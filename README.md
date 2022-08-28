@@ -16,4 +16,4 @@ The app uses the [stride api](https://open-bus-stride-api.hasadna.org.il/), whic
 The api clients are auto-generated, and may need regenerating as the api changes.
 to generate the api client:
 
-`yarn openapi:generate`
+- `yarn generate:openapi`
