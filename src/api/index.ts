@@ -1,6 +1,5 @@
-import {OpenAPI} from "./stride-api"
+import { OpenAPI } from './stride-api'
 
-OpenAPI.BASE = "/api"
+OpenAPI.BASE = '/api'
 
-export { GtfsService, SiriService } from "./stride-api"
-
+export { GtfsService, SiriService } from './stride-api'

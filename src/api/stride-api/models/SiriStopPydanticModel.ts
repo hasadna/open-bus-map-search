@@ -3,7 +3,6 @@
 /* eslint-disable */
 
 export type SiriStopPydanticModel = {
-    id: number;
-    code: number;
-};
-
+  id: number
+  code: number
+}

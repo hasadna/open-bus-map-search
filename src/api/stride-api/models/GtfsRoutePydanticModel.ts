@@ -3,16 +3,15 @@
 /* eslint-disable */
 
 export type GtfsRoutePydanticModel = {
-    id: number;
-    date: string;
-    line_ref: number;
-    operator_ref: number;
-    route_short_name?: string;
-    route_long_name?: string;
-    route_mkt?: string;
-    route_direction?: string;
-    route_alternative?: string;
-    agency_name?: string;
-    route_type?: string;
-};
-
+  id: number
+  date: string
+  line_ref: number
+  operator_ref: number
+  route_short_name?: string
+  route_long_name?: string
+  route_mkt?: string
+  route_direction?: string
+  route_alternative?: string
+  agency_name?: string
+  route_type?: string
+}

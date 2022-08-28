@@ -6,9 +6,9 @@
  * An enumeration.
  */
 export enum SiriSnapshotEtlStatusEnum {
-    PENDING = 'pending',
-    LOADING = 'loading',
-    LOADED = 'loaded',
-    ERROR = 'error',
-    DELETED = 'deleted',
+  PENDING = 'pending',
+  LOADING = 'loading',
+  LOADED = 'loaded',
+  ERROR = 'error',
+  DELETED = 'deleted',
 }

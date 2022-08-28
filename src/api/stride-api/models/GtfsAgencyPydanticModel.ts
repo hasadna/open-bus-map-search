@@ -3,8 +3,7 @@
 /* eslint-disable */
 
 export type GtfsAgencyPydanticModel = {
-    date: string;
-    operator_ref: number;
-    agency_name: string;
-};
-
+  date: string
+  operator_ref: number
+  agency_name: string
+}
