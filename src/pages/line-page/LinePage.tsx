@@ -1,11 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Typography, Layout, TimePicker, Input } from "antd";
+import { Layout, TimePicker, Input } from "antd";
 import LineSelector from "./LineSelector";
 import DirectionSelector from "./DirectionSelector";
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 import L, { LatLngTuple } from "leaflet";
 import axios from "axios";
-
 
 const LinePage = (props: {}) => {
     const [position, setPosition] = useState<LatLngTuple>();

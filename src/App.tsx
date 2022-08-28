@@ -1,12 +1,9 @@
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React from 'react';
 import './App.css'
 import LinePage from "./pages/line-page/LinePage";
 import { Layout, Typography } from "antd";
-import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import L, { LatLngTuple } from 'leaflet';
-import axios from 'axios';
 
 const { Header, Content } = Layout;
 

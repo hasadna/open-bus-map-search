@@ -8,6 +8,7 @@
     "@types/react-dom": "^18.0.6",
     "antd": "^4.22.5",
     "axios": "^0.27.2",
+    "http-proxy-middleware": "^2.0.6",
     "leaflet": "^1.8.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -21,7 +22,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "generate:openapi": "scripts/generate_openapi.sh"
   },
   "eslintConfig": {
     "extends": [
@@ -41,6 +43,7 @@
     ]
   },
   "devDependencies": {
-    "@types/leaflet": "^1.7.11"
+    "@types/leaflet": "^1.7.11",
+    "openapi-typescript-codegen": "^0.23.0"
   }
 }
