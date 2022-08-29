@@ -1,0 +1,2 @@
+src/setupProxy.js
+src/api/generated/**/*.*
