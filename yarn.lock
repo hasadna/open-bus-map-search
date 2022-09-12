@@ -6308,7 +6308,7 @@ mkdirp@~0.5.1:
   dependencies:
     minimist "^1.2.6"
 
-moment@^2.24.0, moment@^2.29.2:
+moment@^2.24.0, moment@^2.29.2, moment@^2.29.4:
   version "2.29.4"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.4.tgz#3dbe052889fe7c1b2ed966fcb3a77328964ef108"
   integrity sha512-5LC9SOxjSc2HF6vO2CyuTDNivEdoz2IvyJJGj6X8DJ0eFyfszE0QiEd+iXmBvUP3WHxSjFH/vIsA0EN00cgr8w==
@@ -6525,6 +6525,11 @@ onetime@^5.1.2:
   integrity sha512-kbpaSSGJTWdAY5KPVeMOKXSrPtr8C8C7wodJbcsd51jRnmD+GZu8Y0VoU6Dm5Z4vWr0Ig/1NKuWRKf7j5aaYSg==
   dependencies:
     mimic-fn "^2.1.0"
+
+open-bus-stride-client@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/open-bus-stride-client/-/open-bus-stride-client-0.1.0.tgz#c9c2a9f0c4b60b01a8f43dc31f29d90919c07576"
+  integrity sha512-8+TgjLUkP8SYWKkoNdGrNmn0fwxD4dKeMWQ78yCBEjQuwkShROQoGaEshUWNrvuR0uzIZYG/8AgUyDLnN4kh6A==
 
 open@^8.0.9, open@^8.4.0:
   version "8.4.0"

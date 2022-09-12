@@ -10,6 +10,8 @@
     "axios": "^0.27.2",
     "http-proxy-middleware": "^2.0.6",
     "leaflet": "^1.8.0",
+    "moment": "^2.29.4",
+    "open-bus-stride-client": "^0.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-leaflet": "^4.0.1",
@@ -23,7 +25,6 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "generate:openapi": "scripts/generate_openapi.sh",
     "lint": "eslint .",
     "lint:fix": "eslint --fix",
     "format": "prettier --write './**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc"
