@@ -1,17 +1,9 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { Input, TimePicker } from 'antd'
-import LineSelector from './LineSelector'
-import DirectionSelector from './DirectionSelector'
-import { getStops } from '../../api/gtfs'
-import styled from 'styled-components'
-import OperatorSelector from './OperatorSelector'
-
-const BASELINE_TIME = new Date('2022-09-12T06:00:00Z')
-
-const Row = styled.div`
-  display: flex;
-  flex-direction: row;
-`
+import LineSelector from 'src/pages/components/LineSelector'
+import DirectionSelector from 'src/pages/components/DirectionSelector'
+import OperatorSelector from 'src/pages/components/OperatorSelector'
+import { Row } from 'src/pages/components/Row'
 
 const LinePage = () => {
   const [operatorId, setOperatorId] = useState<string | undefined>()

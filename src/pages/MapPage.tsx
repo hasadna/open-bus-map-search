@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { Input, Layout } from 'antd'
 import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet'
 import L, { LatLngTuple } from 'leaflet'
-import { searchLocationByQueryAsync } from '../api/search_location'
+import { searchLocationByQueryAsync } from 'src/api/searchLocationService'
 
 const MapPage = () => {
   const [position, setPosition] = useState<LatLngTuple>()

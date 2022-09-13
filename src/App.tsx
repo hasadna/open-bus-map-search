@@ -1,6 +1,6 @@
 import React from 'react'
 import './App.css'
-import LinePage from './pages/line-page/LinePage'
+import LinePage from 'src/pages/LinePage'
 import { ConfigProvider, Empty, Layout, Typography } from 'antd'
 import 'leaflet/dist/leaflet.css'
 import { TEXTS } from 'src/resources/texts'
