@@ -42,6 +42,7 @@
   },
   "devDependencies": {
     "@types/leaflet": "^1.7.11",
+    "@types/styled-components": "^5.1.26",
     "@typescript-eslint/eslint-plugin": "^5.35.1",
     "@typescript-eslint/parser": "^5.35.1",
     "eslint": "8.22.0",
