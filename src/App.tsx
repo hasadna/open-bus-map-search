@@ -1,11 +1,12 @@
 import React from 'react'
 import './App.css'
 import LinePage from 'src/pages/LinePage'
-import { ConfigProvider, Empty, Layout, Typography } from 'antd'
+import { ConfigProvider, Layout, Typography } from 'antd'
 import 'leaflet/dist/leaflet.css'
 import { TEXTS } from 'src/resources/texts'
 import styled from 'styled-components'
 const { Header, Content } = Layout
+import heIL from 'antd/es/locale/he_IL'
 
 const StyledContent = styled(Content)`
   margin: 24px 16px 0;
@@ -18,7 +19,7 @@ const StyledBody = styled.div`
 
 function App() {
   return (
-    <ConfigProvider direction="rtl" renderEmpty={() => <Empty description={TEXTS.no_results} />}>
+    <ConfigProvider direction="rtl" locale={heIL}>
       <Layout>
         <Header>
           <Typography.Title level={3} style={{ color: 'white' }}>

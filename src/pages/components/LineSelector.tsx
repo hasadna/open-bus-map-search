@@ -1,13 +1,26 @@
 import React from 'react'
-import { Select } from 'antd'
+import { Input } from 'antd'
+import { TEXTS } from 'src/resources/texts'
+import styled from 'styled-components'
+import { INPUT_SIZE } from 'src/resources/sizes'
 
-const children: React.ReactNode[] = []
-for (let i = 10; i < 36; i++) {
-  children.push(<Select.Option key={i}>{i}</Select.Option>)
+type LineSelectorProps = {
+  lineNumber: string | undefined
+  setLineNumber: (lineNumber: string) => void
 }
 
-const LineSelector = () => {
-  return <Select placeholder="Select line number">{children}</Select>
+const StyledInput = styled(Input)`
+  width: ${INPUT_SIZE}px;
+`
+
+const LineSelector = ({ lineNumber, setLineNumber }: LineSelectorProps) => {
+  return (
+    <StyledInput
+      placeholder={TEXTS.line_placeholder}
+      value={lineNumber}
+      onChange={(e) => setLineNumber(e.target.value)}
+    />
+  )
 }
 
 export default LineSelector
