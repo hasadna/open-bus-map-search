@@ -31,7 +31,7 @@ const LinePage = () => {
   const [routes, setRoutes] = useState<BusRoute[] | undefined>()
   const [routesIsLoading, setRoutesIsLoading] = useState(false)
   const [stops, setStops] = useState<BusStop[] | undefined>()
-  const [stopsIsLoding, setStopsIsLoading] = useState(false)
+  const [stopsIsLoading, setStopsIsLoading] = useState(false)
 
   const momentForce = dateTime || moment()
   const dateTimeForce = momentForce.toDate()
@@ -93,13 +93,13 @@ const LinePage = () => {
       {!routesIsLoading && routes && (
         <RouteSelector routes={routes} routeKey={routeKey} setRouteKey={setRouteKey} />
       )}
-      {stopsIsLoding && (
+      {stopsIsLoading && (
         <Row>
           <Label text={TEXTS.loading_stops} />
           <Spin />
         </Row>
       )}
-      {!stopsIsLoding && stops && (
+      {!stopsIsLoading && stops && (
         <StopSelector stops={stops} stopKey={stopKey} setStopKey={setStopKey} />
       )}
     </Container>
