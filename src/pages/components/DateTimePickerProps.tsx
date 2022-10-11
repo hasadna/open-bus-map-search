@@ -4,14 +4,14 @@ import { DatePicker } from 'antd'
 import { TEXTS } from 'src/resources/texts'
 
 type DateTimePickerProps = {
-  dateTime: Moment | undefined
-  setDateTime: (dateTime: Moment | undefined) => void
+  timestamp: Moment | undefined
+  setDateTime: (timestamp: Moment) => void
 }
 
-export const DateTimePicker = ({ dateTime, setDateTime }: DateTimePickerProps) => (
+export const DateTimePicker = ({ timestamp, setDateTime }: DateTimePickerProps) => (
   <DatePicker
-    value={dateTime}
-    onChange={(moment) => setDateTime(moment || undefined)}
+    value={timestamp}
+    onChange={(nextTimestamp) => nextTimestamp && setDateTime(nextTimestamp)}
     format={TEXTS.datetime_format}
     showTime={{
       defaultValue: moment('00:00:00', 'HH:mm:ss'),

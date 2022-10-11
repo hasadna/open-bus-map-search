@@ -4,7 +4,7 @@ import OperatorSelector from 'src/pages/components/OperatorSelector'
 import { Row } from 'src/pages/components/Row'
 import { MARGIN_MEDIUM } from 'src/resources/sizes'
 import styled from 'styled-components'
-import { getRoutesAsync, getStopsForRouteAsync } from 'src/api/gtfsService'
+import { getRoutesAsync, getStopHitTimesAsync, getStopsForRouteAsync } from 'src/api/gtfsService'
 import { BusRoute } from 'src/model/busRoute'
 import RouteSelector from 'src/pages/components/RouteSelector'
 import moment, { Moment } from 'moment'
@@ -14,6 +14,7 @@ import { TEXTS } from 'src/resources/texts'
 import { BusStop } from 'src/model/busStop'
 import StopSelector from 'src/pages/components/StopSelector'
 import { Spin } from 'antd'
+import { Timeline } from 'src/pages/components/Timeline'
 
 const Container = styled.div`
   display: flex;
@@ -21,20 +22,22 @@ const Container = styled.div`
   gap: ${MARGIN_MEDIUM}px;
 `
 
+const StyledTimeline = styled(Timeline)`
+  margin-top: ${MARGIN_MEDIUM * 2}px;
+`
+
 const LinePage = () => {
   const [operatorId, setOperatorId] = useState<string | undefined>()
   const [lineNumber, setLineNumber] = useState<string | undefined>()
   const [routeKey, setRouteKey] = useState<string | undefined>()
-  const [dateTime, setDateTime] = useState<Moment | undefined>(moment())
+  const [timestamp, setTimestamp] = useState<Moment>(moment())
   const [stopKey, setStopKey] = useState<string | undefined>()
+  const [hitTimes, setHitTimes] = useState<Date[] | undefined>()
 
   const [routes, setRoutes] = useState<BusRoute[] | undefined>()
   const [routesIsLoading, setRoutesIsLoading] = useState(false)
   const [stops, setStops] = useState<BusStop[] | undefined>()
   const [stopsIsLoading, setStopsIsLoading] = useState(false)
-
-  const momentForce = dateTime || moment()
-  const dateTimeForce = momentForce.toDate()
 
   const clearRoutes = useCallback(() => {
     setRoutes(undefined)
@@ -44,6 +47,7 @@ const LinePage = () => {
   const clearStops = useCallback(() => {
     setStops(undefined)
     setStopKey(undefined)
+    setHitTimes(undefined)
   }, [setStops, setStopKey])
 
   useEffect(() => {
@@ -52,10 +56,10 @@ const LinePage = () => {
     if (!operatorId || !lineNumber) {
       return
     }
-    getRoutesAsync(dateTimeForce, operatorId, lineNumber)
+    getRoutesAsync(timestamp, operatorId, lineNumber)
       .then((lines) => setRoutes(lines))
       .finally(() => setRoutesIsLoading(false))
-  }, [operatorId, lineNumber, clearRoutes, clearStops])
+  }, [operatorId, lineNumber, clearRoutes, clearStops, timestamp])
 
   const selectedRouteIds = routes?.find((route) => route.key === routeKey)?.routeIds
 
@@ -65,16 +69,26 @@ const LinePage = () => {
       return
     }
     setStopsIsLoading(true)
-    getStopsForRouteAsync(selectedRouteIds, momentForce)
+    getStopsForRouteAsync(selectedRouteIds, timestamp)
       .then((stops) => setStops(stops))
       .finally(() => setStopsIsLoading(false))
-  }, [selectedRouteIds, routeKey, clearStops])
+  }, [selectedRouteIds, routeKey, clearStops, timestamp])
+
+  useEffect(() => {
+    if (!stopKey || !stops) {
+      return
+    }
+    const stop = stops.find((stop) => stop.key === stopKey)
+    if (stop) {
+      getStopHitTimesAsync(stop, timestamp).then((times) => setHitTimes(times))
+    }
+  }, [stopKey, stops, timestamp])
 
   return (
     <Container>
       <Row>
         <Label text={TEXTS.choose_datetime} />
-        <DateTimePicker dateTime={dateTime} setDateTime={setDateTime} />
+        <DateTimePicker timestamp={timestamp} setDateTime={setTimestamp} />
       </Row>
       <Row>
         <Label text={TEXTS.choose_operator} />
@@ -102,6 +116,7 @@ const LinePage = () => {
       {!stopsIsLoading && stops && (
         <StopSelector stops={stops} stopKey={stopKey} setStopKey={setStopKey} />
       )}
+      {hitTimes && <StyledTimeline target={timestamp} gtfsTimes={hitTimes} />}
     </Container>
   )
 }

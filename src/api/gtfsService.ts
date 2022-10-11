@@ -1,16 +1,17 @@
-import { Configuration, GtfsApi } from 'open-bus-stride-client'
-import agencyList from 'open-bus-stride-client/agencies/agencyList'
+import { Configuration, GtfsApi, GtfsRideWithRelatedPydanticModel } from 'open-bus-stride-client'
 import moment, { Moment } from 'moment'
-import { fromGtfsRoute, BusRoute } from 'src/model/busRoute'
+import { BusRoute, fromGtfsRoute } from 'src/model/busRoute'
 import { BusStop, fromGtfsStop } from 'src/model/busStop'
 
 //const BASE_PATH = "https://open-bus-stride-api.hasadna.org.il";
 const BASE_PATH = 'http://localhost:3000/api'
 const API_CONFIG = new Configuration({ basePath: BASE_PATH })
 const GTFS_API = new GtfsApi(API_CONFIG)
+const JOIN_SEPARATOR = ','
+export const MAX_HITS_COUNT = 16
 
 export async function getRoutesAsync(
-  date: Date,
+  timestamp: Moment,
   operatorId: string,
   lineNumber: string,
 ): Promise<BusRoute[]> {
@@ -18,8 +19,8 @@ export async function getRoutesAsync(
   const gtfsRoutes = await GTFS_API.gtfsRoutesListGet({
     routeShortName: lineNumber,
     operatorRefs: operatorId,
-    dateFrom: date,
-    dateTo: date,
+    dateFrom: timestamp.toDate(),
+    dateTo: timestamp.toDate(),
     limit: 100,
   })
   const routes = Object.values(
@@ -42,15 +43,16 @@ export async function getRoutesAsync(
 
 export async function getStopsForRouteAsync(
   routeIds: number[],
-  moment: Moment,
+  timestamp: Moment,
 ): Promise<BusStop[]> {
   console.log('looking up stops', routeIds)
   const stops: BusStop[] = []
+
   for (const routeId of routeIds) {
     const rides = await GTFS_API.gtfsRidesListGet({
       gtfsRouteId: routeId,
-      startTimeTo: moment.add(1, 'd').toDate(),
-      startTimeFrom: moment.subtract(1, 'd').toDate(),
+      startTimeFrom: moment(timestamp).subtract(1, 'days').toDate(),
+      startTimeTo: moment(timestamp).add(1, 'days').toDate(),
       limit: 1,
       orderBy: 'start_time',
     })
@@ -63,7 +65,7 @@ export async function getStopsForRouteAsync(
     })
     for (const rideStop of rideStops) {
       const stop = await GTFS_API.gtfsStopsGetGet({ id: rideStop.gtfsStopId })
-      stops.push(fromGtfsStop(rideStop, stop))
+      stops.push(fromGtfsStop(rideStop, stop, rideRepresentative))
     }
   }
   console.log('fetched stops', stops.length)
@@ -74,33 +76,33 @@ export async function getStopsForRouteAsync(
   )
 }
 
-export async function getStops(BASELINE_TIME: Date) {
-  const routes = await GTFS_API.gtfsRoutesListGet({
-    routeShortName: '1',
-    operatorRefs: agencyList.find((value) => value.agency_name === 'דן')!.agency_id,
-    dateFrom: BASELINE_TIME,
-    dateTo: BASELINE_TIME,
-    limit: 10,
-  })
-  console.error(routes.map((route) => [route.id, route.routeDirection, route.routeLongName]))
+export async function getStopHitTimesAsync(stop: BusStop, timestamp: Moment): Promise<Date[]> {
+  const targetStartTime = moment(timestamp).subtract(stop.minutesFromRouteStartTime, 'minutes')
+  console.log('looking for rides starting around', targetStartTime.toDate())
 
-  const route_id = routes[0].id
   const rides = await GTFS_API.gtfsRidesListGet({
-    gtfsRouteId: route_id,
-    startTimeTo: moment(BASELINE_TIME).add(60, 'm').toDate(),
-    startTimeFrom: moment(BASELINE_TIME).subtract(60, 'm').toDate(),
-    limit: 10,
-    orderBy: 'start_time',
-  })
-  console.error(rides.map((ride) => ride.startTime))
-
-  const ride_id = rides[0].id?.toString()
-  const stops = await GTFS_API.gtfsRideStopsListGet({
-    gtfsRideIds: ride_id,
+    gtfsRouteId: stop.routeId,
+    startTimeFrom: moment(targetStartTime).subtract(2, 'hours').toDate(),
+    startTimeTo: moment(targetStartTime).add(2, 'hours').toDate(),
+    limit: 512,
+    orderBy: 'start_time asc',
   })
 
-  for (const ride_stop of stops.sort((a, b) => a.stopSequence! - b.stopSequence!)) {
-    const stop = await GTFS_API.gtfsStopsGetGet({ id: ride_stop.gtfsStopId })
-    console.error(stop.name, stop.code, ride_stop.arrivalTime)
+  if (rides.length === 0) {
+    return []
   }
+
+  const diffFromTargetStart = (ride: GtfsRideWithRelatedPydanticModel): number =>
+    Math.abs(timestamp.diff(ride.startTime, 'seconds'))
+
+  const closestRides = rides
+    .sort((a, b) => diffFromTargetStart(a) - diffFromTargetStart(b))
+    .slice(0, MAX_HITS_COUNT)
+
+  const rideIds = closestRides.map((ride) => ride.id).join(JOIN_SEPARATOR)
+  const stopHits = await GTFS_API.gtfsRideStopsListGet({
+    gtfsRideIds: rideIds,
+    gtfsStopIds: stop.stopId.toString(),
+  })
+  return stopHits.map((hit) => hit.arrivalTime!).sort()
 }

@@ -13,6 +13,9 @@ export const TEXTS = {
   datetime_format: 'HH:mm:ss · YYYY-MM-DD',
   loading_routes: 'מסלולי נסיעה בטעינה',
   loading_stops: 'תחנות עצירה בטעינה',
+  timestamp_target: 'זמן החיפוש',
+  timestamp_gtfs: 'זמן עצירה מתוכנן',
+  timestamp_siri: 'זמן עצירה בפועל',
 }
 
 export const formatted = (text: string, value: string) => text.replace(PLACEHOLDER, value)
