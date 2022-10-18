@@ -18,8 +18,8 @@ import { TEXTS } from 'src/resources/texts'
 import { BusStop } from 'src/model/busStop'
 import StopSelector from 'src/pages/components/StopSelector'
 import { Spin } from 'antd'
-import { Timeline } from 'src/pages/components/Timeline'
 import { getSiriStopHitTimesAsync } from 'src/api/siriService'
+import { TimelineBoard } from 'src/pages/components/TimelineBoard'
 
 const Container = styled.div`
   display: flex;
@@ -27,8 +27,8 @@ const Container = styled.div`
   gap: ${MARGIN_MEDIUM}px;
 `
 
-const StyledTimeline = styled(Timeline)`
-  margin-top: ${MARGIN_MEDIUM * 2}px;
+const StyledTimelineBoard = styled(TimelineBoard)`
+  margin-top: ${MARGIN_MEDIUM * 3}px;
 `
 
 const LinePage = () => {
@@ -129,7 +129,9 @@ const LinePage = () => {
       {!stopsIsLoading && stops && (
         <StopSelector stops={stops} stopKey={stopKey} setStopKey={setStopKey} />
       )}
-      {gtfsHitTimes && <StyledTimeline target={timestamp} gtfsTimes={gtfsHitTimes} />}
+      {gtfsHitTimes && siriHitTimes && (
+        <StyledTimelineBoard target={timestamp} gtfsTimes={gtfsHitTimes} siriTimes={siriHitTimes} />
+      )}
     </Container>
   )
 }

@@ -2,12 +2,11 @@ import { GtfsApi, GtfsRideWithRelatedPydanticModel } from 'open-bus-stride-clien
 import moment, { Moment } from 'moment'
 import { BusRoute, fromGtfsRoute } from 'src/model/busRoute'
 import { BusStop, fromGtfsStop } from 'src/model/busStop'
-import { API_CONFIG } from 'src/api/apiConfig'
+import { API_CONFIG, MAX_HITS_COUNT } from 'src/api/apiConfig'
 import { log } from 'src/log'
 
 const GTFS_API = new GtfsApi(API_CONFIG)
 const JOIN_SEPARATOR = ','
-export const MAX_HITS_COUNT = 16
 
 export async function getRoutesAsync(
   timestamp: Moment,
@@ -99,11 +98,11 @@ export async function getGtfsStopHitTimesAsync(stop: BusStop, timestamp: Moment)
   const diffFromTargetStart = (ride: GtfsRideWithRelatedPydanticModel): number =>
     Math.abs(timestamp.diff(ride.startTime, 'seconds'))
 
-  const closestRides = rides
+  const closestInTimeRides = rides
     .sort((a, b) => diffFromTargetStart(a) - diffFromTargetStart(b))
     .slice(0, MAX_HITS_COUNT)
 
-  const rideIds = closestRides.map((ride) => ride.id).join(JOIN_SEPARATOR)
+  const rideIds = closestInTimeRides.map((ride) => ride.id).join(JOIN_SEPARATOR)
   const stopHits = await GTFS_API.gtfsRideStopsListGet({
     gtfsRideIds: rideIds,
     gtfsStopIds: stop.stopId.toString(),

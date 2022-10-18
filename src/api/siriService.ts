@@ -1,8 +1,8 @@
 import { SiriApi, SiriVehicleLocationWithRelatedPydanticModel } from 'open-bus-stride-client'
-import { API_CONFIG } from 'src/api/apiConfig'
+import { API_CONFIG, MAX_HITS_COUNT } from 'src/api/apiConfig'
 import { BusStop } from 'src/model/busStop'
 import moment, { Moment } from 'moment'
-import { nearestLocation, geoLocationBoundary } from 'src/api/geoService'
+import { geoLocationBoundary, nearestLocation } from 'src/api/geoService'
 import { Coordinates } from 'src/model/location'
 import { log } from 'src/log'
 import { BusRoute } from 'src/model/busRoute'
@@ -49,8 +49,8 @@ export async function getSiriStopHitTimesAsync(
   const locations = await SIRI_API.siriVehicleLocationsListGet({
     limit: 1024,
     siriRoutesIds: siriRouteId.toString(),
-    recordedAtTimeFrom: moment(timestamp).subtract(1, 'hours').toDate(),
-    recordedAtTimeTo: moment(timestamp).add(1, 'hours').toDate(),
+    recordedAtTimeFrom: moment(timestamp).subtract(2, 'hours').toDate(),
+    recordedAtTimeTo: moment(timestamp).add(2, 'hours').toDate(),
     latGreaterOrEqual: boundary.lowerBound.latitude,
     latLowerOrEqual: boundary.upperBound.latitude,
     lonGreaterOrEqual: boundary.lowerBound.longitude,
@@ -73,5 +73,12 @@ export async function getSiriStopHitTimesAsync(
   const stopHits = Object.values(locationsByRideId).map(
     (locations) => nearestLocation(stop.location, locations) as EnrichedLocation,
   )
-  return stopHits.map((value) => value.recordedAtTime!).sort()
+
+  const diffFromTargetStart = (location: EnrichedLocation): number =>
+    Math.abs(timestamp.diff(location.recordedAtTime, 'seconds'))
+
+  const closestInTimeHits = stopHits
+    .sort((a, b) => diffFromTargetStart(a) - diffFromTargetStart(b))
+    .slice(0, MAX_HITS_COUNT)
+  return closestInTimeHits.map((value) => value.recordedAtTime!).sort()
 }
