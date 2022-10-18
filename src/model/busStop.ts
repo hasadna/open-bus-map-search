@@ -2,9 +2,9 @@ import {
   GtfsRideStopPydanticModel,
   GtfsStopPydanticModel,
 } from 'open-bus-stride-client/openapi/models'
-import { LatLngTuple } from 'leaflet'
-import { GtfsRidePydanticModel, GtfsRideWithRelatedPydanticModel } from 'open-bus-stride-client'
+import { GtfsRideWithRelatedPydanticModel } from 'open-bus-stride-client'
 import moment from 'moment'
+import { Coordinates } from 'src/model/location'
 
 export type BusStop = {
   key: string
@@ -13,7 +13,7 @@ export type BusStop = {
   stopSequence: number
   name: string
   code: string
-  location: LatLngTuple
+  location: Coordinates
   minutesFromRouteStartTime: number
 }
 
@@ -33,7 +33,7 @@ export function fromGtfsStop(
     stopSequence: gtfsRideStop.stopSequence || 0,
     name: `${gtfsStop.name} (${gtfsStop.city})`,
     code: gtfsStop.code.toString(),
-    location: [gtfsStop.lat || 0, gtfsStop.lon || 0],
+    location: { latitude: gtfsStop.lat || 0, longitude: gtfsStop.lon || 0 },
     minutesFromRouteStartTime,
   }
 }

@@ -3,6 +3,7 @@ import { strLeftBack } from 'underscore.string'
 
 export type BusRoute = {
   key: string
+  operatorId: string
   lineNumber: string
   fromName: string
   toName: string
@@ -14,6 +15,7 @@ export function fromGtfsRoute(gtfsRoute: GtfsRoutePydanticModel): BusRoute {
   const cleanedName = strLeftBack(gtfsRoute.routeLongName!, '-')
   const parts = cleanedName.split('<->')
   return {
+    operatorId: gtfsRoute.operatorRef.toString(),
     lineNumber: gtfsRoute.routeShortName!,
     key: gtfsRoute.routeLongName!,
     fromName: parts[0] || '',

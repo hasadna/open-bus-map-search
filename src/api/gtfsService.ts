@@ -1,11 +1,10 @@
-import { Configuration, GtfsApi, GtfsRideWithRelatedPydanticModel } from 'open-bus-stride-client'
+import { GtfsApi, GtfsRideWithRelatedPydanticModel } from 'open-bus-stride-client'
 import moment, { Moment } from 'moment'
 import { BusRoute, fromGtfsRoute } from 'src/model/busRoute'
 import { BusStop, fromGtfsStop } from 'src/model/busStop'
+import { API_CONFIG } from 'src/api/apiConfig'
+import { log } from 'src/log'
 
-//const BASE_PATH = "https://open-bus-stride-api.hasadna.org.il";
-const BASE_PATH = 'http://localhost:3000/api'
-const API_CONFIG = new Configuration({ basePath: BASE_PATH })
 const GTFS_API = new GtfsApi(API_CONFIG)
 const JOIN_SEPARATOR = ','
 export const MAX_HITS_COUNT = 16
@@ -15,7 +14,7 @@ export async function getRoutesAsync(
   operatorId: string,
   lineNumber: string,
 ): Promise<BusRoute[]> {
-  console.log('looking up routes', operatorId, lineNumber)
+  log('looking up routes', { operatorId, lineNumber })
   const gtfsRoutes = await GTFS_API.gtfsRoutesListGet({
     routeShortName: lineNumber,
     operatorRefs: operatorId,
@@ -37,7 +36,7 @@ export async function getRoutesAsync(
         return agg
       }, {} as Record<string, BusRoute>),
   )
-  console.log('fetched routes', routes.length)
+  log('fetched routes', routes.length)
   return routes
 }
 
@@ -45,7 +44,7 @@ export async function getStopsForRouteAsync(
   routeIds: number[],
   timestamp: Moment,
 ): Promise<BusStop[]> {
-  console.log('looking up stops', routeIds)
+  log('looking up stops', routeIds)
   const stops: BusStop[] = []
 
   for (const routeId of routeIds) {
@@ -63,12 +62,14 @@ export async function getStopsForRouteAsync(
     const rideStops = await GTFS_API.gtfsRideStopsListGet({
       gtfsRideIds: rideRepresentative.id!.toString(),
     })
-    for (const rideStop of rideStops) {
-      const stop = await GTFS_API.gtfsStopsGetGet({ id: rideStop.gtfsStopId })
-      stops.push(fromGtfsStop(rideStop, stop, rideRepresentative))
-    }
+    await Promise.all(
+      rideStops.map(async (rideStop) => {
+        const stop = await GTFS_API.gtfsStopsGetGet({ id: rideStop.gtfsStopId })
+        stops.push(fromGtfsStop(rideStop, stop, rideRepresentative))
+      }),
+    )
   }
-  console.log('fetched stops', stops.length)
+  log('fetched stops', stops.length)
   return stops.sort((a, b) =>
     a.stopSequence === b.stopSequence
       ? a.name.localeCompare(b.name)
@@ -76,9 +77,12 @@ export async function getStopsForRouteAsync(
   )
 }
 
-export async function getStopHitTimesAsync(stop: BusStop, timestamp: Moment): Promise<Date[]> {
+export async function getGtfsStopHitTimesAsync(stop: BusStop, timestamp: Moment): Promise<Date[]> {
   const targetStartTime = moment(timestamp).subtract(stop.minutesFromRouteStartTime, 'minutes')
-  console.log('looking for rides starting around', targetStartTime.toDate())
+  log('looking for rides starting around time', {
+    stopId: stop.stopId,
+    targetStartTime: targetStartTime.toDate(),
+  })
 
   const rides = await GTFS_API.gtfsRidesListGet({
     gtfsRouteId: stop.routeId,
