@@ -9,9 +9,8 @@ import {
   PointType,
   pointTypeToColor,
   pointTypeToDescription,
-} from 'src/pages/components/TimelinePoint'
-
-const PADDING = 10
+} from 'src/pages/components/timeline/TimelinePoint'
+import { PADDING } from 'src/pages/components/timeline/TimelineBoard'
 
 const Line = styled.div<{ totalHeight: number }>`
   height: ${({ totalHeight }) => totalHeight + PADDING * 3}px;
@@ -35,29 +34,18 @@ const Title = styled.span<{ pointType: PointType }>`
 type TimelineProps = {
   className?: string
   timestamps: Date[]
-  lowerBound: Date
   totalHeight: number
-  totalRange: number
   pointType: PointType
+  timestampToTop: (timestamp: Moment) => number
 }
 
 export const Timeline = ({
   className,
   timestamps,
-  lowerBound,
   totalHeight,
-  totalRange,
   pointType,
+  timestampToTop,
 }: TimelineProps) => {
-  const timestampTop = useCallback(
-    (timestamp: Moment) => {
-      const deltaFromTop = timestamp.diff(lowerBound, 'seconds')
-      const portionOfHeight = deltaFromTop / totalRange
-      return PADDING + portionOfHeight * totalHeight
-    },
-    [lowerBound, totalRange, totalHeight],
-  )
-
   return (
     <Container className={className}>
       <Title pointType={pointType}>{pointTypeToDescription[pointType]}</Title>
@@ -67,7 +55,7 @@ export const Timeline = ({
       {timestamps.map((timestamp) => (
         <LabeledPoint
           key={timestamp.toString()}
-          top={timestampTop(moment(timestamp))}
+          top={timestampToTop(moment(timestamp))}
           type={pointType}
           timestamp={moment(timestamp)}
         />

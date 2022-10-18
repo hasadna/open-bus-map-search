@@ -5,8 +5,8 @@ import { Row } from 'src/pages/components/Row'
 import { MARGIN_MEDIUM } from 'src/resources/sizes'
 import styled from 'styled-components'
 import {
-  getRoutesAsync,
   getGtfsStopHitTimesAsync,
+  getRoutesAsync,
   getStopsForRouteAsync,
 } from 'src/api/gtfsService'
 import { BusRoute } from 'src/model/busRoute'
@@ -19,12 +19,13 @@ import { BusStop } from 'src/model/busStop'
 import StopSelector from 'src/pages/components/StopSelector'
 import { Spin } from 'antd'
 import { getSiriStopHitTimesAsync } from 'src/api/siriService'
-import { TimelineBoard } from 'src/pages/components/TimelineBoard'
+import { TimelineBoard } from 'src/pages/components/timeline/TimelineBoard'
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${MARGIN_MEDIUM}px;
+  z-index: -2;
 `
 
 const StyledTimelineBoard = styled(TimelineBoard)`
@@ -44,6 +45,7 @@ const LinePage = () => {
   const [routesIsLoading, setRoutesIsLoading] = useState(false)
   const [stops, setStops] = useState<BusStop[] | undefined>()
   const [stopsIsLoading, setStopsIsLoading] = useState(false)
+  const [hitsIsLoading, setHitsIsLoading] = useState(false)
 
   const clearRoutes = useCallback(() => {
     setRoutes(undefined)
@@ -90,10 +92,16 @@ const LinePage = () => {
     }
     const stop = stops.find((stop) => stop.key === stopKey)
     if (stop) {
-      getGtfsStopHitTimesAsync(stop, timestamp).then((times) => setGtfsHitTimes(times))
-      getSiriStopHitTimesAsync(selectedRoute, stop, timestamp).then((times) =>
-        setSiriHitTimes(times),
-      )
+      setHitsIsLoading(true)
+      Promise.all([
+        getGtfsStopHitTimesAsync(stop, timestamp),
+        getSiriStopHitTimesAsync(selectedRoute, stop, timestamp),
+      ])
+        .then(([gtfsTimes, siriTimes]) => {
+          setGtfsHitTimes(gtfsTimes)
+          setSiriHitTimes(siriTimes)
+        })
+        .finally(() => setHitsIsLoading(false))
     }
   }, [stopKey, stops, timestamp, selectedRoute])
 
@@ -128,6 +136,12 @@ const LinePage = () => {
       )}
       {!stopsIsLoading && stops && (
         <StopSelector stops={stops} stopKey={stopKey} setStopKey={setStopKey} />
+      )}
+      {hitsIsLoading && (
+        <Row>
+          <Label text={TEXTS.loading_hits} />
+          <Spin />
+        </Row>
       )}
       {gtfsHitTimes && siriHitTimes && (
         <StyledTimelineBoard target={timestamp} gtfsTimes={gtfsHitTimes} siriTimes={siriHitTimes} />

@@ -51,13 +51,7 @@ const Label = styled.div<PointProps>`
   position: absolute;
   top: ${({ top }) => top - POINT_SIZE + 1}px;
   right: ${POINT_SIZE * 2}px;
-`
-
-const HorizontalLine = styled.div`
-  position: absolute;
-  width: 100%;
-  height: 2px;
-  background-color: ${NEUTRAL_COLOR};
+  z-index: 2;
 `
 
 type LabeledPointProps = {
