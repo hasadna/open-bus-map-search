@@ -22,7 +22,7 @@ const Container = styled.div`
 `
 
 const StyledTimeline = styled(Timeline)`
-  width: ${COLUMN_WIDTH}px;
+  min-width: ${COLUMN_WIDTH}px;
   margin-left: 16px;
 `
 

@@ -9,7 +9,7 @@ type HorizontalLineProps = {
 
 const LineStyle = css<HorizontalLineProps>`
   position: absolute;
-  width: 100%;
+  width: 200%;
   user-select: none;
 `
 

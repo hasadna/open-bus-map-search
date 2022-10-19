@@ -10,6 +10,7 @@ import heIL from 'antd/es/locale/he_IL'
 
 const StyledContent = styled(Content)`
   margin: 24px 16px 0;
+  overflow: auto;
 `
 
 const StyledBody = styled.div`

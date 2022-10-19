@@ -29,6 +29,7 @@ const Title = styled.span<{ pointType: PointType }>`
   font-weight: bold;
   background-color: ${({ pointType }) => pointTypeToColor[pointType]};
   padding: 0 8px;
+  white-space: nowrap;
 `
 
 type TimelineProps = {
