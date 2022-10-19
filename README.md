@@ -1,6 +1,8 @@
 # Open bus ranking app
 
-This app is created by th volunteers of [Public Knowledge Workshop](https://www.hasadna.org.il/)
+[![Netlify Status](https://api.netlify.com/api/v1/badges/d3ef62c2-b5bb-48ac-8299-71e5bd22b211/deploy-status)](https://app.netlify.com/sites/open-bus/deploys)
+
+This app is created by the volunteers of [Public Knowledge Workshop](https://www.hasadna.org.il/)
 
 ## Developers:
 
