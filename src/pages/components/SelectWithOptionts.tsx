@@ -1,6 +1,7 @@
 import styled from 'styled-components'
 import { Select } from 'antd'
 import { DefaultOptionType } from 'rc-select/lib/Select'
+import { INPUT_SIZE } from 'src/resources/sizes'
 import React from 'react'
 
 type SelectorProps<T> = {
@@ -12,7 +13,9 @@ type SelectorProps<T> = {
   getItemDisplay: (item: T) => string
 }
 
-const StyledSelect = styled(Select<string, DefaultOptionType>)``
+const StyledSelect = styled(Select<string, DefaultOptionType>)`
+  max-width: ${INPUT_SIZE * 2.5}px;
+`
 
 const SelectWithOptions = <T,>({
   items,
