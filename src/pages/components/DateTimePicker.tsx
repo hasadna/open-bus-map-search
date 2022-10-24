@@ -3,12 +3,19 @@ import React from 'react'
 import { DatePicker } from 'antd'
 import { TEXTS } from 'src/resources/texts'
 
-type DateTimePickerProps = {
+type DateTimePicker = {
   timestamp: Moment | undefined
   setDateTime: (timestamp: Moment) => void
 }
 
-export const DateTimePicker = ({ timestamp, setDateTime }: DateTimePickerProps) => (
+const JAN_FIRST_2022 = 1641038400000
+
+function isDateDisabled(date: Moment) {
+  const END_OF_TODAY = moment().endOf('day')
+  return date.isAfter(END_OF_TODAY) || date.isBefore(moment(JAN_FIRST_2022))
+}
+
+const DateTimePicker = ({ timestamp, setDateTime }: DateTimePicker) => (
   <DatePicker
     value={timestamp}
     onChange={(nextTimestamp) => nextTimestamp && setDateTime(nextTimestamp)}
@@ -17,5 +24,8 @@ export const DateTimePicker = ({ timestamp, setDateTime }: DateTimePickerProps) 
       defaultValue: moment('00:00:00', 'HH:mm:ss'),
       format: 'HH:mm',
     }}
+    disabledDate={(date) => isDateDisabled(date)}
   />
 )
+
+export default DateTimePicker

@@ -12,7 +12,7 @@ import {
 import { BusRoute } from 'src/model/busRoute'
 import RouteSelector from 'src/pages/components/RouteSelector'
 import moment, { Moment } from 'moment'
-import { DateTimePicker } from 'src/pages/components/DateTimePickerProps'
+import DateTimePicker from 'src/pages/components/DateTimePicker'
 import { Label } from 'src/pages/components/Label'
 import { TEXTS } from 'src/resources/texts'
 import { BusStop } from 'src/model/busStop'
