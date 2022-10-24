@@ -32,6 +32,10 @@ const StyledTimelineBoard = styled(TimelineBoard)`
   margin-top: ${MARGIN_MEDIUM * 3}px;
 `
 
+const NotFound = styled.div`
+  color: #710825;
+`
+
 const LinePage = () => {
   const [operatorId, setOperatorId] = useState<string | undefined>()
   const [lineNumber, setLineNumber] = useState<string | undefined>()
@@ -125,9 +129,13 @@ const LinePage = () => {
           <Spin />
         </Row>
       )}
-      {!routesIsLoading && routes && (
-        <RouteSelector routes={routes} routeKey={routeKey} setRouteKey={setRouteKey} />
-      )}
+      {!routesIsLoading &&
+        routes &&
+        (routes.length === 0 ? (
+          <NotFound>{TEXTS.line_not_found}</NotFound>
+        ) : (
+          <RouteSelector routes={routes} routeKey={routeKey} setRouteKey={setRouteKey} />
+        ))}
       {stopsIsLoading && (
         <Row>
           <Label text={TEXTS.loading_stops} />
