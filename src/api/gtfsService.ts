@@ -80,14 +80,15 @@ export async function getGtfsStopHitTimesAsync(stop: BusStop, timestamp: Moment)
   const targetStartTime = moment(timestamp).subtract(stop.minutesFromRouteStartTime, 'minutes')
   log('looking for rides starting around time', {
     stopId: stop.stopId,
+    min: stop.minutesFromRouteStartTime,
     targetStartTime: targetStartTime.toDate(),
   })
 
   const rides = await GTFS_API.gtfsRidesListGet({
     gtfsRouteId: stop.routeId,
-    startTimeFrom: moment(targetStartTime).subtract(2, 'hours').toDate(),
-    startTimeTo: moment(targetStartTime).add(2, 'hours').toDate(),
-    limit: 512,
+    startTimeFrom: moment(targetStartTime).subtract(4, 'hours').toDate(),
+    startTimeTo: moment(targetStartTime).add(4, 'hours').toDate(),
+    limit: 1024,
     orderBy: 'start_time asc',
   })
 
