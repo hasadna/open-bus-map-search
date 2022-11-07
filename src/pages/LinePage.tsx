@@ -48,6 +48,7 @@ const LinePage = () => {
     routes,
     stops,
   } = state
+  console.error(state)
 
   const [routesIsLoading, setRoutesIsLoading] = useState(false)
   const [stopsIsLoading, setStopsIsLoading] = useState(false)
@@ -74,7 +75,11 @@ const LinePage = () => {
       return
     }
     getRoutesAsync(timestamp, operatorId, lineNumber)
-      .then((routes) => setState((current) => ({ ...current, routes: routes })))
+      .then((routes) =>
+        setState((current) =>
+          current.lineNumber === lineNumber ? { ...current, routes: routes } : current,
+        ),
+      )
       .finally(() => setRoutesIsLoading(false))
   }, [operatorId, lineNumber, clearRoutes, clearStops, timestamp, setState])
 
