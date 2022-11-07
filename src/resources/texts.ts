@@ -19,6 +19,7 @@ export const TEXTS = {
   timestamp_siri: 'זמן עצירה בפועל 🚌',
   loading_hits: 'זמני נסיעה בטעינה',
   line_not_found: 'הקו לא נמצא',
+  hits_not_found: 'לא נמצאו נסיעות מתוכננות או בפועל',
 }
 
 export const formatted = (text: string, value: string) => text.replace(PLACEHOLDER, value)

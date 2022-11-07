@@ -177,9 +177,17 @@ const LinePage = () => {
           <Spin />
         </Row>
       )}
-      {gtfsHitTimes && siriHitTimes && (
-        <StyledTimelineBoard target={timestamp} gtfsTimes={gtfsHitTimes} siriTimes={siriHitTimes} />
-      )}
+      {gtfsHitTimes &&
+        siriHitTimes &&
+        (gtfsHitTimes.length > 0 && siriHitTimes.length > 0 ? (
+          <StyledTimelineBoard
+            target={timestamp}
+            gtfsTimes={gtfsHitTimes}
+            siriTimes={siriHitTimes}
+          />
+        ) : (
+          <NotFound>{TEXTS.hits_not_found}</NotFound>
+        ))}
     </Container>
   )
 }
