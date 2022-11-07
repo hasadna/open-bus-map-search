@@ -9,17 +9,16 @@ import {
   getRoutesAsync,
   getStopsForRouteAsync,
 } from 'src/api/gtfsService'
-import { BusRoute } from 'src/model/busRoute'
 import RouteSelector from 'src/pages/components/RouteSelector'
-import moment, { Moment } from 'moment'
+import moment from 'moment'
 import DateTimePicker from 'src/pages/components/DateTimePicker'
 import { Label } from 'src/pages/components/Label'
 import { TEXTS } from 'src/resources/texts'
-import { BusStop } from 'src/model/busStop'
 import StopSelector from 'src/pages/components/StopSelector'
 import { Spin } from 'antd'
 import { getSiriStopHitTimesAsync } from 'src/api/siriService'
 import { TimelineBoard } from 'src/pages/components/timeline/TimelineBoard'
+import { LinePageState } from 'src/model/linePageState'
 
 const Container = styled.div`
   display: flex;
@@ -37,30 +36,36 @@ const NotFound = styled.div`
 `
 
 const LinePage = () => {
-  const [operatorId, setOperatorId] = useState<string | undefined>()
-  const [lineNumber, setLineNumber] = useState<string | undefined>()
-  const [routeKey, setRouteKey] = useState<string | undefined>()
-  const [timestamp, setTimestamp] = useState<Moment>(moment())
-  const [stopKey, setStopKey] = useState<string | undefined>()
-  const [gtfsHitTimes, setGtfsHitTimes] = useState<Date[] | undefined>()
-  const [siriHitTimes, setSiriHitTimes] = useState<Date[] | undefined>()
+  const [state, setState] = useState<LinePageState>({ timestamp: moment() })
+  const {
+    operatorId,
+    lineNumber,
+    routeKey,
+    timestamp,
+    stopKey,
+    gtfsHitTimes,
+    siriHitTimes,
+    routes,
+    stops,
+  } = state
 
-  const [routes, setRoutes] = useState<BusRoute[] | undefined>()
   const [routesIsLoading, setRoutesIsLoading] = useState(false)
-  const [stops, setStops] = useState<BusStop[] | undefined>()
   const [stopsIsLoading, setStopsIsLoading] = useState(false)
   const [hitsIsLoading, setHitsIsLoading] = useState(false)
 
   const clearRoutes = useCallback(() => {
-    setRoutes(undefined)
-    setRouteKey(undefined)
-  }, [setRoutes, setRouteKey])
+    setState((current) => ({ ...current, routes: undefined, routeKey: undefined }))
+  }, [setState])
 
   const clearStops = useCallback(() => {
-    setStops(undefined)
-    setStopKey(undefined)
-    setGtfsHitTimes(undefined)
-  }, [setStops, setStopKey])
+    setState((current) => ({
+      ...current,
+      stops: undefined,
+      stopKey: undefined,
+      gtfsHitTimes: undefined,
+      siriHitTimes: undefined,
+    }))
+  }, [setState])
 
   useEffect(() => {
     clearRoutes()
@@ -69,9 +74,9 @@ const LinePage = () => {
       return
     }
     getRoutesAsync(timestamp, operatorId, lineNumber)
-      .then((lines) => setRoutes(lines))
+      .then((routes) => setState((current) => ({ ...current, routes: routes })))
       .finally(() => setRoutesIsLoading(false))
-  }, [operatorId, lineNumber, clearRoutes, clearStops, timestamp])
+  }, [operatorId, lineNumber, clearRoutes, clearStops, timestamp, setState])
 
   const selectedRoute = useMemo(
     () => routes?.find((route) => route.key === routeKey),
@@ -86,7 +91,7 @@ const LinePage = () => {
     }
     setStopsIsLoading(true)
     getStopsForRouteAsync(selectedRouteIds, timestamp)
-      .then((stops) => setStops(stops))
+      .then((stops) => setState((current) => ({ ...current, stops: stops })))
       .finally(() => setStopsIsLoading(false))
   }, [selectedRouteIds, routeKey, clearStops, timestamp])
 
@@ -101,10 +106,9 @@ const LinePage = () => {
         getGtfsStopHitTimesAsync(stop, timestamp),
         getSiriStopHitTimesAsync(selectedRoute, stop, timestamp),
       ])
-        .then(([gtfsTimes, siriTimes]) => {
-          setGtfsHitTimes(gtfsTimes)
-          setSiriHitTimes(siriTimes)
-        })
+        .then(([gtfsTimes, siriTimes]) =>
+          setState((current) => ({ ...current, gtfsHitTimes: gtfsTimes, siriHitTimes: siriTimes })),
+        )
         .finally(() => setHitsIsLoading(false))
     }
   }, [stopKey, stops, timestamp, selectedRoute])
@@ -113,15 +117,24 @@ const LinePage = () => {
     <Container>
       <Row>
         <Label text={TEXTS.choose_datetime} />
-        <DateTimePicker timestamp={timestamp} setDateTime={setTimestamp} />
+        <DateTimePicker
+          timestamp={timestamp}
+          setDateTime={(ts) => setState((current) => ({ ...current, timestamp: ts }))}
+        />
       </Row>
       <Row>
         <Label text={TEXTS.choose_operator} />
-        <OperatorSelector operatorId={operatorId} setOperatorId={setOperatorId} />
+        <OperatorSelector
+          operatorId={operatorId}
+          setOperatorId={(id) => setState((current) => ({ ...current, operatorId: id }))}
+        />
       </Row>
       <Row>
         <Label text={TEXTS.choose_line} />
-        <LineNumberSelector lineNumber={lineNumber} setLineNumber={setLineNumber} />
+        <LineNumberSelector
+          lineNumber={lineNumber}
+          setLineNumber={(number) => setState((current) => ({ ...current, lineNumber: number }))}
+        />
       </Row>
       {routesIsLoading && (
         <Row>
@@ -134,7 +147,11 @@ const LinePage = () => {
         (routes.length === 0 ? (
           <NotFound>{TEXTS.line_not_found}</NotFound>
         ) : (
-          <RouteSelector routes={routes} routeKey={routeKey} setRouteKey={setRouteKey} />
+          <RouteSelector
+            routes={routes}
+            routeKey={routeKey}
+            setRouteKey={(key) => setState((current) => ({ ...current, routeKey: key }))}
+          />
         ))}
       {stopsIsLoading && (
         <Row>
@@ -143,7 +160,11 @@ const LinePage = () => {
         </Row>
       )}
       {!stopsIsLoading && stops && (
-        <StopSelector stops={stops} stopKey={stopKey} setStopKey={setStopKey} />
+        <StopSelector
+          stops={stops}
+          stopKey={stopKey}
+          setStopKey={(key) => setState((current) => ({ ...current, stopKey: key }))}
+        />
       )}
       {hitsIsLoading && (
         <Row>
