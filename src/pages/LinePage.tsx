@@ -19,6 +19,7 @@ import { Spin } from 'antd'
 import { getSiriStopHitTimesAsync } from 'src/api/siriService'
 import { TimelineBoard } from 'src/pages/components/timeline/TimelineBoard'
 import { LinePageState } from 'src/model/linePageState'
+import { log } from 'src/log'
 
 const Container = styled.div`
   display: flex;
@@ -122,13 +123,12 @@ const LinePage = () => {
   }, [stopKey, stops, timestamp, selectedRoute])
 
   useEffect(() => {
-    console.error('looking up stops to match new day', stopName)
     if (!stopName || !stops || stopKey) {
       return
     }
     const newStopKey = stops.find((stop) => stop.name === stopName)?.key
-    console.error(stopName, newStopKey)
     if (newStopKey) {
+      log(`setting new stopKey=${newStopKey} using the prev stopName=${stopName}`)
       setState((current) => ({ ...current, stopKey: newStopKey }))
     }
   }, [timestamp, stops])
