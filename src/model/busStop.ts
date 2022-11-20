@@ -7,6 +7,7 @@ import moment from 'moment'
 import { Coordinates } from 'src/model/location'
 
 export type BusStop = {
+  date: Date
   key: string
   stopId: number
   routeId: number
@@ -27,6 +28,7 @@ export function fromGtfsStop(
     ? moment(arrivalTime).diff(ride.startTime, 'minutes')
     : 0
   return {
+    date: gtfsStop.date,
     key: gtfsRideStop.id.toString(),
     stopId: gtfsRideStop.gtfsStopId,
     routeId: ride.gtfsRouteId || 0,

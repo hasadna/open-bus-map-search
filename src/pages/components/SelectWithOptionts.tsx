@@ -28,6 +28,7 @@ const SelectWithOptions = <T,>({
   return (
     <StyledSelect
       placeholder={placeholder}
+      defaultValue={selected}
       value={selected}
       onSelect={(selected: string) => setSelected(selected)}
       showSearch

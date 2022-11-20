@@ -2,6 +2,7 @@ import { GtfsRoutePydanticModel } from 'open-bus-stride-client/openapi/models'
 import { strLeftBack } from 'underscore.string'
 
 export type BusRoute = {
+  date: Date
   key: string
   operatorId: string
   lineNumber: string
@@ -15,6 +16,7 @@ export function fromGtfsRoute(gtfsRoute: GtfsRoutePydanticModel): BusRoute {
   const cleanedName = strLeftBack(gtfsRoute.routeLongName!, '-')
   const parts = cleanedName.split('<->')
   return {
+    date: gtfsRoute.date,
     operatorId: gtfsRoute.operatorRef.toString(),
     lineNumber: gtfsRoute.routeShortName!,
     key: gtfsRoute.routeLongName!,

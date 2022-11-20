@@ -43,12 +43,12 @@ const LinePage = () => {
     routeKey,
     timestamp,
     stopKey,
+    stopName,
     gtfsHitTimes,
     siriHitTimes,
     routes,
     stops,
   } = state
-  console.error(state)
 
   const [routesIsLoading, setRoutesIsLoading] = useState(false)
   const [stopsIsLoading, setStopsIsLoading] = useState(false)
@@ -70,6 +70,9 @@ const LinePage = () => {
 
   useEffect(() => {
     clearRoutes()
+  }, [clearRoutes, operatorId, lineNumber])
+
+  useEffect(() => {
     clearStops()
     if (!operatorId || !lineNumber) {
       return
@@ -98,13 +101,13 @@ const LinePage = () => {
     getStopsForRouteAsync(selectedRouteIds, timestamp)
       .then((stops) => setState((current) => ({ ...current, stops: stops })))
       .finally(() => setStopsIsLoading(false))
-  }, [selectedRouteIds, routeKey, clearStops, timestamp])
+  }, [selectedRouteIds, routeKey, clearStops])
 
   useEffect(() => {
     if (!stopKey || !stops || !selectedRoute) {
       return
     }
-    const stop = stops.find((stop) => stop.key === stopKey)
+    const stop = stops?.find((stop) => stop.key === stopKey)
     if (stop) {
       setHitsIsLoading(true)
       Promise.all([
@@ -117,6 +120,18 @@ const LinePage = () => {
         .finally(() => setHitsIsLoading(false))
     }
   }, [stopKey, stops, timestamp, selectedRoute])
+
+  useEffect(() => {
+    console.error('looking up stops to match new day', stopName)
+    if (!stopName || !stops || stopKey) {
+      return
+    }
+    const newStopKey = stops.find((stop) => stop.name === stopName)?.key
+    console.error(stopName, newStopKey)
+    if (newStopKey) {
+      setState((current) => ({ ...current, stopKey: newStopKey }))
+    }
+  }, [timestamp, stops])
 
   return (
     <Container>
@@ -168,7 +183,12 @@ const LinePage = () => {
         <StopSelector
           stops={stops}
           stopKey={stopKey}
-          setStopKey={(key) => setState((current) => ({ ...current, stopKey: key }))}
+          setStopKey={(key) =>
+            setState((current) => {
+              const stop = current.stops?.find((stop) => stop.key === key)
+              return { ...current, stopKey: key, stopName: stop?.name }
+            })
+          }
         />
       )}
       {hitsIsLoading && (
@@ -177,7 +197,8 @@ const LinePage = () => {
           <Spin />
         </Row>
       )}
-      {gtfsHitTimes &&
+      {!hitsIsLoading &&
+        gtfsHitTimes &&
         siriHitTimes &&
         (gtfsHitTimes.length > 0 && siriHitTimes.length > 0 ? (
           <StyledTimelineBoard
