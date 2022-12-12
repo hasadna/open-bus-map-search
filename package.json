@@ -10,7 +10,7 @@
     "leaflet": "^1.8.0",
     "lodash.debounce": "^4.0.8",
     "moment": "^2.29.4",
-    "open-bus-stride-client": "^0.1.0",
+    "open-bus-stride-client": "0.1.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-leaflet": "^4.0.1",

@@ -6550,7 +6550,7 @@ onetime@^5.1.2:
   dependencies:
     mimic-fn "^2.1.0"
 
-open-bus-stride-client@^0.1.0:
+open-bus-stride-client@0.1.1:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/open-bus-stride-client/-/open-bus-stride-client-0.1.1.tgz#22fcc747a46316259641529adddd426cbb3e4a06"
   integrity sha512-iB2pBMnq2ErkzKw8i1VzVp1lkK8bJZwEX1oYbAkIsN8O49gU8q+XiunlG/9681qiG+db5naNFRM7Fx5t8vNI1Q==
