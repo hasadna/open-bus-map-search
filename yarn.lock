@@ -6551,9 +6551,9 @@ onetime@^5.1.2:
     mimic-fn "^2.1.0"
 
 open-bus-stride-client@^0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/open-bus-stride-client/-/open-bus-stride-client-0.1.0.tgz#c9c2a9f0c4b60b01a8f43dc31f29d90919c07576"
-  integrity sha512-8+TgjLUkP8SYWKkoNdGrNmn0fwxD4dKeMWQ78yCBEjQuwkShROQoGaEshUWNrvuR0uzIZYG/8AgUyDLnN4kh6A==
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/open-bus-stride-client/-/open-bus-stride-client-0.1.1.tgz#22fcc747a46316259641529adddd426cbb3e4a06"
+  integrity sha512-iB2pBMnq2ErkzKw8i1VzVp1lkK8bJZwEX1oYbAkIsN8O49gU8q+XiunlG/9681qiG+db5naNFRM7Fx5t8vNI1Q==
 
 open@^8.0.9, open@^8.4.0:
   version "8.4.0"
