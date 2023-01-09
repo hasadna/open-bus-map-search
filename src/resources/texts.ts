@@ -1,7 +1,8 @@
 const PLACEHOLDER = 'XXX'
 
 export const TEXTS = {
-  title: 'לוח זמנים היסטורי',
+  timeline_page_title: 'לוח זמנים היסטורי',
+  gaps_page_title: 'פערי נסיעות מתוכננות',
   choose_datetime: 'תאריך ושעה',
   choose_operator: 'חברה מפעילה',
   operator_placeholder: 'לדוגמא: דן',

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import LineNumberSelector from 'src/pages/components/LineSelector'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
 import { Row } from 'src/pages/components/Row'
@@ -10,7 +10,6 @@ import {
   getStopsForRouteAsync,
 } from 'src/api/gtfsService'
 import RouteSelector from 'src/pages/components/RouteSelector'
-import moment from 'moment'
 import DateTimePicker from 'src/pages/components/DateTimePicker'
 import { Label } from 'src/pages/components/Label'
 import { TEXTS } from 'src/resources/texts'
@@ -18,15 +17,9 @@ import StopSelector from 'src/pages/components/StopSelector'
 import { Spin } from 'antd'
 import { getSiriStopHitTimesAsync } from 'src/api/siriService'
 import { TimelineBoard } from 'src/pages/components/timeline/TimelineBoard'
-import { LinePageState } from 'src/model/linePageState'
 import { log } from 'src/log'
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${MARGIN_MEDIUM}px;
-  z-index: -2;
-`
+import { PageContainer } from './components/PageContainer'
+import { SearchContext, TimelinePageState } from '../model/pageState'
 
 const StyledTimelineBoard = styled(TimelineBoard)`
   margin-top: ${MARGIN_MEDIUM * 3}px;
@@ -36,20 +29,11 @@ const NotFound = styled.div`
   color: #710825;
 `
 
-const LinePage = () => {
-  const [state, setState] = useState<LinePageState>({ timestamp: moment() })
-  const {
-    operatorId,
-    lineNumber,
-    routeKey,
-    timestamp,
-    stopKey,
-    stopName,
-    gtfsHitTimes,
-    siriHitTimes,
-    routes,
-    stops,
-  } = state
+const TimelinePage = () => {
+  const { search, setSearch } = useContext(SearchContext)
+  const { operatorId, lineNumber, timestamp } = search
+  const [state, setState] = useState<TimelinePageState>({})
+  const { routeKey, stopKey, stopName, gtfsHitTimes, siriHitTimes, routes, stops } = state
 
   const [routesIsLoading, setRoutesIsLoading] = useState(false)
   const [stopsIsLoading, setStopsIsLoading] = useState(false)
@@ -81,7 +65,7 @@ const LinePage = () => {
     getRoutesAsync(timestamp, operatorId, lineNumber)
       .then((routes) =>
         setState((current) =>
-          current.lineNumber === lineNumber ? { ...current, routes: routes } : current,
+          search.lineNumber === lineNumber ? { ...current, routes: routes } : current,
         ),
       )
       .finally(() => setRoutesIsLoading(false))
@@ -134,26 +118,26 @@ const LinePage = () => {
   }, [timestamp, stops])
 
   return (
-    <Container>
+    <PageContainer>
       <Row>
         <Label text={TEXTS.choose_datetime} />
         <DateTimePicker
           timestamp={timestamp}
-          setDateTime={(ts) => setState((current) => ({ ...current, timestamp: ts }))}
+          setDateTime={(ts) => setSearch((current) => ({ ...current, timestamp: ts }))}
         />
       </Row>
       <Row>
         <Label text={TEXTS.choose_operator} />
         <OperatorSelector
           operatorId={operatorId}
-          setOperatorId={(id) => setState((current) => ({ ...current, operatorId: id }))}
+          setOperatorId={(id) => setSearch((current) => ({ ...current, operatorId: id }))}
         />
       </Row>
       <Row>
         <Label text={TEXTS.choose_line} />
         <LineNumberSelector
           lineNumber={lineNumber}
-          setLineNumber={(number) => setState((current) => ({ ...current, lineNumber: number }))}
+          setLineNumber={(number) => setSearch((current) => ({ ...current, lineNumber: number }))}
         />
       </Row>
       {routesIsLoading && (
@@ -209,8 +193,8 @@ const LinePage = () => {
         ) : (
           <NotFound>{TEXTS.hits_not_found}</NotFound>
         ))}
-    </Container>
+    </PageContainer>
   )
 }
 
-export default LinePage
+export default TimelinePage
