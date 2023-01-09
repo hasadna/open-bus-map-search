@@ -8,6 +8,8 @@ export type PageSearchState = {
   timestamp: Moment
   operatorId?: string
   lineNumber?: string
+  routeKey?: string
+  routes?: BusRoute[]
 }
 
 export const SearchContext = createContext<{
@@ -16,8 +18,6 @@ export const SearchContext = createContext<{
 }>({ search: { timestamp: moment() }, setSearch: (search) => search })
 
 export type TimelinePageState = {
-  routeKey?: string
-  routes?: BusRoute[]
   stops?: BusStop[]
   stopKey?: string
   stopName?: string

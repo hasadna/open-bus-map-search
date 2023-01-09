@@ -20,20 +20,17 @@ import { TimelineBoard } from 'src/pages/components/timeline/TimelineBoard'
 import { log } from 'src/log'
 import { PageContainer } from './components/PageContainer'
 import { SearchContext, TimelinePageState } from '../model/pageState'
+import { NotFound } from './components/NotFound'
 
 const StyledTimelineBoard = styled(TimelineBoard)`
   margin-top: ${MARGIN_MEDIUM * 3}px;
 `
 
-const NotFound = styled.div`
-  color: #710825;
-`
-
 const TimelinePage = () => {
   const { search, setSearch } = useContext(SearchContext)
-  const { operatorId, lineNumber, timestamp } = search
+  const { operatorId, lineNumber, timestamp, routes, routeKey } = search
   const [state, setState] = useState<TimelinePageState>({})
-  const { routeKey, stopKey, stopName, gtfsHitTimes, siriHitTimes, routes, stops } = state
+  const { stopKey, stopName, gtfsHitTimes, siriHitTimes, stops } = state
 
   const [routesIsLoading, setRoutesIsLoading] = useState(false)
   const [stopsIsLoading, setStopsIsLoading] = useState(false)
@@ -64,7 +61,7 @@ const TimelinePage = () => {
     }
     getRoutesAsync(timestamp, operatorId, lineNumber)
       .then((routes) =>
-        setState((current) =>
+        setSearch((current) =>
           search.lineNumber === lineNumber ? { ...current, routes: routes } : current,
         ),
       )
@@ -154,7 +151,7 @@ const TimelinePage = () => {
           <RouteSelector
             routes={routes}
             routeKey={routeKey}
-            setRouteKey={(key) => setState((current) => ({ ...current, routeKey: key }))}
+            setRouteKey={(key) => setSearch((current) => ({ ...current, routeKey: key }))}
           />
         ))}
       {stopsIsLoading && (
