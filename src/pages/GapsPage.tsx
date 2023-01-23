@@ -14,10 +14,19 @@ import RouteSelector from './components/RouteSelector'
 import { NotFound } from './components/NotFound'
 import { getRoutesAsync } from '../api/gtfsService'
 import { Moment } from 'moment'
+import styled from 'styled-components'
 
 function formatTime(time: Moment | undefined) {
-  return time ? time.format(TEXTS.time_format) : 'MISSING'
+  return time ? time.format(TEXTS.time_format) : TEXTS.ride_missing
 }
+
+const Cell = styled.div`
+  width: 120px;
+`
+
+const TitleCell = styled(Cell)`
+  font-weight: bold;
+`
 
 const GapsPage = () => {
   const { search, setSearch } = useContext(SearchContext)
@@ -25,6 +34,7 @@ const GapsPage = () => {
   const [gaps, setGaps] = useState<GapsList>()
 
   const [routesIsLoading, setRoutesIsLoading] = useState(false)
+  const [gapsIsLoading, setGapsIsLoading] = useState(false)
 
   useEffect(() => {
     if (operatorId && routes && routeKey && timestamp) {
@@ -32,7 +42,10 @@ const GapsPage = () => {
       if (!selectedRoute) {
         return
       }
-      getGapsAsync(timestamp, operatorId, selectedRoute.lineRef).then(setGaps)
+      setGapsIsLoading(true)
+      getGapsAsync(timestamp, operatorId, selectedRoute.lineRef)
+        .then(setGaps)
+        .finally(() => setGapsIsLoading(false))
     }
   }, [operatorId, routeKey, timestamp])
 
@@ -89,11 +102,26 @@ const GapsPage = () => {
             setRouteKey={(key) => setSearch((current) => ({ ...current, routeKey: key }))}
           />
         ))}
-      {gaps?.map((gap, i) => (
-        <div key={i}>
-          Siri: {formatTime(gap.siriTime)}, Gtfs: {formatTime(gap.gtfsTime)}
-        </div>
-      ))}
+      {gapsIsLoading && (
+        <Row>
+          <Label text={TEXTS.loading_gaps} />
+          <Spin />
+        </Row>
+      )}
+      {!gapsIsLoading && (
+        <>
+          <Row>
+            <TitleCell>{TEXTS.planned_time}</TitleCell>
+            <TitleCell>{TEXTS.planned_status}</TitleCell>
+          </Row>
+          {gaps?.map((gap, i) => (
+            <Row key={i}>
+              <Cell>{formatTime(gap.gtfsTime)}</Cell>
+              <Cell>{!gap.siriTime ? TEXTS.ride_missing : TEXTS.ride_as_planned}</Cell>
+            </Row>
+          ))}
+        </>
+      )}
     </PageContainer>
   )
 }

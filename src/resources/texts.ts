@@ -15,12 +15,17 @@ export const TEXTS = {
   datetime_format: 'HH:mm:ss · YYYY-MM-DD',
   loading_routes: 'מסלולי נסיעה בטעינה',
   loading_stops: 'תחנות עצירה בטעינה',
+  loading_gaps: 'פערי נסיעות בטעינה',
   timestamp_target: 'זמן החיפוש ⌚',
   timestamp_gtfs: 'זמן עצירה מתוכנן 🕛',
   timestamp_siri: 'זמן עצירה בפועל 🚌',
   loading_hits: 'זמני נסיעה בטעינה',
   line_not_found: 'הקו לא נמצא',
   hits_not_found: 'לא נמצאו נסיעות מתוכננות או בפועל',
+  planned_time: 'שעה מתוכננת',
+  planned_status: 'סטטוס',
+  ride_as_planned: 'יצאה כמתוכנן ✔️',
+  ride_missing: 'נסיעה חסרה ❌',
 }
 
 export const formatted = (text: string, value: string) => text.replace(PLACEHOLDER, value)

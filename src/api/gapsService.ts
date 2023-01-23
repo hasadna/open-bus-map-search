@@ -1,6 +1,7 @@
 import moment, { Moment } from 'moment'
 import { GapsList } from '../model/gaps'
 import { log } from '../log'
+import axios from 'axios'
 
 type RawGapsList = {
   rides_executed_count: number
@@ -14,6 +15,8 @@ type RawGapsList = {
 const parseTime = (day: Moment, time: string): Moment | undefined =>
   time === 'None' ? undefined : moment(day).add(moment.duration(time))
 
+const USE_API = false
+
 export const getGapsAsync = async (
   timestamp: Moment,
   operatorId: string,
@@ -21,7 +24,16 @@ export const getGapsAsync = async (
 ): Promise<GapsList> => {
   log('Searching for gaps', { operatorId, lineRef })
   const startOfDay = moment(timestamp).startOf('day')
-  return EXAMPLE_DATA.rides.map((ride) => ({
+  const data = USE_API
+    ? (
+        await axios.get<RawGapsList>(
+          `https://evyatar.pythonanywhere.com/siri3/${startOfDay.format(
+            'YYYY-MM-DD',
+          )}/${lineRef}/${operatorId}`,
+        )
+      ).data
+    : EXAMPLE_DATA
+  return data.rides.map((ride) => ({
     siriTime: parseTime(startOfDay, ride.siri_time),
     gtfsTime: parseTime(startOfDay, ride.gtfs_time),
   }))

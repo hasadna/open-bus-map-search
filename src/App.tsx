@@ -52,6 +52,7 @@ const App = () => {
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const [search, setSearch] = useState<PageSearchState>({ timestamp: moment() })
+  console.error({ pathname })
   return (
     <SearchContext.Provider value={{ search, setSearch }}>
       <ConfigProvider direction="rtl" locale={heIL}>
