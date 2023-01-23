@@ -17,6 +17,7 @@ import {
 import GapsPage from './pages/GapsPage'
 import { PageSearchState, SearchContext } from './model/pageState'
 import moment from 'moment'
+import DashboardPage from './pages/DashboardPage'
 
 const { Header, Content } = Layout
 
@@ -38,6 +39,10 @@ const StyledMenu = styled(Menu)`
 `
 
 const PAGES = [
+  {
+    label: TEXTS.dashboard_page_title,
+    key: '/dashboard',
+  },
   {
     label: TEXTS.timeline_page_title,
     key: '/timeline',
@@ -70,8 +75,9 @@ const App = () => {
             <StyledContent>
               <StyledBody>
                 <Routes>
-                  <Route path={PAGES[0].key} element={<TimelinePage />} />
-                  <Route path={PAGES[1].key} element={<GapsPage />} />
+                  <Route path={PAGES[0].key} element={<DashboardPage />} />
+                  <Route path={PAGES[1].key} element={<TimelinePage />} />
+                  <Route path={PAGES[2].key} element={<GapsPage />} />
                   <Route path="*" element={<Navigate to={PAGES[0].key} replace />} />
                 </Routes>
               </StyledBody>
