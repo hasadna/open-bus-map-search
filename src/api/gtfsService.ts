@@ -6,7 +6,7 @@ import { API_CONFIG, MAX_HITS_COUNT } from 'src/api/apiConfig'
 import { log } from 'src/log'
 
 const GTFS_API = new GtfsApi(API_CONFIG)
-const USER_CASES_API = new UserCasesApi(API_CONFIG)
+//const USER_CASES_API = new UserCasesApi(API_CONFIG)
 const JOIN_SEPARATOR = ','
 
 export async function getRoutesAsync(
