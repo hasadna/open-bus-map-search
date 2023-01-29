@@ -1,4 +1,4 @@
-import { GtfsApi, GtfsRideWithRelatedPydanticModel, UserCasesApi } from 'open-bus-stride-client'
+import { GtfsApi, GtfsRideWithRelatedPydanticModel } from 'open-bus-stride-client'
 import moment, { Moment } from 'moment'
 import { BusRoute, fromGtfsRoute } from 'src/model/busRoute'
 import { BusStop, fromGtfsStop } from 'src/model/busStop'
