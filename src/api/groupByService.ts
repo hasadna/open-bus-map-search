@@ -37,7 +37,7 @@ export type GroupByResponse = {
   total_actual_rides: number
 }[]
 
-async function asyncGroupby({
+async function groupby({
   dateTo,
   dateFrom,
   groupBy,
@@ -83,7 +83,7 @@ export function useGroupBy({
   >([])
 
   useEffect(() => {
-    asyncGroupby({ dateTo, dateFrom, groupBy }).then((data) =>
+    groupby({ dateTo, dateFrom, groupBy }).then((data) =>
       setData(
         data.map((dataRecord) => ({
           ...dataRecord,
@@ -98,4 +98,4 @@ export function useGroupBy({
   return data
 }
 
-export default asyncGroupby
+export default groupby
