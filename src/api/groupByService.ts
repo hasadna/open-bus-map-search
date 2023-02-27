@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { BASE_PATH } from './apiConfig'
+import agencyList from 'open-bus-stride-client/agencies/agencyList'
 
 /*
 example response
@@ -55,7 +56,10 @@ export function useGroupBy({
     groupby({ dateTo, dateFrom, groupBy }).then((data) => setData(data))
   }, [dateTo, dateFrom, groupBy])
 
-  return data
+  return data.map((d) => ({
+    ...d,
+    operator_ref: agencyList.find((a) => a.agency_id === String(d.operator_ref)),
+  }))
 }
 
 export default groupby

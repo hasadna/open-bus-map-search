@@ -1,0 +1,9 @@
+.operatorBarTotal {
+    background-image: linear-gradient(to bottom, transparent 30%, black 30%, black 70%, transparent 70%);
+    
+    .operatorBarActual {
+        color: white;
+        padding: 10px;
+        font-size: 1.2em;
+    }
+}
