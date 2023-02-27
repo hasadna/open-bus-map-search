@@ -8,6 +8,7 @@ import { log } from 'src/log'
 const GTFS_API = new GtfsApi(API_CONFIG)
 //const USER_CASES_API = new UserCasesApi(API_CONFIG)
 const JOIN_SEPARATOR = ','
+const SEARCH_MARGIN_HOURS = 4
 
 export async function getRoutesAsync(
   timestamp: Moment,
@@ -87,8 +88,8 @@ export async function getGtfsStopHitTimesAsync(stop: BusStop, timestamp: Moment)
 
   const rides = await GTFS_API.gtfsRidesListGet({
     gtfsRouteId: stop.routeId,
-    startTimeFrom: moment(targetStartTime).subtract(4, 'hours').toDate(),
-    startTimeTo: moment(targetStartTime).add(4, 'hours').toDate(),
+    startTimeFrom: moment(targetStartTime).subtract(SEARCH_MARGIN_HOURS, 'hours').toDate(),
+    startTimeTo: moment(targetStartTime).add(SEARCH_MARGIN_HOURS, 'hours').toDate(),
     limit: 1024,
     orderBy: 'start_time asc',
   })

@@ -27,6 +27,9 @@ export const TEXTS = {
   planned_status: 'סטטוס',
   ride_as_planned: 'יצאה כמתוכנן ✔️',
   ride_missing: 'נסיעה חסרה ❌',
+  ride_extra: 'נסיעה שלא תוכננה 🧐',
+  ride_duped: 'נסיעה כפולה ❇️',
+  checkbox_only_gaps: 'רק פערים',
 }
 
 export const formatted = (text: string, value: string) => text.replace(PLACEHOLDER, value)
