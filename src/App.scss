@@ -1,3 +1,19 @@
-header {
-    background-color: pink !important;
+// import hebbo:
+@import 'https://fonts.googleapis.com/css?family=Heebo:400,700&display=swap';
+@import './resources/variables.scss';
+
+.main {
+    flex-direction: row;
+    font-family: Heebo;
+
+    .header {
+        height: 100vh;
+        background-color: white;
+        padding: 30px;
+        text-align: center;
+
+        h1 {
+            font-size: 30px;
+        }
+    }
 }
