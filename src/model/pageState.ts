@@ -12,9 +12,11 @@ export type PageSearchState = {
   routes?: BusRoute[]
 }
 
+type MutateStateAction<S> = (prevState: S) => S
+
 export const SearchContext = createContext<{
   search: PageSearchState
-  setSearch: Dispatch<SetStateAction<PageSearchState>>
+  setSearch: Dispatch<MutateStateAction<PageSearchState>>
 }>({ search: { timestamp: moment() }, setSearch: (search) => search })
 
 export type TimelinePageState = {

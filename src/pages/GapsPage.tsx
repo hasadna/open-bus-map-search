@@ -20,6 +20,20 @@ function formatTime(time: Moment) {
   return time.format(TEXTS.time_format)
 }
 
+function formatStatus(all: GapsList, gap: Gap) {
+  if (!gap.siriTime) {
+    return TEXTS.ride_missing
+  }
+  if (gap.gtfsTime) {
+    return TEXTS.ride_as_planned
+  }
+  const hasTwinRide = all.some((g) => g.gtfsTime && g.siriTime && g.siriTime.isSame(gap.siriTime))
+  if (hasTwinRide) {
+    return TEXTS.ride_duped
+  }
+  return TEXTS.ride_extra
+}
+
 const Cell = styled.div`
   width: 120px;
 `
@@ -63,25 +77,12 @@ const GapsPage = () => {
       .finally(() => setRoutesIsLoading(false))
   }, [operatorId, lineNumber, timestamp, setSearch])
 
-  function formatStatus(all: GapsList, gap: Gap) {
-    if (!gap.siriTime) {
-      return TEXTS.ride_missing
-    }
-    if (gap.gtfsTime) {
-      return TEXTS.ride_as_planned
-    }
-    const hasTwinRide = all.some((g) => g.gtfsTime && g.siriTime && g.siriTime.isSame(gap.siriTime))
-    if (hasTwinRide) {
-      return TEXTS.ride_duped
-    }
-    return TEXTS.ride_extra
-  }
-
   return (
     <PageContainer>
       <Row>
         <Label text={TEXTS.choose_datetime} />
         <DateTimePicker
+          showTime={false}
           timestamp={timestamp}
           setDateTime={(ts) => setSearch((current) => ({ ...current, timestamp: ts }))}
         />

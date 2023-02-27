@@ -46,8 +46,21 @@ const PAGES = [
 
 const App = () => {
   const [search, setSearch] = useState<PageSearchState>({ timestamp: moment() })
+
+  const safeSetSearch = useCallback((mutate: (prevState: PageSearchState) => PageSearchState) => {
+    setSearch((current: PageSearchState) => {
+      const routeKeyBefore = current.routeKey
+      const newSearch = mutate(current)
+      if (routeKeyBefore && routeKeyBefore === newSearch.routeKey) {
+        newSearch.routeKey = undefined
+        newSearch.routes = undefined
+      }
+      return newSearch
+    })
+  }, [])
+
   return (
-    <SearchContext.Provider value={{ search, setSearch }}>
+    <SearchContext.Provider value={{ search, setSearch: safeSetSearch }}>
       <ConfigProvider direction="rtl" locale={heIL}>
         <StyledLayout className="main">
           <Header pages={PAGES} />
