@@ -1,26 +1,21 @@
 import React, { useCallback } from 'react'
-import './App.css'
+import 'antd/dist/antd.css'
+import './App.scss'
 import TimelinePage from 'src/pages/TimelinePage'
-import { ConfigProvider, Layout, Menu } from 'antd'
+import { ConfigProvider, Layout } from 'antd'
 import 'leaflet/dist/leaflet.css'
 import { TEXTS } from 'src/resources/texts'
 import styled from 'styled-components'
 import heIL from 'antd/es/locale/he_IL'
-import {
-  BrowserRouter as Router,
-  Navigate,
-  Route,
-  Routes,
-  useLocation,
-  useNavigate,
-} from 'react-router-dom'
+import { BrowserRouter as Router, Navigate, Route, Routes } from 'react-router-dom'
 import GapsPage from './pages/GapsPage'
 import { PageSearchState, SearchContext } from './model/pageState'
 import moment from 'moment'
 import DashboardPage from './pages/DashboardPage'
 import { useSessionStorage } from 'usehooks-ts'
+import Header from './pages/components/header/Header'
 
-const { Header, Content } = Layout
+const { Content } = Layout
 
 const StyledLayout = styled(Layout)`
   height: 100vh;
@@ -33,10 +28,6 @@ const StyledContent = styled(Content)`
 const StyledBody = styled.div`
   padding: 24px;
   min-height: 360px;
-`
-
-const StyledMenu = styled(Menu)`
-  height: 100%;
 `
 
 const PAGES = [
@@ -55,8 +46,6 @@ const PAGES = [
 ]
 
 const App = () => {
-  const navigate = useNavigate()
-  const { pathname } = useLocation()
   const [search, setSearch] = useSessionStorage<PageSearchState>('search', {
     timestamp: moment().valueOf(),
   })
@@ -76,16 +65,8 @@ const App = () => {
   return (
     <SearchContext.Provider value={{ search, setSearch: safeSetSearch }}>
       <ConfigProvider direction="rtl" locale={heIL}>
-        <StyledLayout>
-          <Header>
-            <StyledMenu
-              theme="dark"
-              mode="horizontal"
-              defaultSelectedKeys={[pathname]}
-              items={PAGES}
-              onClick={({ key }) => navigate(key)}
-            />
-          </Header>
+        <StyledLayout className="main">
+          <Header pages={PAGES} />
           <Layout>
             <StyledContent>
               <StyledBody>
