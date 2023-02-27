@@ -1,11 +1,10 @@
-import { Moment } from 'moment/moment'
 import { BusRoute } from './busRoute'
 import { BusStop } from './busStop'
-import { createContext, Dispatch, SetStateAction } from 'react'
+import { createContext, Dispatch } from 'react'
 import moment from 'moment'
 
 export type PageSearchState = {
-  timestamp: Moment
+  timestamp: number
   operatorId?: string
   lineNumber?: string
   routeKey?: string
@@ -17,7 +16,7 @@ type MutateStateAction<S> = (prevState: S) => S
 export const SearchContext = createContext<{
   search: PageSearchState
   setSearch: Dispatch<MutateStateAction<PageSearchState>>
-}>({ search: { timestamp: moment() }, setSearch: (search) => search })
+}>({ search: { timestamp: moment().valueOf() }, setSearch: (search) => search })
 
 export type TimelinePageState = {
   stops?: BusStop[]

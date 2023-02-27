@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useCallback } from 'react'
 import 'antd/dist/antd.css'
 import './App.scss'
 import TimelinePage from 'src/pages/TimelinePage'
@@ -13,6 +13,7 @@ import { PageSearchState, SearchContext } from './model/pageState'
 import moment from 'moment'
 import DashboardPage from './pages/dashboard/DashboardPage'
 import Header from './pages/components/header/Header'
+import { useSessionStorage } from 'usehooks-ts'
 
 const { Content } = Layout
 
@@ -45,7 +46,9 @@ const PAGES = [
 ]
 
 const App = () => {
-  const [search, setSearch] = useState<PageSearchState>({ timestamp: moment() })
+  const [search, setSearch] = useSessionStorage<PageSearchState>('search', {
+    timestamp: moment().valueOf(),
+  })
 
   const safeSetSearch = useCallback((mutate: (prevState: PageSearchState) => PageSearchState) => {
     setSearch((current: PageSearchState) => {
