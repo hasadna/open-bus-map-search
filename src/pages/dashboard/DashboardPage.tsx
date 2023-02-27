@@ -2,6 +2,7 @@ import React from 'react'
 import { useGroupBy } from 'src/api/groupByService'
 import { PageContainer } from '../components/PageContainer'
 import OperatorHbarChart from './OperatorHbarChart/OperatorHbarChart'
+import './DashboardPage.scss'
 
 const DashboardPage = () => {
   const data = useGroupBy({
@@ -16,6 +17,7 @@ const DashboardPage = () => {
 
   return (
     <PageContainer>
+      <h2 className="title">מפעילי תח&quot;צ לפי שיעורי יציאת קווים</h2>
       <OperatorHbarChart operators={data} />
     </PageContainer>
   )
