@@ -12,10 +12,10 @@ type RawGapsList = {
   }[]
 }
 
-const parseTime = (day: Moment, time: string): Moment | undefined =>
-  time === 'None' ? undefined : moment(day).add(moment.duration(time))
+const parseTime = (day: Moment, time: string): Moment | null =>
+  day && time && time !== 'None' ? moment(day).add(moment.duration(time)) : null
 
-const USE_API = false
+const USE_API = true
 
 export const getGapsAsync = async (
   timestamp: Moment,
@@ -27,9 +27,9 @@ export const getGapsAsync = async (
   const data = USE_API
     ? (
         await axios.get<RawGapsList>(
-          `https://evyatar.pythonanywhere.com/siri3/${startOfDay.format(
+          `http://ec2-52-201-152-176.compute-1.amazonaws.com/get_rides_statistics/${lineRef}/${operatorId}/${startOfDay.format(
             'YYYY-MM-DD',
-          )}/${lineRef}/${operatorId}`,
+          )}`,
         )
       ).data
     : EXAMPLE_DATA

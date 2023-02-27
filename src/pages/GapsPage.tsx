@@ -16,7 +16,7 @@ import { getRoutesAsync } from '../api/gtfsService'
 import { Moment } from 'moment'
 import styled from 'styled-components'
 
-function formatTime(time: Moment | undefined) {
+function formatTime(time: Moment | null) {
   return time ? time.format(TEXTS.time_format) : TEXTS.ride_missing
 }
 
