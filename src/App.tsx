@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
-import './App.css'
+import 'antd/dist/antd.css'
+import './App.scss'
 import TimelinePage from 'src/pages/TimelinePage'
 import { ConfigProvider, Layout, Menu } from 'antd'
 import 'leaflet/dist/leaflet.css'
