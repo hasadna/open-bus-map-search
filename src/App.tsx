@@ -17,7 +17,7 @@ import {
 import GapsPage from './pages/GapsPage'
 import { PageSearchState, SearchContext } from './model/pageState'
 import moment from 'moment'
-import DashboardPage from './pages/DashboardPage'
+import DashboardPage from './pages/dashboard/DashboardPage'
 
 const { Header, Content } = Layout
 
