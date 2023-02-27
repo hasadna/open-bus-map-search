@@ -12,6 +12,7 @@ export const TEXTS = {
   choose_route: `בחירת מסלול נסיעה (XXX אפשרויות)`,
   choose_stop: `בחירת תחנה (XXX אפשרויות)`,
   direction_arrow: '⟵',
+  date_format: 'YYYY-MM-DD',
   time_format: 'HH:mm:ss',
   datetime_format: 'HH:mm:ss · YYYY-MM-DD',
   loading_routes: 'מסלולי נסיעה בטעינה',

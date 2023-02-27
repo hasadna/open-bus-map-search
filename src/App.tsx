@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import './App.css'
 import TimelinePage from 'src/pages/TimelinePage'
 import { ConfigProvider, Layout, Menu } from 'antd'
@@ -11,8 +11,8 @@ import {
   Navigate,
   Route,
   Routes,
-  useNavigate,
   useLocation,
+  useNavigate,
 } from 'react-router-dom'
 import GapsPage from './pages/GapsPage'
 import { PageSearchState, SearchContext } from './model/pageState'
@@ -57,8 +57,21 @@ const App = () => {
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const [search, setSearch] = useState<PageSearchState>({ timestamp: moment() })
+
+  const safeSetSearch = useCallback((mutate: (prevState: PageSearchState) => PageSearchState) => {
+    setSearch((current: PageSearchState) => {
+      const routeKeyBefore = current.routeKey
+      const newSearch = mutate(current)
+      if (routeKeyBefore && routeKeyBefore === newSearch.routeKey) {
+        newSearch.routeKey = undefined
+        newSearch.routes = undefined
+      }
+      return newSearch
+    })
+  }, [])
+
   return (
-    <SearchContext.Provider value={{ search, setSearch }}>
+    <SearchContext.Provider value={{ search, setSearch: safeSetSearch }}>
       <ConfigProvider direction="rtl" locale={heIL}>
         <StyledLayout>
           <Header>
