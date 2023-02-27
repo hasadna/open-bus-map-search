@@ -7,17 +7,17 @@ import DateTimePicker from './components/DateTimePicker'
 import OperatorSelector from './components/OperatorSelector'
 import LineNumberSelector from './components/LineSelector'
 import { SearchContext } from '../model/pageState'
-import { GapsList } from '../model/gaps'
+import { Gap, GapsList } from '../model/gaps'
 import { getGapsAsync } from '../api/gapsService'
-import { Spin } from 'antd'
+import { Checkbox, Spin } from 'antd'
 import RouteSelector from './components/RouteSelector'
 import { NotFound } from './components/NotFound'
 import { getRoutesAsync } from '../api/gtfsService'
-import { Moment } from 'moment'
+import moment, { Moment } from 'moment'
 import styled from 'styled-components'
 
-function formatTime(time: Moment | null) {
-  return time ? time.format(TEXTS.time_format) : TEXTS.ride_missing
+function formatTime(time: Moment) {
+  return time.format(TEXTS.time_format)
 }
 
 const Cell = styled.div`
@@ -35,6 +35,7 @@ const GapsPage = () => {
 
   const [routesIsLoading, setRoutesIsLoading] = useState(false)
   const [gapsIsLoading, setGapsIsLoading] = useState(false)
+  const [onlyGapped, setOnlyGapped] = useState(false)
 
   useEffect(() => {
     if (operatorId && routes && routeKey && timestamp) {
@@ -61,6 +62,20 @@ const GapsPage = () => {
       )
       .finally(() => setRoutesIsLoading(false))
   }, [operatorId, lineNumber, timestamp, setSearch])
+
+  function formatStatus(all: GapsList, gap: Gap) {
+    if (!gap.siriTime) {
+      return TEXTS.ride_missing
+    }
+    if (gap.gtfsTime) {
+      return TEXTS.ride_as_planned
+    }
+    const hasTwinRide = all.some((g) => g.gtfsTime && g.siriTime && g.siriTime.isSame(gap.siriTime))
+    if (hasTwinRide) {
+      return TEXTS.ride_duped
+    }
+    return TEXTS.ride_extra
+  }
 
   return (
     <PageContainer>
@@ -108,18 +123,24 @@ const GapsPage = () => {
           <Spin />
         </Row>
       )}
-      {!gapsIsLoading && (
+      {!gapsIsLoading && routeKey && (
         <>
+          <Checkbox onChange={(e) => setOnlyGapped(e.target.checked)}>
+            {TEXTS.checkbox_only_gaps}
+          </Checkbox>
           <Row>
             <TitleCell>{TEXTS.planned_time}</TitleCell>
             <TitleCell>{TEXTS.planned_status}</TitleCell>
           </Row>
-          {gaps?.map((gap, i) => (
-            <Row key={i}>
-              <Cell>{formatTime(gap.gtfsTime)}</Cell>
-              <Cell>{!gap.siriTime ? TEXTS.ride_missing : TEXTS.ride_as_planned}</Cell>
-            </Row>
-          ))}
+          {gaps
+            ?.filter((gap) => gap.gtfsTime || gap.siriTime)
+            .filter((gap) => !onlyGapped || !gap.gtfsTime || !gap.siriTime)
+            .map((gap, i) => (
+              <Row key={i}>
+                <Cell>{formatTime(gap.gtfsTime || gap.siriTime || moment())}</Cell>
+                <Cell>{formatStatus(gaps, gap)}</Cell>
+              </Row>
+            ))}
         </>
       )}
     </PageContainer>
