@@ -8,7 +8,7 @@ import { log } from 'src/log'
 import { BusRoute } from 'src/model/busRoute'
 
 const SIRI_API = new SiriApi(API_CONFIG)
-const LOCATION_DELTA_METERS = 250
+const LOCATION_DELTA_METERS = 500
 
 async function getRidesAsync(route: BusRoute, stop: BusStop, timestamp: moment.Moment) {
   return await SIRI_API.siriRidesListGet({

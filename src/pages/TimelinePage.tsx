@@ -179,9 +179,9 @@ const TimelinePage = () => {
         </Row>
       )}
       {!hitsIsLoading &&
-        gtfsHitTimes &&
-        siriHitTimes &&
-        (gtfsHitTimes.length > 0 && siriHitTimes.length > 0 ? (
+        gtfsHitTimes !== undefined &&
+        siriHitTimes !== undefined &&
+        (gtfsHitTimes.length > 0 || siriHitTimes.length > 0 ? (
           <StyledTimelineBoard
             target={timestamp}
             gtfsTimes={gtfsHitTimes}
