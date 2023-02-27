@@ -1,0 +1,28 @@
+@import '../../../../resources/variables';
+
+.menu {
+    flex-direction: column;
+    list-style: none;
+    padding: 0;
+    .menu-item {
+        width: 240px;
+        padding: 10px;
+        font-size: 16px;
+        cursor: pointer;
+        border: 1px solid $gray-5;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        line-height: initial;
+        box-sizing: border-box;
+        transition: all 0.2s ease-in-out;
+
+        &:hover {
+            background-color: #f2f2f2;
+        }
+        &.active {
+            background-color: $color-active;
+            color: white;
+            border: none;
+        }
+    }
+}
