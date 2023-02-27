@@ -15,6 +15,7 @@ import { NotFound } from './components/NotFound'
 import { getRoutesAsync } from '../api/gtfsService'
 import moment, { Moment } from 'moment'
 import styled from 'styled-components'
+import { useSessionStorage } from 'usehooks-ts'
 
 function formatTime(time: Moment) {
   return time.format(TEXTS.time_format)
@@ -49,7 +50,7 @@ const GapsPage = () => {
 
   const [routesIsLoading, setRoutesIsLoading] = useState(false)
   const [gapsIsLoading, setGapsIsLoading] = useState(false)
-  const [onlyGapped, setOnlyGapped] = useState(false)
+  const [onlyGapped, setOnlyGapped] = useSessionStorage('onlyGapped', false)
 
   useEffect(() => {
     if (operatorId && routes && routeKey && timestamp) {
@@ -58,7 +59,7 @@ const GapsPage = () => {
         return
       }
       setGapsIsLoading(true)
-      getGapsAsync(timestamp, operatorId, selectedRoute.lineRef)
+      getGapsAsync(moment(timestamp), operatorId, selectedRoute.lineRef)
         .then(setGaps)
         .finally(() => setGapsIsLoading(false))
     }
@@ -68,7 +69,7 @@ const GapsPage = () => {
     if (!operatorId || !lineNumber) {
       return
     }
-    getRoutesAsync(timestamp, operatorId, lineNumber)
+    getRoutesAsync(moment(timestamp), operatorId, lineNumber)
       .then((routes) =>
         setSearch((current) =>
           search.lineNumber === lineNumber ? { ...current, routes: routes } : current,
@@ -83,8 +84,8 @@ const GapsPage = () => {
         <Label text={TEXTS.choose_datetime} />
         <DateTimePicker
           showTime={false}
-          timestamp={timestamp}
-          setDateTime={(ts) => setSearch((current) => ({ ...current, timestamp: ts }))}
+          timestamp={moment(timestamp)}
+          setDateTime={(ts) => setSearch((current) => ({ ...current, timestamp: ts.valueOf() }))}
         />
       </Row>
       <Row>

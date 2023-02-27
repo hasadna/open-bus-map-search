@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback } from 'react'
 import './App.css'
 import TimelinePage from 'src/pages/TimelinePage'
 import { ConfigProvider, Layout, Menu } from 'antd'
@@ -18,6 +18,7 @@ import GapsPage from './pages/GapsPage'
 import { PageSearchState, SearchContext } from './model/pageState'
 import moment from 'moment'
 import DashboardPage from './pages/DashboardPage'
+import { useSessionStorage } from 'usehooks-ts'
 
 const { Header, Content } = Layout
 
@@ -56,7 +57,9 @@ const PAGES = [
 const App = () => {
   const navigate = useNavigate()
   const { pathname } = useLocation()
-  const [search, setSearch] = useState<PageSearchState>({ timestamp: moment() })
+  const [search, setSearch] = useSessionStorage<PageSearchState>('search', {
+    timestamp: moment().valueOf(),
+  })
 
   const safeSetSearch = useCallback((mutate: (prevState: PageSearchState) => PageSearchState) => {
     setSearch((current: PageSearchState) => {

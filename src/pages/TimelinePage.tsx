@@ -21,6 +21,7 @@ import { log } from 'src/log'
 import { PageContainer } from './components/PageContainer'
 import { SearchContext, TimelinePageState } from '../model/pageState'
 import { NotFound } from './components/NotFound'
+import moment from 'moment'
 
 const StyledTimelineBoard = styled(TimelineBoard)`
   margin-top: ${MARGIN_MEDIUM * 3}px;
@@ -59,7 +60,7 @@ const TimelinePage = () => {
     if (!operatorId || !lineNumber) {
       return
     }
-    getRoutesAsync(timestamp, operatorId, lineNumber)
+    getRoutesAsync(moment(timestamp), operatorId, lineNumber)
       .then((routes) =>
         setSearch((current) =>
           search.lineNumber === lineNumber ? { ...current, routes: routes } : current,
@@ -80,7 +81,7 @@ const TimelinePage = () => {
       return
     }
     setStopsIsLoading(true)
-    getStopsForRouteAsync(selectedRouteIds, timestamp)
+    getStopsForRouteAsync(selectedRouteIds, moment(timestamp))
       .then((stops) => setState((current) => ({ ...current, stops: stops })))
       .finally(() => setStopsIsLoading(false))
   }, [selectedRouteIds, routeKey, clearStops])
@@ -93,8 +94,8 @@ const TimelinePage = () => {
     if (stop) {
       setHitsIsLoading(true)
       Promise.all([
-        getGtfsStopHitTimesAsync(stop, timestamp),
-        getSiriStopHitTimesAsync(selectedRoute, stop, timestamp),
+        getGtfsStopHitTimesAsync(stop, moment(timestamp)),
+        getSiriStopHitTimesAsync(selectedRoute, stop, moment(timestamp)),
       ])
         .then(([gtfsTimes, siriTimes]) =>
           setState((current) => ({ ...current, gtfsHitTimes: gtfsTimes, siriHitTimes: siriTimes })),
@@ -119,8 +120,8 @@ const TimelinePage = () => {
       <Row>
         <Label text={TEXTS.choose_datetime} />
         <DateTimePicker
-          timestamp={timestamp}
-          setDateTime={(ts) => setSearch((current) => ({ ...current, timestamp: ts }))}
+          timestamp={moment(timestamp)}
+          setDateTime={(ts) => setSearch((current) => ({ ...current, timestamp: ts.valueOf() }))}
         />
       </Row>
       <Row>
@@ -183,7 +184,7 @@ const TimelinePage = () => {
         siriHitTimes !== undefined &&
         (gtfsHitTimes.length > 0 || siriHitTimes.length > 0 ? (
           <StyledTimelineBoard
-            target={timestamp}
+            target={moment(timestamp)}
             gtfsTimes={gtfsHitTimes}
             siriTimes={siriHitTimes}
           />
