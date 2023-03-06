@@ -2,6 +2,19 @@ import { useEffect, useState } from 'react'
 import { BASE_PATH } from './apiConfig'
 import agencyList from 'open-bus-stride-client/agencies/agencyList'
 
+type groupByField = 'gtfs_route_date' | 'operator_ref' | 'day_of_week'
+type groupByFields =
+  | groupByField
+  | `${groupByField},${groupByField}`
+  | `${groupByField},${groupByField},${groupByField}`
+
+type Identity<T> = { [P in keyof T]: T[P] }
+type Replace<T, K extends keyof T, TReplace> = Identity<
+  Pick<T, Exclude<keyof T, K>> & {
+    [P in K]: TReplace
+  }
+>
+
 /*
 example response
 [
@@ -31,7 +44,7 @@ async function asyncGroupby({
 }: {
   dateTo: Date
   dateFrom: Date
-  groupBy: 'gtfs_route_date' | 'operator_ref' | 'day_of_week'
+  groupBy: groupByFields
 }): Promise<GroupByResponse> {
   // example: https://open-bus-stride-api.hasadna.org.il/gtfs_rides_agg/group_by?date_from=2023-01-27&date_to=2023-01-29&group_by=operator_ref
   const dateToStr = dateTo.toISOString().split('T')[0]
@@ -50,18 +63,39 @@ export function useGroupBy({
 }: {
   dateTo: Date
   dateFrom: Date
-  groupBy: 'gtfs_route_date' | 'operator_ref' | 'day_of_week'
+  groupBy: groupByFields
 }) {
-  const [data, setData] = useState<GroupByResponse>([])
+  const [data, setData] = useState<
+    Replace<
+      GroupByResponse[0],
+      'operator_ref',
+      | {
+          agency_id: string
+          agency_name: string
+          agency_url: string
+          agency_timezone: string
+          agency_lang: string
+          agency_phone: string
+          agency_fare_url: string
+        }
+      | undefined
+    >[]
+  >([])
 
   useEffect(() => {
-    asyncGroupby({ dateTo, dateFrom, groupBy }).then((data) => setData(data))
-  }, [dateTo, dateFrom, groupBy])
+    asyncGroupby({ dateTo, dateFrom, groupBy }).then((data) =>
+      setData(
+        data.map((dataRecord) => ({
+          ...dataRecord,
+          operator_ref: agencyList.find(
+            (agency) => agency.agency_id === String(dataRecord.operator_ref),
+          ),
+        })),
+      ),
+    )
+  }, [+dateTo, +dateFrom, groupBy])
 
-  return data.map((dataRecord) => ({
-    ...dataRecord,
-    operator_ref: agencyList.find((agency) => agency.agency_id === String(dataRecord.operator_ref)),
-  }))
+  return data
 }
 
 export default asyncGroupby

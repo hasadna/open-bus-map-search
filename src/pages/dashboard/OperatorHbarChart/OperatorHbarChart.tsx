@@ -16,7 +16,6 @@ const colorsByCompannies: { [index: string]: string } = {
 }
 
 function getColorName(name: string) {
-  console.log(getColorByHashString(name))
   return colorsByCompannies[name] || getColorByHashString(name)
 }
 

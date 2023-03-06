@@ -1,7 +1,7 @@
 import styled, { css } from 'styled-components'
 import { NEUTRAL_COLOR } from 'src/pages/components/timeline/TimelinePoint'
-import React from 'react'
-import useHover from 'react-use-hover'
+import React, { useRef } from 'react'
+import { useHover } from 'usehooks-ts'
 
 type HorizontalLineProps = {
   top: number
@@ -31,11 +31,12 @@ const HoverTarget = styled.div<HorizontalLineProps>`
 `
 
 export const HorizontalLine = ({ top }: HorizontalLineProps) => {
-  const [isHovering, hoverProps] = useHover()
+  const hoverRef = useRef(null)
+  const isHovering = useHover(hoverRef)
   return (
     <>
       <StyledLine top={top} visible={isHovering} />
-      <HoverTarget top={top} {...hoverProps} />
+      <HoverTarget ref={hoverRef} top={top} />
     </>
   )
 }

@@ -33,6 +33,7 @@ export const TEXTS = {
   dashboard_page_negative_title: 'מפעילי תח"צ לפי אחוזי אי הגעה מסך הנסיעות  ',
   rides_planned: 'נסיעות שתוכננו',
   rides_actual: 'נסיעות שיצאו',
+  dashboard_page_graph_title: 'אחוזי הגעה מסך הנסיעות לפי זמן',
 }
 
 export const formatted = (text: string, value: string) => text.replace(PLACEHOLDER, value)
