@@ -21,6 +21,8 @@ const DashboardPage = () => {
     <PageContainer>
       <h2 className="title">{TEXTS.dashboard_page_title}</h2>
       <OperatorHbarChart operators={data} />
+      <h2 className="title">{TEXTS.dashboard_page_negative_title}</h2>
+      <OperatorHbarChart operators={data} complement />
     </PageContainer>
   )
 }

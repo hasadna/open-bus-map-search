@@ -2,6 +2,7 @@ import React from 'react'
 import { TEXTS } from 'src/resources/texts'
 import './operatorsHbarChart.scss'
 import { getColorByHashString } from './utils'
+import cn from 'classnames'
 
 const colorsByCompannies: { [index: string]: string } = {
   'אגד תעבורה': '#2f9250',
@@ -21,11 +22,15 @@ function getColorName(name: string) {
 
 function OperatorHbarChart({
   operators,
+  complement = false, // complement the chart (100% - actual) instead of actual
 }: {
   operators: { name: string; total: number; actual: number }[]
+  complement?: boolean
 }) {
-  const percents = operators.map((o) => (o.actual / o.total) * 100)
-  const width = percents.map((p) => Math.min(p, 100))
+  const percents = operators
+    .map((o) => (o.actual / o.total) * 100)
+    .map((p) => (complement ? 100 - p : p))
+  const width = percents.map((p) => Math.max(Math.min(p, 100), 0))
 
   return (
     <div className="operatorRow">
@@ -42,9 +47,9 @@ function OperatorHbarChart({
               <div className="operatorBar">
                 <div className="operatorBarTotal">
                   <div
-                    className="operatorBarActual"
+                    className={cn('operatorBarActual', { small: percents[i] < 20 })}
                     style={{
-                      width: `${width[i]}%`,
+                      width: `${width[i]}`,
                       backgroundColor: getColorName(operator.name),
                     }}>
                     {percents[i].toFixed(2)}%

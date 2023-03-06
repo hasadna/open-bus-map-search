@@ -25,6 +25,14 @@
                 font-weight: 500;
                 color: white;
                 padding: 10px;
+                direction: ltr;
+                text-align: left;
+                &.small {
+                    background-color: transparent !important;
+                    width: 100% !important;
+                    text-align: right;
+                    color: inherit;
+                }
             }
         }
     }
