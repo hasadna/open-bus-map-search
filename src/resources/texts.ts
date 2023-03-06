@@ -3,7 +3,6 @@ const PLACEHOLDER = 'XXX'
 export const TEXTS = {
   timeline_page_title: 'לוח זמנים היסטורי',
   gaps_page_title: 'נסיעות שלא יצאו',
-  dashboard_page_title: 'סטטיסטיקות',
   choose_datetime: 'תאריך ושעה',
   choose_operator: 'חברה מפעילה',
   operator_placeholder: 'לדוגמא: דן',
@@ -30,6 +29,9 @@ export const TEXTS = {
   ride_extra: 'נסיעה שלא תוכננה 🧐',
   ride_duped: 'נסיעה כפולה ❇️',
   checkbox_only_gaps: 'רק פערים',
+  dashboard_page_title: 'מפעילי תח"צ לפי שיעור קיום נסיעות מתוכננות',
+  rides_planned: 'נסיעות שתוכננו',
+  rides_actual: 'נסיעות שיצאו',
 }
 
 export const formatted = (text: string, value: string) => text.replace(PLACEHOLDER, value)

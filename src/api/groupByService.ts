@@ -24,19 +24,21 @@ export type GroupByResponse = {
   total_actual_rides: number
 }[]
 
-async function groupby({
+async function asyncGroupby({
   dateTo,
   dateFrom,
   groupBy,
 }: {
-  dateTo: string
-  dateFrom: string
+  dateTo: Date
+  dateFrom: Date
   groupBy: 'gtfs_route_date' | 'operator_ref' | 'day_of_week'
 }): Promise<GroupByResponse> {
   // example: https://open-bus-stride-api.hasadna.org.il/gtfs_rides_agg/group_by?date_from=2023-01-27&date_to=2023-01-29&group_by=operator_ref
+  const dateToStr = dateTo.toISOString().split('T')[0]
+  const dateFromStr = dateFrom.toISOString().split('T')[0]
   return (
     await fetch(
-      `${BASE_PATH}/gtfs_rides_agg/group_by?date_from=${dateFrom}&date_to=${dateTo}&group_by=${groupBy}`,
+      `${BASE_PATH}/gtfs_rides_agg/group_by?date_from=${dateFromStr}&date_to=${dateToStr}&group_by=${groupBy}`,
     )
   ).json()
 }
@@ -46,20 +48,20 @@ export function useGroupBy({
   dateFrom,
   groupBy,
 }: {
-  dateTo: string
-  dateFrom: string
+  dateTo: Date
+  dateFrom: Date
   groupBy: 'gtfs_route_date' | 'operator_ref' | 'day_of_week'
 }) {
   const [data, setData] = useState<GroupByResponse>([])
 
   useEffect(() => {
-    groupby({ dateTo, dateFrom, groupBy }).then((data) => setData(data))
+    asyncGroupby({ dateTo, dateFrom, groupBy }).then((data) => setData(data))
   }, [dateTo, dateFrom, groupBy])
 
-  return data.map((d) => ({
-    ...d,
-    operator_ref: agencyList.find((a) => a.agency_id === String(d.operator_ref)),
+  return data.map((dataRecord) => ({
+    ...dataRecord,
+    operator_ref: agencyList.find((agency) => agency.agency_id === String(dataRecord.operator_ref)),
   }))
 }
 
-export default groupby
+export default asyncGroupby
