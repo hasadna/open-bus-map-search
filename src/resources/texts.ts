@@ -31,10 +31,10 @@ export const TEXTS = {
   ride_duped: 'נסיעה כפולה ❇️',
   checkbox_only_gaps: 'רק פערים',
   dashboard_page_title: 'מפעילי תח"צ לפי  קיום נסיעות מתוכננות',
-  dashboard_page_negative_title: 'מפעילי תח"צ לפי אחוזי אי הגעה מסך הנסיעות  ',
+  dashboard_page_negative_title: 'מפעילי תח"צ לפי אחוזי אי יציאה מסך הנסיעות  ',
   rides_planned: 'נסיעות שתוכננו',
   rides_actual: 'נסיעות שיצאו',
-  dashboard_page_graph_title: 'אחוזי הגעה מסך הנסיעות לפי זמן',
+  dashboard_page_graph_title: 'אחוזי יציאה מסך הנסיעות לפי זמן',
 }
 
 export const formatted = (text: string, value: string) => text.replace(PLACEHOLDER, value)
