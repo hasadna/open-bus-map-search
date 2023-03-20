@@ -12,8 +12,8 @@ import GapsPage from './pages/GapsPage'
 import { PageSearchState, SearchContext } from './model/pageState'
 import moment from 'moment'
 import DashboardPage from './pages/dashboard/DashboardPage'
-import Header from './pages/components/header/Header'
 import { useSessionStorage } from 'usehooks-ts'
+import Header from './pages/components/header/Header'
 
 const { Content } = Layout
 
