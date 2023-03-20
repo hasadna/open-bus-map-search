@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { BASE_PATH } from './apiConfig'
 import agencyList from 'open-bus-stride-client/agencies/agencyList'
+import { Moment } from 'moment'
 
 type groupByField = 'gtfs_route_date' | 'operator_ref' | 'day_of_week'
 type groupByFields =
@@ -42,8 +43,8 @@ async function groupbyAsync({
   dateFrom,
   groupBy,
 }: {
-  dateTo: Date
-  dateFrom: Date
+  dateTo: Moment
+  dateFrom: Moment
   groupBy: groupByFields
 }): Promise<GroupByResponse> {
   // example: https://open-bus-stride-api.hasadna.org.il/gtfs_rides_agg/group_by?date_from=2023-01-27&date_to=2023-01-29&group_by=operator_ref
@@ -61,8 +62,8 @@ export function useGroupBy({
   dateFrom,
   groupBy,
 }: {
-  dateTo: Date
-  dateFrom: Date
+  dateTo: Moment
+  dateFrom: Moment
   groupBy: groupByFields
 }) {
   const [data, setData] = useState<
