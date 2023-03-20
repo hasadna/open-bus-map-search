@@ -28,10 +28,11 @@
                 direction: ltr;
                 text-align: left;
                 &.small {
-                    background-color: transparent !important;
-                    width: 100% !important;
-                    text-align: right;
                     color: inherit;
+                    direction: rtl;
+                    text-indent: calc(100% + 10px);
+                    padding-right: 0;
+                    padding-left: 0;
                 }
             }
         }
