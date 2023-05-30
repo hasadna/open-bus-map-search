@@ -1,0 +1,21 @@
+main, main > div, .map-container, .leaflet-container, .map-info {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+}
+
+.mask {
+    display: block;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    -webkit-mask-size: contain;
+}
+
+pre {
+    direction: ltr;
+    height: 200px;
+    overflow-y: auto;
+}
