@@ -14,6 +14,7 @@ import moment from 'moment'
 import DashboardPage from './pages/dashboard/DashboardPage'
 import { useSessionStorage } from 'usehooks-ts'
 import Header from './pages/components/header/Header'
+import RealtimeMapPage from './pages/RealtimeMapPage'
 
 const { Content } = Layout
 
@@ -42,6 +43,10 @@ const PAGES = [
   {
     label: TEXTS.gaps_page_title,
     key: '/gaps',
+  },
+  {
+    label: TEXTS.realtime_map_page_title,
+    key: '/map',
   },
 ]
 
@@ -74,6 +79,7 @@ const App = () => {
                   <Route path={PAGES[0].key} element={<DashboardPage />} />
                   <Route path={PAGES[1].key} element={<TimelinePage />} />
                   <Route path={PAGES[2].key} element={<GapsPage />} />
+                  <Route path={PAGES[3].key} element={<RealtimeMapPage />} />
                   <Route path="*" element={<Navigate to={PAGES[0].key} replace />} />
                 </Routes>
               </StyledBody>
