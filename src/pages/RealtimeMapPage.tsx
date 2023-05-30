@@ -53,7 +53,11 @@ const colorIcon = (color: string) => {
 
 function numberToColorHsl(i: number, max: number) {
   const ratio = i / max
-  return 'hsl(' + ratio * 360 + ', 100%, 50%)'
+  // 0 - black. 1 - red
+  const hue = 0
+  const saturation = ratio * 100
+  const lightness = ratio * 50
+  return `hsl(${hue}, ${saturation}%, ${lightness}%)`
 }
 
 function formatTime(time: string) {
@@ -125,7 +129,7 @@ export default function RealtimeMapPage() {
             url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
           />
           {positions.map((pos, i) => (
-            <Marker position={pos.loc} icon={colorIcon(numberToColorHsl(pos.color, 120))} key={i}>
+            <Marker position={pos.loc} icon={colorIcon(numberToColorHsl(pos.color, 60))} key={i}>
               <Popup>
                 <pre>{JSON.stringify(pos, null, 2)}</pre>
               </Popup>
