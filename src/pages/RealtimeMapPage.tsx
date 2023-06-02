@@ -1,27 +1,18 @@
 import React, { useEffect, useState } from 'react'
-import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet'
+import { MapContainer, useMap, Marker, Popup, TileLayer } from 'react-leaflet'
 // import https://www.svgrepo.com/show/113626/bus-front.svg
 import busIcon from '../resources/bus-front.svg'
 
 import './Map.scss'
-import { DivIcon, Icon } from 'leaflet'
+import { DivIcon } from 'leaflet'
+import agencyList from 'open-bus-stride-client/agencies/agencyList'
 
 interface Point {
   loc: [number, number]
   color: number
+  operator?: string
+  bearing?: number
 }
-
-const LeafIcon = new Icon({
-  iconUrl: 'https://www.svgrepo.com/show/113626/bus-front.svg',
-  // circle icon:
-  //   iconUrl:
-  // 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" fill="red" /></svg>',
-  iconSize: [30, 30], //[30, 30],
-  //   shadowSize: [50, 64],
-  //   iconAnchor: [22, 94],
-  //   shadowAnchor: [4, 62],
-  //   popupAnchor: [-3, -76],
-})
 
 interface ColorMemo {
   [key: string]: DivIcon
@@ -29,7 +20,15 @@ interface ColorMemo {
 
 const colormemo: ColorMemo = {}
 
-const colorIcon = (color: string) => {
+const colorIcon = ({
+  color,
+  name,
+  rotate = 0,
+}: {
+  color: string
+  name?: string
+  rotate?: number
+}) => {
   if (colormemo[color]) return colormemo[color]
   return (colormemo[color] = new DivIcon({
     className: 'my-div-icon',
@@ -39,6 +38,7 @@ const colorIcon = (color: string) => {
         border-radius: 50%;
         mask-image: url(${busIcon});
         -webkit-mask-image: url(${busIcon});
+        transform: rotate(${rotate}deg);
     ">
         <div
             style="
@@ -47,7 +47,9 @@ const colorIcon = (color: string) => {
                 height: 100%;
             "
         ></div>
-    </div>`,
+    </div>
+    <div class="text">${name}</div>
+    `,
   }))
 }
 
@@ -72,7 +74,7 @@ export default function RealtimeMapPage() {
   }
 
   const [positions, setPositions] = useState<Point[]>([])
-  const [limit, setLimit] = useState(500)
+  const [limit, setLimit] = useState(20)
   const [loaded, setLoaded] = useState(0)
   const [from, setFrom] = useState('2023-05-01T12:00:00+02:00')
   const [to, setTo] = useState('2023-05-01T12:01:00+02:00')
@@ -86,11 +88,21 @@ export default function RealtimeMapPage() {
       }&order_by=id%20asc&limit=${limit}`
       const response = await fetch(url)
       const data = await response.json()
-      const points: Point[] = data.map((point: { lat: number; lon: number; velocity: number }) => ({
-        loc: [point.lat, point.lon],
-        color: point.velocity,
-        point,
-      }))
+      const points: Point[] = data.map(
+        (point: {
+          lat: number
+          lon: number
+          velocity: number
+          siri_route__operator_ref: string
+          bearing: number
+        }) => ({
+          loc: [point.lat, point.lon],
+          color: point.velocity,
+          point,
+          operator: point.siri_route__operator_ref,
+          bearing: point.bearing,
+        }),
+      )
       setPositions(points)
       setLoaded(points.length)
     })()
@@ -128,15 +140,84 @@ export default function RealtimeMapPage() {
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
           />
-          {positions.map((pos, i) => (
-            <Marker position={pos.loc} icon={colorIcon(numberToColorHsl(pos.color, 60))} key={i}>
-              <Popup>
-                <pre>{JSON.stringify(pos, null, 2)}</pre>
-              </Popup>
-            </Marker>
-          ))}
+          <Markers positions={positions} />
         </MapContainer>
       </div>
     </div>
+  )
+}
+
+function Markers({ positions }: { positions: Point[] }) {
+  const map = useMap()
+  const [filteredList, setFilteredList] = useState<Point[]>([])
+
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition((position) =>
+      map.flyTo([position.coords.latitude, position.coords.longitude], 13),
+    )
+    map.on('moveend', updateFilteredList)
+    map.on('zoomend', updateFilteredList)
+
+    return () => {
+      map.off('moveend', updateFilteredList)
+      map.off('zoomend', updateFilteredList)
+    }
+  }, [])
+
+  function updateFilteredList() {
+    const bounds = map.getBounds()
+    const filtered = positions.filter((pos) => bounds.pad(1).contains(pos.loc))
+    setFilteredList(filtered)
+  }
+
+  const bounds = map.getBounds().pad(1)
+  positions = positions.filter((pos) => bounds.contains(pos.loc))
+  return (
+    <>
+      <Marker
+        position={bounds.getNorthWest()}
+        icon={colorIcon({
+          color: 'red',
+          name: 'North West',
+          rotate: 0,
+        })}></Marker>
+      <Marker
+        position={bounds.getNorthEast()}
+        icon={colorIcon({
+          color: 'red',
+          name: 'North East',
+          rotate: 0,
+        })}></Marker>
+      <Marker
+        position={bounds.getSouthWest()}
+        icon={colorIcon({
+          color: 'red',
+          name: 'South West',
+          rotate: 0,
+        })}></Marker>
+      <Marker
+        position={bounds.getSouthEast()}
+        icon={colorIcon({
+          color: 'red',
+          name: 'South East',
+          rotate: 0,
+        })}></Marker>
+
+      {filteredList.map((pos, i) => (
+        <Marker
+          position={pos.loc}
+          icon={colorIcon({
+            color: numberToColorHsl(pos.color, 60),
+            name: agencyList.find((agency) => agency.agency_id === String(pos.operator))
+              ?.agency_name,
+            rotate: pos.bearing,
+          })}
+          key={i}>
+          <Popup>
+            <pre>{JSON.stringify(pos, null, 2)}</pre>
+          </Popup>
+        </Marker>
+      ))}
+    </>
   )
 }
