@@ -75,7 +75,7 @@ export default function RealtimeMapPage() {
   }
 
   const [positions, setPositions] = useState<Point[]>([])
-  const [limit, setLimit] = useState(20)
+  const [limit, setLimit] = useState(3000)
   const [loaded, setLoaded] = useState(0)
   const [from, setFrom] = useState('2023-05-01T12:00:00+02:00')
   const [to, setTo] = useState('2023-05-01T12:01:00+02:00')
@@ -114,8 +114,6 @@ export default function RealtimeMapPage() {
       <div className="map-header">
         <h1>Realtime Map</h1>
         <div className="map-header-buttons">
-          <button onClick={() => setLimit(500)}>500</button>
-          <button onClick={() => setLimit(1000)}>1000</button>
           <button onClick={() => setLimit(5000)}>5000</button>
           <button onClick={() => setLimit(10000)}>10000</button>
           <button onClick={() => setLimit(10000)}>30000</button>
@@ -150,33 +148,17 @@ export default function RealtimeMapPage() {
 
 function Markers({ positions }: { positions: Point[] }) {
   const map = useMap()
-  const [filteredList, setFilteredList] = useState<Point[]>([])
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition((position) =>
       map.flyTo([position.coords.latitude, position.coords.longitude], 13),
     )
-    map.on('moveend', updateFilteredList)
-    map.on('zoomend', updateFilteredList)
-
-    return () => {
-      map.off('moveend', updateFilteredList)
-      map.off('zoomend', updateFilteredList)
-    }
   }, [])
 
-  function updateFilteredList() {
-    const bounds = map.getBounds()
-    const filtered = positions.filter((pos) => bounds.pad(1).contains(pos.loc))
-    setFilteredList(filtered)
-  }
-
-  const bounds = map.getBounds().pad(1)
-  positions = positions.filter((pos) => bounds.contains(pos.loc))
   return (
     <>
       <MarkerClusterGroup chunkedLoading>
-        {filteredList.map((pos, i) => (
+        {positions.map((pos, i) => (
           <Marker
             position={pos.loc}
             icon={colorIcon({
