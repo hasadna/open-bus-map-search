@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { MapContainer, useMap, Marker, Popup, TileLayer } from 'react-leaflet'
 // import https://www.svgrepo.com/show/113626/bus-front.svg
 import busIcon from '../resources/bus-front.svg'
+import MarkerClusterGroup from 'react-leaflet-cluster'
 
 import './Map.scss'
 import { DivIcon } from 'leaflet'
@@ -174,50 +175,23 @@ function Markers({ positions }: { positions: Point[] }) {
   positions = positions.filter((pos) => bounds.contains(pos.loc))
   return (
     <>
-      <Marker
-        position={bounds.getNorthWest()}
-        icon={colorIcon({
-          color: 'red',
-          name: 'North West',
-          rotate: 0,
-        })}></Marker>
-      <Marker
-        position={bounds.getNorthEast()}
-        icon={colorIcon({
-          color: 'red',
-          name: 'North East',
-          rotate: 0,
-        })}></Marker>
-      <Marker
-        position={bounds.getSouthWest()}
-        icon={colorIcon({
-          color: 'red',
-          name: 'South West',
-          rotate: 0,
-        })}></Marker>
-      <Marker
-        position={bounds.getSouthEast()}
-        icon={colorIcon({
-          color: 'red',
-          name: 'South East',
-          rotate: 0,
-        })}></Marker>
-
-      {filteredList.map((pos, i) => (
-        <Marker
-          position={pos.loc}
-          icon={colorIcon({
-            color: numberToColorHsl(pos.color, 60),
-            name: agencyList.find((agency) => agency.agency_id === String(pos.operator))
-              ?.agency_name,
-            rotate: pos.bearing,
-          })}
-          key={i}>
-          <Popup>
-            <pre>{JSON.stringify(pos, null, 2)}</pre>
-          </Popup>
-        </Marker>
-      ))}
+      <MarkerClusterGroup chunkedLoading>
+        {filteredList.map((pos, i) => (
+          <Marker
+            position={pos.loc}
+            icon={colorIcon({
+              color: numberToColorHsl(pos.color, 60),
+              name: agencyList.find((agency) => agency.agency_id === String(pos.operator))
+                ?.agency_name,
+              rotate: pos.bearing,
+            })}
+            key={i}>
+            <Popup>
+              <pre>{JSON.stringify(pos, null, 2)}</pre>
+            </Popup>
+          </Marker>
+        ))}
+      </MarkerClusterGroup>
     </>
   )
 }
