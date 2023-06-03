@@ -6,24 +6,18 @@ import MarkerClusterGroup from 'react-leaflet-cluster'
 
 import './Map.scss'
 import { DivIcon } from 'leaflet'
-import agencyList from 'open-bus-stride-client/agencies/agencyList'
 import useVehicleLocations from 'src/api/useVehicleLocations'
 import { VehicleLocation } from 'src/model/vehicleLocation'
+import getAgencyList, { Agency } from 'src/api/agencyList'
 
 interface Point {
   loc: [number, number]
   color: number
-  operator?: string
+  operator?: number
   bearing?: number
   point?: VehicleLocation
   recorded_at_time?: number
 }
-
-interface ColorMemo {
-  [key: string]: DivIcon
-}
-
-const colormemo: ColorMemo = {}
 
 const colorIcon = ({
   color,
@@ -34,8 +28,7 @@ const colorIcon = ({
   name?: string
   rotate?: number
 }) => {
-  if (colormemo[color]) return colormemo[color]
-  return (colormemo[color] = new DivIcon({
+  return new DivIcon({
     className: 'my-div-icon',
     html: `<div class="mask" style="
         width: 30px;
@@ -55,7 +48,7 @@ const colorIcon = ({
     </div>
     <div class="text">${name}</div>
     `,
-  }))
+  })
 }
 
 function formatTime(time: any) {
@@ -91,7 +84,7 @@ export default function RealtimeMapPage() {
     let pos = locations.map<Point>((location) => ({
       loc: [location.lat, location.lon],
       color: location.velocity,
-      operator: String(location.siri_route__operator_ref),
+      operator: location.siri_route__operator_ref,
       bearing: location.bearing,
       recorded_at_time: new Date(location.recorded_at_time).getTime(),
       point: location,
@@ -170,6 +163,11 @@ export default function RealtimeMapPage() {
 
 function Markers({ positions }: { positions: Point[] }) {
   const map = useMap()
+  const [agencyList, setAgencyList] = useState<Agency[]>([])
+
+  useEffect(() => {
+    getAgencyList().then(setAgencyList)
+  }, [])
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition((position) =>
@@ -185,8 +183,7 @@ function Markers({ positions }: { positions: Point[] }) {
             position={pos.loc}
             icon={colorIcon({
               color: numberToColorHsl(pos.color, 60),
-              name: agencyList.find((agency) => agency.agency_id === String(pos.operator))
-                ?.agency_name,
+              name: agencyList.find((agency) => agency.operator_ref === pos.operator)?.agency_name,
               rotate: pos.bearing,
             })}
             key={i}>
