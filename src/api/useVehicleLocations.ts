@@ -118,6 +118,7 @@ export default function useVehicleLocations({ from, to }: { from: Dateable; to: 
       }),
     )
     return () => {
+      setLocations([])
       unmounts.forEach((unmount) => unmount())
     }
   }, [from, to])

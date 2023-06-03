@@ -87,10 +87,6 @@ export default function RealtimeMapPage() {
 
   const loaded = locations.length
 
-  const minTime = new Date(from).getTime()
-  const maxTime = new Date(to).getTime()
-  const [chosenTime, setChosenTime] = useState((minTime + maxTime) / 2)
-
   const positions = useMemo(() => {
     let pos = locations.map<Point>((location) => ({
       loc: [location.lat, location.lon],
@@ -115,29 +111,49 @@ export default function RealtimeMapPage() {
     <div className="map-container">
       <div className="map-header">
         <h1>Realtime Map</h1>
-        {/* <div className="map-header-buttons">
-          <input
-            type="range"
-            min={minTime}
-            max={maxTime}
-            value={chosenTime}
-            onChange={(e) => setChosenTime(Number(e.target.value))}
-          />
-          <button onClick={() => setChosenTime(minTime)}>Start</button>
-          <button onClick={() => setChosenTime(maxTime)}>End</button>
-        </div> */}
         <div className="map-header-buttons">
           <label>
             מתאריך
-            <input type="datetime-local" value={from} onChange={(e) => setFrom(e.target.value)} />
+            <input
+              type="datetime-local"
+              value={from.slice(0, 16)}
+              onChange={(e) => {
+                setFrom(e.target.value)
+                setTo(formatTime(+new Date(e.target.value) + (+new Date(to) - +new Date(from))))
+              }}
+            />
           </label>{' '}
           {` `}
           <label>
-            עד תאריך
-            <input type="datetime-local" value={to} onChange={(e) => setTo(e.target.value)} />
+            צפה במיקומי אוטובוסים בטווח של
+            <input
+              type="number"
+              value={(+new Date(to) - +new Date(from)) / 1000 / 60}
+              onChange={(e) => setTo(formatTime(+new Date(from) + +e.target.value * 1000 * 60))}
+            />
+            דקות
           </label>
         </div>
-        <p>Loaded {loaded} busses</p>
+        <div className="map-header-buttons">
+          <button
+            onClick={() => {
+              setFrom(formatTime(+new Date() - 5 * 1000 * 60))
+              setTo(formatTime(+new Date() - 4 * 1000 * 60))
+            }}>
+            לפני 5 דקות
+          </button>
+          <button
+            onClick={() => {
+              setFrom(formatTime(+new Date() - 10 * 1000 * 60))
+              setTo(formatTime(+new Date() - 9 * 1000 * 60))
+            }}>
+            לפני 10 דקות
+          </button>
+        </div>
+        <p>
+          מציג {loaded} מיקומי אוטובוסים בין השעות {new Date(from).toLocaleTimeString()} ל{' '}
+          {new Date(to).toLocaleTimeString()}
+        </p>
       </div>
       <div className="map-info">
         <MapContainer center={position.loc} zoom={8} scrollWheelZoom={true}>
