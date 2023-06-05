@@ -36,6 +36,13 @@ export const TEXTS = {
   rides_planned: 'נסיעות שתוכננו',
   rides_actual: 'נסיעות שיצאו',
   dashboard_page_graph_title: 'אחוזי יציאה מסך הנסיעות לפי זמן',
+  from_date: 'מתאריך',
+  to_date: 'עד תאריך',
+  watch_locations_in_range: 'צפה במיקומי אוטובוסים בטווח של',
+  minutes: 'דקות',
+  minutes_5: '5 דקות',
+  show_x_bus_locations: 'הצג XXX מיקומי אוטובוסים',
+  from_time_x_to_time_y: 'משעה XXX עד שעה YYY',
 }
 
 export const formatted = (text: string, value: string) => text.replace(PLACEHOLDER, value)

@@ -3,6 +3,7 @@ import { MapContainer, useMap, Marker, Popup, TileLayer } from 'react-leaflet'
 // import https://www.svgrepo.com/show/113626/bus-front.svg
 import busIcon from '../resources/bus-front.svg'
 import MarkerClusterGroup from 'react-leaflet-cluster'
+import { TEXTS } from 'src/resources/texts'
 
 import './Map.scss'
 import { DivIcon } from 'leaflet'
@@ -106,7 +107,7 @@ export default function RealtimeMapPage() {
         <h1>Realtime Map</h1>
         <div className="map-header-buttons">
           <label>
-            מתאריך
+            {TEXTS.from_date}
             <input
               type="datetime-local"
               value={from.slice(0, 16)}
@@ -118,13 +119,13 @@ export default function RealtimeMapPage() {
           </label>{' '}
           {` `}
           <label>
-            צפה במיקומי אוטובוסים בטווח של
+            {TEXTS.watch_locations_in_range}
             <input
               type="number"
               value={(+new Date(to) - +new Date(from)) / 1000 / 60}
               onChange={(e) => setTo(formatTime(+new Date(from) + +e.target.value * 1000 * 60))}
             />
-            דקות
+            {TEXTS.minutes}
           </label>
         </div>
         <div className="map-header-buttons">
@@ -144,8 +145,10 @@ export default function RealtimeMapPage() {
           </button>
         </div>
         <p>
-          מציג {loaded} מיקומי אוטובוסים בין השעות {new Date(from).toLocaleTimeString()} ל{' '}
-          {new Date(to).toLocaleTimeString()}
+          {TEXTS.show_x_bus_locations.replace('XXX', loaded.toString())}
+          {TEXTS.from_time_x_to_time_y
+            .replace('XXX', new Date(from).toLocaleTimeString())
+            .replace('YYY', new Date(to).toLocaleTimeString())}
         </p>
       </div>
       <div className="map-info">
