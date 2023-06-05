@@ -68,10 +68,10 @@ function numberToColorHsl(i: number, max: number) {
 
 export default function RealtimeMapPage() {
   const position: Point = {
-    loc: [32.3057988, 34.85478613],
+    loc: [32.3057988, 34.85478613], // arbitrary default value... Netanya - best city to live & die in
     color: 0,
   }
-  const [from, setFrom] = useState('2023-05-01T12:00:00+02:00')
+  const [from, setFrom] = useState('2023-05-01T12:00:00+02:00') // arbitrary default value. this date is not important
   const [to, setTo] = useState('2023-05-01T12:01:00+02:00')
 
   const locations = useVehicleLocations({
@@ -110,10 +110,10 @@ export default function RealtimeMapPage() {
             {TEXTS.from_date}
             <input
               type="datetime-local"
-              value={from.slice(0, 16)}
+              value={from.slice(0, 16)} // remove timezone and seconds
               onChange={(e) => {
                 setFrom(e.target.value)
-                setTo(formatTime(+new Date(e.target.value) + (+new Date(to) - +new Date(from))))
+                setTo(formatTime(+new Date(e.target.value) + (+new Date(to) - +new Date(from)))) // keep the same time difference
               }}
             />
           </label>{' '}
@@ -122,7 +122,7 @@ export default function RealtimeMapPage() {
             {TEXTS.watch_locations_in_range}
             <input
               type="number"
-              value={(+new Date(to) - +new Date(from)) / 1000 / 60}
+              value={(+new Date(to) - +new Date(from)) / 1000 / 60} // minutes difference between from and to
               onChange={(e) => setTo(formatTime(+new Date(from) + +e.target.value * 1000 * 60))}
             />
             {TEXTS.minutes}
@@ -131,15 +131,15 @@ export default function RealtimeMapPage() {
         <div className="map-header-buttons">
           <button
             onClick={() => {
-              setFrom(formatTime(+new Date() - 5 * 1000 * 60))
-              setTo(formatTime(+new Date() - 4 * 1000 * 60))
+              setFrom(formatTime(+new Date() - 5 * 1000 * 60)) // 5 minutes ago
+              setTo(formatTime(+new Date() - 4 * 1000 * 60)) // 4 minutes ago
             }}>
             לפני 5 דקות
           </button>
           <button
             onClick={() => {
-              setFrom(formatTime(+new Date() - 10 * 1000 * 60))
-              setTo(formatTime(+new Date() - 9 * 1000 * 60))
+              setFrom(formatTime(+new Date() - 10 * 1000 * 60)) // 10 minutes ago
+              setTo(formatTime(+new Date() - 9 * 1000 * 60)) // 9 minutes ago
             }}>
             לפני 10 דקות
           </button>
