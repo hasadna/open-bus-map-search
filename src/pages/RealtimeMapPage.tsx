@@ -145,7 +145,7 @@ export default function RealtimeMapPage() {
           </button>
         </div>
         <p>
-          {TEXTS.show_x_bus_locations.replace('XXX', loaded.toString())}
+          {TEXTS.show_x_bus_locations.replace('XXX', loaded.toString())} {` `}
           {TEXTS.from_time_x_to_time_y
             .replace('XXX', new Date(from).toLocaleTimeString())
             .replace('YYY', new Date(to).toLocaleTimeString())}
