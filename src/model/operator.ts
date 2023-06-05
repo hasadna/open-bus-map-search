@@ -1,21 +1,26 @@
-import agencyList from 'open-bus-stride-client/agencies/agencyList'
+import getAgencyList from 'src/api/agencyList'
 
 export type Operator = {
   name: string
   id: string
 }
 
-const getOperatorId = (name: string) => agencyList.find((a) => a.agency_name === name)!.agency_id
+async function getOperatorId(name: string) {
+  const agencyList = await getAgencyList()
+  const agency = agencyList.find((agency) => agency.agency_name === name)
+  if (!agency) {
+    throw new Error(`Agency ${name} not found`)
+  }
+  return agency.operator_ref.toString()
+}
 
-const toOperator = (name: string): Operator => ({ name, id: getOperatorId(name) })
+const toOperator = async (name: string): Promise<Operator> => ({
+  name,
+  id: await getOperatorId(name),
+})
 
-export const RELEVANT_OPERATORS: Operator[] = [
-  toOperator('אגד'),
-  toOperator('אגד תעבורה'),
-  toOperator('דן'),
-  toOperator('נתיב אקספרס'),
-  toOperator('מטרופולין'),
-  toOperator('סופרבוס'),
-  toOperator('קווים'),
-  toOperator('אלקטרה אפיקים'),
-].sort((a, b) => a.name.localeCompare(b.name))
+export const RELEVANT_OPERATORS = Promise.all(
+  ['אגד', 'אגד תעבורה', 'דן', 'נתיב אקספרס', 'מטרופולין', 'סופרבוס', 'קווים', 'אלקטרה אפיקים']
+    .sort()
+    .map(toOperator),
+)
