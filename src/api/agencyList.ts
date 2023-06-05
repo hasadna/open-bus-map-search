@@ -4,8 +4,13 @@ export interface Agency {
   agency_name: string // example - "אלקטרה אפיקים"
 }
 
+let json: Promise<Agency[]>
+
 export default async function getAgencyList(): Promise<Agency[]> {
-  const res = await fetch('https://open-bus-stride-api.hasadna.org.il/gtfs_agencies/list')
-  const json = await res.json()
+  if (!json) {
+    json = fetch('https://open-bus-stride-api.hasadna.org.il/gtfs_agencies/list').then((response) =>
+      response.json(),
+    )
+  }
   return json
 }
