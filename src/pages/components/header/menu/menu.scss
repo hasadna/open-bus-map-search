@@ -26,3 +26,39 @@
         }
     }
 }
+
+.header-menu {
+    display: none;
+}
+
+@media screen and (max-width: $mobile-max-width) {
+
+    .main .header {
+        max-width: 0;
+        padding: 0;
+        transition: all 0.2s ease-in-out;
+
+        .header-menu {
+            display: block;
+            position: absolute;
+            top: 0;
+            right: 0;
+            margin: 10px;
+            cursor: pointer;
+            font-size: 20px;
+
+            &-line {
+                width: 30px;
+                height: 3px;
+                background-color: black;
+                margin: 5px 0;
+            }
+        }
+    }
+
+    .main .header.open{
+        max-width: 100%;
+        padding: 30px;
+    }
+
+}
