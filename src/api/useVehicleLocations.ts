@@ -4,6 +4,7 @@
  * if some of the interval has already been loaded,
  */
 
+import _ from 'lodash'
 import { useEffect, useState } from 'react'
 import { VehicleLocation } from 'src/model/vehicleLocation'
 
@@ -109,11 +110,11 @@ export default function useVehicleLocations({ from, to }: { from: Dateable; to: 
   useEffect(() => {
     const unmounts = getMinutesInRange(from, to).map(({ from, to }) =>
       getLocations(from, to, (locations) => {
-        setLocations(
-          (prev) =>
-            [...prev, ...locations]
-              .sort((a, b) => a.id - b.id)
-              .filter((loc, i, arr) => arr.findIndex((l) => l.id === loc.id) === i), // remove duplicates
+        setLocations((prev) =>
+          _.uniqBy(
+            [...prev, ...locations].sort((a, b) => a.id - b.id),
+            (loc) => loc.id,
+          ),
         )
       }),
     )
