@@ -1,3 +1,4 @@
+.operatorHbarChart {
 .operator {
     display: flex;
     flex-direction: row;
@@ -15,7 +16,8 @@
         padding-right: 20px;
         box-sizing: border-box;
     }
-    .operatorBar{
+
+        .operatorBar {
         flex-grow: 1;
 
         .operatorBarTotal {            
@@ -27,6 +29,7 @@
                 padding: 10px;
                 direction: ltr;
                 text-align: left;
+
                 &.small {
                     color: inherit;
                     direction: rtl;
@@ -64,4 +67,5 @@
             opacity: 1;
         }
     }
+}
 }
