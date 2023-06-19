@@ -13,6 +13,7 @@ const config = {
   limit: 500, // the maximum number of vehicles to load in one request
   fromField: 'recorded_at_time_from',
   toField: 'recorded_at_time_to',
+  lineRefField: 'siri_routes__line_ref',
 } as const
 
 type Dateable = Date | number | string
@@ -33,21 +34,23 @@ const loadedLocations = new Map<
  * it also caches the data, so if the same interval is requested again, it will not load it again.
  */
 class LocationObservable {
-  constructor({ from, to }: { from: Dateable; to: Dateable }) {
-    this.#loadData({ from, to })
+  constructor({ from, to, lineRef }: { from: Dateable; to: Dateable; lineRef?: number }) {
+    this.#loadData({ from, to, lineRef })
   }
 
   data: VehicleLocation[] = []
   loading = true
 
-  async #loadData({ from, to }: { from: Dateable; to: Dateable }) {
+  async #loadData({ from, to, lineRef }: { from: Dateable; to: Dateable; lineRef?: number }) {
     let offset = 0
     for (let i = 1; this.loading; i++) {
-      const response = await fetch(
-        `${config.apiUrl}&${config.fromField}=${formatTime(from)}&${config.toField}=${formatTime(
-          to,
-        )}&limit=${config.limit * i}&offset=${offset}`,
-      )
+      let url = config.apiUrl
+      url += `&${config.fromField}=${formatTime(from)}&${config.toField}=${formatTime(to)}&limit=${
+        config.limit * i
+      }&offset=${offset}`
+      if (lineRef) url += `$&${config.lineRefField}=${lineRef}`
+
+      const response = await fetch(url)
       const data = await response.json()
       if (data.length === 0) {
         this.loading = false
@@ -80,17 +83,23 @@ class LocationObservable {
 }
 
 // this function checks the cache for the data, and if it's not there, it loads it
-function getLocations(
-  from: Dateable,
-  to: Dateable,
-  update: (locations: VehicleLocation[]) => void, // the observer will be called every time with all the locations that were loaded
-) {
+function getLocations({
+  from,
+  to,
+  lineRef,
+  onUpdate,
+}: {
+  from: Dateable
+  to: Dateable
+  lineRef?: number
+  onUpdate: (locations: VehicleLocation[]) => void // the observer will be called every time with all the locations that were loaded
+}) {
   const key = `${formatTime(from)}-${formatTime(to)}`
   if (!loadedLocations.has(key)) {
-    loadedLocations.set(key, new LocationObservable({ from, to }))
+    loadedLocations.set(key, new LocationObservable({ from, to, lineRef }))
   }
   const observable = loadedLocations.get(key)!
-  return observable.observe(update)
+  return observable.observe(onUpdate)
 }
 
 function getMinutesInRange(from: Dateable, to: Dateable) {
@@ -105,17 +114,30 @@ function getMinutesInRange(from: Dateable, to: Dateable) {
   return minutes
 }
 
-export default function useVehicleLocations({ from, to }: { from: Dateable; to: Dateable }) {
+export default function useVehicleLocations({
+  from,
+  to,
+  lineRef,
+}: {
+  from: Dateable
+  to: Dateable
+  lineRef?: number
+}) {
   const [locations, setLocations] = useState<VehicleLocation[]>([])
   useEffect(() => {
     const unmounts = getMinutesInRange(from, to).map(({ from, to }) =>
-      getLocations(from, to, (locations) => {
-        setLocations((prev) =>
-          _.uniqBy(
-            [...prev, ...locations].sort((a, b) => a.id - b.id),
-            (loc) => loc.id,
-          ),
-        )
+      getLocations({
+        from,
+        to,
+        lineRef,
+        onUpdate: (locations) => {
+          setLocations((prev) =>
+            _.uniqBy(
+              [...prev, ...locations].sort((a, b) => a.id - b.id),
+              (loc) => loc.id,
+            ),
+          )
+        },
       }),
     )
     return () => {
