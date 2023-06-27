@@ -15,6 +15,7 @@ import DashboardPage from './pages/dashboard/DashboardPage'
 import { useSessionStorage } from 'usehooks-ts'
 import Header from './pages/components/header/Header'
 import RealtimeMapPage from './pages/RealtimeMapPage'
+import SingleLineMapPage from './pages/SingleLineMapPage'
 
 const { Content } = Layout
 
@@ -48,6 +49,10 @@ const PAGES = [
     label: TEXTS.realtime_map_page_title,
     key: '/map',
   },
+  {
+    label: 'fgvjvgf',
+    key: '/single-line-map',
+  },
 ]
 
 const App = () => {
@@ -80,6 +85,7 @@ const App = () => {
                   <Route path={PAGES[1].key} element={<TimelinePage />} />
                   <Route path={PAGES[2].key} element={<GapsPage />} />
                   <Route path={PAGES[3].key} element={<RealtimeMapPage />} />
+                  <Route path={PAGES[4].key} element={<SingleLineMapPage />} />
                   <Route path="*" element={<Navigate to={PAGES[0].key} replace />} />
                 </Routes>
               </StyledBody>
