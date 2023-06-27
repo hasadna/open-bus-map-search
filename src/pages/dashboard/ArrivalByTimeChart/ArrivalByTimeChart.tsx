@@ -36,7 +36,7 @@ export default function ArrivalByTimeChart({
   }[]
 }) {
   return (
-    <>
+    <div className="chart">
       {arrayGroup(data, (item) => item.id).map((group) => (
         <div key={group[0].name}>
           <h3 className="title">{group[0].name}</h3>
@@ -59,6 +59,6 @@ export default function ArrivalByTimeChart({
           </ResponsiveContainer>
         </div>
       ))}
-    </>
+    </div>
   )
 }

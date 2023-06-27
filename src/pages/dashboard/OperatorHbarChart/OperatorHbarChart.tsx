@@ -41,7 +41,7 @@ function OperatorHbarChart({
   }))
 
   return (
-    <div className="operatorRow">
+    <div className="operatorHbarChart chart">
       {rows
         .sort((a, b) => b.total - a.total)
         .map((operator) => {

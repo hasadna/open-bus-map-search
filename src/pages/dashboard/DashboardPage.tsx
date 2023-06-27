@@ -48,7 +48,6 @@ const DashboardPage = () => {
 
   return (
     <PageContainer>
-      <h2 className="title">{TEXTS.dashboard_page_title}</h2>
       <div className="date-picker-container">
         <DatePicker
           defaultValue={startDate}
@@ -62,11 +61,20 @@ const DashboardPage = () => {
           format="DD/MM/YYYY"
         />
       </div>
-      <OperatorHbarChart operators={hbarData} />
-      <h2 className="title">{TEXTS.dashboard_page_negative_title}</h2>
-      <OperatorHbarChart operators={hbarData} complement />
-      <h2 className="title">{TEXTS.dashboard_page_graph_title}</h2>
-      <ArrivalByTimeChart data={graphData} />
+      <div className="widgets-container">
+        <div className="widget">
+          <h2 className="title">{TEXTS.dashboard_page_title}</h2>
+          <OperatorHbarChart operators={hbarData} />
+        </div>
+        <div className="widget">
+          <h2 className="title">{TEXTS.dashboard_page_negative_title}</h2>
+          <OperatorHbarChart operators={hbarData} complement />
+        </div>
+        <div className="widget">
+          <h2 className="title">{TEXTS.dashboard_page_graph_title}</h2>
+          <ArrivalByTimeChart data={graphData} />
+        </div>
+      </div>
     </PageContainer>
   )
 }
