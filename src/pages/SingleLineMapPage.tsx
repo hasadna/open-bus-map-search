@@ -21,6 +21,18 @@ import { PageContainer } from './components/PageContainer'
 import { SearchContext, TimelinePageState } from '../model/pageState'
 import { NotFound } from './components/NotFound'
 import moment from 'moment'
+import useVehicleLocations from 'src/api/useVehicleLocations'
+import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet'
+import MarkerClusterGroup from 'react-leaflet-cluster'
+import { Markers, Point, colorIcon, numberToColorHsl } from './RealtimeMapPage'
+
+import './Map.scss'
+import getAgencyList, { Agency } from 'src/api/agencyList'
+
+const position: Point = {
+  loc: [32.3057988, 34.85478613], // arbitrary default value... Netanya - best city to live & die in
+  color: 0,
+}
 
 const SingleLineMapPage = () => {
   const { search, setSearch } = useContext(SearchContext)
@@ -32,6 +44,12 @@ const SingleLineMapPage = () => {
   const [stopsIsLoading, setStopsIsLoading] = useState(false)
   const [hitsIsLoading, setHitsIsLoading] = useState(false)
 
+  const [agencyList, setAgencyList] = useState<Agency[]>([])
+
+  useEffect(() => {
+    getAgencyList().then(setAgencyList)
+  }, [])
+
   const clearRoutes = useCallback(() => {
     setState((current) => ({ ...current, routes: undefined, routeKey: undefined }))
   }, [setState])
@@ -41,8 +59,6 @@ const SingleLineMapPage = () => {
       ...current,
       stops: undefined,
       stopKey: undefined,
-      gtfsHitTimes: undefined,
-      siriHitTimes: undefined,
     }))
   }, [setState])
 
@@ -70,6 +86,13 @@ const SingleLineMapPage = () => {
   )
   const selectedRouteIds = selectedRoute?.routeIds
 
+  const locations = useVehicleLocations({
+    from: selectedRouteIds ? new Date(timestamp).setHours(0, 0, 0, 0) : 0,
+    to: selectedRouteIds ? new Date(timestamp).setHours(23, 59, 59, 999) : 0,
+    lineRef: selectedRoute?.lineRef ?? 0,
+    splitMinutes: false,
+  })
+
   useEffect(() => {
     clearStops()
     if (!routeKey || !selectedRouteIds) {
@@ -82,24 +105,6 @@ const SingleLineMapPage = () => {
   }, [selectedRouteIds, routeKey, clearStops])
 
   useEffect(() => {
-    if (!stopKey || !stops || !selectedRoute) {
-      return
-    }
-    const stop = stops?.find((stop) => stop.key === stopKey)
-    if (stop) {
-      setHitsIsLoading(true)
-      Promise.all([
-        getGtfsStopHitTimesAsync(stop, moment(timestamp)),
-        getSiriStopHitTimesAsync(selectedRoute, stop, moment(timestamp)),
-      ])
-        .then(([gtfsTimes, siriTimes]) =>
-          setState((current) => ({ ...current, gtfsHitTimes: gtfsTimes, siriHitTimes: siriTimes })),
-        )
-        .finally(() => setHitsIsLoading(false))
-    }
-  }, [stopKey, stops, timestamp, selectedRoute])
-
-  useEffect(() => {
     if (!stopName || !stops || stopKey) {
       return
     }
@@ -110,8 +115,23 @@ const SingleLineMapPage = () => {
     }
   }, [timestamp, stops])
 
+  const positions = useMemo(() => {
+    const pos = locations.map<Point>((location) => ({
+      loc: [location.lat, location.lon],
+      color: location.velocity,
+      operator: location.siri_route__operator_ref,
+      bearing: location.bearing,
+      recorded_at_time: new Date(location.recorded_at_time).getTime(),
+      point: location,
+    }))
+
+    return pos
+  }, [locations])
+
+  console.log({ locations, search, state, selectedRoute, positions })
+
   return (
-    <PageContainer>
+    <PageContainer className="map-container">
       <Row>
         <Label text={TEXTS.choose_datetime} />
         <DateTimePicker
@@ -134,34 +154,24 @@ const SingleLineMapPage = () => {
         />
       </Row>
 
-      {!routesIsLoading &&
+      {
+        //!routesIsLoading &&
         routes &&
-        (routes.length === 0 ? (
-          <NotFound>{TEXTS.line_not_found}</NotFound>
-        ) : (
-          <RouteSelector
-            routes={routes}
-            routeKey={routeKey}
-            setRouteKey={(key) => setSearch((current) => ({ ...current, routeKey: key }))}
-          />
-        ))}
+          (routes.length === 0 ? (
+            <NotFound>{TEXTS.line_not_found}</NotFound>
+          ) : (
+            <RouteSelector
+              routes={routes}
+              routeKey={routeKey}
+              setRouteKey={(key) => setSearch((current) => ({ ...current, routeKey: key }))}
+            />
+          ))
+      }
       {stopsIsLoading && (
         <Row>
           <Label text={TEXTS.loading_stops} />
           <Spin />
         </Row>
-      )}
-      {!stopsIsLoading && stops && (
-        <StopSelector
-          stops={stops}
-          stopKey={stopKey}
-          setStopKey={(key) =>
-            setState((current) => {
-              const stop = current.stops?.find((stop) => stop.key === key)
-              return { ...current, stopKey: key, stopName: stop?.name }
-            })
-          }
-        />
       )}
       {hitsIsLoading && (
         <Row>
@@ -169,6 +179,42 @@ const SingleLineMapPage = () => {
           <Spin />
         </Row>
       )}
+      {!hitsIsLoading && <pre>{JSON.stringify(locations, null, 2)}</pre>}
+
+      <div className="map-info">
+        <MapContainer center={position.loc} zoom={8} scrollWheelZoom={true}>
+          <TileLayer
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
+          />
+
+          {positions.map((pos, i) => (
+            <Marker
+              position={pos.loc}
+              icon={colorIcon({
+                color: numberToColorHsl(pos.color, 60),
+                name: agencyList.find((agency) => agency.operator_ref === pos.operator)
+                  ?.agency_name,
+                rotate: pos.bearing,
+              })}
+              key={i}>
+              <Popup>
+                <pre>{JSON.stringify(pos, null, 2)}</pre>
+              </Popup>
+            </Marker>
+          ))}
+
+          {/* {paths.map((path) => (
+            <Polyline
+              key={path.vehicleRef}
+              pathOptions={{
+                color: getColorByHashString(path.vehicleRef.toString()),
+              }}
+              positions={path.locations.map(({ lat, lon }) => [lat, lon])}
+            />
+          ))} */}
+        </MapContainer>
+      </div>
     </PageContainer>
   )
 }

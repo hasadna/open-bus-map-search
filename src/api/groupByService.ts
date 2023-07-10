@@ -3,7 +3,7 @@ import { BASE_PATH } from './apiConfig'
 import agencyList from 'open-bus-stride-client/agencies/agencyList'
 import { Moment } from 'moment'
 
-type groupByField = 'gtfs_route_date' | 'operator_ref' | 'day_of_week'
+type groupByField = 'gtfs_route_date' | 'operator_ref' | 'day_of_week' | 'line_ref' | 'operator_ref'
 type groupByFields =
   | groupByField
   | `${groupByField},${groupByField}`
@@ -50,9 +50,10 @@ async function groupbyAsync({
   // example: https://open-bus-stride-api.hasadna.org.il/gtfs_rides_agg/group_by?date_from=2023-01-27&date_to=2023-01-29&group_by=operator_ref
   const dateToStr = dateTo.toISOString().split('T')[0]
   const dateFromStr = dateFrom.toISOString().split('T')[0]
+  const excludes = 'exclude_hour_from=23&exclude_hour_to=2'
   return (
     await fetch(
-      `${BASE_PATH}/gtfs_rides_agg/group_by?date_from=${dateFromStr}&date_to=${dateToStr}&group_by=${groupBy}`,
+      `${BASE_PATH}/gtfs_rides_agg/group_by?date_from=${dateFromStr}&date_to=${dateToStr}&group_by=${groupBy}&${excludes}`,
     )
   ).json()
 }

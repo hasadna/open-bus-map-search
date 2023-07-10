@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { MapContainer, useMap, Marker, Popup, TileLayer } from 'react-leaflet'
+import { MapContainer, useMap, Marker, Popup, TileLayer, Polyline } from 'react-leaflet'
 // import https://www.svgrepo.com/show/113626/bus-front.svg
 import busIcon from '../resources/bus-front.svg'
 import MarkerClusterGroup from 'react-leaflet-cluster'
@@ -10,8 +10,9 @@ import { DivIcon } from 'leaflet'
 import useVehicleLocations from 'src/api/useVehicleLocations'
 import { VehicleLocation } from 'src/model/vehicleLocation'
 import getAgencyList, { Agency } from 'src/api/agencyList'
+import { getColorByHashString } from './dashboard/OperatorHbarChart/utils'
 
-interface Point {
+export interface Point {
   loc: [number, number]
   color: number
   operator?: number
@@ -20,7 +21,14 @@ interface Point {
   recorded_at_time?: number
 }
 
-const colorIcon = ({
+interface Path {
+  locations: VehicleLocation[]
+  lineRef: number
+  operator: number
+  vehicleRef: number
+}
+
+export const colorIcon = ({
   color,
   name,
   rotate = 0,
@@ -57,7 +65,7 @@ function formatTime(time: any) {
   return date
 }
 
-function numberToColorHsl(i: number, max: number) {
+export function numberToColorHsl(i: number, max: number) {
   const ratio = i / max
   // 0 - black. 1 - red
   const hue = 0
@@ -78,11 +86,12 @@ export default function RealtimeMapPage() {
     from: formatTime(from),
     to: formatTime(to),
   })
+  console.log(locations)
 
   const loaded = locations.length
 
   const positions = useMemo(() => {
-    let pos = locations.map<Point>((location) => ({
+    const pos = locations.map<Point>((location) => ({
       loc: [location.lat, location.lon],
       color: location.velocity,
       operator: location.siri_route__operator_ref,
@@ -90,16 +99,38 @@ export default function RealtimeMapPage() {
       recorded_at_time: new Date(location.recorded_at_time).getTime(),
       point: location,
     }))
+
     // keep only the latest point for each vehicle
-    pos = pos.filter((p) =>
-      pos.every(
-        (p2) =>
-          p2.point!.siri_ride__vehicle_ref !== p.point!.siri_ride__vehicle_ref ||
-          p2.recorded_at_time! <= p.recorded_at_time!,
-      ),
-    )
+    // pos = pos.filter((p) =>
+    //   pos.every(
+    //     (p2) =>
+    //       p2.point!.siri_ride__vehicle_ref !== p.point!.siri_ride__vehicle_ref ||
+    //       p2.recorded_at_time! <= p.recorded_at_time!,
+    //   ),
+    // )
     return pos
   }, [locations])
+
+  const paths = useMemo(
+    () =>
+      locations.reduce((arr: Path[], loc) => {
+        const line = arr.find((line) => line.vehicleRef === loc.siri_ride__vehicle_ref)
+        if (!line) {
+          arr.push({
+            locations: [loc],
+            lineRef: loc.siri_route__line_ref,
+            operator: loc.siri_route__operator_ref,
+            vehicleRef: loc.siri_ride__vehicle_ref,
+          })
+        } else {
+          line.locations.push(loc)
+        }
+        return arr
+      }, []),
+    [locations],
+  )
+
+  console.log(paths)
 
   return (
     <div className="map-container">
@@ -158,13 +189,22 @@ export default function RealtimeMapPage() {
             url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
           />
           <Markers positions={positions} />
+          {paths.map((path) => (
+            <Polyline
+              key={path.vehicleRef}
+              pathOptions={{
+                color: getColorByHashString(path.vehicleRef.toString()),
+              }}
+              positions={path.locations.map(({ lat, lon }) => [lat, lon])}
+            />
+          ))}
         </MapContainer>
       </div>
     </div>
   )
 }
 
-function Markers({ positions }: { positions: Point[] }) {
+export function Markers({ positions }: { positions: Point[] }) {
   const map = useMap()
   const [agencyList, setAgencyList] = useState<Agency[]>([])
 

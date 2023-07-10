@@ -48,7 +48,7 @@ class LocationObservable {
       url += `&${config.fromField}=${formatTime(from)}&${config.toField}=${formatTime(to)}&limit=${
         config.limit * i
       }&offset=${offset}`
-      if (lineRef) url += `$&${config.lineRefField}=${lineRef}`
+      if (lineRef) url += `&${config.lineRefField}=${lineRef}`
 
       const response = await fetch(url)
       const data = await response.json()
@@ -118,14 +118,17 @@ export default function useVehicleLocations({
   from,
   to,
   lineRef,
+  splitMinutes: split = true,
 }: {
   from: Dateable
   to: Dateable
   lineRef?: number
+  splitMinutes?: boolean
 }) {
   const [locations, setLocations] = useState<VehicleLocation[]>([])
   useEffect(() => {
-    const unmounts = getMinutesInRange(from, to).map(({ from, to }) =>
+    const range = split ? getMinutesInRange(from, to) : [{ from, to }]
+    const unmounts = range.map(({ from, to }) =>
       getLocations({
         from,
         to,

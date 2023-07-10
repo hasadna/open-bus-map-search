@@ -5,6 +5,11 @@ import styled from 'styled-components'
 import { Timeline } from 'src/pages/components/timeline/Timeline'
 import { PointType } from 'src/pages/components/timeline/TimelinePoint'
 import { HorizontalLine } from 'src/pages/components/timeline/HorizontalLine'
+import {
+  GtfsRideStopPydanticModel,
+  SiriVehicleLocationWithRelatedPydanticModel,
+} from 'open-bus-stride-client'
+import { Coordinates } from 'src/model/location'
 
 const COLUMN_WIDTH = 160
 export const PADDING = 10
@@ -29,19 +34,21 @@ const StyledTimeline = styled(Timeline)`
 type TimelineBoardProps = {
   className?: string
   target: Moment
-  gtfsTimes: Date[]
-  siriTimes: Date[]
+  gtfsTimes: GtfsRideStopPydanticModel[]
+  siriTimes: (SiriVehicleLocationWithRelatedPydanticModel & Coordinates)[]
 }
 
 export const TimelineBoard = ({ className, target, gtfsTimes, siriTimes }: TimelineBoardProps) => {
-  const gtfsRange = getRange(gtfsTimes)
-  const siriRange = getRange(siriTimes)
+  const gtfsDates = gtfsTimes.map((t) => t.arrivalTime!)
+  const siriDates = siriTimes.map((t) => t.recordedAtTime!)
+  const gtfsRange = getRange(gtfsDates)
+  const siriRange = getRange(siriDates)
 
-  const lowerBound = minDate(gtfsTimes[0] ?? Date.now(), siriTimes[0] ?? Date.now())
+  const lowerBound = minDate(gtfsDates[0] ?? Date.now(), siriDates[0] ?? Date.now())
   const totalRange = Math.max(gtfsRange, siriRange)
   const totalHeight = 400 + (Math.max(gtfsTimes.length, siriTimes.length) / MAX_HITS_COUNT) * 400
 
-  const allTimestamps: Set<Date> = new Set([target.toDate(), ...gtfsTimes, ...siriTimes])
+  const allTimestamps: Set<Date> = new Set([target.toDate(), ...gtfsDates, ...siriDates])
 
   const timestampToTop = useCallback(
     (timestamp: Moment) => {

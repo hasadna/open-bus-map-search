@@ -2,6 +2,11 @@ import { BusRoute } from './busRoute'
 import { BusStop } from './busStop'
 import { createContext, Dispatch } from 'react'
 import moment from 'moment'
+import {
+  GtfsRideStopPydanticModel,
+  SiriVehicleLocationWithRelatedPydanticModel,
+} from 'open-bus-stride-client'
+import { Coordinates } from './location'
 
 export type PageSearchState = {
   timestamp: number
@@ -22,6 +27,6 @@ export type TimelinePageState = {
   stops?: BusStop[]
   stopKey?: string
   stopName?: string
-  gtfsHitTimes?: Date[]
-  siriHitTimes?: Date[]
+  gtfsHitTimes?: GtfsRideStopPydanticModel[]
+  siriHitTimes?: SiriVehicleLocationWithRelatedPydanticModel & Coordinates[]
 }
