@@ -16,22 +16,17 @@ import { TEXTS } from 'src/resources/texts'
 import StopSelector from 'src/pages/components/StopSelector'
 import { Spin } from 'antd'
 import { getSiriStopHitTimesAsync } from 'src/api/siriService'
-import { TimelineBoard } from 'src/pages/components/timeline/TimelineBoard'
 import { log } from 'src/log'
 import { PageContainer } from './components/PageContainer'
 import { SearchContext, TimelinePageState } from '../model/pageState'
 import { NotFound } from './components/NotFound'
 import moment from 'moment'
 
-const StyledTimelineBoard = styled(TimelineBoard)`
-  margin-top: ${MARGIN_MEDIUM * 3}px;
-`
-
 const SingleLineMapPage = () => {
   const { search, setSearch } = useContext(SearchContext)
   const { operatorId, lineNumber, timestamp, routes, routeKey } = search
   const [state, setState] = useState<TimelinePageState>({})
-  const { stopKey, stopName, gtfsHitTimes, siriHitTimes, stops } = state
+  const { stopKey, stopName, stops } = state
 
   const [routesIsLoading, setRoutesIsLoading] = useState(false)
   const [stopsIsLoading, setStopsIsLoading] = useState(false)
@@ -174,18 +169,6 @@ const SingleLineMapPage = () => {
           <Spin />
         </Row>
       )}
-      {!hitsIsLoading &&
-        gtfsHitTimes !== undefined &&
-        siriHitTimes !== undefined &&
-        (gtfsHitTimes.length > 0 || siriHitTimes.length > 0 ? (
-          <StyledTimelineBoard
-            target={moment(timestamp)}
-            gtfsTimes={gtfsHitTimes}
-            siriTimes={siriHitTimes}
-          />
-        ) : (
-          <NotFound>{TEXTS.hits_not_found}</NotFound>
-        ))}
     </PageContainer>
   )
 }

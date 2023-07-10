@@ -50,7 +50,7 @@ const PAGES = [
     key: '/map',
   },
   {
-    label: 'fgvjvgf',
+    label: TEXTS.singleline_map_page_title,
     key: '/single-line-map',
   },
 ]
