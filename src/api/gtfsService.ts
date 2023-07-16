@@ -78,7 +78,7 @@ export async function getStopsForRouteAsync(
   )
 }
 
-export async function getGtfsStopHitTimesAsync(stop: BusStop, timestamp: Moment): Promise<Date[]> {
+export async function getGtfsStopHitTimesAsync(stop: BusStop, timestamp: Moment) {
   const targetStartTime = moment(timestamp).subtract(stop.minutesFromRouteStartTime, 'minutes')
   log('looking for rides starting around time', {
     stopId: stop.stopId,
@@ -110,5 +110,5 @@ export async function getGtfsStopHitTimesAsync(stop: BusStop, timestamp: Moment)
     gtfsRideIds: rideIds,
     gtfsStopIds: stop.stopId.toString(),
   })
-  return stopHits.map((hit) => hit.arrivalTime!).sort()
+  return stopHits.sort((hit1, hit2) => +hit1.arrivalTime! - +hit2.arrivalTime!)
 }

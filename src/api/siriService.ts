@@ -26,11 +26,7 @@ async function getRidesAsync(route: BusRoute, stop: BusStop, timestamp: moment.M
   })
 }
 
-export async function getSiriStopHitTimesAsync(
-  route: BusRoute,
-  stop: BusStop,
-  timestamp: Moment,
-): Promise<Date[]> {
+export async function getSiriStopHitTimesAsync(route: BusRoute, stop: BusStop, timestamp: Moment) {
   log('looking for rides arriving at stop around time', {
     route,
     stopId: stop.stopId,
@@ -80,5 +76,5 @@ export async function getSiriStopHitTimesAsync(
   const closestInTimeHits = stopHits
     .sort((a, b) => diffFromTargetStart(a) - diffFromTargetStart(b))
     .slice(0, MAX_HITS_COUNT)
-  return closestInTimeHits.map((value) => value.recordedAtTime!).sort()
+  return closestInTimeHits.sort((a, b) => a.recordedAtTime!.getTime() - b.recordedAtTime!.getTime())
 }

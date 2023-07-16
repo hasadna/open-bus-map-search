@@ -4,6 +4,7 @@ export const TEXTS = {
   timeline_page_title: 'לוח זמנים היסטורי',
   realtime_map_page_title: 'מפה בזמן אמת',
   gaps_page_title: 'נסיעות שלא יצאו',
+  singleline_map_page_title: 'מפה לפי קו',
   choose_datetime: 'תאריך ושעה',
   choose_operator: 'חברה מפעילה',
   operator_placeholder: 'לדוגמא: דן',

@@ -24,7 +24,7 @@ const DashboardPage = () => {
   const [startDate, setStartDate] = useDate(now.clone().subtract(7, 'days'))
   const [endDate, setEndDate] = useDate(now.clone())
 
-  const hbarData = useGroupBy({
+  const groupByOperatorData = useGroupBy({
     dateTo: endDate,
     dateFrom: startDate,
     groupBy: 'operator_ref',
@@ -34,6 +34,17 @@ const DashboardPage = () => {
     total: item.total_planned_rides,
     actual: item.total_actual_rides,
   }))
+
+  // const groupByLineData = useGroupBy({
+  //   dateTo: endDate,
+  //   dateFrom: startDate,
+  //   groupBy: 'operator_ref,line_ref',
+  // }).map((item) => ({
+  //   id: item.operator_ref?.agency_id || 'Unknown',
+  //   name: item.operator_ref?.agency_name || 'Unknown',
+  //   total: item.total_planned_rides,
+  //   actual: item.total_actual_rides,
+  // }))
 
   const graphData = useGroupBy({
     dateTo: endDate,
@@ -64,11 +75,11 @@ const DashboardPage = () => {
       <div className="widgets-container">
         <div className="widget">
           <h2 className="title">{TEXTS.dashboard_page_title}</h2>
-          <OperatorHbarChart operators={hbarData} />
+          <OperatorHbarChart operators={groupByOperatorData} />
         </div>
         <div className="widget">
           <h2 className="title">{TEXTS.dashboard_page_negative_title}</h2>
-          <OperatorHbarChart operators={hbarData} complement />
+          <OperatorHbarChart operators={groupByOperatorData} complement />
         </div>
         <div className="widget">
           <h2 className="title">{TEXTS.dashboard_page_graph_title}</h2>

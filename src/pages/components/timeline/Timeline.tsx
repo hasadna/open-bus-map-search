@@ -11,6 +11,11 @@ import {
   pointTypeToDescription,
 } from 'src/pages/components/timeline/TimelinePoint'
 import { PADDING } from 'src/pages/components/timeline/TimelineBoard'
+import {
+  GtfsRideStopPydanticModel,
+  SiriVehicleLocationWithRelatedPydanticModel,
+} from 'open-bus-stride-client'
+import { Coordinates } from 'src/model/location'
 
 const Line = styled.div<{ totalHeight: number }>`
   height: ${({ totalHeight }) => totalHeight + PADDING * 3}px;
@@ -34,7 +39,11 @@ const Title = styled.span<{ pointType: PointType }>`
 
 type TimelineProps = {
   className?: string
-  timestamps: Date[]
+  // timestamps can be both siri and gtfs timestamps
+  timestamps:
+    | GtfsRideStopPydanticModel[]
+    | (SiriVehicleLocationWithRelatedPydanticModel & Coordinates)[]
+    | Date[]
   totalHeight: number
   pointType: PointType
   timestampToTop: (timestamp: Moment) => number
@@ -53,14 +62,24 @@ export const Timeline = ({
       <Line totalHeight={totalHeight} />
       <Point top={-POINT_SIZE} />
       <Point top={2 * PADDING + totalHeight + POINT_SIZE} />
-      {timestamps.map((timestamp) => (
-        <LabeledPoint
-          key={timestamp.toString()}
-          top={timestampToTop(moment(timestamp))}
-          type={pointType}
-          timestamp={moment(timestamp)}
-        />
-      ))}
+      {timestamps.map((timestamp) => {
+        const t =
+          (timestamp as GtfsRideStopPydanticModel).arrivalTime ??
+          (timestamp as SiriVehicleLocationWithRelatedPydanticModel & Coordinates)
+            .recordedAtTime! ??
+          (timestamp as Date)
+        console.log(t, timestamp)
+
+        return (
+          <LabeledPoint
+            key={t.toString()}
+            top={timestampToTop(moment(t))}
+            type={pointType}
+            timestamp={moment(t)}
+          />
+        )
+      })}
+      )
     </Container>
   )
 }
