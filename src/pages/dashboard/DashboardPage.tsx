@@ -23,6 +23,7 @@ function useDate(initialValue: Moment) {
 const DashboardPage = () => {
   const [startDate, setStartDate] = useDate(now.clone().subtract(7, 'days'))
   const [endDate, setEndDate] = useDate(now.clone())
+  const [groupByHour, setGroupByHour] = React.useState<boolean>(false)
 
   const groupByOperatorData = useGroupBy({
     dateTo: endDate,
@@ -49,12 +50,15 @@ const DashboardPage = () => {
   const graphData = useGroupBy({
     dateTo: endDate,
     dateFrom: startDate,
-    groupBy: 'gtfs_route_date,operator_ref',
+    groupBy: groupByHour ? 'operator_ref,gtfs_route_hour' : 'operator_ref,gtfs_route_date',
   }).map((item) => ({
     id: item.operator_ref?.agency_id || 'Unknown',
     name: item.operator_ref?.agency_name || 'Unknown',
+    current: item.total_actual_rides,
+    max: item.total_planned_rides,
     percent: (item.total_actual_rides / item.total_planned_rides) * 100,
     gtfs_route_date: item.gtfs_route_date,
+    gtfs_route_hour: item.gtfs_route_hour,
   }))
 
   return (
@@ -71,6 +75,14 @@ const DashboardPage = () => {
           onChange={(data) => setEndDate(data)}
           format="DD/MM/YYYY"
         />
+        <label className="group-by-hour">
+          <input
+            type="checkbox"
+            checked={groupByHour}
+            onChange={(e) => setGroupByHour(e.target.checked)}
+          />
+          Group by hour
+        </label>
       </div>
       <div className="widgets-container">
         <div className="widget">

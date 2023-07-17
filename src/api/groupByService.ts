@@ -3,11 +3,18 @@ import { BASE_PATH } from './apiConfig'
 import agencyList from 'open-bus-stride-client/agencies/agencyList'
 import { Moment } from 'moment'
 
-type groupByField = 'gtfs_route_date' | 'operator_ref' | 'day_of_week' | 'line_ref' | 'operator_ref'
+type groupByField =
+  | 'gtfs_route_date'
+  | 'operator_ref'
+  | 'day_of_week'
+  | 'line_ref'
+  | 'operator_ref'
+  | 'gtfs_route_hour'
 type groupByFields =
   | groupByField
   | `${groupByField},${groupByField}`
   | `${groupByField},${groupByField},${groupByField}`
+  | `${groupByField},${groupByField},${groupByField},${groupByField}`
 
 type Identity<T> = { [P in keyof T]: T[P] }
 type Replace<T, K extends keyof T, TReplace> = Identity<
@@ -31,6 +38,7 @@ example response
 */
 export type GroupByResponse = {
   gtfs_route_date: string
+  gtfs_route_hour: string
   operator_ref: number
   day_of_week: string
   total_routes: number
