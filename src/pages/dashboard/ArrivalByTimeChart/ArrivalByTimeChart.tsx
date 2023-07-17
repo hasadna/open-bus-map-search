@@ -31,8 +31,11 @@ export default function ArrivalByTimeChart({
   data: {
     id: string
     name: string
+    current: number
+    max: number
     percent: number
     gtfs_route_date: string
+    gtfs_route_hour: string
   }[]
 }) {
   return (
@@ -42,7 +45,9 @@ export default function ArrivalByTimeChart({
           <h3 className="title">{group[0].name}</h3>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart
-              data={group}
+              data={group
+                .sort((a, b) => (a.gtfs_route_date > b.gtfs_route_date ? 1 : -1))
+                .sort((a, b) => (a.gtfs_route_hour > b.gtfs_route_hour ? 1 : -1))}
               margin={{
                 top: 5,
                 right: 30,
@@ -52,7 +57,31 @@ export default function ArrivalByTimeChart({
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="gtfs_route_date" />
               <YAxis />
-              <Tooltip />
+              <Tooltip
+                content={({ payload }) =>
+                  payload?.[0] && (
+                    <>
+                      <ul>
+                        <li>
+                          <span className="label">תאריך: </span>
+                          <span className="value">
+                            {payload![0].payload.gtfs_route_date ||
+                              payload![0].payload.gtfs_route_hour}
+                          </span>
+                        </li>
+                        <li>
+                          <span className="label">ביצוע: </span>
+                          <span className="value">{payload![0].payload.current}</span>
+                        </li>
+                        <li>
+                          <span className="label">תכנון: </span>
+                          <span className="value">{payload![0].payload.max}</span>
+                        </li>
+                      </ul>
+                    </>
+                  )
+                }
+              />
               <Legend />
               <Line type="monotone" dataKey="percent" stroke="#8884d8" activeDot={{ r: 8 }} />
             </LineChart>
