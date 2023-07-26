@@ -8,6 +8,7 @@ import { TEXTS } from 'src/resources/texts'
 import ArrivalByTimeChart from './ArrivalByTimeChart/ArrivalByTimeChart'
 import { DatePicker } from 'antd'
 import moment, { Moment } from 'moment'
+import LinesHbarChart from './LineHbarChart/LinesHbarChart'
 
 const now = moment()
 
@@ -31,8 +32,20 @@ const DashboardPage = () => {
     dateFrom: startDate,
     groupBy: 'operator_ref',
   }).map((item) => ({
-    id: item.operator_ref?.agency_id || 'Unknown',
+    id: `${item.line_ref}|${item.operator_ref}` || 'Unknown',
     name: item.operator_ref?.agency_name || 'Unknown',
+    total: item.total_planned_rides,
+    actual: item.total_actual_rides,
+  }))
+  const groupByLineData = useGroupBy({
+    dateTo: endDate,
+    dateFrom: startDate,
+    groupBy: 'operator_ref,line_ref',
+  }).map((item) => ({
+    id: item.operator_ref?.agency_id || 'Unknown',
+    operator_name: item.operator_ref?.agency_name || 'Unknown',
+    short_name: item.route_short_name,
+    long_name: item.route_long_name,
     total: item.total_planned_rides,
     actual: item.total_actual_rides,
   }))
@@ -102,8 +115,8 @@ const DashboardPage = () => {
           <OperatorHbarChart operators={groupByOperatorData} />
         </div>
         <div className="widget">
-          <h2 className="title">{TEXTS.dashboard_page_negative_title}</h2>
-          <OperatorHbarChart operators={groupByOperatorData} complement />
+          <h2 className="title">{TEXTS.worst_lines_page_title}</h2>
+          <LinesHbarChart lines={groupByLineData} operators_whitelist={['אלקטרה אפיקים']} />
         </div>
         <div className="widget">
           <h2 className="title">{TEXTS.dashboard_page_graph_title}</h2>
