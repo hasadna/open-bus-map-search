@@ -77,6 +77,16 @@ export default function ArrivalByTimeChart({
                           <span className="label">תכנון: </span>
                           <span className="value">{payload![0].payload.max}</span>
                         </li>
+                        <li>
+                          <span className="label">דיוק: </span>
+                          <span className="value">
+                            {(
+                              (payload![0].payload.current / payload![0].payload.max) *
+                              100
+                            ).toFixed(2)}
+                            %
+                          </span>
+                        </li>
                       </ul>
                     </>
                   )
