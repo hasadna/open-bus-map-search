@@ -34,6 +34,9 @@ export const TEXTS = {
   checkbox_only_gaps: 'רק פערים',
   dashboard_page_title: 'מפעילי תח"צ לפי קיום נסיעות מתוכננות',
   dashboard_page_negative_title: 'מפעילי תח"צ לפי אחוזי אי יציאה מסך הנסיעות  ',
+  dashboard_tooltip_content:
+    'על כל קו בישראל מוצמד GPS שמדווח את מיקום האוטובוס כל כמה רגעים.\n' +
+    'אז מה היא נסיעה שלא בוצעה? זאת נסיעה שתוכננה, אבל לא דווח שיצאה בנתוני הGPS. תוכלו לראות אותה באפליקציה למשל, אבל כשתחכו בתחנה, היא לעולם לא תגיע',
   rides_planned: 'נסיעות שתוכננו',
   rides_actual: 'נסיעות שיצאו',
   dashboard_page_graph_title: 'אחוזי יציאה מסך הנסיעות לפי זמן',

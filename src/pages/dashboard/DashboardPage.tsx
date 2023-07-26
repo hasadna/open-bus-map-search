@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react'
 import { useGroupBy } from 'src/api/groupByService'
 import { PageContainer } from '../components/PageContainer'
+import Tooltip from '../components/utils/tooltip/Tooltip'
 import OperatorHbarChart from './OperatorHbarChart/OperatorHbarChart'
 import './DashboardPage.scss'
 import { TEXTS } from 'src/resources/texts'
@@ -86,7 +87,18 @@ const DashboardPage = () => {
       </div>
       <div className="widgets-container">
         <div className="widget">
-          <h2 className="title">{TEXTS.dashboard_page_title}</h2>
+          <h2 className="title">
+            {TEXTS.dashboard_page_title}
+            <Tooltip
+              text={TEXTS.dashboard_tooltip_content.split('\n').map((row) => (
+                <>
+                  {row}
+                  <br />
+                </>
+              ))}>
+              <span className="tooltip-icon">i</span>
+            </Tooltip>
+          </h2>
           <OperatorHbarChart operators={groupByOperatorData} />
         </div>
         <div className="widget">
