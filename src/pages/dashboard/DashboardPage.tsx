@@ -44,7 +44,7 @@ const DashboardPage = () => {
   }).map((item) => ({
     id: `${item.line_ref}|${item.operator_ref?.agency_id}` || 'Unknown',
     operator_name: item.operator_ref?.agency_name || 'Unknown',
-    short_name: item.route_short_name,
+    short_name: JSON.parse(item.route_short_name)[0],
     long_name: item.route_long_name,
     total: item.total_planned_rides,
     actual: item.total_actual_rides,
@@ -105,7 +105,10 @@ const DashboardPage = () => {
         </div>
         <div className="widget">
           <h2 className="title">{TEXTS.worst_lines_page_title}</h2>
-          <LinesHbarChart lines={groupByLineData} operators_whitelist={['אלקטרה אפיקים']} />
+          <LinesHbarChart
+            lines={groupByLineData}
+            operators_whitelist={['אלקטרה אפיקים', 'דן', 'מטרופולין', 'קווים', 'אגד']}
+          />
         </div>
         <div className="widget">
           <h2 className="title">{TEXTS.dashboard_page_graph_title}</h2>

@@ -1,25 +1,11 @@
 import React from 'react'
 import { TEXTS } from 'src/resources/texts'
-import './linesHbarChart.scss'
 import { getColorByHashString } from './utils'
 import cn from 'classnames'
-
-const colorsByCompannies: { [index: string]: string } = {
-  'אגד תעבורה': '#2f9250',
-  אגד: '#008479',
-  'אלקטרה אפיקים': '#9ACA3C',
-  קווים: '#03296A',
-  סופרבוס: '#164C8F',
-  דן: '#205CAB',
-  'נתיב אקספרס': '#F2BD00',
-  מטרופולין: '#FF8500',
-}
+import { HbarChart } from '../HbarChart/HbarChart'
+import { getColorName } from '../OperatorHbarChart/OperatorHbarChart'
 
 const numberFormatter = new Intl.NumberFormat('he-IL')
-
-function getColorName(name: string) {
-  return colorsByCompannies[name] || getColorByHashString(name)
-}
 
 function getFirstNumber(input: string): string | null {
   const regex = /\d+/g
@@ -50,56 +36,24 @@ function LinesHbarChart({
 
   const rows = lines.map((o, i) => ({
     width: width[i],
-    color: getColorName(o.short_name),
     percent: percents[i],
+    name: `${o.short_name} | ${o.operator_name} | ${o.long_name}`,
+    color: getColorName(o.operator_name),
     ...o,
   }))
 
   return (
-    <div className="lineHbarChart chart">
-      {rows
-        .sort((a, b) => a.percent - b.percent)
+    <HbarChart
+      entries={rows
+        .sort((a, b) => a.actual / a.total - b.actual / b.total)
+        .filter((line) => line.total > 10)
         .filter(
-          (line) =>
-            !operators_whitelist.length ||
-            (operators_whitelist.includes(line.operator_name) && line.percent < 90),
+          (line) => !operators_whitelist.length || operators_whitelist.includes(line.operator_name),
         )
-        .slice(0, 100)
-        .map((line) => {
-          return (
-            !!line.percent && (
-              <div className="line" key={line.id}>
-                <div
-                  className="operatorName"
-                  style={{ backgroundColor: getColorName(line.operator_name) }}>
-                  {`${getFirstNumber(line.short_name)} | ${line.operator_name}`}
-                </div>
-                <div className="operatorBar">
-                  <div className="operatorBarTotal">
-                    <div
-                      className={cn('operatorBarActual', { small: line.percent < 20 })}
-                      style={{
-                        width: `${line.width}%`,
-                        backgroundColor: getColorName(line.operator_name),
-                      }}>
-                      {line.percent.toFixed(2)}%
-                    </div>
-                  </div>
-                </div>
-                <div className="overlay">
-                  <div className="operatorTotal">{line.long_name}</div>
-                  <div className="operatorTotal">
-                    {TEXTS.rides_planned}: {numberFormatter.format(line.total)}
-                  </div>
-                  <div className="operatorActual">
-                    {TEXTS.rides_actual}: {numberFormatter.format(line.actual)}
-                  </div>
-                </div>
-              </div>
-            )
-          )
-        })}
-    </div>
+        // .filter((line) => line.actual / line.total > 0.4)
+        .slice(0, 200)}
+      complement={complement}
+    />
   )
 }
 

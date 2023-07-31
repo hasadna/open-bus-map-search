@@ -1,11 +1,11 @@
-.lineHbarChart {
-.line {
+.HbarChart {
+.entry {
     display: flex;
     flex-direction: row;
     margin-bottom: 31px;
     position: relative;
 
-    .operatorName {
+    .entryName {
         width: 16%;
         border-left: 1px solid white;
         color: white;
@@ -17,11 +17,11 @@
         box-sizing: border-box;
     }
 
-        .operatorBar {
+        .entryBar {
         flex-grow: 1;
 
-        .operatorBarTotal {            
-            .operatorBarActual {
+        .entryBarTotal {            
+            .entryBarActual {
                 text-align: left;
                 font-size: 28px;
                 font-weight: 500;
