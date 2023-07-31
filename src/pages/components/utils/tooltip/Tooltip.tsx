@@ -10,7 +10,7 @@ const Tooltip = ({ text, children }: TooltipProps) => {
   return (
     <div className="tooltip-container">
       <div className="tooltip-trigger">{children}</div>
-      <div className="tooltip">{text}</div>
+      <div className="generic-tooltip">{text}</div>
     </div>
   )
 }

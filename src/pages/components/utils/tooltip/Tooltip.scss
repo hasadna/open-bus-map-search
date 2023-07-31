@@ -28,7 +28,7 @@
   background-color: #333;
 }
 
-.tooltip {
+.generic-tooltip {
     position: absolute;
     top: 50%;
     left: -5px;
@@ -44,11 +44,11 @@
     width: 500px;
 }
 
-.tooltip-container:hover .tooltip {
+.tooltip-container:hover .generic-tooltip {
   opacity: 1;
 }
 
-.tooltip::after {
+.generic-tooltip::after {
     content: '';
     top: 50%;
     left: 50%;
