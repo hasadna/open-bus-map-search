@@ -32,7 +32,7 @@ const DashboardPage = () => {
     dateFrom: startDate,
     groupBy: 'operator_ref',
   }).map((item) => ({
-    id: `${item.line_ref}|${item.operator_ref}` || 'Unknown',
+    id: item.operator_ref?.agency_id || 'Unknown',
     name: item.operator_ref?.agency_name || 'Unknown',
     total: item.total_planned_rides,
     actual: item.total_actual_rides,
@@ -42,7 +42,7 @@ const DashboardPage = () => {
     dateFrom: startDate,
     groupBy: 'operator_ref,line_ref',
   }).map((item) => ({
-    id: item.operator_ref?.agency_id || 'Unknown',
+    id: `${item.line_ref}|${item.operator_ref?.agency_id}` || 'Unknown',
     operator_name: item.operator_ref?.agency_name || 'Unknown',
     short_name: item.route_short_name,
     long_name: item.route_long_name,
