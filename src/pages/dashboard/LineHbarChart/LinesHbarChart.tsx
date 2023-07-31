@@ -50,7 +50,7 @@ function LinesHbarChart({
         .filter(
           (line) => !operators_whitelist.length || operators_whitelist.includes(line.operator_name),
         )
-        // .filter((line) => line.actual / line.total > 0.4)
+        .filter((line) => line.actual / line.total > 0.4)
         .slice(0, 200)}
       complement={complement}
     />
