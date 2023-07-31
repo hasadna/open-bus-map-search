@@ -24,7 +24,7 @@ function useDate(initialValue: Moment) {
 
 const DashboardPage = () => {
   const [startDate, setStartDate] = useDate(now.clone().subtract(7, 'days'))
-  const [endDate, setEndDate] = useDate(now.clone())
+  const [endDate, setEndDate] = useDate(now.clone().subtract(1, 'day'))
   const [groupByHour, setGroupByHour] = React.useState<boolean>(false)
 
   const groupByOperatorData = useGroupBy({
