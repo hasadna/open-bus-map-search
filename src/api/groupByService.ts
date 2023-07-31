@@ -8,7 +8,6 @@ type groupByField =
   | 'operator_ref'
   | 'day_of_week'
   | 'line_ref'
-  | 'operator_ref'
   | 'gtfs_route_hour'
 type groupByFields =
   | groupByField
@@ -40,10 +39,13 @@ export type GroupByResponse = {
   gtfs_route_date: string
   gtfs_route_hour: string
   operator_ref: number
+  line_ref: number
   day_of_week: string
   total_routes: number
   total_planned_rides: number
   total_actual_rides: number
+  route_short_name: string
+  route_long_name: string
 }[]
 
 async function groupbyAsync({
