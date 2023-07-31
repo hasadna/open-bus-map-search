@@ -41,7 +41,7 @@
         }
     }
 
-    .tooltip {
+    .overlay {
         $tooltipBackground: rgba(black, 0.5);
         $tooltipShadow: 0 0 10px 0 $tooltipBackground;
         position: absolute;
@@ -63,7 +63,7 @@
     }
 
     &:hover {
-        .tooltip {
+        .overlay {
             opacity: 1;
         }
     }

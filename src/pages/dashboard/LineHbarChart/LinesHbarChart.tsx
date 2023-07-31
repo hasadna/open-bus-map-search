@@ -86,7 +86,7 @@ function LinesHbarChart({
                     </div>
                   </div>
                 </div>
-                <div className="tooltip">
+                <div className="overlay">
                   <div className="operatorTotal">{line.long_name}</div>
                   <div className="operatorTotal">
                     {TEXTS.rides_planned}: {numberFormatter.format(line.total)}

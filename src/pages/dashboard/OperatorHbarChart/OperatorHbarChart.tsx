@@ -71,7 +71,7 @@ function OperatorHbarChart({
                     </div>
                   </div>
                 </div>
-                <div className="tooltip">
+                <div className="overlay">
                   <div className="operatorTotal">
                     {TEXTS.rides_planned}: {numberFormatter.format(operator.total)}
                   </div>
