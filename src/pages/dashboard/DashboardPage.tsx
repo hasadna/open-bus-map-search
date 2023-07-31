@@ -50,17 +50,6 @@ const DashboardPage = () => {
     actual: item.total_actual_rides,
   }))
 
-  // const groupByLineData = useGroupBy({
-  //   dateTo: endDate,
-  //   dateFrom: startDate,
-  //   groupBy: 'operator_ref,line_ref',
-  // }).map((item) => ({
-  //   id: item.operator_ref?.agency_id || 'Unknown',
-  //   name: item.operator_ref?.agency_name || 'Unknown',
-  //   total: item.total_planned_rides,
-  //   actual: item.total_actual_rides,
-  // }))
-
   const graphData = useGroupBy({
     dateTo: endDate,
     dateFrom: startDate,

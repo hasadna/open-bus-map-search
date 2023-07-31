@@ -33,6 +33,7 @@ function LinesHbarChart({
   operators_whitelist = [],
 }: {
   lines: {
+    id: string
     short_name: string
     long_name: string
     operator_name: string
@@ -63,11 +64,11 @@ function LinesHbarChart({
             !operators_whitelist.length ||
             (operators_whitelist.includes(line.operator_name) && line.percent < 90),
         )
-        .slice(0, 10)
+        .slice(0, 100)
         .map((line) => {
           return (
             !!line.percent && (
-              <div className="line" key={getFirstNumber(line.short_name)}>
+              <div className="line" key={line.id}>
                 <div
                   className="operatorName"
                   style={{ backgroundColor: getColorName(line.operator_name) }}>

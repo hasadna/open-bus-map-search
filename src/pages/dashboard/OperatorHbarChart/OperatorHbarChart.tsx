@@ -15,6 +15,8 @@ const colorsByCompannies: { [index: string]: string } = {
   מטרופולין: '#FF8500',
 }
 
+const excludeOperators = [/רכבת ישראל/, /^מוניות.*/, /^ירושלים-.*/, /^ירושלים -.*/]
+
 const numberFormatter = new Intl.NumberFormat('he-IL')
 
 function getColorName(name: string) {
@@ -44,6 +46,10 @@ function OperatorHbarChart({
     <div className="operatorHbarChart chart">
       {rows
         .sort((a, b) => b.total - a.total)
+        .filter((operator) => {
+          // Check if the string matches any of the patterns
+          return !excludeOperators.some((pattern) => pattern.test(operator.name))
+        })
         .map((operator) => {
           return (
             !!operator.percent && (
