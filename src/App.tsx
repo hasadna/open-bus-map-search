@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useEffect } from 'react'
 import 'antd/dist/antd.css'
 import './App.scss'
 import TimelinePage from 'src/pages/TimelinePage'
@@ -16,6 +16,8 @@ import { useSessionStorage } from 'usehooks-ts'
 import Header from './pages/components/header/Header'
 import RealtimeMapPage from './pages/RealtimeMapPage'
 import SingleLineMapPage from './pages/SingleLineMapPage'
+import { useLocation } from 'react-router-dom'
+import ReactGA from 'react-ga'
 
 const { Content } = Layout
 
@@ -56,6 +58,12 @@ const PAGES = [
 ]
 
 const App = () => {
+  const location = useLocation()
+
+  useEffect(() => {
+    ReactGA.pageview(location.pathname + location.search)
+  }, [location])
+
   const [search, setSearch] = useSessionStorage<PageSearchState>('search', {
     timestamp: moment().valueOf(),
   })
