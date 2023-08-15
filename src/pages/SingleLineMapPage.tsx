@@ -179,7 +179,6 @@ const SingleLineMapPage = () => {
           <Spin />
         </Row>
       )}
-      {!hitsIsLoading && <pre>{JSON.stringify(locations, null, 2)}</pre>}
 
       <div className="map-info">
         <MapContainer center={position.loc} zoom={8} scrollWheelZoom={true}>
