@@ -61,7 +61,7 @@ const App = () => {
   const location = useLocation()
 
   useEffect(() => {
-    ReactGA.pageview(location.pathname + location.search)
+    ReactGA.send({ hitType: 'pageview', page: location.pathname + location.search })
   }, [location])
 
   const [search, setSearch] = useSessionStorage<PageSearchState>('search', {
