@@ -17,7 +17,7 @@ import Header from './pages/components/header/Header'
 import RealtimeMapPage from './pages/RealtimeMapPage'
 import SingleLineMapPage from './pages/SingleLineMapPage'
 import { useLocation } from 'react-router-dom'
-import ReactGA from 'react-ga'
+import ReactGA from 'react-ga4'
 
 const { Content } = Layout
 
