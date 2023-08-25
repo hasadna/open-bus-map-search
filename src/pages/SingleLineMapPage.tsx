@@ -25,6 +25,7 @@ import './Map.scss'
 import getAgencyList, { Agency } from 'src/api/agencyList'
 import { VehicleLocation } from 'src/model/vehicleLocation'
 import { getColorByHashString } from './dashboard/OperatorHbarChart/utils'
+import { Spin } from 'antd'
 
 interface Path {
   locations: VehicleLocation[]
@@ -69,11 +70,11 @@ const SingleLineMapPage = () => {
   )
   const selectedRouteIds = selectedRoute?.routeIds
 
-  const locations = useVehicleLocations({
+  const { locations, isLoading: locationsIsLoading } = useVehicleLocations({
     from: selectedRouteIds ? new Date(timestamp).setHours(0, 0, 0, 0) : 0,
     to: selectedRouteIds ? new Date(timestamp).setHours(23, 59, 59, 999) : 0,
     lineRef: selectedRoute?.lineRef ?? 0,
-    splitMinutes: false,
+    // splitMinutes: false, // uncomment to load everything in one request
   })
 
   const positions = useMemo(() => {
@@ -154,6 +155,7 @@ const SingleLineMapPage = () => {
         <FilterPositionsByStartTime
           positions={positions}
           setFilteredPositions={setFilteredPositions}
+          locationsIsLoading={locationsIsLoading}
         />
       )}
 
@@ -198,9 +200,11 @@ const SingleLineMapPage = () => {
 function FilterPositionsByStartTime({
   positions,
   setFilteredPositions,
+  locationsIsLoading,
 }: {
   positions: Point[]
   setFilteredPositions: (positions: Point[]) => void
+  locationsIsLoading: boolean
 }) {
   const [startTime, setStartTime] = useState<string>('00:00:00')
   const options = useMemo(() => {
@@ -229,6 +233,7 @@ function FilterPositionsByStartTime({
   return (
     <Row>
       <Label text={TEXTS.choose_start_time} />
+      {locationsIsLoading && <Spin size="small" />}
       <select onChange={(e) => setStartTime(e.target.value)} style={{ marginLeft: MARGIN_MEDIUM }}>
         {options.map((option) => (
           <option key={option.value} value={option.value}>

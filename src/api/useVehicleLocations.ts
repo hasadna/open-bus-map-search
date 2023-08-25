@@ -54,6 +54,9 @@ class LocationObservable {
       const data = await response.json()
       if (data.length === 0) {
         this.loading = false
+        this.#notifyObservers({
+          finished: true,
+        })
       } else {
         this.data = [...this.data, ...data]
         this.#notifyObservers(data)
@@ -63,15 +66,15 @@ class LocationObservable {
     this.#observers = []
   }
 
-  #notifyObservers(data: VehicleLocation[]) {
+  #notifyObservers(data: VehicleLocation[] | { finished: true }) {
     const observers = this.#observers
     console.log('notifying observers', observers.length)
     observers.forEach((observer) => observer(data))
   }
 
-  #observers: ((locations: VehicleLocation[]) => void)[] = []
+  #observers: ((locations: VehicleLocation[] | { finished: true }) => void)[] = []
 
-  observe(observer: (locations: VehicleLocation[]) => void) {
+  observe(observer: (locations: VehicleLocation[] | { finished: true }) => void) {
     if (this.loading) {
       this.#observers.push(observer)
     }
@@ -92,7 +95,7 @@ function getLocations({
   from: Dateable
   to: Dateable
   lineRef?: number
-  onUpdate: (locations: VehicleLocation[]) => void // the observer will be called every time with all the locations that were loaded
+  onUpdate: (locations: VehicleLocation[] | { finished: true }) => void // the observer will be called every time with all the locations that were loaded
 }) {
   const key = `${formatTime(from)}-${formatTime(to)}`
   if (!loadedLocations.has(key)) {
@@ -126,29 +129,43 @@ export default function useVehicleLocations({
   splitMinutes?: boolean
 }) {
   const [locations, setLocations] = useState<VehicleLocation[]>([])
+  const [isLoading, setIsLoading] = useState<boolean[]>([])
   useEffect(() => {
     const range = split ? getMinutesInRange(from, to) : [{ from, to }]
-    const unmounts = range.map(({ from, to }) =>
+    setIsLoading(range.map(() => true))
+    const unmounts = range.map(({ from, to }, i) =>
       getLocations({
         from,
         to,
         lineRef,
-        onUpdate: (locations) => {
-          setLocations((prev) =>
-            _.uniqBy(
-              [...prev, ...locations].sort((a, b) => a.id - b.id),
-              (loc) => loc.id,
-            ),
-          )
+        onUpdate: (data) => {
+          if ('finished' in data) {
+            setIsLoading((prev) => {
+              const newIsLoading = [...prev]
+              newIsLoading[i] = false
+              return newIsLoading
+            })
+          } else {
+            setLocations((prev) =>
+              _.uniqBy(
+                [...prev, ...data].sort((a, b) => a.id - b.id),
+                (loc) => loc.id,
+              ),
+            )
+          }
         },
       }),
     )
     return () => {
       setLocations([])
       unmounts.forEach((unmount) => unmount())
+      setIsLoading([])
     }
   }, [from, to])
-  return locations
+  return {
+    locations,
+    isLoading: isLoading.some((loading) => loading),
+  }
 }
 
 export {}

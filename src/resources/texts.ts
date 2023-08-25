@@ -45,7 +45,7 @@ export const TEXTS = {
   watch_locations_in_range: 'צפה במיקומי אוטובוסים בטווח של',
   minutes: 'דקות',
   minutes_5: '5 דקות',
-  show_x_bus_locations: 'הצג XXX מיקומי אוטובוסים',
+  show_x_bus_locations: 'מיקומי אוטובוסים',
   from_time_x_to_time_y: 'משעה XXX עד שעה YYY',
   choose_start_time: 'בחירת שעת התחלה',
 }

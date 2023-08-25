@@ -11,6 +11,7 @@ import useVehicleLocations from 'src/api/useVehicleLocations'
 import { VehicleLocation } from 'src/model/vehicleLocation'
 import getAgencyList, { Agency } from 'src/api/agencyList'
 import { getColorByHashString } from './dashboard/OperatorHbarChart/utils'
+import { Spin } from 'antd'
 
 export interface Point {
   loc: [number, number]
@@ -82,7 +83,7 @@ export default function RealtimeMapPage() {
   const [from, setFrom] = useState('2023-05-01T12:00:00+02:00') // arbitrary default value. this date is not important
   const [to, setTo] = useState('2023-05-01T12:01:00+02:00')
 
-  const locations = useVehicleLocations({
+  const { locations, isLoading } = useVehicleLocations({
     from: formatTime(from),
     to: formatTime(to),
   })
@@ -176,7 +177,8 @@ export default function RealtimeMapPage() {
           </button>
         </div>
         <p>
-          {TEXTS.show_x_bus_locations.replace('XXX', loaded.toString())} {` `}
+          {loaded} {isLoading && <Spin size="small" />} {` `}
+          {TEXTS.show_x_bus_locations} {` `}
           {TEXTS.from_time_x_to_time_y
             .replace('XXX', new Date(from).toLocaleTimeString())
             .replace('YYY', new Date(to).toLocaleTimeString())}
