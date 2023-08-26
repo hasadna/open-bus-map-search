@@ -50,8 +50,8 @@ class LocationObservable {
       }&offset=${offset}`
       if (lineRef) url += `&${config.lineRefField}=${lineRef}`
 
-      const response = await fetch(url)
-      const data = await response.json()
+      const response = await fetchWithQueue(url)
+      const data = await response!.json()
       if (data.length === 0) {
         this.loading = false
         this.#notifyObservers({
@@ -85,6 +85,19 @@ class LocationObservable {
   }
 }
 
+const pool = new Array(10).fill(0).map(() => Promise.resolve<void | Response>(void 0))
+async function fetchWithQueue(url: string, retries = 10) {
+  let queue = pool.shift()!
+  queue = queue
+    .then(() => fetch(url))
+    .catch(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 10000 * Math.random() + 100))
+      return fetchWithQueue(url, retries - 1)
+    })
+  pool.push(queue)
+  return queue
+}
+
 // this function checks the cache for the data, and if it's not there, it loads it
 function getLocations({
   from,
@@ -105,14 +118,15 @@ function getLocations({
   return observable.observe(onUpdate)
 }
 
-function getMinutesInRange(from: Dateable, to: Dateable) {
+function getMinutesInRange(from: Dateable, to: Dateable, minutesGap = 1) {
   const start = new Date(from).setSeconds(0, 0)
   const end = new Date(to).setSeconds(0, 0)
+  const gap = 60000 * minutesGap
 
   // array of minutes to load
-  const minutes = Array.from({ length: (end - start) / 60000 }, (_, i) => ({
-    from: new Date(start + i * 60000),
-    to: new Date(start + (i + 1) * 60000),
+  const minutes = Array.from({ length: (end - start) / gap }, (_, i) => ({
+    from: new Date(start + i * gap),
+    to: new Date(start + (i + 1) * gap),
   }))
   return minutes
 }
@@ -121,12 +135,12 @@ export default function useVehicleLocations({
   from,
   to,
   lineRef,
-  splitMinutes: split = true,
+  splitMinutes: split = 1,
 }: {
   from: Dateable
   to: Dateable
   lineRef?: number
-  splitMinutes?: boolean
+  splitMinutes?: false | number
 }) {
   const [locations, setLocations] = useState<VehicleLocation[]>([])
   const [isLoading, setIsLoading] = useState<boolean[]>([])

@@ -74,7 +74,7 @@ const SingleLineMapPage = () => {
     from: selectedRouteIds ? new Date(timestamp).setHours(0, 0, 0, 0) : 0,
     to: selectedRouteIds ? new Date(timestamp).setHours(23, 59, 59, 999) : 0,
     lineRef: selectedRoute?.lineRef ?? 0,
-    // splitMinutes: false, // uncomment to load everything in one request
+    splitMinutes: 20,
   })
 
   const positions = useMemo(() => {
