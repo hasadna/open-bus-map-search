@@ -13,21 +13,26 @@ import RouteSelector from 'src/pages/components/RouteSelector'
 import DateTimePicker from 'src/pages/components/DateTimePicker'
 import { Label } from 'src/pages/components/Label'
 import { TEXTS } from 'src/resources/texts'
-import StopSelector from 'src/pages/components/StopSelector'
-import { Spin } from 'antd'
-import { getSiriStopHitTimesAsync } from 'src/api/siriService'
-import { log } from 'src/log'
 import { PageContainer } from './components/PageContainer'
-import { SearchContext, TimelinePageState } from '../model/pageState'
+import { SearchContext } from '../model/pageState'
 import { NotFound } from './components/NotFound'
 import moment from 'moment'
 import useVehicleLocations from 'src/api/useVehicleLocations'
-import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet'
-import MarkerClusterGroup from 'react-leaflet-cluster'
-import { Markers, Point, colorIcon, numberToColorHsl } from './RealtimeMapPage'
+import { MapContainer, Marker, Polyline, Popup, TileLayer } from 'react-leaflet'
+import { Point, colorIcon, numberToColorHsl } from './RealtimeMapPage'
 
 import './Map.scss'
 import getAgencyList, { Agency } from 'src/api/agencyList'
+import { VehicleLocation } from 'src/model/vehicleLocation'
+import { getColorByHashString } from './dashboard/OperatorHbarChart/utils'
+import { Spin } from 'antd'
+
+interface Path {
+  locations: VehicleLocation[]
+  lineRef: number
+  operator: number
+  vehicleRef: number
+}
 
 const position: Point = {
   loc: [32.3057988, 34.85478613], // arbitrary default value... Netanya - best city to live & die in
@@ -37,12 +42,8 @@ const position: Point = {
 const SingleLineMapPage = () => {
   const { search, setSearch } = useContext(SearchContext)
   const { operatorId, lineNumber, timestamp, routes, routeKey } = search
-  const [state, setState] = useState<TimelinePageState>({})
-  const { stopKey, stopName, stops } = state
 
   const [routesIsLoading, setRoutesIsLoading] = useState(false)
-  const [stopsIsLoading, setStopsIsLoading] = useState(false)
-  const [hitsIsLoading, setHitsIsLoading] = useState(false)
 
   const [agencyList, setAgencyList] = useState<Agency[]>([])
 
@@ -50,24 +51,7 @@ const SingleLineMapPage = () => {
     getAgencyList().then(setAgencyList)
   }, [])
 
-  const clearRoutes = useCallback(() => {
-    setState((current) => ({ ...current, routes: undefined, routeKey: undefined }))
-  }, [setState])
-
-  const clearStops = useCallback(() => {
-    setState((current) => ({
-      ...current,
-      stops: undefined,
-      stopKey: undefined,
-    }))
-  }, [setState])
-
   useEffect(() => {
-    clearRoutes()
-  }, [clearRoutes, operatorId, lineNumber])
-
-  useEffect(() => {
-    clearStops()
     if (!operatorId || !lineNumber) {
       return
     }
@@ -78,7 +62,7 @@ const SingleLineMapPage = () => {
         ),
       )
       .finally(() => setRoutesIsLoading(false))
-  }, [operatorId, lineNumber, clearRoutes, clearStops, timestamp, setState])
+  }, [operatorId, lineNumber, timestamp])
 
   const selectedRoute = useMemo(
     () => routes?.find((route) => route.key === routeKey),
@@ -86,34 +70,12 @@ const SingleLineMapPage = () => {
   )
   const selectedRouteIds = selectedRoute?.routeIds
 
-  const locations = useVehicleLocations({
+  const { locations, isLoading: locationsIsLoading } = useVehicleLocations({
     from: selectedRouteIds ? new Date(timestamp).setHours(0, 0, 0, 0) : 0,
     to: selectedRouteIds ? new Date(timestamp).setHours(23, 59, 59, 999) : 0,
     lineRef: selectedRoute?.lineRef ?? 0,
-    splitMinutes: false,
+    splitMinutes: 20,
   })
-
-  useEffect(() => {
-    clearStops()
-    if (!routeKey || !selectedRouteIds) {
-      return
-    }
-    setStopsIsLoading(true)
-    getStopsForRouteAsync(selectedRouteIds, moment(timestamp))
-      .then((stops) => setState((current) => ({ ...current, stops: stops })))
-      .finally(() => setStopsIsLoading(false))
-  }, [selectedRouteIds, routeKey, clearStops])
-
-  useEffect(() => {
-    if (!stopName || !stops || stopKey) {
-      return
-    }
-    const newStopKey = stops.find((stop) => stop.name === stopName)?.key
-    if (newStopKey) {
-      log(`setting new stopKey=${newStopKey} using the prev stopName=${stopName}`)
-      setState((current) => ({ ...current, stopKey: newStopKey }))
-    }
-  }, [timestamp, stops])
 
   const positions = useMemo(() => {
     const pos = locations.map<Point>((location) => ({
@@ -128,10 +90,30 @@ const SingleLineMapPage = () => {
     return pos
   }, [locations])
 
-  console.log({ locations, search, state, selectedRoute, positions })
+  const [filteredPositions, setFilteredPositions] = useState<Point[]>([])
+
+  const paths = useMemo(
+    () =>
+      filteredPositions.reduce((arr: Path[], loc) => {
+        const line = arr.find((line) => line.vehicleRef === loc.point!.siri_ride__vehicle_ref)
+        if (!line) {
+          arr.push({
+            locations: [loc.point!],
+            lineRef: loc.point!.siri_route__line_ref,
+            operator: loc.point!.siri_route__operator_ref,
+            vehicleRef: loc.point!.siri_ride__vehicle_ref,
+          })
+        } else {
+          line.locations.push(loc.point!)
+        }
+        return arr
+      }, []),
+    [filteredPositions],
+  )
 
   return (
     <PageContainer className="map-container">
+      {/* choose date */}
       <Row>
         <Label text={TEXTS.choose_datetime} />
         <DateTimePicker
@@ -139,6 +121,7 @@ const SingleLineMapPage = () => {
           setDateTime={(ts) => setSearch((current) => ({ ...current, timestamp: ts.valueOf() }))}
         />
       </Row>
+      {/* choose operator */}
       <Row>
         <Label text={TEXTS.choose_operator} />
         <OperatorSelector
@@ -146,6 +129,7 @@ const SingleLineMapPage = () => {
           setOperatorId={(id) => setSearch((current) => ({ ...current, operatorId: id }))}
         />
       </Row>
+      {/* choose line number */}
       <Row>
         <Label text={TEXTS.choose_line} />
         <LineNumberSelector
@@ -153,7 +137,7 @@ const SingleLineMapPage = () => {
           setLineNumber={(number) => setSearch((current) => ({ ...current, lineNumber: number }))}
         />
       </Row>
-
+      {/* choose route */}
       {
         //!routesIsLoading &&
         routes &&
@@ -167,19 +151,13 @@ const SingleLineMapPage = () => {
             />
           ))
       }
-      {stopsIsLoading && (
-        <Row>
-          <Label text={TEXTS.loading_stops} />
-          <Spin />
-        </Row>
+      {positions && (
+        <FilterPositionsByStartTime
+          positions={positions}
+          setFilteredPositions={setFilteredPositions}
+          locationsIsLoading={locationsIsLoading}
+        />
       )}
-      {hitsIsLoading && (
-        <Row>
-          <Label text={TEXTS.loading_hits} />
-          <Spin />
-        </Row>
-      )}
-      {!hitsIsLoading && <pre>{JSON.stringify(locations, null, 2)}</pre>}
 
       <div className="map-info">
         <MapContainer center={position.loc} zoom={8} scrollWheelZoom={true}>
@@ -188,7 +166,7 @@ const SingleLineMapPage = () => {
             url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
           />
 
-          {positions.map((pos, i) => (
+          {filteredPositions.map((pos, i) => (
             <Marker
               position={pos.loc}
               icon={colorIcon({
@@ -204,7 +182,7 @@ const SingleLineMapPage = () => {
             </Marker>
           ))}
 
-          {/* {paths.map((path) => (
+          {paths.map((path) => (
             <Polyline
               key={path.vehicleRef}
               pathOptions={{
@@ -212,10 +190,58 @@ const SingleLineMapPage = () => {
               }}
               positions={path.locations.map(({ lat, lon }) => [lat, lon])}
             />
-          ))} */}
+          ))}
         </MapContainer>
       </div>
     </PageContainer>
+  )
+}
+
+function FilterPositionsByStartTime({
+  positions,
+  setFilteredPositions,
+  locationsIsLoading,
+}: {
+  positions: Point[]
+  setFilteredPositions: (positions: Point[]) => void
+  locationsIsLoading: boolean
+}) {
+  const [startTime, setStartTime] = useState<string>('00:00:00')
+  const options = useMemo(() => {
+    const options = positions
+      .map((position) => position.point?.siri_ride__scheduled_start_time) // get all start times
+      .filter((time, i, arr) => arr.indexOf(time) === i) // unique
+      .map((time) => new Date(time ?? 0).toLocaleTimeString()) // convert to strings
+      .map((time) => ({
+        // convert to options
+        value: time,
+        label: time,
+      }))
+    return options
+  }, [positions])
+
+  useEffect(() => {
+    setFilteredPositions(
+      positions.filter(
+        (position) =>
+          new Date(position.point?.siri_ride__scheduled_start_time ?? 0).toLocaleTimeString() ===
+          startTime,
+      ),
+    )
+  }, [startTime])
+
+  return (
+    <Row>
+      <Label text={TEXTS.choose_start_time} />
+      {locationsIsLoading && <Spin size="small" />}
+      <select onChange={(e) => setStartTime(e.target.value)} style={{ marginLeft: MARGIN_MEDIUM }}>
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+    </Row>
   )
 }
 
