@@ -50,10 +50,13 @@ class LocationObservable {
       }&offset=${offset}`
       if (lineRef) url += `&${config.lineRefField}=${lineRef}`
 
-      const response = await fetch(url)
-      const data = await response.json()
+      const response = await fetchWithQueue(url)
+      const data = await response!.json()
       if (data.length === 0) {
         this.loading = false
+        this.#notifyObservers({
+          finished: true,
+        })
       } else {
         this.data = [...this.data, ...data]
         this.#notifyObservers(data)
@@ -63,15 +66,15 @@ class LocationObservable {
     this.#observers = []
   }
 
-  #notifyObservers(data: VehicleLocation[]) {
+  #notifyObservers(data: VehicleLocation[] | { finished: true }) {
     const observers = this.#observers
     console.log('notifying observers', observers.length)
     observers.forEach((observer) => observer(data))
   }
 
-  #observers: ((locations: VehicleLocation[]) => void)[] = []
+  #observers: ((locations: VehicleLocation[] | { finished: true }) => void)[] = []
 
-  observe(observer: (locations: VehicleLocation[]) => void) {
+  observe(observer: (locations: VehicleLocation[] | { finished: true }) => void) {
     if (this.loading) {
       this.#observers.push(observer)
     }
@@ -80,6 +83,19 @@ class LocationObservable {
       this.#observers = this.#observers.filter((o) => o !== observer)
     }
   }
+}
+
+const pool = new Array(10).fill(0).map(() => Promise.resolve<void | Response>(void 0))
+async function fetchWithQueue(url: string, retries = 10) {
+  let queue = pool.shift()!
+  queue = queue
+    .then(() => fetch(url))
+    .catch(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 10000 * Math.random() + 100))
+      return fetchWithQueue(url, retries - 1)
+    })
+  pool.push(queue)
+  return queue
 }
 
 // this function checks the cache for the data, and if it's not there, it loads it
@@ -92,7 +108,7 @@ function getLocations({
   from: Dateable
   to: Dateable
   lineRef?: number
-  onUpdate: (locations: VehicleLocation[]) => void // the observer will be called every time with all the locations that were loaded
+  onUpdate: (locations: VehicleLocation[] | { finished: true }) => void // the observer will be called every time with all the locations that were loaded
 }) {
   const key = `${formatTime(from)}-${formatTime(to)}`
   if (!loadedLocations.has(key)) {
@@ -102,14 +118,15 @@ function getLocations({
   return observable.observe(onUpdate)
 }
 
-function getMinutesInRange(from: Dateable, to: Dateable) {
+function getMinutesInRange(from: Dateable, to: Dateable, minutesGap = 1) {
   const start = new Date(from).setSeconds(0, 0)
   const end = new Date(to).setSeconds(0, 0)
+  const gap = 60000 * minutesGap
 
   // array of minutes to load
-  const minutes = Array.from({ length: (end - start) / 60000 }, (_, i) => ({
-    from: new Date(start + i * 60000),
-    to: new Date(start + (i + 1) * 60000),
+  const minutes = Array.from({ length: (end - start) / gap }, (_, i) => ({
+    from: new Date(start + i * gap),
+    to: new Date(start + (i + 1) * gap),
   }))
   return minutes
 }
@@ -118,37 +135,51 @@ export default function useVehicleLocations({
   from,
   to,
   lineRef,
-  splitMinutes: split = true,
+  splitMinutes: split = 1,
 }: {
   from: Dateable
   to: Dateable
   lineRef?: number
-  splitMinutes?: boolean
+  splitMinutes?: false | number
 }) {
   const [locations, setLocations] = useState<VehicleLocation[]>([])
+  const [isLoading, setIsLoading] = useState<boolean[]>([])
   useEffect(() => {
     const range = split ? getMinutesInRange(from, to) : [{ from, to }]
-    const unmounts = range.map(({ from, to }) =>
+    setIsLoading(range.map(() => true))
+    const unmounts = range.map(({ from, to }, i) =>
       getLocations({
         from,
         to,
         lineRef,
-        onUpdate: (locations) => {
-          setLocations((prev) =>
-            _.uniqBy(
-              [...prev, ...locations].sort((a, b) => a.id - b.id),
-              (loc) => loc.id,
-            ),
-          )
+        onUpdate: (data) => {
+          if ('finished' in data) {
+            setIsLoading((prev) => {
+              const newIsLoading = [...prev]
+              newIsLoading[i] = false
+              return newIsLoading
+            })
+          } else {
+            setLocations((prev) =>
+              _.uniqBy(
+                [...prev, ...data].sort((a, b) => a.id - b.id),
+                (loc) => loc.id,
+              ),
+            )
+          }
         },
       }),
     )
     return () => {
       setLocations([])
       unmounts.forEach((unmount) => unmount())
+      setIsLoading([])
     }
   }, [from, to])
-  return locations
+  return {
+    locations,
+    isLoading: isLoading.some((loading) => loading),
+  }
 }
 
 export {}
