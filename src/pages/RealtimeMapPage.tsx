@@ -61,7 +61,7 @@ export const colorIcon = ({
   })
 }
 
-function formatTime(time: any) {
+function formatTime(time: string | number | Date) {
   const date = new Date(time).toISOString()
   return date
 }
