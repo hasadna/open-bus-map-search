@@ -18,6 +18,8 @@ import RealtimeMapPage from './pages/RealtimeMapPage'
 import SingleLineMapPage from './pages/SingleLineMapPage'
 import { useLocation } from 'react-router-dom'
 import ReactGA from 'react-ga4'
+import { LocalizationProvider } from '@mui/x-date-pickers'
+import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 
 const { Content } = Layout
 
@@ -81,27 +83,29 @@ const App = () => {
   }, [])
 
   return (
-    <SearchContext.Provider value={{ search, setSearch: safeSetSearch }}>
-      <ConfigProvider direction="rtl" locale={heIL}>
-        <StyledLayout className="main">
-          <Header pages={PAGES} />
-          <Layout>
-            <StyledContent>
-              <StyledBody>
-                <Routes>
-                  <Route path={PAGES[0].key} element={<DashboardPage />} />
-                  <Route path={PAGES[1].key} element={<TimelinePage />} />
-                  <Route path={PAGES[2].key} element={<GapsPage />} />
-                  <Route path={PAGES[3].key} element={<RealtimeMapPage />} />
-                  <Route path={PAGES[4].key} element={<SingleLineMapPage />} />
-                  <Route path="*" element={<Navigate to={PAGES[0].key} replace />} />
-                </Routes>
-              </StyledBody>
-            </StyledContent>
-          </Layout>
-        </StyledLayout>
-      </ConfigProvider>
-    </SearchContext.Provider>
+    <LocalizationProvider dateAdapter={AdapterMoment}>
+      <SearchContext.Provider value={{ search, setSearch: safeSetSearch }}>
+        <ConfigProvider direction="rtl" locale={heIL}>
+          <StyledLayout className="main">
+            <Header pages={PAGES} />
+            <Layout>
+              <StyledContent>
+                <StyledBody>
+                  <Routes>
+                    <Route path={PAGES[0].key} element={<DashboardPage />} />
+                    <Route path={PAGES[1].key} element={<TimelinePage />} />
+                    <Route path={PAGES[2].key} element={<GapsPage />} />
+                    <Route path={PAGES[3].key} element={<RealtimeMapPage />} />
+                    <Route path={PAGES[4].key} element={<SingleLineMapPage />} />
+                    <Route path="*" element={<Navigate to={PAGES[0].key} replace />} />
+                  </Routes>
+                </StyledBody>
+              </StyledContent>
+            </Layout>
+          </StyledLayout>
+        </ConfigProvider>
+      </SearchContext.Provider>
+    </LocalizationProvider>
   )
 }
 

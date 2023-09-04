@@ -6,7 +6,8 @@ import OperatorHbarChart from './OperatorHbarChart/OperatorHbarChart'
 import './DashboardPage.scss'
 import { TEXTS } from 'src/resources/texts'
 import ArrivalByTimeChart from './ArrivalByTimeChart/ArrivalByTimeChart'
-import { DatePicker } from 'antd'
+//import { DatePicker } from 'antd'
+import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import moment, { Moment } from 'moment'
 import LinesHbarChart from './LineHbarChart/LinesHbarChart'
 
@@ -67,17 +68,9 @@ const DashboardPage = () => {
   return (
     <PageContainer>
       <div className="date-picker-container">
-        <DatePicker
-          defaultValue={startDate}
-          onChange={(data) => setStartDate(data)}
-          format="DD/MM/YYYY"
-        />
+        <DatePicker value={startDate} onChange={(data) => setStartDate(data)} format="DD/MM/YYYY" />
         -
-        <DatePicker
-          defaultValue={endDate}
-          onChange={(data) => setEndDate(data)}
-          format="DD/MM/YYYY"
-        />
+        <DatePicker value={endDate} onChange={(data) => setEndDate(data)} format="DD/MM/YYYY" />
         <label className="group-by-hour">
           <input
             type="checkbox"
