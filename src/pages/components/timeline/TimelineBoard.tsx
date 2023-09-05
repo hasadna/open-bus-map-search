@@ -79,8 +79,8 @@ export const TimelineBoard = ({ className, target, gtfsTimes, siriTimes }: Timel
         pointType={PointType.SIRI}
         timestampToTop={timestampToTop}
       />
-      {Array.from(allTimestamps).map((timestamp) => (
-        <HorizontalLine key={timestamp.toString()} top={timestampToTop(moment(timestamp))} />
+      {Array.from(allTimestamps).map((timestamp, index) => (
+        <HorizontalLine key={index} top={timestampToTop(moment(timestamp))} />
       ))}
     </Container>
   )
