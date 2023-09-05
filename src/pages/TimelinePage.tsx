@@ -2,7 +2,7 @@ import React, { useCallback, useContext, useEffect, useMemo, useState } from 're
 import LineNumberSelector from 'src/pages/components/LineSelector'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
 import { Row } from 'src/pages/components/Row'
-import { INPUT_SIZE, MARGIN_MEDIUM } from 'src/resources/sizes'
+import { MARGIN_MEDIUM } from 'src/resources/sizes'
 import styled from 'styled-components'
 import {
   getGtfsStopHitTimesAsync,
@@ -10,7 +10,6 @@ import {
   getStopsForRouteAsync,
 } from 'src/api/gtfsService'
 import RouteSelector from 'src/pages/components/RouteSelector'
-import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import { Label } from 'src/pages/components/Label'
 import { TEXTS } from 'src/resources/texts'
 import StopSelector from 'src/pages/components/StopSelector'
@@ -22,6 +21,7 @@ import { PageContainer } from './components/PageContainer'
 import { SearchContext, TimelinePageState } from '../model/pageState'
 import { NotFound } from './components/NotFound'
 import moment from 'moment'
+import { DataAndTimeSelector } from './components/DataAndTimeSelector'
 
 const StyledTimelineBoard = styled(TimelineBoard)`
   margin-top: ${MARGIN_MEDIUM * 3}px;
@@ -118,15 +118,11 @@ const TimelinePage = () => {
   return (
     <PageContainer>
       <Row>
-        <DatePicker
-          sx={{ width: INPUT_SIZE }}
-          value={moment(timestamp)}
-          onChange={(ts) =>
+        <DataAndTimeSelector
+          timestamp={moment(timestamp)}
+          setTimestamp={(ts) =>
             setSearch((current) => ({ ...current, timestamp: ts ? ts.valueOf() : 0 }))
           }
-          format="DD/MM/YYYY"
-          label={TEXTS.choose_datetime}
-          disableFuture
         />
       </Row>
       <Row>

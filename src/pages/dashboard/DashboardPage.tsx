@@ -83,11 +83,7 @@ const DashboardPage = () => {
         />
         <FormControlLabel
           control={
-            <Switch
-              checked={groupByHour}
-              onChange={(e) => setGroupByHour(e.target.checked)}
-              color="primary"
-            />
+            <Switch checked={groupByHour} onChange={(e) => setGroupByHour(e.target.checked)} />
           }
           label="Group by hour"
         />
