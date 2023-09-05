@@ -61,7 +61,7 @@ export const colorIcon = ({
   })
 }
 
-function formatTime(time: any) {
+function formatTime(time: string | number | Date) {
   const date = new Date(time).toISOString()
   return date
 }
@@ -178,6 +178,7 @@ export default function RealtimeMapPage() {
         </div>
         <p>
           {loaded} {isLoading && <Spin size="small" />} {` `}
+          {/*FIXME Spin not be inside p. it generate Warning: validateDOMNesting(...). need find another place in the page.*/}
           {TEXTS.show_x_bus_locations} {` `}
           {TEXTS.from_time_x_to_time_y
             .replace('XXX', new Date(from).toLocaleTimeString())

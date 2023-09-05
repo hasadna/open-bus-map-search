@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect } from 'react'
-import 'antd/dist/antd.css'
+import 'antd/dist/antd.min.css'
 import './App.scss'
 import TimelinePage from 'src/pages/TimelinePage'
 import { ConfigProvider, Layout } from 'antd'
