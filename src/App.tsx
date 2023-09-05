@@ -20,6 +20,7 @@ import { useLocation } from 'react-router-dom'
 import ReactGA from 'react-ga4'
 import { LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
+import { ThemeProvider, createTheme } from '@mui/material'
 
 const { Content } = Layout
 
@@ -59,6 +60,14 @@ const PAGES = [
   },
 ]
 
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#5f5bff',
+    },
+  },
+})
+
 const App = () => {
   const location = useLocation()
 
@@ -83,29 +92,31 @@ const App = () => {
   }, [])
 
   return (
-    <LocalizationProvider dateAdapter={AdapterMoment}>
-      <SearchContext.Provider value={{ search, setSearch: safeSetSearch }}>
-        <ConfigProvider direction="rtl" locale={heIL}>
-          <StyledLayout className="main">
-            <Header pages={PAGES} />
-            <Layout>
-              <StyledContent>
-                <StyledBody>
-                  <Routes>
-                    <Route path={PAGES[0].key} element={<DashboardPage />} />
-                    <Route path={PAGES[1].key} element={<TimelinePage />} />
-                    <Route path={PAGES[2].key} element={<GapsPage />} />
-                    <Route path={PAGES[3].key} element={<RealtimeMapPage />} />
-                    <Route path={PAGES[4].key} element={<SingleLineMapPage />} />
-                    <Route path="*" element={<Navigate to={PAGES[0].key} replace />} />
-                  </Routes>
-                </StyledBody>
-              </StyledContent>
-            </Layout>
-          </StyledLayout>
-        </ConfigProvider>
-      </SearchContext.Provider>
-    </LocalizationProvider>
+    <ThemeProvider theme={theme}>
+      <LocalizationProvider dateAdapter={AdapterMoment}>
+        <SearchContext.Provider value={{ search, setSearch: safeSetSearch }}>
+          <ConfigProvider direction="rtl" locale={heIL}>
+            <StyledLayout className="main">
+              <Header pages={PAGES} />
+              <Layout>
+                <StyledContent>
+                  <StyledBody>
+                    <Routes>
+                      <Route path={PAGES[0].key} element={<DashboardPage />} />
+                      <Route path={PAGES[1].key} element={<TimelinePage />} />
+                      <Route path={PAGES[2].key} element={<GapsPage />} />
+                      <Route path={PAGES[3].key} element={<RealtimeMapPage />} />
+                      <Route path={PAGES[4].key} element={<SingleLineMapPage />} />
+                      <Route path="*" element={<Navigate to={PAGES[0].key} replace />} />
+                    </Routes>
+                  </StyledBody>
+                </StyledContent>
+              </Layout>
+            </StyledLayout>
+          </ConfigProvider>
+        </SearchContext.Provider>
+      </LocalizationProvider>
+    </ThemeProvider>
   )
 }
 
