@@ -118,6 +118,7 @@ const TimelinePage = () => {
   return (
     <PageContainer>
       <Row>
+        <Label text={TEXTS.choose_datetime} />
         <DataAndTimeSelector
           timestamp={moment(timestamp)}
           setTimestamp={(ts) =>
@@ -126,12 +127,14 @@ const TimelinePage = () => {
         />
       </Row>
       <Row>
+        <Label text={TEXTS.choose_operator} />
         <OperatorSelector
           operatorId={operatorId}
           setOperatorId={(id) => setSearch((current) => ({ ...current, operatorId: id }))}
         />
       </Row>
       <Row>
+        <Label text={TEXTS.choose_line} />
         <LineNumberSelector
           lineNumber={lineNumber}
           setLineNumber={(number) => setSearch((current) => ({ ...current, lineNumber: number }))}
