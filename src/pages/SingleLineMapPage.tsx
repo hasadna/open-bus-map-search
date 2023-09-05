@@ -1,16 +1,10 @@
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import React, { useContext, useEffect, useMemo, useState } from 'react'
 import LineNumberSelector from 'src/pages/components/LineSelector'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
 import { Row } from 'src/pages/components/Row'
-import { INPUT_SIZE, MARGIN_MEDIUM } from 'src/resources/sizes'
-import styled from 'styled-components'
-import {
-  getGtfsStopHitTimesAsync,
-  getRoutesAsync,
-  getStopsForRouteAsync,
-} from 'src/api/gtfsService'
+import { INPUT_SIZE } from 'src/resources/sizes'
+import { getRoutesAsync } from 'src/api/gtfsService'
 import RouteSelector from 'src/pages/components/RouteSelector'
-import DateTimePicker from 'src/pages/components/DateTimePicker'
 import { Label } from 'src/pages/components/Label'
 import { TEXTS } from 'src/resources/texts'
 import { PageContainer } from './components/PageContainer'
@@ -45,8 +39,6 @@ const SingleLineMapPage = () => {
   const { search, setSearch } = useContext(SearchContext)
   const { operatorId, lineNumber, timestamp, routes, routeKey } = search
 
-  const [routesIsLoading, setRoutesIsLoading] = useState(false)
-
   const [agencyList, setAgencyList] = useState<Agency[]>([])
 
   useEffect(() => {
@@ -57,13 +49,11 @@ const SingleLineMapPage = () => {
     if (!operatorId || !lineNumber) {
       return
     }
-    getRoutesAsync(moment(timestamp), operatorId, lineNumber)
-      .then((routes) =>
-        setSearch((current) =>
-          search.lineNumber === lineNumber ? { ...current, routes: routes } : current,
-        ),
-      )
-      .finally(() => setRoutesIsLoading(false))
+    getRoutesAsync(moment(timestamp), operatorId, lineNumber).then((routes) =>
+      setSearch((current) =>
+        search.lineNumber === lineNumber ? { ...current, routes: routes } : current,
+      ),
+    )
   }, [operatorId, lineNumber, timestamp])
 
   const selectedRoute = useMemo(
