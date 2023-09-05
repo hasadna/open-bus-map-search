@@ -2,7 +2,7 @@ import React, { useCallback, useContext, useEffect, useMemo, useState } from 're
 import LineNumberSelector from 'src/pages/components/LineSelector'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
 import { Row } from 'src/pages/components/Row'
-import { MARGIN_MEDIUM } from 'src/resources/sizes'
+import { INPUT_SIZE, MARGIN_MEDIUM } from 'src/resources/sizes'
 import styled from 'styled-components'
 import {
   getGtfsStopHitTimesAsync,
@@ -10,7 +10,7 @@ import {
   getStopsForRouteAsync,
 } from 'src/api/gtfsService'
 import RouteSelector from 'src/pages/components/RouteSelector'
-import DateTimePicker from 'src/pages/components/DateTimePicker'
+import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import { Label } from 'src/pages/components/Label'
 import { TEXTS } from 'src/resources/texts'
 import StopSelector from 'src/pages/components/StopSelector'
@@ -118,21 +118,24 @@ const TimelinePage = () => {
   return (
     <PageContainer>
       <Row>
-        <Label text={TEXTS.choose_datetime} />
-        <DateTimePicker
-          timestamp={moment(timestamp)}
-          setDateTime={(ts) => setSearch((current) => ({ ...current, timestamp: ts.valueOf() }))}
+        <DatePicker
+          sx={{ width: INPUT_SIZE }}
+          value={moment(timestamp)}
+          onChange={(ts) =>
+            setSearch((current) => ({ ...current, timestamp: ts ? ts.valueOf() : 0 }))
+          }
+          format="DD/MM/YYYY"
+          label={TEXTS.choose_datetime}
+          disableFuture
         />
       </Row>
       <Row>
-        <Label text={TEXTS.choose_operator} />
         <OperatorSelector
           operatorId={operatorId}
           setOperatorId={(id) => setSearch((current) => ({ ...current, operatorId: id }))}
         />
       </Row>
       <Row>
-        <Label text={TEXTS.choose_line} />
         <LineNumberSelector
           lineNumber={lineNumber}
           setLineNumber={(number) => setSearch((current) => ({ ...current, lineNumber: number }))}
