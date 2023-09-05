@@ -2,7 +2,7 @@ import React, { useCallback, useContext, useEffect, useMemo, useState } from 're
 import LineNumberSelector from 'src/pages/components/LineSelector'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
 import { Row } from 'src/pages/components/Row'
-import { MARGIN_MEDIUM } from 'src/resources/sizes'
+import { INPUT_SIZE, MARGIN_MEDIUM } from 'src/resources/sizes'
 import styled from 'styled-components'
 import {
   getGtfsStopHitTimesAsync,
@@ -26,6 +26,8 @@ import getAgencyList, { Agency } from 'src/api/agencyList'
 import { VehicleLocation } from 'src/model/vehicleLocation'
 import { getColorByHashString } from './dashboard/OperatorHbarChart/utils'
 import { Spin } from 'antd'
+import { DataAndTimeSelector } from './components/DataAndTimeSelector'
+import { Autocomplete, TextField } from '@mui/material'
 
 interface Path {
   locations: VehicleLocation[]
@@ -116,9 +118,11 @@ const SingleLineMapPage = () => {
       {/* choose date */}
       <Row>
         <Label text={TEXTS.choose_datetime} />
-        <DateTimePicker
+        <DataAndTimeSelector
           timestamp={moment(timestamp)}
-          setDateTime={(ts) => setSearch((current) => ({ ...current, timestamp: ts.valueOf() }))}
+          setTimestamp={(ts) =>
+            setSearch((current) => ({ ...current, timestamp: ts ? ts.valueOf() : 0 }))
+          }
         />
       </Row>
       {/* choose operator */}
@@ -234,14 +238,43 @@ function FilterPositionsByStartTime({
     <Row>
       <Label text={TEXTS.choose_start_time} />
       {locationsIsLoading && <Spin size="small" />}
-      <select onChange={(e) => setStartTime(e.target.value)} style={{ marginLeft: MARGIN_MEDIUM }}>
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
+      <FilterPositionsByStartTimeSelector
+        options={options}
+        startTime={startTime}
+        setStartTime={setStartTime}
+      />
     </Row>
+  )
+}
+
+type FilterPositionsByStartTimeSelectorProps = {
+  options: {
+    value: string
+    label: string
+  }[]
+  startTime?: string
+  setStartTime: (time: string) => void
+}
+
+function FilterPositionsByStartTimeSelector({
+  options,
+  startTime,
+  setStartTime,
+}: FilterPositionsByStartTimeSelectorProps) {
+  const valueFinned = options.find((option) => option.value === startTime)
+  const value = valueFinned ? valueFinned : null
+
+  return (
+    <Autocomplete
+      disablePortal
+      value={value}
+      onChange={(e, value) => setStartTime(value ? value.value : '0')}
+      id="operator-select"
+      sx={{ width: INPUT_SIZE }}
+      options={options}
+      renderInput={(params) => <TextField {...params} label={TEXTS.choose_operator} />}
+      getOptionLabel={(option) => option.label}
+    />
   )
 }
 
