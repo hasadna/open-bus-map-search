@@ -10,6 +10,7 @@ import ArrivalByTimeChart from './ArrivalByTimeChart/ArrivalByTimeChart'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import moment, { Moment } from 'moment'
 import LinesHbarChart from './LineHbarChart/LinesHbarChart'
+import { FormControlLabel, Switch } from '@mui/material'
 
 const now = moment()
 
@@ -68,17 +69,25 @@ const DashboardPage = () => {
   return (
     <PageContainer>
       <div className="date-picker-container">
-        <DatePicker value={startDate} onChange={(data) => setStartDate(data)} format="DD/MM/YYYY" />
+        <DatePicker
+          value={startDate}
+          onChange={(data) => setStartDate(data)}
+          format="DD/MM/YYYY"
+          label="start"
+        />
         -
-        <DatePicker value={endDate} onChange={(data) => setEndDate(data)} format="DD/MM/YYYY" />
-        <label className="group-by-hour">
-          <input
-            type="checkbox"
-            checked={groupByHour}
-            onChange={(e) => setGroupByHour(e.target.checked)}
-          />
-          Group by hour
-        </label>
+        <DatePicker
+          value={endDate}
+          onChange={(data) => setEndDate(data)}
+          format="DD/MM/YYYY"
+          label="end"
+        />
+        <FormControlLabel
+          control={
+            <Switch checked={groupByHour} onChange={(e) => setGroupByHour(e.target.checked)} />
+          }
+          label="Group by hour"
+        />
       </div>
       <div className="widgets-container">
         <div className="widget">
