@@ -19,3 +19,9 @@ pre {
     height: 200px;
     overflow-y: auto;
 }
+
+.map-header-buttons{
+    display: flex;
+    flex-direction: row;
+    margin-top: 10px;    
+}

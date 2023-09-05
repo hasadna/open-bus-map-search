@@ -29,8 +29,3 @@ const LineSelector = ({ lineNumber, setLineNumber }: LineSelectorProps) => {
 }
 
 export default LineSelector
-/* <StyledInput
-      placeholder={TEXTS.line_placeholder}
-      value={lineNumber}
-      onChange={(e) => debouncedSetLineNumber(e.target.value)}
-    />*/
