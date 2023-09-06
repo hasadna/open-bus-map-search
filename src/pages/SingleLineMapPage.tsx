@@ -262,7 +262,7 @@ function FilterPositionsByStartTimeSelector({
       id="operator-select"
       sx={{ width: INPUT_SIZE }}
       options={options}
-      renderInput={(params) => <TextField {...params} label={TEXTS.choose_operator} />}
+      renderInput={(params) => <TextField {...params} label={TEXTS.choose_start_time} />}
       getOptionLabel={(option) => option.label}
     />
   )
