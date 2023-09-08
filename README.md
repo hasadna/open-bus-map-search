@@ -5,6 +5,8 @@ This is the official repository of the open bus (תחב"צ פתוחה) project -
 [link to the project](https://open-bus-map-search.hasadna.org.il/dashboard)
 Please feel free to submit pull requests and contribute to the project (see the "contribution" section).
 
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/6H6jkJCVhgk/0.jpg)](https://www.youtube.com/watch?v=6H6jkJCVhgk)
+
 ## deployments
 
 [![Netlify Status](https://api.netlify.com/api/v1/badges/d3ef62c2-b5bb-48ac-8299-71e5bd22b211/deploy-status)](https://app.netlify.com/sites/open-bus/deploys)
