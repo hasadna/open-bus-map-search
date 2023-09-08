@@ -84,7 +84,7 @@ const DashboardPage = () => {
             checked={groupByHour}
             onChange={(e) => setGroupByHour(e.target.checked)}
           />
-          Group by hour
+          {TEXTS.group_by_hour_tooltip_content}
         </label>
       </div>
       <div className="widgets-container">
