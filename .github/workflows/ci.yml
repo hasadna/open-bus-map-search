@@ -1,6 +1,7 @@
 name: CI
 on:
   push:
+    branches: [ main, master ]
 jobs:
   ci:
     runs-on: ubuntu-20.04
