@@ -85,7 +85,7 @@ const DashboardPage = () => {
           control={
             <Switch checked={groupByHour} onChange={(e) => setGroupByHour(e.target.checked)} />
           }
-          label="Group by hour"
+          label={TEXTS.group_by_hour_tooltip_content}
         />
       </div>
       <div className="widgets-container">
