@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React, { Fragment, useCallback } from 'react'
 import { useGroupBy } from 'src/api/groupByService'
 import { PageContainer } from '../components/PageContainer'
 import Tooltip from '../components/utils/tooltip/Tooltip'
@@ -84,20 +84,14 @@ const DashboardPage = () => {
             checked={groupByHour}
             onChange={(e) => setGroupByHour(e.target.checked)}
           />
-          Group by hour
+          {TEXTS.group_by_hour_tooltip_content}
         </label>
       </div>
       <div className="widgets-container">
         <div className="widget">
           <h2 className="title">
             {TEXTS.dashboard_page_title}
-            <Tooltip
-              text={TEXTS.dashboard_tooltip_content.split('\n').map((row) => (
-                <>
-                  {row}
-                  <br />
-                </>
-              ))}>
+            <Tooltip text={convertLineFeedToHtmlTags(TEXTS.dashboard_tooltip_content)}>
               <span className="tooltip-icon">i</span>
             </Tooltip>
           </h2>
@@ -118,4 +112,14 @@ const DashboardPage = () => {
     </PageContainer>
   )
 }
+
+function convertLineFeedToHtmlTags(srt: string): React.ReactNode {
+  return srt.split('\n').map((row, i) => (
+    <Fragment key={i}>
+      {row}
+      <br />
+    </Fragment>
+  ))
+}
+
 export default DashboardPage
