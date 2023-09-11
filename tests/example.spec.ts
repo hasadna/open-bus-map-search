@@ -1,6 +1,11 @@
 import { test } from '@playwright/test'
 
 test('search bus station', async ({ page }) => {
+  await page.routeFromHAR('tests/example.har', {
+    url: /api/,
+    update: false,
+    updateContent: 'embed',
+  })
   await page.goto('http://localhost:3000/dashboard')
   await page.getByRole('list').getByText('לוח זמנים היסטורי').click()
   await page.locator('#rc_select_1').fill('אג')
