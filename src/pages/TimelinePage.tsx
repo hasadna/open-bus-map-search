@@ -10,7 +10,6 @@ import {
   getStopsForRouteAsync,
 } from 'src/api/gtfsService'
 import RouteSelector from 'src/pages/components/RouteSelector'
-import DateTimePicker from 'src/pages/components/DateTimePicker'
 import { Label } from 'src/pages/components/Label'
 import { TEXTS } from 'src/resources/texts'
 import StopSelector from 'src/pages/components/StopSelector'
@@ -22,6 +21,7 @@ import { PageContainer } from './components/PageContainer'
 import { SearchContext, TimelinePageState } from '../model/pageState'
 import { NotFound } from './components/NotFound'
 import moment from 'moment'
+import { DataAndTimeSelector } from './components/DataAndTimeSelector'
 
 const StyledTimelineBoard = styled(TimelineBoard)`
   margin-top: ${MARGIN_MEDIUM * 3}px;
@@ -119,9 +119,11 @@ const TimelinePage = () => {
     <PageContainer>
       <Row>
         <Label text={TEXTS.choose_datetime} />
-        <DateTimePicker
+        <DataAndTimeSelector
           timestamp={moment(timestamp)}
-          setDateTime={(ts) => setSearch((current) => ({ ...current, timestamp: ts.valueOf() }))}
+          setTimestamp={(ts) =>
+            setSearch((current) => ({ ...current, timestamp: ts ? ts.valueOf() : 0 }))
+          }
         />
       </Row>
       <Row>
