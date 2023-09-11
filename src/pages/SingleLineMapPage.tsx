@@ -1,16 +1,10 @@
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import React, { useContext, useEffect, useMemo, useState } from 'react'
 import LineNumberSelector from 'src/pages/components/LineSelector'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
 import { Row } from 'src/pages/components/Row'
-import { MARGIN_MEDIUM } from 'src/resources/sizes'
-import styled from 'styled-components'
-import {
-  getGtfsStopHitTimesAsync,
-  getRoutesAsync,
-  getStopsForRouteAsync,
-} from 'src/api/gtfsService'
+import { INPUT_SIZE } from 'src/resources/sizes'
+import { getRoutesAsync } from 'src/api/gtfsService'
 import RouteSelector from 'src/pages/components/RouteSelector'
-import DateTimePicker from 'src/pages/components/DateTimePicker'
 import { Label } from 'src/pages/components/Label'
 import { TEXTS } from 'src/resources/texts'
 import { PageContainer } from './components/PageContainer'
@@ -29,6 +23,8 @@ import { Spin } from 'antd'
 // import getSvgFromOperatorId from './components/utils/SvgComponent/SvgComponent'
 // import svgsMap from './components/utils/SvgComponent/imagesMap'
 import operatorIdToSvg from './components/utils/SvgComponent/imagesMap'
+import { DataAndTimeSelector } from './components/DataAndTimeSelector'
+import { Autocomplete, TextField } from '@mui/material'
 
 interface Path {
   locations: VehicleLocation[]
@@ -45,12 +41,10 @@ const position: Point = {
 const SingleLineMapPage = () => {
   const { search, setSearch } = useContext(SearchContext)
   const { operatorId, lineNumber, timestamp, routes, routeKey } = search
-
   const [routesIsLoading, setRoutesIsLoading] = useState(false)
   /* TODO: 2nd approach
   const [svgs, setSvgs] = useState(() => new Map())
   */
-
   const [agencyList, setAgencyList] = useState<Agency[]>([])
 
   useEffect(() => {
@@ -69,13 +63,11 @@ const SingleLineMapPage = () => {
     if (!operatorId || !lineNumber) {
       return
     }
-    getRoutesAsync(moment(timestamp), operatorId, lineNumber)
-      .then((routes) =>
-        setSearch((current) =>
-          search.lineNumber === lineNumber ? { ...current, routes: routes } : current,
-        ),
-      )
-      .finally(() => setRoutesIsLoading(false))
+    getRoutesAsync(moment(timestamp), operatorId, lineNumber).then((routes) =>
+      setSearch((current) =>
+        search.lineNumber === lineNumber ? { ...current, routes: routes } : current,
+      ),
+    )
   }, [operatorId, lineNumber, timestamp])
 
   const selectedRoute = useMemo(
@@ -130,9 +122,11 @@ const SingleLineMapPage = () => {
       {/* choose date */}
       <Row>
         <Label text={TEXTS.choose_datetime} />
-        <DateTimePicker
+        <DataAndTimeSelector
           timestamp={moment(timestamp)}
-          setDateTime={(ts) => setSearch((current) => ({ ...current, timestamp: ts.valueOf() }))}
+          setTimestamp={(ts) =>
+            setSearch((current) => ({ ...current, timestamp: ts ? ts.valueOf() : 0 }))
+          }
         />
       </Row>
       {/* choose operator */}
@@ -253,14 +247,43 @@ function FilterPositionsByStartTime({
     <Row>
       <Label text={TEXTS.choose_start_time} />
       {locationsIsLoading && <Spin size="small" />}
-      <select onChange={(e) => setStartTime(e.target.value)} style={{ marginLeft: MARGIN_MEDIUM }}>
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
+      <FilterPositionsByStartTimeSelector
+        options={options}
+        startTime={startTime}
+        setStartTime={setStartTime}
+      />
     </Row>
+  )
+}
+
+type FilterPositionsByStartTimeSelectorProps = {
+  options: {
+    value: string
+    label: string
+  }[]
+  startTime?: string
+  setStartTime: (time: string) => void
+}
+
+function FilterPositionsByStartTimeSelector({
+  options,
+  startTime,
+  setStartTime,
+}: FilterPositionsByStartTimeSelectorProps) {
+  const valueFinned = options.find((option) => option.value === startTime)
+  const value = valueFinned ? valueFinned : null
+
+  return (
+    <Autocomplete
+      disablePortal
+      value={value}
+      onChange={(e, value) => setStartTime(value ? value.value : '0')}
+      id="operator-select"
+      sx={{ width: INPUT_SIZE }}
+      options={options}
+      renderInput={(params) => <TextField {...params} label={TEXTS.choose_start_time} />}
+      getOptionLabel={(option) => option.label}
+    />
   )
 }
 

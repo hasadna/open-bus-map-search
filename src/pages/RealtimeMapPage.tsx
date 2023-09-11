@@ -16,6 +16,11 @@ import { Spin } from 'antd'
 import svgsMap from './components/utils/SvgComponent/imagesMap'
 import operatorIdToSvg from './components/utils/SvgComponent/imagesMap'
 
+import { DataAndTimeSelector } from './components/DataAndTimeSelector'
+import moment from 'moment'
+import MinuteSelector from './components/MinuteSelector'
+import { Button } from '@mui/material'
+
 export interface Point {
   loc: [number, number]
   color: number
@@ -137,51 +142,56 @@ export default function RealtimeMapPage() {
         <h1>Realtime Map</h1>
         <div className="map-header-buttons">
           <label>
-            {TEXTS.from_date}
-            <input
-              type="datetime-local"
-              value={from.slice(0, 16)} // remove timezone and seconds
-              onChange={(e) => {
-                setFrom(e.target.value)
-                setTo(formatTime(+new Date(e.target.value) + (+new Date(to) - +new Date(from)))) // keep the same time difference
+            {TEXTS.from_date}{' '}
+            <DataAndTimeSelector
+              timestamp={moment(from.slice(0, 16))} // remove timezone and seconds
+              setTimestamp={(ts) => {
+                const value = ts ? ts.format() : ''
+                setFrom(value)
+                setTo(formatTime(+new Date(value) + (+new Date(to) - +new Date(from)))) // keep the same time difference
               }}
+              showTimePicker={true}
             />
           </label>{' '}
-          {` `}
+        </div>
+        <div className="map-header-buttons">
           <label>
-            {TEXTS.watch_locations_in_range}
-            <input
-              type="number"
-              value={(+new Date(to) - +new Date(from)) / 1000 / 60} // minutes difference between from and to
-              onChange={(e) => setTo(formatTime(+new Date(from) + +e.target.value * 1000 * 60))}
-            />
+            {TEXTS.watch_locations_in_range}{' '}
+            <MinuteSelector
+              num={(+new Date(to) - +new Date(from)) / 1000 / 60}
+              setNum={(num) => setTo(formatTime(+new Date(from) + +num * 1000 * 60))}
+            />{' '}
             {TEXTS.minutes}
           </label>
         </div>
         <div className="map-header-buttons">
-          <button
+          <Button
+            variant="contained"
             onClick={() => {
               setFrom(formatTime(+new Date() - 5 * 1000 * 60)) // 5 minutes ago
               setTo(formatTime(+new Date() - 4 * 1000 * 60)) // 4 minutes ago
             }}>
             לפני 5 דקות
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="contained"
             onClick={() => {
               setFrom(formatTime(+new Date() - 10 * 1000 * 60)) // 10 minutes ago
               setTo(formatTime(+new Date() - 9 * 1000 * 60)) // 9 minutes ago
             }}>
             לפני 10 דקות
-          </button>
+          </Button>
         </div>
-        <p>
-          {loaded} {isLoading && <Spin size="small" />} {` `}
-          {/*FIXME Spin not be inside p. it generate Warning: validateDOMNesting(...). need find another place in the page.*/}
-          {TEXTS.show_x_bus_locations} {` `}
-          {TEXTS.from_time_x_to_time_y
-            .replace('XXX', new Date(from).toLocaleTimeString())
-            .replace('YYY', new Date(to).toLocaleTimeString())}
-        </p>
+        <div className="map-header-buttons">
+          <p>
+            {loaded} {`- `}
+            {TEXTS.show_x_bus_locations} {` `}
+            {TEXTS.from_time_x_to_time_y
+              .replace('XXX', new Date(from).toLocaleTimeString())
+              .replace('YYY', new Date(to).toLocaleTimeString())}
+          </p>
+        </div>
+        {isLoading && <Spin size="small" />}
       </div>
       <div className="map-info">
         <MapContainer center={position.loc} zoom={8} scrollWheelZoom={true}>
