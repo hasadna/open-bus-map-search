@@ -26,6 +26,9 @@ import getAgencyList, { Agency } from 'src/api/agencyList'
 import { VehicleLocation } from 'src/model/vehicleLocation'
 import { getColorByHashString } from './dashboard/OperatorHbarChart/utils'
 import { Spin } from 'antd'
+// import getSvgFromOperatorId from './components/utils/SvgComponent/SvgComponent'
+// import svgsMap from './components/utils/SvgComponent/imagesMap'
+import operatorIdToSvg from './components/utils/SvgComponent/imagesMap'
 
 interface Path {
   locations: VehicleLocation[]
@@ -44,11 +47,22 @@ const SingleLineMapPage = () => {
   const { operatorId, lineNumber, timestamp, routes, routeKey } = search
 
   const [routesIsLoading, setRoutesIsLoading] = useState(false)
+  /* TODO: 2nd approach
+  const [svgs, setSvgs] = useState(() => new Map())
+  */
 
   const [agencyList, setAgencyList] = useState<Agency[]>([])
 
   useEffect(() => {
     getAgencyList().then(setAgencyList)
+    /* TODO: 2nd approach
+    getAgencyList().then((agencyList) => {
+      setAgencyList(agencyList)
+      agencyList.forEach(async (agency) => {
+        const icon = await getSvgFromOperatorId(agency.operator_ref)
+        setSvgs(new Map(svgs.set(agency.operator_ref, icon)))
+      })
+    })*/
   }, [])
 
   useEffect(() => {
@@ -170,6 +184,11 @@ const SingleLineMapPage = () => {
             <Marker
               position={pos.loc}
               icon={colorIcon({
+                /* TODO: 2nd approach
+                busIcon: svgs.get(pos.operator!) as React.FunctionComponent<
+                  React.SVGAttributes<SVGElement>
+                >,*/
+                busIcon: operatorIdToSvg(pos.operator),
                 color: numberToColorHsl(pos.color, 60),
                 name: agencyList.find((agency) => agency.operator_ref === pos.operator)
                   ?.agency_name,

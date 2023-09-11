@@ -1,40 +1,50 @@
 import { DivIcon } from 'leaflet'
 import React, { useEffect, useState } from 'react'
 import getAgencyList, { Agency } from 'src/api/agencyList'
-import busIcon from '../resources/bus-front.svg'
 import MarkerClusterGroup from 'react-leaflet-cluster'
 import { useMap, Marker, Popup } from 'react-leaflet'
 import { VehicleLocation } from 'src/model/vehicleLocation'
+// import getSvgFromOperatorId from '../utils/SvgComponent/SvgComponent'
+// import svgsMap from '../utils/SvgComponent/imagesMap'
+import operatorIdToSvg from '../utils/SvgComponent/imagesMap'
 
 const colorIcon = ({
+  busIcon,
   color,
   name,
   rotate = 0,
 }: {
+  busIcon: React.FunctionComponent<React.SVGAttributes<SVGElement>>
   color: string
   name?: string
   rotate?: number
 }) => {
-  return new DivIcon({
+  /*
+  TODO: 2nd approach
+  const icon = (busIcon as any)?.default ?? defaultIcon
+  */
+
+  /*return new DivIcon({
     className: 'my-div-icon',
     html: `<div class="mask" style="
-          width: 30px;
-          height: 30px;
-          border-radius: 50%;
-          mask-image: url(${busIcon});
-          -webkit-mask-image: url(${busIcon});
-          transform: rotate(${rotate}deg);
+          width: 50px;
+          height: 50px;
+          background-repeat: no-repeat;
+          background-image: url(${busIcon});
       ">
-          <div
-              style="
-                  background-color: ${color};
-                  width: 100%;
-                  height: 100%;
-              "
-          ></div>
       </div>
-      <div class="text">${name}</div>
-      `,
+      <div>${name}</div>`,
+  })*/
+  return new DivIcon({
+    className: 'my-div-icon',
+    html: `
+        <img src=${busIcon} class="mask" style="
+        width: 50px;
+        height: 50px;
+        background-repeat: no-repeat;">
+    </img>
+    <div style="width: max-content;">${name}</div>
+    `,
   })
 }
 
@@ -59,9 +69,20 @@ export interface VehicleLocationMapPoint {
 export function BusLayer({ positions }: { positions: VehicleLocationMapPoint[] }) {
   const map = useMap()
   const [agencyList, setAgencyList] = useState<Agency[]>([])
+  /* TODO: 2nd approach
+  const [svgs, setSvgs] = useState(() => new Map())
+  */
 
   useEffect(() => {
     getAgencyList().then(setAgencyList)
+    /* TODO: 2nd approach
+    getAgencyList().then((agencyList) => {
+      setAgencyList(agencyList)
+      agencyList.forEach(async (agency) => {
+        const icon = await getSvgFromOperatorId(agency.operator_ref)
+        setSvgs(new Map(svgs.set(agency.operator_ref, icon)))
+      })
+    })*/
   }, [])
 
   useEffect(() => {
@@ -77,6 +98,11 @@ export function BusLayer({ positions }: { positions: VehicleLocationMapPoint[] }
           <Marker
             position={pos.loc}
             icon={colorIcon({
+              /* TODO: 2nd approach
+              busIcon: svgs.get(pos.operator!) as React.FunctionComponent<
+                React.SVGAttributes<SVGElement>
+              >,*/
+              busIcon: operatorIdToSvg(pos.operator),
               color: numberToColorHsl(pos.color, 60),
               name: agencyList.find((agency) => agency.operator_ref === pos.operator)?.agency_name,
               rotate: pos.bearing,
