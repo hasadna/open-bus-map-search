@@ -32,7 +32,7 @@ export function HbarChart({
           !!entry.percent && (
             <div className="entry" key={entry.name} title={entry.name}>
               <div className="entryName" style={{ backgroundColor: entry.color }}>
-                {entry.name}
+                {entry.name.split('|').slice(0, 2).join(' | ')}
               </div>
               <div className="entryBar">
                 <div className="entryBarTotal">
