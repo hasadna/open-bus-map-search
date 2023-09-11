@@ -11,7 +11,8 @@ const JOIN_SEPARATOR = ','
 const SEARCH_MARGIN_HOURS = 4
 
 export async function getRoutesAsync(
-  timestamp: Moment,
+  fromTimestamp: moment.Moment,
+  toTimestamp: moment.Moment,
   operatorId: string,
   lineNumber: string,
 ): Promise<BusRoute[]> {
@@ -19,8 +20,8 @@ export async function getRoutesAsync(
   const gtfsRoutes = await GTFS_API.gtfsRoutesListGet({
     routeShortName: lineNumber,
     operatorRefs: operatorId,
-    dateFrom: timestamp.toDate(),
-    dateTo: timestamp.toDate(),
+    dateFrom: fromTimestamp.toDate(),
+    dateTo: fromTimestamp.toDate(),
     limit: 100,
   })
   const routes = Object.values(

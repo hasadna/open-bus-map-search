@@ -1,5 +1,5 @@
 import moment, { Moment } from 'moment'
-import React from 'react'
+import React, { useCallback } from 'react'
 import { DatePicker } from 'antd'
 import { TEXTS } from 'src/resources/texts'
 
@@ -14,6 +14,16 @@ const JAN_FIRST_2022 = 1641038400000
 function isDateDisabled(date: Moment) {
   const END_OF_TODAY = moment().endOf('day')
   return date.isAfter(END_OF_TODAY) || date.isBefore(moment(JAN_FIRST_2022))
+}
+
+export function UseDate(initialValue: Moment) {
+  const [date, setDate] = React.useState<Moment>(initialValue)
+  const onChange = useCallback((date: Moment | null) => {
+    if (date) {
+      setDate(date)
+    }
+  }, [])
+  return [date, onChange] as const
 }
 
 const DateTimePicker = ({ timestamp, setDateTime, showTime }: DateTimePicker) => (

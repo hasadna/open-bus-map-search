@@ -19,22 +19,25 @@ const parseTime = (time: string): Moment | null => {
 }
 
 const USE_API = true
-const LIMIT = 100
+const LIMIT = 10000
 
 export const getGapsAsync = async (
-  timestamp: Moment,
+  fromTimestamp: Moment,
+  toTimestamp: Moment,
   operatorId: string,
   lineRef: number,
 ): Promise<GapsList> => {
   log('Searching for gaps', { operatorId, lineRef })
-  const startOfDay = moment(timestamp).startOf('day')
+  const fromDay = moment(fromTimestamp).startOf('day')
+  const toDay = moment(toTimestamp).startOf('day')
+  // const startOfDay = moment(fromTimestamp).startOf('day')
   const data = USE_API
     ? (
         await axios.get<RawGapsList>(`${BASE_PATH}/rides_execution/list`, {
           params: {
             limit: LIMIT,
-            date_from: startOfDay.format('YYYY-MM-DD'),
-            date_to: startOfDay.format('YYYY-MM-DD'),
+            date_from: fromDay.format('YYYY-MM-DD'),
+            date_to: toDay.format('YYYY-MM-DD'),
             operator_ref: operatorId,
             line_ref: lineRef,
           },
