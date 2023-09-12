@@ -3,19 +3,20 @@ import { PageContainer } from './components/PageContainer'
 import { Row } from './components/Row'
 import { Label } from './components/Label'
 import { TEXTS } from '../resources/texts'
-import DateTimePicker from './components/DateTimePicker'
 import OperatorSelector from './components/OperatorSelector'
 import LineNumberSelector from './components/LineSelector'
 import { SearchContext } from '../model/pageState'
 import { Gap, GapsList } from '../model/gaps'
 import { getGapsAsync } from '../api/gapsService'
-import { Checkbox, Spin } from 'antd'
+import { Spin } from 'antd'
 import RouteSelector from './components/RouteSelector'
 import { NotFound } from './components/NotFound'
 import { getRoutesAsync } from '../api/gtfsService'
 import moment, { Moment } from 'moment'
 import styled from 'styled-components'
 import { useSessionStorage } from 'usehooks-ts'
+import { DataAndTimeSelector } from './components/DataAndTimeSelector'
+import { FormControlLabel, Switch } from '@mui/material'
 
 function formatTime(time: Moment) {
   return time.format(TEXTS.time_format)
@@ -82,10 +83,11 @@ const GapsPage = () => {
     <PageContainer>
       <Row>
         <Label text={TEXTS.choose_datetime} />
-        <DateTimePicker
-          showTime={false}
+        <DataAndTimeSelector
           timestamp={moment(timestamp)}
-          setDateTime={(ts) => setSearch((current) => ({ ...current, timestamp: ts.valueOf() }))}
+          setTimestamp={(ts) =>
+            setSearch((current) => ({ ...current, timestamp: ts ? ts.valueOf() : 0 }))
+          }
         />
       </Row>
       <Row>
@@ -127,9 +129,12 @@ const GapsPage = () => {
       )}
       {!gapsIsLoading && routeKey && (
         <>
-          <Checkbox onChange={(e) => setOnlyGapped(e.target.checked)}>
-            {TEXTS.checkbox_only_gaps}
-          </Checkbox>
+          <FormControlLabel
+            control={
+              <Switch checked={onlyGapped} onChange={(e) => setOnlyGapped(e.target.checked)} />
+            }
+            label={TEXTS.checkbox_only_gaps}
+          />
           <Row>
             <TitleCell>{TEXTS.planned_time}</TitleCell>
             <TitleCell>{TEXTS.planned_status}</TitleCell>

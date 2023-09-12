@@ -1,26 +1,32 @@
 import React, { useCallback } from 'react'
-import { Input } from 'antd'
 import { TEXTS } from 'src/resources/texts'
-import styled from 'styled-components'
 import { INPUT_SIZE } from 'src/resources/sizes'
 import debounce from 'lodash.debounce'
+import { TextField } from '@mui/material'
 
 type LineSelectorProps = {
   lineNumber: string | undefined
   setLineNumber: (lineNumber: string) => void
 }
 
-const StyledInput = styled(Input)`
-  width: ${INPUT_SIZE}px;
-`
-
 const LineSelector = ({ lineNumber, setLineNumber }: LineSelectorProps) => {
   const debouncedSetLineNumber = useCallback(debounce(setLineNumber), [setLineNumber])
+
+  const value = lineNumber ? lineNumber : ''
+
   return (
-    <StyledInput
-      placeholder={TEXTS.line_placeholder}
-      value={lineNumber}
+    <TextField
+      sx={{ width: INPUT_SIZE }}
+      label={TEXTS.choose_line}
+      type="number"
+      value={value}
       onChange={(e) => debouncedSetLineNumber(e.target.value)}
+      InputLabelProps={{
+        shrink: true,
+      }}
+      InputProps={{
+        placeholder: TEXTS.line_placeholder,
+      }}
     />
   )
 }

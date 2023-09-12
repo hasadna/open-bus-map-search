@@ -30,7 +30,7 @@ export async function getSiriStopHitTimesAsync(route: BusRoute, stop: BusStop, t
   log('looking for rides arriving at stop around time', {
     route,
     stopId: stop.stopId,
-    timestamp: timestamp.toDate(),
+    timestamp: timestamp.seconds(0).milliseconds(0).toDate(),
   })
 
   const rides = await getRidesAsync(route, stop, timestamp)
