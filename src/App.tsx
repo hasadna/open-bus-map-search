@@ -7,7 +7,7 @@ import 'leaflet/dist/leaflet.css'
 import { TEXTS } from 'src/resources/texts'
 import styled from 'styled-components'
 import heIL from 'antd/es/locale/he_IL'
-import { BrowserRouter as Router, Navigate, Route, Routes } from 'react-router-dom'
+import { BrowserRouter as Router, Navigate, Route, Routes, useSearchParams } from 'react-router-dom'
 import GapsPage from './pages/GapsPage'
 import { PageSearchState, SearchContext } from './model/pageState'
 import moment from 'moment'
@@ -71,22 +71,35 @@ const theme = createTheme({
 const App = () => {
   const location = useLocation()
 
+  const [searchParams, setSearchParams] = useSearchParams()
+  const operatorId = searchParams.get('operatorId')
+  const lineNumber = searchParams.get('lineNumber')
+  const routeKey = searchParams.get('routeKey')
+  const timestamp = searchParams.get('timestamp')
+
   useEffect(() => {
     ReactGA.send({ hitType: 'pageview', page: location.pathname + location.search })
   }, [location])
 
   const [search, setSearch] = useSessionStorage<PageSearchState>('search', {
-    timestamp: moment().valueOf(),
+    timestamp: +timestamp! || moment().valueOf(),
+    operatorId: operatorId || '',
+    lineNumber: lineNumber || '',
+    routeKey: routeKey || '',
   })
+
+  useEffect(() => {
+    setSearchParams({
+      operatorId: search.operatorId!,
+      lineNumber: search.lineNumber!,
+      routeKey: search.routeKey!,
+      timestamp: search.timestamp.toString(),
+    })
+  }, [search.lineNumber, search.operatorId, search.routeKey, search.timestamp, location.pathname])
 
   const safeSetSearch = useCallback((mutate: (prevState: PageSearchState) => PageSearchState) => {
     setSearch((current: PageSearchState) => {
-      const routeKeyBefore = current.routeKey
       const newSearch = mutate(current)
-      if (routeKeyBefore && routeKeyBefore === newSearch.routeKey) {
-        newSearch.routeKey = undefined
-        newSearch.routes = undefined
-      }
       return newSearch
     })
   }, [])
