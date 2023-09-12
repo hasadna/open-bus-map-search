@@ -24,6 +24,9 @@ const LineSelector = ({ lineNumber, setLineNumber }: LineSelectorProps) => {
       InputLabelProps={{
         shrink: true,
       }}
+      InputProps={{
+        placeholder: TEXTS.line_placeholder,
+      }}
     />
   )
 }
