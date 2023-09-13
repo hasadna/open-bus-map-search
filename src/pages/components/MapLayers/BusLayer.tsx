@@ -5,8 +5,7 @@ import MarkerClusterGroup from 'react-leaflet-cluster'
 import { useMap, Marker, Popup } from 'react-leaflet'
 import { VehicleLocation } from 'src/model/vehicleLocation'
 // import getSvgFromOperatorId from '../utils/SvgComponent/SvgComponent'
-// import svgsMap from '../utils/SvgComponent/imagesMap'
-import operatorIdToSvg from '../utils/SvgComponent/imagesMap'
+import operatorIdToSvg from '../utils/SvgComponent/imagesMap2'
 
 const colorIcon = ({
   busIcon,
