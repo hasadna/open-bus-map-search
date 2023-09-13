@@ -1,4 +1,8 @@
-main, main > div, .map-container, .leaflet-container, .map-info {
+main,
+main>div,
+.map-container,
+.leaflet-container,
+.map-info {
     display: flex;
     flex-direction: column;
     flex: 1 1 auto;
@@ -6,12 +10,11 @@ main, main > div, .map-container, .leaflet-container, .map-info {
 
 .mask {
     display: block;
-    mask-repeat: no-repeat;
-    mask-position: center;
-    mask-size: contain;
-    -webkit-mask-repeat: no-repeat;
+    /*-webkit-mask-repeat: no-repeat;
     -webkit-mask-position: center;
-    -webkit-mask-size: contain;
+    -webkit-mask-size: contain;*/
+    height: 50px;
+    background-repeat: no-repeat;
 }
 
 pre {
@@ -20,8 +23,19 @@ pre {
     overflow-y: auto;
 }
 
-.map-header-buttons{
+.map-header-buttons {
     display: flex;
     flex-direction: row;
-    margin-top: 10px;    
+    margin-top: 10px;
+}
+
+.bus-icon-container {
+    background-color: white;
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }

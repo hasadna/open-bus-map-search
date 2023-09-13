@@ -1,29 +1,28 @@
-import React, { useContext, useEffect, useMemo, useState } from 'react'
+import moment from 'moment'
+import { useContext, useEffect, useMemo, useState } from 'react'
+import { MapContainer, Marker, Polyline, Popup, TileLayer } from 'react-leaflet'
+import { getRoutesAsync } from 'src/api/gtfsService'
+import useVehicleLocations from 'src/api/useVehicleLocations'
+import { Label } from 'src/pages/components/Label'
 import LineNumberSelector from 'src/pages/components/LineSelector'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
+import RouteSelector from 'src/pages/components/RouteSelector'
 import { Row } from 'src/pages/components/Row'
 import { INPUT_SIZE } from 'src/resources/sizes'
-import { getRoutesAsync } from 'src/api/gtfsService'
-import RouteSelector from 'src/pages/components/RouteSelector'
-import { Label } from 'src/pages/components/Label'
 import { TEXTS } from 'src/resources/texts'
-import { PageContainer } from './components/PageContainer'
 import { SearchContext } from '../model/pageState'
+import { Point, colorIcon } from './RealtimeMapPage'
 import { NotFound } from './components/NotFound'
-import moment from 'moment'
-import useVehicleLocations from 'src/api/useVehicleLocations'
-import { MapContainer, Marker, Polyline, Popup, TileLayer } from 'react-leaflet'
-import { Point, colorIcon, numberToColorHsl } from './RealtimeMapPage'
+import { PageContainer } from './components/PageContainer'
 
-import './Map.scss'
+import { Autocomplete, TextField } from '@mui/material'
+import { Spin } from 'antd'
 import getAgencyList, { Agency } from 'src/api/agencyList'
 import { VehicleLocation } from 'src/model/vehicleLocation'
-import { getColorByHashString } from './dashboard/OperatorHbarChart/utils'
-import { Spin } from 'antd'
-// import getSvgFromOperatorId from './components/utils/SvgComponent/SvgComponent'
-import operatorIdToSvg from './components/utils/SvgComponent/imagesMap2'
+import './Map.scss'
 import { DataAndTimeSelector } from './components/DataAndTimeSelector'
-import { Autocomplete, TextField } from '@mui/material'
+import operatorIdToSvg from './components/utils/SvgComponent/BusLogosLoader'
+import { getColorByHashString } from './dashboard/OperatorHbarChart/utils'
 
 interface Path {
   locations: VehicleLocation[]
@@ -41,21 +40,11 @@ const SingleLineMapPage = () => {
   const { search, setSearch } = useContext(SearchContext)
   const { operatorId, lineNumber, timestamp, routes, routeKey } = search
   const [routesIsLoading, setRoutesIsLoading] = useState(false)
-  /* TODO: 2nd approach
-  const [svgs, setSvgs] = useState(() => new Map())
-  */
+
   const [agencyList, setAgencyList] = useState<Agency[]>([])
 
   useEffect(() => {
-    getAgencyList().then(setAgencyList)
-    /* TODO: 2nd approach
-    getAgencyList().then((agencyList) => {
-      setAgencyList(agencyList)
-      agencyList.forEach(async (agency) => {
-        const icon = await getSvgFromOperatorId(agency.operator_ref)
-        setSvgs(new Map(svgs.set(agency.operator_ref, icon)))
-      })
-    })*/
+    getAgencyList().then(setAgencyList).catch(console.log)
   }, [])
 
   useEffect(() => {
@@ -73,7 +62,7 @@ const SingleLineMapPage = () => {
     () => routes?.find((route) => route.key === routeKey),
     [routes, routeKey],
   )
-  const selectedRouteIds = selectedRoute?.routeIds
+  const selectedRouteIds = selectedRoute?.routeIds;
 
   const { locations, isLoading: locationsIsLoading } = useVehicleLocations({
     from: selectedRouteIds ? new Date(timestamp).setHours(0, 0, 0, 0) : 0,
@@ -148,15 +137,15 @@ const SingleLineMapPage = () => {
       {
         //!routesIsLoading &&
         routes &&
-          (routes.length === 0 ? (
-            <NotFound>{TEXTS.line_not_found}</NotFound>
-          ) : (
-            <RouteSelector
-              routes={routes}
-              routeKey={routeKey}
-              setRouteKey={(key) => setSearch((current) => ({ ...current, routeKey: key }))}
-            />
-          ))
+        (routes.length === 0 ? (
+          <NotFound>{TEXTS.line_not_found}</NotFound>
+        ) : (
+          <RouteSelector
+            routes={routes}
+            routeKey={routeKey}
+            setRouteKey={(key) => setSearch((current) => ({ ...current, routeKey: key }))}
+          />
+        ))
       }
       {positions && (
         <FilterPositionsByStartTime
@@ -177,15 +166,9 @@ const SingleLineMapPage = () => {
             <Marker
               position={pos.loc}
               icon={colorIcon({
-                /* TODO: 2nd approach
-                busIcon: svgs.get(pos.operator!) as React.FunctionComponent<
-                  React.SVGAttributes<SVGElement>
-                >,*/
                 busIcon: operatorIdToSvg(pos.operator),
-                color: numberToColorHsl(pos.color, 60),
                 name: agencyList.find((agency) => agency.operator_ref === pos.operator)
                   ?.agency_name,
-                rotate: pos.bearing,
               })}
               key={i}>
               <Popup>
@@ -206,19 +189,19 @@ const SingleLineMapPage = () => {
         </MapContainer>
       </div>
     </PageContainer>
-  )
-}
+  );
+};
 
 function FilterPositionsByStartTime({
   positions,
   setFilteredPositions,
   locationsIsLoading,
 }: {
-  positions: Point[]
-  setFilteredPositions: (positions: Point[]) => void
-  locationsIsLoading: boolean
+  positions: Point[];
+  setFilteredPositions: (positions: Point[]) => void;
+  locationsIsLoading: boolean;
 }) {
-  const [startTime, setStartTime] = useState<string>('00:00:00')
+  const [startTime, setStartTime] = useState<string>('00:00:00');
   const options = useMemo(() => {
     const options = positions
       .map((position) => position.point?.siri_ride__scheduled_start_time) // get all start times
@@ -286,4 +269,4 @@ function FilterPositionsByStartTimeSelector({
   )
 }
 
-export default SingleLineMapPage
+export default SingleLineMapPage;
