@@ -21,6 +21,11 @@ import ReactGA from 'react-ga4'
 import { LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 import { ThemeProvider, createTheme } from '@mui/material'
+import { CacheProvider } from '@emotion/react'
+import createCache from '@emotion/cache'
+import rtlPlugin from 'stylis-plugin-rtl'
+import 'moment/locale/he'
+import { heIL as heILmui } from '@mui/x-date-pickers/locales'
 
 const { Content } = Layout
 
@@ -60,12 +65,22 @@ const PAGES = [
   },
 ]
 
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#5f5bff',
+const theme = createTheme(
+  {
+    direction: 'rtl',
+    palette: {
+      primary: {
+        main: '#5f5bff',
+      },
     },
   },
+  heILmui,
+)
+
+// Create rtl cache
+const cacheRtl = createCache({
+  key: 'muirtl',
+  stylisPlugins: [rtlPlugin],
 })
 
 const App = () => {
@@ -105,31 +120,34 @@ const App = () => {
   }, [])
 
   return (
-    <ThemeProvider theme={theme}>
-      <LocalizationProvider dateAdapter={AdapterMoment}>
-        <SearchContext.Provider value={{ search, setSearch: safeSetSearch }}>
-          <ConfigProvider direction="rtl" locale={heIL}>
-            <StyledLayout className="main">
-              <Header pages={PAGES} />
-              <Layout>
-                <StyledContent>
-                  <StyledBody>
-                    <Routes>
-                      <Route path={PAGES[0].key} element={<DashboardPage />} />
-                      <Route path={PAGES[1].key} element={<TimelinePage />} />
-                      <Route path={PAGES[2].key} element={<GapsPage />} />
-                      <Route path={PAGES[3].key} element={<RealtimeMapPage />} />
-                      <Route path={PAGES[4].key} element={<SingleLineMapPage />} />
-                      <Route path="*" element={<Navigate to={PAGES[0].key} replace />} />
-                    </Routes>
-                  </StyledBody>
-                </StyledContent>
-              </Layout>
-            </StyledLayout>
-          </ConfigProvider>
-        </SearchContext.Provider>
-      </LocalizationProvider>
-    </ThemeProvider>
+    //TODO orginage
+    <CacheProvider value={cacheRtl}>
+      <ThemeProvider theme={theme}>
+        <LocalizationProvider dateAdapter={AdapterMoment} adapterLocale="he">
+          <SearchContext.Provider value={{ search, setSearch: safeSetSearch }}>
+            <ConfigProvider direction="rtl" locale={heIL}>
+              <StyledLayout className="main">
+                <Header pages={PAGES} />
+                <Layout>
+                  <StyledContent>
+                    <StyledBody>
+                      <Routes>
+                        <Route path={PAGES[0].key} element={<DashboardPage />} />
+                        <Route path={PAGES[1].key} element={<TimelinePage />} />
+                        <Route path={PAGES[2].key} element={<GapsPage />} />
+                        <Route path={PAGES[3].key} element={<RealtimeMapPage />} />
+                        <Route path={PAGES[4].key} element={<SingleLineMapPage />} />
+                        <Route path="*" element={<Navigate to={PAGES[0].key} replace />} />
+                      </Routes>
+                    </StyledBody>
+                  </StyledContent>
+                </Layout>
+              </StyledLayout>
+            </ConfigProvider>
+          </SearchContext.Provider>
+        </LocalizationProvider>
+      </ThemeProvider>
+    </CacheProvider>
   )
 }
 

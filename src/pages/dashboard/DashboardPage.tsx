@@ -72,14 +72,14 @@ const DashboardPage = () => {
           value={startDate}
           onChange={(data) => setStartDate(data)}
           format="DD/MM/YYYY"
-          label="start"
+          label={TEXTS.start}
         />
         -
         <DatePicker
           value={endDate}
           onChange={(data) => setEndDate(data)}
           format="DD/MM/YYYY"
-          label="end"
+          label={TEXTS.end}
         />
         <FormControlLabel
           control={

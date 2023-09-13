@@ -108,6 +108,7 @@ const SingleLineMapPage = () => {
       {/* choose date */}
       <Row>
         <Label text={TEXTS.choose_datetime} />
+        {/*FIXME id user type manuel all application cruss.*/}
         <DataAndTimeSelector
           timestamp={moment(timestamp)}
           setTimestamp={(ts) =>
