@@ -108,12 +108,9 @@ const SingleLineMapPage = () => {
       {/* choose date */}
       <Row>
         <Label text={TEXTS.choose_datetime} />
-        {/*FIXME id user type manuel all application cruss.*/}
         <DataAndTimeSelector
           timestamp={moment(timestamp)}
-          setTimestamp={(ts) =>
-            setSearch((current) => ({ ...current, timestamp: ts ? ts.valueOf() : 0 }))
-          }
+          setTimestamp={(ts) => setSearch((current) => ({ ...current, timestamp: ts.valueOf() }))}
         />
       </Row>
       {/* choose operator */}
