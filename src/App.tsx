@@ -59,6 +59,10 @@ const PAGES = [
     searchParamsRequired: true,
   },
   {
+    label: TEXTS.gaps_patterns_page_title,
+    key: '/gaps_patterns',
+  },
+  {
     label: TEXTS.realtime_map_page_title,
     key: '/map',
   },
