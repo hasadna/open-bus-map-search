@@ -188,10 +188,10 @@ function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatistic
     }
   }
 
-  if (hourlyData.length > 0) {
-    hourlyData[0].actual_rides = 100
-    // hourlyData[0].planned_rides = 100
-  }
+  const maxPlannedRides = Math.max(
+    ...hourlyData.map((entry) => entry.planned_rides),
+    ...hourlyData.map((entry) => entry.actual_rides),
+  )
 
   return (
     <ComposedChart
@@ -207,8 +207,21 @@ function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatistic
       }}
       barGap={-20}>
       <CartesianGrid stroke="#f5f5f5" />
-      <XAxis type="number" xAxisId={0} reversed={true} orientation={'top'} />
-      <XAxis type="number" xAxisId={1} reversed={true} orientation={'top'} hide />
+      <XAxis
+        type="number"
+        xAxisId={0}
+        reversed={true}
+        orientation={'top'}
+        domain={[0, maxPlannedRides]}
+      />
+      <XAxis
+        type="number"
+        xAxisId={1}
+        reversed={true}
+        orientation={'top'}
+        domain={[0, maxPlannedRides]}
+        hide
+      />
       <YAxis
         dataKey="planned_hour"
         type="category"
