@@ -109,7 +109,6 @@ function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatistic
 
   const [sortingMode, setSortingMode] = useState<'hour' | 'severity'>('hour')
 
-  // Function to sort the data array by hour
   const sortByHour = () => {
     hourlyData.sort((a, b) => a.planned_hour.localeCompare(b.planned_hour))
   }
@@ -121,13 +120,13 @@ function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatistic
       const percentageMissesA = (missesA / a.planned_rides) * 100
       const percentageMissesB = (missesB / b.planned_rides) * 100
 
-      // First, compare by percentage misses
       if (percentageMissesA !== percentageMissesB) {
-        return percentageMissesB - percentageMissesA // Reverse order here
+        return percentageMissesB - percentageMissesA
       }
-
-      // If percentage misses are equal, compare by the amount of misses
-      return missesB - missesA // Reverse order here
+      if (missesA !== missesB) {
+        return missesB - missesA
+      }
+      return b.planned_rides - a.planned_rides
     })
   }
 
@@ -169,8 +168,8 @@ function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatistic
           name="sorting-mode"
           value={sortingMode}
           onChange={(e) => setSortingMode(e.target.value as 'hour' | 'severity')}>
-          <FormControlLabel value="hour" control={<Radio />} label="Sort by Hour" />
-          <FormControlLabel value="severity" control={<Radio />} label="Sort by Severity" />
+          <FormControlLabel value="hour" control={<Radio />} label={TEXTS.order_by_hour} />
+          <FormControlLabel value="severity" control={<Radio />} label={TEXTS.order_by_severity} />
         </RadioGroup>
       </div>
       <ComposedChart

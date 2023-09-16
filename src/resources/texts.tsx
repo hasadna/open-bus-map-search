@@ -88,6 +88,8 @@ export const TEXTS = {
   and_smaller_donors: 'ותרומות קטנות נוספות של ידידי ואוהדי הסדנא.',
   all_rides_completed: 'כמעט / כל הנסיעות בוצעו',
   missing_rides: 'מהנסיעות חסרות',
+  order_by_hour: 'לפי שעה',
+  order_by_severity: 'לפי חומרה',
 }
 
 export const formatted = (text: string, value: string) => text.replace(PLACEHOLDER, value)
