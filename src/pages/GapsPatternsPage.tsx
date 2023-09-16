@@ -26,6 +26,7 @@ import {
   YAxis,
   ComposedChart,
   Cell,
+  TooltipProps,
 } from 'recharts'
 import { FormControlLabel, Radio, RadioGroup, Switch } from '@mui/material'
 
@@ -137,6 +138,28 @@ function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatistic
     sortBySeverity()
   }
 
+  const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>) => {
+    if (active && payload && payload.length > 1) {
+      const actualRides = payload[0].value || 0
+      const plannedRides = payload[1].value || 0
+      const actualPercentage = ((actualRides / plannedRides) * 100).toFixed(2)
+      return (
+        <div
+          className="custom-tooltip"
+          style={{
+            background: 'white',
+            padding: '5px',
+            border: '1px solid #ccc',
+            borderRadius: '5px',
+          }}>
+          {` בוצעו ${actualPercentage}% מהנסיעות (${actualRides}/${plannedRides})`}
+        </div>
+      )
+    }
+
+    return null
+  }
+
   return (
     <div>
       <div>
@@ -184,7 +207,7 @@ function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatistic
           orientation={'right'}
           style={{ direction: 'ltr', marginTop: '-10px' }}
         />
-        <Tooltip />
+        <Tooltip content={<CustomTooltip />} />
         <Legend />
         <Bar dataKey="actual_rides" barSize={20} radius={9} xAxisId={1} opacity={30}>
           {hourlyData.map((entry, index) => (
