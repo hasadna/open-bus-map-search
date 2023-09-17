@@ -49,10 +49,12 @@ export async function getStopsForRouteAsync(
   const stops: BusStop[] = []
 
   for (const routeId of routeIds) {
+    // eslint-disable-next-line no-debugger
+    debugger
     const rides = await GTFS_API.gtfsRidesListGet({
       gtfsRouteId: routeId,
-      startTimeFrom: moment(timestamp).subtract(1, 'days').toDate(),
-      startTimeTo: moment(timestamp).add(1, 'days').toDate(),
+      startTimeFrom: moment(timestamp).subtract(1, 'days').second(0).milliseconds(0).toDate(),
+      startTimeTo: moment(timestamp).add(1, 'days').second(0).milliseconds(0).toDate(),
       limit: 1,
       orderBy: 'start_time',
     })
@@ -88,8 +90,16 @@ export async function getGtfsStopHitTimesAsync(stop: BusStop, timestamp: Moment)
 
   const rides = await GTFS_API.gtfsRidesListGet({
     gtfsRouteId: stop.routeId,
-    startTimeFrom: moment(targetStartTime).subtract(SEARCH_MARGIN_HOURS, 'hours').toDate(),
-    startTimeTo: moment(targetStartTime).add(SEARCH_MARGIN_HOURS, 'hours').toDate(),
+    startTimeFrom: moment(targetStartTime)
+      .subtract(SEARCH_MARGIN_HOURS, 'hours')
+      .second(0)
+      .milliseconds(0)
+      .toDate(),
+    startTimeTo: moment(targetStartTime)
+      .add(SEARCH_MARGIN_HOURS, 'hours')
+      .second(0)
+      .milliseconds(0)
+      .toDate(),
     limit: 1024,
     orderBy: 'start_time asc',
   })

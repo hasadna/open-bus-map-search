@@ -3,9 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@mui/material": "^5.14.7",
+    "@mui/x-date-pickers": "^6.12.1",
     "antd": "^4.22.5",
     "axios": "^0.27.2",
     "classnames": "^2.3.2",
+    "dayjs": "^1.11.9",
     "geolib": "^3.3.3",
     "http-proxy-middleware": "^2.0.6",
     "leaflet": "^1.8.0",
@@ -35,6 +40,7 @@
     "start": "react-scripts start",
     "build": "CI=false react-scripts build",
     "test": "react-scripts test",
+    "test:playwright": "playwright test",
     "eject": "react-scripts eject",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -53,6 +59,7 @@
     ]
   },
   "devDependencies": {
+    "@playwright/test": "^1.37.1",
     "@types/geolib": "^2.0.23",
     "@types/leaflet": "^1.7.11",
     "@types/lodash.debounce": "^4.0.7",
@@ -69,5 +76,6 @@
     "eslint-plugin-react": "^7.31.1",
     "openapi-typescript-codegen": "^0.23.0",
     "prettier": "^2.7.1"
-  }
+  },
+  "packageManager": "yarn@1.22.19"
 }

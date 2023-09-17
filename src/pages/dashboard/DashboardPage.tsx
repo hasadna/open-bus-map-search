@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React, { Fragment, useCallback } from 'react'
 import { useGroupBy } from 'src/api/groupByService'
 import { PageContainer } from '../components/PageContainer'
 import Tooltip from '../components/utils/tooltip/Tooltip'
@@ -6,9 +6,10 @@ import OperatorHbarChart from './OperatorHbarChart/OperatorHbarChart'
 import './DashboardPage.scss'
 import { TEXTS } from 'src/resources/texts'
 import ArrivalByTimeChart from './ArrivalByTimeChart/ArrivalByTimeChart'
-import { DatePicker } from 'antd'
+import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import moment, { Moment } from 'moment'
 import LinesHbarChart from './LineHbarChart/LinesHbarChart'
+import { FormControlLabel, Switch } from '@mui/material'
 
 const now = moment()
 
@@ -68,36 +69,30 @@ const DashboardPage = () => {
     <PageContainer>
       <div className="date-picker-container">
         <DatePicker
-          defaultValue={startDate}
+          value={startDate}
           onChange={(data) => setStartDate(data)}
           format="DD/MM/YYYY"
+          label="start"
         />
         -
         <DatePicker
-          defaultValue={endDate}
+          value={endDate}
           onChange={(data) => setEndDate(data)}
           format="DD/MM/YYYY"
+          label="end"
         />
-        <label className="group-by-hour">
-          <input
-            type="checkbox"
-            checked={groupByHour}
-            onChange={(e) => setGroupByHour(e.target.checked)}
-          />
-          Group by hour
-        </label>
+        <FormControlLabel
+          control={
+            <Switch checked={groupByHour} onChange={(e) => setGroupByHour(e.target.checked)} />
+          }
+          label={TEXTS.group_by_hour_tooltip_content}
+        />
       </div>
       <div className="widgets-container">
         <div className="widget">
           <h2 className="title">
             {TEXTS.dashboard_page_title}
-            <Tooltip
-              text={TEXTS.dashboard_tooltip_content.split('\n').map((row) => (
-                <>
-                  {row}
-                  <br />
-                </>
-              ))}>
+            <Tooltip text={convertLineFeedToHtmlTags(TEXTS.dashboard_tooltip_content)}>
               <span className="tooltip-icon">i</span>
             </Tooltip>
           </h2>
@@ -118,4 +113,14 @@ const DashboardPage = () => {
     </PageContainer>
   )
 }
+
+function convertLineFeedToHtmlTags(srt: string): React.ReactNode {
+  return srt.split('\n').map((row, i) => (
+    <Fragment key={i}>
+      {row}
+      <br />
+    </Fragment>
+  ))
+}
+
 export default DashboardPage
