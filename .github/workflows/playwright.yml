@@ -31,6 +31,6 @@ jobs:
         aws_bucket: ${{ secrets.BUCKET_NAME }}
         source_dir: playwright-report
         destination_dir: ${{ github.run_id }}/open-bus/playwright-report
-    - name: echo link to report
+    - name: output link to report to the summary
       if: always()
-      run: echo "link to report - https://s3.amazonaws.com/noam-gaash.co.il/$GITHUB_RUN_ID/open-bus/playwright-report/index.html"
+      run: echo "link to report - https://s3.amazonaws.com/noam-gaash.co.il/$GITHUB_RUN_ID/open-bus/playwright-report/index.html" >> $GITHUB_STEP_SUMMARY
