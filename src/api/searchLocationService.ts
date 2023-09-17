@@ -6,7 +6,7 @@ export async function searchLocationByQueryAsync(query: string): Promise<LatLngT
     'https://nominatim.openstreetmap.org/search?countrycodes=il&format=json&q=' +
       encodeURIComponent(query),
   )
-  const data = result.data as any[]
+  const data = result.data
   if (data.length === 0) {
     return null
   }

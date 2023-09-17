@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useLayoutEffect, useState } from 'react'
 import { TEXTS } from 'src/resources/texts'
 import { INPUT_SIZE } from 'src/resources/sizes'
 import debounce from 'lodash.debounce'
@@ -10,9 +10,12 @@ type LineSelectorProps = {
 }
 
 const LineSelector = ({ lineNumber, setLineNumber }: LineSelectorProps) => {
-  const debouncedSetLineNumber = useCallback(debounce(setLineNumber), [setLineNumber])
+  const [value, setValue] = useState<LineSelectorProps['lineNumber']>()
+  const debouncedSetLineNumber = useCallback(debounce(setLineNumber, 200), [setLineNumber])
 
-  const value = lineNumber ? lineNumber : ''
+  useLayoutEffect(() => {
+    setValue(lineNumber)
+  }, [])
 
   return (
     <TextField
@@ -20,7 +23,10 @@ const LineSelector = ({ lineNumber, setLineNumber }: LineSelectorProps) => {
       label={TEXTS.choose_line}
       type="number"
       value={value}
-      onChange={(e) => debouncedSetLineNumber(e.target.value)}
+      onChange={(e) => {
+        setValue(e.target.value)
+        debouncedSetLineNumber(e.target.value)
+      }}
       InputLabelProps={{
         shrink: true,
       }}
