@@ -81,8 +81,8 @@ const Questions = () => {
             צרו איתנו קשר
           </a>
         </li>
-        <SlackIcon />
         <li>
+          <img src={SlackIcon} alt="Slack icon" />
           <a href="https://hasadna.slack.com/join/shared_invite/zt-167h764cg-J18ZcY1odoitq978IyMMig#/shared-invite/email">
             דברו איתנו על זה בסלאק
           </a>
