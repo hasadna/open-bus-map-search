@@ -1,6 +1,7 @@
 import styled from 'styled-components'
 import React from 'react'
 import { TEXTS } from 'src/resources/texts'
+import SlackIcon from '../resources/slack-icon.svg'
 
 const About = () => {
   return (
@@ -22,13 +23,11 @@ const WhatIsWebsite = () => {
   return (
     <ParagraphStyle>
       <h2>{TEXTS.what_is_website}</h2>
-      <p>
-        {TEXTS.what_is_website_paragraph}
-        <ul style={{ listStyle: 'disc', paddingRight: '40px' }}>
-          <li>{TEXTS.planning_information}</li>
-          <li>{TEXTS.performance_information}</li>
-        </ul>
-      </p>
+      <p>{TEXTS.what_is_website_paragraph}</p>
+      <ul style={{ listStyle: 'disc', paddingRight: '40px' }}>
+        <li>{TEXTS.planning_information}</li>
+        <li>{TEXTS.performance_information}</li>
+      </ul>
     </ParagraphStyle>
   )
 }
@@ -82,6 +81,7 @@ const Questions = () => {
             צרו איתנו קשר
           </a>
         </li>
+        <SlackIcon />
         <li>
           <a href="https://hasadna.slack.com/join/shared_invite/zt-167h764cg-J18ZcY1odoitq978IyMMig#/shared-invite/email">
             דברו איתנו על זה בסלאק
@@ -96,16 +96,14 @@ const Funding = () => {
   return (
     <ParagraphStyle>
       <h2>{TEXTS.funding}</h2>
-      <p>
-        {TEXTS.funding_paragraph}
-        <ul>
-          <li>{TEXTS.prime_ministers_office}</li>
-          <li>{TEXTS.european_union}</li>
-          <li>{TEXTS.innovation_authority}</li>
-          <li>{TEXTS.migdal_company}</li>
-          <li>{TEXTS.and_smaller_donors}</li>
-        </ul>
-      </p>
+      <p>{TEXTS.funding_paragraph}</p>
+      <ul>
+        <li>{TEXTS.prime_ministers_office}</li>
+        <li>{TEXTS.european_union}</li>
+        <li>{TEXTS.innovation_authority}</li>
+        <li>{TEXTS.migdal_company}</li>
+        <li>{TEXTS.and_smaller_donors}</li>
+      </ul>
     </ParagraphStyle>
   )
 }
@@ -136,6 +134,9 @@ const ParagraphStyle = styled.div`
   & ul {
     list-style: none;
     padding: 0;
+  }
+  & img {
+    width: 5%;
   }
 `
 
