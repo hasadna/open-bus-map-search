@@ -21,6 +21,7 @@ import ReactGA from 'react-ga4'
 import { LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 import { ThemeProvider, createTheme } from '@mui/material'
+import About from './pages/About'
 
 const { Content } = Layout
 
@@ -57,6 +58,18 @@ const PAGES = [
   {
     label: TEXTS.singleline_map_page_title,
     key: '/single-line-map',
+  },
+  {
+    label: TEXTS.about_title,
+    key: '/about',
+  },
+  {
+    label: TEXTS.report_a_bug_title,
+    key: 'https://github.com/hasadna/open-bus-map-search/issues',
+  },
+  {
+    label: TEXTS.donate_title,
+    key: 'https://www.jgive.com/new/he/ils/donation-targets/3268#donation-modal',
   },
 ]
 
@@ -120,6 +133,7 @@ const App = () => {
                       <Route path={PAGES[2].key} element={<GapsPage />} />
                       <Route path={PAGES[3].key} element={<RealtimeMapPage />} />
                       <Route path={PAGES[4].key} element={<SingleLineMapPage />} />
+                      <Route path={PAGES[5].key} element={<About />} />
                       <Route path="*" element={<Navigate to={PAGES[0].key} replace />} />
                     </Routes>
                   </StyledBody>
