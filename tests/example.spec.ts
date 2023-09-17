@@ -19,7 +19,7 @@ test('search bus station', async ({ page }) => {
   await page.getByPlaceholder('לדוגמא: 17א').fill('10')
   await page
     .locator('div')
-    .filter({ hasText: /^בחירת מסלול נסיעה \(5 אפשרויות\)$/ })
+    .filter({ hasText: /^בחירת מסלול נסיעה/ })
     .locator('#operator-select')
     .click()
   await page
