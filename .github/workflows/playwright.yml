@@ -22,3 +22,15 @@ jobs:
         name: playwright-report
         path: playwright-report/
         retention-days: 30
+    - uses: shallwefootball/s3-upload-action@master
+      name: Upload report to S3
+      if: always()
+      with:
+        aws_key_id: ${{ secrets.AWS_KEY_ID }}
+        aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
+        aws_bucket: ${{ secrets.BUCKET_NAME }}
+        source_dir: playwright-report
+        destination_dir: ${{ github.run_id }}/open-bus/playwright-report
+    - name: echo link to report
+      if: always()
+      run: echo "link to report - https://s3.amazonaws.com/noam-gaash.co.il/$GITHUB_RUN_ID/open-bus/playwright-report/index.html"
