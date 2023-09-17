@@ -19,7 +19,9 @@ function Menu({ pages }: { pages: MenuPage[] }) {
         <li
           className={cn('menu-item', { active: currpage === page.key })}
           key={page.key}
-          onClick={() => navigate(page.key)}>
+          onClick={() =>
+            page.key[0] === '/' ? navigate(page.key) : window.open(page.key, '_blank')
+          }>
           {page.label}
         </li>
       ))}
