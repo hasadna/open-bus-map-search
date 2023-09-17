@@ -28,7 +28,7 @@ jobs:
       with:
         aws_key_id: ${{ secrets.AWS_KEY_ID }}
         aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
-        aws_bucket: ${{ secrets.BUCKET_NAME }}
+        aws_bucket: noam-gaash.co.il
         source_dir: playwright-report
         destination_dir: ${{ github.run_id }}/open-bus/playwright-report
     - name: output link to report to the summary
