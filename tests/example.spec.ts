@@ -10,7 +10,7 @@ test('search bus station', async ({ page }) => {
 
   await resetTime(page)
 
-  await page.goto('http://localhost:3000/dashboard')
+  await page.goto('/dashboard')
   await page.locator('li').filter({ hasText: 'לוח זמנים היסטורי' }).click()
   await page.getByLabel('חברה מפעילה').click()
   await page.getByRole('combobox', { name: 'חברה מפעילה' }).fill('אג')
