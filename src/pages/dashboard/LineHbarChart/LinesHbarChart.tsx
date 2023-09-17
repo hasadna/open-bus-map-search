@@ -1,17 +1,6 @@
 import React from 'react'
-import { TEXTS } from 'src/resources/texts'
-import { getColorByHashString } from './utils'
-import cn from 'classnames'
 import { HbarChart } from '../HbarChart/HbarChart'
 import { getColorName } from '../OperatorHbarChart/OperatorHbarChart'
-
-const numberFormatter = new Intl.NumberFormat('he-IL')
-
-function getFirstNumber(input: string): string | null {
-  const regex = /\d+/g
-  const numbers = input.match(regex)
-  return numbers ? numbers[0] : null
-}
 
 function LinesHbarChart({
   lines,
