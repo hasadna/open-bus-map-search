@@ -112,9 +112,7 @@ const SingleLineMapPage = () => {
         <Label text={TEXTS.choose_datetime} />
         <DataAndTimeSelector
           timestamp={moment(timestamp)}
-          setTimestamp={(ts) =>
-            setSearch((current) => ({ ...current, timestamp: ts ? ts.valueOf() : 0 }))
-          }
+          setTimestamp={(ts) => setSearch((current) => ({ ...current, timestamp: ts.valueOf() }))}
         />
       </Row>
       {/* choose operator */}
