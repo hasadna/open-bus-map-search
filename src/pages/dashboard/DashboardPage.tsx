@@ -1,4 +1,4 @@
-import React, { Fragment, useCallback } from 'react'
+import React, { Fragment, useCallback, useContext } from 'react'
 import { useGroupBy } from 'src/api/groupByService'
 import { PageContainer } from '../components/PageContainer'
 import Tooltip from '../components/utils/tooltip/Tooltip'
@@ -10,6 +10,9 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import moment, { Moment } from 'moment'
 import LinesHbarChart from './LineHbarChart/LinesHbarChart'
 import { FormControlLabel, Switch } from '@mui/material'
+import { Label } from 'src/pages/components/Label'
+import OperatorSelector from 'src/pages/components/OperatorSelector'
+import { SearchContext } from '../../model/pageState'
 
 const now = moment()
 
@@ -28,6 +31,10 @@ const DashboardPage = () => {
   const [endDate, setEndDate] = useDate(now.clone().subtract(1, 'day'))
   const [groupByHour, setGroupByHour] = React.useState<boolean>(false)
 
+  const { search, setSearch } = useContext(SearchContext)
+  const { operatorId, lineNumber, timestamp, routes, routeKey } = search
+  console.log({ operatorId })
+
   const groupByOperatorData = useGroupBy({
     dateTo: endDate,
     dateFrom: startDate,
@@ -42,14 +49,16 @@ const DashboardPage = () => {
     dateTo: endDate,
     dateFrom: startDate,
     groupBy: 'operator_ref,line_ref',
-  }).map((item) => ({
-    id: `${item.line_ref}|${item.operator_ref?.agency_id}` || 'Unknown',
-    operator_name: item.operator_ref?.agency_name || 'Unknown',
-    short_name: JSON.parse(item.route_short_name)[0],
-    long_name: item.route_long_name,
-    total: item.total_planned_rides,
-    actual: item.total_actual_rides,
-  }))
+  })
+    .filter((row) => row.operator_ref?.agency_id == operatorId || !Number(operatorId))
+    .map((item) => ({
+      id: `${item.line_ref}|${item.operator_ref?.agency_id}` || 'Unknown',
+      operator_name: item.operator_ref?.agency_name || 'Unknown',
+      short_name: JSON.parse(item.route_short_name)[0],
+      long_name: item.route_long_name,
+      total: item.total_planned_rides,
+      actual: item.total_actual_rides,
+    }))
 
   const graphData = useGroupBy({
     dateTo: endDate,
@@ -86,6 +95,11 @@ const DashboardPage = () => {
             <Switch checked={groupByHour} onChange={(e) => setGroupByHour(e.target.checked)} />
           }
           label={TEXTS.group_by_hour_tooltip_content}
+        />
+        <Label text={TEXTS.choose_operator} />
+        <OperatorSelector
+          operatorId={operatorId}
+          setOperatorId={(id) => setSearch((current) => ({ ...current, operatorId: id }))}
         />
       </div>
       <div className="widgets-container">
