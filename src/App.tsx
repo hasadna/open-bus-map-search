@@ -18,14 +18,14 @@ import RealtimeMapPage from './pages/RealtimeMapPage'
 import SingleLineMapPage from './pages/SingleLineMapPage'
 import { useLocation } from 'react-router-dom'
 import ReactGA from 'react-ga4'
-import { LocalizationProvider } from '@mui/x-date-pickers'
-import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
-import { ThemeProvider, createTheme } from '@mui/material'
 import { CacheProvider } from '@emotion/react'
 import createCache from '@emotion/cache'
 import rtlPlugin from 'stylis-plugin-rtl'
 import 'moment/locale/he'
 import { heIL as heILmui } from '@mui/x-date-pickers/locales'
+import { ThemeProvider, createTheme } from '@mui/material'
+import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
+import { LocalizationProvider } from '@mui/x-date-pickers'
 
 const { Content } = Layout
 
@@ -120,11 +120,10 @@ const App = () => {
   }, [])
 
   return (
-    //TODO orginage
-    <CacheProvider value={cacheRtl}>
-      <ThemeProvider theme={theme}>
-        <LocalizationProvider dateAdapter={AdapterMoment} adapterLocale="he">
-          <SearchContext.Provider value={{ search, setSearch: safeSetSearch }}>
+    <SearchContext.Provider value={{ search, setSearch: safeSetSearch }}>
+      <CacheProvider value={cacheRtl}>
+        <ThemeProvider theme={theme}>
+          <LocalizationProvider dateAdapter={AdapterMoment} adapterLocale="he">
             <ConfigProvider direction="rtl" locale={heIL}>
               <StyledLayout className="main">
                 <Header pages={PAGES} />
@@ -144,10 +143,10 @@ const App = () => {
                 </Layout>
               </StyledLayout>
             </ConfigProvider>
-          </SearchContext.Provider>
-        </LocalizationProvider>
-      </ThemeProvider>
-    </CacheProvider>
+          </LocalizationProvider>
+        </ThemeProvider>
+      </CacheProvider>
+    </SearchContext.Provider>
   )
 }
 
