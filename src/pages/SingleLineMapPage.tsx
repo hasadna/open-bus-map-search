@@ -1,5 +1,5 @@
 import moment from 'moment'
-import { useContext, useEffect, useMemo, useState } from 'react'
+import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { MapContainer, Marker, Polyline, Popup, TileLayer } from 'react-leaflet'
 import { getRoutesAsync } from 'src/api/gtfsService'
 import useVehicleLocations from 'src/api/useVehicleLocations'
@@ -62,7 +62,7 @@ const SingleLineMapPage = () => {
     () => routes?.find((route) => route.key === routeKey),
     [routes, routeKey],
   )
-  const selectedRouteIds = selectedRoute?.routeIds;
+  const selectedRouteIds = selectedRoute?.routeIds
 
   const { locations, isLoading: locationsIsLoading } = useVehicleLocations({
     from: selectedRouteIds ? new Date(timestamp).setHours(0, 0, 0, 0) : 0,
@@ -137,15 +137,15 @@ const SingleLineMapPage = () => {
       {
         //!routesIsLoading &&
         routes &&
-        (routes.length === 0 ? (
-          <NotFound>{TEXTS.line_not_found}</NotFound>
-        ) : (
-          <RouteSelector
-            routes={routes}
-            routeKey={routeKey}
-            setRouteKey={(key) => setSearch((current) => ({ ...current, routeKey: key }))}
-          />
-        ))
+          (routes.length === 0 ? (
+            <NotFound>{TEXTS.line_not_found}</NotFound>
+          ) : (
+            <RouteSelector
+              routes={routes}
+              routeKey={routeKey}
+              setRouteKey={(key) => setSearch((current) => ({ ...current, routeKey: key }))}
+            />
+          ))
       }
       {positions && (
         <FilterPositionsByStartTime
@@ -158,7 +158,7 @@ const SingleLineMapPage = () => {
       <div className="map-info">
         <MapContainer center={position.loc} zoom={8} scrollWheelZoom={true}>
           <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            attribution='&copy <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
           />
 
@@ -189,19 +189,19 @@ const SingleLineMapPage = () => {
         </MapContainer>
       </div>
     </PageContainer>
-  );
-};
+  )
+}
 
 function FilterPositionsByStartTime({
   positions,
   setFilteredPositions,
   locationsIsLoading,
 }: {
-  positions: Point[];
-  setFilteredPositions: (positions: Point[]) => void;
-  locationsIsLoading: boolean;
+  positions: Point[]
+  setFilteredPositions: (positions: Point[]) => void
+  locationsIsLoading: boolean
 }) {
-  const [startTime, setStartTime] = useState<string>('00:00:00');
+  const [startTime, setStartTime] = useState<string>('00:00:00')
   const options = useMemo(() => {
     const options = positions
       .map((position) => position.point?.siri_ride__scheduled_start_time) // get all start times
@@ -269,4 +269,4 @@ function FilterPositionsByStartTimeSelector({
   )
 }
 
-export default SingleLineMapPage;
+export default SingleLineMapPage
