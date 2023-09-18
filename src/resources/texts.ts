@@ -49,6 +49,8 @@ export const TEXTS = {
   from_time_x_to_time_y: 'משעה XXX עד שעה YYY',
   choose_start_time: 'בחירת שעת התחלה',
   group_by_hour_tooltip_content: 'קיבוץ לפי שעה',
+  start: 'התחלה',
+  end: 'סיום',
   about_title: 'אודות',
   donate_title: 'לתרומות',
   report_a_bug_title: 'דיווח על באג',
