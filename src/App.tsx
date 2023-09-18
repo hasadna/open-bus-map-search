@@ -149,6 +149,7 @@ const App = () => {
                         <Route path={PAGES[2].key} element={<GapsPage />} />
                         <Route path={PAGES[3].key} element={<RealtimeMapPage />} />
                         <Route path={PAGES[4].key} element={<SingleLineMapPage />} />
+                        <Route path={PAGES[5].key} element={<About />} />
                         <Route path="*" element={<Navigate to={PAGES[0].key} replace />} />
                       </Routes>
                     </StyledBody>
