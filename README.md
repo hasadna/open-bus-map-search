@@ -18,6 +18,7 @@ This app is created by the volunteers of [Public Knowledge Workshop](https://www
 
 ### Running the project:
 
+- fork the repo
 - clone the repo
 - `yarn install`
 - `yarn start`

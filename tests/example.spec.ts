@@ -10,7 +10,7 @@ test('search bus station', async ({ page }) => {
 
   await resetTime(page)
 
-  await page.goto('http://localhost:3000/dashboard')
+  await page.goto('/dashboard')
   await page.locator('li').filter({ hasText: 'לוח זמנים היסטורי' }).click()
   await page.getByLabel('חברה מפעילה').click()
   await page.getByRole('combobox', { name: 'חברה מפעילה' }).fill('אג')
@@ -19,7 +19,7 @@ test('search bus station', async ({ page }) => {
   await page.getByPlaceholder('לדוגמא: 17א').fill('10')
   await page
     .locator('div')
-    .filter({ hasText: /^בחירת מסלול נסיעה \(5 אפשרויות\)$/ })
+    .filter({ hasText: /^בחירת מסלול נסיעה/ })
     .locator('#operator-select')
     .click()
   await page
@@ -62,6 +62,7 @@ function resetTime(page: Page) {
           return MockDate.currentTimeStamp + MockDate.getTick()
         }
       }
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       window.Date = MockDate
     })

@@ -51,6 +51,30 @@ export const TEXTS = {
   group_by_hour_tooltip_content: 'קיבוץ לפי שעה',
   start: 'התחלה',
   end: 'סיום',
+  about_title: 'אודות',
+  donate_title: 'לתרומות',
+  report_a_bug_title: 'דיווח על באג',
+  website_name: 'דאטאבוס',
+  what_is_website: 'מהו אתר “דאטאבוס”?',
+  what_is_website_paragraph:
+    'אתר דאטאבוס של הסדנא לידע ציבורי מציג נתונים על איכות ביצוע קווי התחבורה הציבורית בארץ. דאטאבוס מחבר למעשה בין מספר מקורות מידע ממשלתיים:',
+  planning_information:
+    "מידע התכנון - GTFS - המפורסם כל יום ומכיל את פרטי הקווים, מיקומי התחנות, שעות המעבר בהן וכו'.",
+  performance_information:
+    'מידע הביצוע - SIRI - על כל קו בישראל מוצמד GPS שמדווח את מיקום האוטובוס כל כמה רגעים.',
+  discovered_mistake: 'גילינו טעות או מידע לא מעודכן, מה עושים?',
+  discovered_mistake_paragraph:
+    'מכיוון שכל המידע המוצג באתר מתבסס על מקורות המידע הרשמיים, מומלץ לפנות לגורם המפרסם לצורך בירור או תיקון הבעיה. צוות “דאטאבוס“ ישמח לסייע לכם להבין מיהו הגורם הממשלתי שפרסם את הנתון או המידע שדורשים בירור או תיקון.',
+  privacy: 'פרטיות',
+  license: 'רשיון שימוש',
+  questions: 'שאלות? תגובות? רעיונות?',
+  funding: 'מימון',
+  funding_paragraph: 'לאורך השנים, הפרויקט קיבל מימון נוסף גם מהגופים הבאים:',
+  prime_ministers_office: 'משרד ראש הממשלה',
+  european_union: 'האיחוד האירופי',
+  innovation_authority: 'רשות החדשנות',
+  migdal_company: 'חברת “מגדל“',
+  and_smaller_donors: 'ועוד מספר תורמים קטנים יותר.',
 }
 
 export const formatted = (text: string, value: string) => text.replace(PLACEHOLDER, value)

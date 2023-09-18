@@ -26,6 +26,7 @@ import { heIL as heILmui } from '@mui/x-date-pickers/locales'
 import { ThemeProvider, createTheme } from '@mui/material'
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 import { LocalizationProvider } from '@mui/x-date-pickers'
+import About from './pages/About'
 
 const { Content } = Layout
 
@@ -62,6 +63,18 @@ const PAGES = [
   {
     label: TEXTS.singleline_map_page_title,
     key: '/single-line-map',
+  },
+  {
+    label: TEXTS.about_title,
+    key: '/about',
+  },
+  {
+    label: TEXTS.report_a_bug_title,
+    key: 'https://github.com/hasadna/open-bus-map-search/issues',
+  },
+  {
+    label: TEXTS.donate_title,
+    key: 'https://www.jgive.com/new/he/ils/donation-targets/3268#donation-modal',
   },
 ]
 
