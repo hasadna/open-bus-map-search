@@ -2,7 +2,6 @@ import React, { useContext, useEffect, useMemo, useState } from 'react'
 import LineNumberSelector from 'src/pages/components/LineSelector'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
 import { Row } from 'src/pages/components/Row'
-import { INPUT_SIZE } from 'src/resources/sizes'
 import { getRoutesAsync } from 'src/api/gtfsService'
 import RouteSelector from 'src/pages/components/RouteSelector'
 import { Label } from 'src/pages/components/Label'
@@ -14,14 +13,23 @@ import moment from 'moment'
 import useVehicleLocations from 'src/api/useVehicleLocations'
 import { MapContainer, Marker, Polyline, Popup, TileLayer } from 'react-leaflet'
 import { Point, colorIcon, numberToColorHsl } from './RealtimeMapPage'
-
+import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
 import './Map.scss'
 import getAgencyList, { Agency } from 'src/api/agencyList'
 import { VehicleLocation } from 'src/model/vehicleLocation'
 import { getColorByHashString } from './dashboard/OperatorHbarChart/utils'
 import { Spin } from 'antd'
 import { DataAndTimeSelector } from './components/DataAndTimeSelector'
-import { Autocomplete, TextField } from '@mui/material'
+import { Autocomplete, CircularProgress, Paper, TextField, styled } from '@mui/material'
+import { INPUT_SIZE } from 'src/resources/sizes'
+
+const Item = styled(Paper)(({ theme }) => ({
+  backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+  ...theme.typography.body2,
+  padding: theme.spacing(1),
+  textAlign: 'center',
+  color: theme.palette.text.secondary,
+}))
 
 interface Path {
   locations: VehicleLocation[]
@@ -105,51 +113,52 @@ const SingleLineMapPage = () => {
 
   return (
     <PageContainer className="map-container">
-      {/* choose date */}
-      <Row>
-        <Label text={TEXTS.choose_datetime} />
-        <DataAndTimeSelector
-          timestamp={moment(timestamp)}
-          setTimestamp={(ts) => setSearch((current) => ({ ...current, timestamp: ts.valueOf() }))}
-        />
-      </Row>
-      {/* choose operator */}
-      <Row>
-        <Label text={TEXTS.choose_operator} />
-        <OperatorSelector
-          operatorId={operatorId}
-          setOperatorId={(id) => setSearch((current) => ({ ...current, operatorId: id }))}
-        />
-      </Row>
-      {/* choose line number */}
-      <Row>
-        <Label text={TEXTS.choose_line} />
-        <LineNumberSelector
-          lineNumber={lineNumber}
-          setLineNumber={(number) => setSearch((current) => ({ ...current, lineNumber: number }))}
-        />
-      </Row>
-      {/* choose route */}
-      {
-        //!routesIsLoading &&
-        routes &&
-          (routes.length === 0 ? (
-            <NotFound>{TEXTS.line_not_found}</NotFound>
-          ) : (
-            <RouteSelector
-              routes={routes}
-              routeKey={routeKey}
-              setRouteKey={(key) => setSearch((current) => ({ ...current, routeKey: key }))}
-            />
-          ))
-      }
-      {positions && (
-        <FilterPositionsByStartTime
-          positions={positions}
-          setFilteredPositions={setFilteredPositions}
-          locationsIsLoading={locationsIsLoading}
-        />
-      )}
+      <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
+        {/* choose date*/}
+        <GridSelectorAndLabel label={TEXTS.choose_datetime}>
+          <DataAndTimeSelector
+            timestamp={moment(timestamp)}
+            setTimestamp={(ts) => setSearch((current) => ({ ...current, timestamp: ts.valueOf() }))}
+          />
+        </GridSelectorAndLabel>
+        {/* choose operator */}
+        <GridSelectorAndLabel label={TEXTS.choose_operator}>
+          <OperatorSelector
+            operatorId={operatorId}
+            setOperatorId={(id) => setSearch((current) => ({ ...current, operatorId: id }))}
+          />
+        </GridSelectorAndLabel>
+        {/* choose line number */}
+        <GridSelectorAndLabel label={TEXTS.choose_line}>
+          <LineNumberSelector
+            lineNumber={lineNumber}
+            setLineNumber={(number) => setSearch((current) => ({ ...current, lineNumber: number }))}
+          />
+        </GridSelectorAndLabel>
+        <Grid xs={12}>
+          {
+            //!routesIsLoading &&
+            routes &&
+              (routes.length === 0 ? (
+                <NotFound>{TEXTS.line_not_found}</NotFound>
+              ) : (
+                <RouteSelector
+                  routes={routes}
+                  routeKey={routeKey}
+                  setRouteKey={(key) => setSearch((current) => ({ ...current, routeKey: key }))}
+                />
+              ))
+          }
+        </Grid>
+        {/* choose route */}
+        {positions && (
+          <FilterPositionsByStartTime
+            positions={positions}
+            setFilteredPositions={setFilteredPositions}
+            locationsIsLoading={locationsIsLoading}
+          />
+        )}
+      </Grid>
 
       <div className="map-info">
         <MapContainer center={position.loc} zoom={8} scrollWheelZoom={true}>
@@ -189,6 +198,29 @@ const SingleLineMapPage = () => {
   )
 }
 
+//TODO import type for children
+function GridSelectorAndLabel(props: {
+  label: string
+  children:
+    | string
+    | number
+    | boolean
+    | React.ReactElement<any, string | React.JSXElementConstructor<any>>
+    | Iterable<React.ReactNode>
+    | React.ReactPortal
+    | null
+    | undefined
+}) {
+  return (
+    <>
+      <Grid xs={4}>
+        <Label text={props.label} />
+      </Grid>
+      <Grid xs={8}>{props.children}</Grid>
+    </>
+  )
+}
+
 function FilterPositionsByStartTime({
   positions,
   setFilteredPositions,
@@ -223,15 +255,19 @@ function FilterPositionsByStartTime({
   }, [startTime])
 
   return (
-    <Row>
-      <Label text={TEXTS.choose_start_time} />
-      {locationsIsLoading && <Spin size="small" />}
-      <FilterPositionsByStartTimeSelector
-        options={options}
-        startTime={startTime}
-        setStartTime={setStartTime}
-      />
-    </Row>
+    <>
+      <Grid xs={3}>
+        <Label text={TEXTS.choose_start_time} />
+      </Grid>
+      <Grid xs={1}>{locationsIsLoading && <CircularProgress />}</Grid>
+      <Grid xs={8}>
+        <FilterPositionsByStartTimeSelector
+          options={options}
+          startTime={startTime}
+          setStartTime={setStartTime}
+        />
+      </Grid>
+    </>
   )
 }
 
@@ -251,14 +287,14 @@ function FilterPositionsByStartTimeSelector({
 }: FilterPositionsByStartTimeSelectorProps) {
   const valueFinned = options.find((option) => option.value === startTime)
   const value = valueFinned ? valueFinned : null
-
+  //TODO extract file
   return (
     <Autocomplete
+      sx={{ width: '100%' }}
       disablePortal
       value={value}
       onChange={(e, value) => setStartTime(value ? value.value : '0')}
       id="operator-select"
-      sx={{ width: INPUT_SIZE }}
       options={options}
       renderInput={(params) => <TextField {...params} label={TEXTS.choose_start_time} />}
       getOptionLabel={(option) => option.label}
