@@ -8,12 +8,6 @@ main>div,
     flex: 1 1 auto;
 }
 
-.mask {
-    display: block;
-    height: 50px;
-    background-repeat: no-repeat;
-}
-
 pre {
     direction: ltr;
     height: 200px;
@@ -27,12 +21,25 @@ pre {
 }
 
 .bus-icon-container {
-    background-color: white;
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+
+    > .bus-icon-circle{
+        width: 50px;
+        height: 50px;
+        padding: 5px;
+        border-radius: 50%;
+        background-color: white;
+        img {
+            width: 100%;
+            height: 100%;
+        }
+    }
+    > .operator-name {
+        background-color: rgba(255, 255, 255, 0.4);
+        font-weight: bold;
+        font-size: 1.25em;
+    }
 }

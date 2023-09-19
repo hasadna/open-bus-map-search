@@ -11,9 +11,10 @@ const colorIcon = ({ operator_id, name }: { operator_id: string; name?: string }
     className: 'my-div-icon',
     html: `
     <div class="bus-icon-container">
-      <img src=${path} class="mask">
-      </img>
-      <div style="width: max-content;">${name}</div>
+      <div class="bus-icon-circle">
+        <img src="${path}" alt="${name}" />
+      </div>
+      <div class="operator-name">${name}</div>
     </div>
     `,
   })
