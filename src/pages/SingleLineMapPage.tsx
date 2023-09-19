@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react'
 import LineNumberSelector from 'src/pages/components/LineSelector'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
-import { Row } from 'src/pages/components/Row'
 import { getRoutesAsync } from 'src/api/gtfsService'
 import RouteSelector from 'src/pages/components/RouteSelector'
 import { Label } from 'src/pages/components/Label'
@@ -18,18 +17,9 @@ import './Map.scss'
 import getAgencyList, { Agency } from 'src/api/agencyList'
 import { VehicleLocation } from 'src/model/vehicleLocation'
 import { getColorByHashString } from './dashboard/OperatorHbarChart/utils'
-import { Spin } from 'antd'
 import { DataAndTimeSelector } from './components/DataAndTimeSelector'
-import { Autocomplete, CircularProgress, Paper, TextField, styled } from '@mui/material'
+import { Autocomplete, CircularProgress, TextField } from '@mui/material'
 import { INPUT_SIZE } from 'src/resources/sizes'
-
-const Item = styled(Paper)(({ theme }) => ({
-  backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
-  ...theme.typography.body2,
-  padding: theme.spacing(1),
-  textAlign: 'center',
-  color: theme.palette.text.secondary,
-}))
 
 interface Path {
   locations: VehicleLocation[]
@@ -199,6 +189,7 @@ const SingleLineMapPage = () => {
 }
 
 //TODO import type for children
+//TODO extract file
 function GridSelectorAndLabel(props: {
   label: string
   children:
