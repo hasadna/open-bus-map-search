@@ -13,7 +13,6 @@ import { VehicleLocation } from 'src/model/vehicleLocation'
 import './Map.scss'
 import { DataAndTimeSelector } from './components/DataAndTimeSelector'
 import MinuteSelector from './components/MinuteSelector'
-import operatorIdToSvg from './components/utils/SvgComponent/BusLogosLoader'
 import { getColorByHashString } from './dashboard/OperatorHbarChart/utils'
 
 export interface Point {
@@ -32,18 +31,13 @@ interface Path {
   vehicleRef: number
 }
 
-export const colorIcon = ({
-  busIcon,
-  name,
-}: {
-  busIcon: React.FunctionComponent<React.SVGAttributes<SVGElement>>
-  name?: string
-}) => {
+export const colorIcon = ({ operator_id, name }: { operator_id: string; name?: string }) => {
+  const path = process.env.PUBLIC_URL + `/bus-logos/${operator_id}.svg`
   return new DivIcon({
     className: 'my-div-icon',
     html: `
     <div class="bus-icon-container">
-      <img src=${busIcon} class="mask">
+      <img src=${path} class="mask">
       </img>
       <div style="width: max-content">${name}</div>
     </div>
@@ -223,7 +217,7 @@ export function Markers({ positions }: { positions: Point[] }) {
           <Marker
             position={pos.loc}
             icon={colorIcon({
-              busIcon: operatorIdToSvg(pos.operator),
+              operator_id: pos.operator?.toString() || 'default',
               name: agencyList.find((agency) => agency.operator_ref === pos.operator)?.agency_name,
             })}
             key={i}>

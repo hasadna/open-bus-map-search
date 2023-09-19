@@ -2603,11 +2603,6 @@
   resolved "https://registry.yarnpkg.com/@types/underscore/-/underscore-1.11.9.tgz#76a071d27e544e422dbf00f956818b1057f377b2"
   integrity sha512-M63wKUdsjDFUfyFt1TCUZHGFk9KDAa5JP0adNUErbm0U45Lr06HtANdYRP+GyleEopEoZ4UyBcdAC5TnW4Uz2w==
 
-"@types/webpack-env@^1.18.1":
-  version "1.18.1"
-  resolved "https://registry.yarnpkg.com/@types/webpack-env/-/webpack-env-1.18.1.tgz#49699bb508961e14a3bfb68c78cd87b296889d1d"
-  integrity sha512-D0HJET2/UY6k9L6y3f5BL+IDxZmPkYmPT4+qBrRdmRLYRuV0qNKizMgTvYxXZYn+36zjPeoDZAEYBCM6XB+gww==
-
 "@types/ws@^8.5.5":
   version "8.5.5"
   resolved "https://registry.yarnpkg.com/@types/ws/-/ws-8.5.5.tgz#af587964aa06682702ee6dcbc7be41a80e4b28eb"

@@ -21,7 +21,6 @@ import getAgencyList, { Agency } from 'src/api/agencyList'
 import { VehicleLocation } from 'src/model/vehicleLocation'
 import './Map.scss'
 import { DataAndTimeSelector } from './components/DataAndTimeSelector'
-import operatorIdToSvg from './components/utils/SvgComponent/BusLogosLoader'
 import { getColorByHashString } from './dashboard/OperatorHbarChart/utils'
 
 interface Path {
@@ -164,7 +163,7 @@ const SingleLineMapPage = () => {
             <Marker
               position={pos.loc}
               icon={colorIcon({
-                busIcon: operatorIdToSvg(pos.operator),
+                operator_id: pos.operator?.toString() || 'default',
                 name: agencyList.find((agency) => agency.operator_ref === pos.operator)
                   ?.agency_name,
               })}
