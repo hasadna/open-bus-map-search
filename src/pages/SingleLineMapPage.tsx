@@ -18,8 +18,10 @@ import getAgencyList, { Agency } from 'src/api/agencyList'
 import { VehicleLocation } from 'src/model/vehicleLocation'
 import { getColorByHashString } from './dashboard/OperatorHbarChart/utils'
 import { DataAndTimeSelector } from './components/DataAndTimeSelector'
-import { Autocomplete, CircularProgress, TextField } from '@mui/material'
+import { CircularProgress } from '@mui/material'
 import { INPUT_SIZE } from 'src/resources/sizes'
+import { GridSelectorAndLabel } from './components/GridSelectorAndLabel'
+import { FilterPositionsByStartTimeSelector } from './components/FilterPositionsByStartTimeSelector'
 
 interface Path {
   locations: VehicleLocation[]
@@ -188,30 +190,6 @@ const SingleLineMapPage = () => {
   )
 }
 
-//TODO import type for children
-//TODO extract file
-function GridSelectorAndLabel(props: {
-  label: string
-  children:
-    | string
-    | number
-    | boolean
-    | React.ReactElement<any, string | React.JSXElementConstructor<any>>
-    | Iterable<React.ReactNode>
-    | React.ReactPortal
-    | null
-    | undefined
-}) {
-  return (
-    <>
-      <Grid xs={4}>
-        <Label text={props.label} />
-      </Grid>
-      <Grid xs={8}>{props.children}</Grid>
-    </>
-  )
-}
-
 function FilterPositionsByStartTime({
   positions,
   setFilteredPositions,
@@ -259,37 +237,6 @@ function FilterPositionsByStartTime({
         />
       </Grid>
     </>
-  )
-}
-
-type FilterPositionsByStartTimeSelectorProps = {
-  options: {
-    value: string
-    label: string
-  }[]
-  startTime?: string
-  setStartTime: (time: string) => void
-}
-
-function FilterPositionsByStartTimeSelector({
-  options,
-  startTime,
-  setStartTime,
-}: FilterPositionsByStartTimeSelectorProps) {
-  const valueFinned = options.find((option) => option.value === startTime)
-  const value = valueFinned ? valueFinned : null
-  //TODO extract file
-  return (
-    <Autocomplete
-      sx={{ width: '100%' }}
-      disablePortal
-      value={value}
-      onChange={(e, value) => setStartTime(value ? value.value : '0')}
-      id="operator-select"
-      options={options}
-      renderInput={(params) => <TextField {...params} label={TEXTS.choose_start_time} />}
-      getOptionLabel={(option) => option.label}
-    />
   )
 }
 
