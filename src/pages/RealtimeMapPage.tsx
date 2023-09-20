@@ -15,7 +15,11 @@ import { Spin } from 'antd'
 import { DataAndTimeSelector } from './components/DataAndTimeSelector'
 import moment from 'moment'
 import MinuteSelector from './components/MinuteSelector'
+import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
 import { Button } from '@mui/material'
+import { PageContainer } from './components/PageContainer'
+import { INPUT_SIZE } from 'src/resources/sizes'
+import { Label } from './components/Label'
 
 export interface Point {
   loc: [number, number]
@@ -138,34 +142,42 @@ export default function RealtimeMapPage() {
   console.log(paths)
 
   return (
-    <div className="map-container">
-      <div className="map-header">
-        <h1>Realtime Map</h1>
-        <div className="map-header-buttons">
-          <label>
-            {TEXTS.from_date}{' '}
-            <DataAndTimeSelector
-              timestamp={moment(from.slice(0, 16))} // remove timezone and seconds
-              setTimestamp={(ts) => {
-                const value = ts ? ts.format() : ''
-                setFrom(value)
-                setTo(formatTime(+new Date(value) + (+new Date(to) - +new Date(from)))) // keep the same time difference
-              }}
-              showTimePicker={true}
-            />
-          </label>{' '}
-        </div>
-        <div className="map-header-buttons">
-          <label>
-            {TEXTS.watch_locations_in_range}{' '}
-            <MinuteSelector
-              num={(+new Date(to) - +new Date(from)) / 1000 / 60}
-              setNum={(num) => setTo(formatTime(+new Date(from) + +num * 1000 * 60))}
-            />{' '}
-            {TEXTS.minutes}
-          </label>
-        </div>
-        <div className="map-header-buttons">
+    <PageContainer className="map-container">
+      {/*TODO add explanation*/}
+      <h1>Realtime Map</h1>
+      <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
+        {/* from date */}
+        <Grid xs={2}>
+          <Label text={TEXTS.from_date} />
+        </Grid>
+        <Grid xs={10}>
+          {/*TODO fix label*/}
+          <DataAndTimeSelector
+            timestamp={moment(from.slice(0, 16))} // remove timezone and seconds
+            setTimestamp={(ts) => {
+              const value = ts ? ts.format() : ''
+              setFrom(value)
+              setTo(formatTime(+new Date(value) + (+new Date(to) - +new Date(from)))) // keep the same time difference
+            }}
+            showTimePicker={true}
+          />
+        </Grid>
+        {/* watch locations in range */}
+        <Grid xs={5}>
+          <Label text={TEXTS.watch_locations_in_range} />
+        </Grid>
+        <Grid xs={6}>
+          <MinuteSelector
+            num={(+new Date(to) - +new Date(from)) / 1000 / 60}
+            setNum={(num) => setTo(formatTime(+new Date(from) + +num * 1000 * 60))}
+          />
+        </Grid>
+        <Grid xs={1}>
+          <Label text={TEXTS.minutes} />
+        </Grid>
+        {/* Buttons */}
+        {/*TODO make it work. make it work right in another PR*/}
+        <Grid xs={3}>
           <Button
             variant="contained"
             onClick={() => {
@@ -174,6 +186,8 @@ export default function RealtimeMapPage() {
             }}>
             לפני 5 דקות
           </Button>
+        </Grid>
+        <Grid xs={3}>
           <Button
             variant="contained"
             onClick={() => {
@@ -182,8 +196,12 @@ export default function RealtimeMapPage() {
             }}>
             לפני 10 דקות
           </Button>
-        </div>
-        <div className="map-header-buttons">
+        </Grid>
+        <Grid xs={6}>
+          {/* fill the buttons row with empty space. complete to 12 (read the 'xs' documentation) */}
+        </Grid>
+        {/* loaded info */}
+        <Grid xs={11}>
           <p>
             {loaded} {`- `}
             {TEXTS.show_x_bus_locations} {` `}
@@ -191,9 +209,9 @@ export default function RealtimeMapPage() {
               .replace('XXX', new Date(from).toLocaleTimeString())
               .replace('YYY', new Date(to).toLocaleTimeString())}
           </p>
-        </div>
-        {isLoading && <Spin size="small" />}
-      </div>
+        </Grid>
+        <Grid xs={1}>{isLoading && <Spin size="small" />}</Grid>
+      </Grid>
       <div className="map-info">
         <MapContainer center={position.loc} zoom={8} scrollWheelZoom={true}>
           <TileLayer
@@ -212,7 +230,7 @@ export default function RealtimeMapPage() {
           ))}
         </MapContainer>
       </div>
-    </div>
+    </PageContainer>
   )
 }
 

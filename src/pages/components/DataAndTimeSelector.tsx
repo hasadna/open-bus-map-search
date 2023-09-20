@@ -22,10 +22,16 @@ export function DataAndTimeSelector({
       setTimestamp(timeSelected)
   }, [timeSelected])
 
+  useEffect(() => {
+    if (timeSelected != null && !timeSelected.isSame(timestamp)) setTimeSelected(timestamp)
+  }, [timestamp])
+
+  const width = showTimePicker ? '50%' : '100%'
+
   return (
     <>
       <DatePicker
-        sx={{ width: '100%' }}
+        sx={{ width }}
         value={timeSelected}
         onChange={(ts) => setTimeSelected(ts)}
         format="DD/MM/YYYY"
@@ -34,6 +40,7 @@ export function DataAndTimeSelector({
       />
       {showTimePicker && (
         <TimePicker
+          sx={{ width }}
           label={TEXTS.choose_datetime}
           value={timeSelected}
           onChange={(ts) => setTimeSelected(ts)}
@@ -42,6 +49,7 @@ export function DataAndTimeSelector({
             hours: renderTimeViewClock,
             minutes: renderTimeViewClock,
           }}
+          disableFuture
         />
       )}
     </>

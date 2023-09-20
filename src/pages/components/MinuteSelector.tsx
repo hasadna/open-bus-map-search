@@ -1,6 +1,5 @@
 import React from 'react'
 import { TEXTS } from 'src/resources/texts'
-import { INPUT_SIZE } from 'src/resources/sizes'
 import { TextField } from '@mui/material'
 
 type MinuteSelectorProps = {
@@ -11,7 +10,7 @@ type MinuteSelectorProps = {
 const MinuteSelector = ({ num, setNum }: MinuteSelectorProps) => {
   return (
     <TextField
-      sx={{ width: INPUT_SIZE }}
+      sx={{ width: '100%' }}
       label={TEXTS.minutes}
       type="number"
       value={num}
