@@ -2,7 +2,7 @@ import React, { useCallback, useContext, useEffect, useMemo, useState } from 're
 import LineNumberSelector from 'src/pages/components/LineSelector'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
 import { Row } from 'src/pages/components/Row'
-import { MARGIN_MEDIUM } from 'src/resources/sizes'
+import { INPUT_SIZE, MARGIN_MEDIUM } from 'src/resources/sizes'
 import styled from 'styled-components'
 import {
   getGtfsStopHitTimesAsync,
@@ -22,6 +22,8 @@ import { SearchContext, TimelinePageState } from '../model/pageState'
 import { NotFound } from './components/NotFound'
 import moment from 'moment'
 import { DataAndTimeSelector } from './components/DataAndTimeSelector'
+import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
+import { GridSelectorAndLabel } from './components/GridSelectorAndLabel'
 
 const StyledTimelineBoard = styled(TimelineBoard)`
   margin-top: ${MARGIN_MEDIUM * 3}px;
@@ -117,70 +119,81 @@ const TimelinePage = () => {
 
   return (
     <PageContainer>
-      <Row>
-        <Label text={TEXTS.choose_datetime} />
-        <DataAndTimeSelector
-          timestamp={moment(timestamp)}
-          setTimestamp={(ts) =>
-            setSearch((current) => ({ ...current, timestamp: ts ? ts.valueOf() : 0 }))
-          }
-        />
-      </Row>
-      <Row>
-        <Label text={TEXTS.choose_operator} />
-        <OperatorSelector
-          operatorId={operatorId}
-          setOperatorId={(id) => setSearch((current) => ({ ...current, operatorId: id }))}
-        />
-      </Row>
-      <Row>
-        <Label text={TEXTS.choose_line} />
-        <LineNumberSelector
-          lineNumber={lineNumber}
-          setLineNumber={(number) => setSearch((current) => ({ ...current, lineNumber: number }))}
-        />
-      </Row>
-      {routesIsLoading && (
-        <Row>
-          <Label text={TEXTS.loading_routes} />
-          <Spin />
-        </Row>
-      )}
-      {!routesIsLoading &&
-        routes &&
-        (routes.length === 0 ? (
-          <NotFound>{TEXTS.line_not_found}</NotFound>
-        ) : (
-          <RouteSelector
-            routes={routes}
-            routeKey={routeKey}
-            setRouteKey={(key) => setSearch((current) => ({ ...current, routeKey: key }))}
+      <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
+        {/* choose date */}
+        <GridSelectorAndLabel label={TEXTS.choose_date}>
+          <DataAndTimeSelector
+            timestamp={moment(timestamp)}
+            setTimestamp={(ts) =>
+              setSearch((current) => ({ ...current, timestamp: ts ? ts.valueOf() : 0 }))
+            }
           />
-        ))}
-      {stopsIsLoading && (
-        <Row>
-          <Label text={TEXTS.loading_stops} />
-          <Spin />
-        </Row>
-      )}
-      {!stopsIsLoading && stops && (
-        <StopSelector
-          stops={stops}
-          stopKey={stopKey}
-          setStopKey={(key) =>
-            setState((current) => {
-              const stop = current.stops?.find((stop) => stop.key === key)
-              return { ...current, stopKey: key, stopName: stop?.name }
-            })
-          }
-        />
-      )}
-      {hitsIsLoading && (
-        <Row>
-          <Label text={TEXTS.loading_hits} />
-          <Spin />
-        </Row>
-      )}
+        </GridSelectorAndLabel>
+        {/* choose operator */}
+        <GridSelectorAndLabel label={TEXTS.choose_operator}>
+          <OperatorSelector
+            operatorId={operatorId}
+            setOperatorId={(id) => setSearch((current) => ({ ...current, operatorId: id }))}
+          />
+        </GridSelectorAndLabel>
+        {/* choose line */}
+        <GridSelectorAndLabel label={TEXTS.choose_line}>
+          <LineNumberSelector
+            lineNumber={lineNumber}
+            setLineNumber={(number) => setSearch((current) => ({ ...current, lineNumber: number }))}
+          />
+        </GridSelectorAndLabel>
+        {/* routes */}
+        <Grid xs={12}>
+          {routesIsLoading && (
+            <Row>
+              <Label text={TEXTS.loading_routes} /> {/*FIXME never show up*/}
+              <Spin />
+            </Row>
+          )}
+          {!routesIsLoading &&
+            routes &&
+            (routes.length === 0 ? (
+              <NotFound>{TEXTS.line_not_found}</NotFound>
+            ) : (
+              <RouteSelector
+                routes={routes}
+                routeKey={routeKey}
+                setRouteKey={(key) => setSearch((current) => ({ ...current, routeKey: key }))}
+              />
+            ))}
+        </Grid>
+        {/* stops */}
+        <Grid xs={12}>
+          {stopsIsLoading && (
+            <Row>
+              <Label text={TEXTS.loading_stops} />
+              <Spin />
+            </Row>
+          )}
+          {!stopsIsLoading && stops && (
+            <StopSelector
+              stops={stops}
+              stopKey={stopKey}
+              setStopKey={(key) =>
+                setState((current) => {
+                  const stop = current.stops?.find((stop) => stop.key === key)
+                  return { ...current, stopKey: key, stopName: stop?.name }
+                })
+              }
+            />
+          )}
+        </Grid>
+        {/* its Loading */}
+        <Grid xs={12}>
+          {hitsIsLoading && (
+            <Row>
+              <Label text={TEXTS.loading_hits} />
+              <Spin />
+            </Row>
+          )}
+        </Grid>
+      </Grid>
       {!hitsIsLoading &&
         gtfsHitTimes !== undefined &&
         siriHitTimes !== undefined &&

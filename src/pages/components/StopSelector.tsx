@@ -2,7 +2,6 @@ import { formatted, TEXTS } from 'src/resources/texts'
 import React from 'react'
 import { BusStop } from 'src/model/busStop'
 import { Autocomplete, TextField } from '@mui/material'
-import { INPUT_SIZE } from 'src/resources/sizes'
 
 type StopSelectorProps = {
   stops: BusStop[]
@@ -20,7 +19,7 @@ const StopSelector = ({ stops, stopKey, setStopKey }: StopSelectorProps) => {
       value={value}
       onChange={(e, value) => setStopKey(value ? value.key : '0')}
       id="stop-select"
-      sx={{ width: INPUT_SIZE * 2 }}
+      sx={{ width: '100%' }}
       options={stops}
       renderInput={(params) => (
         <TextField {...params} label={formatted(TEXTS.choose_stop, stops.length.toString())} />
