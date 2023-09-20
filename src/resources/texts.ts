@@ -69,8 +69,9 @@ export const TEXTS = {
   license: 'רשיון שימוש',
   questions: 'שאלות? תגובות? רעיונות?',
   funding: 'מימון',
-  funding_paragraph: 'לאורך השנים, הפרויקט קיבל מימון נוסף גם מהגופים הבאים:',
-  prime_ministers_office: 'מר אשר מאיר',
+  funding_paragraph:
+    'דאטא בוס מפותח בעבודת מתנדבים ומבוסס על Open API שפותח בסדנא לידע ציבורי בעזרתם הנדיבה של -',
+  mr_meir: 'מר אשר מאיר',
   innovation_authority: 'רשות החדשנות',
   migdal_company: '“מגדל בקהילה“',
   and_smaller_donors: 'ותרומות קטנות נוספות של ידידי ואוהדי הסדנא.',
