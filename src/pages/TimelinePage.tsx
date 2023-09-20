@@ -62,6 +62,7 @@ const TimelinePage = () => {
     if (!operatorId || !lineNumber) {
       return
     }
+    setRoutesIsLoading(true)
     getRoutesAsync(moment(timestamp), operatorId, lineNumber)
       .then((routes) =>
         setSearch((current) =>
@@ -147,7 +148,7 @@ const TimelinePage = () => {
         <Grid xs={12}>
           {routesIsLoading && (
             <Row>
-              <Label text={TEXTS.loading_routes} /> {/*FIXME never show up*/}
+              <Label text={TEXTS.loading_routes} />
               <Spin />
             </Row>
           )}
