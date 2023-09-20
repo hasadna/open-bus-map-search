@@ -1,6 +1,7 @@
 const PLACEHOLDER = 'XXX'
 
 export const TEXTS = {
+  realtime_map_explanation: 'נתוני מיקום של אוטובוסים שנאספו בזמן אמת',
   timeline_page_title: 'לוח זמנים היסטורי',
   realtime_map_page_title: 'מפה בזמן אמת',
   gaps_page_title: 'נסיעות שלא יצאו',

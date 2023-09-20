@@ -143,9 +143,10 @@ export default function RealtimeMapPage() {
 
   return (
     <PageContainer className="map-container">
-      {/*TODO add explanation*/}
-      <h1>Realtime Map</h1>
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
+        <Grid xs={12}>
+          <Label text={TEXTS.realtime_map_explanation} />
+        </Grid>
         {/* from date */}
         <Grid xs={2}>
           <Label text={TEXTS.from_date} />
