@@ -75,6 +75,8 @@ export const TEXTS = {
   innovation_authority: 'רשות החדשנות',
   migdal_company: 'חברת “מגדל“',
   and_smaller_donors: 'ועוד מספר תורמים קטנים יותר.',
+  all_rides_completed: 'כל הנסיעות בוצעו',
+  missing_rides: 'מהנסיעות חסרות',
 }
 
 export const formatted = (text: string, value: string) => text.replace(PLACEHOLDER, value)

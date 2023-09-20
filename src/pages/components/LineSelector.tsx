@@ -10,7 +10,7 @@ type LineSelectorProps = {
 }
 
 const LineSelector = ({ lineNumber, setLineNumber }: LineSelectorProps) => {
-  const [value, setValue] = useState<LineSelectorProps['lineNumber']>()
+  const [value, setValue] = useState<LineSelectorProps['lineNumber']>('')
   const debouncedSetLineNumber = useCallback(debounce(setLineNumber, 200), [setLineNumber])
 
   useLayoutEffect(() => {

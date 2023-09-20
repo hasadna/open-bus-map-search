@@ -43,11 +43,37 @@ const Cell = styled.div`
 const TitleCell = styled(Cell)`
   font-weight: bold;
 `
+const TitleCellPrecentage = styled(TitleCell)`
+  width: 240px;
+`
+function displayGapsPercentage(gapsPrecentage: number) {
+  switch (true) {
+    case gapsPrecentage === 0:
+      return (
+        <TitleCellPrecentage style={{ color: 'green' }}>
+          {TEXTS.all_rides_completed}
+        </TitleCellPrecentage>
+      )
+    case gapsPrecentage < 20:
+      return (
+        <TitleCellPrecentage style={{ color: 'yellow' }}>
+          {Math.floor(gapsPrecentage)}% {TEXTS.missing_rides}
+        </TitleCellPrecentage>
+      )
+    case gapsPrecentage >= 20:
+      return (
+        <TitleCellPrecentage style={{ color: 'red' }}>
+          {Math.floor(gapsPrecentage)}% {TEXTS.missing_rides}
+        </TitleCellPrecentage>
+      )
+  }
+}
 
 const GapsPage = () => {
   const { search, setSearch } = useContext(SearchContext)
   const { operatorId, lineNumber, timestamp, routes, routeKey } = search
   const [gaps, setGaps] = useState<GapsList>()
+  const [gapsPrecentage, setGapsPrecentage] = useState<number>()
 
   const [routesIsLoading, setRoutesIsLoading] = useState(false)
   const [gapsIsLoading, setGapsIsLoading] = useState(false)
@@ -61,7 +87,12 @@ const GapsPage = () => {
       }
       setGapsIsLoading(true)
       getGapsAsync(moment(timestamp), operatorId, selectedRoute.lineRef)
-        .then(setGaps)
+        .then((gaps) => {
+          setGaps(gaps)
+          const ridesInTime = gaps?.filter((gap) => formatStatus([], gap) === TEXTS.ride_as_planned)
+          const ridesInTimePercentage = (ridesInTime?.length / gaps?.length) * 100
+          setGapsPrecentage(100 - ridesInTimePercentage)
+        })
         .finally(() => setGapsIsLoading(false))
     }
   }, [operatorId, routeKey, timestamp])
@@ -135,6 +166,7 @@ const GapsPage = () => {
             }
             label={TEXTS.checkbox_only_gaps}
           />
+          <Row>{displayGapsPercentage(gapsPrecentage!)}</Row>
           <Row>
             <TitleCell>{TEXTS.planned_time}</TitleCell>
             <TitleCell>{TEXTS.planned_status}</TitleCell>
