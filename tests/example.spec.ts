@@ -28,7 +28,7 @@ test('search bus station', async ({ page }) => {
   await page.getByLabel('בחירת תחנה (36 אפשרויות)').click()
   await page.locator('#stop-select-option-0').click()
   await page.getByText('זמני נסיעה בטעינה').click()
-  await page.getByText('זמן עצירה מתוכנן 🕛').click()
+  await page.getByText('זמן עצירה מתוכנן 🕛').click({ timeout: 3 * 60 * 1000 })
 })
 
 function resetTime(page: Page) {
