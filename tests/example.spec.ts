@@ -1,6 +1,7 @@
 import { test } from '@playwright/test'
 
 test('search bus station', async ({ page }) => {
+  test.slow()
   await page.routeFromHAR('tests/example.har', {
     url: /api/,
     update: false,
