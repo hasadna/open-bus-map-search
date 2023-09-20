@@ -152,7 +152,6 @@ export default function RealtimeMapPage() {
           <Label text={TEXTS.from_date} />
         </Grid>
         <Grid xs={10}>
-          {/*TODO fix label*/}
           <DataAndTimeSelector
             timestamp={moment(from.slice(0, 16))} // remove timezone and seconds
             setTimestamp={(ts) => {

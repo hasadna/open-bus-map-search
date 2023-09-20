@@ -107,7 +107,7 @@ const SingleLineMapPage = () => {
     <PageContainer className="map-container">
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
         {/* choose date*/}
-        <GridSelectorAndLabel label={TEXTS.choose_datetime}>
+        <GridSelectorAndLabel label={TEXTS.choose_date}>
           <DataAndTimeSelector
             timestamp={moment(timestamp)}
             setTimestamp={(ts) => setSearch((current) => ({ ...current, timestamp: ts.valueOf() }))}

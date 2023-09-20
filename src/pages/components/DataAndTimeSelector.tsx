@@ -35,13 +35,13 @@ export function DataAndTimeSelector({
         value={timeSelected}
         onChange={(ts) => setTimeSelected(ts)}
         format="DD/MM/YYYY"
-        label={TEXTS.choose_datetime}
+        label={TEXTS.choose_date}
         disableFuture
       />
       {showTimePicker && (
         <TimePicker
           sx={{ width }}
-          label={TEXTS.choose_datetime}
+          label={TEXTS.choose_time}
           value={timeSelected}
           onChange={(ts) => setTimeSelected(ts)}
           ampm={false}

@@ -7,6 +7,8 @@ export const TEXTS = {
   gaps_page_title: 'נסיעות שלא יצאו',
   singleline_map_page_title: 'מפה לפי קו',
   choose_datetime: 'תאריך ושעה',
+  choose_date: 'תאריך',
+  choose_time: 'שעה',
   choose_operator: 'חברה מפעילה',
   operator_placeholder: 'לדוגמא: דן',
   choose_line: 'מספר קו',
