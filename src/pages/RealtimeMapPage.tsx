@@ -176,7 +176,11 @@ export default function RealtimeMapPage() {
           <Label text={TEXTS.minutes} />
         </Grid>
         {/* Buttons */}
-        {/*TODO make it work. make it work right in another PR*/}
+        {/*TODO (another PR another issue)
+          1) discussion if the buttons need to be 5 minutes from now or from the 'from' state.
+          2) recommended use MomentJs API instead Date API. 'moment().subtract(5, 'minutes')'.
+          3) use text `TEXTS`.
+        */}
         <Grid xs={3}>
           <Button
             variant="contained"
