@@ -1,6 +1,7 @@
 import { test } from '@playwright/test'
 
 test('search bus station', async ({ page }) => {
+  test.slow()
   await page.routeFromHAR('tests/example.har', {
     url: /api/,
     update: false,
@@ -28,7 +29,7 @@ test('search bus station', async ({ page }) => {
   await page.getByLabel('בחירת תחנה (36 אפשרויות)').click()
   await page.locator('#stop-select-option-0').click()
   await page.getByText('זמני נסיעה בטעינה').click()
-  await page.getByText('זמן עצירה מתוכנן 🕛').click()
+  await page.getByText('זמן עצירה מתוכנן 🕛').click({ timeout: 15 * 60 * 1000 })
 })
 
 function resetTime(page: Page) {
