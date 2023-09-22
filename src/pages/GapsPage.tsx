@@ -50,19 +50,19 @@ function displayGapsPercentage(gapsPrecentage: number) {
   switch (true) {
     case gapsPrecentage === 0:
       return (
-        <TitleCellPrecentage style={{ color: 'green' }}>
+        <TitleCellPrecentage style={{ color: '#097d09' }}>
           {TEXTS.all_rides_completed}
         </TitleCellPrecentage>
       )
     case gapsPrecentage < 20:
       return (
-        <TitleCellPrecentage style={{ color: 'yellow' }}>
+        <TitleCellPrecentage style={{ color: '#b4b407' }}>
           {Math.floor(gapsPrecentage)}% {TEXTS.missing_rides}
         </TitleCellPrecentage>
       )
     case gapsPrecentage >= 20:
       return (
-        <TitleCellPrecentage style={{ color: 'red' }}>
+        <TitleCellPrecentage style={{ color: '#b90a0a' }}>
           {Math.floor(gapsPrecentage)}% {TEXTS.missing_rides}
         </TitleCellPrecentage>
       )
