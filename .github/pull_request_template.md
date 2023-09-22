@@ -1,5 +1,5 @@
-# title of the pull request
-short description of the suggested changes
+# Description
+Please describe the suggested changes
 
 ## screenshots
 <-- paste here -->
