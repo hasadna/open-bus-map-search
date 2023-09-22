@@ -1,51 +1,33 @@
 import { DivIcon } from 'leaflet'
 import React, { useEffect, useState } from 'react'
-import getAgencyList, { Agency } from 'src/api/agencyList'
-import busIcon from '../resources/bus-front.svg'
+import { Marker, Popup, useMap } from 'react-leaflet'
 import MarkerClusterGroup from 'react-leaflet-cluster'
-import { useMap, Marker, Popup } from 'react-leaflet'
+import getAgencyList, { Agency } from 'src/api/agencyList'
 import { VehicleLocation } from 'src/model/vehicleLocation'
 
-const colorIcon = ({
-  color,
-  name,
-  rotate = 0,
-}: {
-  color: string
-  name?: string
-  rotate?: number
-}) => {
+const colorIcon = ({ operator_id, name }: { operator_id: string; name?: string }) => {
+  const path = process.env.PUBLIC_URL + `/bus-logos/${operator_id}.svg`
   return new DivIcon({
     className: 'my-div-icon',
-    html: `<div class="mask" style="
-          width: 30px;
-          height: 30px;
-          border-radius: 50%;
-          mask-image: url(${busIcon});
-          -webkit-mask-image: url(${busIcon});
-          transform: rotate(${rotate}deg);
-      ">
-          <div
-              style="
-                  background-color: ${color};
-                  width: 100%;
-                  height: 100%;
-              "
-          ></div>
+    html: `
+    <div class="bus-icon-container">
+      <div class="bus-icon-circle">
+        <img src="${path}" alt="${name}" />
       </div>
-      <div class="text">${name}</div>
-      `,
+      <div class="operator-name">${name}</div>
+    </div>
+    `,
   })
 }
 
-function numberToColorHsl(i: number, max: number) {
+/*function numberToColorHsl(i: number, max: number) {
   const ratio = i / max
   // 0 - black. 1 - red
   const hue = 0
   const saturation = ratio * 100
   const lightness = ratio * 50
   return `hsl(${hue}, ${saturation}%, ${lightness}%)`
-}
+}*/
 
 export interface VehicleLocationMapPoint {
   loc: [number, number]
@@ -61,7 +43,7 @@ export function BusLayer({ positions }: { positions: VehicleLocationMapPoint[] }
   const [agencyList, setAgencyList] = useState<Agency[]>([])
 
   useEffect(() => {
-    getAgencyList().then(setAgencyList)
+    getAgencyList().then(setAgencyList).catch(console.log)
   }, [])
 
   useEffect(() => {
@@ -77,9 +59,8 @@ export function BusLayer({ positions }: { positions: VehicleLocationMapPoint[] }
           <Marker
             position={pos.loc}
             icon={colorIcon({
-              color: numberToColorHsl(pos.color, 60),
+              operator_id: pos.operator?.toString() || 'default',
               name: agencyList.find((agency) => agency.operator_ref === pos.operator)?.agency_name,
-              rotate: pos.bearing,
             })}
             key={i}>
             <Popup>

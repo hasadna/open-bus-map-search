@@ -1,25 +1,23 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { MapContainer, useMap, Marker, Popup, TileLayer, Polyline } from 'react-leaflet'
-// import https://www.svgrepo.com/show/113626/bus-front.svg
-import busIcon from '../resources/bus-front.svg'
+import { MapContainer, Marker, Polyline, Popup, TileLayer, useMap } from 'react-leaflet'
 import MarkerClusterGroup from 'react-leaflet-cluster'
 import { TEXTS } from 'src/resources/texts'
 
-import './Map.scss'
+import { Button } from '@mui/material'
+import { Spin } from 'antd'
 import { DivIcon } from 'leaflet'
+import moment from 'moment'
+import getAgencyList, { Agency } from 'src/api/agencyList'
 import useVehicleLocations from 'src/api/useVehicleLocations'
 import { VehicleLocation } from 'src/model/vehicleLocation'
-import getAgencyList, { Agency } from 'src/api/agencyList'
-import { getColorByHashString } from './dashboard/OperatorHbarChart/utils'
-import { Spin } from 'antd'
+import './Map.scss'
 import { DataAndTimeSelector } from './components/DataAndTimeSelector'
-import moment from 'moment'
 import MinuteSelector from './components/MinuteSelector'
 import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
-import { Button } from '@mui/material'
 import { PageContainer } from './components/PageContainer'
 import { INPUT_SIZE } from 'src/resources/sizes'
 import { Label } from './components/Label'
+import { getColorByHashString } from './dashboard/OperatorHbarChart/utils'
 
 export interface Point {
   loc: [number, number]
@@ -37,34 +35,17 @@ interface Path {
   vehicleRef: number
 }
 
-export const colorIcon = ({
-  color,
-  name,
-  rotate = 0,
-}: {
-  color: string
-  name?: string
-  rotate?: number
-}) => {
+export const colorIcon = ({ operator_id, name }: { operator_id: string; name?: string }) => {
+  const path = process.env.PUBLIC_URL + `/bus-logos/${operator_id}.svg`
   return new DivIcon({
     className: 'my-div-icon',
-    html: `<div class="mask" style="
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        mask-image: url(${busIcon});
-        -webkit-mask-image: url(${busIcon});
-        transform: rotate(${rotate}deg);
-    ">
-        <div
-            style="
-                background-color: ${color};
-                width: 100%;
-                height: 100%;
-            "
-        ></div>
+    html: `
+    <div class="bus-icon-container">
+      <div class="bus-icon-circle">
+        <img src="${path}" alt="${name}" />
+      </div>
+      <div class="operator-name">${name}</div>
     </div>
-    <div class="text">${name}</div>
     `,
   })
 }
@@ -219,7 +200,7 @@ export default function RealtimeMapPage() {
       <div className="map-info">
         <MapContainer center={position.loc} zoom={8} scrollWheelZoom={true}>
           <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            attribution='&copy <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
           />
           <Markers positions={positions} />
@@ -243,7 +224,7 @@ export function Markers({ positions }: { positions: Point[] }) {
   const [agencyList, setAgencyList] = useState<Agency[]>([])
 
   useEffect(() => {
-    getAgencyList().then(setAgencyList)
+    getAgencyList().then(setAgencyList).catch(console.log)
   }, [])
 
   useEffect(() => {
@@ -259,9 +240,8 @@ export function Markers({ positions }: { positions: Point[] }) {
           <Marker
             position={pos.loc}
             icon={colorIcon({
-              color: numberToColorHsl(pos.color, 60),
+              operator_id: pos.operator?.toString() || 'default',
               name: agencyList.find((agency) => agency.operator_ref === pos.operator)?.agency_name,
-              rotate: pos.bearing,
             })}
             key={i}>
             <Popup>
