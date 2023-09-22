@@ -11,7 +11,7 @@ import { INPUT_SIZE } from 'src/resources/sizes'
 import { TEXTS } from 'src/resources/texts'
 import { SearchContext } from '../model/pageState'
 import { NotFound } from './components/NotFound'
-import { Point, colorIcon, numberToColorHsl } from './RealtimeMapPage'
+import { Point, colorIcon } from './RealtimeMapPage'
 import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
 import './Map.scss'
 import getAgencyList, { Agency } from 'src/api/agencyList'
@@ -38,7 +38,6 @@ const position: Point = {
 const SingleLineMapPage = () => {
   const { search, setSearch } = useContext(SearchContext)
   const { operatorId, lineNumber, timestamp, routes, routeKey } = search
-  const [routesIsLoading, setRoutesIsLoading] = useState(false)
 
   const [agencyList, setAgencyList] = useState<Agency[]>([])
 
