@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v2
-    - if: secrets.GITHUB_TOKEN
+      if: secrets.GITHUB_TOKEN
     - env:
         DOCKER_APP_IMAGE_NAME: "ghcr.io/hasadna/open-bus-map-search/open-bus-map-search"
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
