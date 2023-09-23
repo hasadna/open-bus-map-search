@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 
 const StyledDiv = styled.div`
-  min-width: 115px;
+  /* min-width: 80px; */
 `
 
 type LabelProps = {
