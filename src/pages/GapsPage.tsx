@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { PageContainer } from './components/PageContainer'
 import { Row } from './components/Row'
 import { Label } from './components/Label'
@@ -17,6 +17,7 @@ import styled from 'styled-components'
 import { useSessionStorage } from 'usehooks-ts'
 import { DataAndTimeSelector } from './components/DataAndTimeSelector'
 import { FormControlLabel, Switch } from '@mui/material'
+import DisplayGapsPercentage from './components/DisplayGapsPercentage'
 
 function formatTime(time: Moment) {
   return time.format(TEXTS.time_format)
@@ -43,37 +44,11 @@ const Cell = styled.div`
 const TitleCell = styled(Cell)`
   font-weight: bold;
 `
-const TitleCellPrecentage = styled(TitleCell)`
-  width: 240px;
-`
-function displayGapsPercentage(gapsPrecentage: number) {
-  switch (true) {
-    case gapsPrecentage === 0:
-      return (
-        <TitleCellPrecentage style={{ color: '#097d09' }}>
-          {TEXTS.all_rides_completed}
-        </TitleCellPrecentage>
-      )
-    case gapsPrecentage < 20:
-      return (
-        <TitleCellPrecentage style={{ color: '#b4b407' }}>
-          {Math.floor(gapsPrecentage)}% {TEXTS.missing_rides}
-        </TitleCellPrecentage>
-      )
-    case gapsPrecentage >= 20:
-      return (
-        <TitleCellPrecentage style={{ color: '#b90a0a' }}>
-          {Math.floor(gapsPrecentage)}% {TEXTS.missing_rides}
-        </TitleCellPrecentage>
-      )
-  }
-}
 
 const GapsPage = () => {
   const { search, setSearch } = useContext(SearchContext)
   const { operatorId, lineNumber, timestamp, routes, routeKey } = search
   const [gaps, setGaps] = useState<GapsList>()
-  const [gapsPrecentage, setGapsPrecentage] = useState<number>()
 
   const [routesIsLoading, setRoutesIsLoading] = useState(false)
   const [gapsIsLoading, setGapsIsLoading] = useState(false)
@@ -87,12 +62,7 @@ const GapsPage = () => {
       }
       setGapsIsLoading(true)
       getGapsAsync(moment(timestamp), operatorId, selectedRoute.lineRef)
-        .then((gaps) => {
-          setGaps(gaps)
-          const ridesInTime = gaps?.filter((gap) => formatStatus([], gap) === TEXTS.ride_as_planned)
-          const ridesInTimePercentage = (ridesInTime?.length / gaps?.length) * 100
-          setGapsPrecentage(100 - ridesInTimePercentage)
-        })
+        .then(setGaps)
         .finally(() => setGapsIsLoading(false))
     }
   }, [operatorId, routeKey, timestamp])
@@ -109,6 +79,14 @@ const GapsPage = () => {
       )
       .finally(() => setRoutesIsLoading(false))
   }, [operatorId, lineNumber, timestamp, setSearch])
+
+  const gapsPrecentage = useMemo(() => {
+    const ridesInTime = gaps?.filter((gap) => formatStatus([], gap) === TEXTS.ride_as_planned)
+    if (!gaps || !ridesInTime) return undefined
+    const ridesInTimePercentage = (ridesInTime?.length / gaps?.length) * 100
+    const allRidesPercentage = 100
+    return allRidesPercentage - ridesInTimePercentage
+  }, [gaps, formatStatus])
 
   return (
     <PageContainer>
@@ -166,7 +144,7 @@ const GapsPage = () => {
             }
             label={TEXTS.checkbox_only_gaps}
           />
-          <Row>{displayGapsPercentage(gapsPrecentage!)}</Row>
+          <Row>{DisplayGapsPercentage(gapsPrecentage)}</Row>
           <Row>
             <TitleCell>{TEXTS.planned_time}</TitleCell>
             <TitleCell>{TEXTS.planned_status}</TitleCell>
