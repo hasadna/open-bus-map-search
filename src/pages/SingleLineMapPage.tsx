@@ -11,7 +11,7 @@ import { INPUT_SIZE } from 'src/resources/sizes'
 import { TEXTS } from 'src/resources/texts'
 import { SearchContext } from '../model/pageState'
 import { NotFound } from './components/NotFound'
-import { Point, colorIcon, numberToColorHsl } from './RealtimeMapPage'
+import { Point, colorIcon } from './RealtimeMapPage'
 import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
 import './Map.scss'
 import getAgencyList, { Agency } from 'src/api/agencyList'
@@ -38,7 +38,6 @@ const position: Point = {
 const SingleLineMapPage = () => {
   const { search, setSearch } = useContext(SearchContext)
   const { operatorId, lineNumber, timestamp, routes, routeKey } = search
-  const [routesIsLoading, setRoutesIsLoading] = useState(false)
 
   const [agencyList, setAgencyList] = useState<Agency[]>([])
 
@@ -129,19 +128,16 @@ const SingleLineMapPage = () => {
           />
         </GridSelectorAndLabel>
         <Grid xs={12}>
-          {
-            //!routesIsLoading &&
-            routes &&
-              (routes.length === 0 ? (
-                <NotFound>{TEXTS.line_not_found}</NotFound>
-              ) : (
-                <RouteSelector
-                  routes={routes}
-                  routeKey={routeKey}
-                  setRouteKey={(key) => setSearch((current) => ({ ...current, routeKey: key }))}
-                />
-              ))
-          }
+          {routes &&
+            (routes.length === 0 ? (
+              <NotFound>{TEXTS.line_not_found}</NotFound>
+            ) : (
+              <RouteSelector
+                routes={routes}
+                routeKey={routeKey}
+                setRouteKey={(key) => setSearch((current) => ({ ...current, routeKey: key }))}
+              />
+            ))}
         </Grid>
         {/* choose route */}
         {positions && (
