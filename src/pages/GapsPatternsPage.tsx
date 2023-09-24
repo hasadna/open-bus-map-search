@@ -29,6 +29,7 @@ import {
   TooltipProps,
 } from 'recharts'
 import { FormControlLabel, Radio, RadioGroup } from '@mui/material'
+import { GetColorByExecution } from './components/utils/ColorBySeverity'
 
 // Define prop types for the component
 interface BusLineStatisticsProps {
@@ -111,19 +112,6 @@ function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatistic
 
     fetchData()
   }, [lineRef, operatorRef, fromDate, toDate])
-
-  const getColorForMisses = (planned: number, actual: number) => {
-    const misses = planned - actual
-    const percentageMisses = (misses / planned) * 100
-
-    if (percentageMisses <= 5) {
-      return 'green'
-    } else if (percentageMisses <= 50) {
-      return 'orange'
-    } else {
-      return 'red'
-    }
-  }
 
   const maxHourlyRides = Math.max(
     ...hourlyData.map((entry) => entry.planned_rides),
@@ -215,7 +203,7 @@ function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatistic
           {hourlyData.map((entry, index) => (
             <Cell
               key={`cell-${index}`}
-              fill={getColorForMisses(entry.planned_rides, entry.actual_rides)}
+              fill={GetColorByExecution(entry.planned_rides, entry.actual_rides)}
             />
           ))}
         </Bar>
