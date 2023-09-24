@@ -28,7 +28,7 @@ import {
   Cell,
   TooltipProps,
 } from 'recharts'
-import { FormControlLabel, Radio, RadioGroup, Switch } from '@mui/material'
+import { FormControlLabel, Radio, RadioGroup } from '@mui/material'
 
 // Define prop types for the component
 interface BusLineStatisticsProps {
@@ -103,6 +103,7 @@ function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatistic
 
         result.sort((a, b) => a.planned_hour.localeCompare(b.planned_hour))
         setHourlyData(result)
+        sortData(result)
       } catch (error) {
         console.error('Error fetching data:', error)
       }
@@ -147,12 +148,19 @@ function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatistic
     return b.planned_rides - a.planned_rides
   }
 
-  // Sort the data based on the current sorting mode
-  if (sortingMode === 'hour') {
-    hourlyData.sort(byHour)
-  } else if (sortingMode === 'severity') {
-    hourlyData.sort(bySeverity)
+  const sortData = (hourlyData: HourlyData[] = []) => {
+    const orderedData = [...hourlyData]
+    if (sortingMode === 'hour') {
+      orderedData.sort(byHour)
+    } else if (sortingMode === 'severity') {
+      orderedData.sort(bySeverity)
+    }
+    setHourlyData(orderedData)
   }
+
+  useEffect(() => {
+    sortData(hourlyData)
+  }, [sortingMode])
 
   return (
     <div>
