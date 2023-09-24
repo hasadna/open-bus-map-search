@@ -46,6 +46,28 @@ interface HourlyData {
 
 const now = moment()
 
+const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>) => {
+  if (active && payload && payload.length > 1) {
+    const actualRides = payload[0].value || 0
+    const plannedRides = payload[1].value || 0
+    const actualPercentage = ((actualRides / plannedRides) * 100).toFixed(0)
+    return (
+      <div
+        className="custom-tooltip"
+        style={{
+          background: 'white',
+          padding: '5px',
+          border: '1px solid #ccc',
+          borderRadius: '5px',
+        }}>
+        {` בוצעו ${actualPercentage}% מהנסיעות (${actualRides}/${plannedRides})`}
+      </div>
+    )
+  }
+
+  return null
+}
+
 function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatisticsProps) {
   const [hourlyData, setHourlyData] = useState<HourlyData[]>([])
 
@@ -102,61 +124,34 @@ function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatistic
     }
   }
 
-  const maxPlannedRides = Math.max(
+  const maxHourlyRides = Math.max(
     ...hourlyData.map((entry) => entry.planned_rides),
     ...hourlyData.map((entry) => entry.actual_rides),
   )
 
   const [sortingMode, setSortingMode] = useState<'hour' | 'severity'>('hour')
 
-  const sortByHour = data => 
-    data.sort((a, b) => a.planned_hour.localeCompare(b.planned_hour))
-  
+  const byHour = (a: HourlyData, b: HourlyData) => a.planned_hour.localeCompare(b.planned_hour)
+  const bySeverity = (a: HourlyData, b: HourlyData) => {
+    const missesA = a.planned_rides - a.actual_rides
+    const missesB = b.planned_rides - b.actual_rides
+    const percentageMissesA = (missesA / a.planned_rides) * 100
+    const percentageMissesB = (missesB / b.planned_rides) * 100
 
-  const sortBySeverity = () => {
-    hourlyData.sort((a, b) => {
-      const missesA = a.planned_rides - a.actual_rides
-      const missesB = b.planned_rides - b.actual_rides
-      const percentageMissesA = (missesA / a.planned_rides) * 100
-      const percentageMissesB = (missesB / b.planned_rides) * 100
-
-      if (percentageMissesA !== percentageMissesB) {
-        return percentageMissesB - percentageMissesA
-      }
-      if (missesA !== missesB) {
-        return missesB - missesA
-      }
-      return b.planned_rides - a.planned_rides
-    })
+    if (percentageMissesA !== percentageMissesB) {
+      return percentageMissesB - percentageMissesA
+    }
+    if (missesA !== missesB) {
+      return missesB - missesA
+    }
+    return b.planned_rides - a.planned_rides
   }
 
   // Sort the data based on the current sorting mode
   if (sortingMode === 'hour') {
-    sortByHour()
+    hourlyData.sort(byHour)
   } else if (sortingMode === 'severity') {
-    sortBySeverity()
-  }
-
-  const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>) => {
-    if (active && payload && payload.length > 1) {
-      const actualRides = payload[0].value || 0
-      const plannedRides = payload[1].value || 0
-      const actualPercentage = ((actualRides / plannedRides) * 100).toFixed(0)
-      return (
-        <div
-          className="custom-tooltip"
-          style={{
-            background: 'white',
-            padding: '5px',
-            border: '1px solid #ccc',
-            borderRadius: '5px',
-          }}>
-          {` בוצעו ${actualPercentage}% מהנסיעות (${actualRides}/${plannedRides})`}
-        </div>
-      )
-    }
-
-    return null
+    hourlyData.sort(bySeverity)
   }
 
   return (
@@ -190,14 +185,14 @@ function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatistic
           xAxisId={0}
           reversed={true}
           orientation={'top'}
-          domain={[0, maxPlannedRides]}
+          domain={[0, maxHourlyRides]}
         />
         <XAxis
           type="number"
           xAxisId={1}
           reversed={true}
           orientation={'top'}
-          domain={[0, maxPlannedRides]}
+          domain={[0, maxHourlyRides]}
           hide
         />
         <YAxis
@@ -228,19 +223,6 @@ const GapsPatternsPage = () => {
   const { search, setSearch } = useContext(SearchContext)
   const { operatorId, lineNumber, routes, routeKey } = search
   const [routesIsLoading, setRoutesIsLoading] = useState(false)
-
-  // useEffect(() => {
-  //   if (operatorId && routes && routeKey && timestamp) {
-  //     const selectedRoute = routes.find((route) => route.key === routeKey)
-  //     if (!selectedRoute) {
-  //       return
-  //     }
-  //     setGapsIsLoading(true)
-  //     getGapsAsync(moment(timestamp), moment(timestamp), operatorId, selectedRoute.lineRef)
-  //       .then(setGaps)
-  //       .finally(() => setGapsIsLoading(false))
-  //   }
-  // }, [operatorId, routeKey, timestamp])
 
   useEffect(() => {
     if (!operatorId || !lineNumber) {
