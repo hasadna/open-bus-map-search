@@ -109,9 +109,9 @@ function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatistic
 
   const [sortingMode, setSortingMode] = useState<'hour' | 'severity'>('hour')
 
-  const sortByHour = () => {
-    hourlyData.sort((a, b) => a.planned_hour.localeCompare(b.planned_hour))
-  }
+  const sortByHour = data => 
+    data.sort((a, b) => a.planned_hour.localeCompare(b.planned_hour))
+  
 
   const sortBySeverity = () => {
     hourlyData.sort((a, b) => {
