@@ -5,7 +5,7 @@ This is the official repository of the open bus (תחב"צ פתוחה) project -
 [link to the project](https://open-bus-map-search.hasadna.org.il/dashboard)
 Please feel free to submit pull requests and contribute to the project (see the "contribution" section).
 
-## View video:
+## View video (Hebrew language):
 [![video (hebrew) about the project](https://img.youtube.com/vi/6H6jkJCVhgk/0.jpg)](https://www.youtube.com/watch?v=6H6jkJCVhgk)
 
 ## deployments
