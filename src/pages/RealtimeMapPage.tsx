@@ -14,6 +14,7 @@ import './Map.scss'
 import { DataAndTimeSelector } from './components/DataAndTimeSelector'
 import MinuteSelector from './components/MinuteSelector'
 import { getColorByHashString } from './dashboard/OperatorHbarChart/utils'
+import createClusterCustomIcon from './components/utils/customCluster/customCluster'
 
 export interface Point {
   loc: [number, number]
@@ -210,10 +211,11 @@ export function Markers({ positions }: { positions: Point[] }) {
       map.flyTo([position.coords.latitude, position.coords.longitude], 13),
     )
   }, [])
+  // const two = process.env.PUBLIC_URL + '/bus-groups/2.svg'
 
   return (
     <>
-      <MarkerClusterGroup chunkedLoading>
+      <MarkerClusterGroup chunkedLoading iconCreateFunction={createClusterCustomIcon}>
         {positions.map((pos, i) => (
           <Marker
             position={pos.loc}

@@ -4,6 +4,7 @@ import { Marker, Popup, useMap } from 'react-leaflet'
 import MarkerClusterGroup from 'react-leaflet-cluster'
 import getAgencyList, { Agency } from 'src/api/agencyList'
 import { VehicleLocation } from 'src/model/vehicleLocation'
+import createClusterCustomIcon from '../utils/customCluster/customCluster'
 
 const colorIcon = ({ operator_id, name }: { operator_id: string; name?: string }) => {
   const path = process.env.PUBLIC_URL + `/bus-logos/${operator_id}.svg`
@@ -54,7 +55,7 @@ export function BusLayer({ positions }: { positions: VehicleLocationMapPoint[] }
 
   return (
     <>
-      <MarkerClusterGroup chunkedLoading>
+      <MarkerClusterGroup chunkedLoading iconCreateFunction={createClusterCustomIcon}>
         {positions.map((pos, i) => (
           <Marker
             position={pos.loc}
