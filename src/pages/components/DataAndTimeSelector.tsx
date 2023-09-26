@@ -5,26 +5,30 @@ import moment, { Moment } from 'moment'
 import { TimePicker, renderTimeViewClock } from '@mui/x-date-pickers'
 
 type DataAndTimeSelectorProps = {
-  timestamp: moment.Moment
-  setTimestamp: (timestamp: moment.Moment) => void
+  timeValid: moment.Moment
+  setTimeValid: (timeValid: moment.Moment) => void
   showTimePicker?: boolean
 }
 
+/**
+ * @param timeSelected - what the user select. can be invalid.
+ * @param timestamp - valid time that the user choose. must be valid.
+ */
 export function DataAndTimeSelector({
-  timestamp,
-  setTimestamp,
+  timeValid,
+  setTimeValid,
   showTimePicker,
 }: DataAndTimeSelectorProps) {
-  const [timeSelected, setTimeSelected] = useState<moment.Moment | null>(timestamp)
+  const [timeSelected, setTimeSelected] = useState<moment.Moment | null>(timeValid)
 
   useEffect(() => {
     if (timeSelected != null && timeSelected.isValid() && timeSelected.isSameOrBefore(new Date()))
-      setTimestamp(timeSelected)
+      setTimeValid(timeSelected)
   }, [timeSelected])
 
   useEffect(() => {
-    if (timeSelected != null && !timeSelected.isSame(timestamp)) setTimeSelected(timestamp)
-  }, [timestamp])
+    if (timeSelected != null && !timeSelected.isSame(timeValid)) setTimeSelected(timeValid)
+  }, [timeValid])
 
   const width = showTimePicker ? '50%' : '100%'
 

@@ -124,8 +124,8 @@ const TimelinePage = () => {
         {/* choose date */}
         <GridSelectorAndLabel label={TEXTS.choose_date}>
           <DataAndTimeSelector
-            timestamp={moment(timestamp)}
-            setTimestamp={(ts) =>
+            timeValid={moment(timestamp)}
+            setTimeValid={(ts) =>
               setSearch((current) => ({ ...current, timestamp: ts ? ts.valueOf() : 0 }))
             }
           />

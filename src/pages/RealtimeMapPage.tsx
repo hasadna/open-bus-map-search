@@ -69,6 +69,8 @@ export default function RealtimeMapPage() {
     loc: [32.3057988, 34.85478613], // arbitrary default value... Netanya - best city to live & die in
     color: 0,
   }
+
+  //TODO (after upstream) use selectedRouteIds
   const [from, setFrom] = useState('2023-05-01T12:00:00+02:00') // arbitrary default value. this date is not important
   const [to, setTo] = useState('2023-05-01T12:01:00+02:00')
 
@@ -134,8 +136,8 @@ export default function RealtimeMapPage() {
         </Grid>
         <Grid xs={10}>
           <DataAndTimeSelector
-            timestamp={moment(from.slice(0, 16))} // remove timezone and seconds
-            setTimestamp={(ts) => {
+            timeValid={moment(from.slice(0, 16))} // remove timezone and seconds
+            setTimeValid={(ts) => {
               const value = ts ? ts.format() : ''
               setFrom(value)
               setTo(formatTime(+new Date(value) + (+new Date(to) - +new Date(from)))) // keep the same time difference

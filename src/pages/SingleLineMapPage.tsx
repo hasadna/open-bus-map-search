@@ -109,8 +109,8 @@ const SingleLineMapPage = () => {
         {/* choose date*/}
         <GridSelectorAndLabel label={TEXTS.choose_date}>
           <DataAndTimeSelector
-            timestamp={moment(timestamp)}
-            setTimestamp={(ts) => setSearch((current) => ({ ...current, timestamp: ts.valueOf() }))}
+            timeValid={moment(timestamp)}
+            setTimeValid={(ts) => setSearch((current) => ({ ...current, timestamp: ts.valueOf() }))}
           />
         </GridSelectorAndLabel>
         {/* choose operator */}
