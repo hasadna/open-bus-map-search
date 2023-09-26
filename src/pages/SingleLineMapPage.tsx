@@ -19,7 +19,6 @@ import { VehicleLocation } from 'src/model/vehicleLocation'
 import { getColorByHashString } from './dashboard/OperatorHbarChart/utils'
 import { DataSelector } from './components/DataSelector'
 import { CircularProgress } from '@mui/material'
-import { GridSelectorAndLabel } from './components/GridSelectorAndLabel'
 import { FilterPositionsByStartTimeSelector } from './components/FilterPositionsByStartTimeSelector'
 import { PageContainer } from './components/PageContainer'
 
@@ -107,26 +106,35 @@ const SingleLineMapPage = () => {
     <PageContainer className="map-container">
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
         {/* choose date*/}
-        <GridSelectorAndLabel label={TEXTS.choose_date}>
+        <Grid xs={4}>
+          <Label text={TEXTS.choose_date} />
+        </Grid>
+        <Grid xs={8}>
           <DataSelector
             timeValid={moment(timestamp)}
             setTimeValid={(ts) => setSearch((current) => ({ ...current, timestamp: ts.valueOf() }))}
           />
-        </GridSelectorAndLabel>
+        </Grid>
         {/* choose operator */}
-        <GridSelectorAndLabel label={TEXTS.choose_operator}>
+        <Grid xs={4}>
+          <Label text={TEXTS.choose_operator} />
+        </Grid>
+        <Grid xs={8}>
           <OperatorSelector
             operatorId={operatorId}
             setOperatorId={(id) => setSearch((current) => ({ ...current, operatorId: id }))}
           />
-        </GridSelectorAndLabel>
+        </Grid>
         {/* choose line number */}
-        <GridSelectorAndLabel label={TEXTS.choose_line}>
+        <Grid xs={4}>
+          <Label text={TEXTS.choose_line} />
+        </Grid>
+        <Grid xs={8}>
           <LineNumberSelector
             lineNumber={lineNumber}
             setLineNumber={(number) => setSearch((current) => ({ ...current, lineNumber: number }))}
           />
-        </GridSelectorAndLabel>
+        </Grid>
         <Grid xs={12}>
           {routes &&
             (routes.length === 0 ? (

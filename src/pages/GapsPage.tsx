@@ -19,7 +19,6 @@ import { DataSelector } from './components/DataSelector'
 import { FormControlLabel, Switch } from '@mui/material'
 import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
 import { INPUT_SIZE } from 'src/resources/sizes'
-import { GridSelectorAndLabel } from './components/GridSelectorAndLabel'
 
 function formatTime(time: Moment) {
   return time.format(TEXTS.time_format)
@@ -86,28 +85,37 @@ const GapsPage = () => {
     <PageContainer>
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
         {/* choose date */}
-        <GridSelectorAndLabel label={TEXTS.choose_date}>
+        <Grid xs={4}>
+          <Label text={TEXTS.choose_date} />
+        </Grid>
+        <Grid xs={8}>
           <DataSelector
             timeValid={moment(timestamp)}
             setTimeValid={(ts) =>
               setSearch((current) => ({ ...current, timestamp: ts ? ts.valueOf() : 0 }))
             }
           />
-        </GridSelectorAndLabel>
+        </Grid>
         {/* choose operator */}
-        <GridSelectorAndLabel label={TEXTS.choose_operator}>
+        <Grid xs={4}>
+          <Label text={TEXTS.choose_operator} />
+        </Grid>
+        <Grid xs={8}>
           <OperatorSelector
             operatorId={operatorId}
             setOperatorId={(id) => setSearch((current) => ({ ...current, operatorId: id }))}
           />
-        </GridSelectorAndLabel>
+        </Grid>
         {/* choose line */}
-        <GridSelectorAndLabel label={TEXTS.choose_line}>
+        <Grid xs={4}>
+          <Label text={TEXTS.choose_line} />
+        </Grid>
+        <Grid xs={8}>
           <LineNumberSelector
             lineNumber={lineNumber}
             setLineNumber={(number) => setSearch((current) => ({ ...current, lineNumber: number }))}
           />
-        </GridSelectorAndLabel>
+        </Grid>
         {/* choose routes */}
         <Grid xs={12}>
           {routesIsLoading && (
