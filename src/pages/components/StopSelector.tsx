@@ -19,7 +19,6 @@ const StopSelector = ({ stops, stopKey, setStopKey }: StopSelectorProps) => {
       value={value}
       onChange={(e, value) => setStopKey(value ? value.key : '0')}
       id="stop-select"
-      sx={{ width: '100%' }}
       options={stops}
       renderInput={(params) => (
         <TextField {...params} label={formatted(TEXTS.choose_stop, stops.length.toString())} />
