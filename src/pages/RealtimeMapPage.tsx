@@ -11,13 +11,14 @@ import getAgencyList, { Agency } from 'src/api/agencyList'
 import useVehicleLocations from 'src/api/useVehicleLocations'
 import { VehicleLocation } from 'src/model/vehicleLocation'
 import './Map.scss'
-import { DataAndTimeSelector } from './components/DataAndTimeSelector'
+import { DataSelector } from './components/DataSelector'
 import MinuteSelector from './components/MinuteSelector'
 import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
 import { PageContainer } from './components/PageContainer'
 import { INPUT_SIZE } from 'src/resources/sizes'
 import { Label } from './components/Label'
 import { getColorByHashString } from './dashboard/OperatorHbarChart/utils'
+import { TimeSelector } from './components/TimeSelector'
 
 export interface Point {
   loc: [number, number]
@@ -134,18 +135,26 @@ export default function RealtimeMapPage() {
         <Grid xs={2}>
           <Label text={TEXTS.from_date} />
         </Grid>
-        <Grid xs={10}>
-          <DataAndTimeSelector
+        <Grid xs={5}>
+          <DataSelector
             timeValid={moment(from.slice(0, 16))} // remove timezone and seconds
             setTimeValid={(ts) => {
               const value = ts ? ts.format() : ''
               setFrom(value)
               setTo(formatTime(+new Date(value) + (+new Date(to) - +new Date(from)))) // keep the same time difference
             }}
-            showTimePicker={true}
           />
         </Grid>
-        {/* watch locations in range */}
+        <Grid xs={5}>
+          <TimeSelector
+            timeValid={moment(from.slice(0, 16))} // remove timezone and seconds
+            setTimeValid={(ts) => {
+              const value = ts ? ts.format() : ''
+              setFrom(value)
+              setTo(formatTime(+new Date(value) + (+new Date(to) - +new Date(from)))) // keep the same time difference
+            }}
+          />
+        </Grid>
         <Grid xs={5}>
           <Label text={TEXTS.watch_locations_in_range} />
         </Grid>

@@ -15,7 +15,7 @@ import { getRoutesAsync } from '../api/gtfsService'
 import moment, { Moment } from 'moment'
 import styled from 'styled-components'
 import { useSessionStorage } from 'usehooks-ts'
-import { DataAndTimeSelector } from './components/DataAndTimeSelector'
+import { DataSelector } from './components/DataSelector'
 import { FormControlLabel, Switch } from '@mui/material'
 import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
 import { INPUT_SIZE } from 'src/resources/sizes'
@@ -87,7 +87,7 @@ const GapsPage = () => {
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
         {/* choose date */}
         <GridSelectorAndLabel label={TEXTS.choose_date}>
-          <DataAndTimeSelector
+          <DataSelector
             timeValid={moment(timestamp)}
             setTimeValid={(ts) =>
               setSearch((current) => ({ ...current, timestamp: ts ? ts.valueOf() : 0 }))

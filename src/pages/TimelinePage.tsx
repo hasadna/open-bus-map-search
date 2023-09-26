@@ -21,7 +21,7 @@ import { PageContainer } from './components/PageContainer'
 import { SearchContext, TimelinePageState } from '../model/pageState'
 import { NotFound } from './components/NotFound'
 import moment from 'moment'
-import { DataAndTimeSelector } from './components/DataAndTimeSelector'
+import { DataSelector } from './components/DataSelector'
 import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
 import { GridSelectorAndLabel } from './components/GridSelectorAndLabel'
 
@@ -123,7 +123,7 @@ const TimelinePage = () => {
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
         {/* choose date */}
         <GridSelectorAndLabel label={TEXTS.choose_date}>
-          <DataAndTimeSelector
+          <DataSelector
             timeValid={moment(timestamp)}
             setTimeValid={(ts) =>
               setSearch((current) => ({ ...current, timestamp: ts ? ts.valueOf() : 0 }))

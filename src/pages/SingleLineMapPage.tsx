@@ -17,7 +17,7 @@ import './Map.scss'
 import getAgencyList, { Agency } from 'src/api/agencyList'
 import { VehicleLocation } from 'src/model/vehicleLocation'
 import { getColorByHashString } from './dashboard/OperatorHbarChart/utils'
-import { DataAndTimeSelector } from './components/DataAndTimeSelector'
+import { DataSelector } from './components/DataSelector'
 import { CircularProgress } from '@mui/material'
 import { GridSelectorAndLabel } from './components/GridSelectorAndLabel'
 import { FilterPositionsByStartTimeSelector } from './components/FilterPositionsByStartTimeSelector'
@@ -108,7 +108,7 @@ const SingleLineMapPage = () => {
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
         {/* choose date*/}
         <GridSelectorAndLabel label={TEXTS.choose_date}>
-          <DataAndTimeSelector
+          <DataSelector
             timeValid={moment(timestamp)}
             setTimeValid={(ts) => setSearch((current) => ({ ...current, timestamp: ts.valueOf() }))}
           />
