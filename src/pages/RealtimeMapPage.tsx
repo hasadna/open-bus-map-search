@@ -71,7 +71,7 @@ export default function RealtimeMapPage() {
     color: 0,
   }
 
-  //TODO (after upstream) use selectedRouteIds
+  //TODO (another PR and another issue) load from url like in another pages.
   const [from, setFrom] = useState('2023-05-01T12:00:00+02:00') // arbitrary default value. this date is not important
   const [to, setTo] = useState('2023-05-01T12:01:00+02:00')
 
