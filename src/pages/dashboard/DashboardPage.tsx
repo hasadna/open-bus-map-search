@@ -1,4 +1,4 @@
-import React, { Fragment, useCallback, useContext } from 'react'
+import React, { Fragment, useCallback, useState } from 'react'
 import { useGroupBy } from 'src/api/groupByService'
 import { PageContainer } from '../components/PageContainer'
 import Tooltip from '../components/utils/tooltip/Tooltip'
@@ -12,7 +12,6 @@ import LinesHbarChart from './LineHbarChart/LinesHbarChart'
 import { FormControlLabel, Switch } from '@mui/material'
 import { Label } from 'src/pages/components/Label'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
-import { SearchContext } from '../../model/pageState'
 
 const now = moment()
 
@@ -31,10 +30,7 @@ const DashboardPage = () => {
   const [endDate, setEndDate] = useDate(now.clone().subtract(1, 'day'))
   const [groupByHour, setGroupByHour] = React.useState<boolean>(false)
 
-  const { search, setSearch } = useContext(SearchContext)
-  const { operatorId, lineNumber, timestamp, routes, routeKey } = search
-  console.log({ operatorId })
-
+  const [operatorId, setOperatorId] = useState('')
   const groupByOperatorData = useGroupBy({
     dateTo: endDate,
     dateFrom: startDate,
@@ -97,10 +93,7 @@ const DashboardPage = () => {
           label={TEXTS.group_by_hour_tooltip_content}
         />
         <Label text={TEXTS.choose_operator} />
-        <OperatorSelector
-          operatorId={operatorId}
-          setOperatorId={(id) => setSearch((current) => ({ ...current, operatorId: id }))}
-        />
+        <OperatorSelector operatorId={operatorId} setOperatorId={setOperatorId} />
       </div>
       <div className="widgets-container">
         <div className="widget">
