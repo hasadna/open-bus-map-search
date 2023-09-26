@@ -1,17 +1,11 @@
-main, main > div, .map-container, .leaflet-container, .map-info {
+main,
+main>div,
+.map-container,
+.leaflet-container,
+.map-info {
     display: flex;
     flex-direction: column;
     flex: 1 1 auto;
-}
-
-.mask {
-    display: block;
-    mask-repeat: no-repeat;
-    mask-position: center;
-    mask-size: contain;
-    -webkit-mask-repeat: no-repeat;
-    -webkit-mask-position: center;
-    -webkit-mask-size: contain;
 }
 
 pre {
@@ -20,8 +14,32 @@ pre {
     overflow-y: auto;
 }
 
-.map-header-buttons{
+.map-header-buttons {
     display: flex;
     flex-direction: row;
-    margin-top: 10px;    
+    margin-top: 10px;
+}
+
+.bus-icon-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    > .bus-icon-circle{
+        width: 50px;
+        height: 50px;
+        padding: 5px;
+        border-radius: 50%;
+        background-color: white;
+        img {
+            width: 100%;
+            height: 100%;
+        }
+    }
+    > .operator-name{
+        background-color: rgba(255, 255, 255, 0.4);
+        font-weight: bold;
+        font-size: 1.25em;
+    }
 }
