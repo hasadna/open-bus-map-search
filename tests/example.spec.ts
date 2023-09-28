@@ -9,7 +9,7 @@ test('search bus station', async ({ page }) => {
     notFound: 'abort',
   })
   await mockAPI(page)
-  await resetTime(page)
+  await resetPage(page)
 
   await page.goto('/dashboard')
   await page.locator('li').filter({ hasText: 'לוח זמנים היסטורי' }).click()
@@ -34,40 +34,46 @@ test('search bus station', async ({ page }) => {
   await page.getByText('זמן עצירה מתוכנן 🕛').click({ timeout: 15 * 60 * 1000 })
 })
 
-function resetTime(page: Page) {
+function resetPage(page: Page) {
   return page.addInitScript(() => {
-    page.evaluate(() => {
-      const OriginalDate = window.Date
+    const OriginalDate = window.Date
 
-      class MockDate extends OriginalDate {
-        static currentDate = '2023-09-05T12:00:00.000Z'
-        static currentTimeStamp = new OriginalDate(MockDate.currentDate).getTime()
-        static originalNow = OriginalDate.now()
+    class MockDate extends OriginalDate {
+      static currentDate = '2023-09-05T12:00:00.000Z'
+      static currentTimeStamp = new OriginalDate(MockDate.currentDate).getTime()
+      static originalNow = OriginalDate.now()
 
-        constructor(...args) {
-          const params =
-            args && args.length ? args : [MockDate.currentTimeStamp + MockDate.getTick()]
+      constructor(...args) {
+        const params = args && args.length ? args : [MockDate.currentTimeStamp + MockDate.getTick()]
 
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          super(...params)
-        }
-
-        static [Symbol.hasInstance](instance: Date) {
-          return typeof instance.getDate === 'function'
-        }
-
-        static getTick() {
-          return OriginalDate.now() - MockDate.originalNow
-        }
-
-        static now() {
-          return MockDate.currentTimeStamp + MockDate.getTick()
-        }
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        super(...params)
       }
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      window.Date = MockDate
+
+      static [Symbol.hasInstance](instance: Date) {
+        return typeof instance?.getDate === 'function'
+      }
+
+      static getTick() {
+        return OriginalDate.now() - MockDate.originalNow
+      }
+
+      static now() {
+        return MockDate.currentTimeStamp + MockDate.getTick()
+      }
+    }
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    window.Date = MockDate
+    window.addEventListener('load', () => {
+      const style = document.createElement('style')
+      document.head.appendChild(style)
+      style.innerHTML = `
+      #webpack-dev-server-client-overlay {
+        display: none !important;
+      }
+    `
     })
   })
 }
