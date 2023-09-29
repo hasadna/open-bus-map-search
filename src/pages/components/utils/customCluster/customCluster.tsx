@@ -8,7 +8,7 @@ const createClusterCustomIcon = (cluster: MarkerCluster): DivIcon => {
   const innerHtml = `
     <div class="marker-container">
       <span>${childCount}</span>
-       <img src="${imgPath}" alt="haha" />
+       <img src="${imgPath}" alt="${childCount}.svg" />
     </div>`
 
   return new DivIcon({
@@ -19,51 +19,30 @@ const createClusterCustomIcon = (cluster: MarkerCluster): DivIcon => {
 }
 export default createClusterCustomIcon
 
-const getIconForGroup = (groupSize: number): string => {
+const getIconForGroup = (numOfNearbyBusses: number): string => {
+  const groupSizes = [30, 10, 3, 2]
+
   const imgPath = process.env.PUBLIC_URL + '/bus-groups/'
-
-  type groupsToImg = {
-    readonly [index: number]: string
-  }
-
-  const groups: groupsToImg = {
-    2: '2.svg',
-    3: '3.svg',
-    10: '10.svg',
-    30: '30.svg',
-  }
-
-  let icon = ''
-
-  for (const i of Object.keys(groups)) {
-    const numOfNearbyBusses = parseInt(i)
-    if (groupSize >= numOfNearbyBusses) {
-      icon = groups[numOfNearbyBusses]
-    }
-  }
-  return imgPath + icon
+  const iconName = `${groupSizes.find((groupSize) => numOfNearbyBusses >= groupSize) || 3}.svg`
+  return imgPath + iconName
 }
 
-const getClassNameForGroup = (groupSize: number): string => {
+const getClassNameForGroup = (numOfNearbyBusses: number): string => {
   type groupToClassName = {
-    readonly [index: number]: string
+    numOfnearbyBusses: number
+    className: string
   }
 
-  const classes: groupToClassName = {
-    1: 'small',
-    10: 'mediul',
-    100: 'large',
-  }
+  const classes: groupToClassName[] = [
+    { numOfnearbyBusses: 100, className: 'large' },
+    { numOfnearbyBusses: 10, className: 'medium' },
+    { numOfnearbyBusses: 1, className: 'small' },
+  ]
 
   const clusterClass = 'marker-cluster marker-cluster-'
-  let clusterSize = ''
-
-  for (const i of Object.keys(classes)) {
-    const numOfNearbyBusses = parseInt(i)
-    if (groupSize >= numOfNearbyBusses) {
-      clusterSize = classes[numOfNearbyBusses]
-    }
-  }
+  const clusterSize =
+    classes.find((groupClass) => numOfNearbyBusses >= groupClass.numOfnearbyBusses)?.className ||
+    'small'
 
   return clusterClass + clusterSize
 }
