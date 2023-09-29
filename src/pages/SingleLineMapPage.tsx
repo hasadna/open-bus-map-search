@@ -38,7 +38,6 @@ const position: Point = {
 const SingleLineMapPage = () => {
   const { search, setSearch } = useContext(SearchContext)
   const { operatorId, lineNumber, timestamp, routes, routeKey } = search
-
   const [agencyList, setAgencyList] = useState<Agency[]>([])
 
   useEffect(() => {
