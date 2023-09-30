@@ -11,7 +11,7 @@ import getAgencyList, { Agency } from 'src/api/agencyList'
 import useVehicleLocations from 'src/api/useVehicleLocations'
 import { VehicleLocation } from 'src/model/vehicleLocation'
 import './Map.scss'
-import { DataSelector } from './components/DataSelector'
+import { DateSelector } from './components/DateSelector'
 import MinuteSelector from './components/MinuteSelector'
 import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
 import { PageContainer } from './components/PageContainer'
@@ -136,7 +136,7 @@ export default function RealtimeMapPage() {
           <Label text={TEXTS.from_date} />
         </Grid>
         <Grid xs={5}>
-          <DataSelector
+          <DateSelector
             timeValid={moment(from.slice(0, 16))} // remove timezone and seconds
             setTimeValid={(ts) => {
               const value = ts ? ts.format() : ''
@@ -155,6 +155,7 @@ export default function RealtimeMapPage() {
             }}
           />
         </Grid>
+        {/*minutes*/}
         <Grid xs={5}>
           <Label text={TEXTS.watch_locations_in_range} />
         </Grid>

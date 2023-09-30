@@ -3,7 +3,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import { TEXTS } from 'src/resources/texts'
 import { DataAndTimeSelectorProps, useValidSelected } from './utils/dateAndTime'
 
-export function DataSelector({ timeValid, setTimeValid }: DataAndTimeSelectorProps) {
+export function DateSelector({ timeValid, setTimeValid }: DataAndTimeSelectorProps) {
   const [timeSelected, setTimeSelected] = useValidSelected(timeValid, setTimeValid)
 
   return (
