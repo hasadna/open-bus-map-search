@@ -49,8 +49,6 @@ export async function getStopsForRouteAsync(
   const stops: BusStop[] = []
 
   for (const routeId of routeIds) {
-    // eslint-disable-next-line no-debugger
-    debugger
     const rides = await GTFS_API.gtfsRidesListGet({
       gtfsRouteId: routeId,
       startTimeFrom: moment(timestamp).subtract(1, 'days').second(0).milliseconds(0).toDate(),
