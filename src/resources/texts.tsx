@@ -1,11 +1,16 @@
+import React from 'react'
+
 const PLACEHOLDER = 'XXX'
 
 export const TEXTS = {
+  realtime_map_explanation: 'נתוני מיקום של אוטובוסים שנאספו בזמן אמת',
   timeline_page_title: 'לוח זמנים היסטורי',
   realtime_map_page_title: 'מפה בזמן אמת',
   gaps_page_title: 'נסיעות שלא יצאו',
   singleline_map_page_title: 'מפה לפי קו',
   choose_datetime: 'תאריך ושעה',
+  choose_date: 'תאריך',
+  choose_time: 'שעה',
   choose_operator: 'חברה מפעילה',
   operator_placeholder: 'לדוגמא: דן',
   choose_line: 'מספר קו',
@@ -69,8 +74,13 @@ export const TEXTS = {
   license: 'רשיון שימוש',
   questions: 'שאלות? תגובות? רעיונות?',
   funding: 'מימון',
-  funding_paragraph:
-    'דאטא בוס מפותח בעבודת מתנדבים ומבוסס על Open API שפותח בסדנא לידע ציבורי בעזרתם הנדיבה של -',
+  funding_paragraph: (
+    <>
+      דאטא בוס מפותח בעבודת מתנדבים ומבוסס על{' '}
+      <a href="https://open-bus-stride-api.hasadna.org.il/docs">Open API</a> שפותח בסדנא לידע ציבורי
+      בעזרתם הנדיבה של -
+    </>
+  ),
   mr_meir: 'מר אשר מאיר',
   innovation_authority: 'רשות החדשנות',
   migdal_company: '“מגדל בקהילה“',

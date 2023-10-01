@@ -7,6 +7,7 @@
     "@emotion/styled": "^11.11.0",
     "@mui/material": "^5.14.7",
     "@mui/x-date-pickers": "^6.12.1",
+    "@types/leaflet.markercluster": "^1.5.2",
     "antd": "^4.22.5",
     "axios": "^0.27.2",
     "classnames": "^2.3.2",
@@ -43,7 +44,7 @@
     "test": "react-scripts test",
     "test:playwright": "playwright test",
     "eject": "react-scripts eject",
-    "lint": "eslint .",
+    "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write './**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc"
   },

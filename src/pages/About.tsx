@@ -87,6 +87,11 @@ const Questions = () => {
             דברו איתנו על זה בסלאק
           </a>
         </li>
+        <li>
+          <a href="https://www.jgive.com/new/he/ils/donation-targets/3268#donation-modal">
+            שרתים עולים כסף- עזרו לנו להמשיך לתחזק ולפתח את הפרויקט!
+          </a>
+        </li>
       </ul>
     </ParagraphStyle>
   )
@@ -101,7 +106,11 @@ const Funding = () => {
         <li>{TEXTS.mr_meir}</li>
         <li>{TEXTS.innovation_authority}</li>
         <li>{TEXTS.migdal_company}</li>
-        <li>{TEXTS.and_smaller_donors}</li>
+        <li>
+          <a href="https://www.jgive.com/new/he/ils/donation-targets/3268#donation-modal">
+            {TEXTS.and_smaller_donors}
+          </a>
+        </li>
       </ul>
     </ParagraphStyle>
   )
