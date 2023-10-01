@@ -1,11 +1,14 @@
 const PLACEHOLDER = 'XXX'
 
 export const TEXTS = {
+  realtime_map_explanation: 'נתוני מיקום של אוטובוסים שנאספו בזמן אמת',
   timeline_page_title: 'לוח זמנים היסטורי',
   realtime_map_page_title: 'מפה בזמן אמת',
   gaps_page_title: 'נסיעות שלא יצאו',
   singleline_map_page_title: 'מפה לפי קו',
   choose_datetime: 'תאריך ושעה',
+  choose_date: 'תאריך',
+  choose_time: 'שעה',
   choose_operator: 'חברה מפעילה',
   operator_placeholder: 'לדוגמא: דן',
   choose_line: 'מספר קו',
