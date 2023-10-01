@@ -18,6 +18,7 @@ import { PageContainer } from './components/PageContainer'
 import { INPUT_SIZE } from 'src/resources/sizes'
 import { Label } from './components/Label'
 import { getColorByHashString } from './dashboard/OperatorHbarChart/utils'
+import createClusterCustomIcon from './components/utils/customCluster/customCluster'
 import { TimeSelector } from './components/TimeSelector'
 
 export interface Point {
@@ -244,10 +245,11 @@ export function Markers({ positions }: { positions: Point[] }) {
       map.flyTo([position.coords.latitude, position.coords.longitude], 13),
     )
   }, [])
+  // const two = process.env.PUBLIC_URL + '/bus-groups/2.svg'
 
   return (
     <>
-      <MarkerClusterGroup chunkedLoading>
+      <MarkerClusterGroup chunkedLoading iconCreateFunction={createClusterCustomIcon}>
         {positions.map((pos, i) => (
           <Marker
             position={pos.loc}
