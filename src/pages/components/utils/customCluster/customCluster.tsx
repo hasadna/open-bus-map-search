@@ -8,7 +8,7 @@ const createClusterCustomIcon = (cluster: MarkerCluster): DivIcon => {
   const innerHtml = `
     <div class="marker-container">
       <span>${childCount}</span>
-       <img src="${imgPath}" alt="${childCount}.svg" />
+       <img src="${imgPath}" alt="${childCount} אוטובוסים" />
     </div>`
 
   return new DivIcon({
