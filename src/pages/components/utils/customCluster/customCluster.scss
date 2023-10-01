@@ -2,3 +2,34 @@
     display: flex;
     flex-direction: column;
 }
+
+.marker-cluster .count {
+    position: absolute;
+    padding: 5px;
+    border-radius: 50%;
+    line-height: 10px;
+    left: 50%;
+    top: 0;
+    transform: translate(-50%, -50%);
+    font-weight: bold;
+
+}
+
+.marker-cluster, .marker-cluster div {
+    background-color: transparent;
+    margin: 0;
+    width: 40px;
+    height: 40px;
+}
+
+.marker-cluster-small .count {
+    background-color: rgba(181, 226, 140, 0.6)
+}
+
+.marker-cluster-medium .count {
+    background-color: rgba(241, 211, 87, 0.6);
+}
+
+.marker-cluster-large .count {
+    background-color: rgba(253, 156, 115, 0.6);
+}

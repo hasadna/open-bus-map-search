@@ -1,5 +1,7 @@
 import L, { DivIcon, MarkerCluster } from 'leaflet'
 
+import './customCluster.scss'
+
 const createClusterCustomIcon = (cluster: MarkerCluster): DivIcon => {
   const childCount = cluster.getChildCount()
   const imgPath = getIconForGroup(childCount)
@@ -7,7 +9,7 @@ const createClusterCustomIcon = (cluster: MarkerCluster): DivIcon => {
 
   const innerHtml = `
     <div class="marker-container">
-      <span>${childCount}</span>
+      <span class="count">${childCount}</span>
        <img src="${imgPath}" alt="${childCount} אוטובוסים" />
     </div>`
 
