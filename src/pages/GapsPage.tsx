@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { PageContainer } from './components/PageContainer'
 import { Row } from './components/Row'
 import { Label } from './components/Label'
@@ -35,6 +35,14 @@ function formatStatus(all: GapsList, gap: Gap) {
     return TEXTS.ride_duped
   }
   return TEXTS.ride_extra
+}
+
+function getGapsPercentage(gaps: GapsList | undefined): number | undefined {
+  const ridesInTime = gaps?.filter((gap) => formatStatus([], gap) === TEXTS.ride_as_planned)
+  if (!gaps || !ridesInTime) return undefined
+  const ridesInTimePercentage = (ridesInTime?.length / gaps?.length) * 100
+  const allRidesPercentage = 100
+  return allRidesPercentage - ridesInTimePercentage
 }
 
 const Cell = styled.div`
@@ -80,13 +88,7 @@ const GapsPage = () => {
       .finally(() => setRoutesIsLoading(false))
   }, [operatorId, lineNumber, timestamp, setSearch])
 
-  const gapsPrecentage = useMemo(() => {
-    const ridesInTime = gaps?.filter((gap) => formatStatus([], gap) === TEXTS.ride_as_planned)
-    if (!gaps || !ridesInTime) return undefined
-    const ridesInTimePercentage = (ridesInTime?.length / gaps?.length) * 100
-    const allRidesPercentage = 100
-    return allRidesPercentage - ridesInTimePercentage
-  }, [gaps, formatStatus])
+  const gapsPercentage = getGapsPercentage(gaps)
 
   return (
     <PageContainer>
@@ -144,7 +146,11 @@ const GapsPage = () => {
             }
             label={TEXTS.checkbox_only_gaps}
           />
-          <Row>{DisplayGapsPercentage(gapsPrecentage)}</Row>
+          <DisplayGapsPercentage
+            gapsPercentage={gapsPercentage}
+            decentPercentage={5}
+            terriblePercentage={20}
+          />
           <Row>
             <TitleCell>{TEXTS.planned_time}</TitleCell>
             <TitleCell>{TEXTS.planned_status}</TitleCell>

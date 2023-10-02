@@ -75,7 +75,7 @@ export const TEXTS = {
   innovation_authority: 'רשות החדשנות',
   migdal_company: 'חברת “מגדל“',
   and_smaller_donors: 'ועוד מספר תורמים קטנים יותר.',
-  all_rides_completed: 'כל הנסיעות בוצעו',
+  all_rides_completed: 'כמעט / כל הנסיעות בוצעו',
   missing_rides: 'מהנסיעות חסרות',
 }
 
