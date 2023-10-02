@@ -7,7 +7,7 @@ import { VehicleLocation } from 'src/model/vehicleLocation'
 import createClusterCustomIcon from '../utils/customCluster/customCluster'
 
 const colorIcon = ({ operator_id, name }: { operator_id: string; name?: string }) => {
-  const path = process.env.PUBLIC_URL + `/bus-logos/${operator_id}.svg`
+  const path = `/bus-logos/${operator_id}.svg`
   return new DivIcon({
     className: 'my-div-icon',
     html: `
