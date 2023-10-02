@@ -22,6 +22,8 @@ This app is created by the volunteers of [Public Knowledge Workshop](https://www
 - clone the repo
 - `yarn install`
 - `yarn start`
+- If you get an error with `yarn start` then open terminal, go to the root of the project and run this command - `Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope Process`. For more info, go to this link - 
+
 
 ### useful resources:
 * [the design file](https://www.figma.com/file/Plw8Uuu6U96CcX5tJyRMoW/Public-Transportation-visual-informaiton?type=design&node-id=0-1&mode=design&t=Dh8lI3EJ37unxvoe-0)https://www.figma.com/file/Plw8Uuu6U96CcX5tJyRMoW/Public-Transportation-visual-informaiton?type=design&node-id=0-1&mode=design&t=Dh8lI3EJ37unxvoe-0
