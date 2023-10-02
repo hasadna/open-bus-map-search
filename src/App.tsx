@@ -51,10 +51,12 @@ const PAGES = [
   {
     label: TEXTS.timeline_page_title,
     key: '/timeline',
+    searchParamsRequired: true,
   },
   {
     label: TEXTS.gaps_page_title,
     key: '/gaps',
+    searchParamsRequired: true,
   },
   {
     label: TEXTS.realtime_map_page_title,
@@ -63,6 +65,7 @@ const PAGES = [
   {
     label: TEXTS.singleline_map_page_title,
     key: '/single-line-map',
+    searchParamsRequired: true,
   },
   {
     label: TEXTS.about_title,
@@ -117,12 +120,21 @@ const App = () => {
   })
 
   useEffect(() => {
-    setSearchParams({
-      operatorId: search.operatorId!,
-      lineNumber: search.lineNumber!,
-      routeKey: search.routeKey!,
-      timestamp: search.timestamp.toString(),
-    })
+    const page = PAGES.find((page) => page.key === location.pathname)
+    if (page?.searchParamsRequired) {
+      const params = new URLSearchParams({ timestamp: search.timestamp.toString() })
+
+      if (search.operatorId) {
+        params.set('operatorId', search.operatorId)
+      }
+      if (search.lineNumber) {
+        params.set('lineNumber', search.lineNumber)
+      }
+      if (search.routeKey) {
+        params.set('routeKey', search.routeKey)
+      }
+      setSearchParams(params)
+    }
   }, [search.lineNumber, search.operatorId, search.routeKey, search.timestamp, location.pathname])
 
   const safeSetSearch = useCallback((mutate: (prevState: PageSearchState) => PageSearchState) => {
