@@ -47,7 +47,6 @@
     "serve": "vite preview",
     "test": "",
     "test:playwright": "playwright test",
-    "eject": "",
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write './**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc"
