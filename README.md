@@ -22,7 +22,6 @@ This app is created by the volunteers of [Public Knowledge Workshop](https://www
 - clone the repo
 - `yarn install`
 - `yarn start`
-- If you get an error with `yarn start` then open terminal, go to the root of the project and run this command - `Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope Process`. For more info, go to this link - https://bobbyhadz.com/blog/yarn-cannot-be-loaded-running-scripts-disabled
 
 
 ### useful resources:

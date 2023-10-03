@@ -45,7 +45,7 @@
     "start": "vite",
     "build": "tsc && vite build",
     "serve": "vite preview",
-    "test": "",
+    "test": "echo \"no default test defined. to run playwright test, use `npm run test:playwright`\"",
     "test:playwright": "playwright test",
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix",
