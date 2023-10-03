@@ -24,7 +24,7 @@ This app is created by the volunteers of [Public Knowledge Workshop](https://www
 - `yarn start`
 
 ### useful resources:
-* [the design file](https://www.figma.com/file/Plw8Uuu6U96CcX5tJyRMoW/Public-Transportation-visual-informaiton?type=design&node-id=0-1&mode=design&t=Dh8lI3EJ37unxvoe-0)https://www.figma.com/file/Plw8Uuu6U96CcX5tJyRMoW/Public-Transportation-visual-informaiton?type=design&node-id=0-1&mode=design&t=Dh8lI3EJ37unxvoe-0
+* [the design file](https://www.figma.com/file/Plw8Uuu6U96CcX5tJyRMoW/Public-Transportation-visual-informaiton?type=design&node-id=0-1&mode=design&t=Dh8lI3EJ37unxvoe-0)
 * [data model schema](https://github.com/hasadna/open-bus-stride-db/blob/main/DATA_MODEL.md)
 * [API documentation and examples (swagger)](https://open-bus-stride-api.hasadna.org.il/docs)
 * [the deployed website](https://open-bus-map-search.hasadna.org.il/dashboard)
