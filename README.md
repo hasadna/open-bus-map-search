@@ -23,6 +23,7 @@ This app is created by the volunteers of [Public Knowledge Workshop](https://www
 - `yarn install`
 - `yarn start`
 
+
 ### useful resources:
 * [the design file](https://www.figma.com/file/Plw8Uuu6U96CcX5tJyRMoW/Public-Transportation-visual-informaiton?type=design&node-id=0-1&mode=design&t=Dh8lI3EJ37unxvoe-0)
 * [data model schema](https://github.com/hasadna/open-bus-stride-db/blob/main/DATA_MODEL.md)
