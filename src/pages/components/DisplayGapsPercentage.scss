@@ -1,0 +1,15 @@
+@import '../../resources/variables';
+
+.gaps-percentage-displayed {
+  font-weight: bold;
+  width: 200px;
+  &-great-result {
+    color: $great-result;
+  }
+  &-decent-result {
+    color: $decent-result;
+  }
+  &-terrible-result {
+    color: $terrible-result;
+  }
+}
