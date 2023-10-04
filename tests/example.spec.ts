@@ -3,7 +3,7 @@ import { Page, test } from '@playwright/test'
 test('search bus station', async ({ page }) => {
   test.slow()
   await page.routeFromHAR('tests/example.har', {
-    url: /api/,
+    url: /^(?!.*\.(ts|js|mjs)$).*api/,
     update: false,
     updateContent: 'embed',
     notFound: 'abort',
