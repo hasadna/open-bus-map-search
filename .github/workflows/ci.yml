@@ -15,6 +15,7 @@ jobs:
         DOCKER_APP_IMAGE_NAME: "ghcr.io/hasadna/open-bus-map-search/open-bus-map-search"
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         HASADNA_K8S_DEPLOY_KEY: ${{ secrets.HASADNA_K8S_DEPLOY_KEY }}
+      if: env.HASADNA_K8S_DEPLOY_KEY && env.GITHUB_TOKEN
       run: |
         echo "${GITHUB_TOKEN}" | docker login ghcr.io -u hasadna --password-stdin &&\
         if docker pull "${DOCKER_APP_IMAGE_NAME}:latest"; then

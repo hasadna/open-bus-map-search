@@ -46,7 +46,7 @@ const Privacy = () => {
     <ParagraphStyle>
       <h2>{TEXTS.privacy}</h2>
       <p>
-        באתר מוטמע שירות
+        באתר מוטמע שירות{' '}
         <a href="https://marketingplatform.google.com/about/analytics/">Google Analytics </a>
         לניתוח דפוסי השימוש ומיצוב האתר במנועי חיפוש. קוד זה חושף בפני מפעילי השירות מידע בנוגע
         להתנהגות המשתמשים.
@@ -87,6 +87,11 @@ const Questions = () => {
             דברו איתנו על זה בסלאק
           </a>
         </li>
+        <li>
+          <a href="https://www.jgive.com/new/he/ils/donation-targets/3268#donation-modal">
+            שרתים עולים כסף- עזרו לנו להמשיך לתחזק ולפתח את הפרויקט!
+          </a>
+        </li>
       </ul>
     </ParagraphStyle>
   )
@@ -98,11 +103,14 @@ const Funding = () => {
       <h2>{TEXTS.funding}</h2>
       <p>{TEXTS.funding_paragraph}</p>
       <ul>
-        <li>{TEXTS.prime_ministers_office}</li>
-        <li>{TEXTS.european_union}</li>
+        <li>{TEXTS.mr_meir}</li>
         <li>{TEXTS.innovation_authority}</li>
         <li>{TEXTS.migdal_company}</li>
-        <li>{TEXTS.and_smaller_donors}</li>
+        <li>
+          <a href="https://www.jgive.com/new/he/ils/donation-targets/3268#donation-modal">
+            {TEXTS.and_smaller_donors}
+          </a>
+        </li>
       </ul>
     </ParagraphStyle>
   )

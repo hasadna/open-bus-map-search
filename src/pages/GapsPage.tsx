@@ -15,8 +15,10 @@ import { getRoutesAsync } from '../api/gtfsService'
 import moment, { Moment } from 'moment'
 import styled from 'styled-components'
 import { useSessionStorage } from 'usehooks-ts'
-import { DataAndTimeSelector } from './components/DataAndTimeSelector'
+import { DateSelector } from './components/DateSelector'
 import { FormControlLabel, Switch } from '@mui/material'
+import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
+import { INPUT_SIZE } from 'src/resources/sizes'
 import DisplayGapsPercentage from './components/DisplayGapsPercentage'
 
 function formatTime(time: Moment) {
@@ -92,52 +94,68 @@ const GapsPage = () => {
 
   return (
     <PageContainer>
-      <Row>
-        <Label text={TEXTS.choose_datetime} />
-        <DataAndTimeSelector
-          timestamp={moment(timestamp)}
-          setTimestamp={(ts) =>
-            setSearch((current) => ({ ...current, timestamp: ts ? ts.valueOf() : 0 }))
-          }
-        />
-      </Row>
-      <Row>
-        <Label text={TEXTS.choose_operator} />
-        <OperatorSelector
-          operatorId={operatorId}
-          setOperatorId={(id) => setSearch((current) => ({ ...current, operatorId: id }))}
-        />
-      </Row>
-      <Row>
-        <Label text={TEXTS.choose_line} />
-        <LineNumberSelector
-          lineNumber={lineNumber}
-          setLineNumber={(number) => setSearch((current) => ({ ...current, lineNumber: number }))}
-        />
-      </Row>
-      {routesIsLoading && (
-        <Row>
-          <Label text={TEXTS.loading_routes} />
-          <Spin />
-        </Row>
-      )}
-      {!routesIsLoading &&
-        routes &&
-        (routes.length === 0 ? (
-          <NotFound>{TEXTS.line_not_found}</NotFound>
-        ) : (
-          <RouteSelector
-            routes={routes}
-            routeKey={routeKey}
-            setRouteKey={(key) => setSearch((current) => ({ ...current, routeKey: key }))}
+      <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
+        {/* choose date */}
+        <Grid xs={4}>
+          <Label text={TEXTS.choose_date} />
+        </Grid>
+        <Grid xs={8}>
+          <DateSelector
+            timeValid={moment(timestamp)}
+            setTimeValid={(ts) =>
+              setSearch((current) => ({ ...current, timestamp: ts ? ts.valueOf() : 0 }))
+            }
           />
-        ))}
-      {gapsIsLoading && (
-        <Row>
-          <Label text={TEXTS.loading_gaps} />
-          <Spin />
-        </Row>
-      )}
+        </Grid>
+        {/* choose operator */}
+        <Grid xs={4}>
+          <Label text={TEXTS.choose_operator} />
+        </Grid>
+        <Grid xs={8}>
+          <OperatorSelector
+            operatorId={operatorId}
+            setOperatorId={(id) => setSearch((current) => ({ ...current, operatorId: id }))}
+          />
+        </Grid>
+        {/* choose line */}
+        <Grid xs={4}>
+          <Label text={TEXTS.choose_line} />
+        </Grid>
+        <Grid xs={8}>
+          <LineNumberSelector
+            lineNumber={lineNumber}
+            setLineNumber={(number) => setSearch((current) => ({ ...current, lineNumber: number }))}
+          />
+        </Grid>
+        {/* choose routes */}
+        <Grid xs={12}>
+          {routesIsLoading && (
+            <Row>
+              <Label text={TEXTS.loading_routes} />
+              <Spin />
+            </Row>
+          )}
+          {!routesIsLoading &&
+            routes &&
+            (routes.length === 0 ? (
+              <NotFound>{TEXTS.line_not_found}</NotFound>
+            ) : (
+              <RouteSelector
+                routes={routes}
+                routeKey={routeKey}
+                setRouteKey={(key) => setSearch((current) => ({ ...current, routeKey: key }))}
+              />
+            ))}
+        </Grid>
+        <Grid xs={12}>
+          {gapsIsLoading && (
+            <Row>
+              <Label text={TEXTS.loading_gaps} />
+              <Spin />
+            </Row>
+          )}
+        </Grid>
+      </Grid>
       {!gapsIsLoading && routeKey && (
         <>
           <FormControlLabel

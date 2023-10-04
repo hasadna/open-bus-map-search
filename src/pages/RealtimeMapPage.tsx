@@ -1,21 +1,25 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { MapContainer, useMap, Marker, Popup, TileLayer, Polyline } from 'react-leaflet'
-// import https://www.svgrepo.com/show/113626/bus-front.svg
-import busIcon from '../resources/bus-front.svg'
+import { MapContainer, Marker, Polyline, Popup, TileLayer, useMap } from 'react-leaflet'
 import MarkerClusterGroup from 'react-leaflet-cluster'
 import { TEXTS } from 'src/resources/texts'
 
-import './Map.scss'
+import { Button } from '@mui/material'
+import { Spin } from 'antd'
 import { DivIcon } from 'leaflet'
+import moment from 'moment'
+import getAgencyList, { Agency } from 'src/api/agencyList'
 import useVehicleLocations from 'src/api/useVehicleLocations'
 import { VehicleLocation } from 'src/model/vehicleLocation'
-import getAgencyList, { Agency } from 'src/api/agencyList'
-import { getColorByHashString } from './dashboard/OperatorHbarChart/utils'
-import { Spin } from 'antd'
-import { DataAndTimeSelector } from './components/DataAndTimeSelector'
-import moment from 'moment'
+import './Map.scss'
+import { DateSelector } from './components/DateSelector'
 import MinuteSelector from './components/MinuteSelector'
-import { Button } from '@mui/material'
+import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
+import { PageContainer } from './components/PageContainer'
+import { INPUT_SIZE } from 'src/resources/sizes'
+import { Label } from './components/Label'
+import { getColorByHashString } from './dashboard/OperatorHbarChart/utils'
+import createClusterCustomIcon from './components/utils/customCluster/customCluster'
+import { TimeSelector } from './components/TimeSelector'
 
 export interface Point {
   loc: [number, number]
@@ -33,34 +37,17 @@ interface Path {
   vehicleRef: number
 }
 
-export const colorIcon = ({
-  color,
-  name,
-  rotate = 0,
-}: {
-  color: string
-  name?: string
-  rotate?: number
-}) => {
+export const colorIcon = ({ operator_id, name }: { operator_id: string; name?: string }) => {
+  const path = process.env.PUBLIC_URL + `/bus-logos/${operator_id}.svg`
   return new DivIcon({
     className: 'my-div-icon',
-    html: `<div class="mask" style="
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        mask-image: url(${busIcon});
-        -webkit-mask-image: url(${busIcon});
-        transform: rotate(${rotate}deg);
-    ">
-        <div
-            style="
-                background-color: ${color};
-                width: 100%;
-                height: 100%;
-            "
-        ></div>
+    html: `
+    <div class="bus-icon-container">
+      <div class="bus-icon-circle">
+        <img src="${path}" alt="${name}" />
+      </div>
+      <div class="operator-name">${name}</div>
     </div>
-    <div class="text">${name}</div>
     `,
   })
 }
@@ -84,6 +71,8 @@ export default function RealtimeMapPage() {
     loc: [32.3057988, 34.85478613], // arbitrary default value... Netanya - best city to live & die in
     color: 0,
   }
+
+  //TODO (another PR and another issue) load from url like in another pages.
   const [from, setFrom] = useState('2023-05-01T12:00:00+02:00') // arbitrary default value. this date is not important
   const [to, setTo] = useState('2023-05-01T12:01:00+02:00')
 
@@ -138,34 +127,55 @@ export default function RealtimeMapPage() {
   console.log(paths)
 
   return (
-    <div className="map-container">
-      <div className="map-header">
-        <h1>Realtime Map</h1>
-        <div className="map-header-buttons">
-          <label>
-            {TEXTS.from_date}{' '}
-            <DataAndTimeSelector
-              timestamp={moment(from.slice(0, 16))} // remove timezone and seconds
-              setTimestamp={(ts) => {
-                const value = ts ? ts.format() : ''
-                setFrom(value)
-                setTo(formatTime(+new Date(value) + (+new Date(to) - +new Date(from)))) // keep the same time difference
-              }}
-              showTimePicker={true}
-            />
-          </label>{' '}
-        </div>
-        <div className="map-header-buttons">
-          <label>
-            {TEXTS.watch_locations_in_range}{' '}
-            <MinuteSelector
-              num={(+new Date(to) - +new Date(from)) / 1000 / 60}
-              setNum={(num) => setTo(formatTime(+new Date(from) + +num * 1000 * 60))}
-            />{' '}
-            {TEXTS.minutes}
-          </label>
-        </div>
-        <div className="map-header-buttons">
+    <PageContainer className="map-container">
+      <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
+        <Grid xs={12}>
+          <Label text={TEXTS.realtime_map_explanation} />
+        </Grid>
+        {/* from date */}
+        <Grid xs={2}>
+          <Label text={TEXTS.from_date} />
+        </Grid>
+        <Grid xs={5}>
+          <DateSelector
+            timeValid={moment(from.slice(0, 16))} // remove timezone and seconds
+            setTimeValid={(ts) => {
+              const value = ts ? ts.format() : ''
+              setFrom(value)
+              setTo(formatTime(+new Date(value) + (+new Date(to) - +new Date(from)))) // keep the same time difference
+            }}
+          />
+        </Grid>
+        <Grid xs={5}>
+          <TimeSelector
+            timeValid={moment(from.slice(0, 16))} // remove timezone and seconds
+            setTimeValid={(ts) => {
+              const value = ts ? ts.format() : ''
+              setFrom(value)
+              setTo(formatTime(+new Date(value) + (+new Date(to) - +new Date(from)))) // keep the same time difference
+            }}
+          />
+        </Grid>
+        {/*minutes*/}
+        <Grid xs={5}>
+          <Label text={TEXTS.watch_locations_in_range} />
+        </Grid>
+        <Grid xs={6}>
+          <MinuteSelector
+            num={(+new Date(to) - +new Date(from)) / 1000 / 60}
+            setNum={(num) => setTo(formatTime(+new Date(from) + +num * 1000 * 60))}
+          />
+        </Grid>
+        <Grid xs={1}>
+          <Label text={TEXTS.minutes} />
+        </Grid>
+        {/* Buttons */}
+        {/*TODO (another PR another issue)
+          1) discussion if the buttons need to be 5 minutes from now or from the 'from' state.
+          2) recommended use MomentJs API instead Date API. 'moment().subtract(5, 'minutes')'.
+          3) use text `TEXTS`.
+        */}
+        <Grid xs={3}>
           <Button
             variant="contained"
             onClick={() => {
@@ -174,6 +184,8 @@ export default function RealtimeMapPage() {
             }}>
             לפני 5 דקות
           </Button>
+        </Grid>
+        <Grid xs={3}>
           <Button
             variant="contained"
             onClick={() => {
@@ -182,8 +194,12 @@ export default function RealtimeMapPage() {
             }}>
             לפני 10 דקות
           </Button>
-        </div>
-        <div className="map-header-buttons">
+        </Grid>
+        <Grid xs={6}>
+          {/* fill the buttons row with empty space. complete to 12 (read the 'xs' documentation) */}
+        </Grid>
+        {/* loaded info */}
+        <Grid xs={11}>
           <p>
             {loaded} {`- `}
             {TEXTS.show_x_bus_locations} {` `}
@@ -191,13 +207,13 @@ export default function RealtimeMapPage() {
               .replace('XXX', new Date(from).toLocaleTimeString())
               .replace('YYY', new Date(to).toLocaleTimeString())}
           </p>
-        </div>
-        {isLoading && <Spin size="small" />}
-      </div>
+        </Grid>
+        <Grid xs={1}>{isLoading && <Spin size="small" />}</Grid>
+      </Grid>
       <div className="map-info">
         <MapContainer center={position.loc} zoom={8} scrollWheelZoom={true}>
           <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            attribution='&copy <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
           />
           <Markers positions={positions} />
@@ -212,7 +228,7 @@ export default function RealtimeMapPage() {
           ))}
         </MapContainer>
       </div>
-    </div>
+    </PageContainer>
   )
 }
 
@@ -221,7 +237,7 @@ export function Markers({ positions }: { positions: Point[] }) {
   const [agencyList, setAgencyList] = useState<Agency[]>([])
 
   useEffect(() => {
-    getAgencyList().then(setAgencyList)
+    getAgencyList().then(setAgencyList).catch(console.log)
   }, [])
 
   useEffect(() => {
@@ -229,17 +245,17 @@ export function Markers({ positions }: { positions: Point[] }) {
       map.flyTo([position.coords.latitude, position.coords.longitude], 13),
     )
   }, [])
+  // const two = process.env.PUBLIC_URL + '/bus-groups/2.svg'
 
   return (
     <>
-      <MarkerClusterGroup chunkedLoading>
+      <MarkerClusterGroup chunkedLoading iconCreateFunction={createClusterCustomIcon}>
         {positions.map((pos, i) => (
           <Marker
             position={pos.loc}
             icon={colorIcon({
-              color: numberToColorHsl(pos.color, 60),
+              operator_id: pos.operator?.toString() || 'default',
               name: agencyList.find((agency) => agency.operator_ref === pos.operator)?.agency_name,
-              rotate: pos.bearing,
             })}
             key={i}>
             <Popup>

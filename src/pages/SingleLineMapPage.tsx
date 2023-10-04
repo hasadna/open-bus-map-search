@@ -1,27 +1,26 @@
+import moment from 'moment'
 import React, { useContext, useEffect, useMemo, useState } from 'react'
+import { MapContainer, Marker, Polyline, Popup, TileLayer } from 'react-leaflet'
+import { getRoutesAsync } from 'src/api/gtfsService'
+import useVehicleLocations from 'src/api/useVehicleLocations'
+import { Label } from 'src/pages/components/Label'
 import LineNumberSelector from 'src/pages/components/LineSelector'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
-import { Row } from 'src/pages/components/Row'
-import { INPUT_SIZE } from 'src/resources/sizes'
-import { getRoutesAsync } from 'src/api/gtfsService'
 import RouteSelector from 'src/pages/components/RouteSelector'
-import { Label } from 'src/pages/components/Label'
+import { INPUT_SIZE } from 'src/resources/sizes'
 import { TEXTS } from 'src/resources/texts'
-import { PageContainer } from './components/PageContainer'
 import { SearchContext } from '../model/pageState'
 import { NotFound } from './components/NotFound'
-import moment from 'moment'
-import useVehicleLocations from 'src/api/useVehicleLocations'
-import { MapContainer, Marker, Polyline, Popup, TileLayer } from 'react-leaflet'
-import { Point, colorIcon, numberToColorHsl } from './RealtimeMapPage'
-
+import { Point, colorIcon } from './RealtimeMapPage'
+import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
 import './Map.scss'
 import getAgencyList, { Agency } from 'src/api/agencyList'
 import { VehicleLocation } from 'src/model/vehicleLocation'
 import { getColorByHashString } from './dashboard/OperatorHbarChart/utils'
-import { Spin } from 'antd'
-import { DataAndTimeSelector } from './components/DataAndTimeSelector'
-import { Autocomplete, TextField } from '@mui/material'
+import { DateSelector } from './components/DateSelector'
+import { CircularProgress } from '@mui/material'
+import { FilterPositionsByStartTimeSelector } from './components/FilterPositionsByStartTimeSelector'
+import { PageContainer } from './components/PageContainer'
 
 interface Path {
   locations: VehicleLocation[]
@@ -42,7 +41,7 @@ const SingleLineMapPage = () => {
   const [agencyList, setAgencyList] = useState<Agency[]>([])
 
   useEffect(() => {
-    getAgencyList().then(setAgencyList)
+    getAgencyList().then(setAgencyList).catch(console.log)
   }, [])
 
   useEffect(() => {
@@ -105,56 +104,63 @@ const SingleLineMapPage = () => {
 
   return (
     <PageContainer className="map-container">
-      {/* choose date */}
-      <Row>
-        <Label text={TEXTS.choose_datetime} />
-        <DataAndTimeSelector
-          timestamp={moment(timestamp)}
-          setTimestamp={(ts) => setSearch((current) => ({ ...current, timestamp: ts.valueOf() }))}
-        />
-      </Row>
-      {/* choose operator */}
-      <Row>
-        <Label text={TEXTS.choose_operator} />
-        <OperatorSelector
-          operatorId={operatorId}
-          setOperatorId={(id) => setSearch((current) => ({ ...current, operatorId: id }))}
-        />
-      </Row>
-      {/* choose line number */}
-      <Row>
-        <Label text={TEXTS.choose_line} />
-        <LineNumberSelector
-          lineNumber={lineNumber}
-          setLineNumber={(number) => setSearch((current) => ({ ...current, lineNumber: number }))}
-        />
-      </Row>
-      {/* choose route */}
-      {
-        //!routesIsLoading &&
-        routes &&
-          (routes.length === 0 ? (
-            <NotFound>{TEXTS.line_not_found}</NotFound>
-          ) : (
-            <RouteSelector
-              routes={routes}
-              routeKey={routeKey}
-              setRouteKey={(key) => setSearch((current) => ({ ...current, routeKey: key }))}
-            />
-          ))
-      }
-      {positions && (
-        <FilterPositionsByStartTime
-          positions={positions}
-          setFilteredPositions={setFilteredPositions}
-          locationsIsLoading={locationsIsLoading}
-        />
-      )}
+      <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
+        {/* choose date*/}
+        <Grid xs={4}>
+          <Label text={TEXTS.choose_date} />
+        </Grid>
+        <Grid xs={8}>
+          <DateSelector
+            timeValid={moment(timestamp)}
+            setTimeValid={(ts) => setSearch((current) => ({ ...current, timestamp: ts.valueOf() }))}
+          />
+        </Grid>
+        {/* choose operator */}
+        <Grid xs={4}>
+          <Label text={TEXTS.choose_operator} />
+        </Grid>
+        <Grid xs={8}>
+          <OperatorSelector
+            operatorId={operatorId}
+            setOperatorId={(id) => setSearch((current) => ({ ...current, operatorId: id }))}
+          />
+        </Grid>
+        {/* choose line number */}
+        <Grid xs={4}>
+          <Label text={TEXTS.choose_line} />
+        </Grid>
+        <Grid xs={8}>
+          <LineNumberSelector
+            lineNumber={lineNumber}
+            setLineNumber={(number) => setSearch((current) => ({ ...current, lineNumber: number }))}
+          />
+        </Grid>
+        <Grid xs={12}>
+          {routes &&
+            (routes.length === 0 ? (
+              <NotFound>{TEXTS.line_not_found}</NotFound>
+            ) : (
+              <RouteSelector
+                routes={routes}
+                routeKey={routeKey}
+                setRouteKey={(key) => setSearch((current) => ({ ...current, routeKey: key }))}
+              />
+            ))}
+        </Grid>
+        {/* choose route */}
+        {positions && (
+          <FilterPositionsByStartTime
+            positions={positions}
+            setFilteredPositions={setFilteredPositions}
+            locationsIsLoading={locationsIsLoading}
+          />
+        )}
+      </Grid>
 
       <div className="map-info">
         <MapContainer center={position.loc} zoom={8} scrollWheelZoom={true}>
           <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            attribution='&copy <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
           />
 
@@ -162,10 +168,9 @@ const SingleLineMapPage = () => {
             <Marker
               position={pos.loc}
               icon={colorIcon({
-                color: numberToColorHsl(pos.color, 60),
+                operator_id: pos.operator?.toString() || 'default',
                 name: agencyList.find((agency) => agency.operator_ref === pos.operator)
                   ?.agency_name,
-                rotate: pos.bearing,
               })}
               key={i}>
               <Popup>
@@ -223,46 +228,19 @@ function FilterPositionsByStartTime({
   }, [startTime])
 
   return (
-    <Row>
-      <Label text={TEXTS.choose_start_time} />
-      {locationsIsLoading && <Spin size="small" />}
-      <FilterPositionsByStartTimeSelector
-        options={options}
-        startTime={startTime}
-        setStartTime={setStartTime}
-      />
-    </Row>
-  )
-}
-
-type FilterPositionsByStartTimeSelectorProps = {
-  options: {
-    value: string
-    label: string
-  }[]
-  startTime?: string
-  setStartTime: (time: string) => void
-}
-
-function FilterPositionsByStartTimeSelector({
-  options,
-  startTime,
-  setStartTime,
-}: FilterPositionsByStartTimeSelectorProps) {
-  const valueFinned = options.find((option) => option.value === startTime)
-  const value = valueFinned ? valueFinned : null
-
-  return (
-    <Autocomplete
-      disablePortal
-      value={value}
-      onChange={(e, value) => setStartTime(value ? value.value : '0')}
-      id="operator-select"
-      sx={{ width: INPUT_SIZE }}
-      options={options}
-      renderInput={(params) => <TextField {...params} label={TEXTS.choose_start_time} />}
-      getOptionLabel={(option) => option.label}
-    />
+    <>
+      <Grid xs={3}>
+        <Label text={TEXTS.choose_start_time} />
+      </Grid>
+      <Grid xs={1}>{locationsIsLoading && <CircularProgress />}</Grid>
+      <Grid xs={8}>
+        <FilterPositionsByStartTimeSelector
+          options={options}
+          startTime={startTime}
+          setStartTime={setStartTime}
+        />
+      </Grid>
+    </>
   )
 }
 

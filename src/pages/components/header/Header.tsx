@@ -12,7 +12,7 @@ export default function Header({ pages }: { pages: MenuPage[] }) {
         <div className="header-menu-line" />
         <div className="header-menu-line" />
       </div>
-      <h1>לוח זמנים היסטורי</h1>
+      <h1>דאטאבוס</h1>
       <Menu pages={pages} />
     </header>
   )

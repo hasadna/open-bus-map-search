@@ -132,6 +132,8 @@ const App = () => {
     })
   }, [])
 
+  const RedirectToDashboard = () => <Navigate to={PAGES[0].key} replace />
+
   return (
     <SearchContext.Provider value={{ search, setSearch: safeSetSearch }}>
       <CacheProvider value={cacheRtl}>
@@ -150,15 +152,7 @@ const App = () => {
                         <Route path={PAGES[3].key} element={<RealtimeMapPage />} />
                         <Route path={PAGES[4].key} element={<SingleLineMapPage />} />
                         <Route path={PAGES[5].key} element={<About />} />
-                        <Route
-                          path="*"
-                          element={
-                            <div>
-                              <a href={PAGES[0].key}>click to navigate to dashboard.</a>
-                              <Navigate to={PAGES[0].key} replace />
-                            </div>
-                          }
-                        />
+                        <Route path="*" element={<RedirectToDashboard />} />
                       </Routes>
                     </StyledBody>
                   </StyledContent>

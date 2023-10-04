@@ -1,11 +1,16 @@
+import React from 'react'
+
 const PLACEHOLDER = 'XXX'
 
 export const TEXTS = {
+  realtime_map_explanation: 'נתוני מיקום של אוטובוסים שנאספו בזמן אמת',
   timeline_page_title: 'לוח זמנים היסטורי',
   realtime_map_page_title: 'מפה בזמן אמת',
   gaps_page_title: 'נסיעות שלא יצאו',
   singleline_map_page_title: 'מפה לפי קו',
   choose_datetime: 'תאריך ושעה',
+  choose_date: 'תאריך',
+  choose_time: 'שעה',
   choose_operator: 'חברה מפעילה',
   operator_placeholder: 'לדוגמא: דן',
   choose_line: 'מספר קו',
@@ -57,11 +62,11 @@ export const TEXTS = {
   website_name: 'דאטאבוס',
   what_is_website: 'מהו אתר “דאטאבוס”?',
   what_is_website_paragraph:
-    'אתר דאטאבוס של הסדנא לידע ציבורי מציג נתונים על איכות ביצוע קווי התחבורה הציבורית בארץ. דאטאבוס מחבר למעשה בין מספר מקורות מידע ממשלתיים:',
+    'אתר דאטאבוס של הסדנא לידע ציבורי מציג נתונים על איכות קווי התחבורה הציבורית בארץ (אמינות, דיוק, מסלול). דאטאבוס מחבר למעשה בין מספר מקורות מידע ממשלתיים:',
   planning_information:
     "מידע התכנון - GTFS - המפורסם כל יום ומכיל את פרטי הקווים, מיקומי התחנות, שעות המעבר בהן וכו'.",
   performance_information:
-    'מידע הביצוע - SIRI - על כל קו בישראל מוצמד GPS שמדווח את מיקום האוטובוס כל כמה רגעים.',
+    'מידע הביצוע - SIRI - לכל אוטובוס בישראל מוצמד משדר GPS שמדווח את מיקום האוטובוס כל כמה שניות.',
   discovered_mistake: 'גילינו טעות או מידע לא מעודכן, מה עושים?',
   discovered_mistake_paragraph:
     'מכיוון שכל המידע המוצג באתר מתבסס על מקורות המידע הרשמיים, מומלץ לפנות לגורם המפרסם לצורך בירור או תיקון הבעיה. צוות “דאטאבוס“ ישמח לסייע לכם להבין מיהו הגורם הממשלתי שפרסם את הנתון או המידע שדורשים בירור או תיקון.',
@@ -69,12 +74,17 @@ export const TEXTS = {
   license: 'רשיון שימוש',
   questions: 'שאלות? תגובות? רעיונות?',
   funding: 'מימון',
-  funding_paragraph: 'לאורך השנים, הפרויקט קיבל מימון נוסף גם מהגופים הבאים:',
-  prime_ministers_office: 'משרד ראש הממשלה',
-  european_union: 'האיחוד האירופי',
+  funding_paragraph: (
+    <>
+      דאטא בוס מפותח בעבודת מתנדבים ומבוסס על{' '}
+      <a href="https://open-bus-stride-api.hasadna.org.il/docs">Open API</a> שפותח בסדנא לידע ציבורי
+      בעזרתם הנדיבה של -
+    </>
+  ),
+  mr_meir: 'מר אשר מאיר',
   innovation_authority: 'רשות החדשנות',
-  migdal_company: 'חברת “מגדל“',
-  and_smaller_donors: 'ועוד מספר תורמים קטנים יותר.',
+  migdal_company: '“מגדל בקהילה“',
+  and_smaller_donors: 'ותרומות קטנות נוספות של ידידי ואוהדי הסדנא.',
   all_rides_completed: 'כמעט / כל הנסיעות בוצעו',
   missing_rides: 'מהנסיעות חסרות',
 }

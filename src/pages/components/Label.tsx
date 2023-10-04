@@ -2,7 +2,11 @@ import React from 'react'
 import styled from 'styled-components'
 
 const StyledDiv = styled.div`
-  min-width: 80px;
+  display: inline-flex;
+  width: 100%;
+  height: 100%;
+  justify-content: flex-start;
+  align-items: center;
 `
 
 type LabelProps = {
