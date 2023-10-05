@@ -24,7 +24,7 @@ export default createClusterCustomIcon
 const getIconForGroup = (numOfNearbyBusses: number): string => {
   const groupSizes = [30, 10, 3, 2]
 
-  const imgPath = process.env.PUBLIC_URL + '/bus-groups/'
+  const imgPath = '/bus-groups/'
   const iconName = `${groupSizes.find((groupSize) => numOfNearbyBusses >= groupSize) || 3}.svg`
   return imgPath + iconName
 }

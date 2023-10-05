@@ -38,7 +38,7 @@ interface Path {
 }
 
 export const colorIcon = ({ operator_id, name }: { operator_id: string; name?: string }) => {
-  const path = process.env.PUBLIC_URL + `/bus-logos/${operator_id}.svg`
+  const path = `/bus-logos/${operator_id}.svg`
   return new DivIcon({
     className: 'my-div-icon',
     html: `
@@ -245,7 +245,6 @@ export function Markers({ positions }: { positions: Point[] }) {
       map.flyTo([position.coords.latitude, position.coords.longitude], 13),
     )
   }, [])
-  // const two = process.env.PUBLIC_URL + '/bus-groups/2.svg'
 
   return (
     <>
