@@ -57,6 +57,9 @@
     }
 
     .main .header.open{
+        display: block;
+        position: absolute;
+        z-index: 500;
         max-width: 100%;
         padding: 30px;
     }
