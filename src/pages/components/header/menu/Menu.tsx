@@ -1,7 +1,8 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import cn from 'classnames'
 import './menu.scss'
+import { useTranslation } from 'react-i18next'
 
 export type MenuPage = {
   label: string
@@ -9,9 +10,18 @@ export type MenuPage = {
 }
 
 function Menu({ pages }: { pages: MenuPage[] }) {
+  const { t, i18n } = useTranslation()
+
+  const [currentLanguage, setCurrentLanguage] = useState('en')
+
   const navigate = useNavigate()
   const { pathname: currpage } = useLocation()
-  console.log({ currpage, active: pages.map((p) => p.key === currpage) })
+
+  const handleChangeLanguage = () => {
+    const newLanguage = currentLanguage === 'en' ? 'he' : 'en'
+    setCurrentLanguage(newLanguage)
+    i18n.changeLanguage(newLanguage)
+  }
 
   return (
     <ul className="menu">
@@ -22,9 +32,10 @@ function Menu({ pages }: { pages: MenuPage[] }) {
           onClick={() =>
             page.key[0] === '/' ? navigate(page.key) : window.open(page.key, '_blank')
           }>
-          {page.label}
+          {t(page.label)}
         </li>
       ))}
+      <button onClick={handleChangeLanguage}>Change Language</button>
     </ul>
   )
 }

@@ -1,13 +1,16 @@
 import styled from 'styled-components'
 import React from 'react'
-import { TEXTS } from 'src/resources/texts'
+import { TEXT_KEYS } from 'src/resources/texts'
 import SlackIcon from '../resources/slack-icon.svg'
+import { useTranslation } from 'react-i18next'
 
 const About = () => {
+  const { t } = useTranslation()
+
   return (
     <AboutStyle>
       <div className="about-center-container">
-        <h1>{TEXTS.website_name}</h1>
+        <h1>{t(TEXT_KEYS.website_name)}</h1>
         <WhatIsWebsite />
         <DiscoveredMistake />
         <Privacy />
@@ -20,31 +23,37 @@ const About = () => {
 }
 
 const WhatIsWebsite = () => {
+  const { t } = useTranslation()
+
   return (
     <ParagraphStyle>
-      <h2>{TEXTS.what_is_website}</h2>
-      <p>{TEXTS.what_is_website_paragraph}</p>
+      <h2>{t(TEXT_KEYS.what_is_website)}</h2>
+      <p>{t(TEXT_KEYS.what_is_website_paragraph)}</p>
       <ul style={{ listStyle: 'disc', paddingRight: '40px' }}>
-        <li>{TEXTS.planning_information}</li>
-        <li>{TEXTS.performance_information}</li>
+        <li>{t(TEXT_KEYS.planning_information)}</li>
+        <li>{t(TEXT_KEYS.performance_information)}</li>
       </ul>
     </ParagraphStyle>
   )
 }
 
 const DiscoveredMistake = () => {
+  const { t } = useTranslation()
+
   return (
     <ParagraphStyle>
-      <h2>{TEXTS.discovered_mistake}</h2>
-      <p>{TEXTS.discovered_mistake_paragraph}</p>
+      <h2>{t(TEXT_KEYS.discovered_mistake)}</h2>
+      <p>{t(TEXT_KEYS.discovered_mistake_paragraph)}</p>
     </ParagraphStyle>
   )
 }
 
 const Privacy = () => {
+  const { t } = useTranslation()
+
   return (
     <ParagraphStyle>
-      <h2>{TEXTS.privacy}</h2>
+      <h2>{t(TEXT_KEYS.privacy)}</h2>
       <p>
         באתר מוטמע שירות{' '}
         <a href="https://marketingplatform.google.com/about/analytics/">Google Analytics </a>
@@ -58,9 +67,11 @@ const Privacy = () => {
 }
 
 const License = () => {
+  const { t } = useTranslation()
+
   return (
     <ParagraphStyle>
-      <h2>{TEXTS.license}</h2>
+      <h2>{t(TEXT_KEYS.license)}</h2>
       <p>
         כל המידע המוצג באתר מבוסס על נתונים המפורסמים במקורות המידע הממשלתיים. השימוש במידע כפוף ל
         <a href="https://creativecommons.org/licenses/by-sa/4.0/">רישיון CC BY-SA 4.0 </a>
@@ -72,9 +83,11 @@ const License = () => {
 }
 
 const Questions = () => {
+  const { t } = useTranslation()
+
   return (
     <ParagraphStyle>
-      <h2>{TEXTS.questions}</h2>
+      <h2>{t(TEXT_KEYS.questions)}</h2>
       <ul>
         <li>
           <a href="https://www.hasadna.org.il/%D7%A6%D7%95%D7%A8-%D7%A7%D7%A9%D7%A8/">
@@ -98,17 +111,19 @@ const Questions = () => {
 }
 
 const Funding = () => {
+  const { t } = useTranslation()
+
   return (
     <ParagraphStyle>
-      <h2>{TEXTS.funding}</h2>
-      <p>{TEXTS.funding_paragraph}</p>
+      <h2>{t(TEXT_KEYS.funding)}</h2>
+      <p>{t(TEXT_KEYS.funding_paragraph)}</p>
       <ul>
-        <li>{TEXTS.mr_meir}</li>
-        <li>{TEXTS.innovation_authority}</li>
-        <li>{TEXTS.migdal_company}</li>
+        <li>{t(TEXT_KEYS.mr_meir)}</li>
+        <li>{t(TEXT_KEYS.innovation_authority)}</li>
+        <li>{t(TEXT_KEYS.migdal_company)}</li>
         <li>
           <a href="https://www.jgive.com/new/he/ils/donation-targets/3268#donation-modal">
-            {TEXTS.and_smaller_donors}
+            {t(TEXT_KEYS.and_smaller_donors)}
           </a>
         </li>
       </ul>
