@@ -30,9 +30,7 @@ import About from './pages/About'
 
 const { Content } = Layout
 
-const StyledLayout = styled(Layout)`
-  height: 100vh;
-`
+const StyledLayout = styled(Layout)``
 const StyledContent = styled(Content)`
   margin: 24px 16px 0;
   overflow: auto;
