@@ -1,8 +1,8 @@
-name: Playwright Tests
+name: Complaint
 on:
   pull_request:
 jobs:
-  test:
+  test-complaint:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
