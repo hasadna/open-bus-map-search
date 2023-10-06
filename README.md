@@ -24,8 +24,8 @@ This app is created by the volunteers of [Public Knowledge Workshop](https://www
 - `yarn start`
 
 ### testing the project:
-- running the tests - `yarn playwright test`
-- running the tests with UI - `yarn playwright test --ui`
+- running the tests - `yarn test`
+- running the tests with UI - `yarn test:ui`
 - additional helpful flags - https://playwright.dev/docs/test-cli
 
 ### useful resources:
