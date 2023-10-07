@@ -1,7 +1,6 @@
 import React, { Fragment, useCallback, useState } from 'react'
 import { useGroupBy } from 'src/api/groupByService'
 import { PageContainer } from '../components/PageContainer'
-import Tooltip from '../components/utils/tooltip/Tooltip'
 import OperatorHbarChart from './OperatorHbarChart/OperatorHbarChart'
 import './DashboardPage.scss'
 import { TEXTS } from 'src/resources/texts'
@@ -9,7 +8,7 @@ import ArrivalByTimeChart from './ArrivalByTimeChart/ArrivalByTimeChart'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import moment, { Moment } from 'moment'
 import LinesHbarChart from './LineHbarChart/LinesHbarChart'
-import { FormControlLabel, Switch } from '@mui/material'
+import { FormControlLabel, Switch, Tooltip } from '@mui/material'
 import { Label } from 'src/pages/components/Label'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
 
@@ -99,7 +98,10 @@ const DashboardPage = () => {
         <div className="widget">
           <h2 className="title">
             {TEXTS.dashboard_page_title}
-            <Tooltip text={convertLineFeedToHtmlTags(TEXTS.dashboard_tooltip_content)}>
+            <Tooltip
+              title={convertLineFeedToHtmlTags(TEXTS.dashboard_tooltip_content)}
+              placement="left"
+              arrow>
               <span className="tooltip-icon">i</span>
             </Tooltip>
           </h2>
