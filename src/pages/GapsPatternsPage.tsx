@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import PropTypes from 'prop-types'
+import './GapsPatternsPage.scss'
 import { getGapsAsync } from '../api/gapsService'
 import { Moment } from 'moment'
 import { DatePicker, Spin } from 'antd'
@@ -54,13 +54,7 @@ const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>)
     const actualPercentage = ((actualRides / plannedRides) * 100).toFixed(0)
     return (
       <div
-        className="custom-tooltip"
-        style={{
-          background: 'white',
-          padding: '5px',
-          border: '1px solid #ccc',
-          borderRadius: '5px',
-        }}>
+        className="custom-tooltip tooltip-style">
         {` בוצעו ${actualPercentage}% מהנסיעות (${actualRides}/${plannedRides})`}
       </div>
     )
