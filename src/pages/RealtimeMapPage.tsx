@@ -20,6 +20,7 @@ import { Label } from './components/Label'
 import { getColorByHashString } from './dashboard/OperatorHbarChart/utils'
 import createClusterCustomIcon from './components/utils/customCluster/customCluster'
 import { TimeSelector } from './components/TimeSelector'
+import { busIcon } from './components/utils/BusIcon'
 
 export interface Point {
   loc: [number, number]
@@ -37,20 +38,6 @@ interface Path {
   vehicleRef: number
 }
 
-export const colorIcon = ({ operator_id, name }: { operator_id: string; name?: string }) => {
-  const path = `/bus-logos/${operator_id}.svg`
-  return new DivIcon({
-    className: 'my-div-icon',
-    html: `
-    <div class="bus-icon-container">
-      <div class="bus-icon-circle">
-        <img src="${path}" alt="${name}" />
-      </div>
-      <div class="operator-name">${name}</div>
-    </div>
-    `,
-  })
-}
 
 function formatTime(time: string | number | Date) {
   const date = new Date(time).toISOString()
@@ -252,7 +239,7 @@ export function Markers({ positions }: { positions: Point[] }) {
         {positions.map((pos, i) => (
           <Marker
             position={pos.loc}
-            icon={colorIcon({
+            icon={busIcon({
               operator_id: pos.operator?.toString() || 'default',
               name: agencyList.find((agency) => agency.operator_ref === pos.operator)?.agency_name,
             })}
