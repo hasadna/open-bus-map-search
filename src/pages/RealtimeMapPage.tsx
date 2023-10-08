@@ -3,7 +3,6 @@ import { MapContainer, Marker, Polyline, Popup, TileLayer, useMap } from 'react-
 import MarkerClusterGroup from 'react-leaflet-cluster'
 import { TEXTS } from 'src/resources/texts'
 
-import { Button } from '@mui/material'
 import { Spin } from 'antd'
 import { DivIcon } from 'leaflet'
 import moment from 'moment'
@@ -52,10 +51,10 @@ export const colorIcon = ({ operator_id, name }: { operator_id: string; name?: s
   })
 }
 
-function formatTime(time: string | number | Date) {
-  const date = new Date(time).toISOString()
-  return date
-}
+// function formatTime(time: string | number | Date) {
+//   const date = new Date(time).toISOString() // takes as 3 hours back...
+//   return date
+// }
 
 export function numberToColorHsl(i: number, max: number) {
   const ratio = i / max
@@ -73,14 +72,19 @@ export default function RealtimeMapPage() {
   }
 
   //TODO (another PR and another issue) load from url like in another pages.
-  const [from, setFrom] = useState('2023-05-01T12:00:00+02:00') // arbitrary default value. this date is not important
-  const [to, setTo] = useState('2023-05-01T12:01:00+02:00')
+  const fiveMinutesAgo = moment().subtract(5, 'minutes')
+  const now = moment()
+  const [from, setFrom] = useState(fiveMinutesAgo) // 5 minutes ago
+  // const [from, setFrom] = useState(formatTime(+new Date() - 5 * 1000 * 60)) // 5 minutes ago
+  const [to, setTo] = useState(now)
+  // const [to, setTo] = useState(formatTime(+new Date()))
 
   const { locations, isLoading } = useVehicleLocations({
-    from: formatTime(from),
-    to: formatTime(to),
+    from: from.toDate(),
+    to: to.toDate(),
+    // to: formatTime(to),
   })
-  console.log(locations)
+  // console.log(locations)
 
   const loaded = locations.length
 
@@ -124,7 +128,7 @@ export default function RealtimeMapPage() {
     [locations],
   )
 
-  console.log(paths)
+  // console.log(paths)
 
   return (
     <PageContainer className="map-container">
@@ -138,21 +142,26 @@ export default function RealtimeMapPage() {
         </Grid>
         <Grid xs={5}>
           <DateSelector
-            timeValid={moment(from.slice(0, 16))} // remove timezone and seconds
+            timeValid={moment(to)} // 
+            // timeValid={moment(to.toString().slice(0, 16))} // remove timezone and seconds
             setTimeValid={(ts) => {
-              const value = ts ? ts.format() : ''
-              setFrom(value)
-              setTo(formatTime(+new Date(value) + (+new Date(to) - +new Date(from)))) // keep the same time difference
+              // const value = ts ? ts.format() : ''
+              setFrom(from)
+              setTo(to) // keep the same time difference
+              // setTo(formatTime(+new Date(value) + (+new Date(to) - +new Date(from)))) // keep the same time difference
             }}
           />
         </Grid>
         <Grid xs={5}>
           <TimeSelector
-            timeValid={moment(from.slice(0, 16))} // remove timezone and seconds
+            timeValid={moment(to)} // 
+            // timeValid={moment(to.toString().slice(0, 16))} // remove timezone and seconds
             setTimeValid={(ts) => {
-              const value = ts ? ts.format() : ''
-              setFrom(value)
-              setTo(formatTime(+new Date(value) + (+new Date(to) - +new Date(from)))) // keep the same time difference
+              // const value = ts ? ts.format() : ''
+              // setFrom(value)
+              setFrom(from)
+              setTo(to) // keep the same time difference
+              // setTo(formatTime(+new Date() + (+new Date(to) - +new Date(from)))) // keep the same time difference
             }}
           />
         </Grid>
@@ -162,8 +171,13 @@ export default function RealtimeMapPage() {
         </Grid>
         <Grid xs={6}>
           <MinuteSelector
-            num={(+new Date(to) - +new Date(from)) / 1000 / 60}
-            setNum={(num) => setTo(formatTime(+new Date(from) + +num * 1000 * 60))}
+            num={to.diff(from)/1000/60}
+            // num={(+new Date(+to) - +new Date(+from)) / 1000 / 60}
+            setNum={(num) => {
+              setFrom(moment().subtract(num, 'minutes'))
+              setTo(moment())
+            }}
+            // setNum={(num) => setTo(formatTime(+new Date(from) + +num * 1000 * 60))}
           />
         </Grid>
         <Grid xs={1}>
@@ -171,30 +185,13 @@ export default function RealtimeMapPage() {
         </Grid>
         {/* Buttons */}
         {/*TODO (another PR another issue)
-          1) discussion if the buttons need to be 5 minutes from now or from the 'from' state.
+          1) discussion if the buttons need to be 5 minutes from now or from the 'from' state. 
+          => removed the buttons / Amabelle
           2) recommended use MomentJs API instead Date API. 'moment().subtract(5, 'minutes')'.
-          3) use text `TEXTS`.
+          => Done 
+          3) use text `TEXTS`. => ?? were ?
         */}
-        <Grid xs={3}>
-          <Button
-            variant="contained"
-            onClick={() => {
-              setFrom(formatTime(+new Date() - 5 * 1000 * 60)) // 5 minutes ago
-              setTo(formatTime(+new Date() - 4 * 1000 * 60)) // 4 minutes ago
-            }}>
-            לפני 5 דקות
-          </Button>
-        </Grid>
-        <Grid xs={3}>
-          <Button
-            variant="contained"
-            onClick={() => {
-              setFrom(formatTime(+new Date() - 10 * 1000 * 60)) // 10 minutes ago
-              setTo(formatTime(+new Date() - 9 * 1000 * 60)) // 9 minutes ago
-            }}>
-            לפני 10 דקות
-          </Button>
-        </Grid>
+     
         <Grid xs={6}>
           {/* fill the buttons row with empty space. complete to 12 (read the 'xs' documentation) */}
         </Grid>
