@@ -17,7 +17,6 @@ import { SearchContext } from '../model/pageState'
 import { getRoutesAsync } from '../api/gtfsService'
 import {
   Bar,
-  BarChart,
   CartesianGrid,
   Legend,
   Line,
