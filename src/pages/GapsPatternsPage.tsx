@@ -19,7 +19,6 @@ import {
   Bar,
   CartesianGrid,
   Legend,
-  Line,
   Tooltip,
   XAxis,
   YAxis,
