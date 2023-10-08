@@ -4,7 +4,7 @@ import { getGapsAsync } from '../api/gapsService'
 import { Moment } from 'moment'
 import { DatePicker, Spin } from 'antd'
 import moment from 'moment/moment'
-import { UseDate } from './components/DateTimePicker'
+import { useDate } from './components/DateTimePicker'
 import { PageContainer } from './components/PageContainer'
 import { Row } from './components/Row'
 import { Label } from './components/Label'
@@ -205,8 +205,8 @@ function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatistic
 }
 
 const GapsPatternsPage = () => {
-  const [startDate, setStartDate] = UseDate(now.clone().subtract(7, 'days'))
-  const [endDate, setEndDate] = UseDate(now.clone().subtract(1, 'day'))
+  const [startDate, setStartDate] = useDate(now.clone().subtract(7, 'days'))
+  const [endDate, setEndDate] = useDate(now.clone().subtract(1, 'day'))
   const { search, setSearch } = useContext(SearchContext)
   const { operatorId, lineNumber, routes, routeKey } = search
   const [routesIsLoading, setRoutesIsLoading] = useState(false)

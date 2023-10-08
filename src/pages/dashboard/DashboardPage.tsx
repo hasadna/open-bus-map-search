@@ -11,12 +11,12 @@ import LinesHbarChart from './LineHbarChart/LinesHbarChart'
 import { FormControlLabel, Switch, Tooltip } from '@mui/material'
 import { Label } from 'src/pages/components/Label'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
-import { UseDate } from '../components/DateTimePicker'
+import { useDate } from '../components/DateTimePicker'
 const now = moment()
 
 const DashboardPage = () => {
-  const [startDate, setStartDate] = UseDate(now.clone().subtract(7, 'days'))
-  const [endDate, setEndDate] = UseDate(now.clone().subtract(1, 'day'))
+  const [startDate, setStartDate] = useDate(now.clone().subtract(7, 'days'))
+  const [endDate, setEndDate] = useDate(now.clone().subtract(1, 'day'))
   const [groupByHour, setGroupByHour] = React.useState<boolean>(false)
 
   const [operatorId, setOperatorId] = useState('')

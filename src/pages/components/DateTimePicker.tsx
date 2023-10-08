@@ -16,7 +16,7 @@ function isDateDisabled(date: Moment) {
   return date.isAfter(END_OF_TODAY) || date.isBefore(moment(JAN_FIRST_2022))
 }
 
-export function UseDate(initialValue: Moment) {
+export function useDate(initialValue: Moment) {
   const [date, setDate] = React.useState<Moment>(initialValue)
   const onChange = useCallback((date: Moment | null) => {
     if (date) {
