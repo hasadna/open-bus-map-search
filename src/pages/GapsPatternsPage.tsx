@@ -51,8 +51,7 @@ const CustomTooltip = ({ active, payload }: TooltipProps<number, string>) => {
     const plannedRides = payload[1].value || 0
     const actualPercentage = ((actualRides / plannedRides) * 100).toFixed(0)
     return (
-      <div
-        className="custom-tooltip tooltip-style">
+      <div className="custom-tooltip tooltip-style">
         {` בוצעו ${actualPercentage}% מהנסיעות (${actualRides}/${plannedRides})`}
       </div>
     )
