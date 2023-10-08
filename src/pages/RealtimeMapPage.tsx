@@ -142,7 +142,7 @@ export default function RealtimeMapPage() {
         </Grid>
         <Grid xs={5}>
           <DateSelector
-            timeValid={moment(to)} // 
+            timeValid={to} // 
             // timeValid={moment(to.toString().slice(0, 16))} // remove timezone and seconds
             setTimeValid={(ts) => {
               // const value = ts ? ts.format() : ''
@@ -154,7 +154,7 @@ export default function RealtimeMapPage() {
         </Grid>
         <Grid xs={5}>
           <TimeSelector
-            timeValid={moment(to)} // 
+            timeValid={to} // 
             // timeValid={moment(to.toString().slice(0, 16))} // remove timezone and seconds
             setTimeValid={(ts) => {
               // const value = ts ? ts.format() : ''
