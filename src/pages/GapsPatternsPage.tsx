@@ -45,7 +45,7 @@ interface HourlyData {
 
 const now = moment()
 
-const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>) => {
+const CustomTooltip = ({ active, payload }: TooltipProps<number, string>) => {
   if (active && payload && payload.length > 1) {
     const actualRides = payload[0].value || 0
     const plannedRides = payload[1].value || 0
