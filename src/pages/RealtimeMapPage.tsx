@@ -42,19 +42,14 @@ export const colorIcon = ({ operator_id, name }: { operator_id: string; name?: s
     className: 'my-div-icon',
     html: `
     <div class="bus-icon-container">
-      <div class="bus-icon-circle">
-        <img src="${path}" alt="${name}" />
-      </div>
-      <div class="operator-name">${name}</div>
+    <div class="bus-icon-circle">
+    <img src="${path}" alt="${name}" />
+    </div>
+    <div class="operator-name">${name}</div>
     </div>
     `,
   })
 }
-
-// function formatTime(time: string | number | Date) {
-//   const date = new Date(time).toISOString() // takes as 3 hours back...
-//   return date
-// }
 
 export function numberToColorHsl(i: number, max: number) {
   const ratio = i / max
@@ -65,6 +60,9 @@ export function numberToColorHsl(i: number, max: number) {
   return `hsl(${hue}, ${saturation}%, ${lightness}%)`
 }
 
+const fiveMinutesAgo = moment().subtract(5, 'minutes')
+const now = moment()
+
 export default function RealtimeMapPage() {
   const position: Point = {
     loc: [32.3057988, 34.85478613], // arbitrary default value... Netanya - best city to live & die in
@@ -72,19 +70,13 @@ export default function RealtimeMapPage() {
   }
 
   //TODO (another PR and another issue) load from url like in another pages.
-  const fiveMinutesAgo = moment().subtract(5, 'minutes')
-  const now = moment()
   const [from, setFrom] = useState(fiveMinutesAgo) // 5 minutes ago
-  // const [from, setFrom] = useState(formatTime(+new Date() - 5 * 1000 * 60)) // 5 minutes ago
   const [to, setTo] = useState(now)
-  // const [to, setTo] = useState(formatTime(+new Date()))
 
   const { locations, isLoading } = useVehicleLocations({
     from: from.toDate(),
     to: to.toDate(),
-    // to: formatTime(to),
   })
-  // console.log(locations)
 
   const loaded = locations.length
 
@@ -128,8 +120,6 @@ export default function RealtimeMapPage() {
     [locations],
   )
 
-  // console.log(paths)
-
   return (
     <PageContainer className="map-container">
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
@@ -143,25 +133,20 @@ export default function RealtimeMapPage() {
         <Grid xs={5}>
           <DateSelector
             timeValid={to} // 
-            // timeValid={moment(to.toString().slice(0, 16))} // remove timezone and seconds
             setTimeValid={(ts) => {
               // const value = ts ? ts.format() : ''
               setFrom(from)
               setTo(to) // keep the same time difference
-              // setTo(formatTime(+new Date(value) + (+new Date(to) - +new Date(from)))) // keep the same time difference
             }}
           />
         </Grid>
         <Grid xs={5}>
           <TimeSelector
-            timeValid={to} // 
-            // timeValid={moment(to.toString().slice(0, 16))} // remove timezone and seconds
+            timeValid={to}
             setTimeValid={(ts) => {
               // const value = ts ? ts.format() : ''
-              // setFrom(value)
               setFrom(from)
               setTo(to) // keep the same time difference
-              // setTo(formatTime(+new Date() + (+new Date(to) - +new Date(from)))) // keep the same time difference
             }}
           />
         </Grid>
@@ -172,12 +157,10 @@ export default function RealtimeMapPage() {
         <Grid xs={6}>
           <MinuteSelector
             num={to.diff(from)/1000/60}
-            // num={(+new Date(+to) - +new Date(+from)) / 1000 / 60}
             setNum={(num) => {
               setFrom(moment().subtract(num, 'minutes'))
               setTo(moment())
             }}
-            // setNum={(num) => setTo(formatTime(+new Date(from) + +num * 1000 * 60))}
           />
         </Grid>
         <Grid xs={1}>
@@ -186,9 +169,9 @@ export default function RealtimeMapPage() {
         {/* Buttons */}
         {/*TODO (another PR another issue)
           1) discussion if the buttons need to be 5 minutes from now or from the 'from' state. 
-          => removed the buttons / Amabelle
+          => Done.
           2) recommended use MomentJs API instead Date API. 'moment().subtract(5, 'minutes')'.
-          => Done 
+          => Done.
           3) use text `TEXTS`. => ?? were ?
         */}
      
@@ -201,8 +184,8 @@ export default function RealtimeMapPage() {
             {loaded} {`- `}
             {TEXTS.show_x_bus_locations} {` `}
             {TEXTS.from_time_x_to_time_y
-              .replace('XXX', new Date(from).toLocaleTimeString())
-              .replace('YYY', new Date(to).toLocaleTimeString())}
+              .replace('XXX', moment(from).format('hh:mm A')) // cleaner code, moment api
+              .replace('YYY', moment(to).format('hh:mm A'))}
           </p>
         </Grid>
         <Grid xs={1}>{isLoading && <Spin size="small" />}</Grid>
