@@ -19,6 +19,7 @@ import { DateSelector } from './components/DateSelector'
 import { FormControlLabel, Switch } from '@mui/material'
 import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
 import { INPUT_SIZE } from 'src/resources/sizes'
+import DisplayGapsPercentage from './components/DisplayGapsPercentage'
 
 function formatTime(time: Moment) {
   return time.format(TEXTS.time_format)
@@ -36,6 +37,14 @@ function formatStatus(all: GapsList, gap: Gap) {
     return TEXTS.ride_duped
   }
   return TEXTS.ride_extra
+}
+
+function getGapsPercentage(gaps: GapsList | undefined): number | undefined {
+  const ridesInTime = gaps?.filter((gap) => formatStatus([], gap) === TEXTS.ride_as_planned)
+  if (!gaps || !ridesInTime) return undefined
+  const ridesInTimePercentage = (ridesInTime?.length / gaps?.length) * 100
+  const allRidesPercentage = 100
+  return allRidesPercentage - ridesInTimePercentage
 }
 
 const Cell = styled.div`
@@ -80,6 +89,8 @@ const GapsPage = () => {
       )
       .finally(() => setRoutesIsLoading(false))
   }, [operatorId, lineNumber, timestamp, setSearch])
+
+  const gapsPercentage = getGapsPercentage(gaps)
 
   return (
     <PageContainer>
@@ -152,6 +163,11 @@ const GapsPage = () => {
               <Switch checked={onlyGapped} onChange={(e) => setOnlyGapped(e.target.checked)} />
             }
             label={TEXTS.checkbox_only_gaps}
+          />
+          <DisplayGapsPercentage
+            gapsPercentage={gapsPercentage}
+            decentPercentage={5}
+            terriblePercentage={20}
           />
           <Row>
             <TitleCell>{TEXTS.planned_time}</TitleCell>
