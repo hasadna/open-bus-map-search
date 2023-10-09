@@ -27,8 +27,12 @@ import {
   TooltipProps,
 } from 'recharts'
 import { FormControlLabel, Radio, RadioGroup } from '@mui/material'
-import { GetColorByExecution } from './components/utils/ColorBySeverity'
-import { HourlyData, byHourHandler, bySeverityHandler } from './components/utils'
+import {
+  HourlyData,
+  byHourHandler,
+  bySeverityHandler,
+  mapColorByExecution,
+} from './components/utils'
 
 // Define prop types for the component
 interface BusLineStatisticsProps {
@@ -173,7 +177,7 @@ function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatistic
           {hourlyData.map((entry, index) => (
             <Cell
               key={`cell-${index}`}
-              fill={GetColorByExecution(entry.planned_rides, entry.actual_rides)}
+              fill={mapColorByExecution(entry.planned_rides, entry.actual_rides)}
             />
           ))}
         </Bar>

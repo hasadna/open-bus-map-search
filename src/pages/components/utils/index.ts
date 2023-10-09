@@ -21,3 +21,16 @@ export const bySeverityHandler = (a: HourlyData, b: HourlyData) => {
   }
   return b.planned_rides - a.planned_rides
 }
+
+export const mapColorByExecution = (planned: number, actual: number) => {
+  const misses = planned - actual
+  const percentageMisses = (misses / planned) * 100
+
+  if (percentageMisses <= 5) {
+    return 'green'
+  } else if (percentageMisses <= 50) {
+    return 'orange'
+  } else {
+    return 'red'
+  }
+}
