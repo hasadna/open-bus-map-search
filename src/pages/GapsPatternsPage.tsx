@@ -26,12 +26,7 @@ import {
   TooltipProps,
 } from 'recharts'
 import { FormControlLabel, Radio, RadioGroup } from '@mui/material'
-import {
-  HourlyData,
-  byHourHandler,
-  bySeverityHandler,
-  mapColorByExecution,
-} from './components/utils'
+import { mapColorByExecution } from './components/utils'
 import { useGapsList } from './useGapsList'
 
 // Define prop types for the component
