@@ -61,3 +61,14 @@
         }
     }
 }
+
+@media (max-width: 768px) {
+  .date-picker-container {
+    flex-direction: column;
+  }
+  .widgets-container {
+    flex-direction: column;
+  }
+}
+
+
