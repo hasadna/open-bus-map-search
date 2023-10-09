@@ -28,6 +28,7 @@ import {
 } from 'recharts'
 import { FormControlLabel, Radio, RadioGroup } from '@mui/material'
 import { GetColorByExecution } from './components/utils/ColorBySeverity'
+import { HourlyData, bySeverityHandler } from './components/utils'
 
 // Define prop types for the component
 interface BusLineStatisticsProps {
@@ -37,11 +38,7 @@ interface BusLineStatisticsProps {
   toDate: Moment
 }
 
-interface HourlyData {
-  planned_hour: string
-  actual_rides: number
-  planned_rides: number
-}
+
 
 const now = moment()
 
@@ -112,27 +109,15 @@ function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatistic
   const [sortingMode, setSortingMode] = useState<'hour' | 'severity'>('hour')
 
   const byHour = (a: HourlyData, b: HourlyData) => a.planned_hour.localeCompare(b.planned_hour)
-  const bySeverity = (a: HourlyData, b: HourlyData) => {
-    const missesA = a.planned_rides - a.actual_rides
-    const missesB = b.planned_rides - b.actual_rides
-    const percentageMissesA = (missesA / a.planned_rides) * 100
-    const percentageMissesB = (missesB / b.planned_rides) * 100
-
-    if (percentageMissesA !== percentageMissesB) {
-      return percentageMissesB - percentageMissesA
-    }
-    if (missesA !== missesB) {
-      return missesB - missesA
-    }
-    return b.planned_rides - a.planned_rides
-  }
+  
+  
 
   const sortData = (hourlyData: HourlyData[] = []) => {
     const orderedData = [...hourlyData]
     if (sortingMode === 'hour') {
       orderedData.sort(byHour)
     } else if (sortingMode === 'severity') {
-      orderedData.sort(bySeverity)
+      orderedData.sort(bySeverityHandler)
     }
     setHourlyData(orderedData)
   }
