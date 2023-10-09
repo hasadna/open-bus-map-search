@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
 import './GapsPatternsPage.scss'
-import { getGapsAsync } from '../api/gapsService'
 import { Moment } from 'moment'
 import { DatePicker, Spin } from 'antd'
 import moment from 'moment/moment'
@@ -33,6 +32,7 @@ import {
   bySeverityHandler,
   mapColorByExecution,
 } from './components/utils'
+import { useGapsList } from './useGapsList'
 
 // Define prop types for the component
 interface BusLineStatisticsProps {
@@ -60,69 +60,14 @@ const CustomTooltip = ({ active, payload }: TooltipProps<number, string>) => {
 }
 
 function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatisticsProps) {
-  const [hourlyData, setHourlyData] = useState<HourlyData[]>([])
+  const [sortingMode, setSortingMode] = useState<'hour' | 'severity'>('hour')
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const gapsList = await getGapsAsync(fromDate, toDate, operatorRef, lineRef)
-
-        // Convert gapsList data into hourly mapping as needed
-        const hourlyMapping: Record<string, { planned_rides: number; actual_rides: number }> = {}
-
-        for (const ride of gapsList) {
-          if (ride.gtfsTime === null) {
-            continue
-          }
-          const plannedHour = ride.gtfsTime.format('HH:mm')
-
-          if (!hourlyMapping[plannedHour]) {
-            hourlyMapping[plannedHour] = { planned_rides: 0, actual_rides: 0 }
-          }
-
-          hourlyMapping[plannedHour].planned_rides += 1
-          if (ride.siriTime) {
-            hourlyMapping[plannedHour].actual_rides += 1
-          }
-        }
-
-        const result: HourlyData[] = Object.entries(hourlyMapping).map(([hour, data]) => ({
-          planned_hour: hour,
-          actual_rides: data.actual_rides,
-          planned_rides: data.planned_rides,
-        }))
-
-        result.sort((a, b) => a.planned_hour.localeCompare(b.planned_hour))
-        setHourlyData(result)
-        sortData(result)
-      } catch (error) {
-        console.error('Error fetching data:', error)
-      }
-    }
-
-    fetchData()
-  }, [lineRef, operatorRef, fromDate, toDate])
+  const hourlyData = useGapsList(fromDate, toDate, operatorRef, lineRef, sortingMode)
 
   const maxHourlyRides = Math.max(
     ...hourlyData.map((entry) => entry.planned_rides),
     ...hourlyData.map((entry) => entry.actual_rides),
   )
-
-  const [sortingMode, setSortingMode] = useState<'hour' | 'severity'>('hour')
-
-  const sortData = (hourlyData: HourlyData[] = []) => {
-    const orderedData = [...hourlyData]
-    if (sortingMode === 'hour') {
-      orderedData.sort(byHourHandler)
-    } else if (sortingMode === 'severity') {
-      orderedData.sort(bySeverityHandler)
-    }
-    setHourlyData(orderedData)
-  }
-
-  useEffect(() => {
-    sortData(hourlyData)
-  }, [sortingMode])
 
   return (
     <div>
@@ -257,7 +202,8 @@ const GapsPatternsPage = () => {
         lineRef={routes?.find((route) => route.key === routeKey)?.lineRef || 0}
         operatorRef={operatorId || ''}
         fromDate={startDate}
-        toDate={endDate}></GapsByHour>
+        toDate={endDate}
+      />
     </PageContainer>
   )
 }
