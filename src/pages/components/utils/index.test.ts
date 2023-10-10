@@ -1,5 +1,3 @@
-//import { describe, it, expect } from 'vitest';
-
 import { HourlyData, sortByMode } from '.'
 
 describe('sortByMode', () => {
