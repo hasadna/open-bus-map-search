@@ -46,8 +46,6 @@ export const useGapsList = (
       try {
         const gapsList: GapsList = await getGapsAsync(fromDate, toDate, operatorRef, lineRef)
         const result = processData(gapsList)
-        console.log(result[0])
-        console.log('mode: ', sortingMode)
         setHourlyData(sortByMode(result, sortingMode))
       } catch (error) {
         console.error('Error fetching data:', error)
