@@ -132,11 +132,11 @@ export default function RealtimeMapPage() {
         </Grid>
         <Grid xs={5}>
           <DateSelector
-            timeValid={to} // 
+            timeValid={to}
             setTimeValid={(ts) => {
-              const val = ts ? ts : to 
+              const val = ts ? ts : to
               setFrom(moment(val).subtract(5, 'minutes')) // keep the same time difference
-              setTo(moment(val))  
+              setTo(moment(val))
             }}
           />
         </Grid>
@@ -144,9 +144,9 @@ export default function RealtimeMapPage() {
           <TimeSelector
             timeValid={to}
             setTimeValid={(ts) => {
-              const val = ts ? ts : to 
+              const val = ts ? ts : to
               setFrom(moment(val).subtract(5, 'minutes')) // keep the same time difference
-              setTo(moment(val))  
+              setTo(moment(val))
             }}
           />
         </Grid>
@@ -156,7 +156,7 @@ export default function RealtimeMapPage() {
         </Grid>
         <Grid xs={6}>
           <MinuteSelector
-            num={to.diff(from)/1000/60}
+            num={to.diff(from) / 1000 / 60}
             setNum={(num) => {
               setFrom(moment(to).subtract(Math.abs(+num), 'minutes'))
               setTo(moment(to))
@@ -170,7 +170,6 @@ export default function RealtimeMapPage() {
         {/*TODO (another PR another issue)
           3) use text `TEXTS`. 
         */}
-     
         <Grid xs={6}>
           {/* fill the buttons row with empty space. complete to 12 (read the 'xs' documentation) */}
         </Grid>
