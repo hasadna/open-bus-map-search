@@ -134,17 +134,23 @@ const GapsPatternsPage = () => {
   const { operatorId, lineNumber, routes, routeKey } = search
   const [routesIsLoading, setRoutesIsLoading] = useState(false)
 
+  const loadSearchData = async () => {
+    setRoutesIsLoading(true)
+    const routes = await getRoutesAsync(
+      moment(startDate),
+      moment(endDate),
+      operatorId as string,
+      lineNumber as string,
+    )
+    setSearch((current) => (search.lineNumber === lineNumber ? { ...current, routes } : current))
+    setRoutesIsLoading(false)
+  }
+
   useEffect(() => {
     if (!operatorId || !lineNumber) {
       return
     }
-    getRoutesAsync(moment(startDate), moment(endDate), operatorId, lineNumber)
-      .then((routes) =>
-        setSearch((current) =>
-          search.lineNumber === lineNumber ? { ...current, routes: routes } : current,
-        ),
-      )
-      .finally(() => setRoutesIsLoading(false))
+    loadSearchData()
   }, [operatorId, lineNumber, endDate, startDate, setSearch])
 
   return (

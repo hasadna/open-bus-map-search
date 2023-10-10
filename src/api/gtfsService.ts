@@ -21,7 +21,7 @@ export async function getRoutesAsync(
     routeShortName: lineNumber,
     operatorRefs: operatorId,
     dateFrom: fromTimestamp.toDate(),
-    dateTo: fromTimestamp.toDate(),
+    dateTo: toTimestamp.toDate(),
     limit: 100,
   })
   const routes = Object.values(
