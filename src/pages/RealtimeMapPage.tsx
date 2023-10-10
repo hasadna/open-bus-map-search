@@ -42,10 +42,10 @@ export const colorIcon = ({ operator_id, name }: { operator_id: string; name?: s
     className: 'my-div-icon',
     html: `
     <div class="bus-icon-container">
-    <div class="bus-icon-circle">
-    <img src="${path}" alt="${name}" />
-    </div>
-    <div class="operator-name">${name}</div>
+      <div class="bus-icon-circle">
+        <img src="${path}" alt="${name}" />
+      </div>
+      <div class="operator-name">${name}</div>
     </div>
     `,
   })
@@ -134,9 +134,9 @@ export default function RealtimeMapPage() {
           <DateSelector
             timeValid={to} // 
             setTimeValid={(ts) => {
-              // const value = ts ? ts.format() : ''
-              setFrom(from)
-              setTo(to) // keep the same time difference
+              const val = ts ? ts : to 
+              setFrom(moment(val).subtract(5, 'minutes')) // keep the same time difference
+              setTo(moment(val))  
             }}
           />
         </Grid>
@@ -144,9 +144,9 @@ export default function RealtimeMapPage() {
           <TimeSelector
             timeValid={to}
             setTimeValid={(ts) => {
-              // const value = ts ? ts.format() : ''
-              setFrom(from)
-              setTo(to) // keep the same time difference
+              const val = ts ? ts : to 
+              setFrom(moment(val).subtract(5, 'minutes')) // keep the same time difference
+              setTo(moment(val))  
             }}
           />
         </Grid>
@@ -158,8 +158,8 @@ export default function RealtimeMapPage() {
           <MinuteSelector
             num={to.diff(from)/1000/60}
             setNum={(num) => {
-              setFrom(moment().subtract(num, 'minutes'))
-              setTo(moment())
+              setFrom(moment(to).subtract(Math.abs(+num), 'minutes'))
+              setTo(moment(to))
             }}
           />
         </Grid>
@@ -168,11 +168,7 @@ export default function RealtimeMapPage() {
         </Grid>
         {/* Buttons */}
         {/*TODO (another PR another issue)
-          1) discussion if the buttons need to be 5 minutes from now or from the 'from' state. 
-          => Done.
-          2) recommended use MomentJs API instead Date API. 'moment().subtract(5, 'minutes')'.
-          => Done.
-          3) use text `TEXTS`. => ?? were ?
+          3) use text `TEXTS`. 
         */}
      
         <Grid xs={6}>
@@ -184,7 +180,7 @@ export default function RealtimeMapPage() {
             {loaded} {`- `}
             {TEXTS.show_x_bus_locations} {` `}
             {TEXTS.from_time_x_to_time_y
-              .replace('XXX', moment(from).format('hh:mm A')) // cleaner code, moment api
+              .replace('XXX', moment(from).format('hh:mm A'))
               .replace('YYY', moment(to).format('hh:mm A'))}
           </p>
         </Grid>
