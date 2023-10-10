@@ -7,6 +7,7 @@ export const TEXTS = {
   timeline_page_title: 'לוח זמנים היסטורי',
   realtime_map_page_title: 'מפה בזמן אמת',
   gaps_page_title: 'נסיעות שלא יצאו',
+  gaps_patterns_page_title: 'דפוסי נסיעות שלא יצאו',
   singleline_map_page_title: 'מפה לפי קו',
   choose_datetime: 'תאריך ושעה',
   choose_date: 'תאריך',
@@ -87,6 +88,8 @@ export const TEXTS = {
   and_smaller_donors: 'ותרומות קטנות נוספות של ידידי ואוהדי הסדנא.',
   all_rides_completed: 'כמעט / כל הנסיעות בוצעו',
   missing_rides: 'מהנסיעות חסרות',
+  order_by_hour: 'לפי שעה',
+  order_by_severity: 'לפי חומרה',
 }
 
 export const formatted = (text: string, value: string) => text.replace(PLACEHOLDER, value)
