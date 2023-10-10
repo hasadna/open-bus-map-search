@@ -20,6 +20,7 @@ import { Label } from './components/Label'
 import { getColorByHashString } from './dashboard/OperatorHbarChart/utils'
 import createClusterCustomIcon from './components/utils/customCluster/customCluster'
 import { TimeSelector } from './components/TimeSelector'
+import { BusToolTip } from 'src/pages/components/MapLayers/BusToolTip'
 
 export interface Point {
   loc: [number, number]
@@ -249,19 +250,19 @@ export function Markers({ positions }: { positions: Point[] }) {
   return (
     <>
       <MarkerClusterGroup chunkedLoading iconCreateFunction={createClusterCustomIcon}>
-        {positions.map((pos, i) => (
-          <Marker
-            position={pos.loc}
-            icon={colorIcon({
-              operator_id: pos.operator?.toString() || 'default',
-              name: agencyList.find((agency) => agency.operator_ref === pos.operator)?.agency_name,
-            })}
-            key={i}>
-            <Popup>
-              <pre>{JSON.stringify(pos, null, 2)}</pre>
-            </Popup>
-          </Marker>
-        ))}
+        {positions.map((pos, i) => {
+          const icon = colorIcon({
+            operator_id: pos.operator?.toString() || 'default',
+            name: agencyList.find((agency) => agency.operator_ref === pos.operator)?.agency_name,
+          })
+          return (
+            <Marker position={pos.loc} icon={icon} key={i}>
+              <Popup>
+                <BusToolTip position={pos} icon={icon} />
+              </Popup>
+            </Marker>
+          )
+        })}
       </MarkerClusterGroup>
     </>
   )
