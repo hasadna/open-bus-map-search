@@ -22,6 +22,10 @@ export const bySeverityHandler = (a: HourlyData, b: HourlyData) => {
   return b.planned_rides - a.planned_rides
 }
 
+export const sortByMode = (hourlyData: HourlyData[] = [], sortingMode: string) => {
+  return hourlyData.toSorted(sortingMode === 'hour' ? byHourHandler : bySeverityHandler)
+}
+
 export const mapColorByExecution = (planned: number, actual: number) => {
   const misses = planned - actual
   const percentageMisses = (misses / planned) * 100
