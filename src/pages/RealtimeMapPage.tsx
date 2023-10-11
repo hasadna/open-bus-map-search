@@ -61,7 +61,7 @@ export function numberToColorHsl(i: number, max: number) {
 }
 
 const fiveMinutesAgo = moment().subtract(5, 'minutes')
-const now = moment()
+const fourMinutesAgo = fiveMinutesAgo.add(1, 'minutes')
 
 export default function RealtimeMapPage() {
   const position: Point = {
@@ -70,8 +70,8 @@ export default function RealtimeMapPage() {
   }
 
   //TODO (another PR and another issue) load from url like in another pages.
-  const [from, setFrom] = useState(fiveMinutesAgo) // 5 minutes ago
-  const [to, setTo] = useState(now)
+  const [from, setFrom] = useState(fiveMinutesAgo)
+  const [to, setTo] = useState(fourMinutesAgo)
 
   const { locations, isLoading } = useVehicleLocations({
     from: from.toDate(),
@@ -132,21 +132,21 @@ export default function RealtimeMapPage() {
         </Grid>
         <Grid xs={5}>
           <DateSelector
-            timeValid={to}
-            setTimeValid={(ts) => {
+            time={to}
+            onChange={(ts) => {
               const val = ts ? ts : to
-              setFrom(moment(val).subtract(5, 'minutes')) // keep the same time difference
+              setFrom(moment(val).subtract(moment(to).diff(moment(from)))) // keep the same time difference
               setTo(moment(val))
             }}
           />
         </Grid>
         <Grid xs={5}>
           <TimeSelector
-            timeValid={to}
-            setTimeValid={(ts) => {
-              const val = ts ? ts : to
-              setFrom(moment(val).subtract(5, 'minutes')) // keep the same time difference
-              setTo(moment(val))
+            time={to}
+            onChange={(ts) => {
+              const val = ts ? ts : from
+              setFrom(moment(val))
+              setTo(moment(val).add(moment(to).diff(moment(from)))) // keep the same time difference
             }}
           />
         </Grid>
@@ -158,8 +158,7 @@ export default function RealtimeMapPage() {
           <MinuteSelector
             num={to.diff(from) / 1000 / 60}
             setNum={(num) => {
-              setFrom(moment(to).subtract(Math.abs(+num), 'minutes'))
-              setTo(moment(to))
+              setTo(moment(from).add(Math.abs(+num) || 1, 'minutes'))
             }}
           />
         </Grid>
@@ -170,9 +169,6 @@ export default function RealtimeMapPage() {
         {/*TODO (another PR another issue)
           3) use text `TEXTS`. 
         */}
-        <Grid xs={6}>
-          {/* fill the buttons row with empty space. complete to 12 (read the 'xs' documentation) */}
-        </Grid>
         {/* loaded info */}
         <Grid xs={11}>
           <p>

@@ -126,8 +126,8 @@ const TimelinePage = () => {
         </Grid>
         <Grid xs={8}>
           <DateSelector
-            timeValid={moment(timestamp)}
-            setTimeValid={(ts) =>
+            time={moment(timestamp)}
+            onChange={(ts) =>
               setSearch((current) => ({ ...current, timestamp: ts ? ts.valueOf() : 0 }))
             }
           />
