@@ -39,5 +39,25 @@
             height: 400px;
             overflow-y: scroll;
         }
+
+        .tooltip-icon {
+            position: relative;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: #888;
+            color: #fff;
+            font-size: 14px;
+            cursor: pointer;
+            vertical-align: middle;
+            margin-right: 10px;
+        }
+        
+        .tooltip-icon:hover {
+          background-color: #333;
+        }
     }
 }

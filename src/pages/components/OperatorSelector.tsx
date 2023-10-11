@@ -21,6 +21,7 @@ const OperatorSelector = ({ operatorId, setOperatorId }: OperatorSelectorProps) 
   return (
     <Autocomplete
       disablePortal
+      style={{ width: '100%' }}
       value={value}
       onChange={(e, value) => setOperatorId(value ? value.id : '0')}
       id="operator-select"
