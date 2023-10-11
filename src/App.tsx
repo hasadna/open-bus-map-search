@@ -27,6 +27,7 @@ import { ThemeProvider, createTheme } from '@mui/material'
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 import { LocalizationProvider } from '@mui/x-date-pickers'
 import About from './pages/About'
+import GapsPatternsPage from './pages/GapsPatternsPage'
 
 const { Content } = Layout
 
@@ -57,6 +58,10 @@ const PAGES = [
     label: TEXTS.gaps_page_title,
     key: '/gaps',
     searchParamsRequired: true,
+  },
+  {
+    label: TEXTS.gaps_patterns_page_title,
+    key: '/gaps_patterns',
   },
   {
     label: TEXTS.realtime_map_page_title,
@@ -161,9 +166,10 @@ const App = () => {
                         <Route path={PAGES[0].key} element={<DashboardPage />} />
                         <Route path={PAGES[1].key} element={<TimelinePage />} />
                         <Route path={PAGES[2].key} element={<GapsPage />} />
-                        <Route path={PAGES[3].key} element={<RealtimeMapPage />} />
-                        <Route path={PAGES[4].key} element={<SingleLineMapPage />} />
-                        <Route path={PAGES[5].key} element={<About />} />
+                        <Route path={PAGES[3].key} element={<GapsPatternsPage />} />
+                        <Route path={PAGES[4].key} element={<RealtimeMapPage />} />
+                        <Route path={PAGES[5].key} element={<SingleLineMapPage />} />
+                        <Route path={PAGES[6].key} element={<About />} />
                         <Route path="*" element={<RedirectToDashboard />} />
                       </Routes>
                     </StyledBody>

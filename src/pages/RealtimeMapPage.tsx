@@ -3,7 +3,6 @@ import { MapContainer, Marker, Polyline, Popup, TileLayer, useMap } from 'react-
 import MarkerClusterGroup from 'react-leaflet-cluster'
 import { TEXTS } from 'src/resources/texts'
 
-import { Button } from '@mui/material'
 import { Spin } from 'antd'
 import { DivIcon } from 'leaflet'
 import moment from 'moment'
@@ -52,11 +51,6 @@ export const colorIcon = ({ operator_id, name }: { operator_id: string; name?: s
   })
 }
 
-function formatTime(time: string | number | Date) {
-  const date = new Date(time).toISOString()
-  return date
-}
-
 export function numberToColorHsl(i: number, max: number) {
   const ratio = i / max
   // 0 - black. 1 - red
@@ -66,6 +60,9 @@ export function numberToColorHsl(i: number, max: number) {
   return `hsl(${hue}, ${saturation}%, ${lightness}%)`
 }
 
+const fiveMinutesAgo = moment().subtract(5, 'minutes')
+const now = moment()
+
 export default function RealtimeMapPage() {
   const position: Point = {
     loc: [32.3057988, 34.85478613], // arbitrary default value... Netanya - best city to live & die in
@@ -73,14 +70,13 @@ export default function RealtimeMapPage() {
   }
 
   //TODO (another PR and another issue) load from url like in another pages.
-  const [from, setFrom] = useState('2023-05-01T12:00:00+02:00') // arbitrary default value. this date is not important
-  const [to, setTo] = useState('2023-05-01T12:01:00+02:00')
+  const [from, setFrom] = useState(fiveMinutesAgo) // 5 minutes ago
+  const [to, setTo] = useState(now)
 
   const { locations, isLoading } = useVehicleLocations({
-    from: formatTime(from),
-    to: formatTime(to),
+    from: from.toDate(),
+    to: to.toDate(),
   })
-  console.log(locations)
 
   const loaded = locations.length
 
@@ -124,8 +120,6 @@ export default function RealtimeMapPage() {
     [locations],
   )
 
-  console.log(paths)
-
   return (
     <PageContainer className="map-container">
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
@@ -138,21 +132,21 @@ export default function RealtimeMapPage() {
         </Grid>
         <Grid xs={5}>
           <DateSelector
-            timeValid={moment(from.slice(0, 16))} // remove timezone and seconds
+            timeValid={to}
             setTimeValid={(ts) => {
-              const value = ts ? ts.format() : ''
-              setFrom(value)
-              setTo(formatTime(+new Date(value) + (+new Date(to) - +new Date(from)))) // keep the same time difference
+              const val = ts ? ts : to
+              setFrom(moment(val).subtract(5, 'minutes')) // keep the same time difference
+              setTo(moment(val))
             }}
           />
         </Grid>
         <Grid xs={5}>
           <TimeSelector
-            timeValid={moment(from.slice(0, 16))} // remove timezone and seconds
+            timeValid={to}
             setTimeValid={(ts) => {
-              const value = ts ? ts.format() : ''
-              setFrom(value)
-              setTo(formatTime(+new Date(value) + (+new Date(to) - +new Date(from)))) // keep the same time difference
+              const val = ts ? ts : to
+              setFrom(moment(val).subtract(5, 'minutes')) // keep the same time difference
+              setTo(moment(val))
             }}
           />
         </Grid>
@@ -162,8 +156,11 @@ export default function RealtimeMapPage() {
         </Grid>
         <Grid xs={6}>
           <MinuteSelector
-            num={(+new Date(to) - +new Date(from)) / 1000 / 60}
-            setNum={(num) => setTo(formatTime(+new Date(from) + +num * 1000 * 60))}
+            num={to.diff(from) / 1000 / 60}
+            setNum={(num) => {
+              setFrom(moment(to).subtract(Math.abs(+num), 'minutes'))
+              setTo(moment(to))
+            }}
           />
         </Grid>
         <Grid xs={1}>
@@ -171,30 +168,8 @@ export default function RealtimeMapPage() {
         </Grid>
         {/* Buttons */}
         {/*TODO (another PR another issue)
-          1) discussion if the buttons need to be 5 minutes from now or from the 'from' state.
-          2) recommended use MomentJs API instead Date API. 'moment().subtract(5, 'minutes')'.
-          3) use text `TEXTS`.
+          3) use text `TEXTS`. 
         */}
-        <Grid xs={3}>
-          <Button
-            variant="contained"
-            onClick={() => {
-              setFrom(formatTime(+new Date() - 5 * 1000 * 60)) // 5 minutes ago
-              setTo(formatTime(+new Date() - 4 * 1000 * 60)) // 4 minutes ago
-            }}>
-            לפני 5 דקות
-          </Button>
-        </Grid>
-        <Grid xs={3}>
-          <Button
-            variant="contained"
-            onClick={() => {
-              setFrom(formatTime(+new Date() - 10 * 1000 * 60)) // 10 minutes ago
-              setTo(formatTime(+new Date() - 9 * 1000 * 60)) // 9 minutes ago
-            }}>
-            לפני 10 דקות
-          </Button>
-        </Grid>
         <Grid xs={6}>
           {/* fill the buttons row with empty space. complete to 12 (read the 'xs' documentation) */}
         </Grid>
@@ -204,8 +179,8 @@ export default function RealtimeMapPage() {
             {loaded} {`- `}
             {TEXTS.show_x_bus_locations} {` `}
             {TEXTS.from_time_x_to_time_y
-              .replace('XXX', new Date(from).toLocaleTimeString())
-              .replace('YYY', new Date(to).toLocaleTimeString())}
+              .replace('XXX', moment(from).format('hh:mm A'))
+              .replace('YYY', moment(to).format('hh:mm A'))}
           </p>
         </Grid>
         <Grid xs={1}>{isLoading && <Spin size="small" />}</Grid>
