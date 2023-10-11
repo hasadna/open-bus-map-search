@@ -5,6 +5,9 @@ import cn from 'classnames'
 export default function Header({ pages }: { pages: MenuPage[] }) {
   const [open, setOpen] = useState(false)
 
+  function dismiss() {
+    setOpen(false)
+  }
   return (
     <header className={cn('header', { open })}>
       <div className="header-menu" onClick={() => setOpen(!open)}>
@@ -13,7 +16,7 @@ export default function Header({ pages }: { pages: MenuPage[] }) {
         <div className="header-menu-line" />
       </div>
       <h1>דאטאבוס</h1>
-      <Menu pages={pages} />
+      <Menu pages={pages} shouldDismiss={dismiss} />
     </header>
   )
 }
