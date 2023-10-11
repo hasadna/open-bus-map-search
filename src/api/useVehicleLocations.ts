@@ -145,7 +145,7 @@ export default function useVehicleLocations({
   const [locations, setLocations] = useState<VehicleLocation[]>([])
   const [isLoading, setIsLoading] = useState<boolean[]>([])
   useEffect(() => {
-    const range = split ? getMinutesInRange(from, to) : [{ from, to }]
+    const range = split ? getMinutesInRange(from, to, split) : [{ from, to }]
     setIsLoading(range.map(() => true))
     const unmounts = range.map(({ from, to }, i) =>
       getLocations({

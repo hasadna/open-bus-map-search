@@ -48,7 +48,12 @@ const SingleLineMapPage = () => {
     if (!operatorId || !lineNumber) {
       return
     }
-    getRoutesAsync(moment(timestamp), moment(timestamp), operatorId, lineNumber).then((routes) =>
+    getRoutesAsync(
+      moment(timestamp - 24 * 60 * 60 * 1000),
+      moment(timestamp),
+      operatorId,
+      lineNumber,
+    ).then((routes) =>
       setSearch((current) =>
         search.lineNumber === lineNumber ? { ...current, routes: routes } : current,
       ),
