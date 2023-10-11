@@ -21,6 +21,7 @@ import { DateSelector } from './components/DateSelector'
 import { CircularProgress } from '@mui/material'
 import { FilterPositionsByStartTimeSelector } from './components/FilterPositionsByStartTimeSelector'
 import { PageContainer } from './components/PageContainer'
+import { BusToolTip } from 'src/pages/components/MapLayers/BusToolTip'
 
 interface Path {
   locations: VehicleLocation[]
@@ -164,20 +165,26 @@ const SingleLineMapPage = () => {
             url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
           />
 
-          {filteredPositions.map((pos, i) => (
-            <Marker
-              position={pos.loc}
-              icon={colorIcon({
-                operator_id: pos.operator?.toString() || 'default',
-                name: agencyList.find((agency) => agency.operator_ref === pos.operator)
-                  ?.agency_name,
-              })}
-              key={i}>
-              <Popup>
-                <pre>{JSON.stringify(pos, null, 2)}</pre>
-              </Popup>
-            </Marker>
-          ))}
+          {filteredPositions.map((pos, i) => {
+            const icon = colorIcon({
+              operator_id: pos.operator?.toString() || 'default',
+              name: agencyList.find((agency) => agency.operator_ref === pos.operator)?.agency_name,
+            })
+            return (
+              <Marker
+                position={pos.loc}
+                icon={colorIcon({
+                  operator_id: pos.operator?.toString() || 'default',
+                  name: agencyList.find((agency) => agency.operator_ref === pos.operator)
+                    ?.agency_name,
+                })}
+                key={i}>
+                <Popup>
+                  <BusToolTip position={pos} icon={icon} />
+                </Popup>
+              </Marker>
+            )
+          })}
 
           {paths.map((path) => (
             <Polyline
