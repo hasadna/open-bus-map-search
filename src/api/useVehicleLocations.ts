@@ -5,6 +5,7 @@
  */
 
 import _ from 'lodash'
+import moment, { Moment } from 'moment'
 import { useEffect, useState } from 'react'
 import { VehicleLocation } from 'src/model/vehicleLocation'
 
@@ -16,11 +17,15 @@ const config = {
   lineRefField: 'siri_routes__line_ref',
 } as const
 
-type Dateable = Date | number | string
+type Dateable = Date | number | string | Moment
 
 function formatTime(time: Dateable) {
-  const date = new Date(time).toISOString()
-  return date
+  if (moment.isMoment(time)) {
+    time = time.toDate()
+  } else {
+    const date = new Date(time).toISOString()
+    return date
+  }
 }
 
 const loadedLocations = new Map<
