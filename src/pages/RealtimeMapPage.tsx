@@ -224,7 +224,7 @@ export function Markers({ positions }: { positions: Point[] }) {
   return (
     <>
       <MarkerClusterGroup chunkedLoading iconCreateFunction={createClusterCustomIcon}>
-        {positions.map((pos, i) => (
+        {positions.map((pos) => (
           <Marker
             position={pos.loc}
             icon={colorIcon({
