@@ -87,6 +87,17 @@ export const TEXTS = {
   and_smaller_donors: 'ותרומות קטנות נוספות של ידידי ואוהדי הסדנא.',
   all_rides_completed: 'כמעט / כל הנסיעות בוצעו',
   missing_rides: 'מהנסיעות חסרות',
+  line: 'קו',
+  from: 'מוצא',
+  destination: 'יעד',
+  sample_time: 'זמן דגימה',
+  velocity: 'מהירות',
+  drive_direction: 'כיוון נסיעה:',
+  coords: 'נ.צ:',
+  vehicle_ref: 'לוחית רישוי',
+  show_card: 'הצג כרטיס',
+  show_document: 'הצג מסמך',
+  bearing: 'מעלות',
 }
 
 export const formatted = (text: string, value: string) => text.replace(PLACEHOLDER, value)

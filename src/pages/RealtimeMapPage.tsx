@@ -81,8 +81,6 @@ export default function RealtimeMapPage() {
     from: formatTime(from),
     to: formatTime(to),
   })
-  console.log(locations)
-
   const loaded = locations.length
 
   const positions = useMemo(() => {
@@ -124,8 +122,6 @@ export default function RealtimeMapPage() {
       }, []),
     [locations],
   )
-
-  console.log(paths)
 
   return (
     <PageContainer className="map-container">
