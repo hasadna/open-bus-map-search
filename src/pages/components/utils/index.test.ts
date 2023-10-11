@@ -1,7 +1,7 @@
 import { parseTime } from 'src/api/gapsService'
 import { HourlyData, sortByMode } from '.'
 import { GapsList } from 'src/model/gaps'
-import { processData } from 'src/pages/useGapsList'
+import { convertGapsToHourlyStruct as processData } from 'src/pages/useGapsList'
 
 describe('sortByMode', () => {
   it('when mode param is "hour" - should be sorted properly', () => {

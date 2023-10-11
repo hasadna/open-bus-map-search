@@ -7,7 +7,7 @@ import { GapsList } from 'src/model/gaps'
 
 export type HourlyDataList = HourlyData[]
 // Convert gapsList into HourlyDataList structure
-export const processData = (gapsList: GapsList): HourlyDataList => {
+export const convertGapsToHourlyStruct = (gapsList: GapsList): HourlyDataList => {
   // Convert gapsList data to hourly mapping structure, where hour is a key
   const hourlyMapping: Record<string, { planned_rides: number; actual_rides: number }> = {}
 
@@ -47,7 +47,7 @@ export const useGapsList = (
     const fetchData = async () => {
       try {
         const gapsList: GapsList = await getGapsAsync(fromDate, toDate, operatorRef, lineRef)
-        const result = processData(gapsList)
+        const result = convertGapsToHourlyStruct(gapsList)
         setHourlyData(sortByMode(result, sortingMode))
       } catch (error) {
         console.error('Error fetching data:', error)
