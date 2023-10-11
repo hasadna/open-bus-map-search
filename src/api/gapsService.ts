@@ -10,7 +10,7 @@ type RawGapsList = {
   gtfs_ride_id?: number
 }[]
 
-const parseTime = (time: string): Moment | null => {
+export const parseTime = (time: string): Moment | null => {
   const utcMoment: Moment = moment.utc(time).tz('Asia/Jerusalem')
   if (!utcMoment.isValid()) {
     return null
