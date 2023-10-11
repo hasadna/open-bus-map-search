@@ -1,4 +1,4 @@
-import React, { Fragment, useCallback, useState } from 'react'
+import React, { Fragment, useState } from 'react'
 import { useGroupBy } from 'src/api/groupByService'
 import { PageContainer } from '../components/PageContainer'
 import OperatorHbarChart from './OperatorHbarChart/OperatorHbarChart'
@@ -6,23 +6,13 @@ import './DashboardPage.scss'
 import { TEXTS } from 'src/resources/texts'
 import ArrivalByTimeChart from './ArrivalByTimeChart/ArrivalByTimeChart'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
-import moment, { Moment } from 'moment'
+import moment from 'moment'
 import LinesHbarChart from './LineHbarChart/LinesHbarChart'
 import { FormControlLabel, Switch, Tooltip } from '@mui/material'
 import { Label } from 'src/pages/components/Label'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
-
+import { useDate } from '../components/DateTimePicker'
 const now = moment()
-
-function useDate(initialValue: Moment) {
-  const [date, setDate] = React.useState<Moment>(initialValue)
-  const onChange = useCallback((date: Moment | null) => {
-    if (date) {
-      setDate(date)
-    }
-  }, [])
-  return [date, onChange] as const
-}
 
 const DashboardPage = () => {
   const [startDate, setStartDate] = useDate(now.clone().subtract(7, 'days'))

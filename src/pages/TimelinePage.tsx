@@ -62,7 +62,7 @@ const TimelinePage = () => {
       return
     }
     setRoutesIsLoading(true)
-    getRoutesAsync(moment(timestamp), operatorId, lineNumber)
+    getRoutesAsync(moment(timestamp), moment(timestamp), operatorId, lineNumber)
       .then((routes) =>
         setSearch((current) =>
           search.lineNumber === lineNumber ? { ...current, routes: routes } : current,
