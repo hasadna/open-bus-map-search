@@ -1,6 +1,7 @@
 import { parseTime } from 'src/api/gapsService'
-import { HourlyData, processData, sortByMode } from '.'
+import { HourlyData, sortByMode } from '.'
 import { GapsList } from 'src/model/gaps'
+import { processData } from 'src/pages/useGapsList'
 
 describe('sortByMode', () => {
   it('when mode param is "hour" - should be sorted properly', () => {
@@ -49,7 +50,7 @@ describe('sortByMode', () => {
     const [results] = processData(list)
     expect(results).toEqual({
       actual_rides: 1,
-      planned_hour: "05:00",
+      planned_hour: '05:00',
       planned_rides: 1,
     })
   })
@@ -58,13 +59,13 @@ describe('sortByMode', () => {
     const list: GapsList = [
       {
         gtfsTime: parseTime('2023-10-04T02:20:00'),
-        siriTime: parseTime(null),
+        siriTime: parseTime('null'),
       },
     ]
     const [results] = processData(list)
 
-    expect(results).toEqual({   
-      planned_hour: "05:20",
+    expect(results).toEqual({
+      planned_hour: '05:20',
       planned_rides: 1,
       actual_rides: 0,
     })
@@ -84,8 +85,8 @@ describe('sortByMode', () => {
     const [results] = processData(list)
     expect(results).toEqual({
       actual_rides: 2,
-      planned_hour: "05:00",
+      planned_hour: '05:00',
       planned_rides: 2,
     })
-  })  
+  })
 })
