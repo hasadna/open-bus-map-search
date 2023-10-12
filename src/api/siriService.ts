@@ -33,7 +33,7 @@ export async function getSiriRideWithRelated(
   siriRouteLineRefs: string,
 ) {
   const gtfs_route_promise: SiriRideWithRelatedPydanticModel[] = await SIRI_API.siriRidesListGet({
-    limit: 122,
+    limit: 1,
     siriRouteIds: siriRouteId.toString(),
     siriRouteLineRefs,
     vehicleRefs,

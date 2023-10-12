@@ -18,14 +18,12 @@ export function BusToolTip({ position, icon }: { position: Point; icon: DivIcon 
 
   useEffect(() => {
     setIsLoading(true)
-    Promise.all([
-      getSiriRideWithRelated(
-        position.point!.siri_route__id.toString(),
-        position.point!.siri_ride__vehicle_ref.toString(),
-        position.point!.siri_route__line_ref.toString(),
-      ),
-    ])
-      .then(([siriRideRes]) => setSiriRide(siriRideRes))
+    getSiriRideWithRelated(
+      position.point!.siri_route__id.toString(),
+      position.point!.siri_ride__vehicle_ref.toString(),
+      position.point!.siri_route__line_ref.toString(),
+    )
+      .then((siriRideRes: SiriRideWithRelatedPydanticModel) => setSiriRide(siriRideRes))
       .finally(() => setIsLoading(false))
   }, [position])
   return (
