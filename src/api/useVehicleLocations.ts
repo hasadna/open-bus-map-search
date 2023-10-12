@@ -175,7 +175,7 @@ export default function useVehicleLocations({
       unmounts.forEach((unmount) => unmount())
       setIsLoading([])
     }
-  }, [from, to])
+  }, [from, to, lineRef, split])
   return {
     locations,
     isLoading: isLoading.some((loading) => loading),
