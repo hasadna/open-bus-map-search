@@ -5,9 +5,9 @@ import cn from 'classnames'
 export default function Header({ pages }: { pages: MenuPage[] }) {
   const [open, setOpen] = useState(false)
 
-  function dismiss() {
+  useCallback(function dismiss() {
     setOpen(false)
-  }
+  }, [])
   return (
     <header className={cn('header', { open })}>
       <div className="header-menu" onClick={() => setOpen(!open)}>
