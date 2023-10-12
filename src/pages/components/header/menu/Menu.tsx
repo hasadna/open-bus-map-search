@@ -13,7 +13,7 @@ export type MenuPage = {
 function Menu({ pages, shouldDismiss }: { pages: MenuPage[]; shouldDismiss: () => void }) {
   const navigate = useNavigate()
   const { pathname: currpage } = useLocation()
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
+  const isMobile= window.innerWidth <= 768
 
   console.log({ currpage, active: pages.map((p) => p.key === currpage) })
 
