@@ -12,31 +12,53 @@ import { FormControlLabel, Switch, Tooltip } from '@mui/material'
 import { Label } from 'src/pages/components/Label'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
 import { useDate } from '../components/DateTimePicker'
+import { Skeleton } from 'antd'
 const now = moment()
 
+interface groupsResData {
+  operator_ref: {
+    agency_id: string | null
+    agency_name: string | null
+  }
+  route_short_name: string
+  route_long_name: string
+  line_ref: number
+  total_planned_rides: number
+  total_actual_rides: number
+  gtfs_route_date: string
+  gtfs_route_hour: string
+}
 const DashboardPage = () => {
   const [startDate, setStartDate] = useDate(now.clone().subtract(7, 'days'))
   const [endDate, setEndDate] = useDate(now.clone().subtract(1, 'day'))
   const [groupByHour, setGroupByHour] = React.useState<boolean>(false)
 
   const [operatorId, setOperatorId] = useState('')
-  const groupByOperatorData = useGroupBy({
+  const [groupByOperatorData_, groupByOperatorLoading] = useGroupBy({
     dateTo: endDate,
     dateFrom: startDate,
     groupBy: 'operator_ref',
-  }).map((item) => ({
+  })
+  //covert to Operator data to proper structure
+  const groupByOperatorData = groupByOperatorData_.map((item: groupsResData) => ({
     id: item.operator_ref?.agency_id || 'Unknown',
     name: item.operator_ref?.agency_name || 'Unknown',
     total: item.total_planned_rides,
     actual: item.total_actual_rides,
   }))
-  const groupByLineData = useGroupBy({
+
+  const [groupByLineData_, lineDataLoading] = useGroupBy({
     dateTo: endDate,
     dateFrom: startDate,
     groupBy: 'operator_ref,line_ref',
   })
-    .filter((row) => row.operator_ref?.agency_id == operatorId || !Number(operatorId))
-    .map((item) => ({
+
+  // covert LineDaata to proper structure
+  const groupByLineData = groupByLineData_
+    .filter(
+      (row: groupsResData) => row.operator_ref?.agency_id == operatorId || !Number(operatorId),
+    )
+    .map((item: groupsResData) => ({
       id: `${item.line_ref}|${item.operator_ref?.agency_id}` || 'Unknown',
       operator_name: item.operator_ref?.agency_name || 'Unknown',
       short_name: JSON.parse(item.route_short_name)[0],
@@ -45,11 +67,13 @@ const DashboardPage = () => {
       actual: item.total_actual_rides,
     }))
 
-  const graphData = useGroupBy({
+  const [graphData_, loadingGrap] = useGroupBy({
     dateTo: endDate,
     dateFrom: startDate,
     groupBy: groupByHour ? 'operator_ref,gtfs_route_hour' : 'operator_ref,gtfs_route_date',
-  }).map((item) => ({
+  })
+  // convvert grapdata to proper structure
+  const graphData = graphData_.map((item: groupsResData) => ({
     id: item.operator_ref?.agency_id || 'Unknown',
     name: item.operator_ref?.agency_name || 'Unknown',
     current: item.total_actual_rides,
@@ -95,18 +119,26 @@ const DashboardPage = () => {
               <span className="tooltip-icon">i</span>
             </Tooltip>
           </h2>
-          <OperatorHbarChart operators={groupByOperatorData} />
+          {groupByOperatorLoading ? (
+            <Skeleton active />
+          ) : (
+            <OperatorHbarChart operators={groupByOperatorData} />
+          )}
         </div>
         <div className="widget">
           <h2 className="title">{TEXTS.worst_lines_page_title}</h2>
-          <LinesHbarChart
-            lines={groupByLineData}
-            operators_whitelist={['אלקטרה אפיקים', 'דן', 'מטרופולין', 'קווים', 'אגד']}
-          />
+          {lineDataLoading ? (
+            <Skeleton active />
+          ) : (
+            <LinesHbarChart
+              lines={groupByLineData}
+              operators_whitelist={['אלקטרה אפיקים', 'דן', 'מטרופולין', 'קווים', 'אגד']}
+            />
+          )}
         </div>
         <div className="widget">
           <h2 className="title">{TEXTS.dashboard_page_graph_title}</h2>
-          <ArrivalByTimeChart data={graphData} />
+          {loadingGrap ? <Skeleton active /> : <ArrivalByTimeChart data={graphData} />}
         </div>
       </div>
     </PageContainer>
