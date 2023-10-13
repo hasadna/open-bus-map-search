@@ -111,8 +111,8 @@ const SingleLineMapPage = () => {
         </Grid>
         <Grid xs={8}>
           <DateSelector
-            timeValid={moment(timestamp)}
-            setTimeValid={(ts) => setSearch((current) => ({ ...current, timestamp: ts.valueOf() }))}
+            time={moment(timestamp)}
+            onChange={(ts) => setSearch((current) => ({ ...current, timestamp: ts.valueOf() }))}
           />
         </Grid>
         {/* choose operator */}
