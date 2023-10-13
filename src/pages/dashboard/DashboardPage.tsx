@@ -15,19 +15,6 @@ import { useDate } from '../components/DateTimePicker'
 import { Skeleton } from 'antd'
 const now = moment()
 
-interface groupsResData {
-  operator_ref: {
-    agency_id: string | null
-    agency_name: string | null
-  }
-  route_short_name: string
-  route_long_name: string
-  line_ref: number
-  total_planned_rides: number
-  total_actual_rides: number
-  gtfs_route_date: string
-  gtfs_route_hour: string
-}
 const DashboardPage = () => {
   const [startDate, setStartDate] = useDate(now.clone().subtract(7, 'days'))
   const [endDate, setEndDate] = useDate(now.clone().subtract(1, 'day'))
@@ -40,7 +27,7 @@ const DashboardPage = () => {
     groupBy: 'operator_ref',
   })
   //covert to Operator data to proper structure
-  const groupByOperatorData = groupByOperatorData_.map((item: groupsResData) => ({
+  const groupByOperatorData = groupByOperatorData_.map((item) => ({
     id: item.operator_ref?.agency_id || 'Unknown',
     name: item.operator_ref?.agency_name || 'Unknown',
     total: item.total_planned_rides,
@@ -55,10 +42,8 @@ const DashboardPage = () => {
 
   // covert LineDaata to proper structure
   const groupByLineData = groupByLineData_
-    .filter(
-      (row: groupsResData) => row.operator_ref?.agency_id == operatorId || !Number(operatorId),
-    )
-    .map((item: groupsResData) => ({
+    ?.filter((row) => row.operator_ref?.agency_id == operatorId || !Number(operatorId))
+    .map((item) => ({
       id: `${item.line_ref}|${item.operator_ref?.agency_id}` || 'Unknown',
       operator_name: item.operator_ref?.agency_name || 'Unknown',
       short_name: JSON.parse(item.route_short_name)[0],
@@ -73,7 +58,7 @@ const DashboardPage = () => {
     groupBy: groupByHour ? 'operator_ref,gtfs_route_hour' : 'operator_ref,gtfs_route_date',
   })
   // convvert grapdata to proper structure
-  const graphData = graphData_.map((item: groupsResData) => ({
+  const graphData = graphData_.map((item) => ({
     id: item.operator_ref?.agency_id || 'Unknown',
     name: item.operator_ref?.agency_name || 'Unknown',
     current: item.total_actual_rides,
