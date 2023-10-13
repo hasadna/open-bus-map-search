@@ -113,7 +113,7 @@ export function useGroupBy({
       .catch((er) => setError(er))
   }, [+dateTo, +dateFrom, groupBy])
 
-  return [data, loading, error]
+  return [data, loading, error] as const
 }
 
 export default groupbyAsync
