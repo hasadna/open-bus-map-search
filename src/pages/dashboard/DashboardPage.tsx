@@ -81,8 +81,11 @@ const DashboardPage = () => {
           }
           label={TEXTS.group_by_hour_tooltip_content}
         />
-        <Label text={TEXTS.choose_operator} />
-        <OperatorSelector operatorId={operatorId} setOperatorId={setOperatorId} />
+        <FormControlLabel
+          control={<OperatorSelector operatorId={operatorId} setOperatorId={setOperatorId} />}
+          label={TEXTS.choose_operator}
+          labelPlacement="start"
+        />
       </div>
       <div className="widgets-container">
         <div className="widget">
