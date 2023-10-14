@@ -63,8 +63,8 @@ const SingleLineMapPage = () => {
   const selectedRouteIds = selectedRoute?.routeIds
 
   const { locations, isLoading: locationsIsLoading } = useVehicleLocations({
-    from: selectedRouteIds ? +new Date(timestamp).setHours(0, 0, 0, 0) : 0,
-    to: selectedRouteIds ? +new Date(timestamp).setHours(23, 59, 59, 999) : 0,
+    from: selectedRouteIds ? new Date(timestamp).setHours(0, 0, 0, 0) : 0,
+    to: selectedRouteIds ? new Date(timestamp).setHours(23, 59, 59, 999) : 0,
     lineRef: selectedRoute?.lineRef ?? 0,
     splitMinutes: 20,
   })
