@@ -71,7 +71,7 @@ const GapsPage = () => {
         return
       }
       setGapsIsLoading(true)
-      getGapsAsync(moment(timestamp), operatorId, selectedRoute.lineRef)
+      getGapsAsync(moment(timestamp), moment(timestamp), operatorId, selectedRoute.lineRef)
         .then(setGaps)
         .finally(() => setGapsIsLoading(false))
     }
@@ -81,7 +81,7 @@ const GapsPage = () => {
     if (!operatorId || !lineNumber) {
       return
     }
-    getRoutesAsync(moment(timestamp), operatorId, lineNumber)
+    getRoutesAsync(moment(timestamp), moment(timestamp), operatorId, lineNumber)
       .then((routes) =>
         setSearch((current) =>
           search.lineNumber === lineNumber ? { ...current, routes: routes } : current,
@@ -101,8 +101,8 @@ const GapsPage = () => {
         </Grid>
         <Grid xs={8}>
           <DateSelector
-            timeValid={moment(timestamp)}
-            setTimeValid={(ts) =>
+            time={moment(timestamp)}
+            onChange={(ts) =>
               setSearch((current) => ({ ...current, timestamp: ts ? ts.valueOf() : 0 }))
             }
           />
