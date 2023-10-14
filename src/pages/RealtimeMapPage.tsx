@@ -36,11 +36,6 @@ interface Path {
   vehicleRef: number
 }
 
-function formatTime(time: string | number | Date) {
-  const date = new Date(time).toISOString()
-  return date
-}
-
 export function numberToColorHsl(i: number, max: number) {
   const ratio = i / max
   // 0 - black. 1 - red
