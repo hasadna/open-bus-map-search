@@ -5,7 +5,6 @@ import { TEXTS } from 'src/resources/texts'
 
 import { Button } from '@mui/material'
 import { Spin } from 'antd'
-import { DivIcon } from 'leaflet'
 import moment from 'moment'
 import getAgencyList, { Agency } from 'src/api/agencyList'
 import useVehicleLocations from 'src/api/useVehicleLocations'
@@ -37,7 +36,6 @@ interface Path {
   operator: number
   vehicleRef: number
 }
-
 
 function formatTime(time: string | number | Date) {
   const date = new Date(time).toISOString()

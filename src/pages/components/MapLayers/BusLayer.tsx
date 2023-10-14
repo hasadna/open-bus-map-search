@@ -1,4 +1,3 @@
-import { DivIcon } from 'leaflet'
 import React, { useEffect, useState } from 'react'
 import { Marker, Popup, useMap } from 'react-leaflet'
 import MarkerClusterGroup from 'react-leaflet-cluster'
@@ -6,8 +5,6 @@ import getAgencyList, { Agency } from 'src/api/agencyList'
 import { VehicleLocation } from 'src/model/vehicleLocation'
 import createClusterCustomIcon from '../utils/customCluster/customCluster'
 import { busIcon } from '../utils/BusIcon'
-
-
 
 /*function numberToColorHsl(i: number, max: number) {
   const ratio = i / max
