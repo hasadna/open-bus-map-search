@@ -132,7 +132,8 @@ function getMinutesInRange(from: Dateable, to: Dateable, gap = 1) {
     from: start.clone().add(i * gap, 'minutes'),
     to: start.clone().add((i + 1) * gap, 'minutes'),
   }))
-  return minutes
+
+  return minutes.map((range) => ({ from: range.from.toDate(), to: range.to.toDate() })) //TODO getLocations() not work properly with moment
 }
 
 export default function useVehicleLocations({
