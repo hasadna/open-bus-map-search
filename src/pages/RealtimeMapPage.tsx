@@ -59,8 +59,8 @@ export default function RealtimeMapPage() {
   const [to, setTo] = useState(fourMinutesAgo)
 
   const { locations, isLoading } = useVehicleLocations({
-    from: from.toDate(),
-    to: to.toDate(),
+    from,
+    to,
   })
 
   const loaded = locations.length
@@ -205,14 +205,14 @@ export function Markers({ positions }: { positions: Point[] }) {
   return (
     <>
       <MarkerClusterGroup chunkedLoading iconCreateFunction={createClusterCustomIcon}>
-        {positions.map((pos, i) => (
+        {positions.map((pos) => (
           <Marker
             position={pos.loc}
             icon={busIcon({
               operator_id: pos.operator?.toString() || 'default',
               name: agencyList.find((agency) => agency.operator_ref === pos.operator)?.agency_name,
             })}
-            key={i}>
+            key={pos.point?.id}>
             <Popup>
               <pre>{JSON.stringify(pos, null, 2)}</pre>
             </Popup>

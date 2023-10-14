@@ -5,6 +5,7 @@
  */
 
 import _ from 'lodash'
+import moment, { Moment } from 'moment'
 import { useEffect, useState } from 'react'
 import { VehicleLocation } from 'src/model/vehicleLocation'
 
@@ -16,11 +17,15 @@ const config = {
   lineRefField: 'siri_routes__line_ref',
 } as const
 
-type Dateable = Date | number | string
+type Dateable = Date | number | string | Moment
 
 function formatTime(time: Dateable) {
-  const date = new Date(time).toISOString()
-  return date
+  if (moment.isMoment(time)) {
+    time = time.toDate()
+  } else {
+    const date = new Date(time).toISOString()
+    return date
+  }
 }
 
 const loadedLocations = new Map<
@@ -119,14 +124,14 @@ function getLocations({
 }
 
 function getMinutesInRange(from: Dateable, to: Dateable, minutesGap = 1) {
-  const start = new Date(from).setSeconds(0, 0)
-  const end = new Date(to).setSeconds(0, 0)
+  const start = moment(from).startOf('minute')
+  const end = moment(to).startOf('minute')
   const gap = 60000 * minutesGap
 
   // array of minutes to load
-  const minutes = Array.from({ length: (end - start) / gap }, (_, i) => ({
-    from: new Date(start + i * gap),
-    to: new Date(start + (i + 1) * gap),
+  const minutes = Array.from({ length: end.diff(start, 'minutes') / gap }, (_, i) => ({
+    from: start.clone().add(i * gap, 'minutes'),
+    to: start.clone().add((i + 1) * gap, 'minutes'),
   }))
   return minutes
 }
