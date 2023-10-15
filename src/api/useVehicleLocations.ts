@@ -186,5 +186,3 @@ export default function useVehicleLocations({
     isLoading: isLoading.some((loading) => loading),
   }
 }
-
-export {}
