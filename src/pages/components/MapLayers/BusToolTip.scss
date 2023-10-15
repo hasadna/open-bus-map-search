@@ -1,0 +1,24 @@
+
+.extend-for-json {
+  min-width: 30rem;
+  background: white;
+
+}
+
+.tool-tip-container {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: space-between;
+  h4 {
+    align-content: start;
+  }
+
+  .bus-icon {
+    align-content: end;
+
+  }
+}
+
+.button {
+  float: left;
+}
