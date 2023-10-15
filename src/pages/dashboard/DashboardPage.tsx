@@ -1,5 +1,5 @@
 import React, { Fragment, useState } from 'react'
-import { useGroupBy } from 'src/api/groupByService'
+import { GroupByRes, useGroupBy } from 'src/api/groupByService'
 import { PageContainer } from '../components/PageContainer'
 import OperatorHbarChart from './OperatorHbarChart/OperatorHbarChart'
 import './DashboardPage.scss'
@@ -15,35 +15,19 @@ import { useDate } from '../components/DateTimePicker'
 import { Skeleton } from 'antd'
 const now = moment()
 
-const DashboardPage = () => {
-  const [startDate, setStartDate] = useDate(now.clone().subtract(7, 'days'))
-  const [endDate, setEndDate] = useDate(now.clone().subtract(1, 'day'))
-  const [groupByHour, setGroupByHour] = React.useState<boolean>(false)
-
-  const [operatorId, setOperatorId] = useState('')
-  const [groupByOperatorData_, groupByOperatorLoading] = useGroupBy({
-    dateTo: endDate,
-    dateFrom: startDate,
-    groupBy: 'operator_ref',
-  })
-  //covert to Operator data to proper structure
-  const groupByOperatorData = groupByOperatorData_.map((item) => ({
+const convertToChartCompatibleStruct = (arr: GroupByRes[]) => {
+  return arr.map((item: GroupByRes) => ({
     id: item.operator_ref?.agency_id || 'Unknown',
     name: item.operator_ref?.agency_name || 'Unknown',
     total: item.total_planned_rides,
     actual: item.total_actual_rides,
   }))
-
-  const [groupByLineData_, lineDataLoading] = useGroupBy({
-    dateTo: endDate,
-    dateFrom: startDate,
-    groupBy: 'operator_ref,line_ref',
-  })
-
-  // covert LineDaata to proper structure
-  const groupByLineData = groupByLineData_
-    ?.filter((row) => row.operator_ref?.agency_id == operatorId || !Number(operatorId))
-    .map((item) => ({
+}
+const convertToWorstLineChartCompatibleStruct = (arr: GroupByRes[], operatorId: string) => {
+  if (!arr || !arr.length) return []
+  return arr
+    .filter((row: GroupByRes) => row.operator_ref?.agency_id === operatorId || !Number(operatorId))
+    .map((item: GroupByRes) => ({
       id: `${item.line_ref}|${item.operator_ref?.agency_id}` || 'Unknown',
       operator_name: item.operator_ref?.agency_name || 'Unknown',
       short_name: JSON.parse(item.route_short_name)[0],
@@ -51,14 +35,9 @@ const DashboardPage = () => {
       total: item.total_planned_rides,
       actual: item.total_actual_rides,
     }))
-
-  const [graphData_, loadingGrap] = useGroupBy({
-    dateTo: endDate,
-    dateFrom: startDate,
-    groupBy: groupByHour ? 'operator_ref,gtfs_route_hour' : 'operator_ref,gtfs_route_date',
-  })
-  // convvert grapdata to proper structure
-  const graphData = graphData_.map((item) => ({
+}
+const convertToGraphCompatibleStruct = (arr: GroupByRes[]) => {
+  return arr.map((item: GroupByRes) => ({
     id: item.operator_ref?.agency_id || 'Unknown',
     name: item.operator_ref?.agency_name || 'Unknown',
     current: item.total_actual_rides,
@@ -67,6 +46,31 @@ const DashboardPage = () => {
     gtfs_route_date: item.gtfs_route_date,
     gtfs_route_hour: item.gtfs_route_hour,
   }))
+}
+
+const DashboardPage = () => {
+  const [startDate, setStartDate] = useDate(now.clone().subtract(7, 'days'))
+  const [endDate, setEndDate] = useDate(now.clone().subtract(1, 'day'))
+  const [groupByHour, setGroupByHour] = React.useState<boolean>(false)
+
+  const [operatorId, setOperatorId] = useState('')
+  const [groupByOperatorData, groupByOperatorLoading] = useGroupBy({
+    dateTo: endDate,
+    dateFrom: startDate,
+    groupBy: 'operator_ref',
+  })
+
+  const [groupByLineData, lineDataLoading] = useGroupBy({
+    dateTo: endDate,
+    dateFrom: startDate,
+    groupBy: 'operator_ref,line_ref',
+  })
+
+  const [graphData, loadingGrap] = useGroupBy({
+    dateTo: endDate,
+    dateFrom: startDate,
+    groupBy: groupByHour ? 'operator_ref,gtfs_route_hour' : 'operator_ref,gtfs_route_date',
+  })
 
   return (
     <PageContainer>
@@ -107,7 +111,7 @@ const DashboardPage = () => {
           {groupByOperatorLoading ? (
             <Skeleton active />
           ) : (
-            <OperatorHbarChart operators={groupByOperatorData} />
+            <OperatorHbarChart operators={convertToChartCompatibleStruct(groupByOperatorData)} />
           )}
         </div>
         <div className="widget">
@@ -116,14 +120,18 @@ const DashboardPage = () => {
             <Skeleton active />
           ) : (
             <LinesHbarChart
-              lines={groupByLineData}
+              lines={convertToWorstLineChartCompatibleStruct(groupByLineData, operatorId)}
               operators_whitelist={['אלקטרה אפיקים', 'דן', 'מטרופולין', 'קווים', 'אגד']}
             />
           )}
         </div>
         <div className="widget">
           <h2 className="title">{TEXTS.dashboard_page_graph_title}</h2>
-          {loadingGrap ? <Skeleton active /> : <ArrivalByTimeChart data={graphData} />}
+          {loadingGrap ? (
+            <Skeleton active />
+          ) : (
+            <ArrivalByTimeChart data={convertToGraphCompatibleStruct(graphData)} />
+          )}
         </div>
       </div>
     </PageContainer>
