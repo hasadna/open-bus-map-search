@@ -20,8 +20,8 @@ export async function getRoutesAsync(
   const gtfsRoutes = await GTFS_API.gtfsRoutesListGet({
     routeShortName: lineNumber,
     operatorRefs: operatorId,
-    dateFrom: fromTimestamp.toDate(),
-    dateTo: toTimestamp.toDate(),
+    dateFrom: fromTimestamp.startOf('day').toDate(),
+    dateTo: moment.min(toTimestamp.endOf('day'), moment()).toDate(),
     limit: 100,
   })
   const routes = Object.values(

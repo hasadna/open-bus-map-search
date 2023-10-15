@@ -9,13 +9,16 @@ type RawGapsList = {
   actual_start_time: string
   gtfs_ride_id?: number
 }[]
+export function parseTime(time: 'null'): null
+export function parseTime(time: Exclude<string, 'null'>): Moment
 
-const parseTime = (time: string): Moment | null => {
+export function parseTime(time: string): Moment | null {
   const utcMoment: Moment = moment.utc(time).tz('Asia/Jerusalem')
-  if (!utcMoment.isValid()) {
+  if (time !== 'null' && utcMoment.isValid()) {
+    return utcMoment
+  } else {
     return null
   }
-  return utcMoment
 }
 
 const USE_API = true
