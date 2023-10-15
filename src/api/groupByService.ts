@@ -100,7 +100,6 @@ export function useGroupBy({
     setLoading(true)
     groupbyAsync({ dateTo, dateFrom, groupBy })
       .then((data) => {
-        setLoading(false)
         setData(
           data.map((dataRecord) => ({
             ...dataRecord,
@@ -111,6 +110,7 @@ export function useGroupBy({
         )
       })
       .catch((er) => setError(er))
+      .finally(() => setLoading(false))
   }, [+dateTo, +dateFrom, groupBy])
 
   return [data, loading, error] as const
