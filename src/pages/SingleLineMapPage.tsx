@@ -11,7 +11,7 @@ import { INPUT_SIZE } from 'src/resources/sizes'
 import { TEXTS } from 'src/resources/texts'
 import { SearchContext } from '../model/pageState'
 import { NotFound } from './components/NotFound'
-import { Point, colorIcon } from './RealtimeMapPage'
+import { Point } from './RealtimeMapPage'
 import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
 import './Map.scss'
 import getAgencyList, { Agency } from 'src/api/agencyList'
@@ -21,7 +21,7 @@ import { DateSelector } from './components/DateSelector'
 import { CircularProgress } from '@mui/material'
 import { FilterPositionsByStartTimeSelector } from './components/FilterPositionsByStartTimeSelector'
 import { PageContainer } from './components/PageContainer'
-import { BusToolTip } from 'src/pages/components/MapLayers/BusToolTip'
+import { busIcon } from './components/utils/BusIcon'
 
 interface Path {
   locations: VehicleLocation[]
@@ -63,8 +63,8 @@ const SingleLineMapPage = () => {
   const selectedRouteIds = selectedRoute?.routeIds
 
   const { locations, isLoading: locationsIsLoading } = useVehicleLocations({
-    from: selectedRouteIds ? new Date(timestamp).setHours(0, 0, 0, 0) : 0,
-    to: selectedRouteIds ? new Date(timestamp).setHours(23, 59, 59, 999) : 0,
+    from: selectedRouteIds ? +new Date(timestamp).setHours(0, 0, 0, 0) : 0,
+    to: selectedRouteIds ? +new Date(timestamp).setHours(23, 59, 59, 999) : 0,
     lineRef: selectedRoute?.lineRef ?? 0,
     splitMinutes: 20,
   })
@@ -165,26 +165,20 @@ const SingleLineMapPage = () => {
             url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
           />
 
-          {filteredPositions.map((pos, i) => {
-            const icon = colorIcon({
-              operator_id: pos.operator?.toString() || 'default',
-              name: agencyList.find((agency) => agency.operator_ref === pos.operator)?.agency_name,
-            })
-            return (
-              <Marker
-                position={pos.loc}
-                icon={colorIcon({
-                  operator_id: pos.operator?.toString() || 'default',
-                  name: agencyList.find((agency) => agency.operator_ref === pos.operator)
-                    ?.agency_name,
-                })}
-                key={i}>
-                <Popup>
-                  <BusToolTip position={pos} icon={icon} />
-                </Popup>
-              </Marker>
-            )
-          })}
+          {filteredPositions.map((pos, i) => (
+            <Marker
+              position={pos.loc}
+              icon={busIcon({
+                operator_id: pos.operator?.toString() || 'default',
+                name: agencyList.find((agency) => agency.operator_ref === pos.operator)
+                  ?.agency_name,
+              })}
+              key={i}>
+              <Popup>
+                <pre>{JSON.stringify(pos, null, 2)}</pre>
+              </Popup>
+            </Marker>
+          ))}
 
           {paths.map((path) => (
             <Polyline
