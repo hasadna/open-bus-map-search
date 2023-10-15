@@ -21,7 +21,7 @@ type Dateable = Date | number | string | Moment
 
 function formatTime(time: Dateable) {
   if (moment.isMoment(time)) {
-    time = time.toDate()
+    return time.toISOString()
   } else {
     const date = new Date(time).toISOString()
     return date
@@ -123,10 +123,9 @@ function getLocations({
   return observable.observe(onUpdate)
 }
 
-function getMinutesInRange(from: Dateable, to: Dateable, minutesGap = 1) {
+function getMinutesInRange(from: Dateable, to: Dateable, gap = 1) {
   const start = moment(from).startOf('minute')
   const end = moment(to).startOf('minute')
-  const gap = 60000 * minutesGap
 
   // array of minutes to load
   const minutes = Array.from({ length: end.diff(start, 'minutes') / gap }, (_, i) => ({
