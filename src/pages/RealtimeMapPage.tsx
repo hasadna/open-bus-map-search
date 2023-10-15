@@ -19,6 +19,7 @@ import { getColorByHashString } from './dashboard/OperatorHbarChart/utils'
 import createClusterCustomIcon from './components/utils/customCluster/customCluster'
 import { TimeSelector } from './components/TimeSelector'
 import { busIcon } from './components/utils/BusIcon'
+import { BusToolTip } from 'src/pages/components/MapLayers/BusToolTip'
 
 export interface Point {
   loc: [number, number]
@@ -152,7 +153,7 @@ export default function RealtimeMapPage() {
         </Grid>
         {/* Buttons */}
         {/*TODO (another PR another issue)
-          3) use text `TEXTS`. 
+          3) use text `TEXTS`.
         */}
         {/* loaded info */}
         <Grid xs={11}>
@@ -205,19 +206,19 @@ export function Markers({ positions }: { positions: Point[] }) {
   return (
     <>
       <MarkerClusterGroup chunkedLoading iconCreateFunction={createClusterCustomIcon}>
-        {positions.map((pos) => (
-          <Marker
-            position={pos.loc}
-            icon={busIcon({
-              operator_id: pos.operator?.toString() || 'default',
-              name: agencyList.find((agency) => agency.operator_ref === pos.operator)?.agency_name,
-            })}
-            key={pos.point?.id}>
-            <Popup>
-              <pre>{JSON.stringify(pos, null, 2)}</pre>
-            </Popup>
-          </Marker>
-        ))}
+        {positions.map((pos) => {
+          const icon = busIcon({
+            operator_id: pos.operator?.toString() || 'default',
+            name: agencyList.find((agency) => agency.operator_ref === pos.operator)?.agency_name,
+          })
+          return (
+            <Marker position={pos.loc} icon={icon} key={pos.point?.id}>
+              <Popup>
+                <BusToolTip position={pos} icon={icon} />
+              </Popup>
+            </Marker>
+          )
+        })}
       </MarkerClusterGroup>
     </>
   )
