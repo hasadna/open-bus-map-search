@@ -101,6 +101,7 @@ export const TEXTS = {
   show_card: 'הצג כרטיס',
   show_document: 'הצג מסמך',
   bearing: 'מעלות',
+  kmh: 'קמ״ש',
 }
 
 export const formatted = (text: string, value: string) => text.replace(PLACEHOLDER, value)
