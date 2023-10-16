@@ -59,7 +59,6 @@ function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatistic
   const [isLoadingData, setIsLoadingData] = useState(true)
   const hourlyData = useGapsList(fromDate, toDate, operatorRef, lineRef, sortingMode)
   useEffect(() => {
-    console.log('isLoading', isLoadingData)
     if (hourlyData.length) setIsLoadingData(false)
     else setIsLoadingData(true)
   }, [hourlyData])
