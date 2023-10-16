@@ -43,6 +43,13 @@ export const useGapsList = (
 ): HourlyData[] => {
   const [hourlyData, setHourlyData] = useState<HourlyData[]>([])
 
+  // Cleanup function to reset the state when the component is unmounted
+  useEffect(() => {
+    return () => {
+      setHourlyData([])
+    }
+  }, [lineRef, operatorRef, fromDate, toDate, sortingMode])
+
   useEffect(() => {
     const fetchData = async () => {
       try {

@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import './GapsPatternsPage.scss'
 import { Moment } from 'moment'
-import { DatePicker, Spin } from 'antd'
+import { DatePicker, Skeleton, Spin } from 'antd'
 import moment from 'moment/moment'
 import { useDate } from './components/DateTimePicker'
 import { PageContainer } from './components/PageContainer'
@@ -56,15 +56,23 @@ const CustomTooltip = ({ active, payload }: TooltipProps<number, string>) => {
 
 function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatisticsProps) {
   const [sortingMode, setSortingMode] = useState<'hour' | 'severity'>('hour')
-
+  const [isLoadingData, setIsLoadingData] = useState(true)
   const hourlyData = useGapsList(fromDate, toDate, operatorRef, lineRef, sortingMode)
-
+  useEffect(() => {
+    console.log('isLoading', isLoadingData)
+    if (hourlyData.length) setIsLoadingData(false)
+    else setIsLoadingData(true)
+  }, [hourlyData])
   const maxHourlyRides = Math.max(
     ...hourlyData.map((entry) => entry.planned_rides),
     ...hourlyData.map((entry) => entry.actual_rides),
   )
 
-  return (
+  return isLoadingData && lineRef ? (
+    <div className="loading-container">
+      <Skeleton active />
+    </div>
+  ) : (
     <div>
       <div>
         <RadioGroup
