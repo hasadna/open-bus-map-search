@@ -1,7 +1,9 @@
 import { DivIcon } from 'leaflet'
 
+export const busIconPath = (operator_id: string) => `/bus-logos/${operator_id}.svg`
+
 export const busIcon = ({ operator_id, name }: { operator_id: string; name?: string }) => {
-  const path = `/bus-logos/${operator_id}.svg`
+  const path = busIconPath(operator_id)
   return new DivIcon({
     className: 'my-div-icon',
     html: `
