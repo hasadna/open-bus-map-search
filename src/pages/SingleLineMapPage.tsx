@@ -22,7 +22,7 @@ import { DateSelector } from './components/DateSelector'
 import { CircularProgress } from '@mui/material'
 import { FilterPositionsByStartTimeSelector } from './components/FilterPositionsByStartTimeSelector'
 import { PageContainer } from './components/PageContainer'
-import { busIcon } from './components/utils/BusIcon'
+import { busIcon, busIconPath } from './components/utils/BusIcon'
 import { BusToolTip } from 'src/pages/components/MapLayers/BusToolTip'
 
 interface Path {
@@ -174,8 +174,8 @@ const SingleLineMapPage = () => {
             })
             return (
               <Marker position={pos.loc} icon={icon} key={i}>
-                <Popup>
-                  <BusToolTip position={pos} icon={icon} />
+                <Popup minWidth={300} maxWidth={700}>
+                  <BusToolTip position={pos} icon={busIconPath(operatorId!)} />
                 </Popup>
               </Marker>
             )

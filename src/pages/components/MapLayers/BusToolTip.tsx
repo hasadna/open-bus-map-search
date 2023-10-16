@@ -1,18 +1,16 @@
 import React, { useEffect, useState } from 'react'
 import { Point } from 'src/pages/RealtimeMapPage'
 import { Button, Grid } from '@mui/material'
-import { DivIcon } from 'leaflet'
 import moment from 'moment-timezone'
 import './BusToolTip.scss'
 
 import { getSiriRideWithRelated } from 'src/api/siriService'
 import { SiriRideWithRelatedPydanticModel } from 'open-bus-stride-client/openapi/models/SiriRideWithRelatedPydanticModel'
-import { Row } from 'src/pages/components/Row'
-import { Label } from 'src/pages/components/Label'
 import { TEXTS } from 'src/resources/texts'
 import { Spin } from 'antd'
+import cn from 'classnames'
 
-export function BusToolTip({ position, icon }: { position: Point; icon: DivIcon }) {
+export function BusToolTip({ position, icon }: { position: Point; icon: string }) {
   const [siriRide, setSiriRide] = useState<SiriRideWithRelatedPydanticModel | undefined>()
   const [isLoading, setIsLoading] = useState(false)
   const [showJson, setShowJson] = useState(false)
@@ -28,80 +26,71 @@ export function BusToolTip({ position, icon }: { position: Point; icon: DivIcon 
       .finally(() => setIsLoading(false))
   }, [position])
   return (
-    <div className={showJson ? 'extend-for-json' : ''}>
+    <div className={cn({ 'extend-for-json': showJson }, 'bus-tooltip')}>
       {isLoading ? (
-        <Row>
-          <Label text={TEXTS.loading_routes} />
+        <>
+          {TEXTS.loading_routes}
           <Spin />
-        </Row>
-      ) : showJson ? (
+        </>
+      ) : (
+        <>
+          <header className="header">
+            <h1 className="title">
+              {TEXTS.line} :<span>{siriRide && siriRide!.gtfsRouteRouteShortName}</span>
+            </h1>
+            <img src={icon} alt="bus icon" className="bus-icon" />
+          </header>
+          <ul>
+            <li>
+              {TEXTS.from} :
+              <span>{siriRide && siriRide!.gtfsRouteRouteLongName?.split('<->')[0]}</span>
+            </li>
+            <li>
+              {TEXTS.destination} :
+              <span>{siriRide && siriRide!.gtfsRouteRouteLongName?.split('<->')[1]}</span>
+            </li>
+            <li>
+              {TEXTS.velocity} :<span>{`${position.point?.velocity}  ${TEXTS.kmh}`}</span>
+            </li>
+
+            <li>
+              {TEXTS.sample_time} :
+              <span>
+                {moment(position.point!.recorded_at_time as string, moment.ISO_8601)
+                  .tz('Israel')
+                  .format('DD/MM/yyyy בשעה HH:mm')}
+              </span>
+            </li>
+            <li>
+              {TEXTS.vehicle_ref} :<span>{position.point?.siri_ride__vehicle_ref}</span>
+            </li>
+          </ul>
+          {/*maybe option to add info like this in extend card for now I  put this condition */}
+          {window.screen.height > 1100 && (
+            <>
+              <h4>
+                {TEXTS.drive_direction} :
+                <span>
+                  ( {position.point?.bearing} {TEXTS.bearing})
+                </span>
+              </h4>
+              <h4>
+                {TEXTS.coords} :<span>{position.loc.join(' , ')}</span>
+              </h4>
+            </>
+          )}
+        </>
+      )}
+      <Button onClick={() => setShowJson((showJson) => !showJson)}>
+        {showJson ? TEXTS.hide_document : TEXTS.show_document}
+      </Button>
+      {showJson && (
         <pre>
           {JSON.stringify(position, null, 2)}
           <br />
           {siriRide && JSON.stringify(siriRide, null, 2)}
         </pre>
-      ) : (
-        <Grid container className="tool-tip-container">
-          <Grid item xs={4}>
-            <h4 className="bus-icon">
-              <div dangerouslySetInnerHTML={{ __html: icon.options.html as string }} />
-            </h4>
-          </Grid>
-          <Grid item xs={8} mt={2}>
-            <h4>
-              {TEXTS.line} :<span>{siriRide && siriRide!.gtfsRouteRouteShortName}</span>
-            </h4>
-          </Grid>
-          <Grid item xs={12}>
-            <h4>
-              {TEXTS.from} :
-              <span>{siriRide && siriRide!.gtfsRouteRouteLongName?.split('<->')[0]}</span>
-            </h4>
-            <h4>
-              {TEXTS.destination} :
-              <span>{siriRide && siriRide!.gtfsRouteRouteLongName?.split('<->')[1]}</span>
-            </h4>
-            <h4>
-              {TEXTS.velocity} :<span>{`${position.point?.velocity}  ${TEXTS.kmh}`}</span>
-            </h4>
-
-            <h4>
-              {TEXTS.sample_time} :
-              <span>
-                {moment(position.point!.recorded_at_time as string, moment.ISO_8601)
-                  .tz('Israel')
-                  .format('HH:mm')}
-              </span>
-            </h4>
-            <h4>
-              {TEXTS.vehicle_ref} :<span>{position.point?.siri_ride__vehicle_ref}</span>
-            </h4>
-            {/*maybe option to add info like this in extend card for now I  put this condition */}
-            {window.screen.height > 1100 && (
-              <>
-                <h4>
-                  {TEXTS.drive_direction} :
-                  <span>
-                    ( {position.point?.bearing} {TEXTS.bearing})
-                  </span>
-                </h4>
-                <h4>
-                  {TEXTS.coords} :<span>{position.loc.join(' , ')}</span>
-                </h4>
-              </>
-            )}
-          </Grid>{' '}
-        </Grid>
       )}
-      <Grid item xs={3} mt={1} mb={1} className="button">
-        <Button
-          variant="contained"
-          onClick={() => {
-            setShowJson(!showJson)
-          }}>
-          {showJson ? TEXTS.show_card : TEXTS.show_document}
-        </Button>
-      </Grid>
     </div>
   )
 }

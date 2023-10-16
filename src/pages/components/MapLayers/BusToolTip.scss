@@ -1,24 +1,33 @@
+.leaflet-popup-content:has(.bus-tooltip) {
+  width: 350px;
+  direction: rtl;
+  text-align: right;
 
-.extend-for-json {
-  min-width: 30rem;
-  background: white;
+  .bus-tooltip {
+    > ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
 
-}
+      > li {
+        font-weight: bold;
 
-.tool-tip-container {
-  display: flex;
-  flex-direction: row-reverse;
-  justify-content: space-between;
-  h4 {
-    align-content: start;
+        > span {
+          font-weight: normal;
+        }
+      }
+    }
+
+    > .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+
+      img {
+        width: 50px;
+        height: 50px;
+      }
+    }
   }
-
-  .bus-icon {
-    align-content: end;
-
-  }
-}
-
-.button {
-  float: left;
 }

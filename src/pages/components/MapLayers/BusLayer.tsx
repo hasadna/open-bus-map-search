@@ -49,7 +49,7 @@ export function BusLayer({ positions }: { positions: VehicleLocationMapPoint[] }
               name: agencyList.find((agency) => agency.operator_ref === pos.operator)?.agency_name,
             })}
             key={i}>
-            <Popup>
+            <Popup minWidth={300} maxWidth={700}>
               <pre>{JSON.stringify(pos, null, 2)}</pre>
             </Popup>
           </Marker>

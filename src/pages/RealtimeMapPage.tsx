@@ -18,7 +18,7 @@ import { Label } from './components/Label'
 import { getColorByHashString } from './dashboard/OperatorHbarChart/utils'
 import createClusterCustomIcon from './components/utils/customCluster/customCluster'
 import { TimeSelector } from './components/TimeSelector'
-import { busIcon } from './components/utils/BusIcon'
+import { busIcon, busIconPath } from './components/utils/BusIcon'
 import { BusToolTip } from 'src/pages/components/MapLayers/BusToolTip'
 
 export interface Point {
@@ -213,8 +213,8 @@ export function Markers({ positions }: { positions: Point[] }) {
           })
           return (
             <Marker position={pos.loc} icon={icon} key={pos.point?.id}>
-              <Popup>
-                <BusToolTip position={pos} icon={icon} />
+              <Popup minWidth={300} maxWidth={700}>
+                <BusToolTip position={pos} icon={busIconPath(String(pos.operator))} />
               </Popup>
             </Marker>
           )

@@ -33,7 +33,7 @@
 
 @media screen and (max-width: $mobile-max-width) {
 
-    .main .header {
+    .main > .header {
         max-width: 0;
         padding: 0;
         transition: all 0.2s ease-in-out;
@@ -56,7 +56,7 @@
         }
     }
 
-    .main .header.open{
+    .main > .header.open{
         display: block;
         position: absolute;
         z-index: 500;
