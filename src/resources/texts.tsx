@@ -98,8 +98,8 @@ export const TEXTS = {
   drive_direction: 'כיוון נסיעה:',
   coords: 'נ.צ:',
   vehicle_ref: 'לוחית רישוי',
-  hide_document: 'הסתר מידע לחנונים',
-  show_document: 'הצג מידע לחנונים',
+  hide_document: 'הסתר מידע לגיקים',
+  show_document: 'הצג מידע לגיקים',
   bearing: 'מעלות',
   kmh: 'קמ״ש',
 }
