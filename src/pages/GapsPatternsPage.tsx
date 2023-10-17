@@ -56,18 +56,15 @@ const CustomTooltip = ({ active, payload }: TooltipProps<number, string>) => {
 
 function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatisticsProps) {
   const [sortingMode, setSortingMode] = useState<'hour' | 'severity'>('hour')
-  const [isLoadingData, setIsLoadingData] = useState(true)
   const hourlyData = useGapsList(fromDate, toDate, operatorRef, lineRef, sortingMode)
-  useEffect(() => {
-    if (hourlyData.length) setIsLoadingData(false)
-    else setIsLoadingData(true)
-  }, [hourlyData])
+  const isLoading = !hourlyData.length
+
   const maxHourlyRides = Math.max(
     ...hourlyData.map((entry) => entry.planned_rides),
     ...hourlyData.map((entry) => entry.actual_rides),
   )
 
-  return isLoadingData && lineRef ? (
+  return isLoading && lineRef ? (
     <div className="loading-container">
       <Skeleton active />
     </div>
