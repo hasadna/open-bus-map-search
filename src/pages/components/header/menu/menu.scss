@@ -27,18 +27,18 @@
     }
 }
 
-.header-menu {
+.sideber-menu {
     display: none;
 }
 
 @media screen and (max-width: $mobile-max-width) {
 
-    .main > .header {
+    .main > .sidebar {
         max-width: 0;
         padding: 0;
         transition: all 0.2s ease-in-out;
 
-        .header-menu {
+        .sideber-menu {
             display: block;
             position: absolute;
             top: 0;
@@ -56,7 +56,7 @@
         }
     }
 
-    .main > .header.open{
+    .main > .sidebar.open{
         display: block;
         position: absolute;
         z-index: 500;
