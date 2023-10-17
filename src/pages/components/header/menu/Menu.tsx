@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next'
 export type MenuPage = {
   label: string
   key: string
+  icon: string
 }
 
 function Menu({ pages }: { pages: MenuPage[] }) {
@@ -32,7 +33,15 @@ function Menu({ pages }: { pages: MenuPage[] }) {
           onClick={() =>
             page.key[0] === '/' ? navigate(page.key) : window.open(page.key, '_blank')
           }>
-          {t(page.label)}
+          {React.createElement(page.icon)}
+          {
+            <span
+              style={{
+                width: '15px',
+              }}
+            />
+          }
+          {page.label}
         </li>
       ))}
       {null && <button onClick={handleChangeLanguage}>Change Language</button>}

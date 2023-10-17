@@ -10,7 +10,9 @@
         max-width: 0;
         padding: 0;
         transition: all 0.2s ease-in-out;
-
+        .sidebar-logo {
+            display: none;
+        }
         .sidebar-menu-toggle {
             display: block;
             position: absolute;
@@ -23,6 +25,9 @@
     }
 
     .main > .sidebar.open{
+        .sidebar-logo {
+            display: block;
+        }
         display: block;
         position: absolute;
         z-index: 500;

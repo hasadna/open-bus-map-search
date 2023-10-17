@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import Menu, { MenuPage } from '../menu/Menu'
-import cn from 'classnames'
-import './sidebar.scss'
 import { MenuOutlined } from '@ant-design/icons'
+import './sidebar.scss'
+import cn from 'classnames'
 
 const SidebarToggle = ({ open, setOpen }: { open: boolean; setOpen: (open: boolean) => void }) => (
   <div className="sidebar-menu-toggle" onClick={() => setOpen(!open)}>
