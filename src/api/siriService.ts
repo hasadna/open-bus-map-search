@@ -6,6 +6,7 @@ import { geoLocationBoundary, nearestLocation } from 'src/api/geoService'
 import { Coordinates } from 'src/model/location'
 import { log } from 'src/log'
 import { BusRoute } from 'src/model/busRoute'
+import { SiriRideWithRelatedPydanticModel } from 'open-bus-stride-client/openapi/models/SiriRideWithRelatedPydanticModel'
 
 const SIRI_API = new SiriApi(API_CONFIG)
 const LOCATION_DELTA_METERS = 500
@@ -24,6 +25,21 @@ async function getRidesAsync(route: BusRoute, stop: BusStop, timestamp: moment.M
     gtfsRouteRouteShortName: route.lineNumber,
     gtfsRouteRouteDirection: route.direction,
   })
+}
+
+export async function getSiriRideWithRelated(
+  siriRouteId: string,
+  vehicleRefs: string,
+  siriRouteLineRefs: string,
+) {
+  const gtfs_route_promise: SiriRideWithRelatedPydanticModel[] = await SIRI_API.siriRidesListGet({
+    limit: 1,
+    siriRouteIds: siriRouteId.toString(),
+    siriRouteLineRefs,
+    vehicleRefs,
+  })
+
+  return gtfs_route_promise[0]
 }
 
 export async function getSiriStopHitTimesAsync(route: BusRoute, stop: BusStop, timestamp: Moment) {

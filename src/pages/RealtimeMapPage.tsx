@@ -4,7 +4,6 @@ import MarkerClusterGroup from 'react-leaflet-cluster'
 import { TEXTS } from 'src/resources/texts'
 
 import { Spin } from 'antd'
-import { DivIcon } from 'leaflet'
 import moment from 'moment'
 import getAgencyList, { Agency } from 'src/api/agencyList'
 import useVehicleLocations from 'src/api/useVehicleLocations'
@@ -19,6 +18,8 @@ import { Label } from './components/Label'
 import { getColorByHashString } from './dashboard/OperatorHbarChart/utils'
 import createClusterCustomIcon from './components/utils/customCluster/customCluster'
 import { TimeSelector } from './components/TimeSelector'
+import { busIcon, busIconPath } from './components/utils/BusIcon'
+import { BusToolTip } from 'src/pages/components/MapLayers/BusToolTip'
 
 export interface Point {
   loc: [number, number]
@@ -36,21 +37,6 @@ interface Path {
   vehicleRef: number
 }
 
-export const colorIcon = ({ operator_id, name }: { operator_id: string; name?: string }) => {
-  const path = `/bus-logos/${operator_id}.svg`
-  return new DivIcon({
-    className: 'my-div-icon',
-    html: `
-    <div class="bus-icon-container">
-      <div class="bus-icon-circle">
-        <img src="${path}" alt="${name}" />
-      </div>
-      <div class="operator-name">${name}</div>
-    </div>
-    `,
-  })
-}
-
 export function numberToColorHsl(i: number, max: number) {
   const ratio = i / max
   // 0 - black. 1 - red
@@ -61,7 +47,7 @@ export function numberToColorHsl(i: number, max: number) {
 }
 
 const fiveMinutesAgo = moment().subtract(5, 'minutes')
-const now = moment()
+const fourMinutesAgo = fiveMinutesAgo.add(1, 'minutes')
 
 export default function RealtimeMapPage() {
   const position: Point = {
@@ -70,12 +56,12 @@ export default function RealtimeMapPage() {
   }
 
   //TODO (another PR and another issue) load from url like in another pages.
-  const [from, setFrom] = useState(fiveMinutesAgo) // 5 minutes ago
-  const [to, setTo] = useState(now)
+  const [from, setFrom] = useState(fiveMinutesAgo)
+  const [to, setTo] = useState(fourMinutesAgo)
 
   const { locations, isLoading } = useVehicleLocations({
-    from: from.toDate(),
-    to: to.toDate(),
+    from,
+    to,
   })
 
   const loaded = locations.length
@@ -132,21 +118,21 @@ export default function RealtimeMapPage() {
         </Grid>
         <Grid xs={5}>
           <DateSelector
-            timeValid={to}
-            setTimeValid={(ts) => {
+            time={to}
+            onChange={(ts) => {
               const val = ts ? ts : to
-              setFrom(moment(val).subtract(5, 'minutes')) // keep the same time difference
+              setFrom(moment(val).subtract(moment(to).diff(moment(from)))) // keep the same time difference
               setTo(moment(val))
             }}
           />
         </Grid>
         <Grid xs={5}>
           <TimeSelector
-            timeValid={to}
-            setTimeValid={(ts) => {
-              const val = ts ? ts : to
-              setFrom(moment(val).subtract(5, 'minutes')) // keep the same time difference
-              setTo(moment(val))
+            time={to}
+            onChange={(ts) => {
+              const val = ts ? ts : from
+              setFrom(moment(val))
+              setTo(moment(val).add(moment(to).diff(moment(from)))) // keep the same time difference
             }}
           />
         </Grid>
@@ -158,8 +144,7 @@ export default function RealtimeMapPage() {
           <MinuteSelector
             num={to.diff(from) / 1000 / 60}
             setNum={(num) => {
-              setFrom(moment(to).subtract(Math.abs(+num), 'minutes'))
-              setTo(moment(to))
+              setTo(moment(from).add(Math.abs(+num) || 1, 'minutes'))
             }}
           />
         </Grid>
@@ -168,11 +153,8 @@ export default function RealtimeMapPage() {
         </Grid>
         {/* Buttons */}
         {/*TODO (another PR another issue)
-          3) use text `TEXTS`. 
+          3) use text `TEXTS`.
         */}
-        <Grid xs={6}>
-          {/* fill the buttons row with empty space. complete to 12 (read the 'xs' documentation) */}
-        </Grid>
         {/* loaded info */}
         <Grid xs={11}>
           <p>
@@ -224,19 +206,19 @@ export function Markers({ positions }: { positions: Point[] }) {
   return (
     <>
       <MarkerClusterGroup chunkedLoading iconCreateFunction={createClusterCustomIcon}>
-        {positions.map((pos, i) => (
-          <Marker
-            position={pos.loc}
-            icon={colorIcon({
-              operator_id: pos.operator?.toString() || 'default',
-              name: agencyList.find((agency) => agency.operator_ref === pos.operator)?.agency_name,
-            })}
-            key={i}>
-            <Popup>
-              <pre>{JSON.stringify(pos, null, 2)}</pre>
-            </Popup>
-          </Marker>
-        ))}
+        {positions.map((pos) => {
+          const icon = busIcon({
+            operator_id: pos.operator?.toString() || 'default',
+            name: agencyList.find((agency) => agency.operator_ref === pos.operator)?.agency_name,
+          })
+          return (
+            <Marker position={pos.loc} icon={icon} key={pos.point?.id}>
+              <Popup minWidth={300} maxWidth={700}>
+                <BusToolTip position={pos} icon={busIconPath(String(pos.operator))} />
+              </Popup>
+            </Marker>
+          )
+        })}
       </MarkerClusterGroup>
     </>
   )

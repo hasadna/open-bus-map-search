@@ -90,6 +90,18 @@ export const TEXTS = {
   missing_rides: 'מהנסיעות חסרות',
   order_by_hour: 'לפי שעה',
   order_by_severity: 'לפי חומרה',
+  line: 'קו',
+  from: 'מוצא',
+  destination: 'יעד',
+  sample_time: 'זמן דגימה',
+  velocity: 'מהירות',
+  drive_direction: 'כיוון נסיעה:',
+  coords: 'נ.צ:',
+  vehicle_ref: 'לוחית רישוי',
+  hide_document: 'הסתר מידע לגיקים',
+  show_document: 'הצג מידע לגיקים',
+  bearing: 'מעלות',
+  kmh: 'קמ״ש',
 }
 
 export const formatted = (text: string, value: string) => text.replace(PLACEHOLDER, value)

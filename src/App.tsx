@@ -13,7 +13,7 @@ import { PageSearchState, SearchContext } from './model/pageState'
 import moment from 'moment'
 import DashboardPage from './pages/dashboard/DashboardPage'
 import { useSessionStorage } from 'usehooks-ts'
-import Header from './pages/components/header/Header'
+import SideBar from './pages/components/header/SideBar'
 import RealtimeMapPage from './pages/RealtimeMapPage'
 import SingleLineMapPage from './pages/SingleLineMapPage'
 import { useLocation } from 'react-router-dom'
@@ -158,7 +158,7 @@ const App = () => {
           <LocalizationProvider dateAdapter={AdapterMoment} adapterLocale="he">
             <ConfigProvider direction="rtl" locale={heIL}>
               <StyledLayout className="main">
-                <Header pages={PAGES} />
+                <SideBar pages={PAGES} />
                 <Layout>
                   <StyledContent>
                     <StyledBody>
