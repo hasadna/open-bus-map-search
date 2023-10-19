@@ -30,4 +30,4 @@ jobs:
         destination_dir: ${{ github.run_id }}/open-bus/complaint
     - name: output link to report to the trace
       if: always() && steps.s3-trace.outcome == 'success'
-      run: echo "link to trace - https://trace.playwright.dev/?trace=https://s3.amazonaws.com/noam-gaash.co.il/${{ github.run_id }}/open-bus/complaint/index.html" >> $GITHUB_STEP_SUMMARY
+      run: echo "link to trace - https://trace.playwright.dev/?trace=https://s3.amazonaws.com/noam-gaash.co.il/${{ github.run_id }}/open-bus/complaint/trace.zip" >> $GITHUB_STEP_SUMMARY
