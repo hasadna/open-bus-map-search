@@ -45,8 +45,11 @@
     "start": "vite",
     "build": "tsc && vite build",
     "serve": "vite preview",
-    "test": "yarn test:unit && playwright test",
+   "test": "yarn test:unit:ci && yarn test:e2e",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e": "playwright test",
     "test:unit": "vitest",
+    "test:unit:ci": "vitest run",
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write './**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc"
