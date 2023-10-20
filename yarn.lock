@@ -3630,6 +3630,11 @@ pkg-types@^1.0.3:
     mlly "^1.2.0"
     pathe "^1.1.0"
 
+playwright-advanced-har@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/playwright-advanced-har/-/playwright-advanced-har-0.2.0.tgz#3409cc18edcc89b180c8edde83f4949f74f12cac"
+  integrity sha512-oQmHReQvnh46PxYX1MyM6FXwisJQGAU/Zwd6cC178LZn3iO1Cf/cIiraPMVex9fMFWFI5xIteFekiK8BODGgAQ==
+
 playwright-core@1.38.0:
   version "1.38.0"
   resolved "https://registry.npmjs.org/playwright-core/-/playwright-core-1.38.0.tgz"
