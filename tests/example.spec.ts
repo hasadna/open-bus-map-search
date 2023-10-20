@@ -1,4 +1,5 @@
-import { Page, test } from '@playwright/test'
+import { Page } from '@playwright/test'
+import { test } from './utils'
 
 test('search bus station', async ({ page }) => {
   test.slow()
