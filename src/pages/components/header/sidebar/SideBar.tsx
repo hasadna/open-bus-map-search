@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import Menu, { MenuPage } from '../menu/Menu'
 import cn from 'classnames'
 import './sidebar.scss'
