@@ -7,10 +7,10 @@ export default function SideBar({ pages }: { pages: MenuPage[] }) {
 
   return (
     <aside className={cn('sidebar', { open })}>
-      <div className="sideber-menu" onClick={() => setOpen(!open)}>
-        <div className="sideber-menu-line" />
-        <div className="sideber-menu-line" />
-        <div className="sideber-menu-line" />
+      <div className="sidebar-menu-toggle" onClick={() => setOpen(!open)}>
+        <div className="sidebar-menu-toggle-line" />
+        <div className="sidebar-menu-toggle-line" />
+        <div className="sidebar-menu-toggle-line" />
       </div>
       <h1>דאטאבוס</h1>
       <Menu pages={pages} />

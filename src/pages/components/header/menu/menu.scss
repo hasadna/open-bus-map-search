@@ -27,7 +27,7 @@
     }
 }
 
-.sideber-menu {
+.sidebar-menu-toggle {
     display: none;
 }
 
@@ -38,7 +38,7 @@
         padding: 0;
         transition: all 0.2s ease-in-out;
 
-        .sideber-menu {
+        .sidebar-menu-toggle {
             display: block;
             position: absolute;
             top: 0;
