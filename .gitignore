@@ -27,3 +27,6 @@ yarn-error.log*
 /playwright-report/
 /playwright/.cache/
 .vscode/settings.json
+
+**/traces
+**/node_modules
