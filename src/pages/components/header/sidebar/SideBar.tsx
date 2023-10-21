@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
-import Menu, { MenuPage } from './menu/Menu'
+import Menu, { MenuPage } from '../menu/Menu'
 import cn from 'classnames'
+import './sidebar.scss'
 
 export default function SideBar({ pages }: { pages: MenuPage[] }) {
   const [open, setOpen] = useState(false)
