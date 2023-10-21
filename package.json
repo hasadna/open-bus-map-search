@@ -87,7 +87,7 @@
     "eslint-plugin-react": "^7.33.2",
     "jsdom": "^22.1.0",
     "openapi-typescript-codegen": "^0.23.0",
-    "playwright-advanced-har": "^0.2.1",
+    "playwright-advanced-har": "^1.0.2",
     "prettier": "^2.7.1",
     "vitest": "^0.34.6"
   },
