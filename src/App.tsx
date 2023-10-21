@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect } from 'react'
 import 'antd/dist/antd.min.css'
 import './App.scss'
-import './pages/components/header/sidebar/sidebar.scss'
 import TimelinePage from 'src/pages/TimelinePage'
 import { ConfigProvider, Layout } from 'antd'
 import 'leaflet/dist/leaflet.css'
