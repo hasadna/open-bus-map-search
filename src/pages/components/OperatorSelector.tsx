@@ -15,7 +15,7 @@ const OperatorSelector = ({
   onlyMajorOperators = false,
 }: OperatorSelectorProps) => {
   const [operators, setOperators] = React.useState<Operator[]>([])
-  console.log(operatorId)
+  
   React.useEffect(() => {
     const majorOperatorsIds = ['3', '5', '15', '18', '25']
     RELEVANT_OPERATORS.then((resultObj) =>
