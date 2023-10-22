@@ -142,8 +142,8 @@ export default function RealtimeMapPage() {
             time={to}
             onChange={(ts) => {
               const val = ts ? ts : from
-              setFrom(moment(val))
-              setTo(moment(val).add(moment(to).diff(moment(from)))) // keep the same time difference
+              setFrom(moment(val).add(moment(to).diff(moment(from))))
+              setTo(moment(val)) // keep the same time difference
             }}
           />
         </Grid>
