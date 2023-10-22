@@ -48,8 +48,6 @@ export function numberToColorHsl(i: number, max: number) {
 
 const now = moment()
 const oneMinuteAgo = moment().subtract(1, 'minutes')
-// const fiveMinutesAgo = moment().subtract(5, 'minutes')
-// const fourMinutesAgo = fiveMinutesAgo.add(1, 'minutes')
 
 export default function RealtimeMapPage() {
   const position: Point = {
