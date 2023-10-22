@@ -5,6 +5,7 @@
   "dependencies": {
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
+    "@mui/icons-material": "^5.14.14",
     "@mui/material": "^5.14.7",
     "@mui/x-date-pickers": "^6.12.1",
     "@types/leaflet.markercluster": "^1.5.2",
@@ -45,7 +46,7 @@
     "start": "vite",
     "build": "tsc && vite build",
     "serve": "vite preview",
-   "test": "yarn test:unit:ci && yarn test:e2e",
+    "test": "yarn test:unit:ci && yarn test:e2e",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e": "playwright test",
     "test:unit": "vitest",

@@ -2,6 +2,7 @@ import React, { useCallback, useLayoutEffect, useState } from 'react'
 import { TEXTS } from 'src/resources/texts'
 import debounce from 'lodash.debounce'
 import { TextField } from '@mui/material'
+import ClearButton from './ClearButton'
 
 type LineSelectorProps = {
   lineNumber: string | undefined
@@ -16,12 +17,23 @@ const LineSelector = ({ lineNumber, setLineNumber }: LineSelectorProps) => {
     setValue(lineNumber)
   }, [])
 
+  const handleClearInput = () => {
+    setValue('')
+    setLineNumber('')
+  }
+
   return (
     <TextField
-      sx={{ width: '100%' }}
+      className="textInput"
+      sx={{
+        width: '100%',
+        '&:hover .clearIndicatorDirty, & .Mui-focused .clearIndicatorDirty': {
+          visibility: value ? 'visible' : 'hidden',
+        },
+      }}
       label={TEXTS.choose_line}
       type="number"
-      value={value}
+      value={value && +value < 0 ? 0 : value}
       onChange={(e) => {
         setValue(e.target.value)
         debouncedSetLineNumber(e.target.value)
@@ -31,6 +43,7 @@ const LineSelector = ({ lineNumber, setLineNumber }: LineSelectorProps) => {
       }}
       InputProps={{
         placeholder: TEXTS.line_placeholder,
+        endAdornment: <ClearButton onClearInput={handleClearInput} />,
       }}
     />
   )
