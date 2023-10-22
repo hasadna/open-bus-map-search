@@ -68,15 +68,6 @@ export default function RealtimeMapPage() {
 
   const loaded = locations.length
 
-  useEffect(() => {
-    console.log('🚀 ~ file: RealtimeMapPage.tsx:70 ~ RealtimeMapPage ~ from:', from)
-    console.log('🚀 ~ file: RealtimeMapPage.tsx:71 ~ RealtimeMapPage ~ to:', to)
-    console.log('file: RealtimeMapPage.tsx:71 ~ RealtimeMapPage ~ now:', now)
-    console.log('file: RealtimeMapPage.tsx:71 ~ RealtimeMapPage ~ oneMinutesAgo:', oneMinuteAgo)
-    // console.log('file: RealtimeMapPage.tsx:71 ~ RealtimeMapPage ~ fiveMinutesAgo:', fiveMinutesAgo)
-    // console.log('file: RealtimeMapPage.tsx:71 ~ RealtimeMapPage ~ fourMinutesAgo:', fourMinutesAgo)
-  }, [from, to])
-
   const positions = useMemo(() => {
     const pos = locations.map<Point>((location) => ({
       loc: [location.lat, location.lon],
