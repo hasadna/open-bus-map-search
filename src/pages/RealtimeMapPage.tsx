@@ -46,8 +46,10 @@ export function numberToColorHsl(i: number, max: number) {
   return `hsl(${hue}, ${saturation}%, ${lightness}%)`
 }
 
-const fiveMinutesAgo = moment().subtract(5, 'minutes')
-const fourMinutesAgo = fiveMinutesAgo.add(1, 'minutes')
+const now = moment()
+const oneMinuteAgo = moment().subtract(1, 'minutes')
+// const fiveMinutesAgo = moment().subtract(5, 'minutes')
+// const fourMinutesAgo = fiveMinutesAgo.add(1, 'minutes')
 
 export default function RealtimeMapPage() {
   const position: Point = {
@@ -56,8 +58,8 @@ export default function RealtimeMapPage() {
   }
 
   //TODO (another PR and another issue) load from url like in another pages.
-  const [from, setFrom] = useState(fiveMinutesAgo)
-  const [to, setTo] = useState(fourMinutesAgo)
+  const [from, setFrom] = useState(oneMinuteAgo)
+  const [to, setTo] = useState(now)
 
   const { locations, isLoading } = useVehicleLocations({
     from,
@@ -69,8 +71,10 @@ export default function RealtimeMapPage() {
   useEffect(() => {
     console.log('🚀 ~ file: RealtimeMapPage.tsx:70 ~ RealtimeMapPage ~ from:', from)
     console.log('🚀 ~ file: RealtimeMapPage.tsx:71 ~ RealtimeMapPage ~ to:', to)
-    console.log('file: RealtimeMapPage.tsx:71 ~ RealtimeMapPage ~ fiveMinutesAgo:', fiveMinutesAgo)
-    console.log('file: RealtimeMapPage.tsx:71 ~ RealtimeMapPage ~ fourMinutesAgo:', fourMinutesAgo)
+    console.log('file: RealtimeMapPage.tsx:71 ~ RealtimeMapPage ~ now:', now)
+    console.log('file: RealtimeMapPage.tsx:71 ~ RealtimeMapPage ~ oneMinutesAgo:', oneMinuteAgo)
+    // console.log('file: RealtimeMapPage.tsx:71 ~ RealtimeMapPage ~ fiveMinutesAgo:', fiveMinutesAgo)
+    // console.log('file: RealtimeMapPage.tsx:71 ~ RealtimeMapPage ~ fourMinutesAgo:', fourMinutesAgo)
   }, [from, to])
 
   const positions = useMemo(() => {
