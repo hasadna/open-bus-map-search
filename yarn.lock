@@ -1081,6 +1081,11 @@
   dependencies:
     geolib "*"
 
+"@types/har-format@^1.2.14":
+  version "1.2.14"
+  resolved "https://registry.yarnpkg.com/@types/har-format/-/har-format-1.2.14.tgz#292e55d52be8659c8486316a0ae439760617e0a3"
+  integrity sha512-pEmBAoccWvO6XbSI8A7KvIDGEoKtlLWtdqVCKoVBcCDSFvR4Ijd7zGLu7MWGEqk2r8D54uWlMRt+VZuSrfFMzQ==
+
 "@types/hoist-non-react-statics@*":
   version "3.3.2"
   resolved "https://registry.npmjs.org/@types/hoist-non-react-statics/-/hoist-non-react-statics-3.3.2.tgz"
@@ -3629,6 +3634,13 @@ pkg-types@^1.0.3:
     jsonc-parser "^3.2.0"
     mlly "^1.2.0"
     pathe "^1.1.0"
+
+playwright-advanced-har@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/playwright-advanced-har/-/playwright-advanced-har-1.0.2.tgz#d8723ae0686f132c8d8de7583a808cfdbce2346c"
+  integrity sha512-7pvkSLJZaCjL6jdjMhJah/SxQgnT+gGe73swiN4oo0N2ZE481P0K3afZ5cOJL+VsCschlie1Vb4VcHqhBqOhog==
+  dependencies:
+    "@types/har-format" "^1.2.14"
 
 playwright-core@1.38.0:
   version "1.38.0"

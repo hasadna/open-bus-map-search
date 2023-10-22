@@ -45,7 +45,7 @@
     "start": "vite",
     "build": "tsc && vite build",
     "serve": "vite preview",
-   "test": "yarn test:unit:ci && yarn test:e2e",
+    "test": "yarn test:unit:ci && yarn test:e2e",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e": "playwright test",
     "test:unit": "vitest",
@@ -87,6 +87,7 @@
     "eslint-plugin-react": "^7.33.2",
     "jsdom": "^22.1.0",
     "openapi-typescript-codegen": "^0.23.0",
+    "playwright-advanced-har": "^1.0.2",
     "prettier": "^2.7.1",
     "vitest": "^0.34.6"
   },
