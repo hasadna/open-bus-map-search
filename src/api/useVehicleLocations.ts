@@ -5,6 +5,7 @@
  */
 
 import _ from 'lodash'
+import moment, { Moment } from 'moment'
 import { useEffect, useState } from 'react'
 import { VehicleLocation } from 'src/model/vehicleLocation'
 
@@ -14,13 +15,18 @@ const config = {
   fromField: 'recorded_at_time_from',
   toField: 'recorded_at_time_to',
   lineRefField: 'siri_routes__line_ref',
+  operatorRefField: 'siri_routes__operator_ref',
 } as const
 
-type Dateable = Date | number | string
+type Dateable = Date | number | string | Moment
 
 function formatTime(time: Dateable) {
-  const date = new Date(time).toISOString()
-  return date
+  if (moment.isMoment(time)) {
+    return time.toISOString()
+  } else {
+    const date = new Date(time).toISOString()
+    return date
+  }
 }
 
 const loadedLocations = new Map<
@@ -34,20 +40,41 @@ const loadedLocations = new Map<
  * it also caches the data, so if the same interval is requested again, it will not load it again.
  */
 class LocationObservable {
-  constructor({ from, to, lineRef }: { from: Dateable; to: Dateable; lineRef?: number }) {
-    this.#loadData({ from, to, lineRef })
+  constructor({
+    from,
+    to,
+    lineRef,
+    operatorRef,
+  }: {
+    from: Dateable
+    to: Dateable
+    lineRef?: number
+    operatorRef?: number
+  }) {
+    this.#loadData({ from, to, lineRef, operatorRef })
   }
 
   data: VehicleLocation[] = []
   loading = true
 
-  async #loadData({ from, to, lineRef }: { from: Dateable; to: Dateable; lineRef?: number }) {
+  async #loadData({
+    from,
+    to,
+    lineRef,
+    operatorRef,
+  }: {
+    from: Dateable
+    to: Dateable
+    lineRef?: number
+    operatorRef?: number
+  }) {
     let offset = 0
     for (let i = 1; this.loading; i++) {
       let url = config.apiUrl
       url += `&${config.fromField}=${formatTime(from)}&${config.toField}=${formatTime(to)}&limit=${
         config.limit * i
       }&offset=${offset}`
+      if (operatorRef) url += `&${config.operatorRefField}=${operatorRef}`
       if (lineRef) url += `&${config.lineRefField}=${lineRef}`
 
       const response = await fetchWithQueue(url)
@@ -104,29 +131,30 @@ function getLocations({
   to,
   lineRef,
   onUpdate,
+  operatorRef,
 }: {
   from: Dateable
   to: Dateable
   lineRef?: number
+  operatorRef?: number
   onUpdate: (locations: VehicleLocation[] | { finished: true }) => void // the observer will be called every time with all the locations that were loaded
 }) {
   const key = `${formatTime(from)}-${formatTime(to)}`
   if (!loadedLocations.has(key)) {
-    loadedLocations.set(key, new LocationObservable({ from, to, lineRef }))
+    loadedLocations.set(key, new LocationObservable({ from, to, lineRef, operatorRef }))
   }
   const observable = loadedLocations.get(key)!
   return observable.observe(onUpdate)
 }
 
-function getMinutesInRange(from: Dateable, to: Dateable, minutesGap = 1) {
-  const start = new Date(from).setSeconds(0, 0)
-  const end = new Date(to).setSeconds(0, 0)
-  const gap = 60000 * minutesGap
+function getMinutesInRange(from: Dateable, to: Dateable, gap = 1) {
+  const start = moment(from).startOf('minute')
+  const end = moment(to).startOf('minute')
 
   // array of minutes to load
-  const minutes = Array.from({ length: (end - start) / gap }, (_, i) => ({
-    from: new Date(start + i * gap),
-    to: new Date(start + (i + 1) * gap),
+  const minutes = Array.from({ length: end.diff(start, 'minutes') / gap }, (_, i) => ({
+    from: start.clone().add(i * gap, 'minutes'),
+    to: start.clone().add((i + 1) * gap, 'minutes'),
   }))
   return minutes
 }
@@ -135,23 +163,26 @@ export default function useVehicleLocations({
   from,
   to,
   lineRef,
+  operatorRef,
   splitMinutes: split = 1,
 }: {
   from: Dateable
   to: Dateable
   lineRef?: number
+  operatorRef?: number
   splitMinutes?: false | number
 }) {
   const [locations, setLocations] = useState<VehicleLocation[]>([])
   const [isLoading, setIsLoading] = useState<boolean[]>([])
   useEffect(() => {
-    const range = split ? getMinutesInRange(from, to) : [{ from, to }]
+    const range = split ? getMinutesInRange(from, to, split) : [{ from, to }]
     setIsLoading(range.map(() => true))
     const unmounts = range.map(({ from, to }, i) =>
       getLocations({
         from,
         to,
         lineRef,
+        operatorRef,
         onUpdate: (data) => {
           if ('finished' in data) {
             setIsLoading((prev) => {
@@ -175,7 +206,7 @@ export default function useVehicleLocations({
       unmounts.forEach((unmount) => unmount())
       setIsLoading([])
     }
-  }, [from, to])
+  }, [from, to, lineRef, split])
   return {
     locations,
     isLoading: isLoading.some((loading) => loading),

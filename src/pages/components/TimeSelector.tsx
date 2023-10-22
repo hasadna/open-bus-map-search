@@ -1,17 +1,15 @@
 import React from 'react'
 import { TEXTS } from 'src/resources/texts'
 import { TimePicker, renderTimeViewClock } from '@mui/x-date-pickers'
-import { DataAndTimeSelectorProps, useValidSelected } from './utils/dateAndTime'
+import { DataAndTimeSelectorProps } from './utils/dateAndTime'
 
-export function TimeSelector({ timeValid, setTimeValid }: DataAndTimeSelectorProps) {
-  const [timeSelected, setTimeSelected] = useValidSelected(timeValid, setTimeValid)
-
+export function TimeSelector({ time, onChange }: DataAndTimeSelectorProps) {
   return (
     <TimePicker
       sx={{ width: '100%' }}
       label={TEXTS.choose_time}
-      value={timeSelected}
-      onChange={(ts) => setTimeSelected(ts)}
+      value={time}
+      onChange={(ts) => onChange(ts!)}
       ampm={false}
       viewRenderers={{
         hours: renderTimeViewClock,

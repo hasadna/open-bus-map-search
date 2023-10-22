@@ -1,0 +1,41 @@
+@import '../../../../resources/variables';
+
+.sidebar-menu-toggle {
+    display: none;
+}
+
+@media screen and (max-width: $mobile-max-width) {
+
+    .main > .sidebar {
+        max-width: 0;
+        padding: 0;
+        transition: all 0.2s ease-in-out;
+
+        .sidebar-menu-toggle {
+            display: block;
+            position: absolute;
+            top: 0;
+            right: 0;
+            margin: 10px;
+            cursor: pointer;
+            font-size: 20px;
+
+            &-line {
+                width: 30px;
+                height: 3px;
+                background-color: black;
+                margin: 5px 0;
+            }
+        }
+    }
+
+    .main > .sidebar.open{
+        display: block;
+        position: absolute;
+        z-index: 500;
+        max-width: 100%;
+        padding: 30px;
+        margin-right: 1px;
+    }
+
+}

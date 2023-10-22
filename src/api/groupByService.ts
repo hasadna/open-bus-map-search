@@ -48,6 +48,21 @@ export type GroupByResponse = {
   route_long_name: string
 }[]
 
+export type GroupByRes = Replace<
+  GroupByResponse[0],
+  'operator_ref',
+  | {
+      agency_id: string
+      agency_name: string
+      agency_url: string
+      agency_timezone: string
+      agency_lang: string
+      agency_phone: string
+      agency_fare_url: string
+    }
+  | undefined
+>
+
 async function groupbyAsync({
   dateTo,
   dateFrom,
@@ -77,6 +92,8 @@ export function useGroupBy({
   dateFrom: Moment
   groupBy: groupByFields
 }) {
+  const [loading, setLoading] = useState<boolean>(false)
+  const [error, setError] = useState<string | null>(null)
   const [data, setData] = useState<
     Replace<
       GroupByResponse[0],
@@ -95,19 +112,23 @@ export function useGroupBy({
   >([])
 
   useEffect(() => {
-    groupbyAsync({ dateTo, dateFrom, groupBy }).then((data) =>
-      setData(
-        data.map((dataRecord) => ({
-          ...dataRecord,
-          operator_ref: agencyList.find(
-            (agency) => agency.agency_id === String(dataRecord.operator_ref),
-          ),
-        })),
-      ),
-    )
+    setLoading(true)
+    groupbyAsync({ dateTo, dateFrom, groupBy })
+      .then((data) => {
+        setData(
+          data.map((dataRecord) => ({
+            ...dataRecord,
+            operator_ref: agencyList.find(
+              (agency) => agency.agency_id === String(dataRecord.operator_ref),
+            ),
+          })),
+        )
+      })
+      .catch((er) => setError(er))
+      .finally(() => setLoading(false))
   }, [+dateTo, +dateFrom, groupBy])
 
-  return data
+  return [data, loading, error] as const
 }
 
 export default groupbyAsync

@@ -62,7 +62,7 @@ const TimelinePage = () => {
       return
     }
     setRoutesIsLoading(true)
-    getRoutesAsync(moment(timestamp), operatorId, lineNumber)
+    getRoutesAsync(moment(timestamp), moment(timestamp), operatorId, lineNumber)
       .then((routes) =>
         setSearch((current) =>
           search.lineNumber === lineNumber ? { ...current, routes: routes } : current,
@@ -126,8 +126,8 @@ const TimelinePage = () => {
         </Grid>
         <Grid xs={8}>
           <DateSelector
-            timeValid={moment(timestamp)}
-            setTimeValid={(ts) =>
+            time={moment(timestamp)}
+            onChange={(ts) =>
               setSearch((current) => ({ ...current, timestamp: ts ? ts.valueOf() : 0 }))
             }
           />
