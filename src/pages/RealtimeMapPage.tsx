@@ -155,7 +155,7 @@ export default function RealtimeMapPage() {
           <MinuteSelector
             num={to.diff(from) / 1000 / 60}
             setNum={(num) => {
-              setTo(moment(from).add(Math.abs(+num) || 1, 'minutes'))
+              setFrom(moment(to).subtract(Math.abs(+num) || 1, 'minutes'))
             }}
           />
         </Grid>
