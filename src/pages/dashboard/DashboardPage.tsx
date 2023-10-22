@@ -5,7 +5,6 @@ import OperatorHbarChart from './OperatorHbarChart/OperatorHbarChart'
 import './DashboardPage.scss'
 import { TEXTS } from 'src/resources/texts'
 import ArrivalByTimeChart from './ArrivalByTimeChart/ArrivalByTimeChart'
-import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import moment from 'moment'
 import LinesHbarChart from './LineHbarChart/LinesHbarChart'
 import { FormControlLabel, Switch, Tooltip } from '@mui/material'
@@ -14,6 +13,7 @@ import { useDate } from '../components/DateTimePicker'
 import { Skeleton } from 'antd'
 import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
 import { Label } from '../components/Label'
+import { DateSelector } from '../components/DateSelector'
 
 const now = moment()
 
@@ -84,22 +84,18 @@ const DashboardPage = () => {
         justifyContent="space-between">
         <Grid lg={6} xs={12} container spacing={2} alignItems="center">
           <Grid xs={4.5}>
-            <DatePicker
-              value={startDate}
+            <DateSelector
+              time={startDate}
               onChange={(data) => setStartDate(data)}
-              format="DD/MM/YYYY"
-              label={TEXTS.start}
-              sx={{ width: '100%' }}
+              customLabel={TEXTS.start}
             />
           </Grid>
           <Grid xs={0.1}>-</Grid>
           <Grid xs={4.5}>
-            <DatePicker
-              value={endDate}
+            <DateSelector
+              time={endDate}
               onChange={(data) => setEndDate(data)}
-              format="DD/MM/YYYY"
-              label={TEXTS.end}
-              sx={{ width: '100%' }}
+              customLabel={TEXTS.end}
             />
           </Grid>
           <Grid xs={1}>
