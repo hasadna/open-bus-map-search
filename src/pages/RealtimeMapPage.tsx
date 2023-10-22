@@ -142,7 +142,7 @@ export default function RealtimeMapPage() {
             time={to}
             onChange={(ts) => {
               const val = ts ? ts : from
-              setFrom(moment(val).add(moment(to).diff(moment(from))))
+              setFrom(moment(val).subtract(moment(to).diff(moment(from))))
               setTo(moment(val)) // keep the same time difference
             }}
           />
