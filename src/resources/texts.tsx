@@ -73,6 +73,7 @@ export const TEXT_KEYS = {
   innovation_authority: 'innovation_authority',
   migdal_company: 'migdal_company',
   and_smaller_donors: 'and_smaller_donors',
+  gaps_patterns_page_title: 'gaps_patterns_page_title',
 }
 
 export const TEXTS = {
