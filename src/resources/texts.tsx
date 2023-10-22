@@ -11,6 +11,7 @@ export const TEXTS = {
   singleline_map_page_title: 'מפה לפי קו',
   choose_datetime: 'תאריך ושעה',
   choose_date: 'תאריך',
+  choose_dates: 'תאריכים',
   choose_time: 'שעה',
   choose_operator: 'חברה מפעילה',
   operator_placeholder: 'לדוגמא: דן',

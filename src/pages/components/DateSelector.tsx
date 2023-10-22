@@ -4,7 +4,7 @@ import { TEXTS } from 'src/resources/texts'
 import { DataAndTimeSelectorProps } from './utils/dateAndTime'
 import { DateValidationError } from '@mui/x-date-pickers'
 
-export function DateSelector({ time, onChange }: DataAndTimeSelectorProps) {
+export function DateSelector({ time, onChange, customLabel }: DataAndTimeSelectorProps) {
   const [error, setError] = React.useState<DateValidationError | null>(null)
   return (
     <>
@@ -13,7 +13,7 @@ export function DateSelector({ time, onChange }: DataAndTimeSelectorProps) {
         value={time}
         onChange={(ts) => onChange(ts!)}
         format="DD/MM/YYYY"
-        label={TEXTS.choose_date}
+        label={customLabel || TEXTS.choose_date}
         disableFuture
         onError={(err) => setError(err)}
       />

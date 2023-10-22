@@ -6,14 +6,26 @@ import { Autocomplete, TextField } from '@mui/material'
 type OperatorSelectorProps = {
   operatorId?: string
   setOperatorId: (operatorId: string) => void
+  onlyMajorOperators?: boolean
 }
 
-const OperatorSelector = ({ operatorId, setOperatorId }: OperatorSelectorProps) => {
+const OperatorSelector = ({
+  operatorId,
+  setOperatorId,
+  onlyMajorOperators = false,
+}: OperatorSelectorProps) => {
   const [operators, setOperators] = React.useState<Operator[]>([])
 
   React.useEffect(() => {
-    RELEVANT_OPERATORS.then(setOperators)
-  }, [])
+    const majorOperatorsIds = ['3', '5', '15', '18', '25']
+    RELEVANT_OPERATORS.then((resultObj) =>
+      setOperators(
+        onlyMajorOperators
+          ? resultObj.filter((item) => majorOperatorsIds.includes(item.id))
+          : resultObj,
+      ),
+    )
+  }, [onlyMajorOperators])
 
   const valueFinned = operators.find((operator) => operator.id === operatorId)
   const value = valueFinned ? valueFinned : null
