@@ -57,7 +57,7 @@ export default function ArrivalByTimeChart({
                   bottom: 5,
                 }}>
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="gtfs_route_date" />
+                <XAxis dataKey="gtfs_route_date" reversed={true}/>
                 <YAxis />
                 <Tooltip
                   content={({ payload }) =>
