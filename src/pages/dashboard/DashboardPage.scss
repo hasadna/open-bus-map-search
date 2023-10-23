@@ -1,63 +1,42 @@
 @import '../../resources/variables';
 
 .title {
-    font-weight: 500;
-    font-size: 24px;
-    line-height: 35px;
-    color: #3E3D67;
+  font-weight: 500;
+  font-size: 24px;
+  line-height: 35px;
+  color: #3e3d67;
 }
 
-.date-picker-container {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
+.widget {
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 20px;
+  box-sizing: border-box;
+  margin-bottom: 20px;
+  background-color: white;
+
+  .chart {
+    height: 400px;
+    overflow-y: scroll;
+  }
+
+  .tooltip-icon {
+    position: relative;
+    display: inline-flex;
+    justify-content: center;
     align-items: center;
-    margin-top: 20px;
-    gap: 10px;
-}
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: #888;
+    color: #fff;
+    font-size: 14px;
+    cursor: pointer;
+    vertical-align: middle;
+    margin-right: 10px;
+  }
 
-.widgets-container {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: flex-start;
-    flex-wrap: wrap;
-    gap: 20px;
-    margin-top: 20px;
-    margin-bottom: 20px;
-
-    .widget {
-        flex: 1 0 500px;
-        border: 1px solid #e0e0e0;
-        border-radius: 4px;
-        padding: 20px;
-        box-sizing: border-box;
-        margin-bottom: 20px;
-        background-color: white;
-
-        .chart {
-            height: 400px;
-            overflow-y: scroll;
-        }
-
-        .tooltip-icon {
-            position: relative;
-            display: inline-flex;
-            justify-content: center;
-            align-items: center;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background-color: #888;
-            color: #fff;
-            font-size: 14px;
-            cursor: pointer;
-            vertical-align: middle;
-            margin-right: 10px;
-        }
-        
-        .tooltip-icon:hover {
-          background-color: #333;
-        }
-    }
+  .tooltip-icon:hover {
+    background-color: #333;
+  }
 }

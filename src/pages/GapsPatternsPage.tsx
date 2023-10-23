@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import './GapsPatternsPage.scss'
 import { Moment } from 'moment'
-import { DatePicker, Skeleton, Spin } from 'antd'
+import { Skeleton, Spin } from 'antd'
 import moment from 'moment/moment'
 import { useDate } from './components/DateTimePicker'
 import { PageContainer } from './components/PageContainer'
@@ -14,6 +14,8 @@ import { NotFound } from './components/NotFound'
 import RouteSelector from './components/RouteSelector'
 import { SearchContext } from '../model/pageState'
 import { getRoutesAsync } from '../api/gtfsService'
+import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
+
 import {
   Bar,
   CartesianGrid,
@@ -28,6 +30,8 @@ import {
 import { FormControlLabel, Radio, RadioGroup } from '@mui/material'
 import { mapColorByExecution } from './components/utils'
 import { useGapsList } from './useGapsList'
+import { DateSelector } from './components/DateSelector'
+import { INPUT_SIZE } from 'src/resources/sizes'
 
 // Define prop types for the component
 interface BusLineStatisticsProps {
@@ -159,54 +163,76 @@ const GapsPatternsPage = () => {
 
   return (
     <PageContainer>
-      <Row className="date-picker-container">
-        <DatePicker
-          defaultValue={startDate}
-          onChange={(data) => setStartDate(data)}
-          format="DD/MM/YYYY"
-        />
-        -
-        <DatePicker
-          defaultValue={endDate}
-          onChange={(data) => setEndDate(data)}
-          format="DD/MM/YYYY"
-        />
-      </Row>
-      <Row>
-        <OperatorSelector
-          operatorId={operatorId}
-          setOperatorId={(id) => setSearch((current) => ({ ...current, operatorId: id }))}
-        />
-      </Row>
-      <Row>
-        <LineNumberSelector
-          lineNumber={lineNumber}
-          setLineNumber={(number) => setSearch((current) => ({ ...current, lineNumber: number }))}
-        />
-      </Row>
-      {routesIsLoading && (
-        <Row>
-          <Label text={TEXTS.loading_routes} />
-          <Spin />
-        </Row>
-      )}
-      {!routesIsLoading &&
-        routes &&
-        (routes.length === 0 ? (
-          <NotFound>{TEXTS.line_not_found}</NotFound>
-        ) : (
-          <RouteSelector
-            routes={routes}
-            routeKey={routeKey}
-            setRouteKey={(key) => setSearch((current) => ({ ...current, routeKey: key }))}
+      <Grid container spacing={2} alignItems="center" sx={{ maxWidth: INPUT_SIZE }}>
+        <Grid xs={4}>
+          <Label text={TEXTS.choose_dates} />
+        </Grid>
+        <Grid container spacing={2} xs={8} alignItems="center" justifyContent="space-between">
+          <Grid xs={5.7}>
+            <DateSelector
+              time={startDate}
+              onChange={(data) => setStartDate(data)}
+              customLabel={TEXTS.start}
+            />
+          </Grid>
+          <Grid xs={0.1}>-</Grid>
+          <Grid xs={5.7}>
+            <DateSelector
+              time={endDate}
+              onChange={(data) => setEndDate(data)}
+              customLabel={TEXTS.end}
+            />
+          </Grid>
+        </Grid>
+
+        <Grid xs={4}>
+          <Label text={TEXTS.choose_operator} />
+        </Grid>
+        <Grid xs={8}>
+          <OperatorSelector
+            operatorId={operatorId}
+            setOperatorId={(id) => setSearch((current) => ({ ...current, operatorId: id }))}
           />
-        ))}
-      <GapsByHour
-        lineRef={routes?.find((route) => route.key === routeKey)?.lineRef || 0}
-        operatorRef={operatorId || ''}
-        fromDate={startDate}
-        toDate={endDate}
-      />
+        </Grid>
+
+        <Grid xs={4}>
+          <Label text={TEXTS.choose_line} />
+        </Grid>
+        <Grid xs={8}>
+          <LineNumberSelector
+            lineNumber={lineNumber}
+            setLineNumber={(number) => setSearch((current) => ({ ...current, lineNumber: number }))}
+          />
+        </Grid>
+
+        <Grid xs={12}>
+          {routesIsLoading && (
+            <Row>
+              <Label text={TEXTS.loading_routes} />
+              <Spin />
+            </Row>
+          )}
+          {!routesIsLoading &&
+            routes &&
+            (routes.length === 0 ? (
+              <NotFound>{TEXTS.line_not_found}</NotFound>
+            ) : (
+              <RouteSelector
+                routes={routes}
+                routeKey={routeKey}
+                setRouteKey={(key) => setSearch((current) => ({ ...current, routeKey: key }))}
+              />
+            ))}
+        </Grid>
+        <Grid xs={12}>
+          <GapsByHour
+            lineRef={routes?.find((route) => route.key === routeKey)?.lineRef || 0}
+            operatorRef={operatorId || ''}
+            fromDate={startDate}
+            toDate={endDate}
+          />
+        </Grid>
+      </Grid>
     </PageContainer>
   )
 }

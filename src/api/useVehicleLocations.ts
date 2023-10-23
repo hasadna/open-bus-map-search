@@ -15,6 +15,7 @@ const config = {
   fromField: 'recorded_at_time_from',
   toField: 'recorded_at_time_to',
   lineRefField: 'siri_routes__line_ref',
+  operatorRefField: 'siri_routes__operator_ref',
 } as const
 
 type Dateable = Date | number | string | Moment
@@ -72,7 +73,8 @@ class LocationObservable {
       let url = config.apiUrl
       url += `&${config.fromField}=${formatTime(from)}&${config.toField}=${formatTime(to)}&limit=${
         config.limit * i
-      }&offset=${offset}&siri_routes__operator_ref=${operatorRef}`
+      }&offset=${offset}`
+      if (operatorRef) url += `&${config.operatorRefField}=${operatorRef}`
       if (lineRef) url += `&${config.lineRefField}=${lineRef}`
 
       const response = await fetchWithQueue(url)

@@ -24,10 +24,13 @@ This app is created by the volunteers of [Public Knowledge Workshop](https://www
 - `yarn start`
 
 ### testing the project:
-- running the tests - `yarn test`
-- run only unit tests - `yarn run test:unit`
-- run only playwright test: `yarn playwright test`
-- running the tests with UI - `yarn playwright test --ui`
+| command                                                           | description                                                                         |
+| ----------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| `yarn test:unit`                                                       | Run the unit tests using `watch` option (goo for development). |
+| `yarn test:unit:ci`                                                       | Run the unit tests (good for ci). |
+| `yarn test:e2e`                                                       | Run the e2e (playwright) tests (good for ci). |
+| `yarn test:e2e:ui`                                                       | Run the e2e (playwright) tests with user interface. |
+| `yarn test`                                                       | Run all the kind of tests. |
 - additional helpful flags - https://playwright.dev/docs/test-cli
 
 ### useful resources:
