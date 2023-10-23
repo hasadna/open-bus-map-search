@@ -155,7 +155,8 @@ const GapsPatternsPage = () => {
   }
 
   useEffect(() => {
-    if (!operatorId || !lineNumber) {
+    if (!operatorId || operatorId === '0' || !lineNumber) {
+      setSearch((current) => ({ ...current, routeKey: undefined, routes: undefined }))
       return
     }
     loadSearchData()
@@ -217,20 +218,22 @@ const GapsPatternsPage = () => {
             (routes.length === 0 ? (
               <NotFound>{TEXTS.line_not_found}</NotFound>
             ) : (
-              <RouteSelector
-                routes={routes}
-                routeKey={routeKey}
-                setRouteKey={(key) => setSearch((current) => ({ ...current, routeKey: key }))}
-              />
+              <>
+                <RouteSelector
+                  routes={routes}
+                  routeKey={routeKey}
+                  setRouteKey={(key) => setSearch((current) => ({ ...current, routeKey: key }))}
+                />
+                <Grid xs={12}>
+                  <GapsByHour
+                    lineRef={routes?.find((route) => route.key === routeKey)?.lineRef || 0}
+                    operatorRef={operatorId || ''}
+                    fromDate={startDate}
+                    toDate={endDate}
+                  />
+                </Grid>
+              </>
             ))}
-        </Grid>
-        <Grid xs={12}>
-          <GapsByHour
-            lineRef={routes?.find((route) => route.key === routeKey)?.lineRef || 0}
-            operatorRef={operatorId || ''}
-            fromDate={startDate}
-            toDate={endDate}
-          />
         </Grid>
       </Grid>
     </PageContainer>

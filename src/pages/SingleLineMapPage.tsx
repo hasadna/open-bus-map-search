@@ -48,7 +48,8 @@ const SingleLineMapPage = () => {
   }, [])
 
   useEffect(() => {
-    if (!operatorId || !lineNumber) {
+    if (!operatorId || operatorId === '0' || !lineNumber) {
+      setSearch((current) => ({ ...current, routes: undefined, routeKey: undefined }))
       return
     }
     getRoutesAsync(moment(timestamp), moment(timestamp), operatorId, lineNumber).then((routes) =>
