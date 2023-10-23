@@ -40,6 +40,7 @@ const TimelinePage = () => {
 
   const clearRoutes = useCallback(() => {
     setSearch((current) => ({ ...current, routes: undefined, routeKey: undefined }))
+    setRoutesIsLoading(false)
   }, [setSearch])
 
   const clearStops = useCallback(() => {
@@ -51,6 +52,8 @@ const TimelinePage = () => {
       gtfsHitTimes: undefined,
       siriHitTimes: undefined,
     }))
+    setStopsIsLoading(false)
+    setHitsIsLoading(false)
   }, [setState])
 
   useEffect(() => {
@@ -72,12 +75,10 @@ const TimelinePage = () => {
       .finally(() => setRoutesIsLoading(false))
   }, [operatorId, lineNumber, clearRoutes, clearStops, timestamp, setState])
 
-  const selectedRoute = useMemo(() => {
-    if (!operatorId || operatorId === '0' || !lineNumber) {
-      return
-    }
-    return routes?.find((route) => route.key === routeKey)
-  }, [routes, routeKey, operatorId, lineNumber])
+  const selectedRoute = useMemo(
+    () => routes?.find((route) => route.key === routeKey),
+    [routes, routeKey],
+  )
   const selectedRouteIds = selectedRoute?.routeIds
 
   useEffect(() => {
@@ -92,7 +93,7 @@ const TimelinePage = () => {
     getStopsForRouteAsync(selectedRouteIds, moment(timestamp))
       .then((stops) => setState((current) => ({ ...current, stops: stops })))
       .finally(() => setStopsIsLoading(false))
-  }, [selectedRouteIds, routeKey, clearStops, operatorId, lineNumber])
+  }, [selectedRouteIds, routeKey, clearStops])
 
   useEffect(() => {
     if (!operatorId || operatorId === '0' || !lineNumber) {
@@ -113,7 +114,7 @@ const TimelinePage = () => {
         )
         .finally(() => setHitsIsLoading(false))
     }
-  }, [stopKey, stops, timestamp, selectedRoute, operatorId, lineNumber])
+  }, [stopKey, stops, timestamp, selectedRoute])
 
   useEffect(() => {
     if (!operatorId || operatorId === '0' || !lineNumber) {
@@ -127,8 +128,8 @@ const TimelinePage = () => {
       log(`setting new stopKey=${newStopKey} using the prev stopName=${stopName}`)
       setState((current) => ({ ...current, stopKey: newStopKey }))
     }
-  }, [timestamp, stops, operatorId, lineNumber])
-  console.log(state, routes, routeKey)
+  }, [timestamp, stops])
+
   return (
     <PageContainer>
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
