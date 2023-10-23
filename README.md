@@ -26,7 +26,7 @@ This app is created by the volunteers of [Public Knowledge Workshop](https://www
 ### testing the project:
 | command                                                           | description                                                                         |
 | ----------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| `yarn test:unit`                                                       | Run the unit tests using `watch` option (goo for development). |
+| `yarn test:unit`                                                       | Run the unit tests using `watch` option (good for development). |
 | `yarn test:unit:ci`                                                       | Run the unit tests (good for ci). |
 | `yarn test:e2e`                                                       | Run the e2e (playwright) tests (good for ci). |
 | `yarn test:e2e:ui`                                                       | Run the e2e (playwright) tests with user interface. |
@@ -48,4 +48,4 @@ we're here to help! feel free to join our [Slack channel](http://hasadna.slack.c
 
 ## related repository - the API client
 
-See [open-bus-stride-client](https://github.com/iliakap/open-bus-stride-client) repository.
+See [open-bus-stride-client](https://github.com/hasadna/open-bus-stride-api) repository.
