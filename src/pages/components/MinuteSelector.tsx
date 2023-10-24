@@ -2,6 +2,7 @@ import React from 'react'
 import { TEXTS } from 'src/resources/texts'
 import { TextField } from '@mui/material'
 import ClearButton from './ClearButton'
+import './Selector.scss'
 
 type MinuteSelectorProps = {
   num: number
@@ -12,15 +13,12 @@ const MinuteSelector = ({ num, setNum }: MinuteSelectorProps) => {
   const handleClearInput = () => {
     setNum(0)
   }
-
+  const textFieldClass = `selector-minute-text-field selector-minute-text-field_${
+    num ? 'visible' : 'hidden'
+  }`
   return (
     <TextField
-      sx={{
-        width: '100%',
-        '&:hover .clearIndicatorDirty , & .Mui-focused .clearIndicatorDirty ': {
-          visibility: num ? 'visible' : 'hidden',
-        },
-      }}
+      className={textFieldClass}
       label={TEXTS.minutes}
       type="number"
       value={num}
