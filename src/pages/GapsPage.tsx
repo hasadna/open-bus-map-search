@@ -78,7 +78,7 @@ const GapsPage = () => {
   }, [operatorId, routeKey, timestamp])
 
   useEffect(() => {
-    if (!operatorId || operatorId === '0' || !lineNumber) {
+    if (!operatorId || !+operatorId || !lineNumber) {
       setSearch((current) => ({
         ...current,
         routes: undefined,
@@ -161,7 +161,7 @@ const GapsPage = () => {
           )}
         </Grid>
       </Grid>
-      {!gapsIsLoading && routeKey && routeKey !== '0' && (
+      {!gapsIsLoading && routeKey && +routeKey && (
         <>
           <FormControlLabel
             control={

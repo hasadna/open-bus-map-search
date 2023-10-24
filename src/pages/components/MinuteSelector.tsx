@@ -5,12 +5,12 @@ import ClearButton from './ClearButton'
 
 type MinuteSelectorProps = {
   num: number
-  setNum: (num: string) => void
+  setNum: (num: number) => void
 }
 
 const MinuteSelector = ({ num, setNum }: MinuteSelectorProps) => {
   const handleClearInput = () => {
-    setNum('0')
+    setNum(0)
   }
 
   return (
@@ -24,7 +24,7 @@ const MinuteSelector = ({ num, setNum }: MinuteSelectorProps) => {
       label={TEXTS.minutes}
       type="number"
       value={num}
-      onChange={(e) => setNum(e.target.value)}
+      onChange={(e) => setNum(+e.target.value)}
       InputLabelProps={{
         shrink: true,
       }}
