@@ -39,6 +39,7 @@ import {
   BarChartOutlined,
   LineChartOutlined,
 } from '@ant-design/icons'
+import { MenuPage } from './pages/components/header/menu/Menu'
 const { Content } = Layout
 
 const StyledLayout = styled(Layout)`
@@ -103,7 +104,7 @@ const PAGES = [
     key: 'https://www.jgive.com/new/he/ils/donation-targets/3268#donation-modal',
     icon: DollarOutlined,
   },
-]
+] as MenuPage[]
 
 const theme = createTheme(
   {

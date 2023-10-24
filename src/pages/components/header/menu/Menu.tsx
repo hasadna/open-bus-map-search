@@ -3,11 +3,13 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import cn from 'classnames'
 import './menu.scss'
 import { useTranslation } from 'react-i18next'
+import { IconBaseProps } from '@ant-design/icons/lib/components/Icon'
 
 export type MenuPage = {
   label: string
   key: string
-  icon: string
+  searchParamsRequired?: boolean
+  icon: string | React.FunctionComponent<IconBaseProps>
 }
 
 function Menu({ pages }: { pages: MenuPage[] }) {
@@ -41,7 +43,7 @@ function Menu({ pages }: { pages: MenuPage[] }) {
               }}
             />
           }
-          {page.label}
+          {t(page.label)}
         </li>
       ))}
       {null && <button onClick={handleChangeLanguage}>Change Language</button>}
