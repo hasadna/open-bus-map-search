@@ -62,7 +62,7 @@ const TimelinePage = () => {
 
   useEffect(() => {
     clearStops()
-    if (!operatorId || !+operatorId || !lineNumber) {
+    if (!operatorId || operatorId === '0' || !lineNumber) {
       return
     }
     setRoutesIsLoading(true)
@@ -83,7 +83,7 @@ const TimelinePage = () => {
 
   useEffect(() => {
     clearStops()
-    if (!operatorId || !+operatorId || !lineNumber) {
+    if (!operatorId || operatorId === '0' || !lineNumber) {
       return
     }
     if (!routeKey || !selectedRouteIds) {
@@ -96,7 +96,7 @@ const TimelinePage = () => {
   }, [selectedRouteIds, routeKey, clearStops])
 
   useEffect(() => {
-    if (!operatorId || !+operatorId || !lineNumber) {
+    if (!operatorId || operatorId === '0' || !lineNumber) {
       return
     }
     if (!stopKey || !stops || !selectedRoute) {
@@ -117,7 +117,7 @@ const TimelinePage = () => {
   }, [stopKey, stops, timestamp, selectedRoute])
 
   useEffect(() => {
-    if (!operatorId || !+operatorId || !lineNumber) {
+    if (!operatorId || operatorId === '0' || !lineNumber) {
       return
     }
     if (!stopName || !stops || stopKey) {

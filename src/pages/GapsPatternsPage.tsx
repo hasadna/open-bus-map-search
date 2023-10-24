@@ -155,7 +155,7 @@ const GapsPatternsPage = () => {
   }
 
   useEffect(() => {
-    if (!operatorId || !+operatorId || !lineNumber) {
+    if (!operatorId || operatorId === '0' || !lineNumber) {
       setSearch((current) => ({ ...current, routeKey: undefined, routes: undefined }))
       return
     }
