@@ -46,6 +46,18 @@ Thanks for your willingness to invest time and help us improve!
 3. Please tag one of the maintainers as reviewers
 we're here to help! feel free to join our [Slack channel](http://hasadna.slack.com ) 
 
-## related repository - the API client
+## Related Repositories 
+- the API client
+- the data API
 
-See [open-bus-stride-client](https://github.com/hasadna/open-bus-stride-api) repository.
+### API client
+The client is a JS library that provides methods and data models. for example:  
+https://github.com/hasadna/open-bus-map-search/blob/main/src/model/busStop.ts#L4   
+[link to repo](https://github.com/iliakap/open-bus-stride-client).
+
+
+### data API
+The API is backend code that provides us with data and aggregations from the DB
+You can see it's endpoints here:   
+https://open-bus-stride-api.hasadna.org.il/docs     
+[link to repo](https://github.com/hasadna/open-bus-stride-api).
