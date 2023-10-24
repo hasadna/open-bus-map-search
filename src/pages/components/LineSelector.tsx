@@ -3,6 +3,7 @@ import { TEXTS } from 'src/resources/texts'
 import debounce from 'lodash.debounce'
 import { TextField } from '@mui/material'
 import ClearButton from './ClearButton'
+import './Selector.scss'
 
 type LineSelectorProps = {
   lineNumber: string | undefined
@@ -21,16 +22,12 @@ const LineSelector = ({ lineNumber, setLineNumber }: LineSelectorProps) => {
     setValue('')
     setLineNumber('')
   }
-
+  const textFieldClass = `selector-line-text-field selector-line-text-field_${
+    value ? 'visible' : 'hidden'
+  }`
   return (
     <TextField
-      className="textInput"
-      sx={{
-        width: '100%',
-        '&:hover .clearIndicatorDirty, & .Mui-focused .clearIndicatorDirty': {
-          visibility: value ? 'visible' : 'hidden',
-        },
-      }}
+      className={textFieldClass}
       label={TEXTS.choose_line}
       type="number"
       value={value && +value < 0 ? 0 : value}
