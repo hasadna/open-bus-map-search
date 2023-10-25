@@ -35,7 +35,7 @@ function Menu({ pages }: { pages: MenuPage[] }) {
           {t(page.label)}
         </li>
       ))}
-      <button onClick={handleChangeLanguage}>Change Language</button>
+      {null && <button onClick={handleChangeLanguage}>Change Language</button>}
     </ul>
   )
 }
