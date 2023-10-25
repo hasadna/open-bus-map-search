@@ -15,6 +15,7 @@ const config = {
   fromField: 'recorded_at_time_from',
   toField: 'recorded_at_time_to',
   lineRefField: 'siri_routes__line_ref',
+  operatorRefField: 'siri_routes__operator_ref',
 } as const
 
 type Dateable = Date | number | string | Moment
@@ -39,20 +40,41 @@ const loadedLocations = new Map<
  * it also caches the data, so if the same interval is requested again, it will not load it again.
  */
 class LocationObservable {
-  constructor({ from, to, lineRef }: { from: Dateable; to: Dateable; lineRef?: number }) {
-    this.#loadData({ from, to, lineRef })
+  constructor({
+    from,
+    to,
+    lineRef,
+    operatorRef,
+  }: {
+    from: Dateable
+    to: Dateable
+    lineRef?: number
+    operatorRef?: number
+  }) {
+    this.#loadData({ from, to, lineRef, operatorRef })
   }
 
   data: VehicleLocation[] = []
   loading = true
 
-  async #loadData({ from, to, lineRef }: { from: Dateable; to: Dateable; lineRef?: number }) {
+  async #loadData({
+    from,
+    to,
+    lineRef,
+    operatorRef,
+  }: {
+    from: Dateable
+    to: Dateable
+    lineRef?: number
+    operatorRef?: number
+  }) {
     let offset = 0
     for (let i = 1; this.loading; i++) {
       let url = config.apiUrl
       url += `&${config.fromField}=${formatTime(from)}&${config.toField}=${formatTime(to)}&limit=${
         config.limit * i
       }&offset=${offset}`
+      if (operatorRef) url += `&${config.operatorRefField}=${operatorRef}`
       if (lineRef) url += `&${config.lineRefField}=${lineRef}`
 
       const response = await fetchWithQueue(url)
@@ -109,15 +131,17 @@ function getLocations({
   to,
   lineRef,
   onUpdate,
+  operatorRef,
 }: {
   from: Dateable
   to: Dateable
   lineRef?: number
+  operatorRef?: number
   onUpdate: (locations: VehicleLocation[] | { finished: true }) => void // the observer will be called every time with all the locations that were loaded
 }) {
   const key = `${formatTime(from)}-${formatTime(to)}`
   if (!loadedLocations.has(key)) {
-    loadedLocations.set(key, new LocationObservable({ from, to, lineRef }))
+    loadedLocations.set(key, new LocationObservable({ from, to, lineRef, operatorRef }))
   }
   const observable = loadedLocations.get(key)!
   return observable.observe(onUpdate)
@@ -139,11 +163,13 @@ export default function useVehicleLocations({
   from,
   to,
   lineRef,
+  operatorRef,
   splitMinutes: split = 1,
 }: {
   from: Dateable
   to: Dateable
   lineRef?: number
+  operatorRef?: number
   splitMinutes?: false | number
 }) {
   const [locations, setLocations] = useState<VehicleLocation[]>([])
@@ -156,6 +182,7 @@ export default function useVehicleLocations({
         from,
         to,
         lineRef,
+        operatorRef,
         onUpdate: (data) => {
           if ('finished' in data) {
             setIsLoading((prev) => {

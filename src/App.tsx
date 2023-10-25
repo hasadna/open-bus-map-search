@@ -4,7 +4,7 @@ import './App.scss'
 import TimelinePage from 'src/pages/TimelinePage'
 import { ConfigProvider, Layout } from 'antd'
 import 'leaflet/dist/leaflet.css'
-import { TEXTS } from 'src/resources/texts'
+import { TEXT_KEYS } from 'src/resources/texts'
 import styled from 'styled-components'
 import heIL from 'antd/es/locale/he_IL'
 import { BrowserRouter as Router, Navigate, Route, Routes, useSearchParams } from 'react-router-dom'
@@ -13,7 +13,7 @@ import { PageSearchState, SearchContext } from './model/pageState'
 import moment from 'moment'
 import DashboardPage from './pages/dashboard/DashboardPage'
 import { useSessionStorage } from 'usehooks-ts'
-import SideBar from './pages/components/header/SideBar'
+import SideBar from './pages/components/header/sidebar/SideBar'
 import RealtimeMapPage from './pages/RealtimeMapPage'
 import SingleLineMapPage from './pages/SingleLineMapPage'
 import { useLocation } from 'react-router-dom'
@@ -46,42 +46,42 @@ const StyledBody = styled.div`
 
 const PAGES = [
   {
-    label: TEXTS.dashboard_page_title,
+    label: TEXT_KEYS.dashboard_page_title,
     key: '/dashboard',
   },
   {
-    label: TEXTS.timeline_page_title,
+    label: TEXT_KEYS.timeline_page_title,
     key: '/timeline',
     searchParamsRequired: true,
   },
   {
-    label: TEXTS.gaps_page_title,
+    label: TEXT_KEYS.gaps_page_title,
     key: '/gaps',
     searchParamsRequired: true,
   },
   {
-    label: TEXTS.gaps_patterns_page_title,
+    label: TEXT_KEYS.gaps_patterns_page_title,
     key: '/gaps_patterns',
   },
   {
-    label: TEXTS.realtime_map_page_title,
+    label: TEXT_KEYS.realtime_map_page_title,
     key: '/map',
   },
   {
-    label: TEXTS.singleline_map_page_title,
+    label: TEXT_KEYS.singleline_map_page_title,
     key: '/single-line-map',
     searchParamsRequired: true,
   },
   {
-    label: TEXTS.about_title,
+    label: TEXT_KEYS.about_title,
     key: '/about',
   },
   {
-    label: TEXTS.report_a_bug_title,
+    label: TEXT_KEYS.report_a_bug_title,
     key: 'https://github.com/hasadna/open-bus-map-search/issues',
   },
   {
-    label: TEXTS.donate_title,
+    label: TEXT_KEYS.donate_title,
     key: 'https://www.jgive.com/new/he/ils/donation-targets/3268#donation-modal',
   },
 ]

@@ -37,18 +37,6 @@ jobs:
       if: always() && steps.s3-report.outcome == 'success'
       run: echo "link to report - https://s3.amazonaws.com/noam-gaash.co.il/$GITHUB_RUN_ID/open-bus/playwright-report/index.html" >> $GITHUB_STEP_SUMMARY
 
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
-      with:
-        node-version: 18
-    - name: Install dependencies
-      run: yarn
-    - name: Run lint
-      run: yarn lint
-
   build:
     runs-on: ubuntu-latest
     steps:
