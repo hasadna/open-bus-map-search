@@ -73,6 +73,7 @@ export const TEXT_KEYS = {
   innovation_authority: 'innovation_authority',
   migdal_company: 'migdal_company',
   and_smaller_donors: 'and_smaller_donors',
+  gaps_patterns_page_title: 'gaps_patterns_page_title',
 }
 
 export const TEXTS = {
@@ -80,9 +81,11 @@ export const TEXTS = {
   timeline_page_title: 'לוח זמנים היסטורי',
   realtime_map_page_title: 'מפה בזמן אמת',
   gaps_page_title: 'נסיעות שלא יצאו',
+  gaps_patterns_page_title: 'דפוסי נסיעות שלא יצאו',
   singleline_map_page_title: 'מפה לפי קו',
   choose_datetime: 'תאריך ושעה',
   choose_date: 'תאריך',
+  choose_dates: 'תאריכים',
   choose_time: 'שעה',
   choose_operator: 'חברה מפעילה',
   operator_placeholder: 'לדוגמא: דן',
@@ -158,6 +161,22 @@ export const TEXTS = {
   innovation_authority: 'רשות החדשנות',
   migdal_company: '“מגדל בקהילה“',
   and_smaller_donors: 'ותרומות קטנות נוספות של ידידי ואוהדי הסדנא.',
+  all_rides_completed: 'כמעט / כל הנסיעות בוצעו',
+  missing_rides: 'מהנסיעות חסרות',
+  order_by_hour: 'לפי שעה',
+  order_by_severity: 'לפי חומרה',
+  line: 'קו',
+  from: 'מוצא',
+  destination: 'יעד',
+  sample_time: 'זמן דגימה',
+  velocity: 'מהירות',
+  drive_direction: 'כיוון נסיעה:',
+  coords: 'נ.צ:',
+  vehicle_ref: 'לוחית רישוי',
+  hide_document: 'הסתר מידע לגיקים',
+  show_document: 'הצג מידע לגיקים',
+  bearing: 'מעלות',
+  kmh: 'קמ״ש',
 }
 
 export const formatted = (text: string, value: string) => text.replace(PLACEHOLDER, value)

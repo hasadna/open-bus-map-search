@@ -1,4 +1,4 @@
-import { test } from '@playwright/test'
+import { test } from './utils'
 
 test('dashboard is on homepage', async ({ page }) => {
   await page.goto('/')

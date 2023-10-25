@@ -23,6 +23,15 @@ This app is created by the volunteers of [Public Knowledge Workshop](https://www
 - `yarn install`
 - `yarn start`
 
+### testing the project:
+| command                                                           | description                                                                         |
+| ----------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| `yarn test:unit`                                                       | Run the unit tests using `watch` option (goo for development). |
+| `yarn test:unit:ci`                                                       | Run the unit tests (good for ci). |
+| `yarn test:e2e`                                                       | Run the e2e (playwright) tests (good for ci). |
+| `yarn test:e2e:ui`                                                       | Run the e2e (playwright) tests with user interface. |
+| `yarn test`                                                       | Run all the kind of tests. |
+- additional helpful flags - https://playwright.dev/docs/test-cli
 
 ### useful resources:
 * [the design file](https://www.figma.com/file/Plw8Uuu6U96CcX5tJyRMoW/Public-Transportation-visual-informaiton?type=design&node-id=0-1&mode=design&t=Dh8lI3EJ37unxvoe-0)
