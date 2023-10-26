@@ -46,8 +46,8 @@ export function numberToColorHsl(i: number, max: number) {
   return `hsl(${hue}, ${saturation}%, ${lightness}%)`
 }
 
-const now = moment()
-const oneMinuteAgo = moment().subtract(1, 'minutes')
+const fiveMinutesAgo = moment().subtract(5, 'minutes')
+const fourMinutesAgo = moment().subtract(4, 'minutes')
 
 export default function RealtimeMapPage() {
   const position: Point = {
@@ -56,8 +56,8 @@ export default function RealtimeMapPage() {
   }
 
   //TODO (another PR and another issue) load from url like in another pages.
-  const [from, setFrom] = useState(oneMinuteAgo)
-  const [to, setTo] = useState(now)
+  const [from, setFrom] = useState(fiveMinutesAgo)
+  const [to, setTo] = useState(fourMinutesAgo)
 
   const { locations, isLoading } = useVehicleLocations({
     from,
