@@ -2,4 +2,12 @@
   position: absolute;
   left: 33px;
   visibility: hidden;
+  height: 28px;
+  width: 28px;
+  color: #6a6b6c;
+  padding: 7px;
+  &:hover {
+    background-color: #e7e9eb;
+    border-radius: 50%;
+  }
 }

@@ -1,14 +1,9 @@
 import React from 'react'
-import ClearIcon from '@mui/icons-material/Clear'
-import { IconButton } from '@mui/material'
+import { CloseOutlined as ClearIcon } from '@ant-design/icons'
 import './ClearButton.scss'
 
 const ClearButton = ({ onClearInput }: { onClearInput: () => void }) => {
-  return (
-    <IconButton onClick={onClearInput} size="small" className="clear-indicator">
-      <ClearIcon fontSize="small" />
-    </IconButton>
-  )
+  return <ClearIcon onClick={onClearInput} className="clear-indicator" />
 }
 
 export default ClearButton
