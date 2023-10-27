@@ -47,7 +47,7 @@ export function numberToColorHsl(i: number, max: number) {
 }
 
 const fiveMinutesAgo = moment().subtract(5, 'minutes')
-const fourMinutesAgo = fiveMinutesAgo.add(1, 'minutes')
+const fourMinutesAgo = moment().subtract(4, 'minutes')
 
 export default function RealtimeMapPage() {
   const position: Point = {
@@ -131,8 +131,8 @@ export default function RealtimeMapPage() {
             time={to}
             onChange={(ts) => {
               const val = ts ? ts : from
-              setFrom(moment(val))
-              setTo(moment(val).add(moment(to).diff(moment(from)))) // keep the same time difference
+              setFrom(moment(val).subtract(moment(to).diff(moment(from))))
+              setTo(moment(val)) // keep the same time difference
             }}
           />
         </Grid>
@@ -144,7 +144,7 @@ export default function RealtimeMapPage() {
           <MinuteSelector
             num={to.diff(from) / 1000 / 60}
             setNum={(num) => {
-              setTo(moment(from).add(Math.abs(num) || 0, 'minutes'))
+              setFrom(moment(to).subtract(Math.abs(+num) || 1, 'minutes'))
             }}
           />
         </Grid>

@@ -11,7 +11,7 @@ type MinuteSelectorProps = {
 
 const MinuteSelector = ({ num, setNum }: MinuteSelectorProps) => {
   const handleClearInput = () => {
-    setNum(0)
+    setNum(1) // 1 minute this is the wanted default value
   }
   const textFieldClass = `selector-minute-text-field selector-minute-text-field_${
     num ? 'visible' : 'hidden'
