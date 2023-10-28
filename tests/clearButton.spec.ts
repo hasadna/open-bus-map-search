@@ -4,13 +4,13 @@ test.afterEach(async ({ page }, testInfo) => {
   if (testInfo.title === 'test in RealtimeMapPage') return
   if (testInfo.title === 'test in GapsPatternsPage') {
     await page.getByLabel('בחירת תאריך').nth(0).click()
-    await page.getByRole('gridcell', { name: '1', exact: true }).click()
+    await page.getByRole('gridcell', { name: '1', exact: true }).first().click()
     await page.getByLabel('בחירת תאריך').nth(1).click()
   } else {
     await page.getByLabel('בחירת תאריך').click()
   }
   //clear LineNumber value test
-  await page.getByRole('gridcell', { name: '2', exact: true }).click()
+  await page.getByRole('gridcell', { name: '2', exact: true }).first().click()
   await page.locator('#operator-select').click()
   await page.getByRole('option', { name: 'אלקטרה אפיקים' }).click()
   await page.getByPlaceholder('לדוגמא: 17א').fill('64')
