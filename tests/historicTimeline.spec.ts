@@ -52,7 +52,7 @@ test('search bus station', async ({ page, advancedRouteFromHAR }) => {
   await page
     .locator('div')
     .filter({ hasText: /^בחירת מסלול נסיעה/ })
-    .locator('#operator-select')
+    .locator('#route-select')
     .click()
   await page
     .getByRole('option', { name: 'חסן שוקרי/הנביאים-חיפה ⟵ חסן שוקרי/הנביאים-חיפה' })

@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
-    "paths":{
-      "src/*": ["./src/*"],
+    "paths": {
+      "src/*": ["./src/*"]
     },
     "target": "ESNext",
     "lib": ["dom", "dom.iterable", "esnext"],
@@ -19,7 +19,7 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "types": ["vite/client", "vitest/globals", "vite-plugin-svgr/client","node"]
+    "types": ["vite/client", "vitest/globals", "vite-plugin-svgr/client", "node"]
   },
   "include": ["src"]
 }
