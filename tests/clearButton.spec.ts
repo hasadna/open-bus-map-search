@@ -3,15 +3,14 @@ import { test, expect } from '@playwright/test'
 test.afterEach(async ({ page }, testInfo) => {
   if (testInfo.title === 'test in RealtimeMapPage') return
   if (testInfo.title === 'test in GapsPatternsPage') {
-    await page.getByLabel('בחירת תאריך, התאריך שנבחר הוא 21 אוק׳ 2023').click()
-    await page.getByRole('gridcell', { name: '19' }).click()
-    await page.getByLabel('בחירת תאריך, התאריך שנבחר הוא 27 אוק׳ 2023').click()
+    await page.getByLabel('בחירת תאריך').nth(0).click()
+    await page.getByRole('gridcell', { name: '1', exact: true }).click()
+    await page.getByLabel('בחירת תאריך').nth(1).click()
   } else {
     await page.getByLabel('בחירת תאריך').click()
-    await page.getByPlaceholder(/DD.*MM.*YYYY/).fill('25/10/2023')
   }
   //clear LineNumber value test
-  await page.getByRole('gridcell', { name: '25' }).click()
+  await page.getByRole('gridcell', { name: '2', exact: true }).click()
   await page.locator('#operator-select').click()
   await page.getByRole('option', { name: 'אלקטרה אפיקים' }).click()
   await page.getByPlaceholder('לדוגמא: 17א').fill('64')

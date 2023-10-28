@@ -4,6 +4,7 @@ import debounce from 'lodash.debounce'
 import { TextField } from '@mui/material'
 import ClearButton from './ClearButton'
 import './Selector.scss'
+import classNames from 'classnames'
 
 type LineSelectorProps = {
   lineNumber: string | undefined
@@ -22,9 +23,12 @@ const LineSelector = ({ lineNumber, setLineNumber }: LineSelectorProps) => {
     setValue('')
     setLineNumber('')
   }
-  const textFieldClass = `selector-line-text-field selector-line-text-field_${
-    value ? 'visible' : 'hidden'
-  }`
+
+  const textFieldClass = classNames({
+    'selector-line-text-field': true,
+    'selector-line-text-field_visible': value,
+    'selector-line-text-field_hidden': !value,
+  })
   return (
     <TextField
       className={textFieldClass}

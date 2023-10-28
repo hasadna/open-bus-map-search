@@ -3,6 +3,7 @@ import { TEXTS } from 'src/resources/texts'
 import { TextField } from '@mui/material'
 import ClearButton from './ClearButton'
 import './Selector.scss'
+import classNames from 'classnames'
 
 type MinuteSelectorProps = {
   num: number
@@ -13,9 +14,11 @@ const MinuteSelector = ({ num, setNum }: MinuteSelectorProps) => {
   const handleClearInput = () => {
     setNum(1) // 1 minute this is the wanted default value
   }
-  const textFieldClass = `selector-minute-text-field selector-minute-text-field_${
-    num ? 'visible' : 'hidden'
-  }`
+  const textFieldClass = classNames({
+    'selector-minute-text-field': true,
+    'selector-minute-text-field_visible': num,
+    'selector-minute-text-field_hidden': !num,
+  })
   return (
     <TextField
       className={textFieldClass}
