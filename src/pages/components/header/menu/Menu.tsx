@@ -3,10 +3,13 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import cn from 'classnames'
 import './menu.scss'
 import { useTranslation } from 'react-i18next'
+import { IconBaseProps } from '@ant-design/icons/lib/components/Icon'
 
 export type MenuPage = {
   label: string
   key: string
+  searchParamsRequired?: boolean
+  icon: string | React.FunctionComponent<IconBaseProps>
 }
 
 function Menu({ pages }: { pages: MenuPage[] }) {
@@ -32,6 +35,14 @@ function Menu({ pages }: { pages: MenuPage[] }) {
           onClick={() =>
             page.key[0] === '/' ? navigate(page.key) : window.open(page.key, '_blank')
           }>
+          {React.createElement(page.icon)}
+          {
+            <span
+              style={{
+                width: '15px',
+              }}
+            />
+          }
           {t(page.label)}
         </li>
       ))}
