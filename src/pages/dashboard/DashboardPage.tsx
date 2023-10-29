@@ -10,7 +10,7 @@ import LinesHbarChart from './LineHbarChart/LinesHbarChart'
 import { FormControlLabel, Switch, Tooltip } from '@mui/material'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
 import { useDate } from '../components/DateTimePicker'
-import { Skeleton } from 'antd'
+import { Card, Skeleton } from 'antd'
 import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
 import { Label } from '../components/Label'
 import { DateSelector } from '../components/DateSelector'
@@ -120,7 +120,7 @@ const DashboardPage = () => {
       </Grid>
       <Grid container spacing={2} alignItems="flex-start">
         <Grid xs={12} lg={6}>
-          <div className="widget">
+          <Card className="widget" hoverable>
             <h2 className="title">
               {TEXTS.dashboard_page_title}
               <Tooltip
@@ -135,7 +135,7 @@ const DashboardPage = () => {
             ) : (
               <OperatorHbarChart operators={convertToChartCompatibleStruct(groupByOperatorData)} />
             )}
-          </div>
+          </Card>
         </Grid>
         <Grid xs={6} display={{ xs: 'block', lg: 'none' }}>
           <OperatorSelector
@@ -145,7 +145,7 @@ const DashboardPage = () => {
           />
         </Grid>
         <Grid xs={12} lg={6}>
-          <div className="widget">
+          <Card className="widget" hoverable>
             <h2 className="title">{TEXTS.worst_lines_page_title}</h2>
             {lineDataLoading ? (
               <Skeleton active />
@@ -155,17 +155,17 @@ const DashboardPage = () => {
                 operators_whitelist={['אלקטרה אפיקים', 'דן', 'מטרופולין', 'קווים', 'אגד']}
               />
             )}
-          </div>
+          </Card>
         </Grid>
         <Grid xs={12}>
-          <div className="widget">
+          <Card className="widget" hoverable>
             <h2 className="title">{TEXTS.dashboard_page_graph_title}</h2>
             {loadingGrap ? (
               <Skeleton active />
             ) : (
               <ArrivalByTimeChart data={convertToGraphCompatibleStruct(graphData)} />
             )}
-          </div>
+          </Card>
         </Grid>
       </Grid>
     </PageContainer>

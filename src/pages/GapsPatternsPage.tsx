@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import './GapsPatternsPage.scss'
 import { Moment } from 'moment'
-import { Skeleton, Spin } from 'antd'
+import { Card, Skeleton, Spin } from 'antd'
 import moment from 'moment/moment'
 import { useDate } from './components/DateTimePicker'
 import { PageContainer } from './components/PageContainer'
@@ -205,36 +205,39 @@ const GapsPatternsPage = () => {
             setLineNumber={(number) => setSearch((current) => ({ ...current, lineNumber: number }))}
           />
         </Grid>
+      </Grid>
 
-        <Grid xs={12}>
-          {routesIsLoading && (
-            <Row>
-              <Label text={TEXTS.loading_routes} />
-              <Spin />
-            </Row>
-          )}
-          {!routesIsLoading &&
-            routes &&
-            (routes.length === 0 ? (
-              <NotFound>{TEXTS.line_not_found}</NotFound>
-            ) : (
-              <>
-                <RouteSelector
-                  routes={routes}
-                  routeKey={routeKey}
-                  setRouteKey={(key) => setSearch((current) => ({ ...current, routeKey: key }))}
-                />
-                <Grid xs={12}>
-                  <GapsByHour
-                    lineRef={routes?.find((route) => route.key === routeKey)?.lineRef || 0}
-                    operatorRef={operatorId || ''}
-                    fromDate={startDate}
-                    toDate={endDate}
-                  />
-                </Grid>
-              </>
-            ))}
-        </Grid>
+      <Grid xs={12}>
+        {routesIsLoading && (
+          <Row>
+            <Label text={TEXTS.loading_routes} />
+            <Spin />
+          </Row>
+        )}
+        {!routesIsLoading &&
+          routes &&
+          (routes.length === 0 ? (
+            <NotFound>{TEXTS.line_not_found}</NotFound>
+          ) : (
+            <>
+              <RouteSelector
+                routes={routes}
+                routeKey={routeKey}
+                setRouteKey={(key) => setSearch((current) => ({ ...current, routeKey: key }))}
+              />
+            </>
+          ))}
+      </Grid>
+
+      <Grid xs={12}>
+        <Card>
+          <GapsByHour
+            lineRef={routes?.find((route) => route.key === routeKey)?.lineRef || 0}
+            operatorRef={operatorId || ''}
+            fromDate={startDate}
+            toDate={endDate}
+          />
+        </Card>
       </Grid>
     </PageContainer>
   )
