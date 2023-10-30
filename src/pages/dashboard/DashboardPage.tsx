@@ -7,7 +7,7 @@ import { TEXTS } from 'src/resources/texts'
 import ArrivalByTimeChart from './ArrivalByTimeChart/ArrivalByTimeChart'
 import moment from 'moment'
 import LinesHbarChart from './LineHbarChart/LinesHbarChart'
-import { FormControlLabel, Switch, Tooltip } from '@mui/material'
+import { Switch, Tooltip } from '@mui/material'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
 import { useDate } from '../components/DateTimePicker'
 import { Skeleton } from 'antd'
@@ -83,28 +83,30 @@ const DashboardPage = () => {
         sx={{ marginTop: '20px' }}
         justifyContent="space-between">
         <Grid lg={6} xs={12} container spacing={2} alignItems="center">
-          <Grid xs={4.5}>
+          <Grid xs={4}>
             <DateSelector
               time={startDate}
               onChange={(data) => setStartDate(data)}
               customLabel={TEXTS.start}
             />
           </Grid>
-          <Grid xs={0.1}>-</Grid>
-          <Grid xs={4.5}>
+          <Grid xs={1}>-</Grid>
+          <Grid xs={4}>
             <DateSelector
               time={endDate}
               onChange={(data) => setEndDate(data)}
               customLabel={TEXTS.end}
             />
           </Grid>
-          <Grid xs={1}>
-            <FormControlLabel
-              control={
+          <Grid xs={3}>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <div style={{ fontSize: '0.7rem', textAlign: 'center' }}>
+                {TEXTS.group_by_hour_tooltip_content}
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'center' }}>
                 <Switch checked={groupByHour} onChange={(e) => setGroupByHour(e.target.checked)} />
-              }
-              label={TEXTS.group_by_hour_tooltip_content}
-            />
+              </div>
+            </div>
           </Grid>
         </Grid>
         <Grid lg={1} display={{ xs: 'none', lg: 'block' }}>
