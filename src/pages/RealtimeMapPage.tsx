@@ -47,7 +47,7 @@ export function numberToColorHsl(i: number, max: number) {
 }
 
 const fiveMinutesAgo = moment().subtract(5, 'minutes')
-const fourMinutesAgo = moment().subtract(4, 'minutes')
+const fourMinutesAgo = moment(fiveMinutesAgo).add(1, 'minutes')
 
 export default function RealtimeMapPage() {
   const position: Point = {
