@@ -1,4 +1,3 @@
-import React from 'react'
 import { TEXTS } from 'src/resources/texts'
 import { Autocomplete, TextField } from '@mui/material'
 

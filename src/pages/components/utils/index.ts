@@ -4,8 +4,7 @@ export interface HourlyData {
   planned_rides: number
 }
 
-const byHourHandler = (a: HourlyData, b: HourlyData) =>
-  a.planned_hour.localeCompare(b.planned_hour)
+const byHourHandler = (a: HourlyData, b: HourlyData) => a.planned_hour.localeCompare(b.planned_hour)
 
 const bySeverityHandler = (a: HourlyData, b: HourlyData) => {
   const missesA = a.planned_rides - a.actual_rides
