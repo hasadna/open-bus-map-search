@@ -2,7 +2,7 @@ import React, { useCallback, useEffect } from 'react'
 import 'antd/dist/antd.min.css'
 import './App.scss'
 import TimelinePage from 'src/pages/TimelinePage'
-import { ConfigProvider, Layout } from 'antd'
+
 import 'leaflet/dist/leaflet.css'
 import { TEXT_KEYS } from 'src/resources/texts'
 import styled from 'styled-components'
@@ -40,7 +40,11 @@ import {
   LineChartOutlined,
 } from '@ant-design/icons'
 import { MenuPage } from './pages/components/header/menu/Menu'
-const { Content } = Layout
+
+import { Layout, Typography, ConfigProvider } from 'antd'
+
+const { Content, Header } = Layout
+const { Title } = Typography
 
 const StyledLayout = styled(Layout)`
   height: 100vh;
@@ -180,6 +184,21 @@ const App = () => {
               <StyledLayout className="main">
                 <SideBar pages={PAGES} />
                 <Layout>
+                  <Header
+                    style={{
+                      padding: 0,
+                      background: '#fff',
+                      display: 'flex',
+                      alignItems: 'center',
+                      backgroundColor: '#1677ff',
+                    }}>
+                    <Title
+                      level={2}
+                      style={{ margin: 0, color: '#fff', marginRight: '31px' }}
+                      className="banner">
+                      יחד ננצח
+                    </Title>
+                  </Header>
                   <StyledContent>
                     <StyledBody>
                       <Routes>
