@@ -1,4 +1,4 @@
-import   { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { MapContainer, Marker, Polyline, Popup, TileLayer, useMap } from 'react-leaflet'
 import MarkerClusterGroup from 'react-leaflet-cluster'
 import { TEXTS } from 'src/resources/texts'
@@ -36,8 +36,6 @@ interface Path {
   operator: number
   vehicleRef: number
 }
-
-
 
 const fiveMinutesAgo = moment().subtract(5, 'minutes')
 const fourMinutesAgo = moment().subtract(4, 'minutes')

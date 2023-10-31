@@ -1,4 +1,4 @@
-import React from 'react'
+import { useState } from 'react'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import { TEXTS } from 'src/resources/texts'
 import { DataAndTimeSelectorProps } from './utils/dateAndTime'
@@ -10,7 +10,7 @@ const Error = styled.div`
 `
 
 export function DateSelector({ time, onChange, customLabel }: DataAndTimeSelectorProps) {
-  const [error, setError] = React.useState<DateValidationError | null>(null)
+  const [error, setError] = useState<DateValidationError | null>(null)
   return (
     <>
       <DatePicker
