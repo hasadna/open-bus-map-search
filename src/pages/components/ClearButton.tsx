@@ -1,4 +1,3 @@
-import React from 'react'
 import { CloseOutlined as ClearIcon } from '@ant-design/icons'
 import './ClearButton.scss'
 

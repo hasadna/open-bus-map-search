@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import { useCallback } from 'react'
 import moment, { Moment } from 'moment'
 import { MAX_HITS_COUNT } from 'src/api/apiConfig'
 import styled from 'styled-components'

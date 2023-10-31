@@ -1,5 +1,4 @@
 import { formatted, TEXTS } from 'src/resources/texts'
-import React from 'react'
 import { BusRoute } from 'src/model/busRoute'
 import { Autocomplete, TextField } from '@mui/material'
 

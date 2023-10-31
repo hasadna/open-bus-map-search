@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import Menu, { MenuPage } from '../menu/Menu'
 import { MenuOutlined } from '@ant-design/icons'
 import './sidebar.scss'

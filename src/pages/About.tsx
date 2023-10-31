@@ -1,5 +1,4 @@
 import styled from 'styled-components'
-import React from 'react'
 import { TEXT_KEYS } from 'src/resources/texts'
 import SlackIcon from '../resources/slack-icon.svg'
 import { useTranslation } from 'react-i18next'

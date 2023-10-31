@@ -1,5 +1,3 @@
-import React from 'react'
-
 import { TEXTS } from '../../resources/texts'
 import './DisplayGapsPercentage.scss'
 import { Row } from './Row'

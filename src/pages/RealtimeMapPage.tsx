@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { MapContainer, Marker, Polyline, Popup, TileLayer, useMap } from 'react-leaflet'
 import MarkerClusterGroup from 'react-leaflet-cluster'
 import { TEXTS } from 'src/resources/texts'
@@ -35,15 +35,6 @@ interface Path {
   lineRef: number
   operator: number
   vehicleRef: number
-}
-
-export function numberToColorHsl(i: number, max: number) {
-  const ratio = i / max
-  // 0 - black. 1 - red
-  const hue = 0
-  const saturation = ratio * 100
-  const lightness = ratio * 50
-  return `hsl(${hue}, ${saturation}%, ${lightness}%)`
 }
 
 const fiveMinutesAgo = moment().subtract(5, 'minutes')
@@ -189,7 +180,7 @@ export default function RealtimeMapPage() {
   )
 }
 
-export function Markers({ positions }: { positions: Point[] }) {
+function Markers({ positions }: { positions: Point[] }) {
   const map = useMap()
   const [agencyList, setAgencyList] = useState<Agency[]>([])
 

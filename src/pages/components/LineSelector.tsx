@@ -1,4 +1,4 @@
-import React, { useCallback, useLayoutEffect, useState } from 'react'
+import { useCallback, useLayoutEffect, useState } from 'react'
 import { TEXTS } from 'src/resources/texts'
 import debounce from 'lodash.debounce'
 import { TextField } from '@mui/material'
