@@ -5,7 +5,7 @@ import { getGapsAsync } from '../api/gapsService'
 import { sortByMode, HourlyData } from './components/utils'
 import { GapsList } from 'src/model/gaps'
 
-export type HourlyDataList = HourlyData[]
+type HourlyDataList = HourlyData[]
 // Convert gapsList into HourlyDataList structure
 export const convertGapsToHourlyStruct = (gapsList: GapsList): HourlyDataList => {
   // Convert gapsList data to hourly mapping structure, where hour is a key

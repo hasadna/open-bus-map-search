@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import   { useEffect, useState } from 'react'
 import { Marker, Popup, useMap } from 'react-leaflet'
 import MarkerClusterGroup from 'react-leaflet-cluster'
 import getAgencyList, { Agency } from 'src/api/agencyList'
