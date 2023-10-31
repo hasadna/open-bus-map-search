@@ -1,5 +1,3 @@
-import React from 'react'
-
 const PLACEHOLDER = 'XXX'
 
 export const TEXT_KEYS = {

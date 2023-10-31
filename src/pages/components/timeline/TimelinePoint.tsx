@@ -1,7 +1,6 @@
 import { TEXTS } from 'src/resources/texts'
 import styled from 'styled-components'
 import { Moment } from 'moment'
-import React from 'react'
 
 export const POINT_SIZE = 8
 
