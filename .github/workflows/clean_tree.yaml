@@ -1,0 +1,46 @@
+name: Test Clean Tree
+on:
+  pull_request:
+jobs:
+  git-clean-tree-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Check file existence
+        id: check_files
+        uses: andstor/file-existence-action@v1
+        with:
+          files: "package-lock.json"     
+      - name: Exit When File exists
+        if: steps.check_files.outputs.files_exists == 'true'
+        run: exit 1    
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18     
+      - name: Install yarn
+        run: npm install -g yarn     
+      - name: Install dependencies
+        run: yarn
+      - name: Check Tree after yarn
+        run: |
+          if [[ -n $(git status -s) ]]; then
+            echo "ERROR: tree is dirty after yarn"
+            git status
+            exit 1
+          else
+            echo "Working tree is clean."
+          fi
+      - name: Build
+        run: yarn build
+      - name: Check Tree after build
+        run: |
+          if [[ -n $(git status -s) ]]; then
+            echo "ERROR: tree is dirty after yarn build"
+            git status
+            exit 1
+          else
+            echo "Working tree is clean."
+          fi
+      - name: Clean up
+        if: always()
+        run: npm uninstall -g yarn
