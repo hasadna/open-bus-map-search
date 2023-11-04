@@ -130,7 +130,7 @@ export const TEXTS = {
   show_x_bus_locations: 'מיקומי אוטובוסים',
   from_time_x_to_time_y: 'משעה XXX עד שעה YYY',
   choose_start_time: 'בחירת שעת התחלה',
-  group_by_default_tooltip_content: 'קיבוץ רגיל',
+  group_by_default_tooltip_content: 'רגיל לפי זמן',
   group_by_hour_tooltip_content: 'קיבוץ לפי שעה',
   start: 'התחלה',
   end: 'סיום',
