@@ -7,10 +7,10 @@ import { TEXTS } from 'src/resources/texts'
 import ArrivalByTimeChart from './ArrivalByTimeChart/ArrivalByTimeChart'
 import moment from 'moment'
 import LinesHbarChart from './LineHbarChart/LinesHbarChart'
-import { Switch, Tooltip } from '@mui/material'
+import { Tooltip } from '@mui/material'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
 import { useDate } from '../components/DateTimePicker'
-import { Skeleton } from 'antd'
+import { Button, Skeleton } from 'antd'
 import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
 import { Label } from '../components/Label'
 import { DateSelector } from '../components/DateSelector'
@@ -90,7 +90,7 @@ const DashboardPage = () => {
               customLabel={TEXTS.start}
             />
           </Grid>
-          <Grid xs={1}>-</Grid>
+          {/* <Grid xs={1}>-</Grid> */}
           <Grid xs={4}>
             <DateSelector
               time={endDate}
@@ -98,7 +98,7 @@ const DashboardPage = () => {
               customLabel={TEXTS.end}
             />
           </Grid>
-          <Grid xs={3}>
+          {/* <Grid xs={3}>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               <div style={{ fontSize: '0.7rem', textAlign: 'center' }}>
                 {TEXTS.group_by_hour_tooltip_content}
@@ -107,7 +107,7 @@ const DashboardPage = () => {
                 <Switch checked={groupByHour} onChange={(e) => setGroupByHour(e.target.checked)} />
               </div>
             </div>
-          </Grid>
+          </Grid> */}
         </Grid>
         <Grid lg={1} display={{ xs: 'none', lg: 'block' }}>
           <Label text={TEXTS.choose_operator} />
@@ -161,7 +161,16 @@ const DashboardPage = () => {
         </Grid>
         <Grid xs={12}>
           <div className="widget">
-            <h2 className="title">{TEXTS.dashboard_page_graph_title}</h2>
+            <h2 className="title">
+              {groupByHour
+                ? TEXTS.dashboard_page_graph_title_hour
+                : TEXTS.dashboard_page_graph_title_time}
+            </h2>
+            <Button style={{ marginBottom: '10px' }} onClick={() => setGroupByHour(!groupByHour)}>
+              {groupByHour
+                ? TEXTS.group_by_default_tooltip_content
+                : TEXTS.group_by_hour_tooltip_content}
+            </Button>
             {loadingGrap ? (
               <Skeleton active />
             ) : (
