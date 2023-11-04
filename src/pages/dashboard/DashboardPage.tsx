@@ -164,11 +164,11 @@ const DashboardPage = () => {
             <h2 className="title">
               {groupByHour
                 ? TEXTS.dashboard_page_graph_title_hour
-                : TEXTS.dashboard_page_graph_title_time}
+                : TEXTS.dashboard_page_graph_title_day}
             </h2>
             <Button style={{ marginBottom: '10px' }} onClick={() => setGroupByHour(!groupByHour)}>
               {groupByHour
-                ? TEXTS.group_by_default_tooltip_content
+                ? TEXTS.group_by_day_tooltip_content
                 : TEXTS.group_by_hour_tooltip_content}
             </Button>
             {loadingGrap ? (
