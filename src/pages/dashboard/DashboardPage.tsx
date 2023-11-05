@@ -10,7 +10,7 @@ import LinesHbarChart from './LineHbarChart/LinesHbarChart'
 import { Tooltip } from '@mui/material'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
 import { useDate } from '../components/DateTimePicker'
-import { Button, Skeleton } from 'antd'
+import { Skeleton, Radio, RadioChangeEvent } from 'antd'
 import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
 import { Label } from '../components/Label'
 import { DateSelector } from '../components/DateSelector'
@@ -155,11 +155,13 @@ const DashboardPage = () => {
                 ? TEXTS.dashboard_page_graph_title_hour
                 : TEXTS.dashboard_page_graph_title_day}
             </h2>
-            <Button style={{ marginBottom: '10px' }} onClick={() => setGroupByHour(!groupByHour)}>
-              {groupByHour
-                ? TEXTS.group_by_day_tooltip_content
-                : TEXTS.group_by_hour_tooltip_content}
-            </Button>
+            <Radio.Group
+              style={{ marginBottom: '10px' }}
+              onChange={(e: RadioChangeEvent) => setGroupByHour(e.target.value === 'byHour')}
+              defaultValue="byDay">
+              <Radio.Button value="byDay">{TEXTS.group_by_day_tooltip_content}</Radio.Button>
+              <Radio.Button value="byHour">{TEXTS.group_by_hour_tooltip_content}</Radio.Button>
+            </Radio.Group>
             {loadingGrap ? (
               <Skeleton active />
             ) : (
