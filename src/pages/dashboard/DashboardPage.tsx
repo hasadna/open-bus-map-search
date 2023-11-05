@@ -90,7 +90,6 @@ const DashboardPage = () => {
               customLabel={TEXTS.start}
             />
           </Grid>
-          {/* <Grid xs={1}>-</Grid> */}
           <Grid xs={4}>
             <DateSelector
               time={endDate}
@@ -98,16 +97,6 @@ const DashboardPage = () => {
               customLabel={TEXTS.end}
             />
           </Grid>
-          {/* <Grid xs={3}>
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <div style={{ fontSize: '0.7rem', textAlign: 'center' }}>
-                {TEXTS.group_by_hour_tooltip_content}
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'center' }}>
-                <Switch checked={groupByHour} onChange={(e) => setGroupByHour(e.target.checked)} />
-              </div>
-            </div>
-          </Grid> */}
         </Grid>
         <Grid lg={1} display={{ xs: 'none', lg: 'block' }}>
           <Label text={TEXTS.choose_operator} />
