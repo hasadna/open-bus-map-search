@@ -30,6 +30,3 @@ yarn-error.log*
 
 **/traces
 **/node_modules
-
-# Don't use npm i
-package-lock.json
