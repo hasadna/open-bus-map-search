@@ -98,10 +98,8 @@ const DashboardPage = () => {
             />
           </Grid>
         </Grid>
-        <Grid lg={1} display={{ xs: 'none', lg: 'block' }}>
-          <Label text={TEXTS.choose_operator} />
-        </Grid>
-        <Grid lg={5} display={{ xs: 'none', lg: 'block' }}>
+
+        <Grid lg={6} display={{ xs: 'none', lg: 'block' }}>
           <OperatorSelector
             operatorId={operatorId}
             setOperatorId={setOperatorId}
