@@ -1,6 +1,5 @@
 # Description
-Please describe the suggested changes
+<Please describe the suggested changes>
 
 ## screenshots
-<-- paste here -->
-
+<paste here>
