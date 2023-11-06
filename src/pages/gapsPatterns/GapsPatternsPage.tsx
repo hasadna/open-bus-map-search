@@ -32,6 +32,7 @@ import { useGapsList } from '../useGapsList'
 import { DateSelector } from '../components/DateSelector'
 import { INPUT_SIZE } from 'src/resources/sizes'
 const { Title } = Typography
+import { useTranslation } from 'react-i18next'
 // Define prop types for the component
 interface BusLineStatisticsProps {
   lineRef: number
@@ -61,7 +62,7 @@ function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatistic
   const [sortingMode, setSortingMode] = useState<'hour' | 'severity'>('hour')
   const hourlyData = useGapsList(fromDate, toDate, operatorRef, lineRef, sortingMode)
   const isLoading = !hourlyData.length
-
+  const { t } = useTranslation()
   const maxHourlyRides = Math.max(
     ...hourlyData.map((entry) => entry.planned_rides),
     ...hourlyData.map((entry) => entry.actual_rides),
@@ -70,7 +71,7 @@ function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatistic
   return (
     lineRef > 0 && (
       <div className="widget">
-        <Title level={3}>{TEXTS.dashboard_page_graph_title}</Title>
+        <Title level={3}>{t('dashboard_page_graph_title')}</Title>
 
         {isLoading && lineRef ? (
           <Skeleton active />
@@ -81,9 +82,9 @@ function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatistic
               onChange={(e: RadioChangeEvent) =>
                 setSortingMode(e.target.value as 'hour' | 'severity')
               }
-              defaultValue="a">
-              <Radio.Button value="a">{TEXTS.order_by_hour}</Radio.Button>
-              <Radio.Button value="b">{TEXTS.order_by_severity} </Radio.Button>
+              value={sortingMode}>
+              <Radio.Button value="hour">{TEXTS.order_by_hour}</Radio.Button>
+              <Radio.Button value="severity">{TEXTS.order_by_severity} </Radio.Button>
             </Radio.Group>
 
             <ComposedChart
