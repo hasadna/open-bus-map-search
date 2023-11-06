@@ -1,19 +1,19 @@
 import { useContext, useEffect, useState } from 'react'
 import './GapsPatternsPage.scss'
 import { Moment } from 'moment'
-import { Skeleton, Spin } from 'antd'
+import { Skeleton, Spin, Radio, Typography, RadioChangeEvent } from 'antd'
 import moment from 'moment/moment'
-import { useDate } from './components/DateTimePicker'
-import { PageContainer } from './components/PageContainer'
-import { Row } from './components/Row'
-import { Label } from './components/Label'
-import { TEXTS } from '../resources/texts'
-import OperatorSelector from './components/OperatorSelector'
-import LineNumberSelector from './components/LineSelector'
-import { NotFound } from './components/NotFound'
-import RouteSelector from './components/RouteSelector'
-import { SearchContext } from '../model/pageState'
-import { getRoutesAsync } from '../api/gtfsService'
+import { useDate } from '../components/DateTimePicker'
+import { PageContainer } from '../components/PageContainer'
+import { Row } from '../components/Row'
+import { Label } from '../components/Label'
+import { TEXTS } from '../../resources/texts'
+import OperatorSelector from '../components/OperatorSelector'
+import LineNumberSelector from '../components/LineSelector'
+import { NotFound } from '../components/NotFound'
+import RouteSelector from '../components/RouteSelector'
+import { SearchContext } from '../../model/pageState'
+import { getRoutesAsync } from '../../api/gtfsService'
 import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
 
 import {
@@ -27,12 +27,11 @@ import {
   Cell,
   TooltipProps,
 } from 'recharts'
-import { FormControlLabel, Radio, RadioGroup } from '@mui/material'
-import { mapColorByExecution } from './components/utils'
-import { useGapsList } from './useGapsList'
-import { DateSelector } from './components/DateSelector'
+import { mapColorByExecution } from '../components/utils'
+import { useGapsList } from '../useGapsList'
+import { DateSelector } from '../components/DateSelector'
 import { INPUT_SIZE } from 'src/resources/sizes'
-
+const { Title } = Typography
 // Define prop types for the component
 interface BusLineStatisticsProps {
   lineRef: number
@@ -68,70 +67,75 @@ function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatistic
     ...hourlyData.map((entry) => entry.actual_rides),
   )
 
-  return isLoading && lineRef ? (
-    <div className="loading-container">
-      <Skeleton active />
-    </div>
-  ) : (
-    <div>
-      <div>
-        <RadioGroup
-          row
-          aria-label="sorting-mode"
-          name="sorting-mode"
-          value={sortingMode}
-          onChange={(e) => setSortingMode(e.target.value as 'hour' | 'severity')}>
-          <FormControlLabel value="hour" control={<Radio />} label={TEXTS.order_by_hour} />
-          <FormControlLabel value="severity" control={<Radio />} label={TEXTS.order_by_severity} />
-        </RadioGroup>
+  return (
+    lineRef > 0 && (
+      <div className="widget">
+        <Title level={3}>{TEXTS.dashboard_page_graph_title}</Title>
+
+        {isLoading && lineRef ? (
+          <Skeleton active />
+        ) : (
+          <>
+            <Radio.Group
+              style={{ marginBottom: '10px' }}
+              onChange={(e: RadioChangeEvent) =>
+                setSortingMode(e.target.value as 'hour' | 'severity')
+              }
+              defaultValue="a">
+              <Radio.Button value="a">{TEXTS.order_by_hour}</Radio.Button>
+              <Radio.Button value="b">{TEXTS.order_by_severity} </Radio.Button>
+            </Radio.Group>
+
+            <ComposedChart
+              layout="vertical"
+              width={500}
+              height={hourlyData.length * 50}
+              data={hourlyData}
+              margin={{
+                top: 20,
+                right: 20,
+                bottom: 20,
+                left: 20,
+              }}
+              barGap={-20}>
+              <CartesianGrid stroke="#f5f5f5" />
+              <XAxis
+                type="number"
+                xAxisId={0}
+                reversed={true}
+                orientation={'top'}
+                domain={[0, maxHourlyRides]}
+              />
+              <XAxis
+                type="number"
+                xAxisId={1}
+                reversed={true}
+                orientation={'top'}
+                domain={[0, maxHourlyRides]}
+                hide
+              />
+              <YAxis
+                dataKey="planned_hour"
+                type="category"
+                orientation={'right'}
+                style={{ direction: 'ltr', marginTop: '-10px' }}
+              />
+              <Tooltip content={<CustomTooltip />} />
+              <Legend />
+              <Bar dataKey="actual_rides" barSize={20} radius={9} xAxisId={1} opacity={30}>
+                {hourlyData.map((entry, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={mapColorByExecution(entry.planned_rides, entry.actual_rides)}
+                  />
+                ))}
+              </Bar>
+              <Bar dataKey="planned_rides" barSize={20} fill="#413ea055" radius={9} xAxisId={0} />
+            </ComposedChart>
+          </>
+        )}
       </div>
-      <ComposedChart
-        layout="vertical"
-        width={500}
-        height={hourlyData.length * 50}
-        data={hourlyData}
-        margin={{
-          top: 20,
-          right: 20,
-          bottom: 20,
-          left: 20,
-        }}
-        barGap={-20}>
-        <CartesianGrid stroke="#f5f5f5" />
-        <XAxis
-          type="number"
-          xAxisId={0}
-          reversed={true}
-          orientation={'top'}
-          domain={[0, maxHourlyRides]}
-        />
-        <XAxis
-          type="number"
-          xAxisId={1}
-          reversed={true}
-          orientation={'top'}
-          domain={[0, maxHourlyRides]}
-          hide
-        />
-        <YAxis
-          dataKey="planned_hour"
-          type="category"
-          orientation={'right'}
-          style={{ direction: 'ltr', marginTop: '-10px' }}
-        />
-        <Tooltip content={<CustomTooltip />} />
-        <Legend />
-        <Bar dataKey="actual_rides" barSize={20} radius={9} xAxisId={1} opacity={30}>
-          {hourlyData.map((entry, index) => (
-            <Cell
-              key={`cell-${index}`}
-              fill={mapColorByExecution(entry.planned_rides, entry.actual_rides)}
-            />
-          ))}
-        </Bar>
-        <Bar dataKey="planned_rides" barSize={20} fill="#413ea055" radius={9} xAxisId={0} />
-      </ComposedChart>
-    </div>
+    )
   )
 }
 
@@ -195,7 +199,6 @@ const GapsPatternsPage = () => {
             setOperatorId={(id) => setSearch((current) => ({ ...current, operatorId: id }))}
           />
         </Grid>
-
         <Grid xs={4}>
           <Label text={TEXTS.choose_line} />
         </Grid>
@@ -205,7 +208,6 @@ const GapsPatternsPage = () => {
             setLineNumber={(number) => setSearch((current) => ({ ...current, lineNumber: number }))}
           />
         </Grid>
-
         <Grid xs={12}>
           {routesIsLoading && (
             <Row>
@@ -224,17 +226,17 @@ const GapsPatternsPage = () => {
                   routeKey={routeKey}
                   setRouteKey={(key) => setSearch((current) => ({ ...current, routeKey: key }))}
                 />
-                <Grid xs={12}>
-                  <GapsByHour
-                    lineRef={routes?.find((route) => route.key === routeKey)?.lineRef || 0}
-                    operatorRef={operatorId || ''}
-                    fromDate={startDate}
-                    toDate={endDate}
-                  />
-                </Grid>
               </>
             ))}
         </Grid>
+      </Grid>
+      <Grid xs={12}>
+        <GapsByHour
+          lineRef={routes?.find((route) => route.key === routeKey)?.lineRef || 0}
+          operatorRef={operatorId || ''}
+          fromDate={startDate}
+          toDate={endDate}
+        />
       </Grid>
     </PageContainer>
   )
