@@ -125,7 +125,7 @@ const DashboardPage = () => {
             )}
           </div>
         </Grid>
-        <Grid xs={6} display={{ xs: 'block', lg: 'none' }}>
+        <Grid xs={12} display={{ xs: 'block', lg: 'none' }}>
           <OperatorSelector
             operatorId={operatorId}
             setOperatorId={setOperatorId}
