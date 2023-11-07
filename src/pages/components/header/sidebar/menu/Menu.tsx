@@ -3,16 +3,9 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import cn from 'classnames'
 import './menu.scss'
 import { useTranslation } from 'react-i18next'
-import { IconBaseProps } from '@ant-design/icons/lib/components/Icon'
+import { PAGES as pages } from 'src/routes'
 
-export type MenuPage = {
-  label: string
-  key: string
-  searchParamsRequired?: boolean
-  icon: string | React.FunctionComponent<IconBaseProps>
-}
-
-function Menu({ pages }: { pages: MenuPage[] }) {
+const Menu: React.FC = () => {
   const { t, i18n } = useTranslation()
 
   const [currentLanguage, setCurrentLanguage] = useState('en')

@@ -107,7 +107,7 @@ const App = () => {
           <LocalizationProvider dateAdapter={AdapterMoment} adapterLocale="he">
             <ConfigProvider direction="rtl" locale={heIL}>
               <StyledLayout className="main">
-                <SideBar pages={PAGES} />
+                <SideBar />
                 <Layout>
                   <StyledContent>
                     <StyledBody>

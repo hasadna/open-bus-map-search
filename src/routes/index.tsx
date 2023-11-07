@@ -21,7 +21,14 @@ import {
   LineChartOutlined,
 } from '@ant-design/icons'
 
-import { MenuPage } from '../pages/components/header/menu/Menu'
+import { IconBaseProps } from '@ant-design/icons/lib/components/Icon'
+
+export type MenuPage = {
+  label: string
+  key: string
+  searchParamsRequired?: boolean
+  icon: string | React.FC<IconBaseProps>
+}
 
 export const PAGES = [
   {
