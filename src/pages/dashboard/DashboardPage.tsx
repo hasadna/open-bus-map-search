@@ -12,7 +12,6 @@ import OperatorSelector from 'src/pages/components/OperatorSelector'
 import { useDate } from '../components/DateTimePicker'
 import { Skeleton, Radio, RadioChangeEvent } from 'antd'
 import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
-import { Label } from '../components/Label'
 import { DateSelector } from '../components/DateSelector'
 
 const now = moment()
@@ -83,14 +82,14 @@ const DashboardPage = () => {
         sx={{ marginTop: '20px' }}
         justifyContent="space-between">
         <Grid lg={6} xs={12} container spacing={2} alignItems="center">
-          <Grid xs={4}>
+          <Grid xs={6}>
             <DateSelector
               time={startDate}
               onChange={(data) => setStartDate(data)}
               customLabel={TEXTS.start}
             />
           </Grid>
-          <Grid xs={4}>
+          <Grid xs={6}>
             <DateSelector
               time={endDate}
               onChange={(data) => setEndDate(data)}
