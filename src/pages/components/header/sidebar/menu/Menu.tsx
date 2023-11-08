@@ -5,7 +5,7 @@ import './menu.scss'
 import { useTranslation } from 'react-i18next'
 import { PAGES as pages } from 'src/routes'
 
-const Menu: React.FC = () => {
+const Menu = () => {
   const { t, i18n } = useTranslation()
 
   const [currentLanguage, setCurrentLanguage] = useState('en')
