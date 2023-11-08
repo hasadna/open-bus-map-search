@@ -21,8 +21,6 @@ import {
   LineChartOutlined,
 } from '@ant-design/icons'
 
-import { MenuPage } from '../pages/components/header/menu/Menu'
-
 export const PAGES = [
   {
     label: TEXT_KEYS.dashboard_page_title,
@@ -72,7 +70,7 @@ export const PAGES = [
     key: 'https://www.jgive.com/new/he/ils/donation-targets/3268#donation-modal',
     icon: DollarOutlined,
   },
-] as MenuPage[]
+]
 
 const RoutesList = () => {
   const RedirectToDashboard = () => <Navigate to={PAGES[0].key} replace />
