@@ -21,15 +21,6 @@ import {
   LineChartOutlined,
 } from '@ant-design/icons'
 
-import { IconBaseProps } from '@ant-design/icons/lib/components/Icon'
-
-export type MenuPage = {
-  label: string
-  key: string
-  searchParamsRequired?: boolean
-  icon: string | React.FC<IconBaseProps>
-}
-
 export const PAGES = [
   {
     label: TEXT_KEYS.dashboard_page_title,
@@ -79,7 +70,7 @@ export const PAGES = [
     key: 'https://www.jgive.com/new/he/ils/donation-targets/3268#donation-modal',
     icon: DollarOutlined,
   },
-] as MenuPage[]
+]
 
 const RoutesList = () => {
   const RedirectToDashboard = () => <Navigate to={PAGES[0].key} replace />
