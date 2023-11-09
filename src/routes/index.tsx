@@ -1,13 +1,8 @@
 import { TEXT_KEYS } from 'src/resources/texts'
 import { Navigate, Route, Routes } from 'react-router-dom'
+import React, { Suspense, lazy } from 'react'
 
-import DashboardPage from '../pages/dashboard/DashboardPage'
-import TimelinePage from '../pages/TimelinePage'
-import GapsPage from '../pages/GapsPage'
-import GapsPatternsPage from '../pages/gapsPatterns'
-import RealtimeMapPage from '../pages/RealtimeMapPage'
 import SingleLineMapPage from '../pages/SingleLineMapPage'
-import About from '../pages/About'
 
 import {
   RadarChartOutlined,
@@ -20,52 +15,53 @@ import {
   BarChartOutlined,
   LineChartOutlined,
 } from '@ant-design/icons'
+import { Spin } from 'antd'
 
 export const PAGES = [
   {
     label: TEXT_KEYS.dashboard_page_title,
     path: '/dashboard',
     icon: LaptopOutlined,
-    element: <DashboardPage />,
+    element: '../pages/dashboard/DashboardPage',
   },
   {
     label: TEXT_KEYS.timeline_page_title,
     path: '/timeline',
     searchParamsRequired: true,
     icon: FieldTimeOutlined,
-    element: <TimelinePage />,
+    element: '../pages/TimelinePage',
   },
   {
     label: TEXT_KEYS.gaps_page_title,
     path: '/gaps',
     searchParamsRequired: true,
     icon: BarChartOutlined,
-    element: <GapsPage />,
+    element: '../pages/GapsPage',
   },
   {
     label: TEXT_KEYS.gaps_patterns_page_title,
     path: '/gaps_patterns',
     icon: LineChartOutlined,
-    element: <GapsPatternsPage />,
+    element: '../pages/gapsPatterns',
   },
   {
     label: TEXT_KEYS.realtime_map_page_title,
     path: '/map',
     icon: HeatMapOutlined,
-    element: <RealtimeMapPage />,
+    element: '../pages/RealtimeMapPage',
   },
   {
     label: TEXT_KEYS.singleline_map_page_title,
     path: '/single-line-map',
     searchParamsRequired: true,
     icon: RadarChartOutlined,
-    element: <SingleLineMapPage />,
+    element: SingleLineMapPage, // instead of '../pages/SingleLineMapPage',
   },
   {
     label: TEXT_KEYS.about_title,
     path: '/about',
     icon: BellOutlined,
-    element: <About />,
+    element: '../pages/About',
   },
   {
     label: TEXT_KEYS.report_a_bug_title,
@@ -86,9 +82,23 @@ const RoutesList = () => {
   const routes = PAGES.filter((r) => r.element)
   return (
     <Routes>
-      {routes.map(({ path, element }) => (
-        <Route key={path} path={path} element={element} />
-      ))}
+      {routes.map(({ path, element }) => {
+        const Element =
+          typeof element === 'string'
+            ? lazy(() => import(element as string))
+            : (element as React.FC)
+        return (
+          <Route
+            key={path}
+            path={path}
+            element={
+              <Suspense fallback={<Spin size="small" />}>
+                <Element />
+              </Suspense>
+            }
+          />
+        )
+      })}
       <Route path="*" element={<RedirectToDashboard />} />
     </Routes>
   )
