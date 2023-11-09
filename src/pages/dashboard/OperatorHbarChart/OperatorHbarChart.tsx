@@ -13,7 +13,7 @@ const colorsByCompannies: { [index: string]: string } = {
   מטרופולין: '#FF8500',
 }
 
-const excludeOperators = [/רכבת ישראל/, /^מוניות.*/, /^ירושלים-.*/, /^ירושלים -.*/]
+// const excludeOperators = [/רכבת ישראל/, /^מוניות.*/, /^ירושלים-.*/, /^ירושלים -.*/]
 
 export function getColorName(name: string) {
   return colorsByCompannies[name] || getColorByHashString(name)
@@ -21,9 +21,11 @@ export function getColorName(name: string) {
 
 function OperatorHbarChart({
   operators,
+  excludeOperators,
   complement = false, // complement the chart (100% - actual) instead of actual
 }: {
   operators: { name: string; total: number; actual: number }[]
+  excludeOperators: RegExp[]
   complement?: boolean
 }) {
   const rows = operators

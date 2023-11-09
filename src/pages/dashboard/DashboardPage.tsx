@@ -49,6 +49,8 @@ const convertToGraphCompatibleStruct = (arr: GroupByRes[]) => {
   }))
 }
 
+const excludeOperators = [/רכבת ישראל/, /^מוניות.*/, /^ירושלים-.*/, /^ירושלים -.*/]
+
 const DashboardPage = () => {
   const [startDate, setStartDate] = useDate(now.clone().subtract(7, 'days'))
   const [endDate, setEndDate] = useDate(now.clone().subtract(1, 'day'))
@@ -121,7 +123,7 @@ const DashboardPage = () => {
             {groupByOperatorLoading ? (
               <Skeleton active />
             ) : (
-              <OperatorHbarChart operators={convertToChartCompatibleStruct(groupByOperatorData)} />
+              <OperatorHbarChart operators={convertToChartCompatibleStruct(groupByOperatorData)} excludeOperators={excludeOperators}/>
             )}
           </div>
         </Grid>
@@ -162,7 +164,7 @@ const DashboardPage = () => {
             {loadingGrap ? (
               <Skeleton active />
             ) : (
-              <ArrivalByTimeChart data={convertToGraphCompatibleStruct(graphData)} />
+              <ArrivalByTimeChart data={convertToGraphCompatibleStruct(graphData)} excludeOperators={excludeOperators}/>
             )}
           </div>
         </Grid>
