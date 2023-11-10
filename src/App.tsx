@@ -76,7 +76,7 @@ const App = () => {
   })
 
   useEffect(() => {
-    const page = PAGES.find((page) => page.key === location.pathname)
+    const page = PAGES.find((page) => page.path === location.pathname)
     if (page?.searchParamsRequired) {
       const params = new URLSearchParams({ timestamp: search.timestamp.toString() })
 
@@ -107,7 +107,7 @@ const App = () => {
           <LocalizationProvider dateAdapter={AdapterMoment} adapterLocale="he">
             <ConfigProvider direction="rtl" locale={heIL}>
               <StyledLayout className="main">
-                <SideBar pages={PAGES} />
+                <SideBar />
                 <Layout>
                   <StyledContent>
                     <StyledBody>

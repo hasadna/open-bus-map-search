@@ -4,12 +4,9 @@ import SlackIcon from '../resources/slack-icon.svg'
 import { useTranslation } from 'react-i18next'
 
 const About = () => {
-  const { t } = useTranslation()
-
   return (
     <AboutStyle>
       <div className="about-center-container">
-        <h1>{t(TEXT_KEYS.website_name)}</h1>
         <WhatIsWebsite />
         <DiscoveredMistake />
         <Privacy />
@@ -132,10 +129,8 @@ const Funding = () => {
 
 const AboutStyle = styled.div`
   display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-
+  flex-direction: column;
+  padding: 1rem;
   & .about-center-container {
     width: 100%;
     max-width: 770px;

@@ -21,71 +21,74 @@ import {
   LineChartOutlined,
 } from '@ant-design/icons'
 
-import { MenuPage } from '../pages/components/header/menu/Menu'
-
 export const PAGES = [
   {
     label: TEXT_KEYS.dashboard_page_title,
-    key: '/dashboard',
+    path: '/dashboard',
     icon: LaptopOutlined,
+    element: <DashboardPage />,
   },
   {
     label: TEXT_KEYS.timeline_page_title,
-    key: '/timeline',
+    path: '/timeline',
     searchParamsRequired: true,
     icon: FieldTimeOutlined,
+    element: <TimelinePage />,
   },
   {
     label: TEXT_KEYS.gaps_page_title,
-    key: '/gaps',
+    path: '/gaps',
     searchParamsRequired: true,
     icon: BarChartOutlined,
+    element: <GapsPage />,
   },
   {
     label: TEXT_KEYS.gaps_patterns_page_title,
-    key: '/gaps_patterns',
+    path: '/gaps_patterns',
     icon: LineChartOutlined,
+    element: <GapsPatternsPage />,
   },
   {
     label: TEXT_KEYS.realtime_map_page_title,
-    key: '/map',
+    path: '/map',
     icon: HeatMapOutlined,
+    element: <RealtimeMapPage />,
   },
   {
     label: TEXT_KEYS.singleline_map_page_title,
-    key: '/single-line-map',
+    path: '/single-line-map',
     searchParamsRequired: true,
     icon: RadarChartOutlined,
+    element: <SingleLineMapPage />,
   },
   {
     label: TEXT_KEYS.about_title,
-    key: '/about',
+    path: '/about',
     icon: BellOutlined,
+    element: <About />,
   },
   {
     label: TEXT_KEYS.report_a_bug_title,
-    key: 'https://github.com/hasadna/open-bus-map-search/issues',
+    path: 'https://github.com/hasadna/open-bus-map-search/issues',
     icon: BugOutlined,
+    element: null,
   },
   {
     label: TEXT_KEYS.donate_title,
-    key: 'https://www.jgive.com/new/he/ils/donation-targets/3268#donation-modal',
+    path: 'https://www.jgive.com/new/he/ils/donation-targets/3268#donation-modal',
     icon: DollarOutlined,
+    element: null,
   },
-] as MenuPage[]
+]
 
 const RoutesList = () => {
-  const RedirectToDashboard = () => <Navigate to={PAGES[0].key} replace />
-
+  const RedirectToDashboard = () => <Navigate to={PAGES[0].path} replace />
+  const routes = PAGES.filter((r) => r.element)
   return (
     <Routes>
-      <Route path={PAGES[0].key} element={<DashboardPage />} />
-      <Route path={PAGES[1].key} element={<TimelinePage />} />
-      <Route path={PAGES[2].key} element={<GapsPage />} />
-      <Route path={PAGES[3].key} element={<GapsPatternsPage />} />
-      <Route path={PAGES[4].key} element={<RealtimeMapPage />} />
-      <Route path={PAGES[5].key} element={<SingleLineMapPage />} />
-      <Route path={PAGES[6].key} element={<About />} />
+      {routes.map(({ path, element }) => (
+        <Route key={path} path={path} element={element} />
+      ))}
       <Route path="*" element={<RedirectToDashboard />} />
     </Routes>
   )
