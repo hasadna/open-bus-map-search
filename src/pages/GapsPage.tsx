@@ -21,31 +21,7 @@ import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
 import { INPUT_SIZE } from 'src/resources/sizes'
 import DisplayGapsPercentage from './components/DisplayGapsPercentage'
 
-function formatTime(time: Moment) {
-  return time.format(t('time_format'))
-}
 
-function formatStatus(all: GapsList, gap: Gap) {
-  if (!gap.siriTime) {
-    return t('ride_missing')
-  }
-  if (gap.gtfsTime) {
-    return t('ride_as_planned')
-  }
-  const hasTwinRide = all.some((g) => g.gtfsTime && g.siriTime && g.siriTime.isSame(gap.siriTime))
-  if (hasTwinRide) {
-    return t('ride_duped')
-  }
-  return t('ride_extra')
-}
-
-function getGapsPercentage(gaps: GapsList | undefined): number | undefined {
-  const ridesInTime = gaps?.filter((gap) => formatStatus([], gap) === t('ride_as_planned'))
-  if (!gaps || !ridesInTime) return undefined
-  const ridesInTimePercentage = (ridesInTime?.length / gaps?.length) * 100
-  const allRidesPercentage = 100
-  return allRidesPercentage - ridesInTimePercentage
-}
 
 const Cell = styled.div`
   width: 120px;
@@ -98,6 +74,32 @@ const GapsPage = () => {
   const gapsPercentage = getGapsPercentage(gaps)
 
   const { t } = useTranslation()
+
+  function formatTime(time: Moment) {
+    return time.format(t('time_format'))
+  }
+
+  function formatStatus(all: GapsList, gap: Gap) {
+    if (!gap.siriTime) {
+      return t('ride_missing')
+    }
+    if (gap.gtfsTime) {
+      return t('ride_as_planned')
+    }
+    const hasTwinRide = all.some((g) => g.gtfsTime && g.siriTime && g.siriTime.isSame(gap.siriTime))
+    if (hasTwinRide) {
+      return t('ride_duped')
+    }
+    return t('ride_extra')
+  }
+
+  function getGapsPercentage(gaps: GapsList | undefined): number | undefined {
+    const ridesInTime = gaps?.filter((gap) => formatStatus([], gap) === t('ride_as_planned'))
+    if (!gaps || !ridesInTime) return undefined
+    const ridesInTimePercentage = (ridesInTime?.length / gaps?.length) * 100
+    const allRidesPercentage = 100
+    return allRidesPercentage - ridesInTimePercentage
+  }
 
   return (
     <PageContainer>
