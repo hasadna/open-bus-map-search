@@ -1,10 +1,12 @@
 import React from 'react'
-import { TEXTS } from 'src/resources/texts'
+import {useTranslation} from 'react-i18next'
 import './HbarChart.scss'
 import { Tooltip } from '@mui/material'
 
 type Entry = { name: string; total: number; actual: number; color?: string }
 const numberFormatter = new Intl.NumberFormat('he-IL')
+
+const { t } = useTranslation()
 
 export function HbarChart({
   entries,
@@ -29,9 +31,9 @@ export function HbarChart({
         placement={'top'}
         title={
           <div style={{ fontSize: 15 }}>
-            {TEXTS.rides_planned}: {numberFormatter.format(entry.total)}
+            {t('rides_planned')}: {numberFormatter.format(entry.total)}
             <br />
-            {TEXTS.rides_actual}: {numberFormatter.format(entry.actual)}
+            {t('rides_actual')}: {numberFormatter.format(entry.actual)}
           </div>
         }
         followCursor={true}>

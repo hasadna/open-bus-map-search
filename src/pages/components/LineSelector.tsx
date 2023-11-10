@@ -1,5 +1,5 @@
 import { useCallback, useLayoutEffect, useState } from 'react'
-import { TEXTS } from 'src/resources/texts'
+import {useTranslation} from 'react-i18next'
 import debounce from 'lodash.debounce'
 import { TextField } from '@mui/material'
 import ClearButton from './ClearButton'
@@ -23,16 +23,16 @@ const LineSelector = ({ lineNumber, setLineNumber }: LineSelectorProps) => {
     setValue('')
     setLineNumber('')
   }
-
   const textFieldClass = classNames({
     'selector-line-text-field': true,
     'selector-line-text-field_visible': value,
     'selector-line-text-field_hidden': !value,
   })
+  const {t} = useTranslation();
   return (
     <TextField
       className={textFieldClass}
-      label={TEXTS.choose_line}
+      label={t('choose_line')}
       type="number"
       value={value && +value < 0 ? 0 : value}
       onChange={(e) => {
@@ -43,7 +43,7 @@ const LineSelector = ({ lineNumber, setLineNumber }: LineSelectorProps) => {
         shrink: true,
       }}
       InputProps={{
-        placeholder: TEXTS.line_placeholder,
+        placeholder: t('line_placeholder'),
         endAdornment: <ClearButton onClearInput={handleClearInput} />,
       }}
     />

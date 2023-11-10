@@ -1,4 +1,4 @@
-import { TEXTS } from 'src/resources/texts'
+import {useTranslation} from 'react-i18next'
 import { TextField } from '@mui/material'
 import ClearButton from './ClearButton'
 import './Selector.scss'
@@ -18,10 +18,11 @@ const MinuteSelector = ({ num, setNum }: MinuteSelectorProps) => {
     'selector-minute-text-field_visible': num,
     'selector-minute-text-field_hidden': !num,
   })
+  const {t} = useTranslation()
   return (
     <TextField
       className={textFieldClass}
-      label={TEXTS.minutes}
+      label={t('minutes')}
       type="number"
       value={num}
       onChange={(e) => setNum(+e.target.value)}

@@ -7,7 +7,7 @@ import { useDate } from '../components/DateTimePicker'
 import { PageContainer } from '../components/PageContainer'
 import { Row } from '../components/Row'
 import { Label } from '../components/Label'
-import { TEXTS } from '../../resources/texts'
+import {useTranslation} from 'react-i18next'
 import OperatorSelector from '../components/OperatorSelector'
 import LineNumberSelector from '../components/LineSelector'
 import { NotFound } from '../components/NotFound'
@@ -32,7 +32,6 @@ import { useGapsList } from '../useGapsList'
 import { DateSelector } from '../components/DateSelector'
 import { INPUT_SIZE } from 'src/resources/sizes'
 const { Title } = Typography
-import { useTranslation } from 'react-i18next'
 // Define prop types for the component
 interface BusLineStatisticsProps {
   lineRef: number
@@ -42,6 +41,8 @@ interface BusLineStatisticsProps {
 }
 
 const now = moment()
+
+const { t } = useTranslation()
 
 const CustomTooltip = ({ active, payload }: TooltipProps<number, string>) => {
   if (active && payload && payload.length > 1) {
@@ -83,8 +84,8 @@ function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatistic
                 setSortingMode(e.target.value as 'hour' | 'severity')
               }
               value={sortingMode}>
-              <Radio.Button value="hour">{TEXTS.order_by_hour}</Radio.Button>
-              <Radio.Button value="severity">{TEXTS.order_by_severity} </Radio.Button>
+              <Radio.Button value="hour">{t('order_by_hour')}</Radio.Button>
+              <Radio.Button value="severity">{t('order_by_severity')} </Radio.Button>
             </Radio.Group>
 
             <ComposedChart
@@ -171,14 +172,14 @@ const GapsPatternsPage = () => {
     <PageContainer>
       <Grid container spacing={2} alignItems="center" sx={{ maxWidth: INPUT_SIZE }}>
         <Grid xs={4}>
-          <Label text={TEXTS.choose_dates} />
+          <Label text={t('choose_dates')} />
         </Grid>
         <Grid container spacing={2} xs={8} alignItems="center" justifyContent="space-between">
           <Grid xs={5.7}>
             <DateSelector
               time={startDate}
               onChange={(data) => setStartDate(data)}
-              customLabel={TEXTS.start}
+              customLabel={t('start')}
             />
           </Grid>
           <Grid xs={0.1}>-</Grid>
@@ -186,13 +187,13 @@ const GapsPatternsPage = () => {
             <DateSelector
               time={endDate}
               onChange={(data) => setEndDate(data)}
-              customLabel={TEXTS.end}
+              customLabel={t('end')}
             />
           </Grid>
         </Grid>
 
         <Grid xs={4}>
-          <Label text={TEXTS.choose_operator} />
+          <Label text={t('choose_operator')} />
         </Grid>
         <Grid xs={8}>
           <OperatorSelector
@@ -201,7 +202,7 @@ const GapsPatternsPage = () => {
           />
         </Grid>
         <Grid xs={4}>
-          <Label text={TEXTS.choose_line} />
+          <Label text={t('choose_line')} />
         </Grid>
         <Grid xs={8}>
           <LineNumberSelector
@@ -212,14 +213,14 @@ const GapsPatternsPage = () => {
         <Grid xs={12}>
           {routesIsLoading && (
             <Row>
-              <Label text={TEXTS.loading_routes} />
+              <Label text={t('loading_routes')} />
               <Spin />
             </Row>
           )}
           {!routesIsLoading &&
             routes &&
             (routes.length === 0 ? (
-              <NotFound>{TEXTS.line_not_found}</NotFound>
+              <NotFound>{t('line_not_found')}</NotFound>
             ) : (
               <>
                 <RouteSelector

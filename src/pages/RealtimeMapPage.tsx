@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import { MapContainer, Marker, Polyline, Popup, TileLayer, useMap } from 'react-leaflet'
 import MarkerClusterGroup from 'react-leaflet-cluster'
-import { TEXTS } from 'src/resources/texts'
+import { useTranslation } from 'react-i18next'
+
 
 import { Spin } from 'antd'
 import moment from 'moment'
@@ -97,15 +98,17 @@ export default function RealtimeMapPage() {
     [locations],
   )
 
+  const { t } = useTranslation()
+
   return (
     <PageContainer className="map-container">
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
         <Grid xs={12}>
-          <Label text={TEXTS.realtime_map_explanation} />
+          <Label text={t('realtime_map_explanation')} />
         </Grid>
         {/* from date */}
         <Grid xs={2}>
-          <Label text={TEXTS.from_date} />
+          <Label text={t('from_date')} />
         </Grid>
         <Grid xs={5}>
           <DateSelector
@@ -129,7 +132,7 @@ export default function RealtimeMapPage() {
         </Grid>
         {/*minutes*/}
         <Grid xs={5}>
-          <Label text={TEXTS.watch_locations_in_range} />
+          <Label text={t('watch_locations_in_range')} />
         </Grid>
         <Grid xs={6}>
           <MinuteSelector
@@ -140,7 +143,7 @@ export default function RealtimeMapPage() {
           />
         </Grid>
         <Grid xs={1}>
-          <Label text={TEXTS.minutes} />
+          <Label text={t('minutes')} />
         </Grid>
         {/* Buttons */}
         {/*TODO (another PR another issue)
@@ -150,8 +153,8 @@ export default function RealtimeMapPage() {
         <Grid xs={11}>
           <p>
             {loaded} {`- `}
-            {TEXTS.show_x_bus_locations} {` `}
-            {TEXTS.from_time_x_to_time_y
+            {t('show_x_bus_locations')} {` `}
+            {t('from_time_x_to_time_y')
               .replace('XXX', moment(from).format('hh:mm A'))
               .replace('YYY', moment(to).format('hh:mm A'))}
           </p>

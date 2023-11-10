@@ -3,7 +3,7 @@ import { GroupByRes, useGroupBy } from 'src/api/groupByService'
 import { PageContainer } from '../components/PageContainer'
 import OperatorHbarChart from './OperatorHbarChart/OperatorHbarChart'
 import './DashboardPage.scss'
-import { TEXTS } from 'src/resources/texts'
+import {useTranslation} from 'react-i18next'
 import ArrivalByTimeChart from './ArrivalByTimeChart/ArrivalByTimeChart'
 import moment from 'moment'
 import LinesHbarChart from './LineHbarChart/LinesHbarChart'
@@ -73,6 +73,9 @@ const DashboardPage = () => {
     groupBy: groupByHour ? 'operator_ref,gtfs_route_hour' : 'operator_ref,gtfs_route_date',
   })
 
+  const { t } = useTranslation()
+
+
   return (
     <PageContainer>
       <Grid
@@ -86,14 +89,14 @@ const DashboardPage = () => {
             <DateSelector
               time={startDate}
               onChange={(data) => setStartDate(data)}
-              customLabel={TEXTS.start}
+              customLabel={t('start')}
             />
           </Grid>
           <Grid xs={6}>
             <DateSelector
               time={endDate}
               onChange={(data) => setEndDate(data)}
-              customLabel={TEXTS.end}
+              customLabel={t('end')}
             />
           </Grid>
         </Grid>
@@ -110,9 +113,9 @@ const DashboardPage = () => {
         <Grid xs={12} lg={6}>
           <div className="widget">
             <h2 className="title">
-              {TEXTS.dashboard_page_title}
+              {t('dashboard_page_title')}
               <Tooltip
-                title={convertLineFeedToHtmlTags(TEXTS.dashboard_tooltip_content)}
+                title={convertLineFeedToHtmlTags(t('dashboard_tooltip_content'))}
                 placement="left"
                 arrow>
                 <span className="tooltip-icon">i</span>
@@ -134,7 +137,7 @@ const DashboardPage = () => {
         </Grid>
         <Grid xs={12} lg={6}>
           <div className="widget">
-            <h2 className="title">{TEXTS.worst_lines_page_title}</h2>
+            <h2 className="title">{t('worst_lines_page_title')}</h2>
             {lineDataLoading ? (
               <Skeleton active />
             ) : (
@@ -149,15 +152,15 @@ const DashboardPage = () => {
           <div className="widget">
             <h2 className="title">
               {groupByHour
-                ? TEXTS.dashboard_page_graph_title_hour
-                : TEXTS.dashboard_page_graph_title_day}
+                ? t('dashboard_page_graph_title_hour')
+                : t('dashboard_page_graph_title_day')}
             </h2>
             <Radio.Group
               style={{ marginBottom: '10px' }}
               onChange={(e: RadioChangeEvent) => setGroupByHour(e.target.value === 'byHour')}
               defaultValue="byDay">
-              <Radio.Button value="byDay">{TEXTS.group_by_day_tooltip_content}</Radio.Button>
-              <Radio.Button value="byHour">{TEXTS.group_by_hour_tooltip_content}</Radio.Button>
+              <Radio.Button value="byDay">{t('group_by_day_tooltip_content')}</Radio.Button>
+              <Radio.Button value="byHour">{t('group_by_hour_tooltip_content')}</Radio.Button>
             </Radio.Group>
             {loadingGrap ? (
               <Skeleton active />

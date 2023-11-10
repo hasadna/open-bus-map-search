@@ -8,7 +8,7 @@ import LineNumberSelector from 'src/pages/components/LineSelector'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
 import RouteSelector from 'src/pages/components/RouteSelector'
 import { INPUT_SIZE } from 'src/resources/sizes'
-import { TEXTS } from 'src/resources/texts'
+import { useTranslation } from 'react-i18next'
 import { SearchContext } from '../model/pageState'
 import { NotFound } from './components/NotFound'
 import { Point } from './RealtimeMapPage'
@@ -106,12 +106,14 @@ const SingleLineMapPage = () => {
     [filteredPositions],
   )
 
+  const { t } = useTranslation()
+
   return (
     <PageContainer className="map-container">
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
         {/* choose date*/}
         <Grid xs={4}>
-          <Label text={TEXTS.choose_date} />
+          <Label text={t('choose_date')} />
         </Grid>
         <Grid xs={8}>
           <DateSelector
@@ -121,7 +123,7 @@ const SingleLineMapPage = () => {
         </Grid>
         {/* choose operator */}
         <Grid xs={4}>
-          <Label text={TEXTS.choose_operator} />
+          <Label text={t('choose_operator')} />
         </Grid>
         <Grid xs={8}>
           <OperatorSelector
@@ -131,7 +133,7 @@ const SingleLineMapPage = () => {
         </Grid>
         {/* choose line number */}
         <Grid xs={4}>
-          <Label text={TEXTS.choose_line} />
+          <Label text={t('choose_line')} />
         </Grid>
         <Grid xs={8}>
           <LineNumberSelector
@@ -142,7 +144,7 @@ const SingleLineMapPage = () => {
         <Grid xs={12}>
           {routes &&
             (routes.length === 0 ? (
-              <NotFound>{TEXTS.line_not_found}</NotFound>
+              <NotFound>{t('line_not_found')}</NotFound>
             ) : (
               <RouteSelector
                 routes={routes}
@@ -230,10 +232,12 @@ function FilterPositionsByStartTime({
     )
   }, [startTime])
 
+  const { t } = useTranslation()
+
   return (
     <>
       <Grid xs={3}>
-        <Label text={TEXTS.choose_start_time} />
+        <Label text={t('choose_start_time')} />
       </Grid>
       <Grid xs={1}>{locationsIsLoading && <CircularProgress />}</Grid>
       <Grid xs={8}>

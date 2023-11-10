@@ -1,4 +1,4 @@
-import { TEXTS } from '../../resources/texts'
+import {useTranslation} from 'react-i18next'
 import './DisplayGapsPercentage.scss'
 import { Row } from './Row'
 
@@ -30,6 +30,8 @@ function getStatus(percentage: number, decentPercentage: number, terriblePercent
     ?.status
 }
 
+const {t} = useTranslation()
+
 function DisplayGapsPercentage({
   gapsPercentage,
   decentPercentage,
@@ -44,8 +46,8 @@ function DisplayGapsPercentage({
   const stylesClass = `gaps-percentage-displayed-${status}-result`
   const text =
     status === 'great'
-      ? TEXTS.all_rides_completed
-      : `${Math.floor(gapsPercentage)}% ${TEXTS.missing_rides}`
+      ? t('all_rides_completed')
+      : `${Math.floor(gapsPercentage)}% ${t('missing_rides')}`
 
   return (
     <Row>
