@@ -1,4 +1,4 @@
-import { TEXT_KEYS } from 'src/resources/texts'
+import {useTranslation} from 'react-i18next'
 import { Navigate, Route, Routes } from 'react-router-dom'
 
 import DashboardPage from '../pages/dashboard/DashboardPage'
@@ -21,60 +21,61 @@ import {
   LineChartOutlined,
 } from '@ant-design/icons'
 
+const {t} = useTranslation()
 export const PAGES = [
   {
-    label: TEXT_KEYS.dashboard_page_title,
+    label: t('dashboard_page_title'),
     path: '/dashboard',
     icon: LaptopOutlined,
     element: <DashboardPage />,
   },
   {
-    label: TEXT_KEYS.timeline_page_title,
+    label: t('timeline_page_title'),
     path: '/timeline',
     searchParamsRequired: true,
     icon: FieldTimeOutlined,
     element: <TimelinePage />,
   },
   {
-    label: TEXT_KEYS.gaps_page_title,
+    label: t('gaps_page_title'),
     path: '/gaps',
     searchParamsRequired: true,
     icon: BarChartOutlined,
     element: <GapsPage />,
   },
   {
-    label: TEXT_KEYS.gaps_patterns_page_title,
+    label: t('gaps_patterns_page_title'),
     path: '/gaps_patterns',
     icon: LineChartOutlined,
     element: <GapsPatternsPage />,
   },
   {
-    label: TEXT_KEYS.realtime_map_page_title,
+    label: t('realtime_map_page_title'),
     path: '/map',
     icon: HeatMapOutlined,
     element: <RealtimeMapPage />,
   },
   {
-    label: TEXT_KEYS.singleline_map_page_title,
+    label: t('singleline_map_page_title'),
     path: '/single-line-map',
     searchParamsRequired: true,
     icon: RadarChartOutlined,
     element: <SingleLineMapPage />,
   },
   {
-    label: TEXT_KEYS.about_title,
+    label: t('about_title'),
     path: '/about',
     icon: BellOutlined,
     element: <About />,
   },
   {
-    label: TEXT_KEYS.report_a_bug_title,
+    label: t('report_a_bug_title'),
     path: 'https://github.com/hasadna/open-bus-map-search/issues',
     icon: BugOutlined,
     element: null,
   },
   {
-    label: TEXT_KEYS.donate_title,
+    label: t('donate_title'),
     path: 'https://www.jgive.com/new/he/ils/donation-targets/3268#donation-modal',
     icon: DollarOutlined,
     element: null,
