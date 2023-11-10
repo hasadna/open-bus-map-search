@@ -13,8 +13,6 @@ const colorsByCompannies: { [index: string]: string } = {
   מטרופולין: '#FF8500',
 }
 
-// const excludeOperators = [/רכבת ישראל/, /^מוניות.*/, /^ירושלים-.*/, /^ירושלים -.*/]
-
 export function getColorName(name: string) {
   return colorsByCompannies[name] || getColorByHashString(name)
 }
