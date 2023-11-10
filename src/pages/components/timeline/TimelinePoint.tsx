@@ -1,8 +1,8 @@
-import {useTranslation} from 'react-i18next'
+import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import { Moment } from 'moment'
 
-const {t} = useTranslation()
+const { t } = useTranslation()
 
 export const POINT_SIZE = 8
 

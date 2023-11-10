@@ -3,7 +3,7 @@ import { GroupByRes, useGroupBy } from 'src/api/groupByService'
 import { PageContainer } from '../components/PageContainer'
 import OperatorHbarChart from './OperatorHbarChart/OperatorHbarChart'
 import './DashboardPage.scss'
-import {useTranslation} from 'react-i18next'
+import { useTranslation } from 'react-i18next'
 import ArrivalByTimeChart from './ArrivalByTimeChart/ArrivalByTimeChart'
 import moment from 'moment'
 import LinesHbarChart from './LineHbarChart/LinesHbarChart'
@@ -74,7 +74,6 @@ const DashboardPage = () => {
   })
 
   const { t } = useTranslation()
-
 
   return (
     <PageContainer>

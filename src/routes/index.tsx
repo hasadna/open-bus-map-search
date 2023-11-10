@@ -1,4 +1,4 @@
-import {useTranslation} from 'react-i18next'
+import { useTranslation } from 'react-i18next'
 import { Navigate, Route, Routes } from 'react-router-dom'
 
 import DashboardPage from '../pages/dashboard/DashboardPage'
@@ -21,7 +21,7 @@ import {
   LineChartOutlined,
 } from '@ant-design/icons'
 
-const {t} = useTranslation()
+const { t } = useTranslation()
 export const PAGES = [
   {
     label: t('dashboard_page_title'),

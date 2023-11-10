@@ -1,5 +1,5 @@
 import { useCallback, useLayoutEffect, useState } from 'react'
-import {useTranslation} from 'react-i18next'
+import { useTranslation } from 'react-i18next'
 import debounce from 'lodash.debounce'
 import { TextField } from '@mui/material'
 import ClearButton from './ClearButton'
@@ -28,7 +28,7 @@ const LineSelector = ({ lineNumber, setLineNumber }: LineSelectorProps) => {
     'selector-line-text-field_visible': value,
     'selector-line-text-field_hidden': !value,
   })
-  const {t} = useTranslation();
+  const { t } = useTranslation()
   return (
     <TextField
       className={textFieldClass}

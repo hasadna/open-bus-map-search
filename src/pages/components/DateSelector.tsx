@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
-import {useTranslation} from 'react-i18next'
+import { useTranslation } from 'react-i18next'
 import { DataAndTimeSelectorProps } from './utils/dateAndTime'
 import { DateValidationError } from '@mui/x-date-pickers'
 import styled from 'styled-components'

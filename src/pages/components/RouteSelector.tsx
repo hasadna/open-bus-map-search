@@ -1,7 +1,7 @@
-import {useTranslation} from 'react-i18next'
+import { useTranslation } from 'react-i18next'
 import { BusRoute } from 'src/model/busRoute'
 import { Autocomplete, TextField } from '@mui/material'
-import {formatted} from "src/resources/texts";
+import { formatted } from 'src/resources/texts'
 
 type RouteSelectorProps = {
   routes: BusRoute[]
@@ -17,7 +17,6 @@ const getRouteTitle = (route: BusRoute) =>
 const RouteSelector = ({ routes, routeKey, setRouteKey }: RouteSelectorProps) => {
   const valueFinned = routes.find((route) => route.key === routeKey)
   const value = valueFinned ? valueFinned : null
-
 
   return (
     <Autocomplete

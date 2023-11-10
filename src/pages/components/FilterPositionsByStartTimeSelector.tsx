@@ -1,4 +1,4 @@
-import {useTranslation} from 'react-i18next'
+import { useTranslation } from 'react-i18next'
 import { Autocomplete, TextField } from '@mui/material'
 
 type FilterPositionsByStartTimeSelectorProps = {
@@ -17,7 +17,7 @@ export function FilterPositionsByStartTimeSelector({
 }: FilterPositionsByStartTimeSelectorProps) {
   const valueFinned = options.find((option) => option.value === startTime)
   const value = valueFinned ? valueFinned : null
-  const {t} = useTranslation()
+  const { t } = useTranslation()
   return (
     <Autocomplete
       sx={{ width: '100%' }}

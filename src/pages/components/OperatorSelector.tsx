@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import {useTranslation} from 'react-i18next'
+import { useTranslation } from 'react-i18next'
 import { Operator, RELEVANT_OPERATORS } from 'src/model/operator'
 import { Autocomplete, TextField } from '@mui/material'
 

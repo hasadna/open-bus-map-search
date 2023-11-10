@@ -11,7 +11,7 @@ import {
 } from 'src/api/gtfsService'
 import RouteSelector from 'src/pages/components/RouteSelector'
 import { Label } from 'src/pages/components/Label'
-import {useTranslation} from 'react-i18next'
+import { useTranslation } from 'react-i18next'
 import StopSelector from 'src/pages/components/StopSelector'
 import { Spin } from 'antd'
 import { getSiriStopHitTimesAsync } from 'src/api/siriService'

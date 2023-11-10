@@ -1,4 +1,4 @@
-import {useTranslation} from 'react-i18next'
+import { useTranslation } from 'react-i18next'
 import './DisplayGapsPercentage.scss'
 import { Row } from './Row'
 
@@ -30,7 +30,7 @@ function getStatus(percentage: number, decentPercentage: number, terriblePercent
     ?.status
 }
 
-const {t} = useTranslation()
+const { t } = useTranslation()
 
 function DisplayGapsPercentage({
   gapsPercentage,

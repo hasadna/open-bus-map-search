@@ -1,7 +1,7 @@
 import { BusStop } from 'src/model/busStop'
 import { Autocomplete, TextField } from '@mui/material'
-import {useTranslation} from "react-i18next";
-import {formatted} from "src/resources/texts";
+import { useTranslation } from 'react-i18next'
+import { formatted } from 'src/resources/texts'
 
 type StopSelectorProps = {
   stops: BusStop[]
@@ -12,7 +12,7 @@ type StopSelectorProps = {
 const StopSelector = ({ stops, stopKey, setStopKey }: StopSelectorProps) => {
   const valueFinned = stops.find((stop) => stop.key === stopKey)
   const value = valueFinned ? valueFinned : null
-  const {t} = useTranslation()
+  const { t } = useTranslation()
   return (
     <Autocomplete
       disablePortal
