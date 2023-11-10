@@ -21,7 +21,22 @@ import { ThemeProvider, createTheme } from '@mui/material'
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 import { LocalizationProvider } from '@mui/x-date-pickers'
 
-import RoutesList, { PAGES } from './routes'
+import RoutesList from './routes'
+import {
+  BarChartOutlined, BellOutlined, BugOutlined, DollarOutlined,
+  FieldTimeOutlined,
+  HeatMapOutlined,
+  LaptopOutlined,
+  LineChartOutlined, RadarChartOutlined
+} from "@ant-design/icons";
+import DashboardPage from "src/pages/dashboard/DashboardPage";
+import TimelinePage from "src/pages/TimelinePage";
+import GapsPage from "src/pages/GapsPage";
+import GapsPatternsPage from "src/pages/gapsPatterns";
+import RealtimeMapPage from "src/pages/RealtimeMapPage";
+import SingleLineMapPage from "src/pages/SingleLineMapPage";
+import About from "src/pages/About";
+import {useTranslation} from "react-i18next";
 const { Content } = Layout
 
 const StyledLayout = styled(Layout)`
@@ -64,6 +79,9 @@ const App = () => {
   const routeKey = searchParams.get('routeKey')
   const timestamp = searchParams.get('timestamp')
 
+  const { t } = useTranslation()
+
+
   useEffect(() => {
     ReactGA.send({ hitType: 'pageview', page: location.pathname + location.search })
   }, [location])
@@ -74,6 +92,66 @@ const App = () => {
     lineNumber: lineNumber || '',
     routeKey: routeKey || '',
   })
+
+  const PAGES = [
+    {
+      label: t('dashboard_page_title'),
+      path: '/dashboard',
+      icon: LaptopOutlined,
+      element: <DashboardPage />,
+    },
+    {
+      label: t('timeline_page_title'),
+      path: '/timeline',
+      searchParamsRequired: true,
+      icon: FieldTimeOutlined,
+      element: <TimelinePage />,
+    },
+    {
+      label: t('gaps_page_title'),
+      path: '/gaps',
+      searchParamsRequired: true,
+      icon: BarChartOutlined,
+      element: <GapsPage />,
+    },
+    {
+      label: t('gaps_patterns_page_title'),
+      path: '/gaps_patterns',
+      icon: LineChartOutlined,
+      element: <GapsPatternsPage />,
+    },
+    {
+      label: t('realtime_map_page_title'),
+      path: '/map',
+      icon: HeatMapOutlined,
+      element: <RealtimeMapPage />,
+    },
+    {
+      label: t('singleline_map_page_title'),
+      path: '/single-line-map',
+      searchParamsRequired: true,
+      icon: RadarChartOutlined,
+      element: <SingleLineMapPage />,
+    },
+    {
+      label: t('about_title'),
+      path: '/about',
+      icon: BellOutlined,
+      element: <About />,
+    },
+    {
+      label: t('report_a_bug_title'),
+      path: 'https://github.com/hasadna/open-bus-map-search/issues',
+      icon: BugOutlined,
+      element: null,
+    },
+    {
+      label: t('donate_title'),
+      path: 'https://www.jgive.com/new/he/ils/donation-targets/3268#donation-modal',
+      icon: DollarOutlined,
+      element: null,
+    },
+  ]
 
   useEffect(() => {
     const page = PAGES.find((page) => page.path === location.pathname)

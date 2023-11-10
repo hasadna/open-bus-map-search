@@ -8,11 +8,11 @@ import styled from 'styled-components'
 const Error = styled.div`
   color: 'red';
 `
-const { t } = useTranslation()
 
 export function DateSelector({ time, onChange, customLabel }: DataAndTimeSelectorProps) {
-  const [error, setError] = useState<DateValidationError | null>(null)
-  return (
+    const [error, setError] = useState<DateValidationError | null>(null)
+    const { t } = useTranslation()
+    return (
     <>
       <DatePicker
         sx={{ width: '100%' }}

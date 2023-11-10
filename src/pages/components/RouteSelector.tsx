@@ -9,14 +9,15 @@ type RouteSelectorProps = {
   setRouteKey: (routeKey: string) => void
 }
 
-const { t } = useTranslation()
-
-const getRouteTitle = (route: BusRoute) =>
-  `${route.fromName} ${t('direction_arrow')} ${route.toName}`
-
 const RouteSelector = ({ routes, routeKey, setRouteKey }: RouteSelectorProps) => {
   const valueFinned = routes.find((route) => route.key === routeKey)
   const value = valueFinned ? valueFinned : null
+
+  const { t } = useTranslation()
+
+  const getRouteTitle = (route: BusRoute) =>
+      `${route.fromName} ${t('direction_arrow')} ${route.toName}`
+
 
   return (
     <Autocomplete

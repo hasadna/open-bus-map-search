@@ -7,7 +7,6 @@ import {
   POINT_SIZE,
   PointType,
   pointTypeToColor,
-  pointTypeToDescription,
 } from 'src/pages/components/timeline/TimelinePoint'
 import { PADDING } from 'src/pages/components/timeline/TimelineBoard'
 import {
@@ -15,6 +14,7 @@ import {
   SiriVehicleLocationWithRelatedPydanticModel,
 } from 'open-bus-stride-client'
 import { Coordinates } from 'src/model/location'
+import {useTranslation} from "react-i18next";
 
 const Line = styled.div<{ totalHeight: number }>`
   height: ${({ totalHeight }) => totalHeight + PADDING * 3}px;
@@ -55,6 +55,16 @@ export const Timeline = ({
   pointType,
   timestampToTop,
 }: TimelineProps) => {
+
+  const { t } = useTranslation()
+
+  const pointTypeToDescription: Record<PointType, string | null> = {
+    [PointType.BOUNDARY]: null,
+    [PointType.GTFS]: t('timestamp_gtfs'),
+    [PointType.SIRI]: t('timestamp_siri'),
+    [PointType.TARGET]: t('timestamp_target'),
+  }
+
   return (
     <Container className={className}>
       <Title pointType={pointType}>{pointTypeToDescription[pointType]}</Title>

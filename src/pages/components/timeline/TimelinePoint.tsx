@@ -2,7 +2,6 @@ import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import { Moment } from 'moment'
 
-const { t } = useTranslation()
 
 export const POINT_SIZE = 8
 
@@ -23,13 +22,6 @@ export const pointTypeToColor: Record<PointType, string> = {
   [PointType.GTFS]: GTFS_COLOR,
   [PointType.SIRI]: SIRI_COLOR,
   [PointType.TARGET]: TARGET_COLOR,
-}
-
-export const pointTypeToDescription: Record<PointType, string | null> = {
-  [PointType.BOUNDARY]: null,
-  [PointType.GTFS]: t('timestamp_gtfs'),
-  [PointType.SIRI]: t('timestamp_siri'),
-  [PointType.TARGET]: t('timestamp_target'),
 }
 
 type PointProps = {
@@ -60,6 +52,8 @@ type LabeledPointProps = {
 } & PointProps
 
 export const LabeledPoint = ({ timestamp, top, type }: LabeledPointProps) => {
+  const { t } = useTranslation()
+
   const timeDisplay = timestamp.format(t('time_format'))
   return (
     <>

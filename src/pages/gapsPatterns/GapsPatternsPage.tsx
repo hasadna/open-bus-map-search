@@ -42,7 +42,6 @@ interface BusLineStatisticsProps {
 
 const now = moment()
 
-const { t } = useTranslation()
 
 const CustomTooltip = ({ active, payload }: TooltipProps<number, string>) => {
   if (active && payload && payload.length > 1) {
@@ -167,6 +166,8 @@ const GapsPatternsPage = () => {
     }
     loadSearchData()
   }, [operatorId, lineNumber, endDate, startDate, setSearch])
+
+  const { t } = useTranslation()
 
   return (
     <PageContainer>

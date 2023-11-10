@@ -6,8 +6,6 @@ import { Tooltip } from '@mui/material'
 type Entry = { name: string; total: number; actual: number; color?: string }
 const numberFormatter = new Intl.NumberFormat('he-IL')
 
-const { t } = useTranslation()
-
 export function HbarChart({
   entries,
   complement = false, // complement the chart (100% - actual) instead of actual
@@ -24,6 +22,7 @@ export function HbarChart({
     ...entry,
   }))
   console.log(rows[0])
+  const { t } = useTranslation()
 
   const wrapWithTooltip = (element: React.ReactElement, entry: Entry) => {
     return (

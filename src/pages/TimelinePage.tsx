@@ -24,7 +24,6 @@ import moment from 'moment'
 import { DateSelector } from './components/DateSelector'
 import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
 
-const { t } = useTranslation()
 
 const StyledTimelineBoard = styled(TimelineBoard)`
   margin-top: ${MARGIN_MEDIUM * 3}px;
@@ -131,6 +130,8 @@ const TimelinePage = () => {
       setState((current) => ({ ...current, stopKey: newStopKey }))
     }
   }, [timestamp, stops])
+
+  const { t } = useTranslation()
 
   return (
     <PageContainer>

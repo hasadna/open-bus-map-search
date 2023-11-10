@@ -21,68 +21,70 @@ import {
   LineChartOutlined,
 } from '@ant-design/icons'
 
-const { t } = useTranslation()
-export const PAGES = [
-  {
-    label: t('dashboard_page_title'),
-    path: '/dashboard',
-    icon: LaptopOutlined,
-    element: <DashboardPage />,
-  },
-  {
-    label: t('timeline_page_title'),
-    path: '/timeline',
-    searchParamsRequired: true,
-    icon: FieldTimeOutlined,
-    element: <TimelinePage />,
-  },
-  {
-    label: t('gaps_page_title'),
-    path: '/gaps',
-    searchParamsRequired: true,
-    icon: BarChartOutlined,
-    element: <GapsPage />,
-  },
-  {
-    label: t('gaps_patterns_page_title'),
-    path: '/gaps_patterns',
-    icon: LineChartOutlined,
-    element: <GapsPatternsPage />,
-  },
-  {
-    label: t('realtime_map_page_title'),
-    path: '/map',
-    icon: HeatMapOutlined,
-    element: <RealtimeMapPage />,
-  },
-  {
-    label: t('singleline_map_page_title'),
-    path: '/single-line-map',
-    searchParamsRequired: true,
-    icon: RadarChartOutlined,
-    element: <SingleLineMapPage />,
-  },
-  {
-    label: t('about_title'),
-    path: '/about',
-    icon: BellOutlined,
-    element: <About />,
-  },
-  {
-    label: t('report_a_bug_title'),
-    path: 'https://github.com/hasadna/open-bus-map-search/issues',
-    icon: BugOutlined,
-    element: null,
-  },
-  {
-    label: t('donate_title'),
-    path: 'https://www.jgive.com/new/he/ils/donation-targets/3268#donation-modal',
-    icon: DollarOutlined,
-    element: null,
-  },
-]
-
 const RoutesList = () => {
+
+  const { t } = useTranslation()
+
+  const PAGES = [
+    {
+      label: t('dashboard_page_title'),
+      path: '/dashboard',
+      icon: LaptopOutlined,
+      element: <DashboardPage />,
+    },
+    {
+      label: t('timeline_page_title'),
+      path: '/timeline',
+      searchParamsRequired: true,
+      icon: FieldTimeOutlined,
+      element: <TimelinePage />,
+    },
+    {
+      label: t('gaps_page_title'),
+      path: '/gaps',
+      searchParamsRequired: true,
+      icon: BarChartOutlined,
+      element: <GapsPage />,
+    },
+    {
+      label: t('gaps_patterns_page_title'),
+      path: '/gaps_patterns',
+      icon: LineChartOutlined,
+      element: <GapsPatternsPage />,
+    },
+    {
+      label: t('realtime_map_page_title'),
+      path: '/map',
+      icon: HeatMapOutlined,
+      element: <RealtimeMapPage />,
+    },
+    {
+      label: t('singleline_map_page_title'),
+      path: '/single-line-map',
+      searchParamsRequired: true,
+      icon: RadarChartOutlined,
+      element: <SingleLineMapPage />,
+    },
+    {
+      label: t('about_title'),
+      path: '/about',
+      icon: BellOutlined,
+      element: <About />,
+    },
+    {
+      label: t('report_a_bug_title'),
+      path: 'https://github.com/hasadna/open-bus-map-search/issues',
+      icon: BugOutlined,
+      element: null,
+    },
+    {
+      label: t('donate_title'),
+      path: 'https://www.jgive.com/new/he/ils/donation-targets/3268#donation-modal',
+      icon: DollarOutlined,
+      element: null,
+    },
+  ]
+
   const RedirectToDashboard = () => <Navigate to={PAGES[0].path} replace />
   const routes = PAGES.filter((r) => r.element)
   return (

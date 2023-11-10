@@ -30,7 +30,6 @@ function getStatus(percentage: number, decentPercentage: number, terriblePercent
     ?.status
 }
 
-const { t } = useTranslation()
 
 function DisplayGapsPercentage({
   gapsPercentage,
@@ -42,6 +41,7 @@ function DisplayGapsPercentage({
   terriblePercentage: number
 }) {
   if (!gapsPercentage && gapsPercentage != 0) return <></>
+  const { t } = useTranslation()
   const status = getStatus(gapsPercentage, decentPercentage, terriblePercentage)
   const stylesClass = `gaps-percentage-displayed-${status}-result`
   const text =

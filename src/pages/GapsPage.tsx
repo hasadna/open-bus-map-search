@@ -21,8 +21,6 @@ import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
 import { INPUT_SIZE } from 'src/resources/sizes'
 import DisplayGapsPercentage from './components/DisplayGapsPercentage'
 
-const { t } = useTranslation()
-
 function formatTime(time: Moment) {
   return time.format(t('time_format'))
 }
@@ -98,6 +96,8 @@ const GapsPage = () => {
   }, [operatorId, lineNumber, timestamp, setSearch])
 
   const gapsPercentage = getGapsPercentage(gaps)
+
+  const { t } = useTranslation()
 
   return (
     <PageContainer>
