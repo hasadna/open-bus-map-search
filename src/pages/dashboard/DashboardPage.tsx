@@ -123,7 +123,10 @@ const DashboardPage = () => {
             {groupByOperatorLoading ? (
               <Skeleton active />
             ) : (
-              <OperatorHbarChart operators={convertToChartCompatibleStruct(groupByOperatorData)} excludeOperators={excludeOperators}/>
+              <OperatorHbarChart
+                operators={convertToChartCompatibleStruct(groupByOperatorData)}
+                excludeOperators={excludeOperators}
+              />
             )}
           </div>
         </Grid>
@@ -164,7 +167,10 @@ const DashboardPage = () => {
             {loadingGrap ? (
               <Skeleton active />
             ) : (
-              <ArrivalByTimeChart data={convertToGraphCompatibleStruct(graphData)} excludeOperators={excludeOperators}/>
+              <ArrivalByTimeChart
+                data={convertToGraphCompatibleStruct(graphData)}
+                excludeOperators={excludeOperators}
+              />
             )}
           </div>
         </Grid>
