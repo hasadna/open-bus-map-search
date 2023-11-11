@@ -13,37 +13,22 @@ jobs:
         run: npm install -g yarn     
       - name: make sure package.lock does not exist
         run: rm -f package-lock.json
-      - name: Check Tree if package-lock.json file was existing and removed
-        run: |
-          if [[ -n $(git status -s) ]]; then
-            echo "ERROR: tree is dirty after removing package-lock.json file"
-            git status
-            exit 1
-          else
-            echo "Working tree is clean."
-          fi
+      - name: Git Check Clean Tree
+        uses: ArkadiK94/action-git-clean-tree@v1.0.3
+        with:
+          error-reason: "removing package-lock.json file"
       - name: Install dependencies
         run: yarn
-      - name: Check Tree after yarn
-        run: |
-          if [[ -n $(git status -s) ]]; then
-            echo "ERROR: tree is dirty after yarn"
-            git status
-            exit 1
-          else
-            echo "Working tree is clean."
-          fi
+      - name: Git Check Clean Tree
+        uses: ArkadiK94/action-git-clean-tree@v1.0.3
+        with:
+          error-reason: "yarn"
       - name: Build
         run: yarn build
-      - name: Check Tree after build
-        run: |
-          if [[ -n $(git status -s) ]]; then
-            echo "ERROR: tree is dirty after yarn build"
-            git status
-            exit 1
-          else
-            echo "Working tree is clean."
-          fi
+      - name: Git Check Clean Tree
+        uses: ArkadiK94/action-git-clean-tree@v1.0.3
+        with:
+          error-reason: "yarn build"
       - name: Clean up
         if: always()
         run: npm uninstall -g yarn
