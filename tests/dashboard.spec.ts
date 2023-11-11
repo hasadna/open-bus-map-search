@@ -6,7 +6,7 @@ test('dashboard is on homepage', async ({ page, advancedRouteFromHAR }) => {
     updateContent: 'embed',
     update: false,
     notFound: 'abort',
-    url: /api/,
+    url: /stride-api/,
     matcher: customMatcher({
       urlComparator(a, b) {
         const fieldsToRemove = ['t', 'date_from', 'date_to']
