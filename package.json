@@ -94,5 +94,5 @@
     "prettier": "^2.7.1",
     "vitest": "^0.34.6"
   },
-  "packageManager": "yarn@1.22.19"
+  "packageManager": "yarn@4.0.1"
 }
