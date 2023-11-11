@@ -1089,13 +1089,6 @@
   resolved "https://registry.yarnpkg.com/@types/geojson/-/geojson-7946.0.12.tgz#0307536218d32e6b970bccd1d148b9c4e5b6f10d"
   integrity sha512-uK2z1ZHJyC0nQRbuovXFt4mzXDwf27vQeUWNhfKGwRcWW429GOhP8HxUHlM6TLH4bzmlv/HlEjpvJh3JfmGsAA==
 
-"@types/geolib@^2.0.23":
-  version "2.0.23"
-  resolved "https://registry.yarnpkg.com/@types/geolib/-/geolib-2.0.23.tgz#83aa8d2772f3898daec211eac176583bd466b418"
-  integrity sha512-afIUEoDag0RdcaeQ965SlGRZA361Ngz2OthkkxAVMlvYPVn/5wm/9dYl5yPXteTyjSYxkhKUhWdFyJdVG87hJg==
-  dependencies:
-    geolib "*"
-
 "@types/har-format@^1.2.14":
   version "1.2.14"
   resolved "https://registry.yarnpkg.com/@types/har-format/-/har-format-1.2.14.tgz#292e55d52be8659c8486316a0ae439760617e0a3"
@@ -2948,7 +2941,7 @@ gensync@^1.0.0-beta.2:
   resolved "https://registry.yarnpkg.com/gensync/-/gensync-1.0.0-beta.2.tgz#32a6ee76c3d7f52d46b2b1ae5d93fea8580a25e0"
   integrity sha512-3hN7NaskYvMDLQY55gnW3NQ+mesEAepTqlg+VEbj7zzqEMBVNhzcGYYeqFo/TlYz6eQiFcp1HcsCZO+nGgS8zg==
 
-geolib@*, geolib@^3.3.3:
+geolib@^3.3.3:
   version "3.3.4"
   resolved "https://registry.yarnpkg.com/geolib/-/geolib-3.3.4.tgz#09883ba2fdab84d2764cf3615dbafb9bce3c54d0"
   integrity sha512-EicrlLLL3S42gE9/wde+11uiaYAaeSVDwCUIv2uMIoRBfNJCn8EsSI+6nS3r4TCKDO6+RQNM9ayLq2at+oZQWQ==
@@ -4181,10 +4174,10 @@ pkg-types@^1.0.3:
     mlly "^1.2.0"
     pathe "^1.1.0"
 
-playwright-advanced-har@^1.0.2:
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/playwright-advanced-har/-/playwright-advanced-har-1.0.6.tgz#82fda6842f277a1a04187cd09f826f803f5f1184"
-  integrity sha512-XJTQYeZTuMezLRjzrEVPXt813wmByYvgoBlbOCb87OlXvC5TXHTFKqRJ6EP1EA1UPcKhwdouv86vUGhSevSrBw==
+playwright-advanced-har@^1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/playwright-advanced-har/-/playwright-advanced-har-1.2.1.tgz#3c25a606c0706a8020f15b4362f27e0f98252291"
+  integrity sha512-807gAUUnYK7QIcm7GzPiKtz81ziYy13YA9cvtvOE8cduEd65xGKJCcIBwRnJABpPlr19OJQZqicZJk1b5mqDhA==
   dependencies:
     "@types/har-format" "^1.2.14"
 
