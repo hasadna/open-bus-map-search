@@ -44,6 +44,7 @@ const defaultArgs: BusToolTipProps = {
       siri_ride__last_vehicle_location_id: 2838555351,
       siri_ride__duration_minutes: 27,
       siri_ride__gtfs_ride_id: 57365030,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any,
   },
   icon: '/bus-logos/3.svg',

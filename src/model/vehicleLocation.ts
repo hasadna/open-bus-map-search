@@ -26,7 +26,7 @@ export interface VehicleLocation {
   siri_ride__id: number
   siri_ride__journey_ref: string
   siri_ride__scheduled_start_time: string
-  siri_ride__vehicle_ref: string
+  siri_ride__vehicle_ref: number
   siri_ride__first_vehicle_location_id: number
   siri_ride__last_vehicle_location_id: number
   siri_ride__duration_minutes: number
