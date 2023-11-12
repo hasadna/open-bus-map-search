@@ -95,7 +95,6 @@ class LocationObservable {
 
   #notifyObservers(data: VehicleLocation[] | { finished: true }) {
     const observers = this.#observers
-    console.log('notifying observers', observers.length)
     observers.forEach((observer) => observer(data))
   }
 
