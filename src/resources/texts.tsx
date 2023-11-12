@@ -74,6 +74,8 @@ export const TEXT_KEYS = {
   migdal_company: 'migdal_company',
   and_smaller_donors: 'and_smaller_donors',
   gaps_patterns_page_title: 'gaps_patterns_page_title',
+  profile_page: 'profile_page',
+  profile_page_line: 'profile_page_line',
 }
 
 export const TEXTS = {
@@ -177,6 +179,8 @@ export const TEXTS = {
   show_document: 'הצג מידע לגיקים',
   bearing: 'מעלות',
   kmh: 'קמ״ש',
+  profile_page: 'דף פרופיל',
+  profile_page_line: 'דף פרופיל על קו',
 }
 
 export const formatted = (text: string, value: string) => text.replace(PLACEHOLDER, value)

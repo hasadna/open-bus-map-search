@@ -28,6 +28,7 @@ import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 import { LocalizationProvider } from '@mui/x-date-pickers'
 import About from './pages/About'
 import GapsPatternsPage from './pages/GapsPatternsPage'
+import Profile from './pages/Profile'
 
 const { Content } = Layout
 
@@ -76,6 +77,10 @@ const PAGES = [
     label: TEXT_KEYS.about_title,
     key: '/about',
   },
+  // {
+  //   label: TEXT_KEYS.profile_page,
+  //   key: '/profile',
+  // },
   {
     label: TEXT_KEYS.report_a_bug_title,
     key: 'https://github.com/hasadna/open-bus-map-search/issues',
@@ -170,6 +175,8 @@ const App = () => {
                         <Route path={PAGES[4].key} element={<RealtimeMapPage />} />
                         <Route path={PAGES[5].key} element={<SingleLineMapPage />} />
                         <Route path={PAGES[6].key} element={<About />} />
+                        <Route path={'/profile'} element={<Profile />} />
+                        {/* <Route path={PAGES[7].key} element={<Profile />} /> */}
                         <Route path="*" element={<RedirectToDashboard />} />
                       </Routes>
                     </StyledBody>
