@@ -25,6 +25,7 @@ const arrayGroup = function <T>(array: T[], f: (item: T) => string) {
 
 export default function ArrivalByTimeChart({
   data,
+  operatorId
 }: {
   data: {
     id: string
@@ -34,8 +35,13 @@ export default function ArrivalByTimeChart({
     percent: number
     gtfs_route_date: string
     gtfs_route_hour: string
-  }[]
+  }[],
+  operatorId: string
 }) {
+  // Filter data if an operator is selected
+  if(operatorId !== ''){
+    data = data.filter( item => operatorId && item.id === operatorId);
+  }
   return (
     <div className="chart">
       {arrayGroup(data, (item) => item.id)
