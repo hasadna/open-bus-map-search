@@ -39,6 +39,9 @@
   "rides_planned": "נסיעות שתוכננו",
   "rides_actual": "נסיעות שיצאו",
   "dashboard_page_graph_title": "אחוזי יציאה מסך הנסיעות לפי זמן",
+  "dashboard_page_graph_title_day":  "אחוזי יציאה מסך הנסיעות לפי יום",
+  "dashboard_page_graph_title_hour":  "אחוזי יציאה מסך הנסיעות לפי שעה",
+
   "from_date": "מתאריך",
   "to_date": "עד תאריך",
   "watch_locations_in_range": "צפה במיקומי אוטובוסים בטווח של",
@@ -48,6 +51,7 @@
   "from_time_x_to_time_y": "משעה XXX עד שעה YYY",
   "choose_start_time": "בחירת שעת התחלה",
   "group_by_hour_tooltip_content": "קיבוץ לפי שעה",
+  "group_by_day_tooltip_content": "קיבוץ לפי יום",
   "start": "התחלה",
   "end": "סיום",
   "about_title": "אודות",
