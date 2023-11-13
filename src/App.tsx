@@ -22,6 +22,8 @@ import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 import { LocalizationProvider } from '@mui/x-date-pickers'
 
 import RoutesList, { PAGES } from './routes'
+import MainHeader from './pages/components/header/Header'
+import LayoutContext from './layout/LayoutContext'
 const { Content } = Layout
 
 const StyledLayout = styled(Layout)`
@@ -107,14 +109,17 @@ const App = () => {
           <LocalizationProvider dateAdapter={AdapterMoment} adapterLocale="he">
             <ConfigProvider direction="rtl" locale={heIL}>
               <StyledLayout className="main">
-                <SideBar />
-                <Layout>
-                  <StyledContent>
-                    <StyledBody>
-                      <RoutesList />
-                    </StyledBody>
-                  </StyledContent>
-                </Layout>
+                <LayoutContext>
+                  <SideBar />
+                  <Layout>
+                    <MainHeader />
+                    <StyledContent>
+                      <StyledBody>
+                        <RoutesList />
+                      </StyledBody>
+                    </StyledContent>
+                  </Layout>
+                </LayoutContext>
               </StyledLayout>
             </ConfigProvider>
           </LocalizationProvider>
