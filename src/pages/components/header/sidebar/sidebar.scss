@@ -10,7 +10,9 @@
         max-width: 0;
         padding: 0;
         transition: all 0.2s ease-in-out;
-
+        .sidebar-logo {
+            display: none;
+        }
         .sidebar-menu-toggle {
             display: block;
             position: absolute;
@@ -19,17 +21,13 @@
             margin: 10px;
             cursor: pointer;
             font-size: 20px;
-
-            &-line {
-                width: 30px;
-                height: 3px;
-                background-color: black;
-                margin: 5px 0;
-            }
         }
     }
 
     .main > .sidebar.open{
+        .sidebar-logo {
+            display: block;
+        }
         display: block;
         position: absolute;
         z-index: 500;
@@ -38,4 +36,63 @@
         margin-right: 1px;
     }
 
+}
+.hideOnMobile {
+    display: none;
+  }
+  @media only screen and (min-width: 768px) {
+    .hideOnMobile {
+      display: block;
+    }
+  }
+  
+  .hideOnDesktop {
+    display: block;
+  }
+  @media only screen and (min-width: 768px) {
+    .hideOnDesktop {
+      display: none;
+    }
+  }
+  
+.sidebar-logo {
+    position: relative;
+    margin: 20px auto;
+    width: 119px;
+    font-size: 30px;
+    border-top: 6px solid gray;
+    border-bottom: 8px solid gray;
+    padding-bottom: 0;
+    line-height: 25px;
+    &::before {
+      height: 10px;
+      width: 10px;
+      border-radius: 5px;
+      position: absolute;
+      background: gray;
+      top: 28px;
+      right: 24px;
+      content: ' ' 
+  }
+  &::after {
+      height: 10px;
+      width: 10px;
+      border-radius: 5px;
+      position: absolute;
+      background: gray;
+      top: 28px;
+      left: 17px;
+      content: ' ' 
+  }
+}
+
+.sidebar-logo-collapsed {
+    position: relative;
+    margin: 20px auto;
+    text-align: center;
+    font-size: 30px;
+    border-top: 6px solid gray;
+    border-bottom: 8px solid gray;
+    padding-bottom: 0;
+    line-height: 25px;
 }

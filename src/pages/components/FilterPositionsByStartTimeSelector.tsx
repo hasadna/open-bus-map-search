@@ -1,4 +1,3 @@
-import React from 'react'
 import { TEXTS } from 'src/resources/texts'
 import { Autocomplete, TextField } from '@mui/material'
 
@@ -25,7 +24,7 @@ export function FilterPositionsByStartTimeSelector({
       disablePortal
       value={value}
       onChange={(e, value) => setStartTime(value ? value.value : '0')}
-      id="operator-select"
+      id="start-time-select"
       options={options}
       renderInput={(params) => <TextField {...params} label={TEXTS.choose_start_time} />}
       getOptionLabel={(option) => option.label}

@@ -1,20 +1,33 @@
-import React, { useState } from 'react'
-import Menu, { MenuPage } from '../menu/Menu'
-import cn from 'classnames'
+import Menu from './menu/Menu'
 import './sidebar.scss'
+import { Drawer } from 'antd'
+import { useContext } from 'react'
+import { LayoutContextInterface, LayoutCtx } from 'src/layout/LayoutContext'
 
-export default function SideBar({ pages }: { pages: MenuPage[] }) {
-  const [open, setOpen] = useState(false)
+const Logo = () => (
+  <div style={{ overflow: 'hidden' }}>
+    <h1 className={'sidebar-logo'}>דאטאבוס</h1>
+  </div>
+)
+
+export default function SideBar() {
+  const { drawerOpen, setDrawerOpen } = useContext<LayoutContextInterface>(LayoutCtx)
 
   return (
-    <aside className={cn('sidebar', { open })}>
-      <div className="sidebar-menu-toggle" onClick={() => setOpen(!open)}>
-        <div className="sidebar-menu-toggle-line" />
-        <div className="sidebar-menu-toggle-line" />
-        <div className="sidebar-menu-toggle-line" />
-      </div>
-      <h1>דאטאבוס</h1>
-      <Menu pages={pages} />
-    </aside>
+    <>
+      <Drawer
+        placement="right"
+        mask
+        width={280}
+        onClose={() => setDrawerOpen(false)}
+        open={drawerOpen}
+        className="hideOnDesktop">
+        <Menu />
+      </Drawer>
+      <aside className={'sidebar hideOnMobile'}>
+        <Logo />
+        <Menu />
+      </aside>
+    </>
   )
 }

@@ -1,5 +1,4 @@
 import { formatted, TEXTS } from 'src/resources/texts'
-import React from 'react'
 import { BusRoute } from 'src/model/busRoute'
 import { Autocomplete, TextField } from '@mui/material'
 
@@ -21,7 +20,7 @@ const RouteSelector = ({ routes, routeKey, setRouteKey }: RouteSelectorProps) =>
       disablePortal
       value={value}
       onChange={(e, value) => setRouteKey(value ? value.key : '0')}
-      id="operator-select"
+      id="route-select"
       options={routes}
       renderInput={(params) => (
         <TextField {...params} label={formatted(TEXTS.choose_route, routes.length.toString())} />

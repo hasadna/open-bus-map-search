@@ -18,6 +18,7 @@
     "i18next": "^23.5.1",
     "leaflet": "^1.8.0",
     "lodash.debounce": "^4.0.8",
+    "madge": "^6.1.0",
     "moment": "^2.29.4",
     "moment-timezone": "^0.5.43",
     "open-bus-stride-client": "0.1.2",

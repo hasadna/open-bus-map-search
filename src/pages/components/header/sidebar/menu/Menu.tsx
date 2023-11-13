@@ -3,13 +3,9 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import cn from 'classnames'
 import './menu.scss'
 import { useTranslation } from 'react-i18next'
+import { PAGES as pages } from 'src/routes'
 
-export type MenuPage = {
-  label: string
-  key: string
-}
-
-function Menu({ pages }: { pages: MenuPage[] }) {
+const Menu = () => {
   const { t, i18n } = useTranslation()
 
   const [currentLanguage, setCurrentLanguage] = useState('en')
@@ -27,11 +23,19 @@ function Menu({ pages }: { pages: MenuPage[] }) {
     <ul className="menu">
       {pages.map((page) => (
         <li
-          className={cn('menu-item', { active: currpage === page.key })}
-          key={page.key}
+          className={cn('menu-item', { active: currpage === page.path })}
+          key={page.path}
           onClick={() =>
-            page.key[0] === '/' ? navigate(page.key) : window.open(page.key, '_blank')
+            page.path[0] === '/' ? navigate(page.path) : window.open(page.path, '_blank')
           }>
+          {React.createElement(page.icon)}
+          {
+            <span
+              style={{
+                width: '15px',
+              }}
+            />
+          }
           {t(page.label)}
         </li>
       ))}

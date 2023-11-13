@@ -1,4 +1,3 @@
-import React from 'react'
 import { HbarChart } from '../HbarChart/HbarChart'
 import { getColorName } from '../OperatorHbarChart/OperatorHbarChart'
 

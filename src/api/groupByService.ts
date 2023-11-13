@@ -35,7 +35,7 @@ example response
   }
 ]
 */
-export type GroupByResponse = {
+type GroupByResponse = {
   gtfs_route_date: string
   gtfs_route_hour: string
   operator_ref: number
@@ -130,5 +130,3 @@ export function useGroupBy({
 
   return [data, loading, error] as const
 }
-
-export default groupbyAsync

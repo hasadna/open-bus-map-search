@@ -13,3 +13,6 @@ jobs:
       run: yarn
     - name: Run lint
       run: yarn lint
+    - name: find circular dependencies
+      run: yarn madge --extensions js,ts --circular .
+

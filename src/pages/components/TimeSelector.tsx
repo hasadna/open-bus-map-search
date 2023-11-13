@@ -1,4 +1,3 @@
-import React from 'react'
 import { TEXTS } from 'src/resources/texts'
 import { TimePicker, renderTimeViewClock } from '@mui/x-date-pickers'
 import { DataAndTimeSelectorProps } from './utils/dateAndTime'

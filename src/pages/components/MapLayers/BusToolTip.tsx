@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Point } from 'src/pages/RealtimeMapPage'
 import { Button } from '@mui/material'
 import moment from 'moment-timezone'

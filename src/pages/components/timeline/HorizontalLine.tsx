@@ -1,6 +1,6 @@
 import styled, { css } from 'styled-components'
 import { NEUTRAL_COLOR } from 'src/pages/components/timeline/TimelinePoint'
-import React, { useRef } from 'react'
+import { useRef } from 'react'
 import { useHover } from 'usehooks-ts'
 
 type HorizontalLineProps = {

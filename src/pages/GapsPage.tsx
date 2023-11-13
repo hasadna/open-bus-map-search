@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { PageContainer } from './components/PageContainer'
 import { Row } from './components/Row'
 import { Label } from './components/Label'
@@ -78,7 +78,12 @@ const GapsPage = () => {
   }, [operatorId, routeKey, timestamp])
 
   useEffect(() => {
-    if (!operatorId || !lineNumber) {
+    if (!operatorId || operatorId === '0' || !lineNumber) {
+      setSearch((current) => ({
+        ...current,
+        routes: undefined,
+        routeKey: undefined,
+      }))
       return
     }
     getRoutesAsync(moment(timestamp), moment(timestamp), operatorId, lineNumber)
@@ -156,7 +161,7 @@ const GapsPage = () => {
           )}
         </Grid>
       </Grid>
-      {!gapsIsLoading && routeKey && (
+      {!gapsIsLoading && routeKey && routeKey !== '0' && (
         <>
           <FormControlLabel
             control={

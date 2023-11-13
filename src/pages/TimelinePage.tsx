@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import LineNumberSelector from 'src/pages/components/LineSelector'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
 import { Row } from 'src/pages/components/Row'
@@ -39,17 +39,21 @@ const TimelinePage = () => {
   const [hitsIsLoading, setHitsIsLoading] = useState(false)
 
   const clearRoutes = useCallback(() => {
-    setState((current) => ({ ...current, routes: undefined, routeKey: undefined }))
-  }, [setState])
+    setSearch((current) => ({ ...current, routes: undefined, routeKey: undefined }))
+    setRoutesIsLoading(false)
+  }, [setSearch])
 
   const clearStops = useCallback(() => {
     setState((current) => ({
       ...current,
       stops: undefined,
+      stopName: undefined,
       stopKey: undefined,
       gtfsHitTimes: undefined,
       siriHitTimes: undefined,
     }))
+    setStopsIsLoading(false)
+    setHitsIsLoading(false)
   }, [setState])
 
   useEffect(() => {
@@ -58,7 +62,7 @@ const TimelinePage = () => {
 
   useEffect(() => {
     clearStops()
-    if (!operatorId || !lineNumber) {
+    if (!operatorId || operatorId === '0' || !lineNumber) {
       return
     }
     setRoutesIsLoading(true)
@@ -79,6 +83,9 @@ const TimelinePage = () => {
 
   useEffect(() => {
     clearStops()
+    if (!operatorId || operatorId === '0' || !lineNumber) {
+      return
+    }
     if (!routeKey || !selectedRouteIds) {
       return
     }
@@ -89,6 +96,9 @@ const TimelinePage = () => {
   }, [selectedRouteIds, routeKey, clearStops])
 
   useEffect(() => {
+    if (!operatorId || operatorId === '0' || !lineNumber) {
+      return
+    }
     if (!stopKey || !stops || !selectedRoute) {
       return
     }
@@ -107,6 +117,9 @@ const TimelinePage = () => {
   }, [stopKey, stops, timestamp, selectedRoute])
 
   useEffect(() => {
+    if (!operatorId || operatorId === '0' || !lineNumber) {
+      return
+    }
     if (!stopName || !stops || stopKey) {
       return
     }

@@ -7,12 +7,11 @@ import { TEXTS } from 'src/resources/texts'
 import ArrivalByTimeChart from './ArrivalByTimeChart/ArrivalByTimeChart'
 import moment from 'moment'
 import LinesHbarChart from './LineHbarChart/LinesHbarChart'
-import { FormControlLabel, Switch, Tooltip } from '@mui/material'
+import { Tooltip } from '@mui/material'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
 import { useDate } from '../components/DateTimePicker'
-import { Skeleton } from 'antd'
+import { Skeleton, Radio, RadioChangeEvent } from 'antd'
 import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
-import { Label } from '../components/Label'
 import { DateSelector } from '../components/DateSelector'
 
 const now = moment()
@@ -83,34 +82,23 @@ const DashboardPage = () => {
         sx={{ marginTop: '20px' }}
         justifyContent="space-between">
         <Grid lg={6} xs={12} container spacing={2} alignItems="center">
-          <Grid xs={4.5}>
+          <Grid xs={6}>
             <DateSelector
               time={startDate}
               onChange={(data) => setStartDate(data)}
               customLabel={TEXTS.start}
             />
           </Grid>
-          <Grid xs={0.1}>-</Grid>
-          <Grid xs={4.5}>
+          <Grid xs={6}>
             <DateSelector
               time={endDate}
               onChange={(data) => setEndDate(data)}
               customLabel={TEXTS.end}
             />
           </Grid>
-          <Grid xs={1}>
-            <FormControlLabel
-              control={
-                <Switch checked={groupByHour} onChange={(e) => setGroupByHour(e.target.checked)} />
-              }
-              label={TEXTS.group_by_hour_tooltip_content}
-            />
-          </Grid>
         </Grid>
-        <Grid lg={1} display={{ xs: 'none', lg: 'block' }}>
-          <Label text={TEXTS.choose_operator} />
-        </Grid>
-        <Grid lg={5} display={{ xs: 'none', lg: 'block' }}>
+
+        <Grid lg={6} display={{ xs: 'none', lg: 'block' }}>
           <OperatorSelector
             operatorId={operatorId}
             setOperatorId={setOperatorId}
@@ -137,7 +125,7 @@ const DashboardPage = () => {
             )}
           </div>
         </Grid>
-        <Grid xs={6} display={{ xs: 'block', lg: 'none' }}>
+        <Grid xs={12} display={{ xs: 'block', lg: 'none' }}>
           <OperatorSelector
             operatorId={operatorId}
             setOperatorId={setOperatorId}
@@ -159,7 +147,18 @@ const DashboardPage = () => {
         </Grid>
         <Grid xs={12}>
           <div className="widget">
-            <h2 className="title">{TEXTS.dashboard_page_graph_title}</h2>
+            <h2 className="title">
+              {groupByHour
+                ? TEXTS.dashboard_page_graph_title_hour
+                : TEXTS.dashboard_page_graph_title_day}
+            </h2>
+            <Radio.Group
+              style={{ marginBottom: '10px' }}
+              onChange={(e: RadioChangeEvent) => setGroupByHour(e.target.value === 'byHour')}
+              defaultValue="byDay">
+              <Radio.Button value="byDay">{TEXTS.group_by_day_tooltip_content}</Radio.Button>
+              <Radio.Button value="byHour">{TEXTS.group_by_hour_tooltip_content}</Radio.Button>
+            </Radio.Group>
             {loadingGrap ? (
               <Skeleton active />
             ) : (

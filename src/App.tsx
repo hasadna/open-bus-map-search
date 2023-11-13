@@ -1,21 +1,15 @@
-import React, { useCallback, useEffect } from 'react'
+import { useCallback, useEffect } from 'react'
 import 'antd/dist/antd.min.css'
 import './App.scss'
-import TimelinePage from 'src/pages/TimelinePage'
 import { ConfigProvider, Layout } from 'antd'
 import 'leaflet/dist/leaflet.css'
-import { TEXT_KEYS } from 'src/resources/texts'
 import styled from 'styled-components'
 import heIL from 'antd/es/locale/he_IL'
-import { BrowserRouter as Router, Navigate, Route, Routes, useSearchParams } from 'react-router-dom'
-import GapsPage from './pages/GapsPage'
+import { BrowserRouter as Router, useSearchParams } from 'react-router-dom'
 import { PageSearchState, SearchContext } from './model/pageState'
 import moment from 'moment'
-import DashboardPage from './pages/dashboard/DashboardPage'
 import { useSessionStorage } from 'usehooks-ts'
 import SideBar from './pages/components/header/sidebar/SideBar'
-import RealtimeMapPage from './pages/RealtimeMapPage'
-import SingleLineMapPage from './pages/SingleLineMapPage'
 import { useLocation } from 'react-router-dom'
 import ReactGA from 'react-ga4'
 import { CacheProvider } from '@emotion/react'
@@ -30,6 +24,9 @@ import About from './pages/About'
 import GapsPatternsPage from './pages/GapsPatternsPage'
 import Profile from './pages/Profile'
 
+import RoutesList, { PAGES } from './routes'
+import MainHeader from './pages/components/header/Header'
+import LayoutContext from './layout/LayoutContext'
 const { Content } = Layout
 
 const StyledLayout = styled(Layout)`
@@ -91,6 +88,7 @@ const PAGES = [
   },
 ]
 
+
 const theme = createTheme(
   {
     direction: 'rtl',
@@ -130,7 +128,7 @@ const App = () => {
   })
 
   useEffect(() => {
-    const page = PAGES.find((page) => page.key === location.pathname)
+    const page = PAGES.find((page) => page.path === location.pathname)
     if (page?.searchParamsRequired) {
       const params = new URLSearchParams({ timestamp: search.timestamp.toString() })
 
@@ -153,8 +151,6 @@ const App = () => {
       return newSearch
     })
   }, [])
-
-  const RedirectToDashboard = () => <Navigate to={PAGES[0].key} replace />
 
   return (
     <SearchContext.Provider value={{ search, setSearch: safeSetSearch }}>
