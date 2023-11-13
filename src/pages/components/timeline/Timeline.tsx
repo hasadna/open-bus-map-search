@@ -67,7 +67,6 @@ export const Timeline = ({
           (timestamp as SiriVehicleLocationWithRelatedPydanticModel & Coordinates)
             .recordedAtTime! ??
           (timestamp as Date)
-        console.log(t, timestamp)
 
         return (
           <LabeledPoint

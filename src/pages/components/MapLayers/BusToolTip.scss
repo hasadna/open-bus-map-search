@@ -2,32 +2,32 @@
   width: 350px;
   direction: rtl;
   text-align: right;
+}
 
-  .bus-tooltip {
-    > ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
+.bus-tooltip {
+  >ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
 
-      > li {
-        font-weight: bold;
+    >li {
+      font-weight: bold;
 
-        > span {
-          font-weight: normal;
-        }
+      >span {
+        font-weight: normal;
       }
     }
+  }
 
-    > .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
+  >.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
 
-      img {
-        width: 50px;
-        height: 50px;
-      }
+    img {
+      width: 50px;
+      height: 50px;
     }
   }
 }
