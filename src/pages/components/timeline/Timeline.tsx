@@ -1,4 +1,3 @@
-import React from 'react'
 import moment, { Moment } from 'moment'
 import styled from 'styled-components'
 import {
@@ -68,7 +67,6 @@ export const Timeline = ({
           (timestamp as SiriVehicleLocationWithRelatedPydanticModel & Coordinates)
             .recordedAtTime! ??
           (timestamp as Date)
-        console.log(t, timestamp)
 
         return (
           <LabeledPoint

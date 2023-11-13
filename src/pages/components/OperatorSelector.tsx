@@ -1,4 +1,4 @@
-import React from 'react'
+import { useEffect, useState } from 'react'
 import { TEXTS } from 'src/resources/texts'
 import { Operator, RELEVANT_OPERATORS } from 'src/model/operator'
 import { Autocomplete, TextField } from '@mui/material'
@@ -14,9 +14,8 @@ const OperatorSelector = ({
   setOperatorId,
   onlyMajorOperators = false,
 }: OperatorSelectorProps) => {
-  const [operators, setOperators] = React.useState<Operator[]>([])
-
-  React.useEffect(() => {
+  const [operators, setOperators] = useState<Operator[]>([])
+  useEffect(() => {
     const majorOperatorsIds = ['3', '5', '15', '18', '25']
     RELEVANT_OPERATORS.then((resultObj) =>
       setOperators(

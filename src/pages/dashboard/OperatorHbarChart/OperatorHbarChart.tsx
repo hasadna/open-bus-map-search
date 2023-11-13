@@ -1,4 +1,3 @@
-import React from 'react'
 import './operatorsHbarChart.scss'
 import { getColorByHashString } from './utils'
 import { HbarChart } from '../HbarChart/HbarChart'

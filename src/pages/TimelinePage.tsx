@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import LineNumberSelector from 'src/pages/components/LineSelector'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
 import { Row } from 'src/pages/components/Row'
@@ -16,7 +16,6 @@ import StopSelector from 'src/pages/components/StopSelector'
 import { Spin } from 'antd'
 import { getSiriStopHitTimesAsync } from 'src/api/siriService'
 import { TimelineBoard } from 'src/pages/components/timeline/TimelineBoard'
-import { log } from 'src/log'
 import { PageContainer } from './components/PageContainer'
 import { SearchContext, TimelinePageState } from '../model/pageState'
 import { NotFound } from './components/NotFound'
@@ -39,17 +38,21 @@ const TimelinePage = () => {
   const [hitsIsLoading, setHitsIsLoading] = useState(false)
 
   const clearRoutes = useCallback(() => {
-    setState((current) => ({ ...current, routes: undefined, routeKey: undefined }))
-  }, [setState])
+    setSearch((current) => ({ ...current, routes: undefined, routeKey: undefined }))
+    setRoutesIsLoading(false)
+  }, [setSearch])
 
   const clearStops = useCallback(() => {
     setState((current) => ({
       ...current,
       stops: undefined,
+      stopName: undefined,
       stopKey: undefined,
       gtfsHitTimes: undefined,
       siriHitTimes: undefined,
     }))
+    setStopsIsLoading(false)
+    setHitsIsLoading(false)
   }, [setState])
 
   useEffect(() => {
@@ -58,7 +61,7 @@ const TimelinePage = () => {
 
   useEffect(() => {
     clearStops()
-    if (!operatorId || !lineNumber) {
+    if (!operatorId || operatorId === '0' || !lineNumber) {
       return
     }
     setRoutesIsLoading(true)
@@ -79,6 +82,9 @@ const TimelinePage = () => {
 
   useEffect(() => {
     clearStops()
+    if (!operatorId || operatorId === '0' || !lineNumber) {
+      return
+    }
     if (!routeKey || !selectedRouteIds) {
       return
     }
@@ -89,6 +95,9 @@ const TimelinePage = () => {
   }, [selectedRouteIds, routeKey, clearStops])
 
   useEffect(() => {
+    if (!operatorId || operatorId === '0' || !lineNumber) {
+      return
+    }
     if (!stopKey || !stops || !selectedRoute) {
       return
     }
@@ -107,12 +116,14 @@ const TimelinePage = () => {
   }, [stopKey, stops, timestamp, selectedRoute])
 
   useEffect(() => {
+    if (!operatorId || operatorId === '0' || !lineNumber) {
+      return
+    }
     if (!stopName || !stops || stopKey) {
       return
     }
     const newStopKey = stops.find((stop) => stop.name === stopName)?.key
     if (newStopKey) {
-      log(`setting new stopKey=${newStopKey} using the prev stopName=${stopName}`)
       setState((current) => ({ ...current, stopKey: newStopKey }))
     }
   }, [timestamp, stops])

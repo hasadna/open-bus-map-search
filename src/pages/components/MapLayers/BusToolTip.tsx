@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Point } from 'src/pages/RealtimeMapPage'
 import { Button } from '@mui/material'
 import moment from 'moment-timezone'
@@ -10,7 +10,9 @@ import { TEXTS } from 'src/resources/texts'
 import { Spin } from 'antd'
 import cn from 'classnames'
 
-export function BusToolTip({ position, icon }: { position: Point; icon: string }) {
+export type BusToolTipProps = { position: Point; icon: string }
+
+export function BusToolTip({ position, icon }: BusToolTipProps) {
   const [siriRide, setSiriRide] = useState<SiriRideWithRelatedPydanticModel | undefined>()
   const [isLoading, setIsLoading] = useState(false)
   const [showJson, setShowJson] = useState(false)

@@ -1,5 +1,3 @@
-import React from 'react'
-
 const PLACEHOLDER = 'XXX'
 
 export const TEXT_KEYS = {
@@ -42,7 +40,8 @@ export const TEXT_KEYS = {
   worst_lines_page_title: 'worst_lines_page_title',
   rides_planned: 'rides_planned',
   rides_actual: 'rides_actual',
-  dashboard_page_graph_title: 'dashboard_page_graph_title',
+  dashboard_page_graph_title_time: 'dashboard_page_graph_title_time',
+  dashboard_page_graph_title_hour: 'dashboard_page_graph_title_hour',
   from_date: 'from_date',
   to_date: 'to_date',
   watch_locations_in_range: 'watch_locations_in_range',
@@ -52,6 +51,7 @@ export const TEXT_KEYS = {
   from_time_x_to_time_y: 'from_time_x_to_time_y',
   choose_start_time: 'choose_start_time',
   group_by_hour_tooltip_content: 'group_by_hour_tooltip_content',
+  group_by_day_tooltip_content: 'group_by_day_tooltip_content',
   start: 'start',
   end: 'end',
   about_title: 'about_title',
@@ -122,7 +122,8 @@ export const TEXTS = {
   worst_lines_page_title: 'הקווים הגרועים ביותר של 5 המפעילות הגדולות',
   rides_planned: 'נסיעות שתוכננו',
   rides_actual: 'נסיעות שיצאו',
-  dashboard_page_graph_title: 'אחוזי יציאה מסך הנסיעות לפי זמן',
+  dashboard_page_graph_title_day: 'אחוזי יציאה מסך הנסיעות לפי יום',
+  dashboard_page_graph_title_hour: 'אחוזי יציאה מסך הנסיעות לפי שעה',
   from_date: 'מתאריך',
   to_date: 'עד תאריך',
   watch_locations_in_range: 'צפה במיקומי אוטובוסים בטווח של',
@@ -131,7 +132,8 @@ export const TEXTS = {
   show_x_bus_locations: 'מיקומי אוטובוסים',
   from_time_x_to_time_y: 'משעה XXX עד שעה YYY',
   choose_start_time: 'בחירת שעת התחלה',
-  group_by_hour_tooltip_content: 'קיבוץ לפי שעה',
+  group_by_day_tooltip_content: 'לפי יום',
+  group_by_hour_tooltip_content: 'לפי שעה',
   start: 'התחלה',
   end: 'סיום',
   about_title: 'אודות',

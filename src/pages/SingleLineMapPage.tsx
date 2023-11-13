@@ -1,5 +1,5 @@
 import moment from 'moment'
-import React, { useContext, useEffect, useMemo, useState } from 'react'
+import { useContext, useEffect, useMemo, useState } from 'react'
 import { MapContainer, Marker, Polyline, Popup, TileLayer } from 'react-leaflet'
 import { getRoutesAsync } from 'src/api/gtfsService'
 import useVehicleLocations from 'src/api/useVehicleLocations'
@@ -48,7 +48,8 @@ const SingleLineMapPage = () => {
   }, [])
 
   useEffect(() => {
-    if (!operatorId || !lineNumber) {
+    if (!operatorId || operatorId === '0' || !lineNumber) {
+      setSearch((current) => ({ ...current, routes: undefined, routeKey: undefined }))
       return
     }
     getRoutesAsync(moment(timestamp), moment(timestamp), operatorId, lineNumber).then((routes) =>

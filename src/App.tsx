@@ -1,21 +1,15 @@
-import React, { useCallback, useEffect } from 'react'
+import { useCallback, useEffect } from 'react'
 import 'antd/dist/antd.min.css'
 import './App.scss'
-import TimelinePage from 'src/pages/TimelinePage'
 import { ConfigProvider, Layout } from 'antd'
 import 'leaflet/dist/leaflet.css'
-import { TEXT_KEYS } from 'src/resources/texts'
 import styled from 'styled-components'
 import heIL from 'antd/es/locale/he_IL'
-import { BrowserRouter as Router, Navigate, Route, Routes, useSearchParams } from 'react-router-dom'
-import GapsPage from './pages/GapsPage'
+import { BrowserRouter as Router, useSearchParams } from 'react-router-dom'
 import { PageSearchState, SearchContext } from './model/pageState'
 import moment from 'moment'
-import DashboardPage from './pages/dashboard/DashboardPage'
 import { useSessionStorage } from 'usehooks-ts'
 import SideBar from './pages/components/header/sidebar/SideBar'
-import RealtimeMapPage from './pages/RealtimeMapPage'
-import SingleLineMapPage from './pages/SingleLineMapPage'
 import { useLocation } from 'react-router-dom'
 import ReactGA from 'react-ga4'
 import { CacheProvider } from '@emotion/react'
@@ -30,6 +24,10 @@ import About from './pages/About'
 import GapsPatternsPage from './pages/GapsPatternsPage'
 import Profile from './pages/Profile'
 
+
+import RoutesList, { PAGES } from './routes'
+import MainHeader from './pages/components/header/Header'
+import LayoutContext from './layout/LayoutContext'
 const { Content } = Layout
 
 const StyledLayout = styled(Layout)`
@@ -44,48 +42,6 @@ const StyledBody = styled.div`
   padding: 24px;
   min-height: 360px;
 `
-
-const PAGES = [
-  {
-    label: TEXT_KEYS.dashboard_page_title,
-    key: '/dashboard',
-  },
-  {
-    label: TEXT_KEYS.timeline_page_title,
-    key: '/timeline',
-    searchParamsRequired: true,
-  },
-  {
-    label: TEXT_KEYS.gaps_page_title,
-    key: '/gaps',
-    searchParamsRequired: true,
-  },
-  {
-    label: TEXT_KEYS.gaps_patterns_page_title,
-    key: '/gaps_patterns',
-  },
-  {
-    label: TEXT_KEYS.realtime_map_page_title,
-    key: '/map',
-  },
-  {
-    label: TEXT_KEYS.singleline_map_page_title,
-    key: '/single-line-map',
-    searchParamsRequired: true,
-  },
-  {
-    label: TEXT_KEYS.about_title,
-    key: '/about',
-  },
-  {
-    label: TEXT_KEYS.report_a_bug_title,
-    key: 'https://github.com/hasadna/open-bus-map-search/issues',
-  },
-  {
-    label: TEXT_KEYS.donate_title,
-    key: 'https://www.jgive.com/new/he/ils/donation-targets/3268#donation-modal',
-  },
-]
 
 const theme = createTheme(
   {
@@ -126,7 +82,7 @@ const App = () => {
   })
 
   useEffect(() => {
-    const page = PAGES.find((page) => page.key === location.pathname)
+    const page = PAGES.find((page) => page.path === location.pathname)
     if (page?.searchParamsRequired) {
       const params = new URLSearchParams({ timestamp: search.timestamp.toString() })
 
@@ -150,8 +106,6 @@ const App = () => {
     })
   }, [])
 
-  const RedirectToDashboard = () => <Navigate to={PAGES[0].key} replace />
-
   return (
     <SearchContext.Provider value={{ search, setSearch: safeSetSearch }}>
       <CacheProvider value={cacheRtl}>
@@ -159,6 +113,7 @@ const App = () => {
           <LocalizationProvider dateAdapter={AdapterMoment} adapterLocale="he">
             <ConfigProvider direction="rtl" locale={heIL}>
               <StyledLayout className="main">
+
                 <SideBar pages={PAGES} />
                 <Layout>
                   <StyledContent>
@@ -177,6 +132,7 @@ const App = () => {
                     </StyledBody>
                   </StyledContent>
                 </Layout>
+
               </StyledLayout>
             </ConfigProvider>
           </LocalizationProvider>
