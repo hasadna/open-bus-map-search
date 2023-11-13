@@ -1,24 +1,33 @@
-import { useState } from 'react'
 import Menu from './menu/Menu'
-import { MenuOutlined } from '@ant-design/icons'
 import './sidebar.scss'
-import cn from 'classnames'
+import { Drawer } from 'antd'
+import { useContext } from 'react'
+import { LayoutContextInterface, LayoutCtx } from 'src/layout/LayoutContext'
 
-const SidebarToggle = ({ open, setOpen }: { open: boolean; setOpen: (open: boolean) => void }) => (
-  <div className="sidebar-menu-toggle" onClick={() => setOpen(!open)}>
-    <MenuOutlined />
+const Logo = () => (
+  <div style={{ overflow: 'hidden' }}>
+    <h1 className={'sidebar-logo'}>דאטאבוס</h1>
   </div>
 )
 
-const Logo = () => <h1 className={'sidebar-logo'}>דאטאבוס</h1>
-
 export default function SideBar() {
-  const [open, setOpen] = useState(false)
+  const { drawerOpen, setDrawerOpen } = useContext<LayoutContextInterface>(LayoutCtx)
+
   return (
-    <aside className={cn('sidebar', { open })}>
-      <Logo />
-      <SidebarToggle open={open} setOpen={setOpen} />
-      <Menu />
-    </aside>
+    <>
+      <Drawer
+        placement="right"
+        mask
+        width={280}
+        onClose={() => setDrawerOpen(false)}
+        open={drawerOpen}
+        className="hideOnDesktop">
+        <Menu />
+      </Drawer>
+      <aside className={'sidebar hideOnMobile'}>
+        <Logo />
+        <Menu />
+      </aside>
+    </>
   )
 }
