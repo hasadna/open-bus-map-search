@@ -42,7 +42,6 @@ export async function getSiriRideWithRelated(
 }
 
 export async function getSiriStopHitTimesAsync(route: BusRoute, stop: BusStop, timestamp: Moment) {
-
   const rides = await getRidesAsync(route, stop, timestamp)
   if (rides.length === 0) {
     return []

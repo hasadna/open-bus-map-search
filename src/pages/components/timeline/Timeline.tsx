@@ -40,9 +40,9 @@ type TimelineProps = {
   className?: string
   // timestamps can be both siri and gtfs timestamps
   timestamps:
-  | GtfsRideStopPydanticModel[]
-  | (SiriVehicleLocationWithRelatedPydanticModel & Coordinates)[]
-  | Date[]
+    | GtfsRideStopPydanticModel[]
+    | (SiriVehicleLocationWithRelatedPydanticModel & Coordinates)[]
+    | Date[]
   totalHeight: number
   pointType: PointType
   timestampToTop: (timestamp: Moment) => number

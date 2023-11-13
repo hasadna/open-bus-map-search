@@ -42,8 +42,6 @@ try {
       await page.getByLabel('מספר זהות').fill(complaint.id)
       await page.getByLabel('טלפון נייד', { exact: true }).fill(complaint.phone)
       await page.getByRole('textbox', { name: 'דואר אלקטרוני' }).fill(complaint.email)
-
-
       await page.getByRole('button', { name: 'לשלב הבא' }).click()
       //   await page.getByLabel('נושא הפנייה').getByLabel('בחירה מהרשימה').first().click()
       //   await new Promise((r) => setTimeout(r, 100))
@@ -57,8 +55,6 @@ try {
       await new Promise((r) => setTimeout(r, 100))
       await page.getByText(complaintTypes[0]).click()
       await new Promise((r) => setTimeout(r, 100))
-
-
       await page.getByRole('button', { name: 'לשלב הבא' }).click()
       await page.getByLabel('חברת האוטובוסים (מפעיל)').fill(complaint.operator)
       await page.getByRole('textbox', { name: 'מספר רישוי' }).fill(complaint.licensePlate)
@@ -69,10 +65,8 @@ try {
       await page
         .getByRole('textbox', { name: 'תוכן הפנייה' })
         .fill('האוטובוס עצר בתחנה ולא נסע עד שעה מאוחרת')
-
       await page.getByRole('textbox', { name: 'מספר קו' }).fill(complaint.lineNumber)
       await page.getByLabel('מוצא/ יעד (כיוון )').fill(complaint.routeName)
-
 
       for (let i = 0; i < 10 && (await page.getByText('הנחיות לצירוף מסמכים').isHidden()); i++) {
         // retry until it works
