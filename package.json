@@ -105,5 +105,6 @@
     "prettier": "^2.7.1",
     "storybook": "^7.5.3",
     "vitest": "^0.34.6"
-  }
+  },
+  "packageManager": "yarn@4.0.1"
 }
