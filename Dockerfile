@@ -3,6 +3,7 @@ FROM node:18@sha256:8d9a875ee427897ef245302e31e2319385b092f1c3368b497e89790f2403
 WORKDIR /app
 COPY package.json ./
 COPY yarn.lock ./
+COPY ./.yarn ./.yarn
 RUN yarn install --pure-lockfile
 COPY . .
 RUN yarn run build
