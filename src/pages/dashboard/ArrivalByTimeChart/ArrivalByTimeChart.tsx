@@ -10,6 +10,7 @@ import {
 } from 'recharts'
 
 import './ArrivalByTimeChats.scss'
+import { useMemo } from 'react'
 
 const arrayGroup = function <T>(array: T[], f: (item: T) => string) {
   const groups: Record<string, T[]> = {}
@@ -25,7 +26,7 @@ const arrayGroup = function <T>(array: T[], f: (item: T) => string) {
 
 export default function ArrivalByTimeChart({
   data,
-  operatorId
+  operatorId,
 }: {
   data: {
     id: string
@@ -35,13 +36,17 @@ export default function ArrivalByTimeChart({
     percent: number
     gtfs_route_date: string
     gtfs_route_hour: string
-  }[],
+  }[]
   operatorId: string
 }) {
-  // Filter data if an operator is selected
-  if(operatorId !== ''){
-    data = data.filter( item => operatorId && item.id === operatorId);
-  }
+
+  const filteredData = useMemo(
+    () => data.filter((item) => operatorId && item.id === operatorId),
+    [data, operatorId],
+  )
+  // If operatorId is present, the data makes sense
+  if (operatorId) data = filteredData
+
   return (
     <div className="chart">
       {arrayGroup(data, (item) => item.id)
