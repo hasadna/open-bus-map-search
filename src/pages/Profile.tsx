@@ -1,10 +1,47 @@
 import styled from 'styled-components'
 import React from 'react'
-import { TEXT_KEYS } from 'src/resources/texts'
+import { useContext, useEffect, useMemo, useState } from 'react'
+import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
+import getAgencyList, { Agency } from 'src/api/agencyList'
+
+import { Label } from './components/Label'
+import { NotFound } from './components/NotFound'
+import { PageContainer } from './components/PageContainer'
+
+import { TEXT_KEYS, TEXTS } from 'src/resources/texts'
 import SlackIcon from '../resources/slack-icon.svg'
 import { useTranslation } from 'react-i18next'
-import GapsPage from './GapsPage'
-import SingleLineMapPage from './SingleLineMapPage'
+// import GapsPage from './GapsPage'
+// import SingleLineMapPage from './SingleLineMapPage'
+import { SearchContext } from '../model/pageState'
+import LineNumberSelector from './components/LineSelector'
+import OperatorSelector from './components/OperatorSelector'
+import RouteSelector from './components/RouteSelector'
+
+// time inputs
+import { DateSelector } from './components/DateSelector'
+import MinuteSelector from './components/MinuteSelector'
+import { TimeSelector } from './components/TimeSelector'
+import moment from 'moment'
+import { useDate } from './components/DateTimePicker'
+
+// GRAPH
+import ArrivalByTimeChart from 'src/pages/dashboard/ArrivalByTimeChart/ArrivalByTimeChart'
+import { GroupByRes, useGroupBy } from 'src/api/groupByService'
+
+
+
+
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from 'recharts'
 
 const Profile = () => {
     return  (
@@ -14,33 +51,216 @@ const Profile = () => {
 
 const GeneralDetailsAboutLine = () => {
     const { t } = useTranslation()
+
+    const { search, setSearch } = useContext(SearchContext)
+    const { operatorId, lineNumber, timestamp, routes, routeKey } = search
   
     return (
       <>
-      <ParagraphStyle>
-        <h2>קו מספר: </h2>
-        <h3>מפעיל: </h3>
-      </ParagraphStyle>
+      <PageContainer className="line-data-container">
+        {/* choose operator */}
+        <Grid xs={8}>
+          <OperatorSelector
+            operatorId={operatorId}
+            setOperatorId={(id) => setSearch((current) => ({ ...current, operatorId: id }))}
+          />
+        </Grid>
+
+        {/* choose line number */}
+        <Grid xs={8}>
+          <LineNumberSelector
+            lineNumber={lineNumber}
+            setLineNumber={(number) => setSearch((current) => ({ ...current, lineNumber: number }))}
+          />
+        </Grid>
+
+        {/* choose route*/}
+        <Grid xs={12}>
+            {routes &&
+              (routes.length === 0 ? (
+                <NotFound>{TEXTS.line_not_found}</NotFound>
+              ) : (
+                <RouteSelector
+                  routes={routes}
+                  routeKey={routeKey}
+                  setRouteKey={(key) => setSearch((current) => ({ ...current, routeKey: key }))}
+                />
+              ))}
+          </Grid>
+        </PageContainer>
+
+      <LineProfileComponent />
+      <LineGraphSchedule />
       </>
     )
   }
 
-const ParagraphStyle = styled.div`
-  & h2 {
-    font-size: 1.5em;
+
+const LineProfileComponent = () => {
+  const { search, setSearch } = useContext(SearchContext)
+  const { operatorId, lineNumber, timestamp, routes, routeKey } = search
+  const [agencyList, setAgencyList] = useState<Agency[]>([])
+
+  return (
+    <Grid xs={12} lg={6}>
+      <div className="widget">
+        <h2 className="title">{TEXTS.profile_page}</h2>
+
+        <div>
+          <Label text='שעות פעילות' />
+            {/* GET the earliest and the latest bus drive departure time for each day */}
+            <TableStyle>
+            <table className="time-table">
+              <tr>
+                <th></th>
+                <th>יום ראשון</th>
+                <th>יום שני</th>
+                <th>יום שלישי</th>
+                <th>יום רביעי</th>
+                <th>יום חמישי</th>
+                <th>יום שישי</th>
+                <th>יום שבת</th>
+              </tr>
+              
+              <tr>
+                <td>אוטובוס ראשון</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+              </tr>
+              
+              <tr>
+                <td>אוטובוס אחרון</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+              </tr>
+            </table>
+            </TableStyle>
+
+            <Label text='הערות ועדכונים על הקו:'/>
+          <div>
+            
+          </div>
+        </div>
+
+      </div>
+    </Grid>
+  )
+}
+
+
+const convertToGraphCompatibleStruct = (arr: GroupByRes[]) => {
+  return arr.map((item: GroupByRes) => ({
+    id: item.operator_ref?.agency_id || 'Unknown',
+    name: item.operator_ref?.agency_name || 'Unknown',
+
+    current: item.total_actual_rides,
+    max: item.total_planned_rides,
+    percent: (item.total_actual_rides / item.total_planned_rides) * 100,
+    gtfs_route_date: item.gtfs_route_date,
+    gtfs_route_hour: item.gtfs_route_hour,
+
+    
+  }))
+}
+// const LineUpdateParagraph = 
+
+const LineGraphSchedule = () => {
+  /*
+  DATA NEEDED:
+  - inputs which indicate the timestamp
+  - schedule of the bus line
+  - timestamp and location of the bus in real time or historically accroding
+  - arrange in series and
+  - present in graph 
+  */
+  const fiveMinutesAgo = moment().subtract(5, 'minutes')
+  const fourMinutesAgo = fiveMinutesAgo.add(1, 'minutes')
+
+  const [from, setFrom] = useState(fiveMinutesAgo)
+  const [to, setTo] = useState(fourMinutesAgo)
+  const now = moment()
+
+  const [startDate, setStartDate] = useDate(now.clone().subtract(7, 'days'))
+  const [endDate, setEndDate] = useDate(now.clone().subtract(1, 'day'))
+  const [groupByHour, setGroupByHour] = React.useState<boolean>(false)
+
+  const [graphData, loadingGrap] = useGroupBy({
+    dateTo: endDate,
+    dateFrom: startDate,
+    groupBy: groupByHour ? 'operator_ref,gtfs_route_hour' : 'operator_ref,gtfs_route_date',
+  })
+
+  return (
+    <>
+      {/* from date */}
+      <Grid xs={2}>
+        <Label text={TEXTS.from_date} />
+      </Grid>
+      <Grid xs={5}>
+        <DateSelector
+          time={to}
+          onChange={(ts) => {
+            const val = ts ? ts : to
+            setFrom(moment(val).subtract(moment(to).diff(moment(from)))) // keep the same time difference
+            setTo(moment(val))
+          }}
+        />
+      </Grid>
+      <Grid xs={5}>
+        <TimeSelector
+          time={to}
+          onChange={(ts) => {
+            const val = ts ? ts : from
+            setFrom(moment(val))
+            setTo(moment(val).add(moment(to).diff(moment(from)))) // keep the same time difference
+          }}
+        />
+      </Grid>
+
+
+
+      <Grid xs={12}>
+          <div className="widget">
+            <h2 className="title">{TEXTS.profile_page_line}</h2>
+              <ArrivalByTimeChart data={convertToGraphCompatibleStruct(graphData)} />
+          </div>
+        </Grid>
+    </>
+  )
+}
+
+
+const TableStyle = styled.table`
+  & th,td {
+    border: 1px solid #ddd;
+    padding: 8px;
   }
-  & p {
+  & th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: rgb(95, 91, 255);
+    color: white;
+  }
+  & tr {
     font-size: 1.15em;
   }
-
-  & ul {
-    list-style: none;
-    padding: 0;
+  & tr:nth-child(even){
+    background-color: #f2f2f2;
   }
-  & img {
-    width: 5%;
+  & table {
+    border-collapse: collapse;
   }
 `
-
 
 export default Profile
