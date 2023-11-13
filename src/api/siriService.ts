@@ -4,7 +4,6 @@ import { BusStop } from 'src/model/busStop'
 import moment, { Moment } from 'moment'
 import { geoLocationBoundary, nearestLocation } from 'src/api/geoService'
 import { Coordinates } from 'src/model/location'
-import { log } from 'src/log'
 import { BusRoute } from 'src/model/busRoute'
 import { SiriRideWithRelatedPydanticModel } from 'open-bus-stride-client/openapi/models/SiriRideWithRelatedPydanticModel'
 
@@ -43,11 +42,6 @@ export async function getSiriRideWithRelated(
 }
 
 export async function getSiriStopHitTimesAsync(route: BusRoute, stop: BusStop, timestamp: Moment) {
-  log('looking for rides arriving at stop around time', {
-    route,
-    stopId: stop.stopId,
-    timestamp: timestamp.seconds(0).milliseconds(0).toDate(),
-  })
 
   const rides = await getRidesAsync(route, stop, timestamp)
   if (rides.length === 0) {
