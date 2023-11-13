@@ -74,10 +74,6 @@ const PAGES = [
     label: TEXT_KEYS.about_title,
     key: '/about',
   },
-  // {
-  //   label: TEXT_KEYS.profile_page,
-  //   key: '/profile',
-  // },
   {
     label: TEXT_KEYS.report_a_bug_title,
     key: 'https://github.com/hasadna/open-bus-map-search/issues',
