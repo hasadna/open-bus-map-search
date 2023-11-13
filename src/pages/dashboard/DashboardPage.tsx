@@ -14,6 +14,11 @@ import { Skeleton, Radio, RadioChangeEvent } from 'antd'
 import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
 import { DateSelector } from '../components/DateSelector'
 
+
+
+
+
+
 const now = moment()
 
 const convertToChartCompatibleStruct = (arr: GroupByRes[]) => {
@@ -141,7 +146,7 @@ const DashboardPage = () => {
               <LinesHbarChart
                 lines={convertToWorstLineChartCompatibleStruct(groupByLineData, operatorId)}
                 operators_whitelist={['אלקטרה אפיקים', 'דן', 'מטרופולין', 'קווים', 'אגד']}
-              />
+                />
             )}
           </div>
         </Grid>
@@ -167,7 +172,7 @@ const DashboardPage = () => {
           </div>
         </Grid>
       </Grid>
-    </PageContainer>
+    </PageContainer >
   )
 }
 

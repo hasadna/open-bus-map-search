@@ -1,13 +1,14 @@
 import { TEXT_KEYS } from 'src/resources/texts'
 import { Navigate, Route, Routes } from 'react-router-dom'
-
-import DashboardPage from '../pages/dashboard/DashboardPage'
-import TimelinePage from '../pages/TimelinePage'
-import GapsPage from '../pages/GapsPage'
-import GapsPatternsPage from '../pages/gapsPatterns'
-import RealtimeMapPage from '../pages/RealtimeMapPage'
-import SingleLineMapPage from '../pages/SingleLineMapPage'
-import About from '../pages/About'
+import { lazy, Suspense } from 'react';
+const DashboardPage = lazy(() => import('../pages/dashboard/DashboardPage'));
+const TimelinePage = lazy(() => import('../pages/TimelinePage'));
+const GapsPage = lazy(() => import('../pages/GapsPage'));
+const GapsPatternsPage = lazy(() => import('../pages/gapsPatterns'));
+const RealtimeMapPage = lazy(() => import('../pages/RealtimeMapPage'));
+const SingleLineMapPage = lazy(() => import('../pages/SingleLineMapPage'));
+const About = lazy(() => import('../pages/About'));
+import CircularProgress from '@mui/material/CircularProgress';
 
 import {
   RadarChartOutlined,
@@ -23,7 +24,7 @@ import {
 
 import { MenuPage } from '../pages/components/header/menu/Menu'
 
-export const PAGES = [
+export const PAGES: MenuPage[] = [
   {
     label: TEXT_KEYS.dashboard_page_title,
     key: '/dashboard',
@@ -78,17 +79,35 @@ const RoutesList = () => {
   const RedirectToDashboard = () => <Navigate to={PAGES[0].key} replace />
 
   return (
-    <Routes>
-      <Route path={PAGES[0].key} element={<DashboardPage />} />
-      <Route path={PAGES[1].key} element={<TimelinePage />} />
-      <Route path={PAGES[2].key} element={<GapsPage />} />
-      <Route path={PAGES[3].key} element={<GapsPatternsPage />} />
-      <Route path={PAGES[4].key} element={<RealtimeMapPage />} />
-      <Route path={PAGES[5].key} element={<SingleLineMapPage />} />
-      <Route path={PAGES[6].key} element={<About />} />
-      <Route path="*" element={<RedirectToDashboard />} />
-    </Routes>
-  )
-}
+    <Suspense fallback={<CircularProgress />}>
+      <Routes>
+        {PAGES.map((page) => (
+          <Route key={page.key} path={page.key} element={getPageElement(page)} />
+        ))}
+        <Route path="*" element={<RedirectToDashboard />} />
+      </Routes>
+    </Suspense>
+  );
 
+}
+const getPageElement = (page: MenuPage) => {
+  switch (page.key) {
+    case '/dashboard':
+      return <DashboardPage />;
+    case '/timeline':
+      return <TimelinePage />;
+    case '/gaps':
+      return <GapsPage />;
+    case '/gaps_patterns':
+      return <GapsPatternsPage />;
+    case '/map':
+      return <RealtimeMapPage />;
+    case '/single-line-map':
+      return <SingleLineMapPage />;
+    case '/about':
+      return <About />;
+    default:
+      return null;
+  }
+}
 export default RoutesList
