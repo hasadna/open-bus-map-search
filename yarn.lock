@@ -11147,6 +11147,7 @@ __metadata:
     stylis-plugin-rtl: "npm:^2.1.1"
     typescript: "npm:^5.2.2"
     underscore.string: "npm:^3.3.6"
+    use-konami: "npm:^1.0.1"
     usehooks-ts: "npm:^2.9.1"
     vite: "npm:^4.4.9"
     vite-plugin-svgr: "npm:^4.1.0"
@@ -14714,6 +14715,15 @@ __metadata:
     "@types/react":
       optional: true
   checksum: 8a0867ffd441f358c66d79567970a745cc78ac2f98840a81c1fa749a525e8716116c645497d886a815e1dcf40ad81a107ebd6a7d15fd9ab5925c44a994a1d89a
+  languageName: node
+  linkType: hard
+
+"use-konami@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "use-konami@npm:1.0.1"
+  peerDependencies:
+    react: ">=16.13"
+  checksum: 07fad7f810027c68313e24f5bf68642ca1d7669e37fced6c10050dccf10f88d8ca810dc6023f59846a216b2e5acb774413376de8fed3eeed44444d5accfe635e
   languageName: node
   linkType: hard
 
