@@ -74,6 +74,7 @@ export const TEXT_KEYS = {
   migdal_company: 'migdal_company',
   and_smaller_donors: 'and_smaller_donors',
   gaps_patterns_page_title: 'gaps_patterns_page_title',
+  github_link: 'github_link',
 }
 
 export const TEXTS = {
@@ -136,6 +137,7 @@ export const TEXTS = {
   end: 'סיום',
   about_title: 'אודות',
   donate_title: 'לתרומות',
+  github_link: 'github_link',
   report_a_bug_title: 'דיווח על באג',
   website_name: 'דאטאבוס',
   what_is_website: 'מהו אתר “דאטאבוס”?',

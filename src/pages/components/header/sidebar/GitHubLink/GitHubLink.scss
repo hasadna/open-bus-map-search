@@ -1,0 +1,10 @@
+.github-link {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2em; 
+
+  &:hover {
+    transform: scale(1.1); 
+  }
+}

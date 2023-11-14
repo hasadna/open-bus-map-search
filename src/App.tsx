@@ -1,5 +1,4 @@
 import { useCallback, useEffect } from 'react'
-import 'antd/dist/antd.min.css'
 import './App.scss'
 import { ConfigProvider, Layout } from 'antd'
 import 'leaflet/dist/leaflet.css'
