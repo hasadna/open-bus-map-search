@@ -35,10 +35,10 @@ export default function ArrivalByTimeChart({
     percent: number
     gtfs_route_date: string
     gtfs_route_hour: string
-  }[]
+  }[],
   excludeOperators: RegExp[]
 }) {
-  const filteredData = data.filter((item) => {
+  const filteredData = data.filter(item =>  {
     return !excludeOperators.some((pattern) => pattern.test(item.name))
   })
   return (
