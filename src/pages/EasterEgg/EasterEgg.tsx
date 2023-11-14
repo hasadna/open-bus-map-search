@@ -215,7 +215,7 @@ const Envelope = ({ fade }: { fade: boolean }) => (
   </EnvelopeWrapper>
 )
 
-export function EasterEgg({}) {
+export function EasterEgg() {
   const [show, setShow] = useState(false)
   const [fade, setFade] = useState(false)
   useKonami({
