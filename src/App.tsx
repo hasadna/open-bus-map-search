@@ -21,7 +21,6 @@ import { ThemeProvider, createTheme } from '@mui/material'
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 import { LocalizationProvider } from '@mui/x-date-pickers'
 
-
 import RoutesList, { PAGES } from './routes'
 import MainHeader from './pages/components/header/Header'
 import LayoutContext from './layout/LayoutContext'

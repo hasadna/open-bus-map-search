@@ -20,6 +20,7 @@ import {
   BugOutlined,
   BarChartOutlined,
   LineChartOutlined,
+  ProfileOutlined,
 } from '@ant-design/icons'
 
 
