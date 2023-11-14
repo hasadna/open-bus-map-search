@@ -1,15 +1,13 @@
 import styled from 'styled-components'
 import React from 'react'
-import { useContext, useEffect, useMemo, useState } from 'react'
+import { useContext, useState } from 'react'
 import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
-import getAgencyList, { Agency } from 'src/api/agencyList'
 
 import { Label } from './components/Label'
 import { NotFound } from './components/NotFound'
 import { PageContainer } from './components/PageContainer'
 
-import { TEXT_KEYS, TEXTS } from 'src/resources/texts'
-import SlackIcon from '../resources/slack-icon.svg'
+import { TEXTS } from 'src/resources/texts'
 import { useTranslation } from 'react-i18next'
 // import GapsPage from './GapsPage'
 // import SingleLineMapPage from './SingleLineMapPage'
@@ -20,40 +18,26 @@ import RouteSelector from './components/RouteSelector'
 
 // time inputs
 import { DateSelector } from './components/DateSelector'
-import MinuteSelector from './components/MinuteSelector'
 import { TimeSelector } from './components/TimeSelector'
 import moment from 'moment'
 import { useDate } from './components/DateTimePicker'
 
 // GRAPH
-import ArrivalByTimeChart from 'src/pages/dashboard/ArrivalByTimeChart/ArrivalByTimeChart'
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
-
-
-
-
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from 'recharts'
+import BusArrivalTimeline from './components/BusArrivalsTimeline'
 
 const Profile = () => {
     return  (
+      <>
         <GeneralDetailsAboutLine />
+      </>
     )
 }
 
 const GeneralDetailsAboutLine = () => {
-    const { t } = useTranslation()
 
     const { search, setSearch } = useContext(SearchContext)
-    const { operatorId, lineNumber, timestamp, routes, routeKey } = search
+    const { operatorId, lineNumber, routes, routeKey } = search
   
     return (
       <>
@@ -97,17 +81,17 @@ const GeneralDetailsAboutLine = () => {
 
 
 const LineProfileComponent = () => {
+  const { t } = useTranslation()
   const { search, setSearch } = useContext(SearchContext)
-  const { operatorId, lineNumber, timestamp, routes, routeKey } = search
-  const [agencyList, setAgencyList] = useState<Agency[]>([])
+  // const { operatorId, lineNumber, timestamp, routes, routeKey } = search
 
   return (
     <Grid xs={12} lg={6}>
       <div className="widget">
-        <h2 className="title">{TEXTS.profile_page}</h2>
+        <h2 className="title">{t('profile_page')}</h2>
 
         <div>
-          <Label text='שעות פעילות' />
+          <Label text="שעות פעילות" />
             {/* GET the earliest and the latest bus drive departure time for each day */}
             <TableStyle>
             <table className="time-table">
@@ -146,7 +130,7 @@ const LineProfileComponent = () => {
             </table>
             </TableStyle>
 
-            <Label text='הערות ועדכונים על הקו:'/>
+            <Label text="הערות ועדכונים על הקו:"/>
           <div>
             
           </div>
@@ -227,12 +211,10 @@ const LineGraphSchedule = () => {
         />
       </Grid>
 
-
-
       <Grid xs={12}>
           <div className="widget">
             <h2 className="title">{TEXTS.profile_page_line}</h2>
-              <ArrivalByTimeChart data={convertToGraphCompatibleStruct(graphData)} />
+              <BusArrivalTimeline data={convertToGraphCompatibleStruct(graphData)} />
           </div>
         </Grid>
     </>

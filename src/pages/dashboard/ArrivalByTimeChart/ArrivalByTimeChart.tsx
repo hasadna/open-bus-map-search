@@ -11,7 +11,7 @@ import {
 
 import './ArrivalByTimeChats.scss'
 
-const arrayGroup = function <T>(array: T[], f: (item: T) => string) {
+export const arrayGroup = function <T>(array: T[], f: (item: T) => string) {
   const groups: Record<string, T[]> = {}
   array.forEach(function (o) {
     const group = f(o)
