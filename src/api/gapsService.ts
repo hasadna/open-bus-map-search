@@ -1,6 +1,5 @@
 import moment, { Moment } from 'moment-timezone'
 import { GapsList } from '../model/gaps'
-import { log } from '../log'
 import axios from 'axios'
 import { BASE_PATH } from './apiConfig'
 
@@ -30,7 +29,6 @@ export const getGapsAsync = async (
   operatorId: string,
   lineRef: number,
 ): Promise<GapsList> => {
-  log('Searching for gaps', { operatorId, lineRef })
   const fromDay = moment(fromTimestamp).startOf('day')
   const toDay = moment(toTimestamp).startOf('day')
   // const startOfDay = moment(fromTimestamp).startOf('day')
