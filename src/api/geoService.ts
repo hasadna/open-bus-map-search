@@ -1,6 +1,5 @@
 import { computeDestinationPoint, findNearest } from 'geolib'
 import { Coordinates, CoordinatesBoundary } from 'src/model/location'
-import { log } from 'src/log'
 
 export function geoLocationBoundary(location: Coordinates, byMeters: number): CoordinatesBoundary {
   const moveUp = computeDestinationPoint(location, byMeters, 0)
@@ -11,7 +10,6 @@ export function geoLocationBoundary(location: Coordinates, byMeters: number): Co
     lowerBound: { longitude: moveLeft.longitude, latitude: moveDown.latitude },
     upperBound: { longitude: moveRight.longitude, latitude: moveUp.latitude },
   }
-  log('getting boundary', { location, byMeters, boundary })
   return boundary
 }
 
