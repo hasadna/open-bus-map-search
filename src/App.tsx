@@ -21,7 +21,7 @@ import { ThemeProvider, createTheme } from '@mui/material'
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 import { LocalizationProvider } from '@mui/x-date-pickers'
 import About from './pages/About'
-import GapsPatternsPage from './pages/GapsPatternsPage'
+import GapsPatternsPage from './pages/gaps/GapsPatternsPage'
 import Profile from './pages/Profile'
 
 
