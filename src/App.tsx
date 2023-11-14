@@ -21,7 +21,7 @@ import { ThemeProvider, createTheme } from '@mui/material'
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 import { LocalizationProvider } from '@mui/x-date-pickers'
 import About from './pages/About'
-import GapsPatternsPage from './pages/gaps/GapsPatternsPage'
+import GapsPatternsPage from './pages/gapsPatterns/GapsPatternsPage'
 import Profile from './pages/Profile'
 
 
@@ -109,30 +109,21 @@ const App = () => {
   return (
     <SearchContext.Provider value={{ search, setSearch: safeSetSearch }}>
       <CacheProvider value={cacheRtl}>
-        <ThemeProvider theme={theme}>
+      <ThemeProvider theme={theme}>
           <LocalizationProvider dateAdapter={AdapterMoment} adapterLocale="he">
             <ConfigProvider direction="rtl" locale={heIL}>
               <StyledLayout className="main">
-
-                <SideBar pages={PAGES} />
-                <Layout>
-                  <StyledContent>
-                    <StyledBody>
-                      <Routes>
-                        <Route path={PAGES[0].key} element={<DashboardPage />} />
-                        <Route path={PAGES[1].key} element={<TimelinePage />} />
-                        <Route path={PAGES[2].key} element={<GapsPage />} />
-                        <Route path={PAGES[3].key} element={<GapsPatternsPage />} />
-                        <Route path={PAGES[4].key} element={<RealtimeMapPage />} />
-                        <Route path={PAGES[5].key} element={<SingleLineMapPage />} />
-                        <Route path={PAGES[6].key} element={<About />} />
-                        <Route path={'/profile'} element={<Profile />} />
-                        <Route path="*" element={<RedirectToDashboard />} />
-                      </Routes>
-                    </StyledBody>
-                  </StyledContent>
-                </Layout>
-
+                <LayoutContext>
+                  <SideBar />
+                  <Layout>
+                    <MainHeader />
+                    <StyledContent>
+                      <StyledBody>
+                        <RoutesList />
+                      </StyledBody>
+                    </StyledContent>
+                  </Layout>
+                </LayoutContext>
               </StyledLayout>
             </ConfigProvider>
           </LocalizationProvider>

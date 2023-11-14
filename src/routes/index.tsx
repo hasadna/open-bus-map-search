@@ -8,6 +8,7 @@ import GapsPatternsPage from '../pages/gapsPatterns'
 import RealtimeMapPage from '../pages/RealtimeMapPage'
 import SingleLineMapPage from '../pages/SingleLineMapPage'
 import About from '../pages/About'
+import Profile from '../pages/Profile'
 
 import {
   RadarChartOutlined,
@@ -19,7 +20,9 @@ import {
   BugOutlined,
   BarChartOutlined,
   LineChartOutlined,
+  ProfileOutlined,
 } from '@ant-design/icons'
+
 
 export const PAGES = [
   {
@@ -90,6 +93,7 @@ const RoutesList = () => {
         <Route key={path} path={path} element={element} />
       ))}
       <Route path="*" element={<RedirectToDashboard />} />
+      <Route path="/profile" element={<Profile />} />
     </Routes>
   )
 }
