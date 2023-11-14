@@ -24,6 +24,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers'
 import RoutesList, { PAGES } from './routes'
 import MainHeader from './pages/components/header/Header'
 import LayoutContext from './layout/LayoutContext'
+import { EasterEgg } from './pages/EasterEgg/EasterEgg'
 const { Content } = Layout
 
 const StyledLayout = styled(Layout)`
@@ -132,6 +133,7 @@ const App = () => {
 const RoutedApp = () => (
   <Router>
     <App />
+    <EasterEgg />
   </Router>
 )
 export default RoutedApp
