@@ -1,4 +1,4 @@
-name: Test Clean Tree
+name: Validate
 on:
   pull_request:
 
@@ -7,7 +7,7 @@ env:
   DOCKER_APP_IMAGE_TAG: 'latest'
 
 jobs:
-  git-clean-tree-test:
+  verify-clean-tree:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -88,7 +88,7 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v3
         with:
-          name: myimage
+          name: docker-image
           path: /tmp
       - name: Load image
         run: docker load -i /tmp/docker-image.tar
