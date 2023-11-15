@@ -37,6 +37,9 @@ import RealtimeMapPage from "src/pages/RealtimeMapPage";
 import SingleLineMapPage from "src/pages/SingleLineMapPage";
 import About from "src/pages/About";
 import {useTranslation} from "react-i18next";
+import MainHeader from './pages/components/header/Header'
+import LayoutContext from './layout/LayoutContext'
+import { EasterEgg } from './pages/EasterEgg/EasterEgg'
 const { Content } = Layout
 
 const StyledLayout = styled(Layout)`
@@ -185,14 +188,17 @@ const App = () => {
           <LocalizationProvider dateAdapter={AdapterMoment} adapterLocale="he">
             <ConfigProvider direction="rtl" locale={heIL}>
               <StyledLayout className="main">
-                <SideBar />
-                <Layout>
-                  <StyledContent>
-                    <StyledBody>
-                      <RoutesList />
-                    </StyledBody>
-                  </StyledContent>
-                </Layout>
+                <LayoutContext>
+                  <SideBar />
+                  <Layout>
+                    <MainHeader />
+                    <StyledContent>
+                      <StyledBody>
+                        <RoutesList />
+                      </StyledBody>
+                    </StyledContent>
+                  </Layout>
+                </LayoutContext>
               </StyledLayout>
             </ConfigProvider>
           </LocalizationProvider>
@@ -205,6 +211,7 @@ const App = () => {
 const RoutedApp = () => (
   <Router>
     <App />
+    <EasterEgg />
   </Router>
 )
 export default RoutedApp

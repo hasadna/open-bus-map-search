@@ -16,7 +16,6 @@ import StopSelector from 'src/pages/components/StopSelector'
 import { Spin } from 'antd'
 import { getSiriStopHitTimesAsync } from 'src/api/siriService'
 import { TimelineBoard } from 'src/pages/components/timeline/TimelineBoard'
-import { log } from 'src/log'
 import { PageContainer } from './components/PageContainer'
 import { SearchContext, TimelinePageState } from '../model/pageState'
 import { NotFound } from './components/NotFound'
@@ -126,7 +125,6 @@ const TimelinePage = () => {
     }
     const newStopKey = stops.find((stop) => stop.name === stopName)?.key
     if (newStopKey) {
-      log(`setting new stopKey=${newStopKey} using the prev stopName=${stopName}`)
       setState((current) => ({ ...current, stopKey: newStopKey }))
     }
   }, [timestamp, stops])

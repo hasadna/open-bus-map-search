@@ -6,45 +6,47 @@ jobs:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
-      with:
-        node-version: 18
-    - name: Install dependencies
-      run: yarn
-    - name: Install Playwright Browsers
-      run: yarn playwright install --with-deps
-    - name: Run Playwright tests
-      run: yarn playwright test
-    - uses: actions/upload-artifact@v3
-      if: always()
-      with:
-        name: playwright-report
-        path: playwright-report/
-        retention-days: 30\
-    - uses: shallwefootball/s3-upload-action@master
-      name: Upload report to S3
-      if: always()
-      id: s3-report
-      continue-on-error: true
-      with:
-        aws_key_id: ${{ secrets.AWS_KEY_ID }}
-        aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
-        aws_bucket: noam-gaash.co.il
-        source_dir: playwright-report
-        destination_dir: ${{ github.run_id }}/open-bus/playwright-report
-    - name: output link to report to the summary
-      if: always() && steps.s3-report.outcome == 'success'
-      run: echo "link to report - https://s3.amazonaws.com/noam-gaash.co.il/$GITHUB_RUN_ID/open-bus/playwright-report/index.html" >> $GITHUB_STEP_SUMMARY
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Run install
+        uses: borales/actions-yarn@v4
+        with:
+          cmd: install
+      - name: Install Playwright Browsers
+        run: yarn playwright install --with-deps
+      - name: Run Playwright tests
+        run: yarn playwright test
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30\
+      - uses: shallwefootball/s3-upload-action@master
+        name: Upload report to S3
+        if: always()
+        id: s3-report
+        continue-on-error: true
+        with:
+          aws_key_id: ${{ secrets.AWS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
+          aws_bucket: noam-gaash.co.il
+          source_dir: playwright-report
+          destination_dir: ${{ github.run_id }}/open-bus/playwright-report
+      - name: output link to report to the summary
+        if: always() && steps.s3-report.outcome == 'success'
+        run: echo "link to report - https://s3.amazonaws.com/noam-gaash.co.il/$GITHUB_RUN_ID/open-bus/playwright-report/index.html" >> $GITHUB_STEP_SUMMARY
 
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
-      with:
-        node-version: 18
-    - name: Install dependencies
-      run: yarn
-    - name: Build
-      run: yarn build
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Install dependencies
+        run: yarn
+      - name: Build
+        run: yarn build
