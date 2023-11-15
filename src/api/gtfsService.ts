@@ -3,7 +3,6 @@ import moment, { Moment } from 'moment'
 import { BusRoute, fromGtfsRoute } from 'src/model/busRoute'
 import { BusStop, fromGtfsStop } from 'src/model/busStop'
 import { API_CONFIG, MAX_HITS_COUNT } from 'src/api/apiConfig'
-import { log } from 'src/log'
 
 const GTFS_API = new GtfsApi(API_CONFIG)
 //const USER_CASES_API = new UserCasesApi(API_CONFIG)
@@ -16,7 +15,6 @@ export async function getRoutesAsync(
   operatorId: string,
   lineNumber: string,
 ): Promise<BusRoute[]> {
-  log('looking up routes', { operatorId, lineNumber })
   const gtfsRoutes = await GTFS_API.gtfsRoutesListGet({
     routeShortName: lineNumber,
     operatorRefs: operatorId,
@@ -38,7 +36,6 @@ export async function getRoutesAsync(
         return agg
       }, {} as Record<string, BusRoute>),
   )
-  log('fetched routes', routes.length)
   return routes
 }
 
@@ -46,7 +43,6 @@ export async function getStopsForRouteAsync(
   routeIds: number[],
   timestamp: Moment,
 ): Promise<BusStop[]> {
-  log('looking up stops', routeIds)
   const stops: BusStop[] = []
 
   for (const routeId of routeIds) {
@@ -71,7 +67,6 @@ export async function getStopsForRouteAsync(
       }),
     )
   }
-  log('fetched stops', stops.length)
   return stops.sort((a, b) =>
     a.stopSequence === b.stopSequence
       ? a.name.localeCompare(b.name)
@@ -81,11 +76,6 @@ export async function getStopsForRouteAsync(
 
 export async function getGtfsStopHitTimesAsync(stop: BusStop, timestamp: Moment) {
   const targetStartTime = moment(timestamp).subtract(stop.minutesFromRouteStartTime, 'minutes')
-  log('looking for rides starting around time', {
-    stopId: stop.stopId,
-    min: stop.minutesFromRouteStartTime,
-    targetStartTime: targetStartTime.toDate(),
-  })
 
   const rides = await GTFS_API.gtfsRidesListGet({
     gtfsRouteId: stop.routeId,
