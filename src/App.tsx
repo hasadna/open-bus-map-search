@@ -105,7 +105,7 @@ const App = () => {
   return (
     <SearchContext.Provider value={{ search, setSearch: safeSetSearch }}>
       <CacheProvider value={cacheRtl}>
-      <ThemeProvider theme={theme}>
+        <ThemeProvider theme={theme}>
           <LocalizationProvider dateAdapter={AdapterMoment} adapterLocale="he">
             <ConfigProvider direction="rtl" locale={heIL}>
               <StyledLayout className="main">

@@ -27,57 +27,55 @@ import { GroupByRes, useGroupBy } from 'src/api/groupByService'
 import BusArrivalTimeline from './components/BusArrivalsTimeline'
 
 const Profile = () => {
-    return  (
-      <>
-        <GeneralDetailsAboutLine />
-      </>
-    )
+  return  (
+    <>
+      <GeneralDetailsAboutLine />
+      <LineProfileComponent />
+      <LineGraphSchedule />
+    </>
+  )
 }
 
 const GeneralDetailsAboutLine = () => {
+  const { search, setSearch } = useContext(SearchContext)
+  const { operatorId, lineNumber, routes, routeKey } = search
 
-    const { search, setSearch } = useContext(SearchContext)
-    const { operatorId, lineNumber, routes, routeKey } = search
-  
-    return (
-      <>
-      <PageContainer className="line-data-container">
-        {/* choose operator */}
-        <Grid xs={8}>
-          <OperatorSelector
-            operatorId={operatorId}
-            setOperatorId={(id) => setSearch((current) => ({ ...current, operatorId: id }))}
-          />
+  return (
+    <>
+    <PageContainer className="line-data-container">
+      {/* choose operator */}
+      <Grid xs={8}>
+        <OperatorSelector
+          operatorId={operatorId}
+          setOperatorId={(id) => setSearch((current) => ({ ...current, operatorId: id }))}
+        />
+      </Grid>
+
+      {/* choose line number */}
+      <Grid xs={8}>
+        <LineNumberSelector
+          lineNumber={lineNumber}
+          setLineNumber={(number) => setSearch((current) => ({ ...current, lineNumber: number }))}
+        />
+      </Grid>
+
+      {/* choose route*/}
+      <Grid xs={12}>
+          {routes &&
+            (routes.length === 0 ? (
+              <NotFound>{TEXTS.line_not_found}</NotFound>
+            ) : (
+              <RouteSelector
+                routes={routes}
+                routeKey={routeKey}
+                setRouteKey={(key) => setSearch((current) => ({ ...current, routeKey: key }))}
+              />
+            ))}
         </Grid>
-
-        {/* choose line number */}
-        <Grid xs={8}>
-          <LineNumberSelector
-            lineNumber={lineNumber}
-            setLineNumber={(number) => setSearch((current) => ({ ...current, lineNumber: number }))}
-          />
-        </Grid>
-
-        {/* choose route*/}
-        <Grid xs={12}>
-            {routes &&
-              (routes.length === 0 ? (
-                <NotFound>{TEXTS.line_not_found}</NotFound>
-              ) : (
-                <RouteSelector
-                  routes={routes}
-                  routeKey={routeKey}
-                  setRouteKey={(key) => setSearch((current) => ({ ...current, routeKey: key }))}
-                />
-              ))}
-          </Grid>
-        </PageContainer>
-
-      <LineProfileComponent />
-      <LineGraphSchedule />
-      </>
-    )
-  }
+      </PageContainer>
+    </>
+  )
+}
 
 
 const LineProfileComponent = () => {
@@ -142,7 +140,7 @@ const LineProfileComponent = () => {
 }
 
 
-const convertToGraphCompatibleStruct = (arr: GroupByRes[]) => {
+const convertToProfileGraphStruct = (arr: GroupByRes[]) => {
   return arr.map((item: GroupByRes) => ({
     id: item.operator_ref?.agency_id || 'Unknown',
     name: item.operator_ref?.agency_name || 'Unknown',
@@ -214,7 +212,7 @@ const LineGraphSchedule = () => {
       <Grid xs={12}>
           <div className="widget">
             <h2 className="title">{TEXTS.profile_page_line}</h2>
-              <BusArrivalTimeline data={convertToGraphCompatibleStruct(graphData)} />
+              <BusArrivalTimeline data={convertToProfileGraphStruct(graphData)} />
           </div>
         </Grid>
     </>
