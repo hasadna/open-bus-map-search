@@ -1,13 +1,10 @@
-name: CI
+name: CD
 on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
 jobs:
-  ci:
+  cd:
     environment: production
     runs-on: ubuntu-20.04
     steps:
