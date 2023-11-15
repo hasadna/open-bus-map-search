@@ -25,7 +25,7 @@ const arrayGroup = function <T>(array: T[], f: (item: T) => string) {
 
 export default function ArrivalByTimeChart({
   data,
-excludeOperators,
+  excludeOperators,
 }: {
   data: {
     id: string
@@ -35,10 +35,10 @@ excludeOperators,
     percent: number
     gtfs_route_date: string
     gtfs_route_hour: string
-  }[],
+  }[]
   excludeOperators: RegExp[]
 }) {
-const filteredData = data.filter(item =>  {
+  const filteredData = data.filter((item) => {
     return !excludeOperators.some((pattern) => pattern.test(item.name))
   })
   return (

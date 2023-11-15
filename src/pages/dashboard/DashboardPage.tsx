@@ -167,7 +167,10 @@ const DashboardPage = () => {
             {loadingGrap ? (
               <Skeleton active />
             ) : (
-              <ArrivalByTimeChart data={convertToGraphCompatibleStruct(graphData)} excludeOperators={excludeOperators}/>
+              <ArrivalByTimeChart
+                data={convertToGraphCompatibleStruct(graphData)}
+                excludeOperators={excludeOperators}
+              />
             )}
           </div>
         </Grid>

@@ -19,11 +19,11 @@ export function getColorName(name: string) {
 
 function OperatorHbarChart({
   operators,
-excludeOperators,
+  excludeOperators,
   complement = false, // complement the chart (100% - actual) instead of actual
 }: {
   operators: { name: string; total: number; actual: number }[]
-excludeOperators: RegExp[]
+  excludeOperators: RegExp[]
   complement?: boolean
 }) {
   const rows = operators
