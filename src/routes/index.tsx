@@ -1,14 +1,14 @@
 import { TEXT_KEYS } from 'src/resources/texts'
 import { Navigate, Route, Routes } from 'react-router-dom'
-import React, { lazy, Suspense } from 'react';
-const DashboardPage = lazy(() => import('../pages/dashboard/DashboardPage'));
-const TimelinePage = lazy(() => import('../pages/TimelinePage'));
-const GapsPage = lazy(() => import('../pages/GapsPage'));
-const GapsPatternsPage = lazy(() => import('../pages/gapsPatterns'));
-const RealtimeMapPage = lazy(() => import('../pages/RealtimeMapPage'));
-const SingleLineMapPage = lazy(() => import('../pages/SingleLineMapPage'));
+import React, { lazy, Suspense } from 'react'
+const DashboardPage = lazy(() => import('../pages/dashboard/DashboardPage'))
+const TimelinePage = lazy(() => import('../pages/TimelinePage'))
+const GapsPage = lazy(() => import('../pages/GapsPage'))
+const GapsPatternsPage = lazy(() => import('../pages/gapsPatterns'))
+const RealtimeMapPage = lazy(() => import('../pages/RealtimeMapPage'))
+const SingleLineMapPage = lazy(() => import('../pages/SingleLineMapPage'))
 const About = lazy(() => import('../pages/About'))
-import CircularProgress from '@mui/material/CircularProgress';
+import CircularProgress from '@mui/material/CircularProgress'
 
 import {
   RadarChartOutlined,
