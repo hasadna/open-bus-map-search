@@ -102,6 +102,7 @@ jobs:
         uses: borales/actions-yarn@v4
         with:
           cmd: install
+      - run: yarn playwright install
       - name: Run test
         run: yarn test
   test-unit:
