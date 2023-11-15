@@ -1,14 +1,16 @@
 import { TEXT_KEYS } from 'src/resources/texts'
 import { Navigate, Route, Routes } from 'react-router-dom'
 
-import DashboardPage from '../pages/dashboard/DashboardPage'
-import TimelinePage from '../pages/TimelinePage'
-import GapsPage from '../pages/GapsPage'
-import GapsPatternsPage from '../pages/gapsPatterns'
-import RealtimeMapPage from '../pages/RealtimeMapPage'
-import SingleLineMapPage from '../pages/SingleLineMapPage'
-import About from '../pages/About'
-import Profile from '../pages/Profile'
+import React, { lazy, Suspense } from 'react'
+const DashboardPage = lazy(() => import('../pages/dashboard/DashboardPage'))
+const TimelinePage = lazy(() => import('../pages/TimelinePage'))
+const GapsPage = lazy(() => import('../pages/GapsPage'))
+const GapsPatternsPage = lazy(() => import('../pages/gapsPatterns'))
+const RealtimeMapPage = lazy(() => import('../pages/RealtimeMapPage'))
+const SingleLineMapPage = lazy(() => import('../pages/SingleLineMapPage'))
+const About = lazy(() => import('../pages/About'))
+const Profile = lazy(() => import('../pages/Profile'))
+import CircularProgress from '@mui/material/CircularProgress'
 
 import {
   RadarChartOutlined,
@@ -87,13 +89,15 @@ const RoutesList = () => {
   const RedirectToDashboard = () => <Navigate to={PAGES[0].path} replace />
   const routes = PAGES.filter((r) => r.element)
   return (
-    <Routes>
-      {routes.map(({ path, element }) => (
-        <Route key={path} path={path} element={element} />
-      ))}
-      <Route path="*" element={<RedirectToDashboard />} />
-      <Route path="/profile" element={<Profile />} />
-    </Routes>
+    <Suspense fallback={<CircularProgress />}>
+      <Routes>
+        {routes.map(({ path, element }) => (
+          <Route key={path} path={path} element={element} />
+        ))}
+        <Route path="/profile" element={<Profile />} />
+        <Route path="*" element={<RedirectToDashboard />} />
+      </Routes>
+    </Suspense>
   )
 }
 

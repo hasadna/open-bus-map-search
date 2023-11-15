@@ -76,6 +76,8 @@ export const TEXT_KEYS = {
   gaps_patterns_page_title: 'gaps_patterns_page_title',
   profile_page: 'profile_page',
   profile_page_line: 'profile_page_line',
+  github_link: 'github_link',
+
 }
 
 export const TEXTS = {
@@ -183,6 +185,7 @@ export const TEXTS = {
   kmh: 'קמ״ש',
   profile_page: 'דף פרופיל',
   profile_page_line: 'דף פרופיל על קו',
+  github_link: 'github_link',
 }
 
 export const formatted = (text: string, value: string) => text.replace(PLACEHOLDER, value)
