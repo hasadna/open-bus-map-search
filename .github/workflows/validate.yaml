@@ -118,3 +118,10 @@ jobs:
           cmd: install
       - name: run the tests
         run: yarn test:unit
+
+  all-passed:
+    runs-on: ubuntu-latest
+    needs: [verify-clean-tree, lint, circular, test, test-unit]
+    steps:
+      - name: All passed
+        run: echo "All passed"
