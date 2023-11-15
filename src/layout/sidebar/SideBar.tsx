@@ -3,6 +3,7 @@ import './sidebar.scss'
 import { Drawer, Layout } from 'antd'
 import { useContext, useState } from 'react'
 import { LayoutContextInterface, LayoutCtx } from '../LayoutContext'
+import GitHubLink from './GitHubLink/GitHubLink'
 
 const { Sider } = Layout
 
@@ -26,7 +27,11 @@ export default function SideBar() {
         open={drawerOpen}
         className="hideOnDesktop"
         bodyStyle={{ padding: '0' }}>
+        <Logo />
+        <div className="sidebar-divider"></div>
         <Menu />
+        <div className="sidebar-divider"></div>
+        <GitHubLink />
       </Drawer>
       <Sider
         theme="light"
@@ -37,7 +42,10 @@ export default function SideBar() {
         onCollapse={(value: boolean) => setCollapsed(value)}
         className="hideOnMobile">
         {collapsed ? <CollapsedLogo /> : <Logo />}
+        <div className="sidebar-divider"></div>
         <Menu />
+        <div className="sidebar-divider"></div>
+        <GitHubLink />
       </Sider>
     </>
   )
