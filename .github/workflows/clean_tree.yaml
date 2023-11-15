@@ -27,10 +27,12 @@ jobs:
           error-reason: 'yarn'
       - name: Build
         run: yarn build
+      - name: Build Storybook
+        run: yarn build-storybook -o dist/storybook
       - name: Git Check Clean Tree
         uses: ArkadiK94/action-git-clean-tree@v1.0.3
         with:
-          error-reason: 'yarn build'
+          error-reason: 'yarn build and yarn build-storybook'
       - name: Clean up
         if: always()
         run: npm uninstall -g yarn
