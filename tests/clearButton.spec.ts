@@ -53,22 +53,27 @@ test.describe('test clearButton ', () => {
     await page.goto('/')
     await page.goto('/dashboard')
     await page.locator('li').filter({ hasText: 'לוח זמנים היסטורי' }).click()
+    await page.waitForURL(/timeline/)
   })
   test('test in GapsPage', async ({ page }) => {
     await page.goto('/')
     await page.getByText('נסיעות שלא יצאו', { exact: true }).click()
+    await page.waitForURL(/gaps/)
   })
   test('test in GapsPatternsPage', async ({ page }) => {
     await page.goto('/')
     await page.getByText('דפוסי נסיעות שלא יצאו', { exact: true }).click()
+    await page.waitForURL(/gaps-patterns/)
   })
   test('test in SingleLineMapPage', async ({ page }) => {
     await page.goto('/')
     await page.getByText('מפה לפי קו', { exact: true }).click()
+    await page.waitForURL(/single-line/)
   })
   test('test in RealtimeMapPage', async ({ page }) => {
     await page.goto('/')
     await page.getByText('מפה בזמן אמת', { exact: true }).click()
+    await page.waitForURL(/realtime/)
     const minutes = page.getByLabel('דקות')
     let getValueAttribute = await minutes.getAttribute('value')
     if (!getValueAttribute) return test.fail()
