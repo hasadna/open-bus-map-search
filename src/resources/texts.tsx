@@ -74,6 +74,7 @@ export const TEXT_KEYS = {
   migdal_company: 'migdal_company',
   and_smaller_donors: 'and_smaller_donors',
   gaps_patterns_page_title: 'gaps_patterns_page_title',
+  github_link: 'github_link',
 }
 
 export const TEXTS = {
@@ -179,6 +180,7 @@ export const TEXTS = {
   show_document: 'הצג מידע לגיקים',
   bearing: 'מעלות',
   kmh: 'קמ״ש',
+  github_link: 'github_link',
 }
 
 export const formatted = (text: string, value: string) => text.replace(PLACEHOLDER, value)
