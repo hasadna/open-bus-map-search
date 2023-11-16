@@ -59,6 +59,7 @@ test.describe('test clearButton ', () => {
     await page.goto('/')
     await page.getByText('נסיעות שלא יצאו', { exact: true }).click()
     await page.waitForURL(/gaps/)
+    await page.getByRole('progressbar').waitFor({ state: 'hidden' })
   })
   test('test in GapsPatternsPage', async ({ page }) => {
     await page.goto('/')
