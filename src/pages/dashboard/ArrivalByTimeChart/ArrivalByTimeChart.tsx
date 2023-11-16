@@ -39,14 +39,10 @@ export default function ArrivalByTimeChart({
   }[]
   operatorId: string
 }) {
-
-  const filteredData = useMemo(
-    () => data.filter((item) => operatorId && item.id === operatorId),
+  data = useMemo(
+    () => data.filter((item) => !operatorId || item.id === operatorId),
     [data, operatorId],
   )
-  // If operatorId is present, the data makes sense
-  if (operatorId) data = filteredData
-
   return (
     <div className="chart">
       {arrayGroup(data, (item) => item.id)
