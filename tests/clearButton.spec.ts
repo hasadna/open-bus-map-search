@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { test, expect, Page } from '@playwright/test'
 
 test.afterEach(async ({ page }, testInfo) => {
   await page.getByRole('progressbar').waitFor({ state: 'hidden' })
@@ -50,22 +50,21 @@ test.afterEach(async ({ page }, testInfo) => {
   await expect(stopSelect).not.toBeVisible()
 })
 
+async function visitPage(page: Page, pageName: string, url: RegExp) {
+  await page.goto('/')
+  await page.getByText(pageName).click()
+  await page.waitForURL(url)
+}
+
 test.describe('test clearButton ', () => {
   test('test in TimeLinePage', async ({ page }) => {
-    await page.goto('/')
-    await page.goto('/dashboard')
-    await page.locator('li').filter({ hasText: 'לוח זמנים היסטורי' }).click()
-    await page.waitForURL(/timeline/)
+    await visitPage(page, 'לוח זמנים היסטורי', /timeline/)
   })
   test('test in GapsPage', async ({ page }) => {
-    await page.goto('/')
-    await page.getByText('נסיעות שלא יצאו', { exact: true }).click()
-    await page.waitForURL(/gaps/)
+    await visitPage(page, 'פערים', /gaps/)
   })
   test('test in GapsPatternsPage', async ({ page }) => {
-    await page.goto('/')
-    await page.getByText('דפוסי נסיעות שלא יצאו', { exact: true }).click()
-    await page.waitForURL(/gaps_patterns/)
+    await visitPage(page, 'דפוסי נסיעות שלא יצאו', /gaps-patterns/)
   })
   test('test in SingleLineMapPage', async ({ page }) => {
     await page.goto('/')
@@ -76,6 +75,7 @@ test.describe('test clearButton ', () => {
     await page.goto('/')
     await page.getByText('מפה בזמן אמת', { exact: true }).click()
     await page.waitForURL(/map/)
+    await page.getByRole('progressbar').waitFor({ state: 'hidden' })
     const minutes = page.getByLabel('דקות')
     let getValueAttribute = await minutes.getAttribute('value')
     if (!getValueAttribute) return test.fail()
