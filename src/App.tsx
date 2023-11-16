@@ -23,20 +23,24 @@ import { LocalizationProvider } from '@mui/x-date-pickers'
 
 import RoutesList from './routes'
 import {
-  BarChartOutlined, BellOutlined, BugOutlined, DollarOutlined,
+  BarChartOutlined,
+  BellOutlined,
+  BugOutlined,
+  DollarOutlined,
   FieldTimeOutlined,
   HeatMapOutlined,
   LaptopOutlined,
-  LineChartOutlined, RadarChartOutlined
-} from "@ant-design/icons";
-import DashboardPage from "src/pages/dashboard/DashboardPage";
-import TimelinePage from "src/pages/TimelinePage";
-import GapsPage from "src/pages/GapsPage";
-import GapsPatternsPage from "src/pages/gapsPatterns";
-import RealtimeMapPage from "src/pages/RealtimeMapPage";
-import SingleLineMapPage from "src/pages/SingleLineMapPage";
-import About from "src/pages/About";
-import {useTranslation} from "react-i18next";
+  LineChartOutlined,
+  RadarChartOutlined,
+} from '@ant-design/icons'
+import DashboardPage from 'src/pages/dashboard/DashboardPage'
+import TimelinePage from 'src/pages/TimelinePage'
+import GapsPage from 'src/pages/GapsPage'
+import GapsPatternsPage from 'src/pages/gapsPatterns'
+import RealtimeMapPage from 'src/pages/RealtimeMapPage'
+import SingleLineMapPage from 'src/pages/SingleLineMapPage'
+import About from 'src/pages/About'
+import { useTranslation } from 'react-i18next'
 import MainHeader from './pages/components/header/Header'
 import LayoutContext from './layout/LayoutContext'
 import { EasterEgg } from './pages/EasterEgg/EasterEgg'
@@ -83,7 +87,6 @@ const App = () => {
   const timestamp = searchParams.get('timestamp')
 
   const { t } = useTranslation()
-
 
   useEffect(() => {
     ReactGA.send({ hitType: 'pageview', page: location.pathname + location.search })

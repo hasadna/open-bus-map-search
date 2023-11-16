@@ -2,7 +2,6 @@ import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import { Moment } from 'moment'
 
-
 export const POINT_SIZE = 8
 
 export const NEUTRAL_COLOR = '#7393B3'

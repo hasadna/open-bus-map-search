@@ -14,7 +14,7 @@ import {
   SiriVehicleLocationWithRelatedPydanticModel,
 } from 'open-bus-stride-client'
 import { Coordinates } from 'src/model/location'
-import {useTranslation} from "react-i18next";
+import { useTranslation } from 'react-i18next'
 
 const Line = styled.div<{ totalHeight: number }>`
   height: ${({ totalHeight }) => totalHeight + PADDING * 3}px;
@@ -55,7 +55,6 @@ export const Timeline = ({
   pointType,
   timestampToTop,
 }: TimelineProps) => {
-
   const { t } = useTranslation()
 
   const pointTypeToDescription: Record<PointType, string | null> = {

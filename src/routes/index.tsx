@@ -23,7 +23,6 @@ import {
 } from '@ant-design/icons'
 
 const RoutesList = () => {
-
   const { t } = useTranslation()
 
   const PAGES = [

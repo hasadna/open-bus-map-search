@@ -10,9 +10,9 @@ const Error = styled.div`
 `
 
 export function DateSelector({ time, onChange, customLabel }: DataAndTimeSelectorProps) {
-    const [error, setError] = useState<DateValidationError | null>(null)
-    const { t } = useTranslation()
-    return (
+  const [error, setError] = useState<DateValidationError | null>(null)
+  const { t } = useTranslation()
+  return (
     <>
       <DatePicker
         sx={{ width: '100%' }}

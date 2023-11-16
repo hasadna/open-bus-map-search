@@ -23,7 +23,6 @@ import moment from 'moment'
 import { DateSelector } from './components/DateSelector'
 import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
 
-
 const StyledTimelineBoard = styled(TimelineBoard)`
   margin-top: ${MARGIN_MEDIUM * 3}px;
 `

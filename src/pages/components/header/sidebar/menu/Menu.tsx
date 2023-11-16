@@ -4,20 +4,23 @@ import cn from 'classnames'
 import './menu.scss'
 import { useTranslation } from 'react-i18next'
 import {
-  BarChartOutlined, BellOutlined, BugOutlined, DollarOutlined,
+  BarChartOutlined,
+  BellOutlined,
+  BugOutlined,
+  DollarOutlined,
   FieldTimeOutlined,
   HeatMapOutlined,
   LaptopOutlined,
-  LineChartOutlined, RadarChartOutlined
-} from "@ant-design/icons";
-import DashboardPage from "src/pages/dashboard/DashboardPage";
-import TimelinePage from "src/pages/TimelinePage";
-import GapsPage from "src/pages/GapsPage";
-import GapsPatternsPage from "src/pages/gapsPatterns";
-import RealtimeMapPage from "src/pages/RealtimeMapPage";
-import SingleLineMapPage from "src/pages/SingleLineMapPage";
-import About from "src/pages/About";
-
+  LineChartOutlined,
+  RadarChartOutlined,
+} from '@ant-design/icons'
+import DashboardPage from 'src/pages/dashboard/DashboardPage'
+import TimelinePage from 'src/pages/TimelinePage'
+import GapsPage from 'src/pages/GapsPage'
+import GapsPatternsPage from 'src/pages/gapsPatterns'
+import RealtimeMapPage from 'src/pages/RealtimeMapPage'
+import SingleLineMapPage from 'src/pages/SingleLineMapPage'
+import About from 'src/pages/About'
 
 const Menu = () => {
   const { t, i18n } = useTranslation()

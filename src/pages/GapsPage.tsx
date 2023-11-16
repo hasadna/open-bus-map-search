@@ -21,8 +21,6 @@ import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
 import { INPUT_SIZE } from 'src/resources/sizes'
 import DisplayGapsPercentage from './components/DisplayGapsPercentage'
 
-
-
 const Cell = styled.div`
   width: 120px;
 `

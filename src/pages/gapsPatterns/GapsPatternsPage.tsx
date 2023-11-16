@@ -42,7 +42,6 @@ interface BusLineStatisticsProps {
 
 const now = moment()
 
-
 const CustomTooltip = ({ active, payload }: TooltipProps<number, string>) => {
   if (active && payload && payload.length > 1) {
     const actualRides = payload[0].value || 0

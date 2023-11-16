@@ -16,8 +16,7 @@ const RouteSelector = ({ routes, routeKey, setRouteKey }: RouteSelectorProps) =>
   const { t } = useTranslation()
 
   const getRouteTitle = (route: BusRoute) =>
-      `${route.fromName} ${t('direction_arrow')} ${route.toName}`
-
+    `${route.fromName} ${t('direction_arrow')} ${route.toName}`
 
   return (
     <Autocomplete

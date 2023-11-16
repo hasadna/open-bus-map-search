@@ -30,7 +30,6 @@ function getStatus(percentage: number, decentPercentage: number, terriblePercent
     ?.status
 }
 
-
 function DisplayGapsPercentage({
   gapsPercentage,
   decentPercentage,

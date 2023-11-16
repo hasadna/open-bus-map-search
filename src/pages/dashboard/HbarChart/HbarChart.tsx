@@ -21,9 +21,8 @@ export function HbarChart({
     percent: percents[idx],
     ...entry,
   }))
-  
-  const { t } = useTranslation()
 
+  const { t } = useTranslation()
 
   const wrapWithTooltip = (element: React.ReactElement, entry: Entry) => {
     return (
