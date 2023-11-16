@@ -1,6 +1,8 @@
 import { test, expect } from '@playwright/test'
 
 test.afterEach(async ({ page }, testInfo) => {
+  await page.getByRole('progressbar').waitFor({ state: 'hidden' })
+
   if (testInfo.title === 'test in RealtimeMapPage') return
   if (testInfo.title === 'test in GapsPatternsPage') {
     await page.getByLabel('בחירת תאריך').nth(0).click()
@@ -59,7 +61,6 @@ test.describe('test clearButton ', () => {
     await page.goto('/')
     await page.getByText('נסיעות שלא יצאו', { exact: true }).click()
     await page.waitForURL(/gaps/)
-    await page.getByRole('progressbar').waitFor({ state: 'hidden' })
   })
   test('test in GapsPatternsPage', async ({ page }) => {
     await page.goto('/')
