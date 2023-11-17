@@ -16,6 +16,9 @@ import LineNumberSelector from './components/LineSelector'
 import OperatorSelector from './components/OperatorSelector'
 import RouteSelector from './components/RouteSelector'
 
+//API
+import { getGtfsRidesList } from 'src/api/gtfsService'
+
 // time inputs
 import { DateSelector } from './components/DateSelector'
 import { TimeSelector } from './components/TimeSelector'
@@ -25,12 +28,12 @@ import { useDate } from './components/DateTimePicker'
 // GRAPH
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
 import BusArrivalTimeline from './components/BusArrivalsTimeline'
+// import { json } from 'stream/consumers'
 
 const Profile = () => {
-  return  (
+  return (
     <>
       <GeneralDetailsAboutLine />
-      <LineProfileComponent />
       <LineGraphSchedule />
     </>
   )
@@ -42,25 +45,25 @@ const GeneralDetailsAboutLine = () => {
 
   return (
     <>
-    <PageContainer className="line-data-container">
-      {/* choose operator */}
-      <Grid xs={8}>
-        <OperatorSelector
-          operatorId={operatorId}
-          setOperatorId={(id) => setSearch((current) => ({ ...current, operatorId: id }))}
-        />
-      </Grid>
+      <PageContainer className="line-data-container">
+        {/* choose operator */}
+        <Grid xs={8}>
+          <OperatorSelector
+            operatorId={operatorId}
+            setOperatorId={(id) => setSearch((current) => ({ ...current, operatorId: id }))}
+          />
+        </Grid>
 
-      {/* choose line number */}
-      <Grid xs={8}>
-        <LineNumberSelector
-          lineNumber={lineNumber}
-          setLineNumber={(number) => setSearch((current) => ({ ...current, lineNumber: number }))}
-        />
-      </Grid>
+        {/* choose line number */}
+        <Grid xs={8}>
+          <LineNumberSelector
+            lineNumber={lineNumber}
+            setLineNumber={(number) => setSearch((current) => ({ ...current, lineNumber: number }))}
+          />
+        </Grid>
 
-      {/* choose route*/}
-      <Grid xs={12}>
+        {/* choose route*/}
+        <Grid xs={12}>
           {routes &&
             (routes.length === 0 ? (
               <NotFound>{TEXTS.line_not_found}</NotFound>
@@ -72,26 +75,32 @@ const GeneralDetailsAboutLine = () => {
               />
             ))}
         </Grid>
+
+        <LineProfileComponent />
       </PageContainer>
     </>
   )
 }
 
-
 const LineProfileComponent = () => {
   const { t } = useTranslation()
-  const { search, setSearch } = useContext(SearchContext)
+  // const { search, setSearch } = useContext(SearchContext)
   // const { operatorId, lineNumber, timestamp, routes, routeKey } = search
+
+  // const resp = getGtfsRidesList(new Date(), operator, lineNumber, routeId)
+  const resp = getGtfsRidesList(new Date(), '3', '271', '1')
 
   return (
     <Grid xs={12} lg={6}>
       <div className="widget">
         <h2 className="title">{t('profile_page')}</h2>
-
+        {/* <label> מפעיל: {operator} </label>
+        <label> מספר קו: {line} </label>
+        <label> כיוון נסיעה: {route} </label> */}
         <div>
           <Label text="שעות פעילות" />
-            {/* GET the earliest and the latest bus drive departure time for each day */}
-            <TableStyle>
+          {/* GET the earliest and the latest bus drive departure time for each day */}
+          <TableStyle>
             <table className="time-table">
               <tr>
                 <th></th>
@@ -103,7 +112,7 @@ const LineProfileComponent = () => {
                 <th>יום שישי</th>
                 <th>יום שבת</th>
               </tr>
-              
+
               <tr>
                 <td>אוטובוס ראשון</td>
                 <td></td>
@@ -114,7 +123,7 @@ const LineProfileComponent = () => {
                 <td></td>
                 <td></td>
               </tr>
-              
+
               <tr>
                 <td>אוטובוס אחרון</td>
                 <td></td>
@@ -126,19 +135,15 @@ const LineProfileComponent = () => {
                 <td></td>
               </tr>
             </table>
-            </TableStyle>
+          </TableStyle>
 
-            <Label text="הערות ועדכונים על הקו:"/>
-          <div>
-            
-          </div>
+          <Label text="הערות ועדכונים על הקו:" />
+          <div></div>
         </div>
-
       </div>
     </Grid>
   )
 }
-
 
 const convertToProfileGraphStruct = (arr: GroupByRes[]) => {
   return arr.map((item: GroupByRes) => ({
@@ -150,11 +155,10 @@ const convertToProfileGraphStruct = (arr: GroupByRes[]) => {
     percent: (item.total_actual_rides / item.total_planned_rides) * 100,
     gtfs_route_date: item.gtfs_route_date,
     gtfs_route_hour: item.gtfs_route_hour,
-
-    
   }))
 }
-// const LineUpdateParagraph = 
+
+// const LineUpdateParagraph =
 
 const LineGraphSchedule = () => {
   /*
@@ -210,18 +214,18 @@ const LineGraphSchedule = () => {
       </Grid>
 
       <Grid xs={12}>
-          <div className="widget">
-            <h2 className="title">{TEXTS.profile_page_line}</h2>
-              <BusArrivalTimeline data={convertToProfileGraphStruct(graphData)} />
-          </div>
-        </Grid>
+        <div className="widget">
+          <h2 className="title">{TEXTS.profile_page_line}</h2>
+          <BusArrivalTimeline data={convertToProfileGraphStruct(graphData)} />
+        </div>
+      </Grid>
     </>
   )
 }
 
-
 const TableStyle = styled.table`
-  & th,td {
+  & th,
+  td {
     border: 1px solid #ddd;
     padding: 8px;
   }
@@ -235,7 +239,7 @@ const TableStyle = styled.table`
   & tr {
     font-size: 1.15em;
   }
-  & tr:nth-child(even){
+  & tr:nth-child(even) {
     background-color: #f2f2f2;
   }
   & table {

@@ -1,55 +1,56 @@
 import {
-LineChart,
-Line,
-XAxis,
-YAxis,
-CartesianGrid,
-Tooltip,
-Legend,
-ResponsiveContainer,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
 } from 'recharts'
 
-
 const arrayGroup = function <T>(array: T[], f: (item: T) => string) {
-    const groups: Record<string, T[]> = {}
-    array.forEach(function (o) {
-      const group = f(o)
-      groups[group] = groups[group] || []
-      groups[group].push(o)
-    })
-    return Object.keys(groups).map(function (group) {
-      return groups[group]
-    })
-  }
+  const groups: Record<string, T[]> = {}
+  array.forEach(function (o) {
+    const group = f(o)
+    groups[group] = groups[group] || []
+    groups[group].push(o)
+  })
+  return Object.keys(groups).map(function (group) {
+    return groups[group]
+  })
+}
 
 export default function BusArrivalTimeline({
-    data,
-  }: {
-    data: {
-      id: string
-      name: string
-      current: number
-      max: number
-      percent: number
-      gtfs_route_date: string
-      gtfs_route_hour: string
-    }[]
-  })
-  {
-    return (
-      <>
-        <p dir='ltr'>
-          Timeline Graph shows a graph which its X-axis is time or station and Y-axis is time passed (in minutes) <br></br>
-          The graph follows the progress of a bus and tracks its correspondence to the schedule <br></br>
-          Series 1 indicates the schedule <br></br>
-          Series 2 indicates the reality <br></br>
-        </p>
+  data,
+}: {
+  data: {
+    id: string
+    name: string
+    current: number
+    max: number
+    percent: number
+    gtfs_route_date: string
+    gtfs_route_hour: string
+  }[]
+}) {
+  return (
+    <>
+      <p dir="ltr">
+        Timeline Graph shows a graph which its X-axis is time or station and Y-axis is time passed
+        (in minutes) <br></br>
+        The graph follows the progress of a bus and tracks its correspondence to the schedule{' '}
+        <br></br>
+        Series 1 indicates the schedule <br></br>
+        Series 2 indicates the reality <br></br>
+        Series 3 indicates the gap <br></br>
+      </p>
 
-        <div className="chart">
-            {arrayGroup(data, (item) => item.id)
-            .filter((group) => group.length > 1 && group.reduce((a, b) => a + b.current, 0) > 1)
-            .map((group) => (
-              <div key={group[0].name}>
+      <div className="chart">
+        {arrayGroup(data, (item) => item.id)
+          .filter((group) => group.length > 1 && group.reduce((a, b) => a + b.current, 0) > 1)
+          .map((group) => (
+            <div key={group[0].name}>
               <h3 className="title">{group[0].name}</h3>
               <ResponsiveContainer width="100%" height={300}>
                 <LineChart
@@ -68,46 +69,46 @@ export default function BusArrivalTimeline({
                   <YAxis />
                   <Tooltip
                     content={({ payload }) =>
-                    payload?.[0] && (
-                      <>
-                      <ul>
-                        <li>
-                        <span className="label">תאריך: </span>
-                        <span className="value">
-                          {payload![0].payload.gtfs_route_date ||
-                          payload![0].payload.gtfs_route_hour}
-                        </span>
-                        </li>
-                        <li>
-                        <span className="label">ביצוע: </span>
-                        <span className="value">{payload![0].payload.current}</span>
-                        </li>
-                        <li>
-                        <span className="label">תכנון: </span>
-                        <span className="value">{payload![0].payload.max}</span>
-                        </li>
-                        <li>
-                        <span className="label">דיוק: </span>
-                        <span className="value">
-                          {(
-                          (payload![0].payload.current / payload![0].payload.max) *
-                          100
-                          ).toFixed(2)}
-                          %
-                        </span>
-                        </li>
-                      </ul>
-                      </>
-                    )
-                  }
+                      payload?.[0] && (
+                        <>
+                          <ul>
+                            <li>
+                              <span className="label">תאריך: </span>
+                              <span className="value">
+                                {payload![0].payload.gtfs_route_date ||
+                                  payload![0].payload.gtfs_route_hour}
+                              </span>
+                            </li>
+                            <li>
+                              <span className="label">ביצוע: </span>
+                              <span className="value">{payload![0].payload.current}</span>
+                            </li>
+                            <li>
+                              <span className="label">תכנון: </span>
+                              <span className="value">{payload![0].payload.max}</span>
+                            </li>
+                            <li>
+                              <span className="label">דיוק: </span>
+                              <span className="value">
+                                {(
+                                  (payload![0].payload.current / payload![0].payload.max) *
+                                  100
+                                ).toFixed(2)}
+                                %
+                              </span>
+                            </li>
+                          </ul>
+                        </>
+                      )
+                    }
                   />
                   <Legend />
                   <Line type="monotone" dataKey="percent" stroke="#8884d8" activeDot={{ r: 8 }} />
                 </LineChart>
               </ResponsiveContainer>
-              </div>
-            ))}
-        </div>
-      </>
-    )
+            </div>
+          ))}
+      </div>
+    </>
+  )
 }
