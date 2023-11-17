@@ -9,7 +9,7 @@ async function visitPage(page: Page, pageName: string, url: RegExp) {
   await page.getByRole('progressbar').waitFor({ state: 'hidden' })
 }
 
-async function fillDate(page: Page, twoDateElements: Boolean = false) {
+async function fillDate(page: Page, twoDateElements: boolean = false) {
   if (twoDateElements) {
     await page.getByLabel('בחירת תאריך').nth(0).click()
     await page.getByRole('gridcell', { name: '1', exact: true }).first().click()
