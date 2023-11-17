@@ -96,3 +96,14 @@
     padding-bottom: 0;
     line-height: 25px;
 }
+
+.sidebar-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-divider {
+  height: 1px;
+  background-color: #ccc; 
+  margin: 8px 0; 
+}
