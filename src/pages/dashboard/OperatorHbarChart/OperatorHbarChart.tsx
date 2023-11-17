@@ -19,11 +19,9 @@ export function getColorName(name: string) {
 
 function OperatorHbarChart({
   operators,
-  excludeOperators,
   complement = false, // complement the chart (100% - actual) instead of actual
 }: {
   operators: { name: string; total: number; actual: number }[]
-  excludeOperators: RegExp[]
   complement?: boolean
 }) {
   const rows = operators
@@ -35,10 +33,6 @@ function OperatorHbarChart({
           ...o,
           color: getColorName(o.name),
         }))
-        .filter((operator) => {
-          // Check if the string matches any of the patterns
-          return !excludeOperators.some((pattern) => pattern.test(operator.name))
-        })
         .sort((a, b) => a.actual / a.total - b.actual / b.total)
         .slice(0, 100)}
       complement={complement}

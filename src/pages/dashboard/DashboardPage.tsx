@@ -16,13 +16,20 @@ import { DateSelector } from '../components/DateSelector'
 
 const now = moment()
 
+const excludeOperators = [/רכבת ישראל/, /^מוניות.*/, /^ירושלים-.*/, /^ירושלים -.*/]
+
 const convertToChartCompatibleStruct = (arr: GroupByRes[]) => {
-  return arr.map((item: GroupByRes) => ({
-    id: item.operator_ref?.agency_id || 'Unknown',
-    name: item.operator_ref?.agency_name || 'Unknown',
-    total: item.total_planned_rides,
-    actual: item.total_actual_rides,
-  }))
+  return arr
+    .map((item: GroupByRes) => ({
+      id: item.operator_ref?.agency_id || 'Unknown',
+      name: item.operator_ref?.agency_name || 'Unknown',
+      total: item.total_planned_rides,
+      actual: item.total_actual_rides,
+    }))
+    .filter((operator) => {
+      // Check if the string matches any of the patterns
+      return !excludeOperators.some((pattern) => pattern.test(operator.name))
+    })
 }
 const convertToWorstLineChartCompatibleStruct = (arr: GroupByRes[], operatorId: string) => {
   if (!arr || !arr.length) return []
@@ -38,18 +45,20 @@ const convertToWorstLineChartCompatibleStruct = (arr: GroupByRes[], operatorId: 
     }))
 }
 const convertToGraphCompatibleStruct = (arr: GroupByRes[]) => {
-  return arr.map((item: GroupByRes) => ({
-    id: item.operator_ref?.agency_id || 'Unknown',
-    name: item.operator_ref?.agency_name || 'Unknown',
-    current: item.total_actual_rides,
-    max: item.total_planned_rides,
-    percent: (item.total_actual_rides / item.total_planned_rides) * 100,
-    gtfs_route_date: item.gtfs_route_date,
-    gtfs_route_hour: item.gtfs_route_hour,
-  }))
+  return arr
+    .map((item: GroupByRes) => ({
+      id: item.operator_ref?.agency_id || 'Unknown',
+      name: item.operator_ref?.agency_name || 'Unknown',
+      current: item.total_actual_rides,
+      max: item.total_planned_rides,
+      percent: (item.total_actual_rides / item.total_planned_rides) * 100,
+      gtfs_route_date: item.gtfs_route_date,
+      gtfs_route_hour: item.gtfs_route_hour,
+    }))
+    .filter((item) => {
+      return !excludeOperators.some((pattern) => pattern.test(item.name))
+    })
 }
-
-const excludeOperators = [/רכבת ישראל/, /^מוניות.*/, /^ירושלים-.*/, /^ירושלים -.*/]
 
 const DashboardPage = () => {
   const [startDate, setStartDate] = useDate(now.clone().subtract(7, 'days'))
@@ -123,10 +132,7 @@ const DashboardPage = () => {
             {groupByOperatorLoading ? (
               <Skeleton active />
             ) : (
-              <OperatorHbarChart
-                operators={convertToChartCompatibleStruct(groupByOperatorData)}
-                excludeOperators={excludeOperators}
-              />
+              <OperatorHbarChart operators={convertToChartCompatibleStruct(groupByOperatorData)} />
             )}
           </div>
         </Grid>
@@ -169,7 +175,7 @@ const DashboardPage = () => {
             ) : (
               <ArrivalByTimeChart
                 data={convertToGraphCompatibleStruct(graphData)}
-                excludeOperators={excludeOperators}
+                // excludeOperators={excludeOperators}
               />
             )}
           </div>
