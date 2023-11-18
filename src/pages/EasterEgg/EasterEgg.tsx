@@ -241,7 +241,7 @@ export function EasterEgg() {
         setFade(false)
       }, 10000)
     },
-    sequence: 'openbus'.split(''),
+    sequence: 'storybook'.split(''),
   })
   return (
     show && (
