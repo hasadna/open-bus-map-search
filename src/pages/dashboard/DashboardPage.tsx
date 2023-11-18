@@ -27,7 +27,6 @@ const convertToChartCompatibleStruct = (arr: GroupByRes[]) => {
       actual: item.total_actual_rides,
     }))
     .filter((operator) => {
-      // Check if the string matches any of the patterns
       return !excludeOperators.some((pattern) => pattern.test(operator.name))
     })
 }
@@ -175,7 +174,6 @@ const DashboardPage = () => {
             ) : (
               <ArrivalByTimeChart
                 data={convertToGraphCompatibleStruct(graphData)}
-                // excludeOperators={excludeOperators}
               />
             )}
           </div>
