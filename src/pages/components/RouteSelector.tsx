@@ -1,7 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { BusRoute } from 'src/model/busRoute'
 import { Autocomplete, TextField } from '@mui/material'
-import { formatted } from 'src/resources/texts'
 
 type RouteSelectorProps = {
   routes: BusRoute[]
@@ -26,7 +25,7 @@ const RouteSelector = ({ routes, routeKey, setRouteKey }: RouteSelectorProps) =>
       id="route-select"
       options={routes}
       renderInput={(params) => (
-        <TextField {...params} label={formatted(t('choose_route'), routes.length.toString())} />
+        <TextField {...params} label={t('choose_route').replace('XXX', routes.length.toString())} />
       )}
       getOptionLabel={(route) => getRouteTitle(route)}
     />

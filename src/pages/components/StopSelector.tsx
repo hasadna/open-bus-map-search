@@ -1,7 +1,6 @@
 import { BusStop } from 'src/model/busStop'
 import { Autocomplete, TextField } from '@mui/material'
 import { useTranslation } from 'react-i18next'
-import { formatted } from 'src/resources/texts'
 
 type StopSelectorProps = {
   stops: BusStop[]
@@ -21,7 +20,7 @@ const StopSelector = ({ stops, stopKey, setStopKey }: StopSelectorProps) => {
       id="stop-select"
       options={stops}
       renderInput={(params) => (
-        <TextField {...params} label={formatted(t('choose_stop'), stops.length.toString())} />
+        <TextField {...params} label={t('choose_stop').replace('XXX', stops.length.toString())} />
       )}
       getOptionLabel={(stop) => stop.name}
     />
