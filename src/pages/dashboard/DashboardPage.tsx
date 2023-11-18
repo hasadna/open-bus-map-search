@@ -174,6 +174,7 @@ const DashboardPage = () => {
             ) : (
               <ArrivalByTimeChart
                 data={convertToGraphCompatibleStruct(graphData)}
+                operatorId={operatorId}
               />
             )}
           </div>
