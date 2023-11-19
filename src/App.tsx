@@ -26,6 +26,8 @@ import MainHeader from './layout/header/Header'
 import SideBar from './layout/sidebar/SideBar'
 import LayoutContext from './layout/LayoutContext'
 import { EasterEgg } from './pages/EasterEgg/EasterEgg'
+
+import MainFooter from './layout/footer/Footer'
 const { Content } = Layout
 
 const StyledLayout = styled(Layout)`
@@ -120,6 +122,7 @@ const App = () => {
                         <RoutesList />
                       </StyledBody>
                     </StyledContent>
+                    <MainFooter />
                   </Layout>
                 </LayoutContext>
               </StyledLayout>
