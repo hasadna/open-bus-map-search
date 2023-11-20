@@ -4,7 +4,7 @@ test('menu', async ({ page }) => {
   await page.goto('/')
   await expect(page.locator('h1')).toContainText('דאטאבוס')
   const menuItemsInOrder = [
-    'מפעילי תח"צ לפי קיום נסיעות מתוכננות',
+    'קיום נסיעות',
     'לוח זמנים היסטורי',
     'נסיעות שלא יצאו',
     'דפוסי נסיעות שלא יצאו',
@@ -14,5 +14,5 @@ test('menu', async ({ page }) => {
     'דיווח על באג',
     'לתרומות',
   ]
-  await expect(page.locator('ul > li')).toContainText(menuItemsInOrder)
+  await expect(page.locator('ul > li a')).toContainText(menuItemsInOrder)
 })
