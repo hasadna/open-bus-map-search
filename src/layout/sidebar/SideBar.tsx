@@ -4,12 +4,15 @@ import { Drawer, Layout } from 'antd'
 import { useContext, useState } from 'react'
 import { LayoutContextInterface, LayoutCtx } from '../LayoutContext'
 import GitHubLink from './GitHubLink/GitHubLink'
-
+import { Link } from 'react-router-dom'
+import { PAGES as pages } from 'src/routes'
 const { Sider } = Layout
 
 const Logo = () => (
   <div style={{ overflow: 'hidden' }}>
-    <h1 className={'sidebar-logo'}>דאטאבוס</h1>
+    <Link to={pages[0].path} replace>
+      <h1 className={'sidebar-logo'}>דאטאבוס</h1>
+    </Link>
   </div>
 )
 const CollapsedLogo = () => <h1 className={'sidebar-logo-collapsed'}>🚌</h1>
