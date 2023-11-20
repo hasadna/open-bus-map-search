@@ -44,8 +44,6 @@ export default function SideBar() {
         {collapsed ? <CollapsedLogo /> : <Logo />}
         <div className="sidebar-divider"></div>
         <Menu />
-        <div className="sidebar-divider"></div>
-        <GitHubLink />
       </Sider>
     </>
   )
