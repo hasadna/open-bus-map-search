@@ -64,12 +64,12 @@ export type GroupByRes = Replace<
 >
 
 export type GroupByX = {
-  operator_ref: number
-  route_short_name: number
-  route_route_direction: number
+  operator_ref: string
+  route_short_name: string
+  route_route_direction: string
   route_date_from: Date
   route_date_to: Date
-}[]
+}
 
 async function groupbyAsync({
   dateTo,

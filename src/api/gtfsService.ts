@@ -13,8 +13,8 @@ const SEARCH_MARGIN_HOURS = 4
 export async function getRoutesAsync(
   fromTimestamp: moment.Moment,
   toTimestamp: moment.Moment,
-  operatorId: string,
-  lineNumber: string,
+  operatorId: string | undefined,
+  lineNumber: string | undefined,
 ): Promise<BusRoute[]> {
   const gtfsRoutes = await GTFS_API.gtfsRoutesListGet({
     routeShortName: lineNumber,
@@ -111,21 +111,4 @@ export async function getGtfsStopHitTimesAsync(stop: BusStop, timestamp: Moment)
     gtfsStopIds: stop.stopId.toString(),
   })
   return stopHits.sort((hit1, hit2) => +hit1.arrivalTime! - +hit2.arrivalTime!)
-}
-
-export async function getGtfsRidesList(
-  date: Date,
-  operator: string,
-  lineNumber: string,
-  route: string,
-) {
-  const gtfsRidesList = await GTFS_API.gtfsRidesListGet({
-    gtfsRouteDateFrom: date,
-    gtfsRouteDateTo: date,
-    gtfsRouteOperatorRefs: operator,
-    gtfsRouteRouteShortName: lineNumber,
-    gtfsRouteRouteDirection: route,
-  })
-
-  return gtfsRidesList.sort((a, b) => +a.startTime! - +b.startTime!)
 }

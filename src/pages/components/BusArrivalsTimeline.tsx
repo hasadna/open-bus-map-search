@@ -25,13 +25,11 @@ export default function BusArrivalTimeline({
   data,
 }: {
   data: {
-    id: string
-    name: string
-    current: number
-    max: number
-    percent: number
-    gtfs_route_date: string
-    gtfs_route_hour: string
+    operator_ref: string
+    lineNumber: string
+    direction: string
+    from_date: Date
+    to_date: Date
   }[]
 }) {
   return (
@@ -47,16 +45,16 @@ export default function BusArrivalTimeline({
       </p>
 
       <div className="chart">
-        {arrayGroup(data, (item) => item.id)
-          .filter((group) => group.length > 1 && group.reduce((a, b) => a + b.current, 0) > 1)
+        {arrayGroup(data, (item) => item.operator_ref)
+          .filter((group) => group.length > 1 && group.reduce((a, b) => a + b.from_date, 0) > 1)
           .map((group) => (
-            <div key={group[0].name}>
-              <h3 className="title">{group[0].name}</h3>
+            <div key={group[0].lineNumber}>
+              <h3 className="title">{group[0].lineNumber}</h3>
               <ResponsiveContainer width="100%" height={300}>
                 <LineChart
                   data={group
-                    .sort((a, b) => (a.gtfs_route_date > b.gtfs_route_date ? 1 : -1))
-                    .sort((a, b) => (a.gtfs_route_hour > b.gtfs_route_hour ? 1 : -1))}
+                    .sort((a, b) => (a.lineNumber > b.lineNumber ? 1 : -1))
+                    .sort((a, b) => (a.lineNumber > b.lineNumber ? 1 : -1))}
                   margin={{
                     top: 5,
                     right: 30,

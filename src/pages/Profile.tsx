@@ -11,13 +11,14 @@ import { TEXTS } from 'src/resources/texts'
 import { useTranslation } from 'react-i18next'
 // import GapsPage from './GapsPage'
 // import SingleLineMapPage from './SingleLineMapPage'
-import { SearchContext } from '../model/pageState'
+import { PageSearchState, SearchContext } from '../model/pageState'
 import LineNumberSelector from './components/LineSelector'
 import OperatorSelector from './components/OperatorSelector'
 import RouteSelector from './components/RouteSelector'
 
 //API
-import { getGtfsRidesList } from 'src/api/gtfsService'
+// import { /*getGtfsRidesList,*/ getRidesAsync } from 'src/api/profileService'
+import { getRoutesAsync } from '../api/gtfsService'
 
 // time inputs
 import { DateSelector } from './components/DateSelector'
@@ -26,7 +27,7 @@ import moment from 'moment'
 import { useDate } from './components/DateTimePicker'
 
 // GRAPH
-import { GroupByRes, useGroupBy } from 'src/api/groupByService'
+import { GroupByX } from 'src/api/groupByService'
 import BusArrivalTimeline from './components/BusArrivalsTimeline'
 // import { json } from 'stream/consumers'
 
@@ -34,7 +35,7 @@ const Profile = () => {
   return (
     <>
       <GeneralDetailsAboutLine />
-      <LineGraphSchedule />
+      {/* <LineGraphSchedule /> */}
     </>
   )
 }
@@ -76,28 +77,35 @@ const GeneralDetailsAboutLine = () => {
             ))}
         </Grid>
 
-        <LineProfileComponent />
+        <LineProfileComponent search={search} />
       </PageContainer>
     </>
   )
 }
 
-const LineProfileComponent = () => {
+const LineProfileComponent = ({ search }: { search: PageSearchState }) => {
   const { t } = useTranslation()
-  // const { search, setSearch } = useContext(SearchContext)
-  // const { operatorId, lineNumber, timestamp, routes, routeKey } = search
 
-  // const resp = getGtfsRidesList(new Date(), operator, lineNumber, routeId)
-  const resp = getGtfsRidesList(new Date(), '3', '271', '1')
+  // const resp = getRidesAsync(search.operatorId, search.lineNumber, search.routeKey, new Date())
+  // const resp = getGtfsRidesList(new Date(), '3', '271', '1')
+  const resp = getRoutesAsync(
+    moment(search.timestamp),
+    moment(search.timestamp),
+    search.operatorId,
+    search.lineNumber,
+  )
 
   return (
     <Grid xs={12} lg={6}>
       <div className="widget">
         <h2 className="title">{t('profile_page')}</h2>
-        {/* <label> מפעיל: {operator} </label>
-        <label> מספר קו: {line} </label>
-        <label> כיוון נסיעה: {route} </label> */}
+        <label> מפעיל: {search.operatorId} </label>
+        <br></br>
+        <label> מספר קו: {search.lineNumber} </label>
+        <br></br>
+        <label> כיוון נסיעה: {search.routeKey} </label>
         <div>
+          <div>{resp.toString()}</div>
           <Label text="שעות פעילות" />
           {/* GET the earliest and the latest bus drive departure time for each day */}
           <TableStyle>
@@ -145,19 +153,15 @@ const LineProfileComponent = () => {
   )
 }
 
-const convertToProfileGraphStruct = (arr: GroupByRes[]) => {
-  return arr.map((item: GroupByRes) => ({
-    id: item.operator_ref?.agency_id || 'Unknown',
-    name: item.operator_ref?.agency_name || 'Unknown',
-
-    current: item.total_actual_rides,
-    max: item.total_planned_rides,
-    percent: (item.total_actual_rides / item.total_planned_rides) * 100,
-    gtfs_route_date: item.gtfs_route_date,
-    gtfs_route_hour: item.gtfs_route_hour,
+const convertToProfileGraphStruct = (arr: GroupByX[]) => {
+  return arr.map((item: GroupByX) => ({
+    operator_ref: item.operator_ref,
+    busLine: item.route_short_name,
+    direction: item.route_route_direction,
+    from_date: item.route_date_from,
+    to_date: item.route_date_to,
   }))
 }
-
 // const LineUpdateParagraph =
 
 const LineGraphSchedule = () => {
@@ -176,15 +180,17 @@ const LineGraphSchedule = () => {
   const [to, setTo] = useState(fourMinutesAgo)
   const now = moment()
 
-  const [startDate, setStartDate] = useDate(now.clone().subtract(7, 'days'))
-  const [endDate, setEndDate] = useDate(now.clone().subtract(1, 'day'))
-  const [groupByHour, setGroupByHour] = React.useState<boolean>(false)
+  const [startDate] = useDate(now.clone().subtract(7, 'days'))
+  const [endDate] = useDate(now.clone().subtract(1, 'day'))
+  // const [groupByHour] = React.useState<boolean>(false)
 
-  const [graphData, loadingGrap] = useGroupBy({
-    dateTo: endDate,
-    dateFrom: startDate,
-    groupBy: groupByHour ? 'operator_ref,gtfs_route_hour' : 'operator_ref,gtfs_route_date',
-  })
+  // const graphData: GroupByX = {
+  //   operator_ref: ,
+  //   route_short_name: ,
+  //   route_route_direction: ,
+  //   route_date_from: startDate.toDate(),
+  //   route_date_to: endDate.toDate(),
+  // }
 
   return (
     <>
