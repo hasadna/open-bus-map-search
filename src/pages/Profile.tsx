@@ -1,7 +1,9 @@
 import styled from 'styled-components'
 import React from 'react'
-import { useContext, useState } from 'react'
+// import { useContext, useState } from 'react'
+import { useContext } from 'react'
 import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
+import moment from 'moment'
 
 import { Label } from './components/Label'
 import { NotFound } from './components/NotFound'
@@ -21,21 +23,14 @@ import RouteSelector from './components/RouteSelector'
 import { getRoutesAsync } from '../api/gtfsService'
 
 // time inputs
-import { DateSelector } from './components/DateSelector'
-import { TimeSelector } from './components/TimeSelector'
-import moment from 'moment'
-import { useDate } from './components/DateTimePicker'
-
-// GRAPH
-import { GroupByX } from 'src/api/groupByService'
-import BusArrivalTimeline from './components/BusArrivalsTimeline'
-// import { json } from 'stream/consumers'
+// import { DateSelector } from './components/DateSelector'
+// import { TimeSelector } from './components/TimeSelector'
+// import { useDate } from './components/DateTimePicker'
 
 const Profile = () => {
   return (
     <>
       <GeneralDetailsAboutLine />
-      {/* <LineGraphSchedule /> */}
     </>
   )
 }
@@ -150,82 +145,6 @@ const LineProfileComponent = ({ search }: { search: PageSearchState }) => {
         </div>
       </div>
     </Grid>
-  )
-}
-
-const convertToProfileGraphStruct = (arr: GroupByX[]) => {
-  return arr.map((item: GroupByX) => ({
-    operator_ref: item.operator_ref,
-    busLine: item.route_short_name,
-    direction: item.route_route_direction,
-    from_date: item.route_date_from,
-    to_date: item.route_date_to,
-  }))
-}
-// const LineUpdateParagraph =
-
-const LineGraphSchedule = () => {
-  /*
-  DATA NEEDED:
-  - inputs which indicate the timestamp
-  - schedule of the bus line
-  - timestamp and location of the bus in real time or historically accroding
-  - arrange in series and
-  - present in graph 
-  */
-  const fiveMinutesAgo = moment().subtract(5, 'minutes')
-  const fourMinutesAgo = fiveMinutesAgo.add(1, 'minutes')
-
-  const [from, setFrom] = useState(fiveMinutesAgo)
-  const [to, setTo] = useState(fourMinutesAgo)
-  const now = moment()
-
-  const [startDate] = useDate(now.clone().subtract(7, 'days'))
-  const [endDate] = useDate(now.clone().subtract(1, 'day'))
-  // const [groupByHour] = React.useState<boolean>(false)
-
-  // const graphData: GroupByX = {
-  //   operator_ref: ,
-  //   route_short_name: ,
-  //   route_route_direction: ,
-  //   route_date_from: startDate.toDate(),
-  //   route_date_to: endDate.toDate(),
-  // }
-
-  return (
-    <>
-      {/* from date */}
-      <Grid xs={2}>
-        <Label text={TEXTS.from_date} />
-      </Grid>
-      <Grid xs={5}>
-        <DateSelector
-          time={to}
-          onChange={(ts) => {
-            const val = ts ? ts : to
-            setFrom(moment(val).subtract(moment(to).diff(moment(from)))) // keep the same time difference
-            setTo(moment(val))
-          }}
-        />
-      </Grid>
-      <Grid xs={5}>
-        <TimeSelector
-          time={to}
-          onChange={(ts) => {
-            const val = ts ? ts : from
-            setFrom(moment(val))
-            setTo(moment(val).add(moment(to).diff(moment(from)))) // keep the same time difference
-          }}
-        />
-      </Grid>
-
-      <Grid xs={12}>
-        <div className="widget">
-          <h2 className="title">{TEXTS.profile_page_line}</h2>
-          <BusArrivalTimeline data={convertToProfileGraphStruct(graphData)} />
-        </div>
-      </Grid>
-    </>
   )
 }
 
