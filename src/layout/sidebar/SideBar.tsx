@@ -10,9 +10,7 @@ const { Sider } = Layout
 
 const Logo = () => (
   <div style={{ overflow: 'hidden' }}>
-    <Link to={pages[0].path} replace>
-      <h1 className={'sidebar-logo'}>דאטאבוס</h1>
-    </Link>
+    <h1 className={'sidebar-logo'}>דאטאבוס</h1>
   </div>
 )
 const CollapsedLogo = () => <h1 className={'sidebar-logo-collapsed'}>🚌</h1>
@@ -44,7 +42,9 @@ export default function SideBar() {
         collapsed={collapsed}
         onCollapse={(value: boolean) => setCollapsed(value)}
         className="hideOnMobile">
-        {collapsed ? <CollapsedLogo /> : <Logo />}
+        <Link to={pages[0].path} replace>
+          {collapsed ? <CollapsedLogo /> : <Logo />}
+        </Link>
         <div className="sidebar-divider"></div>
         <Menu />
         <div className="sidebar-divider"></div>
