@@ -77,7 +77,6 @@ export const TEXT_KEYS = {
   profile_page: 'profile_page',
   profile_page_line: 'profile_page_line',
   github_link: 'github_link',
-
 }
 
 export const TEXTS = {
