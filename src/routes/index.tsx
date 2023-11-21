@@ -24,7 +24,6 @@ import {
   LineChartOutlined,
 } from '@ant-design/icons'
 
-
 export const PAGES = [
   {
     label: TEXT_KEYS.dashboard_page_title,
