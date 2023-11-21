@@ -10,6 +10,7 @@ import {
 } from 'recharts'
 
 import './ArrivalByTimeChats.scss'
+import { useMemo } from 'react'
 
 export const arrayGroup = function <T>(array: T[], f: (item: T) => string) {
   const groups: Record<string, T[]> = {}
@@ -25,6 +26,7 @@ export const arrayGroup = function <T>(array: T[], f: (item: T) => string) {
 
 export default function ArrivalByTimeChart({
   data,
+  operatorId,
 }: {
   data: {
     id: string
@@ -35,7 +37,12 @@ export default function ArrivalByTimeChart({
     gtfs_route_date: string
     gtfs_route_hour: string
   }[]
+  operatorId: string
 }) {
+  data = useMemo(
+    () => data.filter((item) => !operatorId || item.id === operatorId),
+    [data, operatorId],
+  )
   return (
     <div className="chart">
       {arrayGroup(data, (item) => item.id)

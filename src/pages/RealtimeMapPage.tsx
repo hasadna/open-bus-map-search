@@ -66,15 +66,6 @@ export default function RealtimeMapPage() {
       recorded_at_time: new Date(location.recorded_at_time).getTime(),
       point: location,
     }))
-
-    // keep only the latest point for each vehicle
-    // pos = pos.filter((p) =>
-    //   pos.every(
-    //     (p2) =>
-    //       p2.point!.siri_ride__vehicle_ref !== p.point!.siri_ride__vehicle_ref ||
-    //       p2.recorded_at_time! <= p.recorded_at_time!,
-    //   ),
-    // )
     return pos
   }, [locations])
 

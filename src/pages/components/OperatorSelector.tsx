@@ -34,7 +34,7 @@ const OperatorSelector = ({
       disablePortal
       style={{ width: '100%' }}
       value={value}
-      onChange={(e, value) => setOperatorId(value ? value.id : '0')}
+      onChange={(e, value) => setOperatorId(value ? value.id : '')}
       id="operator-select"
       options={operators}
       renderInput={(params) => <TextField {...params} label={TEXTS.choose_operator} />}
