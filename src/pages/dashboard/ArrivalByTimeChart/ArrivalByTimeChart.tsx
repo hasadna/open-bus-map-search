@@ -53,7 +53,7 @@ export default function ArrivalByTimeChart({
             <ResponsiveContainer width="100%" height={300}>
               <LineChart
                 data={group
-                  .sort((a, b) => (a.gtfs_route_date > b.gtfs_route_date ? 1 : -1))
+                  .sort((a, b) => (a.gtfs_route_date < b.gtfs_route_date ? 1 : -1))
                   .sort((a, b) => (a.gtfs_route_hour > b.gtfs_route_hour ? 1 : -1))}
                 margin={{
                   top: 5,
@@ -62,7 +62,7 @@ export default function ArrivalByTimeChart({
                   bottom: 5,
                 }}>
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="gtfs_route_date" reversed={true} />
+                <XAxis dataKey="gtfs_route_date" />
                 <YAxis />
                 <Tooltip
                   content={({ payload }) =>
