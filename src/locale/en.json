@@ -69,5 +69,25 @@
   "innovation_authority": "Innovation Authority",
   "migdal_company": "\"A tower in the community\"",
   "and_smaller_donors": "And other small contributions from my friends and fans of the workshop.",
-  "github_link": "Go to GitHub"
+  "github_link": "Go to GitHub",
+  "bug_title": "Title/Summary",
+  "bug_title_message": "Please enter a title/summary!",
+  "bug_description": "Description",
+  "bug_description_message": "Please enter a description!",
+  "bug_environment": "Environment",
+  "bug_environment_message": "Please enter the environment!",
+  "bug_expected_behavior": "Expected Behavior",
+  "bug_expected_behavior_message": "Please describe the expected behavior!",
+  "bug_actual_behavior": "Actual Behavior",
+  "bug_actual_behavior_message": "Please describe the actual behavior!",
+  "bug_reproducibility": "Frequency/Reproducibility",
+  "bug_reproducibility_message": "Please describe the frequency/reproducibility!",
+  "bug_attachments": "Attachments/Screenshots",
+  "bug_attachments_upload_button": "Click to Upload",
+  "bug_submit":"Submit Bug Report",
+  "bug_contact_name":"Full Name",
+  "bug_contact_name_message":"Please enter your full name!",
+  "bug_contact_email":"Email",
+  "bug_contact_email_message":"Please enter your email!"
+  
 }

@@ -1,0 +1,60 @@
+// BugReportForm.scss
+
+.bug-report-form-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 30px;
+  background-color: #fff;
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.bug-report-form-container h1.logo {
+  position: relative;
+  margin: 20px auto;
+  width: 119px;
+  font-size: 30px;
+  border-top: 6px solid gray;
+  border-bottom: 8px solid gray;
+  padding-bottom: 0;
+  line-height: 25px;
+  text-align: center; /* Center the logo */
+}
+
+.bug-report-form-container .ant-form-item {
+  margin-bottom: 20px;
+}
+
+.bug-report-form-container .ant-form-item-label {
+  font-weight: bold;
+  text-align: right; /* Align the label to the right */
+}
+
+.bug-report-form-container .ant-input,
+.bug-report-form-container .ant-input-textarea {
+  width: 100%;
+}
+
+.bug-report-form-container .ant-upload {
+  width: 100%;
+}
+
+.bug-report-form-container .ant-btn {
+  margin-right: 8px;
+}
+
+.bug-report-form-container .ant-btn-primary {
+  background-color: #1890ff;
+  border-color: #1890ff;
+  width: 100%; /* Make the button 100% width */
+}
+
+.bug-report-form-container .ant-btn-primary:hover {
+  background-color: #40a9ff;
+  border-color: #40a9ff;
+}
+
+.bug-report-form-container .ant-btn-primary:focus {
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}

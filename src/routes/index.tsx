@@ -8,6 +8,7 @@ const GapsPatternsPage = lazy(() => import('../pages/gapsPatterns'))
 const RealtimeMapPage = lazy(() => import('../pages/RealtimeMapPage'))
 const SingleLineMapPage = lazy(() => import('../pages/SingleLineMapPage'))
 const About = lazy(() => import('../pages/About'))
+const BugReportForm = lazy(() => import('../pages/BugReportForm '))
 import CircularProgress from '@mui/material/CircularProgress'
 
 import {
@@ -70,9 +71,9 @@ export const PAGES = [
   },
   {
     label: TEXT_KEYS.report_a_bug_title,
-    path: 'https://github.com/hasadna/open-bus-map-search/issues',
+    path: 'report-a-bug',
     icon: <BugOutlined />,
-    element: null,
+    element: <BugReportForm />,
   },
   {
     label: TEXT_KEYS.donate_title,

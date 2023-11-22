@@ -75,6 +75,25 @@ export const TEXT_KEYS = {
   and_smaller_donors: 'and_smaller_donors',
   gaps_patterns_page_title: 'gaps_patterns_page_title',
   github_link: 'github_link',
+  bug_title: "bug_title",
+  bug_title_message: "bug_title_message",
+  bug_description: "bug_description",
+  bug_description_message: "bug_description_message",
+  bug_environment: "bug_environment",
+  bug_environment_message: "bug_environment_message",
+  bug_expected_behavior: "bug_expected_behavior",
+  bug_expected_behavior_message: "bug_expected_behavior_message",
+  bug_actual_behavior: "bug_actual_behavior",
+  bug_actual_behavior_message: "bug_actual_behavior_message",
+  bug_reproducibility: "bug_reproducibility",
+  bug_reproducibility_message: "bug_reproducibility_message",
+  bug_attachments: "bug_attachments",
+  bug_attachments_upload_button: "bug_attachments_upload_button",
+  bug_submit:"bug_submit",
+  bug_contact_name:"bug_contact_name",
+  bug_contact_name_message:"bug_contact_name_message",
+  bug_contact_email:"bug_contact_email",
+  bug_contact_email_message:"bug_contact_email_message"
 }
 
 export const TEXTS = {
