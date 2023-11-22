@@ -170,17 +170,17 @@ const GapsPatternsPage = () => {
   return (
     <PageContainer>
       <Grid container spacing={2} alignItems="center" sx={{ maxWidth: INPUT_SIZE }}>
-        <Grid lg={4} className="hideOnMobile">
+        <Grid sm={4} className="hideOnMobile">
           <Label text={TEXTS.choose_dates} />
         </Grid>
         <Grid
           container
           spacing={2}
           xs={12}
-          lg={8}
+          sm={8}
           alignItems="center"
           justifyContent="space-between">
-          <Grid xs={6} lg={5.7}>
+          <Grid xs={6} sm={5.7}>
             <DateSelector
               time={startDate}
               onChange={(data) => setStartDate(data)}
@@ -190,7 +190,7 @@ const GapsPatternsPage = () => {
           <Grid xs={0.1} className="hideOnMobile">
             -
           </Grid>
-          <Grid xs={6} lg={5.7}>
+          <Grid xs={6} sm={5.7}>
             <DateSelector
               time={endDate}
               onChange={(data) => setEndDate(data)}
@@ -202,7 +202,7 @@ const GapsPatternsPage = () => {
         <Grid xs={4} className="hideOnMobile">
           <Label text={TEXTS.choose_operator} />
         </Grid>
-        <Grid xs={12} lg={8}>
+        <Grid xs={12} sm={8}>
           <OperatorSelector
             operatorId={operatorId}
             setOperatorId={(id) => setSearch((current) => ({ ...current, operatorId: id }))}
@@ -211,7 +211,7 @@ const GapsPatternsPage = () => {
         <Grid xs={4} className="hideOnMobile">
           <Label text={TEXTS.choose_line} />
         </Grid>
-        <Grid xs={12} lg={8}>
+        <Grid xs={12} sm={8}>
           <LineNumberSelector
             lineNumber={lineNumber}
             setLineNumber={(number) => setSearch((current) => ({ ...current, lineNumber: number }))}
