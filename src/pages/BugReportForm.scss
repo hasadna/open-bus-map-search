@@ -8,6 +8,27 @@
   border: 1px solid #e8e8e8;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  @media (max-width: 600px) {
+    padding: 15px;
+
+    h1.logo {
+      font-size: 24px;
+      margin: 10px auto;
+      border-top: 4px solid gray;
+      border-bottom: 6px solid gray;
+    }
+
+    .ant-form-item-label {
+      text-align: left;
+    }
+
+    .ant-btn-primary {
+      max-width: calc(100% - 100px); 
+      margin: 0 auto; 
+      display: block; 
+    }
+  }
 }
 
 .bug-report-form-container h1.logo {
