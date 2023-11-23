@@ -70,7 +70,7 @@ export const PAGES = [
   },
   {
     label: TEXT_KEYS.report_a_bug_title,
-    path: 'https://github.com/hasadna/open-bus-map-search/issues',
+    path: 'https://github.com/hasadna/open-bus-map-search/issues/new',
     icon: <BugOutlined />,
     element: null,
   },
