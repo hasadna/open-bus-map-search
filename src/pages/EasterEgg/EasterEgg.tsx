@@ -2,6 +2,12 @@ import { useState } from 'react'
 import styled from 'styled-components'
 import useKonami from 'use-konami'
 
+const colors = {
+  primaryColor300: '#7ec1ff', // the prev color  '#e95f55',
+  primaryColor400: '#1890ff', // the prev color '#e15349' ,
+  primaryColor500: '#317fc8', // the prev color '#cb5a5e',
+  primaryColor600: '#136fc5', // the prev color '#cf4a43',
+}
 const EnvelopeWrapper = styled.div`
   .letter-image {
     position: absolute;
@@ -57,7 +63,7 @@ const EnvelopeWrapper = styled.div`
       height: 0;
       border-style: solid;
       border-width: 0 0 100px 200px;
-      border-color: transparent transparent #e95f55 transparent;
+      border-color: transparent transparent ${colors.primaryColor300} transparent;
       z-index: 2;
     }
 
@@ -74,7 +80,7 @@ const EnvelopeWrapper = styled.div`
       -moz-transition: transform 0.4s 0.4s, z-index 0.2s 0.4s;
       transform-origin: 50% 0%;
       transition: transform 0.4s 0.4s, z-index 0.2s 0.4s;
-      border-color: #cf4a43 transparent transparent transparent;
+      border-color: ${colors.primaryColor600} transparent transparent transparent;
       z-index: 2;
     }
 
@@ -83,7 +89,7 @@ const EnvelopeWrapper = styled.div`
       bottom: 0;
       width: 200px;
       height: 100px;
-      background: #cf4a43;
+      background: ${colors.primaryColor600};
       z-index: 0;
     }
 
@@ -94,7 +100,7 @@ const EnvelopeWrapper = styled.div`
       height: 0;
       border-style: solid;
       border-width: 50px 0 50px 100px;
-      border-color: transparent transparent transparent #e15349;
+      border-color: transparent transparent transparent ${colors.primaryColor400};
       z-index: 2;
     }
 
@@ -116,8 +122,8 @@ const EnvelopeWrapper = styled.div`
         width: 100%;
         background: repeating-linear-gradient(
           -45deg,
-          #cb5a5e,
-          #cb5a5e 8px,
+          ${colors.primaryColor500},
+          ${colors.primaryColor500} 8px,
           transparent 8px,
           transparent 18px
         );
@@ -128,23 +134,26 @@ const EnvelopeWrapper = styled.div`
         margin-left: 5px;
         height: 10px;
         width: 40%;
-        background: #cb5a5e;
+        background: ${colors.primaryColor500};
       }
       .letter-context {
         margin-top: 10px;
         margin-left: 5px;
         height: 10px;
         width: 20%;
-        background: #cb5a5e;
+        background: ${colors.primaryColor500};
       }
-
+      .letter-favicon {
+        display: flex;
+        justify-content: center;
+      }
       .letter-stamp {
         margin-top: 30px;
         margin-left: 120px;
         border-radius: 100%;
         height: 30px;
         width: 30px;
-        background: #cb5a5e;
+        background: ${colors.primaryColor500};
         opacity: 0.3;
       }
     }
@@ -202,6 +211,9 @@ const Envelope = ({ fade }: { fade: boolean }) => (
           <div className="letter-border"></div>
           <div className="letter-title"></div>
           <div className="letter-context"></div>
+          <div className="letter-favicon">
+            <img src="/favicon.ico" alt="busFavicon" />
+          </div>
           <div className="letter-stamp">
             <div className="letter-stamp-inner"></div>
           </div>

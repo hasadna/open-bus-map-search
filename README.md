@@ -3,6 +3,8 @@
 ## Welcome!
 This is the official repository of the open bus (תחב"צ פתוחה) project - also known as "ShameBus".
 [link to the project](https://open-bus-map-search.hasadna.org.il/dashboard)
+- While in the site, type "storybook" (in lowercase) to see a secret 😉
+
 Please feel free to submit pull requests and contribute to the project (see the "contribution" section).
 
 ## View video (Hebrew language):
