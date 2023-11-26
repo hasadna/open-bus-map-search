@@ -1,5 +1,4 @@
 import styled from 'styled-components'
-import { TEXT_KEYS } from 'src/resources/texts'
 import SlackIcon from '../resources/slack-icon.svg'
 import { useTranslation } from 'react-i18next'
 
@@ -112,14 +111,17 @@ const Funding = () => {
   return (
     <ParagraphStyle>
       <h2>{t('funding')}</h2>
-      <p>{t(TEXT_KEYS.funding_paragraph)}</p>
+      <div className="funding-paragraph">
+        <p>{t('funding_paragraph')}</p>
+        <a href="https://open-bus-stride-api.hasadna.org.il/docs">Open API</a>
+      </div>
       <ul>
-        <li>{t(TEXT_KEYS.mr_meir)}</li>
-        <li>{t(TEXT_KEYS.innovation_authority)}</li>
-        <li>{t(TEXT_KEYS.migdal_company)}</li>
+        <li>{t('mr_meir')}</li>
+        <li>{t('innovation_authority')}</li>
+        <li>{t('migdal_company')}</li>
         <li>
           <a href="https://www.jgive.com/new/he/ils/donation-targets/3268#donation-modal">
-            {t(TEXT_KEYS.and_smaller_donors)}
+            {t('and_smaller_donors')}
           </a>
         </li>
       </ul>
@@ -144,8 +146,15 @@ const ParagraphStyle = styled.div`
   & h2 {
     font-size: 1.5em;
   }
+  & .funding-paragraph {
+    display: flex;
+  }
   & p {
     font-size: 1.15em;
+    margin-left: 0.5rem;
+  }
+  & a {
+    padding-top: 0.2rem;
   }
 
   & ul {
