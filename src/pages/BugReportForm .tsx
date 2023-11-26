@@ -1,10 +1,13 @@
 import React, { useState } from 'react'
 import { TEXT_KEYS } from 'src/resources/texts'
 import { useTranslation } from 'react-i18next'
-import { Form, Input, Button, Upload, message } from 'antd'
+import { Form, Input, Button, Upload, message, Select } from 'antd';
 import { UploadOutlined } from '@ant-design/icons'
 import axios from 'axios'
 import './BugReportForm.scss'
+const { Option } = Select;
+
+
 
 interface BugReportFormData {
   title: string
@@ -22,6 +25,8 @@ const BugReportForm: React.FC = () => {
   const { t } = useTranslation()
   const [form] = Form.useForm()
   const [fileList, setFileList] = useState<any[]>([])
+  const [selectedType, setSelectedType] = useState<string | undefined>(undefined);
+
 
   //Not implemented yet
   const onFinish = async (values: BugReportFormData) => {
@@ -62,7 +67,7 @@ const BugReportForm: React.FC = () => {
       <span> {t(TEXT_KEYS.bug_form_description)} </span>
       <br />
       <br />
-      
+
       <Form
         form={form}
         name="bug-report"
@@ -70,6 +75,17 @@ const BugReportForm: React.FC = () => {
         onFinishFailed={onFinishFailed}
         labelCol={{ span: 6 }}
         wrapperCol={{ span: 18 }}>
+        <Form.Item
+          label={t(TEXT_KEYS.bug_type)}
+          name="type"
+          initialValue={selectedType}
+          rules={[{ required: true, message: t(TEXT_KEYS.bug_type_message) }]}>
+          <Select onChange={(value) => setSelectedType(value)}>
+            <Option value="bug">{t(TEXT_KEYS.bug_type_bug)}</Option>
+            <Option value="feature">{t(TEXT_KEYS.bug_type_feature)}</Option>
+          </Select>
+        </Form.Item>
+
         <Form.Item
           label={t(TEXT_KEYS.bug_title)}
           name="title"

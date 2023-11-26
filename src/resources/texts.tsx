@@ -94,7 +94,11 @@ export const TEXT_KEYS = {
   bug_contact_name_message:"bug_contact_name_message",
   bug_contact_email:"bug_contact_email",
   bug_contact_email_message:"bug_contact_email_message",
-  bug_form_description:"bug_form_description"
+  bug_form_description:"bug_form_description",
+  bug_type:"bug_type",
+  bug_type_message:"bug_type_message",
+  bug_type_bug:"bug_type_bug",
+  bug_type_feature:"bug_type_feature"
 }
 
 export const TEXTS = {
