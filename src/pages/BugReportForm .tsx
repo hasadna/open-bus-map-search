@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'
 import { TEXT_KEYS } from 'src/resources/texts'
 import { useTranslation } from 'react-i18next'
 import { Form, Input, Button, Upload, message } from 'antd'
@@ -13,7 +13,7 @@ interface BugReportFormData {
   expectedBehavior: string
   actualBehavior: string
   reproducibility: string
-  attachments: any[] 
+  attachments: any[]
   contactName: string
   contactEmail: string
 }
@@ -23,6 +23,7 @@ const BugReportForm: React.FC = () => {
   const [form] = Form.useForm()
   const [fileList, setFileList] = useState<any[]>([])
 
+  //Not implemented yet
   const onFinish = async (values: BugReportFormData) => {
     try {
       // Send the bug report data to the server
@@ -36,7 +37,8 @@ const BugReportForm: React.FC = () => {
       console.log(values)
 
       // Handle the server response
-      message.success('Bug report submitted successfully!')
+      // message.success('Bug report submitted successfully!')
+      message.success('Not implemented!')
       form.resetFields()
       setFileList([]) // Reset fileList after submission
     } catch (error) {
