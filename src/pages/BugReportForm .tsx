@@ -1,13 +1,11 @@
 import React, { useState } from 'react'
 import { TEXT_KEYS } from 'src/resources/texts'
 import { useTranslation } from 'react-i18next'
-import { Form, Input, Button, Upload, message, Select } from 'antd';
+import { Form, Input, Button, Upload, message, Select } from 'antd'
 import { UploadOutlined } from '@ant-design/icons'
-import axios from 'axios'
+// import axios from 'axios'
 import './BugReportForm.scss'
-const { Option } = Select;
-
-
+const { Option } = Select
 
 interface BugReportFormData {
   title: string
@@ -25,8 +23,7 @@ const BugReportForm: React.FC = () => {
   const { t } = useTranslation()
   const [form] = Form.useForm()
   const [fileList, setFileList] = useState<any[]>([])
-  const [selectedType, setSelectedType] = useState<string | undefined>(undefined);
-
+  const [selectedType, setSelectedType] = useState<string | undefined>(undefined)
 
   //Not implemented yet
   const onFinish = async (values: BugReportFormData) => {
@@ -75,7 +72,6 @@ const BugReportForm: React.FC = () => {
         onFinishFailed={onFinishFailed}
         labelCol={{ span: 6 }}
         wrapperCol={{ span: 18 }}>
-          
         <Form.Item
           label={t(TEXT_KEYS.bug_type)}
           name="type"
