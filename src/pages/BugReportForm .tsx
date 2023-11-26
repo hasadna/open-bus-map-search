@@ -75,6 +75,7 @@ const BugReportForm: React.FC = () => {
         onFinishFailed={onFinishFailed}
         labelCol={{ span: 6 }}
         wrapperCol={{ span: 18 }}>
+          
         <Form.Item
           label={t(TEXT_KEYS.bug_type)}
           name="type"
