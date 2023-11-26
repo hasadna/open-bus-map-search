@@ -23,11 +23,11 @@ const WhatIsWebsite = () => {
 
   return (
     <ParagraphStyle>
-      <h2>{t(TEXT_KEYS.what_is_website)}</h2>
-      <p>{t(TEXT_KEYS.what_is_website_paragraph)}</p>
+      <h2>{t('what_is_website')}</h2>
+      <p>{t('what_is_website_paragraph')}</p>
       <ul style={{ listStyle: 'disc', paddingRight: '40px' }}>
-        <li>{t(TEXT_KEYS.planning_information)}</li>
-        <li>{t(TEXT_KEYS.performance_information)}</li>
+        <li>{t('planning_information')}</li>
+        <li>{t('performance_information')}</li>
       </ul>
     </ParagraphStyle>
   )
@@ -38,8 +38,8 @@ const DiscoveredMistake = () => {
 
   return (
     <ParagraphStyle>
-      <h2>{t(TEXT_KEYS.discovered_mistake)}</h2>
-      <p>{t(TEXT_KEYS.discovered_mistake_paragraph)}</p>
+      <h2>{t('discovered_mistake')}</h2>
+      <p>{t('discovered_mistake_paragraph')}</p>
     </ParagraphStyle>
   )
 }
@@ -49,7 +49,7 @@ const Privacy = () => {
 
   return (
     <ParagraphStyle>
-      <h2>{t(TEXT_KEYS.privacy)}</h2>
+      <h2>{t('privacy')}</h2>
       <p>
         באתר מוטמע שירות{' '}
         <a href="https://marketingplatform.google.com/about/analytics/">Google Analytics </a>
@@ -67,7 +67,7 @@ const License = () => {
 
   return (
     <ParagraphStyle>
-      <h2>{t(TEXT_KEYS.license)}</h2>
+      <h2>{t('license')}</h2>
       <p>
         כל המידע המוצג באתר מבוסס על נתונים המפורסמים במקורות המידע הממשלתיים. השימוש במידע כפוף ל
         <a href="https://creativecommons.org/licenses/by-sa/4.0/">רישיון CC BY-SA 4.0 </a>
@@ -83,7 +83,7 @@ const Questions = () => {
 
   return (
     <ParagraphStyle>
-      <h2>{t(TEXT_KEYS.questions)}</h2>
+      <h2>{t('questions')}</h2>
       <ul>
         <li>
           <a href="https://www.hasadna.org.il/%D7%A6%D7%95%D7%A8-%D7%A7%D7%A9%D7%A8/">
@@ -111,7 +111,7 @@ const Funding = () => {
 
   return (
     <ParagraphStyle>
-      <h2>{t(TEXT_KEYS.funding)}</h2>
+      <h2>{t('funding')}</h2>
       <p>{t(TEXT_KEYS.funding_paragraph)}</p>
       <ul>
         <li>{t(TEXT_KEYS.mr_meir)}</li>
