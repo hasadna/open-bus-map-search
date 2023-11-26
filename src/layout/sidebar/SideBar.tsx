@@ -4,7 +4,8 @@ import { Drawer, Layout } from 'antd'
 import { useContext, useState } from 'react'
 import { LayoutContextInterface, LayoutCtx } from '../LayoutContext'
 import GitHubLink from './GitHubLink/GitHubLink'
-
+import { Link } from 'react-router-dom'
+import { PAGES as pages } from 'src/routes'
 const { Sider } = Layout
 
 const Logo = () => (
@@ -41,7 +42,9 @@ export default function SideBar() {
         collapsed={collapsed}
         onCollapse={(value: boolean) => setCollapsed(value)}
         className="hideOnMobile">
-        {collapsed ? <CollapsedLogo /> : <Logo />}
+        <Link to={pages[0].path} replace>
+          {collapsed ? <CollapsedLogo /> : <Logo />}
+        </Link>
         <div className="sidebar-divider"></div>
         <Menu />
         <div className="sidebar-divider"></div>
