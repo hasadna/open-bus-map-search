@@ -1,4 +1,5 @@
 import styled from 'styled-components'
+import { TEXT_KEYS } from 'src/resources/texts'
 import SlackIcon from '../resources/slack-icon.svg'
 import { useTranslation } from 'react-i18next'
 
@@ -151,10 +152,6 @@ const ParagraphStyle = styled.div`
   }
   & p {
     font-size: 1.15em;
-    margin-left: 0.5rem;
-  }
-  & a {
-    padding-top: 0.1rem;
   }
 
   & ul {
