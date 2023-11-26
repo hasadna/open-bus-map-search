@@ -2,6 +2,7 @@
 
 .bug-report-form-container {
   max-width: 800px;
+  width: 100%;
   margin: 0 auto;
   padding: 30px;
   background-color: #fff;
@@ -29,53 +30,53 @@
       display: block; 
     }
   }
-}
 
-.bug-report-form-container h1.logo {
-  position: relative;
-  margin: 20px auto;
-  width: 119px;
-  font-size: 30px;
-  border-top: 6px solid gray;
-  border-bottom: 8px solid gray;
-  padding-bottom: 0;
-  line-height: 25px;
-  text-align: center; /* Center the logo */
-}
+  h1.logo {
+    position: relative;
+    margin: 20px auto;
+    width: 119px;
+    font-size: 30px;
+    border-top: 6px solid gray;
+    border-bottom: 8px solid gray;
+    padding-bottom: 0;
+    line-height: 25px;
+    text-align: center; 
+  }
 
-.bug-report-form-container .ant-form-item {
-  margin-bottom: 20px;
-}
+  .ant-form-item {
+    margin-bottom: 20px;
 
-.bug-report-form-container .ant-form-item-label {
-  font-weight: bold;
-  text-align: right; /* Align the label to the right */
-}
+    &-label {
+      font-weight: bold;
+      text-align: right; 
+    }
+  }
 
-.bug-report-form-container .ant-input,
-.bug-report-form-container .ant-input-textarea {
-  width: 100%;
-}
+  .ant-input,
+  .ant-input-textarea {
+    width: 100%;
+  }
 
-.bug-report-form-container .ant-upload {
-  width: 100%;
-}
+  .ant-upload {
+    width: 100%;
+  }
 
-.bug-report-form-container .ant-btn {
-  margin-right: 8px;
-}
+  .ant-btn {
+    margin-right: 8px;
 
-.bug-report-form-container .ant-btn-primary {
-  background-color: #1890ff;
-  border-color: #1890ff;
-  width: 100%; /* Make the button 100% width */
-}
+    &-primary {
+      background-color: #1890ff;
+      border-color: #1890ff;
+      width: 100%; 
 
-.bug-report-form-container .ant-btn-primary:hover {
-  background-color: #40a9ff;
-  border-color: #40a9ff;
-}
+      &:hover {
+        background-color: #40a9ff;
+        border-color: #40a9ff;
+      }
 
-.bug-report-form-container .ant-btn-primary:focus {
-  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+      &:focus {
+        box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+      }
+    }
+  }
 }
