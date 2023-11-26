@@ -154,7 +154,7 @@ const ParagraphStyle = styled.div`
     margin-left: 0.5rem;
   }
   & a {
-    padding-top: 0.2rem;
+    padding-top: 0.1rem;
   }
 
   & ul {
