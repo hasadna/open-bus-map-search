@@ -93,7 +93,8 @@ export const TEXT_KEYS = {
   bug_contact_name:"bug_contact_name",
   bug_contact_name_message:"bug_contact_name_message",
   bug_contact_email:"bug_contact_email",
-  bug_contact_email_message:"bug_contact_email_message"
+  bug_contact_email_message:"bug_contact_email_message",
+  bug_form_description:"bug_form_description"
 }
 
 export const TEXTS = {

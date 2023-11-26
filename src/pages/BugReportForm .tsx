@@ -59,6 +59,10 @@ const BugReportForm: React.FC = () => {
     <div className="bug-report-form-container">
       <h1 className="logo">דאטאבוס</h1>
 
+      <span> {t(TEXT_KEYS.bug_form_description)} </span>
+      <br />
+      <br />
+      
       <Form
         form={form}
         name="bug-report"

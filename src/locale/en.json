@@ -88,6 +88,7 @@
   "bug_contact_name":"Full Name",
   "bug_contact_name_message":"Please enter your full name!",
   "bug_contact_email":"Email",
-  "bug_contact_email_message":"Please enter your email!"
+  "bug_contact_email_message":"Please enter your email!",
+  "bug_form_description":"This form is designed so that we can receive feedback and improve the application."
   
 }
