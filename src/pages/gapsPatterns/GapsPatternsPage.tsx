@@ -68,6 +68,11 @@ function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatistic
     ...hourlyData.map((entry) => entry.actual_rides),
   )
 
+  const isSmallScreen = window.innerWidth < 992
+  const widgetWidth =
+    window.innerWidth - (isSmallScreen ? (window.innerWidth < 768 ? 120 : 179) : 500)
+  const barSize = isSmallScreen ? 10 : 20
+
   return (
     lineRef > 0 && (
       <div className="widget">
@@ -89,16 +94,16 @@ function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatistic
 
             <ComposedChart
               layout="vertical"
-              width={500}
+              width={widgetWidth}
               height={hourlyData.length * 50}
               data={hourlyData}
               margin={{
                 top: 20,
-                right: 20,
+                right: isSmallScreen ? 5 : 20,
                 bottom: 20,
-                left: 20,
+                left: isSmallScreen ? 5 : 20,
               }}
-              barGap={-20}>
+              barGap={-barSize}>
               <CartesianGrid stroke="#f5f5f5" />
               <XAxis
                 type="number"
@@ -123,7 +128,7 @@ function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatistic
               />
               <Tooltip content={<CustomTooltip />} />
               <Legend />
-              <Bar dataKey="actual_rides" barSize={20} radius={9} xAxisId={1} opacity={30}>
+              <Bar dataKey="actual_rides" barSize={barSize} radius={9} xAxisId={1} opacity={30}>
                 {hourlyData.map((entry, index) => (
                   <Cell
                     key={`cell-${index}`}
@@ -131,7 +136,13 @@ function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatistic
                   />
                 ))}
               </Bar>
-              <Bar dataKey="planned_rides" barSize={20} fill="#413ea055" radius={9} xAxisId={0} />
+              <Bar
+                dataKey="planned_rides"
+                barSize={barSize}
+                fill="#413ea055"
+                radius={9}
+                xAxisId={0}
+              />
             </ComposedChart>
           </>
         )}
