@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { BusToolTip } from './MapLayers/BusToolTip'
-import '../dashboard/DashboardPage.scss'
+import '../../shared/shared.css'
 const meta = {
   title: 'Components/Widget',
   component: () => (
