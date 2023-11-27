@@ -111,7 +111,7 @@ const Funding = () => {
   return (
     <ParagraphStyle>
       <h2>{t('funding')}</h2>
-      <div className="funding-paragraph">
+      <div>
         <p>{t('funding_paragraph')}</p>
         <a href="https://open-bus-stride-api.hasadna.org.il/docs">Open API</a>
       </div>
@@ -146,13 +146,9 @@ const ParagraphStyle = styled.div`
   & h2 {
     font-size: 1.5em;
   }
-  & .funding-paragraph {
-    display: flex;
-  }
   & p {
     font-size: 1.15em;
   }
-
   & ul {
     list-style: none;
     padding: 0;
