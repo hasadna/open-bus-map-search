@@ -69,7 +69,7 @@ export const PAGES = [
     icon: <BellOutlined />,
     element: <About />,
   },
-   {
+  {
     label: TEXT_KEYS.report_a_bug_title,
     path: 'report-a-bug',
     icon: <BugOutlined />,
