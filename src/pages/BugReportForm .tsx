@@ -1,10 +1,11 @@
 import React, { useState } from 'react'
 import { TEXT_KEYS } from 'src/resources/texts'
 import { useTranslation } from 'react-i18next'
-import { Form, Input, Button, Upload, message, Select } from 'antd'
+import { Form, Input, Button, Upload, message, Select, FormProps } from 'antd'
 import { UploadOutlined } from '@ant-design/icons'
 // import axios from 'axios'
 import './BugReportForm.scss'
+import { UploadChangeParam, UploadFile } from 'antd/lib/upload'
 const { Option } = Select
 
 interface BugReportFormData {
@@ -22,7 +23,7 @@ interface BugReportFormData {
 const BugReportForm: React.FC = () => {
   const { t } = useTranslation()
   const [form] = Form.useForm()
-  const [fileList, setFileList] = useState<any[]>([])
+  const [fileList, setFileList] = useState<UploadFile[]>([])
   const [selectedType, setSelectedType] = useState<string | undefined>(undefined)
 
   //Not implemented yet
@@ -49,11 +50,11 @@ const BugReportForm: React.FC = () => {
     }
   }
 
-  const onFinishFailed = (errorInfo: any) => {
+  const onFinishFailed: FormProps['onFinishFailed'] = (errorInfo) => {
     console.log('Failed:', errorInfo)
   }
 
-  const onFileChange = (info: any) => {
+  const onFileChange = (info: UploadChangeParam) => {
     setFileList(info.fileList)
   }
 
