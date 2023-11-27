@@ -15,7 +15,7 @@ interface BugReportFormData {
   expectedBehavior: string
   actualBehavior: string
   reproducibility: string
-  attachments: any[]
+  attachments: UploadFile[]
   contactName: string
   contactEmail: string
 }
