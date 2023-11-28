@@ -10,7 +10,7 @@ import {
 } from 'recharts'
 
 import './ArrivalByTimeChats.scss'
-import { useMemo } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 
 const arrayGroup = function <T>(array: T[], f: (item: T) => string) {
   const groups: Record<string, T[]> = {}
@@ -43,8 +43,35 @@ export default function ArrivalByTimeChart({
     () => data.filter((item) => !operatorId || item.id === operatorId),
     [data, operatorId],
   )
+
+  const [containerWidth, setContainerWidth] = useState<number | undefined>(undefined)
+
+  const chartContainerStyle = {
+    maxWidth: containerWidth ? `${containerWidth - 380}px` : '100%',
+    width: '100%',
+    transition: 'max-width 0.3s ease',
+  }
+
+  // Update containerWidth on mount and when operatorId changes
+  useEffect(() => {
+    const handleResize = () => {
+      const container = document.getElementById('chart-container')
+      if (container) {
+        setContainerWidth(window.innerWidth)
+      }
+    }
+
+    handleResize()
+
+    window.addEventListener('resize', handleResize)
+
+    return () => {
+      window.removeEventListener('resize', handleResize)
+    }
+  }, [])
+
   return (
-    <div className="chart">
+    <div className="chart" style={chartContainerStyle} id="chart-container">
       {arrayGroup(data, (item) => item.id)
         .filter((group) => group.length > 1 && group.reduce((a, b) => a + b.current, 0) > 1)
         .map((group) => (
