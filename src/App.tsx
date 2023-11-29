@@ -9,7 +9,7 @@ import { BrowserRouter as Router, useSearchParams } from 'react-router-dom'
 import { PageSearchState, SearchContext } from './model/pageState'
 import moment from 'moment'
 import { useSessionStorage } from 'usehooks-ts'
-import SideBar from './pages/components/header/sidebar/SideBar'
+
 import { useLocation } from 'react-router-dom'
 import ReactGA from 'react-ga4'
 import { CacheProvider } from '@emotion/react'
@@ -22,7 +22,8 @@ import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 import { LocalizationProvider } from '@mui/x-date-pickers'
 
 import RoutesList, { PAGES } from './routes'
-import MainHeader from './pages/components/header/Header'
+import MainHeader from './layout/header/Header'
+import SideBar from './layout/sidebar/SideBar'
 import LayoutContext from './layout/LayoutContext'
 import { EasterEgg } from './pages/EasterEgg/EasterEgg'
 const { Content } = Layout

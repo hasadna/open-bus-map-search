@@ -74,6 +74,31 @@ export const TEXT_KEYS = {
   migdal_company: 'migdal_company',
   and_smaller_donors: 'and_smaller_donors',
   gaps_patterns_page_title: 'gaps_patterns_page_title',
+  github_link: 'github_link',
+  bug_title: 'bug_title',
+  bug_title_message: 'bug_title_message',
+  bug_description: 'bug_description',
+  bug_description_message: 'bug_description_message',
+  bug_environment: 'bug_environment',
+  bug_environment_message: 'bug_environment_message',
+  bug_expected_behavior: 'bug_expected_behavior',
+  bug_expected_behavior_message: 'bug_expected_behavior_message',
+  bug_actual_behavior: 'bug_actual_behavior',
+  bug_actual_behavior_message: 'bug_actual_behavior_message',
+  bug_reproducibility: 'bug_reproducibility',
+  bug_reproducibility_message: 'bug_reproducibility_message',
+  bug_attachments: 'bug_attachments',
+  bug_attachments_upload_button: 'bug_attachments_upload_button',
+  bug_submit: 'bug_submit',
+  bug_contact_name: 'bug_contact_name',
+  bug_contact_name_message: 'bug_contact_name_message',
+  bug_contact_email: 'bug_contact_email',
+  bug_contact_email_message: 'bug_contact_email_message',
+  bug_form_description: 'bug_form_description',
+  bug_type: 'bug_type',
+  bug_type_message: 'bug_type_message',
+  bug_type_bug: 'bug_type_bug',
+  bug_type_feature: 'bug_type_feature',
 }
 
 export const TEXTS = {
@@ -117,7 +142,7 @@ export const TEXTS = {
   dashboard_tooltip_content:
     'על כל קו בישראל מוצמד GPS שמדווח את מיקום האוטובוס כל כמה רגעים.\n' +
     'אז מה היא נסיעה שלא בוצעה? זאת נסיעה שתוכננה, אבל לא דווח שיצאה בנתוני הGPS. תוכלו לראות אותה באפליקציה למשל, אבל כשתחכו בתחנה, היא לעולם לא תגיע',
-  worst_lines_page_title: 'הקווים הגרועים ביותר של 5 המפעילות הגדולות',
+  worst_lines_page_title: 'הקווים הגרועים ביותר',
   rides_planned: 'נסיעות שתוכננו',
   rides_actual: 'נסיעות שיצאו',
   dashboard_page_graph_title_day: 'אחוזי יציאה מסך הנסיעות לפי יום',
@@ -179,6 +204,7 @@ export const TEXTS = {
   show_document: 'הצג מידע לגיקים',
   bearing: 'מעלות',
   kmh: 'קמ״ש',
+  github_link: 'github_link',
 }
 
 export const formatted = (text: string, value: string) => text.replace(PLACEHOLDER, value)

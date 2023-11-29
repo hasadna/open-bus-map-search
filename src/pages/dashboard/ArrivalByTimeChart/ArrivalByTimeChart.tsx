@@ -10,6 +10,7 @@ import {
 } from 'recharts'
 
 import './ArrivalByTimeChats.scss'
+import { useMemo } from 'react'
 
 const arrayGroup = function <T>(array: T[], f: (item: T) => string) {
   const groups: Record<string, T[]> = {}
@@ -25,6 +26,7 @@ const arrayGroup = function <T>(array: T[], f: (item: T) => string) {
 
 export default function ArrivalByTimeChart({
   data,
+  operatorId,
 }: {
   data: {
     id: string
@@ -35,7 +37,12 @@ export default function ArrivalByTimeChart({
     gtfs_route_date: string
     gtfs_route_hour: string
   }[]
+  operatorId: string
 }) {
+  data = useMemo(
+    () => data.filter((item) => !operatorId || item.id === operatorId),
+    [data, operatorId],
+  )
   return (
     <div className="chart">
       {arrayGroup(data, (item) => item.id)
@@ -46,7 +53,7 @@ export default function ArrivalByTimeChart({
             <ResponsiveContainer width="100%" height={300}>
               <LineChart
                 data={group
-                  .sort((a, b) => (a.gtfs_route_date > b.gtfs_route_date ? 1 : -1))
+                  .sort((a, b) => (a.gtfs_route_date < b.gtfs_route_date ? 1 : -1))
                   .sort((a, b) => (a.gtfs_route_hour > b.gtfs_route_hour ? 1 : -1))}
                 margin={{
                   top: 5,
@@ -55,7 +62,7 @@ export default function ArrivalByTimeChart({
                   bottom: 5,
                 }}>
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="gtfs_route_date" reversed={true} />
+                <XAxis dataKey="gtfs_route_date" />
                 <YAxis />
                 <Tooltip
                   content={({ payload }) =>

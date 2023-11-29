@@ -3,9 +3,9 @@ test.describe('About Page Tests', () => {
   test('can access about page by clicking `about` menu', async ({ page }) => {
     await page.goto('/')
     await page.getByText('אודות').click()
-    await expect(page).toHaveURL('http://localhost:3000/about')
-    const locator = await page.getByText('אודות')
-    await expect(locator).toHaveClass('menu-item active')
+    await expect(page).toHaveURL(/about/)
+    const locator = await page.locator('li').filter({ hasText: 'אודות' })
+    await expect(locator).toHaveClass(/menu-item-selected/)
   })
   test('page display title `מהו אתר “דאטאבוס”?`', async ({ page }) => {
     await page.goto('/about')

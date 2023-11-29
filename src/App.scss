@@ -1,14 +1,9 @@
 // import hebbo:
 @import 'https://fonts.googleapis.com/css?family=Heebo:400,500,700&display=swap';
 @import './resources/variables.scss';
+@import './shared/shared.css';
 
 .main {
     flex-direction: row;
     font-family: Heebo;
-
-    > .sidebar {
-        height: 100vh;
-        background-color: white;
-        padding: 10px;     
-    }
 }

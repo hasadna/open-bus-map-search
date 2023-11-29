@@ -3,6 +3,8 @@
 ## Welcome!
 This is the official repository of the open bus (תחב"צ פתוחה) project - also known as "ShameBus".
 [link to the project](https://open-bus-map-search.hasadna.org.il/dashboard)
+- While in the site, type "storybook" (in lowercase) to see a secret 😉
+
 Please feel free to submit pull requests and contribute to the project (see the "contribution" section).
 
 ## View video (Hebrew language):
@@ -44,7 +46,7 @@ Thanks for your willingness to invest time and help us improve!
 1. If you're new to GitHub, here is a [tutorial describing Pull Requests](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request). if you're familiarized with Merge Requests - it's the same concept.
 2. Please make sure that the project works on your computer
 3. Please tag one of the maintainers as reviewers
-we're here to help! feel free to join our [Slack channel](http://hasadna.slack.com ) 
+we're here to help! feel free to join our [Slack channel](https://join.slack.com/t/hasadna/shared_invite/zt-21qipktl1-7yF4FYJVxAqXl0wE4DlMKQ) 
 
 ## Related Repositories 
 - the API client

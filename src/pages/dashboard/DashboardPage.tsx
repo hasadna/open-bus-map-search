@@ -162,7 +162,10 @@ const DashboardPage = () => {
             {loadingGrap ? (
               <Skeleton active />
             ) : (
-              <ArrivalByTimeChart data={convertToGraphCompatibleStruct(graphData)} />
+              <ArrivalByTimeChart
+                data={convertToGraphCompatibleStruct(graphData)}
+                operatorId={operatorId}
+              />
             )}
           </div>
         </Grid>
