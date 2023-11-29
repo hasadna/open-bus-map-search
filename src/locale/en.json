@@ -93,8 +93,6 @@
   "bug_type":"Type of request",
   "bug_type_message":"Please enter the type of request",
   "bug_type_bug":"Bug",
-  "bug_type_feature":"Feature Request"
-
-
-
+  "bug_type_feature":"Feature Request",
+  "funding_paragraph": "The Databus project is developed by the Hasadna for public knowledge, by the contributions of volunteers, and based upon"
 }
