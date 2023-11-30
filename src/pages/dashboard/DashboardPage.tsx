@@ -4,15 +4,16 @@ import { PageContainer } from '../components/PageContainer'
 import OperatorHbarChart from './OperatorHbarChart/OperatorHbarChart'
 import './DashboardPage.scss'
 import { TEXTS } from 'src/resources/texts'
-import ArrivalByTimeChart from './ArrivalByTimeChart/ArrivalByTimeChart'
 import moment from 'moment'
 import LinesHbarChart from './LineHbarChart/LinesHbarChart'
 import { Tooltip } from '@mui/material'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
 import { useDate } from '../components/DateTimePicker'
-import { Skeleton, Radio, RadioChangeEvent } from 'antd'
+import { Skeleton, Typography } from 'antd'
 import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
 import { DateSelector } from '../components/DateSelector'
+import DayTimeChart from './ArrivalByTimeChart/DayTimeChart'
+const { Title } = Typography
 
 const now = moment()
 
@@ -37,49 +38,30 @@ const convertToWorstLineChartCompatibleStruct = (arr: GroupByRes[], operatorId: 
       actual: item.total_actual_rides,
     }))
 }
-const convertToGraphCompatibleStruct = (arr: GroupByRes[]) => {
-  return arr.map((item: GroupByRes) => ({
-    id: item.operator_ref?.agency_id || 'Unknown',
-    name: item.operator_ref?.agency_name || 'Unknown',
-    current: item.total_actual_rides,
-    max: item.total_planned_rides,
-    percent: (item.total_actual_rides / item.total_planned_rides) * 100,
-    gtfs_route_date: item.gtfs_route_date,
-    gtfs_route_hour: item.gtfs_route_hour,
-  }))
-}
 
 const DashboardPage = () => {
   const [startDate, setStartDate] = useDate(now.clone().subtract(7, 'days'))
   const [endDate, setEndDate] = useDate(now.clone().subtract(1, 'day'))
-  const [groupByHour, setGroupByHour] = React.useState<boolean>(false)
-
   const [operatorId, setOperatorId] = useState('')
   const [groupByOperatorData, groupByOperatorLoading] = useGroupBy({
     dateTo: endDate,
     dateFrom: startDate,
     groupBy: 'operator_ref',
   })
-
   const [groupByLineData, lineDataLoading] = useGroupBy({
     dateTo: endDate,
     dateFrom: startDate,
     groupBy: 'operator_ref,line_ref',
   })
 
-  const [graphData, loadingGrap] = useGroupBy({
-    dateTo: endDate,
-    dateFrom: startDate,
-    groupBy: groupByHour ? 'operator_ref,gtfs_route_hour' : 'operator_ref,gtfs_route_date',
-  })
-
   return (
     <PageContainer>
+      <Title level={3}>ביצועי תחבורה ציבורית</Title>
       <Grid
         container
         spacing={2}
         alignItems="center"
-        sx={{ marginTop: '20px' }}
+        sx={{ marginTop: '0px' }}
         justifyContent="space-between">
         <Grid lg={6} xs={12} container spacing={2} alignItems="center">
           <Grid xs={6}>
@@ -146,28 +128,7 @@ const DashboardPage = () => {
           </div>
         </Grid>
         <Grid xs={12}>
-          <div className="widget">
-            <h2 className="title">
-              {groupByHour
-                ? TEXTS.dashboard_page_graph_title_hour
-                : TEXTS.dashboard_page_graph_title_day}
-            </h2>
-            <Radio.Group
-              style={{ marginBottom: '10px' }}
-              onChange={(e: RadioChangeEvent) => setGroupByHour(e.target.value === 'byHour')}
-              defaultValue="byDay">
-              <Radio.Button value="byDay">{TEXTS.group_by_day_tooltip_content}</Radio.Button>
-              <Radio.Button value="byHour">{TEXTS.group_by_hour_tooltip_content}</Radio.Button>
-            </Radio.Group>
-            {loadingGrap ? (
-              <Skeleton active />
-            ) : (
-              <ArrivalByTimeChart
-                data={convertToGraphCompatibleStruct(graphData)}
-                operatorId={operatorId}
-              />
-            )}
-          </div>
+          <DayTimeChart />
         </Grid>
       </Grid>
     </PageContainer>
