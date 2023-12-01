@@ -45,7 +45,7 @@ const RouteSelector = ({ routes, routeKey, setRouteKey }: RouteSelectorProps) =>
       renderInput={(params) => (
         <TextField {...params} label={formatted(TEXTS.choose_route, routes.length.toString())} />
       )}
-      getOptionLabel={(routes) => getRouteTitle(routes, t)}
+      getOptionLabel={(route) => getRouteTitle(route, t)}
     />
   )
 }
