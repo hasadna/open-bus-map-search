@@ -26,6 +26,7 @@ import {
   ComposedChart,
   Cell,
   TooltipProps,
+  ResponsiveContainer,
 } from 'recharts'
 import { mapColorByExecution } from '../components/utils'
 import { useGapsList } from '../useGapsList'
@@ -86,53 +87,54 @@ function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatistic
               <Radio.Button value="hour">{TEXTS.order_by_hour}</Radio.Button>
               <Radio.Button value="severity">{TEXTS.order_by_severity} </Radio.Button>
             </Radio.Group>
-
-            <ComposedChart
-              layout="vertical"
-              width={500}
-              height={hourlyData.length * 50}
-              data={hourlyData}
-              margin={{
-                top: 20,
-                right: 20,
-                bottom: 20,
-                left: 20,
-              }}
-              barGap={-20}>
-              <CartesianGrid stroke="#f5f5f5" />
-              <XAxis
-                type="number"
-                xAxisId={0}
-                reversed={true}
-                orientation={'top'}
-                domain={[0, maxHourlyRides]}
-              />
-              <XAxis
-                type="number"
-                xAxisId={1}
-                reversed={true}
-                orientation={'top'}
-                domain={[0, maxHourlyRides]}
-                hide
-              />
-              <YAxis
-                dataKey="planned_hour"
-                type="category"
-                orientation={'right'}
-                style={{ direction: 'ltr', marginTop: '-10px' }}
-              />
-              <Tooltip content={<CustomTooltip />} />
-              <Legend />
-              <Bar dataKey="actual_rides" barSize={20} radius={9} xAxisId={1} opacity={30}>
-                {hourlyData.map((entry, index) => (
-                  <Cell
-                    key={`cell-${index}`}
-                    fill={mapColorByExecution(entry.planned_rides, entry.actual_rides)}
-                  />
-                ))}
-              </Bar>
-              <Bar dataKey="planned_rides" barSize={20} fill="#413ea055" radius={9} xAxisId={0} />
-            </ComposedChart>
+            <ResponsiveContainer width="100%" height={hourlyData.length * 50}>
+              <ComposedChart
+                layout="vertical"
+                width={500}
+                height={hourlyData.length * 50}
+                data={hourlyData}
+                margin={{
+                  top: 20,
+                  right: 20,
+                  bottom: 20,
+                  left: 20,
+                }}
+                barGap={-20}>
+                <CartesianGrid stroke="#f5f5f5" />
+                <XAxis
+                  type="number"
+                  xAxisId={0}
+                  reversed={true}
+                  orientation={'top'}
+                  domain={[0, maxHourlyRides]}
+                />
+                <XAxis
+                  type="number"
+                  xAxisId={1}
+                  reversed={true}
+                  orientation={'top'}
+                  domain={[0, maxHourlyRides]}
+                  hide
+                />
+                <YAxis
+                  dataKey="planned_hour"
+                  type="category"
+                  orientation={'right'}
+                  style={{ direction: 'ltr', marginTop: '-10px' }}
+                />
+                <Tooltip content={<CustomTooltip />} />
+                <Legend />
+                <Bar dataKey="actual_rides" barSize={20} radius={9} xAxisId={1} opacity={30}>
+                  {hourlyData.map((entry, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={mapColorByExecution(entry.planned_rides, entry.actual_rides)}
+                    />
+                  ))}
+                </Bar>
+                <Bar dataKey="planned_rides" barSize={20} fill="#413ea055" radius={9} xAxisId={0} />
+              </ComposedChart>
+            </ResponsiveContainer>
           </>
         )}
       </div>
