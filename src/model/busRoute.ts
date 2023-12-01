@@ -11,6 +11,7 @@ export type BusRoute = {
   direction: string
   routeIds: number[]
   lineRef: number
+  routeAlternative: string
 }
 
 export function fromGtfsRoute(gtfsRoute: GtfsRoutePydanticModel): BusRoute {
@@ -26,5 +27,6 @@ export function fromGtfsRoute(gtfsRoute: GtfsRoutePydanticModel): BusRoute {
     direction: gtfsRoute.routeDirection!,
     routeIds: [gtfsRoute.id],
     lineRef: gtfsRoute.lineRef,
+    routeAlternative: gtfsRoute.routeAlternative!,
   }
 }
