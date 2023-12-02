@@ -25,6 +25,7 @@ export async function getRoutesAsync(
   })
   const routes = Object.values(
     gtfsRoutes
+      .filter((route) => route.date.getDate() === toTimestamp.date())
       .map((route) => fromGtfsRoute(route))
       .reduce((agg, line) => {
         const groupByKey = line.key

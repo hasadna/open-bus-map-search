@@ -1,7 +1,6 @@
 import { TEXT_KEYS } from 'src/resources/texts'
 import { Navigate, Route, Routes } from 'react-router-dom'
-
-import React, { lazy, Suspense } from 'react'
+import { lazy, Suspense } from 'react'
 const DashboardPage = lazy(() => import('../pages/dashboard/DashboardPage'))
 const TimelinePage = lazy(() => import('../pages/TimelinePage'))
 const GapsPage = lazy(() => import('../pages/GapsPage'))
@@ -10,6 +9,7 @@ const RealtimeMapPage = lazy(() => import('../pages/RealtimeMapPage'))
 const SingleLineMapPage = lazy(() => import('../pages/SingleLineMapPage'))
 const About = lazy(() => import('../pages/About'))
 const Profile = lazy(() => import('../pages/Profile'))
+const BugReportForm = lazy(() => import('../pages/BugReportForm '))
 import CircularProgress from '@mui/material/CircularProgress'
 
 import {
@@ -72,9 +72,9 @@ export const PAGES = [
   },
   {
     label: TEXT_KEYS.report_a_bug_title,
-    path: 'https://github.com/hasadna/open-bus-map-search/issues',
+    path: 'report-a-bug',
     icon: <BugOutlined />,
-    element: null,
+    element: <BugReportForm />,
   },
   {
     label: TEXT_KEYS.donate_title,

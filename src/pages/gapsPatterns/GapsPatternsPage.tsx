@@ -26,6 +26,7 @@ import {
   ComposedChart,
   Cell,
   TooltipProps,
+  ResponsiveContainer,
 } from 'recharts'
 import { mapColorByExecution } from '../components/utils'
 import { useGapsList } from '../useGapsList'
@@ -86,53 +87,54 @@ function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatistic
               <Radio.Button value="hour">{TEXTS.order_by_hour}</Radio.Button>
               <Radio.Button value="severity">{TEXTS.order_by_severity} </Radio.Button>
             </Radio.Group>
-
-            <ComposedChart
-              layout="vertical"
-              width={500}
-              height={hourlyData.length * 50}
-              data={hourlyData}
-              margin={{
-                top: 20,
-                right: 20,
-                bottom: 20,
-                left: 20,
-              }}
-              barGap={-20}>
-              <CartesianGrid stroke="#f5f5f5" />
-              <XAxis
-                type="number"
-                xAxisId={0}
-                reversed={true}
-                orientation={'top'}
-                domain={[0, maxHourlyRides]}
-              />
-              <XAxis
-                type="number"
-                xAxisId={1}
-                reversed={true}
-                orientation={'top'}
-                domain={[0, maxHourlyRides]}
-                hide
-              />
-              <YAxis
-                dataKey="planned_hour"
-                type="category"
-                orientation={'right'}
-                style={{ direction: 'ltr', marginTop: '-10px' }}
-              />
-              <Tooltip content={<CustomTooltip />} />
-              <Legend />
-              <Bar dataKey="actual_rides" barSize={20} radius={9} xAxisId={1} opacity={30}>
-                {hourlyData.map((entry, index) => (
-                  <Cell
-                    key={`cell-${index}`}
-                    fill={mapColorByExecution(entry.planned_rides, entry.actual_rides)}
-                  />
-                ))}
-              </Bar>
-              <Bar dataKey="planned_rides" barSize={20} fill="#413ea055" radius={9} xAxisId={0} />
-            </ComposedChart>
+            <ResponsiveContainer width="100%" height={hourlyData.length * 50}>
+              <ComposedChart
+                layout="vertical"
+                width={500}
+                height={hourlyData.length * 50}
+                data={hourlyData}
+                margin={{
+                  top: 20,
+                  right: 20,
+                  bottom: 20,
+                  left: 20,
+                }}
+                barGap={-20}>
+                <CartesianGrid stroke="#f5f5f5" />
+                <XAxis
+                  type="number"
+                  xAxisId={0}
+                  reversed={true}
+                  orientation={'top'}
+                  domain={[0, maxHourlyRides]}
+                />
+                <XAxis
+                  type="number"
+                  xAxisId={1}
+                  reversed={true}
+                  orientation={'top'}
+                  domain={[0, maxHourlyRides]}
+                  hide
+                />
+                <YAxis
+                  dataKey="planned_hour"
+                  type="category"
+                  orientation={'right'}
+                  style={{ direction: 'ltr', marginTop: '-10px' }}
+                />
+                <Tooltip content={<CustomTooltip />} />
+                <Legend />
+                <Bar dataKey="actual_rides" barSize={20} radius={9} xAxisId={1} opacity={30}>
+                  {hourlyData.map((entry, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={mapColorByExecution(entry.planned_rides, entry.actual_rides)}
+                    />
+                  ))}
+                </Bar>
+                <Bar dataKey="planned_rides" barSize={20} fill="#413ea055" radius={9} xAxisId={0} />
+              </ComposedChart>
+            </ResponsiveContainer>
           </>
         )}
       </div>
@@ -170,19 +172,27 @@ const GapsPatternsPage = () => {
   return (
     <PageContainer>
       <Grid container spacing={2} alignItems="center" sx={{ maxWidth: INPUT_SIZE }}>
-        <Grid xs={4}>
+        <Grid sm={4} className="hideOnMobile">
           <Label text={TEXTS.choose_dates} />
         </Grid>
-        <Grid container spacing={2} xs={8} alignItems="center" justifyContent="space-between">
-          <Grid xs={5.7}>
+        <Grid
+          container
+          spacing={2}
+          xs={12}
+          sm={8}
+          alignItems="center"
+          justifyContent="space-between">
+          <Grid xs={6} sm={5.7}>
             <DateSelector
               time={startDate}
               onChange={(data) => setStartDate(data)}
               customLabel={TEXTS.start}
             />
           </Grid>
-          <Grid xs={0.1}>-</Grid>
-          <Grid xs={5.7}>
+          <Grid xs={0.1} className="hideOnMobile">
+            -
+          </Grid>
+          <Grid xs={6} sm={5.7}>
             <DateSelector
               time={endDate}
               onChange={(data) => setEndDate(data)}
@@ -191,19 +201,19 @@ const GapsPatternsPage = () => {
           </Grid>
         </Grid>
 
-        <Grid xs={4}>
+        <Grid xs={4} className="hideOnMobile">
           <Label text={TEXTS.choose_operator} />
         </Grid>
-        <Grid xs={8}>
+        <Grid xs={12} sm={8}>
           <OperatorSelector
             operatorId={operatorId}
             setOperatorId={(id) => setSearch((current) => ({ ...current, operatorId: id }))}
           />
         </Grid>
-        <Grid xs={4}>
+        <Grid xs={4} className="hideOnMobile">
           <Label text={TEXTS.choose_line} />
         </Grid>
-        <Grid xs={8}>
+        <Grid xs={12} sm={8}>
           <LineNumberSelector
             lineNumber={lineNumber}
             setLineNumber={(number) => setSearch((current) => ({ ...current, lineNumber: number }))}

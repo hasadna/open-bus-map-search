@@ -55,7 +55,7 @@ const MainMenu = () => {
       <Menu
         onClick={handleClick}
         theme="light"
-        defaultSelectedKeys={[current]}
+        selectedKeys={[current]}
         mode="inline"
         items={items}
       />
