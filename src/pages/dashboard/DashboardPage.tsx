@@ -1,30 +1,28 @@
-import React, { Fragment, useState } from 'react'
+import { useState } from 'react'
+
+// Services and libraries
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
-import { PageContainer } from '../components/PageContainer'
-import OperatorHbarChart from './OperatorHbarChart/OperatorHbarChart'
-import './DashboardPage.scss'
-import { TEXTS } from 'src/resources/texts'
-import moment from 'moment'
-import LinesHbarChart from './LineHbarChart/LinesHbarChart'
-import { Tooltip } from '@mui/material'
-import OperatorSelector from 'src/pages/components/OperatorSelector'
+import { DateSelector } from '../components/DateSelector'
 import { useDate } from '../components/DateTimePicker'
+import moment from 'moment'
+
+// Styling
+import './DashboardPage.scss'
+import { PageContainer } from '../components/PageContainer'
+import { TEXTS } from 'src/resources/texts'
 import { Skeleton, Typography } from 'antd'
 import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
-import { DateSelector } from '../components/DateSelector'
-import DayTimeChart from './ArrivalByTimeChart/DayTimeChart'
-const { Title } = Typography
 
+// Components
+import OperatorSelector from 'src/pages/components/OperatorSelector'
+import LinesHbarChart from './LineHbarChart/LinesHbarChart'
+import DayTimeChart from './ArrivalByTimeChart/DayTimeChart'
+import AllLinesChart from './AllLineschart/AllLinesChart'
+
+// Declarations
+const { Title } = Typography
 const now = moment()
 
-const convertToChartCompatibleStruct = (arr: GroupByRes[]) => {
-  return arr.map((item: GroupByRes) => ({
-    id: item.operator_ref?.agency_id || 'Unknown',
-    name: item.operator_ref?.agency_name || 'Unknown',
-    total: item.total_planned_rides,
-    actual: item.total_actual_rides,
-  }))
-}
 const convertToWorstLineChartCompatibleStruct = (arr: GroupByRes[], operatorId: string) => {
   if (!arr || !arr.length) return []
   return arr
@@ -43,11 +41,6 @@ const DashboardPage = () => {
   const [startDate, setStartDate] = useDate(now.clone().subtract(7, 'days'))
   const [endDate, setEndDate] = useDate(now.clone().subtract(1, 'day'))
   const [operatorId, setOperatorId] = useState('')
-  const [groupByOperatorData, groupByOperatorLoading] = useGroupBy({
-    dateTo: endDate,
-    dateFrom: startDate,
-    groupBy: 'operator_ref',
-  })
   const [groupByLineData, lineDataLoading] = useGroupBy({
     dateTo: endDate,
     dateFrom: startDate,
@@ -90,22 +83,7 @@ const DashboardPage = () => {
       </Grid>
       <Grid container spacing={2} alignItems="flex-start">
         <Grid xs={12} lg={6}>
-          <div className="widget">
-            <h2 className="title">
-              {TEXTS.dashboard_page_title}
-              <Tooltip
-                title={convertLineFeedToHtmlTags(TEXTS.dashboard_tooltip_content)}
-                placement="left"
-                arrow>
-                <span className="tooltip-icon">i</span>
-              </Tooltip>
-            </h2>
-            {groupByOperatorLoading ? (
-              <Skeleton active />
-            ) : (
-              <OperatorHbarChart operators={convertToChartCompatibleStruct(groupByOperatorData)} />
-            )}
-          </div>
+          <AllLinesChart startDate={startDate} endDate={endDate} />
         </Grid>
         <Grid xs={12} display={{ xs: 'block', lg: 'none' }}>
           <OperatorSelector
@@ -133,15 +111,6 @@ const DashboardPage = () => {
       </Grid>
     </PageContainer>
   )
-}
-
-function convertLineFeedToHtmlTags(srt: string): React.ReactNode {
-  return srt.split('\n').map((row, i) => (
-    <Fragment key={i}>
-      {row}
-      <br />
-    </Fragment>
-  ))
 }
 
 export default DashboardPage
