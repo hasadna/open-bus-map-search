@@ -1,4 +1,5 @@
 import { TEXT_KEYS } from 'src/resources/texts'
+// import { useTranslation } from 'react-i18next'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { lazy, Suspense } from 'react'
 const DashboardPage = lazy(() => import('../pages/dashboard/DashboardPage'))
