@@ -1,10 +1,9 @@
-import React from 'react'
+import React, { FC } from 'react'
 import { TEXTS } from 'src/resources/texts'
 import { Skeleton, Radio, RadioChangeEvent } from 'antd'
 import ArrivalByTimeChart from './ArrivalByTimeChart'
-import { useDate } from 'src/pages/components/DateTimePicker'
-import moment from 'moment'
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
+import { Moment } from 'moment/moment'
 
 const convertToGraphCompatibleStruct = (arr: GroupByRes[]) => {
   return arr.map((item: GroupByRes) => ({
@@ -17,13 +16,16 @@ const convertToGraphCompatibleStruct = (arr: GroupByRes[]) => {
     gtfs_route_hour: item.gtfs_route_hour,
   }))
 }
-const now = moment()
-const DayTimeChart = () => {
-  const [startDate] = useDate(now.clone().subtract(7, 'days'))
-  const [endDate] = useDate(now.clone().subtract(1, 'day'))
+
+interface DayTimeChartProps {
+  startDate: Moment
+  endDate: Moment
+}
+
+const DayTimeChart: FC<DayTimeChartProps> = ({ startDate, endDate }) => {
   const [groupByHour, setGroupByHour] = React.useState<boolean>(false)
 
-  const [graphData, loadingGrap] = useGroupBy({
+  const [graphData, loadingGraph] = useGroupBy({
     dateTo: endDate,
     dateFrom: startDate,
     groupBy: groupByHour ? 'operator_ref,gtfs_route_hour' : 'operator_ref,gtfs_route_date',
@@ -41,7 +43,7 @@ const DayTimeChart = () => {
         <Radio.Button value="byDay">{TEXTS.group_by_day_tooltip_content}</Radio.Button>
         <Radio.Button value="byHour">{TEXTS.group_by_hour_tooltip_content}</Radio.Button>
       </Radio.Group>
-      {loadingGrap ? (
+      {loadingGraph ? (
         <Skeleton active />
       ) : (
         <ArrivalByTimeChart data={convertToGraphCompatibleStruct(graphData)} operatorId={''} />
