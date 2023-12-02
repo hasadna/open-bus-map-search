@@ -8,6 +8,7 @@ const GapsPatternsPage = lazy(() => import('../pages/gapsPatterns'))
 const RealtimeMapPage = lazy(() => import('../pages/RealtimeMapPage'))
 const SingleLineMapPage = lazy(() => import('../pages/SingleLineMapPage'))
 const About = lazy(() => import('../pages/About'))
+const Profile = lazy(() => import('../pages/Profile'))
 const BugReportForm = lazy(() => import('../pages/BugReportForm '))
 import CircularProgress from '@mui/material/CircularProgress'
 
@@ -92,6 +93,7 @@ const RoutesList = () => {
         {routes.map(({ path, element }) => (
           <Route key={path} path={path} element={element} />
         ))}
+        <Route path="/profile" element={<Profile />} />
         <Route path="*" element={<RedirectToDashboard />} />
       </Routes>
     </Suspense>
