@@ -34,7 +34,7 @@
   "ride_extra": "🧐 An unplanned trip",
   "ride_duped": "❇️ Double ride",
   "checkbox_only_gaps": "Only gaps",
-  "dashboard_page_title": "Public transport operators according to planned trips",
+  "dashboard_page_title": "Public transport operators - overview",
   "dashboard_tooltip_content": "A GPS is attached to every line in Israel that reports the location of the bus every few moments.\nSo what is a missed trip? This is a trip that was planned, but was not reported to have taken place in the GPS data. You can see it in the app for example, but when you wait at the station, it will never arrive",
   "worst_lines_page_title": "Least Efficient Lines",
   "rides_planned": "planned trips",
