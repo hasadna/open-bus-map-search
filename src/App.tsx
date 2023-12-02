@@ -19,7 +19,7 @@ import { ThemeProvider, createTheme } from '@mui/material'
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 import { LocalizationProvider } from '@mui/x-date-pickers'
 
-import { PAGES, getPages } from './routes'
+import { PAGES } from './routes'
 import { EasterEgg } from './pages/EasterEgg/EasterEgg'
 import MainLayout from './layout'
 
