@@ -1,4 +1,3 @@
-import { TEXT_KEYS } from 'src/resources/texts'
 import { useTranslation } from 'react-i18next'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { lazy, Suspense } from 'react'
@@ -87,66 +86,6 @@ export const usePages = () => {
     },
   ]
 }
-
-export const PAGES = [
-  {
-    label: TEXT_KEYS.dashboard_page_title,
-    path: '/dashboard',
-    icon: <LaptopOutlined />,
-    element: <DashboardPage />,
-  },
-  {
-    label: TEXT_KEYS.timeline_page_title,
-    path: '/timeline',
-    searchParamsRequired: true,
-    icon: <FieldTimeOutlined />,
-    element: <TimelinePage />,
-  },
-  {
-    label: TEXT_KEYS.gaps_page_title,
-    path: '/gaps',
-    searchParamsRequired: true,
-    icon: <BarChartOutlined />,
-    element: <GapsPage />,
-  },
-  {
-    label: TEXT_KEYS.gaps_patterns_page_title,
-    path: '/gaps_patterns',
-    icon: <LineChartOutlined />,
-    element: <GapsPatternsPage />,
-  },
-  {
-    label: TEXT_KEYS.realtime_map_page_title,
-    path: '/map',
-    icon: <HeatMapOutlined />,
-    element: <RealtimeMapPage />,
-  },
-  {
-    label: TEXT_KEYS.singleline_map_page_title,
-    path: '/single-line-map',
-    searchParamsRequired: true,
-    icon: <RadarChartOutlined />,
-    element: <SingleLineMapPage />,
-  },
-  {
-    label: TEXT_KEYS.about_title,
-    path: '/about',
-    icon: <BellOutlined />,
-    element: <About />,
-  },
-  {
-    label: TEXT_KEYS.report_a_bug_title,
-    path: 'report-a-bug',
-    icon: <BugOutlined />,
-    element: <BugReportForm />,
-  },
-  {
-    label: TEXT_KEYS.donate_title,
-    path: 'https://www.jgive.com/new/he/ils/donation-targets/3268#donation-modal',
-    icon: <DollarOutlined />,
-    element: null,
-  },
-]
 
 const RoutesList = () => {
   const pages = usePages()
