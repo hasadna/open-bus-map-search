@@ -17,7 +17,7 @@ async function fillDate(page: Page, twoDateElements: boolean = false) {
   } else {
     await page.getByLabel('בחירת תאריך').click()
   }
-  await page.getByRole('gridcell', { name: '2', exact: true }).first().click()
+  await page.getByRole('gridcell', { name: '1', exact: true }).first().click()
 }
 
 async function selectLineNumberAndRoute(page: Page, lineNumber: Locator, route: Locator) {
