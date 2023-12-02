@@ -19,7 +19,7 @@ import { ThemeProvider, createTheme } from '@mui/material'
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 import { LocalizationProvider } from '@mui/x-date-pickers'
 
-import { PAGES } from './routes'
+import { PAGES, getPages } from './routes'
 import { EasterEgg } from './pages/EasterEgg/EasterEgg'
 import MainLayout from './layout'
 
@@ -62,6 +62,7 @@ const App = () => {
   })
 
   useEffect(() => {
+    // const page = pages.find((page) => page.path === location.pathname)
     const page = PAGES.find((page) => page.path === location.pathname)
     if (page?.searchParamsRequired) {
       const params = new URLSearchParams({ timestamp: search.timestamp.toString() })

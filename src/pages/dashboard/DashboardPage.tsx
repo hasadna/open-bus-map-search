@@ -4,6 +4,7 @@ import { PageContainer } from '../components/PageContainer'
 import OperatorHbarChart from './OperatorHbarChart/OperatorHbarChart'
 import './DashboardPage.scss'
 import { TEXTS } from 'src/resources/texts'
+import { useTranslation } from 'react-i18next'
 import moment from 'moment'
 import LinesHbarChart from './LineHbarChart/LinesHbarChart'
 import { Tooltip } from '@mui/material'
@@ -40,6 +41,7 @@ const convertToWorstLineChartCompatibleStruct = (arr: GroupByRes[], operatorId: 
 }
 
 const DashboardPage = () => {
+  const { t } = useTranslation()
   const [startDate, setStartDate] = useDate(now.clone().subtract(7, 'days'))
   const [endDate, setEndDate] = useDate(now.clone().subtract(1, 'day'))
   const [operatorId, setOperatorId] = useState('')
