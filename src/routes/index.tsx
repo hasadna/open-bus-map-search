@@ -25,7 +25,7 @@ import {
   LineChartOutlined,
 } from '@ant-design/icons'
 
-export const getPages = () => {
+export const usePages = () => {
   const { t } = useTranslation()
   return [
     {
@@ -149,7 +149,7 @@ export const PAGES = [
 ]
 
 const RoutesList = () => {
-  const pages = getPages()
+  const pages = usePages()
   const RedirectToDashboard = () => <Navigate to={pages[0].path} replace />
   const routes = pages.filter((r) => r.element)
   return (
