@@ -1,5 +1,5 @@
-import { HbarChart } from '../HbarChart/HbarChart'
-import { getColorName } from '../OperatorHbarChart/OperatorHbarChart'
+import { HbarChart } from './HbarChart/HbarChart'
+import { getColorName } from '../../AllLineschart/OperatorHbarChart/OperatorHbarChart'
 
 function LinesHbarChart({
   lines,

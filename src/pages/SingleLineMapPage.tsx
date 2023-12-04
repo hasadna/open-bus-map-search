@@ -17,7 +17,7 @@ import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
 import './Map.scss'
 import getAgencyList, { Agency } from 'src/api/agencyList'
 import { VehicleLocation } from 'src/model/vehicleLocation'
-import { getColorByHashString } from './dashboard/OperatorHbarChart/utils'
+import { getColorByHashString } from './dashboard/AllLineschart/OperatorHbarChart/utils'
 import { DateSelector } from './components/DateSelector'
 import { CircularProgress } from '@mui/material'
 import { FilterPositionsByStartTimeSelector } from './components/FilterPositionsByStartTimeSelector'
