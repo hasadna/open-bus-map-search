@@ -1,6 +1,6 @@
 import './operatorsHbarChart.scss'
 import { getColorByHashString } from './utils'
-import { HbarChart } from '../HbarChart/HbarChart'
+import { HbarChart } from '../../WorstLinesChart/LineHbarChart/HbarChart/HbarChart'
 
 const colorsByCompannies: { [index: string]: string } = {
   'אגד תעבורה': '#2f9250',

@@ -1,6 +1,6 @@
 import { Skeleton } from 'antd'
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
-import LinesHbarChart from '../LineHbarChart/LinesHbarChart'
+import LinesHbarChart from './LineHbarChart/LinesHbarChart'
 import { TEXTS } from 'src/resources/texts'
 import { FC } from 'react'
 import { Moment } from 'moment/moment'
