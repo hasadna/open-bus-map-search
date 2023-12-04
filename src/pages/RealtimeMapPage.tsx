@@ -15,7 +15,7 @@ import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
 import { PageContainer } from './components/PageContainer'
 import { INPUT_SIZE } from 'src/resources/sizes'
 import { Label } from './components/Label'
-import { getColorByHashString } from './dashboard/OperatorHbarChart/utils'
+import { getColorByHashString } from './dashboard/AllLineschart/OperatorHbarChart/utils'
 import createClusterCustomIcon from './components/utils/customCluster/customCluster'
 import { TimeSelector } from './components/TimeSelector'
 import { busIcon, busIconPath } from './components/utils/BusIcon'
