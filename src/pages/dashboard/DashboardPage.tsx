@@ -76,7 +76,7 @@ const DashboardPage = () => {
           <WorstLinesChart startDate={startDate} endDate={endDate} operatorId={operatorId} />
         </Grid>
         <Grid xs={12}>
-          <DayTimeChart startDate={startDate} endDate={endDate} />
+          <DayTimeChart startDate={startDate} endDate={endDate} operatorId={operatorId} />
         </Grid>
       </Grid>
     </PageContainer>

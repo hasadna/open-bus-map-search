@@ -20,9 +20,10 @@ const convertToGraphCompatibleStruct = (arr: GroupByRes[]) => {
 interface DayTimeChartProps {
   startDate: Moment
   endDate: Moment
+  operatorId: string
 }
 
-const DayTimeChart: FC<DayTimeChartProps> = ({ startDate, endDate }) => {
+const DayTimeChart: FC<DayTimeChartProps> = ({ startDate, endDate, operatorId }) => {
   const [groupByHour, setGroupByHour] = React.useState<boolean>(false)
 
   const [graphData, loadingGraph] = useGroupBy({
@@ -46,7 +47,10 @@ const DayTimeChart: FC<DayTimeChartProps> = ({ startDate, endDate }) => {
       {loadingGraph ? (
         <Skeleton active />
       ) : (
-        <ArrivalByTimeChart data={convertToGraphCompatibleStruct(graphData)} operatorId={''} />
+        <ArrivalByTimeChart
+          data={convertToGraphCompatibleStruct(graphData)}
+          operatorId={operatorId}
+        />
       )}
     </div>
   )
