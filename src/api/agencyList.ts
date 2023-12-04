@@ -9,7 +9,7 @@ let json: Agency[]
 
 export default async function getAgencyList(): Promise<Agency[]> {
   if (!json) {
-    const response = await fetch(`${BASE_PATH}gtfs_agencies/list`)
+    const response = await fetch(`${BASE_PATH}/gtfs_agencies/list`)
     json = await response.json()
   }
 
