@@ -8,7 +8,7 @@ let json: Agency[]
 
 export default async function getAgencyList(): Promise<Agency[]> {
   if (!json) {
-    const response = await fetch(`${import.meta.env.VITE_API_URI}gtfs_agencies/list`)
+    const response = await fetch(`${import.meta.env.VITE_BASE_PATH}gtfs_agencies/list`)
     json = await response.json()
   }
 
