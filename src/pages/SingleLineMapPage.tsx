@@ -11,7 +11,7 @@ import { INPUT_SIZE } from 'src/resources/sizes'
 import { TEXTS } from 'src/resources/texts'
 import { SearchContext } from '../model/pageState'
 import { NotFound } from './components/NotFound'
-import { Point } from './RealtimeMapPage'
+import { Point } from './realTimeMap'
 
 import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
 import './Map.scss'
