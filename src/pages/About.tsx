@@ -112,8 +112,10 @@ const Funding = () => {
     <ParagraphStyle>
       <h2>{t('funding')}</h2>
       <div>
-        <p>{t('funding_paragraph')}</p>
-        <a href="https://open-bus-stride-api.hasadna.org.il/docs">Open API</a>
+        <p>
+          {t('funding_paragraph')}&nbsp;
+          <a href="https://open-bus-stride-api.hasadna.org.il/docs">Open API</a>
+        </p>
       </div>
       <ul>
         <li>{t('mr_meir')}</li>
