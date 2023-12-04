@@ -1,3 +1,4 @@
+import { BASE_PATH } from './apiConfig'
 export interface Agency {
   date: string // example - "2019-07-01"
   operator_ref: number // example - 25,
@@ -8,7 +9,7 @@ let json: Agency[]
 
 export default async function getAgencyList(): Promise<Agency[]> {
   if (!json) {
-    const response = await fetch(`${import.meta.env.VITE_BASE_PATH}gtfs_agencies/list`)
+    const response = await fetch(`${BASE_PATH}gtfs_agencies/list`)
     json = await response.json()
   }
 
