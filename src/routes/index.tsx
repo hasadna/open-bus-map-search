@@ -114,9 +114,15 @@ const RoutesList = () => {
     <Suspense fallback={<CircularProgress />}>
       <Routes>
         {routes.map(({ path, element, isProtected}) => (
-          <Route key={path} path={path} element={isProtected ? <ProtectedRoute>
+          <Route key={path} path={path} element=
+        {
+          isProtected ? 
+          <ProtectedRoute>
           element
-          </ProtectedRoute> : element} />
+          </ProtectedRoute> 
+          : 
+          element
+        } />
         ))}
         <Route path="/profile" element={<Profile />} />
         <Route path="*" element={<RedirectToDashboard />} />
