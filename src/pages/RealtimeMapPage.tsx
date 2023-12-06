@@ -3,7 +3,7 @@ import { MapContainer, Marker, Polyline, Popup, TileLayer, useMap } from 'react-
 import MarkerClusterGroup from 'react-leaflet-cluster'
 import { TEXTS } from 'src/resources/texts'
 
-import { Spin } from 'antd'
+import { Spin, Typography } from 'antd'
 import moment from 'moment'
 import getAgencyList, { Agency } from 'src/api/agencyList'
 import useVehicleLocations from 'src/api/useVehicleLocations'
@@ -20,6 +20,8 @@ import createClusterCustomIcon from './components/utils/customCluster/customClus
 import { TimeSelector } from './components/TimeSelector'
 import { busIcon, busIconPath } from './components/utils/BusIcon'
 import { BusToolTip } from 'src/pages/components/MapLayers/BusToolTip'
+
+const { Title } = Typography
 
 export interface Point {
   loc: [number, number]
@@ -90,15 +92,16 @@ export default function RealtimeMapPage() {
 
   return (
     <PageContainer className="map-container">
+      <Title level={3}>{TEXTS.realtime_map_explanation.slice(0, 25)}</Title>
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
-        <Grid xs={12}>
+        <Grid xs={12} className="hideOnMobile">
           <Label text={TEXTS.realtime_map_explanation} />
         </Grid>
         {/* from date */}
-        <Grid xs={2}>
+        <Grid xs={2} className="hideOnMobile">
           <Label text={TEXTS.from_date} />
         </Grid>
-        <Grid xs={5}>
+        <Grid sm={5} xs={6}>
           <DateSelector
             time={to}
             onChange={(ts) => {
@@ -108,7 +111,7 @@ export default function RealtimeMapPage() {
             }}
           />
         </Grid>
-        <Grid xs={5}>
+        <Grid sm={5} xs={6}>
           <TimeSelector
             time={to}
             onChange={(ts) => {
@@ -119,10 +122,10 @@ export default function RealtimeMapPage() {
           />
         </Grid>
         {/*minutes*/}
-        <Grid xs={5}>
+        <Grid sm={5} xs={12}>
           <Label text={TEXTS.watch_locations_in_range} />
         </Grid>
-        <Grid xs={6}>
+        <Grid sm={6} xs={12}>
           <MinuteSelector
             num={to.diff(from) / 1000 / 60}
             setNum={(num) => {
@@ -130,7 +133,7 @@ export default function RealtimeMapPage() {
             }}
           />
         </Grid>
-        <Grid xs={1}>
+        <Grid xs={1} className="hideOnMobile">
           <Label text={TEXTS.minutes} />
         </Grid>
         {/* Buttons */}
