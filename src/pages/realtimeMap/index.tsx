@@ -8,7 +8,7 @@ import moment from 'moment'
 import getAgencyList, { Agency } from 'src/api/agencyList'
 import useVehicleLocations from 'src/api/useVehicleLocations'
 import { VehicleLocation } from 'src/model/vehicleLocation'
-import './Map.scss'
+import '../Map.scss'
 import { DateSelector } from '../components/DateSelector'
 import MinuteSelector from '../components/MinuteSelector'
 import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
