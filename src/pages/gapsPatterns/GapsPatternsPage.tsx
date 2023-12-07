@@ -29,7 +29,7 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 import { mapColorByExecution } from '../components/utils'
-import { useGapsList } from '../useGapsList'
+import { useGapsList } from './useGapsList'
 import { DateSelector } from '../components/DateSelector'
 import { INPUT_SIZE } from 'src/resources/sizes'
 const { Title } = Typography

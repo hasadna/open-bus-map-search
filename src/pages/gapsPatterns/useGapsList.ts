@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Moment } from 'moment'
-import { getGapsAsync } from '../api/gapsService'
+import { getGapsAsync } from '../../api/gapsService'
 
-import { sortByMode, HourlyData } from './components/utils'
+import { sortByMode, HourlyData } from '../components/utils'
 import { GapsList } from 'src/model/gaps'
 
 type HourlyDataList = HourlyData[]
