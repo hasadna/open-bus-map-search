@@ -3,10 +3,10 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import { lazy, Suspense } from 'react'
 const DashboardPage = lazy(() => import('../pages/dashboard/DashboardPage'))
 const TimelinePage = lazy(() => import('../pages/TimelinePage'))
-const GapsPage = lazy(() => import('../pages/GapsPage'))
+const GapsPage = lazy(() => import('../pages/gaps'))
 const GapsPatternsPage = lazy(() => import('../pages/gapsPatterns'))
-const RealtimeMapPage = lazy(() => import('../pages/RealtimeMapPage'))
-const SingleLineMapPage = lazy(() => import('../pages/SingleLineMapPage'))
+const RealtimeMapPage = lazy(() => import('../pages/realtimeMap'))
+const SingleLineMapPage = lazy(() => import('../pages/singleLineMap'))
 const About = lazy(() => import('../pages/About'))
 const Profile = lazy(() => import('../pages/Profile'))
 const BugReportForm = lazy(() => import('../pages/BugReportForm '))
