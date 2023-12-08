@@ -1,4 +1,4 @@
-import { TEXTS } from 'src/resources/texts'
+import { useTranslation } from 'react-i18next'
 import { Autocomplete, TextField } from '@mui/material'
 
 type FilterPositionsByStartTimeSelectorProps = {
@@ -18,6 +18,8 @@ export function FilterPositionsByStartTimeSelector({
   const valueFinned = options.find((option) => option.value === startTime)
   const value = valueFinned ? valueFinned : null
 
+  const { t } = useTranslation()
+
   return (
     <Autocomplete
       sx={{ width: '100%' }}
@@ -26,7 +28,7 @@ export function FilterPositionsByStartTimeSelector({
       onChange={(e, value) => setStartTime(value ? value.value : '0')}
       id="start-time-select"
       options={options}
-      renderInput={(params) => <TextField {...params} label={TEXTS.choose_start_time} />}
+      renderInput={(params) => <TextField {...params} label={t('choose_start_time')} />}
       getOptionLabel={(option) => option.label}
     />
   )
