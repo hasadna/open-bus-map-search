@@ -10,7 +10,6 @@ const SingleLineMapPage = lazy(() => import('../pages/singleLineMap'))
 const About = lazy(() => import('../pages/About'))
 const Profile = lazy(() => import('../pages/Profile'))
 const BugReportForm = lazy(() => import('../pages/BugReportForm '))
-import CircularProgress from '@mui/material/CircularProgress'
 
 import {
   RadarChartOutlined,
@@ -23,6 +22,7 @@ import {
   BarChartOutlined,
   LineChartOutlined,
 } from '@ant-design/icons'
+import Preloader from 'src/shared/Preloader'
 
 export const usePages = () => {
   const { t } = useTranslation()
@@ -92,7 +92,7 @@ const RoutesList = () => {
   const RedirectToDashboard = () => <Navigate to={pages[0].path} replace />
   const routes = pages.filter((r) => r.element)
   return (
-    <Suspense fallback={<CircularProgress />}>
+    <Suspense fallback={<Preloader />}>
       <Routes>
         {routes.map(({ path, element }) => (
           <Route key={path} path={path} element={element} />
