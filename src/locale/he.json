@@ -95,5 +95,7 @@
   "bug_type_bug": "באג",
   "bug_type_feature": "בקשה לפיתוח",
   "funding_paragraph": "דאטאבוס פותח בסדנא לידע ציבורי, בעבודת מתנדבים, ומבוסס על",
-  "halufa_ride": "נסיעה חלופית מס"
+  "halufa_ride": "נסיעה חלופית מס",
+  "all_rides_completed": "כמעט / כל הנסיעות בוצעו",
+  "missing_rides": "מהנסיעות חסרות"
 }
