@@ -7,6 +7,7 @@ import './BusToolTip.scss'
 import { getSiriRideWithRelated } from 'src/api/siriService'
 import { SiriRideWithRelatedPydanticModel } from 'open-bus-stride-client/openapi/models/SiriRideWithRelatedPydanticModel'
 import { TEXTS } from 'src/resources/texts'
+import { useTranslation } from 'react-i18next'
 import { Spin } from 'antd'
 import cn from 'classnames'
 
@@ -16,6 +17,7 @@ export function BusToolTip({ position, icon }: BusToolTipProps) {
   const [siriRide, setSiriRide] = useState<SiriRideWithRelatedPydanticModel | undefined>()
   const [isLoading, setIsLoading] = useState(false)
   const [showJson, setShowJson] = useState(false)
+  const { t } = useTranslation()
 
   useEffect(() => {
     setIsLoading(true)

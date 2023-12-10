@@ -1,4 +1,3 @@
-import { TEXTS } from 'src/resources/texts'
 import { useTranslation } from 'react-i18next'
 import { TimePicker, renderTimeViewClock } from '@mui/x-date-pickers'
 import { DataAndTimeSelectorProps } from './utils/dateAndTime'
