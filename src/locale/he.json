@@ -97,5 +97,17 @@
   "funding_paragraph": "דאטאבוס פותח בסדנא לידע ציבורי, בעבודת מתנדבים, ומבוסס על",
   "halufa_ride": "נסיעה חלופית מס",
   "all_rides_completed": "כמעט / כל הנסיעות בוצעו",
-  "missing_rides": "מהנסיעות חסרות"
+  "missing_rides": "מהנסיעות חסרות",
+  "line": "קו",
+  "from": "מוצא",
+  "destination": "יעד",
+  "velocity": "מהירות",
+  "kmh": "קמ״ש",
+  "sample_time": "זמן דגימה",
+  "vehicle_ref": "לוחית רישוי",
+  "drive_direction": "כיוון נסיעה:",
+  "bearing": "מעלות",
+  "coords": "נ.צ.",
+  "hide_document": "הסתר מידע לגיקים",
+  "show_document": "הצג מידע לגיקים"
 }
