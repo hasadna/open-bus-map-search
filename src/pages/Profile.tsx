@@ -21,6 +21,7 @@ import RouteSelector from './components/RouteSelector'
 //API
 // import { /*getGtfsRidesList,*/ getRidesAsync } from 'src/api/profileService'
 import { getRoutesAsync } from '../api/gtfsService'
+import Widget from 'src/shared/Widget'
 
 // time inputs
 // import { DateSelector } from './components/DateSelector'
@@ -92,7 +93,7 @@ const LineProfileComponent = ({ search }: { search: PageSearchState }) => {
 
   return (
     <Grid xs={12} lg={6}>
-      <div className="widget">
+      <Widget>
         <h2 className="title">{t('profile_page')}</h2>
         <label> מפעיל: {search.operatorId} </label>
         <br></br>
@@ -143,7 +144,7 @@ const LineProfileComponent = ({ search }: { search: PageSearchState }) => {
           <Label text="הערות ועדכונים על הקו:" />
           <div></div>
         </div>
-      </div>
+      </Widget>
     </Grid>
   )
 }

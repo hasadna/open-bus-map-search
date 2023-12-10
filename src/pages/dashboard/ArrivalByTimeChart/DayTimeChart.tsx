@@ -4,6 +4,7 @@ import { Skeleton, Radio, RadioChangeEvent } from 'antd'
 import ArrivalByTimeChart from './ArrivalByTimeChart'
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
 import { Moment } from 'moment/moment'
+import Widget from 'src/shared/Widget'
 
 const convertToGraphCompatibleStruct = (arr: GroupByRes[]) => {
   return arr.map((item: GroupByRes) => ({
@@ -33,7 +34,7 @@ const DayTimeChart: FC<DayTimeChartProps> = ({ startDate, endDate, operatorId })
   })
 
   return (
-    <div className="widget">
+    <Widget>
       <h2 className="title">
         {groupByHour ? TEXTS.dashboard_page_graph_title_hour : TEXTS.dashboard_page_graph_title_day}
       </h2>
@@ -52,7 +53,7 @@ const DayTimeChart: FC<DayTimeChartProps> = ({ startDate, endDate, operatorId })
           operatorId={operatorId}
         />
       )}
-    </div>
+    </Widget>
   )
 }
 
