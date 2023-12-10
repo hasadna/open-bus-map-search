@@ -6,6 +6,7 @@ import OperatorHbarChart from './OperatorHbarChart/OperatorHbarChart'
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
 import { FC } from 'react'
 import { Moment } from 'moment/moment'
+import Widget from 'src/shared/Widget'
 
 const convertToChartCompatibleStruct = (arr: GroupByRes[]) => {
   return arr.map((item: GroupByRes) => ({
@@ -29,7 +30,7 @@ export const AllLinesChart: FC<AllChartComponentProps> = ({ startDate, endDate }
   })
 
   return (
-    <div className="widget">
+    <Widget>
       <h2 className="title">
         {TEXTS.dashboard_page_title}
         <Tooltip
@@ -44,7 +45,7 @@ export const AllLinesChart: FC<AllChartComponentProps> = ({ startDate, endDate }
       ) : (
         <OperatorHbarChart operators={convertToChartCompatibleStruct(groupByOperatorData)} />
       )}
-    </div>
+    </Widget>
   )
 }
 

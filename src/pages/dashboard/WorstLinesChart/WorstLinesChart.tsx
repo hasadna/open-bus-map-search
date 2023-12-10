@@ -4,6 +4,7 @@ import LinesHbarChart from './LineHbarChart/LinesHbarChart'
 import { TEXTS } from 'src/resources/texts'
 import { FC } from 'react'
 import { Moment } from 'moment/moment'
+import Widget from 'src/shared/Widget'
 
 interface WorstLinesChartProps {
   startDate: Moment
@@ -35,7 +36,7 @@ export const WorstLinesChart: FC<WorstLinesChartProps> = ({ startDate, endDate, 
   }
 
   return (
-    <div className="widget">
+    <Widget>
       <h2 className="title">{TEXTS.worst_lines_page_title}</h2>
       {lineDataLoading ? (
         <Skeleton active />
@@ -45,7 +46,7 @@ export const WorstLinesChart: FC<WorstLinesChartProps> = ({ startDate, endDate, 
           operators_whitelist={['אלקטרה אפיקים', 'דן', 'מטרופולין', 'קווים', 'אגד']}
         />
       )}
-    </div>
+    </Widget>
   )
 }
 
