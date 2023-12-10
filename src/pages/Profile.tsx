@@ -9,7 +9,6 @@ import { Label } from './components/Label'
 import { NotFound } from './components/NotFound'
 import { PageContainer } from './components/PageContainer'
 
-import { TEXTS } from 'src/resources/texts'
 import { useTranslation } from 'react-i18next'
 // import GapsPage from './GapsPage'
 // import SingleLineMapPage from './SingleLineMapPage'
@@ -38,7 +37,7 @@ const Profile = () => {
 const GeneralDetailsAboutLine = () => {
   const { search, setSearch } = useContext(SearchContext)
   const { operatorId, lineNumber, routes, routeKey } = search
-
+  const { t } = useTranslation()
   return (
     <>
       <PageContainer className="line-data-container">
@@ -62,7 +61,7 @@ const GeneralDetailsAboutLine = () => {
         <Grid xs={12}>
           {routes &&
             (routes.length === 0 ? (
-              <NotFound>{TEXTS.line_not_found}</NotFound>
+              <NotFound>{t('line_not_found')}</NotFound>
             ) : (
               <RouteSelector
                 routes={routes}
