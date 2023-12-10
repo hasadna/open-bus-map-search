@@ -3,14 +3,13 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import { lazy, Suspense } from 'react'
 const DashboardPage = lazy(() => import('../pages/dashboard/DashboardPage'))
 const TimelinePage = lazy(() => import('../pages/TimelinePage'))
-const GapsPage = lazy(() => import('../pages/GapsPage'))
+const GapsPage = lazy(() => import('../pages/gaps'))
 const GapsPatternsPage = lazy(() => import('../pages/gapsPatterns'))
-const RealtimeMapPage = lazy(() => import('../pages/RealtimeMapPage'))
-const SingleLineMapPage = lazy(() => import('../pages/SingleLineMapPage'))
+const RealtimeMapPage = lazy(() => import('../pages/realtimeMap'))
+const SingleLineMapPage = lazy(() => import('../pages/singleLineMap'))
 const About = lazy(() => import('../pages/About'))
 const Profile = lazy(() => import('../pages/Profile'))
 const BugReportForm = lazy(() => import('../pages/BugReportForm '))
-import CircularProgress from '@mui/material/CircularProgress'
 
 import {
   RadarChartOutlined,
@@ -23,6 +22,7 @@ import {
   BarChartOutlined,
   LineChartOutlined,
 } from '@ant-design/icons'
+import Preloader from 'src/shared/Preloader'
 
 export const usePages = () => {
   const { t } = useTranslation()
@@ -92,7 +92,7 @@ const RoutesList = () => {
   const RedirectToDashboard = () => <Navigate to={pages[0].path} replace />
   const routes = pages.filter((r) => r.element)
   return (
-    <Suspense fallback={<CircularProgress />}>
+    <Suspense fallback={<Preloader />}>
       <Routes>
         {routes.map(({ path, element }) => (
           <Route key={path} path={path} element={element} />

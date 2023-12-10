@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Point } from 'src/pages/RealtimeMapPage'
+import { Point } from 'src/pages/realtimeMap'
 import { Button } from '@mui/material'
 import moment from 'moment-timezone'
 import './BusToolTip.scss'

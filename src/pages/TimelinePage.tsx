@@ -11,7 +11,7 @@ import {
 } from 'src/api/gtfsService'
 import RouteSelector from 'src/pages/components/RouteSelector'
 import { Label } from 'src/pages/components/Label'
-import { TEXTS } from 'src/resources/texts'
+import { useTranslation } from 'react-i18next'
 import StopSelector from 'src/pages/components/StopSelector'
 import { Spin } from 'antd'
 import { getSiriStopHitTimesAsync } from 'src/api/siriService'
@@ -28,6 +28,7 @@ const StyledTimelineBoard = styled(TimelineBoard)`
 `
 
 const TimelinePage = () => {
+  const { t } = useTranslation()
   const { search, setSearch } = useContext(SearchContext)
   const { operatorId, lineNumber, timestamp, routes, routeKey } = search
   const [state, setState] = useState<TimelinePageState>({})
@@ -133,7 +134,7 @@ const TimelinePage = () => {
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
         {/* choose date */}
         <Grid xs={4}>
-          <Label text={TEXTS.choose_date} />
+          <Label text={t('choose_date')} />
         </Grid>
         <Grid xs={8}>
           <DateSelector
@@ -145,7 +146,7 @@ const TimelinePage = () => {
         </Grid>
         {/* choose operator */}
         <Grid xs={4}>
-          <Label text={TEXTS.choose_operator} />
+          <Label text={t('choose_operator')} />
         </Grid>
         <Grid xs={8}>
           <OperatorSelector
@@ -155,7 +156,7 @@ const TimelinePage = () => {
         </Grid>
         {/* choose line */}
         <Grid xs={4}>
-          <Label text={TEXTS.choose_line} />
+          <Label text={t('choose_line')} />
         </Grid>
         <Grid xs={8}>
           <LineNumberSelector
@@ -167,14 +168,14 @@ const TimelinePage = () => {
         <Grid xs={12}>
           {routesIsLoading && (
             <Row>
-              <Label text={TEXTS.loading_routes} />
+              <Label text={t('loading_routes')} />
               <Spin />
             </Row>
           )}
           {!routesIsLoading &&
             routes &&
             (routes.length === 0 ? (
-              <NotFound>{TEXTS.line_not_found}</NotFound>
+              <NotFound>{t('line_not_found')}</NotFound>
             ) : (
               <RouteSelector
                 routes={routes}
@@ -187,7 +188,7 @@ const TimelinePage = () => {
         <Grid xs={12}>
           {stopsIsLoading && (
             <Row>
-              <Label text={TEXTS.loading_stops} />
+              <Label text={t('loading_stops')} />
               <Spin />
             </Row>
           )}
@@ -208,7 +209,7 @@ const TimelinePage = () => {
         <Grid xs={12}>
           {hitsIsLoading && (
             <Row>
-              <Label text={TEXTS.loading_hits} />
+              <Label text={t('loading_hits')} />
               <Spin />
             </Row>
           )}
@@ -224,7 +225,7 @@ const TimelinePage = () => {
             siriTimes={siriHitTimes}
           />
         ) : (
-          <NotFound>{TEXTS.hits_not_found}</NotFound>
+          <NotFound>{t('hits_not_found')}</NotFound>
         ))}
     </PageContainer>
   )

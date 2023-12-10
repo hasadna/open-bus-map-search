@@ -1,51 +1,25 @@
 import { useContext, useEffect, useState } from 'react'
-import { PageContainer } from './components/PageContainer'
-import { Row } from './components/Row'
-import { Label } from './components/Label'
-import { TEXTS } from '../resources/texts'
-import OperatorSelector from './components/OperatorSelector'
-import LineNumberSelector from './components/LineSelector'
-import { SearchContext } from '../model/pageState'
-import { Gap, GapsList } from '../model/gaps'
-import { getGapsAsync } from '../api/gapsService'
+import { PageContainer } from '../components/PageContainer'
+import { Row } from '../components/Row'
+import { Label } from '../components/Label'
+import { useTranslation } from 'react-i18next'
+import OperatorSelector from '../components/OperatorSelector'
+import LineNumberSelector from '../components/LineSelector'
+import { SearchContext } from '../../model/pageState'
+import { Gap, GapsList } from '../../model/gaps'
+import { getGapsAsync } from '../../api/gapsService'
 import { Spin } from 'antd'
-import RouteSelector from './components/RouteSelector'
-import { NotFound } from './components/NotFound'
-import { getRoutesAsync } from '../api/gtfsService'
+import RouteSelector from '../components/RouteSelector'
+import { NotFound } from '../components/NotFound'
+import { getRoutesAsync } from '../../api/gtfsService'
 import moment, { Moment } from 'moment'
 import styled from 'styled-components'
 import { useSessionStorage } from 'usehooks-ts'
-import { DateSelector } from './components/DateSelector'
+import { DateSelector } from '../components/DateSelector'
 import { FormControlLabel, Switch } from '@mui/material'
 import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
 import { INPUT_SIZE } from 'src/resources/sizes'
-import DisplayGapsPercentage from './components/DisplayGapsPercentage'
-
-function formatTime(time: Moment) {
-  return time.format(TEXTS.time_format)
-}
-
-function formatStatus(all: GapsList, gap: Gap) {
-  if (!gap.siriTime) {
-    return TEXTS.ride_missing
-  }
-  if (gap.gtfsTime) {
-    return TEXTS.ride_as_planned
-  }
-  const hasTwinRide = all.some((g) => g.gtfsTime && g.siriTime && g.siriTime.isSame(gap.siriTime))
-  if (hasTwinRide) {
-    return TEXTS.ride_duped
-  }
-  return TEXTS.ride_extra
-}
-
-function getGapsPercentage(gaps: GapsList | undefined): number | undefined {
-  const ridesInTime = gaps?.filter((gap) => formatStatus([], gap) === TEXTS.ride_as_planned)
-  if (!gaps || !ridesInTime) return undefined
-  const ridesInTimePercentage = (ridesInTime?.length / gaps?.length) * 100
-  const allRidesPercentage = 100
-  return allRidesPercentage - ridesInTimePercentage
-}
+import DisplayGapsPercentage from '../components/DisplayGapsPercentage'
 
 const Cell = styled.div`
   width: 120px;
@@ -56,6 +30,7 @@ const TitleCell = styled(Cell)`
 `
 
 const GapsPage = () => {
+  const { t } = useTranslation()
   const { search, setSearch } = useContext(SearchContext)
   const { operatorId, lineNumber, timestamp, routes, routeKey } = search
   const [gaps, setGaps] = useState<GapsList>()
@@ -63,6 +38,32 @@ const GapsPage = () => {
   const [routesIsLoading, setRoutesIsLoading] = useState(false)
   const [gapsIsLoading, setGapsIsLoading] = useState(false)
   const [onlyGapped, setOnlyGapped] = useSessionStorage('onlyGapped', false)
+
+  function formatTime(time: Moment) {
+    return time.format(t('time_format'))
+  }
+
+  function formatStatus(all: GapsList, gap: Gap) {
+    if (!gap.siriTime) {
+      return t('ride_missing')
+    }
+    if (gap.gtfsTime) {
+      return t('ride_as_planned')
+    }
+    const hasTwinRide = all.some((g) => g.gtfsTime && g.siriTime && g.siriTime.isSame(gap.siriTime))
+    if (hasTwinRide) {
+      return t('ride_duped')
+    }
+    return t('ride_extra')
+  }
+
+  function getGapsPercentage(gaps: GapsList | undefined): number | undefined {
+    const ridesInTime = gaps?.filter((gap) => formatStatus([], gap) === t('ride_as_planned'))
+    if (!gaps || !ridesInTime) return undefined
+    const ridesInTimePercentage = (ridesInTime?.length / gaps?.length) * 100
+    const allRidesPercentage = 100
+    return allRidesPercentage - ridesInTimePercentage
+  }
 
   useEffect(() => {
     if (operatorId && routes && routeKey && timestamp) {
@@ -102,7 +103,7 @@ const GapsPage = () => {
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
         {/* choose date */}
         <Grid xs={4}>
-          <Label text={TEXTS.choose_date} />
+          <Label text={t('choose_date')} />
         </Grid>
         <Grid xs={8}>
           <DateSelector
@@ -114,7 +115,7 @@ const GapsPage = () => {
         </Grid>
         {/* choose operator */}
         <Grid xs={4}>
-          <Label text={TEXTS.choose_operator} />
+          <Label text={t('choose_operator')} />
         </Grid>
         <Grid xs={8}>
           <OperatorSelector
@@ -124,7 +125,7 @@ const GapsPage = () => {
         </Grid>
         {/* choose line */}
         <Grid xs={4}>
-          <Label text={TEXTS.choose_line} />
+          <Label text={t('choose_line')} />
         </Grid>
         <Grid xs={8}>
           <LineNumberSelector
@@ -136,14 +137,14 @@ const GapsPage = () => {
         <Grid xs={12}>
           {routesIsLoading && (
             <Row>
-              <Label text={TEXTS.loading_routes} />
+              <Label text={t('loading_routes')} />
               <Spin />
             </Row>
           )}
           {!routesIsLoading &&
             routes &&
             (routes.length === 0 ? (
-              <NotFound>{TEXTS.line_not_found}</NotFound>
+              <NotFound>{t('line_not_found')}</NotFound>
             ) : (
               <RouteSelector
                 routes={routes}
@@ -155,7 +156,7 @@ const GapsPage = () => {
         <Grid xs={12}>
           {gapsIsLoading && (
             <Row>
-              <Label text={TEXTS.loading_gaps} />
+              <Label text={t('loading_gaps')} />
               <Spin />
             </Row>
           )}
@@ -167,7 +168,7 @@ const GapsPage = () => {
             control={
               <Switch checked={onlyGapped} onChange={(e) => setOnlyGapped(e.target.checked)} />
             }
-            label={TEXTS.checkbox_only_gaps}
+            label={t('checkbox_only_gaps')}
           />
           <DisplayGapsPercentage
             gapsPercentage={gapsPercentage}
@@ -175,8 +176,8 @@ const GapsPage = () => {
             terriblePercentage={20}
           />
           <Row>
-            <TitleCell>{TEXTS.planned_time}</TitleCell>
-            <TitleCell>{TEXTS.planned_status}</TitleCell>
+            <TitleCell>{t('planned_time')}</TitleCell>
+            <TitleCell>{t('planned_status')}</TitleCell>
           </Row>
           {gaps
             ?.filter((gap) => gap.gtfsTime || gap.siriTime)
