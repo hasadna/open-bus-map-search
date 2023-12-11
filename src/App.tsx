@@ -25,7 +25,7 @@ import RoutesList, { PAGES } from './routes'
 import MainHeader from './layout/header/Header'
 import SideBar from './layout/sidebar/SideBar'
 import LayoutContext from './layout/LayoutContext'
-import { EasterEgg } from './pages/EasterEgg/EasterEgg'
+import { EasterEgg, Envelope } from './pages/EasterEgg/EasterEgg'
 const { Content } = Layout
 
 const StyledLayout = styled(Layout)`
@@ -134,7 +134,11 @@ const App = () => {
 const RoutedApp = () => (
   <Router>
     <App />
-    <EasterEgg />
+    <EasterEgg code="storybook">
+      <a href="/storybook/index.html">
+        <Envelope />
+      </a>
+    </EasterEgg>
   </Router>
 )
 export default RoutedApp

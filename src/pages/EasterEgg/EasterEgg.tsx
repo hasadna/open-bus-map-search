@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { createContext, useContext, useState } from 'react'
 import styled from 'styled-components'
 import useKonami from 'use-konami'
 
@@ -202,32 +202,38 @@ const EnvelopeWrapper = styled.div`
     }
   }
 `
-const Envelope = ({ fade }: { fade: boolean }) => (
-  <EnvelopeWrapper>
-    <div className={fade ? 'letter-image fade-out' : 'letter-image'}>
-      <div className="animated-mail">
-        <div className="back-fold"></div>
-        <div className="letter">
-          <div className="letter-border"></div>
-          <div className="letter-title"></div>
-          <div className="letter-context"></div>
-          <div className="letter-favicon">
-            <img src="/favicon.ico" alt="busFavicon" />
-          </div>
-          <div className="letter-stamp">
-            <div className="letter-stamp-inner"></div>
-          </div>
-        </div>
-        <div className="top-fold"></div>
-        <div className="body"></div>
-        <div className="left-fold"></div>
-      </div>
-      <div className="shadow"></div>
-    </div>
-  </EnvelopeWrapper>
-)
 
-export function EasterEgg() {
+const FadeContext = createContext(false)
+
+export const Envelope = () => {
+  const fade = useContext(FadeContext)
+  return (
+    <EnvelopeWrapper>
+      <div className={fade ? 'letter-image fade-out' : 'letter-image'}>
+        <div className="animated-mail">
+          <div className="back-fold"></div>
+          <div className="letter">
+            <div className="letter-border"></div>
+            <div className="letter-title"></div>
+            <div className="letter-context"></div>
+            <div className="letter-favicon">
+              <img src="/favicon.ico" alt="busFavicon" />
+            </div>
+            <div className="letter-stamp">
+              <div className="letter-stamp-inner"></div>
+            </div>
+          </div>
+          <div className="top-fold"></div>
+          <div className="body"></div>
+          <div className="left-fold"></div>
+        </div>
+        <div className="shadow"></div>
+      </div>
+    </EnvelopeWrapper>
+  )
+}
+
+export function EasterEgg({ children, code }: { children?: React.ReactNode; code: string }) {
   const [show, setShow] = useState(false)
   const [fade, setFade] = useState(false)
   useKonami({
@@ -241,13 +247,7 @@ export function EasterEgg() {
         setFade(false)
       }, 10000)
     },
-    sequence: 'storybook'.split(''),
+    sequence: code.split(''),
   })
-  return (
-    show && (
-      <a href="/storybook/index.html">
-        <Envelope fade={fade} />
-      </a>
-    )
-  )
+  return show && <FadeContext.Provider value={fade}>{children}</FadeContext.Provider>
 }
