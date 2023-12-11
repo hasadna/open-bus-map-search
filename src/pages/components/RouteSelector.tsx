@@ -1,4 +1,4 @@
-import { formatted, TEXTS } from 'src/resources/texts'
+import { formatted } from 'src/resources/texts'
 import { BusRoute } from 'src/model/busRoute'
 import { Autocomplete, TextField } from '@mui/material'
 import { useEffect } from 'react'
@@ -12,7 +12,7 @@ type RouteSelectorProps = {
 }
 
 const getRouteTitle = (route: BusRoute, t: TFunction<'translation', undefined>) =>
-  `${route.fromName} ${TEXTS.direction_arrow} ${route.toName}  ${
+  `${route.fromName} ${t('direction_arrow')} ${route.toName}  ${
     route.routeAlternative === '#' || route.routeAlternative === '0'
       ? ''
       : `(${t('halufa_ride')} ${route.routeAlternative})`
@@ -43,7 +43,7 @@ const RouteSelector = ({ routes, routeKey, setRouteKey }: RouteSelectorProps) =>
       id="route-select"
       options={routes}
       renderInput={(params) => (
-        <TextField {...params} label={formatted(TEXTS.choose_route, routes.length.toString())} />
+        <TextField {...params} label={formatted(t('choose_route'), routes.length.toString())} />
       )}
       getOptionLabel={(route) => getRouteTitle(route, t)}
     />
