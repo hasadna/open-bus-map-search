@@ -1,14 +1,27 @@
 # Open bus ranking app
 
 ## Welcome!
-This is the official repository of the open bus (תחב"צ פתוחה) project - also known as "ShameBus".
+This is the official repository of the open bus (תחב"צ פתוחה / דאטאבוס) project - also known as "ShameBus".
 [link to the project](https://open-bus-map-search.hasadna.org.il/dashboard)
-- While in the site, type "storybook" (in lowercase) to see a secret 😉
 
 Please feel free to submit pull requests and contribute to the project (see the "contribution" section).
 
 ## View video (Hebrew language):
 [![video (hebrew) about the project](https://img.youtube.com/vi/6H6jkJCVhgk/0.jpg)](https://www.youtube.com/watch?v=6H6jkJCVhgk)
+
+# Easter eggs
+We've hidden a couple of fun surprises in our web app, just for you. Discovering them is as easy as typing a few magic words on your keyboard.
+
+## How to Find the Easter Eggs
+1. Open our [web app](https://open-bus-map-search.hasadna.org.il/dashboard)
+2. **Unleash the Magic Words:**
+   To reveal the hidden gems, use your keyboard to type the following commands:
+
+   - **Type "storybook":**
+     Watch the magic unfold as you type "storybook" on your keyboard. You might just stumble upon our Storybook, a treasure trove of UI components showcasing the beauty and functionality of our app.
+   - **Type "english":**
+     Feel like switching up the language? Type "english" and see the language toggle in action. Our app is multilingual, and you can experience it by triggering this secret command.
+
 
 ## deployments
 
