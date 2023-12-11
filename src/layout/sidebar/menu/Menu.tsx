@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useReducer, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import './menu.scss'
 import { useTranslation } from 'react-i18next'
@@ -6,6 +6,8 @@ import { PAGES as pages } from 'src/routes'
 
 import type { MenuProps } from 'antd'
 import { Menu } from 'antd'
+import { Button } from '@mui/material'
+import { EasterEgg } from 'src/pages/EasterEgg/EasterEgg'
 
 type MenuItem = Required<MenuProps>['items'][number]
 function getItem(
@@ -22,18 +24,32 @@ function getItem(
   } as MenuItem
 }
 
-const MainMenu = () => {
+const LanguageToggle = () => {
   const { t, i18n } = useTranslation()
+  const [, handleChangeLanguage] = useReducer((state: string) => {
+    const newLanguage = { he: 'en', en: 'he' }[state]
+    i18n.changeLanguage(newLanguage)
+    return newLanguage!
+  }, 'he')
+
+  return (
+    <EasterEgg code="english">
+      <Button
+        onClick={handleChangeLanguage}
+        variant="contained"
+        style={{ margin: 'auto', display: 'block' }}>
+        {t('Change Language')}
+      </Button>
+    </EasterEgg>
+  )
+}
+
+const MainMenu = () => {
+  const { t } = useTranslation()
   const items: MenuItem[] = pages.map((itm) => {
     return getItem(<Link to={t(itm.path)}>{t(itm.label)}</Link>, itm.path, itm.icon)
   })
-  const [currentLanguage, setCurrentLanguage] = useState('en')
 
-  const handleChangeLanguage = () => {
-    const newLanguage = currentLanguage === 'en' ? 'he' : 'en'
-    setCurrentLanguage(newLanguage)
-    i18n.changeLanguage(newLanguage)
-  }
   const location = useLocation()
   const [current, setCurrent] = useState(
     location.pathname === '/' || location.pathname === '' ? '/dashboard' : location.pathname,
@@ -59,7 +75,7 @@ const MainMenu = () => {
         mode="inline"
         items={items}
       />
-      {null && <button onClick={handleChangeLanguage}>Change Language</button>}
+      {<LanguageToggle />}
     </>
   )
 }
