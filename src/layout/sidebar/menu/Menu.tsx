@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import './menu.scss'
 import { useTranslation } from 'react-i18next'
@@ -6,8 +6,7 @@ import { usePages } from 'src/routes'
 
 import type { MenuProps } from 'antd'
 import { Menu } from 'antd'
-import { Button } from '@mui/material'
-import { EasterEgg } from 'src/pages/EasterEgg/EasterEgg'
+import { LanguageToggle } from 'src/pages/EasterEgg/LanguageToggle'
 
 type MenuItem = Required<MenuProps>['items'][number]
 function getItem(
@@ -22,26 +21,6 @@ function getItem(
     children,
     label,
   } as MenuItem
-}
-
-const LanguageToggle = () => {
-  const { t, i18n } = useTranslation()
-  const [, handleChangeLanguage] = useReducer((state: string) => {
-    const newLanguage = { he: 'en', en: 'he' }[state]
-    i18n.changeLanguage(newLanguage)
-    return newLanguage!
-  }, 'he')
-
-  return (
-    <EasterEgg code="english">
-      <Button
-        onClick={handleChangeLanguage}
-        variant="contained"
-        style={{ margin: 'auto', display: 'block' }}>
-        {t('Change Language')}
-      </Button>
-    </EasterEgg>
-  )
 }
 
 const MainMenu = () => {
