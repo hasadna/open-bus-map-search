@@ -1,11 +1,16 @@
 import styled from 'styled-components'
-import SlackIcon from '../resources/slack-icon.svg'
+import SlackIcon from '../../resources/slack-icon.svg'
 import { useTranslation } from 'react-i18next'
+import Widget from 'src/shared/Widget'
+import { Typography } from 'antd'
 
+import './About.scss'
+const { Title } = Typography
 const About = () => {
   return (
     <AboutStyle>
       <div className="about-center-container">
+        <Title level={3}> קצת עלינו</Title>
         <WhatIsWebsite />
         <DiscoveredMistake />
         <Privacy />
@@ -21,14 +26,14 @@ const WhatIsWebsite = () => {
   const { t } = useTranslation()
 
   return (
-    <ParagraphStyle>
+    <Widget>
       <h2>{t('what_is_website')}</h2>
       <p>{t('what_is_website_paragraph')}</p>
       <ul style={{ listStyle: 'disc', paddingRight: '40px' }}>
         <li>{t('planning_information')}</li>
         <li>{t('performance_information')}</li>
       </ul>
-    </ParagraphStyle>
+    </Widget>
   )
 }
 
@@ -36,10 +41,10 @@ const DiscoveredMistake = () => {
   const { t } = useTranslation()
 
   return (
-    <ParagraphStyle>
+    <Widget>
       <h2>{t('discovered_mistake')}</h2>
       <p>{t('discovered_mistake_paragraph')}</p>
-    </ParagraphStyle>
+    </Widget>
   )
 }
 
@@ -47,7 +52,7 @@ const Privacy = () => {
   const { t } = useTranslation()
 
   return (
-    <ParagraphStyle>
+    <Widget>
       <h2>{t('privacy')}</h2>
       <p>
         באתר מוטמע שירות{' '}
@@ -57,7 +62,7 @@ const Privacy = () => {
         <a href="https://support.google.com/analytics/answer/6004245?hl=iw"> קראו כאן </a>
         על מדיניות הפרטיות של השירות.
       </p>
-    </ParagraphStyle>
+    </Widget>
   )
 }
 
@@ -65,7 +70,7 @@ const License = () => {
   const { t } = useTranslation()
 
   return (
-    <ParagraphStyle>
+    <Widget>
       <h2>{t('license')}</h2>
       <p>
         כל המידע המוצג באתר מבוסס על נתונים המפורסמים במקורות המידע הממשלתיים. השימוש במידע כפוף ל
@@ -73,7 +78,7 @@ const License = () => {
         של
         <a href="https://creativecommons.org/"> Creative Commons</a>.
       </p>
-    </ParagraphStyle>
+    </Widget>
   )
 }
 
@@ -81,7 +86,7 @@ const Questions = () => {
   const { t } = useTranslation()
 
   return (
-    <ParagraphStyle>
+    <Widget>
       <h2>{t('questions')}</h2>
       <ul>
         <li>
@@ -101,7 +106,7 @@ const Questions = () => {
           </a>
         </li>
       </ul>
-    </ParagraphStyle>
+    </Widget>
   )
 }
 
@@ -109,7 +114,7 @@ const Funding = () => {
   const { t } = useTranslation()
 
   return (
-    <ParagraphStyle>
+    <Widget>
       <h2>{t('funding')}</h2>
       <div>
         <p>
@@ -127,7 +132,7 @@ const Funding = () => {
           </a>
         </li>
       </ul>
-    </ParagraphStyle>
+    </Widget>
   )
 }
 
@@ -141,22 +146,6 @@ const AboutStyle = styled.div`
     & h1 {
       font-size: 2em;
     }
-  }
-`
-
-const ParagraphStyle = styled.div`
-  & h2 {
-    font-size: 1.5em;
-  }
-  & p {
-    font-size: 1.15em;
-  }
-  & ul {
-    list-style: none;
-    padding: 0;
-  }
-  & img {
-    width: 5%;
   }
 `
 
