@@ -7,7 +7,7 @@ const GapsPage = lazy(() => import('../pages/gaps'))
 const GapsPatternsPage = lazy(() => import('../pages/gapsPatterns'))
 const RealtimeMapPage = lazy(() => import('../pages/realtimeMap'))
 const SingleLineMapPage = lazy(() => import('../pages/singleLineMap'))
-const About = lazy(() => import('../pages/About'))
+const About = lazy(() => import('../pages/about'))
 const Profile = lazy(() => import('../pages/Profile'))
 const BugReportForm = lazy(() => import('../pages/BugReportForm '))
 
