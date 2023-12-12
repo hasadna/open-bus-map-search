@@ -18,9 +18,10 @@ import { heIL as heILmui } from '@mui/x-date-pickers/locales'
 import { ThemeProvider, createTheme } from '@mui/material'
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 import { LocalizationProvider } from '@mui/x-date-pickers'
-import { EasterEgg, Envelope } from './pages/EasterEgg/EasterEgg'
+import { EasterEgg } from './pages/EasterEgg/EasterEgg'
 import { usePages } from './routes'
 import MainLayout from './layout'
+import { Envelope } from './pages/EasterEgg/Envelope'
 
 const theme = createTheme(
   {
