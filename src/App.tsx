@@ -1,15 +1,13 @@
 import { useCallback, useEffect } from 'react'
 import 'antd/dist/antd.min.css'
 import './App.scss'
-import { ConfigProvider, Layout } from 'antd'
+import { ConfigProvider } from 'antd'
 import 'leaflet/dist/leaflet.css'
-import styled from 'styled-components'
 import heIL from 'antd/es/locale/he_IL'
 import { BrowserRouter as Router, useSearchParams } from 'react-router-dom'
 import { PageSearchState, SearchContext } from './model/pageState'
 import moment from 'moment'
 import { useSessionStorage } from 'usehooks-ts'
-
 import { useLocation } from 'react-router-dom'
 import ReactGA from 'react-ga4'
 import { CacheProvider } from '@emotion/react'
@@ -20,26 +18,9 @@ import { heIL as heILmui } from '@mui/x-date-pickers/locales'
 import { ThemeProvider, createTheme } from '@mui/material'
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 import { LocalizationProvider } from '@mui/x-date-pickers'
-
-import RoutesList, { PAGES } from './routes'
-import MainHeader from './layout/header/Header'
-import SideBar from './layout/sidebar/SideBar'
-import LayoutContext from './layout/LayoutContext'
 import { EasterEgg, Envelope } from './pages/EasterEgg/EasterEgg'
-const { Content } = Layout
-
-const StyledLayout = styled(Layout)`
-  height: 100vh;
-`
-const StyledContent = styled(Content)`
-  margin: 24px 16px 0;
-  overflow: auto;
-`
-
-const StyledBody = styled.div`
-  padding: 24px;
-  min-height: 360px;
-`
+import { usePages } from './routes'
+import MainLayout from './layout'
 
 const theme = createTheme(
   {
@@ -67,6 +48,7 @@ const App = () => {
   const lineNumber = searchParams.get('lineNumber')
   const routeKey = searchParams.get('routeKey')
   const timestamp = searchParams.get('timestamp')
+  const pages = usePages()
 
   useEffect(() => {
     ReactGA.send({ hitType: 'pageview', page: location.pathname + location.search })
@@ -80,7 +62,7 @@ const App = () => {
   })
 
   useEffect(() => {
-    const page = PAGES.find((page) => page.path === location.pathname)
+    const page = pages.find((page) => page.path === location.pathname)
     if (page?.searchParamsRequired) {
       const params = new URLSearchParams({ timestamp: search.timestamp.toString() })
 
@@ -110,19 +92,7 @@ const App = () => {
         <ThemeProvider theme={theme}>
           <LocalizationProvider dateAdapter={AdapterMoment} adapterLocale="he">
             <ConfigProvider direction="rtl" locale={heIL}>
-              <StyledLayout className="main">
-                <LayoutContext>
-                  <SideBar />
-                  <Layout>
-                    <MainHeader />
-                    <StyledContent>
-                      <StyledBody>
-                        <RoutesList />
-                      </StyledBody>
-                    </StyledContent>
-                  </Layout>
-                </LayoutContext>
-              </StyledLayout>
+              <MainLayout />
             </ConfigProvider>
           </LocalizationProvider>
         </ThemeProvider>

@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react'
-import { Point } from 'src/pages/RealtimeMapPage'
+import { Point } from 'src/pages/realtimeMap'
 import { Button } from '@mui/material'
 import moment from 'moment-timezone'
 import './BusToolTip.scss'
 
 import { getSiriRideWithRelated } from 'src/api/siriService'
 import { SiriRideWithRelatedPydanticModel } from 'open-bus-stride-client/openapi/models/SiriRideWithRelatedPydanticModel'
-import { TEXTS } from 'src/resources/texts'
+import { useTranslation } from 'react-i18next'
 import { Spin } from 'antd'
 import cn from 'classnames'
 
@@ -16,6 +16,7 @@ export function BusToolTip({ position, icon }: BusToolTipProps) {
   const [siriRide, setSiriRide] = useState<SiriRideWithRelatedPydanticModel | undefined>()
   const [isLoading, setIsLoading] = useState(false)
   const [showJson, setShowJson] = useState(false)
+  const { t } = useTranslation()
 
   useEffect(() => {
     setIsLoading(true)
@@ -31,32 +32,32 @@ export function BusToolTip({ position, icon }: BusToolTipProps) {
     <div className={cn({ 'extend-for-json': showJson }, 'bus-tooltip')}>
       {isLoading ? (
         <>
-          {TEXTS.loading_routes}
+          {t('loading_routes')}
           <Spin />
         </>
       ) : (
         <>
           <header className="header">
             <h1 className="title">
-              {TEXTS.line} :<span>{siriRide && siriRide!.gtfsRouteRouteShortName}</span>
+              {t('line')} :<span>{siriRide && siriRide!.gtfsRouteRouteShortName}</span>
             </h1>
             <img src={icon} alt="bus icon" className="bus-icon" />
           </header>
           <ul>
             <li>
-              {TEXTS.from} :
+              {t('from')} :
               <span>{siriRide && siriRide!.gtfsRouteRouteLongName?.split('<->')[0]}</span>
             </li>
             <li>
-              {TEXTS.destination} :
+              {t('destination')} :
               <span>{siriRide && siriRide!.gtfsRouteRouteLongName?.split('<->')[1]}</span>
             </li>
             <li>
-              {TEXTS.velocity} :<span>{`${position.point?.velocity}  ${TEXTS.kmh}`}</span>
+              {t('velocity')} :<span>{`${position.point?.velocity}  ${t('kmh')}`}</span>
             </li>
 
             <li>
-              {TEXTS.sample_time} :
+              {t('sample_time')} :
               <span>
                 {moment(position.point!.recorded_at_time as string, moment.ISO_8601)
                   .tz('Israel')
@@ -64,27 +65,27 @@ export function BusToolTip({ position, icon }: BusToolTipProps) {
               </span>
             </li>
             <li>
-              {TEXTS.vehicle_ref} :<span>{position.point?.siri_ride__vehicle_ref}</span>
+              {t('vehicle_ref')} :<span>{position.point?.siri_ride__vehicle_ref}</span>
             </li>
           </ul>
           {/*maybe option to add info like this in extend card for now I  put this condition */}
           {window.screen.height > 1100 && (
             <>
               <h4>
-                {TEXTS.drive_direction} :
+                {t('drive_direction')} :
                 <span>
-                  ( {position.point?.bearing} {TEXTS.bearing})
+                  ( {position.point?.bearing} {t('bearing')})
                 </span>
               </h4>
               <h4>
-                {TEXTS.coords} :<span>{position.loc.join(' , ')}</span>
+                {t('coords')} :<span>{position.loc.join(' , ')}</span>
               </h4>
             </>
           )}
         </>
       )}
       <Button onClick={() => setShowJson((showJson) => !showJson)}>
-        {showJson ? TEXTS.hide_document : TEXTS.show_document}
+        {showJson ? t('hide_document') : t('show_document')}
       </Button>
       {showJson && (
         <pre>

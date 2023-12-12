@@ -12,7 +12,7 @@ import {
 import './ArrivalByTimeChats.scss'
 import { useMemo } from 'react'
 
-const arrayGroup = function <T>(array: T[], f: (item: T) => string) {
+export const arrayGroup = function <T>(array: T[], f: (item: T) => string) {
   const groups: Record<string, T[]> = {}
   array.forEach(function (o) {
     const group = f(o)
@@ -50,7 +50,7 @@ export default function ArrivalByTimeChart({
         .map((group) => (
           <div key={group[0].name}>
             <h3 className="title">{group[0].name}</h3>
-            <ResponsiveContainer width="100%" height={300}>
+            <ResponsiveContainer debounce={1000} width="100%" height={300}>
               <LineChart
                 data={group
                   .sort((a, b) => (a.gtfs_route_date < b.gtfs_route_date ? 1 : -1))
