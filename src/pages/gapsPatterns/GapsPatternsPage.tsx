@@ -29,11 +29,12 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 import { mapColorByExecution } from '../components/utils'
-import { useGapsList } from '../useGapsList'
+import { useGapsList } from './useGapsList'
 import { DateSelector } from '../components/DateSelector'
 import { INPUT_SIZE } from 'src/resources/sizes'
 const { Title } = Typography
 import { useTranslation } from 'react-i18next'
+import Widget from 'src/shared/Widget'
 // Define prop types for the component
 interface BusLineStatisticsProps {
   lineRef: number
@@ -71,7 +72,7 @@ function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatistic
 
   return (
     lineRef > 0 && (
-      <div className="widget">
+      <Widget>
         <Title level={3}>{t('dashboard_page_graph_title')}</Title>
 
         {isLoading && lineRef ? (
@@ -137,7 +138,7 @@ function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatistic
             </ResponsiveContainer>
           </>
         )}
-      </div>
+      </Widget>
     )
   )
 }

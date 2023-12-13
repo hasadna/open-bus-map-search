@@ -9,7 +9,6 @@ import { Label } from './components/Label'
 import { NotFound } from './components/NotFound'
 import { PageContainer } from './components/PageContainer'
 
-import { TEXTS } from 'src/resources/texts'
 import { useTranslation } from 'react-i18next'
 // import GapsPage from './GapsPage'
 // import SingleLineMapPage from './SingleLineMapPage'
@@ -21,6 +20,7 @@ import RouteSelector from './components/RouteSelector'
 //API
 // import { /*getGtfsRidesList,*/ getRidesAsync } from 'src/api/profileService'
 import { getRoutesAsync } from '../api/gtfsService'
+import Widget from 'src/shared/Widget'
 
 // time inputs
 // import { DateSelector } from './components/DateSelector'
@@ -38,7 +38,7 @@ const Profile = () => {
 const GeneralDetailsAboutLine = () => {
   const { search, setSearch } = useContext(SearchContext)
   const { operatorId, lineNumber, routes, routeKey } = search
-
+  const { t } = useTranslation()
   return (
     <>
       <PageContainer className="line-data-container">
@@ -62,7 +62,7 @@ const GeneralDetailsAboutLine = () => {
         <Grid xs={12}>
           {routes &&
             (routes.length === 0 ? (
-              <NotFound>{TEXTS.line_not_found}</NotFound>
+              <NotFound>{t('line_not_found')}</NotFound>
             ) : (
               <RouteSelector
                 routes={routes}
@@ -92,7 +92,7 @@ const LineProfileComponent = ({ search }: { search: PageSearchState }) => {
 
   return (
     <Grid xs={12} lg={6}>
-      <div className="widget">
+      <Widget>
         <h2 className="title">{t('profile_page')}</h2>
         <label> מפעיל: {search.operatorId} </label>
         <br></br>
@@ -143,7 +143,7 @@ const LineProfileComponent = ({ search }: { search: PageSearchState }) => {
           <Label text="הערות ועדכונים על הקו:" />
           <div></div>
         </div>
-      </div>
+      </Widget>
     </Grid>
   )
 }

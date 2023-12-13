@@ -9,7 +9,7 @@ import moment from 'moment'
 import './DashboardPage.scss'
 import { PageContainer } from '../components/PageContainer'
 import { TEXTS } from 'src/resources/texts'
-import { Typography } from 'antd'
+import { Alert, Typography } from 'antd'
 import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
 
 // Components
@@ -30,6 +30,7 @@ const DashboardPage = () => {
   return (
     <PageContainer>
       <Title level={3}>ביצועי תחבורה ציבורית</Title>
+      <Alert message="תפקוד תחבורה ציבורית לפי פרמטרים שונים" type="info" />
       <Grid
         container
         spacing={2}
@@ -76,7 +77,7 @@ const DashboardPage = () => {
           <WorstLinesChart startDate={startDate} endDate={endDate} operatorId={operatorId} />
         </Grid>
         <Grid xs={12}>
-          <DayTimeChart startDate={startDate} endDate={endDate} />
+          <DayTimeChart startDate={startDate} endDate={endDate} operatorId={operatorId} />
         </Grid>
       </Grid>
     </PageContainer>

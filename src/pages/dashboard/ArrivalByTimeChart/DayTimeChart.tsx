@@ -4,6 +4,7 @@ import { Skeleton, Radio, RadioChangeEvent } from 'antd'
 import ArrivalByTimeChart from './ArrivalByTimeChart'
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
 import { Moment } from 'moment/moment'
+import Widget from 'src/shared/Widget'
 
 const convertToGraphCompatibleStruct = (arr: GroupByRes[]) => {
   return arr.map((item: GroupByRes) => ({
@@ -20,9 +21,10 @@ const convertToGraphCompatibleStruct = (arr: GroupByRes[]) => {
 interface DayTimeChartProps {
   startDate: Moment
   endDate: Moment
+  operatorId: string
 }
 
-const DayTimeChart: FC<DayTimeChartProps> = ({ startDate, endDate }) => {
+const DayTimeChart: FC<DayTimeChartProps> = ({ startDate, endDate, operatorId }) => {
   const [groupByHour, setGroupByHour] = React.useState<boolean>(false)
 
   const [graphData, loadingGraph] = useGroupBy({
@@ -32,7 +34,7 @@ const DayTimeChart: FC<DayTimeChartProps> = ({ startDate, endDate }) => {
   })
 
   return (
-    <div className="widget">
+    <Widget>
       <h2 className="title">
         {groupByHour ? TEXTS.dashboard_page_graph_title_hour : TEXTS.dashboard_page_graph_title_day}
       </h2>
@@ -46,9 +48,12 @@ const DayTimeChart: FC<DayTimeChartProps> = ({ startDate, endDate }) => {
       {loadingGraph ? (
         <Skeleton active />
       ) : (
-        <ArrivalByTimeChart data={convertToGraphCompatibleStruct(graphData)} operatorId={''} />
+        <ArrivalByTimeChart
+          data={convertToGraphCompatibleStruct(graphData)}
+          operatorId={operatorId}
+        />
       )}
-    </div>
+    </Widget>
   )
 }
 

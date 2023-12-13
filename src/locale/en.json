@@ -94,5 +94,19 @@
   "bug_type_message":"Please enter the type of request",
   "bug_type_bug":"Bug",
   "bug_type_feature":"Feature Request",
-  "funding_paragraph": "The Databus project is developed by the Hasadna for public knowledge, by the contributions of volunteers, and based upon"
+  "funding_paragraph": "The Databus project is developed by the Hasadna for public knowledge, by the contributions of volunteers, and based upon",
+  "all_rides_completed": "All/Almost the rides are completed",
+  "missing_rides": "Of the rides are missing",
+  "line": "line",
+  "from": "from",
+  "destination": "destination",
+  "velocity": "velocity",
+  "kmh": "kmh",
+  "sample_time": "sample time",
+  "vehicle_ref": "vehicle plate",
+  "drive_direction": "drive direction",
+  "bearing": "bearing",
+  "coords": "coords",
+  "hide_document": "hide document",
+  "show_document": "show document"
 }
