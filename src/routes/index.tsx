@@ -97,9 +97,11 @@ const getRoutesList = () => {
         key={'/profile/:gtfsRideGtfsRouteId'}
         element={<Profile />}
         loader={async ({ params: { gtfsRideGtfsRouteId } }) => {
-          return fetch(
+          const resp = await fetch(
             `https://open-bus-stride-api.hasadna.org.il/gtfs_routes/get?id=${gtfsRideGtfsRouteId}`,
-          ).then((resp) => resp.json())
+          )
+          const gtfs_route = await resp.json()
+          return gtfs_route
         }}
       />
       ,
