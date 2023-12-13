@@ -5,7 +5,7 @@ import { useContext, useState } from 'react'
 import { LayoutContextInterface, LayoutCtx } from '../LayoutContext'
 import GitHubLink from './GitHubLink/GitHubLink'
 import { Link } from 'react-router-dom'
-import { usePages } from 'src/routes'
+import { PAGES } from 'src/routes'
 const { Sider } = Layout
 
 const Logo = () => (
@@ -18,7 +18,6 @@ const CollapsedLogo = () => <h1 className={'sidebar-logo-collapsed'}>🚌</h1>
 export default function SideBar() {
   const { drawerOpen, setDrawerOpen } = useContext<LayoutContextInterface>(LayoutCtx)
   const [collapsed, setCollapsed] = useState(false)
-  const pages = usePages()
   return (
     <>
       <Drawer
@@ -43,7 +42,7 @@ export default function SideBar() {
         collapsed={collapsed}
         onCollapse={(value: boolean) => setCollapsed(value)}
         className="hideOnMobile">
-        <Link to={pages[0].path} replace>
+        <Link to={PAGES[0].path} replace>
           {collapsed ? <CollapsedLogo /> : <Logo />}
         </Link>
         <div className="sidebar-divider"></div>

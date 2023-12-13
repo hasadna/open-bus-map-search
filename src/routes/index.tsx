@@ -1,6 +1,5 @@
-import { useTranslation } from 'react-i18next'
-import { Navigate, Route, Routes } from 'react-router-dom'
-import { lazy, Suspense } from 'react'
+import { Navigate, Route, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
+import { lazy } from 'react'
 const DashboardPage = lazy(() => import('../pages/dashboard/DashboardPage'))
 const TimelinePage = lazy(() => import('../pages/TimelinePage'))
 const GapsPage = lazy(() => import('../pages/gaps'))
@@ -22,86 +21,96 @@ import {
   BarChartOutlined,
   LineChartOutlined,
 } from '@ant-design/icons'
-import Preloader from 'src/shared/Preloader'
+import { MainRoute } from './MainRoute'
 
-export const usePages = () => {
-  const { t } = useTranslation()
-  return [
-    {
-      label: t('dashboard_page_title'),
-      path: '/dashboard',
-      icon: <LaptopOutlined />,
-      element: <DashboardPage />,
-    },
-    {
-      label: t('timeline_page_title'),
-      path: '/timeline',
-      searchParamsRequired: true,
-      icon: <FieldTimeOutlined />,
-      element: <TimelinePage />,
-    },
-    {
-      label: t('gaps_page_title'),
-      path: '/gaps',
-      searchParamsRequired: true,
-      icon: <BarChartOutlined />,
-      element: <GapsPage />,
-    },
-    {
-      label: t('gaps_patterns_page_title'),
-      path: '/gaps_patterns',
-      icon: <LineChartOutlined />,
-      element: <GapsPatternsPage />,
-    },
-    {
-      label: t('realtime_map_page_title'),
-      path: '/map',
-      icon: <HeatMapOutlined />,
-      element: <RealtimeMapPage />,
-    },
-    {
-      label: t('singleline_map_page_title'),
-      path: '/single-line-map',
-      searchParamsRequired: true,
-      icon: <RadarChartOutlined />,
-      element: <SingleLineMapPage />,
-    },
-    {
-      label: t('about_title'),
-      path: '/about',
-      icon: <BellOutlined />,
-      element: <About />,
-    },
-    {
-      label: t('report_a_bug_title'),
-      path: 'report-a-bug',
-      icon: <BugOutlined />,
-      element: <BugReportForm />,
-    },
-    {
-      label: t('donate_title'),
-      path: 'https://www.jgive.com/new/he/ils/donation-targets/3268#donation-modal',
-      icon: <DollarOutlined />,
-      element: null,
-    },
-  ]
-}
+export const PAGES = [
+  {
+    label: 'dashboard_page_title',
+    path: '/dashboard',
+    icon: <LaptopOutlined />,
+    element: <DashboardPage />,
+  },
+  {
+    label: 'timeline_page_title',
+    path: '/timeline',
+    searchParamsRequired: true,
+    icon: <FieldTimeOutlined />,
+    element: <TimelinePage />,
+  },
+  {
+    label: 'gaps_page_title',
+    path: '/gaps',
+    searchParamsRequired: true,
+    icon: <BarChartOutlined />,
+    element: <GapsPage />,
+  },
+  {
+    label: 'gaps_patterns_page_title',
+    path: '/gaps_patterns',
+    icon: <LineChartOutlined />,
+    element: <GapsPatternsPage />,
+  },
+  {
+    label: 'realtime_map_page_title',
+    path: '/map',
+    icon: <HeatMapOutlined />,
+    element: <RealtimeMapPage />,
+  },
+  {
+    label: 'singleline_map_page_title',
+    path: '/single-line-map',
+    searchParamsRequired: true,
+    icon: <RadarChartOutlined />,
+    element: <SingleLineMapPage />,
+  },
+  {
+    label: 'about_title',
+    path: '/about',
+    icon: <BellOutlined />,
+    element: <About />,
+  },
+  {
+    label: 'report_a_bug_title',
+    path: 'report-a-bug',
+    icon: <BugOutlined />,
+    element: <BugReportForm />,
+  },
+  {
+    label: 'donate_title',
+    path: 'https://www.jgive.com/new/he/ils/donation-targets/3268#donation-modal',
+    icon: <DollarOutlined />,
+    element: null,
+  },
+]
 
-const RoutesList = () => {
-  const pages = usePages()
+const getRoutesList = () => {
+  const pages = PAGES
   const RedirectToDashboard = () => <Navigate to={pages[0].path} replace />
   const routes = pages.filter((r) => r.element)
   return (
-    <Suspense fallback={<Preloader />}>
-      <Routes>
-        {routes.map(({ path, element }) => (
-          <Route key={path} path={path} element={element} />
-        ))}
-        <Route path="/profile" element={<Profile />} />
-        <Route path="*" element={<RedirectToDashboard />} />
-      </Routes>
-    </Suspense>
+    <Route element={<MainRoute />}>
+      {routes.map(({ path, element }) => (
+        <Route key={path} path={path} element={element} />
+      ))}
+      <Route
+        path="/profile/:gtfsRideGtfsRouteId"
+        key={'/profile/:gtfsRideGtfsRouteId'}
+        element={<Profile />}
+        loader={async ({ params: { gtfsRideGtfsRouteId } }) => {
+          return fetch(
+            `https://open-bus-stride-api.hasadna.org.il/gtfs_routes/get?id=${gtfsRideGtfsRouteId}`,
+          ).then((resp) => resp.json())
+        }}
+      />
+      ,
+      <Route path="*" element={<RedirectToDashboard />} key="back" />,
+    </Route>
+    // </Suspense>
   )
 }
 
-export default RoutesList
+const routes = createRoutesFromElements(getRoutesList())
+
+const router = createBrowserRouter(routes)
+
+export default router

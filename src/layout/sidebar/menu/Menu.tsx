@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import './menu.scss'
 import { useTranslation } from 'react-i18next'
-import { usePages } from 'src/routes'
+import { PAGES } from 'src/routes'
 
 import type { MenuProps } from 'antd'
 import { Menu } from 'antd'
@@ -24,8 +24,7 @@ function getItem(
 
 const MainMenu = () => {
   const { t, i18n } = useTranslation()
-  const pages = usePages()
-  const items: MenuItem[] = pages.map((itm) => {
+  const items: MenuItem[] = PAGES.map((itm) => {
     return getItem(<Link to={t(itm.path)}>{t(itm.label)}</Link>, itm.path, itm.icon)
   })
   const [currentLanguage, setCurrentLanguage] = useState('en')
