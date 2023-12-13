@@ -109,5 +109,9 @@
   "bearing": "מעלות",
   "coords": "נ.צ.",
   "hide_document": "הסתר מידע לגיקים",
-  "show_document": "הצג מידע לגיקים"
+  "show_document": "הצג מידע לגיקים",
+  "lineProfile": {
+    "title": "פרופיל קו",
+    "notFound":"לא הצלחנו למצוא את הקו שחיפשת :("
+  }
 }
