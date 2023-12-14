@@ -16,6 +16,22 @@ jobs:
           cmd: install
       - name: Build
         run: yarn build
+      - name: upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: dist
+          path: dist
+  build-storybook:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Run install
+        uses: borales/actions-yarn@v4
+        with:
+          cmd: install
       - name: Build Storybook
         run: yarn build-storybook -o dist/storybook
       - name: upload artifact
@@ -24,7 +40,7 @@ jobs:
           name: dist
           path: dist
   deploy-to-s3:
-    needs: build
+    needs: [build, build-storybook]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
