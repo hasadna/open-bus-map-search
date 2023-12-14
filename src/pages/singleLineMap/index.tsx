@@ -13,6 +13,8 @@ import { SearchContext } from '../../model/pageState'
 import { NotFound } from '../components/NotFound'
 import { Point } from '../realtimeMap'
 import styled from 'styled-components'
+import { Button } from 'antd'
+import { ExpandAltOutlined } from "@ant-design/icons"
 
 import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
 import '../Map.scss'
@@ -107,36 +109,20 @@ const SingleLineMapPage = () => {
     [filteredPositions],
   )
 
-  function doThis() {
-    setIsExpanded(!isExpanded)
-    console.log("isExpanded", isExpanded)
-  }
+  const ExpandedContainer = isExpanded ? styled.div`
+                                          position: absolute;
+                                          top: 0;
+                                          left: 0;
+                                          height: 100%;
+                                          width: 100%;
+                                          ` : styled.div`
+                                          width: 100%;
+                                          height: 100%;  
+                                          `
 
-  const ExpandedContainer = styled.div`
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 100%;
-  `
-  const Container = styled.div`
-    position: absolute;
-    top: 0;
-    left: 0;
-  `
-
-  const MyMap = styled(MapContainer)`
+  const ExpandableMap = styled(MapContainer)`
     height: 100%;
     width: 100%
-  `
-
-  const ExpandButton = styled.button`
-    z-index: 9999;
-    position: absolute;
-    left: 15px;
-    bottom: 15px;
-    width: fit-content;
-    font-size: 20px;
   `
 
   return (
@@ -195,16 +181,12 @@ const SingleLineMapPage = () => {
       </Grid>
 
       <div className="map-info">
-        <ExpandButton onClick={doThis}>Expand</ExpandButton>
-        {/* <Container> */}
+        <Button type="primary" className="expand-button" shape="circle" onClick={() => setIsExpanded(!isExpanded)} icon={<ExpandAltOutlined />} />
         <ExpandedContainer>
-          <MyMap center={position.loc} zoom={13}>
-            {/* <Container> */}
-            {/* <MapContainer center={position.loc} zoom={8} scrollWheelZoom={true}> */}
+          <ExpandableMap center={position.loc} zoom={8} scrollWheelZoom={true}>
             <TileLayer
               attribution='&copy <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
               url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
-            // className={isExpanded ? "expanded-map" : ""}
             />
             {filteredPositions.map((pos, i) => {
               const icon = busIcon({
@@ -229,9 +211,8 @@ const SingleLineMapPage = () => {
                 positions={path.locations.map(({ lat, lon }) => [lat, lon])}
               />
             ))}
-          </MyMap>
+          </ExpandableMap>
         </ExpandedContainer>
-        {/* </MapContainer> */}
       </div>
     </PageContainer>
   )
