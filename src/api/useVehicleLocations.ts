@@ -139,7 +139,7 @@ function getLocations({
   operatorRef?: number
   onUpdate: (locations: VehicleLocation[] | { finished: true }) => void // the observer will be called every time with all the locations that were loaded
 }) {
-  const key = `${formatTime(from)}-${formatTime(to)}`
+  const key = `${formatTime(from)}-${formatTime(to)}-${operatorRef}-${lineRef}`
   if (!loadedLocations.has(key)) {
     loadedLocations.set(key, new LocationObservable({ from, to, lineRef, operatorRef }))
   }

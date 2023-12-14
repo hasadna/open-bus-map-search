@@ -6,6 +6,7 @@ import { PAGES } from 'src/routes'
 
 import type { MenuProps } from 'antd'
 import { Menu } from 'antd'
+import { LanguageToggle } from 'src/pages/EasterEgg/LanguageToggle'
 
 type MenuItem = Required<MenuProps>['items'][number]
 function getItem(
@@ -23,17 +24,11 @@ function getItem(
 }
 
 const MainMenu = () => {
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
   const items: MenuItem[] = PAGES.map((itm) => {
     return getItem(<Link to={t(itm.path)}>{t(itm.label)}</Link>, itm.path, itm.icon)
   })
-  const [currentLanguage, setCurrentLanguage] = useState('en')
 
-  const handleChangeLanguage = () => {
-    const newLanguage = currentLanguage === 'en' ? 'he' : 'en'
-    setCurrentLanguage(newLanguage)
-    i18n.changeLanguage(newLanguage)
-  }
   const location = useLocation()
   const [current, setCurrent] = useState(
     location.pathname === '/' || location.pathname === '' ? '/dashboard' : location.pathname,
@@ -59,7 +54,7 @@ const MainMenu = () => {
         mode="inline"
         items={items}
       />
-      {null && <button onClick={handleChangeLanguage}>Change Language</button>}
+      {<LanguageToggle />}
     </>
   )
 }

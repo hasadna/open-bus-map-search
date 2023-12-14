@@ -6,6 +6,8 @@ import LayoutContext from './LayoutContext'
 import { Outlet } from 'react-router-dom'
 import { Suspense } from 'react'
 import Preloader from 'src/shared/Preloader'
+import { EasterEgg } from 'src/pages/EasterEgg/EasterEgg'
+import { Envelope } from 'src/pages/EasterEgg/Envelope'
 
 const { Content } = Layout
 
@@ -32,6 +34,11 @@ export function MainLayout() {
             <StyledBody>
               <Suspense fallback={<Preloader />}>
                 <Outlet />
+                <EasterEgg code="storybook">
+                  <a href="/storybook/index.html">
+                    <Envelope />
+                  </a>
+                </EasterEgg>
               </Suspense>
             </StyledBody>
           </StyledContent>
