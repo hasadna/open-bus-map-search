@@ -73,6 +73,7 @@ jobs:
         if: steps.fc.outputs.comment-id
         with:
           comment-id: ${{ steps.fc.outputs.comment-id }}
+          edit-mode: replace
           body: |
             Preview: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.sha }}/index.html
       - name: create comment
