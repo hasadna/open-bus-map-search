@@ -3,7 +3,7 @@ import { TEXTS } from 'src/resources/texts'
 import './HbarChart.scss'
 import { Tooltip } from '@mui/material'
 
-type Entry = { name: string; total: number; actual: number; color?: string }
+export type Entry = { name: string; total: number; actual: number; color?: string }
 const numberFormatter = new Intl.NumberFormat('he-IL')
 
 export function HbarChart({
