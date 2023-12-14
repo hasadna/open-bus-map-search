@@ -81,6 +81,7 @@ jobs:
           edit-mode: replace
           body: |
             Preview: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.sha }}/index.html
+            Preview Storybook: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.sha }}/storybook/index.html
       - name: create comment
         uses: peter-evans/create-or-update-comment@v1
         if: steps.fc.outputs.comment-id == ''
@@ -88,3 +89,4 @@ jobs:
           issue-number: ${{ github.event.pull_request.number }}
           body: |
             Preview: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.sha }}/index.html
+            Preview Storybook: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.sha }}/storybook/index.html
