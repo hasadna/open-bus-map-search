@@ -18,10 +18,10 @@ import { heIL as heILmui } from '@mui/x-date-pickers/locales'
 import { ThemeProvider, createTheme } from '@mui/material'
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 import { LocalizationProvider } from '@mui/x-date-pickers'
-
-import { usePages } from './routes'
 import { EasterEgg } from './pages/EasterEgg/EasterEgg'
+import { usePages } from './routes'
 import MainLayout from './layout'
+import { Envelope } from './pages/EasterEgg/Envelope'
 
 const theme = createTheme(
   {
@@ -105,7 +105,11 @@ const App = () => {
 const RoutedApp = () => (
   <Router>
     <App />
-    <EasterEgg />
+    <EasterEgg code="storybook">
+      <a href="/storybook/index.html">
+        <Envelope />
+      </a>
+    </EasterEgg>
   </Router>
 )
 export default RoutedApp
