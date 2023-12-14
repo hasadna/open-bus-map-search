@@ -12,6 +12,7 @@ import { TEXTS } from 'src/resources/texts'
 import { SearchContext } from '../../model/pageState'
 import { NotFound } from '../components/NotFound'
 import { Point } from '../realtimeMap'
+import styled from 'styled-components'
 
 import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
 import '../Map.scss'
@@ -40,7 +41,7 @@ const position: Point = {
 const SingleLineMapPage = () => {
   const { search, setSearch } = useContext(SearchContext)
   const { operatorId, lineNumber, timestamp, routes, routeKey } = search
-
+  const [isExpanded, setIsExpanded] = useState<Boolean>(false)
   const [agencyList, setAgencyList] = useState<Agency[]>([])
 
   useEffect(() => {
@@ -106,6 +107,38 @@ const SingleLineMapPage = () => {
     [filteredPositions],
   )
 
+  function doThis() {
+    setIsExpanded(!isExpanded)
+    console.log("isExpanded", isExpanded)
+  }
+
+  const ExpandedContainer = styled.div`
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+  `
+  const Container = styled.div`
+    position: absolute;
+    top: 0;
+    left: 0;
+  `
+
+  const MyMap = styled(MapContainer)`
+    height: 100%;
+    width: 100%
+  `
+
+  const ExpandButton = styled.button`
+    z-index: 9999;
+    position: absolute;
+    left: 15px;
+    bottom: 15px;
+    width: fit-content;
+    font-size: 20px;
+  `
+
   return (
     <PageContainer className="map-container">
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
@@ -162,36 +195,43 @@ const SingleLineMapPage = () => {
       </Grid>
 
       <div className="map-info">
-        <MapContainer center={position.loc} zoom={8} scrollWheelZoom={true}>
-          <TileLayer
-            attribution='&copy <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
-          />
-
-          {filteredPositions.map((pos, i) => {
-            const icon = busIcon({
-              operator_id: pos.operator?.toString() || 'default',
-              name: agencyList.find((agency) => agency.operator_ref === pos.operator)?.agency_name,
-            })
-            return (
-              <Marker position={pos.loc} icon={icon} key={i}>
-                <Popup minWidth={300} maxWidth={700}>
-                  <BusToolTip position={pos} icon={busIconPath(operatorId!)} />
-                </Popup>
-              </Marker>
-            )
-          })}
-
-          {paths.map((path) => (
-            <Polyline
-              key={path.vehicleRef}
-              pathOptions={{
-                color: getColorByHashString(path.vehicleRef.toString()),
-              }}
-              positions={path.locations.map(({ lat, lon }) => [lat, lon])}
+        <ExpandButton onClick={doThis}>Expand</ExpandButton>
+        {/* <Container> */}
+        <ExpandedContainer>
+          <MyMap center={position.loc} zoom={13}>
+            {/* <Container> */}
+            {/* <MapContainer center={position.loc} zoom={8} scrollWheelZoom={true}> */}
+            <TileLayer
+              attribution='&copy <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
+            // className={isExpanded ? "expanded-map" : ""}
             />
-          ))}
-        </MapContainer>
+            {filteredPositions.map((pos, i) => {
+              const icon = busIcon({
+                operator_id: pos.operator?.toString() || 'default',
+                name: agencyList.find((agency) => agency.operator_ref === pos.operator)?.agency_name,
+              })
+              return (
+                <Marker position={pos.loc} icon={icon} key={i}>
+                  <Popup minWidth={300} maxWidth={700}>
+                    <BusToolTip position={pos} icon={busIconPath(operatorId!)} />
+                  </Popup>
+                </Marker>
+              )
+            })}
+
+            {paths.map((path) => (
+              <Polyline
+                key={path.vehicleRef}
+                pathOptions={{
+                  color: getColorByHashString(path.vehicleRef.toString()),
+                }}
+                positions={path.locations.map(({ lat, lon }) => [lat, lon])}
+              />
+            ))}
+          </MyMap>
+        </ExpandedContainer>
+        {/* </MapContainer> */}
       </div>
     </PageContainer>
   )
