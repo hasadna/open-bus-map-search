@@ -47,6 +47,7 @@ function StackedResearchSection() {
 
   return (
     <Widget>
+      <h1>בעיות etl/gps/משהו גלובאלי אחר</h1>
       <StackedResearchInputs
         startDate={startDate}
         setStartDate={setStartDate}
@@ -55,7 +56,6 @@ function StackedResearchSection() {
         groupByHour={groupByHour}
         setGroupByHour={setGroupByHour}
       />
-      <h2>בעיות etl/gps/משהו גלובאלי אחר</h2>
       <StackedResearchChart
         graphData={graphData}
         isLoading={loadingGraph}
@@ -183,7 +183,7 @@ const StackedResearchChart = ({
 
   return (
     <>
-      {title && <h3>{title}</h3>}
+      {title && <h2>{title}</h2>}
       {description && (
         <p>
           <strong>מה רואים בגרף?</strong>
