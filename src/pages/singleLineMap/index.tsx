@@ -1,5 +1,5 @@
 import moment from 'moment'
-import { useContext, useEffect, useMemo, useState } from 'react'
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { MapContainer, Marker, Polyline, Popup, TileLayer } from 'react-leaflet'
 import { getRoutesAsync } from 'src/api/gtfsService'
 import useVehicleLocations from 'src/api/useVehicleLocations'
@@ -44,6 +44,7 @@ const SingleLineMapPage = () => {
   const { search, setSearch } = useContext(SearchContext)
   const { operatorId, lineNumber, timestamp, routes, routeKey } = search
   const [isExpanded, setIsExpanded] = useState<Boolean>(false)
+  const toggleExpanded = useCallback(()=>setIsExpanded(expanded => !expanded), [])
   const [agencyList, setAgencyList] = useState<Agency[]>([])
 
   useEffect(() => {
@@ -181,7 +182,7 @@ const SingleLineMapPage = () => {
       </Grid>
 
       <div className="map-info">
-        <Button type="primary" className="expand-button" shape="circle" onClick={() => setIsExpanded(!isExpanded)} icon={<ExpandAltOutlined />} />
+        <Button type="primary" className="expand-button" shape="circle" onClick={toggleExpanded} icon={<ExpandAltOutlined />} />
         <ExpandedContainer>
           <ExpandableMap center={position.loc} zoom={8} scrollWheelZoom={true}>
             <TileLayer
