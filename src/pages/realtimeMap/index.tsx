@@ -19,7 +19,7 @@ import { getColorByHashString } from '../dashboard/AllLineschart/OperatorHbarCha
 import createClusterCustomIcon from '../components/utils/customCluster/customCluster'
 import { TimeSelector } from '../components/TimeSelector'
 import { busIcon, busIconPath } from '../components/utils/BusIcon'
-import { BusToolTip } from 'src/pages/components/MapLayers/BusToolTip'
+import { BusToolTip } from 'src/pages/components/map-related/MapLayers/BusToolTip'
 
 const { Title } = Typography
 

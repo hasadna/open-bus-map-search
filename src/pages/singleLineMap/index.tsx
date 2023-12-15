@@ -23,7 +23,7 @@ import { CircularProgress } from '@mui/material'
 import { FilterPositionsByStartTimeSelector } from '../components/FilterPositionsByStartTimeSelector'
 import { PageContainer } from '../components/PageContainer'
 import { busIcon, busIconPath } from '../components/utils/BusIcon'
-import { BusToolTip } from 'src/pages/components/MapLayers/BusToolTip'
+import { BusToolTip } from 'src/pages/components/map-related/MapLayers/BusToolTip'
 
 interface Path {
   locations: VehicleLocation[]
