@@ -1,5 +1,4 @@
 import { useCallback, useEffect } from 'react'
-import 'antd/dist/antd.min.css'
 import { ConfigProvider } from 'antd'
 import 'leaflet/dist/leaflet.css'
 import heIL from 'antd/es/locale/he_IL'

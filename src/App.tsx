@@ -1,4 +1,3 @@
-import 'antd/dist/antd.min.css'
 import './App.scss'
 import 'leaflet/dist/leaflet.css'
 import 'moment/locale/he'
