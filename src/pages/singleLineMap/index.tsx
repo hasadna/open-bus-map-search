@@ -41,12 +41,6 @@ const SingleLineMapPage = () => {
   const { search, setSearch } = useContext(SearchContext)
   const { operatorId, lineNumber, timestamp, routes, routeKey } = search
 
-  const [agencyList, setAgencyList] = useState<Agency[]>([])
-
-  useEffect(() => {
-    getAgencyList().then(setAgencyList).catch(console.log)
-  }, [])
-
   useEffect(() => {
     if (!operatorId || operatorId === '0' || !lineNumber) {
       setSearch((current) => ({ ...current, routes: undefined, routeKey: undefined }))
@@ -160,41 +154,58 @@ const SingleLineMapPage = () => {
           />
         )}
       </Grid>
-
-      <div className="map-info">
-        <MapContainer center={position.loc} zoom={8} scrollWheelZoom={true}>
-          <TileLayer
-            attribution='&copy <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
-          />
-
-          {filteredPositions.map((pos, i) => {
-            const icon = busIcon({
-              operator_id: pos.operator?.toString() || 'default',
-              name: agencyList.find((agency) => agency.operator_ref === pos.operator)?.agency_name,
-            })
-            return (
-              <Marker position={pos.loc} icon={icon} key={i}>
-                <Popup minWidth={300} maxWidth={700}>
-                  <BusToolTip position={pos} icon={busIconPath(operatorId!)} />
-                </Popup>
-              </Marker>
-            )
-          })}
-
-          {paths.map((path) => (
-            <Polyline
-              key={path.vehicleRef}
-              pathOptions={{
-                color: getColorByHashString(path.vehicleRef.toString()),
-              }}
-              positions={path.locations.map(({ lat, lon }) => [lat, lon])}
-            />
-          ))}
-        </MapContainer>
-      </div>
+      <MapWithLocationsAndPath positions={filteredPositions} paths={paths} />
     </PageContainer>
   )
+}
+
+function MapWithLocationsAndPath({ positions, paths }: { positions: Point[]; paths: Path[] }) {
+  const agencyList = useAgencyList()
+
+  return (
+    <div className="map-info">
+      <MapContainer center={position.loc} zoom={8} scrollWheelZoom={true}>
+        <TileLayer
+          attribution='&copy <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
+        />
+
+        {positions.map((pos, i) => {
+          const icon = busIcon({
+            operator_id: pos.operator?.toString() || 'default',
+            name: agencyList.find((agency) => agency.operator_ref === pos.operator)?.agency_name,
+          })
+          return (
+            <Marker position={pos.loc} icon={icon} key={i}>
+              <Popup minWidth={300} maxWidth={700}>
+                <BusToolTip position={pos} icon={busIconPath(pos.operator!)} />
+              </Popup>
+            </Marker>
+          )
+        })}
+
+        {paths.map((path) => (
+          <Polyline
+            key={path.vehicleRef}
+            pathOptions={{
+              color: getColorByHashString(path.vehicleRef.toString()),
+            }}
+            positions={path.locations.map(({ lat, lon }) => [lat, lon])}
+          />
+        ))}
+      </MapContainer>
+    </div>
+  )
+}
+
+function useAgencyList() {
+  const [agencyList, setAgencyList] = useState<Agency[]>([])
+
+  useEffect(() => {
+    getAgencyList().then(setAgencyList).catch(console.log)
+  }, [])
+
+  return agencyList
 }
 
 function FilterPositionsByStartTime({
