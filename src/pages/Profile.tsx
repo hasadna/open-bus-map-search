@@ -1,31 +1,15 @@
 import styled from 'styled-components'
-import React from 'react'
-// import { useContext, useState } from 'react'
-import { useContext } from 'react'
 import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
-import moment from 'moment'
 
 import { Label } from './components/Label'
 import { NotFound } from './components/NotFound'
 import { PageContainer } from './components/PageContainer'
 
 import { useTranslation } from 'react-i18next'
-// import GapsPage from './GapsPage'
-// import SingleLineMapPage from './SingleLineMapPage'
-import { PageSearchState, SearchContext } from '../model/pageState'
-import LineNumberSelector from './components/LineSelector'
-import OperatorSelector from './components/OperatorSelector'
-import RouteSelector from './components/RouteSelector'
 
 //API
-// import { /*getGtfsRidesList,*/ getRidesAsync } from 'src/api/profileService'
-import { getRoutesAsync } from '../api/gtfsService'
 import Widget from 'src/shared/Widget'
-
-// time inputs
-// import { DateSelector } from './components/DateSelector'
-// import { TimeSelector } from './components/TimeSelector'
-// import { useDate } from './components/DateTimePicker'
+import { useLoaderData } from 'react-router-dom'
 
 const Profile = () => {
   return (
@@ -36,71 +20,47 @@ const Profile = () => {
 }
 
 const GeneralDetailsAboutLine = () => {
-  const { search, setSearch } = useContext(SearchContext)
-  const { operatorId, lineNumber, routes, routeKey } = search
-  const { t } = useTranslation()
   return (
     <>
       <PageContainer className="line-data-container">
-        {/* choose operator */}
-        <Grid xs={8}>
-          <OperatorSelector
-            operatorId={operatorId}
-            setOperatorId={(id) => setSearch((current) => ({ ...current, operatorId: id }))}
-          />
-        </Grid>
-
-        {/* choose line number */}
-        <Grid xs={8}>
-          <LineNumberSelector
-            lineNumber={lineNumber}
-            setLineNumber={(number) => setSearch((current) => ({ ...current, lineNumber: number }))}
-          />
-        </Grid>
-
-        {/* choose route*/}
-        <Grid xs={12}>
-          {routes &&
-            (routes.length === 0 ? (
-              <NotFound>{t('line_not_found')}</NotFound>
-            ) : (
-              <RouteSelector
-                routes={routes}
-                routeKey={routeKey}
-                setRouteKey={(key) => setSearch((current) => ({ ...current, routeKey: key }))}
-              />
-            ))}
-        </Grid>
-
-        <LineProfileComponent search={search} />
+        <LineProfileComponent />
       </PageContainer>
     </>
   )
 }
 
-const LineProfileComponent = ({ search }: { search: PageSearchState }) => {
+const LineProfileComponent = () => {
   const { t } = useTranslation()
+  const route = useLoaderData() as {
+    // TODO: find better type definition
+    agency_name: string
+    route_short_name: string
+    route_long_name: string
+    message?: string
+  }
+  console.log('route', route)
 
-  // const resp = getRidesAsync(search.operatorId, search.lineNumber, search.routeKey, new Date())
-  // const resp = getGtfsRidesList(new Date(), '3', '271', '1')
-  const resp = getRoutesAsync(
-    moment(search.timestamp),
-    moment(search.timestamp),
-    search.operatorId,
-    search.lineNumber,
-  )
+  if (route.message)
+    return (
+      <NotFound>
+        <Widget>
+          <h1>{t('lineProfile.notFound')}</h1>
+          <pre>{route.message}</pre>
+        </Widget>
+      </NotFound>
+    )
 
   return (
     <Grid xs={12} lg={6}>
       <Widget>
-        <h2 className="title">{t('profile_page')}</h2>
-        <label> מפעיל: {search.operatorId} </label>
+        <h2 className="title">{t('lineProfile.title')}</h2>
+        <label> מפעיל: {route.agency_name} </label>
         <br></br>
-        <label> מספר קו: {search.lineNumber} </label>
+        <label> מספר קו: {route.route_short_name} </label>
         <br></br>
-        <label> כיוון נסיעה: {search.routeKey} </label>
+        <label> כיוון נסיעה: {route.route_long_name} </label>
         <div>
-          <div>{resp.toString()}</div>
+          <pre style={{ direction: 'ltr' }}>{JSON.stringify(route, null, 2)}</pre>
           <Label text="שעות פעילות" />
           {/* GET the earliest and the latest bus drive departure time for each day */}
           <TableStyle>
