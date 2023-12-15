@@ -22,6 +22,7 @@ import {
   LineChartOutlined,
 } from '@ant-design/icons'
 import { MainRoute } from './MainRoute'
+import { DataResearch } from 'src/pages/DataResearch'
 
 export const PAGES = [
   {
@@ -104,8 +105,8 @@ const getRoutesList = () => {
           return gtfs_route
         }}
       />
-      ,
-      <Route path="*" element={<RedirectToDashboard />} key="back" />,
+      <Route path="data-research" element={<DataResearch />} />
+      <Route path="*" element={<RedirectToDashboard />} key="back" />
     </Route>
     // </Suspense>
   )
