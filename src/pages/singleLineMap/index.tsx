@@ -15,7 +15,7 @@ import { Point } from '../realtimeMap'
 
 import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
 import '../Map.scss'
-import getAgencyList, { Agency } from 'src/api/agencyList'
+import getAgencyList, { Agency, useAgencyList } from 'src/api/agencyList'
 import { VehicleLocation } from 'src/model/vehicleLocation'
 import { getColorByHashString } from '../dashboard/AllLineschart/OperatorHbarChart/utils'
 import { DateSelector } from '../components/DateSelector'
@@ -196,16 +196,6 @@ function MapWithLocationsAndPath({ positions, paths }: { positions: Point[]; pat
       </MapContainer>
     </div>
   )
-}
-
-function useAgencyList() {
-  const [agencyList, setAgencyList] = useState<Agency[]>([])
-
-  useEffect(() => {
-    getAgencyList().then(setAgencyList).catch(console.log)
-  }, [])
-
-  return agencyList
 }
 
 function FilterPositionsByStartTime({
