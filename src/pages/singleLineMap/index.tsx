@@ -24,6 +24,7 @@ import { FilterPositionsByStartTimeSelector } from '../components/FilterPosition
 import { PageContainer } from '../components/PageContainer'
 import { busIcon, busIconPath } from '../components/utils/BusIcon'
 import { BusToolTip } from 'src/pages/components/MapLayers/BusToolTip'
+import { t } from 'i18next'
 
 interface Path {
   locations: VehicleLocation[]
@@ -237,7 +238,7 @@ function FilterPositionsByStartTime({
       </Grid>
       <Grid xs={1}>
         {locationsIsLoading && (
-          <Tooltip title={TEXTS.loading_times_tooltip_content}>
+          <Tooltip title={t('loading_times_tooltip_content')}>
             <CircularProgress />
           </Tooltip>
         )}
