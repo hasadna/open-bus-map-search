@@ -1,6 +1,5 @@
 import moment from 'moment'
 import { useContext, useEffect, useMemo, useState } from 'react'
-import { MapContainer, Marker, Polyline, Popup, TileLayer } from 'react-leaflet'
 import { getRoutesAsync } from 'src/api/gtfsService'
 import useVehicleLocations from 'src/api/useVehicleLocations'
 import { Label } from 'src/pages/components/Label'
@@ -15,27 +14,11 @@ import { Point } from '../realtimeMap'
 
 import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
 import '../Map.scss'
-import getAgencyList, { Agency, useAgencyList } from 'src/api/agencyList'
-import { VehicleLocation } from 'src/model/vehicleLocation'
-import { getColorByHashString } from '../dashboard/AllLineschart/OperatorHbarChart/utils'
 import { DateSelector } from '../components/DateSelector'
 import { CircularProgress } from '@mui/material'
 import { FilterPositionsByStartTimeSelector } from '../components/FilterPositionsByStartTimeSelector'
 import { PageContainer } from '../components/PageContainer'
-import { busIcon, busIconPath } from '../components/utils/BusIcon'
-import { BusToolTip } from 'src/pages/components/map-related/MapLayers/BusToolTip'
-
-interface Path {
-  locations: VehicleLocation[]
-  lineRef: number
-  operator: number
-  vehicleRef: number
-}
-
-const position: Point = {
-  loc: [32.3057988, 34.85478613], // arbitrary default value... Netanya - best city to live & die in
-  color: 0,
-}
+import { MapWithLocationsAndPath } from '../components/map-related/MapWithLocationsAndPath'
 
 const SingleLineMapPage = () => {
   const { search, setSearch } = useContext(SearchContext)
@@ -156,45 +139,6 @@ const SingleLineMapPage = () => {
       </Grid>
       <MapWithLocationsAndPath positions={filteredPositions} paths={paths} />
     </PageContainer>
-  )
-}
-
-function MapWithLocationsAndPath({ positions, paths }: { positions: Point[]; paths: Path[] }) {
-  const agencyList = useAgencyList()
-
-  return (
-    <div className="map-info">
-      <MapContainer center={position.loc} zoom={8} scrollWheelZoom={true}>
-        <TileLayer
-          attribution='&copy <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
-        />
-
-        {positions.map((pos, i) => {
-          const icon = busIcon({
-            operator_id: pos.operator?.toString() || 'default',
-            name: agencyList.find((agency) => agency.operator_ref === pos.operator)?.agency_name,
-          })
-          return (
-            <Marker position={pos.loc} icon={icon} key={i}>
-              <Popup minWidth={300} maxWidth={700}>
-                <BusToolTip position={pos} icon={busIconPath(pos.operator!)} />
-              </Popup>
-            </Marker>
-          )
-        })}
-
-        {paths.map((path) => (
-          <Polyline
-            key={path.vehicleRef}
-            pathOptions={{
-              color: getColorByHashString(path.vehicleRef.toString()),
-            }}
-            positions={path.locations.map(({ lat, lon }) => [lat, lon])}
-          />
-        ))}
-      </MapContainer>
-    </div>
   )
 }
 
