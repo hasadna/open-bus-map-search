@@ -3,13 +3,19 @@ import { useGroupBy } from 'src/api/groupByService'
 import Widget from 'src/shared/Widget'
 import { useDate } from './components/DateTimePicker'
 import moment from 'moment'
-import { useState } from 'react'
 import { Grid } from '@mui/material'
 import { DateSelector } from './components/DateSelector'
 import { useTranslation } from 'react-i18next'
 import { Skeleton } from 'antd'
-import { Area, AreaChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis } from 'recharts'
-import { Tooltip } from 'react-leaflet'
+import {
+  Area,
+  Tooltip,
+  AreaChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  XAxis,
+  YAxis,
+} from 'recharts'
 import { PageContainer } from './components/PageContainer'
 import { getColorName } from './dashboard/AllLineschart/OperatorHbarChart/OperatorHbarChart'
 
@@ -41,14 +47,15 @@ export const StackedResearchChart = () => {
   const data = useMemo(
     () =>
       graphData.reduce((acc, curr) => {
+        if (curr.total_actual_rides === 0) return acc
         const date = curr.gtfs_route_date ?? curr.gtfs_route_hour
-        const entry = acc.find((item) => item.name === date)
+        const entry = acc.find((item) => item.date === date)
         if (entry) {
-          entry[curr.operator_ref?.agency_id || 'Unknown'] = curr.total_actual_rides
+          entry[curr.operator_ref?.agency_name || 'Unknown'] = curr.total_actual_rides
         } else {
           const newEntry = {
-            name: date,
-            [curr.operator_ref?.agency_id || 'Unknown']: curr.total_actual_rides,
+            date: date,
+            [curr.operator_ref?.agency_name || 'Unknown']: curr.total_actual_rides,
           }
           acc.push(newEntry)
         }
@@ -58,7 +65,7 @@ export const StackedResearchChart = () => {
   )
 
   const operators = graphData
-    .map((operator) => operator.operator_ref?.agency_id || 'Unknown')
+    .map((operator) => operator.operator_ref?.agency_name || 'Unknown')
     .filter(unique)
 
   return (
@@ -104,7 +111,7 @@ export const StackedResearchChart = () => {
               bottom: 0,
             }}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
+            <XAxis dataKey="date" />
             <YAxis />
             {operators.map((operator) => (
               <Area
