@@ -1,4 +1,5 @@
 import { TEXTS } from 'src/resources/texts'
+import { t } from 'i18next'
 import styled from 'styled-components'
 import { Moment } from 'moment'
 
