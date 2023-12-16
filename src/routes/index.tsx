@@ -9,6 +9,9 @@ const SingleLineMapPage = lazy(() => import('../pages/singleLineMap'))
 const About = lazy(() => import('../pages/about'))
 const Profile = lazy(() => import('../pages/Profile'))
 const BugReportForm = lazy(() => import('../pages/BugReportForm '))
+const DataResearch = lazy(() =>
+  import('../pages/DataResearch/DataResearch').then((m) => ({ default: m.DataResearch })),
+)
 
 import {
   RadarChartOutlined,
@@ -104,8 +107,8 @@ const getRoutesList = () => {
           return gtfs_route
         }}
       />
-      ,
-      <Route path="*" element={<RedirectToDashboard />} key="back" />,
+      <Route path="data-research" element={<DataResearch />} />
+      <Route path="*" element={<RedirectToDashboard />} key="back" />
     </Route>
     // </Suspense>
   )
