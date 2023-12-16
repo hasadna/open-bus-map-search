@@ -113,5 +113,8 @@
   "show_document": "show document",
   "dashboard_page_graph_title_hour": "Percentage of rides out, by hour",
   "dashboard_page_graph_title_day": "Percentage of rides out, by day",
-  "group_by_day_tooltip_content": "Group by day"
+  "group_by_day_tooltip_content": "Group by day",
+  "order_by_hour": "by hour",
+  "order_by_severity": "by severity",
+  "choose_dates": "Dates"
 }

@@ -124,5 +124,8 @@
   },
   "dashboard_page_graph_title_hour": "אחוזי יציאה מסך הנסיעות לפי שעה",
   "dashboard_page_graph_title_day": "אחוזי יציאה מסך הנסיעות לפי יום",
-  "group_by_day_tooltip_content": "קיבוץ לפי יום"
+  "group_by_day_tooltip_content": "קיבוץ לפי יום",
+  "order_by_hour": "לפי שעה",
+  "order_by_severity": "לפי חומרה",
+  "choose_dates": "תאריכים"
 }
