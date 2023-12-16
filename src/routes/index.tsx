@@ -91,7 +91,7 @@ const getRoutesList = () => {
   return (
     <Route element={<MainRoute />}>
       {routes.map(({ path, element }) => (
-        <Route key={path} path={path} element={element} />
+        <Route key={path} path={path} element={element} ErrorBoundary={ErrorPage} />
       ))}
       <Route
         path="/profile/:gtfsRideGtfsRouteId"
