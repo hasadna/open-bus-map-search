@@ -23,6 +23,7 @@ import { MapWithLocationsAndPath, Path } from '../components/map-related/MapWith
 const SingleLineMapPage = () => {
   const { search, setSearch } = useContext(SearchContext)
   const { operatorId, lineNumber, timestamp, routes, routeKey } = search
+  const { t } = useTranslation()
 
   useEffect(() => {
     if (!operatorId || operatorId === '0' || !lineNumber) {
