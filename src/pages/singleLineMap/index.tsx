@@ -19,11 +19,12 @@ import getAgencyList, { Agency } from 'src/api/agencyList'
 import { VehicleLocation } from 'src/model/vehicleLocation'
 import { getColorByHashString } from '../dashboard/AllLineschart/OperatorHbarChart/utils'
 import { DateSelector } from '../components/DateSelector'
-import { CircularProgress } from '@mui/material'
+import { CircularProgress, Tooltip } from '@mui/material'
 import { FilterPositionsByStartTimeSelector } from '../components/FilterPositionsByStartTimeSelector'
 import { PageContainer } from '../components/PageContainer'
 import { busIcon, busIconPath } from '../components/utils/BusIcon'
 import { BusToolTip } from 'src/pages/components/MapLayers/BusToolTip'
+import { t } from 'i18next'
 
 interface Path {
   locations: VehicleLocation[]
@@ -235,7 +236,13 @@ function FilterPositionsByStartTime({
       <Grid xs={3}>
         <Label text={TEXTS.choose_start_time} />
       </Grid>
-      <Grid xs={1}>{locationsIsLoading && <CircularProgress />}</Grid>
+      <Grid xs={1}>
+        {locationsIsLoading && (
+          <Tooltip title={t('loading_times_tooltip_content')}>
+            <CircularProgress />
+          </Tooltip>
+        )}
+      </Grid>
       <Grid xs={8}>
         <FilterPositionsByStartTimeSelector
           options={options}
