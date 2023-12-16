@@ -1,4 +1,4 @@
-import { TEXTS } from 'src/resources/texts'
+import { t } from 'i18next'
 import styled from 'styled-components'
 import { Moment } from 'moment'
 
@@ -25,9 +25,9 @@ export const pointTypeToColor: Record<PointType, string> = {
 
 export const pointTypeToDescription: Record<PointType, string | null> = {
   [PointType.BOUNDARY]: null,
-  [PointType.GTFS]: TEXTS.timestamp_gtfs,
-  [PointType.SIRI]: TEXTS.timestamp_siri,
-  [PointType.TARGET]: TEXTS.timestamp_target,
+  [PointType.GTFS]: t('timestamp_gtfs'),
+  [PointType.SIRI]: t('timestamp_siri'),
+  [PointType.TARGET]: t('timestamp_target'),
 }
 
 type PointProps = {
@@ -58,7 +58,7 @@ type LabeledPointProps = {
 } & PointProps
 
 export const LabeledPoint = ({ timestamp, top, type }: LabeledPointProps) => {
-  const timeDisplay = timestamp.format(TEXTS.time_format)
+  const timeDisplay = timestamp.format(t('time_format'))
   return (
     <>
       <Point top={top} type={type} title={timeDisplay} />
