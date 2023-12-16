@@ -3,7 +3,7 @@ import MainHeader from './header/Header'
 import SideBar from './sidebar/SideBar'
 import styled from 'styled-components'
 import LayoutContext from './LayoutContext'
-import { Outlet } from 'react-router-dom'
+import { Link, Outlet } from 'react-router-dom'
 import { Suspense } from 'react'
 import Preloader from 'src/shared/Preloader'
 import { EasterEgg } from 'src/pages/EasterEgg/EasterEgg'
@@ -38,6 +38,11 @@ export function MainLayout() {
                   <a href="/storybook/index.html">
                     <Envelope />
                   </a>
+                </EasterEgg>
+                <EasterEgg code="geek">
+                  <Link to="/data-research">
+                    <Envelope />
+                  </Link>
                 </EasterEgg>
               </Suspense>
             </StyledBody>
