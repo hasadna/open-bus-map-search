@@ -9,6 +9,9 @@ const SingleLineMapPage = lazy(() => import('../pages/singleLineMap'))
 const About = lazy(() => import('../pages/about'))
 const Profile = lazy(() => import('../pages/Profile'))
 const BugReportForm = lazy(() => import('../pages/BugReportForm '))
+const DataResearch = lazy(() =>
+  import('../pages/DataResearch/DataResearch').then((m) => ({ default: m.DataResearch })),
+)
 
 import {
   RadarChartOutlined,
@@ -22,7 +25,6 @@ import {
   LineChartOutlined,
 } from '@ant-design/icons'
 import { MainRoute } from './MainRoute'
-import { DataResearch } from 'src/pages/DataResearch/DataResearch'
 
 export const PAGES = [
   {
