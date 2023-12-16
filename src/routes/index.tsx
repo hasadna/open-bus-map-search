@@ -25,6 +25,7 @@ import {
   LineChartOutlined,
 } from '@ant-design/icons'
 import { MainRoute } from './MainRoute'
+import { ErrorPage } from 'src/pages/ErrorPage'
 
 export const PAGES = [
   {
@@ -93,12 +94,13 @@ const getRoutesList = () => {
   return (
     <Route element={<MainRoute />}>
       {routes.map(({ path, element }) => (
-        <Route key={path} path={path} element={element} />
+        <Route key={path} path={path} element={element} ErrorBoundary={ErrorPage} />
       ))}
       <Route
         path="/profile/:gtfsRideGtfsRouteId"
         key={'/profile/:gtfsRideGtfsRouteId'}
         element={<Profile />}
+        ErrorBoundary={ErrorPage}
         loader={async ({ params: { gtfsRideGtfsRouteId } }) => {
           const resp = await fetch(
             `https://open-bus-stride-api.hasadna.org.il/gtfs_routes/get?id=${gtfsRideGtfsRouteId}`,
