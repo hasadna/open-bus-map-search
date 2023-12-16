@@ -1,4 +1,4 @@
-import { formatted } from 'src/resources/texts'
+import { formatted } from 'src/locale/utils'
 import { BusStop } from 'src/model/busStop'
 import { Autocomplete, TextField } from '@mui/material'
 import { useTranslation } from 'react-i18next'

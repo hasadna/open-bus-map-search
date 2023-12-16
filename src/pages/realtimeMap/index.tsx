@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { MapContainer, Marker, Polyline, Popup, TileLayer, useMap } from 'react-leaflet'
 import MarkerClusterGroup from 'react-leaflet-cluster'
-import { TEXTS } from 'src/resources/texts'
-
+import { useTranslation } from 'react-i18next'
 import { Spin, Typography } from 'antd'
 import moment from 'moment'
 import getAgencyList, { Agency } from 'src/api/agencyList'
@@ -58,6 +57,7 @@ export default function RealtimeMapPage() {
   })
 
   const loaded = locations.length
+  const { t } = useTranslation()
 
   const positions = useMemo(() => {
     const pos = locations.map<Point>((location) => ({
@@ -92,14 +92,14 @@ export default function RealtimeMapPage() {
 
   return (
     <PageContainer className="map-container">
-      <Title level={3}>{TEXTS.realtime_map_explanation.slice(0, 25)}</Title>
+      <Title level={3}>{t('realtime_map_explanation').slice(0, 25)}</Title>
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
         <Grid xs={12} className="hideOnMobile">
-          <Label text={TEXTS.realtime_map_explanation} />
+          <Label text={t('realtime_map_explanation')} />
         </Grid>
         {/* from date */}
         <Grid xs={2} className="hideOnMobile">
-          <Label text={TEXTS.from_date} />
+          <Label text={t('from_date')} />
         </Grid>
         <Grid sm={5} xs={6}>
           <DateSelector
@@ -123,7 +123,7 @@ export default function RealtimeMapPage() {
         </Grid>
         {/*minutes*/}
         <Grid sm={5} xs={12}>
-          <Label text={TEXTS.watch_locations_in_range} />
+          <Label text={t('watch_locations_in_range')} />
         </Grid>
         <Grid sm={6} xs={12}>
           <MinuteSelector
@@ -134,18 +134,15 @@ export default function RealtimeMapPage() {
           />
         </Grid>
         <Grid xs={1} className="hideOnMobile">
-          <Label text={TEXTS.minutes} />
+          <Label text={t('minutes')} />
         </Grid>
         {/* Buttons */}
-        {/*TODO (another PR another issue)
-          3) use text `TEXTS`.
-        */}
         {/* loaded info */}
         <Grid xs={11}>
           <p>
             {loaded} {`- `}
-            {TEXTS.show_x_bus_locations} {` `}
-            {TEXTS.from_time_x_to_time_y
+            {t('show_x_bus_locations')} {` `}
+            {t('from_time_x_to_time_y')
               .replace('XXX', moment(from).format('hh:mm A'))
               .replace('YYY', moment(to).format('hh:mm A'))}
           </p>
