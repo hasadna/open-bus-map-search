@@ -1,7 +1,7 @@
 import { Skeleton } from 'antd'
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
 import LinesHbarChart from './LineHbarChart/LinesHbarChart'
-import { TEXTS } from 'src/resources/texts'
+import { useTranslation } from 'react-i18next'
 import { FC } from 'react'
 import { Moment } from 'moment/moment'
 import Widget from 'src/shared/Widget'
@@ -18,6 +18,8 @@ export const WorstLinesChart: FC<WorstLinesChartProps> = ({ startDate, endDate, 
     dateFrom: startDate,
     groupBy: 'operator_ref,line_ref',
   })
+
+  const { t } = useTranslation()
 
   const convertToWorstLineChartCompatibleStruct = (arr: GroupByRes[], operatorId: string) => {
     if (!arr || !arr.length) return []
@@ -37,7 +39,7 @@ export const WorstLinesChart: FC<WorstLinesChartProps> = ({ startDate, endDate, 
 
   return (
     <Widget>
-      <h2 className="title">{TEXTS.worst_lines_page_title}</h2>
+      <h2 className="title">{t('worst_lines_page_title')}</h2>
       {lineDataLoading ? (
         <Skeleton active />
       ) : (

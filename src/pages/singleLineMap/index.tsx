@@ -8,7 +8,7 @@ import LineNumberSelector from 'src/pages/components/LineSelector'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
 import RouteSelector from 'src/pages/components/RouteSelector'
 import { INPUT_SIZE } from 'src/resources/sizes'
-import { TEXTS } from 'src/resources/texts'
+import { useTranslation } from 'react-i18next'
 import { SearchContext } from '../../model/pageState'
 import { NotFound } from '../components/NotFound'
 import { Point } from '../realtimeMap'
@@ -24,7 +24,6 @@ import { FilterPositionsByStartTimeSelector } from '../components/FilterPosition
 import { PageContainer } from '../components/PageContainer'
 import { busIcon, busIconPath } from '../components/utils/BusIcon'
 import { BusToolTip } from 'src/pages/components/MapLayers/BusToolTip'
-import { t } from 'i18next'
 
 interface Path {
   locations: VehicleLocation[]
@@ -43,6 +42,7 @@ const SingleLineMapPage = () => {
   const { operatorId, lineNumber, timestamp, routes, routeKey } = search
 
   const [agencyList, setAgencyList] = useState<Agency[]>([])
+  const { t } = useTranslation()
 
   useEffect(() => {
     getAgencyList().then(setAgencyList).catch(console.log)
@@ -112,7 +112,7 @@ const SingleLineMapPage = () => {
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
         {/* choose date*/}
         <Grid xs={4}>
-          <Label text={TEXTS.choose_date} />
+          <Label text={t('choose_date')} />
         </Grid>
         <Grid xs={8}>
           <DateSelector
@@ -122,7 +122,7 @@ const SingleLineMapPage = () => {
         </Grid>
         {/* choose operator */}
         <Grid xs={4}>
-          <Label text={TEXTS.choose_operator} />
+          <Label text={t('choose_operator')} />
         </Grid>
         <Grid xs={8}>
           <OperatorSelector
@@ -132,7 +132,7 @@ const SingleLineMapPage = () => {
         </Grid>
         {/* choose line number */}
         <Grid xs={4}>
-          <Label text={TEXTS.choose_line} />
+          <Label text={t('choose_line')} />
         </Grid>
         <Grid xs={8}>
           <LineNumberSelector
@@ -143,7 +143,7 @@ const SingleLineMapPage = () => {
         <Grid xs={12}>
           {routes &&
             (routes.length === 0 ? (
-              <NotFound>{TEXTS.line_not_found}</NotFound>
+              <NotFound>{t('line_not_found')}</NotFound>
             ) : (
               <RouteSelector
                 routes={routes}
@@ -207,6 +207,7 @@ function FilterPositionsByStartTime({
   setFilteredPositions: (positions: Point[]) => void
   locationsIsLoading: boolean
 }) {
+  const { t } = useTranslation()
   const [startTime, setStartTime] = useState<string>('00:00:00')
   const options = useMemo(() => {
     const options = positions
@@ -234,7 +235,7 @@ function FilterPositionsByStartTime({
   return (
     <>
       <Grid xs={3}>
-        <Label text={TEXTS.choose_start_time} />
+        <Label text={t('choose_start_time')} />
       </Grid>
       <Grid xs={1}>
         {locationsIsLoading && (

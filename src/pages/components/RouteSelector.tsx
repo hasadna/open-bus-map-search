@@ -1,4 +1,4 @@
-import { formatted } from 'src/resources/texts'
+import { formatted } from 'src/locale/utils'
 import { BusRoute } from 'src/model/busRoute'
 import { Autocomplete, TextField } from '@mui/material'
 import { useEffect } from 'react'
