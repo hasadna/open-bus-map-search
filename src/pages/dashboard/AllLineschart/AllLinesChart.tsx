@@ -1,7 +1,7 @@
 import { Tooltip } from '@mui/material'
 import { Skeleton } from 'antd'
 import { Fragment } from 'react'
-import { TEXTS } from 'src/resources/texts'
+import { useTranslation } from 'react-i18next'
 import OperatorHbarChart from './OperatorHbarChart/OperatorHbarChart'
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
 import { FC } from 'react'
@@ -28,13 +28,13 @@ export const AllLinesChart: FC<AllChartComponentProps> = ({ startDate, endDate }
     dateFrom: startDate,
     groupBy: 'operator_ref',
   })
-
+  const { t } = useTranslation()
   return (
     <Widget>
       <h2 className="title">
-        {TEXTS.dashboard_page_title}
+        {t('dashboard_page_title')}
         <Tooltip
-          title={convertLineFeedToHtmlTags(TEXTS.dashboard_tooltip_content)}
+          title={convertLineFeedToHtmlTags(t('dashboard_tooltip_content'))}
           placement="left"
           arrow>
           <span className="tooltip-icon">i</span>
