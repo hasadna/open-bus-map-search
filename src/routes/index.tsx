@@ -22,7 +22,7 @@ import {
   LineChartOutlined,
 } from '@ant-design/icons'
 import { MainRoute } from './MainRoute'
-import { DataResearch } from 'src/pages/DataResearch'
+import { DataResearch } from 'src/pages/DataResearch/DataResearch'
 
 export const PAGES = [
   {
