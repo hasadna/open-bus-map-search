@@ -121,5 +121,8 @@
     "text": "אנא נסה שוב מאוחר יותר",
     "text2": "אם הבעיה נמשכת, אנא פנה אלינו בכתובת:",
     "button": "חזרה לדף הבית"
-  }
+  },
+  "dashboard_page_graph_title_hour": "אחוזי יציאה מסך הנסיעות לפי שעה",
+  "dashboard_page_graph_title_day": "אחוזי יציאה מסך הנסיעות לפי יום",
+  "group_by_day_tooltip_content": "קיבוץ לפי יום"
 }

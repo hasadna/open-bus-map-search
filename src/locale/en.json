@@ -49,7 +49,7 @@
   "from_time_x_to_time_y": "From XXX to YYY",
   "choose_start_time": "Select a start time",
   "loading_times_tooltip_content": "Loading bus times. Current times available to use",
-  "group_by_hour_tooltip_content": "Kibbutz by hour",
+  "group_by_hour_tooltip_content": "Group by hour",
   "start": "start",
   "end": "end",
   "about_title": "About",
@@ -110,5 +110,8 @@
   "bearing": "bearing",
   "coords": "coords",
   "hide_document": "hide document",
-  "show_document": "show document"
+  "show_document": "show document",
+  "dashboard_page_graph_title_hour": "Percentage of rides out, by hour",
+  "dashboard_page_graph_title_day": "Percentage of rides out, by day",
+  "group_by_day_tooltip_content": "Group by day"
 }
