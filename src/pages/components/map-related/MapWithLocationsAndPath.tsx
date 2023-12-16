@@ -10,7 +10,7 @@ const position: Point = {
   loc: [32.3057988, 34.85478613], // arbitrary default value... Netanya - best city to live & die in
   color: 0,
 }
-interface Path {
+export interface Path {
   locations: VehicleLocation[]
   lineRef: number
   operator: number

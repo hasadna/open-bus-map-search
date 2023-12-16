@@ -18,7 +18,7 @@ import { DateSelector } from '../components/DateSelector'
 import { CircularProgress } from '@mui/material'
 import { FilterPositionsByStartTimeSelector } from '../components/FilterPositionsByStartTimeSelector'
 import { PageContainer } from '../components/PageContainer'
-import { MapWithLocationsAndPath } from '../components/map-related/MapWithLocationsAndPath'
+import { MapWithLocationsAndPath, Path } from '../components/map-related/MapWithLocationsAndPath'
 
 const SingleLineMapPage = () => {
   const { search, setSearch } = useContext(SearchContext)
