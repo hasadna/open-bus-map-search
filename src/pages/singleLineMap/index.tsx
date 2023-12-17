@@ -44,7 +44,7 @@ const SingleLineMapPage = () => {
   const { search, setSearch } = useContext(SearchContext)
   const { operatorId, lineNumber, timestamp, routes, routeKey } = search
   const [isExpanded, setIsExpanded] = useState<Boolean>(false)
-  const toggleExpanded = useCallback(()=>setIsExpanded(expanded => !expanded), [])
+  const toggleExpanded = useCallback(() => setIsExpanded(expanded => !expanded), [])
   const [agencyList, setAgencyList] = useState<Agency[]>([])
 
   useEffect(() => {
@@ -110,17 +110,6 @@ const SingleLineMapPage = () => {
     [filteredPositions],
   )
 
-  const ExpandedContainer = isExpanded ? styled.div`
-                                          position: absolute;
-                                          top: 0;
-                                          left: 0;
-                                          height: 100%;
-                                          width: 100%;
-                                          ` : styled.div`
-                                          width: 100%;
-                                          height: 100%;  
-                                          `
-
   const ExpandableMap = styled(MapContainer)`
     height: 100%;
     width: 100%
@@ -183,7 +172,7 @@ const SingleLineMapPage = () => {
 
       <div className="map-info">
         <Button type="primary" className="expand-button" shape="circle" onClick={toggleExpanded} icon={<ExpandAltOutlined />} />
-        <ExpandedContainer>
+        <div className={`${isExpanded ? 'expanded' : 'collapsed'}`}>
           <ExpandableMap center={position.loc} zoom={8} scrollWheelZoom={true}>
             <TileLayer
               attribution='&copy <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -213,7 +202,7 @@ const SingleLineMapPage = () => {
               />
             ))}
           </ExpandableMap>
-        </ExpandedContainer>
+        </div>
       </div>
     </PageContainer>
   )
