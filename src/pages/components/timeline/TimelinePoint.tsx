@@ -58,7 +58,7 @@ type LabeledPointProps = {
 } & PointProps
 
 export const LabeledPoint = ({ timestamp, top, type }: LabeledPointProps) => {
-  const timeDisplay = timestamp.format(t('time_format'))
+  const timeDisplay = timestamp.format('HH:mm:ss')
   return (
     <>
       <Point top={top} type={type} title={timeDisplay} />
