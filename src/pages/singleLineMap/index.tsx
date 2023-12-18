@@ -179,38 +179,39 @@ const SingleLineMapPage = () => {
           onClick={toggleExpanded}
           icon={<ExpandAltOutlined />}
         />
-        <div className={`${isExpanded ? 'expanded' : 'collapsed'}`}>
-          <ExpandableMap center={position.loc} zoom={8} scrollWheelZoom={true}>
-            <TileLayer
-              attribution='&copy <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-              url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
-            />
-            {filteredPositions.map((pos, i) => {
-              const icon = busIcon({
-                operator_id: pos.operator?.toString() || 'default',
-                name: agencyList.find((agency) => agency.operator_ref === pos.operator)
-                  ?.agency_name,
-              })
-              return (
-                <Marker position={pos.loc} icon={icon} key={i}>
-                  <Popup minWidth={300} maxWidth={700}>
-                    <BusToolTip position={pos} icon={busIconPath(operatorId!)} />
-                  </Popup>
-                </Marker>
-              )
-            })}
+        <ExpandableMap
+          center={position.loc}
+          zoom={8}
+          scrollWheelZoom={true}
+          className={`${isExpanded ? 'expanded' : 'collapsed'}`}>
+          <TileLayer
+            attribution='&copy <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
+          />
+          {filteredPositions.map((pos, i) => {
+            const icon = busIcon({
+              operator_id: pos.operator?.toString() || 'default',
+              name: agencyList.find((agency) => agency.operator_ref === pos.operator)?.agency_name,
+            })
+            return (
+              <Marker position={pos.loc} icon={icon} key={i}>
+                <Popup minWidth={300} maxWidth={700}>
+                  <BusToolTip position={pos} icon={busIconPath(operatorId!)} />
+                </Popup>
+              </Marker>
+            )
+          })}
 
-            {paths.map((path) => (
-              <Polyline
-                key={path.vehicleRef}
-                pathOptions={{
-                  color: getColorByHashString(path.vehicleRef.toString()),
-                }}
-                positions={path.locations.map(({ lat, lon }) => [lat, lon])}
-              />
-            ))}
-          </ExpandableMap>
-        </div>
+          {paths.map((path) => (
+            <Polyline
+              key={path.vehicleRef}
+              pathOptions={{
+                color: getColorByHashString(path.vehicleRef.toString()),
+              }}
+              positions={path.locations.map(({ lat, lon }) => [lat, lon])}
+            />
+          ))}
+        </ExpandableMap>
       </div>
     </PageContainer>
   )
