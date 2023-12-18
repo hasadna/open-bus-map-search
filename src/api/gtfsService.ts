@@ -15,7 +15,7 @@ export async function getRoutesAsync(
   toTimestamp: moment.Moment,
   operatorId: string | undefined,
   lineNumber: string | undefined,
-  signal: AbortSignal | undefined,
+  signal?: AbortSignal | undefined,
 ): Promise<BusRoute[]> {
   const gtfsRoutes = await GTFS_API.gtfsRoutesListGet(
     {
