@@ -1,13 +1,50 @@
-# Contribution:
+# Contribution Guidelines
 
-## Running the project:
+Hello :wave: and welcome to **דאטאבוס**, a project of [hasadna](https://open-bus-map-search.hasadna.org.il)!
 
-- fork the repo
-- clone the repo
-- `yarn install`
-- `yarn start`
+We glad to see you decided to contribute to our project!
+
+[Join our discord](https://discord.gg/D7926WTY) to get connected with the project's development team.
+
+# Where to start
+
+You welcome to explore the [list of project's issues](https://github.com/hasadna/open-bus-map-search/issues), the points we need help with
+Some of them marked with `help wanted` or `good first issue` - can be good for a beginners
+
+Also! you can look at the project and if you find some point that can be improved (it can be unclear documentation as well as UI or backend problem) - you wellcome to add issue to the project issues (which considers a contribution too)
+
+# Starting your environment
+
+- Fork the Repository on GitHub (by pressing `fork` button)
+- Clone the Repository on your machine (`git clone https://github.com/<YOUR NAME>/open-bus-map-search`)
+- Define your fork as remote - `git remote set-url origin https://github.com/<YOUR NAME>/open-bus-map-search`
+- Install dependencies `yarn`
+- Run dev server `yarn start`
+
+# How to open the PR
+
+- If you're new to GitHub, here is a [tutorial describing Pull Requests](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request).
+- create a branch
+- branch better to be named after issue (or feature) it tries so solve, e.g. `feat/add-close-button-to-modal`
+- Please make sure that the project works on your computer
+- do changes and then - do commit (`git commit -m "feat: add some feature"`)
+- push the branch to remote repo (`git push`)
+- go to the original repo and create a pr (by pressing `create a pr` button)
+- tag one of the maintainers as reviewers
+
+
+# Commit message convention
+
+- commit messages better to be short and explain clearly what the change is about
+- `fix` change that tries to fix some bug, e.g. `fix: make close button visible at mobile`
+- `feat` change that add some new functionality, e.g. `feat: add a modal component`
+- `docs` change that adds some documentation, e.g. `docs: add project description at readme`
+- `reafctor` change that makes the code better, e.g. `reafctor: split App component to subcomponents`
+- `chore` all the other things `chore: upgrade react package to new 18 version`
 
 ## testing the project:
+
+### tests beter to be run locally
 
 | command             | description                                                     |
 | ------------------- | --------------------------------------------------------------- |
@@ -26,14 +63,9 @@
 - [API documentation and examples (swagger)](https://open-bus-stride-api.hasadna.org.il/docs)
 - [the deployed website](https://open-bus-map-search.hasadna.org.il/dashboard)
 
-## submitting pull requests
+## Troubleshooting
 
-Thanks for your willingness to invest time and help us improve!
-
-1. If you're new to GitHub, here is a [tutorial describing Pull Requests](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request). if you're familiarized with Merge Requests - it's the same concept.
-2. Please make sure that the project works on your computer
-3. Please tag one of the maintainers as reviewers
-   we're here to help! feel free to join our [Slack channel](https://join.slack.com/t/hasadna/shared_invite/zt-21qipktl1-7yF4FYJVxAqXl0wE4DlMKQ)
+we're here to help! feel free to join our [Slack channel](https://join.slack.com/t/hasadna/shared_invite/zt-21qipktl1-7yF4FYJVxAqXl0wE4DlMKQ)
 
 # Related Repositories
 
