@@ -14,7 +14,7 @@ import { NotFound } from '../components/NotFound'
 import { Point } from '../realtimeMap'
 import styled from 'styled-components'
 import { Button } from 'antd'
-import { ExpandAltOutlined } from "@ant-design/icons"
+import { ExpandAltOutlined } from '@ant-design/icons'
 
 import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
 import '../Map.scss'
@@ -43,8 +43,8 @@ const position: Point = {
 const SingleLineMapPage = () => {
   const { search, setSearch } = useContext(SearchContext)
   const { operatorId, lineNumber, timestamp, routes, routeKey } = search
-  const [isExpanded, setIsExpanded] = useState<Boolean>(false)
-  const toggleExpanded = useCallback(() => setIsExpanded(expanded => !expanded), [])
+  const [isExpanded, setIsExpanded] = useState<boolean>(false)
+  const toggleExpanded = useCallback(() => setIsExpanded((expanded) => !expanded), [])
   const [agencyList, setAgencyList] = useState<Agency[]>([])
 
   useEffect(() => {
@@ -112,7 +112,7 @@ const SingleLineMapPage = () => {
 
   const ExpandableMap = styled(MapContainer)`
     height: 100%;
-    width: 100%
+    width: 100%;
   `
 
   return (
@@ -171,7 +171,13 @@ const SingleLineMapPage = () => {
       </Grid>
 
       <div className="map-info">
-        <Button type="primary" className="expand-button" shape="circle" onClick={toggleExpanded} icon={<ExpandAltOutlined />} />
+        <Button
+          type="primary"
+          className="expand-button"
+          shape="circle"
+          onClick={toggleExpanded}
+          icon={<ExpandAltOutlined />}
+        />
         <div className={`${isExpanded ? 'expanded' : 'collapsed'}`}>
           <ExpandableMap center={position.loc} zoom={8} scrollWheelZoom={true}>
             <TileLayer
@@ -181,7 +187,8 @@ const SingleLineMapPage = () => {
             {filteredPositions.map((pos, i) => {
               const icon = busIcon({
                 operator_id: pos.operator?.toString() || 'default',
-                name: agencyList.find((agency) => agency.operator_ref === pos.operator)?.agency_name,
+                name: agencyList.find((agency) => agency.operator_ref === pos.operator)
+                  ?.agency_name,
               })
               return (
                 <Marker position={pos.loc} icon={icon} key={i}>
