@@ -4,7 +4,8 @@
 This is the official repository of the open bus (תחב"צ פתוחה / דאטאבוס) project - also known as "ShameBus".
 [link to the project](https://open-bus-map-search.hasadna.org.il/dashboard)
 
-Please feel free to submit pull requests and contribute to the project (see the "contribution" section).
+Please feel free to submit pull requests and contribute to the project.
+For more details about contributing, see the [CONTRIBUTION.md](CONTRIBUTION.md) file.
 
 ## View video (Hebrew language):
 [![video (hebrew) about the project](https://img.youtube.com/vi/6H6jkJCVhgk/0.jpg)](https://www.youtube.com/watch?v=6H6jkJCVhgk)
@@ -27,34 +28,7 @@ We've hidden a couple of fun surprises in our web app, just for you. Discovering
 
 ## deployments
 
-[![Netlify Status](https://api.netlify.com/api/v1/badges/d3ef62c2-b5bb-48ac-8299-71e5bd22b211/deploy-status)](https://app.netlify.com/sites/open-bus/deploys)
-
 This app is created by the volunteers of [Public Knowledge Workshop](https://www.hasadna.org.il/)
-
-## Contribution:
-
-### Running the project:
-
-- fork the repo
-- clone the repo
-- `yarn install`
-- `yarn start`
-
-### testing the project:
-| command                                                           | description                                                                         |
-| ----------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| `yarn test:unit`                                                       | Run the unit tests using `watch` option (good for development). |
-| `yarn test:unit:ci`                                                       | Run the unit tests (good for ci). |
-| `yarn test:e2e`                                                       | Run the e2e (playwright) tests (good for ci). |
-| `yarn test:e2e:ui`                                                       | Run the e2e (playwright) tests with user interface. |
-| `yarn test`                                                       | Run all the kind of tests. |
-- additional helpful flags - https://playwright.dev/docs/test-cli
-
-### useful resources:
-* [the design file](https://www.figma.com/file/Plw8Uuu6U96CcX5tJyRMoW/Public-Transportation-visual-informaiton?type=design&node-id=0-1&mode=design&t=Dh8lI3EJ37unxvoe-0)
-* [data model schema](https://github.com/hasadna/open-bus-stride-db/blob/main/DATA_MODEL.md)
-* [API documentation and examples (swagger)](https://open-bus-stride-api.hasadna.org.il/docs)
-* [the deployed website](https://open-bus-map-search.hasadna.org.il/dashboard)
 
 ### submitting pull requests
 Thanks for your willingness to invest time and help us improve!
