@@ -61,18 +61,22 @@ const TimelinePage = () => {
   }, [clearRoutes, operatorId, lineNumber])
 
   useEffect(() => {
+    const controller = new AbortController()
+    const signal = controller.signal
     clearStops()
     if (!operatorId || operatorId === '0' || !lineNumber) {
       return
     }
     setRoutesIsLoading(true)
-    getRoutesAsync(moment(timestamp), moment(timestamp), operatorId, lineNumber)
+    getRoutesAsync(moment(timestamp), moment(timestamp), operatorId, lineNumber, signal)
       .then((routes) =>
         setSearch((current) =>
           search.lineNumber === lineNumber ? { ...current, routes: routes } : current,
         ),
       )
+      .catch((err) => console.error(err.message))
       .finally(() => setRoutesIsLoading(false))
+    return () => controller.abort()
   }, [operatorId, lineNumber, clearRoutes, clearStops, timestamp, setState])
 
   const selectedRoute = useMemo(

@@ -20,6 +20,7 @@ import { FormControlLabel, Switch } from '@mui/material'
 import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
 import { INPUT_SIZE } from 'src/resources/sizes'
 import DisplayGapsPercentage from '../components/DisplayGapsPercentage'
+import axios from 'axios'
 
 const Cell = styled.div`
   width: 120px;
@@ -34,7 +35,6 @@ const GapsPage = () => {
   const { search, setSearch } = useContext(SearchContext)
   const { operatorId, lineNumber, timestamp, routes, routeKey } = search
   const [gaps, setGaps] = useState<GapsList>()
-
   const [routesIsLoading, setRoutesIsLoading] = useState(false)
   const [gapsIsLoading, setGapsIsLoading] = useState(false)
   const [onlyGapped, setOnlyGapped] = useSessionStorage('onlyGapped', false)
@@ -66,19 +66,29 @@ const GapsPage = () => {
   }
 
   useEffect(() => {
+    const source = axios.CancelToken.source()
     if (operatorId && routes && routeKey && timestamp) {
       const selectedRoute = routes.find((route) => route.key === routeKey)
       if (!selectedRoute) {
         return
       }
       setGapsIsLoading(true)
-      getGapsAsync(moment(timestamp), moment(timestamp), operatorId, selectedRoute.lineRef)
+      getGapsAsync(
+        moment(timestamp),
+        moment(timestamp),
+        operatorId,
+        selectedRoute.lineRef,
+        source.token,
+      )
         .then(setGaps)
         .finally(() => setGapsIsLoading(false))
     }
+    return () => source.cancel()
   }, [operatorId, routeKey, timestamp])
 
   useEffect(() => {
+    const controller = new AbortController()
+    const signal = controller.signal
     if (!operatorId || operatorId === '0' || !lineNumber) {
       setSearch((current) => ({
         ...current,
@@ -87,13 +97,16 @@ const GapsPage = () => {
       }))
       return
     }
-    getRoutesAsync(moment(timestamp), moment(timestamp), operatorId, lineNumber)
+    setRoutesIsLoading(true)
+    getRoutesAsync(moment(timestamp), moment(timestamp), operatorId, lineNumber, signal)
       .then((routes) =>
         setSearch((current) =>
           search.lineNumber === lineNumber ? { ...current, routes: routes } : current,
         ),
       )
+      .catch((err) => console.error(err.message))
       .finally(() => setRoutesIsLoading(false))
+    return () => controller.abort()
   }, [operatorId, lineNumber, timestamp, setSearch])
 
   const gapsPercentage = getGapsPercentage(gaps)

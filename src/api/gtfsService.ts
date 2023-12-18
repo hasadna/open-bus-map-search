@@ -15,14 +15,18 @@ export async function getRoutesAsync(
   toTimestamp: moment.Moment,
   operatorId: string | undefined,
   lineNumber: string | undefined,
+  signal: AbortSignal | undefined,
 ): Promise<BusRoute[]> {
-  const gtfsRoutes = await GTFS_API.gtfsRoutesListGet({
-    routeShortName: lineNumber,
-    operatorRefs: operatorId,
-    dateFrom: fromTimestamp.startOf('day').toDate(),
-    dateTo: moment.min(toTimestamp.endOf('day'), moment()).toDate(),
-    limit: 100,
-  })
+  const gtfsRoutes = await GTFS_API.gtfsRoutesListGet(
+    {
+      routeShortName: lineNumber,
+      operatorRefs: operatorId,
+      dateFrom: fromTimestamp.startOf('day').toDate(),
+      dateTo: moment.min(toTimestamp.endOf('day'), moment()).toDate(),
+      limit: 100,
+    },
+    { signal },
+  )
   const routes = Object.values(
     gtfsRoutes
       .filter((route) => route.date.getDate() === toTimestamp.date())
