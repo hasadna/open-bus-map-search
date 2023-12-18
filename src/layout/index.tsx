@@ -3,7 +3,11 @@ import MainHeader from './header/Header'
 import SideBar from './sidebar/SideBar'
 import styled from 'styled-components'
 import LayoutContext from './LayoutContext'
-import RoutesList from '../routes'
+import { Link, Outlet } from 'react-router-dom'
+import { Suspense } from 'react'
+import Preloader from 'src/shared/Preloader'
+import { EasterEgg } from 'src/pages/EasterEgg/EasterEgg'
+import { Envelope } from 'src/pages/EasterEgg/Envelope'
 
 const { Content } = Layout
 
@@ -19,7 +23,7 @@ const StyledBody = styled.div`
   min-height: 360px;
 `
 
-function MainLayout() {
+export function MainLayout() {
   return (
     <StyledLayout className="main">
       <LayoutContext>
@@ -28,7 +32,19 @@ function MainLayout() {
           <MainHeader />
           <StyledContent>
             <StyledBody>
-              <RoutesList />
+              <Suspense fallback={<Preloader />}>
+                <Outlet />
+                <EasterEgg code="storybook">
+                  <a href="/storybook/index.html">
+                    <Envelope />
+                  </a>
+                </EasterEgg>
+                <EasterEgg code="geek">
+                  <Link to="/data-research">
+                    <Envelope />
+                  </Link>
+                </EasterEgg>
+              </Suspense>
             </StyledBody>
           </StyledContent>
         </Layout>
@@ -36,5 +52,3 @@ function MainLayout() {
     </StyledLayout>
   )
 }
-
-export default MainLayout
