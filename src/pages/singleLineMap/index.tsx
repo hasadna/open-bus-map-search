@@ -1,5 +1,5 @@
 import moment from 'moment'
-import { useContext, useEffect, useMemo, useState } from 'react'
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { MapContainer, Marker, Polyline, Popup, TileLayer } from 'react-leaflet'
 import { getRoutesAsync } from 'src/api/gtfsService'
 import useVehicleLocations from 'src/api/useVehicleLocations'
@@ -12,6 +12,9 @@ import { useTranslation } from 'react-i18next'
 import { SearchContext } from '../../model/pageState'
 import { NotFound } from '../components/NotFound'
 import { Point } from '../realtimeMap'
+import styled from 'styled-components'
+import { Button } from 'antd'
+import { ExpandAltOutlined } from '@ant-design/icons'
 
 import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
 import '../Map.scss'
@@ -40,7 +43,8 @@ const position: Point = {
 const SingleLineMapPage = () => {
   const { search, setSearch } = useContext(SearchContext)
   const { operatorId, lineNumber, timestamp, routes, routeKey } = search
-
+  const [isExpanded, setIsExpanded] = useState<boolean>(false)
+  const toggleExpanded = useCallback(() => setIsExpanded((expanded) => !expanded), [])
   const [agencyList, setAgencyList] = useState<Agency[]>([])
   const { t } = useTranslation()
 
@@ -107,6 +111,11 @@ const SingleLineMapPage = () => {
     [filteredPositions],
   )
 
+  const ExpandableMap = styled(MapContainer)`
+    height: 100%;
+    width: 100%;
+  `
+
   return (
     <PageContainer className="map-container">
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
@@ -163,12 +172,22 @@ const SingleLineMapPage = () => {
       </Grid>
 
       <div className="map-info">
-        <MapContainer center={position.loc} zoom={8} scrollWheelZoom={true}>
+        <Button
+          type="primary"
+          className="expand-button"
+          shape="circle"
+          onClick={toggleExpanded}
+          icon={<ExpandAltOutlined />}
+        />
+        <ExpandableMap
+          center={position.loc}
+          zoom={8}
+          scrollWheelZoom={true}
+          className={`${isExpanded ? 'expanded' : 'collapsed'}`}>
           <TileLayer
             attribution='&copy <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
           />
-
           {filteredPositions.map((pos, i) => {
             const icon = busIcon({
               operator_id: pos.operator?.toString() || 'default',
@@ -192,7 +211,7 @@ const SingleLineMapPage = () => {
               positions={path.locations.map(({ lat, lon }) => [lat, lon])}
             />
           ))}
-        </MapContainer>
+        </ExpandableMap>
       </div>
     </PageContainer>
   )
