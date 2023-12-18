@@ -8,7 +8,7 @@ import moment from 'moment'
 // Styling
 import './DashboardPage.scss'
 import { PageContainer } from '../components/PageContainer'
-import { TEXTS } from 'src/resources/texts'
+import { useTranslation } from 'react-i18next'
 import { Alert, Typography } from 'antd'
 import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
 
@@ -26,6 +26,7 @@ const DashboardPage = () => {
   const [startDate, setStartDate] = useDate(now.clone().subtract(7, 'days'))
   const [endDate, setEndDate] = useDate(now.clone().subtract(1, 'day'))
   const [operatorId, setOperatorId] = useState('')
+  const { t } = useTranslation()
 
   return (
     <PageContainer>
@@ -42,14 +43,14 @@ const DashboardPage = () => {
             <DateSelector
               time={startDate}
               onChange={(data) => setStartDate(data)}
-              customLabel={TEXTS.start}
+              customLabel={t('start')}
             />
           </Grid>
           <Grid xs={6}>
             <DateSelector
               time={endDate}
               onChange={(data) => setEndDate(data)}
-              customLabel={TEXTS.end}
+              customLabel={t('end')}
             />
           </Grid>
         </Grid>

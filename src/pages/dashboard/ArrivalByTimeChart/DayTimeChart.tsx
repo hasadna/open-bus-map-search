@@ -1,5 +1,5 @@
 import React, { FC } from 'react'
-import { TEXTS } from 'src/resources/texts'
+import { useTranslation } from 'react-i18next'
 import { Skeleton, Radio, RadioChangeEvent } from 'antd'
 import ArrivalByTimeChart from './ArrivalByTimeChart'
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
@@ -25,6 +25,7 @@ interface DayTimeChartProps {
 }
 
 const DayTimeChart: FC<DayTimeChartProps> = ({ startDate, endDate, operatorId }) => {
+  const { t } = useTranslation()
   const [groupByHour, setGroupByHour] = React.useState<boolean>(false)
 
   const [graphData, loadingGraph] = useGroupBy({
@@ -36,14 +37,14 @@ const DayTimeChart: FC<DayTimeChartProps> = ({ startDate, endDate, operatorId })
   return (
     <Widget>
       <h2 className="title">
-        {groupByHour ? TEXTS.dashboard_page_graph_title_hour : TEXTS.dashboard_page_graph_title_day}
+        {groupByHour ? t('dashboard_page_graph_title_hour') : t('dashboard_page_graph_title_day')}
       </h2>
       <Radio.Group
         style={{ marginBottom: '10px' }}
         onChange={(e: RadioChangeEvent) => setGroupByHour(e.target.value === 'byHour')}
         defaultValue="byDay">
-        <Radio.Button value="byDay">{TEXTS.group_by_day_tooltip_content}</Radio.Button>
-        <Radio.Button value="byHour">{TEXTS.group_by_hour_tooltip_content}</Radio.Button>
+        <Radio.Button value="byDay">{t('group_by_day_tooltip_content')}</Radio.Button>
+        <Radio.Button value="byHour">{t('group_by_hour_tooltip_content')}</Radio.Button>
       </Radio.Group>
       {loadingGraph ? (
         <Skeleton active />
