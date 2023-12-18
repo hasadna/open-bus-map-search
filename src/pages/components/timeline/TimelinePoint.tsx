@@ -1,4 +1,3 @@
-import { t } from 'i18next'
 import styled from 'styled-components'
 import { Moment } from 'moment'
 
@@ -23,12 +22,12 @@ export const pointTypeToColor: Record<PointType, string> = {
   [PointType.TARGET]: TARGET_COLOR,
 }
 
-export const pointTypeToDescription: Record<PointType, string | null> = {
+export const pointTypeToDescription = {
   [PointType.BOUNDARY]: null,
-  [PointType.GTFS]: t('timestamp_gtfs'),
-  [PointType.SIRI]: t('timestamp_siri'),
-  [PointType.TARGET]: t('timestamp_target'),
-}
+  [PointType.GTFS]: 'timestamp_gtfs',
+  [PointType.SIRI]: 'timestamp_siri',
+  [PointType.TARGET]: 'timestamp_target',
+} as const
 
 type PointProps = {
   top: number
