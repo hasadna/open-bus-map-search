@@ -1,7 +1,7 @@
 import { Navigate, Route, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
 import { lazy } from 'react'
 const DashboardPage = lazy(() => import('../pages/dashboard/DashboardPage'))
-const TimelinePage = lazy(() => import('../pages/TimelinePage'))
+const TimelinePage = lazy(() => import('../pages/historicTimeline'))
 const GapsPage = lazy(() => import('../pages/gaps'))
 const GapsPatternsPage = lazy(() => import('../pages/gapsPatterns'))
 const RealtimeMapPage = lazy(() => import('../pages/realtimeMap'))
