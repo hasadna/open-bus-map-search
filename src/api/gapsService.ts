@@ -28,7 +28,7 @@ export const getGapsAsync = async (
   toTimestamp: Moment,
   operatorId: string,
   lineRef: number,
-  token?: CancelTokenSource['token'],
+  token: CancelTokenSource['token'],
 ): Promise<GapsList> => {
   const fromDay = moment(fromTimestamp).startOf('day')
   const toDay = moment(toTimestamp).startOf('day')
