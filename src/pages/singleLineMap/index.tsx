@@ -53,15 +53,19 @@ const SingleLineMapPage = () => {
   }, [])
 
   useEffect(() => {
+    const controller = new AbortController()
+    const signal = controller.signal
     if (!operatorId || operatorId === '0' || !lineNumber) {
       setSearch((current) => ({ ...current, routes: undefined, routeKey: undefined }))
       return
     }
-    getRoutesAsync(moment(timestamp), moment(timestamp), operatorId, lineNumber).then((routes) =>
-      setSearch((current) =>
-        search.lineNumber === lineNumber ? { ...current, routes: routes } : current,
-      ),
+    getRoutesAsync(moment(timestamp), moment(timestamp), operatorId, lineNumber, signal).then(
+      (routes) =>
+        setSearch((current) =>
+          search.lineNumber === lineNumber ? { ...current, routes: routes } : current,
+        ),
     )
+    return () => controller.abort()
   }, [operatorId, lineNumber, timestamp])
 
   const selectedRoute = useMemo(
