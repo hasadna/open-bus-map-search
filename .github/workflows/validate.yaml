@@ -111,6 +111,41 @@ jobs:
         with:
           name: playwright
           path: test-results
+      - name: upload report
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: playwright
+          path: playwright-report
+  publish-test-results:
+    runs-on: ubuntu-latest
+    needs: test
+    if: always()
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: playwright
+          path: test-results
+      - name: Publish test results
+        uses: shallwefootball/s3-upload-action@master
+        if: always()
+        id: s3-trace
+        continue-on-error: true
+        with:
+          aws_key_id: ${{ secrets.AWS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
+          aws_bucket: noam-gaash.co.il
+          source_dir: test-results
+          destination_dir: ${{ github.run_id }}/open-bus/${{ github.sha }}/test-results
+      - name: Set commit status as pending
+        uses: myrotvorets/set-commit-status-action@master
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          description: 'Test results: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.sha }}/test-results/index.html'
+          status: success
+          context: 'Test results'
+          targetUrl: 'https://s3.amazonaws.com/noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.sha }}/test-results/index.html'
   test-unit:
     timeout-minutes: 60
     runs-on: ubuntu-latest
