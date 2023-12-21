@@ -1,6 +1,5 @@
 import moment from 'moment'
 import { useContext, useEffect, useMemo, useState } from 'react'
-import { MapContainer } from 'react-leaflet'
 import { getRoutesAsync } from 'src/api/gtfsService'
 import useVehicleLocations from 'src/api/useVehicleLocations'
 import { Label } from 'src/pages/components/Label'
@@ -12,7 +11,6 @@ import { useTranslation } from 'react-i18next'
 import { SearchContext } from '../../model/pageState'
 import { NotFound } from '../components/NotFound'
 import { Point } from '../realtimeMap'
-import styled from 'styled-components'
 
 import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
 import '../Map.scss'
