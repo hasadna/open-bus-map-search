@@ -90,11 +90,6 @@ const SingleLineMapPage = () => {
     filteredPositions.flat(),
   )
 
-  const ExpandableMap = styled(MapContainer)`
-    height: 100%;
-    width: 100%;
-  `
-
   return (
     <PageContainer className="map-container">
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
