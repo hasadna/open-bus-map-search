@@ -15,6 +15,7 @@ async function fillDate(page: Page, twoDateElements: boolean = false) {
     await page.getByRole('gridcell', { name: '1', exact: true }).first().click()
     await page.getByLabel('בחירת תאריך').nth(1).click()
   } else {
+    await page.getByLabel('בחירת תאריך').nth(1).waitFor({ state: 'detached' })
     await page.getByLabel('בחירת תאריך').click()
   }
   await page.getByRole('gridcell', { name: '1', exact: true }).first().click()
