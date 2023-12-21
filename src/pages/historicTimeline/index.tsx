@@ -13,15 +13,17 @@ import RouteSelector from 'src/pages/components/RouteSelector'
 import { Label } from 'src/pages/components/Label'
 import { useTranslation } from 'react-i18next'
 import StopSelector from 'src/pages/components/StopSelector'
-import { Spin } from 'antd'
+import { Spin, Typography, Alert } from 'antd'
 import { getSiriStopHitTimesAsync } from 'src/api/siriService'
 import { TimelineBoard } from 'src/pages/components/timeline/TimelineBoard'
-import { PageContainer } from './components/PageContainer'
-import { SearchContext, TimelinePageState } from '../model/pageState'
-import { NotFound } from './components/NotFound'
+import { PageContainer } from '../components/PageContainer'
+import { SearchContext, TimelinePageState } from '../../model/pageState'
+import { NotFound } from '../components/NotFound'
 import moment from 'moment'
-import { DateSelector } from './components/DateSelector'
+import { DateSelector } from '../components/DateSelector'
 import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
+
+const { Title } = Typography
 
 const StyledTimelineBoard = styled(TimelineBoard)`
   margin-top: ${MARGIN_MEDIUM * 3}px;
@@ -135,12 +137,14 @@ const TimelinePage = () => {
 
   return (
     <PageContainer>
+      <Title level={3}>הסטורית נסיעות</Title>
+      <Alert message="רשימת זמני עצירה בתחנה שנבחרה" type="info" />
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
         {/* choose date */}
-        <Grid xs={4}>
+        <Grid xs={4} className="hideOnMobile">
           <Label text={t('choose_date')} />
         </Grid>
-        <Grid xs={8}>
+        <Grid sm={8} xs={12}>
           <DateSelector
             time={moment(timestamp)}
             onChange={(ts) =>
@@ -149,20 +153,20 @@ const TimelinePage = () => {
           />
         </Grid>
         {/* choose operator */}
-        <Grid xs={4}>
+        <Grid xs={4} className="hideOnMobile">
           <Label text={t('choose_operator')} />
         </Grid>
-        <Grid xs={8}>
+        <Grid sm={8} xs={12}>
           <OperatorSelector
             operatorId={operatorId}
             setOperatorId={(id) => setSearch((current) => ({ ...current, operatorId: id }))}
           />
         </Grid>
         {/* choose line */}
-        <Grid xs={4}>
+        <Grid xs={4} className="hideOnMobile">
           <Label text={t('choose_line')} />
         </Grid>
-        <Grid xs={8}>
+        <Grid sm={8} xs={12}>
           <LineNumberSelector
             lineNumber={lineNumber}
             setLineNumber={(number) => setSearch((current) => ({ ...current, lineNumber: number }))}
