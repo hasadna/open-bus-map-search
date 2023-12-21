@@ -1,5 +1,6 @@
 import moment from 'moment'
 import { useContext, useEffect, useMemo, useState } from 'react'
+import { MapContainer } from 'react-leaflet'
 import { getRoutesAsync } from 'src/api/gtfsService'
 import useVehicleLocations from 'src/api/useVehicleLocations'
 import { Label } from 'src/pages/components/Label'
@@ -11,6 +12,7 @@ import { useTranslation } from 'react-i18next'
 import { SearchContext } from '../../model/pageState'
 import { NotFound } from '../components/NotFound'
 import { Point } from '../realtimeMap'
+import styled from 'styled-components'
 
 import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
 import '../Map.scss'
@@ -26,15 +28,19 @@ const SingleLineMapPage = () => {
   const { t } = useTranslation()
 
   useEffect(() => {
+    const controller = new AbortController()
+    const signal = controller.signal
     if (!operatorId || operatorId === '0' || !lineNumber) {
       setSearch((current) => ({ ...current, routes: undefined, routeKey: undefined }))
       return
     }
-    getRoutesAsync(moment(timestamp), moment(timestamp), operatorId, lineNumber).then((routes) =>
-      setSearch((current) =>
-        search.lineNumber === lineNumber ? { ...current, routes: routes } : current,
-      ),
+    getRoutesAsync(moment(timestamp), moment(timestamp), operatorId, lineNumber, signal).then(
+      (routes) =>
+        setSearch((current) =>
+          search.lineNumber === lineNumber ? { ...current, routes: routes } : current,
+        ),
     )
+    return () => controller.abort()
   }, [operatorId, lineNumber, timestamp])
 
   const selectedRoute = useMemo(
@@ -81,8 +87,13 @@ const SingleLineMapPage = () => {
         }
         return arr
       }, []),
-    [filteredPositions],
+    filteredPositions.flat(),
   )
+
+  const ExpandableMap = styled(MapContainer)`
+    height: 100%;
+    width: 100%;
+  `
 
   return (
     <PageContainer className="map-container">

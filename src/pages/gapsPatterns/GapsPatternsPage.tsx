@@ -150,24 +150,28 @@ const GapsPatternsPage = () => {
   const [routesIsLoading, setRoutesIsLoading] = useState(false)
   const { t } = useTranslation()
 
-  const loadSearchData = async () => {
+  const loadSearchData = async (signal: AbortSignal | undefined) => {
     setRoutesIsLoading(true)
     const routes = await getRoutesAsync(
       moment(startDate),
       moment(endDate),
       operatorId as string,
       lineNumber as string,
+      signal,
     )
     setSearch((current) => (search.lineNumber === lineNumber ? { ...current, routes } : current))
     setRoutesIsLoading(false)
   }
 
   useEffect(() => {
+    const controller = new AbortController()
+    const signal = controller.signal
     if (!operatorId || operatorId === '0' || !lineNumber) {
       setSearch((current) => ({ ...current, routeKey: undefined, routes: undefined }))
       return
     }
-    loadSearchData()
+    loadSearchData(signal)
+    return () => controller.abort()
   }, [operatorId, lineNumber, endDate, startDate, setSearch])
 
   return (
