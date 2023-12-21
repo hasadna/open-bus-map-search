@@ -111,6 +111,12 @@ jobs:
         with:
           name: playwright
           path: test-results
+      - name: upload report
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: playwright
+          path: playwright-report
   publish-test-results:
     runs-on: ubuntu-latest
     needs: test
