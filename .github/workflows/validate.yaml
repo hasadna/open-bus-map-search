@@ -131,29 +131,14 @@ jobs:
           aws_bucket: noam-gaash.co.il
           source_dir: test-results
           destination_dir: ${{ github.run_id }}/open-bus/${{ github.sha }}/test-results
-      - name: find comment
-        uses: peter-evans/find-comment@v1
-        if: always()
-        id: fc
+      - name: Set commit status as pending
+        uses: myrotvorets/set-commit-status-action@master
         with:
-          issue-number: ${{ github.event.pull_request.number }}
-          comment-author: 'github-actions[bot]'
-          body-includes: 'Test results'
-      - name: update comment
-        uses: peter-evans/create-or-update-comment@v1
-        if: steps.fc.outputs.comment-id
-        with:
-          comment-id: ${{ steps.fc.outputs.comment-id }}
-          edit-mode: replace
-          body: |
-            Test results: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.sha }}/test-results/index.html
-      - name: create comment
-        uses: peter-evans/create-or-update-comment@v1
-        if: steps.fc.outputs.comment-id == ''
-        with:
-          issue-number: ${{ github.event.pull_request.number }}
-          body: |
-            Test results: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.sha }}/test-results/index.html
+          token: ${{ secrets.GITHUB_TOKEN }}
+          description: 'Test results: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.sha }}/test-results/index.html'
+          status: success
+          context: 'Test results'
+          targetUrl: 'https://s3.amazonaws.com/noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.sha }}/test-results/index.html'
   test-unit:
     timeout-minutes: 60
     runs-on: ubuntu-latest
