@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { BASE_PATH } from './apiConfig'
 export interface Agency {
   date: string // example - "2019-07-01"
@@ -14,4 +15,14 @@ export default async function getAgencyList(): Promise<Agency[]> {
   }
 
   return json
+}
+
+export function useAgencyList() {
+  const [agencyList, setAgencyList] = useState<Agency[]>([])
+
+  useEffect(() => {
+    getAgencyList().then(setAgencyList).catch(console.log)
+  }, [])
+
+  return agencyList
 }

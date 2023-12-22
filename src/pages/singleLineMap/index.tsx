@@ -1,6 +1,5 @@
 import moment from 'moment'
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
-import { MapContainer, Marker, Polyline, Popup, TileLayer } from 'react-leaflet'
+import { useContext, useEffect, useMemo, useState } from 'react'
 import { getRoutesAsync } from 'src/api/gtfsService'
 import useVehicleLocations from 'src/api/useVehicleLocations'
 import { Label } from 'src/pages/components/Label'
@@ -12,45 +11,19 @@ import { useTranslation } from 'react-i18next'
 import { SearchContext } from '../../model/pageState'
 import { NotFound } from '../components/NotFound'
 import { Point } from '../realtimeMap'
-import styled from 'styled-components'
-import { Button } from 'antd'
-import { ExpandAltOutlined } from '@ant-design/icons'
 
 import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
 import '../Map.scss'
-import getAgencyList, { Agency } from 'src/api/agencyList'
-import { VehicleLocation } from 'src/model/vehicleLocation'
-import { getColorByHashString } from '../dashboard/AllLineschart/OperatorHbarChart/utils'
 import { DateSelector } from '../components/DateSelector'
 import { CircularProgress, Tooltip } from '@mui/material'
 import { FilterPositionsByStartTimeSelector } from '../components/FilterPositionsByStartTimeSelector'
 import { PageContainer } from '../components/PageContainer'
-import { busIcon, busIconPath } from '../components/utils/BusIcon'
-import { BusToolTip } from 'src/pages/components/MapLayers/BusToolTip'
-
-interface Path {
-  locations: VehicleLocation[]
-  lineRef: number
-  operator: number
-  vehicleRef: number
-}
-
-const position: Point = {
-  loc: [32.3057988, 34.85478613], // arbitrary default value... Netanya - best city to live & die in
-  color: 0,
-}
+import { MapWithLocationsAndPath, Path } from '../components/map-related/MapWithLocationsAndPath'
 
 const SingleLineMapPage = () => {
   const { search, setSearch } = useContext(SearchContext)
   const { operatorId, lineNumber, timestamp, routes, routeKey } = search
-  const [isExpanded, setIsExpanded] = useState<boolean>(false)
-  const toggleExpanded = useCallback(() => setIsExpanded((expanded) => !expanded), [])
-  const [agencyList, setAgencyList] = useState<Agency[]>([])
   const { t } = useTranslation()
-
-  useEffect(() => {
-    getAgencyList().then(setAgencyList).catch(console.log)
-  }, [])
 
   useEffect(() => {
     const controller = new AbortController()
@@ -112,13 +85,8 @@ const SingleLineMapPage = () => {
         }
         return arr
       }, []),
-    [filteredPositions],
+    filteredPositions.flat(),
   )
-
-  const ExpandableMap = styled(MapContainer)`
-    height: 100%;
-    width: 100%;
-  `
 
   return (
     <PageContainer className="map-container">
@@ -174,49 +142,7 @@ const SingleLineMapPage = () => {
           />
         )}
       </Grid>
-
-      <div className="map-info">
-        <Button
-          type="primary"
-          className="expand-button"
-          shape="circle"
-          onClick={toggleExpanded}
-          icon={<ExpandAltOutlined />}
-        />
-        <ExpandableMap
-          center={position.loc}
-          zoom={8}
-          scrollWheelZoom={true}
-          className={`${isExpanded ? 'expanded' : 'collapsed'}`}>
-          <TileLayer
-            attribution='&copy <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
-          />
-          {filteredPositions.map((pos, i) => {
-            const icon = busIcon({
-              operator_id: pos.operator?.toString() || 'default',
-              name: agencyList.find((agency) => agency.operator_ref === pos.operator)?.agency_name,
-            })
-            return (
-              <Marker position={pos.loc} icon={icon} key={i}>
-                <Popup minWidth={300} maxWidth={700}>
-                  <BusToolTip position={pos} icon={busIconPath(operatorId!)} />
-                </Popup>
-              </Marker>
-            )
-          })}
-
-          {paths.map((path) => (
-            <Polyline
-              key={path.vehicleRef}
-              pathOptions={{
-                color: getColorByHashString(path.vehicleRef.toString()),
-              }}
-              positions={path.locations.map(({ lat, lon }) => [lat, lon])}
-            />
-          ))}
-        </ExpandableMap>
-      </div>
+      <MapWithLocationsAndPath positions={filteredPositions} paths={paths} />
     </PageContainer>
   )
 }

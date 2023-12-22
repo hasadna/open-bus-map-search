@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { BusToolTip } from './MapLayers/BusToolTip'
+import { BusToolTip } from './map-related/MapLayers/BusToolTip'
 import '../../shared/shared.css'
 import Widget from 'src/shared/Widget'
 const meta = {
