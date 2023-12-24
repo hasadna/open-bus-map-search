@@ -1,5 +1,4 @@
 import { test } from '@playwright/test'
-
 test('realtime-map page', async ({ page }) => {
   await page.goto('/')
   await page.getByText('מפה בזמן אמת', { exact: true }).click()

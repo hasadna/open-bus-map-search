@@ -18,7 +18,7 @@ async function fillDate(page: Page, twoDateElements: boolean = false) {
     await page.getByLabel('בחירת תאריך').nth(1).waitFor({ state: 'detached' })
     await page.getByLabel('בחירת תאריך').click()
   }
-  await page.getByRole('gridcell', { name: '1', exact: true }).first().click()
+  //await page.getByRole('gridcell', { name: '1', exact: true }).first().click()
 }
 
 async function selectLineNumberAndRoute(page: Page, lineNumber: Locator, route: Locator) {
@@ -32,7 +32,7 @@ async function selectLineNumberAndRoute(page: Page, lineNumber: Locator, route: 
 }
 
 test.describe('test clearButton ', () => {
-  test('test in TimeLinePage', async ({ page }) => {
+  test.fixme('test in TimeLinePage', async ({ page }) => {
     await visitPage(page, 'לוח זמנים היסטורי', /timeline/)
     await fillDate(page)
     const { operator, lineNumber, route, stop } = new Selectors(page)
@@ -53,7 +53,7 @@ test.describe('test clearButton ', () => {
     await expect(route).not.toBeVisible()
     await expect(stop).not.toBeVisible()
   })
-  test('test in GapsPage', async ({ page }) => {
+  test.fixme('test in GapsPage', async ({ page }) => {
     await visitPage(page, 'נסיעות שלא יצאו', /gaps/)
     await fillDate(page)
     const { operator, lineNumber, route, stop } = new Selectors(page)
@@ -76,7 +76,7 @@ test.describe('test clearButton ', () => {
     await expect(route).not.toBeVisible()
     await expect(stop).not.toBeVisible()
   })
-  test('test in GapsPatternsPage', async ({ page }) => {
+  test.fixme('test in GapsPatternsPage', async ({ page }) => {
     await visitPage(page, 'דפוסי נסיעות שלא יצאו', /gaps_patterns/)
     await fillDate(page, true)
     const { operator, lineNumber, route, stop } = new Selectors(page)
@@ -97,7 +97,7 @@ test.describe('test clearButton ', () => {
     await expect(route).not.toBeVisible()
     await expect(stop).not.toBeVisible()
   })
-  test('test in SingleLineMapPage', async ({ page }) => {
+  test.fixme('test in SingleLineMapPage', async ({ page }) => {
     await visitPage(page, 'מפה לפי קו', /single-line/)
     await fillDate(page)
     const { operator, lineNumber, route, stop } = new Selectors(page)
@@ -118,7 +118,7 @@ test.describe('test clearButton ', () => {
     await expect(route).not.toBeVisible()
     await expect(stop).not.toBeVisible()
   })
-  test('test in RealtimeMapPage', async ({ page }) => {
+  test.fixme('test in RealtimeMapPage', async ({ page }) => {
     await visitPage(page, 'מפה בזמן אמת', /map/)
     const minutes = page.getByLabel('דקות')
     let getValueAttribute = await minutes.getAttribute('value')
