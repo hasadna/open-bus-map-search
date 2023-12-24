@@ -13,13 +13,39 @@ Some of them marked with `help wanted` or `good first issue` - can be good for a
 
 Also! you can look at the project and if you find some point that can be improved (it can be unclear documentation as well as UI or backend problem) - you wellcome to add issue to the project issues (which considers a contribution too)
 
-# Starting your environment
+# Running the Project Locally
 
-- Fork the Repository on GitHub (by pressing `fork` button)
-- Clone the Repository on your machine (`git clone https://github.com/<YOUR NAME>/open-bus-map-search`)
-- Define your fork as remote - `git remote set-url origin https://github.com/<YOUR NAME>/open-bus-map-search`
-- Install dependencies `yarn`
-- Run dev server `yarn start`
+Follow these steps to run the project on your local machine:
+
+1. **Fork the Repository:**
+   Before you clone the repository to your local machine, you need to create a fork of it on GitHub. This allows you to make changes without affecting the original project. To fork the repository, click the "Fork" button at the top right of this page.
+
+2. **Clone the Repository:**
+   After forking, you need to clone the repository to your local machine. You can do this by running the following command in your terminal:
+
+   ```bash
+   git clone https://github.com/<Your GitHub Username>/open-bus-map-search.git
+   ```
+   Make sure to replace <Your GitHub Username> with your actual GitHub username.
+
+3. **Navigate to the Project Directory:**
+    Once the repository is cloned, navigate to the project directory by running:
+
+    ```bash
+    cd open-bus-map-search
+    ```
+4. **Install Dependencies:**
+   The project uses Yarn to manage dependencies. If you don't have Yarn installed, you can install it by following the instructions on the [Yarn website](https://classic.yarnpkg.com/en/docs/install). Once Yarn is installed, you can install the project dependencies by running:
+    ```bash
+    yarn
+    ```
+5. **Run the Project:**
+    After all dependencies are installed, you can start the project by running:
+    ```bash
+    yarn start
+    ```
+    The project should now be running on your local machine. Open your web browser and navigate to http://localhost:3000 to view the project.
+
 
 # How to open the PR
 
