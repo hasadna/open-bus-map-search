@@ -4,7 +4,7 @@ Hello :wave: and welcome to **דאטאבוס**, a project of [hasadna](https://o
 
 We glad to see you decided to contribute to our project!
 
-[Join our discord](https://discord.gg/D7926WTY) to get connected with the project's development team.
+[Join our discord](https://discord.gg/deBdkmufS4) to get connected with the project's development team.
 
 # Where to start
 
