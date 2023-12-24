@@ -31,28 +31,37 @@ async function selectLineNumberAndRoute(page: Page, lineNumber: Locator, route: 
     .click()
 }
 
-test.describe('test clearButton ', () => {
-  test.fixme('test in TimeLinePage', async ({ page }) => {
+test.describe('test clearButton at TimeLinePage', () => {
+  test('after clear `line-number` value - should hide `stop` & `route` inputs', async ({
+    page,
+  }) => {
     await visitPage(page, 'לוח זמנים היסטורי', /timeline/)
-    await fillDate(page)
+    await page.getByLabel('תאריך').fill(new Date().toLocaleDateString('en-GB'))
     const { operator, lineNumber, route, stop } = new Selectors(page)
 
-    //clear LineNumber value test
     await operator.click()
     await page.getByRole('option', { name: 'אלקטרה אפיקים' }).click()
+
     await selectLineNumberAndRoute(page, lineNumber, route)
     await lineNumber.click()
     await page.getByLabel('close').locator('svg').click()
     await expect(route).not.toBeVisible()
     await expect(stop).not.toBeVisible()
+  })
+  test('after clear `route` input value - should hide `stop` input', async ({ page }) => {
+    await visitPage(page, 'לוח זמנים היסטורי', /timeline/)
+    const { operator, lineNumber, route, stop } = new Selectors(page)
+    await page.getByLabel('תאריך').fill(new Date().toLocaleDateString('en-GB'))
 
-    //clear Operator value test
-    await selectLineNumberAndRoute(page, lineNumber, route)
     await operator.click()
+    await page.getByRole('option', { name: 'אלקטרה אפיקים' }).click()
+    await selectLineNumberAndRoute(page, lineNumber, route)
     await page.getByRole('button', { name: 'Clear' }).click()
-    await expect(route).not.toBeVisible()
+
     await expect(stop).not.toBeVisible()
   })
+})
+test.describe('test clearButton ', () => {
   test.fixme('test in GapsPage', async ({ page }) => {
     await visitPage(page, 'נסיעות שלא יצאו', /gaps/)
     await fillDate(page)
