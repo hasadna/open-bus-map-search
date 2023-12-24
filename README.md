@@ -8,7 +8,41 @@ Please feel free to submit pull requests and contribute to the project.
 For more details about contributing, see the [CONTRIBUTION.md](CONTRIBUTION.md) file.
 
 ## View video (Hebrew language):
+### The video will explain you how to contribute to the project:   
 [![video (hebrew) about the project](https://img.youtube.com/vi/6H6jkJCVhgk/0.jpg)](https://www.youtube.com/watch?v=6H6jkJCVhgk)
+
+# Running the Project Locally
+
+Follow these steps to run the project on your local machine:
+
+1. **Fork the Repository:**
+   Before you clone the repository to your local machine, you need to create a fork of it on GitHub. This allows you to make changes without affecting the original project. To fork the repository, click the "Fork" button at the top right of this page.
+
+2. **Clone the Repository:**
+   After forking, you need to clone the repository to your local machine. You can do this by running the following command in your terminal:
+
+   ```bash
+   git clone https://github.com/<Your GitHub Username>/open-bus-map-search.git
+   ```
+   Make sure to replace <Your GitHub Username> with your actual GitHub username.
+
+3. **Navigate to the Project Directory:**
+    Once the repository is cloned, navigate to the project directory by running:
+
+    ```bash
+    cd open-bus-map-search
+    ```
+4. **Install Dependencies:**
+   The project uses Yarn to manage dependencies. If you don't have Yarn installed, you can install it by following the instructions on the [Yarn website](https://classic.yarnpkg.com/en/docs/install). Once Yarn is installed, you can install the project dependencies by running:
+    ```bash
+    yarn
+    ```
+5. **Run the Project:**
+    After all dependencies are installed, you can start the project by running:
+    ```bash
+    yarn start
+    ```
+    The project should now be running on your local machine. Open your web browser and navigate to http://localhost:3000 to view the project.
 
 # Easter eggs
 We've hidden a couple of fun surprises in our web app, just for you. Discovering them is as easy as typing a few magic words on your keyboard.
