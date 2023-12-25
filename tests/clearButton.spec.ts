@@ -31,7 +31,7 @@ async function selectLineNumberAndRoute(page: Page, lineNumber: Locator, route: 
     .click()
 }
 
-test.describe('test clearButton at TimeLinePage', () => {
+test.describe('clearButton functionality at TimeLinePage', () => {
   test('after clear `line-number` value - should hide `stop` & `route` inputs', async ({
     page,
   }) => {
@@ -61,13 +61,14 @@ test.describe('test clearButton at TimeLinePage', () => {
     await expect(stop).not.toBeVisible()
   })
 })
-test.describe('test clearButton ', () => {
-  test.fixme('test in GapsPage', async ({ page }) => {
+test.describe('clearButton functionality at GapsPage', () => {
+  test('after clear LineNumber input value - stop and route inputs should be hidden', async ({
+    page,
+  }) => {
     await visitPage(page, 'נסיעות שלא יצאו', /gaps/)
-    await fillDate(page)
+    await page.getByLabel('תאריך').fill(new Date().toLocaleDateString('en-GB'))
     const { operator, lineNumber, route, stop } = new Selectors(page)
 
-    //clear LineNumber value test
     await operator.click()
     await page.getByRole('option', { name: 'אלקטרה אפיקים' }).click()
     await selectLineNumberAndRoute(page, lineNumber, route)
@@ -77,20 +78,29 @@ test.describe('test clearButton ', () => {
     await page.getByLabel('close').locator('svg').click()
     await expect(route).not.toBeVisible()
     await expect(stop).not.toBeVisible()
+  })
+  test('after clear route input value - stop input should be hidden', async ({ page }) => {
+    await visitPage(page, 'נסיעות שלא יצאו', /gaps/)
+    const { operator, lineNumber, route, stop } = new Selectors(page)
+    await page.getByLabel('תאריך').fill(new Date().toLocaleDateString('en-GB'))
 
-    //clear Operator value test
-    await selectLineNumberAndRoute(page, lineNumber, route)
     await operator.click()
+    await page.getByRole('option', { name: 'אלקטרה אפיקים' }).click()
+    await selectLineNumberAndRoute(page, lineNumber, route)
     await page.getByRole('button', { name: 'Clear' }).click()
-    await expect(route).not.toBeVisible()
+
     await expect(stop).not.toBeVisible()
   })
-  test.fixme('test in GapsPatternsPage', async ({ page }) => {
+})
+test.describe('clear button functionality at GapsPatternsPage', () => {
+  test('after clear LineNumber input value - stop and route inputs should be hidden', async ({
+    page,
+  }) => {
     await visitPage(page, 'דפוסי נסיעות שלא יצאו', /gaps_patterns/)
-    await fillDate(page, true)
+    await page.getByLabel('התחלה').fill(new Date().toLocaleDateString('en-GB'))
+    await page.getByLabel('סיום').fill(new Date().toLocaleDateString('en-GB'))
     const { operator, lineNumber, route, stop } = new Selectors(page)
 
-    //clear LineNumber value test
     await operator.click()
     await page.getByRole('option', { name: 'אלקטרה אפיקים' }).click()
     await selectLineNumberAndRoute(page, lineNumber, route)
@@ -98,17 +108,26 @@ test.describe('test clearButton ', () => {
     await page.getByLabel('close').locator('svg').click()
     await expect(route).not.toBeVisible()
     await expect(stop).not.toBeVisible()
+  })
+  test('after clear route input value - stop input should be hidden', async ({ page }) => {
+    await visitPage(page, 'דפוסי נסיעות שלא יצאו', /gaps_patterns/)
+    await page.getByLabel('התחלה').fill(new Date().toLocaleDateString('en-GB'))
+    await page.getByLabel('סיום').fill(new Date().toLocaleDateString('en-GB'))
+    const { operator, lineNumber, route, stop } = new Selectors(page)
 
-    //clear Operator value test
-    await selectLineNumberAndRoute(page, lineNumber, route)
     await operator.click()
+    await page.getByRole('option', { name: 'אלקטרה אפיקים' }).click()
+    await selectLineNumberAndRoute(page, lineNumber, route)
     await page.getByRole('button', { name: 'Clear' }).click()
-    await expect(route).not.toBeVisible()
     await expect(stop).not.toBeVisible()
   })
-  test.fixme('test in SingleLineMapPage', async ({ page }) => {
+})
+test.describe('clear button functionality at SingleLineMapPage', () => {
+  test('after clear LineNumber input value - stop and route inputs should be hidden', async ({
+    page,
+  }) => {
     await visitPage(page, 'מפה לפי קו', /single-line/)
-    await fillDate(page)
+    await page.getByLabel('תאריך').fill(new Date().toLocaleDateString('en-GB'))
     const { operator, lineNumber, route, stop } = new Selectors(page)
 
     //clear LineNumber value test
@@ -119,15 +138,22 @@ test.describe('test clearButton ', () => {
     await page.getByLabel('close').locator('svg').click()
     await expect(route).not.toBeVisible()
     await expect(stop).not.toBeVisible()
+  })
+  test('after clear route input value - stop input should be hidden', async ({ page }) => {
+    await visitPage(page, 'מפה לפי קו', /single-line/)
+    const { operator, lineNumber, route, stop } = new Selectors(page)
+    await page.getByLabel('תאריך').fill(new Date().toLocaleDateString('en-GB'))
 
-    //clear Operator value test
-    await selectLineNumberAndRoute(page, lineNumber, route)
     await operator.click()
+    await page.getByRole('option', { name: 'אלקטרה אפיקים' }).click()
+    await selectLineNumberAndRoute(page, lineNumber, route)
     await page.getByRole('button', { name: 'Clear' }).click()
-    await expect(route).not.toBeVisible()
+
     await expect(stop).not.toBeVisible()
   })
-  test.fixme('test in RealtimeMapPage', async ({ page }) => {
+})
+test.describe('clear button functionality at RealtimeMapPage', () => {
+  test('after clear the `minutes` input - it should has value equals to `1`', async ({ page }) => {
     await visitPage(page, 'מפה בזמן אמת', /map/)
     const minutes = page.getByLabel('דקות')
     let getValueAttribute = await minutes.getAttribute('value')
