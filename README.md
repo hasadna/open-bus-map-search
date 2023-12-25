@@ -7,7 +7,11 @@ This is the official repository of the open bus (תחב"צ פתוחה / דאטא
 Please feel free to submit pull requests and contribute to the project.
 For more details about contributing, see the [CONTRIBUTION.md](CONTRIBUTION.md) file.
 
+# Running the project locally
+An explanation how to run the project locally you can [read here](CONTRIBUTION.md#running-the-project-locally).
+
 ## View video (Hebrew language):
+### The video will explain you how to contribute to the project:   
 [![video (hebrew) about the project](https://img.youtube.com/vi/6H6jkJCVhgk/0.jpg)](https://www.youtube.com/watch?v=6H6jkJCVhgk)
 
 # Easter eggs
