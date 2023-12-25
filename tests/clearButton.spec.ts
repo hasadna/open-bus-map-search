@@ -9,18 +9,6 @@ async function visitPage(page: Page, pageName: string, url: RegExp) {
   await page.getByRole('progressbar').waitFor({ state: 'hidden' })
 }
 
-async function fillDate(page: Page, twoDateElements: boolean = false) {
-  if (twoDateElements) {
-    await page.getByLabel('בחירת תאריך').nth(0).click()
-    await page.getByRole('gridcell', { name: '1', exact: true }).first().click()
-    await page.getByLabel('בחירת תאריך').nth(1).click()
-  } else {
-    await page.getByLabel('בחירת תאריך').nth(1).waitFor({ state: 'detached' })
-    await page.getByLabel('בחירת תאריך').click()
-  }
-  //await page.getByRole('gridcell', { name: '1', exact: true }).first().click()
-}
-
 async function selectLineNumberAndRoute(page: Page, lineNumber: Locator, route: Locator) {
   await lineNumber.fill('64')
   await route.click()
