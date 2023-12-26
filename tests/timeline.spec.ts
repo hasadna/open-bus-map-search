@@ -1,29 +1,28 @@
-import TimelinePage from '../src/test_pages/TimelinePage';
-import { test, expect } from '@playwright/test';
+import TimelinePage from '../src/test_pages/TimelinePage'
+import { test, expect } from '@playwright/test'
 
 test.describe('Timeline Page Tests', () => {
-    test('Test route selection disappears after line number is closed', async ({page})=>{
-        await page.goto('/')
-        await page.getByText('לוח זמנים היסטורי', { exact: true }).click()
-        await expect(page).toHaveURL(/timeline/);
-        await page.getByRole('progressbar').waitFor({ state: 'hidden' })
-        const timelinePage = new TimelinePage(page)
+  let timelinePage: TimelinePage
 
-        await timelinePage.selectOperatorFromDropbox("אגד");
-        await timelinePage.fillLineNumber("1");
-        await timelinePage.closeLineNumber();
-        await timelinePage.verifyRouteSelectionVisible(false)
-    })
+  test.beforeEach(async ({ page }) => {
+    timelinePage = new TimelinePage(page) // Initialize timelinePage before each test
+    await page.goto('/')
+    await page.getByText('לוח זמנים היסטורי', { exact: true }).click()
+    await page.getByRole('progressbar').waitFor({ state: 'hidden' })
+  })
 
-    test('Test route selection appears after line number selected', async ({page})=>{
-        await page.goto('/')
-        await page.getByText('לוח זמנים היסטורי', { exact: true }).click()
-        await expect(page).toHaveURL(/timeline/);
-        await page.getByRole('progressbar').waitFor({ state: 'hidden' })
-        const timelinePage = new TimelinePage(page)
+  test('Test route selection disappears after line number is closed', async () => {
+    await timelinePage.validatePageUrl(/timeline/)
+    await timelinePage.selectOperatorFromDropbox('אגד')
+    await timelinePage.fillLineNumber('1')
+    await timelinePage.closeLineNumber()
+    await timelinePage.verifyRouteSelectionVisible(false)
+  })
 
-        await timelinePage.selectOperatorFromDropbox("אגד");
-        await timelinePage.fillLineNumber("1");
-        await timelinePage.verifyRouteSelectionVisible(true)
-    })   
+  test('Test route selection appears after line number selected', async () => {
+    await timelinePage.validatePageUrl(/timeline/)
+    await timelinePage.selectOperatorFromDropbox('אגד')
+    await timelinePage.fillLineNumber('1')
+    await timelinePage.verifyRouteSelectionVisible(true)
+  })
 })
