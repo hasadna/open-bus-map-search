@@ -18,7 +18,7 @@ const OperatorSelector = ({
   const [operators, setOperators] = useState<Operator[]>([])
   useEffect(() => {
     const majorOperatorsIds = ['3', '5', '15', '18', '25']
-    RELEVANT_OPERATORS.then((resultObj) =>
+    RELEVANT_OPERATORS().then((resultObj) =>
       setOperators(
         onlyMajorOperators
           ? resultObj.filter((item) => majorOperatorsIds.includes(item.id))
