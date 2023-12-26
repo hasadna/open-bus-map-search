@@ -1,5 +1,6 @@
 import { GithubOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
+import { useCallback } from 'react'
 import './GitHubLink.scss'
 
 export default function GitHubLink() {
@@ -12,9 +13,9 @@ export default function GitHubLink() {
     element: null,
   }
 
-  const handleClick = () => {
+  const handleClick = useCallback(() => {
     window.open(data.path, '_blank')
-  }
+  }, [])
 
   return (
     <div className="github-link" onClick={handleClick}>
