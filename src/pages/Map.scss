@@ -1,44 +1,61 @@
 main,
-main>div,
+main > div,
 .map-container,
 .leaflet-container,
 .map-info {
-    display: flex;
-    flex-direction: column;
-    flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
 }
 
 pre {
-    direction: ltr;
-    height: 200px;
-    overflow-y: auto;
+  direction: ltr;
+  height: 200px;
+  overflow-y: auto;
 }
 
 .map-header-buttons {
-    display: flex;
-    flex-direction: row;
-    margin-top: 10px;
+  display: flex;
+  flex-direction: row;
+  margin-top: 10px;
 }
 
 .bus-icon-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 
-    > .bus-icon-circle{
-        width: 30px;
-        height: 30px;
-        padding: 5px;
-        border-radius: 50%;
-        background-color: white;
-        img {
-            width: 100%;
-            height: 100%;
-        }
+  > .bus-icon-circle {
+    width: 30px;
+    height: 30px;
+    padding: 5px;
+    border-radius: 50%;
+    background-color: white;
+
+    img {
+      width: 100%;
+      height: 100%;
     }
-    > .operator-name{
-        background-color: rgba(255, 255, 255, 0.4);
-        font-weight: bold;
-    }
+  }
+
+  > .operator-name {
+    background-color: rgba(255, 255, 255, 0.4);
+    font-weight: bold;
+  }
+}
+
+.expand-button {
+  position: absolute;
+  left: 5px;
+  bottom: 5px;
+  z-index: 999;
+}
+
+.expanded {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
 }

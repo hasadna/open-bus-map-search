@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { TEXTS } from 'src/resources/texts'
+import { useTranslation } from 'react-i18next'
 import { Operator, RELEVANT_OPERATORS } from 'src/model/operator'
 import { Autocomplete, TextField } from '@mui/material'
 
@@ -14,6 +14,7 @@ const OperatorSelector = ({
   setOperatorId,
   onlyMajorOperators = false,
 }: OperatorSelectorProps) => {
+  const { t } = useTranslation()
   const [operators, setOperators] = useState<Operator[]>([])
   useEffect(() => {
     const majorOperatorsIds = ['3', '5', '15', '18', '25']
@@ -37,7 +38,7 @@ const OperatorSelector = ({
       onChange={(e, value) => setOperatorId(value ? value.id : '')}
       id="operator-select"
       options={operators}
-      renderInput={(params) => <TextField {...params} label={TEXTS.choose_operator} />}
+      renderInput={(params) => <TextField {...params} label={t('choose_operator')} />}
       getOptionLabel={(option) => option.name}
     />
   )

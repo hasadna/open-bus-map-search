@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
 import { Moment } from 'moment'
-import { getGapsAsync } from '../api/gapsService'
+import { getGapsAsync } from '../../api/gapsService'
 
-import { sortByMode, HourlyData } from './components/utils'
+import { sortByMode, HourlyData } from '../components/utils'
 import { GapsList } from 'src/model/gaps'
+import axios from 'axios'
 
 type HourlyDataList = HourlyData[]
 // Convert gapsList into HourlyDataList structure
@@ -44,11 +45,19 @@ export const useGapsList = (
   const [hourlyData, setHourlyData] = useState<HourlyData[]>([])
 
   useEffect(() => {
+    const source = axios.CancelToken.source()
     const fetchData = async () => {
       try {
-        const gapsList: GapsList = await getGapsAsync(fromDate, toDate, operatorRef, lineRef)
+        const gapsList: GapsList = await getGapsAsync(
+          fromDate,
+          toDate,
+          operatorRef,
+          lineRef,
+          source.token,
+        )
         const result = convertGapsToHourlyStruct(gapsList)
         setHourlyData(sortByMode(result, sortingMode))
+        return () => source.cancel()
       } catch (error) {
         console.error('Error fetching data:', error)
       }

@@ -1,6 +1,5 @@
 import moment from 'moment'
 import { useContext, useEffect, useMemo, useState } from 'react'
-import { MapContainer, Marker, Polyline, Popup, TileLayer } from 'react-leaflet'
 import { getRoutesAsync } from 'src/api/gtfsService'
 import useVehicleLocations from 'src/api/useVehicleLocations'
 import { Label } from 'src/pages/components/Label'
@@ -8,55 +7,38 @@ import LineNumberSelector from 'src/pages/components/LineSelector'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
 import RouteSelector from 'src/pages/components/RouteSelector'
 import { INPUT_SIZE } from 'src/resources/sizes'
-import { TEXTS } from 'src/resources/texts'
-import { SearchContext } from '../model/pageState'
-import { NotFound } from './components/NotFound'
-import { Point } from './RealtimeMapPage'
+import { useTranslation } from 'react-i18next'
+import { SearchContext } from '../../model/pageState'
+import { NotFound } from '../components/NotFound'
+import { Point } from '../realtimeMap'
 
 import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
-import './Map.scss'
-import getAgencyList, { Agency } from 'src/api/agencyList'
-import { VehicleLocation } from 'src/model/vehicleLocation'
-import { getColorByHashString } from './dashboard/OperatorHbarChart/utils'
-import { DateSelector } from './components/DateSelector'
-import { CircularProgress } from '@mui/material'
-import { FilterPositionsByStartTimeSelector } from './components/FilterPositionsByStartTimeSelector'
-import { PageContainer } from './components/PageContainer'
-import { busIcon, busIconPath } from './components/utils/BusIcon'
-import { BusToolTip } from 'src/pages/components/MapLayers/BusToolTip'
-
-interface Path {
-  locations: VehicleLocation[]
-  lineRef: number
-  operator: number
-  vehicleRef: number
-}
-
-const position: Point = {
-  loc: [32.3057988, 34.85478613], // arbitrary default value... Netanya - best city to live & die in
-  color: 0,
-}
+import '../Map.scss'
+import { DateSelector } from '../components/DateSelector'
+import { CircularProgress, Tooltip } from '@mui/material'
+import { FilterPositionsByStartTimeSelector } from '../components/FilterPositionsByStartTimeSelector'
+import { PageContainer } from '../components/PageContainer'
+import { MapWithLocationsAndPath, Path } from '../components/map-related/MapWithLocationsAndPath'
 
 const SingleLineMapPage = () => {
   const { search, setSearch } = useContext(SearchContext)
   const { operatorId, lineNumber, timestamp, routes, routeKey } = search
-
-  const [agencyList, setAgencyList] = useState<Agency[]>([])
-
-  useEffect(() => {
-    getAgencyList().then(setAgencyList).catch(console.log)
-  }, [])
+  const { t } = useTranslation()
 
   useEffect(() => {
+    const controller = new AbortController()
+    const signal = controller.signal
     if (!operatorId || operatorId === '0' || !lineNumber) {
       setSearch((current) => ({ ...current, routes: undefined, routeKey: undefined }))
       return
     }
-    getRoutesAsync(moment(timestamp), moment(timestamp), operatorId, lineNumber).then((routes) =>
-      setSearch((current) =>
-        search.lineNumber === lineNumber ? { ...current, routes: routes } : current,
-      ),
+    getRoutesAsync(moment(timestamp), moment(timestamp), operatorId, lineNumber, signal).then(
+      (routes) =>
+        setSearch((current) =>
+          search.lineNumber === lineNumber ? { ...current, routes: routes } : current,
+        ),
     )
+    return () => controller.abort()
   }, [operatorId, lineNumber, timestamp])
 
   const selectedRoute = useMemo(
@@ -103,7 +85,7 @@ const SingleLineMapPage = () => {
         }
         return arr
       }, []),
-    [filteredPositions],
+    filteredPositions.flat(),
   )
 
   return (
@@ -111,7 +93,7 @@ const SingleLineMapPage = () => {
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
         {/* choose date*/}
         <Grid xs={4}>
-          <Label text={TEXTS.choose_date} />
+          <Label text={t('choose_date')} />
         </Grid>
         <Grid xs={8}>
           <DateSelector
@@ -121,7 +103,7 @@ const SingleLineMapPage = () => {
         </Grid>
         {/* choose operator */}
         <Grid xs={4}>
-          <Label text={TEXTS.choose_operator} />
+          <Label text={t('choose_operator')} />
         </Grid>
         <Grid xs={8}>
           <OperatorSelector
@@ -131,7 +113,7 @@ const SingleLineMapPage = () => {
         </Grid>
         {/* choose line number */}
         <Grid xs={4}>
-          <Label text={TEXTS.choose_line} />
+          <Label text={t('choose_line')} />
         </Grid>
         <Grid xs={8}>
           <LineNumberSelector
@@ -142,7 +124,7 @@ const SingleLineMapPage = () => {
         <Grid xs={12}>
           {routes &&
             (routes.length === 0 ? (
-              <NotFound>{TEXTS.line_not_found}</NotFound>
+              <NotFound>{t('line_not_found')}</NotFound>
             ) : (
               <RouteSelector
                 routes={routes}
@@ -160,39 +142,7 @@ const SingleLineMapPage = () => {
           />
         )}
       </Grid>
-
-      <div className="map-info">
-        <MapContainer center={position.loc} zoom={8} scrollWheelZoom={true}>
-          <TileLayer
-            attribution='&copy <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
-          />
-
-          {filteredPositions.map((pos, i) => {
-            const icon = busIcon({
-              operator_id: pos.operator?.toString() || 'default',
-              name: agencyList.find((agency) => agency.operator_ref === pos.operator)?.agency_name,
-            })
-            return (
-              <Marker position={pos.loc} icon={icon} key={i}>
-                <Popup minWidth={300} maxWidth={700}>
-                  <BusToolTip position={pos} icon={busIconPath(operatorId!)} />
-                </Popup>
-              </Marker>
-            )
-          })}
-
-          {paths.map((path) => (
-            <Polyline
-              key={path.vehicleRef}
-              pathOptions={{
-                color: getColorByHashString(path.vehicleRef.toString()),
-              }}
-              positions={path.locations.map(({ lat, lon }) => [lat, lon])}
-            />
-          ))}
-        </MapContainer>
-      </div>
+      <MapWithLocationsAndPath positions={filteredPositions} paths={paths} />
     </PageContainer>
   )
 }
@@ -206,6 +156,7 @@ function FilterPositionsByStartTime({
   setFilteredPositions: (positions: Point[]) => void
   locationsIsLoading: boolean
 }) {
+  const { t } = useTranslation()
   const [startTime, setStartTime] = useState<string>('00:00:00')
   const options = useMemo(() => {
     const options = positions
@@ -233,9 +184,15 @@ function FilterPositionsByStartTime({
   return (
     <>
       <Grid xs={3}>
-        <Label text={TEXTS.choose_start_time} />
+        <Label text={t('choose_start_time')} />
       </Grid>
-      <Grid xs={1}>{locationsIsLoading && <CircularProgress />}</Grid>
+      <Grid xs={1}>
+        {locationsIsLoading && (
+          <Tooltip title={t('loading_times_tooltip_content')}>
+            <CircularProgress />
+          </Tooltip>
+        )}
+      </Grid>
       <Grid xs={8}>
         <FilterPositionsByStartTimeSelector
           options={options}

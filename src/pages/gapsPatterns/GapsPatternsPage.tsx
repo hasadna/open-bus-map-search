@@ -7,7 +7,6 @@ import { useDate } from '../components/DateTimePicker'
 import { PageContainer } from '../components/PageContainer'
 import { Row } from '../components/Row'
 import { Label } from '../components/Label'
-import { TEXTS } from '../../resources/texts'
 import OperatorSelector from '../components/OperatorSelector'
 import LineNumberSelector from '../components/LineSelector'
 import { NotFound } from '../components/NotFound'
@@ -29,11 +28,12 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 import { mapColorByExecution } from '../components/utils'
-import { useGapsList } from '../useGapsList'
+import { useGapsList } from './useGapsList'
 import { DateSelector } from '../components/DateSelector'
 import { INPUT_SIZE } from 'src/resources/sizes'
 const { Title } = Typography
 import { useTranslation } from 'react-i18next'
+import Widget from 'src/shared/Widget'
 // Define prop types for the component
 interface BusLineStatisticsProps {
   lineRef: number
@@ -71,7 +71,7 @@ function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatistic
 
   return (
     lineRef > 0 && (
-      <div className="widget">
+      <Widget>
         <Title level={3}>{t('dashboard_page_graph_title')}</Title>
 
         {isLoading && lineRef ? (
@@ -84,8 +84,8 @@ function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatistic
                 setSortingMode(e.target.value as 'hour' | 'severity')
               }
               value={sortingMode}>
-              <Radio.Button value="hour">{TEXTS.order_by_hour}</Radio.Button>
-              <Radio.Button value="severity">{TEXTS.order_by_severity} </Radio.Button>
+              <Radio.Button value="hour">{t('order_by_hour')}</Radio.Button>
+              <Radio.Button value="severity">{t('order_by_severity')} </Radio.Button>
             </Radio.Group>
             <ResponsiveContainer width="100%" height={hourlyData.length * 50}>
               <ComposedChart
@@ -137,7 +137,7 @@ function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatistic
             </ResponsiveContainer>
           </>
         )}
-      </div>
+      </Widget>
     )
   )
 }
@@ -148,32 +148,37 @@ const GapsPatternsPage = () => {
   const { search, setSearch } = useContext(SearchContext)
   const { operatorId, lineNumber, routes, routeKey } = search
   const [routesIsLoading, setRoutesIsLoading] = useState(false)
+  const { t } = useTranslation()
 
-  const loadSearchData = async () => {
+  const loadSearchData = async (signal: AbortSignal | undefined) => {
     setRoutesIsLoading(true)
     const routes = await getRoutesAsync(
       moment(startDate),
       moment(endDate),
       operatorId as string,
       lineNumber as string,
+      signal,
     )
     setSearch((current) => (search.lineNumber === lineNumber ? { ...current, routes } : current))
     setRoutesIsLoading(false)
   }
 
   useEffect(() => {
+    const controller = new AbortController()
+    const signal = controller.signal
     if (!operatorId || operatorId === '0' || !lineNumber) {
       setSearch((current) => ({ ...current, routeKey: undefined, routes: undefined }))
       return
     }
-    loadSearchData()
+    loadSearchData(signal)
+    return () => controller.abort()
   }, [operatorId, lineNumber, endDate, startDate, setSearch])
 
   return (
     <PageContainer>
       <Grid container spacing={2} alignItems="center" sx={{ maxWidth: INPUT_SIZE }}>
         <Grid sm={4} className="hideOnMobile">
-          <Label text={TEXTS.choose_dates} />
+          <Label text={t('choose_dates')} />
         </Grid>
         <Grid
           container
@@ -186,7 +191,7 @@ const GapsPatternsPage = () => {
             <DateSelector
               time={startDate}
               onChange={(data) => setStartDate(data)}
-              customLabel={TEXTS.start}
+              customLabel={t('start')}
             />
           </Grid>
           <Grid xs={0.1} className="hideOnMobile">
@@ -196,13 +201,13 @@ const GapsPatternsPage = () => {
             <DateSelector
               time={endDate}
               onChange={(data) => setEndDate(data)}
-              customLabel={TEXTS.end}
+              customLabel={t('end')}
             />
           </Grid>
         </Grid>
 
         <Grid xs={4} className="hideOnMobile">
-          <Label text={TEXTS.choose_operator} />
+          <Label text={t('choose_operator')} />
         </Grid>
         <Grid xs={12} sm={8}>
           <OperatorSelector
@@ -211,7 +216,7 @@ const GapsPatternsPage = () => {
           />
         </Grid>
         <Grid xs={4} className="hideOnMobile">
-          <Label text={TEXTS.choose_line} />
+          <Label text={t('choose_line')} />
         </Grid>
         <Grid xs={12} sm={8}>
           <LineNumberSelector
@@ -222,14 +227,14 @@ const GapsPatternsPage = () => {
         <Grid xs={12}>
           {routesIsLoading && (
             <Row>
-              <Label text={TEXTS.loading_routes} />
+              <Label text={t('loading_routes')} />
               <Spin />
             </Row>
           )}
           {!routesIsLoading &&
             routes &&
             (routes.length === 0 ? (
-              <NotFound>{TEXTS.line_not_found}</NotFound>
+              <NotFound>{t('line_not_found')}</NotFound>
             ) : (
               <>
                 <RouteSelector

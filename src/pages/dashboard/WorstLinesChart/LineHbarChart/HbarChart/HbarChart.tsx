@@ -1,9 +1,9 @@
 import React from 'react'
-import { TEXTS } from 'src/resources/texts'
+import { useTranslation } from 'react-i18next'
 import './HbarChart.scss'
 import { Tooltip } from '@mui/material'
 
-type Entry = { name: string; total: number; actual: number; color?: string }
+export type Entry = { name: string; total: number; actual: number; color?: string }
 const numberFormatter = new Intl.NumberFormat('he-IL')
 
 export function HbarChart({
@@ -13,6 +13,7 @@ export function HbarChart({
   entries: Entry[]
   complement?: boolean
 }) {
+  const { t } = useTranslation()
   const percents = entries
     .map((o) => (o.actual / o.total) * 100)
     .map((p) => (complement ? Math.max(100 - p, 0) : p))
@@ -28,9 +29,9 @@ export function HbarChart({
         placement={'top'}
         title={
           <div style={{ fontSize: 15 }}>
-            {TEXTS.rides_planned}: {numberFormatter.format(entry.total)}
+            {t('rides_planned')}: {numberFormatter.format(entry.total)}
             <br />
-            {TEXTS.rides_actual}: {numberFormatter.format(entry.actual)}
+            {t('rides_actual')}: {numberFormatter.format(entry.actual)}
           </div>
         }
         followCursor={true}>
