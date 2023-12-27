@@ -5,7 +5,7 @@ export type Operator = {
   id: string
 }
 
-export const RELEVANT_OPERATORS = async () => {
+export const getRelevantOperators = async () => {
   const relevant = [
     'אגד',
     'אגד תעבורה',
