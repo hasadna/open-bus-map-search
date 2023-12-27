@@ -55,7 +55,7 @@ const DashboardPage = () => {
           </Grid>
         </Grid>
 
-        <Grid lg={6} display={{ xs: 'none', lg: 'block' }}>
+        <Grid lg={6} xs={12}>
           <OperatorSelector
             operatorId={operatorId}
             setOperatorId={setOperatorId}
@@ -67,13 +67,7 @@ const DashboardPage = () => {
         <Grid xs={12} lg={6}>
           <AllLinesChart startDate={startDate} endDate={endDate} />
         </Grid>
-        <Grid xs={12} display={{ xs: 'block', lg: 'none' }}>
-          <OperatorSelector
-            operatorId={operatorId}
-            setOperatorId={setOperatorId}
-            onlyMajorOperators
-          />
-        </Grid>
+
         <Grid xs={12} lg={6}>
           <WorstLinesChart startDate={startDate} endDate={endDate} operatorId={operatorId} />
         </Grid>

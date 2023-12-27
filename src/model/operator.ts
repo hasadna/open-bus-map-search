@@ -5,22 +5,27 @@ export type Operator = {
   id: string
 }
 
-async function getOperatorId(name: string) {
+export const getRelevantOperators = async () => {
+  const relevant = [
+    'אגד',
+    'אגד תעבורה',
+    'אלקטרה אפיקים',
+    'דן',
+    'מטרופולין',
+    'נתיב אקספרס',
+    'סופרבוס',
+    'קווים',
+  ]
   const agencyList = await getAgencyList()
-  const agency = agencyList.find((agency) => agency.agency_name === name)
-  if (!agency) {
-    throw new Error(`Agency ${name} not found`)
-  }
-  return agency.operator_ref.toString()
+  const agencyMap = new Map()
+  // convert to Map
+  agencyList.forEach((obj) => {
+    agencyMap.set(obj.agency_name, obj)
+  })
+  const res = relevant.reduce((acc: Operator[], name: string): Operator[] => {
+    return agencyMap.has(name)
+      ? [...acc, { name, id: agencyMap.get(name)?.operator_ref.toString() }]
+      : acc
+  }, [])
+  return res
 }
-
-const toOperator = async (name: string): Promise<Operator> => ({
-  name,
-  id: await getOperatorId(name),
-})
-
-export const RELEVANT_OPERATORS = Promise.all(
-  ['אגד', 'אגד תעבורה', 'דן', 'נתיב אקספרס', 'מטרופולין', 'סופרבוס', 'קווים', 'אלקטרה אפיקים']
-    .sort()
-    .map(toOperator),
-)
