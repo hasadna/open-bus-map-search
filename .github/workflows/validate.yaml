@@ -15,9 +15,7 @@ jobs:
         with:
           node-version: 18
       - name: Run install
-        uses: borales/actions-yarn@v4
-        with:
-          cmd: install
+        run: npm ci
       - name: make sure package.lock does not exist
         run: rm -f package-lock.json
       - name: Git Check Clean Tree
@@ -25,19 +23,19 @@ jobs:
         with:
           error-reason: 'removing package-lock.json file'
       - name: Install dependencies
-        run: yarn
+        run: npm i
       - name: Git Check Clean Tree
         uses: ArkadiK94/action-git-clean-tree@v1.0.3
         with:
-          error-reason: 'yarn'
+          error-reason: 'npm i'
       - name: Build
-        run: yarn build
+        run: npm run build
       - name: Build Storybook
-        run: yarn build-storybook -o dist/storybook
+        run: npm run build-storybook -o dist/storybook
       - name: Git Check Clean Tree
         uses: ArkadiK94/action-git-clean-tree@v1.0.3
         with:
-          error-reason: 'yarn build and yarn build-storybook'
+          error-reason: 'npm run build and npm run build-storybook'
   lint:
     runs-on: ubuntu-latest
     steps:
@@ -46,11 +44,9 @@ jobs:
         with:
           node-version: 18
       - name: Run install
-        uses: borales/actions-yarn@v4
-        with:
-          cmd: install
+        run: npm ci
       - name: Run lint
-        run: yarn lint
+        run: npm run lint
   circular:
     runs-on: ubuntu-latest
     steps:
@@ -59,11 +55,9 @@ jobs:
         with:
           node-version: 18
       - name: Run install
-        uses: borales/actions-yarn@v4
-        with:
-          cmd: install
+        run: npm ci
       - name: find circular dependencies
-        run: yarn madge --extensions js,ts --circular .
+        run: npx madge --extensions js,ts --circular .
   build:
     runs-on: ubuntu-latest
     steps:
@@ -99,12 +93,10 @@ jobs:
         with:
           node-version: 18
       - name: Run install
-        uses: borales/actions-yarn@v4
-        with:
-          cmd: install
-      - run: yarn playwright install
+        run: npm ci
+      - run: npm run playwright install
       - name: Run test
-        run: yarn test
+        run: npm run test
       - name: upload playwright artifacts
         if: always()
         uses: actions/upload-artifact@v2
@@ -155,11 +147,9 @@ jobs:
         with:
           node-version: 20
       - name: Run install
-        uses: borales/actions-yarn@v4
-        with:
-          cmd: install
+        run: npm ci
       - name: run the tests
-        run: yarn test:unit
+        run: npm run test:unit
   all-passed:
     runs-on: ubuntu-latest
     needs: [verify-clean-tree, lint, circular, test, test-unit]

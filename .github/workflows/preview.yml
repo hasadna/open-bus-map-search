@@ -25,13 +25,11 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
-          cache: 'yarn'
+          cache: 'npm'
       - name: Run install
-        uses: borales/actions-yarn@v4
-        with:
-          cmd: install
+        run: npm ci
       - name: Build
-        run: yarn build
+        run: npm run build
       - name: upload artifact
         uses: actions/upload-artifact@v2
         with:
@@ -46,13 +44,11 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
-          cache: 'yarn'
+          cache: 'npm'
       - name: Run install
-        uses: borales/actions-yarn@v4
-        with:
-          cmd: install
+        run: npm ci
       - name: Build Storybook
-        run: yarn build-storybook -o dist/storybook
+        run: npm run build-storybook -o dist/storybook
       - name: upload artifact
         uses: actions/upload-artifact@v2
         with:

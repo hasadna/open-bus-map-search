@@ -71,7 +71,7 @@ export default defineConfig({
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: 'yarn start',
+    command: 'npm start',
     reuseExistingServer: true,
     timeout: 120 * 1000,
     port: 3000,

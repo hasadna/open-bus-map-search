@@ -26,26 +26,27 @@ Follow these steps to run the project on your local machine:
    ```bash
    git clone https://github.com/<Your GitHub Username>/open-bus-map-search.git
    ```
+
    Make sure to replace <Your GitHub Username> with your actual GitHub username.
 
 3. **Navigate to the Project Directory:**
-    Once the repository is cloned, navigate to the project directory by running:
+   Once the repository is cloned, navigate to the project directory by running:
 
-    ```bash
-    cd open-bus-map-search
-    ```
+   ```bash
+   cd open-bus-map-search
+   ```
+
 4. **Install Dependencies:**
-   The project uses Yarn to manage dependencies. If you don't have Yarn installed, you can install it by following the instructions on the [Yarn website](https://classic.yarnpkg.com/en/docs/install). Once Yarn is installed, you can install the project dependencies by running:
-    ```bash
-    yarn
-    ```
+   The project uses npm to manage dependencies. Once Node is installed, you can install the project dependencies by running:
+   ```bash
+   npm install
+   ```
 5. **Run the Project:**
-    After all dependencies are installed, you can start the project by running:
-    ```bash
-    yarn start
-    ```
-    The project should now be running on your local machine. Open your web browser and navigate to http://localhost:3000 to view the project.
-
+   After all dependencies are installed, you can start the project by running:
+   ```bash
+   npm start
+   ```
+   The project should now be running on your local machine. Open your web browser and navigate to http://localhost:3000 to view the project.
 
 # How to open the PR
 
@@ -57,7 +58,6 @@ Follow these steps to run the project on your local machine:
 - push the branch to remote repo (`git push`)
 - go to the original repo and create a pr (by pressing `create a pr` button)
 - tag one of the maintainers as reviewers
-
 
 # Commit message convention
 
@@ -72,13 +72,13 @@ Follow these steps to run the project on your local machine:
 
 ### tests beter to be run locally
 
-| command             | description                                                     |
-| ------------------- | --------------------------------------------------------------- |
-| `yarn test:unit`    | Run the unit tests using `watch` option (good for development). |
-| `yarn test:unit:ci` | Run the unit tests (good for ci).                               |
-| `yarn test:e2e`     | Run the e2e (playwright) tests (good for ci).                   |
-| `yarn test:e2e:ui`  | Run the e2e (playwright) tests with user interface.             |
-| `yarn test`         | Run all the kind of tests.                                      |
+| command                | description                                                     |
+| ---------------------- | --------------------------------------------------------------- |
+| `npm run test:unit`    | Run the unit tests using `watch` option (good for development). |
+| `npm run test:unit:ci` | Run the unit tests (good for ci).                               |
+| `npm run test:e2e`     | Run the e2e (playwright) tests (good for ci).                   |
+| `npm run test:e2e:ui`  | Run the e2e (playwright) tests with user interface.             |
+| `npm run test`         | Run all the kind of tests.                                      |
 
 - additional helpful flags - https://playwright.dev/docs/test-cli
 
@@ -115,7 +115,7 @@ https://open-bus-stride-api.hasadna.org.il/docs
 
 ### Why do I get a red `x` commit status?
 
-- lint - you have lint errors. fix them by running `yarn lint:fix`
-- tests - you have test errors. see them by running `yarn test:unit:ci`
-- build - you have build errors. see them by running `yarn build`
+- lint - you have lint errors. fix them by running `npm run lint:fix`
+- tests - you have test errors. see them by running `npm run test:unit:ci`
+- build - you have build errors. see them by running `npm run build`
 - pr title validation - you have an invalid pr title. please edit the title of your PR with conventional commit formatting. examples: `feat: add new feature`, `fix: fix a bug` or `docs: update README.md`
