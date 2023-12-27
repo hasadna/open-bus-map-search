@@ -19,7 +19,7 @@ jobs:
           node-version: 18
       - name: Run install
         run: npm ci
-      - run: npm run playwright install
+      - run: npx playwright install
       - name: Run test
         run: npm run test
       - name: Run end-to-end tests
