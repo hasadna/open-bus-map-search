@@ -1,4 +1,4 @@
-import { test } from '@playwright/test'
+import { test } from './utils'
 
 test('realtime-map page', async ({ page }) => {
   await page.goto('/')

@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { test, expect } from './utils'
 test.describe('About Page Tests', () => {
   test('can access about page by clicking `about` menu', async ({ page }) => {
     await page.goto('/')
