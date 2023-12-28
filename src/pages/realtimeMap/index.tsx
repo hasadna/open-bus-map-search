@@ -42,6 +42,7 @@ const fiveMinutesAgo = moment().subtract(5, 'minutes')
 const fourMinutesAgo = moment(fiveMinutesAgo).add(1, 'minutes')
 
 export default function RealtimeMapPage() {
+  const [isExpanded, setIsExpanded] = useState<boolean>(false)
   const position: Point = {
     loc: [32.3057988, 34.85478613], // arbitrary default value... Netanya - best city to live & die in
     color: 0,
@@ -149,7 +150,7 @@ export default function RealtimeMapPage() {
         </Grid>
         <Grid xs={1}>{isLoading && <Spin size="small" />}</Grid>
       </Grid>
-      <div className="map-info">
+      <div className={`map-info ${isExpanded ? 'expanded' : 'collapsed'}`}>
         <MapContainer center={position.loc} zoom={8} scrollWheelZoom={true}>
           <TileLayer
             attribution='&copy <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
