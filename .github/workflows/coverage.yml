@@ -18,12 +18,10 @@ jobs:
         with:
           node-version: 18
       - name: Run install
-        uses: borales/actions-yarn@v4
-        with:
-          cmd: install
-      - run: yarn playwright install
+        run: npm ci
+      - run: npx playwright install
       - name: Run test
-        run: yarn test
+        run: npm run test
       - name: Run end-to-end tests
         run: npm test
       - run: npx nyc report --reporter=lcovonly
