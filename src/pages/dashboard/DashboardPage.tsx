@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 // Services and libraries
 import { DateSelector } from '../components/DateSelector'
@@ -28,10 +28,19 @@ const DashboardPage = () => {
   const [operatorId, setOperatorId] = useState('')
   const { t } = useTranslation()
 
+  const setEndDateAfterStartDate = () => {
+    console.log('startDate:', startDate)
+    console.log('startDate < endDate:', startDate < endDate)
+  }
+
+  useEffect(() => {
+    setEndDateAfterStartDate()
+  }, [endDate])
   return (
     <PageContainer>
       <Title level={3}>ביצועי תחבורה ציבורית</Title>
       <Alert message="תפקוד תחבורה ציבורית לפי פרמטרים שונים" type="info" />
+      {endDate < startDate ? <Alert message={t('bug_date_alert')} type="error" /> : null}
       <Grid
         container
         spacing={2}
@@ -54,7 +63,6 @@ const DashboardPage = () => {
             />
           </Grid>
         </Grid>
-
         <Grid lg={6} xs={12}>
           <OperatorSelector
             operatorId={operatorId}
