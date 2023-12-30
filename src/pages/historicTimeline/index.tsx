@@ -27,6 +27,7 @@ const { Title } = Typography
 
 const StyledTimelineBoard = styled(TimelineBoard)`
   margin-top: ${MARGIN_MEDIUM * 3}px;
+  margin-bottom: ${MARGIN_MEDIUM * 3}px;
 `
 
 const TimelinePage = () => {

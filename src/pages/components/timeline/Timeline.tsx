@@ -79,7 +79,6 @@ export const Timeline = ({
           />
         )
       })}
-      )
     </Container>
   )
 }
