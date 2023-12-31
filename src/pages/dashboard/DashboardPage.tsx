@@ -26,21 +26,29 @@ const DashboardPage = () => {
   const [startDate, setStartDate] = useDate(now.clone().subtract(7, 'days'))
   const [endDate, setEndDate] = useDate(now.clone().subtract(1, 'day'))
   const [operatorId, setOperatorId] = useState('')
+  const [showAlert, setShowAlert] = useState(false)
   const { t } = useTranslation()
 
-  const setEndDateAfterStartDate = () => {
-    console.log('startDate:', startDate)
-    console.log('startDate < endDate:', startDate < endDate)
+  const setEndDateAfterStartDate = (data: moment.Moment) => {
+    setShowAlert(false)
+    if (data < startDate) {
+      setShowAlert(true)
+      return
+    } else setEndDate(data)
+  }
+  const setStartDateAfterEndDate = (data: moment.Moment) => {
+    setShowAlert(false)
+    if (data > endDate) {
+      setShowAlert(true)
+      return
+    } else setStartDate(data)
   }
 
-  useEffect(() => {
-    setEndDateAfterStartDate()
-  }, [endDate])
   return (
     <PageContainer>
       <Title level={3}>ביצועי תחבורה ציבורית</Title>
       <Alert message="תפקוד תחבורה ציבורית לפי פרמטרים שונים" type="info" />
-      {endDate < startDate ? <Alert message={t('bug_date_alert')} type="error" /> : null}
+      {showAlert ? <Alert message={t('bug_date_alert')} type="error" /> : null}
       <Grid
         container
         spacing={2}
@@ -51,14 +59,14 @@ const DashboardPage = () => {
           <Grid xs={6}>
             <DateSelector
               time={startDate}
-              onChange={(data) => setStartDate(data)}
+              onChange={(data) => setStartDateAfterEndDate(data)}
               customLabel={t('start')}
             />
           </Grid>
           <Grid xs={6}>
             <DateSelector
               time={endDate}
-              onChange={(data) => setEndDate(data)}
+              onChange={(data) => setEndDateAfterStartDate(data)}
               customLabel={t('end')}
             />
           </Grid>
