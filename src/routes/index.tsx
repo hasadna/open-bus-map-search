@@ -15,7 +15,7 @@ const DataResearch = lazy(() =>
 
 import {
   RadarChartOutlined,
-  BellOutlined,
+  InfoCircleOutlined,
   DollarOutlined,
   HeatMapOutlined,
   LaptopOutlined,
@@ -70,7 +70,7 @@ export const PAGES = [
   {
     label: 'about_title',
     path: '/about',
-    icon: <BellOutlined />,
+    icon: <InfoCircleOutlined />,
     element: <About />,
   },
   {

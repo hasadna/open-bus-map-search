@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { MapContainer, Marker, Polyline, Popup, TileLayer, useMap } from 'react-leaflet'
 import MarkerClusterGroup from 'react-leaflet-cluster'
 import { useTranslation } from 'react-i18next'
-import { Spin, Typography } from 'antd'
+import { Button, Spin, Typography } from 'antd'
+import { ExpandAltOutlined } from '@ant-design/icons'
 import moment from 'moment'
 import getAgencyList, { Agency } from 'src/api/agencyList'
 import useVehicleLocations from 'src/api/useVehicleLocations'
@@ -42,6 +43,9 @@ const fiveMinutesAgo = moment().subtract(5, 'minutes')
 const fourMinutesAgo = moment(fiveMinutesAgo).add(1, 'minutes')
 
 export default function RealtimeMapPage() {
+  const [isExpanded, setIsExpanded] = useState<boolean>(false)
+  const toggleExpanded = useCallback(() => setIsExpanded((expanded) => !expanded), [])
+
   const position: Point = {
     loc: [32.3057988, 34.85478613], // arbitrary default value... Netanya - best city to live & die in
     color: 0,
@@ -149,7 +153,14 @@ export default function RealtimeMapPage() {
         </Grid>
         <Grid xs={1}>{isLoading && <Spin size="small" />}</Grid>
       </Grid>
-      <div className="map-info">
+      <div className={`map-info ${isExpanded ? 'expanded' : 'collapsed'}`}>
+        <Button
+          type="primary"
+          className="expand-button"
+          shape="circle"
+          onClick={toggleExpanded}
+          icon={<ExpandAltOutlined />}
+        />
         <MapContainer center={position.loc} zoom={8} scrollWheelZoom={true}>
           <TileLayer
             attribution='&copy <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
