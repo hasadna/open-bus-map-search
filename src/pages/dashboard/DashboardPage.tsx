@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 // Services and libraries
 import { DateSelector } from '../components/DateSelector'
