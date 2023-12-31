@@ -96,7 +96,7 @@
   "bug_type_message":"Please enter the type of request",
   "bug_type_bug":"Bug",
   "bug_type_feature":"Feature Request",
-  "bug_date_alert": "Please make sure that the end date is later than the start date",
+  "bug_date_alert": "The end date can not be later than the start date",
   "funding_paragraph": "The Databus project is developed by the Hasadna for public knowledge, by the contributions of volunteers, and based upon",
   "all_rides_completed": "All/Almost the rides are completed",
   "missing_rides": "Of the rides are missing",
