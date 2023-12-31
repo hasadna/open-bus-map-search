@@ -10,7 +10,7 @@ const About = () => {
   return (
     <AboutStyle>
       <Space direction="vertical" size="middle">
-        <Title level={3}>קצת עלינו</Title>
+        <Title className="page-title" level={3}>קצת עלינו</Title>
         <WhatIsWebsite />
         <DiscoveredMistake />
         <Privacy />
@@ -139,7 +139,7 @@ const Funding = () => {
 const AboutStyle = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 1rem;
+  padding: 0 1rem;
   & .about-center-container {
     width: 100%;
     max-width: 770px;

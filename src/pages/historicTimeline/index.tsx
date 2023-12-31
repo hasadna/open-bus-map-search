@@ -4,6 +4,8 @@ import OperatorSelector from 'src/pages/components/OperatorSelector'
 import { Row } from 'src/pages/components/Row'
 import { INPUT_SIZE, MARGIN_MEDIUM } from 'src/resources/sizes'
 import styled from 'styled-components'
+import 'src/App.scss'
+
 import {
   getGtfsStopHitTimesAsync,
   getRoutesAsync,
@@ -137,7 +139,7 @@ const TimelinePage = () => {
 
   return (
     <PageContainer>
-      <Title level={3}>הסטורית נסיעות</Title>
+      <Title className="page-title" level={3}>הסטורית נסיעות</Title>
       <Alert message="רשימת זמני עצירה בתחנה שנבחרה" type="info" />
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
         {/* choose date */}

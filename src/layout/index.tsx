@@ -20,6 +20,7 @@ const StyledContent = styled(Content)`
 `
 const StyledBody = styled.div`
   padding: 24px;
+  padding-top: 0;
   min-height: 360px;
 `
 
