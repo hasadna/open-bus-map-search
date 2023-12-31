@@ -39,6 +39,7 @@
   "rides_planned": "נסיעות שתוכננו",
   "rides_actual": "נסיעות שיצאו",
   "dashboard_page_graph_title": "אחוזי יציאה מסך הנסיעות לפי זמן",
+  "gapspatterns_page_title": "אחוזי יציאה מסך הנסיעות",
   "from_date": "מתאריך",
   "to_date": "עד תאריך",
   "watch_locations_in_range": "צפה במיקומי אוטובוסים בטווח של",
@@ -71,7 +72,7 @@
   "and_smaller_donors": "ותרומות קטנות נוספות של ידידי ואוהדי הסדנא.",
   "gaps_patterns_page_title": "דפוסי נסיעות שלא יצאו",
   "github_link": "למעבר אל GitHub",
-  "Change Language":"Change Language",
+  "Change Language": "Change Language",
   "bug_title": "כותרת/סיכום",
   "bug_title_message": "אנא הזן כותרת/סיכום!",
   "bug_description": "תיאור",
@@ -114,7 +115,7 @@
   "show_document": "הצג מידע לגיקים",
   "lineProfile": {
     "title": "פרופיל קו",
-    "notFound":"לא הצלחנו למצוא את הקו שחיפשת :("
+    "notFound": "לא הצלחנו למצוא את הקו שחיפשת :("
   },
   "errorPage": {
     "title": "אופס, משהו השתבש",
