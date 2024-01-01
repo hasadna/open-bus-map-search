@@ -35,6 +35,9 @@ const DashboardPage = () => {
         ביצועי תחבורה ציבורית
       </Title>
       <Alert message="תפקוד תחבורה ציבורית לפי פרמטרים שונים" type="info" />
+      {startDate > endDate ? (
+        <Alert closable showIcon message={t('bug_date_alert')} type="error" />
+      ) : null}
       <Grid
         container
         spacing={2}
