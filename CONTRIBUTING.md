@@ -11,10 +11,19 @@ We glad to see you decided to contribute to our project!
 You welcome to explore the [list of project's issues](https://github.com/hasadna/open-bus-map-search/issues), the points we need help with
 Some of them marked with `help wanted` or `good first issue` - can be good for a beginners
 
-Also! you can look at the project and if you find some point that can be improved (it can be unclear documentation as well as UI or backend problem) - you wellcome to add issue to the project issues (which considers a contribution too)
+Also! you can look at the project and if you see some points which can be improved (it can be unclear documentation as well as UI or backend problem) - you wellcome to add an issue to the [project issues](https://github.com/hasadna/open-bus-map-search/issues) (which considers a contribution too)
 
-# Running the Project Locally
+# Running the Project
 
+For start working on the project you can use any of options from the below:
+
+- You can set up project locally. This is **highly recommended** for regular/repeat contributions. This setup allows you to work and test your changes.
+- Use Gitpod, a free online dev environment. Clicking the link below will start a ready-to-code dev environment in your browser. It only takes a few minutes.
+
+Click [here](https://gitpod.io/#https://github.com/hasadna/open-bus-map-search) to
+open project in Gitpod
+
+# Running the project on a local environment
 Follow these steps to run the project on your local machine:
 
 1. **Fork the Repository:**
