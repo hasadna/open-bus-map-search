@@ -23,6 +23,7 @@ For start working on the project you can use any of options from the below:
 Click [here](https://gitpod.io/#https://github.com/hasadna/open-bus-map-search) to
 open project in Gitpod
 
+# Running the project on a local environment
 Follow these steps to run the project on your local machine:
 
 1. **Fork the Repository:**
