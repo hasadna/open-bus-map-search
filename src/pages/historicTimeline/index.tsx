@@ -138,9 +138,9 @@ const TimelinePage = () => {
 
   return (
     <PageContainer>
-      <Title level={3}>הסטורית נסיעות</Title>
+      <Title level={3}>{t('rides_history')}</Title>
       <Space>
-        <Alert message="רשימת זמני עצירה בתחנה שנבחרה" type="info" />
+        <Alert message={t('timestamp_list')} type="info" />
       </Space>
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
         {/* choose date */}

@@ -10,6 +10,7 @@ import {
   SiriVehicleLocationWithRelatedPydanticModel,
 } from 'open-bus-stride-client'
 import { Coordinates } from 'src/model/location'
+import { useTranslation } from 'react-i18next'
 
 const COLUMN_WIDTH = 140
 export const PADDING = 10
@@ -42,6 +43,7 @@ type TimelineBoardProps = {
 }
 
 export const TimelineBoard = ({ className, target, gtfsTimes, siriTimes }: TimelineBoardProps) => {
+  const { t } = useTranslation()
   const gtfsDates = gtfsTimes.map((t) => t.arrivalTime!)
   const siriDates = siriTimes.map((t) => t.recordedAtTime!)
   const gtfsRange = getRange(gtfsDates)
@@ -63,7 +65,9 @@ export const TimelineBoard = ({ className, target, gtfsTimes, siriTimes }: Timel
   )
   return (
     <StyledContainer>
-      <h4>זמן החיפוש ⌚: {target.format('DD/MM/yyyy HH:mm:ss')}</h4>
+      <h4>
+        {t('timestamp_target')} {target.format('DD/MM/yyyy HH:mm:ss')}
+      </h4>
       <Container className={className}>
         <StyledTimeline
           timestamps={gtfsTimes}
