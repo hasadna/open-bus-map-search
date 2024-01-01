@@ -5,14 +5,13 @@ import styled from 'styled-components'
 import { Timeline } from 'src/pages/components/timeline/Timeline'
 import { PointType } from 'src/pages/components/timeline/TimelinePoint'
 import { HorizontalLine } from 'src/pages/components/timeline/HorizontalLine'
-import Carousel from 'react-material-ui-carousel'
 import {
   GtfsRideStopPydanticModel,
   SiriVehicleLocationWithRelatedPydanticModel,
 } from 'open-bus-stride-client'
 import { Coordinates } from 'src/model/location'
 
-const COLUMN_WIDTH = 400
+const COLUMN_WIDTH = 140
 export const PADDING = 10
 
 const getRange = (timestamps: Date[]) =>
@@ -25,9 +24,11 @@ const minDate = (date1: Date, date2: Date) => (date1 <= date2 ? date1 : date2)
 const Container = styled.div`
   position: relative;
   display: flex;
-  justify-content: center;
 `
-
+const StyledContainer = styled.div`
+  flex-direction: column;
+  margin-right: 8px;
+`
 const StyledTimeline = styled(Timeline)`
   min-width: ${COLUMN_WIDTH}px;
   margin-left: 16px;
@@ -61,17 +62,9 @@ export const TimelineBoard = ({ className, target, gtfsTimes, siriTimes }: Timel
     [lowerBound, totalRange, totalHeight],
   )
   return (
-    <Container className={className}>
-      {Array.from(allTimestamps).map((timestamp, index) => (
-        <HorizontalLine key={index} top={timestampToTop(moment(timestamp))} />
-      ))}
-      <Carousel autoPlay={false} swipe={false}>
-        <StyledTimeline
-          timestamps={[target.toDate()]}
-          totalHeight={totalHeight}
-          pointType={PointType.TARGET}
-          timestampToTop={timestampToTop}
-        />
+    <StyledContainer>
+      <h4>זמן החיפוש ⌚: {target.format('DD/MM/yyyy HH:mm:ss')}</h4>
+      <Container className={className}>
         <StyledTimeline
           timestamps={gtfsTimes}
           totalHeight={totalHeight}
@@ -84,7 +77,10 @@ export const TimelineBoard = ({ className, target, gtfsTimes, siriTimes }: Timel
           pointType={PointType.SIRI}
           timestampToTop={timestampToTop}
         />
-      </Carousel>
-    </Container>
+        {Array.from(allTimestamps).map((timestamp, index) => (
+          <HorizontalLine key={index} top={timestampToTop(moment(timestamp))} />
+        ))}
+      </Container>
+    </StyledContainer>
   )
 }
