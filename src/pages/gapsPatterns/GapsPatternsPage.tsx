@@ -148,7 +148,7 @@ const GapsPatternsPage = () => {
   const { search, setSearch } = useContext(SearchContext)
   const { operatorId, lineNumber, routes, routeKey } = search
   const [routesIsLoading, setRoutesIsLoading] = useState(false)
-  const [showAlert, setShowAlert] = useState(false)
+
   const { t } = useTranslation()
 
   const loadSearchData = async (signal: AbortSignal | undefined) => {
@@ -175,24 +175,11 @@ const GapsPatternsPage = () => {
     return () => controller.abort()
   }, [operatorId, lineNumber, endDate, startDate, setSearch])
 
-  const setEndDateAfterStartDate = (data: moment.Moment) => {
-    setShowAlert(false)
-    if (data < startDate) {
-      setShowAlert(true)
-      return
-    } else setEndDate(data)
-  }
-  const setStartDateAfterEndDate = (data: moment.Moment) => {
-    setShowAlert(false)
-    if (data > endDate) {
-      setShowAlert(true)
-      return
-    } else setStartDate(data)
-  }
-
   return (
     <PageContainer>
-      {showAlert ? <Alert message={t('bug_date_alert')} type="error" /> : null}
+      {startDate > endDate ? (
+        <Alert closable showIcon message={t('bug_date_alert')} type="error" />
+      ) : null}
       <Grid container spacing={2} alignItems="center" sx={{ maxWidth: INPUT_SIZE }}>
         <Grid sm={4} className="hideOnMobile">
           <Label text={t('choose_dates')} />
@@ -207,7 +194,7 @@ const GapsPatternsPage = () => {
           <Grid xs={6} sm={5.7}>
             <DateSelector
               time={startDate}
-              onChange={(data) => setStartDateAfterEndDate(data)}
+              onChange={(data) => setStartDate(data)}
               customLabel={t('start')}
             />
           </Grid>
@@ -217,7 +204,7 @@ const GapsPatternsPage = () => {
           <Grid xs={6} sm={5.7}>
             <DateSelector
               time={endDate}
-              onChange={(data) => setEndDateAfterStartDate(data)}
+              onChange={(data) => setEndDate(data)}
               customLabel={t('end')}
             />
           </Grid>
