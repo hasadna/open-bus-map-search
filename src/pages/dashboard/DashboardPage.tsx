@@ -31,7 +31,9 @@ const DashboardPage = () => {
 
   return (
     <PageContainer>
-      <Title className="page-title" level={3}>ביצועי תחבורה ציבורית</Title>
+      <Title className="page-title" level={3}>
+        ביצועי תחבורה ציבורית
+      </Title>
       <Alert message="תפקוד תחבורה ציבורית לפי פרמטרים שונים" type="info" />
       <Grid
         container

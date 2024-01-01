@@ -10,7 +10,9 @@ const About = () => {
   return (
     <AboutStyle>
       <Space direction="vertical" size="middle">
-        <Title className="page-title" level={3}>קצת עלינו</Title>
+        <Title className="page-title" level={3}>
+          קצת עלינו
+        </Title>
         <WhatIsWebsite />
         <DiscoveredMistake />
         <Privacy />
