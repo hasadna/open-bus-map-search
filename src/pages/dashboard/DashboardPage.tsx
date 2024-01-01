@@ -7,6 +7,7 @@ import moment from 'moment'
 
 // Styling
 import './DashboardPage.scss'
+import 'src/App.scss'
 import { PageContainer } from '../components/PageContainer'
 import { useTranslation } from 'react-i18next'
 import { Alert, Typography } from 'antd'
@@ -30,7 +31,9 @@ const DashboardPage = () => {
 
   return (
     <PageContainer>
-      <Title level={3}>ביצועי תחבורה ציבורית</Title>
+      <Title className="page-title" level={3}>
+        ביצועי תחבורה ציבורית
+      </Title>
       <Alert message="תפקוד תחבורה ציבורית לפי פרמטרים שונים" type="info" />
       <Grid
         container

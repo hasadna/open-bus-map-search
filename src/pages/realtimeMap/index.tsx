@@ -96,7 +96,9 @@ export default function RealtimeMapPage() {
 
   return (
     <PageContainer className="map-container">
-      <Title level={3}>{t('realtime_map_explanation').slice(0, 25)}</Title>
+      <Title className="page-title" level={3}>
+        {t('realtime_map_explanation').slice(0, 25)}
+      </Title>
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
         <Grid xs={12} className="hideOnMobile">
           <Label text={t('realtime_map_explanation')} />
