@@ -72,8 +72,6 @@ function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatistic
   return (
     lineRef > 0 && (
       <Widget>
-        <Title level={3}>{t('dashboard_page_graph_title')}</Title>
-
         {isLoading && lineRef ? (
           <Skeleton active />
         ) : (
@@ -176,6 +174,7 @@ const GapsPatternsPage = () => {
 
   return (
     <PageContainer>
+      <Title level={3}>{t('gapspatterns_page_title')}</Title>
       <Grid container spacing={2} alignItems="center" sx={{ maxWidth: INPUT_SIZE }}>
         <Grid sm={4} className="hideOnMobile">
           <Label text={t('choose_dates')} />
@@ -187,17 +186,14 @@ const GapsPatternsPage = () => {
           sm={8}
           alignItems="center"
           justifyContent="space-between">
-          <Grid xs={6} sm={5.7}>
+          <Grid xs={6}>
             <DateSelector
               time={startDate}
               onChange={(data) => setStartDate(data)}
               customLabel={t('start')}
             />
           </Grid>
-          <Grid xs={0.1} className="hideOnMobile">
-            -
-          </Grid>
-          <Grid xs={6} sm={5.7}>
+          <Grid xs={6}>
             <DateSelector
               time={endDate}
               onChange={(data) => setEndDate(data)}

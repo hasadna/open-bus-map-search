@@ -19,7 +19,7 @@ const StyledContent = styled(Content)`
   overflow: auto;
 `
 const StyledBody = styled.div`
-  padding: 24px;
+  padding: 0 24px;
   min-height: 360px;
 `
 

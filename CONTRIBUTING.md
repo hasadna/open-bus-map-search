@@ -11,15 +11,51 @@ We glad to see you decided to contribute to our project!
 You welcome to explore the [list of project's issues](https://github.com/hasadna/open-bus-map-search/issues), the points we need help with
 Some of them marked with `help wanted` or `good first issue` - can be good for a beginners
 
-Also! you can look at the project and if you find some point that can be improved (it can be unclear documentation as well as UI or backend problem) - you wellcome to add issue to the project issues (which considers a contribution too)
+Also! you can look at the project and if you see some points which can be improved (it can be unclear documentation as well as UI or backend problem) - you wellcome to add an issue to the [project issues](https://github.com/hasadna/open-bus-map-search/issues) (which considers a contribution too)
 
-# Starting your environment
+# Running the Project
 
-- Fork the Repository on GitHub (by pressing `fork` button)
-- Clone the Repository on your machine (`git clone https://github.com/<YOUR NAME>/open-bus-map-search`)
-- Define your fork as remote - `git remote set-url origin https://github.com/<YOUR NAME>/open-bus-map-search`
-- Install dependencies `yarn`
-- Run dev server `yarn start`
+For start working on the project you can use any of options from the below:
+
+- You can set up project locally. This is **highly recommended** for regular/repeat contributions. This setup allows you to work and test your changes.
+- Use Gitpod, a free online dev environment. Clicking the link below will start a ready-to-code dev environment in your browser. It only takes a few minutes.
+
+Click [here](https://gitpod.io/#https://github.com/hasadna/open-bus-map-search) to
+open project in Gitpod
+
+# Running the project on a local environment
+Follow these steps to run the project on your local machine:
+
+1. **Fork the Repository:**
+   Before you clone the repository to your local machine, you need to create a fork of it on GitHub. This allows you to make changes without affecting the original project. To fork the repository, click the "Fork" button at the top right of this page.
+
+2. **Clone the Repository:**
+   After forking, you need to clone the repository to your local machine. You can do this by running the following command in your terminal:
+
+   ```bash
+   git clone https://github.com/<Your GitHub Username>/open-bus-map-search.git
+   ```
+
+   Make sure to replace <Your GitHub Username> with your actual GitHub username.
+
+3. **Navigate to the Project Directory:**
+   Once the repository is cloned, navigate to the project directory by running:
+
+   ```bash
+   cd open-bus-map-search
+   ```
+
+4. **Install Dependencies:**
+   The project uses npm to manage dependencies. Once Node is installed, you can install the project dependencies by running:
+   ```bash
+   npm install
+   ```
+5. **Run the Project:**
+   After all dependencies are installed, you can start the project by running:
+   ```bash
+   npm start
+   ```
+   The project should now be running on your local machine. Open your web browser and navigate to http://localhost:3000 to view the project.
 
 # How to open the PR
 
@@ -31,7 +67,6 @@ Also! you can look at the project and if you find some point that can be improve
 - push the branch to remote repo (`git push`)
 - go to the original repo and create a pr (by pressing `create a pr` button)
 - tag one of the maintainers as reviewers
-
 
 # Commit message convention
 
@@ -46,13 +81,13 @@ Also! you can look at the project and if you find some point that can be improve
 
 ### tests beter to be run locally
 
-| command             | description                                                     |
-| ------------------- | --------------------------------------------------------------- |
-| `yarn test:unit`    | Run the unit tests using `watch` option (good for development). |
-| `yarn test:unit:ci` | Run the unit tests (good for ci).                               |
-| `yarn test:e2e`     | Run the e2e (playwright) tests (good for ci).                   |
-| `yarn test:e2e:ui`  | Run the e2e (playwright) tests with user interface.             |
-| `yarn test`         | Run all the kind of tests.                                      |
+| command                | description                                                     |
+| ---------------------- | --------------------------------------------------------------- |
+| `npm run test:unit`    | Run the unit tests using `watch` option (good for development). |
+| `npm run test:unit:ci` | Run the unit tests (good for ci).                               |
+| `npm run test:e2e`     | Run the e2e (playwright) tests (good for ci).                   |
+| `npm run test:e2e:ui`  | Run the e2e (playwright) tests with user interface.             |
+| `npm run test`         | Run all the kind of tests.                                      |
 
 - additional helpful flags - https://playwright.dev/docs/test-cli
 
@@ -89,7 +124,7 @@ https://open-bus-stride-api.hasadna.org.il/docs
 
 ### Why do I get a red `x` commit status?
 
-- lint - you have lint errors. fix them by running `yarn lint:fix`
-- tests - you have test errors. see them by running `yarn test:unit:ci`
-- build - you have build errors. see them by running `yarn build`
+- lint - you have lint errors. fix them by running `npm run lint:fix`
+- tests - you have test errors. see them by running `npm run test:unit:ci`
+- build - you have build errors. see them by running `npm run build`
 - pr title validation - you have an invalid pr title. please edit the title of your PR with conventional commit formatting. examples: `feat: add new feature`, `fix: fix a bug` or `docs: update README.md`
