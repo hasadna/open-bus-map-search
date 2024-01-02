@@ -67,14 +67,14 @@ const DashboardPage = () => {
         </Grid>
       </Grid>
       <Grid container spacing={2} alignItems="flex-start">
-        <Grid xs={12} lg={6}>
+        <Grid xs={12} lg={6} className="widget">
           <AllLinesChart startDate={startDate} endDate={endDate} />
         </Grid>
 
-        <Grid xs={12} lg={6}>
+        <Grid xs={12} lg={6} className="widget">
           <WorstLinesChart startDate={startDate} endDate={endDate} operatorId={operatorId} />
         </Grid>
-        <Grid xs={12}>
+        <Grid xs={12} className="widget">
           <DayTimeChart startDate={startDate} endDate={endDate} operatorId={operatorId} />
         </Grid>
       </Grid>
