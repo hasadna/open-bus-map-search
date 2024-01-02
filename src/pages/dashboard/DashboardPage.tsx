@@ -41,7 +41,7 @@ const DashboardPage = () => {
         alignItems="center"
         sx={{ marginTop: '0px' }}
         justifyContent="space-between">
-        <Grid lg={6} xs={12} container spacing={2} alignItems="center">
+        <Grid lg={6} xs={12} container spacing={2} alignItems="center" className="widget">
           <Grid xs={6}>
             <DateSelector
               time={startDate}
@@ -58,7 +58,7 @@ const DashboardPage = () => {
           </Grid>
         </Grid>
 
-        <Grid lg={6} xs={12}>
+        <Grid lg={6} xs={12} className="widget">
           <OperatorSelector
             operatorId={operatorId}
             setOperatorId={setOperatorId}
@@ -66,7 +66,7 @@ const DashboardPage = () => {
           />
         </Grid>
       </Grid>
-      <Grid container spacing={2} alignItems="flex-start">
+      <Grid container spacing={2} alignItems="flex-start" className="widget">
         <Grid xs={12} lg={6}>
           <AllLinesChart startDate={startDate} endDate={endDate} />
         </Grid>
