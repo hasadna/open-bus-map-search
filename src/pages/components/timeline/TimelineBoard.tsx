@@ -10,8 +10,9 @@ import {
   SiriVehicleLocationWithRelatedPydanticModel,
 } from 'open-bus-stride-client'
 import { Coordinates } from 'src/model/location'
+import { useTranslation } from 'react-i18next'
 
-const COLUMN_WIDTH = 160
+const COLUMN_WIDTH = 140
 export const PADDING = 10
 
 const getRange = (timestamps: Date[]) =>
@@ -25,7 +26,10 @@ const Container = styled.div`
   position: relative;
   display: flex;
 `
-
+const StyledContainer = styled.div`
+  flex-direction: column;
+  margin-right: 8px;
+`
 const StyledTimeline = styled(Timeline)`
   min-width: ${COLUMN_WIDTH}px;
   margin-left: 16px;
@@ -39,6 +43,7 @@ type TimelineBoardProps = {
 }
 
 export const TimelineBoard = ({ className, target, gtfsTimes, siriTimes }: TimelineBoardProps) => {
+  const { t } = useTranslation()
   const gtfsDates = gtfsTimes.map((t) => t.arrivalTime!)
   const siriDates = siriTimes.map((t) => t.recordedAtTime!)
   const gtfsRange = getRange(gtfsDates)
@@ -58,30 +63,28 @@ export const TimelineBoard = ({ className, target, gtfsTimes, siriTimes }: Timel
     },
     [lowerBound, totalRange, totalHeight],
   )
-
   return (
-    <Container className={className}>
-      <StyledTimeline
-        timestamps={[target.toDate()]}
-        totalHeight={totalHeight}
-        pointType={PointType.TARGET}
-        timestampToTop={timestampToTop}
-      />
-      <StyledTimeline
-        timestamps={gtfsTimes}
-        totalHeight={totalHeight}
-        pointType={PointType.GTFS}
-        timestampToTop={timestampToTop}
-      />
-      <StyledTimeline
-        timestamps={siriTimes}
-        totalHeight={totalHeight}
-        pointType={PointType.SIRI}
-        timestampToTop={timestampToTop}
-      />
-      {Array.from(allTimestamps).map((timestamp, index) => (
-        <HorizontalLine key={index} top={timestampToTop(moment(timestamp))} />
-      ))}
-    </Container>
+    <StyledContainer>
+      <h4>
+        {t('timestamp_target')} {target.format('DD/MM/yyyy HH:mm:ss')}
+      </h4>
+      <Container className={className}>
+        <StyledTimeline
+          timestamps={gtfsTimes}
+          totalHeight={totalHeight}
+          pointType={PointType.GTFS}
+          timestampToTop={timestampToTop}
+        />
+        <StyledTimeline
+          timestamps={siriTimes}
+          totalHeight={totalHeight}
+          pointType={PointType.SIRI}
+          timestampToTop={timestampToTop}
+        />
+        {Array.from(allTimestamps).map((timestamp, index) => (
+          <HorizontalLine key={index} top={timestampToTop(moment(timestamp))} />
+        ))}
+      </Container>
+    </StyledContainer>
   )
 }

@@ -15,7 +15,7 @@ import RouteSelector from 'src/pages/components/RouteSelector'
 import { Label } from 'src/pages/components/Label'
 import { useTranslation } from 'react-i18next'
 import StopSelector from 'src/pages/components/StopSelector'
-import { Spin, Typography, Alert } from 'antd'
+import { Spin, Typography, Alert, Space } from 'antd'
 import { getSiriStopHitTimesAsync } from 'src/api/siriService'
 import { TimelineBoard } from 'src/pages/components/timeline/TimelineBoard'
 import { PageContainer } from '../components/PageContainer'
@@ -29,6 +29,7 @@ const { Title } = Typography
 
 const StyledTimelineBoard = styled(TimelineBoard)`
   margin-top: ${MARGIN_MEDIUM * 3}px;
+  margin-bottom: ${MARGIN_MEDIUM * 3}px;
 `
 
 const TimelinePage = () => {
@@ -139,6 +140,10 @@ const TimelinePage = () => {
 
   return (
     <PageContainer>
+      <Title level={3}>{t('rides_history')}</Title>
+      <Space>
+        <Alert message={t('timestamp_list')} type="info" />
+      </Space>
       <Title className="page-title" level={3}>
         הסטורית נסיעות
       </Title>
