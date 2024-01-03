@@ -21,6 +21,9 @@ import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
 import { INPUT_SIZE } from 'src/resources/sizes'
 import DisplayGapsPercentage from '../components/DisplayGapsPercentage'
 import axios from 'axios'
+import { Typography, Alert } from 'antd'
+
+const { Title } = Typography
 
 const Cell = styled.div`
   width: 120px;
@@ -113,6 +116,10 @@ const GapsPage = () => {
 
   return (
     <PageContainer>
+      <Title className="page-title" level={3}>
+        נסיעות שלא יצאו
+      </Title>
+      <Alert message="רשימת נסיעות שלא בוצעו" type="info" />
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
         {/* choose date */}
         <Grid xs={4}>

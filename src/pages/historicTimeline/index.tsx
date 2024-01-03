@@ -145,7 +145,7 @@ const TimelinePage = () => {
         <Alert message={t('timestamp_list')} type="info" />
       </Space>
       <Title className="page-title" level={3}>
-        הסטורית נסיעות
+        הסטוריית נסיעות
       </Title>
       <Alert message="רשימת זמני עצירה בתחנה שנבחרה" type="info" />
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
