@@ -41,6 +41,7 @@
   "rides_actual": "נסיעות שיצאו",
   "rides_history": "היסטוריית נסיעות",
   "dashboard_page_graph_title": "אחוזי יציאה מסך הנסיעות לפי זמן",
+  "gapspatterns_page_title": "אחוזי יציאה מסך הנסיעות",
   "from_date": "מתאריך",
   "to_date": "עד תאריך",
   "watch_locations_in_range": "צפה במיקומי אוטובוסים בטווח של",
@@ -73,7 +74,7 @@
   "and_smaller_donors": "ותרומות קטנות נוספות של ידידי ואוהדי הסדנא.",
   "gaps_patterns_page_title": "דפוסי נסיעות שלא יצאו",
   "github_link": "למעבר אל GitHub",
-  "Change Language":"Change Language",
+  "Change Language": "Change Language",
   "bug_title": "כותרת/סיכום",
   "bug_title_message": "אנא הזן כותרת/סיכום!",
   "bug_description": "תיאור",
@@ -98,6 +99,7 @@
   "bug_type_message": "אנא הזן סוג בקשה!",
   "bug_type_bug": "באג",
   "bug_type_feature": "בקשה לפיתוח",
+  "bug_date_alert": "תאריך הסיום אינו יכול להיות מוקדם יותר מתאריך ההתחלה",
   "funding_paragraph": "דאטאבוס פותח בסדנא לידע ציבורי, בעבודת מתנדבים, ומבוסס על",
   "halufa_ride": "נסיעה חלופית מס",
   "all_rides_completed": "כמעט / כל הנסיעות בוצעו",
@@ -116,7 +118,7 @@
   "show_document": "הצג מידע לגיקים",
   "lineProfile": {
     "title": "פרופיל קו",
-    "notFound":"לא הצלחנו למצוא את הקו שחיפשת :("
+    "notFound": "לא הצלחנו למצוא את הקו שחיפשת :("
   },
   "errorPage": {
     "title": "אופס, משהו השתבש",

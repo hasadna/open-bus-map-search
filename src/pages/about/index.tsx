@@ -2,22 +2,24 @@ import styled from 'styled-components'
 import SlackIcon from '../../resources/slack-icon.svg'
 import { useTranslation } from 'react-i18next'
 import Widget from 'src/shared/Widget'
-import { Typography } from 'antd'
+import { Space, Typography } from 'antd'
 
 import './About.scss'
 const { Title } = Typography
 const About = () => {
   return (
     <AboutStyle>
-      <div className="about-center-container">
-        <Title level={3}> קצת עלינו</Title>
+      <Space direction="vertical" size="middle">
+        <Title className="page-title" level={3}>
+          קצת עלינו
+        </Title>
         <WhatIsWebsite />
         <DiscoveredMistake />
         <Privacy />
         <License />
         <Questions />
         <Funding />
-      </div>
+      </Space>
     </AboutStyle>
   )
 }
@@ -139,7 +141,7 @@ const Funding = () => {
 const AboutStyle = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 1rem;
+  padding: 0 1rem;
   & .about-center-container {
     width: 100%;
     max-width: 770px;

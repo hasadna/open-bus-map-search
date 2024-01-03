@@ -7,6 +7,7 @@ import { GroupByRes, useGroupBy } from 'src/api/groupByService'
 import { FC } from 'react'
 import { Moment } from 'moment/moment'
 import Widget from 'src/shared/Widget'
+import { InfoCircleOutlined } from '@ant-design/icons'
 
 const convertToChartCompatibleStruct = (arr: GroupByRes[]) => {
   return arr.map((item: GroupByRes) => ({
@@ -37,7 +38,7 @@ export const AllLinesChart: FC<AllChartComponentProps> = ({ startDate, endDate }
           title={convertLineFeedToHtmlTags(t('dashboard_tooltip_content'))}
           placement="left"
           arrow>
-          <span className="tooltip-icon">i</span>
+          <InfoCircleOutlined style={{ marginRight: '12px' }} />
         </Tooltip>
       </h2>
       {groupByOperatorLoading ? (
