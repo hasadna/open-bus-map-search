@@ -27,12 +27,14 @@ const Container = styled.div`
   display: flex;
 `
 const StyledContainer = styled.div`
+  overflow-x: hidden;
   flex-direction: column;
   margin-right: 8px;
 `
 const StyledTimeline = styled(Timeline)`
   min-width: ${COLUMN_WIDTH}px;
   margin-left: 16px;
+  margin-right: 16px;
 `
 
 type TimelineBoardProps = {
