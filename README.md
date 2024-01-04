@@ -5,7 +5,7 @@ This is the official repository of the open bus (תחב"צ פתוחה / דאטא
 [link to the project](https://open-bus-map-search.hasadna.org.il/dashboard)
 
 Please feel free to submit pull requests and contribute to the project.
-For more details about contributing, see the [CONTRIBUTION.md](CONTRIBUTION.md) file.
+For more details about contributing, see the [CONTRIBUTING.md](CONTRIBUTING.md) file.
 
 # Running the project locally
 An explanation how to run the project locally you can [read here](CONTRIBUTION.md#running-the-project-locally).
