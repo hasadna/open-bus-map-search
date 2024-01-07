@@ -7,3 +7,12 @@
 .main-header.dark {
   background: #141414;
 }
+
+.theme-icon {
+  
+  width: 1rem;
+
+  &:hover {
+    transform: scale(1.1); 
+  }
+}
