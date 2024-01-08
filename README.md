@@ -41,6 +41,13 @@ Thanks for your willingness to invest time and help us improve!
 3. Please tag one of the maintainers as reviewers
 we're here to help! feel free to join our [Slack channel](https://join.slack.com/t/hasadna/shared_invite/zt-21qipktl1-7yF4FYJVxAqXl0wE4DlMKQ) 
 
+## Links for developers
+* [figma file](https://www.figma.com/file/Plw8Uuu6U96CcX5tJyRMoW/Public-Transportation-visual-informaiton?node-id=0%3A1&t=EJCQpeg5zSbVXLUx-0)
+* [data model schema](https://github.com/hasadna/open-bus-stride-db/blob/main/DATA_MODEL.md)
+* [Slack channel](https://join.slack.com/t/hasadna/shared_invite/zt-21qipktl1-7yF4FYJVxAqXl0wE4DlMKQ)
+* [Swagger](https://open-bus-stride-api.hasadna.org.il/docs)
+* [Production](https://open-bus-map-search.hasadna.org.il/dashboard)
+
 ## Related Repositories 
 - the API client
 - the data API
