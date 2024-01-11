@@ -3,6 +3,8 @@ import React, { FC, PropsWithChildren, createContext, useContext, useState } fro
 import { ThemeProvider as MuiThemeProvider, createTheme } from '@mui/material/styles'
 import { ConfigProvider, theme } from 'antd'
 import heIL from 'antd/es/locale/he_IL'
+import { useTranslation } from 'react-i18next'
+
 export interface ThemeContextInterface {
   toggleTheme: () => void
   isDarkTheme: boolean
@@ -23,6 +25,7 @@ const lightTheme = createTheme({
 const { defaultAlgorithm, darkAlgorithm } = theme
 export const ThemeProvider: FC<PropsWithChildren> = ({ children }) => {
   const [isDarkTheme, setIsDarkTheme] = useState(false)
+  const { i18n } = useTranslation()
 
   const toggleTheme = () => {
     setIsDarkTheme((prevTheme) => !prevTheme)
@@ -35,7 +38,7 @@ export const ThemeProvider: FC<PropsWithChildren> = ({ children }) => {
 
   return (
     <ConfigProvider
-      direction="rtl"
+      direction={i18n.dir()}
       locale={heIL}
       theme={{
         algorithm: isDarkTheme ? darkAlgorithm : defaultAlgorithm,
