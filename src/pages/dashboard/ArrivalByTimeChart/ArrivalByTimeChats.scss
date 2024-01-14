@@ -1,0 +1,6 @@
+.chart{
+  scroll-snap-type: y mandatory;
+  & > div{
+    scroll-snap-align: start;
+  }
+}
