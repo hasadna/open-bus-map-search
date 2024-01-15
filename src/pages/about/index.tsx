@@ -6,12 +6,14 @@ import { Space, Typography } from 'antd'
 
 import './About.scss'
 const { Title } = Typography
+const pageName = 'aboutPage'
 const About = () => {
+  const { t } = useTranslation()
   return (
     <AboutStyle>
       <Space direction="vertical" size="middle">
         <Title className="page-title" level={3}>
-          קצת עלינו
+          {t(`${pageName}.title`)}
         </Title>
         <WhatIsWebsite />
         <DiscoveredMistake />

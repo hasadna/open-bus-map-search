@@ -115,6 +115,9 @@
   "coords": "coords",
   "hide_document": "hide document",
   "show_document": "show document",
+  "aboutPage":{
+    "title": "About us"
+  },
   "dashboard_page_graph_title_hour": "Percentage of rides out, by hour",
   "dashboard_page_graph_title_day": "Percentage of rides out, by day",
   "group_by_day_tooltip_content": "Group by day",
