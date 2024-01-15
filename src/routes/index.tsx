@@ -97,7 +97,6 @@ export const PAGES = [
 
 const getRoutesList = () => {
   const pages = PAGES
-  // const RedirectToDashboard = () => <Navigate to={pages[0].path} replace /> // I commented this out in case the new home page routing doen't work
   const RedirectToHome = () => <Navigate to={pages[0].path} replace />
   const routes = pages.filter((r) => r.element)
   return (
