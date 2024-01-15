@@ -21,6 +21,12 @@ export abstract class BasePage {
     })
   }
 
+  protected async verifySelectionVisible(locator: Locator, isVisible: boolean) {
+    isVisible
+      ? await expect(locator).toBeVisible({ timeout: 5000 })
+      : await expect(locator).toBeHidden({ timeout: 5000 })
+  }
+
   protected async selectFrom_UL_LI_Dropbox(
     dropElement: Locator,
     optionsListElement: Locator,
