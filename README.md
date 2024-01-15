@@ -8,7 +8,7 @@ Please feel free to submit pull requests and contribute to the project.
 For more details about contributing, see the [CONTRIBUTING.md](CONTRIBUTING.md) file.
 
 # Running the project locally
-An explanation how to run the project locally you can [read here](CONTRIBUTION.md#running-the-project-locally).
+An explanation how to run the project locally you can [read here](CONTRIBUTING.md#running-the-project-on-a-local-environment).
 
 ## View video (Hebrew language):
 ### The video will explain you how to contribute to the project:   
