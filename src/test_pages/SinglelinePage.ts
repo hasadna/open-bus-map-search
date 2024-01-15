@@ -14,9 +14,9 @@ export default class SinglinePage extends BasePage {
 
   constructor(protected page: Page) {
     super(page)
-    this.date = this.page.getByPlaceholder('DD/MM/YYYY')
+    this.date = this.page.locator('label').filter({ hasText: 'תאריך' })
     this.operator = this.page.locator('#operator-select')
-    this.line_number = this.page.locator("//input[@placeholder='לדוגמא: 17א']")
+    this.line_number = this.page.locator('label').filter({ hasText: 'מספר קו' })
     this.close_line_number = this.page.locator("span[aria-label='close']")
     this.route_select = this.page.locator('#route-select')
     this.operators_dropdown = this.page.locator('#operator-select')
