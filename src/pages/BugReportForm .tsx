@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Form, Input, Button, Upload, message, Select, FormProps } from 'antd'
+import { Form, Input, Button, Upload, message, Select, FormProps, Card } from 'antd'
 import { UploadOutlined } from '@ant-design/icons'
 // import axios from 'axios'
 import './BugReportForm.scss'
@@ -58,7 +58,7 @@ const BugReportForm: React.FC = () => {
   }
 
   return (
-    <div className="bug-report-form-container">
+    <Card className="bug-report-form-container">
       <h1 className="logo">דאטאבוס</h1>
 
       <span> {t('bug_form_description')} </span>
@@ -158,7 +158,7 @@ const BugReportForm: React.FC = () => {
           </Button>
         </Form.Item>
       </Form>
-    </div>
+    </Card>
   )
 }
 

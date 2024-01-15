@@ -119,7 +119,12 @@ const getRoutesList = () => {
         }}
       />
       <Route path="data-research" element={<DataResearch />} />
+
       <Route path="*" element={<RedirectToHome />} key="back" />
+
+      <Route path="release" element={<iframe src="https://noam-gaash.co.il/databus/" />} />
+      <Route path="*" element={<RedirectToDashboard />} key="back" />
+main
     </Route>
     // </Suspense>
   )
