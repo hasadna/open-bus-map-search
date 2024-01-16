@@ -21,6 +21,8 @@ test('dashboard is on homepage', async ({ page, advancedRouteFromHAR }) => {
   })
   await page.goto('/')
   await page.getByText('הקווים הגרועים ביותר').click()
+  // await page.waitForSelector('h1:has-text("This is soon going to be a home page")')
+
   const skeletons = await page.locator('.ant-skeleton').all()
   await Promise.all(skeletons.map((skeleton) => skeleton.waitFor({ state: 'hidden' })))
 })

@@ -1,6 +1,6 @@
 import { Navigate, Route, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
 import { lazy } from 'react'
-const HomePage = lazy(() => import('../pages/homepage/HomePage'))
+// const HomePage = lazy(() => import('../pages/homepage/HomePage'))
 const DashboardPage = lazy(() => import('../pages/dashboard/DashboardPage'))
 const TimelinePage = lazy(() => import('../pages/historicTimeline'))
 const GapsPage = lazy(() => import('../pages/gaps'))
@@ -15,7 +15,7 @@ const DataResearch = lazy(() =>
 )
 
 import {
-  HomeOutlined,
+  // HomeOutlined,
   RadarChartOutlined,
   InfoCircleOutlined,
   DollarOutlined,
@@ -30,12 +30,12 @@ import { MainRoute } from './MainRoute'
 import { ErrorPage } from 'src/pages/ErrorPage'
 
 export const PAGES = [
-  {
-    label: 'home_page',
-    path: '/home',
-    icon: <HomeOutlined />,
-    element: <HomePage />, //need to build - created only the file and routing
-  },
+  // {
+  //   label: 'home_page',
+  //   path: '/home',
+  //   icon: <HomeOutlined />,
+  //   element: <HomePage />, //need to build - created only the file and routing
+  // },
   {
     label: 'dashboard_page_title',
     path: '/dashboard',
@@ -97,7 +97,7 @@ export const PAGES = [
 
 const getRoutesList = () => {
   const pages = PAGES
-  const RedirectToHome = () => <Navigate to={pages[0].path} replace />
+  const RedirectToDashboard = () => <Navigate to={pages[0].path} replace />
   const routes = pages.filter((r) => r.element)
   return (
     <Route element={<MainRoute />}>
@@ -118,9 +118,9 @@ const getRoutesList = () => {
         }}
       />
       <Route path="data-research" element={<DataResearch />} />
-      <Route path="*" element={<RedirectToHome />} key="back" />
+      <Route path="*" element={<RedirectToDashboard />} key="back" />
       <Route path="release" element={<iframe src="https://noam-gaash.co.il/databus/" />} />
-      <Route path="*" element={<RedirectToHome />} key="back" />
+      <Route path="*" element={<RedirectToDashboard />} key="back" />
       main
     </Route>
     // </Suspense>
