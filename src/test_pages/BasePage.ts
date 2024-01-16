@@ -9,9 +9,9 @@ export abstract class BasePage {
     })
   }
 
-  protected async clickOnElement(element: Locator) {
+  protected async clickOnElement(element: Locator, timeout?: number) {
     await test.step(`Click on ${element}`, async () => {
-      await element.click()
+      await element.click({ timeout: timeout || 0 })
     })
   }
 
@@ -21,10 +21,16 @@ export abstract class BasePage {
     })
   }
 
-  protected async verifySelectionVisible(locator: Locator, isVisible: boolean) {
+  protected async clearTextFromElement(element: Locator) {
+    await test.step(`Clearing '${element}' from text`, async () => {
+      await element.clear()
+    })
+  }
+
+  protected async verifySelectionVisible(locator: Locator, isVisible: boolean, timeout?: number) {
     isVisible
-      ? await expect(locator).toBeVisible({ timeout: 5000 })
-      : await expect(locator).toBeHidden({ timeout: 5000 })
+      ? await expect(locator).toBeVisible({ timeout: timeout || 5000 })
+      : await expect(locator).toBeHidden({ timeout: timeout || 5000 })
   }
 
   protected async selectFrom_UL_LI_Dropbox(
