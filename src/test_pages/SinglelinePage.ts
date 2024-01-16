@@ -1,4 +1,4 @@
-import { Locator, Page } from '@playwright/test'
+import { Locator, Page, test } from '@playwright/test'
 import { BasePage } from './BasePage'
 
 export default class SinglinePage extends BasePage {
@@ -29,8 +29,18 @@ export default class SinglinePage extends BasePage {
     await this.selectFrom_UL_LI_Dropbox(this.operators_dropdown, this.operators_list, operatorName)
   }
 
+  public async verifyOperatorExistsInDropbox(operatorName: string) {
+    await test.step(`Verifying ${operatorName} is in dropbox`, async () => {
+      await this.page.locator('ul#operator-select li').filter({ hasText: operatorName }).isVisible()
+    })
+  }
+
+  public async openOperatorSelection() {
+    await this.clickOnElement(this.operators_dropdown)
+  }
+
   public async openHoursSelection() {
-    await this.hours_dropdown.click({ timeout: 5000 })
+    await this.clickOnElement(this.hours_dropdown, 5000)
   }
 
   public async fillLineNumber(lineNumber: string) {
@@ -46,20 +56,21 @@ export default class SinglinePage extends BasePage {
   }
 
   public async selectRandomRoute() {
-    await this.route_select.click()
+    await this.clickOnElement(this.route_select)
     const options = this.page.locator('ul#route-select-listbox li')
-    console.log('options', await options.count())
+    const optionsCount = await options.count()
+    const randomIndex = Math.floor(Math.random() * optionsCount)
 
-    const randomIndex = Math.floor(Math.random() * (await options.count()))
-    console.log('chose', randomIndex)
-    await options.nth(randomIndex).scrollIntoViewIfNeeded()
-    await options.nth(randomIndex).click()
+    await test.step(`Selecting route ${randomIndex} out of ${optionsCount}`, async () => {
+      await options.nth(randomIndex).scrollIntoViewIfNeeded()
+      await options.nth(randomIndex).click()
+    })
   }
 
   public async changeDate(newDate: string) {
-    console.log('Changing date to:', newDate)
-    await this.page.waitForTimeout(2000)
-    await this.date.clear()
-    await this.date.fill(newDate)
+    await test.step(`Changing date to: ${newDate}`, async () => {
+      await this.clearTextFromElement(this.date)
+      await this.fillTextToElement(this.date, newDate)
+    })
   }
 }
