@@ -144,6 +144,11 @@
         "url": "https://creativecommons.org/",
         "text": "Creative Commons"
       }
+    },
+    "contactLinksText":{
+      "sadna": "Contact us",
+      "slack": "Chat with us on Slack",
+      "donations": "Servers cost money - help us continue to maintain and develop the project!"
     }
   },
   "dashboard_page_graph_title_hour": "Percentage of rides out, by hour",

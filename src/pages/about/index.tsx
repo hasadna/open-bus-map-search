@@ -93,25 +93,25 @@ const License = () => {
 
 const Questions = () => {
   const { t } = useTranslation()
-
+  const linksTextPath = `${pageName}.contactLinksText`
   return (
     <Widget>
       <h2>{t('questions')}</h2>
       <ul>
         <li>
           <a href="https://www.hasadna.org.il/%D7%A6%D7%95%D7%A8-%D7%A7%D7%A9%D7%A8/">
-            צרו איתנו קשר
+            {t(`${linksTextPath}.sadna`)}
           </a>
         </li>
         <li>
           <img src={SlackIcon} alt="Slack icon" />
           <a href="https://hasadna.slack.com/join/shared_invite/zt-167h764cg-J18ZcY1odoitq978IyMMig#/shared-invite/email">
-            דברו איתנו על זה בסלאק
+            {t(`${linksTextPath}.slack`)}
           </a>
         </li>
         <li>
           <a href="https://www.jgive.com/new/he/ils/donation-targets/3268#donation-modal">
-            שרתים עולים כסף- עזרו לנו להמשיך לתחזק ולפתח את הפרויקט!
+            {t(`${linksTextPath}.donations`)}
           </a>
         </li>
       </ul>
