@@ -127,7 +127,21 @@
     "button": "חזרה לדף הבית"
   },
   "aboutPage":{
-    "title": "קצת עלינו"
+    "title": "קצת עלינו",
+    "googleAnaliticsText":{
+      "text" : "באתר מוטמע שירות XXX לניתוח דפוסי השימוש ומיצוב האתר במנועי חיפוש. קוד זה חושף בפני מפעילי השירות מידע בנוגע להתנהגות המשתמשים.",
+      "link" : {
+        "url": "https://marketingplatform.google.com/about/analytics/",
+        "text": "Google Analytics"
+      }
+    },
+    "privacyPolicyText":{
+      "text" : "XXX על מדיניות הפרטיות של השירות.",
+      "link" : {
+        "url": "https://support.google.com/analytics/answer/6004245?hl=iw",
+        "text": "קראו כאן"
+      }
+    }
   },
 
   "dashboard_page_graph_title_hour": "אחוזי יציאה מסך הנסיעות לפי שעה",

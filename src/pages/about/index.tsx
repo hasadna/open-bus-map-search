@@ -3,6 +3,7 @@ import SlackIcon from '../../resources/slack-icon.svg'
 import { useTranslation } from 'react-i18next'
 import Widget from 'src/shared/Widget'
 import { Space, Typography } from 'antd'
+import MyFormatter from 'src/locale/utils'
 
 import './About.scss'
 const { Title } = Typography
@@ -51,20 +52,24 @@ const DiscoveredMistake = () => {
     </Widget>
   )
 }
+const formatLinkWithTranslation = (linkPath: string) => {
+  const { t } = useTranslation()
+  const path = `${pageName}.${linkPath}`
+  return MyFormatter.linkFormatted(t(`${path}.text`), {
+    url: t(`${path}.link.url`),
+    text: t(`${path}.link.text`),
+  })
+}
 
 const Privacy = () => {
   const { t } = useTranslation()
-
+  const googleAnaliticsText = formatLinkWithTranslation('googleAnaliticsText')
+  const privacyPolicyText = formatLinkWithTranslation(`privacyPolicyText`)
   return (
     <Widget>
       <h2>{t('privacy')}</h2>
       <p>
-        באתר מוטמע שירות{' '}
-        <a href="https://marketingplatform.google.com/about/analytics/">Google Analytics </a>
-        לניתוח דפוסי השימוש ומיצוב האתר במנועי חיפוש. קוד זה חושף בפני מפעילי השירות מידע בנוגע
-        להתנהגות המשתמשים.
-        <a href="https://support.google.com/analytics/answer/6004245?hl=iw"> קראו כאן </a>
-        על מדיניות הפרטיות של השירות.
+        {googleAnaliticsText} {privacyPolicyText}
       </p>
     </Widget>
   )
