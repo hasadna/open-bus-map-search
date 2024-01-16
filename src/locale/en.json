@@ -130,6 +130,20 @@
         "url": "https://support.google.com/analytics/answer/6004245?hl=iw",
         "text": "Learn more"
       }
+    },
+    "mainLicenseInfo":{
+      "text" : "All information displayed on the website is based on data published by government sources. Usage of the information is subject to the XXX",
+      "link" : {
+        "url": "https://creativecommons.org/licenses/by-sa/4.0/",
+        "text": "CC BY-SA 4.0 license"
+      }
+    },
+    "organizationLicenseInfo":{
+      "text" : " of XXX",
+      "link" : {
+        "url": "https://creativecommons.org/",
+        "text": "Creative Commons"
+      }
     }
   },
   "dashboard_page_graph_title_hour": "Percentage of rides out, by hour",

@@ -77,15 +77,15 @@ const Privacy = () => {
 
 const License = () => {
   const { t } = useTranslation()
+  const mainLicenseInfo = formatLinkWithTranslation('mainLicenseInfo')
+  const organizationLicenseInfo = formatLinkWithTranslation('organizationLicenseInfo')
 
   return (
     <Widget>
       <h2>{t('license')}</h2>
       <p>
-        כל המידע המוצג באתר מבוסס על נתונים המפורסמים במקורות המידע הממשלתיים. השימוש במידע כפוף ל
-        <a href="https://creativecommons.org/licenses/by-sa/4.0/">רישיון CC BY-SA 4.0 </a>
-        של
-        <a href="https://creativecommons.org/"> Creative Commons</a>.
+        {mainLicenseInfo}
+        {organizationLicenseInfo}
       </p>
     </Widget>
   )

@@ -141,7 +141,21 @@
         "url": "https://support.google.com/analytics/answer/6004245?hl=iw",
         "text": "קראו כאן"
       }
-    }
+    },
+    "mainLicenseInfo":{
+      "text" : "כל המידע המוצג באתר מבוסס על נתונים המפורסמים במקורות המידע הממשלתיים. השימוש במידע כפוף לXXX ",
+      "link" : {
+        "url": "https://creativecommons.org/licenses/by-sa/4.0/",
+        "text": "רישיון CC BY-SA 4.0"
+      }
+    },
+    "organizationLicenseInfo":{
+      "text" : "של XXX",
+      "link" : {
+        "url": "https://creativecommons.org/",
+        "text": "Creative Commons"
+      }
+    }    
   },
 
   "dashboard_page_graph_title_hour": "אחוזי יציאה מסך הנסיעות לפי שעה",
