@@ -1,4 +1,4 @@
-import { Locator, Page } from '@playwright/test'
+import { Locator, Page, expect } from '@playwright/test'
 import { BasePage } from './BasePage'
 
 export default class TimelinePage extends BasePage {
@@ -38,6 +38,8 @@ export default class TimelinePage extends BasePage {
   }
 
   public async verifyRouteSelectionVisible(isVisible: boolean) {
-    await this.verifySelectionVisible(this.route_select, isVisible)
+    isVisible
+      ? await expect(this.route_select).toBeVisible({ timeout: 2000 })
+      : await expect(this.route_select).toBeHidden({ timeout: 2000 })
   }
 }
