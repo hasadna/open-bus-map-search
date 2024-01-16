@@ -13,7 +13,8 @@ test.describe('Single line page tests', () => {
 
   test('Test single line operator company options are selectable', async () => {
     await singleLinePage.changeDate(yesterday)
-    await singleLinePage.selectOperatorFromDropbox('אגד')
+    await singleLinePage.openOperatorSelection()
+    await singleLinePage.verifyOperatorExistsInDropbox('אגד')
   })
 
   test('Test "choose route" dropdown appears after selecting line', async () => {
