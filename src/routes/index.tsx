@@ -28,6 +28,7 @@ import {
 } from '@ant-design/icons'
 import { MainRoute } from './MainRoute'
 import { ErrorPage } from 'src/pages/ErrorPage'
+import { Spin } from 'antd'
 
 export const PAGES = [
   // {
@@ -82,12 +83,6 @@ export const PAGES = [
     element: <About />,
   },
   {
-    label: 'report_a_bug_title',
-    path: 'report-a-bug',
-    icon: <BugOutlined />,
-    element: <BugReportForm />,
-  },
-  {
     label: 'donate_title',
     path: 'https://www.jgive.com/new/he/ils/donation-targets/3268#donation-modal',
     icon: <DollarOutlined />,
@@ -95,8 +90,34 @@ export const PAGES = [
   },
 ]
 
+const HIDDEN_PAGES = [
+  {
+    label: 'data-research',
+    path: '/data-research',
+    icon: <InfoCircleOutlined />,
+    element: <DataResearch />,
+  },
+  {
+    label: 'report_a_bug_title',
+    path: 'report-a-bug',
+    icon: <BugOutlined />,
+    element: <BugReportForm />,
+  },
+  {
+    label: 'release',
+    path: '/release',
+    icon: <InfoCircleOutlined />,
+    element: (
+      <>
+        <Spin />
+        <iframe src="https://noam-gaash.co.il/databus/" />
+      </>
+    ),
+  },
+]
+
 const getRoutesList = () => {
-  const pages = PAGES
+  const pages = PAGES.concat(HIDDEN_PAGES)
   const RedirectToDashboard = () => <Navigate to={pages[0].path} replace />
   const routes = pages.filter((r) => r.element)
   return (
@@ -117,9 +138,6 @@ const getRoutesList = () => {
           return gtfs_route
         }}
       />
-      <Route path="data-research" element={<DataResearch />} />
-      <Route path="*" element={<RedirectToDashboard />} key="back" />
-      <Route path="release" element={<iframe src="https://noam-gaash.co.il/databus/" />} />
       <Route path="*" element={<RedirectToDashboard />} key="back" />
       main
     </Route>
