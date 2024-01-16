@@ -11,6 +11,7 @@ import {
 
 import './ArrivalByTimeChats.scss'
 import { useMemo } from 'react'
+import moment from 'moment-timezone'
 
 export const arrayGroup = function <T>(array: T[], f: (item: T) => string) {
   const groups: Record<string, T[]> = {}
@@ -70,10 +71,15 @@ export default function ArrivalByTimeChart({
                       <>
                         <ul>
                           <li>
-                            <span className="label">תאריך: </span>
+                            <span className="label">זמן: </span>
                             <span className="value">
-                              {payload![0].payload.gtfs_route_date ||
-                                payload![0].payload.gtfs_route_hour}
+                              {payload![0].payload.gtfs_route_date
+                                ? moment
+                                    .utc(payload![0].payload.gtfs_route_date)
+                                    .format('יום ddd, L')
+                                : moment(payload![0].payload.gtfs_route_hour).format(
+                                    'יום dddd, LT',
+                                  )}
                             </span>
                           </li>
                           <li>

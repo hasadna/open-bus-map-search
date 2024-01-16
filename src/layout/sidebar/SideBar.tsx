@@ -5,13 +5,9 @@ import { useContext, useState } from 'react'
 import { LayoutContextInterface, LayoutCtx } from '../LayoutContext'
 import { Link } from 'react-router-dom'
 import { PAGES } from 'src/routes'
+import { Logo } from './logo'
 const { Sider } = Layout
 
-const Logo = () => (
-  <div style={{ overflow: 'hidden' }}>
-    <h1 className={'sidebar-logo'}>דאטאבוס</h1>
-  </div>
-)
 const CollapsedLogo = () => <h1 className={'sidebar-logo-collapsed'}>🚌</h1>
 
 export default function SideBar() {
