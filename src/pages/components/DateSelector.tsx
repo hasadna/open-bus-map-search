@@ -3,11 +3,6 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import { useTranslation } from 'react-i18next'
 import { DataAndTimeSelectorProps } from './utils/dateAndTime'
 import { DateValidationError } from '@mui/x-date-pickers'
-import styled from 'styled-components'
-
-const Error = styled.div`
-  color: 'red';
-`
 
 export function DateSelector({ time, onChange, customLabel }: DataAndTimeSelectorProps) {
   const [error, setError] = useState<DateValidationError | null>(null)
@@ -43,7 +38,6 @@ export function DateSelector({ time, onChange, customLabel }: DataAndTimeSelecto
           },
         }}
       />
-      {error && <Error>{error}</Error>}
     </>
   )
 }
