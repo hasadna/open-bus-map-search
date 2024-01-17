@@ -1,0 +1,28 @@
+
+
+.sidebar {
+    color: #fff;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    padding: 10px;
+
+    h1 {
+        padding: 5px;
+    }
+}
+
+.logo-icon {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    border-radius: 50%;
+    background: rgba(28, 17, 41, 0.88);
+}
