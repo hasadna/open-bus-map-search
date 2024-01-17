@@ -1,4 +1,4 @@
-import { FireFilled } from '@ant-design/icons';
+import { FireFilled } from '@ant-design/icons'
 
 const Logo = () => {
   return (
@@ -8,7 +8,7 @@ const Logo = () => {
         <h1>דאטאבוס</h1>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Logo;
+export default Logo
