@@ -1,9 +1,8 @@
 import styled from 'styled-components'
 import SlackIcon from '../../resources/slack-icon.svg'
-import { useTranslation } from 'react-i18next'
+import { Trans, useTranslation } from 'react-i18next'
 import Widget from 'src/shared/Widget'
 import { Space, Typography } from 'antd'
-import MyFormatter from 'src/locale/utils'
 
 import './About.scss'
 const { Title } = Typography
@@ -52,24 +51,19 @@ const DiscoveredMistake = () => {
     </Widget>
   )
 }
-const formatLinkWithTranslation = (linkPath: string) => {
-  const { t } = useTranslation()
-  const path = `${pageName}.${linkPath}`
-  return MyFormatter.linkFormatted(t(`${path}.text`), {
-    url: t(`${path}.link.url`),
-    text: t(`${path}.link.text`),
-  })
-}
 
 const Privacy = () => {
   const { t } = useTranslation()
-  const googleAnaliticsText = formatLinkWithTranslation('googleAnaliticsText')
-  const privacyPolicyText = formatLinkWithTranslation(`privacyPolicyText`)
+  const googlAnalyticsUrl = 'https://marketingplatform.google.com/about/analytics/'
+  const googleAnaliticsPrivacyUrl = 'https://support.google.com/analytics/answer/6004245?hl=iw'
   return (
     <Widget>
       <h2>{t('privacy')}</h2>
       <p>
-        {googleAnaliticsText} {privacyPolicyText}
+        <Trans i18nKey="aboutPage.privacyText">
+          <a href={googlAnalyticsUrl}></a>
+          <a href={googleAnaliticsPrivacyUrl}></a>
+        </Trans>
       </p>
     </Widget>
   )
@@ -77,15 +71,18 @@ const Privacy = () => {
 
 const License = () => {
   const { t } = useTranslation()
-  const mainLicenseInfo = formatLinkWithTranslation('mainLicenseInfo')
-  const organizationLicenseInfo = formatLinkWithTranslation('organizationLicenseInfo')
-
+  const licenseLink = 'https://creativecommons.org/licenses/by-sa/4.0/'
+  const licenseOrgLink = 'https://creativecommons.org/'
   return (
     <Widget>
       <h2>{t('license')}</h2>
       <p>
-        {mainLicenseInfo}
-        {organizationLicenseInfo}
+        <Trans
+          i18nKey="aboutPage.licenseInfo.text"
+          values={{ licenseName: t('aboutPage.licenseInfo.licenseName') }}>
+          <a href={licenseLink}></a>
+          <a href={licenseOrgLink}></a>
+        </Trans>
       </p>
     </Widget>
   )

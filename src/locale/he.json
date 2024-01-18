@@ -129,33 +129,10 @@
   },
   "aboutPage":{
     "title": "קצת עלינו",
-    "googleAnaliticsText":{
-      "text" : "באתר מוטמע שירות XXX לניתוח דפוסי השימוש ומיצוב האתר במנועי חיפוש. קוד זה חושף בפני מפעילי השירות מידע בנוגע להתנהגות המשתמשים.",
-      "link" : {
-        "url": "https://marketingplatform.google.com/about/analytics/",
-        "text": "Google Analytics"
-      }
-    },
-    "privacyPolicyText":{
-      "text" : "XXX על מדיניות הפרטיות של השירות.",
-      "link" : {
-        "url": "https://support.google.com/analytics/answer/6004245?hl=iw",
-        "text": "קראו כאן"
-      }
-    },
-    "mainLicenseInfo":{
-      "text" : "כל המידע המוצג באתר מבוסס על נתונים המפורסמים במקורות המידע הממשלתיים. השימוש במידע כפוף לXXX ",
-      "link" : {
-        "url": "https://creativecommons.org/licenses/by-sa/4.0/",
-        "text": "רישיון CC BY-SA 4.0"
-      }
-    },
-    "organizationLicenseInfo":{
-      "text" : "של XXX",
-      "link" : {
-        "url": "https://creativecommons.org/",
-        "text": "Creative Commons"
-      }
+    "privacyText": "באתר מוטמע שירות <0>Google Analytics</0>  לניתוח דפוסי השימוש ומיצוב האתר במנועי חיפוש. קוד זה חושף בפני מפעילי השירות מידע בנוגע להתנהגות המשתמשים. <1>קראו כאן</1>  על מדיניות הפרטיות של השירות.",
+    "licenseInfo":{
+      "text":  "כל המידע המוצג באתר מבוסס על נתונים המפורסמים במקורות המידע הממשלתיים. השימוש במידע כפוף לרישיון <0>{{licenseName}}</0> של <1>Creative Commons</1>.",
+      "licenseName": "רישיון CC BY-SA 4.0"
     },
     "contactLinksText":{
       "sadna": "צרו איתנו קשר",
