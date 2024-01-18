@@ -1,11 +1,42 @@
-import { test } from './utils'
+import { getYesterday, test } from './utils'
+import SinglelinePage from '../src/test_pages/SinglelinePage'
 
-test('single line', async ({ page }) => {
-  await page.route('**stride-api**', (route) => route.abort())
-  await page.route('*.png', (route) => route.abort())
-  await page.goto('/')
-  await page.getByText('מפה לפי קו').click()
-  await page.getByPlaceholder('לדוגמא: 17א').fill('1')
-  await page.getByLabel('חברה מפעילה').click()
-  await page.getByRole('option', { name: 'אגד', exact: true }).click()
+test.describe('Single line page tests', () => {
+  let singleLinePage: SinglelinePage
+  const yesterday = getYesterday() // we set the date to yesterday so we dont get the edge case of buses not loading at 12AM
+
+  test.beforeEach(async ({ page }) => {
+    singleLinePage = new SinglelinePage(page)
+    await page.goto('/')
+    await page.getByText('מפה לפי קו').click()
+  })
+
+  test('Test single line operator company options are selectable', async () => {
+    await singleLinePage.changeDate(yesterday)
+    await singleLinePage.openOperatorSelection()
+    await singleLinePage.verifyOperatorExistsInDropbox('אגד')
+  })
+
+  test('Test "choose route" dropdown appears after selecting line', async () => {
+    await singleLinePage.changeDate(yesterday)
+    await singleLinePage.selectOperatorFromDropbox('אגד')
+    await singleLinePage.fillLineNumber('1')
+    await singleLinePage.verifyRouteSelectionVisible(true)
+  })
+
+  test('Test "choose route" dropdown disappears after removing line', async () => {
+    await singleLinePage.changeDate(yesterday)
+    await singleLinePage.selectOperatorFromDropbox('אגד')
+    await singleLinePage.fillLineNumber('1')
+    await singleLinePage.verifyRouteSelectionVisible(true)
+    await singleLinePage.closeLineNumber()
+    await singleLinePage.verifyRouteSelectionVisible(false)
+  })
+
+  test('Test "choose route" options are selectable', async () => {
+    await singleLinePage.changeDate(yesterday)
+    await singleLinePage.selectOperatorFromDropbox('אגד')
+    await singleLinePage.fillLineNumber('1')
+    await singleLinePage.selectRandomRoute()
+  })
 })
