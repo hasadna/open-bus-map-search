@@ -19,6 +19,7 @@ const About = () => {
         <License />
         <Questions />
         <Funding />
+        <Attributions />
       </Space>
     </AboutStyle>
   )
@@ -134,6 +135,22 @@ const Funding = () => {
           </a>
         </li>
       </ul>
+    </Widget>
+  )
+}
+
+const Attributions = () => {
+  return (
+    <Widget>
+      <h2>Attributions</h2>
+      Bus ifmage by{' '}
+      <a
+        href="https://www.freepik.com/free-vector/passengers-waiting-bus-city-queue-town-road-flat-vector-illustration-public-transport-urban-lifestyle_10173277.htm#query=public%20transportation&position=0&from_view=search&track=ais&uuid=70a79b38-20cb-42b8-9dde-b96a68088522"
+        target="_blank"
+        rel="noopener noreferrer">
+        pch.vector
+      </a>{' '}
+      on Freepik
     </Widget>
   )
 }
