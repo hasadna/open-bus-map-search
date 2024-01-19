@@ -75,6 +75,12 @@ export const PAGES = [
     element: <About />,
   },
   {
+    label: 'report_a_bug_title',
+    path: 'report-a-bug',
+    icon: <BugOutlined />,
+    element: <BugReportForm />,
+  },
+  {
     label: 'donate_title',
     path: 'https://www.jgive.com/new/he/ils/donation-targets/3268#donation-modal',
     icon: <DollarOutlined />,
@@ -88,12 +94,6 @@ const HIDDEN_PAGES = [
     path: '/data-research',
     icon: <InfoCircleOutlined />,
     element: <DataResearch />,
-  },
-  {
-    label: 'report_a_bug_title',
-    path: 'report-a-bug',
-    icon: <BugOutlined />,
-    element: <BugReportForm />,
   },
   {
     label: 'release',
