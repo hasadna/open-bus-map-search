@@ -69,9 +69,11 @@ const BugReportForm = () => {
       <span> {t('reportBug.description')}</span>
 
       <p>
-        <a href={submittedUrl} target="_blank" rel="noopener noreferrer">
-          {t('reportBug.viewIssue')} (Github)
-        </a>
+        {submittedUrl && (
+          <a href={submittedUrl} target="_blank" rel="noopener noreferrer">
+            {t('reportBug.viewIssue')} (Github)
+          </a>
+        )}
       </p>
 
       <Form
