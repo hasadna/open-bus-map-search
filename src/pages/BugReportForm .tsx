@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Form, Input, Button, Upload, message, Select, FormProps, Card } from 'antd'
 import { UploadOutlined } from '@ant-design/icons'
-// import axios from 'axios'
+import axios from 'axios'
 import './BugReportForm.scss'
 import { UploadChangeParam, UploadFile } from 'antd/lib/upload'
 const { Option } = Select
@@ -19,11 +19,12 @@ interface BugReportFormData {
   contactEmail: string
 }
 
-const BugReportForm: React.FC = () => {
+const BugReportForm = () => {
   const { t } = useTranslation()
   const [form] = Form.useForm()
   const [fileList, setFileList] = useState<UploadFile[]>([])
   const [selectedType, setSelectedType] = useState<string | undefined>(undefined)
+  const [submittedUrl, setSubmittedUrl] = useState<string | undefined>(undefined)
 
   //Not implemented yet
   const onFinish = async (values: BugReportFormData) => {
@@ -31,21 +32,25 @@ const BugReportForm: React.FC = () => {
       // Send the bug report data to the server
       // Include fileList in the values if needed
 
-      // const response = await axios.post('http://localhost:3001/create-issue', {
-      //   ...values,
-      //   attachments: fileList,
-      // })
+      const response = await axios.post(
+        'https://open-bus-backend.k8s.hasadna.org.il/create-issue',
+        {
+          ...values,
+          attachments: fileList,
+        },
+      )
 
-      console.log(values)
-
-      // Handle the server response
-      // message.success('Bug report submitted successfully!')
-      message.success('Not implemented!')
-      form.resetFields()
-      setFileList([]) // Reset fileList after submission
+      setSubmittedUrl(response.data.url)
+      if (response.data.state === 'open') {
+        message.success(t('reportBug.success'))
+        form.resetFields()
+        setFileList([])
+      } else {
+        message.error(t('reportBug.error'))
+      }
     } catch (error) {
       console.error('Error submitting bug report:', error)
-      message.error('Error submitting bug report. Please try again.')
+      message.error(t('reportBug.error'))
     }
   }
 
@@ -61,9 +66,13 @@ const BugReportForm: React.FC = () => {
     <Card className="bug-report-form-container">
       <h1 className="logo">דאטאבוס</h1>
 
-      <span> {t('bug_form_description')} </span>
-      <br />
-      <br />
+      <span> {t('reportBug.description')}</span>
+
+      <p>
+        <a href={submittedUrl} target="_blank" rel="noopener noreferrer">
+          {t('reportBug.viewIssue')} (Github)
+        </a>
+      </p>
 
       <Form
         form={form}
