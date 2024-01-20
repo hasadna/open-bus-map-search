@@ -1,17 +1,19 @@
 import styled from 'styled-components'
 import SlackIcon from '../../resources/slack-icon.svg'
-import { useTranslation } from 'react-i18next'
+import { Trans, useTranslation } from 'react-i18next'
 import Widget from 'src/shared/Widget'
 import { Space, Typography } from 'antd'
 
 import './About.scss'
 const { Title } = Typography
+const pageName = 'aboutPage'
 const About = () => {
+  const { t } = useTranslation()
   return (
     <AboutStyle>
       <Space direction="vertical" size="middle">
         <Title className="page-title" level={3}>
-          קצת עלינו
+          {t(`${pageName}.title`)}
         </Title>
         <WhatIsWebsite />
         <DiscoveredMistake />
@@ -52,17 +54,16 @@ const DiscoveredMistake = () => {
 
 const Privacy = () => {
   const { t } = useTranslation()
-
+  const googlAnalyticsUrl = 'https://marketingplatform.google.com/about/analytics/'
+  const googleAnaliticsPrivacyUrl = 'https://support.google.com/analytics/answer/6004245?hl=iw'
   return (
     <Widget>
       <h2>{t('privacy')}</h2>
       <p>
-        באתר מוטמע שירות{' '}
-        <a href="https://marketingplatform.google.com/about/analytics/">Google Analytics </a>
-        לניתוח דפוסי השימוש ומיצוב האתר במנועי חיפוש. קוד זה חושף בפני מפעילי השירות מידע בנוגע
-        להתנהגות המשתמשים.
-        <a href="https://support.google.com/analytics/answer/6004245?hl=iw"> קראו כאן </a>
-        על מדיניות הפרטיות של השירות.
+        <Trans i18nKey="aboutPage.privacyText">
+          <a href={googlAnalyticsUrl}></a>
+          <a href={googleAnaliticsPrivacyUrl}></a>
+        </Trans>
       </p>
     </Widget>
   )
@@ -70,15 +71,18 @@ const Privacy = () => {
 
 const License = () => {
   const { t } = useTranslation()
-
+  const licenseLink = 'https://creativecommons.org/licenses/by-sa/4.0/'
+  const licenseOrgLink = 'https://creativecommons.org/'
   return (
     <Widget>
       <h2>{t('license')}</h2>
       <p>
-        כל המידע המוצג באתר מבוסס על נתונים המפורסמים במקורות המידע הממשלתיים. השימוש במידע כפוף ל
-        <a href="https://creativecommons.org/licenses/by-sa/4.0/">רישיון CC BY-SA 4.0 </a>
-        של
-        <a href="https://creativecommons.org/"> Creative Commons</a>.
+        <Trans
+          i18nKey="aboutPage.licenseInfo.text"
+          values={{ licenseName: t('aboutPage.licenseInfo.licenseName') }}>
+          <a href={licenseLink}></a>
+          <a href={licenseOrgLink}></a>
+        </Trans>
       </p>
     </Widget>
   )
@@ -86,25 +90,25 @@ const License = () => {
 
 const Questions = () => {
   const { t } = useTranslation()
-
+  const linksTextPath = `${pageName}.contactLinksText`
   return (
     <Widget>
       <h2>{t('questions')}</h2>
       <ul>
         <li>
           <a href="https://www.hasadna.org.il/%D7%A6%D7%95%D7%A8-%D7%A7%D7%A9%D7%A8/">
-            צרו איתנו קשר
+            {t(`${linksTextPath}.sadna`)}
           </a>
         </li>
         <li>
           <img src={SlackIcon} alt="Slack icon" />
           <a href="https://hasadna.slack.com/join/shared_invite/zt-167h764cg-J18ZcY1odoitq978IyMMig#/shared-invite/email">
-            דברו איתנו על זה בסלאק
+            {t(`${linksTextPath}.slack`)}
           </a>
         </li>
         <li>
           <a href="https://www.jgive.com/new/he/ils/donation-targets/3268#donation-modal">
-            שרתים עולים כסף- עזרו לנו להמשיך לתחזק ולפתח את הפרויקט!
+            {t(`${linksTextPath}.donations`)}
           </a>
         </li>
       </ul>

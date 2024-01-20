@@ -26,6 +26,7 @@ import {
 } from '@ant-design/icons'
 import { MainRoute } from './MainRoute'
 import { ErrorPage } from 'src/pages/ErrorPage'
+import { Spin } from 'antd'
 
 export const PAGES = [
   {
@@ -87,8 +88,28 @@ export const PAGES = [
   },
 ]
 
+const HIDDEN_PAGES = [
+  {
+    label: 'data-research',
+    path: '/data-research',
+    icon: <InfoCircleOutlined />,
+    element: <DataResearch />,
+  },
+  {
+    label: 'release',
+    path: '/release',
+    icon: <InfoCircleOutlined />,
+    element: (
+      <>
+        <Spin />
+        <iframe src="https://noam-gaash.co.il/databus/" />
+      </>
+    ),
+  },
+]
+
 const getRoutesList = () => {
-  const pages = PAGES
+  const pages = PAGES.concat(HIDDEN_PAGES)
   const RedirectToDashboard = () => <Navigate to={pages[0].path} replace />
   const routes = pages.filter((r) => r.element)
   return (
@@ -109,8 +130,6 @@ const getRoutesList = () => {
           return gtfs_route
         }}
       />
-      <Route path="data-research" element={<DataResearch />} />
-      <Route path="release" element={<iframe src="https://noam-gaash.co.il/databus/" />} />
       <Route path="*" element={<RedirectToDashboard />} key="back" />
     </Route>
     // </Suspense>
