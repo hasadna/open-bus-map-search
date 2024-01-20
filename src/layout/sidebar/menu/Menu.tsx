@@ -1,12 +1,14 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import './menu.scss'
 import { useTranslation } from 'react-i18next'
-import { PAGES } from 'src/routes'
-
 import type { MenuProps } from 'antd'
 import { Menu } from 'antd'
+
+import { LayoutContextInterface, LayoutCtx } from 'src/layout/LayoutContext'
 import { LanguageToggle } from 'src/pages/EasterEgg/LanguageToggle'
+import { PAGES } from 'src/routes'
+
+import './menu.scss'
 
 type MenuItem = Required<MenuProps>['items'][number]
 function getItem(
@@ -25,8 +27,15 @@ function getItem(
 
 const MainMenu = () => {
   const { t } = useTranslation()
+  const { setDrawerOpen } = useContext<LayoutContextInterface>(LayoutCtx)
   const items: MenuItem[] = PAGES.map((itm) => {
-    return getItem(<Link to={t(itm.path)}>{t(itm.label)}</Link>, itm.path, itm.icon)
+    return getItem(
+      <Link to={t(itm.path)} onClick={() => setDrawerOpen(false)}>
+        {t(itm.label)}
+      </Link>,
+      itm.path,
+      itm.icon,
+    )
   })
 
   const location = useLocation()
