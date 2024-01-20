@@ -31,4 +31,13 @@ export abstract class BasePage {
       await this.clickOnElement(optionsListElement.locator(`//li[text()='${optionToSelect}']`))
     })
   }
+
+  protected async getAllOptions_Dropbox(dropElement: Locator) {
+    let options: Locator[] = []
+    await test.step(`Click on dropbox ${dropElement} and select all Options`, async () => {
+      await this.clickOnElement(dropElement)
+      options = await this.page.getByRole('option').all()
+    })
+    return options
+  }
 }
