@@ -40,7 +40,7 @@ export default class TimelinePage extends BasePage {
   }
 
   public async closeLineNumber() {
-    await this.clickOnElement(this.close_line_number)
+    await this.clickOnElement(this.close_line_number, 3000)
   }
 
   public async verifyRouteSelectionVisible(isVisible: boolean) {

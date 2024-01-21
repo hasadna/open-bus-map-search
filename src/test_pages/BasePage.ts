@@ -11,7 +11,7 @@ export abstract class BasePage {
 
   protected async clickOnElement(element: Locator, timeout?: number) {
     await test.step(`Click on ${element}`, async () => {
-      await element.click({ timeout: timeout || 0 })
+      await element.click({ timeout: timeout || 3000 })
     })
   }
 
