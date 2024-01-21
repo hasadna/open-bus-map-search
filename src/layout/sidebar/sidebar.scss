@@ -52,6 +52,28 @@
   }
 }
 
+.sidebar-logo.dark {
+  color: white;
+  svg {
+    padding: 0 8px;
+    .st0 {
+      fill: none;
+      stroke: white;
+      stroke-width: 23;
+      stroke-miterlimit: 10;
+    }
+    path {
+      stroke-dasharray: 1720;
+      stroke-dashoffset: 1720;
+    }
+    circle {
+      fill: white;
+      stroke-dasharray: 420;
+      stroke-dashoffset: 420;
+    }
+  }
+}
+
 .sidebar-logo-collapsed {
   position: relative;
   margin: 20px auto;

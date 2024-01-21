@@ -1,6 +1,10 @@
+import { useTheme } from '../ThemeContext'
+import cn from 'classnames'
+
 export function Logo() {
+  const { isDarkTheme } = useTheme()
   return (
-    <h1 className="sidebar-logo">
+    <h1 className={cn('sidebar-logo', { dark: isDarkTheme })}>
       <svg viewBox="450 900 3200 1730" xmlSpace="preserve">
         <circle cx="930.32" cy="2390.95" r="121.59" />
         <circle cx="2412.32" cy="2390.95" r="121.59" />

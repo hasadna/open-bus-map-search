@@ -1,5 +1,7 @@
 import { Navigate, Route, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
 import { lazy } from 'react'
+
+const HomePage = lazy(() => import('../pages/homepage/HomePage'))
 const DashboardPage = lazy(() => import('../pages/dashboard/DashboardPage'))
 const TimelinePage = lazy(() => import('../pages/historicTimeline'))
 const GapsPage = lazy(() => import('../pages/gaps'))
@@ -14,6 +16,7 @@ const DataResearch = lazy(() =>
 )
 
 import {
+  HomeOutlined,
   RadarChartOutlined,
   InfoCircleOutlined,
   DollarOutlined,
@@ -26,6 +29,7 @@ import {
 } from '@ant-design/icons'
 import { MainRoute } from './MainRoute'
 import { ErrorPage } from 'src/pages/ErrorPage'
+import { Spin } from 'antd'
 
 export const PAGES = [
   {
@@ -87,8 +91,34 @@ export const PAGES = [
   },
 ]
 
+const HIDDEN_PAGES = [
+  {
+    label: 'home_page',
+    path: '/home',
+    icon: <HomeOutlined />,
+    element: <HomePage />, //need to build - created only the file and routing
+  },
+  {
+    label: 'data-research',
+    path: '/data-research',
+    icon: <InfoCircleOutlined />,
+    element: <DataResearch />,
+  },
+  {
+    label: 'release',
+    path: '/release',
+    icon: <InfoCircleOutlined />,
+    element: (
+      <>
+        <Spin />
+        <iframe src="https://noam-gaash.co.il/databus/" />
+      </>
+    ),
+  },
+]
+
 const getRoutesList = () => {
-  const pages = PAGES
+  const pages = PAGES.concat(HIDDEN_PAGES)
   const RedirectToDashboard = () => <Navigate to={pages[0].path} replace />
   const routes = pages.filter((r) => r.element)
   return (
@@ -109,8 +139,6 @@ const getRoutesList = () => {
           return gtfs_route
         }}
       />
-      <Route path="data-research" element={<DataResearch />} />
-      <Route path="release" element={<iframe src="https://noam-gaash.co.il/databus/" />} />
       <Route path="*" element={<RedirectToDashboard />} key="back" />
     </Route>
     // </Suspense>
