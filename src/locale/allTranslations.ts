@@ -17,4 +17,12 @@ i18n.use(initReactI18next).init({
   lng: 'he',
 })
 
+declare module 'i18next' {
+  interface CustomTypeOptions {
+    resources: {
+      translation: typeof translationsHE
+    }
+  }
+}
+
 export default i18n
