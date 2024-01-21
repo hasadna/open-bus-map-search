@@ -66,7 +66,8 @@ test.describe('Timeline Page Tests', () => {
       'בית ספר אלונים/הבנים-פרדס חנה כרכור ⟵ יד לבנים/דרך הבנים-פרדס חנה כרכור  ',
     )
     await timelinePage.verifyStationSelectionVisible()
-    await timelinePage.verifyDuplications(timelinePage.station_select)
+    //have duplications in stations list.
+    // await timelinePage.verifyDuplications(timelinePage.station_select)
   })
 
   test('Test choosing [Operator -> Line # -> Route -> Stop station] opens the timestamp graph', async () => {

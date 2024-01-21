@@ -53,6 +53,8 @@ export default class TimelinePage extends BasePage {
     const list = new Set()
     const selectOption = await this.getAllOptions_Dropbox(selectBox)
     for (const row of selectOption) list.add(await row.textContent())
+    console.log(list)
+    console.log(selectOption)
     expect(list.size === selectOption.length).toBe(true)
   }
 
