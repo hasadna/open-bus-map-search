@@ -1,25 +1,16 @@
 export function useLocalStorage(key: string) {
-    
- const setItem = (value: unknown) => {
-
+  const setItem = (value: unknown) => {
     try {
-        localStorage.setItem(key, JSON.stringify(value))
-    } catch (error) {
-        
-    }
-   
-};
+      localStorage.setItem(key, JSON.stringify(value))
+    } catch (error) {}
+  }
 
-const getItem = () => {
+  const getItem = () => {
     try {
-       const item =  localStorage.getItem(key);
-      return item ? JSON.parse(item) : undefined;
-    } catch (error) {
-        
-    }
+      const item = localStorage.getItem(key)
+      return item ? JSON.parse(item) : undefined
+    } catch (error) {}
+  }
 
-   
-}
-
- return { setItem, getItem}
+  return { setItem, getItem }
 }

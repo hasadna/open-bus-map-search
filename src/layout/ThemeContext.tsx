@@ -1,4 +1,3 @@
-// ThemeContext.js
 import React, { FC, PropsWithChildren, createContext, useContext, useState, useEffect } from 'react';
 import { ThemeProvider as MuiThemeProvider, createTheme } from '@mui/material/styles';
 import { ConfigProvider, theme } from 'antd';
@@ -28,20 +27,15 @@ const lightTheme = createTheme({
 const { defaultAlgorithm, darkAlgorithm } = theme;
 
 export const ThemeProvider: FC<PropsWithChildren> = ({ children }) => {
-
   const { setItem, getItem } = useLocalStorage('isDarkTheme');
-
   const [isDarkTheme, setIsDarkTheme] = useState(() => {
-    // Read the dark theme preference from localStorage or default to false
     return getItem() === 'true' || false;
   });
 
   const { i18n } = useTranslation();
-
   const toggleTheme = () => {
     setIsDarkTheme((prevTheme) => {
       const newTheme = !prevTheme;
-      // Save the dark theme preference to localStorage
       setItem(String(newTheme));
       return newTheme;
     });
@@ -52,7 +46,6 @@ export const ThemeProvider: FC<PropsWithChildren> = ({ children }) => {
     toggleTheme,
   };
 
-  // Read the dark theme preference from localStorage when the component mounts
   useEffect(() => {
     const storedTheme = getItem() === 'true';
     setIsDarkTheme(storedTheme || false);
