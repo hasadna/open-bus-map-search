@@ -19,6 +19,7 @@ import { CircularProgress, Tooltip } from '@mui/material'
 import { FilterPositionsByStartTimeSelector } from '../components/FilterPositionsByStartTimeSelector'
 import { PageContainer } from '../components/PageContainer'
 import { MapWithLocationsAndPath, Path } from '../components/map-related/MapWithLocationsAndPath'
+import Title from 'antd/es/typography/Title'
 
 const SingleLineMapPage = () => {
   const { search, setSearch } = useContext(SearchContext)
@@ -90,32 +91,35 @@ const SingleLineMapPage = () => {
 
   return (
     <PageContainer className="map-container">
+      <Title className="page-title" level={3}>
+        {t('single_line_map_title')}
+      </Title>
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
         {/* choose date*/}
-        <Grid xs={4}>
+        <Grid xs={4} className="hideOnMobile">
           <Label text={t('choose_date')} />
         </Grid>
-        <Grid xs={8}>
+        <Grid sm={5} xs={12}>
           <DateSelector
             time={moment(timestamp)}
             onChange={(ts) => setSearch((current) => ({ ...current, timestamp: ts.valueOf() }))}
           />
         </Grid>
         {/* choose operator */}
-        <Grid xs={4}>
+        <Grid xs={4} className="hideOnMobile">
           <Label text={t('choose_operator')} />
         </Grid>
-        <Grid xs={8}>
+        <Grid sm={8} xs={12}>
           <OperatorSelector
             operatorId={operatorId}
             setOperatorId={(id) => setSearch((current) => ({ ...current, operatorId: id }))}
           />
         </Grid>
         {/* choose line number */}
-        <Grid xs={4}>
+        <Grid xs={4} className="hideOnMobile">
           <Label text={t('choose_line')} />
         </Grid>
-        <Grid xs={8}>
+        <Grid sm={8} xs={12}>
           <LineNumberSelector
             lineNumber={lineNumber}
             setLineNumber={(number) => setSearch((current) => ({ ...current, lineNumber: number }))}
@@ -183,7 +187,7 @@ function FilterPositionsByStartTime({
 
   return (
     <>
-      <Grid xs={3}>
+      <Grid xs={3} className="hideOnMobile">
         <Label text={t('choose_start_time')} />
       </Grid>
       <Grid xs={1}>
@@ -193,7 +197,7 @@ function FilterPositionsByStartTime({
           </Tooltip>
         )}
       </Grid>
-      <Grid xs={8}>
+      <Grid sm={5} xs={12}>
         <FilterPositionsByStartTimeSelector
           options={options}
           startTime={startTime}
