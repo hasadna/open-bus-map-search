@@ -4,12 +4,12 @@ import { BasePage } from './BasePage'
 export default class TimelinePage extends BasePage {
   private date: Locator
   private operator: Locator
-  public operators_dropdown: Locator
+  private operators_dropdown: Locator
   private operators_list: Locator
   private line_number: Locator
   private close_line_number: Locator
-  public route_select: Locator
-  public station_select: Locator
+  private route_select: Locator
+  private station_select: Locator
   private eged_taavura: Locator
   private routes_list: Locator
   private stop_station_list: Locator
@@ -53,8 +53,6 @@ export default class TimelinePage extends BasePage {
     const list = new Set()
     const selectOption = await this.getAllOptions_Dropbox(selectBox)
     for (const row of selectOption) list.add(await row.textContent())
-    console.log(list)
-    console.log(selectOption)
     expect(list.size === selectOption.length).toBe(true)
   }
 
@@ -76,5 +74,15 @@ export default class TimelinePage extends BasePage {
 
   public async verifyTimestampGraphSelectionVisible() {
     await expect(this.timeline_graph).toBeVisible({ timeout: 30000 })
+  }
+
+  get routeSelect() {
+    return this.route_select
+  }
+  get stationSelect() {
+    return this.station_select
+  }
+  get operatorsDropDown() {
+    return this.operators_dropdown
   }
 }
