@@ -18,8 +18,10 @@ i18n.use(initReactI18next).init({
 })
 
 declare module 'i18next' {
-  interface CustomResourcesTypeOptions {
-    translation: typeof translationsHE
+  interface CustomTypeOptions {
+    resources: {
+      translation: typeof translationsHE
+    }
   }
 }
 
