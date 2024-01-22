@@ -9,15 +9,9 @@ export abstract class BasePage {
     })
   }
 
-<<<<<<< HEAD
-  protected async clickOnElement(element: Locator) {
-    await test.step(`Click on ${element}`, async () => {
-      await element.click()
-=======
   protected async clickOnElement(element: Locator, timeout?: number) {
     await test.step(`Click on ${element}`, async () => {
       await element.click({ timeout: timeout || 0 })
->>>>>>> 536f8078134fe2506936e6109112f67f4d5c6eaf
     })
   }
 
@@ -27,8 +21,6 @@ export abstract class BasePage {
     })
   }
 
-<<<<<<< HEAD
-=======
   protected async clearTextFromElement(element: Locator) {
     await test.step(`Clearing '${element}' from text`, async () => {
       await element.clear()
@@ -41,7 +33,6 @@ export abstract class BasePage {
       : await expect(locator).toBeHidden({ timeout: timeout || 5000 })
   }
 
->>>>>>> 536f8078134fe2506936e6109112f67f4d5c6eaf
   protected async selectFrom_UL_LI_Dropbox(
     dropElement: Locator,
     optionsListElement: Locator,

@@ -1,9 +1,5 @@
 import TimelinePage from '../src/test_pages/TimelinePage'
-<<<<<<< HEAD
-import { test, expect } from '@playwright/test'
-=======
 import { test } from '@playwright/test'
->>>>>>> 536f8078134fe2506936e6109112f67f4d5c6eaf
 
 test.describe('Timeline Page Tests', () => {
   let timelinePage: TimelinePage
