@@ -9,7 +9,7 @@
     "@mui/x-date-pickers": "^6.12.1",
     "@types/leaflet.markercluster": "^1.5.2",
     "@vitejs/plugin-react-swc": "^3.4.0",
-    "antd": "^4.22.5",
+    "antd": "^5.12.2",
     "axios": "^1.6.0",
     "classnames": "^2.3.2",
     "dayjs": "^1.11.9",
@@ -49,7 +49,7 @@
     "start": "vite",
     "build": "tsc && vite build",
     "serve": "vite preview",
-    "test": "yarn test:unit:ci && yarn test:e2e",
+    "test": "npm run test:unit:ci && npm run test:e2e",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e": "playwright test",
     "test:unit": "vitest",
@@ -104,7 +104,7 @@
     "playwright-advanced-har": "^1.2.1",
     "prettier": "^2.7.1",
     "storybook": "^7.5.3",
+    "vite-plugin-istanbul": "^5.0.0",
     "vitest": "^0.34.6"
-  },
-  "packageManager": "yarn@4.0.1"
+  }
 }

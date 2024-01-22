@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { test, expect } from './utils'
 
 test('menu', async ({ page }) => {
   await page.goto('/')
@@ -11,7 +11,6 @@ test('menu', async ({ page }) => {
     'מפה בזמן אמת',
     'מפה לפי קו',
     'אודות',
-    'דיווח על באג',
     'לתרומות',
   ]
   await expect(page.locator('ul > li a')).toContainText(menuItemsInOrder)

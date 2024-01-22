@@ -1,45 +1,38 @@
 # Open bus ranking app
 
 ## Welcome!
-This is the official repository of the open bus (תחב"צ פתוחה) project - also known as "ShameBus".
+This is the official repository of the open bus (תחב"צ פתוחה / דאטאבוס) project - also known as "ShameBus".
 [link to the project](https://open-bus-map-search.hasadna.org.il/dashboard)
-- While in the site, type "storybook" (in lowercase) to see a secret 😉
 
-Please feel free to submit pull requests and contribute to the project (see the "contribution" section).
+Please feel free to submit pull requests and contribute to the project.
+For more details about contributing, see the [CONTRIBUTING.md](CONTRIBUTING.md) file.
+
+# Running the project locally
+An explanation how to run the project locally you can [read here](CONTRIBUTING.md#running-the-project-on-a-local-environment).
 
 ## View video (Hebrew language):
+### The video will explain you how to contribute to the project:   
 [![video (hebrew) about the project](https://img.youtube.com/vi/6H6jkJCVhgk/0.jpg)](https://www.youtube.com/watch?v=6H6jkJCVhgk)
+
+# Easter eggs
+We've hidden a couple of fun surprises in our web app, just for you. Discovering them is as easy as typing a few magic words on your keyboard.
+
+## How to Find the Easter Eggs
+1. Open our [web app](https://open-bus-map-search.hasadna.org.il/dashboard)
+2. **Unleash the Magic Words:**
+   To reveal the hidden gems, use your keyboard to type the following commands:
+
+   - **Type "storybook":**
+     Watch the magic unfold as you type "storybook" on your keyboard. You might just stumble upon our Storybook, a treasure trove of UI components showcasing the beauty and functionality of our app.
+   - **Type "english":**
+     Feel like switching up the language? Type "english" and see the language toggle in action. Our app is multilingual, and you can experience it by triggering this secret command.
+   - **Type "geek":**
+     To get some experimental charts with some additional data and aggregation
+
 
 ## deployments
 
-[![Netlify Status](https://api.netlify.com/api/v1/badges/d3ef62c2-b5bb-48ac-8299-71e5bd22b211/deploy-status)](https://app.netlify.com/sites/open-bus/deploys)
-
 This app is created by the volunteers of [Public Knowledge Workshop](https://www.hasadna.org.il/)
-
-## Contribution:
-
-### Running the project:
-
-- fork the repo
-- clone the repo
-- `yarn install`
-- `yarn start`
-
-### testing the project:
-| command                                                           | description                                                                         |
-| ----------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| `yarn test:unit`                                                       | Run the unit tests using `watch` option (good for development). |
-| `yarn test:unit:ci`                                                       | Run the unit tests (good for ci). |
-| `yarn test:e2e`                                                       | Run the e2e (playwright) tests (good for ci). |
-| `yarn test:e2e:ui`                                                       | Run the e2e (playwright) tests with user interface. |
-| `yarn test`                                                       | Run all the kind of tests. |
-- additional helpful flags - https://playwright.dev/docs/test-cli
-
-### useful resources:
-* [the design file](https://www.figma.com/file/Plw8Uuu6U96CcX5tJyRMoW/Public-Transportation-visual-informaiton?type=design&node-id=0-1&mode=design&t=Dh8lI3EJ37unxvoe-0)
-* [data model schema](https://github.com/hasadna/open-bus-stride-db/blob/main/DATA_MODEL.md)
-* [API documentation and examples (swagger)](https://open-bus-stride-api.hasadna.org.il/docs)
-* [the deployed website](https://open-bus-map-search.hasadna.org.il/dashboard)
 
 ### submitting pull requests
 Thanks for your willingness to invest time and help us improve!
@@ -47,6 +40,13 @@ Thanks for your willingness to invest time and help us improve!
 2. Please make sure that the project works on your computer
 3. Please tag one of the maintainers as reviewers
 we're here to help! feel free to join our [Slack channel](https://join.slack.com/t/hasadna/shared_invite/zt-21qipktl1-7yF4FYJVxAqXl0wE4DlMKQ) 
+
+## Links for developers
+* [figma file](https://www.figma.com/file/Plw8Uuu6U96CcX5tJyRMoW/Public-Transportation-visual-informaiton?node-id=0%3A1&t=EJCQpeg5zSbVXLUx-0)
+* [data model schema](https://github.com/hasadna/open-bus-stride-db/blob/main/DATA_MODEL.md)
+* [Slack channel](https://join.slack.com/t/hasadna/shared_invite/zt-21qipktl1-7yF4FYJVxAqXl0wE4DlMKQ)
+* [Swagger](https://open-bus-stride-api.hasadna.org.il/docs)
+* [Production](https://open-bus-map-search.hasadna.org.il/dashboard)
 
 ## Related Repositories 
 - the API client

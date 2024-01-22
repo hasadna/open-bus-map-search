@@ -1,6 +1,5 @@
 @import '../../resources/variables';
 
-
 .hideOnMobile {
   display: none;
 }
@@ -17,35 +16,61 @@
     display: none;
   }
 }
-  
+
 .sidebar-logo {
-  position: relative;
-  margin: 20px auto;
-  width: 119px;
-  font-size: 30px;
-  border-top: 6px solid gray;
-  border-bottom: 8px solid gray;
-  padding-bottom: 0;
-  line-height: 25px;
-  &::before {
-    height: 10px;
-    width: 10px;
-    border-radius: 5px;
-    position: absolute;
-    background: gray;
-    top: 28px;
-    right: 24px;
-    content: ' ' 
+  text-align: center;
+  color: black;
+  font-weight: 400;
+  line-height: 0.9em;
+  text-indent: -37px;
+  padding-right: 32px;
+
+  svg {
+    padding: 0 8px;
+    .st0 {
+      fill: none;
+      stroke: #000000;
+      stroke-width: 23;
+      stroke-miterlimit: 10;
+    }
+    path {
+      stroke-dasharray: 1720;
+      stroke-dashoffset: 1720;
+      animation: dash 0.8s linear forwards;
+    }
+    circle {
+      stroke-dasharray: 420;
+      stroke-dashoffset: 420;
+      animation: dash 1s linear forwards;
+      animation-delay: 0.5s;
+    }
   }
-  &::after {
-      height: 10px;
-      width: 10px;
-      border-radius: 5px;
-      position: absolute;
-      background: gray;
-      top: 28px;
-      left: 17px;
-      content: ' ' 
+  @keyframes dash {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+}
+
+.sidebar-logo.dark {
+  color: white;
+  svg {
+    padding: 0 8px;
+    .st0 {
+      fill: none;
+      stroke: white;
+      stroke-width: 23;
+      stroke-miterlimit: 10;
+    }
+    path {
+      stroke-dasharray: 1720;
+      stroke-dashoffset: 1720;
+    }
+    circle {
+      fill: white;
+      stroke-dasharray: 420;
+      stroke-dashoffset: 420;
+    }
   }
 }
 
@@ -67,6 +92,6 @@
 
 .sidebar-divider {
   height: 1px;
-  background-color: #ccc; 
-  margin: 8px 0; 
+  background-color: #ccc;
+  margin: 8px 0;
 }

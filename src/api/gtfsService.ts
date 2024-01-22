@@ -3,6 +3,7 @@ import moment, { Moment } from 'moment'
 import { BusRoute, fromGtfsRoute } from 'src/model/busRoute'
 import { BusStop, fromGtfsStop } from 'src/model/busStop'
 import { API_CONFIG, MAX_HITS_COUNT } from 'src/api/apiConfig'
+// import { Route } from 'react-router'
 
 const GTFS_API = new GtfsApi(API_CONFIG)
 //const USER_CASES_API = new UserCasesApi(API_CONFIG)
@@ -12,16 +13,20 @@ const SEARCH_MARGIN_HOURS = 4
 export async function getRoutesAsync(
   fromTimestamp: moment.Moment,
   toTimestamp: moment.Moment,
-  operatorId: string,
-  lineNumber: string,
+  operatorId: string | undefined,
+  lineNumber: string | undefined,
+  signal?: AbortSignal | undefined,
 ): Promise<BusRoute[]> {
-  const gtfsRoutes = await GTFS_API.gtfsRoutesListGet({
-    routeShortName: lineNumber,
-    operatorRefs: operatorId,
-    dateFrom: fromTimestamp.startOf('day').toDate(),
-    dateTo: moment.min(toTimestamp.endOf('day'), moment()).toDate(),
-    limit: 100,
-  })
+  const gtfsRoutes = await GTFS_API.gtfsRoutesListGet(
+    {
+      routeShortName: lineNumber,
+      operatorRefs: operatorId,
+      dateFrom: fromTimestamp.startOf('day').toDate(),
+      dateTo: moment.min(toTimestamp.endOf('day'), moment()).toDate(),
+      limit: 100,
+    },
+    { signal },
+  )
   const routes = Object.values(
     gtfsRoutes
       .filter((route) => route.date.getDate() === toTimestamp.date())

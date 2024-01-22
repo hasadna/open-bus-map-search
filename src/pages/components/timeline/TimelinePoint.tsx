@@ -1,4 +1,3 @@
-import { TEXTS } from 'src/resources/texts'
 import styled from 'styled-components'
 import { Moment } from 'moment'
 
@@ -23,12 +22,12 @@ export const pointTypeToColor: Record<PointType, string> = {
   [PointType.TARGET]: TARGET_COLOR,
 }
 
-export const pointTypeToDescription: Record<PointType, string | null> = {
+export const pointTypeToDescription = {
   [PointType.BOUNDARY]: null,
-  [PointType.GTFS]: TEXTS.timestamp_gtfs,
-  [PointType.SIRI]: TEXTS.timestamp_siri,
-  [PointType.TARGET]: TEXTS.timestamp_target,
-}
+  [PointType.GTFS]: 'timestamp_gtfs',
+  [PointType.SIRI]: 'timestamp_siri',
+  [PointType.TARGET]: 'timestamp_target',
+} as const
 
 type PointProps = {
   top: number
@@ -58,7 +57,7 @@ type LabeledPointProps = {
 } & PointProps
 
 export const LabeledPoint = ({ timestamp, top, type }: LabeledPointProps) => {
-  const timeDisplay = timestamp.format(TEXTS.time_format)
+  const timeDisplay = timestamp.format('HH:mm:ss')
   return (
     <>
       <Point top={top} type={type} title={timeDisplay} />

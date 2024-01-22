@@ -15,29 +15,27 @@ jobs:
         with:
           node-version: 18
       - name: Run install
-        uses: borales/actions-yarn@v4
-        with:
-          cmd: install
-      - name: make sure package.lock does not exist
-        run: rm -f package-lock.json
+        run: npm ci
+      - name: make sure yarn.lock does not exist
+        run: rm -f yarn.json
       - name: Git Check Clean Tree
         uses: ArkadiK94/action-git-clean-tree@v1.0.3
         with:
           error-reason: 'removing package-lock.json file'
       - name: Install dependencies
-        run: yarn
+        run: npm i
       - name: Git Check Clean Tree
         uses: ArkadiK94/action-git-clean-tree@v1.0.3
         with:
-          error-reason: 'yarn'
+          error-reason: 'npm i'
       - name: Build
-        run: yarn build
+        run: npm run build
       - name: Build Storybook
-        run: yarn build-storybook -o dist/storybook
+        run: npm run build-storybook -o dist/storybook
       - name: Git Check Clean Tree
         uses: ArkadiK94/action-git-clean-tree@v1.0.3
         with:
-          error-reason: 'yarn build and yarn build-storybook'
+          error-reason: 'npm run build and npm run build-storybook'
   lint:
     runs-on: ubuntu-latest
     steps:
@@ -46,11 +44,9 @@ jobs:
         with:
           node-version: 18
       - name: Run install
-        uses: borales/actions-yarn@v4
-        with:
-          cmd: install
+        run: npm ci
       - name: Run lint
-        run: yarn lint
+        run: npm run lint
   circular:
     runs-on: ubuntu-latest
     steps:
@@ -59,11 +55,9 @@ jobs:
         with:
           node-version: 18
       - name: Run install
-        uses: borales/actions-yarn@v4
-        with:
-          cmd: install
+        run: npm ci
       - name: find circular dependencies
-        run: yarn madge --extensions js,ts --circular .
+        run: npx madge --extensions js,ts --circular .
   build:
     runs-on: ubuntu-latest
     steps:
@@ -99,18 +93,51 @@ jobs:
         with:
           node-version: 18
       - name: Run install
-        uses: borales/actions-yarn@v4
-        with:
-          cmd: install
-      - run: yarn playwright install
+        run: npm ci
+      - run: npx playwright install
       - name: Run test
-        run: yarn test
+        run: npm run test
       - name: upload playwright artifacts
         if: always()
         uses: actions/upload-artifact@v2
         with:
           name: playwright
           path: test-results
+      - name: upload report
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: playwright
+          path: playwright-report
+  publish-test-results:
+    runs-on: ubuntu-latest
+    needs: test
+    if: always()
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: playwright
+          path: test-results
+      - name: Publish test results
+        uses: shallwefootball/s3-upload-action@master
+        if: always()
+        id: s3-trace
+        continue-on-error: true
+        with:
+          aws_key_id: ${{ secrets.AWS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
+          aws_bucket: noam-gaash.co.il
+          source_dir: test-results
+          destination_dir: ${{ github.run_id }}/open-bus/${{ github.sha }}/test-results
+      - name: Set commit status as pending
+        uses: myrotvorets/set-commit-status-action@master
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          description: 'Test results: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.sha }}/test-results/index.html'
+          status: success
+          context: 'Test results'
+          targetUrl: 'https://s3.amazonaws.com/noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.sha }}/test-results/index.html'
   test-unit:
     timeout-minutes: 60
     runs-on: ubuntu-latest
@@ -120,11 +147,9 @@ jobs:
         with:
           node-version: 20
       - name: Run install
-        uses: borales/actions-yarn@v4
-        with:
-          cmd: install
+        run: npm ci
       - name: run the tests
-        run: yarn test:unit
+        run: npm run test:unit
   all-passed:
     runs-on: ubuntu-latest
     needs: [verify-clean-tree, lint, circular, test, test-unit]

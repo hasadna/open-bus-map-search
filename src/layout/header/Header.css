@@ -1,0 +1,18 @@
+.main-header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  background: #fff;
+}
+.main-header.dark {
+  background: #141414;
+}
+
+.theme-icon {
+  
+  width: 1rem;
+
+  &:hover {
+    transform: scale(1.1); 
+  }
+}

@@ -1,6 +1,6 @@
 import moment, { Moment } from 'moment-timezone'
 import { GapsList } from '../model/gaps'
-import axios from 'axios'
+import axios, { CancelTokenSource } from 'axios'
 import { BASE_PATH } from './apiConfig'
 
 type RawGapsList = {
@@ -28,6 +28,7 @@ export const getGapsAsync = async (
   toTimestamp: Moment,
   operatorId: string,
   lineRef: number,
+  token: CancelTokenSource['token'],
 ): Promise<GapsList> => {
   const fromDay = moment(fromTimestamp).startOf('day')
   const toDay = moment(toTimestamp).startOf('day')
@@ -42,6 +43,7 @@ export const getGapsAsync = async (
             operator_ref: operatorId,
             line_ref: lineRef,
           },
+          cancelToken: token,
         })
       ).data
     : EXAMPLE_DATA

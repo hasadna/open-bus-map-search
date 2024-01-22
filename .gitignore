@@ -2,11 +2,10 @@
 
 # dependencies
 /node_modules
-/.pnp
-.pnp.js
 
 # testing
 /coverage
+.nyc_output
 
 # production
 /dist
@@ -17,10 +16,9 @@
 .env.development.local
 .env.test.local
 .env.production.local
+.vscode
 
 npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
 
 .idea
 /test-results/
@@ -31,11 +29,4 @@ yarn-error.log*
 **/traces
 **/node_modules
 
-# yarn
-.pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/sdks
-!.yarn/versions
+storybook-static
