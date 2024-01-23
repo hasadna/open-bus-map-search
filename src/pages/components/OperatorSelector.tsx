@@ -17,7 +17,7 @@ const OperatorSelector = ({
   const { t } = useTranslation()
   const [operators, setOperators] = useState<Operator[]>([])
   useEffect(() => {
-    const majorOperatorsIds = ['3', '5', '15', '18', '25']
+    const majorOperatorsIds = ['3', '5', '15', '18', '25', '34']
     getRelevantOperators().then((resultObj) =>
       setOperators(
         onlyMajorOperators
