@@ -1,55 +1,55 @@
-import React, { FC, PropsWithChildren, createContext, useContext, useState, useEffect } from 'react';
-import { ThemeProvider as MuiThemeProvider, createTheme } from '@mui/material/styles';
-import { ConfigProvider, theme } from 'antd';
-import heIL from 'antd/es/locale/he_IL';
-import { useTranslation } from 'react-i18next';
-import { useLocalStorage } from 'src/locale/useLocalStorage';
+import React, { FC, PropsWithChildren, createContext, useContext, useState, useEffect } from 'react'
+import { ThemeProvider as MuiThemeProvider, createTheme } from '@mui/material/styles'
+import { ConfigProvider, theme } from 'antd'
+import heIL from 'antd/es/locale/he_IL'
+import { useTranslation } from 'react-i18next'
+import { useLocalStorage } from 'src/locale/useLocalStorage'
 
 export interface ThemeContextInterface {
-  toggleTheme: () => void;
-  isDarkTheme: boolean;
+  toggleTheme: () => void
+  isDarkTheme: boolean
 }
 
-const ThemeContext = createContext({} as ThemeContextInterface);
+const ThemeContext = createContext({} as ThemeContextInterface)
 
 const darkTheme = createTheme({
   palette: {
     mode: 'dark',
   },
-});
+})
 
 const lightTheme = createTheme({
   palette: {
     mode: 'light',
   },
-});
+})
 
-const { defaultAlgorithm, darkAlgorithm } = theme;
+const { defaultAlgorithm, darkAlgorithm } = theme
 
 export const ThemeProvider: FC<PropsWithChildren> = ({ children }) => {
-  const { setItem, getItem } = useLocalStorage('isDarkTheme');
+  const { setItem, getItem } = useLocalStorage('isDarkTheme')
   const [isDarkTheme, setIsDarkTheme] = useState(() => {
-    return getItem() === 'true' || false;
-  });
+    return getItem() === 'true' || false
+  })
 
-  const { i18n } = useTranslation();
+  const { i18n } = useTranslation()
   const toggleTheme = () => {
     setIsDarkTheme((prevTheme) => {
-      const newTheme = !prevTheme;
-      setItem(String(newTheme));
-      return newTheme;
-    });
-  };
+      const newTheme = !prevTheme
+      setItem(String(newTheme))
+      return newTheme
+    })
+  }
 
   const contextValue = {
     isDarkTheme,
     toggleTheme,
-  };
+  }
 
   useEffect(() => {
-    const storedTheme = getItem() === 'true';
-    setIsDarkTheme(storedTheme || false);
-  }, []);
+    const storedTheme = getItem() === 'true'
+    setIsDarkTheme(storedTheme || false)
+  }, [])
 
   return (
     <ConfigProvider
@@ -62,9 +62,9 @@ export const ThemeProvider: FC<PropsWithChildren> = ({ children }) => {
         <ThemeContext.Provider value={contextValue}>{children}</ThemeContext.Provider>
       </MuiThemeProvider>
     </ConfigProvider>
-  );
-};
+  )
+}
 
 export const useTheme = () => {
-  return useContext(ThemeContext);
-};
+  return useContext(ThemeContext)
+}
