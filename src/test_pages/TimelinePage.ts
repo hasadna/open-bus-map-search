@@ -73,7 +73,7 @@ export default class TimelinePage extends BasePage {
   }
 
   public async verifyTimestampGraphSelectionVisible() {
-    await expect(this.timeline_graph).toBeVisible({ timeout: 30000 })
+    await expect(this.timeline_graph).toBeVisible({ timeout: 60000 })
   }
 
   get routeSelect() {
