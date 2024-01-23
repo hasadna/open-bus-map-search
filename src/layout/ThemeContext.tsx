@@ -28,13 +28,11 @@ const { defaultAlgorithm, darkAlgorithm } = theme
 
 export const ThemeProvider: FC<PropsWithChildren> = ({ children }) => {
   const { setItem, getItem } = useLocalStorage('isDarkTheme')
-  const [isDarkTheme, setIsDarkTheme] = useState(() => {
-    return getItem() === 'true' || false
-  })
+  const [isDarkTheme, setIsDarkTheme] = useState(getItem())
 
   const { i18n } = useTranslation()
   const toggleTheme = () => {
-    setIsDarkTheme((prevTheme) => {
+    setIsDarkTheme((prevTheme: boolean) => {
       const newTheme = !prevTheme
       setItem(String(newTheme))
       return newTheme
