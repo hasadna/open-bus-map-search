@@ -13,17 +13,25 @@ test.describe('Timeline Page Tests', () => {
 
   test('Test route selection disappears after line number is closed', async () => {
     await timelinePage.validatePageUrl(/timeline/)
-    await timelinePage.selectOperatorFromDropbox('אגד')
+    await timelinePage.selectOperatorFromDropbox(
+      timelinePage.operatorsDropDown,
+      timelinePage.operatorsList,
+      'אגד',
+    )
     await timelinePage.fillLineNumber('1')
     await timelinePage.closeLineNumber()
-    await timelinePage.verifyRouteSelectionVisible(false)
+    await timelinePage.verifyRouteSelectionVisible(timelinePage.routeSelect, false, 3000)
   })
 
   test('Test route selection appears after line number selected', async () => {
     await timelinePage.validatePageUrl(/timeline/)
-    await timelinePage.selectOperatorFromDropbox('אגד')
+    await timelinePage.selectOperatorFromDropbox(
+      timelinePage.operatorsDropDown,
+      timelinePage.operatorsList,
+      'אגד',
+    )
     await timelinePage.fillLineNumber('1')
-    await timelinePage.verifyRouteSelectionVisible(true)
+    await timelinePage.verifyRouteSelectionVisible(timelinePage.routeSelect, true, 3000)
   })
 
   test('Test Verify no duplications in Operators list', async () => {
@@ -33,53 +41,83 @@ test.describe('Timeline Page Tests', () => {
 
   test('Test Verify no duplications in Route Selection list', async () => {
     await timelinePage.validatePageUrl(/timeline/)
-    await timelinePage.selectOperatorFromDropbox('אגד')
+    await timelinePage.selectOperatorFromDropbox(
+      timelinePage.operatorsDropDown,
+      timelinePage.operatorsList,
+      'אגד',
+    )
     await timelinePage.fillLineNumber('1')
-    await timelinePage.verifyRouteSelectionVisible(true)
+    await timelinePage.verifyRouteSelectionVisible(timelinePage.routeSelect, true, 3000)
     await timelinePage.verifyDuplications(timelinePage.routeSelect)
   })
 
   test('Test Verify the line Number is not found', async () => {
     await timelinePage.validatePageUrl(/timeline/)
-    await timelinePage.selectOperatorFromDropbox('אגד תעבורה')
+    await timelinePage.selectOperatorFromDropbox(
+      timelinePage.operatorsDropDown,
+      timelinePage.operatorsList,
+      'אגד תעבורה',
+    )
     await timelinePage.fillLineNumber('2')
     await timelinePage.verifyLineNumberNotFound()
   })
 
   test('Test Verify station selection drop box appears', async () => {
     await timelinePage.validatePageUrl(/timeline/)
-    await timelinePage.selectOperatorFromDropbox('אגד')
+    await timelinePage.selectOperatorFromDropbox(
+      timelinePage.operatorsDropDown,
+      timelinePage.operatorsList,
+      'אגד',
+    )
     await timelinePage.fillLineNumber('1')
-    await timelinePage.verifyRouteSelectionVisible(true)
-    await timelinePage.selectRouteSelection(
+    await timelinePage.verifyRouteSelectionVisible(timelinePage.routeSelect, true, 3000)
+    await timelinePage.selectOperatorFromDropbox(
+      timelinePage.routeSelect,
+      timelinePage.routeList,
       'בית ספר אלונים/הבנים-פרדס חנה כרכור ⟵ יד לבנים/דרך הבנים-פרדס חנה כרכור  ',
     )
-    await timelinePage.verifyStationSelectionVisible()
+    await timelinePage.verifyRouteSelectionVisible(timelinePage.stationSelect, true, 3000)
   })
 
   test('Test Verify no duplications in stations list', async () => {
     await timelinePage.validatePageUrl(/timeline/)
-    await timelinePage.selectOperatorFromDropbox('אגד')
+    await timelinePage.selectOperatorFromDropbox(
+      timelinePage.operatorsDropDown,
+      timelinePage.operatorsList,
+      'אגד',
+    )
     await timelinePage.fillLineNumber('1')
-    await timelinePage.verifyRouteSelectionVisible(true)
-    await timelinePage.selectRouteSelection(
+    await timelinePage.verifyRouteSelectionVisible(timelinePage.routeSelect, true, 3000)
+    await timelinePage.selectOperatorFromDropbox(
+      timelinePage.routeSelect,
+      timelinePage.routeList,
       'בית ספר אלונים/הבנים-פרדס חנה כרכור ⟵ יד לבנים/דרך הבנים-פרדס חנה כרכור  ',
     )
-    await timelinePage.verifyStationSelectionVisible()
+    await timelinePage.verifyRouteSelectionVisible(timelinePage.stationSelect, true, 3000)
     //have duplications in stations list.
     // await timelinePage.verifyDuplications(timelinePage.stationSelect)
   })
 
   test('Test choosing [Operator -> Line # -> Route -> Stop station] opens the timestamp graph', async () => {
     await timelinePage.validatePageUrl(/timeline/)
-    await timelinePage.selectOperatorFromDropbox('אגד')
+    await timelinePage.selectOperatorFromDropbox(
+      timelinePage.operatorsDropDown,
+      timelinePage.operatorsList,
+      'אגד',
+    )
     await timelinePage.fillLineNumber('1')
-    await timelinePage.verifyRouteSelectionVisible(true)
-    await timelinePage.selectRouteSelection(
+    await timelinePage.verifyRouteSelectionVisible(timelinePage.routeSelect, true, 3000)
+    await timelinePage.selectOperatorFromDropbox(
+      timelinePage.routeSelect,
+      timelinePage.routeList,
       'שדרות מנחם בגין/כביש 7-גדרה ⟵ שדרות מנחם בגין/כביש 7-גדרה  ',
     )
-    await timelinePage.verifyStationSelectionVisible()
-    await timelinePage.selectStopStationSelection('חיים הרצוג/שדרות מנחם בגין (גדרה)')
-    await timelinePage.verifyTimestampGraphSelectionVisible()
+    await timelinePage.verifyRouteSelectionVisible(timelinePage.stationSelect, true)
+    await timelinePage.selectOperatorFromDropbox(
+      timelinePage.stationSelect,
+      timelinePage.stationList,
+      'חיים הרצוג/שדרות מנחם בגין (גדרה)',
+    )
+    await timelinePage.verifyRouteSelectionVisible(timelinePage.timelineGraph, true, 100000)
   })
 })

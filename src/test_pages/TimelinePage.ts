@@ -31,8 +31,8 @@ export default class TimelinePage extends BasePage {
     this.timeline_graph = this.page.locator('h4')
   }
 
-  public async selectOperatorFromDropbox(operatorName: string) {
-    await this.selectFrom_UL_LI_Dropbox(this.operators_dropdown, this.operators_list, operatorName)
+  public async selectOperatorFromDropbox(locator: Locator, list: Locator, operatorName: string) {
+    await this.selectFrom_UL_LI_Dropbox(locator, list, operatorName)
   }
 
   public async fillLineNumber(lineNumber: string) {
@@ -43,10 +43,8 @@ export default class TimelinePage extends BasePage {
     await this.clickOnElement(this.close_line_number, 3000)
   }
 
-  public async verifyRouteSelectionVisible(isVisible: boolean) {
-    isVisible
-      ? await expect(this.route_select).toBeVisible({ timeout: 3000 })
-      : await expect(this.route_select).toBeHidden({ timeout: 2000 })
+  public async verifyRouteSelectionVisible(locator: Locator, isVisible: boolean, timeout?: number) {
+    await this.verifySelectionVisible(locator, isVisible, timeout)
   }
 
   public async verifyDuplications(selectBox: Locator) {
@@ -60,22 +58,6 @@ export default class TimelinePage extends BasePage {
     await expect(this.page.getByText('הקו לא נמצא')).toBeVisible()
   }
 
-  public async selectRouteSelection(routeName: string) {
-    await this.selectFrom_UL_LI_Dropbox(this.route_select, this.routes_list, routeName)
-  }
-
-  public async verifyStationSelectionVisible() {
-    await expect(this.station_select).toBeVisible({ timeout: 2000 })
-  }
-
-  public async selectStopStationSelection(stationName: string) {
-    await this.selectFrom_UL_LI_Dropbox(this.station_select, this.stop_station_list, stationName)
-  }
-
-  public async verifyTimestampGraphSelectionVisible() {
-    await expect(this.timeline_graph).toBeVisible({ timeout: 30000 })
-  }
-
   get routeSelect() {
     return this.route_select
   }
@@ -84,5 +66,21 @@ export default class TimelinePage extends BasePage {
   }
   get operatorsDropDown() {
     return this.operators_dropdown
+  }
+
+  get timelineGraph() {
+    return this.timeline_graph
+  }
+
+  get operatorsList() {
+    return this.operators_list
+  }
+
+  get routeList() {
+    return this.routes_list
+  }
+
+  get stationList() {
+    return this.stop_station_list
   }
 }
