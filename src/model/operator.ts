@@ -15,6 +15,7 @@ export const getRelevantOperators = async () => {
     'נתיב אקספרס',
     'סופרבוס',
     'קווים',
+    'תנופה',
   ]
   const agencyList = await getAgencyList()
   const agencyMap = new Map()
