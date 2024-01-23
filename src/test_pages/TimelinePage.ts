@@ -58,29 +58,29 @@ export default class TimelinePage extends BasePage {
     await expect(this.page.getByText('הקו לא נמצא')).toBeVisible()
   }
 
-  get routeSelect() {
+  public get routeSelect() {
     return this.route_select
   }
-  get stationSelect() {
+  public get stationSelect() {
     return this.station_select
   }
-  get operatorsDropDown() {
+  public get operatorsDropDown() {
     return this.operators_dropdown
   }
 
-  get timelineGraph() {
+  public get timelineGraph() {
     return this.timeline_graph
   }
 
-  get operatorsList() {
+  public get operatorsList() {
     return this.operators_list
   }
 
-  get routeList() {
+  public get routeList() {
     return this.routes_list
   }
 
-  get stationList() {
+  public get stationList() {
     return this.stop_station_list
   }
 }
