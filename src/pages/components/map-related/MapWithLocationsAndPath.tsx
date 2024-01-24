@@ -5,7 +5,7 @@ import { busIcon, busIconPath } from '../utils/BusIcon'
 import { BusToolTip } from './MapLayers/BusToolTip'
 import { VehicleLocation } from 'src/model/vehicleLocation'
 import { getColorByHashString } from 'src/pages/dashboard/AllLineschart/OperatorHbarChart/utils'
-import { useCallback, useState } from 'react'
+import { useCallback, useState, useEffect } from 'react'
 import { Button } from 'antd'
 import { ExpandAltOutlined } from '@ant-design/icons'
 import '../../Map.scss'
@@ -32,6 +32,9 @@ export function MapWithLocationsAndPath({
   const [isExpanded, setIsExpanded] = useState<boolean>(false)
   const toggleExpanded = useCallback(() => setIsExpanded((expanded) => !expanded), [])
   console.log('MapWithLocationsAndPath', `${isExpanded ? 'expanded' : 'collapsed'}`)
+  console.log('positions: ', positions )
+
+
   return (
     <div className={`map-info ${isExpanded ? 'expanded' : 'collapsed'}`}>
       <Button
@@ -41,7 +44,7 @@ export function MapWithLocationsAndPath({
         onClick={toggleExpanded}
         icon={<ExpandAltOutlined />}
       />
-      <MapContainer center={position.loc} zoom={8} scrollWheelZoom={true}>
+      <MapContainer center={position.loc} zoom={13} scrollWheelZoom={true}>
         <TileLayer
           attribution='&copy <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
@@ -61,7 +64,12 @@ export function MapWithLocationsAndPath({
           )
         })}
 
-        {paths.map((path) => (
+        {
+          positions.length && (
+            <Polyline pathOptions={{color: 'black'}} positions={positions.map(position => position.loc)} />
+          )
+        }
+        {/* {paths.map((path) => (
           <Polyline
             key={path.vehicleRef}
             pathOptions={{
@@ -69,7 +77,8 @@ export function MapWithLocationsAndPath({
             }}
             positions={path.locations.map(({ lat, lon }) => [lat, lon])}
           />
-        ))}
+        ))
+        } */}
       </MapContainer>
     </div>
   )
