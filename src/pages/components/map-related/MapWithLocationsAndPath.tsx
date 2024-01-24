@@ -1,4 +1,5 @@
 import { MapContainer, Marker, Polyline, Popup, TileLayer } from 'react-leaflet'
+import { Icon, IconOptions } from 'leaflet'
 import { useAgencyList } from 'src/api/agencyList'
 import { Point } from 'src/pages/realtimeMap'
 import { busIcon, busIconPath } from '../utils/BusIcon'
@@ -32,8 +33,11 @@ export function MapWithLocationsAndPath({
   const [isExpanded, setIsExpanded] = useState<boolean>(false)
   const toggleExpanded = useCallback(() => setIsExpanded((expanded) => !expanded), [])
   console.log('MapWithLocationsAndPath', `${isExpanded ? 'expanded' : 'collapsed'}`)
-  console.log('positions: ', positions )
 
+  const wayPointMarker = new Icon<IconOptions>({
+    iconUrl: '/marker-dot.png',
+    iconSize: [10, 10], 
+  })
 
   return (
     <div className={`map-info ${isExpanded ? 'expanded' : 'collapsed'}`}>
@@ -51,10 +55,10 @@ export function MapWithLocationsAndPath({
         />
 
         {positions.map((pos, i) => {
-          const icon = busIcon({
+          const icon = (i === 0 ) ? busIcon({
             operator_id: pos.operator?.toString() || 'default',
             name: agencyList.find((agency) => agency.operator_ref === pos.operator)?.agency_name,
-          })
+          }) : wayPointMarker;
           return (
             <Marker position={pos.loc} icon={icon} key={i}>
               <Popup minWidth={300} maxWidth={700}>
