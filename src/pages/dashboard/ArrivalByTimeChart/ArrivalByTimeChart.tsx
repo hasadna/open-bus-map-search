@@ -51,7 +51,7 @@ export default function ArrivalByTimeChart({
         .map((group) => (
           <div key={group[0].name}>
             <h3 className="title">{group[0].name}</h3>
-            <ResponsiveContainer debounce={1000} width="100%" height={300}>
+            <ResponsiveContainer debounce={1000} width="100%" minWidth={300} height={300}>
               <LineChart
                 data={group
                   .sort((a, b) => (a.gtfs_route_date < b.gtfs_route_date ? 1 : -1))
