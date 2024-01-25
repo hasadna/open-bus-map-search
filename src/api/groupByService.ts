@@ -124,6 +124,7 @@ export function useGroupBy({
                 (agency) => agency.agency_id === String(dataRecord.operator_ref),
               ),
             }))
+            //NOTE: the problem comes from agencyList number 22 is not found. need to add the agency or remove it from the DB
             .filter((dataRecord) => dataRecord.operator_ref !== undefined),
         )
       })
