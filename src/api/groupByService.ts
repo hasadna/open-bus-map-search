@@ -117,7 +117,6 @@ export function useGroupBy({
       .then((data) => {
         setData(
           data
-
             .map((dataRecord) => ({
               ...dataRecord,
               operator_ref: agencyList.find(
