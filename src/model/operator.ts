@@ -15,6 +15,7 @@ export const getRelevantOperators = async (onlyRelevantOperators: boolean) => {
       })),
     )
     allOperators.push({ name: 'הכל', id: '' })
+    return allOperators
   }
   const relevant = [
     'אגד',
