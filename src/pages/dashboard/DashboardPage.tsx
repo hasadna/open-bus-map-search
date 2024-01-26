@@ -66,7 +66,6 @@ const DashboardPage = () => {
             operatorId={operatorId}
             setOperatorId={setOperatorId}
             filter={FilterOperatorOptions.MAJOR}
-            onlyMajorOperators
           />
         </Grid>
       </Grid>
@@ -74,7 +73,6 @@ const DashboardPage = () => {
         <Grid xs={12} lg={6} className="widget">
           <AllLinesChart startDate={startDate} endDate={endDate} />
         </Grid>
-
         <Grid xs={12} lg={6} className="widget">
           <WorstLinesChart startDate={startDate} endDate={endDate} operatorId={operatorId} />
         </Grid>
