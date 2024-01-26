@@ -3,24 +3,32 @@ import { useTranslation } from 'react-i18next'
 import { Operator, getRelevantOperators } from 'src/model/operator'
 import { Autocomplete, TextField } from '@mui/material'
 
+enum FilterOperatorOptions {
+  ALL = 0,
+  RELEVANT = 1,
+  MAJOR = 2,
+}
+
 type OperatorSelectorProps = {
   operatorId?: string
   setOperatorId: (operatorId: string) => void
   onlyMajorOperators?: boolean
+  filter?: FilterOperatorOptions
 }
 
 const OperatorSelector = ({
   operatorId,
   setOperatorId,
   onlyMajorOperators = false,
+  filter = FilterOperatorOptions.MAJOR
 }: OperatorSelectorProps) => {
   const { t } = useTranslation()
   const [operators, setOperators] = useState<Operator[]>([])
   useEffect(() => {
     const majorOperatorsIds = ['3', '5', '15', '18', '25', '34']
-    getRelevantOperators().then((resultObj) =>
+    getRelevantOperators(filter != FilterOperatorOptions.ALL).then((resultObj) =>
       setOperators(
-        onlyMajorOperators
+        onlyMajorOperators && resultObj
           ? resultObj.filter((item) => majorOperatorsIds.includes(item.id))
           : resultObj,
       ),
