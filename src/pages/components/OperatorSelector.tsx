@@ -3,10 +3,10 @@ import { useTranslation } from 'react-i18next'
 import { Operator, getRelevantOperators } from 'src/model/operator'
 import { Autocomplete, TextField } from '@mui/material'
 
-enum FilterOperatorOptions {
-  ALL = 0,
-  RELEVANT = 1,
-  MAJOR = 2,
+export enum FilterOperatorOptions {
+  ALL,
+  RELEVANT,
+  MAJOR,
 }
 
 type OperatorSelectorProps = {
@@ -39,6 +39,7 @@ const OperatorSelector = ({
   const value = valueFinned ? valueFinned : null
 
   return (
+    
     <Autocomplete
       disablePortal
       style={{ width: '100%' }}
