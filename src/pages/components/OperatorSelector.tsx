@@ -12,15 +12,13 @@ export enum FilterOperatorOptions {
 type OperatorSelectorProps = {
   operatorId?: string
   setOperatorId: (operatorId: string) => void
-  onlyMajorOperators?: boolean
   filter?: FilterOperatorOptions
 }
 
 const OperatorSelector = ({
   operatorId,
   setOperatorId,
-  onlyMajorOperators = false,
-  filter = FilterOperatorOptions.MAJOR
+  filter = FilterOperatorOptions.RELEVANT
 }: OperatorSelectorProps) => {
   const { t } = useTranslation()
   const [operators, setOperators] = useState<Operator[]>([])
@@ -28,12 +26,12 @@ const OperatorSelector = ({
     const majorOperatorsIds = ['3', '5', '15', '18', '25', '34']
     getRelevantOperators(filter != FilterOperatorOptions.ALL).then((resultObj) =>
       setOperators(
-        onlyMajorOperators && resultObj
+        filter == FilterOperatorOptions.MAJOR && resultObj
           ? resultObj.filter((item) => majorOperatorsIds.includes(item.id))
           : resultObj,
       ),
     )
-  }, [onlyMajorOperators])
+  }, [filter == FilterOperatorOptions.MAJOR])
 
   const valueFinned = operators.find((operator) => operator.id === operatorId)
   const value = valueFinned ? valueFinned : null

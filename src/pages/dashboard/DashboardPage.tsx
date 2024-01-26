@@ -14,7 +14,7 @@ import { Alert, Typography } from 'antd'
 import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
 
 // Components
-import OperatorSelector from 'src/pages/components/OperatorSelector'
+import OperatorSelector, { FilterOperatorOptions } from 'src/pages/components/OperatorSelector'
 import DayTimeChart from './ArrivalByTimeChart/DayTimeChart'
 import AllLinesChart from './AllLineschart/AllLinesChart'
 import WorstLinesChart from './WorstLinesChart/WorstLinesChart'
@@ -65,6 +65,7 @@ const DashboardPage = () => {
           <OperatorSelector
             operatorId={operatorId}
             setOperatorId={setOperatorId}
+            filter={FilterOperatorOptions.MAJOR}
             onlyMajorOperators
           />
         </Grid>
