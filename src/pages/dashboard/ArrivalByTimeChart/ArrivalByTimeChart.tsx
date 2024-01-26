@@ -5,7 +5,6 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
 } from 'recharts'
 
@@ -40,10 +39,58 @@ export default function ArrivalByTimeChart({
   }[]
   operatorId: string
 }) {
-  data = useMemo(
-    () => data.filter((item) => !operatorId || item.id === operatorId),
-    [data, operatorId],
-  )
+  data = useMemo(() => {
+    let newData = data.filter((item) => !operatorId || item.id === operatorId)
+    if (newData[0]?.gtfs_route_hour) {
+      const lastId = parseInt(newData[newData.length - 1].id)
+      const fillerArray = []
+      for (let currentId = 0; currentId <= lastId; currentId++) {
+        const allPoints = newData
+          .filter((e) => parseInt(e.id) === currentId)
+          .sort((a, b) => (moment(a.gtfs_route_hour).isAfter(b.gtfs_route_hour) ? 1 : -1))
+        if (allPoints[0]) {
+          // Start gap
+          for (
+            let startHour = moment(allPoints[0].gtfs_route_hour).hour();
+            startHour > 0;
+            startHour--
+          ) {
+            fillerArray.push({
+              ...allPoints[0],
+              max: 0,
+              current: 0,
+              percent: 0,
+              gtfs_route_hour: moment(allPoints[0].gtfs_route_hour)
+                .subtract(startHour, 'hours')
+                .toISOString(),
+            })
+          }
+          // During gap
+          let lastHour = allPoints[0].gtfs_route_hour
+          allPoints.forEach((entry) => {
+            for (
+              let delta = moment(entry.gtfs_route_hour).diff(moment(lastHour), 'hours');
+              delta > 1;
+              delta--
+            ) {
+              const currentHour = moment(lastHour).add(1, 'hours').local().toISOString()
+              fillerArray.push({
+                ...entry,
+                percent: 0,
+                current: 0,
+                max: 0,
+                gtfs_route_hour: currentHour,
+              })
+              lastHour = currentHour
+            }
+            lastHour = entry.gtfs_route_hour
+          })
+        }
+      }
+      newData = newData.concat(fillerArray)
+    }
+    return newData
+  }, [data, operatorId])
   return (
     <div className="chart">
       {arrayGroup(data, (item) => item.id)
@@ -51,11 +98,12 @@ export default function ArrivalByTimeChart({
         .map((group) => (
           <div key={group[0].name}>
             <h3 className="title">{group[0].name}</h3>
-            <ResponsiveContainer debounce={1000} width="100%" height={300}>
+            <ResponsiveContainer width="100%" height={300}>
               <LineChart
-                data={group
-                  .sort((a, b) => (a.gtfs_route_date < b.gtfs_route_date ? 1 : -1))
-                  .sort((a, b) => (a.gtfs_route_hour > b.gtfs_route_hour ? 1 : -1))}
+                data={group.sort((a, b) => {
+                  const sortBy = group[0].gtfs_route_hour ? 'gtfs_route_hour' : 'gtfs_route_date'
+                  return moment(a[sortBy]).isAfter(moment(b[sortBy])) ? 1 : -1
+                })}
                 margin={{
                   top: 5,
                   right: 30,
@@ -63,8 +111,12 @@ export default function ArrivalByTimeChart({
                   bottom: 5,
                 }}>
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="gtfs_route_date" />
-                <YAxis />
+                <XAxis
+                  dataKey={group[0].gtfs_route_date ? 'gtfs_route_date' : 'gtfs_route_hour'}
+                  tickFormatter={(tick) => moment(tick).format('dddd')}
+                  interval={group[0].gtfs_route_hour ? 23 : 0}
+                />
+                <YAxis domain={[0, 100]} tickMargin={35} unit={'%'} />
                 <Tooltip
                   content={({ payload }) =>
                     payload?.[0] && (
@@ -77,9 +129,7 @@ export default function ArrivalByTimeChart({
                                 ? moment
                                     .utc(payload![0].payload.gtfs_route_date)
                                     .format('יום ddd, L')
-                                : moment(payload![0].payload.gtfs_route_hour).format(
-                                    'יום dddd, LT',
-                                  )}
+                                : moment(payload![0].payload.gtfs_route_hour).format('L, LT')}
                             </span>
                           </li>
                           <li>
@@ -88,16 +138,17 @@ export default function ArrivalByTimeChart({
                           </li>
                           <li>
                             <span className="label">תכנון: </span>
-                            <span className="value">{payload![0].payload.max}</span>
+                            <span className="value">{payload![0].payload.max || 'לא מתועד'}</span>
                           </li>
                           <li>
                             <span className="label">דיוק: </span>
                             <span className="value">
-                              {(
-                                (payload![0].payload.current / payload![0].payload.max) *
-                                100
-                              ).toFixed(2)}
-                              %
+                              {payload![0].payload.max
+                                ? (
+                                    (payload![0].payload.current / payload![0].payload.max) *
+                                    100
+                                  ).toFixed(2) + '%'
+                                : 'לא מתועד'}
                             </span>
                           </li>
                         </ul>
@@ -105,7 +156,6 @@ export default function ArrivalByTimeChart({
                     )
                   }
                 />
-                <Legend />
                 <Line type="monotone" dataKey="percent" stroke="#8884d8" activeDot={{ r: 8 }} />
               </LineChart>
             </ResponsiveContainer>
