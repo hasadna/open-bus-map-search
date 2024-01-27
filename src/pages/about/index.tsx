@@ -147,14 +147,22 @@ const Attributions = () => {
   return (
     <Widget>
       <h2>Attributions</h2>
-      Bus ifmage by{' '}
-      <a
-        href="https://www.freepik.com/free-vector/passengers-waiting-bus-city-queue-town-road-flat-vector-illustration-public-transport-urban-lifestyle_10173277.htm#query=public%20transportation&position=0&from_view=search&track=ais&uuid=70a79b38-20cb-42b8-9dde-b96a68088522"
-        target="_blank"
-        rel="noopener noreferrer nofollow">
-        pch.vector
-      </a>{' '}
-      on Freepik
+      <ul>
+        <li>
+          Thanks <a href="http://www.applitools.com/">Applitools</a> for the free open-source
+          license for their visual testing tool
+        </li>
+        <li>
+          Bus ifmage by{' '}
+          <a
+            href="https://www.freepik.com/free-vector/passengers-waiting-bus-city-queue-town-road-flat-vector-illustration-public-transport-urban-lifestyle_10173277.htm#query=public%20transportation&position=0&from_view=search&track=ais&uuid=70a79b38-20cb-42b8-9dde-b96a68088522"
+            target="_blank"
+            rel="noopener noreferrer nofollow">
+            pch.vector
+          </a>{' '}
+          on Freepik
+        </li>
+      </ul>
     </Widget>
   )
 }
