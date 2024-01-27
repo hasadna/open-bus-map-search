@@ -8,7 +8,7 @@ import prettier from 'eslint-plugin-prettier'
 
 export default [
   {
-    files: ['./src/**/*.{ts,tsx, scss}'],
+    files: ['./src/**/*.{ts,tsx}'],
     languageOptions: {
       parser: tsParser,
       parserOptions: {
@@ -33,7 +33,6 @@ export default [
       ...react.configs['recommended'].rules,
       ...sb.configs['recommended'].rules,
       ...prettier.configs['recommended'].rules,
-      '@typescript-eslint/no-non-null-assertion': 'off',
       '@typescript-eslint/no-unused-vars': 'error',
       'react/react-in-jsx-scope': 'off',
       'prettier/prettier': [
