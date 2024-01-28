@@ -104,17 +104,6 @@ const HIDDEN_PAGES = [
     icon: <InfoCircleOutlined />,
     element: <DataResearch />,
   },
-  {
-    label: 'release',
-    path: '/release',
-    icon: <InfoCircleOutlined />,
-    element: (
-      <>
-        <Spin />
-        <iframe src="https://noam-gaash.co.il/databus/" />
-      </>
-    ),
-  },
 ]
 
 const getRoutesList = () => {
