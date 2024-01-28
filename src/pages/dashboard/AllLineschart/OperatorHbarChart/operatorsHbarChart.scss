@@ -41,7 +41,7 @@
     }
 
     .overlay {
-      $tooltipBackground: rgb(black 0.5);
+      $tooltipBackground: rgb(0 0 0 / 50%);
       $tooltipShadow: 0 0 10px 0 $tooltipBackground;
 
       position: absolute;

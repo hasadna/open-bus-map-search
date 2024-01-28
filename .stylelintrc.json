@@ -1,5 +1,6 @@
 {
   "extends": "stylelint-config-standard-scss",
+  "ignoreFiles": ["node_modules/**/*", "dist/**/*", "storybook-static/**/*", "coverage/**/*"],
   "rules": {
     "selector-class-pattern": [
       "^[a-zA-Z0-9-]+$",
