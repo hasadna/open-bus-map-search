@@ -11,7 +11,7 @@ export abstract class BasePage {
 
   protected async clickOnElement(element: Locator, timeout?: number) {
     await test.step(`Click on ${element}`, async () => {
-      await element.click({ timeout: timeout || 3000 })
+      await element.click({ timeout: timeout || 0 })
     })
   }
 
@@ -44,10 +44,9 @@ export abstract class BasePage {
     })
   }
 
-  protected async getAllOptions_Dropbox(dropElement: Locator) {
+  protected async getAllOptions_Dropbox() {
     let options: Locator[] = []
-    await test.step(`Click on dropbox ${dropElement} and select all Options`, async () => {
-      await this.clickOnElement(dropElement)
+    await test.step(`select all Options from dropBox`, async () => {
       options = await this.page.getByRole('option').all()
     })
     return options

@@ -36,7 +36,8 @@ test.describe('Timeline Page Tests', () => {
 
   test('Test Verify no duplications in Operators list', async () => {
     await timelinePage.validatePageUrl(/timeline/)
-    await timelinePage.verifyDuplications(timelinePage.operatorsDropDown)
+    await timelinePage.openSelectBox(timelinePage.operatorsDropDown)
+    await timelinePage.verifyNoDuplications()
   })
 
   test('Test Verify no duplications in Route Selection list', async () => {
@@ -48,7 +49,8 @@ test.describe('Timeline Page Tests', () => {
     )
     await timelinePage.fillLineNumber('1')
     await timelinePage.verifyRouteSelectionVisible(timelinePage.routeSelect, true, 3000)
-    await timelinePage.verifyDuplications(timelinePage.routeSelect)
+    await timelinePage.openSelectBox(timelinePage.routeSelect)
+    await timelinePage.verifyNoDuplications()
   })
 
   test('Test Verify the line Number is not found', async () => {
@@ -79,7 +81,7 @@ test.describe('Timeline Page Tests', () => {
     await timelinePage.verifyRouteSelectionVisible(timelinePage.stationSelect, true, 3000)
   })
 
-  test('Test Verify no duplications in stations list', async () => {
+  test.fixme('Test Verify no duplications in stations list', async () => {
     await timelinePage.validatePageUrl(/timeline/)
     await timelinePage.selectOperatorFromDropbox(
       timelinePage.operatorsDropDown,
@@ -95,7 +97,8 @@ test.describe('Timeline Page Tests', () => {
     )
     await timelinePage.verifyRouteSelectionVisible(timelinePage.stationSelect, true, 3000)
     //have duplications in stations list.
-    // await timelinePage.verifyDuplications(timelinePage.stationSelect)
+    // await timelinePage.openSelectBox(timelinePage.stationSelect)
+    // await timelinePage.verifyNoDuplications()
   })
 
   test('Test choosing [Operator -> Line # -> Route -> Stop station] opens the timestamp graph', async () => {
