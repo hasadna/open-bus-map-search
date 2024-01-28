@@ -74,6 +74,8 @@
   "migdal_company": "\"A tower in the community\"",
   "and_smaller_donors": "And other small contributions from my friends and fans of the workshop.",
   "github_link": "Go to GitHub",
+  "dark_mode_tooltip": "Move to Dark mode",
+  "light_mode_tooltip": "Move to Light mode",
   "Change Language": "שנה שפה",
   "bug_title": "Title/Summary",
   "bug_title_message": "Please enter a title/summary!",
@@ -114,13 +116,13 @@
   "coords": "coords",
   "hide_document": "hide document",
   "show_document": "show document",
-  "aboutPage":{
+  "aboutPage": {
     "title": "About us",
     "privacyText": "<0>Google Analytics</0> service is embedded in the website to analyze the usage patterns and positioning of the website in search engines. This code reveals to the operators of the service information regarding the behavior of the users. <1>Learn more</1> about the privacy policy of the service.",
-    "licenseInfo":{
-      "text":  "All information displayed on the website is based on data published by government sources. Usage of the information is subject to the <0>CC BY-SA 4.0 license</0> of <1>Creative Commons</1>"
+    "licenseInfo": {
+      "text": "All information displayed on the website is based on data published by government sources. Usage of the information is subject to the <0>CC BY-SA 4.0 license</0> of <1>Creative Commons</1>"
     },
-    "contactLinksText":{
+    "contactLinksText": {
       "sadna": "Contact us",
       "slack": "Chat with us on Slack",
       "donations": "Servers cost money - help us continue to maintain and develop the project!"
@@ -132,6 +134,7 @@
   "order_by_hour": "by hour",
   "order_by_severity": "by severity",
   "choose_dates": "Dates",
+  "single_line_map_title": "Locations of selected lines",
   "reportBug": {
     "description": "This form is designed so that we can receive feedback and improve the application. Please be aware that the submitted information will be available to the public.",
     "error": "An error occurred while sending the report. Please try again later.",

@@ -1,5 +1,7 @@
 import { Navigate, Route, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
 import { lazy } from 'react'
+
+const HomePage = lazy(() => import('../pages/homepage/HomePage'))
 const DashboardPage = lazy(() => import('../pages/dashboard/DashboardPage'))
 const TimelinePage = lazy(() => import('../pages/historicTimeline'))
 const GapsPage = lazy(() => import('../pages/gaps'))
@@ -14,6 +16,7 @@ const DataResearch = lazy(() =>
 )
 
 import {
+  HomeOutlined,
   RadarChartOutlined,
   InfoCircleOutlined,
   DollarOutlined,
@@ -90,21 +93,16 @@ export const PAGES = [
 
 const HIDDEN_PAGES = [
   {
+    label: 'home_page',
+    path: '/home',
+    icon: <HomeOutlined />,
+    element: <HomePage />, //need to build - created only the file and routing
+  },
+  {
     label: 'data-research',
     path: '/data-research',
     icon: <InfoCircleOutlined />,
     element: <DataResearch />,
-  },
-  {
-    label: 'release',
-    path: '/release',
-    icon: <InfoCircleOutlined />,
-    element: (
-      <>
-        <Spin />
-        <iframe src="https://noam-gaash.co.il/databus/" />
-      </>
-    ),
   },
 ]
 
