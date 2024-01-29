@@ -1,4 +1,4 @@
-import  moment from 'moment'
+import moment from 'moment'
 import { useContext, useEffect, useMemo, useState } from 'react'
 import { getRoutesAsync, getStopsForRouteAsync } from 'src/api/gtfsService'
 import useVehicleLocations from 'src/api/useVehicleLocations'
@@ -18,7 +18,7 @@ import { DateSelector } from '../components/DateSelector'
 import { CircularProgress, Tooltip } from '@mui/material'
 import { FilterPositionsByStartTimeSelector } from '../components/FilterPositionsByStartTimeSelector'
 import { PageContainer } from '../components/PageContainer'
-import { MapWithLocationsAndPath, Path } from '../components/map-related/MapWithLocationsAndPath'
+import { MapWithLocationsAndPath } from '../components/map-related/MapWithLocationsAndPath'
 import Title from 'antd/es/typography/Title'
 
 const SingleLineMapPage = () => {
@@ -36,16 +36,12 @@ const SingleLineMapPage = () => {
     getRoutesAsync(moment(timestamp), moment(timestamp), operatorId, lineNumber, signal).then(
       (routes) => {
         setSearch((current) =>
-        search.lineNumber === lineNumber ? { ...current, routes: routes } : current,
+          search.lineNumber === lineNumber ? { ...current, routes: routes } : current,
         )
-      }
+      },
     )
     return () => controller.abort()
-  
-
   }, [operatorId, lineNumber, timestamp])
-
-  
 
   const selectedRoute = useMemo(
     () => routes?.find((route) => route.key === routeKey),
@@ -87,27 +83,30 @@ const SingleLineMapPage = () => {
 
   const [filteredPositions, setFilteredPositions] = useState<Point[]>([])
   const [startTime, setStartTime] = useState<string>('00:00:00')
-  const [plannedRouteStops, setPlannedRouteStops] = useState<BusStop[]|undefined>([])
+  const [plannedRouteStops, setPlannedRouteStops] = useState<BusStop[] | undefined>([])
 
   useEffect(() => {
     if (startTime !== '00:00:00' && positions.length > 0) {
       setFilteredPositions(
-        positions.filter((position) =>
-          new Date(position.point?.siri_ride__scheduled_start_time ?? 0).toLocaleTimeString() ===
-          startTime,
+        positions.filter(
+          (position) =>
+            new Date(position.point?.siri_ride__scheduled_start_time ?? 0).toLocaleTimeString() ===
+            startTime,
         ),
       )
     }
     if (startTime !== '00:00:00' && selectedRouteIds && selectedRouteIds.length > 0) {
-      const [hours, minutes] = startTime.split(':');
-      const startTimeTimestamp = +new Date(positions[0].point?.siri_ride__scheduled_start_time ?? 0).setHours(+hours, +minutes, 0, 0);
+      const [hours, minutes] = startTime.split(':')
+      const startTimeTimestamp = +new Date(
+        positions[0].point?.siri_ride__scheduled_start_time ?? 0,
+      ).setHours(+hours, +minutes, 0, 0)
       handlePlannedRouteStops(selectedRouteIds, startTimeTimestamp)
     }
   }, [startTime])
 
   // this function fetch & set state of planned route stops by selected route ids & start time
   const handlePlannedRouteStops = async (routeIds: number[], startTimeTs: number) => {
-    const stops = await getStopsForRouteAsync(routeIds, moment(startTimeTs));
+    const stops = await getStopsForRouteAsync(routeIds, moment(startTimeTs))
     setPlannedRouteStops(stops)
   }
 
@@ -160,29 +159,33 @@ const SingleLineMapPage = () => {
             ))}
         </Grid>
         {/* choose route */}
-        {positions &&     <>
-      <Grid xs={3} className="hideOnMobile">
-        <Label text={t('choose_start_time')} />
-      </Grid>
-      <Grid xs={1}>
-        {locationsIsLoading && (
-          <Tooltip title={t('loading_times_tooltip_content')}>
-            <CircularProgress />
-          </Tooltip>
+        {positions && (
+          <>
+            <Grid xs={3} className="hideOnMobile">
+              <Label text={t('choose_start_time')} />
+            </Grid>
+            <Grid xs={1}>
+              {locationsIsLoading && (
+                <Tooltip title={t('loading_times_tooltip_content')}>
+                  <CircularProgress />
+                </Tooltip>
+              )}
+            </Grid>
+            {/* choose start time */}
+            <Grid sm={5} xs={12}>
+              <FilterPositionsByStartTimeSelector
+                options={options}
+                startTime={startTime}
+                setStartTime={setStartTime}
+              />
+            </Grid>
+          </>
         )}
       </Grid>
-      {/* choose start time */}
-      <Grid sm={5} xs={12}>
-        <FilterPositionsByStartTimeSelector
-          options={options}
-          startTime={startTime}
-          setStartTime={setStartTime}
-        />
-      </Grid>
-    </>
-      }
-      </Grid>
-      <MapWithLocationsAndPath positions={filteredPositions} plannedRouteStops={plannedRouteStops} />
+      <MapWithLocationsAndPath
+        positions={filteredPositions}
+        plannedRouteStops={plannedRouteStops}
+      />
     </PageContainer>
   )
 }
