@@ -90,6 +90,7 @@ const SingleLineMapPage = () => {
   const [plannedRouteStops, setPlannedRouteStops] = useState<BusStop[]|undefined>([])
 
   useEffect(() => {
+    if (startTime !== '00:00:00' && positions.length)
     setFilteredPositions(
       positions.filter(
         (position) =>
@@ -97,7 +98,19 @@ const SingleLineMapPage = () => {
           startTime,
       ),
     )
+    if (startTime !== '00:00:00' && selectedRouteIds && selectedRouteIds.length > 0) {
+      const [hours, minutes] = startTime.split(':');
+      const startTimeTimestamp = +new Date(positions[0].point?.siri_ride__scheduled_start_time ?? 0).setHours(+hours, +minutes, 0, 0);
+      handlePlannedRouteStops(selectedRouteIds, startTimeTimestamp)
+    }
   }, [startTime])
+
+  // this function fetch & set state of planned route stops by selected route ids & start time
+  const handlePlannedRouteStops = async (routeIds: number[], startTimeTs: number) => {
+    const stops = await getStopsForRouteAsync(routeIds, moment(startTimeTs));
+    console.log('stops: ', stops)
+    setPlannedRouteStops(stops)
+  }
 
   return (
     <PageContainer className="map-container">
