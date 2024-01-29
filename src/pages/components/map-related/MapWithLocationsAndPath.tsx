@@ -5,8 +5,7 @@ import { Point } from 'src/pages/realtimeMap'
 import { busIcon, busIconPath } from '../utils/BusIcon'
 import { BusToolTip } from './MapLayers/BusToolTip'
 import { VehicleLocation } from 'src/model/vehicleLocation'
-import { getColorByHashString } from 'src/pages/dashboard/AllLineschart/OperatorHbarChart/utils'
-import { useCallback, useState, useEffect } from 'react'
+import { useCallback, useState } from 'react'
 import { Button } from 'antd'
 import { ExpandAltOutlined } from '@ant-design/icons'
 import '../../Map.scss'
@@ -22,13 +21,7 @@ export interface Path {
   vehicleRef: number
 }
 
-export function MapWithLocationsAndPath({
-  positions,
-  paths,
-}: {
-  positions: Point[]
-  paths: Path[]
-}) {
+export function MapWithLocationsAndPath({ positions }: { positions: Point[] }) {
   const agencyList = useAgencyList()
   const [isExpanded, setIsExpanded] = useState<boolean>(false)
   const toggleExpanded = useCallback(() => setIsExpanded((expanded) => !expanded), [])
@@ -36,7 +29,7 @@ export function MapWithLocationsAndPath({
 
   const wayPointMarker = new Icon<IconOptions>({
     iconUrl: '/marker-dot.png',
-    iconSize: [10, 10], 
+    iconSize: [10, 10],
   })
 
   return (
@@ -55,10 +48,14 @@ export function MapWithLocationsAndPath({
         />
 
         {positions.map((pos, i) => {
-          const icon = (i === 0 ) ? busIcon({
-            operator_id: pos.operator?.toString() || 'default',
-            name: agencyList.find((agency) => agency.operator_ref === pos.operator)?.agency_name,
-          }) : wayPointMarker;
+          const icon =
+            i === 0
+              ? busIcon({
+                  operator_id: pos.operator?.toString() || 'default',
+                  name: agencyList.find((agency) => agency.operator_ref === pos.operator)
+                    ?.agency_name,
+                })
+              : wayPointMarker
           return (
             <Marker position={pos.loc} icon={icon} key={i}>
               <Popup minWidth={300} maxWidth={700}>
@@ -68,21 +65,12 @@ export function MapWithLocationsAndPath({
           )
         })}
 
-        {
-          positions.length && (
-            <Polyline pathOptions={{color: 'black'}} positions={positions.map(position => position.loc)} />
-          )
-        }
-        {/* {paths.map((path) => (
+        {positions.length && (
           <Polyline
-            key={path.vehicleRef}
-            pathOptions={{
-              color: getColorByHashString(path.vehicleRef.toString()),
-            }}
-            positions={path.locations.map(({ lat, lon }) => [lat, lon])}
+            pathOptions={{ color: 'black' }}
+            positions={positions.map((position) => position.loc)}
           />
-        ))
-        } */}
+        )}
       </MapContainer>
     </div>
   )
