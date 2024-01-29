@@ -8,13 +8,10 @@ export type Operator = {
 export const getRelevantOperators = async (onlyRelevantOperators: boolean) => {
   const agencyList = await getAgencyList()
   if (!onlyRelevantOperators) {
-    const allOperators = Array.from(
-      agencyList.map((agency) => ({
-        name: agency.agency_name,
-        id: agency.operator_ref.toString(),
-      })),
-    )
-    allOperators.push({ name: 'הכל', id: '' })
+    const allOperators = agencyList.map((agency) => ({
+      name: agency.agency_name,
+      id: agency.operator_ref.toString(),
+    }))
     return allOperators
   }
   const relevant = [

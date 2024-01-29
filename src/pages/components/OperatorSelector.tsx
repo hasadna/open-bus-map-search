@@ -18,26 +18,31 @@ type OperatorSelectorProps = {
 const OperatorSelector = ({
   operatorId,
   setOperatorId,
-  filter = FilterOperatorOptions.RELEVANT
+  filter = FilterOperatorOptions.RELEVANT,
 }: OperatorSelectorProps) => {
   const { t } = useTranslation()
   const [operators, setOperators] = useState<Operator[]>([])
   useEffect(() => {
     const majorOperatorsIds = ['3', '5', '15', '18', '25', '34']
-    getRelevantOperators(filter != FilterOperatorOptions.ALL).then((resultObj) =>
-      setOperators(
-        filter == FilterOperatorOptions.MAJOR && resultObj
-          ? resultObj.filter((item) => majorOperatorsIds.includes(item.id))
-          : resultObj,
-      ),
-    )
+    getRelevantOperators(filter != FilterOperatorOptions.ALL)
+      .then((list) =>
+        filter === FilterOperatorOptions.ALL
+          ? [...list, { id: '', name: t('operatorSelectorOptions.all') }]
+          : list,
+      )
+      .then((resultObj) =>
+        setOperators(
+          filter == FilterOperatorOptions.MAJOR && resultObj
+            ? resultObj.filter((item) => majorOperatorsIds.includes(item.id))
+            : resultObj,
+        ),
+      )
   }, [filter == FilterOperatorOptions.MAJOR])
 
   const valueFinned = operators.find((operator) => operator.id === operatorId)
   const value = valueFinned ? valueFinned : null
 
   return (
-    
     <Autocomplete
       disablePortal
       style={{ width: '100%' }}
