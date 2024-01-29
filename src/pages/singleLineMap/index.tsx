@@ -1,6 +1,6 @@
-import moment from 'moment'
+import  moment from 'moment'
 import { useContext, useEffect, useMemo, useState } from 'react'
-import { getRoutesAsync } from 'src/api/gtfsService'
+import { getRoutesAsync, getStopsForRouteAsync } from 'src/api/gtfsService'
 import useVehicleLocations from 'src/api/useVehicleLocations'
 import { Label } from 'src/pages/components/Label'
 import LineNumberSelector from 'src/pages/components/LineSelector'
@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next'
 import { SearchContext } from '../../model/pageState'
 import { NotFound } from '../components/NotFound'
 import { Point } from '../realtimeMap'
-
+import { BusStop } from 'src/model/busStop'
 import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
 import '../Map.scss'
 import { DateSelector } from '../components/DateSelector'
@@ -34,20 +34,24 @@ const SingleLineMapPage = () => {
       return
     }
     getRoutesAsync(moment(timestamp), moment(timestamp), operatorId, lineNumber, signal).then(
-      (routes) =>
+      (routes) => {
         setSearch((current) =>
-          search.lineNumber === lineNumber ? { ...current, routes: routes } : current,
-        ),
+        search.lineNumber === lineNumber ? { ...current, routes: routes } : current,
+        )
+      }
     )
     return () => controller.abort()
+  
+
   }, [operatorId, lineNumber, timestamp])
+
+  
 
   const selectedRoute = useMemo(
     () => routes?.find((route) => route.key === routeKey),
     [routes, routeKey],
   )
   const selectedRouteIds = selectedRoute?.routeIds
-
   const { locations, isLoading: locationsIsLoading } = useVehicleLocations({
     from: selectedRouteIds ? +new Date(timestamp).setHours(0, 0, 0, 0) : 0,
     to: selectedRouteIds ? +new Date(timestamp).setHours(23, 59, 59, 999) : 0,
@@ -68,26 +72,32 @@ const SingleLineMapPage = () => {
     return pos
   }, [locations])
 
-  const [filteredPositions, setFilteredPositions] = useState<Point[]>([])
+  const options = useMemo(() => {
+    const options = positions
+      .map((position) => position.point?.siri_ride__scheduled_start_time) // get all start times
+      .filter((time, i, arr) => arr.indexOf(time) === i) // unique
+      .map((time) => new Date(time ?? 0).toLocaleTimeString()) // convert to strings
+      .map((time) => ({
+        // convert to options
+        value: time,
+        label: time,
+      }))
+    return options
+  }, [positions])
 
-  const paths = useMemo(
-    () =>
-      filteredPositions.reduce((arr: Path[], loc) => {
-        const line = arr.find((line) => line.vehicleRef === loc.point!.siri_ride__vehicle_ref)
-        if (!line) {
-          arr.push({
-            locations: [loc.point!],
-            lineRef: loc.point!.siri_route__line_ref,
-            operator: loc.point!.siri_route__operator_ref,
-            vehicleRef: loc.point!.siri_ride__vehicle_ref,
-          })
-        } else {
-          line.locations.push(loc.point!)
-        }
-        return arr
-      }, []),
-    filteredPositions.flat(),
-  )
+  const [filteredPositions, setFilteredPositions] = useState<Point[]>([])
+  const [startTime, setStartTime] = useState<string>('00:00:00')
+  const [plannedRouteStops, setPlannedRouteStops] = useState<BusStop[]|undefined>([])
+
+  useEffect(() => {
+    setFilteredPositions(
+      positions.filter(
+        (position) =>
+          new Date(position.point?.siri_ride__scheduled_start_time ?? 0).toLocaleTimeString() ===
+          startTime,
+      ),
+    )
+  }, [startTime])
 
   return (
     <PageContainer className="map-container">
@@ -138,55 +148,7 @@ const SingleLineMapPage = () => {
             ))}
         </Grid>
         {/* choose route */}
-        {positions && (
-          <FilterPositionsByStartTime
-            positions={positions}
-            setFilteredPositions={setFilteredPositions}
-            locationsIsLoading={locationsIsLoading}
-          />
-        )}
-      </Grid>
-      <MapWithLocationsAndPath positions={filteredPositions} paths={paths} />
-    </PageContainer>
-  )
-}
-
-function FilterPositionsByStartTime({
-  positions,
-  setFilteredPositions,
-  locationsIsLoading,
-}: {
-  positions: Point[]
-  setFilteredPositions: (positions: Point[]) => void
-  locationsIsLoading: boolean
-}) {
-  const { t } = useTranslation()
-  const [startTime, setStartTime] = useState<string>('00:00:00')
-  const options = useMemo(() => {
-    const options = positions
-      .map((position) => position.point?.siri_ride__scheduled_start_time) // get all start times
-      .filter((time, i, arr) => arr.indexOf(time) === i) // unique
-      .map((time) => new Date(time ?? 0).toLocaleTimeString()) // convert to strings
-      .map((time) => ({
-        // convert to options
-        value: time,
-        label: time,
-      }))
-    return options
-  }, [positions])
-
-  useEffect(() => {
-    setFilteredPositions(
-      positions.filter(
-        (position) =>
-          new Date(position.point?.siri_ride__scheduled_start_time ?? 0).toLocaleTimeString() ===
-          startTime,
-      ),
-    )
-  }, [startTime])
-
-  return (
-    <>
+        {positions &&     <>
       <Grid xs={3} className="hideOnMobile">
         <Label text={t('choose_start_time')} />
       </Grid>
@@ -197,6 +159,7 @@ function FilterPositionsByStartTime({
           </Tooltip>
         )}
       </Grid>
+      {/* choose start time */}
       <Grid sm={5} xs={12}>
         <FilterPositionsByStartTimeSelector
           options={options}
@@ -205,6 +168,10 @@ function FilterPositionsByStartTime({
         />
       </Grid>
     </>
+      }
+      </Grid>
+      <MapWithLocationsAndPath positions={filteredPositions} />
+    </PageContainer>
   )
 }
 
