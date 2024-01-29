@@ -4,19 +4,10 @@
 @import './shared/shared.css';
 
 .main {
-  flex-direction: row;
-  font-family: Heebo;
+    flex-direction: row;
+    font-family: Heebo;
 }
 
-.page-title {
-  margin-top: 0;
-}
-
-iframe {
-  width: 100%;
-  height: 100%;
-  border: none;
-  position: absolute;
-  top: 0;
-  left: 0;
+.page-title{
+    margin-top: 0;
 }
