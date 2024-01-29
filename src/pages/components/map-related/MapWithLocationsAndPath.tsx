@@ -22,7 +22,13 @@ export interface Path {
   vehicleRef: number
 }
 
-export function  MapWithLocationsAndPath({ positions, plannedRouteStops }: { positions: Point[], plannedRouteStops: BusStop[]|undefined }) {
+export function MapWithLocationsAndPath({
+  positions,
+  plannedRouteStops,
+}: {
+  positions: Point[]
+  plannedRouteStops: BusStop[] | undefined
+}) {
   const agencyList = useAgencyList()
   const [isExpanded, setIsExpanded] = useState<boolean>(false)
   const toggleExpanded = useCallback(() => setIsExpanded((expanded) => !expanded), [])
@@ -34,7 +40,7 @@ export function  MapWithLocationsAndPath({ positions, plannedRouteStops }: { pos
   })
   const busStopMarker = new Icon<IconOptions>({
     iconUrl: '/marker-bus-stop.png',
-    iconSize: [10,15],
+    iconSize: [10, 15],
   })
 
   return (
@@ -52,50 +58,48 @@ export function  MapWithLocationsAndPath({ positions, plannedRouteStops }: { pos
           url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
         />
 
-        {
-          positions.map((pos, i) => {
-            const icon =
-              i === 0
-                ? busIcon({
-                    operator_id: pos.operator?.toString() || 'default',
-                    name: agencyList.find((agency) => agency.operator_ref === pos.operator)
-                      ?.agency_name,
-                  })
-                : wayPointMarker
-            return (
-              <Marker position={pos.loc} icon={icon} key={i}>
-                <Popup minWidth={300} maxWidth={700}>
-                  <BusToolTip position={pos} icon={busIconPath(pos.operator!)} />
-                </Popup>
-              </Marker>
-            )
-          })
-        }
-
-        {
-        plannedRouteStops?.length && (
-            <Polyline
-              pathOptions={{ color: 'black' }}
-              positions={plannedRouteStops.map((stop) => [stop.location.latitude, stop.location.longitude])}
-            />
-          )
-        }
-        {
-          plannedRouteStops?.map(stop => {
-            const {latitude, longitude} = stop.location;
-            return <Marker position={[latitude, longitude]} icon={busStopMarker}>
-
+        {positions.map((pos, i) => {
+          const icon =
+            i === 0
+              ? busIcon({
+                  operator_id: pos.operator?.toString() || 'default',
+                  name: agencyList.find((agency) => agency.operator_ref === pos.operator)
+                    ?.agency_name,
+                })
+              : wayPointMarker
+          return (
+            <Marker position={pos.loc} icon={icon} key={i}>
+              <Popup minWidth={300} maxWidth={700}>
+                <BusToolTip position={pos} icon={busIconPath(pos.operator!)} />
+              </Popup>
             </Marker>
-          })
-        }
-        {
-        positions.length && (
-            <Polyline
-              pathOptions={{ color: 'yellow' }}
-              positions={positions.map((position) => position.loc)}
-            />
           )
-        }
+        })}
+
+        {plannedRouteStops?.length && (
+          <Polyline
+            pathOptions={{ color: 'black' }}
+            positions={plannedRouteStops.map((stop) => [
+              stop.location.latitude,
+              stop.location.longitude,
+            ])}
+          />
+        )}
+        {plannedRouteStops?.map((stop) => {
+          const { latitude, longitude } = stop.location
+          return (
+            <Marker
+              key={'' + stop.location.latitude + stop.location.longitude}
+              position={[latitude, longitude]}
+              icon={busStopMarker}></Marker>
+          )
+        })}
+        {positions.length && (
+          <Polyline
+            pathOptions={{ color: 'yellow' }}
+            positions={positions.map((position) => position.loc)}
+          />
+        )}
       </MapContainer>
     </div>
   )
