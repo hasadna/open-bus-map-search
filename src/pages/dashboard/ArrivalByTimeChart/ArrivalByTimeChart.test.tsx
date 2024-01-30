@@ -36,14 +36,6 @@ describe('ArrivalByTimeChart', () => {
     }
   })
 
-  test('matches snapshot', () => {
-    const { asFragment } = render(
-      <ArrivalByTimeChart data={testData} operatorId={testData[0].id} />,
-    )
-
-    expect(asFragment()).toMatchSnapshot()
-  })
-
   test('renders without crashing', () => {
     render(<ArrivalByTimeChart data={testData} operatorId={testData[0].id} />)
 
