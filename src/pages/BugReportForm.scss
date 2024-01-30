@@ -6,9 +6,9 @@
   margin: 0 auto;
   padding: 30px;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
   
-  @media (max-width: 600px) {
+  @media (width <= 600px) {
     padding: 15px;
 
     h1.logo {
@@ -73,7 +73,7 @@
       }
 
       &:focus {
-        box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+        box-shadow: 0 0 0 2px rgb(24 144 255 / 20%);
       }
     }
   }

@@ -31,7 +31,7 @@
     "react-leaflet": "^4.0.1",
     "react-leaflet-cluster": "^2.1.0",
     "react-router-dom": "^6.6.1",
-    "recharts": "^2.4.3",
+    "recharts": "^2.10.4",
     "sass": "^1.58.3",
     "styled-components": "^5.3.5",
     "stylis-plugin-rtl": "^2.1.1",
@@ -56,8 +56,8 @@
     "test:e2e": "APPLITOOLS_BATCH_ID=`uuidgen` playwright test",
     "test:unit": "vitest",
     "test:unit:ci": "vitest run",
-    "lint": "eslint . --max-warnings 0",
-    "lint:fix": "eslint . --fix",
+    "lint": "eslint . --max-warnings 0 && stylelint '**/*.{css,scss}' --max-warnings 0",
+    "lint:fix": "eslint . --fix && stylelint '**/*.{css,scss}' --fix",
     "format": "prettier --write './**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
@@ -111,6 +111,8 @@
     "playwright-advanced-har": "^1.2.1",
     "prettier": "^2.7.1",
     "storybook": "^7.5.3",
+    "stylelint": "^16.2.0",
+    "stylelint-config-standard-scss": "^13.0.0",
     "vite-plugin-istanbul": "^5.0.0",
     "vitest": "^0.34.6"
   }
