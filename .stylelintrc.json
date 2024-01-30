@@ -1,0 +1,18 @@
+{
+  "extends": "stylelint-config-standard-scss",
+  "ignoreFiles": ["node_modules/**/*", "dist/**/*", "storybook-static/**/*", "coverage/**/*", "test-results/**/*"],
+  "rules": {
+    "selector-class-pattern": [
+      "^[a-zA-Z0-9-]+$",
+      {
+        "message": "Selector should be camalCase or kebab-case"
+      }
+    ],
+    "scss/dollar-variable-pattern": [
+      "^[a-zA-Z0-9-]+$",
+      {
+        "message": "Expected variable to be camalCase or kebab-case"
+      }
+    ]
+  }
+}
