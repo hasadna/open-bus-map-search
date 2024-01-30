@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { RenderResult, render, screen } from '@testing-library/react'
 import ArrivalByTimeChart from './ArrivalByTimeChart'
 import '@testing-library/jest-dom'
 import { ReactNode } from 'react'
@@ -21,6 +21,12 @@ describe('ArrivalByTimeChart', () => {
     testData = testBusData
   })
 
+  let renderedComponent: RenderResult
+
+  beforeEach(() => {
+    renderedComponent = render(<ArrivalByTimeChart data={testData} operatorId={testData[0].id} />)
+  })
+
   // Mock ResponsiveContainer to have a static size otherwise it doesn't render in the unit test
   vi.mock('recharts', () => {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -37,29 +43,22 @@ describe('ArrivalByTimeChart', () => {
   })
 
   test('renders without crashing', () => {
-    render(<ArrivalByTimeChart data={testData} operatorId={testData[0].id} />)
-
     expect(screen.getByText(testData[0].name)).toBeInTheDocument()
   })
 
   test('tooltip wrapper exists', () => {
-    render(<ArrivalByTimeChart data={testData} operatorId={testData[0].id} />)
-    expect(document.querySelector('.recharts-tooltip-wrapper')).not.toBeNull
+    expect(renderedComponent.container.querySelector('.recharts-tooltip-wrapper')).not.toBeNull
   })
 
   test('tooltips are not visible by default', () => {
-    render(<ArrivalByTimeChart data={testData} operatorId={testData[0].id} />)
-    expect(document.querySelector('.recharts-tooltip-wrapper')).not.toBeVisible
+    expect(renderedComponent.container.querySelector('.recharts-tooltip-wrapper')).not.toBeVisible
   })
 
   test('legend wrapper exists', () => {
-    render(<ArrivalByTimeChart data={testData} operatorId={testData[0].id} />)
-    expect(document.querySelector('.recharts-legend-wrapper')).not.toBeVisible
+    expect(renderedComponent.container.querySelector('.recharts-legend-wrapper')).not.toBeVisible
   })
 
   test('filters operators correctly', () => {
-    render(<ArrivalByTimeChart data={testData} operatorId={testData[0].id} />)
-
     expect(screen.queryByText('notegged')).not.toBeInTheDocument()
     expect(screen.queryByText('Unknown')).not.toBeInTheDocument()
   })
