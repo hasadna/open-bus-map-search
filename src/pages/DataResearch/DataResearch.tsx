@@ -47,7 +47,7 @@ function StackedResearchSection() {
     dateFrom: startDate,
     groupBy: groupByHour ? 'operator_ref,gtfs_route_hour' : 'operator_ref,gtfs_route_date',
   })
-  
+
   return (
     <Widget>
       <h1>בעיות etl/gps/משהו גלובאלי אחר</h1>
@@ -126,7 +126,11 @@ function StackedResearchInputs({
             customLabel={t('end')}
           />
         </Grid>
-        <OperatorSelector operatorId={operatorId} setOperatorId={setOperatorId} filter={FilterOperatorOptions.ALL}/>
+        <OperatorSelector
+          operatorId={operatorId}
+          setOperatorId={setOperatorId}
+          filter={FilterOperatorOptions.ALL}
+        />
       </Grid>
       <label>
         <input
@@ -165,28 +169,33 @@ const StackedResearchChart = ({
   agencyId?: string
 }) => {
   const filteredGraphData =
-    agencyId == '' ? graphData : graphData.filter((dataRecord) => dataRecord.operator_ref?.agency_id === agencyId)
+    agencyId == ''
+      ? graphData
+      : graphData.filter((dataRecord) => dataRecord.operator_ref?.agency_id === agencyId)
   const data = useMemo(
     () =>
       filteredGraphData
-        .reduce((acc, curr) => {
-          const val =
-            field === 'total_missed_rides'
-              ? curr.total_planned_rides - curr.total_actual_rides
-              : curr[field]
-          const date = curr.gtfs_route_date ?? curr.gtfs_route_hour
-          const entry = acc.find((item) => item.date === date)
-          if (entry) {
-            if (val) entry[curr.operator_ref?.agency_name || 'Unknown'] = val
-          } else {
-            const newEntry = {
-              date: date,
-              [curr.operator_ref?.agency_name || 'Unknown']: val,
+        .reduce(
+          (acc, curr) => {
+            const val =
+              field === 'total_missed_rides'
+                ? curr.total_planned_rides - curr.total_actual_rides
+                : curr[field]
+            const date = curr.gtfs_route_date ?? curr.gtfs_route_hour
+            const entry = acc.find((item) => item.date === date)
+            if (entry) {
+              if (val) entry[curr.operator_ref?.agency_name || 'Unknown'] = val
+            } else {
+              const newEntry = {
+                date: date,
+                [curr.operator_ref?.agency_name || 'Unknown']: val,
+              }
+              acc.push(newEntry)
             }
-            acc.push(newEntry)
-          }
-          return acc
-        }, [] as Record<string, string | number>[])
+            return acc
+          },
+          [] as Record<string, string | number>[],
+        )
         .sort((a, b) => {
           if (a.date > b.date) return 1
           if (a.date < b.date) return -1
