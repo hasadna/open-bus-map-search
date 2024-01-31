@@ -35,6 +35,7 @@ module.exports = [
     },
   },
   {
+    files: ['src/**/*.{ts,tsx}', 'tests/**/*.{ts,tsx}'],
     rules: {
       '@typescript-eslint/explicit-module-boundary-types': 'off',
       '@typescript-eslint/no-use-before-define': 'off',
@@ -61,7 +62,6 @@ module.exports = [
   {
     ignores: [
       'dist',
-      'node_modules',
       'coverage',
       'test-results',
       'playwright-report',
