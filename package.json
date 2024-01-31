@@ -57,7 +57,6 @@
     "test:unit:ci": "vitest run",
     "lint": "eslint . --max-warnings 0 && stylelint '**/*.{css,scss}' --max-warnings 0",
     "lint:fix": "eslint . --fix && stylelint '**/*.{css,scss}' --fix",
-    "format": "prettier --write './**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "nx exec -- storybook build",
     "_build": "tsc && vite build"
