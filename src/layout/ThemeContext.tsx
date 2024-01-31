@@ -1,4 +1,4 @@
-import React, { FC, PropsWithChildren, createContext, useContext, useState, useEffect } from 'react'
+import { FC, PropsWithChildren, createContext, useContext, useState } from 'react'
 import { ThemeProvider as MuiThemeProvider, createTheme } from '@mui/material/styles'
 import ScopedCssBaseline from '@mui/material/ScopedCssBaseline'
 import { ConfigProvider, theme } from 'antd'
@@ -28,14 +28,14 @@ const lightTheme = createTheme({
 const { defaultAlgorithm, darkAlgorithm } = theme
 
 export const ThemeProvider: FC<PropsWithChildren> = ({ children }) => {
-  const { setItem, getItem } = useLocalStorage('isDarkTheme')
-  const [isDarkTheme, setIsDarkTheme] = useState(getItem())
+  const { setItem, getItem } = useLocalStorage<boolean>('isDarkTheme')
+  const [isDarkTheme, setIsDarkTheme] = useState(getItem() ?? false)
 
   const { i18n } = useTranslation()
   const toggleTheme = () => {
     setIsDarkTheme((prevTheme: boolean) => {
       const newTheme = !prevTheme
-      setItem(String(newTheme))
+      setItem(newTheme)
       return newTheme
     })
   }
@@ -44,11 +44,6 @@ export const ThemeProvider: FC<PropsWithChildren> = ({ children }) => {
     isDarkTheme,
     toggleTheme,
   }
-
-  useEffect(() => {
-    const storedTheme = getItem() === 'true'
-    setIsDarkTheme(storedTheme || false)
-  }, [])
 
   return (
     <ConfigProvider

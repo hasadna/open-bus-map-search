@@ -1,5 +1,5 @@
-export function useLocalStorage(key: string) {
-  const setItem = (value: unknown) => {
+export function useLocalStorage<T>(key: string) {
+  const setItem = (value: T) => {
     try {
       localStorage.setItem(key, JSON.stringify(value))
     } catch (error) {
@@ -10,7 +10,7 @@ export function useLocalStorage(key: string) {
   const getItem = () => {
     try {
       const item = localStorage.getItem(key)
-      return item ? JSON.parse(item) : undefined
+      if (item) return JSON.parse(item) as T
     } catch (error) {
       console.log('No support for local storage')
     }
