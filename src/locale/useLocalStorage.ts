@@ -1,20 +1,20 @@
+import { useState } from "react"
+
 export function useLocalStorage<T>(key: string) {
-  const setItem = (value: T) => {
-    try {
-      localStorage.setItem(key, JSON.stringify(value))
-    } catch (error) {
-      console.log('No support for local storage')
-    }
-  }
+  try {
+    const [state, setState] = useState(localStorage.getItem(key) as T)
 
-  const getItem = () => {
-    try {
-      const item = localStorage.getItem(key)
-      if (item) return JSON.parse(item) as T
-    } catch (error) {
-      console.log('No support for local storage')
+    const setItem = (value: T | ((val: T) => T)) => {
+      const valueToStore = value instanceof Function ? value(state) : value
+      setState(valueToStore)
+      localStorage.setItem(key, valueToStore as unknown as string)
     }
-  }
 
-  return { setItem, getItem }
+    return [state, setItem] as const
+  } catch (error) {
+    console.log('No support for local storage')
+    return [undefined, () =>{
+      throw new Error('No support for local storage')
+    }] as const
+  }
 }

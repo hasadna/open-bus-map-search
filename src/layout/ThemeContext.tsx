@@ -8,7 +8,7 @@ import { useLocalStorage } from 'src/locale/useLocalStorage'
 
 export interface ThemeContextInterface {
   toggleTheme: () => void
-  isDarkTheme: boolean
+  isDarkTheme?: boolean
 }
 
 const ThemeContext = createContext({} as ThemeContextInterface)
@@ -28,16 +28,11 @@ const lightTheme = createTheme({
 const { defaultAlgorithm, darkAlgorithm } = theme
 
 export const ThemeProvider: FC<PropsWithChildren> = ({ children }) => {
-  const { setItem, getItem } = useLocalStorage<boolean>('isDarkTheme')
-  const [isDarkTheme, setIsDarkTheme] = useState(getItem() ?? false)
+  const [isDarkTheme, setIsDarkTheme] = useLocalStorage<boolean>('isDarkTheme')
 
   const { i18n } = useTranslation()
   const toggleTheme = () => {
-    setIsDarkTheme((prevTheme: boolean) => {
-      const newTheme = !prevTheme
-      setItem(newTheme)
-      return newTheme
-    })
+    setIsDarkTheme((prevTheme: boolean) => !prevTheme)
   }
 
   const contextValue = {
