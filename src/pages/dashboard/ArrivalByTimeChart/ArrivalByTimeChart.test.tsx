@@ -1,4 +1,4 @@
-import { RenderResult, render, screen } from '@testing-library/react'
+import { type RenderResult, render, screen } from '@testing-library/react'
 import ArrivalByTimeChart from './ArrivalByTimeChart'
 import '@testing-library/jest-dom'
 import type { ReactNode } from 'react'
