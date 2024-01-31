@@ -26,7 +26,8 @@ function getItem(
 const MainMenu = () => {
   const { t } = useTranslation()
   const items: MenuItem[] = PAGES.map((itm) => {
-    return getItem(<Link to={t(itm.path)}>{t(itm.label)}</Link>, itm.path, itm.icon)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return getItem(<Link to={t(itm.path as any)}>{t(itm.label as any)}</Link>, itm.path, itm.icon)
   })
 
   const location = useLocation()

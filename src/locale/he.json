@@ -74,6 +74,8 @@
   "and_smaller_donors": "ותרומות קטנות נוספות של ידידי ואוהדי הסדנא.",
   "gaps_patterns_page_title": "דפוסי נסיעות שלא יצאו",
   "github_link": "למעבר אל GitHub",
+  "dark_mode_tooltip": "עבור למצב חשוך",
+  "light_mode_tooltip": "עבור למצב בהיר",
   "Change Language": "Change Language",
   "bug_title": "כותרת/סיכום",
   "bug_title_message": "אנא הזן כותרת/סיכום!",
@@ -126,26 +128,30 @@
     "text2": "אם הבעיה נמשכת, אנא פנה אלינו בכתובת:",
     "button": "חזרה לדף הבית"
   },
-  "aboutPage":{
+  "aboutPage": {
     "title": "קצת עלינו",
     "privacyText": "באתר מוטמע שירות <0>Google Analytics</0>  לניתוח דפוסי השימוש ומיצוב האתר במנועי חיפוש. קוד זה חושף בפני מפעילי השירות מידע בנוגע להתנהגות המשתמשים. <1>קראו כאן</1>  על מדיניות הפרטיות של השירות.",
-    "licenseInfo":{
-      "text":  "כל המידע המוצג באתר מבוסס על נתונים המפורסמים במקורות המידע הממשלתיים. השימוש במידע כפוף לרישיון <0>{{licenseName}}</0> של <1>Creative Commons</1>.",
+    "licenseInfo": {
+      "text": "כל המידע המוצג באתר מבוסס על נתונים המפורסמים במקורות המידע הממשלתיים. השימוש במידע כפוף לרישיון <0>{{licenseName}}</0> של <1>Creative Commons</1>.",
       "licenseName": "רישיון CC BY-SA 4.0"
     },
-    "contactLinksText":{
+    "contactLinksText": {
       "sadna": "צרו איתנו קשר",
       "slack": " דברו איתנו על זה בסלאק",
       "donations": "שרתים עולים כסף - עזרו לנו להמשיך לתחזק ולפתח את הפרויקט!"
     }
   },
-
+  "operatorSelectorOptions":
+  {
+    "all": "הכל"
+  },
   "dashboard_page_graph_title_hour": "אחוזי יציאה מסך הנסיעות לפי שעה",
   "dashboard_page_graph_title_day": "אחוזי יציאה מסך הנסיעות לפי יום",
   "group_by_day_tooltip_content": "קיבוץ לפי יום",
   "order_by_hour": "לפי שעה",
   "order_by_severity": "לפי חומרה",
   "choose_dates": "תאריכים",
+  "single_line_map_title": "מיקומים של קו שנבחר",
   "reportBug": {
     "description": "טופס זה נועד על מנת שנוכל לקבל פידבק ולשפר את האפליקציה. לתשומת לבך - הטופס נשלח לGitHub, והמידע שיצויין בו יהיה ציבורי.",
     "error": "אירעה שגיאה בעת שליחת הדיווח. אנא נסה שוב מאוחר יותר.",

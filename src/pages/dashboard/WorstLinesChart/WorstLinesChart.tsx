@@ -45,7 +45,7 @@ export const WorstLinesChart: FC<WorstLinesChartProps> = ({ startDate, endDate, 
       ) : (
         <LinesHbarChart
           lines={convertToWorstLineChartCompatibleStruct(groupByLineData, operatorId)}
-          operators_whitelist={['אלקטרה אפיקים', 'דן', 'מטרופולין', 'קווים', 'אגד']}
+          operators_whitelist={['אלקטרה אפיקים', 'דן', 'מטרופולין', 'קווים', 'אגד', 'תנופה']}
         />
       )}
     </Widget>
