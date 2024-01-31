@@ -1,46 +1,72 @@
-import ts from '@typescript-eslint/eslint-plugin'
-import tsParser from '@typescript-eslint/parser'
-import functional from 'eslint-plugin-functional'
-import imprt from 'eslint-plugin-import' // 'import' is ambiguous & prettier has trouble
-import react from 'eslint-plugin-react'
-import sb from 'eslint-plugin-storybook'
-import prettier from 'eslint-plugin-prettier'
+const nxPlugin = require('@nx/eslint-plugin')
+const { FlatCompat } = require('@eslint/eslintrc')
+const eslintPluginReact = require('eslint-plugin-react')
+const eslintPluginReactHooks = require('eslint-plugin-react-hooks')
+const typescriptEslintEslintPlugin = require('@typescript-eslint/eslint-plugin')
+const typescriptEslintParser = require('@typescript-eslint/parser')
+const globals = require('globals')
+const js = require('@eslint/js')
 
-export default [
+const compat = new FlatCompat({
+  baseDirectory: __dirname,
+  recommendedConfig: js.configs.recommended,
+})
+
+module.exports = [
+  ...compat.extends('plugin:@typescript-eslint/recommended', 'plugin:react/recommended'),
   {
-    files: ['./src/**/*.{ts,tsx}'],
-    languageOptions: {
-      parser: tsParser,
-      parserOptions: {
-        ecmaFeatures: { modules: true },
-        ecmaVersion: 'latest',
-        project: './tsconfig.json',
-      },
-    },
     plugins: {
-      functional,
-      import: imprt,
-      '@typescript-eslint': ts,
-      ts,
-      react,
-      sb,
-      prettier,
+      react: eslintPluginReact,
+      'react-hooks': eslintPluginReactHooks,
+      '@typescript-eslint': typescriptEslintEslintPlugin,
+      '@nx': nxPlugin,
     },
+  },
+  {
+    settings: { 'import/resolver': { typescript: {} } },
+    languageOptions: {
+      parser: typescriptEslintParser,
+      parserOptions: {
+        ecmaFeatures: { jsx: true },
+        ecmaVersion: 12,
+        sourceType: 'module',
+      },
+      globals: { ...globals.browser, ...globals.es2021 },
+    },
+  },
+  {
     rules: {
-      ...ts.configs['eslint-recommended'].rules,
-      ...ts.configs['recommended'].rules,
-      ...ts.configs['recommended-requiring-type-checking'].rules,
-      ...react.configs['recommended'].rules,
-      ...sb.configs['recommended'].rules,
-      ...prettier.configs['recommended'].rules,
-      '@typescript-eslint/no-unused-vars': 'error',
-      'react/react-in-jsx-scope': 'off',
-      'prettier/prettier': [
-        'error',
-        {
-          endOfLine: 'auto',
-        },
-      ],
+      '@typescript-eslint/explicit-module-boundary-types': 'off',
+      '@typescript-eslint/no-use-before-define': 'off',
+      camelcase: 'off',
+      'consistent-return': 'off',
+      'no-param-reassign': 'off',
+      'no-use-before-define': 'off',
+      'react-hooks/exhaustive-deps': 'warn',
+      'react-hooks/rules-of-hooks': 'error',
+      'react/jsx-props-no-spreading': 'off',
+      'react/prop-types': 'off',
+      'react/require-default-props': 'off',
+      'react/jsx-filename-extension': [1, { extensions: ['.tsx'] }],
+      'import/prefer-default-export': 'off',
+      // 'import/extensions': [
+      //   'error',
+      //   'ignorePackages',
+      //   {
+      //     ts: 'never',
+      //     tsx: 'never',
+      //   },
+      // ],
     },
+  },
+  {
+    ignores: [
+      'dist',
+      'node_modules',
+      'coverage',
+      'test-results',
+      'playwright-report',
+      'storybook-static',
+    ],
   },
 ]

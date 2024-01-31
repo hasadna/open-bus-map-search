@@ -2,7 +2,7 @@
   "name": "open-bus-map-search",
   "version": "1.0.0",
   "private": true,
-  "type": "module",
+  "type": "commonjs",
   "dependencies": {
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
@@ -75,6 +75,10 @@
     ]
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^2.1.1",
+    "@eslint/js": "~8.48.0",
+    "@nx/eslint": "^17.3.0",
+    "@nx/eslint-plugin": "^17.3.0",
     "@playwright/test": "^1.37.1",
     "@storybook/addon-essentials": "^7.5.3",
     "@storybook/addon-interactions": "^7.5.3",
@@ -96,25 +100,18 @@
     "@types/react-dom": "^18.0.6",
     "@types/styled-components": "^5.1.26",
     "@types/underscore.string": "^0.0.38",
-    "@typescript-eslint/eslint-plugin": "^6.11.0",
-    "@typescript-eslint/parser": "^6.11.0",
-    "eslint": "^8.53.0",
-    "eslint-config-prettier": "^8.5.0",
-    "eslint-plugin-functional": "^6.0.0",
-    "eslint-plugin-import": "^2.29.1",
-    "eslint-plugin-prettier": "^4.2.1",
+    "@typescript-eslint/eslint-plugin": "^6.20.0",
+    "eslint": "^8.56.0",
     "eslint-plugin-react": "^7.33.2",
-    "eslint-plugin-storybook": "^0.6.15",
+    "eslint-plugin-react-hooks": "^4.6.0",
     "jsdom": "^22.1.0",
+    "nx": "^17.3.0",
     "openapi-typescript-codegen": "^0.23.0",
     "playwright-advanced-har": "^1.2.1",
     "prettier": "^2.7.1",
     "storybook": "^7.5.3",
-    "stylelint": "^16.2.0",
-    "stylelint-config-standard-scss": "^13.0.0",
     "vite-plugin-istanbul": "^5.0.0",
-    "vitest": "^0.34.6",
-    "nx": "17.3.0"
+    "vitest": "^0.34.6"
   },
   "nx": {
     "targets": {
