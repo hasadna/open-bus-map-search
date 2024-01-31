@@ -29,7 +29,6 @@ import {
 } from '@ant-design/icons'
 import { MainRoute } from './MainRoute'
 import { ErrorPage } from 'src/pages/ErrorPage'
-import { Spin } from 'antd'
 
 export const PAGES = [
   {

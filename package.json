@@ -110,6 +110,8 @@
     "playwright-advanced-har": "^1.2.1",
     "prettier": "^2.7.1",
     "storybook": "^7.5.3",
+    "stylelint": "^16.2.0",
+    "stylelint-config-standard-scss": "^13.0.0",
     "vite-plugin-istanbul": "^5.0.0",
     "vitest": "^0.34.6"
   },

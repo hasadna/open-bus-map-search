@@ -38,11 +38,10 @@ module.exports = [
     rules: {
       '@typescript-eslint/explicit-module-boundary-types': 'off',
       '@typescript-eslint/no-use-before-define': 'off',
-      camelcase: 'off',
+      'react/react-in-jsx-scope': 'off',
       'consistent-return': 'off',
       'no-param-reassign': 'off',
-      'no-use-before-define': 'off',
-      'react-hooks/exhaustive-deps': 'warn',
+      'react-hooks/exhaustive-deps': 'off',
       'react-hooks/rules-of-hooks': 'error',
       'react/jsx-props-no-spreading': 'off',
       'react/prop-types': 'off',
@@ -67,6 +66,8 @@ module.exports = [
       'test-results',
       'playwright-report',
       'storybook-static',
+      'eslint.config.js',
+      '.nx',
     ],
   },
 ]
