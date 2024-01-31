@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { useMemo, useState } from 'react'
 import { useGroupBy } from 'src/api/groupByService'
 import Widget from 'src/shared/Widget'
 import { useDate } from '../components/DateTimePicker'
@@ -18,8 +18,8 @@ import {
 } from 'recharts'
 import { PageContainer } from '../components/PageContainer'
 import { getColorName } from '../dashboard/AllLineschart/OperatorHbarChart/OperatorHbarChart'
-
 import './DataResearch.scss'
+import OperatorSelector, { FilterOperatorOptions } from '../components/OperatorSelector'
 
 const now = moment()
 const unique: (value: string, index: number, self: string[]) => boolean = (value, index, self) =>
@@ -40,13 +40,14 @@ export const DataResearch = () => {
 function StackedResearchSection() {
   const [startDate, setStartDate] = useDate(now.clone().subtract(7, 'days'))
   const [endDate, setEndDate] = useDate(now.clone().subtract(1, 'day'))
+  const [operatorId, setOperatorId] = useState('')
   const [groupByHour, setGroupByHour] = React.useState<boolean>(false)
   const [graphData, loadingGraph] = useGroupBy({
     dateTo: endDate,
     dateFrom: startDate,
     groupBy: groupByHour ? 'operator_ref,gtfs_route_hour' : 'operator_ref,gtfs_route_date',
   })
-
+  
   return (
     <Widget>
       <h1>בעיות etl/gps/משהו גלובאלי אחר</h1>
@@ -57,6 +58,8 @@ function StackedResearchSection() {
         setEndDate={setEndDate}
         groupByHour={groupByHour}
         setGroupByHour={setGroupByHour}
+        operatorId={operatorId}
+        setOperatorId={setOperatorId}
       />
       <StackedResearchChart
         graphData={graphData}
@@ -64,6 +67,7 @@ function StackedResearchSection() {
         field="total_actual_rides"
         title="מספר נסיעות בפועל"
         description="כמה נסיעות נרשמו כהתבצעו בכל יום/שעה בטווח הזמן שבחרתם. (נסיעות = siri rides)"
+        agencyId={operatorId}
       />
       <StackedResearchChart
         graphData={graphData}
@@ -71,6 +75,7 @@ function StackedResearchSection() {
         field="total_planned_rides"
         title="מספר נסיעות מתוכננות"
         description="כמה נסיעות היו אמורות להיות בכל יום/שעה בטווח הזמן שבחרתם. (נסיעות = נסיעות מתוכננות בgtfs)"
+        agencyId={operatorId}
       />
       <StackedResearchChart
         graphData={graphData}
@@ -78,6 +83,7 @@ function StackedResearchSection() {
         field="total_missed_rides"
         title="מספר נסיעות שלא התבצעו"
         description="כמה נסיעות היו אמורות להיות בכל יום/שעה בטווח הזמן שבחרתם אבל לא התבצעו. (הפרש בין שני הגרפים הקודמים)"
+        agencyId={operatorId}
       />
     </Widget>
   )
@@ -90,6 +96,8 @@ function StackedResearchInputs({
   setEndDate,
   groupByHour,
   setGroupByHour,
+  operatorId,
+  setOperatorId,
 }: {
   startDate: moment.Moment
   setStartDate: (date: moment.Moment) => void
@@ -97,6 +105,8 @@ function StackedResearchInputs({
   setEndDate: (date: moment.Moment) => void
   groupByHour: boolean
   setGroupByHour: (value: boolean) => void
+  operatorId: string
+  setOperatorId: (value: string) => void
 }) {
   const { t } = useTranslation()
   return (
@@ -116,6 +126,7 @@ function StackedResearchInputs({
             customLabel={t('end')}
           />
         </Grid>
+        <OperatorSelector operatorId={operatorId} setOperatorId={setOperatorId} filter={FilterOperatorOptions.ALL}/>
       </Grid>
       <label>
         <input
@@ -135,11 +146,13 @@ const StackedResearchChart = ({
   title,
   description,
   field = 'total_actual_rides',
+  agencyId = '',
 }: {
   graphData: {
     gtfs_route_date: string
     gtfs_route_hour: string
     operator_ref?: {
+      agency_id?: string
       agency_name?: string
     }
     total_actual_rides: number
@@ -149,10 +162,13 @@ const StackedResearchChart = ({
   title?: string
   description?: string
   field?: 'total_actual_rides' | 'total_planned_rides' | 'total_missed_rides'
+  agencyId?: string
 }) => {
+  const filteredGraphData =
+    agencyId == '' ? graphData : graphData.filter((dataRecord) => dataRecord.operator_ref?.agency_id === agencyId)
   const data = useMemo(
     () =>
-      graphData
+      filteredGraphData
         .reduce((acc, curr) => {
           const val =
             field === 'total_missed_rides'
@@ -176,10 +192,10 @@ const StackedResearchChart = ({
           if (a.date < b.date) return -1
           return 0
         }),
-    [graphData],
+    [filteredGraphData],
   )
 
-  const operators = graphData
+  const operators = filteredGraphData
     .map((operator) => operator.operator_ref?.agency_name || 'Unknown')
     .filter(unique)
 
