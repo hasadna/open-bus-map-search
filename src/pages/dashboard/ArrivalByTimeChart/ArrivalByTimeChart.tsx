@@ -74,9 +74,7 @@ export default function ArrivalByTimeChart({
                                 ? moment
                                     .utc(payload[0].payload.gtfs_route_date)
                                     .format('יום ddd, L')
-                                : moment(payload[0].payload.gtfs_route_hour).format(
-                                    'יום dddd, LT',
-                                  )}
+                                : moment(payload[0].payload.gtfs_route_hour).format('יום dddd, LT')}
                             </span>
                           </li>
                           <li>

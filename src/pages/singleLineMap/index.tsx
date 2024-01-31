@@ -33,16 +33,17 @@ const SingleLineMapPage = () => {
       setSearch((current) => ({ ...current, routes: undefined, routeKey: undefined }))
       return
     }
-    getRoutesAsync(moment(timestamp), moment(timestamp), operatorId, lineNumber, signal).then(
-      (routes) =>
+    getRoutesAsync(moment(timestamp), moment(timestamp), operatorId, lineNumber, signal)
+      .then((routes) =>
         setSearch((current) =>
           search.lineNumber === lineNumber ? { ...current, routes: routes } : current,
         ),
-    ).catch((err) => {
-      console.error(err)
-      setSearch((current) => ({ ...current, routes: undefined, routeKey: undefined }))
-      controller.abort()
-    })
+      )
+      .catch((err) => {
+        console.error(err)
+        setSearch((current) => ({ ...current, routes: undefined, routeKey: undefined }))
+        controller.abort()
+      })
     return () => controller.abort()
   }, [operatorId, lineNumber, timestamp])
 

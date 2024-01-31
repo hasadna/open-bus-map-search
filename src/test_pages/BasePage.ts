@@ -10,7 +10,8 @@ export abstract class BasePage {
   }
 
   protected async clickOnElement(element: Locator, timeout?: number) {
-    await test.step(`Click on ${element.toString()}`, async () => { // TODO: make sure that element.toString() doesn't make [object Object]
+    // TODO: make sure that element.toString() doesn't make [object Object]
+    await test.step(`Click on ${element.toString()}`, async () => {
       await element.click({ timeout: timeout || 0 })
     })
   }

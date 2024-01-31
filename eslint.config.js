@@ -7,6 +7,7 @@ const typescriptEslintEslintPlugin = require('@typescript-eslint/eslint-plugin')
 const typescriptEslintParser = require('@typescript-eslint/parser')
 const globals = require('globals')
 const js = require('@eslint/js')
+const eslintPluginPrettierRecommended = require('eslint-plugin-prettier/recommended');
 
 const compat = new FlatCompat({
   baseDirectory: __dirname,
@@ -15,6 +16,7 @@ const compat = new FlatCompat({
 
 module.exports = [
   ...compat.extends('plugin:@typescript-eslint/recommended', 'plugin:react/recommended'),
+  eslintPluginPrettierRecommended,
   {
     plugins: {
       react: eslintPluginReact,
@@ -22,6 +24,7 @@ module.exports = [
       '@typescript-eslint': typescriptEslintEslintPlugin,
       '@nx': nxPlugin,
       import: eslintPluginImport,
+
     },
   },
   {
@@ -58,6 +61,16 @@ module.exports = [
       '@typescript-eslint/no-base-to-string': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
       '@typescript-eslint/no-unsafe-argument': 'off',
+      'prettier/prettier': ['error', {
+        "semi": false,
+        "tabWidth": 2,
+        "printWidth": 100,
+        "singleQuote": true,
+        "trailingComma": "all",
+        "bracketSameLine": true,
+        "jsxSingleQuote": false,
+        "endOfLine": "auto",
+      }],
     },
   },
   {

@@ -59,7 +59,7 @@ export function BusToolTip({ position, icon }: BusToolTipProps) {
             <li>
               {t('sample_time')} :
               <span>
-                { /* eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion */ }
+                {/* eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion */}
                 {moment(position.point!.recorded_at_time as string, moment.ISO_8601)
                   .tz('Israel')
                   .format('DD/MM/yyyy בשעה HH:mm')}
