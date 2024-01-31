@@ -1,7 +1,7 @@
 import { RenderResult, render, screen } from '@testing-library/react'
 import ArrivalByTimeChart from './ArrivalByTimeChart'
 import '@testing-library/jest-dom'
-import { ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import testBusData from './testdata/data.json'
 
 describe('ArrivalByTimeChart', () => {
