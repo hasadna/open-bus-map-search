@@ -5,26 +5,12 @@ import type { ReactNode } from 'react'
 import testBusData from './testdata/data.json'
 
 describe('ArrivalByTimeChart', () => {
-  interface Data {
-    id: string
-    name: string
-    current: number
-    max: number
-    percent: number
-    gtfs_route_date: string
-    gtfs_route_hour: string
-  }
-
-  let testData: Data[]
-
-  beforeAll(() => {
-    testData = testBusData
-  })
-
   let renderedComponent: RenderResult
 
   beforeEach(() => {
-    renderedComponent = render(<ArrivalByTimeChart data={testData} operatorId={testData[0].id} />)
+    renderedComponent = render(
+      <ArrivalByTimeChart data={testBusData} operatorId={testBusData[0].id} />,
+    )
   })
 
   // Mock ResponsiveContainer to have a static size otherwise it doesn't render in the unit test
@@ -43,7 +29,7 @@ describe('ArrivalByTimeChart', () => {
   })
 
   test('renders without crashing', () => {
-    expect(screen.getByText(testData[0].name)).toBeInTheDocument()
+    expect(screen.getByText(testBusData[0].name)).toBeInTheDocument()
   })
 
   test('tooltip wrapper exists', () => {
