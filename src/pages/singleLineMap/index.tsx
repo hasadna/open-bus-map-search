@@ -38,7 +38,11 @@ const SingleLineMapPage = () => {
         setSearch((current) =>
           search.lineNumber === lineNumber ? { ...current, routes: routes } : current,
         ),
-    )
+    ).catch((err) => {
+      console.error(err)
+      setSearch((current) => ({ ...current, routes: undefined, routeKey: undefined }))
+      controller.abort()
+    })
     return () => controller.abort()
   }, [operatorId, lineNumber, timestamp])
 

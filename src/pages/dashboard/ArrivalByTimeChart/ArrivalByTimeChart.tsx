@@ -70,28 +70,28 @@ export default function ArrivalByTimeChart({
                           <li>
                             <span className="label">זמן: </span>
                             <span className="value">
-                              {payload![0].payload.gtfs_route_date
+                              {payload[0].payload.gtfs_route_date
                                 ? moment
-                                    .utc(payload![0].payload.gtfs_route_date)
+                                    .utc(payload[0].payload.gtfs_route_date)
                                     .format('יום ddd, L')
-                                : moment(payload![0].payload.gtfs_route_hour).format(
+                                : moment(payload[0].payload.gtfs_route_hour).format(
                                     'יום dddd, LT',
                                   )}
                             </span>
                           </li>
                           <li>
                             <span className="label">ביצוע: </span>
-                            <span className="value">{payload![0].payload.current}</span>
+                            <span className="value">{payload[0].payload.current}</span>
                           </li>
                           <li>
                             <span className="label">תכנון: </span>
-                            <span className="value">{payload![0].payload.max}</span>
+                            <span className="value">{payload[0].payload.max}</span>
                           </li>
                           <li>
                             <span className="label">דיוק: </span>
                             <span className="value">
                               {(
-                                (payload![0].payload.current / payload![0].payload.max) *
+                                (payload[0].payload.current / payload[0].payload.max) *
                                 100
                               ).toFixed(2)}
                               %

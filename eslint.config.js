@@ -2,6 +2,7 @@ const nxPlugin = require('@nx/eslint-plugin')
 const { FlatCompat } = require('@eslint/eslintrc')
 const eslintPluginReact = require('eslint-plugin-react')
 const eslintPluginReactHooks = require('eslint-plugin-react-hooks')
+const eslintPluginImport = require('eslint-plugin-import')
 const typescriptEslintEslintPlugin = require('@typescript-eslint/eslint-plugin')
 const typescriptEslintParser = require('@typescript-eslint/parser')
 const globals = require('globals')
@@ -20,6 +21,7 @@ module.exports = [
       'react-hooks': eslintPluginReactHooks,
       '@typescript-eslint': typescriptEslintEslintPlugin,
       '@nx': nxPlugin,
+      import: eslintPluginImport,
     },
   },
   {
@@ -30,33 +32,32 @@ module.exports = [
         ecmaFeatures: { jsx: true },
         ecmaVersion: 12,
         sourceType: 'module',
+        project: './tsconfig.json',
       },
       globals: { ...globals.browser, ...globals.es2021 },
     },
   },
   {
-    files: ['src/**/*.{ts,tsx}', 'tests/**/*.{ts,tsx}'],
     rules: {
-      '@typescript-eslint/explicit-module-boundary-types': 'off',
-      '@typescript-eslint/no-use-before-define': 'off',
-      'react/react-in-jsx-scope': 'off',
-      'consistent-return': 'off',
-      'no-param-reassign': 'off',
-      'react-hooks/exhaustive-deps': 'off',
+      ...typescriptEslintEslintPlugin.configs.recommended.rules,
+      ...eslintPluginReact.configs.recommended.rules,
       'react-hooks/rules-of-hooks': 'error',
-      'react/jsx-props-no-spreading': 'off',
-      'react/prop-types': 'off',
-      'react/require-default-props': 'off',
       'react/jsx-filename-extension': [1, { extensions: ['.tsx'] }],
-      'import/prefer-default-export': 'off',
-      // 'import/extensions': [
-      //   'error',
-      //   'ignorePackages',
-      //   {
-      //     ts: 'never',
-      //     tsx: 'never',
-      //   },
-      // ],
+      ...typescriptEslintEslintPlugin.configs['eslint-recommended'].rules,
+      ...typescriptEslintEslintPlugin.configs['recommended'].rules,
+      ...typescriptEslintEslintPlugin.configs['recommended-requiring-type-checking'].rules,
+      ...eslintPluginReact.configs['recommended'].rules,
+      'react/react-in-jsx-scope': 'off',
+      '@typescript-eslint/no-explicit-any': 'warn',
+      // ...eslintPluginImport.configs.recommended.rules,
+      '@typescript-eslint/no-unsafe-call': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+      '@typescript-eslint/no-unsafe-return': 'off',
+      '@typescript-eslint/no-floating-promises': 'off',
+      '@typescript-eslint/restrict-template-expressions': 'off',
+      '@typescript-eslint/no-base-to-string': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-argument': 'off',
     },
   },
   {
