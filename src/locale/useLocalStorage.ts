@@ -2,12 +2,12 @@ import { useState } from 'react'
 
 export function useLocalStorage<T>(key: string) {
   try {
-    const [state, setState] = useState(localStorage.getItem(key) as T)
+    const [state, setState] = useState(JSON.parse(localStorage.getItem(key)) as T)
 
     const setItem = (value: T | ((val: T) => T)) => {
       const valueToStore = value instanceof Function ? value(state) : value
       setState(valueToStore)
-      localStorage.setItem(key, valueToStore as unknown as string)
+      localStorage.setItem(key, JSON.stringify(valueToStore))
     }
 
     return [state, setItem] as const
