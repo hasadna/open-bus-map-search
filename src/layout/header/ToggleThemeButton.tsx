@@ -4,7 +4,7 @@ import { BulbFilled, BulbOutlined } from '@ant-design/icons'
 
 interface ToggleThemeButtonProps {
   toggleTheme: () => void
-  isDarkTheme: boolean
+  isDarkTheme?: boolean
 }
 
 const ToggleThemeButton: React.FC<ToggleThemeButtonProps> = ({ toggleTheme, isDarkTheme }) => {
