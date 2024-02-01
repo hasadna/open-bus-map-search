@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState } from 'react'
 
 export function useLocalStorage<T>(key: string) {
   try {
@@ -13,8 +13,11 @@ export function useLocalStorage<T>(key: string) {
     return [state, setItem] as const
   } catch (error) {
     console.log('No support for local storage')
-    return [undefined, () =>{
-      throw new Error('No support for local storage')
-    }] as const
+    return [
+      undefined,
+      () => {
+        throw new Error('No support for local storage')
+      },
+    ] as const
   }
 }
