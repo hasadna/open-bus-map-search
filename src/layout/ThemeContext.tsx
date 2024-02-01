@@ -1,16 +1,18 @@
-// ThemeContext.js
-import React, { FC, PropsWithChildren, createContext, useContext, useState } from 'react'
+import { FC, PropsWithChildren, createContext, useContext } from 'react'
 import { ThemeProvider as MuiThemeProvider, createTheme } from '@mui/material/styles'
 import ScopedCssBaseline from '@mui/material/ScopedCssBaseline'
 import { ConfigProvider, theme } from 'antd'
 import heIL from 'antd/es/locale/he_IL'
 import { useTranslation } from 'react-i18next'
+import { useLocalStorage } from 'src/locale/useLocalStorage'
 
 export interface ThemeContextInterface {
   toggleTheme: () => void
-  isDarkTheme: boolean
+  isDarkTheme?: boolean
 }
+
 const ThemeContext = createContext({} as ThemeContextInterface)
+
 const darkTheme = createTheme({
   palette: {
     mode: 'dark',
@@ -24,12 +26,13 @@ const lightTheme = createTheme({
 })
 
 const { defaultAlgorithm, darkAlgorithm } = theme
-export const ThemeProvider: FC<PropsWithChildren> = ({ children }) => {
-  const [isDarkTheme, setIsDarkTheme] = useState(false)
-  const { i18n } = useTranslation()
 
+export const ThemeProvider: FC<PropsWithChildren> = ({ children }) => {
+  const [isDarkTheme, setIsDarkTheme] = useLocalStorage<boolean>('isDarkTheme')
+
+  const { i18n } = useTranslation()
   const toggleTheme = () => {
-    setIsDarkTheme((prevTheme) => !prevTheme)
+    setIsDarkTheme((prevTheme: boolean) => !prevTheme)
   }
 
   const contextValue = {
