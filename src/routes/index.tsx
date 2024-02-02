@@ -1,5 +1,7 @@
 import { Navigate, Route, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
 import { lazy } from 'react'
+
+const HomePage = lazy(() => import('../pages/homepage/HomePage'))
 const DashboardPage = lazy(() => import('../pages/dashboard/DashboardPage'))
 const TimelinePage = lazy(() => import('../pages/historicTimeline'))
 const GapsPage = lazy(() => import('../pages/gaps'))
@@ -14,6 +16,7 @@ const DataResearch = lazy(() =>
 )
 
 import {
+  HomeOutlined,
   RadarChartOutlined,
   InfoCircleOutlined,
   DollarOutlined,
@@ -26,7 +29,6 @@ import {
 } from '@ant-design/icons'
 import { MainRoute } from './MainRoute'
 import { ErrorPage } from 'src/pages/ErrorPage'
-import { Spin } from 'antd'
 
 export const PAGES = [
   {
@@ -90,21 +92,16 @@ export const PAGES = [
 
 const HIDDEN_PAGES = [
   {
+    label: 'home_page',
+    path: '/home',
+    icon: <HomeOutlined />,
+    element: <HomePage />, //need to build - created only the file and routing
+  },
+  {
     label: 'data-research',
     path: '/data-research',
     icon: <InfoCircleOutlined />,
     element: <DataResearch />,
-  },
-  {
-    label: 'release',
-    path: '/release',
-    icon: <InfoCircleOutlined />,
-    element: (
-      <>
-        <Spin />
-        <iframe src="https://noam-gaash.co.il/databus/" />
-      </>
-    ),
   },
 ]
 
@@ -126,7 +123,9 @@ const getRoutesList = () => {
           const resp = await fetch(
             `https://open-bus-stride-api.hasadna.org.il/gtfs_routes/get?id=${gtfsRideGtfsRouteId}`,
           )
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const gtfs_route = await resp.json()
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-return
           return gtfs_route
         }}
       />

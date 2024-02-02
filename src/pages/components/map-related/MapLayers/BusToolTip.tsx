@@ -39,18 +39,18 @@ export function BusToolTip({ position, icon }: BusToolTipProps) {
         <>
           <header className="header">
             <h1 className="title">
-              {t('line')} :<span>{siriRide && siriRide!.gtfsRouteRouteShortName}</span>
+              {t('line')} :<span>{siriRide && siriRide.gtfsRouteRouteShortName}</span>
             </h1>
             <img src={icon} alt="bus icon" className="bus-icon" />
           </header>
           <ul>
             <li>
               {t('from')} :
-              <span>{siriRide && siriRide!.gtfsRouteRouteLongName?.split('<->')[0]}</span>
+              <span>{siriRide && siriRide.gtfsRouteRouteLongName?.split('<->')[0]}</span>
             </li>
             <li>
               {t('destination')} :
-              <span>{siriRide && siriRide!.gtfsRouteRouteLongName?.split('<->')[1]}</span>
+              <span>{siriRide && siriRide.gtfsRouteRouteLongName?.split('<->')[1]}</span>
             </li>
             <li>
               {t('velocity')} :<span>{`${position.point?.velocity}  ${t('kmh')}`}</span>
@@ -59,6 +59,7 @@ export function BusToolTip({ position, icon }: BusToolTipProps) {
             <li>
               {t('sample_time')} :
               <span>
+                {/* eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion */}
                 {moment(position.point!.recorded_at_time as string, moment.ISO_8601)
                   .tz('Israel')
                   .format('DD/MM/yyyy בשעה HH:mm')}

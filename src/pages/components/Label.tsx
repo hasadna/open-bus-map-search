@@ -1,5 +1,6 @@
 import styled from 'styled-components'
-
+import { Typography } from 'antd'
+const { Text } = Typography
 const StyledDiv = styled.div`
   display: inline-flex;
   width: 100%;
@@ -12,4 +13,8 @@ type LabelProps = {
   text: string
 }
 
-export const Label = ({ text }: LabelProps) => <StyledDiv>{text}</StyledDiv>
+export const Label = ({ text }: LabelProps) => (
+  <StyledDiv>
+    <Text>{text}</Text>
+  </StyledDiv>
+)
