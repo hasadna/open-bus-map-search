@@ -3,29 +3,41 @@ import { useTranslation } from 'react-i18next'
 import { Operator, getRelevantOperators } from 'src/model/operator'
 import { Autocomplete, TextField } from '@mui/material'
 
+export enum FilterOperatorOptions {
+  ALL,
+  RELEVANT,
+  MAJOR,
+}
+
 type OperatorSelectorProps = {
   operatorId?: string
   setOperatorId: (operatorId: string) => void
-  onlyMajorOperators?: boolean
+  filter?: FilterOperatorOptions
 }
 
 const OperatorSelector = ({
   operatorId,
   setOperatorId,
-  onlyMajorOperators = false,
+  filter = FilterOperatorOptions.RELEVANT,
 }: OperatorSelectorProps) => {
   const { t } = useTranslation()
   const [operators, setOperators] = useState<Operator[]>([])
   useEffect(() => {
-    const majorOperatorsIds = ['3', '5', '15', '18', '25']
-    getRelevantOperators().then((resultObj) =>
-      setOperators(
-        onlyMajorOperators
-          ? resultObj.filter((item) => majorOperatorsIds.includes(item.id))
-          : resultObj,
-      ),
-    )
-  }, [onlyMajorOperators])
+    const majorOperatorsIds = ['3', '5', '15', '18', '25', '34']
+    getRelevantOperators(filter != FilterOperatorOptions.ALL)
+      .then((list) =>
+        filter === FilterOperatorOptions.ALL
+          ? [...list, { id: '', name: t('operatorSelectorOptions.all') }]
+          : list,
+      )
+      .then((resultObj) =>
+        setOperators(
+          filter == FilterOperatorOptions.MAJOR && resultObj
+            ? resultObj.filter((item) => majorOperatorsIds.includes(item.id))
+            : resultObj,
+        ),
+      )
+  }, [filter == FilterOperatorOptions.MAJOR])
 
   const valueFinned = operators.find((operator) => operator.id === operatorId)
   const value = valueFinned ? valueFinned : null

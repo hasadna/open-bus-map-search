@@ -1,7 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-return */
 import * as fs from 'fs'
 import * as path from 'path'
 import * as crypto from 'crypto'
+import moment from 'moment'
 import { test as baseTest } from 'playwright-advanced-har'
 
 const istanbulCLIOutput = path.join(process.cwd(), '.nyc_output')
@@ -33,5 +34,11 @@ export const test = baseTest.extend({
     }
   },
 })
+
+export function getYesterday(): string {
+  const yesterday = moment().subtract(1, 'days')
+  const formattedDate = yesterday.format('DD/MM/YYYY')
+  return formattedDate
+}
 
 export const expect = test.expect

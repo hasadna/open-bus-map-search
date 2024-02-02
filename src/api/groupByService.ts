@@ -116,12 +116,15 @@ export function useGroupBy({
     groupbyAsync({ dateTo, dateFrom, groupBy })
       .then((data) => {
         setData(
-          data.map((dataRecord) => ({
-            ...dataRecord,
-            operator_ref: agencyList.find(
-              (agency) => agency.agency_id === String(dataRecord.operator_ref),
-            ),
-          })),
+          data
+            .map((dataRecord) => ({
+              ...dataRecord,
+              operator_ref: agencyList.find(
+                (agency) => agency.agency_id === String(dataRecord.operator_ref),
+              ),
+            }))
+            // should filter operator 22 (which is the Dankal TLV light train)
+            .filter((dataRecord) => dataRecord.operator_ref !== undefined),
         )
       })
       .catch((er) => setError(er))

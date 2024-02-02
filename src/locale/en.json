@@ -74,6 +74,8 @@
   "migdal_company": "\"A tower in the community\"",
   "and_smaller_donors": "And other small contributions from my friends and fans of the workshop.",
   "github_link": "Go to GitHub",
+  "dark_mode_tooltip": "Move to Dark mode",
+  "light_mode_tooltip": "Move to Light mode",
   "Change Language": "שנה שפה",
   "bug_title": "Title/Summary",
   "bug_title_message": "Please enter a title/summary!",
@@ -94,7 +96,6 @@
   "bug_contact_name_message": "Please enter your full name!",
   "bug_contact_email": "Email",
   "bug_contact_email_message": "Please enter your email!",
-  "bug_form_description": "This form is designed so that we can receive feedback and improve the application.",
   "bug_type": "Type of request",
   "bug_type_message": "Please enter the type of request",
   "bug_type_bug": "Bug",
@@ -115,10 +116,33 @@
   "coords": "coords",
   "hide_document": "hide document",
   "show_document": "show document",
+  "aboutPage": {
+    "title": "About us",
+    "privacyText": "<0>Google Analytics</0> service is embedded in the website to analyze the usage patterns and positioning of the website in search engines. This code reveals to the operators of the service information regarding the behavior of the users. <1>Learn more</1> about the privacy policy of the service.",
+    "licenseInfo": {
+      "text": "All information displayed on the website is based on data published by government sources. Usage of the information is subject to the <0>CC BY-SA 4.0 license</0> of <1>Creative Commons</1>"
+    },
+    "contactLinksText": {
+      "sadna": "Contact us",
+      "slack": "Chat with us on Slack",
+      "donations": "Servers cost money - help us continue to maintain and develop the project!"
+    }
+  },
   "dashboard_page_graph_title_hour": "Percentage of rides out, by hour",
   "dashboard_page_graph_title_day": "Percentage of rides out, by day",
   "group_by_day_tooltip_content": "Group by day",
   "order_by_hour": "by hour",
   "order_by_severity": "by severity",
-  "choose_dates": "Dates"
+  "choose_dates": "Dates",
+  "single_line_map_title": "Locations of selected lines",
+  "operatorSelectorOptions":
+  {
+    "all": "all"
+  },
+  "reportBug": {
+    "description": "This form is designed so that we can receive feedback and improve the application. Please be aware that the submitted information will be available to the public.",
+    "error": "An error occurred while sending the report. Please try again later.",
+    "success": "The report was sent successfully. Thank you for your help!",
+    "viewIssue": "View issue"
+  }
 }

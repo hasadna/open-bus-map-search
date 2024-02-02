@@ -98,17 +98,14 @@ export default function ArrivalByTimeChart({
         .map((group) => (
           <div key={group[0].name}>
             <h3 className="title">{group[0].name}</h3>
-            <ResponsiveContainer width="100%" height={300}>
+            <ResponsiveContainer debounce={1000} height={300}>
               <LineChart
                 data={group.sort((a, b) => {
                   const sortBy = group[0].gtfs_route_hour ? 'gtfs_route_hour' : 'gtfs_route_date'
                   return moment(a[sortBy]).isAfter(moment(b[sortBy])) ? 1 : -1
                 })}
                 margin={{
-                  top: 5,
-                  right: 30,
-                  left: 20,
-                  bottom: 5,
+                  right: 35,
                 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis
@@ -125,26 +122,26 @@ export default function ArrivalByTimeChart({
                           <li>
                             <span className="label">זמן: </span>
                             <span className="value">
-                              {payload![0].payload.gtfs_route_date
+                              {payload[0].payload.gtfs_route_date
                                 ? moment
-                                    .utc(payload![0].payload.gtfs_route_date)
+                                    .utc(payload[0].payload.gtfs_route_date)
                                     .format('יום ddd, L')
                                 : moment(payload![0].payload.gtfs_route_hour).format('L, LT')}
                             </span>
                           </li>
                           <li>
                             <span className="label">ביצוע: </span>
-                            <span className="value">{payload![0].payload.current}</span>
+                            <span className="value">{payload[0].payload.current}</span>
                           </li>
                           <li>
                             <span className="label">תכנון: </span>
-                            <span className="value">{payload![0].payload.max}</span>
+                            <span className="value">{payload[0].payload.max}</span>
                           </li>
                           <li>
                             <span className="label">דיוק: </span>
                             <span className="value">
                               {(
-                                (payload![0].payload.current / payload![0].payload.max) *
+                                (payload[0].payload.current / payload[0].payload.max) *
                                 100
                               ).toFixed(2)}
                               %

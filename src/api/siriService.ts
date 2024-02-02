@@ -65,16 +65,19 @@ export async function getSiriStopHitTimesAsync(route: BusRoute, stop: BusStop, t
 
   type EnrichedLocation = SiriVehicleLocationWithRelatedPydanticModel & Coordinates
 
-  const locationsByRideId = locations.reduce((acc, location) => {
-    if (location.siriRideId) {
-      ;(acc[location.siriRideId.toString()] ||= []).push({
-        ...location,
-        longitude: location.lon || 0,
-        latitude: location.lat || 0,
-      })
-    }
-    return acc
-  }, {} as { [key: string]: EnrichedLocation[] })
+  const locationsByRideId = locations.reduce(
+    (acc, location) => {
+      if (location.siriRideId) {
+        ;(acc[location.siriRideId.toString()] ||= []).push({
+          ...location,
+          longitude: location.lon || 0,
+          latitude: location.lat || 0,
+        })
+      }
+      return acc
+    },
+    {} as { [key: string]: EnrichedLocation[] },
+  )
   const stopHits = Object.values(locationsByRideId).map(
     (locations) => nearestLocation(stop.location, locations) as EnrichedLocation,
   )
