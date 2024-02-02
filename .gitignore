@@ -30,3 +30,5 @@ npm-debug.log*
 **/node_modules
 
 storybook-static
+
+.nx/cache

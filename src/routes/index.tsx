@@ -29,7 +29,6 @@ import {
 } from '@ant-design/icons'
 import { MainRoute } from './MainRoute'
 import { ErrorPage } from 'src/pages/ErrorPage'
-import { Spin } from 'antd'
 
 export const PAGES = [
   {
@@ -124,7 +123,9 @@ const getRoutesList = () => {
           const resp = await fetch(
             `https://open-bus-stride-api.hasadna.org.il/gtfs_routes/get?id=${gtfsRideGtfsRouteId}`,
           )
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const gtfs_route = await resp.json()
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-return
           return gtfs_route
         }}
       />
