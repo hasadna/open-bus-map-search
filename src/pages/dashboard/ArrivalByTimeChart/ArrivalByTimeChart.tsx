@@ -33,7 +33,7 @@ export default function ArrivalByTimeChart({
     name: string
     current: number
     max: number
-    percent: number
+    percent: number | null
     gtfs_route_date: string
     gtfs_route_hour: string
   }[]
@@ -59,7 +59,7 @@ export default function ArrivalByTimeChart({
               ...allPoints[0],
               max: 0,
               current: 0,
-              percent: 0,
+              percent: null,
               gtfs_route_hour: moment(allPoints[0].gtfs_route_hour)
                 .subtract(startHour, 'hours')
                 .toISOString(),
@@ -76,7 +76,7 @@ export default function ArrivalByTimeChart({
               const currentHour = moment(lastHour).add(1, 'hours').local().toISOString()
               fillerArray.push({
                 ...entry,
-                percent: 0,
+                percent: null,
                 current: 0,
                 max: 0,
                 gtfs_route_hour: currentHour,
@@ -138,17 +138,16 @@ export default function ArrivalByTimeChart({
                           </li>
                           <li>
                             <span className="label">תכנון: </span>
-                            <span className="value">{payload![0].payload.max || 'לא מתועד'}</span>
+                            <span className="value">{payload![0].payload.max}</span>
                           </li>
                           <li>
                             <span className="label">דיוק: </span>
                             <span className="value">
-                              {payload![0].payload.max
-                                ? (
-                                    (payload![0].payload.current / payload![0].payload.max) *
-                                    100
-                                  ).toFixed(2) + '%'
-                                : 'לא מתועד'}
+                              {(
+                                (payload![0].payload.current / payload![0].payload.max) *
+                                100
+                              ).toFixed(2)}
+                              %
                             </span>
                           </li>
                         </ul>
