@@ -34,7 +34,7 @@ const DashboardPage = () => {
       <Title className="page-title" level={3}>
         {t('dashboard_page_title')}
       </Title>
-      <Alert message="תפקוד תחבורה ציבורית לפי פרמטרים שונים" type="info" />
+      <Alert message={t('dashboard_page_description')} type="info" /> 
       {startDate > endDate ? (
         <Alert closable showIcon message={t('bug_date_alert')} type="error" />
       ) : null}

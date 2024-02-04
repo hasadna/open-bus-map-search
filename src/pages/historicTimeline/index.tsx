@@ -142,7 +142,7 @@ const TimelinePage = () => {
     <PageContainer>
       <Title level={3}>{t('timeline_page_title')}</Title>
       <Space direction="vertical" size="middle" style={{ marginBottom: '22px' }}>
-        <Alert message={t('timestamp_list')} type="info" />
+        <Alert message={t('timeline_page_description')} type="info" />
       </Space>
 
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>

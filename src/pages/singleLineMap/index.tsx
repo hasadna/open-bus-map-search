@@ -20,6 +20,7 @@ import { FilterPositionsByStartTimeSelector } from '../components/FilterPosition
 import { PageContainer } from '../components/PageContainer'
 import { MapWithLocationsAndPath, Path } from '../components/map-related/MapWithLocationsAndPath'
 import Title from 'antd/es/typography/Title'
+import { Space, Alert } from 'antd'
 
 const SingleLineMapPage = () => {
   const { search, setSearch } = useContext(SearchContext)
@@ -94,6 +95,9 @@ const SingleLineMapPage = () => {
       <Title className="page-title" level={3}>
         {t('singleline_map_page_title')}
       </Title>
+      <Space direction="vertical" size="middle" style={{ marginBottom: '22px' }}>
+         <Alert message={t('realtime_map_page_description')} type="info" />
+      </Space>
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
         {/* choose date*/}
         <Grid xs={4} className="hideOnMobile">
