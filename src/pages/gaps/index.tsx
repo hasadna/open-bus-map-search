@@ -117,7 +117,7 @@ const GapsPage = () => {
   return (
     <PageContainer>
       <Title className="page-title" level={3}>
-        נסיעות שלא יצאו
+        {t('gaps_page_title')}
       </Title>
       <Alert message="רשימת נסיעות שלא בוצעו" type="info" />
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>

@@ -32,7 +32,7 @@ const DashboardPage = () => {
   return (
     <PageContainer>
       <Title className="page-title" level={3}>
-        ביצועי תחבורה ציבורית
+        {t('dashboard_page_title')}
       </Title>
       <Alert message="תפקוד תחבורה ציבורית לפי פרמטרים שונים" type="info" />
       {startDate > endDate ? (

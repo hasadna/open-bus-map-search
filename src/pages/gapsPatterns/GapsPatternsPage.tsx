@@ -174,7 +174,7 @@ const GapsPatternsPage = () => {
 
   return (
     <PageContainer>
-      <Title level={3}>{t('gapspatterns_page_title')}</Title>
+      <Title level={3}>{t('gaps_patterns_page_title')}</Title>
       {startDate > endDate ? (
         <Alert closable showIcon message={t('bug_date_alert')} type="error" />
       ) : null}

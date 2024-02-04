@@ -92,7 +92,7 @@ const SingleLineMapPage = () => {
   return (
     <PageContainer className="map-container">
       <Title className="page-title" level={3}>
-        {t('single_line_map_title')}
+        {t('singleline_map_page_title')}
       </Title>
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
         {/* choose date*/}

@@ -140,7 +140,7 @@ const TimelinePage = () => {
 
   return (
     <PageContainer>
-      <Title level={3}>{t('rides_history')}</Title>
+      <Title level={3}>{t('timeline_page_title')}</Title>
       <Space direction="vertical" size="middle" style={{ marginBottom: '22px' }}>
         <Alert message={t('timestamp_list')} type="info" />
       </Space>
