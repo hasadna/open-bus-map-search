@@ -143,7 +143,7 @@ test.describe('clear button functionality at SingleLineMapPage', () => {
 })
 test.describe('clear button functionality at RealtimeMapPage', () => {
   test('after clear the `minutes` input - it should has value equals to `1`', async ({ page }) => {
-    await visitPage(page, 'מפה בזמן אמת', /map/)
+    await visitPage(page, 'מפת אוטובוסים בזמן אמת', /map/)
     const minutes = page.getByLabel('דקות')
     let getValueAttribute = await minutes.getAttribute('value')
     if (!getValueAttribute) return test.fail()
