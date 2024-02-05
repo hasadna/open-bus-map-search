@@ -96,12 +96,12 @@ const SingleLineMapPage = () => {
         {t('singleline_map_page_title')}
       </Title>
       <Space direction="vertical" size="middle" style={{ marginBottom: '22px' }}>
-         <Alert message={t('realtime_map_page_description')} type="info" />
+        <Alert message={t('realtime_map_page_description')} type="info" />
       </Space>
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
         {/* choose date*/}
         <Grid xs={4} className="hideOnMobile">
-         <Label text={t('choose_date')} />
+          <Label text={t('choose_date')} />
         </Grid>
         <Grid sm={5} xs={12}>
           <DateSelector
