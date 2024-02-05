@@ -4,6 +4,7 @@
     flex-direction: column;
     list-style: none;
     padding: 0;
+
     .menu-item {
         display: flex;
         align-items: center;
@@ -20,9 +21,9 @@
         &:hover {
             background-color: #f2f2f2;
         }
+
         &.active {
             background-color: $color-active;
-      
             color: #1677ff;
             border: none;
         }

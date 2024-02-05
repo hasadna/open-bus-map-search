@@ -79,7 +79,7 @@ const TimelinePage = () => {
           search.lineNumber === lineNumber ? { ...current, routes: routes } : current,
         ),
       )
-      .catch((err) => console.error(err.message))
+      .catch((err) => console.error(err?.message ?? err))
       .finally(() => setRoutesIsLoading(false))
     return () => controller.abort()
   }, [operatorId, lineNumber, clearRoutes, clearStops, timestamp, setState])

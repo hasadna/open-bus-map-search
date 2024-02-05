@@ -76,11 +76,17 @@ const EnvelopeWrapper = styled.div`
       border-style: solid;
       border-width: 50px 100px 0 100px;
       -webkit-transform-origin: 50% 0%;
-      -webkit-transition: transform 0.4s 0.4s, z-index 0.2s 0.4s;
+      -webkit-transition:
+        transform 0.4s 0.4s,
+        z-index 0.2s 0.4s;
       -moz-transform-origin: 50% 0%;
-      -moz-transition: transform 0.4s 0.4s, z-index 0.2s 0.4s;
+      -moz-transition:
+        transform 0.4s 0.4s,
+        z-index 0.2s 0.4s;
       transform-origin: 50% 0%;
-      transition: transform 0.4s 0.4s, z-index 0.2s 0.4s;
+      transition:
+        transform 0.4s 0.4s,
+        z-index 0.2s 0.4s;
       border-color: ${colors.primaryColor600} transparent transparent transparent;
       z-index: 2;
     }
@@ -185,11 +191,17 @@ const EnvelopeWrapper = styled.div`
     }
 
     .animated-mail .top-fold {
-      transition: transform 0.4s, z-index 0.2s;
+      transition:
+        transform 0.4s,
+        z-index 0.2s;
       transform: rotateX(180deg);
-      -webkit-transition: transform 0.4s, z-index 0.2s;
+      -webkit-transition:
+        transform 0.4s,
+        z-index 0.2s;
       -webkit-transform: rotateX(180deg);
-      -moz-transition: transform 0.4s, z-index 0.2s;
+      -moz-transition:
+        transform 0.4s,
+        z-index 0.2s;
       -moz-transform: rotateX(180deg);
       z-index: 0;
     }

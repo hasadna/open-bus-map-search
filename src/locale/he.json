@@ -147,7 +147,10 @@
       "donations": "שרתים עולים כסף - עזרו לנו להמשיך לתחזק ולפתח את הפרויקט!"
     }
   },
-
+  "operatorSelectorOptions":
+  {
+    "all": "הכל"
+  },
   "dashboard_page_graph_title_hour": "אחוזי יציאה מסך הנסיעות לפי שעה",
   "dashboard_page_graph_title_day": "אחוזי יציאה מסך הנסיעות לפי יום",
   "group_by_day_tooltip_content": "קיבוץ לפי יום",

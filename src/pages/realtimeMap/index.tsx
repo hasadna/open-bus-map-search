@@ -198,7 +198,7 @@ function Markers({ positions }: { positions: Point[] }) {
     navigator.geolocation.getCurrentPosition((position) =>
       map.flyTo([position.coords.latitude, position.coords.longitude], 13),
     )
-  }, [])
+  }, [map])
 
   return (
     <>
