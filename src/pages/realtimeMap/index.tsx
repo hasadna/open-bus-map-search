@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { MapContainer, Marker, Polyline, Popup, TileLayer, useMap } from 'react-leaflet'
 import MarkerClusterGroup from 'react-leaflet-cluster'
 import { useTranslation } from 'react-i18next'
-import { Button, Spin, Typography, Alert,Space} from 'antd'
+import { Button, Spin, Typography, Alert, Space } from 'antd'
 import { ExpandAltOutlined } from '@ant-design/icons'
 import moment from 'moment'
 import getAgencyList, { Agency } from 'src/api/agencyList'
@@ -101,9 +101,9 @@ export default function RealtimeMapPage() {
       </Title>
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
         <Grid xs={12} className="hideOnMobile">
-        <Space direction="vertical" size="middle" style={{ marginBottom: '22px' }}>
-         <Alert message={t('realtime_map_page_description')} type="info" />
-        </Space>
+          <Space direction="vertical" size="middle" style={{ marginBottom: '22px' }}>
+            <Alert message={t('realtime_map_page_description')} type="info" />
+          </Space>
         </Grid>
         {/* from date */}
         <Grid xs={2} className="hideOnMobile">

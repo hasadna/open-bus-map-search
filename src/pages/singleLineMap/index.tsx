@@ -101,7 +101,7 @@ const SingleLineMapPage = () => {
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
         {/* choose date*/}
         <Grid xs={4} className="hideOnMobile">
-          <Label text={t('choose_date')} />
+         <Label text={t('choose_date')} />
         </Grid>
         <Grid sm={5} xs={12}>
           <DateSelector
