@@ -84,6 +84,7 @@ const GapsPage = () => {
         source.token,
       )
         .then(setGaps)
+        .catch((err) => console.error(err.message))
         .finally(() => setGapsIsLoading(false))
     }
     return () => source.cancel()

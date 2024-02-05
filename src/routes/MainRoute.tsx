@@ -24,7 +24,6 @@ const cacheRtl = createCache({
 
 export const MainRoute = () => {
   const location = useLocation()
-
   const [searchParams, setSearchParams] = useSearchParams()
   const operatorId = searchParams.get('operatorId')
   const lineNumber = searchParams.get('lineNumber')
@@ -58,7 +57,14 @@ export const MainRoute = () => {
       }
       setSearchParams(params)
     }
-  }, [search.lineNumber, search.operatorId, search.routeKey, search.timestamp, location.pathname])
+  }, [
+    search.lineNumber,
+    search.operatorId,
+    search.routeKey,
+    search.timestamp,
+    location.pathname,
+    setSearchParams,
+  ])
 
   const safeSetSearch = useCallback((mutate: (prevState: PageSearchState) => PageSearchState) => {
     setSearch((current: PageSearchState) => {

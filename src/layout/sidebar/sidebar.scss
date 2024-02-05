@@ -3,15 +3,18 @@
 .hideOnMobile {
   display: none;
 }
-@media only screen and (min-width: 768px) {
+
+@media only screen and (width >= 768px) {
   .hideOnMobile {
     display: block;
   }
 }
+
 .hideOnDesktop {
   display: block;
 }
-@media only screen and (min-width: 768px) {
+
+@media only screen and (width >= 768px) {
   .hideOnDesktop {
     display: none;
   }
@@ -27,17 +30,20 @@
 
   svg {
     padding: 0 8px;
+
     .st0 {
       fill: none;
-      stroke: #000000;
+      stroke: #000;
       stroke-width: 23;
       stroke-miterlimit: 10;
     }
+
     path {
       stroke-dasharray: 1720;
       stroke-dashoffset: 1720;
       animation: dash 0.8s linear forwards;
     }
+
     circle {
       stroke-dasharray: 420;
       stroke-dashoffset: 420;
@@ -45,6 +51,7 @@
       animation-delay: 0.5s;
     }
   }
+
   @keyframes dash {
     to {
       stroke-dashoffset: 0;
@@ -54,18 +61,22 @@
 
 .sidebar-logo.dark {
   color: white;
+
   svg {
     padding: 0 8px;
+
     .st0 {
       fill: none;
       stroke: white;
       stroke-width: 23;
       stroke-miterlimit: 10;
     }
+
     path {
       stroke-dasharray: 1720;
       stroke-dashoffset: 1720;
     }
+
     circle {
       fill: white;
       stroke-dasharray: 420;

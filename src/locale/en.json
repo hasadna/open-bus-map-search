@@ -139,6 +139,10 @@
   "order_by_severity": "by severity",
   "choose_dates": "Dates",
   "single_line_map_title": "Locations of selected lines",
+  "operatorSelectorOptions":
+  {
+    "all": "all"
+  },
   "reportBug": {
     "description": "This form is designed so that we can receive feedback and improve the application. Please be aware that the submitted information will be available to the public.",
     "error": "An error occurred while sending the report. Please try again later.",
