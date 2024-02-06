@@ -4,6 +4,7 @@ import * as matchers from '@testing-library/jest-dom/matchers'
 // runs a cleanup after each test case (e.g. clearing jsdom)
 
 expect.extend(matchers)
+global.ResizeObserver = require('resize-observer-polyfill')
 afterEach(() => {
   cleanup()
 })
