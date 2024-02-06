@@ -42,9 +42,8 @@ export default function ArrivalByTimeChart({
   data = useMemo(() => {
     let newData = data.filter((item) => !operatorId || item.id === operatorId)
     if (newData[0]?.gtfs_route_hour) {
-      const lastId = parseInt(newData[newData.length - 1].id)
       const fillerArray = []
-      for (let currentId = 0; currentId <= lastId; currentId++) {
+      for (const currentId of new Set(newData.map((i) => parseInt(i.id)))) {
         const allPoints = newData
           .filter((e) => parseInt(e.id) === currentId)
           .sort((a, b) => (moment(a.gtfs_route_hour).isAfter(b.gtfs_route_hour) ? 1 : -1))
