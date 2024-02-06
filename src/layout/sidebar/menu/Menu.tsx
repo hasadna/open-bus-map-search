@@ -28,7 +28,13 @@ const MainMenu = () => {
   const { setDrawerOpen } = useContext<LayoutContextInterface>(LayoutCtx)
   const items: MenuItem[] = PAGES.map((itm) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return getItem(<Link to={t(itm.path as any)} onClick={() => setDrawerOpen(false)}>{t(itm.label as any)}</Link>, itm.path, itm.icon)
+    return getItem(
+      <Link to={t(itm.path as any)} onClick={() => setDrawerOpen(false)}>
+        {t(itm.label as any)}
+      </Link>,
+      itm.path,
+      itm.icon,
+    )
   })
 
   const location = useLocation()
