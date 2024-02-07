@@ -88,7 +88,7 @@ export const PAGES = [
     icon: <DollarOutlined />,
     element: null,
   },
-]
+] as const
 
 const HIDDEN_PAGES = [
   {
