@@ -42,8 +42,8 @@ export const MainRoute = () => {
   })
 
   useEffect(() => {
-    const page = PAGES.find((page) => page.path === location.pathname)
-    if (page?.searchParamsRequired) {
+    const page = PAGES.find((page) => page.path === location.pathname) 
+    if (page && "searchParamsRequired" in page && page.searchParamsRequired) {
       const params = new URLSearchParams({ timestamp: search.timestamp.toString() })
 
       if (search.operatorId) {
