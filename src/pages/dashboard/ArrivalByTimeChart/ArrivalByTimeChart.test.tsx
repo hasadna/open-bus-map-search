@@ -15,15 +15,14 @@ describe('ArrivalByTimeChart', () => {
 
   // Mock ResponsiveContainer to have a static size otherwise it doesn't render in the unit test
   vi.mock('recharts', () => {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
     const Recharts = require('recharts')
-
     return {
       ...Recharts,
       ResponsiveContainer: ({ children }: { children: ReactNode }) => (
-        <Recharts.ResponsiveContainer width={800} height={800}>
-          {children}
-        </Recharts.ResponsiveContainer>
+          <Recharts.ResponsiveContainer height={300} aspect={1}>
+              {children}
+          </Recharts.ResponsiveContainer>
+      
       ),
     }
   })
@@ -33,15 +32,15 @@ describe('ArrivalByTimeChart', () => {
   })
 
   test('tooltip wrapper exists', () => {
-    expect(renderedComponent.container.querySelector('.recharts-tooltip-wrapper')).not.toBeNull
+    expect(renderedComponent.container.querySelector('.recharts-tooltip-wrapper')).not.toBeNull()
   })
 
   test('tooltips are not visible by default', () => {
-    expect(renderedComponent.container.querySelector('.recharts-tooltip-wrapper')).not.toBeVisible
+    expect(renderedComponent.container.querySelector('.recharts-tooltip-wrapper')).not.toBeVisible()
   })
 
   test('legend wrapper exists', () => {
-    expect(renderedComponent.container.querySelector('.recharts-legend-wrapper')).not.toBeVisible
+    expect(renderedComponent.container.querySelector('.recharts-legend-wrapper')).toBeVisible()
   })
 
   test('filters operators correctly', () => {
