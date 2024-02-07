@@ -1,30 +1,28 @@
 import { type RenderResult, render, screen } from '@testing-library/react'
 import ArrivalByTimeChart from './ArrivalByTimeChart'
 import '@testing-library/jest-dom'
-import type { ReactNode } from 'react'
+import type { ReactElement } from 'react'
 import testBusData from './testdata/data.json'
 
 describe('ArrivalByTimeChart', () => {
   let renderedComponent: RenderResult
 
+  vi.mock('recharts', async () => {
+    const mod: typeof import('recharts') = await vi.importActual('recharts')
+    return {
+      ...mod,
+      ResponsiveContainer: ({ children }: { children: ReactElement }) => (
+        <mod.ResponsiveContainer height={300} aspect={1}>
+          {children}
+        </mod.ResponsiveContainer>
+      ),
+    }
+  })
+
   beforeEach(() => {
     renderedComponent = render(
       <ArrivalByTimeChart data={testBusData} operatorId={testBusData[0].id} />,
     )
-  })
-
-  // Mock ResponsiveContainer to have a static size otherwise it doesn't render in the unit test
-  vi.mock('recharts', () => {
-    const Recharts = require('recharts')
-    return {
-      ...Recharts,
-      ResponsiveContainer: ({ children }: { children: ReactNode }) => (
-          <Recharts.ResponsiveContainer height={300} aspect={1}>
-              {children}
-          </Recharts.ResponsiveContainer>
-      
-      ),
-    }
   })
 
   test('renders without crashing', () => {
