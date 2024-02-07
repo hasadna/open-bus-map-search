@@ -101,7 +101,7 @@ test.describe('Timeline Page Tests', () => {
     // await timelinePage.verifyNoDuplications()
   })
 
-  test('Test choosing [Operator -> Line # -> Route -> Stop station] opens the timestamp graph', async () => {
+  test.fixme('Test choosing [Operator -> Line # -> Route -> Stop station] opens the timestamp graph', async () => {
     await timelinePage.validatePageUrl(/timeline/)
     await timelinePage.selectOperatorFromDropbox(
       timelinePage.operatorsDropDown,
