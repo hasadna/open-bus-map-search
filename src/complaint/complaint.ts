@@ -91,17 +91,17 @@ try {
 /**
  * @param {Date} date
  */
-function formatDate(date) {
+function formatDate(date: Date) {
   const d = leadZero(date.getDate())
   const month = leadZero(date.getMonth() + 1)
   const year = date.getFullYear()
   return `${d}/${month}/${year}`
 }
 
-function formatTime(date) {
+function formatTime(date: Date) {
   return `${leadZero(date.getHours())}:${leadZero(date.getMinutes())}`
 }
 
-function leadZero(number) {
+function leadZero(number: number) {
   return number < 10 ? `0${number}` : number
 }
