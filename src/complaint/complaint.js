@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { chromium } from 'playwright'
 // import { express } from 'express'
 
@@ -91,17 +92,17 @@ try {
 /**
  * @param {Date} date
  */
-function formatDate(date: Date) {
+function formatDate(date) {
   const d = leadZero(date.getDate())
   const month = leadZero(date.getMonth() + 1)
   const year = date.getFullYear()
   return `${d}/${month}/${year}`
 }
 
-function formatTime(date: Date) {
+function formatTime(date) {
   return `${leadZero(date.getHours())}:${leadZero(date.getMinutes())}`
 }
 
-function leadZero(number: number) {
+function leadZero(number) {
   return number < 10 ? `0${number}` : number
 }
