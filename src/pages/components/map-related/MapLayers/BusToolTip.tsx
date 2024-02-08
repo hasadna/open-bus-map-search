@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { Point } from 'src/pages/realtimeMap'
 import { Button } from '@mui/material'
 import moment from 'moment-timezone'
@@ -28,6 +29,13 @@ export function BusToolTip({ position, icon }: BusToolTipProps) {
       .then((siriRideRes: SiriRideWithRelatedPydanticModel) => setSiriRide(siriRideRes))
       .finally(() => setIsLoading(false))
   }, [position])
+
+  const LinkToProfile = siriRide ? (
+    <Link to={`/profile/${siriRide.gtfsRouteRouteShortName}`}>
+      {siriRide && siriRide.gtfsRouteRouteShortName}{' '}
+    </Link>
+  ) : null
+
   return (
     <div className={cn({ 'extend-for-json': showJson }, 'bus-tooltip')}>
       {isLoading ? (
@@ -39,7 +47,7 @@ export function BusToolTip({ position, icon }: BusToolTipProps) {
         <>
           <header className="header">
             <h1 className="title">
-              {t('line')} :<span>{siriRide && siriRide.gtfsRouteRouteShortName}</span>
+              {t('line')} :<span>{LinkToProfile}</span>
             </h1>
             <img src={icon} alt="bus icon" className="bus-icon" />
           </header>
