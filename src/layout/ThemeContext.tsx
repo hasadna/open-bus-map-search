@@ -46,10 +46,13 @@ export const ThemeProvider: FC<PropsWithChildren> = ({ children }) => {
       locale={heIL}
       theme={{
         algorithm: isDarkTheme ? darkAlgorithm : defaultAlgorithm,
+        token: {
+          colorBgBase: isDarkTheme ? '#1c1d1c' : '#ffffff',
+        },
       }}>
       <MuiThemeProvider theme={isDarkTheme ? darkTheme : lightTheme}>
         <ScopedCssBaseline enableColorScheme>
-          <ThemeContext.Provider value={contextValue}> {children} </ThemeContext.Provider>
+          <ThemeContext.Provider value={contextValue}>{children}</ThemeContext.Provider>
         </ScopedCssBaseline>
       </MuiThemeProvider>
     </ConfigProvider>

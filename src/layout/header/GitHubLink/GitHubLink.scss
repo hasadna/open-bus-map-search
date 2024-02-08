@@ -2,11 +2,11 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 1.5em; 
+  font-size: 1.5em;
   cursor: pointer;
-
+  transition: all 0.1s;
 
   &:hover {
-    transform: scale(1.1); 
+    transform: scale(1.1);
   }
 }
