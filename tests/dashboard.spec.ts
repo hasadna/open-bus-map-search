@@ -1,5 +1,4 @@
-import { customMatcher } from 'playwright-advanced-har'
-import { test } from './utils'
+import { test, urlMatcher } from './utils'
 
 test.describe('dashboard tests', () => {
   test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
@@ -8,17 +7,7 @@ test.describe('dashboard tests', () => {
       update: false,
       notFound: 'abort',
       url: /stride-api/,
-      matcher: customMatcher({
-        urlComparator(a, b) {
-          const fieldsToRemove = ['t', 'date_from', 'date_to']
-          ;[a, b] = [a, b].map((url) => {
-            const urlObj = new URL(url)
-            fieldsToRemove.forEach((field) => urlObj.searchParams.delete(field))
-            return urlObj.toString()
-          })
-          return a === b
-        },
-      }),
+      matcher: urlMatcher(),
     })
     await page.goto('/')
     await page.getByText('הקווים הגרועים ביותר').waitFor()

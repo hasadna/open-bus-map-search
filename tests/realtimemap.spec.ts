@@ -1,7 +1,16 @@
-import { test } from './utils'
+import { test, urlMatcher } from './utils'
 
-test('realtime-map page', async ({ page }) => {
+test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
+  advancedRouteFromHAR('tests/HAR/realtimemap.har', {
+    updateContent: 'embed',
+    update: false,
+    notFound: 'abort',
+    url: /stride-api/,
+    matcher: urlMatcher(),
+  })
   await page.goto('/')
+})
+test('realtime-map page', async ({ page }) => {
   await page.getByText('מפה בזמן אמת', { exact: true }).click()
   await page.waitForURL(/map/)
   await page.getByRole('progressbar').waitFor({ state: 'hidden' })

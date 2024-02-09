@@ -1,4 +1,4 @@
-import { test, expect } from './utils'
+import { test, expect, urlMatcher } from './utils'
 import type { Locator, Page } from '@playwright/test'
 
 import Selectors from './SelectorsModel'
@@ -21,6 +21,16 @@ async function selectLineNumberAndRoute(page: Page, lineNumber: Locator, route: 
 }
 
 test.describe('clearButton functionality at TimeLinePage', () => {
+  test.beforeEach(({ advancedRouteFromHAR }) => {
+    advancedRouteFromHAR('tests/HAR/clearbutton.har', {
+      updateContent: 'embed',
+      update: false,
+      notFound: 'abort',
+      url: /stride-api/,
+      matcher: urlMatcher(),
+    })
+  })
+
   test('after clear `line-number` value - should hide `stop` & `route` inputs', async ({
     page,
   }) => {

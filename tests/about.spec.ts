@@ -1,5 +1,14 @@
 import { test, expect } from './utils'
 test.describe('About Page Tests', () => {
+  test.beforeEach(({ advancedRouteFromHAR }) => {
+    advancedRouteFromHAR('tests/HAR/clearbutton.har', {
+      updateContent: 'embed',
+      update: false,
+      notFound: 'abort',
+      url: /stride-api/,
+    })
+  })
+
   test('after clicking "about" menu item, user should redirect to "about" page', async ({
     page,
   }) => {
