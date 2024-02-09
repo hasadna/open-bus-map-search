@@ -15,7 +15,7 @@ const compat = new FlatCompat({
 })
 
 module.exports = [
-  ...compat.extends('plugin:@typescript-eslint/recommended', 'plugin:react/recommended'),
+  ...compat.extends('plugin:@typescript-eslint/recommended', 'plugin:react/recommended', 'react-app', 'react-app/jest'),
   eslintPluginPrettierRecommended,
   {
     plugins: {
