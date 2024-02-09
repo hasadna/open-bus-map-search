@@ -3,7 +3,7 @@ import * as fs from 'fs'
 import * as path from 'path'
 import * as crypto from 'crypto'
 import moment from 'moment'
-import { test as baseTest } from 'playwright-advanced-har'
+import { Matcher, test as baseTest, customMatcher } from 'playwright-advanced-har'
 
 const istanbulCLIOutput = path.join(process.cwd(), '.nyc_output')
 
@@ -39,6 +39,20 @@ export function getYesterday(): string {
   const yesterday = moment().subtract(1, 'days')
   const formattedDate = yesterday.format('DD/MM/YYYY')
   return formattedDate
+}
+
+export function urlMatcher(): Matcher {
+  return customMatcher({
+    urlComparator(a, b) {
+      const fieldsToRemove = ['t', 'date_from', 'date_to']
+      ;[a, b] = [a, b].map((url) => {
+        const urlObj = new URL(url)
+        fieldsToRemove.forEach((field) => urlObj.searchParams.delete(field))
+        return urlObj.toString()
+      })
+      return a === b
+    },
+  })
 }
 
 export const expect = test.expect
