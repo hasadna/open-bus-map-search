@@ -1,24 +1,25 @@
 import { type RenderResult, render, screen } from '@testing-library/react'
 import ArrivalByTimeChart from './ArrivalByTimeChart'
-import '@testing-library/jest-dom'
 import type { ReactElement } from 'react'
 import testBusData from './testdata/data.json'
 
+jest.mock('recharts', () => {
+  const original: typeof import('recharts') = jest.requireActual('recharts')
+  return {
+    __esModule: true,
+    ...original,
+    ResponsiveContainer: jest
+      .fn()
+      .mockImplementation(({ children }: { children: ReactElement }) => (
+        <original.ResponsiveContainer height={300} aspect={1}>
+          {children}
+        </original.ResponsiveContainer>
+      )),
+  }
+})
+
 describe('ArrivalByTimeChart', () => {
   let renderedComponent: RenderResult
-
-  vi.mock('recharts', async () => {
-    const mod: typeof import('recharts') = await vi.importActual('recharts')
-    return {
-      ...mod,
-      ResponsiveContainer: ({ children }: { children: ReactElement }) => (
-        <mod.ResponsiveContainer height={300} aspect={1}>
-          {children}
-        </mod.ResponsiveContainer>
-      ),
-    }
-  })
-
   beforeEach(() => {
     renderedComponent = render(
       <ArrivalByTimeChart data={testBusData} operatorId={testBusData[0].id} />,
