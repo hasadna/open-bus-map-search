@@ -83,7 +83,7 @@ const SingleLineMapPage = () => {
 
   const [filteredPositions, setFilteredPositions] = useState<Point[]>([])
   const [startTime, setStartTime] = useState<string>('00:00:00')
-  const [plannedRouteStops, setPlannedRouteStops] = useState<BusStop[] | undefined>([])
+  const [plannedRouteStops, setPlannedRouteStops] = useState<BusStop[]>([])
 
   useEffect(() => {
     if (startTime !== '00:00:00' && positions.length > 0) {
