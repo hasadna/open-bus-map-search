@@ -13,6 +13,12 @@ export default {
     '/node_modules/',
     '/tests/', // Ignoring this folder since playwright tests are here
   ],
+  collectCoverageFrom: [
+    '**/*.{js,jsx,ts,tsx}',
+    '!**/node_modules/**',
+    '!**/dist/**',
+    '!**/*.spec.*'
+  ],
   modulePaths: ['<rootDir>'],
   setupFilesAfterEnv: ['<rootDir>/setupTests.ts'],
 }
