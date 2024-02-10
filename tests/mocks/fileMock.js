@@ -1,4 +1,4 @@
 module.exports = {
-    __esModule: true,
-    default: 'test-file-stub',
+  __esModule: true,
+  default: 'test-file-stub',
 }
