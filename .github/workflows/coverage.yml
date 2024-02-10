@@ -24,7 +24,7 @@ jobs:
         run: npm run test
       - name: Run end-to-end tests
         run: npm test
-      - run: npx nyc report --reporter=lcovonly
+      - run: npm test -- --coverage --coverageReporters=lcov
       - name: Upload to Coveralls
         if: always()
         uses: coverallsapp/github-action@v2
