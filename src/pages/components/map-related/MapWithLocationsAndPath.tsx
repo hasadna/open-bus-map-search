@@ -9,12 +9,14 @@ import { useCallback, useState } from 'react'
 import { Button } from 'antd'
 import { ExpandAltOutlined } from '@ant-design/icons'
 import { BusStop } from 'src/model/busStop'
+import { t } from 'i18next'
 import '../../Map.scss'
 
 const position: Point = {
   loc: [32.3057988, 34.85478613], // arbitrary default value... Netanya - best city to live & die in
   color: 0,
 }
+
 export interface Path {
   locations: VehicleLocation[]
   lineRef: number
@@ -27,21 +29,28 @@ export function MapWithLocationsAndPath({
   plannedRouteStops,
 }: {
   positions: Point[]
-  plannedRouteStops: BusStop[] | undefined
+  plannedRouteStops: BusStop[]
 }) {
   const agencyList = useAgencyList()
   const [isExpanded, setIsExpanded] = useState<boolean>(false)
   const toggleExpanded = useCallback(() => setIsExpanded((expanded) => !expanded), [])
   console.log('MapWithLocationsAndPath', `${isExpanded ? 'expanded' : 'collapsed'}`)
 
-  const wayPointMarker = new Icon<IconOptions>({
-    iconUrl: '/marker-dot.png',
-    iconSize: [10, 10],
-  })
-  const busStopMarker = new Icon<IconOptions>({
-    iconUrl: '/marker-bus-stop.png',
-    iconSize: [10, 15],
-  })
+  const getIcon = (path:string, width: number = 10, height: number = 10) : Icon<IconOptions> => {
+    return new Icon<IconOptions>({
+      iconUrl: path,
+      iconSize: [width, height]
+    })
+  }
+
+  // configs for planned & actual routes - line color & marker icon 
+  const actualRouteStopMarkerPath = '/marker-dot.png'
+  const plannedRouteStopMarkerPath = '/marker-bus-stop.png' 
+  const actualRouteLineColor = 'orange'
+  const plannedRouteLineColor = 'black'
+  const actualRouteStopMarker = getIcon(actualRouteStopMarkerPath)
+  const plannedRouteStopMarker = getIcon(plannedRouteStopMarkerPath, 10, 15)
+
 
   return (
     <div className={`map-info ${isExpanded ? 'expanded' : 'collapsed'}`}>
@@ -57,7 +66,10 @@ export function MapWithLocationsAndPath({
           attribution='&copy <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
         />
-
+        <div className="map-index">
+          <MapIndex lineColor={actualRouteLineColor} imgSrc={actualRouteStopMarkerPath} title={t('actualRoute')} />
+          <MapIndex lineColor={plannedRouteLineColor} imgSrc={plannedRouteStopMarkerPath} title={t('plannedRoute')} />
+        </div>
         {positions.map((pos, i) => {
           const icon =
             i === 0
@@ -66,7 +78,7 @@ export function MapWithLocationsAndPath({
                   name: agencyList.find((agency) => agency.operator_ref === pos.operator)
                     ?.agency_name,
                 })
-              : wayPointMarker
+              : actualRouteStopMarker
           return (
             <Marker position={pos.loc} icon={icon} key={i}>
               <Popup minWidth={300} maxWidth={700}>
@@ -75,32 +87,47 @@ export function MapWithLocationsAndPath({
             </Marker>
           )
         })}
-
+        
         {plannedRouteStops?.length && (
           <Polyline
-            pathOptions={{ color: 'black' }}
+            pathOptions={{ color: plannedRouteLineColor }}
             positions={plannedRouteStops.map((stop) => [
               stop.location.latitude,
               stop.location.longitude,
             ])}
           />
         )}
-        {plannedRouteStops?.map((stop) => {
+        {plannedRouteStops?.length && plannedRouteStops.map((stop) => {
           const { latitude, longitude } = stop.location
           return (
             <Marker
-              key={'' + stop.location.latitude + stop.location.longitude}
+              key={'' + latitude + longitude}
               position={[latitude, longitude]}
-              icon={busStopMarker}></Marker>
+              icon={plannedRouteStopMarker}></Marker>
           )
         })}
         {positions.length && (
           <Polyline
-            pathOptions={{ color: 'yellow' }}
+            pathOptions={{ color: actualRouteLineColor }}
             positions={positions.map((position) => position.loc)}
           />
         )}
       </MapContainer>
     </div>
   )
+}
+
+export function MapIndex({lineColor, imgSrc, title}: { lineColor: string, imgSrc: string, title: string}){
+  return <div className="map-index-item">
+            <p className="map-index-item-config">
+              <p className='map-index-item-line' style={{backgroundColor: lineColor}}></p>
+              <p className='map-index-item-icon' style={{backgroundImage: `url(${imgSrc})`}}>
+                {/* <img src={imgSrc} alt="planned route stop icon" /> */}
+
+              </p>
+            </p>
+            <p className="map-index-item-title">
+              <h3>{title}</h3>
+            </p>
+          </div>
 }
