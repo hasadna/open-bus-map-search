@@ -54,7 +54,7 @@
     "test:e2e:ui": "playwright test --ui",
     "test:e2e": "playwright test",
     "test:unit": "jest",
-    "test:unit:ci": "jest --collect-coverage",
+    "test:unit:ci": "jest --coverage --coverageReporters=lcov",
     "lint": "eslint . --max-warnings 0 && stylelint '**/*.{css,scss}' --max-warnings 0",
     "lint:fix": "eslint . --fix && stylelint '**/*.{css,scss}' --fix",
     "storybook": "storybook dev -p 6006",
