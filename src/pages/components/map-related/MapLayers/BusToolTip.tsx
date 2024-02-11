@@ -32,7 +32,7 @@ export function BusToolTip({ position, icon }: BusToolTipProps) {
 
   return (
     <div className={cn({ 'extend-for-json': showJson }, 'bus-tooltip')}>
-      {isLoading ? (
+      {isLoading || !siriRide ? (
         <>
           {t('loading_routes')}
           <Spin />
