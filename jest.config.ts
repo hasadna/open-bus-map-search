@@ -15,9 +15,12 @@ export default {
   ],
   collectCoverageFrom: [
     '**/src/**/*.{js,jsx,ts,tsx}',
-    '!**/**/{test_pages, complaint, DataResearch}/**',
-    '!**/src/**/{setupProxy,log}.ts',
-    '!**/*.{test,spec,config, stories}.*'
+    '!**/src/svgLoader.d.ts',
+    '!**/src/{test_pages,complaint}/**',
+    '!**/src/pages/DataResearch/**',
+    '!**/src/pages/homepage/**',
+    '!**/src/**/{setupProxy,log}.{ts,tsx}',
+    '!**/*.{test,spec,config,stories}.*'
   ],
   modulePaths: ['<rootDir>'],
   setupFilesAfterEnv: ['<rootDir>/setupTests.ts'],
