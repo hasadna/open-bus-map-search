@@ -30,12 +30,6 @@ export function BusToolTip({ position, icon }: BusToolTipProps) {
       .finally(() => setIsLoading(false))
   }, [position])
 
-  const LinkToProfile = siriRide ? (
-    <Link to={`/profile/${siriRide.gtfsRouteRouteShortName}`}>
-      {siriRide && siriRide.gtfsRouteRouteShortName}{' '}
-    </Link>
-  ) : null
-
   return (
     <div className={cn({ 'extend-for-json': showJson }, 'bus-tooltip')}>
       {isLoading ? (
@@ -47,7 +41,14 @@ export function BusToolTip({ position, icon }: BusToolTipProps) {
         <>
           <header className="header">
             <h1 className="title">
-              {t('line')} :<span>{LinkToProfile}</span>
+              {t('line')} :
+              <span>
+                {siriRide ? (
+                  <Link to={`/profile/${siriRide.gtfsRouteRouteShortName}`}>
+                    {siriRide && siriRide.gtfsRouteRouteShortName}
+                  </Link>
+                ) : null}
+              </span>
             </h1>
             <img src={icon} alt="bus icon" className="bus-icon" />
           </header>
