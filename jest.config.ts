@@ -15,9 +15,8 @@ export default {
   ],
   collectCoverageFrom: [
     '**/*.{js,jsx,ts,tsx}',
-    '!**/node_modules/**',
-    '!**/dist/**',
-    '!**/*.spec.*'
+    '!**/{node_modules,test-results,coverage,.nx,.storybook,dist}/**',
+    '!**/*.{test,spec,config}.*'
   ],
   modulePaths: ['<rootDir>'],
   setupFilesAfterEnv: ['<rootDir>/setupTests.ts'],
