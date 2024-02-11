@@ -6,7 +6,7 @@ test.describe('About Page Tests', () => {
     await page.goto('/')
     await page.getByText('אודות').click()
     await expect(page).toHaveURL(/about/)
-    const locator = await page.locator('li').filter({ hasText: 'אודות' })
+    const locator = page.locator('li').filter({ hasText: 'אודות' })
     await expect(locator).toHaveClass(/menu-item-selected/)
   })
   test('page title should be `מהו אתר “דאטאבוס”?`', async ({ page }) => {

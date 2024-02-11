@@ -31,16 +31,19 @@ export async function getRoutesAsync(
     gtfsRoutes
       .filter((route) => route.date.getDate() === toTimestamp.date())
       .map((route) => fromGtfsRoute(route))
-      .reduce((agg, line) => {
-        const groupByKey = line.key
-        const prevLine = agg[groupByKey] || { routeIds: [] }
-        agg[groupByKey] = {
-          ...line,
-          ...prevLine,
-          routeIds: [...prevLine.routeIds, ...line.routeIds],
-        }
-        return agg
-      }, {} as Record<string, BusRoute>),
+      .reduce(
+        (agg, line) => {
+          const groupByKey = line.key
+          const prevLine = agg[groupByKey] || { routeIds: [] }
+          agg[groupByKey] = {
+            ...line,
+            ...prevLine,
+            routeIds: [...prevLine.routeIds, ...line.routeIds],
+          }
+          return agg
+        },
+        {} as Record<string, BusRoute>,
+      ),
   )
   return routes
 }

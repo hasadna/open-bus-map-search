@@ -3,6 +3,7 @@
   &-line {
     &-text-field {
       width: 100%;
+
       &_visible {
         &:hover .clear-indicator,
         & .Mui-focused .clear-indicator {
@@ -10,6 +11,7 @@
           visibility: visible;
         }
       }
+
       &_hidden {
         &:hover .clear-indicator,
         & .Mui-focused .clear-indicator {
