@@ -84,7 +84,7 @@ pre {
   }
 
   > .operator-name {
-    background-color: rgba(255, 255, 255, 0.4);
+    background-color: rgb(255 255 255 / 40%);
     font-weight: bold;
   }
 }
@@ -98,8 +98,5 @@ pre {
 
 .expanded {
   position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
+  inset: 0;
 }

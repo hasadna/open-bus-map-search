@@ -4,15 +4,16 @@
   align-items: center;
   background: #fff;
 }
+
 .main-header.dark {
-  background: #141414;
+  background: #303230;
 }
 
 .theme-icon {
-  
   width: 1rem;
+  transition: all 0.1s;
+}
 
-  &:hover {
-    transform: scale(1.1); 
-  }
+.theme-icon:hover {
+  transform: scale(1.1);
 }
