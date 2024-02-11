@@ -14,8 +14,7 @@ export default {
     '/tests/', // Ignoring this folder since playwright tests are here
   ],
   collectCoverageFrom: [
-    '**/*.{js,jsx,ts,tsx}',
-    '!**/{node_modules,test-results,coverage,.nx,.storybook,dist}/**',
+    '**/src/**/*.{js,jsx,ts,tsx}',
     '!**/*.{test,spec,config}.*'
   ],
   modulePaths: ['<rootDir>'],
