@@ -15,8 +15,8 @@ export default {
   ],
   collectCoverageFrom: [
     '**/src/**/*.{js,jsx,ts,tsx}',
-    '!**/{test_pages, complaint, DataResearch}/**',
-    '!**/src/{setupProxy, log}.ts',
+    '!**/**/{test_pages, complaint, DataResearch}/**',
+    '!**/src/**/{setupProxy,log}.ts',
     '!**/*.{test,spec,config, stories}.*'
   ],
   modulePaths: ['<rootDir>'],
