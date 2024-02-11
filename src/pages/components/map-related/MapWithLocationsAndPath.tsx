@@ -36,15 +36,15 @@ export function MapWithLocationsAndPath({
   const toggleExpanded = useCallback(() => setIsExpanded((expanded) => !expanded), [])
   console.log('MapWithLocationsAndPath', `${isExpanded ? 'expanded' : 'collapsed'}`)
 
-  const getIcon = (path:string, width: number = 10, height: number = 10) : Icon<IconOptions> => {
+  const getIcon = (path: string, width: number = 10, height: number = 10): Icon<IconOptions> => {
     return new Icon<IconOptions>({
       iconUrl: path,
-      iconSize: [width, height]
+      iconSize: [width, height],
     })
   }
-  // configs for planned & actual routes - line color & marker icon 
+  // configs for planned & actual routes - line color & marker icon
   const actualRouteStopMarkerPath = '/marker-dot.png'
-  const plannedRouteStopMarkerPath = '/marker-bus-stop.png' 
+  const plannedRouteStopMarkerPath = '/marker-bus-stop.png'
   const actualRouteLineColor = 'orange'
   const plannedRouteLineColor = 'black'
   const actualRouteStopMarker = getIcon(actualRouteStopMarkerPath, 20, 20)
@@ -65,8 +65,16 @@ export function MapWithLocationsAndPath({
           url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
         />
         <div className="map-index">
-          <MapIndex lineColor={actualRouteLineColor} imgSrc={actualRouteStopMarkerPath} title={t('actualRoute')} />
-          <MapIndex lineColor={plannedRouteLineColor} imgSrc={plannedRouteStopMarkerPath} title={t('plannedRoute')} />
+          <MapIndex
+            lineColor={actualRouteLineColor}
+            imgSrc={actualRouteStopMarkerPath}
+            title={t('actualRoute')}
+          />
+          <MapIndex
+            lineColor={plannedRouteLineColor}
+            imgSrc={plannedRouteStopMarkerPath}
+            title={t('plannedRoute')}
+          />
         </div>
         {positions.map((pos, i) => {
           const icon =
@@ -85,7 +93,7 @@ export function MapWithLocationsAndPath({
             </Marker>
           )
         })}
-        
+
         {plannedRouteStops?.length && (
           <Polyline
             pathOptions={{ color: plannedRouteLineColor }}
@@ -95,15 +103,16 @@ export function MapWithLocationsAndPath({
             ])}
           />
         )}
-        {plannedRouteStops?.length && plannedRouteStops.map((stop) => {
-          const { latitude, longitude } = stop.location
-          return (
-            <Marker
-              key={'' + latitude + longitude}
-              position={[latitude, longitude]}
-              icon={plannedRouteStopMarker}></Marker>
-          )
-        })}
+        {plannedRouteStops?.length &&
+          plannedRouteStops.map((stop) => {
+            const { latitude, longitude } = stop.location
+            return (
+              <Marker
+                key={'' + latitude + longitude}
+                position={[latitude, longitude]}
+                icon={plannedRouteStopMarker}></Marker>
+            )
+          })}
         {positions.length && (
           <Polyline
             pathOptions={{ color: actualRouteLineColor }}
@@ -115,17 +124,26 @@ export function MapWithLocationsAndPath({
   )
 }
 
-export function MapIndex({lineColor, imgSrc, title}: { lineColor: string, imgSrc: string, title: string}){
-  return <div className="map-index-item">
-            <div className="map-index-item-config">
-              <p className='map-index-item-line' style={{backgroundColor: lineColor}}></p>
-              <p className='map-index-item-icon' style={{backgroundImage: `url(${imgSrc})`}}>
-                {/* <img src={imgSrc} alt="planned route stop icon" /> */}
-
-              </p>
-            </div>
-            <div className="map-index-item-title">
-              <h3>{title}</h3>
-            </div>
-          </div>
+export function MapIndex({
+  lineColor,
+  imgSrc,
+  title,
+}: {
+  lineColor: string
+  imgSrc: string
+  title: string
+}) {
+  return (
+    <div className="map-index-item">
+      <div className="map-index-item-config">
+        <p className="map-index-item-line" style={{ backgroundColor: lineColor }}></p>
+        <p className="map-index-item-icon" style={{ backgroundImage: `url(${imgSrc})` }}>
+          {/* <img src={imgSrc} alt="planned route stop icon" /> */}
+        </p>
+      </div>
+      <div className="map-index-item-title">
+        <h3>{title}</h3>
+      </div>
+    </div>
+  )
 }
