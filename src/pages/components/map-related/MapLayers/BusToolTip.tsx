@@ -43,23 +43,19 @@ export function BusToolTip({ position, icon }: BusToolTipProps) {
             <h1 className="title">
               {t('line')} :
               <span>
-                {siriRide ? (
-                  <Link to={`/profile/${siriRide.gtfsRouteRouteShortName}`}>
-                    {siriRide && siriRide.gtfsRouteRouteShortName}
-                  </Link>
-                ) : null}
+                <Link to={`/profile/${siriRide.gtfsRouteRouteShortName}`}>
+                  {siriRide.gtfsRouteRouteShortName}
+                </Link>
               </span>
             </h1>
             <img src={icon} alt="bus icon" className="bus-icon" />
           </header>
           <ul>
             <li>
-              {t('from')} :
-              <span>{siriRide && siriRide.gtfsRouteRouteLongName?.split('<->')[0]}</span>
+              {t('from')} :<span>{siriRide.gtfsRouteRouteLongName?.split('<->')[0]}</span>
             </li>
             <li>
-              {t('destination')} :
-              <span>{siriRide && siriRide.gtfsRouteRouteLongName?.split('<->')[1]}</span>
+              {t('destination')} :<span>{siriRide.gtfsRouteRouteLongName?.split('<->')[1]}</span>
             </li>
             <li>
               {t('velocity')} :<span>{`${position.point?.velocity}  ${t('kmh')}`}</span>
