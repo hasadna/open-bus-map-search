@@ -88,7 +88,7 @@ export const PAGES = [
     icon: <DollarOutlined />,
     element: null,
   },
-]
+] as const
 
 const HIDDEN_PAGES = [
   {
@@ -103,10 +103,10 @@ const HIDDEN_PAGES = [
     icon: <InfoCircleOutlined />,
     element: <DataResearch />,
   },
-]
+] as const
 
 const getRoutesList = () => {
-  const pages = PAGES.concat(HIDDEN_PAGES)
+  const pages = [...PAGES, ...HIDDEN_PAGES]
   const RedirectToDashboard = () => <Navigate to={pages[0].path} replace />
   const routes = pages.filter((r) => r.element)
   return (

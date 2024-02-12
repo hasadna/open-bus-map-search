@@ -7,7 +7,7 @@ const typescriptEslintEslintPlugin = require('@typescript-eslint/eslint-plugin')
 const typescriptEslintParser = require('@typescript-eslint/parser')
 const globals = require('globals')
 const js = require('@eslint/js')
-const eslintPluginPrettierRecommended = require('eslint-plugin-prettier/recommended');
+const eslintPluginPrettierRecommended = require('eslint-plugin-prettier/recommended')
 
 const compat = new FlatCompat({
   baseDirectory: __dirname,
@@ -24,7 +24,6 @@ module.exports = [
       '@typescript-eslint': typescriptEslintEslintPlugin,
       '@nx': nxPlugin,
       import: eslintPluginImport,
-
     },
   },
   {
@@ -53,7 +52,6 @@ module.exports = [
       'react/react-in-jsx-scope': 'off',
       '@typescript-eslint/no-explicit-any': 'warn',
       // ...eslintPluginImport.configs.recommended.rules,
-      '@typescript-eslint/no-unsafe-call': 'off',
       '@typescript-eslint/no-unsafe-member-access': 'off',
       '@typescript-eslint/no-unsafe-return': 'off',
       '@typescript-eslint/no-floating-promises': 'off',
@@ -61,16 +59,19 @@ module.exports = [
       '@typescript-eslint/no-base-to-string': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
       '@typescript-eslint/no-unsafe-argument': 'off',
-      'prettier/prettier': ['error', {
-        "semi": false,
-        "tabWidth": 2,
-        "printWidth": 100,
-        "singleQuote": true,
-        "trailingComma": "all",
-        "bracketSameLine": true,
-        "jsxSingleQuote": false,
-        "endOfLine": "auto",
-      }],
+      'prettier/prettier': [
+        'error',
+        {
+          semi: false,
+          tabWidth: 2,
+          printWidth: 100,
+          singleQuote: true,
+          trailingComma: 'all',
+          bracketSameLine: true,
+          jsxSingleQuote: false,
+          endOfLine: 'auto',
+        },
+      ],
     },
   },
   {
