@@ -8,8 +8,8 @@ test.describe('Timeline Page Tests', () => {
     await advancedRouteFromHAR('tests/HAR/timeline.har', {
       updateContent: 'embed',
       update: false,
-      notFound: 'fallback',
-      url: /stride-api/,
+      notFound: 'abort',
+      url: /stride-api\/list\?/,
       matcher: urlMatcher(),
     })
     timelinePage = new TimelinePage(page) // Initialize timelinePage before each test

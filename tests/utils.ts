@@ -4,7 +4,7 @@ import * as path from 'path'
 import * as crypto from 'crypto'
 import moment from 'moment'
 import { Matcher, test as baseTest, customMatcher } from 'playwright-advanced-har'
-import { Page } from '@playwright/test'
+import { BrowserContext, Page } from '@playwright/test'
 
 const istanbulCLIOutput = path.join(process.cwd(), '.nyc_output')
 
@@ -20,6 +20,7 @@ export const test = baseTest.extend({
         (window as any).collectIstanbulCoverage(JSON.stringify((window as any).__coverage__)),
       ),
     )
+    await setBrowserTime(getPastDate(), context)
     await fs.promises.mkdir(istanbulCLIOutput, { recursive: true })
     await context.exposeFunction('collectIstanbulCoverage', (coverageJSON: string) => {
       if (coverageJSON)
@@ -42,7 +43,7 @@ export function getPastDate(): Date {
   return moment('2024-02-12 15:00:00').toDate()
 }
 
-export async function setBrowserTime(date: Date, page: Page) {
+export async function setBrowserTime(date: Date, page: Page | BrowserContext) {
   const fakeNow = date.valueOf()
 
   // Update the Date accordingly

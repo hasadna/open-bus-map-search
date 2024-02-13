@@ -8,7 +8,7 @@ test.describe('Single line page tests', () => {
     advancedRouteFromHAR('tests/HAR/singleline.har', {
       updateContent: 'embed',
       update: false,
-      notFound: 'fallback',
+      notFound: 'abort',
       url: /stride-api/,
       matcher: urlMatcher(),
     })
