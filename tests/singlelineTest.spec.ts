@@ -1,4 +1,4 @@
-import { getPastDate, test, urlMatcher } from './utils'
+import { test, urlMatcher } from './utils'
 import SinglelinePage from '../src/test_pages/SinglelinePage'
 
 test.describe('Single line page tests', () => {
@@ -8,12 +8,11 @@ test.describe('Single line page tests', () => {
     advancedRouteFromHAR('tests/HAR/singleline.har', {
       updateContent: 'embed',
       update: false,
-      notFound: 'abort',
+      notFound: 'fallback',
       url: /stride-api/,
       matcher: urlMatcher(),
     })
     singleLinePage = new SinglelinePage(page)
-    await singleLinePage.setFakeTime(getPastDate())
     await page.goto('/')
     await page.getByText('מפה לפי קו').click()
   })

@@ -1,5 +1,5 @@
 import TimelinePage from '../src/test_pages/TimelinePage'
-import { getPastDate, test, urlMatcher } from './utils'
+import { test, urlMatcher } from './utils'
 
 test.describe('Timeline Page Tests', () => {
   let timelinePage: TimelinePage
@@ -13,7 +13,6 @@ test.describe('Timeline Page Tests', () => {
       matcher: urlMatcher(),
     })
     timelinePage = new TimelinePage(page) // Initialize timelinePage before each test
-    await timelinePage.setFakeTime(getPastDate())
     await page.goto('/')
     await page.getByText('לוח זמנים היסטורי', { exact: true }).click()
     await page.getByRole('progressbar').waitFor({ state: 'hidden' })
