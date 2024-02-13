@@ -22,4 +22,5 @@ const MainHeader = () => {
     </Header>
   )
 }
+
 export default MainHeader

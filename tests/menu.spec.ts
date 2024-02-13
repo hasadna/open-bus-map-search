@@ -12,7 +12,7 @@ test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
 })
 
 test('menu', async ({ page }) => {
-  await expect(page.locator('h1')).toContainText('דאטאבוס')
+  await expect(page.locator('h1.sidebar-logo')).toContainText('דאטאבוס')
   const menuItemsInOrder = [
     'קיום נסיעות',
     'לוח זמנים היסטורי',
