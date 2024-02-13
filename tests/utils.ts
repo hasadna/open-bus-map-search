@@ -35,10 +35,8 @@ export const test = baseTest.extend({
   },
 })
 
-export function getYesterday(): string {
-  const yesterday = moment().subtract(1, 'days')
-  const formattedDate = yesterday.format('DD/MM/YYYY')
-  return formattedDate
+export function getPastDate(): Date {
+  return moment('2024-02-12 15:00:00').toDate()
 }
 
 export function urlMatcher(): Matcher {
