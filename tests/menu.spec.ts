@@ -2,7 +2,7 @@ import { test, expect } from './utils'
 
 test('menu', async ({ page }) => {
   await page.goto('/')
-  await expect(page.locator('h1')).toContainText('דאטאבוס')
+  await expect(page.locator('h1.sidebar-logo')).toContainText('דאטאבוס')
   const menuItemsInOrder = [
     'קיום נסיעות',
     'לוח זמנים היסטורי',
