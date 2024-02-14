@@ -20,7 +20,6 @@ export const test = baseTest.extend({
         (window as any).collectIstanbulCoverage(JSON.stringify((window as any).__coverage__)),
       ),
     )
-    await setBrowserTime(getPastDate(), context)
     await fs.promises.mkdir(istanbulCLIOutput, { recursive: true })
     await context.exposeFunction('collectIstanbulCoverage', (coverageJSON: string) => {
       if (coverageJSON)

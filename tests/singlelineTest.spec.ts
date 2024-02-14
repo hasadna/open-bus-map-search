@@ -1,4 +1,4 @@
-import { test, urlMatcher } from './utils'
+import { getPastDate, test, urlMatcher } from './utils'
 import SinglelinePage from '../src/test_pages/SinglelinePage'
 
 test.describe('Single line page tests', () => {
@@ -13,6 +13,7 @@ test.describe('Single line page tests', () => {
       matcher: urlMatcher(),
     })
     singleLinePage = new SinglelinePage(page)
+    await singleLinePage.setFakeTime(getPastDate())
     await page.goto('/')
     await page.getByText('מפה לפי קו').click()
   })
