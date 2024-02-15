@@ -1,4 +1,5 @@
 import { Locator, Page, expect, test } from '@playwright/test'
+import { setBrowserTime } from 'tests/utils'
 
 export abstract class BasePage {
   constructor(protected page: Page) {}
@@ -7,6 +8,10 @@ export abstract class BasePage {
     await test.step(`Validating that a correct value of URL is ${url}`, async () => {
       await expect(this.page).toHaveURL(url)
     })
+  }
+
+  async setFakeTime(date: Date) {
+    await setBrowserTime(date, this.page)
   }
 
   protected async clickOnElement(element: Locator, timeout?: number) {

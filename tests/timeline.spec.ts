@@ -1,18 +1,26 @@
 import TimelinePage from '../src/test_pages/TimelinePage'
-import { test } from '@playwright/test'
+import { getPastDate, test, urlMatcher } from './utils'
 
 test.describe('Timeline Page Tests', () => {
   let timelinePage: TimelinePage
 
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
+    await advancedRouteFromHAR('tests/HAR/timeline.har', {
+      updateContent: 'embed',
+      update: false,
+      notFound: 'abort',
+      url: /stride-api\/list\?/,
+      matcher: urlMatcher,
+    })
     timelinePage = new TimelinePage(page) // Initialize timelinePage before each test
+    await timelinePage.setFakeTime(getPastDate())
     await page.goto('/')
     await page.getByText('לוח זמנים היסטורי', { exact: true }).click()
     await page.getByRole('progressbar').waitFor({ state: 'hidden' })
+    await timelinePage.validatePageUrl(/timeline/)
   })
 
   test('Test route selection disappears after line number is closed', async () => {
-    await timelinePage.validatePageUrl(/timeline/)
     await timelinePage.selectOperatorFromDropbox(
       timelinePage.operatorsDropDown,
       timelinePage.operatorsList,
@@ -24,7 +32,6 @@ test.describe('Timeline Page Tests', () => {
   })
 
   test('Test route selection appears after line number selected', async () => {
-    await timelinePage.validatePageUrl(/timeline/)
     await timelinePage.selectOperatorFromDropbox(
       timelinePage.operatorsDropDown,
       timelinePage.operatorsList,
@@ -35,13 +42,11 @@ test.describe('Timeline Page Tests', () => {
   })
 
   test('Test Verify no duplications in Operators list', async () => {
-    await timelinePage.validatePageUrl(/timeline/)
     await timelinePage.openSelectBox(timelinePage.operatorsDropDown)
     await timelinePage.verifyNoDuplications()
   })
 
   test('Test Verify no duplications in Route Selection list', async () => {
-    await timelinePage.validatePageUrl(/timeline/)
     await timelinePage.selectOperatorFromDropbox(
       timelinePage.operatorsDropDown,
       timelinePage.operatorsList,
@@ -54,7 +59,6 @@ test.describe('Timeline Page Tests', () => {
   })
 
   test('Test Verify the line Number is not found', async () => {
-    await timelinePage.validatePageUrl(/timeline/)
     await timelinePage.selectOperatorFromDropbox(
       timelinePage.operatorsDropDown,
       timelinePage.operatorsList,
@@ -65,7 +69,6 @@ test.describe('Timeline Page Tests', () => {
   })
 
   test('Test Verify station selection drop box appears', async () => {
-    await timelinePage.validatePageUrl(/timeline/)
     await timelinePage.selectOperatorFromDropbox(
       timelinePage.operatorsDropDown,
       timelinePage.operatorsList,
@@ -82,7 +85,6 @@ test.describe('Timeline Page Tests', () => {
   })
 
   test.fixme('Test Verify no duplications in stations list', async () => {
-    await timelinePage.validatePageUrl(/timeline/)
     await timelinePage.selectOperatorFromDropbox(
       timelinePage.operatorsDropDown,
       timelinePage.operatorsList,
@@ -104,7 +106,6 @@ test.describe('Timeline Page Tests', () => {
   test.fixme(
     'Test choosing [Operator -> Line # -> Route -> Stop station] opens the timestamp graph',
     async () => {
-      await timelinePage.validatePageUrl(/timeline/)
       await timelinePage.selectOperatorFromDropbox(
         timelinePage.operatorsDropDown,
         timelinePage.operatorsList,
