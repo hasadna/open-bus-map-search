@@ -27,7 +27,7 @@ test.describe('clearButton functionality', () => {
       update: false,
       notFound: 'abort',
       url: /stride-api/,
-      matcher: urlMatcher(),
+      matcher: urlMatcher,
     })
     setBrowserTime(getPastDate(), page)
   })

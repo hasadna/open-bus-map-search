@@ -10,7 +10,7 @@ test.describe('Timeline Page Tests', () => {
       update: false,
       notFound: 'abort',
       url: /stride-api\/list\?/,
-      matcher: urlMatcher(),
+      matcher: urlMatcher,
     })
     timelinePage = new TimelinePage(page) // Initialize timelinePage before each test
     await timelinePage.setFakeTime(getPastDate())

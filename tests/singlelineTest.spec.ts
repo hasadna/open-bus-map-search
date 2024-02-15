@@ -10,7 +10,7 @@ test.describe('Single line page tests', () => {
       update: false,
       notFound: 'abort',
       url: /stride-api/,
-      matcher: urlMatcher(),
+      matcher: urlMatcher,
     })
     singleLinePage = new SinglelinePage(page)
     await singleLinePage.setFakeTime(getPastDate())

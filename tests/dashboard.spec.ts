@@ -7,7 +7,7 @@ test.describe('dashboard tests', () => {
       update: false,
       notFound: 'abort',
       url: /stride-api/,
-      matcher: urlMatcher(),
+      matcher: urlMatcher,
     })
     await page.goto('/')
     await page.getByText('הקווים הגרועים ביותר').waitFor()

@@ -65,15 +65,15 @@ export async function setBrowserTime(date: Date, page: Page | BrowserContext) {
 }
 
 export const urlMatcher: Matcher = customMatcher({
-    urlComparator(a, b) {
-      const fieldsToRemove = ['t', 'date_from', 'date_to']
-      ;[a, b] = [a, b].map((url) => {
-        const urlObj = new URL(url)
-        fieldsToRemove.forEach((field) => urlObj.searchParams.delete(field))
-        return urlObj.toString()
-      })
-      return a === b
-    },
-  })
+  urlComparator(a, b) {
+    const fieldsToRemove = ['t', 'date_from', 'date_to']
+    ;[a, b] = [a, b].map((url) => {
+      const urlObj = new URL(url)
+      fieldsToRemove.forEach((field) => urlObj.searchParams.delete(field))
+      return urlObj.toString()
+    })
+    return a === b
+  },
+})
 
 export const expect = test.expect

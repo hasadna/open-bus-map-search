@@ -6,7 +6,7 @@ test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
     update: false,
     notFound: 'abort',
     url: /stride-api/,
-    matcher: urlMatcher(),
+    matcher: urlMatcher,
   })
   await page.goto('/')
 })
