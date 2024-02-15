@@ -46,22 +46,24 @@ export async function setBrowserTime(date: Date, page: Page | BrowserContext) {
   const fakeNow = date.valueOf()
 
   // Update the Date accordingly
-  await page.addInitScript(`{
+  await page.addInitScript((fakeNow) => {
     // Extend Date constructor to default to fakeNow
-    Date = class extends Date {
-      constructor(...args) {
+    ;(window as any).Date = class extends (window as any).Date {
+      constructor(...args: any[]) {
         if (args.length === 0) {
-          super(${fakeNow});
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+          super(fakeNow)
         } else {
-          super(...args);
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+          super(...args)
         }
       }
     }
     // Override Date.now() to start from fakeNow
-    const __DateNowOffset = ${fakeNow} - Date.now();
-    const __DateNow = Date.now;
-    Date.now = () => __DateNow() + __DateNowOffset;
-  }`)
+    const __DateNowOffset = fakeNow - Date.now()
+    const __DateNow = Date.now
+    Date.now = () => __DateNow() + __DateNowOffset
+  }, fakeNow)
 }
 
 export const urlMatcher: Matcher = customMatcher({
