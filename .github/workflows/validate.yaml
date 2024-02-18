@@ -1,6 +1,8 @@
 name: Validate
 on:
   pull_request:
+  push:
+    branches: main
 
 env:
   DOCKER_APP_IMAGE_NAME: 'ghcr.io/hasadna/open-bus-map-search/open-bus-map-search'

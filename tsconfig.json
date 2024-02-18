@@ -21,5 +21,15 @@
     "jsx": "react-jsx",
     "types": ["vite/client", "vitest/globals", "vite-plugin-svgr/client", "node"]
   },
-  "include": ["src"]
+  "include": [
+    "src",
+    "vite-env.d.ts",
+    "vite.config.ts",
+    "tests",
+    "setupTests.ts",
+    "playwright.config.ts",
+    ".storybook/preview.tsx",
+    ".storybook/main.ts",
+    "jest.config.ts"
+  ]
 }

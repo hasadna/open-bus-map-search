@@ -1,12 +1,21 @@
 import { test, expect } from './utils'
 test.describe('About Page Tests', () => {
+  test.beforeEach(({ advancedRouteFromHAR }) => {
+    advancedRouteFromHAR('tests/HAR/clearbutton.har', {
+      updateContent: 'embed',
+      update: false,
+      notFound: 'abort',
+      url: /stride-api/,
+    })
+  })
+
   test('after clicking "about" menu item, user should redirect to "about" page', async ({
     page,
   }) => {
     await page.goto('/')
     await page.getByText('אודות').click()
     await expect(page).toHaveURL(/about/)
-    const locator = await page.locator('li').filter({ hasText: 'אודות' })
+    const locator = page.locator('li').filter({ hasText: 'אודות' })
     await expect(locator).toHaveClass(/menu-item-selected/)
   })
   test('page title should be `מהו אתר “דאטאבוס”?`', async ({ page }) => {

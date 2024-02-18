@@ -1,9 +1,10 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-return */
 import * as fs from 'fs'
 import * as path from 'path'
 import * as crypto from 'crypto'
 import moment from 'moment'
-import { test as baseTest } from 'playwright-advanced-har'
+import { Matcher, test as baseTest, customMatcher } from 'playwright-advanced-har'
+import { BrowserContext, Page } from '@playwright/test'
 
 const istanbulCLIOutput = path.join(process.cwd(), '.nyc_output')
 
@@ -15,6 +16,7 @@ export const test = baseTest.extend({
   context: async ({ context }, use) => {
     await context.addInitScript(() =>
       window.addEventListener('beforeunload', () =>
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- window will always stay `any`, see: https://github.com/hasadna/open-bus-map-search/issues/450#issuecomment-1931862354
         (window as any).collectIstanbulCoverage(JSON.stringify((window as any).__coverage__)),
       ),
     )
@@ -29,16 +31,51 @@ export const test = baseTest.extend({
     await use(context)
     for (const page of context.pages()) {
       await page.evaluate(() =>
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- window will always stay `any`, see: https://github.com/hasadna/open-bus-map-search/issues/450#issuecomment-1931862354
         (window as any).collectIstanbulCoverage(JSON.stringify((window as any).__coverage__)),
       )
     }
   },
 })
 
-export function getYesterday(): string {
-  const yesterday = moment().subtract(1, 'days')
-  const formattedDate = yesterday.format('DD/MM/YYYY')
-  return formattedDate
+export function getPastDate(): Date {
+  return moment('2024-02-12 15:00:00').toDate()
 }
+
+export async function setBrowserTime(date: Date, page: Page | BrowserContext) {
+  const fakeNow = date.valueOf()
+
+  // Update the Date accordingly
+  await page.addInitScript((fakeNow) => {
+    // Extend Date constructor to default to fakeNow
+    ;(window as any).Date = class extends (window as any).Date {
+      constructor(...args: any[]) {
+        if (args.length === 0) {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+          super(fakeNow)
+        } else {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+          super(...args)
+        }
+      }
+    }
+    // Override Date.now() to start from fakeNow
+    const __DateNowOffset = fakeNow - Date.now()
+    const __DateNow = Date.now
+    Date.now = () => __DateNow() + __DateNowOffset
+  }, fakeNow)
+}
+
+export const urlMatcher: Matcher = customMatcher({
+  urlComparator(a, b) {
+    const fieldsToRemove = ['t', 'date_from', 'date_to']
+    ;[a, b] = [a, b].map((url) => {
+      const urlObj = new URL(url)
+      fieldsToRemove.forEach((field) => urlObj.searchParams.delete(field))
+      return urlObj.toString()
+    })
+    return a === b
+  },
+})
 
 export const expect = test.expect

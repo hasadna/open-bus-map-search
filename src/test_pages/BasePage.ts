@@ -1,4 +1,5 @@
 import { Locator, Page, expect, test } from '@playwright/test'
+import { setBrowserTime } from 'tests/utils'
 
 export abstract class BasePage {
   constructor(protected page: Page) {}
@@ -9,9 +10,14 @@ export abstract class BasePage {
     })
   }
 
+  async setFakeTime(date: Date) {
+    await setBrowserTime(date, this.page)
+  }
+
   protected async clickOnElement(element: Locator, timeout?: number) {
-    await test.step(`Click on ${element}`, async () => {
-      await element.click({ timeout: timeout || 0 })
+    // TODO: make sure that element.toString() doesn't make [object Object]
+    await test.step(`Click on ${element.toString()}`, async () => {
+      await element.click({ timeout })
     })
   }
 
@@ -42,5 +48,13 @@ export abstract class BasePage {
       await this.clickOnElement(dropElement)
       await this.clickOnElement(optionsListElement.locator(`//li[text()='${optionToSelect}']`))
     })
+  }
+
+  protected async getAllOptions_Dropbox() {
+    let options: Locator[] = []
+    await test.step(`select all Options from dropBox`, async () => {
+      options = await this.page.getByRole('option').all()
+    })
+    return options
   }
 }

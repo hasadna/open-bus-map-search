@@ -16,7 +16,6 @@
 .env.development.local
 .env.test.local
 .env.production.local
-.vscode
 
 npm-debug.log*
 
@@ -24,9 +23,10 @@ npm-debug.log*
 /test-results/
 /playwright-report/
 /playwright/.cache/
-.vscode/settings.json
 
 **/traces
 **/node_modules
 
 storybook-static
+
+.nx/cache
