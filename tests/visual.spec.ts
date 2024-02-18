@@ -1,11 +1,11 @@
-import { test, expect } from './utils'
-import { Eyes, Target, BatchInfo } from '@applitools/eyes-playwright'
-import userName from 'git-user-name'
+import { test } from './utils'
+import { Eyes, Target } from '@applitools/eyes-playwright'
+import username from 'git-username'
 
 test.describe('Visual Tests', () => {
   const eyes = new Eyes()
-  test.beforeAll(async () => {
-    eyes.setBatch(userName() + ' is testing openbus ' + new Date().toLocaleString().split(',')[0])
+  test.beforeAll(() => {
+    eyes.setBatch(username() + ' is testing openbus ' + new Date().toLocaleString().split(',')[0])
   })
 
   test.beforeEach(async ({ page }, testinfo) => {
