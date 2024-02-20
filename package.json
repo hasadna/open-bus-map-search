@@ -32,7 +32,7 @@
     "react-leaflet-cluster": "^2.1.0",
     "react-router-dom": "^6.6.1",
     "recharts": "^2.10.4",
-    "sass": "^1.58.3",
+    "sass": "^1.71.0",
     "styled-components": "^5.3.5",
     "stylis-plugin-rtl": "^2.1.1",
     "typescript": "^5.2.2",
