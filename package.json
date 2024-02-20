@@ -116,7 +116,7 @@
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
     "jest-svg-transformer": "^1.0.0",
-    "jsdom": "^22.1.0",
+    "jsdom": "^24.0.0",
     "nx": "^17.3.0",
     "openapi-typescript-codegen": "^0.23.0",
     "playwright-advanced-har": "^1.2.1",
