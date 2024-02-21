@@ -10,7 +10,7 @@ import {
 
 import './ArrivalByTimeChats.scss'
 import { useMemo } from 'react'
-import moment from 'moment-timezone'
+import moment from 'moment'
 
 export const arrayGroup = function <T>(array: T[], f: (item: T) => string) {
   const groups: Record<string, T[]> = {}
@@ -24,6 +24,17 @@ export const arrayGroup = function <T>(array: T[], f: (item: T) => string) {
   })
 }
 
+// create a range of dates between min and max
+const getRange = (start: string, end: string, interval: 'hour' | 'day') => {
+  const startTime = new Date(start),
+    endTime = new Date(end)
+  const interval_ms = (interval == 'hour' ? 1 : 24) * 60 * 60 * 1000
+  const result = new Array((endTime.getTime() - startTime.getTime()) / interval_ms)
+    .fill(null)
+    .map((_, i) => new Date(startTime.getTime() + i * interval_ms).toISOString())
+  return result
+}
+
 export default function ArrivalByTimeChart({
   data,
   operatorId,
@@ -34,128 +45,102 @@ export default function ArrivalByTimeChart({
     current: number
     max: number
     percent: number | null
-    gtfs_route_date: string
-    gtfs_route_hour: string
+    // iso string, can be sorted. TODO: better type definitions
+    gtfs_route_date?: string
+    gtfs_route_hour?: string
   }[]
   operatorId: string
 }) {
-  data = useMemo(() => {
-    let newData = data.filter((item) => !operatorId || item.id === operatorId)
-    if (newData[0]?.gtfs_route_hour) {
-      const fillerArray = []
-      for (const currentId of new Set(newData.map((i) => parseInt(i.id)))) {
-        const allPoints = newData
-          .filter((e) => parseInt(e.id) === currentId)
-          .sort((a, b) => (moment(a.gtfs_route_hour).isAfter(b.gtfs_route_hour) ? 1 : -1))
-        if (allPoints[0]) {
-          // Start gap
-          for (
-            let startHour = moment(allPoints[0].gtfs_route_hour).hour();
-            startHour > 0;
-            startHour--
-          ) {
-            fillerArray.push({
-              ...allPoints[0],
-              max: 0,
-              current: 0,
-              percent: null,
-              gtfs_route_hour: moment(allPoints[0].gtfs_route_hour)
-                .subtract(startHour, 'hours')
-                .toISOString(),
-            })
-          }
-          // During gap
-          let lastHour = allPoints[0].gtfs_route_hour
-          allPoints.forEach((entry) => {
-            for (
-              let delta = moment(entry.gtfs_route_hour).diff(moment(lastHour), 'hours');
-              delta > 1;
-              delta--
-            ) {
-              const currentHour = moment(lastHour).add(1, 'hours').local().toISOString()
-              fillerArray.push({
-                ...entry,
-                percent: null,
-                current: 0,
-                max: 0,
-                gtfs_route_hour: currentHour,
-              })
-              lastHour = currentHour
-            }
-            lastHour = entry.gtfs_route_hour
-          })
+  if (operatorId) data = data.filter((item) => item.id === operatorId)
+  const dataByOperator = useMemo(() => {
+    // find the min and max time, to create a range of dates / hours for the x axis
+    const times = data.map((item) => item.gtfs_route_date ?? item.gtfs_route_hour!).filter(Boolean)
+    if (times.length === 0) return []
+    const minTime = times.reduce((a, b) => (a < b ? a : b))
+    const maxTime = times.reduce((a, b) => (a > b ? a : b))
+
+    const range = getRange(minTime, maxTime, data[0].gtfs_route_hour ? 'hour' : 'day')
+
+    const pointsPerOperator = arrayGroup(data, (item) => item.id).map((operatorData) => {
+      return range.map((time) => {
+        const current = operatorData.find(
+          (item) => time.includes(item.gtfs_route_date!) || time.includes(item.gtfs_route_hour!),
+        )
+        return {
+          id: operatorData[0].id,
+          name: operatorData[0].name,
+          current: current?.current || 0,
+          max: current?.max || 0,
+          percent: current ? (current.current / current.max) * 100 : null,
+          ...(data[0]?.gtfs_route_hour ? { gtfs_route_hour: time } : { gtfs_route_date: time }),
+          time,
         }
-      }
-      newData = newData.concat(fillerArray)
-    }
-    return newData
-  }, [data, operatorId])
+      })
+    })
+
+    return pointsPerOperator.filter((operator) => operator.reduce((a, b) => a + b.current, 0) > 1) // filter out operators with no data
+  }, [data])
+
   return (
     <div className="chart">
-      {arrayGroup(data, (item) => item.id)
-        .filter((group) => group.length > 1 && group.reduce((a, b) => a + b.current, 0) > 1)
-        .map((group) => (
-          <div key={group[0].name}>
-            <h3 className="title">{group[0].name}</h3>
-            <ResponsiveContainer debounce={1000} height={300}>
-              <LineChart
-                data={group.sort((a, b) => {
-                  const sortBy = group[0].gtfs_route_hour ? 'gtfs_route_hour' : 'gtfs_route_date'
-                  return moment(a[sortBy]).isAfter(moment(b[sortBy])) ? 1 : -1
-                })}
-                margin={{
-                  right: 35,
-                }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis
-                  dataKey={group[0].gtfs_route_date ? 'gtfs_route_date' : 'gtfs_route_hour'}
-                  tickFormatter={(tick) => moment(tick).format('dddd')}
-                  interval={group[0].gtfs_route_hour ? 23 : 0}
-                />
-                <YAxis domain={[0, 100]} tickMargin={35} unit={'%'} />
-                <Tooltip
-                  content={({ payload }) =>
-                    payload?.[0] && (
-                      <>
-                        <ul>
-                          <li>
-                            <span className="label">זמן: </span>
-                            <span className="value">
-                              {payload[0].payload.gtfs_route_date
-                                ? moment
-                                    .utc(payload[0].payload.gtfs_route_date)
-                                    .format('יום ddd, L')
-                                : moment(payload[0].payload.gtfs_route_hour).format('L, LT')}
-                            </span>
-                          </li>
-                          <li>
-                            <span className="label">ביצוע: </span>
-                            <span className="value">{payload[0].payload.current}</span>
-                          </li>
-                          <li>
-                            <span className="label">תכנון: </span>
-                            <span className="value">{payload[0].payload.max}</span>
-                          </li>
-                          <li>
-                            <span className="label">דיוק: </span>
-                            <span className="value">
-                              {(
-                                (payload[0].payload.current / payload[0].payload.max) *
-                                100
-                              ).toFixed(2)}
-                              %
-                            </span>
-                          </li>
-                        </ul>
-                      </>
-                    )
-                  }
-                />
-                <Line type="monotone" dataKey="percent" stroke="#8884d8" activeDot={{ r: 8 }} />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        ))}
+      {dataByOperator.map((operatorData) => (
+        <div key={operatorData[0].name}>
+          <h3 className="title">{operatorData[0].name}</h3>
+          <ResponsiveContainer debounce={1000} height={300}>
+            <LineChart
+              data={operatorData}
+              margin={{
+                right: 35,
+              }}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis
+                dataKey={
+                  'gtfs_route_date' in operatorData[0] ? 'gtfs_route_date' : 'gtfs_route_hour'
+                }
+                tickFormatter={(tick) => moment(tick).format('dddd')}
+                interval={'gtfs_route_hour' in operatorData[0] ? 23 : 0}
+              />
+              <YAxis domain={[0, 100]} tickMargin={35} unit={'%'} />
+              <Tooltip
+                content={({ payload }) =>
+                  payload?.[0] && (
+                    <>
+                      <ul>
+                        <li>
+                          <span className="label">זמן: </span>
+                          <span className="value">
+                            {payload[0].payload.gtfs_route_date
+                              ? moment.utc(payload[0].payload.gtfs_route_date).format('יום ddd, L')
+                              : moment(payload[0].payload.gtfs_route_hour).format('יום ddd, L, LT')}
+                          </span>
+                        </li>
+                        <li>
+                          <span className="label">ביצוע: </span>
+                          <span className="value">{payload[0].payload.current}</span>
+                        </li>
+                        <li>
+                          <span className="label">תכנון: </span>
+                          <span className="value">{payload[0].payload.max}</span>
+                        </li>
+                        <li>
+                          <span className="label">דיוק: </span>
+                          <span className="value">
+                            {((payload[0].payload.current / payload[0].payload.max) * 100).toFixed(
+                              2,
+                            )}
+                            %
+                          </span>
+                        </li>
+                      </ul>
+                    </>
+                  )
+                }
+              />
+              <Line type="monotone" dataKey="percent" stroke="#8884d8" activeDot={{ r: 8 }} />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      ))}
     </div>
   )
 }
