@@ -33,7 +33,7 @@
     "react-router-dom": "^6.6.1",
     "recharts": "^2.10.4",
     "sass": "^1.58.3",
-    "styled-components": "^5.3.5",
+    "styled-components": "^6.1.8",
     "stylis-plugin-rtl": "^2.1.1",
     "typescript": "^5.2.2",
     "underscore.string": "^3.3.6",
