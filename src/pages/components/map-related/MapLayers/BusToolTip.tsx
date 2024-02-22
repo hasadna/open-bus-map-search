@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { Point } from 'src/pages/realtimeMap'
 import { Button } from '@mui/material'
 import moment from 'moment-timezone'
@@ -28,9 +29,10 @@ export function BusToolTip({ position, icon }: BusToolTipProps) {
       .then((siriRideRes: SiriRideWithRelatedPydanticModel) => setSiriRide(siriRideRes))
       .finally(() => setIsLoading(false))
   }, [position])
+
   return (
     <div className={cn({ 'extend-for-json': showJson }, 'bus-tooltip')}>
-      {isLoading ? (
+      {isLoading || !siriRide ? (
         <>
           {t('loading_routes')}
           <Spin />
@@ -39,18 +41,21 @@ export function BusToolTip({ position, icon }: BusToolTipProps) {
         <>
           <header className="header">
             <h1 className="title">
-              {t('line')} :<span>{siriRide && siriRide.gtfsRouteRouteShortName}</span>
+              {t('line')} :
+              <span>
+                <Link to={`/profile/${siriRide.gtfsRouteRouteShortName}`}>
+                  {siriRide.gtfsRouteRouteShortName}
+                </Link>
+              </span>
             </h1>
             <img src={icon} alt="bus icon" className="bus-icon" />
           </header>
           <ul>
             <li>
-              {t('from')} :
-              <span>{siriRide && siriRide.gtfsRouteRouteLongName?.split('<->')[0]}</span>
+              {t('from')} :<span>{siriRide.gtfsRouteRouteLongName?.split('<->')[0]}</span>
             </li>
             <li>
-              {t('destination')} :
-              <span>{siriRide && siriRide.gtfsRouteRouteLongName?.split('<->')[1]}</span>
+              {t('destination')} :<span>{siriRide.gtfsRouteRouteLongName?.split('<->')[1]}</span>
             </li>
             <li>
               {t('velocity')} :<span>{`${position.point?.velocity}  ${t('kmh')}`}</span>
