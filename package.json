@@ -90,7 +90,7 @@
     "@storybook/addon-onboarding": "^1.0.8",
     "@storybook/blocks": "^7.5.3",
     "@storybook/react": "^7.5.3",
-    "@storybook/react-vite": "^7.5.3",
+    "@storybook/react-vite": "^7.6.17",
     "@storybook/testing-library": "^0.2.2",
     "@swc/cli": "^0.1.65",
     "@swc/core": "^1.3.105",
