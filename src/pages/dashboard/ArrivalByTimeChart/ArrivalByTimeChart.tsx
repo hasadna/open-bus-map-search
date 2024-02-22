@@ -12,20 +12,32 @@ import './ArrivalByTimeChats.scss'
 import { useMemo } from 'react'
 import moment from 'moment'
 
-export const arrayGroup = function <T>(array: T[], f: (item: T) => string) {
+/**
+ * Returns a new array grouped by item's a property value
+ * @param array Data to group
+ * @param f A function that returns a group name
+ * @returns new array ordered by the `f()` return
+ */
+export const arrayGroup = function <T>(array: T[], callback: (item: T) => string) {
   const groups: Record<string, T[]> = {}
-  array.forEach(function (o) {
-    const group = f(o)
-    groups[group] = groups[group] || []
-    groups[group].push(o)
+  array.forEach(function (item) {
+    const groupName = callback(item)
+    groups[groupName] = groups[groupName] || []
+    groups[groupName].push(item)
   })
   return Object.keys(groups).map(function (group) {
     return groups[group]
   })
 }
 
-// create a range of dates between min and max
-const getRange = (start: string, end: string, interval: 'hour' | 'day') => {
+/**
+ * Creates an ISO string array between 2 points guided by an interval.
+ * @param start ISO string (included)
+ * @param end ISO string (excluded)
+ * @param interval hour | day
+ * @returns an array filled with dates from start to end (excluded)
+ */
+export const getRange = (start: string, end: string, interval: 'hour' | 'day') => {
   const startTime = new Date(start),
     endTime = new Date(end)
   const interval_ms = (interval == 'hour' ? 1 : 24) * 60 * 60 * 1000
@@ -45,7 +57,6 @@ export default function ArrivalByTimeChart({
     current: number
     max: number
     percent: number | null
-    // iso string, can be sorted. TODO: better type definitions
     gtfs_route_date?: string
     gtfs_route_hour?: string
   }[]
@@ -53,11 +64,11 @@ export default function ArrivalByTimeChart({
 }) {
   if (operatorId) data = data.filter((item) => item.id === operatorId)
   const dataByOperator = useMemo(() => {
-    // find the min and max time, to create a range of dates / hours for the x axis
-    const times = data.map((item) => item.gtfs_route_date ?? item.gtfs_route_hour!).filter(Boolean)
-    if (times.length === 0) return []
-    const minTime = times.reduce((a, b) => (a < b ? a : b))
-    const maxTime = times.reduce((a, b) => (a > b ? a : b))
+    const allTimes = data.map((item) => item.gtfs_route_date ?? item.gtfs_route_hour!)
+      .filter(Boolean)
+    if (allTimes.length === 0) return []
+    const minTime = allTimes.reduce((a, b) => (a < b ? a : b))
+    const maxTime = allTimes.reduce((a, b) => (a > b ? a : b))
 
     const range = getRange(minTime, maxTime, data[0].gtfs_route_hour ? 'hour' : 'day')
 
