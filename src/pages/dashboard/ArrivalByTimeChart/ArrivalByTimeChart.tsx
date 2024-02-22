@@ -13,10 +13,10 @@ import { useMemo } from 'react'
 import moment from 'moment'
 
 /**
- * Returns a new array grouped by item's a property value
- * @param array Data to group
- * @param f A function that returns a group name
- * @returns new array ordered by the `f()` return
+ * Group array items by a common property value returned from the callback (ie. group by value of id).
+ * @param array Data array
+ * @param callback A callback that returns a group name
+ * @returns New grouped array
  */
 export const arrayGroup = function <T>(array: T[], callback: (item: T) => string) {
   const groups: Record<string, T[]> = {}
@@ -64,16 +64,16 @@ export default function ArrivalByTimeChart({
 }) {
   if (operatorId) data = data.filter((item) => item.id === operatorId)
   const dataByOperator = useMemo(() => {
-    const allTimes = data.map((item) => item.gtfs_route_date ?? item.gtfs_route_hour!)
+    const allTimes = data
+      .map((item) => item.gtfs_route_date ?? item.gtfs_route_hour!)
       .filter(Boolean)
     if (allTimes.length === 0) return []
     const minTime = allTimes.reduce((a, b) => (a < b ? a : b))
     const maxTime = allTimes.reduce((a, b) => (a > b ? a : b))
-
-    const range = getRange(minTime, maxTime, data[0].gtfs_route_hour ? 'hour' : 'day')
+    const allRange = getRange(minTime, maxTime, data[0].gtfs_route_hour ? 'hour' : 'day')
 
     const pointsPerOperator = arrayGroup(data, (item) => item.id).map((operatorData) => {
-      return range.map((time) => {
+      return allRange.map((time) => {
         const current = operatorData.find(
           (item) => time.includes(item.gtfs_route_date!) || time.includes(item.gtfs_route_hour!),
         )
@@ -84,7 +84,6 @@ export default function ArrivalByTimeChart({
           max: current?.max || 0,
           percent: current ? (current.current / current.max) * 100 : null,
           ...(data[0]?.gtfs_route_hour ? { gtfs_route_hour: time } : { gtfs_route_date: time }),
-          time,
         }
       })
     })
