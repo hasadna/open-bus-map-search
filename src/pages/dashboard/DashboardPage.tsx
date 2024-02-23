@@ -56,6 +56,7 @@ const DashboardPage = () => {
             <DateSelector
               time={endDate}
               onChange={(data) => setEndDate(data)}
+              startDate={startDate}
               customLabel={t('end')}
             />
           </Grid>
