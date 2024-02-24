@@ -19,7 +19,7 @@ import {
 import { PageContainer } from '../components/PageContainer'
 import { getColorName } from '../dashboard/AllLineschart/OperatorHbarChart/OperatorHbarChart'
 import './DataResearch.scss'
-import OperatorSelector, { FilterOperatorOptions } from '../components/OperatorSelector'
+import OperatorSelector from '../components/OperatorSelector'
 
 const now = moment()
 const unique: (value: string, index: number, self: string[]) => boolean = (value, index, self) =>
@@ -126,11 +126,7 @@ function StackedResearchInputs({
             customLabel={t('end')}
           />
         </Grid>
-        <OperatorSelector
-          operatorId={operatorId}
-          setOperatorId={setOperatorId}
-          filter={FilterOperatorOptions.ALL}
-        />
+        <OperatorSelector operatorId={operatorId} setOperatorId={setOperatorId} />
       </Grid>
       <label>
         <input
