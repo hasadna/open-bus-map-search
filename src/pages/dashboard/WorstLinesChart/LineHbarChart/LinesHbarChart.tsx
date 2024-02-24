@@ -4,7 +4,6 @@ import { getColorName } from '../../AllLineschart/OperatorHbarChart/OperatorHbar
 function LinesHbarChart({
   lines,
   complement = false, // complement the chart (100% - actual) instead of actual
-  operators_whitelist = [],
 }: {
   lines: {
     id: string
@@ -15,7 +14,8 @@ function LinesHbarChart({
     actual: number
   }[]
   complement?: boolean
-  operators_whitelist?: Array<string>
+  operators_whitelist?: string[]
+  defaultOperators?: string[]
 }) {
   const percents = lines
     .map((o) => (o.actual / o.total) * 100)
@@ -35,9 +35,6 @@ function LinesHbarChart({
       entries={rows
         .sort((a, b) => a.actual / a.total - b.actual / b.total)
         .filter((line) => line.total > 10)
-        .filter(
-          (line) => !operators_whitelist.length || operators_whitelist.includes(line.operator_name),
-        )
         .filter((line) => line.actual / line.total > 0.4)
         .slice(0, 200)}
       complement={complement}

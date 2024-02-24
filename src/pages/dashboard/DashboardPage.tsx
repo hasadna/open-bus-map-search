@@ -18,7 +18,6 @@ import OperatorSelector from 'src/pages/components/OperatorSelector'
 import DayTimeChart from './ArrivalByTimeChart/DayTimeChart'
 import AllLinesChart from './AllLineschart/AllLinesChart'
 import WorstLinesChart from './WorstLinesChart/WorstLinesChart'
-import { MAJOR_OPERATORS } from 'src/model/operator'
 
 // Declarations
 const { Title } = Typography
@@ -63,11 +62,7 @@ const DashboardPage = () => {
         </Grid>
 
         <Grid lg={6} xs={12}>
-          <OperatorSelector
-            operatorId={operatorId}
-            setOperatorId={setOperatorId}
-            filter={MAJOR_OPERATORS}
-          />
+          <OperatorSelector operatorId={operatorId} setOperatorId={setOperatorId} />
         </Grid>
       </Grid>
       <Grid container spacing={2} alignItems="flex-start">

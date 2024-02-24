@@ -5,7 +5,7 @@ export type Operator = {
   id: string
 }
 
-export const MAJOR_OPERATORS = ['3', '5', '15', '18', '25', '34']
+export const MAJOR_OPERATORS = ['3', '5', '15', '18', '25', '34'] // ['אלקטרה אפיקים', 'דן', 'מטרופולין', 'קווים', 'אגד', 'תנופה']
 
 /**
  * Get operators list, based on agencies fetched from MOT api
