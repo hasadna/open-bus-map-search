@@ -1,41 +1,24 @@
-import getAgencyList, { Agency } from 'src/api/agencyList'
+import getAgencyList from 'src/api/agencyList'
 
 export type Operator = {
   name: string
   id: string
 }
 
-export const getRelevantOperators = async (onlyRelevantOperators: boolean) => {
-  const agencyList = await getAgencyList()
-  if (!onlyRelevantOperators) {
-    const allOperators = agencyList.map((agency) => ({
-      name: agency.agency_name,
-      id: agency.operator_ref.toString(),
-    }))
-    return allOperators
-  }
-  const relevant = [
-    'אגד',
-    'אגד תעבורה',
-    'אלקטרה אפיקים',
-    'דן',
-    'מטרופולין',
-    'נתיב אקספרס',
-    'סופרבוס',
-    'קווים',
-    'תנופה',
-  ]
-  const agencyMap: Map<string, Agency> = new Map()
-  agencyList.forEach((obj) => {
-    if (obj) {
-      agencyMap.set(obj.agency_name, obj)
-    }
-  })
+export const MAJOR_OPERATORS = ['3', '5', '15', '18', '25', '34']
 
-  const res = relevant.reduce((acc: Operator[], name: string): Operator[] => {
-    return agencyMap.has(name)
-      ? [...acc, { name, id: (agencyMap.get(name) as Agency).operator_ref.toString() }]
-      : acc
-  }, [])
-  return res
+/**
+ * Get operators list, based on agencies fetched from MOT api
+ * @param filter Operator ID list
+ * @returns List of operators
+ */
+export async function getOperators(filter?: string[]): Promise<Operator[]> {
+  const agencyList = await getAgencyList()
+  const allOperators: Operator[] = agencyList.map((agency) => ({
+    name: agency.agency_name,
+    id: agency.operator_ref.toString(),
+  }))
+  const res = allOperators.filter((op, i, a) => a.findIndex((op2) => op2.id === op.id) === i) // Filter duplicates
+
+  return !filter ? res : res.filter((operator) => filter.includes(operator.id))
 }
