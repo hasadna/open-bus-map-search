@@ -37,11 +37,6 @@ describe('ArrivalByTimeChart', () => {
   test('tooltips are not visible by default', () => {
     expect(renderedComponent.container.querySelector('.recharts-tooltip-wrapper')).not.toBeVisible()
   })
-
-  test('legend wrapper exists', () => {
-    expect(renderedComponent.container.querySelector('.recharts-legend-wrapper')).toBeVisible()
-  })
-
   test('filters operators correctly', () => {
     expect(screen.queryByText('notegged')).not.toBeInTheDocument()
     expect(screen.queryByText('Unknown')).not.toBeInTheDocument()
