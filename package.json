@@ -9,7 +9,7 @@
     "@mui/material": "^5.15.10",
     "@mui/x-date-pickers": "^6.19.4",
     "@types/leaflet.markercluster": "^1.5.2",
-    "@vitejs/plugin-react-swc": "^3.4.0",
+    "@vitejs/plugin-react-swc": "^3.6.0",
     "antd": "^5.14.2",
     "axios": "^1.6.7",
     "babel-plugin-transform-import-meta": "^2.2.1",
