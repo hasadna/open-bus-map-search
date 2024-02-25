@@ -59,6 +59,7 @@ module.exports = [
       '@typescript-eslint/no-base-to-string': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
       '@typescript-eslint/no-unsafe-argument': 'off',
+      "import/no-unused-modules": [1, {"unusedExports": true}],
       'prettier/prettier': [
         'error',
         {
