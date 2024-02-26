@@ -1,4 +1,5 @@
 import { Locator, Page, expect, test } from '@playwright/test'
+import { setBrowserTime } from 'tests/utils'
 
 export abstract class BasePage {
   constructor(protected page: Page) {}
@@ -9,10 +10,14 @@ export abstract class BasePage {
     })
   }
 
+  async setFakeTime(date: Date) {
+    await setBrowserTime(date, this.page)
+  }
+
   protected async clickOnElement(element: Locator, timeout?: number) {
     // TODO: make sure that element.toString() doesn't make [object Object]
     await test.step(`Click on ${element.toString()}`, async () => {
-      await element.click({ timeout: timeout || 0 })
+      await element.click({ timeout })
     })
   }
 

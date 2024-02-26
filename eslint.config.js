@@ -83,6 +83,7 @@ module.exports = [
       'storybook-static',
       'eslint.config.js',
       '.nx',
+      'jest.config.ts'
     ],
   },
 ]

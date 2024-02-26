@@ -29,6 +29,7 @@
     "setupTests.ts",
     "playwright.config.ts",
     ".storybook/preview.tsx",
-    ".storybook/main.ts"
+    ".storybook/main.ts",
+    "jest.config.ts"
   ]
 }
