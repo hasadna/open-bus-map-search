@@ -12,7 +12,9 @@ const About = lazy(() => import('../pages/about'))
 const Profile = lazy(() => import('../pages/Profile'))
 const BugReportForm = lazy(() => import('../pages/BugReportForm '))
 const DataResearch = lazy(() =>
-  import('../pages/DataResearch/DataResearch').then((m) => ({ default: m.DataResearch })),
+  import('../pages/DataResearch/DataResearch').then((m) => ({
+    default: m.DataResearch,
+  })),
 )
 
 import {
@@ -26,6 +28,7 @@ import {
   BugOutlined,
   BarChartOutlined,
   LineChartOutlined,
+  GithubOutlined,
 } from '@ant-design/icons'
 import { MainRoute } from './MainRoute'
 import { ErrorPage } from 'src/pages/ErrorPage'
@@ -76,6 +79,9 @@ export const PAGES = [
     icon: <InfoCircleOutlined />,
     element: <About />,
   },
+] as const
+
+export const HEADER_LINKS = [
   {
     label: 'report_a_bug_title',
     path: 'report-a-bug',
@@ -88,7 +94,13 @@ export const PAGES = [
     icon: <DollarOutlined />,
     element: null,
   },
-] as const
+  {
+    label: 'github_link',
+    path: 'https://github.com/hasadna/open-bus-map-search',
+    icon: <GithubOutlined />,
+    element: null,
+  },
+]
 
 const HIDDEN_PAGES = [
   {
@@ -106,7 +118,7 @@ const HIDDEN_PAGES = [
 ] as const
 
 const getRoutesList = () => {
-  const pages = [...PAGES, ...HIDDEN_PAGES]
+  const pages = [...PAGES, ...HIDDEN_PAGES, ...HEADER_LINKS]
   const RedirectToDashboard = () => <Navigate to={pages[0].path} replace />
   const routes = pages.filter((r) => r.element)
   return (
