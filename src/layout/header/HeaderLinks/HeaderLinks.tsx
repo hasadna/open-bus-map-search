@@ -1,7 +1,6 @@
 import { FC, ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { TFunction } from 'i18next/typescript/t'
 
 import './HeaderLinks.scss'
 import { HEADER_LINKS } from 'src/routes'
@@ -12,7 +11,7 @@ type ExternalLinkType = {
     path: string
     icon: ReactNode
   }
-  t: TFunction<'translation', undefined>
+  t: (key: string) => string
 }
 
 type InternalLinkType = ExternalLinkType & {
