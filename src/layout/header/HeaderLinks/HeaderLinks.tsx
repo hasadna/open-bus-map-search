@@ -12,7 +12,7 @@ type ExternalLinkType = {
     path: string
     icon: ReactNode
   }
-  t: TFunction<'translation', undefined>
+  t: (key: string) => string
 }
 
 type InternalLinkType = ExternalLinkType & {
