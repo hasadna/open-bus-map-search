@@ -1,42 +1,29 @@
-import { FC, ReactNode } from 'react'
+import { FC } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
 import './HeaderLinks.scss'
 import { HEADER_LINKS } from 'src/routes'
 
-type ExternalLinkType = {
-  component: {
-    label: string
-    path: string
-    icon: ReactNode
-  }
-  t: (key: string) => string
-}
-
-type InternalLinkType = ExternalLinkType & {
-  component: ExternalLinkType['component'] & {
-    element: ReactNode
-  }
-}
+type LinkType = { component: (typeof HEADER_LINKS)[number] }
 
 const HeaderLinks: FC = () => {
-  const { t } = useTranslation()
   return (
     <div className="header-links">
       {HEADER_LINKS.map((item) => {
-        if (item.element == null) {
-          return <ExternalLink key={item.label} component={item} t={t} />
+        if (item.element === null) {
+          return <ExternalLink key={item.label} component={item} />
         } else {
-          return <InternalLink key={item.label} component={item} t={t} />
+          return <InternalLink key={item.label} component={item} />
         }
       })}
     </div>
   )
 }
 
-const ExternalLink: FC<ExternalLinkType> = ({ component, t }) => {
+const ExternalLink: FC<LinkType> = ({ component }) => {
   const { label, path, icon } = component
+  const { t } = useTranslation()
   function handleClick() {
     window.open(path, '_blank')
   }
@@ -47,8 +34,9 @@ const ExternalLink: FC<ExternalLinkType> = ({ component, t }) => {
   )
 }
 
-const InternalLink: FC<InternalLinkType> = ({ component, t }) => {
+const InternalLink: FC<LinkType> = ({ component }) => {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const { label, path, icon } = component
   return (
     <div

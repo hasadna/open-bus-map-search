@@ -100,7 +100,7 @@ export const HEADER_LINKS = [
     icon: <GithubOutlined />,
     element: null,
   },
-]
+] as const
 
 const HIDDEN_PAGES = [
   {
