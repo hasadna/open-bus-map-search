@@ -200,6 +200,7 @@ const GapsPatternsPage = () => {
             <DateSelector
               time={endDate}
               onChange={(data) => setEndDate(data)}
+              minDate={startDate}
               customLabel={t('end')}
             />
           </Grid>
