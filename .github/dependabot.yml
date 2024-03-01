@@ -11,4 +11,8 @@ updates:
       interval: "weekly"
     reviewers:
       - "aviv1620"
-    open-pull-requests-limit: 10
+groups:
+  production-dependencies:
+    dependency-type: "production"
+  development-dependencies:
+    dependency-type: "development"
