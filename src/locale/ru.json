@@ -1,27 +1,105 @@
-import { useTranslation } from 'react-i18next'
-import styled from 'styled-components'
+main,
+main > div,
+.map-container,
+.leaflet-container,
+.map-info,
+.map-index-item-config {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+}
 
-const Centered = styled.div`
-  text-align: center;
-`
+.map-info {
+  position: relative;
 
-export const ErrorPage = () => {
-  const { t } = useTranslation()
-  return (
-    <Centered>
-      <h1>{t('errorPage.title')}</h1>
-      <section>
-        <p>{t('errorPage.text')}</p>
-        <br />
-        <img src="https://media0.giphy.com/media/YcLorQZbPI4Ks/giphy.gif" alt="error" />
-        <br />
-        <p>
-          {t('errorPage.text2')} <br />
-          <a href="https://github.com/hasadna/open-bus-map-search/issues/new">
-            https://github.com/hasadna/open-bus-map-search/issues/new
-          </a>
-        </p>
-      </section>
-    </Centered>
-  )
+  .map-index {
+    position: absolute;
+    top: 1em;
+    right: 1em;
+    z-index: 1000;
+    border: 2px solid black;
+    background-color: rgba($color: #fff, $alpha: 50%);
+    padding: 1em;
+
+    &-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      
+      &-config {
+        align-items: center;
+        margin-left: 1em;
+      }
+
+      &-line {
+        width: 25px;
+        height: 4px;
+      }
+
+      &-icon {
+        width: 20px;
+        height: 20px;
+        margin: 0 auto;
+        background-size: contain;
+        background-position: center;
+        background-repeat: no-repeat;
+      }
+
+      &-title {
+        width: 100px;
+        text-align: left;
+      }
+    }
+  }
+}
+
+
+
+pre {
+  direction: ltr;
+  height: 200px;
+  overflow-y: auto;
+}
+
+.map-header-buttons {
+  display: flex;
+  flex-direction: row;
+  margin-top: 10px;
+}
+
+.bus-icon-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  > .bus-icon-circle {
+    width: 30px;
+    height: 30px;
+    padding: 5px;
+    border-radius: 50%;
+    background-color: white;
+
+    img {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  > .operator-name {
+    background-color: rgb(255 255 255 / 40%);
+    font-weight: bold;
+  }
+}
+
+.expand-button {
+  position: absolute;
+  left: 5px;
+  bottom: 5px;
+  z-index: 999;
+}
+
+.expanded {
+  position: absolute;
+  inset: 0;
 }
