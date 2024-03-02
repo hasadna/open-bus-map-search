@@ -1,30 +1,33 @@
-import type { Meta, StoryObj } from '@storybook/react'
-import { BusToolTip } from './map-related/MapLayers/BusToolTip'
-import '../../shared/shared.css'
-import Widget from 'src/shared/Widget'
-const meta = {
-  title: 'Components/Widget',
-  component: () => (
-    <div style={{ background: '#f0f2f5', width: '400px', padding: '20px' }}>
-      <Widget>
-        שלום חברים!
-        <br />
-        ככה נראה widget util
-      </Widget>
-    </div>
-  ),
-  parameters: {
-    layout: 'centered',
-  },
-  tags: ['map', 'tooltip', 'autodocs'],
-} satisfies Meta<typeof BusToolTip>
+.leaflet-popup-content:has(.bus-tooltip) {
+  width: 350px;
+  direction: rtl;
+  text-align: right;
+}
 
-export default meta
+.bus-tooltip {
+  >ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
 
-type Story = StoryObj<typeof meta>
+    >li {
+      font-weight: bold;
 
-const defaultArgs = {}
+      >span {
+        font-weight: normal;
+      }
+    }
+  }
 
-export const Default: Story = {
-  args: defaultArgs,
+  >.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+
+    img {
+      width: 50px;
+      height: 50px;
+    }
+  }
 }
