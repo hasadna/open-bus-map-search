@@ -1,14 +1,8 @@
-.clear-indicator {
-  position: absolute;
-  left: 33px;
-  visibility: hidden;
-  height: 28px;
-  width: 28px;
-  color: #6a6b6c;
-  padding: 7px;
+import { CloseOutlined as ClearIcon } from '@ant-design/icons'
+import './ClearButton.scss'
 
-  &:hover {
-    background-color: #e7e9eb;
-    border-radius: 50%;
-  }
+const ClearButton = ({ onClearInput }: { onClearInput: () => void }) => {
+  return <ClearIcon onClick={onClearInput} className="clear-indicator" />
 }
+
+export default ClearButton
