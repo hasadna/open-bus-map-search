@@ -1,31 +1,54 @@
-import React from 'react'
-import { useTranslation } from 'react-i18next'
-import { BulbFilled, BulbOutlined } from '@ant-design/icons'
+import { Layout } from 'antd'
+import MainHeader from './header/Header'
+import SideBar from './sidebar/SideBar'
+import styled from 'styled-components'
+import LayoutContext from './LayoutContext'
+import { Link, Outlet } from 'react-router-dom'
+import { Suspense } from 'react'
+import Preloader from 'src/shared/Preloader'
+import { EasterEgg } from 'src/pages/EasterEgg/EasterEgg'
+import { Envelope } from 'src/pages/EasterEgg/Envelope'
 
-interface ToggleThemeButtonProps {
-  toggleTheme: () => void
-  isDarkTheme?: boolean
-}
+const { Content } = Layout
 
-const ToggleThemeButton: React.FC<ToggleThemeButtonProps> = ({ toggleTheme, isDarkTheme }) => {
-  const { t } = useTranslation()
+const StyledLayout = styled(Layout)`
+  height: 100vh;
+`
+const StyledContent = styled(Content)`
+  margin: 24px 16px 0;
+  overflow: auto;
+`
+const StyledBody = styled.div`
+  padding: 0 24px;
+  min-height: 360px;
+`
 
-  const tooltip_title = isDarkTheme ? t('light_mode_tooltip') : t('dark_mode_tooltip')
-
+export function MainLayout() {
   return (
-    <button
-      className="theme-icon"
-      onClick={toggleTheme}
-      aria-label={tooltip_title}
-      title={tooltip_title}
-      style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}>
-      {isDarkTheme ? (
-        <BulbOutlined style={{ color: '#fff', fontSize: '1.5em' }} />
-      ) : (
-        <BulbFilled style={{ fontSize: '1.5em' }} />
-      )}
-    </button>
+    <StyledLayout className="main">
+      <LayoutContext>
+        <SideBar />
+        <Layout>
+          <MainHeader />
+          <StyledContent>
+            <StyledBody>
+              <Suspense fallback={<Preloader />}>
+                <Outlet />
+                <EasterEgg code="storybook">
+                  <a href="/storybook/index.html">
+                    <Envelope />
+                  </a>
+                </EasterEgg>
+                <EasterEgg code="geek">
+                  <Link to="/data-research">
+                    <Envelope />
+                  </Link>
+                </EasterEgg>
+              </Suspense>
+            </StyledBody>
+          </StyledContent>
+        </Layout>
+      </LayoutContext>
+    </StyledLayout>
   )
 }
-
-export default ToggleThemeButton
