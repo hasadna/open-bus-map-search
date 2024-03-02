@@ -1,54 +1,48 @@
-import { Layout } from 'antd'
-import MainHeader from './header/Header'
-import SideBar from './sidebar/SideBar'
-import styled from 'styled-components'
-import LayoutContext from './LayoutContext'
-import { Link, Outlet } from 'react-router-dom'
-import { Suspense } from 'react'
-import Preloader from 'src/shared/Preloader'
-import { EasterEgg } from 'src/pages/EasterEgg/EasterEgg'
-import { Envelope } from 'src/pages/EasterEgg/Envelope'
+import Menu from './menu/Menu'
+import './sidebar.scss'
+import { Drawer, Layout } from 'antd'
+import { useContext, useState } from 'react'
+import { LayoutContextInterface, LayoutCtx } from '../LayoutContext'
+import { Link } from 'react-router-dom'
+import { PAGES } from 'src/routes'
+import { Logo } from './logo'
+const { Sider } = Layout
 
-const { Content } = Layout
+const CollapsedLogo = () => <h1 className={'sidebar-logo-collapsed'}>🚌</h1>
 
-const StyledLayout = styled(Layout)`
-  height: 100vh;
-`
-const StyledContent = styled(Content)`
-  margin: 24px 16px 0;
-  overflow: auto;
-`
-const StyledBody = styled.div`
-  padding: 0 24px;
-  min-height: 360px;
-`
-
-export function MainLayout() {
+export default function SideBar() {
+  const { drawerOpen, setDrawerOpen } = useContext<LayoutContextInterface>(LayoutCtx)
+  const [collapsed, setCollapsed] = useState(false)
   return (
-    <StyledLayout className="main">
-      <LayoutContext>
-        <SideBar />
-        <Layout>
-          <MainHeader />
-          <StyledContent>
-            <StyledBody>
-              <Suspense fallback={<Preloader />}>
-                <Outlet />
-                <EasterEgg code="storybook">
-                  <a href="/storybook/index.html">
-                    <Envelope />
-                  </a>
-                </EasterEgg>
-                <EasterEgg code="geek">
-                  <Link to="/data-research">
-                    <Envelope />
-                  </Link>
-                </EasterEgg>
-              </Suspense>
-            </StyledBody>
-          </StyledContent>
-        </Layout>
-      </LayoutContext>
-    </StyledLayout>
+    <>
+      <Drawer
+        placement="right"
+        mask
+        width={280}
+        onClose={() => setDrawerOpen(false)}
+        open={drawerOpen}
+        className="hideOnDesktop"
+        bodyStyle={{ padding: '0' }}>
+        <Logo />
+        <div className="sidebar-divider"></div>
+        <Menu />
+        <div className="sidebar-divider"></div>
+      </Drawer>
+      <Sider
+        theme="light"
+        breakpoint="lg"
+        collapsedWidth={60}
+        collapsible
+        collapsed={collapsed}
+        onCollapse={(value: boolean) => setCollapsed(value)}
+        className="hideOnMobile">
+        <Link to={PAGES[0].path} replace>
+          {collapsed ? <CollapsedLogo /> : <Logo />}
+        </Link>
+        <div className="sidebar-divider"></div>
+        <Menu />
+        <div className="sidebar-divider"></div>
+      </Sider>
+    </>
   )
 }
