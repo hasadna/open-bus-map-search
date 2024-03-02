@@ -1,8 +1,7 @@
-const Preloader = () => (
-  <>
-    <div className="preloader-bus">🚌</div>
-    <div className="preloader"></div>
-  </>
-)
+import { Card } from 'antd'
 
-export default Preloader
+const Widget = (props: { children: React.ReactNode }) => {
+  return <Card>{props.children}</Card>
+}
+
+export default Widget
