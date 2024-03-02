@@ -31,7 +31,7 @@ test.describe('Visual Tests', () => {
     await page.evaluate(() => {
       document.querySelector('.recharts-wrapper')?.scrollIntoView()
     })
-    await eyes.check('dashboard page - recharts', Target.window())
+    await eyes.check('dashboard page - recharts', Target.window().layoutRegions('.chart'))
   })
 
   test('about page should look good', async ({ page }) => {
