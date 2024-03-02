@@ -1,32 +1,108 @@
-@import '../../../resources/variables';
+@import '../../resources/variables';
 
-.menu {
-    flex-direction: column;
-    list-style: none;
-    padding: 0;
-
-    .menu-item {
-        display: flex;
-        align-items: center;
-        width: 240px;
-        padding: 12px 23px;
-        font-size: 16px;
-        cursor: pointer;
-        border-radius: 9px;
-        margin-bottom: 4px;
-        line-height: 21px;
-        box-sizing: border-box;
-        transition: all 0.2s ease-in-out;
-
-        &:hover {
-            background-color: #f2f2f2;
-        }
-
-        &.active {
-            background-color: $color-active;
-            color: #1677ff;
-            border: none;
-        }
-    }
+.hideOnMobile {
+  display: none;
 }
 
+@media only screen and (width >= 768px) {
+  .hideOnMobile {
+    display: block;
+  }
+}
+
+.hideOnDesktop {
+  display: block;
+}
+
+@media only screen and (width >= 768px) {
+  .hideOnDesktop {
+    display: none;
+  }
+}
+
+.sidebar-logo {
+  text-align: center;
+  color: black;
+  font-weight: 400;
+  line-height: 0.9em;
+  text-indent: -37px;
+  padding-right: 32px;
+
+  svg {
+    padding: 0 8px;
+
+    .st0 {
+      fill: none;
+      stroke: #000;
+      stroke-width: 23;
+      stroke-miterlimit: 10;
+    }
+
+    path {
+      stroke-dasharray: 1720;
+      stroke-dashoffset: 1720;
+      animation: dash 0.8s linear forwards;
+    }
+
+    circle {
+      stroke-dasharray: 420;
+      stroke-dashoffset: 420;
+      animation: dash 1s linear forwards;
+      animation-delay: 0.5s;
+    }
+  }
+
+  @keyframes dash {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+}
+
+.sidebar-logo.dark {
+  color: white;
+
+  svg {
+    padding: 0 8px;
+
+    .st0 {
+      fill: none;
+      stroke: white;
+      stroke-width: 23;
+      stroke-miterlimit: 10;
+    }
+
+    path {
+      stroke-dasharray: 1720;
+      stroke-dashoffset: 1720;
+    }
+
+    circle {
+      fill: white;
+      stroke-dasharray: 420;
+      stroke-dashoffset: 420;
+    }
+  }
+}
+
+.sidebar-logo-collapsed {
+  position: relative;
+  margin: 20px auto;
+  text-align: center;
+  font-size: 22px;
+  border-top: 6px solid gray;
+  border-bottom: 8px solid gray;
+  padding-bottom: 0;
+  line-height: 25px;
+}
+
+.sidebar-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-divider {
+  height: 1px;
+  background-color: #ccc;
+  margin: 8px 0;
+}
