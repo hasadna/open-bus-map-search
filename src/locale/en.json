@@ -1,12 +1,64 @@
-import { FC, PropsWithChildren, createContext, useState } from 'react'
+import { FC, PropsWithChildren, createContext, useContext } from 'react'
+import { ThemeProvider as MuiThemeProvider, createTheme } from '@mui/material/styles'
+import ScopedCssBaseline from '@mui/material/ScopedCssBaseline'
+import { ConfigProvider, theme } from 'antd'
+import heIL from 'antd/es/locale/he_IL'
+import { useTranslation } from 'react-i18next'
+import { useLocalStorage } from 'src/locale/useLocalStorage'
 
-export interface LayoutContextInterface {
-  setDrawerOpen: (isOpen: boolean) => void
-  drawerOpen: boolean
+export interface ThemeContextInterface {
+  toggleTheme: () => void
+  isDarkTheme?: boolean
 }
-export const LayoutCtx = createContext({} as LayoutContextInterface)
-const LayoutContext: FC<PropsWithChildren> = ({ children }) => {
-  const [drawerOpen, setDrawerOpen] = useState(false)
-  return <LayoutCtx.Provider value={{ drawerOpen, setDrawerOpen }}>{children}</LayoutCtx.Provider>
+
+const ThemeContext = createContext({} as ThemeContextInterface)
+
+const darkTheme = createTheme({
+  palette: {
+    mode: 'dark',
+  },
+})
+
+const lightTheme = createTheme({
+  palette: {
+    mode: 'light',
+  },
+})
+
+const { defaultAlgorithm, darkAlgorithm } = theme
+
+export const ThemeProvider: FC<PropsWithChildren> = ({ children }) => {
+  const [isDarkTheme, setIsDarkTheme] = useLocalStorage<boolean>('isDarkTheme')
+
+  const { i18n } = useTranslation()
+  const toggleTheme = () => {
+    setIsDarkTheme((prevTheme: boolean) => !prevTheme)
+  }
+
+  const contextValue = {
+    isDarkTheme,
+    toggleTheme,
+  }
+
+  return (
+    <ConfigProvider
+      direction={i18n.dir()}
+      locale={heIL}
+      theme={{
+        algorithm: isDarkTheme ? darkAlgorithm : defaultAlgorithm,
+        token: {
+          colorBgBase: isDarkTheme ? '#1c1d1c' : '#ffffff',
+        },
+      }}>
+      <MuiThemeProvider theme={isDarkTheme ? darkTheme : lightTheme}>
+        <ScopedCssBaseline enableColorScheme>
+          <ThemeContext.Provider value={contextValue}>{children}</ThemeContext.Provider>
+        </ScopedCssBaseline>
+      </MuiThemeProvider>
+    </ConfigProvider>
+  )
 }
-export default LayoutContext
+
+export const useTheme = () => {
+  return useContext(ThemeContext)
+}
