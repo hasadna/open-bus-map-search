@@ -1,35 +1,20 @@
-import { useTranslation } from 'react-i18next'
-import { Autocomplete, TextField } from '@mui/material'
+import styled from 'styled-components'
+import { Typography } from 'antd'
+const { Text } = Typography
+const StyledDiv = styled.div`
+  display: inline-flex;
+  width: 100%;
+  height: 100%;
+  justify-content: flex-start;
+  align-items: center;
+`
 
-type FilterPositionsByStartTimeSelectorProps = {
-  options: {
-    value: string
-    label: string
-  }[]
-  startTime?: string
-  setStartTime: (time: string) => void
+type LabelProps = {
+  text: string
 }
 
-export function FilterPositionsByStartTimeSelector({
-  options,
-  startTime,
-  setStartTime,
-}: FilterPositionsByStartTimeSelectorProps) {
-  const valueFinned = options.find((option) => option.value === startTime)
-  const value = valueFinned ? valueFinned : null
-
-  const { t } = useTranslation()
-
-  return (
-    <Autocomplete
-      sx={{ width: '100%' }}
-      disablePortal
-      value={value}
-      onChange={(e, value) => setStartTime(value ? value.value : '0')}
-      id="start-time-select"
-      options={options}
-      renderInput={(params) => <TextField {...params} label={t('choose_start_time')} />}
-      getOptionLabel={(option) => option.label}
-    />
-  )
-}
+export const Label = ({ text }: LabelProps) => (
+  <StyledDiv>
+    <Text>{text}</Text>
+  </StyledDiv>
+)
