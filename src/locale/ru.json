@@ -1,20 +1,54 @@
-import styled from 'styled-components'
-import { Typography } from 'antd'
-const { Text } = Typography
-const StyledDiv = styled.div`
-  display: inline-flex;
-  width: 100%;
-  height: 100%;
-  justify-content: flex-start;
-  align-items: center;
-`
+import { useCallback, useLayoutEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import debounce from 'lodash.debounce'
+import { TextField } from '@mui/material'
+import ClearButton from './ClearButton'
+import './Selector.scss'
+import classNames from 'classnames'
 
-type LabelProps = {
-  text: string
+type LineSelectorProps = {
+  lineNumber: string | undefined
+  setLineNumber: (lineNumber: string) => void
 }
 
-export const Label = ({ text }: LabelProps) => (
-  <StyledDiv>
-    <Text>{text}</Text>
-  </StyledDiv>
-)
+const LineSelector = ({ lineNumber, setLineNumber }: LineSelectorProps) => {
+  const [value, setValue] = useState<LineSelectorProps['lineNumber']>(lineNumber)
+  const debouncedSetLineNumber = useCallback(debounce(setLineNumber, 200), [setLineNumber])
+  const { t } = useTranslation()
+
+  useLayoutEffect(() => {
+    setValue(lineNumber)
+  }, [])
+
+  const handleClearInput = () => {
+    setValue('')
+    setLineNumber('')
+  }
+
+  const textFieldClass = classNames({
+    'selector-line-text-field': true,
+    'selector-line-text-field_visible': value,
+    'selector-line-text-field_hidden': !value,
+  })
+  return (
+    <TextField
+      className={textFieldClass}
+      label={t('choose_line')}
+      type="number"
+      value={value && +value < 0 ? 0 : value}
+      onChange={(e) => {
+        setValue(e.target.value)
+        debouncedSetLineNumber(e.target.value)
+      }}
+      InputLabelProps={{
+        shrink: true,
+      }}
+      InputProps={{
+        placeholder: t('line_placeholder'),
+        endAdornment: <ClearButton onClearInput={handleClearInput} />,
+      }}
+    />
+  )
+}
+
+export default LineSelector
