@@ -1,89 +1,142 @@
-import { useCallback, useEffect } from 'react'
-import 'leaflet/dist/leaflet.css'
-import { useSearchParams } from 'react-router-dom'
-import { PageSearchState, SearchContext } from '../model/pageState'
-import moment from 'moment'
-import { useSessionStorage } from 'usehooks-ts'
-import { useLocation } from 'react-router-dom'
-import ReactGA from 'react-ga4'
-import { CacheProvider } from '@emotion/react'
-import createCache from '@emotion/cache'
-import rtlPlugin from 'stylis-plugin-rtl'
-import 'moment/locale/he'
-import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
-import { LocalizationProvider } from '@mui/x-date-pickers'
-import { ThemeProvider } from '../layout/ThemeContext'
-import { PAGES } from '../routes'
-import { MainLayout } from '../layout'
+import { Navigate, Route, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
+import { lazy } from 'react'
 
-// Create rtl cache
-const cacheRtl = createCache({
-  key: 'muirtl',
-  stylisPlugins: [rtlPlugin],
-})
+const HomePage = lazy(() => import('../pages/homepage/HomePage'))
+const DashboardPage = lazy(() => import('../pages/dashboard/DashboardPage'))
+const TimelinePage = lazy(() => import('../pages/historicTimeline'))
+const GapsPage = lazy(() => import('../pages/gaps'))
+const GapsPatternsPage = lazy(() => import('../pages/gapsPatterns'))
+const RealtimeMapPage = lazy(() => import('../pages/realtimeMap'))
+const SingleLineMapPage = lazy(() => import('../pages/singleLineMap'))
+const About = lazy(() => import('../pages/about'))
+const Profile = lazy(() => import('../pages/Profile'))
+const BugReportForm = lazy(() => import('../pages/BugReportForm '))
+const DataResearch = lazy(() =>
+  import('../pages/DataResearch/DataResearch').then((m) => ({ default: m.DataResearch })),
+)
 
-export const MainRoute = () => {
-  const location = useLocation()
-  const [searchParams, setSearchParams] = useSearchParams()
-  const operatorId = searchParams.get('operatorId')
-  const lineNumber = searchParams.get('lineNumber')
-  const routeKey = searchParams.get('routeKey')
-  const timestamp = searchParams.get('timestamp')
+import {
+  HomeOutlined,
+  RadarChartOutlined,
+  InfoCircleOutlined,
+  DollarOutlined,
+  HeatMapOutlined,
+  LaptopOutlined,
+  FieldTimeOutlined,
+  BugOutlined,
+  BarChartOutlined,
+  LineChartOutlined,
+} from '@ant-design/icons'
+import { MainRoute } from './MainRoute'
+import { ErrorPage } from 'src/pages/ErrorPage'
 
-  useEffect(() => {
-    ReactGA.send({ hitType: 'pageview', page: location.pathname + location.search })
-  }, [location])
+export const PAGES = [
+  {
+    label: 'dashboard_page_title',
+    path: '/dashboard',
+    icon: <LaptopOutlined />,
+    element: <DashboardPage />,
+  },
+  {
+    label: 'timeline_page_title',
+    path: '/timeline',
+    searchParamsRequired: true,
+    icon: <FieldTimeOutlined />,
+    element: <TimelinePage />,
+  },
+  {
+    label: 'gaps_page_title',
+    path: '/gaps',
+    searchParamsRequired: true,
+    icon: <BarChartOutlined />,
+    element: <GapsPage />,
+  },
+  {
+    label: 'gaps_patterns_page_title',
+    path: '/gaps_patterns',
+    icon: <LineChartOutlined />,
+    element: <GapsPatternsPage />,
+  },
+  {
+    label: 'realtime_map_page_title',
+    path: '/map',
+    icon: <HeatMapOutlined />,
+    element: <RealtimeMapPage />,
+  },
+  {
+    label: 'singleline_map_page_title',
+    path: '/single-line-map',
+    searchParamsRequired: true,
+    icon: <RadarChartOutlined />,
+    element: <SingleLineMapPage />,
+  },
+  {
+    label: 'about_title',
+    path: '/about',
+    icon: <InfoCircleOutlined />,
+    element: <About />,
+  },
+  {
+    label: 'report_a_bug_title',
+    path: 'report-a-bug',
+    icon: <BugOutlined />,
+    element: <BugReportForm />,
+  },
+  {
+    label: 'donate_title',
+    path: 'https://www.jgive.com/new/he/ils/donation-targets/3268#donation-modal',
+    icon: <DollarOutlined />,
+    element: null,
+  },
+] as const
 
-  const [search, setSearch] = useSessionStorage<PageSearchState>('search', {
-    timestamp: +timestamp! || moment().valueOf(),
-    operatorId: operatorId || '',
-    lineNumber: lineNumber || '',
-    routeKey: routeKey || '',
-  })
+const HIDDEN_PAGES = [
+  {
+    label: 'home_page',
+    path: '/home',
+    icon: <HomeOutlined />,
+    element: <HomePage />, //need to build - created only the file and routing
+  },
+  {
+    label: 'data-research',
+    path: '/data-research',
+    icon: <InfoCircleOutlined />,
+    element: <DataResearch />,
+  },
+] as const
 
-  useEffect(() => {
-    const page = PAGES.find((page) => page.path === location.pathname)
-    if (page && 'searchParamsRequired' in page && page.searchParamsRequired) {
-      const params = new URLSearchParams({
-        timestamp: search.timestamp?.toString(),
-      })
-
-      if (search.operatorId) {
-        params.set('operatorId', search.operatorId)
-      }
-      if (search.lineNumber) {
-        params.set('lineNumber', search.lineNumber)
-      }
-      if (search.routeKey) {
-        params.set('routeKey', search.routeKey)
-      }
-      setSearchParams(params)
-    }
-  }, [
-    search.lineNumber,
-    search.operatorId,
-    search.routeKey,
-    search.timestamp,
-    location.pathname,
-    setSearchParams,
-  ])
-
-  const safeSetSearch = useCallback((mutate: (prevState: PageSearchState) => PageSearchState) => {
-    setSearch((current: PageSearchState) => {
-      const newSearch = mutate(current)
-      return newSearch
-    })
-  }, [])
-
+const getRoutesList = () => {
+  const pages = [...PAGES, ...HIDDEN_PAGES]
+  const RedirectToDashboard = () => <Navigate to={pages[0].path} replace />
+  const routes = pages.filter((r) => r.element)
   return (
-    <SearchContext.Provider value={{ search, setSearch: safeSetSearch }}>
-      <CacheProvider value={cacheRtl}>
-        <LocalizationProvider dateAdapter={AdapterMoment} adapterLocale="he">
-          <ThemeProvider>
-            <MainLayout />
-          </ThemeProvider>
-        </LocalizationProvider>
-      </CacheProvider>
-    </SearchContext.Provider>
+    <Route element={<MainRoute />}>
+      {routes.map(({ path, element }) => (
+        <Route key={path} path={path} element={element} ErrorBoundary={ErrorPage} />
+      ))}
+      <Route
+        path="/profile/:gtfsRideGtfsRouteId"
+        key={'/profile/:gtfsRideGtfsRouteId'}
+        element={<Profile />}
+        ErrorBoundary={ErrorPage}
+        loader={async ({ params: { gtfsRideGtfsRouteId } }) => {
+          const resp = await fetch(
+            `https://open-bus-stride-api.hasadna.org.il/gtfs_routes/get?id=${gtfsRideGtfsRouteId}`,
+          )
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const gtfs_route = await resp.json()
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+          return gtfs_route
+        }}
+      />
+      <Route path="*" element={<RedirectToDashboard />} key="back" />
+    </Route>
+    // </Suspense>
   )
 }
+
+const routes = createRoutesFromElements(getRoutesList())
+
+const router = createBrowserRouter(routes)
+
+export default router
