@@ -2,11 +2,58 @@ main,
 main > div,
 .map-container,
 .leaflet-container,
-.map-info {
+.map-info,
+.map-index-item-config {
   display: flex;
   flex-direction: column;
   flex: 1 1 auto;
 }
+
+.map-info {
+  position: relative;
+
+  .map-index {
+    position: absolute;
+    top: 1em;
+    right: 1em;
+    z-index: 1000;
+    border: 2px solid black;
+    background-color: rgba($color: #fff, $alpha: 50%);
+    padding: 1em;
+
+    &-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      
+      &-config {
+        align-items: center;
+        margin-left: 1em;
+      }
+
+      &-line {
+        width: 25px;
+        height: 4px;
+      }
+
+      &-icon {
+        width: 20px;
+        height: 20px;
+        margin: 0 auto;
+        background-size: contain;
+        background-position: center;
+        background-repeat: no-repeat;
+      }
+
+      &-title {
+        width: 100px;
+        text-align: left;
+      }
+    }
+  }
+}
+
+
 
 pre {
   direction: ltr;

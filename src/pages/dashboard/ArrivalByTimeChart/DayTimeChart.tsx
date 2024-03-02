@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import React, { FC, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Skeleton, Radio, RadioChangeEvent } from 'antd'
 import ArrivalByTimeChart from './ArrivalByTimeChart'
@@ -28,11 +28,16 @@ const DayTimeChart: FC<DayTimeChartProps> = ({ startDate, endDate, operatorId })
   const { t } = useTranslation()
   const [groupByHour, setGroupByHour] = React.useState<boolean>(false)
 
-  const [graphData, loadingGraph] = useGroupBy({
+  const [data, loadingGraph] = useGroupBy({
     dateTo: endDate,
     dateFrom: startDate,
     groupBy: groupByHour ? 'operator_ref,gtfs_route_hour' : 'operator_ref,gtfs_route_date',
   })
+
+  const graphData = useMemo(
+    () => convertToGraphCompatibleStruct(data),
+    [endDate, groupByHour, startDate, data.length],
+  )
 
   return (
     <Widget>
@@ -49,10 +54,7 @@ const DayTimeChart: FC<DayTimeChartProps> = ({ startDate, endDate, operatorId })
       {loadingGraph ? (
         <Skeleton active />
       ) : (
-        <ArrivalByTimeChart
-          data={convertToGraphCompatibleStruct(graphData)}
-          operatorId={operatorId}
-        />
+        <ArrivalByTimeChart data={graphData} operatorId={operatorId} />
       )}
     </Widget>
   )

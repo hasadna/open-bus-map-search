@@ -144,5 +144,7 @@
     "error": "An error occurred while sending the report. Please try again later.",
     "success": "The report was sent successfully. Thank you for your help!",
     "viewIssue": "View issue"
-  }
+  },
+  "plannedRoute": "Planned Route",
+  "actualRoute": "Actual Route"
 }
