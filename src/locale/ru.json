@@ -1,15 +1,12 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import './index.css'
-import App from './App'
-import ReactGA from 'react-ga4'
-import './locale/allTranslations'
+import { FC, PropsWithChildren, createContext, useState } from 'react'
 
-ReactGA.initialize('G-0YRQT80GG1')
-
-const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-)
+export interface LayoutContextInterface {
+  setDrawerOpen: (isOpen: boolean) => void
+  drawerOpen: boolean
+}
+export const LayoutCtx = createContext({} as LayoutContextInterface)
+const LayoutContext: FC<PropsWithChildren> = ({ children }) => {
+  const [drawerOpen, setDrawerOpen] = useState(false)
+  return <LayoutCtx.Provider value={{ drawerOpen, setDrawerOpen }}>{children}</LayoutCtx.Provider>
+}
+export default LayoutContext
