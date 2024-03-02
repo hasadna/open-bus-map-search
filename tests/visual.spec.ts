@@ -6,7 +6,7 @@ test.describe('Visual Tests', () => {
   const eyes = new Eyes()
   test.beforeAll(() => {
     eyes.setBatch(username() + ' is testing openbus ' + new Date().toLocaleString().split(',')[0])
-    eyes.configuration.sendDom = true
+    eyes.getConfiguration().setUseDom(true)
   })
 
   test.beforeEach(async ({ page }, testinfo) => {
