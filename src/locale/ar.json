@@ -1,13 +1,19 @@
-// import hebbo:
-@import 'https://fonts.googleapis.com/css?family=Heebo:400,500,700&display=swap';
-@import './resources/variables';
-@import './shared/shared.css';
+import './App.scss'
+import 'leaflet/dist/leaflet.css'
+import 'moment/locale/he'
+import router from './routes'
+import { RouterProvider } from 'react-router-dom'
+import { Suspense } from 'react'
+import Preloader from './shared/Preloader'
+import moment from 'moment-timezone'
+import 'moment/dist/locale/he'
 
-.main {
-  flex-direction: row;
-  font-family: Heebo, sans-serif;
-}
+moment.tz.setDefault('Asia/Jerusalem')
+moment.locale('he')
 
-.page-title{
-    margin-top: 0;
-}
+export const RoutedApp = () => (
+  <Suspense fallback={<Preloader />}>
+    <RouterProvider router={router} />
+  </Suspense>
+)
+export default RoutedApp
