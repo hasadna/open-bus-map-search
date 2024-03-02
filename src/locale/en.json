@@ -1,7 +1,5 @@
-import { Card } from 'antd'
-
-const Widget = (props: { children: React.ReactNode }) => {
-  return <Card>{props.children}</Card>
+.widget {
+  border-radius: 4px;
+  padding: 20px;
+  margin-bottom: 20px;
 }
-
-export default Widget
