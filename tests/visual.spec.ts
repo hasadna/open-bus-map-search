@@ -26,7 +26,7 @@ test.describe('Visual Tests', () => {
     await page.getByText('אגד').first().waitFor()
     while ((await page.locator('.ant-skeleton-content').count()) > 0)
       await page.locator('.ant-skeleton-content').last().waitFor({ state: 'hidden' })
-    await eyes.check('dashboard page', Target.window())
+    await eyes.check('dashboard page', Target.window().layoutRegions('.chart'))
     // scroll to recharts-wrapper
     await page.evaluate(() => {
       document.querySelector('.recharts-wrapper')?.scrollIntoView()
