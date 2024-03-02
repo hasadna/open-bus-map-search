@@ -1,71 +1,12 @@
-.operatorHbarChart {
-  .operator {
-    display: flex;
-    flex-direction: row;
-    margin-bottom: 31px;
-    position: relative;
-
-    .operatorName {
-      width: 16%;
-      border-left: 1px solid white;
-      color: white;
-      font-size: 16px;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      padding-right: 20px;
-      box-sizing: border-box;
-    }
-
-    .operatorBar {
-      flex-grow: 1;
-
-      .operatorBarTotal {
-        .operatorBarActual {
-          text-align: left;
-          font-size: 28px;
-          font-weight: 500;
-          color: white;
-          padding: 10px;
-          direction: ltr;
-
-          &.small {
-            color: inherit;
-            direction: rtl;
-            text-indent: calc(100% + 10px);
-            padding-right: 0;
-            padding-left: 0;
-          }
-        }
-      }
-    }
-
-    .overlay {
-      $tooltipBackground: rgb(0 0 0 / 50%);
-      $tooltipShadow: 0 0 10px 0 $tooltipBackground;
-
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      color: white;
-      font-size: 16px;
-      z-index: 1;
-      opacity: 0;
-      transition: opacity 0.5s;
-      box-shadow: $tooltipShadow;
-      background: $tooltipBackground;
-    }
-
-    &:hover {
-      .overlay {
-        opacity: 1;
-      }
-    }
+export function getColorByHashString(str: string) {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash);
   }
+  let color = '#';
+  for (let i = 0; i < 3; i++) {
+    const value = hash >> i * 8 & 0xff;
+    color += ('00' + value.toString(16)).slice(-2);
+  }
+  return color;
 }
