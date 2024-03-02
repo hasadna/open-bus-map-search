@@ -1,71 +1,48 @@
-import React from 'react'
-import { useTranslation } from 'react-i18next'
-import './HbarChart.scss'
-import { Tooltip } from '@mui/material'
+import { HbarChart } from './HbarChart/HbarChart'
+import { getColorName } from '../../AllLineschart/OperatorHbarChart/OperatorHbarChart'
 
-export type Entry = { name: string; total: number; actual: number; color?: string }
-const numberFormatter = new Intl.NumberFormat('he-IL')
-
-export function HbarChart({
-  entries,
+function LinesHbarChart({
+  lines,
   complement = false, // complement the chart (100% - actual) instead of actual
+  operators_whitelist = [],
 }: {
-  entries: Entry[]
+  lines: {
+    id: string
+    short_name: string
+    long_name: string
+    operator_name: string
+    total: number
+    actual: number
+  }[]
   complement?: boolean
+  operators_whitelist?: Array<string>
 }) {
-  const { t } = useTranslation()
-  const percents = entries
+  const percents = lines
     .map((o) => (o.actual / o.total) * 100)
     .map((p) => (complement ? Math.max(100 - p, 0) : p))
+  const width = percents.map((p) => Math.max(Math.min(p, 100), 0))
 
-  const rows = entries.map((entry, idx) => ({
-    percent: percents[idx],
-    ...entry,
+  const rows = lines.map((o, i) => ({
+    width: width[i],
+    percent: percents[i],
+    name: `${o.short_name} | ${o.operator_name} | ${o.long_name}`,
+    color: getColorName(o.operator_name),
+    ...o,
   }))
 
-  const wrapWithTooltip = (element: React.ReactElement, entry: Entry) => {
-    return (
-      <Tooltip
-        placement={'top'}
-        title={
-          <div style={{ fontSize: 15 }}>
-            {t('rides_planned')}: {numberFormatter.format(entry.total)}
-            <br />
-            {t('rides_actual')}: {numberFormatter.format(entry.actual)}
-          </div>
-        }
-        followCursor={true}>
-        {element}
-      </Tooltip>
-    )
-  }
-
   return (
-    <div className="HbarChart chart">
-      {rows.map((entry) => {
-        return (
-          !!entry.percent && (
-            <div className="entry" key={entry.name}>
-              <div className="entryName" style={{ borderBottomColor: entry.color }}>
-                {entry.name.split('|').slice(0, 2).join(' | ')}
-              </div>
-
-              <div className="entryBar">
-                {wrapWithTooltip(
-                  <div
-                    className="barDisplay"
-                    style={{ width: `${entry.percent}%`, backgroundColor: entry.color }}></div>,
-                  entry,
-                )}
-                {wrapWithTooltip(
-                  <div className="entryBarTotal">{entry.percent.toFixed(2)}%</div>,
-                  entry,
-                )}
-              </div>
-            </div>
-          )
+    <HbarChart
+      entries={rows
+        .sort((a, b) => a.actual / a.total - b.actual / b.total)
+        .filter((line) => line.total > 10)
+        .filter(
+          (line) => !operators_whitelist.length || operators_whitelist.includes(line.operator_name),
         )
-      })}
-    </div>
+        .filter((line) => line.actual / line.total > 0.4)
+        .slice(0, 200)}
+      complement={complement}
+    />
   )
 }
+
+export default LinesHbarChart
