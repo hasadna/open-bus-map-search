@@ -1,55 +1,221 @@
-import { Skeleton } from 'antd'
-import { GroupByRes, useGroupBy } from 'src/api/groupByService'
-import LinesHbarChart from './LineHbarChart/LinesHbarChart'
+import { useContext, useEffect, useState } from 'react'
+import { PageContainer } from '../components/PageContainer'
+import { Row } from '../components/Row'
+import { Label } from '../components/Label'
 import { useTranslation } from 'react-i18next'
-import { FC } from 'react'
-import { Moment } from 'moment/moment'
-import Widget from 'src/shared/Widget'
+import OperatorSelector from '../components/OperatorSelector'
+import LineNumberSelector from '../components/LineSelector'
+import { SearchContext } from '../../model/pageState'
+import { Gap, GapsList } from '../../model/gaps'
+import { getGapsAsync } from '../../api/gapsService'
+import { Spin } from 'antd'
+import RouteSelector from '../components/RouteSelector'
+import { NotFound } from '../components/NotFound'
+import { getRoutesAsync } from '../../api/gtfsService'
+import moment, { Moment } from 'moment'
+import styled from 'styled-components'
+import { useSessionStorage } from 'usehooks-ts'
+import { DateSelector } from '../components/DateSelector'
+import { FormControlLabel, Switch } from '@mui/material'
+import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
+import { INPUT_SIZE } from 'src/resources/sizes'
+import DisplayGapsPercentage from '../components/DisplayGapsPercentage'
+import axios from 'axios'
+import { Typography, Alert } from 'antd'
 
-interface WorstLinesChartProps {
-  startDate: Moment
-  endDate: Moment
-  operatorId: string
-}
+const { Title } = Typography
 
-export const WorstLinesChart: FC<WorstLinesChartProps> = ({ startDate, endDate, operatorId }) => {
-  const [groupByLineData, lineDataLoading] = useGroupBy({
-    dateTo: endDate,
-    dateFrom: startDate,
-    groupBy: 'operator_ref,line_ref',
-  })
+const Cell = styled.div`
+  width: 120px;
+`
 
+const TitleCell = styled(Cell)`
+  font-weight: bold;
+`
+
+const GapsPage = () => {
   const { t } = useTranslation()
+  const { search, setSearch } = useContext(SearchContext)
+  const { operatorId, lineNumber, timestamp, routes, routeKey } = search
+  const [gaps, setGaps] = useState<GapsList>()
+  const [routesIsLoading, setRoutesIsLoading] = useState(false)
+  const [gapsIsLoading, setGapsIsLoading] = useState(false)
+  const [onlyGapped, setOnlyGapped] = useSessionStorage('onlyGapped', false)
 
-  const convertToWorstLineChartCompatibleStruct = (arr: GroupByRes[], operatorId: string) => {
-    if (!arr || !arr.length) return []
-    return arr
-      .filter(
-        (row: GroupByRes) => row.operator_ref?.agency_id === operatorId || !Number(operatorId),
-      )
-      .map((item: GroupByRes) => ({
-        id: `${item.line_ref}|${item.operator_ref?.agency_id}` || 'Unknown',
-        operator_name: item.operator_ref?.agency_name || 'Unknown',
-        short_name: JSON.parse(item.route_short_name)[0],
-        long_name: item.route_long_name,
-        total: item.total_planned_rides,
-        actual: item.total_actual_rides,
-      }))
+  function formatTime(time: Moment) {
+    return time.format(t('time_format'))
   }
 
+  function formatStatus(all: GapsList, gap: Gap) {
+    if (!gap.siriTime) {
+      return t('ride_missing')
+    }
+    if (gap.gtfsTime) {
+      return t('ride_as_planned')
+    }
+    const hasTwinRide = all.some((g) => g.gtfsTime && g.siriTime && g.siriTime.isSame(gap.siriTime))
+    if (hasTwinRide) {
+      return t('ride_duped')
+    }
+    return t('ride_extra')
+  }
+
+  function getGapsPercentage(gaps: GapsList | undefined): number | undefined {
+    const ridesInTime = gaps?.filter((gap) => formatStatus([], gap) === t('ride_as_planned'))
+    if (!gaps || !ridesInTime) return undefined
+    const ridesInTimePercentage = (ridesInTime?.length / gaps?.length) * 100
+    const allRidesPercentage = 100
+    return allRidesPercentage - ridesInTimePercentage
+  }
+
+  useEffect(() => {
+    const source = axios.CancelToken.source()
+    if (operatorId && routes && routeKey && timestamp) {
+      const selectedRoute = routes.find((route) => route.key === routeKey)
+      if (!selectedRoute) {
+        return
+      }
+      setGapsIsLoading(true)
+      getGapsAsync(
+        moment(timestamp),
+        moment(timestamp),
+        operatorId,
+        selectedRoute.lineRef,
+        source.token,
+      )
+        .then(setGaps)
+        .catch((err) => console.error(err.message))
+        .finally(() => setGapsIsLoading(false))
+    }
+    return () => source.cancel()
+  }, [operatorId, routeKey, timestamp])
+
+  useEffect(() => {
+    const controller = new AbortController()
+    const signal = controller.signal
+    if (!operatorId || operatorId === '0' || !lineNumber) {
+      setSearch((current) => ({
+        ...current,
+        routes: undefined,
+        routeKey: undefined,
+      }))
+      return
+    }
+    setRoutesIsLoading(true)
+    getRoutesAsync(moment(timestamp), moment(timestamp), operatorId, lineNumber, signal)
+      .then((routes) =>
+        setSearch((current) =>
+          search.lineNumber === lineNumber ? { ...current, routes: routes } : current,
+        ),
+      )
+      .catch((err) => console.error(err.message))
+      .finally(() => setRoutesIsLoading(false))
+    return () => controller.abort()
+  }, [operatorId, lineNumber, timestamp, setSearch])
+
+  const gapsPercentage = getGapsPercentage(gaps)
+
   return (
-    <Widget>
-      <h2 className="title">{t('worst_lines_page_title')}</h2>
-      {lineDataLoading ? (
-        <Skeleton active />
-      ) : (
-        <LinesHbarChart
-          lines={convertToWorstLineChartCompatibleStruct(groupByLineData, operatorId)}
-          operators_whitelist={['אלקטרה אפיקים', 'דן', 'מטרופולין', 'קווים', 'אגד', 'תנופה']}
-        />
+    <PageContainer>
+      <Title className="page-title" level={3}>
+        נסיעות שלא יצאו
+      </Title>
+      <Alert message="רשימת נסיעות שלא בוצעו" type="info" />
+      <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
+        {/* choose date */}
+        <Grid xs={4}>
+          <Label text={t('choose_date')} />
+        </Grid>
+        <Grid xs={8}>
+          <DateSelector
+            time={moment(timestamp)}
+            onChange={(ts) =>
+              setSearch((current) => ({ ...current, timestamp: ts ? ts.valueOf() : 0 }))
+            }
+          />
+        </Grid>
+        {/* choose operator */}
+        <Grid xs={4}>
+          <Label text={t('choose_operator')} />
+        </Grid>
+        <Grid xs={8}>
+          <OperatorSelector
+            operatorId={operatorId}
+            setOperatorId={(id) => setSearch((current) => ({ ...current, operatorId: id }))}
+          />
+        </Grid>
+        {/* choose line */}
+        <Grid xs={4}>
+          <Label text={t('choose_line')} />
+        </Grid>
+        <Grid xs={8}>
+          <LineNumberSelector
+            lineNumber={lineNumber}
+            setLineNumber={(number) => setSearch((current) => ({ ...current, lineNumber: number }))}
+          />
+        </Grid>
+        {/* choose routes */}
+        <Grid xs={12}>
+          {routesIsLoading && (
+            <Row>
+              <Label text={t('loading_routes')} />
+              <Spin />
+            </Row>
+          )}
+          {!routesIsLoading &&
+            routes &&
+            (routes.length === 0 ? (
+              <NotFound>{t('line_not_found')}</NotFound>
+            ) : (
+              <RouteSelector
+                routes={routes}
+                routeKey={routeKey}
+                setRouteKey={(key) => setSearch((current) => ({ ...current, routeKey: key }))}
+              />
+            ))}
+        </Grid>
+        <Grid xs={12}>
+          {gapsIsLoading && (
+            <Row>
+              <Label text={t('loading_gaps')} />
+              <Spin />
+            </Row>
+          )}
+        </Grid>
+      </Grid>
+      {!gapsIsLoading && routeKey && routeKey !== '0' && (
+        <>
+          <FormControlLabel
+            control={
+              <Switch checked={onlyGapped} onChange={(e) => setOnlyGapped(e.target.checked)} />
+            }
+            label={t('checkbox_only_gaps')}
+          />
+          <DisplayGapsPercentage
+            gapsPercentage={gapsPercentage}
+            decentPercentage={5}
+            terriblePercentage={20}
+          />
+          <Row>
+            <TitleCell>{t('planned_time')}</TitleCell>
+            <TitleCell>{t('planned_status')}</TitleCell>
+          </Row>
+          {gaps
+            ?.filter((gap) => gap.gtfsTime || gap.siriTime)
+            .filter((gap) => !onlyGapped || !gap.gtfsTime || !gap.siriTime)
+            .sort((t1, t2) => {
+              return Number((t1?.siriTime || t1?.gtfsTime)?.diff(t2?.siriTime || t2?.gtfsTime))
+            })
+            .map((gap, i) => (
+              <Row key={i}>
+                <Cell>{formatTime(gap.gtfsTime || gap.siriTime || moment())}</Cell>
+                <Cell>{formatStatus(gaps, gap)}</Cell>
+              </Row>
+            ))}
+        </>
       )}
-    </Widget>
+    </PageContainer>
   )
 }
 
-export default WorstLinesChart
+export default GapsPage
