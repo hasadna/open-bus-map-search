@@ -1,33 +1,62 @@
-export interface HourlyData {
-  planned_hour: string;
-  actual_rides: number;
-  planned_rides: number;
+import { Tooltip } from '@mui/material'
+import { Skeleton } from 'antd'
+import { Fragment } from 'react'
+import { useTranslation } from 'react-i18next'
+import OperatorHbarChart from './OperatorHbarChart/OperatorHbarChart'
+import { GroupByRes, useGroupBy } from 'src/api/groupByService'
+import { FC } from 'react'
+import { Moment } from 'moment/moment'
+import Widget from 'src/shared/Widget'
+import { InfoCircleOutlined } from '@ant-design/icons'
+
+const convertToChartCompatibleStruct = (arr: GroupByRes[]) => {
+  return arr.map((item: GroupByRes) => ({
+    id: item.operator_ref?.agency_id || 'Unknown',
+    name: item.operator_ref?.agency_name || 'Unknown',
+    total: item.total_planned_rides,
+    actual: item.total_actual_rides,
+  }))
 }
-const byHourHandler = (a: HourlyData, b: HourlyData) => a.planned_hour.localeCompare(b.planned_hour);
-const bySeverityHandler = (a: HourlyData, b: HourlyData) => {
-  const missesA = a.planned_rides - a.actual_rides;
-  const missesB = b.planned_rides - b.actual_rides;
-  const percentageMissesA = missesA / a.planned_rides * 100;
-  const percentageMissesB = missesB / b.planned_rides * 100;
-  if (percentageMissesA !== percentageMissesB) {
-    return percentageMissesB - percentageMissesA;
-  }
-  if (missesA !== missesB) {
-    return missesB - missesA;
-  }
-  return b.planned_rides - a.planned_rides;
-};
-export const sortByMode = (hourlyData: HourlyData[] = [], sortingMode: string) => {
-  return [...hourlyData].sort(sortingMode === 'hour' ? byHourHandler : bySeverityHandler);
-};
-export const mapColorByExecution = (planned: number, actual: number) => {
-  const misses = planned - actual;
-  const percentageMisses = misses / planned * 100;
-  if (percentageMisses <= 5) {
-    return 'green';
-  } else if (percentageMisses <= 50) {
-    return 'orange';
-  } else {
-    return 'red';
-  }
-};
+
+interface AllChartComponentProps {
+  startDate: Moment
+  endDate: Moment
+}
+
+export const AllLinesChart: FC<AllChartComponentProps> = ({ startDate, endDate }) => {
+  const [groupByOperatorData, groupByOperatorLoading] = useGroupBy({
+    dateTo: endDate,
+    dateFrom: startDate,
+    groupBy: 'operator_ref',
+  })
+  const { t } = useTranslation()
+  return (
+    <Widget>
+      <h2 className="title">
+        {t('dashboard_page_title')}
+        <Tooltip
+          title={convertLineFeedToHtmlTags(t('dashboard_tooltip_content'))}
+          placement="left"
+          arrow>
+          <InfoCircleOutlined style={{ marginRight: '12px' }} />
+        </Tooltip>
+      </h2>
+      {groupByOperatorLoading ? (
+        <Skeleton active />
+      ) : (
+        <OperatorHbarChart operators={convertToChartCompatibleStruct(groupByOperatorData)} />
+      )}
+    </Widget>
+  )
+}
+
+function convertLineFeedToHtmlTags(srt: string): React.ReactNode {
+  return srt.split('\n').map((row, i) => (
+    <Fragment key={i}>
+      {row}
+      <br />
+    </Fragment>
+  ))
+}
+
+export default AllLinesChart
