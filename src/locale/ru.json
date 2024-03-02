@@ -1,5 +1,4 @@
-.widget {
-  border-radius: 4px;
-  padding: 20px;
-  margin-bottom: 20px;
+declare module '*.svg' {
+  const content: string;
+  export default content;
 }
