@@ -1,82 +1,80 @@
-import { GtfsApi, GtfsRideWithRelatedPydanticModel } from 'open-bus-stride-client';
-import moment, { Moment } from 'moment';
-import { BusRoute, fromGtfsRoute } from 'src/model/busRoute';
-import { BusStop, fromGtfsStop } from 'src/model/busStop';
-import { API_CONFIG, MAX_HITS_COUNT } from 'src/api/apiConfig';
-// import { Route } from 'react-router'
+import { GtfsApi /*, GtfsRideWithRelatedPydanticModel*/ } from 'open-bus-stride-client';
+import { API_CONFIG } from 'src/api/apiConfig';
+// import { BASE_PATH } from './apiConfig'
 
 const GTFS_API = new GtfsApi(API_CONFIG);
-//const USER_CASES_API = new UserCasesApi(API_CONFIG)
-const JOIN_SEPARATOR = ',';
-const SEARCH_MARGIN_HOURS = 4;
-export async function getRoutesAsync(fromTimestamp: moment.Moment, toTimestamp: moment.Moment, operatorId: string | undefined, lineNumber: string | undefined, signal?: AbortSignal | undefined): Promise<BusRoute[]> {
-  const gtfsRoutes = await GTFS_API.gtfsRoutesListGet({
-    routeShortName: lineNumber,
-    operatorRefs: operatorId,
-    dateFrom: fromTimestamp.startOf('day').toDate(),
-    dateTo: moment.min(toTimestamp.endOf('day'), moment()).toDate(),
-    limit: 100
-  }, {
-    signal
+export async function getGtfsRidesList(date: Date | undefined, operator: string | undefined, lineNumber: string | undefined, routeKey: string | undefined) {
+  const gtfsRidesList = await GTFS_API.gtfsRidesListGet({
+    gtfsRouteDateFrom: date,
+    gtfsRouteDateTo: date,
+    gtfsRouteOperatorRefs: operator,
+    gtfsRouteRouteShortName: lineNumber,
+    gtfsRouteRouteLongNameContains: routeKey
   });
-  const routes = Object.values(gtfsRoutes.filter(route => route.date.getDate() === toTimestamp.date()).map(route => fromGtfsRoute(route)).reduce((agg, line) => {
-    const groupByKey = line.key;
-    const prevLine = agg[groupByKey] || {
-      routeIds: []
-    };
-    agg[groupByKey] = {
-      ...line,
-      ...prevLine,
-      routeIds: [...prevLine.routeIds, ...line.routeIds]
-    };
-    return agg;
-  }, ({} as Record<string, BusRoute>)));
-  return routes;
+  return gtfsRidesList.sort((a, b) => +a.startTime! - +b.startTime!);
 }
-export async function getStopsForRouteAsync(routeIds: number[], timestamp: Moment): Promise<BusStop[]> {
-  const stops: BusStop[] = [];
-  for (const routeId of routeIds) {
-    const rides = await GTFS_API.gtfsRidesListGet({
-      gtfsRouteId: routeId,
-      startTimeFrom: moment(timestamp).subtract(1, 'days').second(0).milliseconds(0).toDate(),
-      startTimeTo: moment(timestamp).add(1, 'days').second(0).milliseconds(0).toDate(),
-      limit: 1,
-      orderBy: 'start_time'
-    });
-    if (rides.length === 0) {
-      continue;
-    }
-    const rideRepresentative = rides[0];
-    const rideStops = await GTFS_API.gtfsRideStopsListGet({
-      gtfsRideIds: rideRepresentative.id!.toString()
-    });
-    await Promise.all(rideStops.map(async rideStop => {
-      const stop = await GTFS_API.gtfsStopsGetGet({
-        id: rideStop.gtfsStopId
-      });
-      stops.push(fromGtfsStop(rideStop, stop, rideRepresentative));
-    }));
-  }
-  return stops.sort((a, b) => a.stopSequence === b.stopSequence ? a.name.localeCompare(b.name) : a.stopSequence - b.stopSequence);
-}
-export async function getGtfsStopHitTimesAsync(stop: BusStop, timestamp: Moment) {
-  const targetStartTime = moment(timestamp).subtract(stop.minutesFromRouteStartTime, 'minutes');
-  const rides = await GTFS_API.gtfsRidesListGet({
-    gtfsRouteId: stop.routeId,
-    startTimeFrom: moment(targetStartTime).subtract(SEARCH_MARGIN_HOURS, 'hours').second(0).milliseconds(0).toDate(),
-    startTimeTo: moment(targetStartTime).add(SEARCH_MARGIN_HOURS, 'hours').second(0).milliseconds(0).toDate(),
-    limit: 1024,
-    orderBy: 'start_time asc'
-  });
-  if (rides.length === 0) {
-    return [];
-  }
-  const diffFromTargetStart = (ride: GtfsRideWithRelatedPydanticModel): number => Math.abs(timestamp.diff(ride.startTime, 'seconds'));
-  const closestInTimeRides = rides.sort((a, b) => diffFromTargetStart(a) - diffFromTargetStart(b)).slice(0, MAX_HITS_COUNT);
-  const rideIds = closestInTimeRides.map(ride => ride.id).join(JOIN_SEPARATOR);
-  const stopHits = await GTFS_API.gtfsRideStopsListGet({
-    gtfsRideIds: rideIds,
-    gtfsStopIds: stop.stopId.toString()
-  });
-  return stopHits.sort((hit1, hit2) => +hit1.arrivalTime! - +hit2.arrivalTime!);
-}
+
+// type RidesList = {
+//   operator_ref: string
+//   route_short_name: string
+//   route_route_direction: string
+//   route_date_from: Date
+//   route_date_to: Date
+// }[]
+
+// type RawRidesList = {
+//   operator_ref: string
+//   route_short_name: string
+//   route_route_direction: string
+//   route_date_from: string
+//   route_date_to: string
+// }[]
+
+// const USE_API = true
+// const LIMIT = 10000
+
+// export const getRidesAsync = async (
+//   operator_ref?: string,
+//   route_short_name?: string,
+//   route_route_direction?: string,
+//   route_date_from?: string,
+//   route_date_to?: string,
+// ): Promise<RawRidesList> => {
+//   // const startOfDay = moment(fromTimestamp).startOf('day')
+//   const data = USE_API
+//     ? (0
+//         await axios.get<RawRidesList>(`${BASE_PATH}/rides_rides/list`, {
+//           params: {
+//             limit: LIMIT,
+//             gtfs_route__date_from: route_date_from,
+//             gtfs_route__date_to: route_date_to,
+//             gtfs_route__operator_refs: operator_ref,
+//             gtfs_route__route_short_name: route_short_name,
+//             gtfs_route__route_long_name_contains: route_route_direction,
+//           },
+//         }).data
+//     : EXAMPLE_DATA
+//   return data.map((ride) => ({
+//     operator_ref: ride.gtfs_route__operator_refs,
+//     lineNumber: ride.gtfs_route__route_short_name,
+//     direction: ride.gtfs_route__route_long_name_contains,
+//     start_time: ride.start_time,
+//   })).json()
+// }
+
+// const EXAMPLE_DATA: RawRidesList = [
+//   {
+//     operator_ref: "3",
+//     route_short_name: "271",
+//     route_route_direction: "תל אביב",
+//     route_date_from: "2023-01-01",
+//     route_date_to: "2023-01-01",
+//   },
+//   {
+//     operator_ref: "3",
+//     route_short_name: "271",
+//     route_route_direction: "תל אביב",
+//     route_date_from: "2023-01-01",
+//     route_date_to: "2023-01-01",
+//   }
+// ]
