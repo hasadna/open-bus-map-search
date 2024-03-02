@@ -1,29 +1,19 @@
-import { GithubOutlined } from '@ant-design/icons'
-import { useTranslation } from 'react-i18next'
-import { useCallback } from 'react'
-import './GitHubLink.scss'
+.main-header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  background: #fff;
+}
 
-export default function GitHubLink() {
-  const { t } = useTranslation()
+.main-header.dark {
+  background: #303230;
+}
 
-  const data = {
-    label: t('github_link'),
-    path: 'https://github.com/hasadna/open-bus-map-search',
-    icon: <GithubOutlined />,
-    element: null,
-  }
+.theme-icon {
+  width: 1rem;
+  transition: all 0.1s;
+}
 
-  const handleClick = useCallback(() => {
-    window.open(data.path, '_blank')
-  }, [])
-
-  return (
-    <div
-      className="github-link"
-      onClick={handleClick}
-      aria-label={t('github_link')}
-      title={t('github_link')}>
-      {data.icon}
-    </div>
-  )
+.theme-icon:hover {
+  transform: scale(1.1);
 }
