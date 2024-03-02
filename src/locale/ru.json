@@ -1,57 +1,35 @@
 import { useTranslation } from 'react-i18next'
-import './DisplayGapsPercentage.scss'
-import { Row } from './Row'
+import { Autocomplete, TextField } from '@mui/material'
 
-function getStatus(percentage: number, decentPercentage: number, terriblePercentage: number) {
-  const moreThanOneHundredPercent = 101
-  const statuses = [
-    {
-      min: -Infinity,
-      status: 'invalid',
-    },
-    {
-      min: 0,
-      status: 'great',
-    },
-    {
-      min: decentPercentage,
-      status: 'decent',
-    },
-    {
-      min: terriblePercentage,
-      status: 'terrible',
-    },
-    {
-      min: moreThanOneHundredPercent,
-      status: 'invalid',
-    },
-  ]
-  return statuses.findLast((status: { min: number; status: string }) => status.min <= percentage)
-    ?.status
+type FilterPositionsByStartTimeSelectorProps = {
+  options: {
+    value: string
+    label: string
+  }[]
+  startTime?: string
+  setStartTime: (time: string) => void
 }
 
-function DisplayGapsPercentage({
-  gapsPercentage,
-  decentPercentage,
-  terriblePercentage,
-}: {
-  gapsPercentage: number | undefined
-  decentPercentage: number
-  terriblePercentage: number
-}) {
+export function FilterPositionsByStartTimeSelector({
+  options,
+  startTime,
+  setStartTime,
+}: FilterPositionsByStartTimeSelectorProps) {
+  const valueFinned = options.find((option) => option.value === startTime)
+  const value = valueFinned ? valueFinned : null
+
   const { t } = useTranslation()
-  if (!gapsPercentage && gapsPercentage != 0) return <></>
-  const status = getStatus(gapsPercentage, decentPercentage, terriblePercentage)
-  const stylesClass = `gaps-percentage-displayed-${status}-result`
-  const text =
-    status === 'great'
-      ? t('all_rides_completed')
-      : `${Math.floor(gapsPercentage)}% ${t('missing_rides')}`
 
   return (
-    <Row>
-      <div className={stylesClass}>{text}</div>
-    </Row>
+    <Autocomplete
+      sx={{ width: '100%' }}
+      disablePortal
+      value={value}
+      onChange={(e, value) => setStartTime(value ? value.value : '0')}
+      id="start-time-select"
+      options={options}
+      renderInput={(params) => <TextField {...params} label={t('choose_start_time')} />}
+      getOptionLabel={(option) => option.label}
+    />
   )
 }
-export default DisplayGapsPercentage
