@@ -1,18 +1,35 @@
-import { DivIcon } from 'leaflet'
+.marker-container {
+    display: flex;
+    flex-direction: column;
+}
 
-export const busIconPath = (operator_id: string | number) => `/bus-logos/${operator_id}.svg`
+.marker-cluster .count {
+    position: absolute;
+    padding: 5px;
+    border-radius: 50%;
+    line-height: 10px;
+    left: 50%;
+    top: 0;
+    transform: translate(-50%, -50%);
+    font-weight: bold;
 
-export const busIcon = ({ operator_id, name }: { operator_id: string | number; name?: string }) => {
-  const path = busIconPath(operator_id)
-  return new DivIcon({
-    className: 'my-div-icon',
-    html: `
-      <div class="bus-icon-container">
-        <div class="bus-icon-circle">
-          <img src="${path}" alt="${name}" />
-        </div>
-        <div class="operator-name">${name}</div>
-      </div>
-      `,
-  })
+}
+
+.marker-cluster, .marker-cluster div {
+    background-color: transparent;
+    margin: 0;
+    width: 40px;
+    height: 40px;
+}
+
+.marker-cluster-small .count {
+    background-color: rgb(181 226 140 / 60%)
+}
+
+.marker-cluster-medium .count {
+    background-color: rgb(241 211 87 / 60%);
+}
+
+.marker-cluster-large .count {
+    background-color: rgb(253 156 115 / 60%);
 }
