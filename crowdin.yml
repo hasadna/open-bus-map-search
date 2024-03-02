@@ -1,5 +1,3 @@
 files:
-  - source: /src/
-    ignore:
-      - /src/locale
-    translation: /src/locale/%two_letters_code%.json
+  - source: /src/locale
+  - type: i18next_json
