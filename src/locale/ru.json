@@ -1,12 +1,18 @@
-import { Moment } from 'moment'
-import React, { useCallback } from 'react'
+@import '../../resources/variables';
 
-export function useDate(initialValue: Moment) {
-  const [date, setDate] = React.useState<Moment>(initialValue)
-  const onChange = useCallback((date: Moment | null) => {
-    if (date) {
-      setDate(date)
-    }
-  }, [])
-  return [date, onChange] as const
+.gaps-percentage-displayed {
+  font-weight: bold;
+  width: 200px;
+
+  &-great-result {
+    color: $great-result;
+  }
+
+  &-decent-result {
+    color: $decent-result;
+  }
+
+  &-terrible-result {
+    color: $terrible-result;
+  }
 }
