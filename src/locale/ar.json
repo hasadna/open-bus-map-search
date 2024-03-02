@@ -1,30 +1,35 @@
-import { GtfsRoutePydanticModel } from 'open-bus-stride-client/openapi/models';
-import { strLeftBack } from 'underscore.string';
-export type BusRoute = {
+import { GtfsRideStopPydanticModel, GtfsStopPydanticModel } from 'open-bus-stride-client/openapi/models';
+import { GtfsRideWithRelatedPydanticModel } from 'open-bus-stride-client';
+import moment from 'moment';
+import { Coordinates } from 'src/model/location';
+export type BusStop = {
   date: Date;
   key: string;
-  operatorId: string;
-  lineNumber: string;
-  fromName: string;
-  toName: string;
-  direction: string;
-  routeIds: number[];
-  lineRef: number;
-  routeAlternative: string;
+  stopId: number;
+  routeId: number;
+  stopSequence: number;
+  name: string;
+  code: string;
+  location: Coordinates;
+  minutesFromRouteStartTime: number;
 };
-export function fromGtfsRoute(gtfsRoute: GtfsRoutePydanticModel): BusRoute {
-  const cleanedName = strLeftBack(gtfsRoute.routeLongName!, '-');
-  const parts = cleanedName.split('<->');
+export function fromGtfsStop(gtfsRideStop: GtfsRideStopPydanticModel, gtfsStop: GtfsStopPydanticModel, ride: GtfsRideWithRelatedPydanticModel): BusStop {
+  const {
+    arrivalTime
+  } = gtfsRideStop;
+  const minutesFromRouteStartTime = arrivalTime ? moment(arrivalTime).diff(ride.startTime, 'minutes') : 0;
   return {
-    date: gtfsRoute.date,
-    operatorId: gtfsRoute.operatorRef.toString(),
-    lineNumber: gtfsRoute.routeShortName!,
-    key: gtfsRoute.routeLongName!,
-    fromName: parts[0] || '',
-    toName: parts[1] || '',
-    direction: gtfsRoute.routeDirection!,
-    routeIds: [gtfsRoute.id],
-    lineRef: gtfsRoute.lineRef,
-    routeAlternative: gtfsRoute.routeAlternative!
+    date: gtfsStop.date,
+    key: gtfsRideStop.id.toString(),
+    stopId: gtfsRideStop.gtfsStopId,
+    routeId: ride.gtfsRouteId || 0,
+    stopSequence: gtfsRideStop.stopSequence || 0,
+    name: `${gtfsStop.name} (${gtfsStop.city})`,
+    code: gtfsStop.code.toString(),
+    location: {
+      latitude: gtfsStop.lat || 0,
+      longitude: gtfsStop.lon || 0
+    },
+    minutesFromRouteStartTime
   };
 }
