@@ -1,55 +1,105 @@
-import type { Meta, StoryObj } from '@storybook/react'
-import { BusToolTip, BusToolTipProps } from './BusToolTip'
+import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { Point } from 'src/pages/realtimeMap'
+import { Button } from '@mui/material'
+import moment from 'moment-timezone'
+import './BusToolTip.scss'
 
-const meta = {
-  title: 'Components/MapLayers/BusToolTip',
-  component: BusToolTip,
-  parameters: {
-    layout: 'centered',
-  },
-  tags: ['map', 'tooltip', 'autodocs'],
-} satisfies Meta<typeof BusToolTip>
+import { getSiriRideWithRelated } from 'src/api/siriService'
+import { SiriRideWithRelatedPydanticModel } from 'open-bus-stride-client/openapi/models/SiriRideWithRelatedPydanticModel'
+import { useTranslation } from 'react-i18next'
+import { Spin } from 'antd'
+import cn from 'classnames'
 
-export default meta
+export type BusToolTipProps = { position: Point; icon: string }
 
-type Story = StoryObj<typeof meta>
+export function BusToolTip({ position, icon }: BusToolTipProps) {
+  const [siriRide, setSiriRide] = useState<SiriRideWithRelatedPydanticModel | undefined>()
+  const [isLoading, setIsLoading] = useState(false)
+  const [showJson, setShowJson] = useState(false)
+  const { t } = useTranslation()
 
-const defaultArgs: BusToolTipProps = {
-  position: {
-    loc: [31.799982, 34.786926],
-    color: 22,
-    operator: 3,
-    bearing: 106,
-    recorded_at_time: 1698809440000,
-    point: {
-      id: 2838516282,
-      siri_snapshot_id: 919509,
-      siri_ride_stop_id: 1370461085,
-      recorded_at_time: '2023-11-01T03:30:40+00:00',
-      lon: 34.786926,
-      lat: 31.799982,
-      bearing: 106,
-      velocity: 22,
-      distance_from_journey_start: 636,
-      distance_from_siri_ride_stop_meters: 278,
-      siri_snapshot__snapshot_id: '2023/11/01/03/30',
-      siri_route__id: 973,
-      siri_route__line_ref: 2974,
-      siri_route__operator_ref: 3,
-      siri_ride__id: 52703935,
-      siri_ride__journey_ref: '2023-11-01-56650774',
-      siri_ride__scheduled_start_time: '2023-11-01T03:30:00+00:00',
-      siri_ride__vehicle_ref: '23321002',
-      siri_ride__first_vehicle_location_id: 2838509585,
-      siri_ride__last_vehicle_location_id: 2838555351,
-      siri_ride__duration_minutes: 27,
-      siri_ride__gtfs_ride_id: 57365030,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } as any,
-  },
-  icon: '/bus-logos/3.svg',
-}
+  useEffect(() => {
+    setIsLoading(true)
+    getSiriRideWithRelated(
+      position.point!.siri_route__id.toString(),
+      position.point!.siri_ride__vehicle_ref.toString(),
+      position.point!.siri_route__line_ref.toString(),
+    )
+      .then((siriRideRes: SiriRideWithRelatedPydanticModel) => setSiriRide(siriRideRes))
+      .finally(() => setIsLoading(false))
+  }, [position])
 
-export const Default: Story = {
-  args: defaultArgs,
+  return (
+    <div className={cn({ 'extend-for-json': showJson }, 'bus-tooltip')}>
+      {isLoading || !siriRide ? (
+        <>
+          {t('loading_routes')}
+          <Spin />
+        </>
+      ) : (
+        <>
+          <header className="header">
+            <h1 className="title">
+              {t('line')} :
+              <span>
+                <Link to={`/profile/${siriRide.gtfsRouteRouteShortName}`}>
+                  {siriRide.gtfsRouteRouteShortName}
+                </Link>
+              </span>
+            </h1>
+            <img src={icon} alt="bus icon" className="bus-icon" />
+          </header>
+          <ul>
+            <li>
+              {t('from')} :<span>{siriRide.gtfsRouteRouteLongName?.split('<->')[0]}</span>
+            </li>
+            <li>
+              {t('destination')} :<span>{siriRide.gtfsRouteRouteLongName?.split('<->')[1]}</span>
+            </li>
+            <li>
+              {t('velocity')} :<span>{`${position.point?.velocity}  ${t('kmh')}`}</span>
+            </li>
+
+            <li>
+              {t('sample_time')} :
+              <span>
+                {/* eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion */}
+                {moment(position.point!.recorded_at_time as string, moment.ISO_8601)
+                  .tz('Israel')
+                  .format('DD/MM/yyyy בשעה HH:mm')}
+              </span>
+            </li>
+            <li>
+              {t('vehicle_ref')} :<span>{position.point?.siri_ride__vehicle_ref}</span>
+            </li>
+          </ul>
+          {/*maybe option to add info like this in extend card for now I  put this condition */}
+          {window.screen.height > 1100 && (
+            <>
+              <h4>
+                {t('drive_direction')} :
+                <span>
+                  ( {position.point?.bearing} {t('bearing')})
+                </span>
+              </h4>
+              <h4>
+                {t('coords')} :<span>{position.loc.join(' , ')}</span>
+              </h4>
+            </>
+          )}
+        </>
+      )}
+      <Button onClick={() => setShowJson((showJson) => !showJson)}>
+        {showJson ? t('hide_document') : t('show_document')}
+      </Button>
+      {showJson && (
+        <pre>
+          {JSON.stringify(position, null, 2)}
+          <br />
+          {siriRide && JSON.stringify(siriRide, null, 2)}
+        </pre>
+      )}
+    </div>
+  )
 }
