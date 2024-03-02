@@ -1,95 +1,82 @@
-import { useEffect, useState } from 'react';
-import { BASE_PATH } from './apiConfig';
-import agencyList from 'open-bus-stride-client/agencies/agencyList';
-import { Moment } from 'moment';
-type groupByField = 'gtfs_route_date' | 'operator_ref' | 'day_of_week' | 'line_ref' | 'gtfs_route_hour';
-type groupByFields = groupByField | `${groupByField},${groupByField}` | `${groupByField},${groupByField},${groupByField}` | `${groupByField},${groupByField},${groupByField},${groupByField}`;
-type Identity<T> = { [P in keyof T]: T[P] };
-type Replace<T, K extends keyof T, TReplace> = Identity<Pick<T, Exclude<keyof T, K>> & { [P in K]: TReplace }>;
+import { GtfsApi, GtfsRideWithRelatedPydanticModel } from 'open-bus-stride-client';
+import moment, { Moment } from 'moment';
+import { BusRoute, fromGtfsRoute } from 'src/model/busRoute';
+import { BusStop, fromGtfsStop } from 'src/model/busStop';
+import { API_CONFIG, MAX_HITS_COUNT } from 'src/api/apiConfig';
+// import { Route } from 'react-router'
 
-/*
-example response
-[
-  {
-    "gtfs_route_date": "2023-02-27",
-    "operator_ref": 0,
-    "day_of_week": "string",
-    "total_routes": 0,
-    "total_planned_rides": 0,
-    "total_actual_rides": 0
-  }
-]
-*/
-type GroupByResponse = {
-  gtfs_route_date: string;
-  gtfs_route_hour: string;
-  operator_ref: number;
-  line_ref: number;
-  day_of_week: string;
-  total_routes: number;
-  total_planned_rides: number;
-  total_actual_rides: number;
-  route_short_name: string;
-  route_long_name: string;
-}[];
-export type GroupByRes = Replace<GroupByResponse[0], 'operator_ref', {
-  agency_id: string;
-  agency_name: string;
-  agency_url: string;
-  agency_timezone: string;
-  agency_lang: string;
-  agency_phone: string;
-  agency_fare_url: string;
-} | undefined>;
-async function groupbyAsync({
-  dateTo,
-  dateFrom,
-  groupBy
-}: {
-  dateTo: Moment;
-  dateFrom: Moment;
-  groupBy: groupByFields;
-}): Promise<GroupByResponse> {
-  // example: https://open-bus-stride-api.hasadna.org.il/gtfs_rides_agg/group_by?date_from=2023-01-27&date_to=2023-01-29&group_by=operator_ref
-  const dateToStr = dateTo.toISOString().split('T')[0];
-  const dateFromStr = dateFrom.toISOString().split('T')[0];
-  const excludes = 'exclude_hour_from=23&exclude_hour_to=2';
-  return (await fetch(`${BASE_PATH}/gtfs_rides_agg/group_by?date_from=${dateFromStr}&date_to=${dateToStr}&group_by=${groupBy}&${excludes}`)).json();
+const GTFS_API = new GtfsApi(API_CONFIG);
+//const USER_CASES_API = new UserCasesApi(API_CONFIG)
+const JOIN_SEPARATOR = ',';
+const SEARCH_MARGIN_HOURS = 4;
+export async function getRoutesAsync(fromTimestamp: moment.Moment, toTimestamp: moment.Moment, operatorId: string | undefined, lineNumber: string | undefined, signal?: AbortSignal | undefined): Promise<BusRoute[]> {
+  const gtfsRoutes = await GTFS_API.gtfsRoutesListGet({
+    routeShortName: lineNumber,
+    operatorRefs: operatorId,
+    dateFrom: fromTimestamp.startOf('day').toDate(),
+    dateTo: moment.min(toTimestamp.endOf('day'), moment()).toDate(),
+    limit: 100
+  }, {
+    signal
+  });
+  const routes = Object.values(gtfsRoutes.filter(route => route.date.getDate() === toTimestamp.date()).map(route => fromGtfsRoute(route)).reduce((agg, line) => {
+    const groupByKey = line.key;
+    const prevLine = agg[groupByKey] || {
+      routeIds: []
+    };
+    agg[groupByKey] = {
+      ...line,
+      ...prevLine,
+      routeIds: [...prevLine.routeIds, ...line.routeIds]
+    };
+    return agg;
+  }, ({} as Record<string, BusRoute>)));
+  return routes;
 }
-export function useGroupBy({
-  dateTo,
-  dateFrom,
-  groupBy
-}: {
-  dateTo: Moment;
-  dateFrom: Moment;
-  groupBy: groupByFields;
-}) {
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-  const [data, setData] = useState<Replace<GroupByResponse[0], 'operator_ref', {
-    agency_id: string;
-    agency_name: string;
-    agency_url: string;
-    agency_timezone: string;
-    agency_lang: string;
-    agency_phone: string;
-    agency_fare_url: string;
-  } | undefined>[]>([]);
-  useEffect(() => {
-    setLoading(true);
-    groupbyAsync({
-      dateTo,
-      dateFrom,
-      groupBy
-    }).then(data => {
-      setData(data.map(dataRecord => ({
-        ...dataRecord,
-        operator_ref: agencyList.find(agency => agency.agency_id === String(dataRecord.operator_ref))
-      }))
-      // should filter operator 22 (which is the Dankal TLV light train)
-      .filter(dataRecord => dataRecord.operator_ref !== undefined));
-    }).catch(er => setError(er)).finally(() => setLoading(false));
-  }, [+dateTo, +dateFrom, groupBy]);
-  return ([data, loading, error] as const);
+export async function getStopsForRouteAsync(routeIds: number[], timestamp: Moment): Promise<BusStop[]> {
+  const stops: BusStop[] = [];
+  for (const routeId of routeIds) {
+    const rides = await GTFS_API.gtfsRidesListGet({
+      gtfsRouteId: routeId,
+      startTimeFrom: moment(timestamp).subtract(1, 'days').second(0).milliseconds(0).toDate(),
+      startTimeTo: moment(timestamp).add(1, 'days').second(0).milliseconds(0).toDate(),
+      limit: 1,
+      orderBy: 'start_time'
+    });
+    if (rides.length === 0) {
+      continue;
+    }
+    const rideRepresentative = rides[0];
+    const rideStops = await GTFS_API.gtfsRideStopsListGet({
+      gtfsRideIds: rideRepresentative.id!.toString()
+    });
+    await Promise.all(rideStops.map(async rideStop => {
+      const stop = await GTFS_API.gtfsStopsGetGet({
+        id: rideStop.gtfsStopId
+      });
+      stops.push(fromGtfsStop(rideStop, stop, rideRepresentative));
+    }));
+  }
+  return stops.sort((a, b) => a.stopSequence === b.stopSequence ? a.name.localeCompare(b.name) : a.stopSequence - b.stopSequence);
+}
+export async function getGtfsStopHitTimesAsync(stop: BusStop, timestamp: Moment) {
+  const targetStartTime = moment(timestamp).subtract(stop.minutesFromRouteStartTime, 'minutes');
+  const rides = await GTFS_API.gtfsRidesListGet({
+    gtfsRouteId: stop.routeId,
+    startTimeFrom: moment(targetStartTime).subtract(SEARCH_MARGIN_HOURS, 'hours').second(0).milliseconds(0).toDate(),
+    startTimeTo: moment(targetStartTime).add(SEARCH_MARGIN_HOURS, 'hours').second(0).milliseconds(0).toDate(),
+    limit: 1024,
+    orderBy: 'start_time asc'
+  });
+  if (rides.length === 0) {
+    return [];
+  }
+  const diffFromTargetStart = (ride: GtfsRideWithRelatedPydanticModel): number => Math.abs(timestamp.diff(ride.startTime, 'seconds'));
+  const closestInTimeRides = rides.sort((a, b) => diffFromTargetStart(a) - diffFromTargetStart(b)).slice(0, MAX_HITS_COUNT);
+  const rideIds = closestInTimeRides.map(ride => ride.id).join(JOIN_SEPARATOR);
+  const stopHits = await GTFS_API.gtfsRideStopsListGet({
+    gtfsRideIds: rideIds,
+    gtfsStopIds: stop.stopId.toString()
+  });
+  return stopHits.sort((hit1, hit2) => +hit1.arrivalTime! - +hit2.arrivalTime!);
 }
