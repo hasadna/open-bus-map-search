@@ -1,35 +1,50 @@
-.marker-container {
-    display: flex;
-    flex-direction: column;
+import L, { DivIcon, MarkerCluster } from 'leaflet'
+
+import './customCluster.scss'
+
+const createClusterCustomIcon = (cluster: MarkerCluster): DivIcon => {
+  const childCount = cluster.getChildCount()
+  const imgPath = getIconForGroup(childCount)
+  const className = getClassNameForGroup(childCount)
+
+  const innerHtml = `
+    <div class="marker-container">
+      <span class="count">${childCount}</span>
+       <img src="${imgPath}" alt="${childCount} אוטובוסים" />
+    </div>`
+
+  return new DivIcon({
+    html: innerHtml,
+    className: className,
+    iconSize: new L.Point(40, 40),
+  })
+}
+export default createClusterCustomIcon
+
+const getIconForGroup = (numOfNearbyBusses: number): string => {
+  const groupSizes = [30, 10, 3, 2]
+
+  const imgPath = '/bus-groups/'
+  const iconName = `${groupSizes.find((groupSize) => numOfNearbyBusses >= groupSize) || 3}.svg`
+  return imgPath + iconName
 }
 
-.marker-cluster .count {
-    position: absolute;
-    padding: 5px;
-    border-radius: 50%;
-    line-height: 10px;
-    left: 50%;
-    top: 0;
-    transform: translate(-50%, -50%);
-    font-weight: bold;
+const getClassNameForGroup = (numOfNearbyBusses: number): string => {
+  type groupToClassName = {
+    numOfnearbyBusses: number
+    className: string
+  }
 
-}
+  const classes: groupToClassName[] = [
+    { numOfnearbyBusses: 100, className: 'large' },
+    { numOfnearbyBusses: 10, className: 'medium' },
+    { numOfnearbyBusses: 1, className: 'small' },
+  ]
 
-.marker-cluster, .marker-cluster div {
-    background-color: transparent;
-    margin: 0;
-    width: 40px;
-    height: 40px;
-}
+  const clusterClass = 'marker-cluster marker-cluster-'
+  const clusterSize =
+    classes.find((groupClass) => numOfNearbyBusses >= groupClass.numOfnearbyBusses)?.className ||
+    'small'
 
-.marker-cluster-small .count {
-    background-color: rgb(181 226 140 / 60%)
-}
-
-.marker-cluster-medium .count {
-    background-color: rgb(241 211 87 / 60%);
-}
-
-.marker-cluster-large .count {
-    background-color: rgb(253 156 115 / 60%);
+  return clusterClass + clusterSize
 }
