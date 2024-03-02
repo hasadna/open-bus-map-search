@@ -1,62 +1,49 @@
-import { Tooltip } from '@mui/material'
-import { Skeleton } from 'antd'
-import { Fragment } from 'react'
-import { useTranslation } from 'react-i18next'
-import OperatorHbarChart from './OperatorHbarChart/OperatorHbarChart'
-import { GroupByRes, useGroupBy } from 'src/api/groupByService'
-import { FC } from 'react'
-import { Moment } from 'moment/moment'
-import Widget from 'src/shared/Widget'
-import { InfoCircleOutlined } from '@ant-design/icons'
+import './operatorsHbarChart.scss'
+import { getColorByHashString } from './utils'
+import { HbarChart } from '../../WorstLinesChart/LineHbarChart/HbarChart/HbarChart'
 
-const convertToChartCompatibleStruct = (arr: GroupByRes[]) => {
-  return arr.map((item: GroupByRes) => ({
-    id: item.operator_ref?.agency_id || 'Unknown',
-    name: item.operator_ref?.agency_name || 'Unknown',
-    total: item.total_planned_rides,
-    actual: item.total_actual_rides,
-  }))
+const colorsByCompannies: { [index: string]: string } = {
+  'אגד תעבורה': '#2f9250',
+  אגד: '#008479',
+  'אלקטרה אפיקים': '#9ACA3C',
+  קווים: '#03296A',
+  סופרבוס: '#164C8F',
+  דן: '#205CAB',
+  'נתיב אקספרס': '#F2BD00',
+  מטרופולין: '#FF8500',
 }
 
-interface AllChartComponentProps {
-  startDate: Moment
-  endDate: Moment
+const excludeOperators = [/רכבת ישראל/, /^מוניות.*/, /^ירושלים-.*/, /^ירושלים -.*/]
+
+export function getColorName(name: string) {
+  return colorsByCompannies[name] || getColorByHashString(name)
 }
 
-export const AllLinesChart: FC<AllChartComponentProps> = ({ startDate, endDate }) => {
-  const [groupByOperatorData, groupByOperatorLoading] = useGroupBy({
-    dateTo: endDate,
-    dateFrom: startDate,
-    groupBy: 'operator_ref',
-  })
-  const { t } = useTranslation()
+function OperatorHbarChart({
+  operators,
+  complement = false, // complement the chart (100% - actual) instead of actual
+}: {
+  operators: { name: string; total: number; actual: number }[]
+  complement?: boolean
+}) {
+  const rows = operators
+
   return (
-    <Widget>
-      <h2 className="title">
-        {t('dashboard_page_title')}
-        <Tooltip
-          title={convertLineFeedToHtmlTags(t('dashboard_tooltip_content'))}
-          placement="left"
-          arrow>
-          <InfoCircleOutlined style={{ marginRight: '12px' }} />
-        </Tooltip>
-      </h2>
-      {groupByOperatorLoading ? (
-        <Skeleton active />
-      ) : (
-        <OperatorHbarChart operators={convertToChartCompatibleStruct(groupByOperatorData)} />
-      )}
-    </Widget>
+    <HbarChart
+      entries={rows
+        .map((o) => ({
+          ...o,
+          color: getColorName(o.name),
+        }))
+        .filter((operator) => {
+          // Check if the string matches any of the patterns
+          return !excludeOperators.some((pattern) => pattern.test(operator.name))
+        })
+        .sort((a, b) => a.actual / a.total - b.actual / b.total)
+        .slice(0, 100)}
+      complement={complement}
+    />
   )
 }
 
-function convertLineFeedToHtmlTags(srt: string): React.ReactNode {
-  return srt.split('\n').map((row, i) => (
-    <Fragment key={i}>
-      {row}
-      <br />
-    </Fragment>
-  ))
-}
-
-export default AllLinesChart
+export default OperatorHbarChart
