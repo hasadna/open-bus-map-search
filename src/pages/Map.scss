@@ -18,7 +18,7 @@ main > div,
     right: 1em;
     z-index: 1000;
     border: 2px solid black;
-    background-color: rgba($color: #fff, $alpha: 0.5);
+    background-color: rgba($color: #fff, $alpha: 50%);
     padding: 1em;
 
     &-item {
@@ -30,10 +30,12 @@ main > div,
         align-items: center;
         margin-left: 1em;
       }
+
       &-line {
         width: 25px;
         height: 4px;
       }
+
       &-icon {
         width: 20px;
         height: 20px;
@@ -42,6 +44,7 @@ main > div,
         background-position: center;
         background-repeat: no-repeat;
       }
+
       &-title {
         width: 100px;
         text-align: left;
