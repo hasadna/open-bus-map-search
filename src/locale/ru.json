@@ -1,30 +1,52 @@
-.HbarChart {
-    .entry {
-        position: relative;
+import type { Meta, StoryObj } from '@storybook/react'
+import { HbarChart, Entry } from './HbarChart'
 
-        .entryName {
-            margin-left: 10px;
-            font-size: 16px;
-            font-weight: 500;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
+const meta = {
+  title: 'Components/MapLayers/HbarChart',
+  component: HbarChart,
+  tags: ['map', 'tooltip', 'autodocs'],
+} satisfies Meta<typeof HbarChart>
 
-        .entryBar {
-            display: flex;
-            align-items: center;
+export default meta
 
-            .barDisplay {
-                height: 7px;
-                border-radius: 10px;
-                margin-left: 10px;
-            }
+type Story = StoryObj<typeof meta>
 
-            .entryBarTotal {
-                .entryBarActual {
-                    font-size: 15px;
-                }
-            }
-         }
-    }
+const operatorsPT: Entry[] = [
+  {
+    name: 'כפיר',
+    total: 1883,
+    actual: 0,
+    color: '#5840c0',
+  },
+  {
+    name: 'Unknown',
+    total: 2318,
+    actual: 0,
+    color: '#2a443e',
+  },
+  {
+    name: 'כרמלית',
+    total: 998,
+    actual: 0,
+    color: '#5cbcec',
+  },
+  {
+    name: 'כבל אקספרס',
+    total: 12824,
+    actual: 0,
+    color: '#0d2b58',
+  },
+  {
+    name: 'מועצה אזורית גולן',
+    total: 1992,
+    actual: 1506,
+    color: '#957476',
+  },
+]
+
+export const Chart: Story = {
+  args: {
+    entries: operatorsPT,
+    complement: false,
+  },
 }
