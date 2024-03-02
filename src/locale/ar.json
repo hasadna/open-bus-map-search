@@ -1,20 +1,30 @@
-import { useTranslation } from 'react-i18next'
-import { TimePicker, renderTimeViewClock } from '@mui/x-date-pickers'
-import { DataAndTimeSelectorProps } from './utils/dateAndTime'
+import type { Meta, StoryObj } from '@storybook/react'
+import { BusToolTip } from './map-related/MapLayers/BusToolTip'
+import '../../shared/shared.css'
+import Widget from 'src/shared/Widget'
+const meta = {
+  title: 'Components/Widget',
+  component: () => (
+    <div style={{ background: '#f0f2f5', width: '400px', padding: '20px' }}>
+      <Widget>
+        שלום חברים!
+        <br />
+        ככה נראה widget util
+      </Widget>
+    </div>
+  ),
+  parameters: {
+    layout: 'centered',
+  },
+  tags: ['map', 'tooltip', 'autodocs'],
+} satisfies Meta<typeof BusToolTip>
 
-export function TimeSelector({ time, onChange }: DataAndTimeSelectorProps) {
-  const { t } = useTranslation()
-  return (
-    <TimePicker
-      sx={{ width: '100%' }}
-      label={t('choose_time')}
-      value={time}
-      onChange={(ts) => onChange(ts!)}
-      ampm={false}
-      viewRenderers={{
-        hours: renderTimeViewClock,
-        minutes: renderTimeViewClock,
-      }}
-    />
-  )
+export default meta
+
+type Story = StoryObj<typeof meta>
+
+const defaultArgs = {}
+
+export const Default: Story = {
+  args: defaultArgs,
 }
