@@ -59,7 +59,7 @@ export function MapWithLocationsAndPath({
         onClick={toggleExpanded}
         icon={<ExpandAltOutlined />}
       />
-      <MapContainer center={position.loc} zoom={13} scrollWheelZoom={true}>
+      <MapContainer center={position.loc} zoom={8} scrollWheelZoom={true}>
         <TileLayer
           attribution='&copy <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
