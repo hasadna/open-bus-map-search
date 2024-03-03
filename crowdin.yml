@@ -1,0 +1,4 @@
+files:
+  - source: /src/locale/en.json
+    translation: /src/locale/%two_letters_code%.json
+  - type: i18next_json
