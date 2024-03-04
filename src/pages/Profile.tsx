@@ -1,24 +1,24 @@
-import styled from "styled-components";
-import Grid from "@mui/material/Unstable_Grid2"; // Grid version 2
+import styled from 'styled-components'
+import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
 
-import { Label } from "./components/Label";
-import { NotFound } from "./components/NotFound";
-import { PageContainer } from "./components/PageContainer";
+import { Label } from './components/Label'
+import { NotFound } from './components/NotFound'
+import { PageContainer } from './components/PageContainer'
 
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'react-i18next'
 
 //API
-import Widget from "src/shared/Widget";
-import { useLoaderData } from "react-router-dom";
-import { ProfileLineDetails } from "./ProfileLineDetails";
+import Widget from 'src/shared/Widget'
+import { useLoaderData } from 'react-router-dom'
+import { ProfileLineDetails } from './ProfileLineDetails'
 
 const Profile = () => {
   return (
     <>
       <GeneralDetailsAboutLine />
     </>
-  );
-};
+  )
+}
 
 const GeneralDetailsAboutLine = () => {
   return (
@@ -27,33 +27,33 @@ const GeneralDetailsAboutLine = () => {
         <LineProfileComponent />
       </PageContainer>
     </>
-  );
-};
+  )
+}
 
 const LineProfileComponent = () => {
-  const { t } = useTranslation();
+  const { t } = useTranslation()
   const route = useLoaderData() as {
     // TODO: find better type definition
-    agency_name: string;
-    route_short_name: string;
-    route_long_name: string;
-    message?: string;
-  };
+    agency_name: string
+    route_short_name: string
+    route_long_name: string
+    message?: string
+  }
 
   if (route.message)
     return (
       <NotFound>
         <Widget>
-          <h1>{t("lineProfile.notFound")}</h1>
+          <h1>{t('lineProfile.notFound')}</h1>
           <pre>{route.message}</pre>
         </Widget>
       </NotFound>
-    );
+    )
 
   return (
     <Grid xs={12} lg={6}>
       <Widget>
-        <h2 className="title">{t("lineProfile.title")}</h2>
+        <h2 className="title">{t('lineProfile.title')}</h2>
         <label> מפעיל: {route.agency_name} </label>
         <br></br>
         <label> מספר קו: {route.route_short_name} </label>
@@ -105,8 +105,8 @@ const LineProfileComponent = () => {
         </div>
       </Widget>
     </Grid>
-  );
-};
+  )
+}
 
 const TableStyle = styled.table`
   & th,
@@ -130,6 +130,6 @@ const TableStyle = styled.table`
   & table {
     border-collapse: collapse;
   }
-`;
+`
 
-export default Profile;
+export default Profile
