@@ -1,20 +1,20 @@
-import React from 'react'
-import styled from 'styled-components'
+import React from "react";
+import styled from "styled-components";
 
 export interface ProfileLineDetailsProps {
   route: {
-    id?: number
-    date?: string
-    line_ref?: number
-    operator_ref?: number
-    route_short_name: string
-    route_long_name: string
-    route_mkt?: string
-    route_direction?: string
-    route_alternative?: string
-    agency_name: string
-    route_type?: string
-  }
+    id?: number;
+    date?: string;
+    line_ref?: number;
+    operator_ref?: number;
+    route_short_name: string;
+    route_long_name: string;
+    route_mkt?: string;
+    route_direction?: string;
+    route_alternative?: string;
+    agency_name: string;
+    route_type?: string;
+  };
 }
 
 export const ProfileLineDetails: React.FC<ProfileLineDetailsProps> = ({
@@ -33,18 +33,18 @@ export const ProfileLineDetails: React.FC<ProfileLineDetailsProps> = ({
   },
 }) => {
   const data = [
-    { label: 'ID', value: id },
-    { label: 'Date', value: date },
-    { label: 'Line Reference', value: line_ref },
-    { label: 'Operator Reference', value: operator_ref },
-    { label: 'Route Short Name', value: route_short_name },
-    { label: 'Route Long Name', value: route_long_name },
-    { label: 'Route MKT', value: route_mkt },
-    { label: 'Route Direction', value: route_direction },
-    { label: 'Route Alternative', value: route_alternative },
-    { label: 'Agency Name', value: agency_name },
-    { label: 'Route Type', value: route_type },
-  ]
+    { label: "ID", value: id },
+    { label: "Date", value: date },
+    { label: "Line Reference", value: line_ref },
+    { label: "Operator Reference", value: operator_ref },
+    { label: "Route Short Name", value: route_short_name },
+    { label: "Route Long Name", value: route_long_name },
+    { label: "Route MKT", value: route_mkt },
+    { label: "Route Direction", value: route_direction },
+    { label: "Route Alternative", value: route_alternative },
+    { label: "Agency Name", value: agency_name },
+    { label: "Route Type", value: route_type },
+  ];
 
   return (
     <LineDetailsContainer>
@@ -57,8 +57,8 @@ export const ProfileLineDetails: React.FC<ProfileLineDetailsProps> = ({
         ))}
       </main>
     </LineDetailsContainer>
-  )
-}
+  );
+};
 
 const LineDetailsContainer = styled.div`
   border: 1px solid #ddd;
@@ -82,4 +82,4 @@ const LineDetailsContainer = styled.div`
     direction: ltr;
     width: 80%;
   }
-`
+`;
