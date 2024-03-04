@@ -17,8 +17,7 @@ const ToggleThemeButton: React.FC<ToggleThemeButtonProps> = ({ toggleTheme, isDa
       className="theme-icon"
       onClick={toggleTheme}
       aria-label={tooltip_title}
-      title={tooltip_title}
-      style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}>
+      title={tooltip_title}>
       {isDarkTheme ? (
         <BulbOutlined style={{ color: '#fff', fontSize: '1.5em' }} />
       ) : (

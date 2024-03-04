@@ -82,12 +82,6 @@ export const PAGES = [
     icon: <BugOutlined />,
     element: <BugReportForm />,
   },
-  {
-    label: 'donate_title',
-    path: 'https://www.jgive.com/new/he/ils/donation-targets/3268#donation-modal',
-    icon: <DollarOutlined />,
-    element: null,
-  },
 ] as const
 
 const HIDDEN_PAGES = [
