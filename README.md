@@ -58,6 +58,17 @@ https://github.com/hasadna/open-bus-map-search/blob/main/src/model/busStop.ts#L4
 [link to repo](https://github.com/iliakap/open-bus-stride-client).
 
 
+## Contributors
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
 ### data API
 The API is backend code that provides us with data and aggregations from the DB
 You can see it's endpoints here:   

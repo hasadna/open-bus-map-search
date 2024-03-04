@@ -3,7 +3,8 @@ import * as fs from 'fs'
 import * as path from 'path'
 import * as crypto from 'crypto'
 import moment from 'moment'
-import { test as baseTest } from 'playwright-advanced-har'
+import { Matcher, test as baseTest, customMatcher } from 'playwright-advanced-har'
+import { BrowserContext, Page } from '@playwright/test'
 
 const istanbulCLIOutput = path.join(process.cwd(), '.nyc_output')
 
@@ -37,10 +38,44 @@ export const test = baseTest.extend({
   },
 })
 
-export function getYesterday(): string {
-  const yesterday = moment().subtract(1, 'days')
-  const formattedDate = yesterday.format('DD/MM/YYYY')
-  return formattedDate
+export function getPastDate(): Date {
+  return moment('2024-02-12 15:00:00').toDate()
 }
+
+export async function setBrowserTime(date: Date, page: Page | BrowserContext) {
+  const fakeNow = date.valueOf()
+
+  // Update the Date accordingly
+  await page.addInitScript((fakeNow) => {
+    // Extend Date constructor to default to fakeNow
+    ;(window as any).Date = class extends (window as any).Date {
+      constructor(...args: any[]) {
+        if (args.length === 0) {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+          super(fakeNow)
+        } else {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+          super(...args)
+        }
+      }
+    }
+    // Override Date.now() to start from fakeNow
+    const __DateNowOffset = fakeNow - Date.now()
+    const __DateNow = Date.now
+    Date.now = () => __DateNow() + __DateNowOffset
+  }, fakeNow)
+}
+
+export const urlMatcher: Matcher = customMatcher({
+  urlComparator(a, b) {
+    const fieldsToRemove = ['t', 'date_from', 'date_to']
+    ;[a, b] = [a, b].map((url) => {
+      const urlObj = new URL(url)
+      fieldsToRemove.forEach((field) => urlObj.searchParams.delete(field))
+      return urlObj.toString()
+    })
+    return a === b
+  },
+})
 
 export const expect = test.expect

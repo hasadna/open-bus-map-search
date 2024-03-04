@@ -8,10 +8,16 @@ We glad to see you decided to contribute to our project!
 
 # Where to start
 
-You welcome to explore the [list of project's issues](https://github.com/hasadna/open-bus-map-search/issues), the points we need help with
-Some of them marked with `help wanted` or `good first issue` - can be good for a beginners
+You welcome to explore the [list of project's issues](https://github.com/hasadna/open-bus-map-search/issues).
 
-Also! you can look at the project and if you see some points which can be improved (it can be unclear documentation as well as UI or backend problem) - you wellcome to add an issue to the [project issues](https://github.com/hasadna/open-bus-map-search/issues) (which considers a contribution too)
+## Want to start easy?
+See the ["Good first issue"](https://github.com/hasadna/open-bus-map-search/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) label!
+
+## Want to make a real impact?
+Pick an issue from our [milestones](https://github.com/hasadna/open-bus-map-search/milestones)!
+
+## Also, you should tell us what should we do better
+Look at the project and if you see some points which can be improved (it can be unclear documentation as well as UI or backend problem) - you wellcome to add an issue to the [project issues](https://github.com/hasadna/open-bus-map-search/issues) (which considers a contribution too)
 
 # Running the Project
 

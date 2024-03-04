@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { DataAndTimeSelectorProps } from './utils/dateAndTime'
 import { DateValidationError } from '@mui/x-date-pickers'
 
-export function DateSelector({ time, onChange, customLabel }: DataAndTimeSelectorProps) {
+export function DateSelector({ time, onChange, customLabel, minDate }: DataAndTimeSelectorProps) {
   const [error, setError] = useState<DateValidationError | null>(null)
   const { t } = useTranslation()
 
@@ -31,6 +31,7 @@ export function DateSelector({ time, onChange, customLabel }: DataAndTimeSelecto
         format="DD/MM/YYYY"
         label={customLabel || t('choose_date')}
         disableFuture
+        minDate={minDate}
         onError={(err) => setError(err)}
         slotProps={{
           textField: {

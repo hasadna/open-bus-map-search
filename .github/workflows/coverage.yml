@@ -9,8 +9,10 @@ env:
   USE_BABEL_PLUGIN_ISTANBUL: 1
 
 jobs:
-  build:
+  test-with-coverage:
     runs-on: ubuntu-22.04
+    env:
+      APPLITOOLS_API_KEY: ${{ secrets.APPLITOOLS_API_KEY }}
     steps:
       - uses: actions/checkout@v3
       - name: Use Node.js
@@ -21,7 +23,7 @@ jobs:
         run: npm ci
       - run: npx playwright install
       - name: Run test
-        run: npm run test
+        run: npm test
       - name: Run end-to-end tests
         run: npm test
       - run: npx nyc report --reporter=lcovonly

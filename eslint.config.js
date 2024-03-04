@@ -59,6 +59,7 @@ module.exports = [
       '@typescript-eslint/no-base-to-string': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
       '@typescript-eslint/no-unsafe-argument': 'off',
+      "import/no-unused-modules": "error" ,
       'prettier/prettier': [
         'error',
         {
@@ -83,6 +84,7 @@ module.exports = [
       'storybook-static',
       'eslint.config.js',
       '.nx',
+      'jest.config.ts'
     ],
   },
 ]

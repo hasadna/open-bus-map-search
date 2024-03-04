@@ -1,8 +1,18 @@
-import { test, expect } from './utils'
+import { test, expect, urlMatcher } from './utils'
+
+test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
+  advancedRouteFromHAR('tests/HAR/menu.har', {
+    updateContent: 'embed',
+    update: false,
+    notFound: 'abort',
+    url: /stride-api/,
+    matcher: urlMatcher,
+  })
+  await page.goto('/')
+})
 
 test('menu', async ({ page }) => {
-  await page.goto('/')
-  await expect(page.locator('h1')).toContainText('דאטאבוס')
+  await expect(page.locator('h1.sidebar-logo')).toContainText('דאטאבוס')
   const menuItemsInOrder = [
     'ביצועי תחבורה ציבורית',
     'היסטוריית נסיעות',
