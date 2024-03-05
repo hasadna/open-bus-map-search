@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { DollarOutlined } from '@ant-design/icons'
 import { Box, Grid, Modal, Typography } from '@mui/material'
+import i18n from 'src/locale/allTranslations'
 
 const style = {
   position: 'fixed',
@@ -38,7 +39,7 @@ export const DonationButton = () => {
         onClose={onClose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description">
-        <Box sx={style}>
+        <Box dir={i18n.dir()} sx={style}>
           <button onClick={onClose} className="close-modal-icon">
             X
           </button>
