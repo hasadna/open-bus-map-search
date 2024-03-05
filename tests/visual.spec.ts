@@ -11,7 +11,13 @@ test.describe('Visual Tests', () => {
 
   test.beforeEach(async ({ page }, testinfo) => {
     if (!process.env.APPLITOOLS_API_KEY) {
-      throw new Error('APPLITOOLS_API_KEY is not defined, please ask noamgaash for the key')
+      if (process.env.CI) {
+        test.skip() // on forks, the secret is not available
+        eyes.setIsDisabled(true)
+        return
+      } else {
+        throw new Error('APPLITOOLS_API_KEY is not defined, please ask noamgaash for the key')
+      }
     }
 
     await eyes.open(page, 'OpenBus', testinfo.title)
