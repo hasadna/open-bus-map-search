@@ -12,8 +12,8 @@ test.describe('Visual Tests', () => {
   test.beforeEach(async ({ page }, testinfo) => {
     if (!process.env.APPLITOOLS_API_KEY) {
       if (process.env.CI) {
-        test.skip() // on forks, the secret is not available
         eyes.setIsDisabled(true)
+        test.skip() // on forks, the secret is not available
         return
       } else {
         throw new Error('APPLITOOLS_API_KEY is not defined, please ask noamgaash for the key')
@@ -24,7 +24,9 @@ test.describe('Visual Tests', () => {
   })
 
   test.afterEach(async () => {
-    await eyes.close()
+    if (process.env.APPLITOOLS_API_KEY) {
+      await eyes.close()
+    }
   })
 
   test('dashboard page should look good', async ({ page }) => {
