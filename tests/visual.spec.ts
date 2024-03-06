@@ -35,7 +35,7 @@ test.describe('Visual Tests', () => {
 
   test.afterEach(async () => {
     if (process.env.APPLITOOLS_API_KEY) {
-      await eyes.close()
+      await eyes.close(false)
     }
   })
 
