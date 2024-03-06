@@ -2,9 +2,9 @@
 import * as fs from 'fs'
 import * as path from 'path'
 import * as crypto from 'crypto'
-import moment from 'moment'
 import { Matcher, test as baseTest, customMatcher } from 'playwright-advanced-har'
 import { BrowserContext, Page } from '@playwright/test'
+import { exec } from 'child_process'
 
 const istanbulCLIOutput = path.join(process.cwd(), '.nyc_output')
 
@@ -39,7 +39,7 @@ export const test = baseTest.extend({
 })
 
 export function getPastDate(): Date {
-  return moment('2024-02-12 15:00:00').toDate()
+  return new Date('2024-02-12 15:00:00')
 }
 
 export async function setBrowserTime(date: Date, page: Page | BrowserContext) {
@@ -77,5 +77,13 @@ export const urlMatcher: Matcher = customMatcher({
     return a === b
   },
 })
+
+export const getBranch = () =>
+  new Promise<string>((resolve, reject) => {
+    return exec('git rev-parse --abbrev-ref HEAD', (err, stdout) => {
+      if (err) reject(`getBranch Error: ${err}`)
+      else if (typeof stdout === 'string') resolve(stdout.trim())
+    })
+  })
 
 export const expect = test.expect
