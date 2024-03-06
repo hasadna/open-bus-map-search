@@ -1,12 +1,14 @@
-import { test } from './utils'
+import { getBranch, test } from './utils'
 import { Eyes, Target } from '@applitools/eyes-playwright'
 import username from 'git-username'
 
 test.describe('Visual Tests', () => {
   const eyes = new Eyes()
-  test.beforeAll(() => {
+  test.beforeAll(async () => {
     eyes.setBatch(username() + ' is testing openbus ' + new Date().toLocaleString().split(',')[0])
     eyes.getConfiguration().setUseDom(true)
+    eyes.setParentBranchName('main')
+    eyes.setBranchName((await getBranch()) || 'main')
   })
 
   test.beforeEach(async ({ page }, testinfo) => {

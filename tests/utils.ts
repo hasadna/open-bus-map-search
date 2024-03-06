@@ -5,6 +5,7 @@ import * as crypto from 'crypto'
 import moment from 'moment'
 import { Matcher, test as baseTest, customMatcher } from 'playwright-advanced-har'
 import { BrowserContext, Page } from '@playwright/test'
+import { exec } from 'child_process'
 
 const istanbulCLIOutput = path.join(process.cwd(), '.nyc_output')
 
@@ -77,5 +78,13 @@ export const urlMatcher: Matcher = customMatcher({
     return a === b
   },
 })
+
+export const getBranch = () =>
+  new Promise<string>((resolve, reject) => {
+    return exec('git rev-parse --abbrev-ref HEAD', (err, stdout) => {
+      if (err) reject(`getBranch Error: ${err}`)
+      else if (typeof stdout === 'string') resolve(stdout.trim())
+    })
+  })
 
 export const expect = test.expect
