@@ -10,10 +10,23 @@
 }
 
 .theme-icon {
-  width: 1rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
   transition: all 0.1s;
 }
 
 .theme-icon:hover {
   transform: scale(1.1);
+}
+
+.close-modal-icon {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  cursor: pointer;
+  transition: all 0.1s;
+  border: none;
+  background: transparent;
+
 }

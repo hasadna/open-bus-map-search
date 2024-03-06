@@ -7,6 +7,7 @@ import GitHubLink from './GitHubLink/GitHubLink'
 import './Header.css'
 import cn from 'classnames'
 import ToggleThemeButton from './ToggleThemeButton'
+import { DonationButton } from './DonationButton'
 
 const { Header } = Layout
 
@@ -19,6 +20,7 @@ const MainHeader = () => {
       <div style={{ flex: 1 }}>&nbsp;</div>
       <GitHubLink />
       <ToggleThemeButton toggleTheme={toggleTheme} isDarkTheme={isDarkTheme} />
+      <DonationButton />
     </Header>
   )
 }

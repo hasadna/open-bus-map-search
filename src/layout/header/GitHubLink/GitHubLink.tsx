@@ -18,12 +18,12 @@ export default function GitHubLink() {
   }, [])
 
   return (
-    <div
-      className="github-link"
+    <button
+      className="github-link theme-icon"
       onClick={handleClick}
       aria-label={t('github_link')}
       title={t('github_link')}>
       {data.icon}
-    </div>
+    </button>
   )
 }
