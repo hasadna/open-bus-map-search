@@ -1,12 +1,22 @@
-import { test } from './utils'
+import { getBranch, test } from './utils'
 import { Eyes, Target } from '@applitools/eyes-playwright'
 import username from 'git-username'
 
 test.describe('Visual Tests', () => {
   const eyes = new Eyes()
-  test.beforeAll(() => {
-    eyes.setBatch(username() + ' is testing openbus ' + new Date().toLocaleString().split(',')[0])
+  test.beforeAll(async () => {
+    if (process.env.CI) {
+      // set batch id to the commit sha
+      eyes.setBatch({
+        id: process.env.GITHUB_SHA,
+        name: 'openbus',
+      })
+    } else {
+      eyes.setBatch(username() + ' is testing openbus ' + new Date().toLocaleString().split(',')[0])
+    }
     eyes.getConfiguration().setUseDom(true)
+    eyes.setParentBranchName('main')
+    eyes.setBranchName((await getBranch()) || 'main')
   })
 
   test.beforeEach(async ({ page }, testinfo) => {
@@ -25,7 +35,7 @@ test.describe('Visual Tests', () => {
 
   test.afterEach(async () => {
     if (process.env.APPLITOOLS_API_KEY) {
-      await eyes.close()
+      await eyes.close(false)
     }
   })
 
