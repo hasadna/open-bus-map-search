@@ -12,7 +12,6 @@ import Widget from 'src/shared/Widget'
 import { useLoaderData } from 'react-router-dom'
 import { ProfileLineDetails } from './ProfileLineDetails'
 import { MapWithLocationsAndPath } from './components/map-related/MapWithLocationsAndPath'
-import { MapContainer } from 'react-leaflet'
 
 const Profile = () => {
   return (
