@@ -1,8 +1,14 @@
-.github-link {
+.header-links {
+  display: flex;
+  margin-right: 10px;
+}
+
+.header-link {
   display: flex;
   justify-content: center;
   align-items: center;
   font-size: 1.5em;
+  padding-inline: 5px;
   cursor: pointer;
   transition: all 0.1s;
 
