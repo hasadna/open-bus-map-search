@@ -2,7 +2,6 @@
 import * as fs from 'fs'
 import * as path from 'path'
 import * as crypto from 'crypto'
-import moment from 'moment'
 import { Matcher, test as baseTest, customMatcher } from 'playwright-advanced-har'
 import { BrowserContext, Page } from '@playwright/test'
 import { exec } from 'child_process'
@@ -40,7 +39,7 @@ export const test = baseTest.extend({
 })
 
 export function getPastDate(): Date {
-  return moment('2024-02-12 15:00:00').toDate()
+  return new Date('2024-02-12 15:00:00')
 }
 
 export async function setBrowserTime(date: Date, page: Page | BrowserContext) {
