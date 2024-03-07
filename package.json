@@ -59,7 +59,7 @@
     "test:e2e:ui": "cross-env APPLITOOLS_BATCH_ID=`uuidgen` playwright test --ui",
     "test:e2e": "cross-env APPLITOOLS_BATCH_ID=`uuidgen` playwright test",
     "test:unit": "jest",
-    "test:unit:ci": "jest --coverage",    
+    "test:unit:ci": "jest --coverage",
     "lint": "eslint . --max-warnings 0 && stylelint '**/*.{css,scss}' --max-warnings 0",
     "lint:fix": "eslint . --fix && stylelint '**/*.{css,scss}' --fix",
     "storybook": "storybook dev -p 6006",
