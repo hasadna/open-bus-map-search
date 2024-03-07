@@ -105,11 +105,6 @@ export function BusToolTip({ position, icon }: BusToolTipProps) {
             />
           )}
         </div>
-        // <pre>
-        //   {JSON.stringify(position, null, 2)}
-        //   <br />
-        //   {siriRide && JSON.stringify(siriRide, null, 2)}
-        // </pre>
       )}
     </div>
   );
