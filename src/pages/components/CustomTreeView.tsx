@@ -1,42 +1,42 @@
-import { TreeView } from '@mui/x-tree-view/TreeView';
-import { TreeItem } from '@mui/x-tree-view/TreeItem';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import { TreeView } from '@mui/x-tree-view/TreeView'
+import { TreeItem } from '@mui/x-tree-view/TreeItem'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 
 interface BaseTreeNode {
-  id: string;
-  name: string;
+  id: string
+  name: string
 }
 
 // Generic TreeNode interface with additional properties
 interface TreeNode<T extends BaseTreeNode> extends BaseTreeNode {
-  children?: TreeNode<T>[];
+  children?: TreeNode<T>[]
   // You can now include additional properties from T
 }
 
 // Generic CustomTreeViewProps interface
 interface CustomTreeViewProps<T> {
-  data: T;
-  name: string;
-  id: string;
+  data: T
+  name: string
+  id: string
 }
 
 // A utility function to transform any object into a TreeNode structure
 const objectToTreeNode = (
   obj: any,
   key: string = 'root',
-  nodeId: string = '0'
+  nodeId: string = '0',
 ): TreeNode<BaseTreeNode> => {
-  const isPrimitive = (value: any) => value !== Object(value) || value === null;
+  const isPrimitive = (value: any) => value !== Object(value) || value === null
 
   const children = Object.keys(obj).map((k, index) => {
-    const value = obj[k];
+    const value = obj[k]
     if (isPrimitive(value)) {
       // Handle primitive types directly
       return {
         id: `${nodeId}-${index}`,
         name: `${k}: ${value}`,
-      };
+      }
     } else if (Array.isArray(value)) {
       // If it's an array, create a node that lists all elements
       return {
@@ -48,44 +48,43 @@ const objectToTreeNode = (
             return {
               id: `${nodeId}-${index}-${itemIndex}`,
               name: `${item}`,
-            };
+            }
           }
           // Recursively handle objects in the array
-          return objectToTreeNode(item, k, `${nodeId}-${index}-${itemIndex}`);
+          return objectToTreeNode(item, k, `${nodeId}-${index}-${itemIndex}`)
         }),
-      };
+      }
     } else {
       // Recursively handle objects
-      return objectToTreeNode(value, k, `${nodeId}-${index}`);
+      return objectToTreeNode(value, k, `${nodeId}-${index}`)
     }
-  });
+  })
 
   return {
     id: nodeId,
     name: obj.name || key,
     children: children.length ? children : undefined,
-  };
-};
+  }
+}
 
 // Render tree function utilizing the TreeNode interface
 const renderTree = <T extends BaseTreeNode>(nodes: TreeNode<T>): JSX.Element => (
   <TreeItem key={nodes.id} nodeId={nodes.id} label={nodes.name}>
     {nodes.children?.map((node) => renderTree(node))}
   </TreeItem>
-);
+)
 
 // CustomTreeView component using TypeScript
 const CustomTreeView = <T,>({ data, name, id }: CustomTreeViewProps<T>) => {
-  const dataAsTreeNode = objectToTreeNode({ id, name, children: [data] });
+  const dataAsTreeNode = objectToTreeNode({ id, name, children: [data] })
   return (
     <TreeView
       defaultCollapseIcon={<ExpandMoreIcon />}
       defaultExpandIcon={<ChevronRightIcon />}
-      defaultEndIcon={<div style={{ width: 24 }} />}
-    >
+      defaultEndIcon={<div style={{ width: 24 }} />}>
       {renderTree(dataAsTreeNode)}
     </TreeView>
-  );
-};
+  )
+}
 
-export default CustomTreeView;
+export default CustomTreeView
