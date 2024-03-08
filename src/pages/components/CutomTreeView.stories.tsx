@@ -1,14 +1,7 @@
 // CustomTreeView.stories.tsx
-import type { Meta, StoryObj } from '@storybook/react';
-import CustomTreeView from './CustomTreeView';
-import '../../shared/shared.css'; // Assuming you have some shared styles
-
-// Define a base type for your tree nodes, considering the object structure you provided earlier
-interface CustomTreeNode {
-  id: string;
-  name: string;
-  children?: CustomTreeNode[];
-}
+import type { Meta, StoryObj } from '@storybook/react'
+import CustomTreeView from './CustomTreeView'
+import '../../shared/shared.css' // Assuming you have some shared styles
 
 // Example data for the story
 const exampleData = {
@@ -28,7 +21,7 @@ const exampleData = {
       name: 'Child Node 2',
     },
   ],
-};
+}
 
 const meta: Meta<typeof CustomTreeView> = {
   title: 'Components/CustomTreeView',
@@ -37,14 +30,14 @@ const meta: Meta<typeof CustomTreeView> = {
     layout: 'centered',
   },
   tags: ['tree', 'view', 'react', 'mui'], // Adjust tags as needed
-} satisfies Meta<typeof CustomTreeView>;
+} satisfies Meta<typeof CustomTreeView>
 
-export default meta;
+export default meta
 
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   args: {
     data: exampleData, // Using the example data for the default story
   },
-};
+}
