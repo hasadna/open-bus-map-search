@@ -1,6 +1,6 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import { BusToolTip, BusToolTipProps } from './BusToolTip';
-import { BrowserRouter } from 'react-router-dom';
+import type { Meta, StoryObj } from '@storybook/react'
+import { BusToolTip, BusToolTipProps } from './BusToolTip'
+import { BrowserRouter } from 'react-router-dom'
 
 const meta = {
   title: 'Components/MapLayers/BusToolTip',
@@ -59,4 +59,4 @@ export const Default: Story = {
       <BusToolTip {...args} />
     </BrowserRouter>
   ),
-};
+}
