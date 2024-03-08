@@ -39,10 +39,8 @@ Follow these steps to run the project on your local machine:
    Clone the repository to your local machine. You can do this by running the following command in your terminal:
 
    ```bash
-   git clone https://github.com/<Your GitHub Username>/open-bus-map-search.git
+   git clone https://github.com/hasadna/open-bus-map-search.git
    ```
-
-   Make sure to replace <Your GitHub Username> with your actual GitHub username.
 
 3. **Navigate to the Project Directory:**
    Once the repository is cloned, navigate to the project directory by running:
