@@ -32,11 +32,11 @@ open project in Gitpod
 # Running the project on a local environment
 Follow these steps to run the project on your local machine:
 
-1. **Fork the Repository:**
-   Before you clone the repository to your local machine, you need to create a fork of it on GitHub. This allows you to make changes without affecting the original project. To fork the repository, click the "Fork" button at the top right of this page.
+1. **DONT Fork the Repository!**
+   While you can create a fork and submit your pull requests from it, it's really not reccomended. Creating your branch and pull request directly from within the repository will allow our automation pipeline to make a live preview of your contribution and run visual tests against your branch using repository secrets. Just ask, and we will happily grant you write permissions to this repo.
 
 2. **Clone the Repository:**
-   After forking, you need to clone the repository to your local machine. You can do this by running the following command in your terminal:
+   Clone the repository to your local machine. You can do this by running the following command in your terminal:
 
    ```bash
    git clone https://github.com/<Your GitHub Username>/open-bus-map-search.git
@@ -71,7 +71,7 @@ Follow these steps to run the project on your local machine:
 - Please make sure that the project works on your computer
 - do changes and then - do commit (`git commit -m "feat: add some feature"`)
 - push the branch to remote repo (`git push`)
-- go to the original repo and create a pr (by pressing `create a pr` button)
+- go to the repo and create a pr (by pressing `create a pr` button)
 - tag one of the maintainers as reviewers
 
 # Commit message convention
