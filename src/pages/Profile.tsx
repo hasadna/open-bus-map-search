@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next'
 import Widget from 'src/shared/Widget'
 import { useLoaderData } from 'react-router-dom'
 import { ProfileLineDetails } from './ProfileLineDetails'
+import { MapWithLocationsAndPath } from './components/map-related/MapWithLocationsAndPath'
 
 const Profile = () => {
   return (
@@ -104,6 +105,9 @@ const LineProfileComponent = () => {
           <div></div>
         </div>
       </Widget>
+      <LineProfileMapContainer>
+        <MapWithLocationsAndPath positions={[]} plannedRouteStops={[]} />
+      </LineProfileMapContainer>
     </Grid>
   )
 }
@@ -129,6 +133,12 @@ const TableStyle = styled.table`
   }
   & table {
     border-collapse: collapse;
+  }
+`
+
+const LineProfileMapContainer = styled.div`
+  .map-info {
+    height: 15rem;
   }
 `
 
