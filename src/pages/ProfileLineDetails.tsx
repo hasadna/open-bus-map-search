@@ -51,9 +51,9 @@ export const ProfileLineDetails: React.FC<ProfileLineDetailsProps> = ({
       <h2>פירוט על הקו:</h2>
       <main className="line-details-container">
         {data.map(({ label, value }) => (
-          <p key={label}>
+          <ul className="line-details" key={label}>
             <strong>{label}:</strong> {value}
-          </p>
+          </ul>
         ))}
       </main>
     </LineDetailsContainer>
@@ -61,13 +61,11 @@ export const ProfileLineDetails: React.FC<ProfileLineDetailsProps> = ({
 }
 
 const LineDetailsContainer = styled.div`
-  border: 1px solid #ddd;
-  background-color: #f9f9f9;
-  margin: 1rem 0;
-
   & h2 {
     margin-bottom: 12px;
     text-align: center;
+    color: white;
+    background-color: rgb(95, 91, 255);
   }
 
   & div {
@@ -80,6 +78,15 @@ const LineDetailsContainer = styled.div`
 
   & main {
     direction: ltr;
-    width: 80%;
+    margin: auto;
+  }
+
+  & .line-details {
+    height: 2rem;
+    margin: 0;
+
+    &:nth-child(odd) {
+      background-color: #f2f2f2;
+    }
   }
 `
