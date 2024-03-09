@@ -82,7 +82,8 @@ const LineDetailsContainer = styled.div`
   }
 
   & .line-details {
-    height: 2rem;
+    line-height: 2rem;
+    padding: 0;
     margin: 0;
 
     &:nth-child(odd) {
