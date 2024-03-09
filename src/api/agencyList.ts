@@ -6,15 +6,19 @@ export interface Agency {
   agency_name: string // example - "אלקטרה אפיקים"
 }
 
-let json: Agency[]
+let agencyList: Agency[]
 
+/**
+ * Fetch agency data from MOT api
+ * @returns Agency data array, might contain DUPLICATE agencies with different `date` values
+ */
 export default async function getAgencyList(): Promise<Agency[]> {
-  if (!json) {
+  if (!agencyList) {
     const response = await fetch(`${BASE_PATH}/gtfs_agencies/list`)
-    json = await response.json()
+    const data = (await response.json()) as Awaited<Agency[]>
+    agencyList = data.filter(Boolean) // filter empty entries
   }
-
-  return json
+  return agencyList
 }
 
 export function useAgencyList() {
