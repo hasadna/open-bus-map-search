@@ -21,7 +21,6 @@ test('menu', async ({ page }) => {
     'מפת אוטובוסים בזמן אמת',
     'מפה לפי קו',
     'אודות',
-    'לתרומות',
   ]
   await expect(page.locator('ul > li a')).toContainText(menuItemsInOrder)
 })

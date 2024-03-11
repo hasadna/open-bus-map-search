@@ -2,9 +2,9 @@ import { Skeleton } from 'antd'
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
 import LinesHbarChart from './LineHbarChart/LinesHbarChart'
 import { useTranslation } from 'react-i18next'
-import { FC } from 'react'
 import { Moment } from 'moment/moment'
 import Widget from 'src/shared/Widget'
+import { MAJOR_OPERATORS } from 'src/model/operator'
 
 interface WorstLinesChartProps {
   startDate: Moment
@@ -12,7 +12,7 @@ interface WorstLinesChartProps {
   operatorId: string
 }
 
-export const WorstLinesChart: FC<WorstLinesChartProps> = ({ startDate, endDate, operatorId }) => {
+export const WorstLinesChart = ({ startDate, endDate, operatorId }: WorstLinesChartProps) => {
   const [groupByLineData, lineDataLoading] = useGroupBy({
     dateTo: endDate,
     dateFrom: startDate,
@@ -20,14 +20,15 @@ export const WorstLinesChart: FC<WorstLinesChartProps> = ({ startDate, endDate, 
   })
 
   const { t } = useTranslation()
-
   const convertToWorstLineChartCompatibleStruct = (arr: GroupByRes[], operatorId: string) => {
     if (!arr || !arr.length) return []
     return arr
       .filter(
-        (row: GroupByRes) => row.operator_ref?.agency_id === operatorId || !Number(operatorId),
+        (row) =>
+          operatorId || (row.operator_ref && MAJOR_OPERATORS.includes(row.operator_ref.agency_id)),
       )
-      .map((item: GroupByRes) => ({
+      .filter((row) => row.operator_ref?.agency_id === operatorId || !Number(operatorId))
+      .map((item) => ({
         id: `${item.line_ref}|${item.operator_ref?.agency_id}` || 'Unknown',
         operator_name: item.operator_ref?.agency_name || 'Unknown',
         short_name: JSON.parse(item.route_short_name)[0],
@@ -45,7 +46,6 @@ export const WorstLinesChart: FC<WorstLinesChartProps> = ({ startDate, endDate, 
       ) : (
         <LinesHbarChart
           lines={convertToWorstLineChartCompatibleStruct(groupByLineData, operatorId)}
-          operators_whitelist={['אלקטרה אפיקים', 'דן', 'מטרופולין', 'קווים', 'אגד', 'תנופה']}
         />
       )}
     </Widget>

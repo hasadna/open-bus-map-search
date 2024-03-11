@@ -10,6 +10,8 @@ import { useTranslation } from 'react-i18next'
 //API
 import Widget from 'src/shared/Widget'
 import { useLoaderData } from 'react-router-dom'
+import { ProfileLineDetails } from './ProfileLineDetails'
+import { MapWithLocationsAndPath } from './components/map-related/MapWithLocationsAndPath'
 
 const Profile = () => {
   return (
@@ -38,7 +40,6 @@ const LineProfileComponent = () => {
     route_long_name: string
     message?: string
   }
-  console.log('route', route)
 
   if (route.message)
     return (
@@ -60,7 +61,7 @@ const LineProfileComponent = () => {
         <br></br>
         <label> כיוון נסיעה: {route.route_long_name} </label>
         <div>
-          <pre style={{ direction: 'ltr' }}>{JSON.stringify(route, null, 2)}</pre>
+          <ProfileLineDetails route={route} />
           <Label text="שעות פעילות" />
           {/* GET the earliest and the latest bus drive departure time for each day */}
           <TableStyle>
@@ -104,6 +105,9 @@ const LineProfileComponent = () => {
           <div></div>
         </div>
       </Widget>
+      <LineProfileMapContainer>
+        <MapWithLocationsAndPath positions={[]} plannedRouteStops={[]} />
+      </LineProfileMapContainer>
     </Grid>
   )
 }
@@ -129,6 +133,12 @@ const TableStyle = styled.table`
   }
   & table {
     border-collapse: collapse;
+  }
+`
+
+const LineProfileMapContainer = styled.div`
+  .map-info {
+    height: 15rem;
   }
 `
 

@@ -10,6 +10,7 @@ import { SiriRideWithRelatedPydanticModel } from 'open-bus-stride-client/openapi
 import { useTranslation } from 'react-i18next'
 import { Spin } from 'antd'
 import cn from 'classnames'
+import CustomTreeView from '../../CustomTreeView'
 
 export type BusToolTipProps = { position: Point; icon: string }
 
@@ -43,7 +44,7 @@ export function BusToolTip({ position, icon }: BusToolTipProps) {
             <h1 className="title">
               {t('line')} :
               <span>
-                <Link to={`/profile/${siriRide.gtfsRouteRouteShortName}`}>
+                <Link to={`/profile/${siriRide.gtfsRideGtfsRouteId}`}>
                   {siriRide.gtfsRouteRouteShortName}
                 </Link>
               </span>
@@ -94,11 +95,16 @@ export function BusToolTip({ position, icon }: BusToolTipProps) {
         {showJson ? t('hide_document') : t('show_document')}
       </Button>
       {showJson && (
-        <pre>
-          {JSON.stringify(position, null, 2)}
-          <br />
-          {siriRide && JSON.stringify(siriRide, null, 2)}
-        </pre>
+        <div onClick={(e) => e.stopPropagation()}>
+          <CustomTreeView<Point> id={position.point?.id + ''} data={position} name={t('line')} />
+          {siriRide?.gtfsRideId && (
+            <CustomTreeView<SiriRideWithRelatedPydanticModel | undefined>
+              id={siriRide?.gtfsRideId + ''}
+              data={siriRide}
+              name={t('drive_direction')}
+            />
+          )}
+        </div>
       )}
     </div>
   )
