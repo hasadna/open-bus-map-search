@@ -44,7 +44,7 @@ export function BusToolTip({ position, icon }: BusToolTipProps) {
             <h1 className="title">
               {t('line')} :
               <span>
-                <Link to={`/profile/${siriRide.gtfsRouteRouteShortName}`}>
+                <Link to={`/profile/${siriRide.gtfsRideGtfsRouteId}`}>
                   {siriRide.gtfsRouteRouteShortName}
                 </Link>
               </span>
