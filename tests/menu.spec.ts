@@ -14,11 +14,11 @@ test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
 test('menu', async ({ page }) => {
   await expect(page.locator('h1.sidebar-logo')).toContainText('דאטאבוס')
   const menuItemsInOrder = [
-    'ביצועי תחבורה ציבורית',
+    'קיום נסיעות',
     'היסטוריית נסיעות',
     'נסיעות שלא בוצעו',
     'דפוסי נסיעות שלא בוצעו',
-    'מפת אוטובוסים בזמן אמת',
+    'מפה בזמן אמת',
     'מפה לפי קו',
     'אודות',
   ]
