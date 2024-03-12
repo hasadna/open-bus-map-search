@@ -2,7 +2,7 @@
   "name": "open-bus-map-search",
   "version": "1.0.0",
   "private": true,
-  "type": "commonjs",
+  "type": "module",
   "dependencies": {
     "@applitools/eyes-playwright": "^1.25.0",
     "@emotion/react": "^11.11.4",
