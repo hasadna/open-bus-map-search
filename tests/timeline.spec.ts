@@ -1,10 +1,19 @@
 import TimelinePage from '../src/test_pages/TimelinePage'
 import { getPastDate, test, urlMatcher } from './utils'
+import i18next from 'i18next'
+import Backend from 'i18next-fs-backend'
 
 test.describe('Timeline Page Tests', () => {
   let timelinePage: TimelinePage
 
   test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
+    await i18next.use(Backend).init({
+      lng: 'he',
+      backend: {
+        loadPath: 'src/locale/{{lng}}.json',
+      },
+    })
+
     await advancedRouteFromHAR('tests/HAR/timeline.har', {
       updateContent: 'embed',
       update: false,
@@ -15,7 +24,7 @@ test.describe('Timeline Page Tests', () => {
     timelinePage = new TimelinePage(page) // Initialize timelinePage before each test
     await timelinePage.setFakeTime(getPastDate())
     await page.goto('/')
-    await page.getByText('לוח זמנים היסטורי', { exact: true }).click()
+    await page.getByText(i18next.t('timeline_page_title'), { exact: true }).click()
     await page.getByRole('progressbar').waitFor({ state: 'hidden' })
     await timelinePage.validatePageUrl(/timeline/)
   })
