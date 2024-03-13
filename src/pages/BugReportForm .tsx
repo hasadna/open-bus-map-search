@@ -39,8 +39,8 @@ const BugReportForm = () => {
           attachments: fileList,
         },
       )
-
-      setSubmittedUrl(response.data.url)
+      const url: string = response.data.url
+      setSubmittedUrl(url)
       if (response.data.state === 'open') {
         message.success(t('reportBug.success'))
         form.resetFields()
@@ -89,7 +89,7 @@ const BugReportForm = () => {
           name="type"
           initialValue={selectedType}
           rules={[{ required: true, message: t('bug_type_message') }]}>
-          <Select onChange={(value) => setSelectedType(value)}>
+          <Select onChange={(value: string) => setSelectedType(value)}>
             <Option value="bug">{t('bug_type_bug')}</Option>
             <Option value="feature">{t('bug_type_feature')}</Option>
           </Select>
