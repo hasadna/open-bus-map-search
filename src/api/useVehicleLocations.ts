@@ -79,7 +79,7 @@ class LocationObservable {
 
       const response = await fetchWithQueue(url)
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-      const data = await response!.json()
+      const data: VehicleLocation[] = await response!.json()
       if (data.length === 0) {
         this.loading = false
         this.#notifyObservers({

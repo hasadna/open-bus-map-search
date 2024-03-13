@@ -80,7 +80,7 @@ async function groupbyAsync({
     await fetch(
       `${BASE_PATH}/gtfs_rides_agg/group_by?date_from=${dateFromStr}&date_to=${dateToStr}&group_by=${groupBy}&${excludes}`,
     )
-  ).json()
+  ).json() as Promise<GroupByResponse>
 }
 
 export function useGroupBy({
@@ -127,7 +127,7 @@ export function useGroupBy({
             .filter((dataRecord) => dataRecord.operator_ref !== undefined),
         )
       })
-      .catch((er) => setError(er))
+      .catch((er: string) => setError(er))
       .finally(() => setLoading(false))
   }, [+dateTo, +dateFrom, groupBy])
 
