@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from 'react'
 import './GapsPatternsPage.scss'
 import { Moment } from 'moment'
-import { Skeleton, Spin, Radio, Typography, RadioChangeEvent, Alert } from 'antd'
+import { Skeleton, Spin, Radio, Typography, RadioChangeEvent, Alert, Space } from 'antd'
 import moment from 'moment/moment'
 import { useDate } from '../components/DateTimePicker'
 import { PageContainer } from '../components/PageContainer'
@@ -174,7 +174,10 @@ const GapsPatternsPage = () => {
 
   return (
     <PageContainer>
-      <Title level={3}>{t('gapspatterns_page_title')}</Title>
+      <Title level={3}>{t('gaps_patterns_page_title')}</Title>
+      <Space direction="vertical" size="middle" style={{ marginBottom: '22px' }}>
+        <Alert message={t('gaps_patterns_page_description')} type="info" />
+      </Space>
       {startDate > endDate ? (
         <Alert closable showIcon message={t('bug_date_alert')} type="error" />
       ) : null}

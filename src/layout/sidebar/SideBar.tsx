@@ -32,6 +32,7 @@ export default function SideBar() {
         theme="light"
         breakpoint="lg"
         collapsedWidth={60}
+        width={250}
         collapsible
         collapsed={collapsed}
         onCollapse={(value: boolean) => setCollapsed(value)}
