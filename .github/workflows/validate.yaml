@@ -25,7 +25,7 @@ jobs:
                 echo "::error file=yarn.json::yarn.json is being added"
             elif [ ! -f package-lock.json ]; then
                 echo "::error file=package-lock.json::package-lock.json is being removed"
-            elif ! npm ci &> /dev/null; then
+            elif ! npm ci --also=dev &> /dev/null; then
                 echo "::error file=package-lock.json::package-lock.json is not updated"
             elif npm run lint 1>/dev/null 2>$err; then
                 if npx madge --extensions js,ts --circular . 1>/dev/null 2>$err; then
