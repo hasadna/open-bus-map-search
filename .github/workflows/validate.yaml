@@ -1,4 +1,5 @@
 name: Validate
+
 on:
   pull_request:
     branches: [main]
@@ -10,57 +11,31 @@ env:
   DOCKER_APP_IMAGE_TAG: 'latest'
 
 jobs:
-  verify-clean-tree:
+  local-tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
           node-version: 18
-      - name: Run install
-        run: npm ci
-      - name: make sure yarn.lock does not exist
-        run: rm -f yarn.json
-      - name: Git Check Clean Tree
-        uses: ArkadiK94/action-git-clean-tree@v1.0.3
-        with:
-          error-reason: 'removing package-lock.json file'
-      - name: Install dependencies
-        run: npm i
-      - name: Git Check Clean Tree
-        uses: ArkadiK94/action-git-clean-tree@v1.0.3
-        with:
-          error-reason: 'npm i'
-      - name: Build
-        run: npm run build
-      - name: Build Storybook
-        run: npm run build-storybook -o dist/storybook
-      - name: Git Check Clean Tree
-        uses: ArkadiK94/action-git-clean-tree@v1.0.3
-        with:
-          error-reason: 'npm run build and npm run build-storybook'
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
-      - name: Run install
-        run: npm ci
-      - name: Run lint
-        run: npm run lint
-  circular:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
-      - name: Run install
-        run: npm ci
-      - name: find circular dependencies
-        run: npx madge --extensions js,ts --circular .
+      - name: Run all the local tests
+        run: |
+            err=$(mktemp)
+            if [ -f yarn.json ]; then
+                echo "::error file=yarn.json::yarn.json is being added"
+            elif [ ! -f package-lock.json]; then
+                echo "::error file=package-lock.json::package-lock.json is being removed"
+            elif ! npm ci &> /dev/null; then
+                echo "::error file=package-lock.json::package-lock.json is not updated"
+            elif npm run lint 1>/dev/null 2>$err; then
+                if npx madge --extensions js,ts --circular . 1>/dev/null 2>$err; then
+                    if jest 1>/dev/null 2>$err; then
+                        exit 0
+                    fi
+                fi
+            fi
+            if [ -s $err ]; then echo "::error ::$(head -n1 $err)"; fi
+            exit 1
   build:
     runs-on: ubuntu-latest
     steps:
@@ -147,21 +122,9 @@ jobs:
           status: success
           context: 'Test results'
           targetUrl: 'https://s3.amazonaws.com/noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.sha }}/test-results/index.html'
-  test-unit:
-    timeout-minutes: 60
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 20
-      - name: Run install
-        run: npm ci
-      - name: run the tests
-        run: npm run test:unit
   all-passed:
     runs-on: ubuntu-latest
-    needs: [verify-clean-tree, lint, circular, test, test-unit]
+    needs: [local-tests, test]
     steps:
       - name: All passed
         run: echo "All passed"
