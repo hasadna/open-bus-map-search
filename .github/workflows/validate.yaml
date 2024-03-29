@@ -23,7 +23,7 @@ jobs:
             err=$(mktemp)
             if [ -f yarn.json ]; then
                 echo "::error file=yarn.json::yarn.json is being added"
-            elif [ ! -f package-lock.json]; then
+            elif [ ! -f package-lock.json ]; then
                 echo "::error file=package-lock.json::package-lock.json is being removed"
             elif ! npm ci &> /dev/null; then
                 echo "::error file=package-lock.json::package-lock.json is not updated"
