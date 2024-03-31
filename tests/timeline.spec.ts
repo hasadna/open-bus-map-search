@@ -93,7 +93,7 @@ test.describe('Timeline Page Tests', () => {
     await timelinePage.verifyRouteSelectionVisible(timelinePage.stationSelect, true, 3000)
   })
 
-  test.fixme('Test Verify no duplications in stations list', async () => {
+  test('Test Verify no duplications in stations list', async () => {
     await timelinePage.selectOperatorFromDropbox(
       timelinePage.operatorsDropDown,
       timelinePage.operatorsList,
@@ -112,28 +112,25 @@ test.describe('Timeline Page Tests', () => {
     // await timelinePage.verifyNoDuplications()
   })
 
-  test.fixme(
-    'Test choosing [Operator -> Line # -> Route -> Stop station] opens the timestamp graph',
-    async () => {
-      await timelinePage.selectOperatorFromDropbox(
-        timelinePage.operatorsDropDown,
-        timelinePage.operatorsList,
-        'אגד',
-      )
-      await timelinePage.fillLineNumber('1')
-      await timelinePage.verifyRouteSelectionVisible(timelinePage.routeSelect, true, 3000)
-      await timelinePage.selectOperatorFromDropbox(
-        timelinePage.routeSelect,
-        timelinePage.routeList,
-        'שדרות מנחם בגין/כביש 7-גדרה ⟵ שדרות מנחם בגין/כביש 7-גדרה  ',
-      )
-      await timelinePage.verifyRouteSelectionVisible(timelinePage.stationSelect, true)
-      await timelinePage.selectOperatorFromDropbox(
-        timelinePage.stationSelect,
-        timelinePage.stationList,
-        'חיים הרצוג/שדרות מנחם בגין (גדרה)',
-      )
-      await timelinePage.verifyRouteSelectionVisible(timelinePage.timelineGraph, true, 100000)
-    },
-  )
+  test('Test choosing [Operator -> Line # -> Route -> Stop station] opens the timestamp graph', async () => {
+    await timelinePage.selectOperatorFromDropbox(
+      timelinePage.operatorsDropDown,
+      timelinePage.operatorsList,
+      'אגד',
+    )
+    await timelinePage.fillLineNumber('1')
+    await timelinePage.verifyRouteSelectionVisible(timelinePage.routeSelect, true, 3000)
+    await timelinePage.selectOperatorFromDropbox(
+      timelinePage.routeSelect,
+      timelinePage.routeList,
+      'שדרות מנחם בגין/כביש 7-גדרה ⟵ שדרות מנחם בגין/כביש 7-גדרה  ',
+    )
+    await timelinePage.verifyRouteSelectionVisible(timelinePage.stationSelect, true)
+    await timelinePage.selectOperatorFromDropbox(
+      timelinePage.stationSelect,
+      timelinePage.stationList,
+      'חיים הרצוג/שדרות מנחם בגין (גדרה)',
+    )
+    await timelinePage.verifyRouteSelectionVisible(timelinePage.timelineGraph, true, 100000)
+  })
 })
