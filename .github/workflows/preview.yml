@@ -1,6 +1,5 @@
 name: Preview
-on:
-  pull_request:
+on: pull_request
 
 env:
   ASSET_URL: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.sha }}
