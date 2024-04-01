@@ -1,4 +1,3 @@
-const nxPlugin = require('@nx/eslint-plugin')
 const { FlatCompat } = require('@eslint/eslintrc')
 const eslintPluginReact = require('eslint-plugin-react')
 const eslintPluginReactHooks = require('eslint-plugin-react-hooks')
@@ -22,7 +21,6 @@ module.exports = [
       react: eslintPluginReact,
       'react-hooks': eslintPluginReactHooks,
       '@typescript-eslint': typescriptEslintEslintPlugin,
-      '@nx': nxPlugin,
       import: eslintPluginImport,
     },
   },
