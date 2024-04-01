@@ -90,7 +90,7 @@
     "@nx/eslint": "^18.0.5",
     "@nx/eslint-plugin": "^18.0.5",
     "@playwright/test": "^1.41.2",
-    "@storybook/addon-essentials": "^7.5.3",
+    "@storybook/addon-essentials": "^8.0.5",
     "@storybook/addon-interactions": "^7.6.17",
     "@storybook/addon-links": "^7.6.17",
     "@storybook/addon-onboarding": "^1.0.11",
