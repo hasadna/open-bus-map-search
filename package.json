@@ -15,7 +15,7 @@
     "@types/git-username": "^1.0.5",
     "@types/leaflet.markercluster": "^1.5.2",
     "@vitejs/plugin-react-swc": "^3.6.0",
-    "antd": "^5.14.2",
+    "antd": "^5.16.0",
     "axios": "^1.6.7",
     "babel-plugin-transform-import-meta": "^2.2.1",
     "classnames": "^2.5.1",
