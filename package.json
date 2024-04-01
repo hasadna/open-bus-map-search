@@ -56,7 +56,7 @@
   },
   "scripts": {
     "start": "vite",
-    "build": "nx exec -- npm run _build -- ",
+    "build": "tsc && vite build",
     "serve": "vite preview",
     "test": "npm run test:unit:ci && npm run test:e2e",
     "test:e2e:ui": "cross-env APPLITOOLS_BATCH_ID=`uuidgen` playwright test --ui",
@@ -65,9 +65,7 @@
     "test:unit:ci": "jest --coverage",
     "lint": "eslint . --max-warnings 0 && stylelint '**/*.{css,scss}' --max-warnings 0",
     "lint:fix": "eslint . --fix && stylelint '**/*.{css,scss}' --fix",
-    "storybook": "storybook dev -p 6006",
-    "build-storybook": "nx exec -- storybook build",
-    "_build": "tsc && vite build"
+    "storybook": "storybook dev -p 6006"
   },
   "browserslist": {
     "production": [
