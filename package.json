@@ -93,7 +93,7 @@
     "@storybook/addon-essentials": "^8.0.5",
     "@storybook/addon-interactions": "^7.6.17",
     "@storybook/addon-links": "^7.6.17",
-    "@storybook/addon-onboarding": "^1.0.11",
+    "@storybook/addon-onboarding": "^8.0.5",
     "@storybook/blocks": "^7.5.3",
     "@storybook/react": "^8.0.5",
     "@storybook/react-vite": "^7.6.17",
