@@ -2,7 +2,7 @@ import { useRef, useState } from 'react'
 import { InfoCircleOutlined } from '@ant-design/icons'
 import { Modal } from 'antd'
 
-const InfoYoutubeModal = ({ videoUrl, title }: { videoUrl: string; title: 'string' }) => {
+const InfoYoutubeModal = ({ videoUrl, title }: { videoUrl: string; title: string }) => {
   const [visible, setVisible] = useState(false)
   const iframeRef = useRef<HTMLIFrameElement | null>(null)
 
@@ -10,7 +10,6 @@ const InfoYoutubeModal = ({ videoUrl, title }: { videoUrl: string; title: 'strin
     const iframe = iframeRef.current
 
     if (iframe) {
-      iframe.contentWindow?.postMessage?.({ event: 'command', func: 'pauseVideo' }, '*')
       iframe.src = iframe.src
     }
 

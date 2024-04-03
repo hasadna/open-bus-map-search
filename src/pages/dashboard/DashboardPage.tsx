@@ -34,7 +34,10 @@ const DashboardPage = () => {
     <PageContainer>
       <Title className="page-title" level={3}>
         {t('dashboard_page_title')}
-        <InfoYoutubeModal title='Dashboard Page Info' videoUrl={'https://www.youtube.com/embed?v=fJT2u1RHA-Q&list=PL6Rh06rT7uiX1AQE-lm55hy-seL3idx3T'} />
+        <InfoYoutubeModal
+          title={t('youtube_modal_info_title')}
+          videoUrl="https://www.youtube-nocookie.com/embed?v=fJT2u1RHA-Q&list=PL6Rh06rT7uiX1AQE-lm55hy-seL3idx3T"
+        />
       </Title>
       <Alert message={t('dashboard_page_description')} type="info" />
       {startDate > endDate ? (
