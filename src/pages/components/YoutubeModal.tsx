@@ -1,9 +1,21 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { InfoCircleOutlined } from '@ant-design/icons'
 import { Modal } from 'antd'
 
 const InfoYoutubeModal = ({ videoUrl, title }: { videoUrl: string; title: 'string' }) => {
   const [visible, setVisible] = useState(false)
+  const iframeRef = useRef<HTMLIFrameElement | null>(null)
+
+  function closeAndStop() {
+    const iframe = iframeRef.current
+
+    if (iframe) {
+      iframe.contentWindow?.postMessage?.({ event: 'command', func: 'pauseVideo' }, '*')
+      iframe.src = iframe.src
+    }
+
+    setVisible(false)
+  }
 
   return (
     <>
@@ -12,12 +24,7 @@ const InfoYoutubeModal = ({ videoUrl, title }: { videoUrl: string; title: 'strin
         style={{ marginRight: '12px' }}
         aria-label="youtube-video-about-this-page"
       />
-      <Modal
-        width={'1000px'}
-        footer={null}
-        title={title}
-        open={visible}
-        onCancel={() => setVisible(false)}>
+      <Modal width={'1000px'} footer={null} title={title} open={visible} onCancel={closeAndStop}>
         <div
           style={{
             height: '0px',
@@ -35,6 +42,7 @@ const InfoYoutubeModal = ({ videoUrl, title }: { videoUrl: string; title: 'strin
               top: 0,
               left: 0,
             }}
+            ref={iframeRef}
             allowFullScreen
             src={videoUrl}
           />
