@@ -14,6 +14,19 @@ An explanation how to run the project locally you can [read here](CONTRIBUTING.m
 ### The video will explain you how to contribute to the project:   
 [![video (hebrew) about the project](https://img.youtube.com/vi/6H6jkJCVhgk/0.jpg)](https://www.youtube.com/watch?v=6H6jkJCVhgk)
 
+## Page Video Descriptions
+
+This section provides video tutorials for some of the key pages in this project.
+
+**Dashboard & Maps Pages**
+
+* **Video:** [How to Use the Dashboard & Maps Pages](https://www.youtube.com/watch?v=MJZrIxjQEH8&list=PL6Rh06rT7uiX1AQE-lm55hy-seL3idx3T&t=17s)
+
+**Bug Reporting**
+
+* **Video:** [How to Report Bugs](https://www.youtube.com/watch?v=F6sD9Bz4Xj0&list=PL6Rh06rT7uiX1AQE-lm55hy-seL3idx3T)
+
+
 # Easter eggs
 We've hidden a couple of fun surprises in our web app, just for you. Discovering them is as easy as typing a few magic words on your keyboard.
 
