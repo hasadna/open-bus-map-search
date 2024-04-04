@@ -20,6 +20,7 @@ import createClusterCustomIcon from '../components/utils/customCluster/customClu
 import { TimeSelector } from '../components/TimeSelector'
 import { busIcon, busIconPath } from '../components/utils/BusIcon'
 import { BusToolTip } from 'src/pages/components/map-related/MapLayers/BusToolTip'
+import InfoYoutubeModal from '../components/YoutubeModal'
 
 const { Title } = Typography
 
@@ -98,6 +99,10 @@ export default function RealtimeMapPage() {
     <PageContainer className="map-container">
       <Title className="page-title" level={3}>
         {t('realtime_map_page_title')}
+        <InfoYoutubeModal
+          title={t('youtube_modal_info_title')}
+          videoUrl="https://www.youtube-nocookie.com/embed?v=fJT2u1RHA-Q&list=PL6Rh06rT7uiX1AQE-lm55hy-seL3idx3T"
+        />
       </Title>
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
         <Grid xs={12} className="hideOnMobile">

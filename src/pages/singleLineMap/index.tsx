@@ -21,6 +21,7 @@ import { PageContainer } from '../components/PageContainer'
 import { MapWithLocationsAndPath } from '../components/map-related/MapWithLocationsAndPath'
 import Title from 'antd/es/typography/Title'
 import { Space, Alert } from 'antd'
+import InfoYoutubeModal from '../components/YoutubeModal'
 
 const SingleLineMapPage = () => {
   const { search, setSearch } = useContext(SearchContext)
@@ -120,6 +121,10 @@ const SingleLineMapPage = () => {
     <PageContainer className="map-container">
       <Title className="page-title" level={3}>
         {t('singleline_map_page_title')}
+        <InfoYoutubeModal
+          title={t('youtube_modal_info_title')}
+          videoUrl="https://www.youtube-nocookie.com/embed?v=fJT2u1RHA-Q&list=PL6Rh06rT7uiX1AQE-lm55hy-seL3idx3T"
+        />
       </Title>
       <Space direction="vertical" size="middle" style={{ marginBottom: '22px' }}>
         <Alert message={t('realtime_map_page_description')} type="info" />
