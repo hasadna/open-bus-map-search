@@ -1,8 +1,17 @@
 import { useRef, useState } from 'react'
 import { InfoCircleOutlined } from '@ant-design/icons'
 import { Modal } from 'antd'
+import './YotubeModal.scss'
 
-const InfoYoutubeModal = ({ videoUrl, title }: { videoUrl: string; title: string }) => {
+const InfoYoutubeModal = ({
+  videoUrl,
+  label,
+  title,
+}: {
+  label: string
+  videoUrl: string
+  title: string
+}) => {
   const [visible, setVisible] = useState(false)
   const iframeRef = useRef<HTMLIFrameElement | null>(null)
 
@@ -21,30 +30,11 @@ const InfoYoutubeModal = ({ videoUrl, title }: { videoUrl: string; title: string
       <InfoCircleOutlined
         onClick={() => setVisible(true)}
         style={{ marginRight: '12px' }}
-        aria-label="youtube-video-about-this-page"
+        aria-label={label}
       />
       <Modal width={'1000px'} footer={null} title={title} open={visible} onCancel={closeAndStop}>
-        <div
-          style={{
-            height: '0px',
-            paddingBottom: '56.25%',
-            width: '100%',
-            position: 'relative',
-          }}>
-          <iframe
-            frameBorder={0}
-            style={{
-              borderRadius: '8px',
-              position: 'absolute',
-              width: '100%',
-              height: '100%',
-              top: 0,
-              left: 0,
-            }}
-            ref={iframeRef}
-            allowFullScreen
-            src={videoUrl}
-          />
+        <div className="modal-iframe-container">
+          <iframe ref={iframeRef} allowFullScreen src={videoUrl} />
         </div>
       </Modal>
     </>

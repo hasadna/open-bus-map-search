@@ -65,11 +65,13 @@ const BugReportForm = () => {
 
   return (
     <Card className="bug-report-form-container">
-      <h1 className="logo">דאטאבוס</h1>
-      <InfoYoutubeModal
-        title={t('youtube_modal_info_title')}
-        videoUrl="https://www.youtube-nocookie.com/embed?v=F6sD9Bz4Xj0&list=PL6Rh06rT7uiX1AQE-lm55hy-seL3idx3T&index=11"
-      />
+      <h1 className="logo">
+        דאטאבוס
+        <InfoYoutubeModal
+          title={t('youtube_modal_info_title')}
+          videoUrl="https://www.youtube-nocookie.com/embed?v=F6sD9Bz4Xj0&list=PL6Rh06rT7uiX1AQE-lm55hy-seL3idx3T&index=11"
+        />
+      </h1>
       <span> {t('reportBug.description')}</span>
       <p>
         {submittedUrl && (
@@ -78,7 +80,6 @@ const BugReportForm = () => {
           </a>
         )}
       </p>
-
       <Form
         form={form}
         name="bug-report"
