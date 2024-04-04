@@ -61,6 +61,7 @@
   "start": "התחלה",
   "end": "סיום",
   "about_title": "אודות",
+  "public_appeal_title": "קול קורא",
   "donate_title": "לתרומות",
   "report_a_bug_title": "דיווח על באג",
   "website_name": "דאטאבוס",
@@ -165,5 +166,13 @@
     "viewIssue": "לצפייה בדיווח"
   },
   "plannedRoute": "מסלול מתוכנן",
-  "actualRoute": "מסלול בפועל"
+  "actualRoute": "מסלול בפועל",
+  "publicAppealPage": {
+    "title": "קול קורא",
+    "contactLinksText": {
+      "sadna": "צרו איתנו קשר",
+      "slack": " דברו איתנו על זה בסלאק",
+      "donations": "שרתים עולים כסף - עזרו לנו להמשיך לתחזק ולפתח את הפרויקט!"
+    }
+  }
 }

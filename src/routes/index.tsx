@@ -16,6 +16,7 @@ const DataResearch = lazy(() =>
     default: m.DataResearch,
   })),
 )
+const PublicAppeal = lazy(() => import('../pages/publicAppeal'))
 
 import {
   HomeOutlined,
@@ -32,6 +33,7 @@ import {
 } from '@ant-design/icons'
 import { MainRoute } from './MainRoute'
 import { ErrorPage } from 'src/pages/ErrorPage'
+import PsychologyIcon from '@mui/icons-material/Psychology';
 
 export const PAGES = [
   {
@@ -79,6 +81,12 @@ export const PAGES = [
     icon: <InfoCircleOutlined />,
     element: <About />,
   },
+  {
+    label: 'public_appeal_title',
+    path: '/public-appeal',
+    icon: <PsychologyIcon />,
+    element: <PublicAppeal />,
+  }
 ] as const
 
 export const HEADER_LINKS = [
