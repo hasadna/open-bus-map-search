@@ -178,8 +178,9 @@ const GapsPatternsPage = () => {
       <Title level={3}>
         {t('gaps_patterns_page_title')}
         <InfoYoutubeModal
+          label="Open video about this page"
           title={t('youtube_modal_info_title')}
-          videoUrl="https://www.youtube.com/embed?v=-C_rZlbHBmk&list=PL6Rh06rT7uiX1AQE-lm55hy-seL3idx3T&index=4"
+          videoUrl="https://www.youtube-nocookie.com/embed?v=-C_rZlbHBmk&list=PL6Rh06rT7uiX1AQE-lm55hy-seL3idx3T&index=4"
         />
       </Title>
       <Space direction="vertical" size="middle" style={{ marginBottom: '22px' }}>
