@@ -3,15 +3,13 @@ import { InfoCircleOutlined } from '@ant-design/icons'
 import { Modal } from 'antd'
 import './YotubeModal.scss'
 
-const InfoYoutubeModal = ({
-  videoUrl,
-  label,
-  title,
-}: {
+type InfoYoutubeModalProps = {
   label: string
   videoUrl: string
   title: string
-}) => {
+}
+
+const InfoYoutubeModal = ({ videoUrl, label, title }: InfoYoutubeModalProps) => {
   const [visible, setVisible] = useState(false)
   const iframeRef = useRef<HTMLIFrameElement | null>(null)
 
