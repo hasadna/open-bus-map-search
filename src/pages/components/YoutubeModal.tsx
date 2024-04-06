@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import { InfoCircleOutlined } from '@ant-design/icons'
 import { Modal } from 'antd'
 import './YotubeModal.scss'
@@ -11,17 +11,6 @@ type InfoYoutubeModalProps = {
 
 const InfoYoutubeModal = ({ videoUrl, label, title }: InfoYoutubeModalProps) => {
   const [visible, setVisible] = useState(false)
-  const iframeRef = useRef<HTMLIFrameElement | null>(null)
-
-  function closeAndStop() {
-    const iframe = iframeRef.current
-
-    if (iframe) {
-      iframe.src = iframe.src
-    }
-
-    setVisible(false)
-  }
 
   return (
     <>
@@ -30,9 +19,14 @@ const InfoYoutubeModal = ({ videoUrl, label, title }: InfoYoutubeModalProps) => 
         style={{ marginRight: '12px' }}
         aria-label={label}
       />
-      <Modal width={'1000px'} footer={null} title={title} open={visible} onCancel={closeAndStop}>
+      <Modal
+        width={'1000px'}
+        footer={null}
+        title={title}
+        open={visible}
+        onCancel={() => setVisible(false)}>
         <div className="modal-iframe-container">
-          <iframe ref={iframeRef} allowFullScreen src={videoUrl} />
+          {visible && <iframe allowFullScreen src={videoUrl} />}
         </div>
       </Modal>
     </>
