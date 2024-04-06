@@ -68,7 +68,7 @@ const BugReportForm = () => {
       <h1 className="logo">
         דאטאבוס
         <InfoYoutubeModal
-          label="Open video about this page"
+          label={t('open_video_about_this_page')}
           title={t('youtube_modal_info_title')}
           videoUrl="https://www.youtube-nocookie.com/embed?v=F6sD9Bz4Xj0&list=PL6Rh06rT7uiX1AQE-lm55hy-seL3idx3T&index=11"
         />

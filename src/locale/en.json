@@ -151,5 +151,6 @@
   },
   "plannedRoute": "Planned Route",
   "actualRoute": "Actual Route",
-  "youtube_modal_info_title": "Page Description"
+  "youtube_modal_info_title": "Video tutorial (Hebrew)",
+  "open_video_about_this_page": "Open video about this page"
 }
