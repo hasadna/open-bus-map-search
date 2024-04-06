@@ -16,7 +16,7 @@ const InfoYoutubeModal = ({ videoUrl, label, title }: InfoYoutubeModalProps) => 
     <>
       <InfoCircleOutlined
         onClick={() => setVisible(true)}
-        style={{ marginRight: '12px' }}
+        className="modal-info-ico"
         aria-label={label}
       />
       <Modal
@@ -24,10 +24,15 @@ const InfoYoutubeModal = ({ videoUrl, label, title }: InfoYoutubeModalProps) => 
         footer={null}
         title={title}
         open={visible}
-        onCancel={() => setVisible(false)}>
-        <div className="modal-iframe-container">
-          {visible && <iframe allowFullScreen src={videoUrl} />}
-        </div>
+        destroyOnClose={true}
+        onCancel={() => {
+          setVisible(false)
+        }}>
+        {
+          <div className="modal-iframe-container">
+            <iframe allowFullScreen src={videoUrl} />
+          </div>
+        }
       </Modal>
     </>
   )
