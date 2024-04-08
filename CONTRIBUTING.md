@@ -102,6 +102,18 @@ Follow these steps to run the project on your local machine:
 - [API documentation and examples (swagger)](https://open-bus-stride-api.hasadna.org.il/docs)
 - [the deployed website](https://open-bus-map-search.hasadna.org.il/dashboard)
 
+## Page Video Descriptions
+
+This section provides video tutorials for some of the key pages in this project.
+
+**Dashboard & Maps Pages**
+
+* **Video:** [How to Use the Dashboard & Maps Pages](https://www.youtube.com/watch?v=MJZrIxjQEH8&list=PL6Rh06rT7uiX1AQE-lm55hy-seL3idx3T&t=17s)
+
+**Bug Reporting**
+
+* **Video:** [How to Report Bugs](https://www.youtube.com/watch?v=F6sD9Bz4Xj0&list=PL6Rh06rT7uiX1AQE-lm55hy-seL3idx3T)
+
 ## Troubleshooting
 
 we're here to help! feel free to join our [Slack channel](https://join.slack.com/t/hasadna/shared_invite/zt-21qipktl1-7yF4FYJVxAqXl0wE4DlMKQ)

@@ -18,6 +18,7 @@ import OperatorSelector from 'src/pages/components/OperatorSelector'
 import DayTimeChart from './ArrivalByTimeChart/DayTimeChart'
 import AllLinesChart from './AllLineschart/AllLinesChart'
 import WorstLinesChart from './WorstLinesChart/WorstLinesChart'
+import InfoYoutubeModal from '../components/YoutubeModal'
 
 // Declarations
 const { Title } = Typography
@@ -33,6 +34,11 @@ const DashboardPage = () => {
     <PageContainer>
       <Title className="page-title" level={3}>
         {t('dashboard_page_title')}
+        <InfoYoutubeModal
+          label="Open video about this page"
+          title={t('youtube_modal_info_title')}
+          videoUrl="https://www.youtube-nocookie.com/embed?v=fJT2u1RHA-Q&list=PL6Rh06rT7uiX1AQE-lm55hy-seL3idx3T"
+        />
       </Title>
       <Alert message={t('dashboard_page_description')} type="info" />
       {startDate > endDate ? (
@@ -61,7 +67,6 @@ const DashboardPage = () => {
             />
           </Grid>
         </Grid>
-
         <Grid lg={6} xs={12}>
           <OperatorSelector operatorId={operatorId} setOperatorId={setOperatorId} />
         </Grid>
