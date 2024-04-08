@@ -42,7 +42,7 @@
     "sass": "^1.72.0",
     "styled-components": "^6.1.8",
     "stylis-plugin-rtl": "^2.1.1",
-    "typescript": "^5.2.2",
+    "typescript": "^5.4.4",
     "underscore.string": "^3.3.6",
     "use-konami": "^1.0.1",
     "usehooks-ts": "^3.0.2",
