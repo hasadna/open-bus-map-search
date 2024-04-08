@@ -122,6 +122,20 @@ jobs:
           status: success
           context: 'Test results'
           targetUrl: 'https://s3.amazonaws.com/noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.sha }}/test-results/index.html'
+  build-outside-docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Run install
+        run: npm ci
+      - name: build
+        run: npm run build
+      - name: build storybook
+        run: npm run build-storybook
+      
   all-passed:
     runs-on: ubuntu-latest
     needs: [local-tests, test]
