@@ -1,6 +1,5 @@
 import styled from 'styled-components'
-import SlackIcon from '../../resources/slack-icon.svg'
-import { Trans, useTranslation } from 'react-i18next'
+import { useTranslation } from 'react-i18next'
 import Widget from 'src/shared/Widget'
 import { Space, Typography } from 'antd'
 
@@ -9,32 +8,31 @@ const { Title } = Typography
 const pageName = 'publicAppealPage'
 const PublicAppeal = () => {
   const { t } = useTranslation()
+  const tasks = t(`${pageName}.tasks`, { returnObjects: true })
+
   return (
     <PublicAppealStyle>
       <Space direction="vertical" size="middle">
         <Title className="page-title" level={3}>
           {t(`${pageName}.title`)}
         </Title>
-        <Tasks />
+        {tasks.map((task, i) => (
+          <Task task={task} index={i} key={i}/>
+        ))
+        }
       </Space>
     </PublicAppealStyle>
   )
 }
 
-const Tasks = () => {
-  const { t } = useTranslation()
-  const tasks = t(`${pageName}.tasks`, { returnObjects: true })
-
+const Task = (props: any) => {
   return (
-    tasks.map((task) => (
-      <Widget>
-        <h2 className='public'>{task.title}</h2>
-        {/* <p>{t('what_is_website_paragraph')}</p> */}
-        <p>{task.description}</p>
-        <a href="https://www.google.com">{task.swagger}</a>
-        <p>jupyter notebook</p>
-      </Widget>
-    ))
+    <Widget key={props.index}>
+      <h2 className='public'>{props.task.title}</h2>
+      <p>{props.task.description}</p>
+      <a href="https://www.google.com">{props.task.swagger}</a>
+      <p>jupyter notebook </p>
+    </Widget>
   )
 }
 
