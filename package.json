@@ -11,7 +11,7 @@
     "@mui/lab": "^5.0.0-alpha.169",
     "@mui/material": "^5.15.14",
     "@mui/x-date-pickers": "^7.1.0",
-    "@mui/x-tree-view": "^6.17.0",
+    "@mui/x-tree-view": "^7.2.0",
     "@types/git-username": "^1.0.5",
     "@types/leaflet.markercluster": "^1.5.2",
     "@vitejs/plugin-react-swc": "^3.6.0",
