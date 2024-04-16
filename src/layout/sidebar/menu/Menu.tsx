@@ -7,7 +7,7 @@ import { PAGES } from 'src/routes'
 import type { MenuProps } from 'antd'
 import { Menu } from 'antd'
 import { LayoutContextInterface, LayoutCtx } from 'src/layout/LayoutContext'
-import { LanguageToggle } from 'src/pages/EasterEgg/LanguageToggle'
+import { LanguageToggle } from 'src/layout/sidebar/menu/LanguageToggle'
 type MenuItem = Required<MenuProps>['items'][number]
 function getItem(
   label: React.ReactNode,
@@ -61,7 +61,7 @@ const MainMenu = () => {
         mode="inline"
         items={items}
       />
-      {<LanguageToggle />}
+      <LanguageToggle />
     </>
   )
 }
