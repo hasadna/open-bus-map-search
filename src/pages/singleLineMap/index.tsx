@@ -124,7 +124,7 @@ const SingleLineMapPage = () => {
         <InfoYoutubeModal
           label={t('open_video_about_this_page')}
           title={t('youtube_modal_info_title')}
-          videoUrl="https://www.youtube-nocookie.com/embed?v=fJT2u1RHA-Q&list=PL6Rh06rT7uiX1AQE-lm55hy-seL3idx3T"
+          videoUrl="https://www.youtube-nocookie.com/embed/bXg50_j_hTA?si=inyvqDylStvgNRA6&amp;start=93"
         />
       </Title>
       <Space direction="vertical" size="middle" style={{ marginBottom: '22px' }}>
