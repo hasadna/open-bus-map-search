@@ -12,6 +12,8 @@ import Widget from 'src/shared/Widget'
 import { useLoaderData } from 'react-router-dom'
 import { ProfileLineDetails } from './ProfileLineDetails'
 import { MapWithLocationsAndPath } from './components/map-related/MapWithLocationsAndPath'
+import { Typography } from '@mui/material'
+import { MultipleStopOutlined } from '@mui/icons-material'
 
 const Profile = () => {
   return (
@@ -31,6 +33,40 @@ const GeneralDetailsAboutLine = () => {
   )
 }
 
+const LineProfileHeader = ({
+  operator_ref,
+  agency_name,
+  route_short_name,
+  route_long_name,
+}: {
+  operator_ref: number
+  agency_name: string
+  route_short_name: string
+  route_long_name: string
+}) => {
+  const { t } = useTranslation()
+  const splitRouteName = route_long_name.split('<->')
+  return (
+    <>
+      <OperatorCard>
+        <img width={'60px'} height={'60px'} src={`../operators-logos/${operator_ref}.svg`} />
+        <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+          {agency_name}
+        </Typography>
+      </OperatorCard>
+      <HeaderContainer>
+        <h2 className="title">
+          {t('lineProfile.title')} {route_short_name}
+        </h2>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+          {' '}
+          {splitRouteName[0]} <MultipleStopOutlined /> {splitRouteName[1]}{' '}
+        </div>
+      </HeaderContainer>
+    </>
+  )
+}
+
 const LineProfileComponent = () => {
   const { t } = useTranslation()
   const route = useLoaderData() as {
@@ -38,6 +74,7 @@ const LineProfileComponent = () => {
     agency_name: string
     route_short_name: string
     route_long_name: string
+    operator_ref: number
     message?: string
   }
 
@@ -54,13 +91,8 @@ const LineProfileComponent = () => {
   return (
     <Grid xs={12} lg={6}>
       <Widget>
-        <h2 className="title">{t('lineProfile.title')}</h2>
-        <label> מפעיל: {route.agency_name} </label>
-        <br></br>
-        <label> מספר קו: {route.route_short_name} </label>
-        <br></br>
-        <label> כיוון נסיעה: {route.route_long_name} </label>
         <div>
+          <LineProfileHeader {...route} />
           <ProfileLineDetails route={route} />
           <Label text="שעות פעילות" />
           {/* GET the earliest and the latest bus drive departure time for each day */}
@@ -111,6 +143,20 @@ const LineProfileComponent = () => {
     </Grid>
   )
 }
+
+const HeaderContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`
+
+const OperatorCard = styled.div`
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: fit-content;
+`
 
 const TableStyle = styled.table`
   & th,
