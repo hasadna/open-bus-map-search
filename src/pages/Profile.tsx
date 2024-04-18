@@ -33,19 +33,20 @@ const GeneralDetailsAboutLine = () => {
   )
 }
 
+interface LineProfileHeaderProps {
+  operator_ref: number
+  agency_name: string
+  route_short_name: string
+  route_long_name: string
+}
 const LineProfileHeader = ({
   operator_ref,
   agency_name,
   route_short_name,
   route_long_name,
-}: {
-  operator_ref: number
-  agency_name: string
-  route_short_name: string
-  route_long_name: string
-}) => {
+}: LineProfileHeaderProps) => {
   const { t } = useTranslation()
-  const splitRouteName = route_long_name.split('<->')
+  const [firstPart, secondPart] = route_long_name.split('<->')
   return (
     <>
       <OperatorCard>
@@ -59,8 +60,7 @@ const LineProfileHeader = ({
           {t('lineProfile.title')} {route_short_name}
         </h2>
         <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-          {' '}
-          {splitRouteName[0]} <MultipleStopOutlined /> {splitRouteName[1]}{' '}
+          {` ${firstPart} ${(<MultipleStopOutlined />)} ${secondPart} `}
         </div>
       </HeaderContainer>
     </>
