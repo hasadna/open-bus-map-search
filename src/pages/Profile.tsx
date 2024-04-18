@@ -50,7 +50,7 @@ const LineProfileHeader = ({
   return (
     <>
       <OperatorCard>
-        <img width={'60px'} height={'60px'} src={`../operators-logos/${operator_ref}.svg`} />
+        <img src={`../operators-logos/${operator_ref}.svg`} />
         <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
           {agency_name}
         </Typography>
@@ -59,8 +59,8 @@ const LineProfileHeader = ({
         <h2 className="title">
           {t('lineProfile.title')} {route_short_name}
         </h2>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-          {` ${firstPart} ${(<MultipleStopOutlined />)} ${secondPart} `}
+        <div className="route-wrapper">
+          {firstPart} <MultipleStopOutlined /> {secondPart}
         </div>
       </HeaderContainer>
     </>
@@ -148,6 +148,11 @@ const HeaderContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  .route-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
 `
 
 const OperatorCard = styled.div`
@@ -156,6 +161,10 @@ const OperatorCard = styled.div`
   flex-direction: column;
   align-items: center;
   width: fit-content;
+  img {
+    width: 60px;
+    height: 60px;
+  }
 `
 
 const TableStyle = styled.table`
