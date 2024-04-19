@@ -46,7 +46,7 @@ const LineProfileHeader = ({
   route_long_name,
 }: LineProfileHeaderProps) => {
   const { t } = useTranslation()
-  const [firstPart, secondPart] = route_long_name.split('<->')
+  const [firstRoute, secondRoute] = route_long_name.split('<->')
   return (
     <>
       <OperatorCard>
@@ -60,7 +60,7 @@ const LineProfileHeader = ({
           {t('lineProfile.title')} {route_short_name}
         </h2>
         <div className="route-wrapper">
-          {firstPart} <MultipleStopOutlined /> {secondPart}
+          {firstRoute} <MultipleStopOutlined /> {secondRoute}
         </div>
       </HeaderContainer>
     </>
