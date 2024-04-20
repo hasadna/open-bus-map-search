@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "commonjs",
+  "homepage": ".",
   "dependencies": {
     "@applitools/eyes-playwright": "^1.26.1",
     "@emotion/react": "^11.11.4",
