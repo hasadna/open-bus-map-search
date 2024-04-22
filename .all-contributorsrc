@@ -42,6 +42,16 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "R894",
+      "name": "R894",
+      "avatar_url": "https://avatars.githubusercontent.com/u/54629307?v=4",
+      "profile": "https://github.com/R894",
+      "contributions": [
+        "code",
+        "test"
+      ]
     }
   ]
 }
