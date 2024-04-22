@@ -66,6 +66,7 @@ https://github.com/hasadna/open-bus-map-search/blob/main/src/model/busStop.ts#L4
 <table>
   <tbody>
     <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/ShayAdler"><img src="https://avatars.githubusercontent.com/u/61648359?v=4?s=100" width="100px;" alt="Shay"/><br /><sub><b>Shay</b></sub></a><br /><a href="#code-ShayAdler" title="Code">💻</a> <a href="#doc-ShayAdler" title="Documentation">📖</a> <a href="#mentoring-ShayAdler" title="Mentoring">🧑‍🏫</a> <a href="#ideas-ShayAdler" title="Ideas, Planning, & Feedback">🤔</a> <a href="#research-ShayAdler" title="Research">🔬</a></td>
       <td align="center" valign="top" width="14.28%"><a href="http://noam-gaash.co.il"><img src="https://avatars.githubusercontent.com/u/11145132?v=4?s=100" width="100px;" alt="Noam Gaash"/><br /><sub><b>Noam Gaash</b></sub></a><br /><a href="#projectManagement-NoamGaash" title="Project Management">📆</a> <a href="#test-NoamGaash" title="Tests">⚠️</a> <a href="#code-NoamGaash" title="Code">💻</a> <a href="#doc-NoamGaash" title="Documentation">📖</a> <a href="#review-NoamGaash" title="Reviewed Pull Requests">👀</a></td>
     </tr>
   </tbody>

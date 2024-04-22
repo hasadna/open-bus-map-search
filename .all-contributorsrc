@@ -9,6 +9,19 @@
   "contributorsPerLine": 7,
   "contributors": [
     {
+      "login": "ShayAdler",
+      "name": "Shay",
+      "avatar_url": "https://avatars.githubusercontent.com/u/61648359?v=4",
+      "profile": "https://github.com/ShayAdler",
+      "contributions": [
+        "code",
+        "doc",
+        "mentoring",
+        "ideas",
+        "research"
+      ]
+    },
+    {
       "login": "NoamGaash",
       "name": "Noam Gaash",
       "avatar_url": "https://avatars.githubusercontent.com/u/11145132?v=4",
