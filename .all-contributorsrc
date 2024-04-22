@@ -33,6 +33,15 @@
         "doc",
         "review"
       ]
+    },
+    {
+      "login": "KirilCycle",
+      "name": "Kiril Volskiy",
+      "avatar_url": "https://avatars.githubusercontent.com/u/118115736?v=4",
+      "profile": "https://github.com/KirilCycle",
+      "contributions": [
+        "code"
+      ]
     }
   ]
 }
