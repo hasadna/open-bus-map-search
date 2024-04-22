@@ -1,4 +1,25 @@
 {
   "projectName": "open-bus-map-search",
-  "projectOwner": "hasadna"
+  "projectOwner": "hasadna",
+  "files": [
+    "README.md"
+  ],
+  "commitType": "docs",
+  "commitConvention": "angular",
+  "contributorsPerLine": 7,
+  "contributors": [
+    {
+      "login": "NoamGaash",
+      "name": "Noam Gaash",
+      "avatar_url": "https://avatars.githubusercontent.com/u/11145132?v=4",
+      "profile": "http://noam-gaash.co.il",
+      "contributions": [
+        "projectManagement",
+        "test",
+        "code",
+        "doc",
+        "review"
+      ]
+    }
+  ]
 }
