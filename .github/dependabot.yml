@@ -11,4 +11,4 @@ updates:
       interval: "weekly"
     reviewers:
       - "aviv1620"
-    open-pull-requests-limit: 15
+    open-pull-requests-limit: 3
