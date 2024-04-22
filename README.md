@@ -63,6 +63,13 @@ https://github.com/hasadna/open-bus-map-search/blob/main/src/model/busStop.ts#L4
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/ShayAdler"><img src="https://avatars.githubusercontent.com/u/61648359?v=4?s=100" width="100px;" alt="Shay"/><br /><sub><b>Shay</b></sub></a><br /><a href="#code-ShayAdler" title="Code">💻</a> <a href="#doc-ShayAdler" title="Documentation">📖</a> <a href="#mentoring-ShayAdler" title="Mentoring">🧑‍🏫</a> <a href="#ideas-ShayAdler" title="Ideas, Planning, & Feedback">🤔</a> <a href="#research-ShayAdler" title="Research">🔬</a></td>
+    </tr>
+  </tbody>
+</table>
 
 <!-- markdownlint-restore -->
 <!-- prettier-ignore-end -->
