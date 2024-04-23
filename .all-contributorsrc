@@ -52,6 +52,33 @@
         "code",
         "test"
       ]
+    },
+    {
+      "login": "Tamir198",
+      "name": "Tamir Abutbul",
+      "avatar_url": "https://avatars.githubusercontent.com/u/34707669?v=4",
+      "profile": "https://www.linkedin.com/in/tamir-abutbul-10a695178/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "davis0011",
+      "name": "davis0011",
+      "avatar_url": "https://avatars.githubusercontent.com/u/104071579?v=4",
+      "profile": "https://github.com/davis0011",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "ArkadiK94",
+      "name": "Arkadi Koifman",
+      "avatar_url": "https://avatars.githubusercontent.com/u/76536506?v=4",
+      "profile": "https://arkadik94.github.io/",
+      "contributions": [
+        "review"
+      ]
     }
   ]
 }
