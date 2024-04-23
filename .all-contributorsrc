@@ -1,4 +1,74 @@
 {
   "projectName": "open-bus-map-search",
-  "projectOwner": "hasadna"
+  "projectOwner": "hasadna",
+  "files": [
+    "README.md"
+  ],
+  "commitType": "docs",
+  "commitConvention": "angular",
+  "contributorsPerLine": 7,
+  "contributors": [
+    {
+      "login": "ShayAdler",
+      "name": "Shay",
+      "avatar_url": "https://avatars.githubusercontent.com/u/61648359?v=4",
+      "profile": "https://github.com/ShayAdler",
+      "contributions": [
+        "code",
+        "doc",
+        "mentoring",
+        "ideas",
+        "research"
+      ]
+    },
+    {
+      "login": "NoamGaash",
+      "name": "Noam Gaash",
+      "avatar_url": "https://avatars.githubusercontent.com/u/11145132?v=4",
+      "profile": "http://noam-gaash.co.il",
+      "contributions": [
+        "projectManagement",
+        "test",
+        "code",
+        "doc",
+        "review"
+      ]
+    },
+    {
+      "login": "KirilCycle",
+      "name": "Kiril Volskiy",
+      "avatar_url": "https://avatars.githubusercontent.com/u/118115736?v=4",
+      "profile": "https://github.com/KirilCycle",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "Tamir198",
+      "name": "Tamir Abutbul",
+      "avatar_url": "https://avatars.githubusercontent.com/u/34707669?v=4",
+      "profile": "https://www.linkedin.com/in/tamir-abutbul-10a695178/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "davis0011",
+      "name": "davis0011",
+      "avatar_url": "https://avatars.githubusercontent.com/u/104071579?v=4",
+      "profile": "https://github.com/davis0011",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "ArkadiK94",
+      "name": "Arkadi Koifman",
+      "avatar_url": "https://avatars.githubusercontent.com/u/76536506?v=4",
+      "profile": "https://arkadik94.github.io/",
+      "contributions": [
+        "review"
+      ]
+    }
+  ]
 }
