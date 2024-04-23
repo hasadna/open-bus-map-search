@@ -24,8 +24,6 @@ We've hidden a couple of fun surprises in our web app, just for you. Discovering
 
    - **Type "storybook":**
      Watch the magic unfold as you type "storybook" on your keyboard. You might just stumble upon our Storybook, a treasure trove of UI components showcasing the beauty and functionality of our app.
-   - **Type "english":**
-     Feel like switching up the language? Type "english" and see the language toggle in action. Our app is multilingual, and you can experience it by triggering this secret command.
    - **Type "geek":**
      To get some experimental charts with some additional data and aggregation
 
