@@ -44,6 +44,16 @@
       ]
     },
     {
+      "login": "R894",
+      "name": "R894",
+      "avatar_url": "https://avatars.githubusercontent.com/u/54629307?v=4",
+      "profile": "https://github.com/R894",
+      "contributions": [
+        "code",
+        "test"
+      ]
+    },
+    {
       "login": "Tamir198",
       "name": "Tamir Abutbul",
       "avatar_url": "https://avatars.githubusercontent.com/u/34707669?v=4",
@@ -69,6 +79,15 @@
       "profile": "https://github.com/davis0011",
       "contributions": [
         "code"
+      ]
+    },
+    {
+      "login": "ArkadiK94",
+      "name": "Arkadi Koifman",
+      "avatar_url": "https://avatars.githubusercontent.com/u/76536506?v=4",
+      "profile": "https://arkadik94.github.io/",
+      "contributions": [
+        "review"
       ]
     }
   ]
