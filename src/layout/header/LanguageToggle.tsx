@@ -12,12 +12,12 @@ export const LanguageToggle = () => {
 
   return (
     <button
-      className="theme-icon"
+      className="header-link"
       onClick={handleChangeLanguage}
       aria-label={t('Change Language')}
       title={t('Change Language')}
-      style={{ margin: '1em', border: 'none', background: 'transparent', cursor: 'pointer' }}>
-      <GlobalOutlined style={{ fontSize: '1.7em' }} />
+      style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}>
+      <GlobalOutlined />
     </button>
   )
 }
