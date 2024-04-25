@@ -15,8 +15,7 @@ export const LanguageToggle = () => {
       className="header-link"
       onClick={handleChangeLanguage}
       aria-label={t('Change Language')}
-      title={t('Change Language')}
-      style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}>
+      title={t('Change Language')}>
       <GlobalOutlined />
     </button>
   )
