@@ -9,11 +9,6 @@
   background: #303230;
 }
 
-.theme-icon {
-  width: 1rem;
-  transition: all 0.1s;
-}
-
-.theme-icon:hover {
-  transform: scale(1.1);
+.bulb-dark {
+  color: #fff;
 }
