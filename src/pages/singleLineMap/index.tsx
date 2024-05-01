@@ -2,7 +2,6 @@ import moment from 'moment'
 import { useContext, useEffect, useMemo, useState } from 'react'
 import { getRoutesAsync, getStopsForRouteAsync } from 'src/api/gtfsService'
 import useVehicleLocations from 'src/api/useVehicleLocations'
-import { Label } from 'src/pages/components/Label'
 import LineNumberSelector from 'src/pages/components/LineSelector'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
 import RouteSelector from 'src/pages/components/RouteSelector'
@@ -20,7 +19,6 @@ import { FilterPositionsByStartTimeSelector } from '../components/FilterPosition
 import { PageContainer } from '../components/PageContainer'
 import { MapWithLocationsAndPath } from '../components/map-related/MapWithLocationsAndPath'
 import Title from 'antd/es/typography/Title'
-import { Space, Alert } from 'antd'
 import InfoYoutubeModal from '../components/YoutubeModal'
 
 const SingleLineMapPage = () => {
@@ -127,75 +125,66 @@ const SingleLineMapPage = () => {
           videoUrl="https://www.youtube-nocookie.com/embed/bXg50_j_hTA?si=inyvqDylStvgNRA6&amp;start=93"
         />
       </Title>
-      <Space direction="vertical" size="middle" style={{ marginBottom: '22px' }}>
-        <Alert message={t('realtime_map_page_description')} type="info" />
-      </Space>
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
-        {/* choose date*/}
-        <Grid xs={4} className="hideOnMobile">
-          <Label text={t('choose_date')} />
+        <Grid container spacing={2} xs={12}>
+          {/* choose date*/}
+          <Grid sm={4} xs={12}>
+            <DateSelector
+              time={moment(timestamp)}
+              onChange={(ts) => setSearch((current) => ({ ...current, timestamp: ts.valueOf() }))}
+            />
+          </Grid>
+          {/* choose operator */}
+          <Grid sm={4} xs={12}>
+            <OperatorSelector
+              operatorId={operatorId}
+              setOperatorId={(id) => setSearch((current) => ({ ...current, operatorId: id }))}
+            />
+          </Grid>
+          {/* choose line number */}
+          <Grid sm={4} xs={12}>
+            <LineNumberSelector
+              lineNumber={lineNumber}
+              setLineNumber={(number) =>
+                setSearch((current) => ({ ...current, lineNumber: number }))
+              }
+            />
+          </Grid>
         </Grid>
-        <Grid sm={5} xs={12}>
-          <DateSelector
-            time={moment(timestamp)}
-            onChange={(ts) => setSearch((current) => ({ ...current, timestamp: ts.valueOf() }))}
-          />
+        <Grid container spacing={2} xs={12} alignContent={'center'}>
+          <Grid sm={6} xs={12}>
+            {routes &&
+              (routes.length === 0 ? (
+                <NotFound>{t('line_not_found')}</NotFound>
+              ) : (
+                <RouteSelector
+                  routes={routes}
+                  routeKey={routeKey}
+                  setRouteKey={(key) => setSearch((current) => ({ ...current, routeKey: key }))}
+                />
+              ))}
+          </Grid>
+          {/* choose route */}
+          {positions && (
+            <>
+              <Grid sm={2} xs={12}>
+                {locationsIsLoading && (
+                  <Tooltip title={t('loading_times_tooltip_content')}>
+                    <CircularProgress />
+                  </Tooltip>
+                )}
+              </Grid>
+              {/* choose start time */}
+              <Grid sm={4} xs={12}>
+                <FilterPositionsByStartTimeSelector
+                  options={options}
+                  startTime={startTime}
+                  setStartTime={setStartTime}
+                />
+              </Grid>
+            </>
+          )}
         </Grid>
-        {/* choose operator */}
-        <Grid xs={4} className="hideOnMobile">
-          <Label text={t('choose_operator')} />
-        </Grid>
-        <Grid sm={8} xs={12}>
-          <OperatorSelector
-            operatorId={operatorId}
-            setOperatorId={(id) => setSearch((current) => ({ ...current, operatorId: id }))}
-          />
-        </Grid>
-        {/* choose line number */}
-        <Grid xs={4} className="hideOnMobile">
-          <Label text={t('choose_line')} />
-        </Grid>
-        <Grid sm={8} xs={12}>
-          <LineNumberSelector
-            lineNumber={lineNumber}
-            setLineNumber={(number) => setSearch((current) => ({ ...current, lineNumber: number }))}
-          />
-        </Grid>
-        <Grid xs={12}>
-          {routes &&
-            (routes.length === 0 ? (
-              <NotFound>{t('line_not_found')}</NotFound>
-            ) : (
-              <RouteSelector
-                routes={routes}
-                routeKey={routeKey}
-                setRouteKey={(key) => setSearch((current) => ({ ...current, routeKey: key }))}
-              />
-            ))}
-        </Grid>
-        {/* choose route */}
-        {positions && (
-          <>
-            <Grid xs={3} className="hideOnMobile">
-              <Label text={t('choose_start_time')} />
-            </Grid>
-            <Grid xs={1}>
-              {locationsIsLoading && (
-                <Tooltip title={t('loading_times_tooltip_content')}>
-                  <CircularProgress />
-                </Tooltip>
-              )}
-            </Grid>
-            {/* choose start time */}
-            <Grid sm={5} xs={12}>
-              <FilterPositionsByStartTimeSelector
-                options={options}
-                startTime={startTime}
-                setStartTime={setStartTime}
-              />
-            </Grid>
-          </>
-        )}
       </Grid>
       <MapWithLocationsAndPath
         positions={filteredPositions}
