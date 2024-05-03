@@ -9,8 +9,13 @@ main > div,
   flex: 1 1 auto;
 }
 
+.leaflet-container {
+  min-height: calc(100vh - 88px);
+}
+
 .map-info {
   position: relative;
+  margin-bottom: 1em;
 
   .map-index {
     position: absolute;
@@ -25,7 +30,7 @@ main > div,
       display: flex;
       justify-content: space-between;
       align-items: center;
-      
+
       &-config {
         align-items: center;
         margin-left: 1em;
@@ -52,8 +57,6 @@ main > div,
     }
   }
 }
-
-
 
 pre {
   direction: ltr;
