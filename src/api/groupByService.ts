@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { BASE_PATH } from './apiConfig'
 import agencyList from 'open-bus-stride-client/agencies/agencyList'
 import { Moment } from 'moment'
+import { useQuery } from 'react-query'
 
 type groupByField =
   | 'gtfs_route_date'
@@ -92,9 +93,12 @@ export function useGroupBy({
   dateFrom: Moment
   groupBy: groupByFields
 }) {
-  const [loading, setLoading] = useState<boolean>(false)
-  const [error, setError] = useState<string | null>(null)
-  const [data, setData] = useState<
+  const { isLoading, isError, data, error } = useQuery(
+    ['groupBy', dateFrom.toISOString(), dateTo.toISOString(), groupBy],
+    () => groupbyAsync({ dateTo, dateFrom, groupBy }),
+  )
+
+  const [filteredData, setFilteredData] = useState<
     Replace<
       GroupByResponse[0],
       'operator_ref',
@@ -112,24 +116,19 @@ export function useGroupBy({
   >([])
 
   useEffect(() => {
-    setLoading(true)
-    groupbyAsync({ dateTo, dateFrom, groupBy })
-      .then((data) => {
-        setData(
-          data
-            .map((dataRecord) => ({
-              ...dataRecord,
-              operator_ref: agencyList.find(
-                (agency) => agency.agency_id === String(dataRecord.operator_ref),
-              ),
-            }))
-            // should filter operator 22 (which is the Dankal TLV light train)
-            .filter((dataRecord) => dataRecord.operator_ref !== undefined),
-        )
-      })
-      .catch((er: string) => setError(er))
-      .finally(() => setLoading(false))
-  }, [+dateTo, +dateFrom, groupBy])
+    if (data) {
+      setFilteredData(
+        data
+          .map((dataRecord) => ({
+            ...dataRecord,
+            operator_ref: agencyList.find(
+              (agency) => agency.agency_id === String(dataRecord.operator_ref),
+            ),
+          }))
+          .filter((dataRecord) => dataRecord.operator_ref !== undefined),
+      )
+    }
+  }, [data])
 
-  return [data, loading, error] as const
+  return [filteredData, isLoading, isError ? error : null] as const
 }
