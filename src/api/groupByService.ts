@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react'
 import { BASE_PATH } from './apiConfig'
 import agencyList from 'open-bus-stride-client/agencies/agencyList'
 import { Moment } from 'moment'
@@ -64,7 +63,7 @@ export type GroupByRes = Replace<
   | undefined
 >
 
-async function groupbyAsync({
+async function fetchGroupBy({
   dateTo,
   dateFrom,
   groupBy,
@@ -77,11 +76,21 @@ async function groupbyAsync({
   const dateToStr = dateTo.toISOString().split('T')[0]
   const dateFromStr = dateFrom.toISOString().split('T')[0]
   const excludes = 'exclude_hour_from=23&exclude_hour_to=2'
-  return (
-    await fetch(
-      `${BASE_PATH}/gtfs_rides_agg/group_by?date_from=${dateFromStr}&date_to=${dateToStr}&group_by=${groupBy}&${excludes}`,
-    )
-  ).json() as Promise<GroupByResponse>
+
+  const response = await fetch(
+    `${BASE_PATH}/gtfs_rides_agg/group_by?date_from=${dateFromStr}&date_to=${dateToStr}&group_by=${groupBy}&${excludes}`,
+  ).then((res) => res.json())
+
+  return response
+    .map((dataRecord: { operator_ref: unknown }) => ({
+      ...dataRecord,
+      operator_ref: agencyList.find(
+        (agency) => agency.agency_id === String(dataRecord.operator_ref),
+      ),
+    }))
+    .filter(
+      (dataRecord: { operator_ref: undefined }) => dataRecord.operator_ref !== undefined,
+    ) as GroupByResponse
 }
 
 export function useGroupBy({
@@ -95,40 +104,8 @@ export function useGroupBy({
 }) {
   const { isLoading, isError, data, error } = useQuery(
     ['groupBy', dateFrom.toISOString(), dateTo.toISOString(), groupBy],
-    () => groupbyAsync({ dateTo, dateFrom, groupBy }),
+    () => fetchGroupBy({ dateTo, dateFrom, groupBy }),
   )
 
-  const [filteredData, setFilteredData] = useState<
-    Replace<
-      GroupByResponse[0],
-      'operator_ref',
-      | {
-          agency_id: string
-          agency_name: string
-          agency_url: string
-          agency_timezone: string
-          agency_lang: string
-          agency_phone: string
-          agency_fare_url: string
-        }
-      | undefined
-    >[]
-  >([])
-
-  useEffect(() => {
-    if (data) {
-      setFilteredData(
-        data
-          .map((dataRecord) => ({
-            ...dataRecord,
-            operator_ref: agencyList.find(
-              (agency) => agency.agency_id === String(dataRecord.operator_ref),
-            ),
-          }))
-          .filter((dataRecord) => dataRecord.operator_ref !== undefined),
-      )
-    }
-  }, [data])
-
-  return [filteredData, isLoading, isError ? error : null] as const
+  return [data ? data : [], isLoading, isError ? error : null] as const
 }
