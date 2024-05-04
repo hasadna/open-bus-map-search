@@ -58,7 +58,7 @@ module.exports = [
       '@typescript-eslint/restrict-template-expressions': 'off',
       '@typescript-eslint/no-base-to-string': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
-      "import/no-unused-modules": "error" ,
+      'import/no-unused-modules': 'error',
       'prettier/prettier': [
         'error',
         {
@@ -83,7 +83,7 @@ module.exports = [
       'storybook-static',
       'eslint.config.js',
       '.nx',
-      'jest.config.ts'
+      'jest.config.ts',
     ],
   },
 ]
