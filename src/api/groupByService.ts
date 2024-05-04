@@ -71,7 +71,7 @@ async function fetchGroupBy({
   dateTo: Moment
   dateFrom: Moment
   groupBy: groupByFields
-}): Promise<GroupByResponse> {
+}): Promise<GroupByRes[]> {
   // example: https://open-bus-stride-api.hasadna.org.il/gtfs_rides_agg/group_by?date_from=2023-01-27&date_to=2023-01-29&group_by=operator_ref
   const dateToStr = dateTo.toISOString().split('T')[0]
   const dateFromStr = dateFrom.toISOString().split('T')[0]
@@ -90,7 +90,7 @@ async function fetchGroupBy({
     }))
     .filter(
       (dataRecord: { operator_ref: undefined }) => dataRecord.operator_ref !== undefined,
-    ) as GroupByResponse
+    ) as Promise<GroupByRes[]>
 }
 
 export function useGroupBy({
