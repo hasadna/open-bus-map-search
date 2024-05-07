@@ -12,7 +12,7 @@ export default class TimelinePage extends BasePage {
     super(page)
     this.date = this.page.locator("//input[@placeholder='DD/MM/YYYY']")
     this.operator = this.page.locator('#operator-select')
-    this.line_number = this.page.locator("//input[@placeholder='לדוגמא: 17א']")
+    this.line_number = this.page.locator("//input[@placeholder='לדוגמה: 17א']")
     this.close_line_number = this.page.locator("span[aria-label='close']")
     this.eged_taavura = this.page.locator("//li[text()='אגד תעבורה']")
   }

@@ -24,7 +24,7 @@ export const HomePage = () => {
           דפוסי נסיעות שלא בוצעו
         </NavLink>
         <NavLink to="/map" className="nav-link">
-          מפה בזמן אמת
+          מפה לפי זמן
         </NavLink>
       </div>
     </>
