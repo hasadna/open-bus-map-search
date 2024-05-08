@@ -1,7 +1,7 @@
 import { MapContainer, Marker, Polyline, Popup, TileLayer, useMap } from 'react-leaflet'
 import { Icon, IconOptions, LatLngTuple } from 'leaflet'
 import { useAgencyList } from 'src/api/agencyList'
-import { Point } from 'src/pages/realtimeMap'
+import { Point } from 'src/pages/timeBasedMap'
 import { busIcon, busIconPath } from '../utils/BusIcon'
 import { BusToolTip } from './MapLayers/BusToolTip'
 import { VehicleLocation } from 'src/model/vehicleLocation'

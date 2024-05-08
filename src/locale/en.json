@@ -3,8 +3,8 @@
   "dashboard_page_description": "A graphic display of public transportation rides - ratio of successful actual rides / total rides scheduled. Grouped by bus operators (Egged, Dan, Metropolin etc)",
   "timeline_page_title": "Trips History",
   "timeline_page_description": "Displays actual vs scheduled stop times by user-given bus operator, route number & stop name",
-  "realtime_map_page_title": "Real time map",
-  "realtime_map_page_description": "Displays all buses locations on map based on user-given date, time & minutes range",
+  "time_based_map_page_title": "Time based map",
+  "time_based_map_page_description": "Displays all buses locations on map based on user-given date, time & minutes range",
   "gaps_page_title": "Trips that didn't take place",
   "gaps_page_description": "Displays routes that did not take place according to schedule by user-given bus operator, route number. route & date",
   "gaps_patterns_page_title": "patterns",
@@ -139,8 +139,7 @@
   "order_by_severity": "by severity",
   "choose_dates": "Dates",
   "single_line_map_title": "Locations of selected lines",
-  "operatorSelectorOptions":
-  {
+  "operatorSelectorOptions": {
     "all": "all"
   },
   "reportBug": {

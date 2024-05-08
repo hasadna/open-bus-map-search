@@ -9,7 +9,7 @@ import { INPUT_SIZE } from 'src/resources/sizes'
 import { useTranslation } from 'react-i18next'
 import { SearchContext } from '../../model/pageState'
 import { NotFound } from '../components/NotFound'
-import { Point } from '../realtimeMap'
+import { Point } from '../timeBasedMap'
 import { BusStop } from 'src/model/busStop'
 import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
 import '../Map.scss'
@@ -121,7 +121,7 @@ const SingleLineMapPage = () => {
         {t('singleline_map_page_title')}
         <InfoYoutubeModal
           label={t('open_video_about_this_page')}
-          title={t('realtime_map_page_description')}
+          title={t('time_based_map_page_description')}
           videoUrl="https://www.youtube-nocookie.com/embed/bXg50_j_hTA?si=inyvqDylStvgNRA6&amp;start=93"
         />
       </Title>

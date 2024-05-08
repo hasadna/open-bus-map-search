@@ -8,7 +8,7 @@ export default class Selectors {
 
   constructor(page: Page) {
     this._operatorSelector = page.locator('#operator-select')
-    this._lineNumberSelector = page.getByPlaceholder('לדוגמא: 17א')
+    this._lineNumberSelector = page.getByPlaceholder('לדוגמה: 17א')
     this._routeSelector = page
       .locator('div')
       .filter({ hasText: /^בחירת מסלול נסיעה/ })
