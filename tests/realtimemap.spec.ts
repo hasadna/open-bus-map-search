@@ -10,7 +10,7 @@ test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
   })
   await page.goto('/')
 })
-test('realtime-map page', async ({ page }) => {
+test('time-based-map page', async ({ page }) => {
   await page.getByText('מפה לפי זמן', { exact: true }).click()
   await page.waitForURL(/map/)
   await page.getByRole('progressbar').waitFor({ state: 'hidden' })

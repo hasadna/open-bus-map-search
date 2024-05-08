@@ -43,7 +43,7 @@ interface Path {
 const fiveMinutesAgo = moment().subtract(5, 'minutes')
 const fourMinutesAgo = moment(fiveMinutesAgo).add(1, 'minutes')
 
-export default function RealtimeMapPage() {
+export default function TimeBasedMapPage() {
   const [isExpanded, setIsExpanded] = useState<boolean>(false)
   const toggleExpanded = useCallback(() => setIsExpanded((expanded) => !expanded), [])
 
@@ -98,7 +98,7 @@ export default function RealtimeMapPage() {
   return (
     <PageContainer className="map-container">
       <Title className="page-title" level={3}>
-        {t('realtime_map_page_title')}
+        {t('time_based_map_page_title')}
         <InfoYoutubeModal
           label={t('open_video_about_this_page')}
           title={t('youtube_modal_info_title')}
@@ -108,7 +108,7 @@ export default function RealtimeMapPage() {
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
         <Grid xs={12} className="hideOnMobile">
           <Space direction="vertical" size="middle" style={{ marginBottom: '22px' }}>
-            <Alert message={t('realtime_map_page_description')} type="info" />
+            <Alert message={t('time_based_map_page_description')} type="info" />
           </Space>
         </Grid>
         {/* from date */}

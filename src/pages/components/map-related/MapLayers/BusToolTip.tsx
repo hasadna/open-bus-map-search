@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Point } from 'src/pages/realtimeMap'
+import { Point } from 'src/pages/timeBasedMap'
 import { Button } from '@mui/material'
 import moment from 'moment-timezone'
 import './BusToolTip.scss'
