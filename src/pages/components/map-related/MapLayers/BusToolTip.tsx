@@ -19,7 +19,7 @@ export function BusToolTip({ position, icon }: BusToolTipProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [showJson, setShowJson] = useState(false)
   const [expanded, setExpanded] = useState(false)
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
 
   useEffect(() => {
     setIsLoading(true)
@@ -33,7 +33,10 @@ export function BusToolTip({ position, icon }: BusToolTipProps) {
   }, [position])
 
   return (
-    <div className={cn({ 'extend-for-json': showJson }, 'bus-tooltip')}>
+    <div
+      className={cn({ 'extend-for-json': showJson }, 'bus-tooltip', {
+        hebrew: i18n.language === 'he',
+      })}>
       {isLoading || !siriRide ? (
         <div className="loading">
           <span>{t('loading_routes')}</span>
@@ -82,6 +85,7 @@ export function BusToolTip({ position, icon }: BusToolTipProps) {
           </ul>
           <ExpandMore
             expand={expanded}
+            language={i18n.language}
             onClick={() => setExpanded(!expanded)}
             aria-expanded={expanded}
             aria-label="show more"
@@ -99,7 +103,9 @@ export function BusToolTip({ position, icon }: BusToolTipProps) {
                 <span>{position.loc.join(' ,')}</span>
               </li>
             </ul>
-            <Button sx={{ paddingLeft: 0 }} onClick={() => setShowJson((showJson) => !showJson)}>
+            <Button
+              sx={i18n.language === 'he' ? { paddingLeft: 0 } : { paddingRight: 0 }}
+              onClick={() => setShowJson((showJson) => !showJson)}>
               {showJson ? t('hide_document') : t('show_document')}
             </Button>
             {showJson && (
