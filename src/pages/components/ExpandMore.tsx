@@ -5,19 +5,20 @@ import { ExpandMore as ExpandMoreIcon } from '@mui/icons-material'
 
 interface ExpandMoreProps extends IconButtonProps {
   expand: boolean
+  language: string
 }
 
 export const ExpandMore = styled((props: ExpandMoreProps) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { expand, ...other } = props
+  const { expand, language, ...other } = props
   return (
-    <IconButton sx={{ left: '-1rem' }} {...other}>
+    <IconButton {...other}>
       <ExpandMoreIcon />
     </IconButton>
   )
-})(({ theme, expand }) => ({
+})(({ theme, expand, language }) => ({
   transform: !expand ? 'rotate(0deg)' : 'rotate(180deg)',
-  marginLeft: 'auto',
+  right: language === 'he' ? '1rem' : '-1rem',
   transition: theme.transitions.create('transform', {
     duration: theme.transitions.duration.shortest,
   }),

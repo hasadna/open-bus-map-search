@@ -82,7 +82,7 @@
   "github_link": "למעבר אל GitHub",
   "dark_mode_tooltip": "עבור למצב חשוך",
   "light_mode_tooltip": "עבור למצב בהיר",
-  "Change Language": "Englesh",
+  "Change Language": "English",
   "bug_title": "כותרת/סיכום",
   "bug_title_message": "אנא הזן כותרת/סיכום!",
   "bug_description": "תיאור",
@@ -126,7 +126,21 @@
   "show_document": "הצג מידע לגיקים",
   "lineProfile": {
     "title": "פרופיל קו",
-    "notFound": "לא הצלחנו למצוא את הקו שחיפשת :("
+    "notFound": "לא הצלחנו למצוא את הקו שחיפשת :(",
+    "id": "מזהה טכני",
+    "date": "תאריך",
+    "lineReference": "מזהה קו",
+    "operatorReference": "מזהה חברה מפעילה",
+    "agencyName": "שם נפה",
+    "route": {
+      "shortName": "מס' קו",
+      "start": "מוצא",
+      "end": "יעד",
+      "mkt": "מק\"ט קו",
+      "direction": "כיוון קו",
+      "alternative": "חלופה מס'",
+      "type": "סוג קו"
+    }
   },
   "errorPage": {
     "title": "אופס, משהו השתבש",
