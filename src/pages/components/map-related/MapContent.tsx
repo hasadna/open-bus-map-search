@@ -1,24 +1,14 @@
-import { MapContainer, Marker, Polyline, Popup, TileLayer, useMap } from 'react-leaflet'
-import { Icon, IconOptions, LatLngTuple } from 'leaflet'
+import { MapContainer, Marker, Polyline, Popup, TileLayer } from 'react-leaflet'
+import { Icon, IconOptions } from 'leaflet'
 import { useAgencyList } from 'src/api/agencyList'
-import { Point } from 'src/pages/timeBasedMap'
 import { busIcon, busIconPath } from '../utils/BusIcon'
 import { BusToolTip } from './MapLayers/BusToolTip'
-import { VehicleLocation } from 'src/model/vehicleLocation'
-import { useCallback, useEffect, useState } from 'react'
-import { Button } from 'antd'
-import { ExpandAltOutlined } from '@ant-design/icons'
-import { BusStop } from 'src/model/busStop'
 import { t } from 'i18next'
 import '../../Map.scss'
 import { MapIndex, MapProps, RecenterOnDataChange, position } from './MapWithLocationsAndPath'
 
-
-
 export function MapContent({ positions, plannedRouteStops }: MapProps) {
   const agencyList = useAgencyList()
-  // const [isExpanded, setIsExpanded] = useState<boolean>(false)
-  // const toggleExpanded = useCallback(() => setIsExpanded((expanded) => !expanded), [])
 
   const getIcon = (path: string, width: number = 10, height: number = 10): Icon<IconOptions> => {
     return new Icon<IconOptions>({
