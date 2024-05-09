@@ -1,13 +1,16 @@
-import { MapContainer, Marker, Polyline, Popup, TileLayer } from 'react-leaflet'
+import { Marker, Polyline, Popup, TileLayer } from 'react-leaflet'
 import { Icon, IconOptions } from 'leaflet'
 import { useAgencyList } from 'src/api/agencyList'
 import { busIcon, busIconPath } from '../utils/BusIcon'
 import { BusToolTip } from './MapLayers/BusToolTip'
 import { t } from 'i18next'
 import '../../Map.scss'
-import { MapIndex, MapProps, RecenterOnDataChange, position } from './MapWithLocationsAndPath'
+import { MapIndex, MapProps } from './MapWithLocationsAndPath'
+import { useRecenterOnDataChange } from './useRecenterOnDataChange'
 
 export function MapContent({ positions, plannedRouteStops }: MapProps) {
+  useRecenterOnDataChange({ positions, plannedRouteStops })
+
   const agencyList = useAgencyList()
 
   const getIcon = (path: string, width: number = 10, height: number = 10): Icon<IconOptions> => {
@@ -25,7 +28,7 @@ export function MapContent({ positions, plannedRouteStops }: MapProps) {
   const plannedRouteStopMarker = getIcon(plannedRouteStopMarkerPath, 20, 25)
 
   return (
-    <MapContainer center={position.loc} zoom={13} scrollWheelZoom={true}>
+    <>
       <TileLayer
         attribution='&copy <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
@@ -85,7 +88,6 @@ export function MapContent({ positions, plannedRouteStops }: MapProps) {
           positions={positions.map((position) => position.loc)}
         />
       )}
-      <RecenterOnDataChange positions={positions} plannedRouteStops={plannedRouteStops} />
-    </MapContainer>
+    </>
   )
 }

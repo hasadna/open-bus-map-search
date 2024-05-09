@@ -1,7 +1,8 @@
-import { useMap } from 'react-leaflet'
+import { MapContainer, useMap } from 'react-leaflet'
 import { LatLngTuple } from 'leaflet'
 import { Point } from 'src/pages/timeBasedMap'
 import { MapContent } from './MapContent'
+
 import { VehicleLocation } from 'src/model/vehicleLocation'
 import { useCallback, useEffect, useState } from 'react'
 import { Button } from 'antd'
@@ -39,7 +40,9 @@ export function MapWithLocationsAndPath({ positions, plannedRouteStops }: MapPro
         onClick={toggleExpanded}
         icon={<ExpandAltOutlined />}
       />
-      <MapContent positions={positions} plannedRouteStops={plannedRouteStops} />
+      <MapContainer center={position.loc} zoom={13} scrollWheelZoom={true}>
+        <MapContent positions={positions} plannedRouteStops={plannedRouteStops} />
+      </MapContainer>
     </div>
   )
 }
