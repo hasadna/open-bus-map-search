@@ -4,6 +4,7 @@ import { useAgencyList } from 'src/api/agencyList'
 import { Point } from 'src/pages/timeBasedMap'
 import { busIcon, busIconPath } from '../utils/BusIcon'
 import { BusToolTip } from './MapLayers/BusToolTip'
+import { MapContent } from './MapContent'
 import { VehicleLocation } from 'src/model/vehicleLocation'
 import { useCallback, useEffect, useState } from 'react'
 import { Button } from 'antd'
@@ -12,7 +13,7 @@ import { BusStop } from 'src/model/busStop'
 import { t } from 'i18next'
 import '../../Map.scss'
 
-const position: Point = {
+export const position: Point = {
   loc: [32.3057988, 34.85478613], // arbitrary default value... Netanya - best city to live & die in
   color: 0,
 }
@@ -24,7 +25,7 @@ export interface Path {
   vehicleRef: number
 }
 
-interface MapProps {
+export interface MapProps {
   positions: Point[]
   plannedRouteStops: BusStop[]
 }
@@ -57,7 +58,11 @@ export function MapWithLocationsAndPath({ positions, plannedRouteStops }: MapPro
         onClick={toggleExpanded}
         icon={<ExpandAltOutlined />}
       />
-      <MapContainer center={position.loc} zoom={13} scrollWheelZoom={true}>
+      <MapContent positions={positions} plannedRouteStops={plannedRouteStops} />
+      {/* <MapContainer
+       center={position.loc} 
+      zoom={13} scrollWheelZoom={true}>
+       
         <TileLayer
           attribution='&copy <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
@@ -118,7 +123,7 @@ export function MapWithLocationsAndPath({ positions, plannedRouteStops }: MapPro
           />
         )}
         <RecenterOnDataChange positions={positions} plannedRouteStops={plannedRouteStops} />
-      </MapContainer>
+      </MapContainer> */}
     </div>
   )
 }
@@ -147,7 +152,7 @@ export function MapIndex({
   )
 }
 
-function RecenterOnDataChange({ positions, plannedRouteStops }: MapProps) {
+export function RecenterOnDataChange({ positions, plannedRouteStops }: MapProps) {
   const map = useMap()
 
   useEffect(() => {
