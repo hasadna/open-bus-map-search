@@ -131,7 +131,7 @@
     "date": "תאריך",
     "lineReference": "מזהה קו",
     "operatorReference": "מזהה חברה מפעילה",
-    "agencyName": "שם נפה",
+    "agencyName": "שם חברה מפעילה",
     "route": {
       "shortName": "מס' קו",
       "start": "מוצא",
