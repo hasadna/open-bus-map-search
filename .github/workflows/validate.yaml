@@ -31,7 +31,11 @@ jobs:
                 if npx madge --extensions js,ts --circular . 1>/dev/null 2>$err; then
                     if npm run test:unit 1>/dev/null 2>$err; then
                         exit 0
+                    else
+                        echo "::error file=package.json::npm run test:unit failed"
                     fi
+                else
+                    echo "::error file=package.json::npx madge --extensions js,ts --circular . failed"
                 fi
             fi
             if [ -s $err ]; then echo "::error ::$(head -n1 $err)"; fi
