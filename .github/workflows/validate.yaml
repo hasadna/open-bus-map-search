@@ -35,6 +35,7 @@ jobs:
             if ! npm ci; then
                 echo "::error file=package-lock.json::package-lock.json is not updated"
                 exit 1
+            fi
       - name: lint
         run: npm run lint
       - name: madge
