@@ -18,30 +18,29 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
-      - name: Run all the local tests
+      - name: make sure no yarn.json is added
         run: |
-            err=$(mktemp)
             if [ -f yarn.json ]; then
                 echo "::error file=yarn.json::yarn.json is being added"
-            elif [ ! -f package-lock.json ]; then
-                echo "::error file=package-lock.json::package-lock.json is being removed"
-            elif ! npm ci &> /dev/null; then
-                echo "::error file=package-lock.json::package-lock.json is not updated"
-            elif npm run lint 2>$err; then
-                if npx madge --extensions js,ts --circular . 2>$err; then
-                    if npm run test:unit 2>$err; then
-                        exit 0
-                    else
-                        echo "::error file=package.json::npm run test:unit failed"
-                    fi
-                else
-                    echo "::error file=package.json::npx madge --extensions js,ts --circular . failed"
-                fi
-            else
-                echo "::error file=package.json::npm run lint failed"
+                exit 1
             fi
-            if [ -s $err ]; then echo "::error ::$(head -n1 $err)"; fi
-            exit 1
+      - name: make sure no package-lock.json is removed
+        run: |
+            if [ ! -f package-lock.json ]; then
+                echo "::error file=package-lock.json::package-lock.json is being removed"
+                exit 1
+            fi
+      - name: make sure package-lock.json is updated
+        run: |
+            if ! npm ci; then
+                echo "::error file=package-lock.json::package-lock.json is not updated"
+                exit 1
+      - name: lint
+        run: npm run lint
+      - name: madge
+        run: npx madge --extensions js,ts --circular .
+      - name: unit tests
+        run: npm run test:unit
   build:
     runs-on: ubuntu-latest
     steps:
