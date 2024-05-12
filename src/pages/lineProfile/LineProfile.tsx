@@ -1,4 +1,3 @@
-import styled from 'styled-components'
 import Grid from '@mui/material/Unstable_Grid2'
 import { NotFound } from '../components/NotFound'
 import { PageContainer } from '../components/PageContainer'
@@ -113,20 +112,12 @@ const LineProfile = () => {
           </Widget>
         </Grid>
       </Grid>
-      <LineProfileMapContainer>
-        <MapWithLocationsAndPath
-          positions={filteredPositions}
-          plannedRouteStops={plannedRouteStops}
-        />
-      </LineProfileMapContainer>
+      <MapWithLocationsAndPath
+        positions={filteredPositions}
+        plannedRouteStops={plannedRouteStops}
+      />
     </div>
   )
 }
-
-const LineProfileMapContainer = styled.div`
-  .map-info {
-    height: 15rem;
-  }
-`
 
 export default LineProfileWrapper
