@@ -6,14 +6,15 @@ import { Route } from './Route.interface'
 
 type Props = Route
 
-const LineProfileHeader: React.FC<Props> = ({
+const LineProfileHeader = ({
   operator_ref,
   agency_name,
   route_short_name,
   route_long_name,
-}) => {
+}: Props) => {
   const { t } = useTranslation()
   const [firstRoute, secondRoute] = route_long_name.split('<->')
+
   return (
     <>
       <OperatorCard>
