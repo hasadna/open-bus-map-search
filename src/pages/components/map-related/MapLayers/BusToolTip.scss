@@ -4,9 +4,30 @@
 }
 
 .bus-tooltip {
+  height: 20rem;
+
   .loading {
     display: flex;
     gap: 1rem;
+  }
+
+  > .header {
+    max-height: 30%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+
+    img {
+      width: 50px;
+      height: 50px;
+    }
+  }
+
+  > .content {
+    max-height: 70%;
+    overflow-y: auto;
+    padding-left: 1rem;
   }
 
   ul {
@@ -16,22 +37,11 @@
 
     > li {
       font-weight: bold;
+      margin-bottom: 0.25rem;
 
       > span {
         font-weight: normal;
       }
-    }
-  }
-
-  > .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-
-    img {
-      width: 50px;
-      height: 50px;
     }
   }
 }
