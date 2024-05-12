@@ -5,8 +5,9 @@ import { busIcon, busIconPath } from '../utils/BusIcon'
 import { BusToolTip } from './MapLayers/BusToolTip'
 import { t } from 'i18next'
 import '../../Map.scss'
-import { MapIndex, MapProps } from './MapWithLocationsAndPath'
+import { MapProps } from './MapWithLocationsAndPath'
 import { useRecenterOnDataChange } from './useRecenterOnDataChange'
+import { MapIndex } from './MapIndex'
 
 export function MapContent({ positions, plannedRouteStops }: MapProps) {
   useRecenterOnDataChange({ positions, plannedRouteStops })
