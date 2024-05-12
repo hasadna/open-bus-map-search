@@ -5,7 +5,7 @@ import { busIcon, busIconPath } from '../utils/BusIcon'
 import { BusToolTip } from './MapLayers/BusToolTip'
 import { t } from 'i18next'
 import '../../Map.scss'
-import { MapProps } from './MapWithLocationsAndPath'
+import { MapProps } from './map-types'
 import { useRecenterOnDataChange } from './useRecenterOnDataChange'
 import { MapIndex } from './MapIndex'
 
