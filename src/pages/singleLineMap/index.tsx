@@ -1,7 +1,6 @@
 import moment from 'moment'
-import { useContext, useEffect, useMemo, useState } from 'react'
-import { getRoutesAsync, getStopsForRouteAsync } from 'src/api/gtfsService'
-import useVehicleLocations from 'src/api/useVehicleLocations'
+import { useContext, useEffect, useMemo } from 'react'
+import { getRoutesAsync } from 'src/api/gtfsService'
 import LineNumberSelector from 'src/pages/components/LineSelector'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
 import RouteSelector from 'src/pages/components/RouteSelector'
@@ -9,9 +8,7 @@ import { INPUT_SIZE } from 'src/resources/sizes'
 import { useTranslation } from 'react-i18next'
 import { SearchContext } from '../../model/pageState'
 import { NotFound } from '../components/NotFound'
-import { Point } from '../timeBasedMap'
-import { BusStop } from 'src/model/busStop'
-import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
+import Grid from '@mui/material/Unstable_Grid2'
 import '../Map.scss'
 import { DateSelector } from '../components/DateSelector'
 import { CircularProgress, Tooltip } from '@mui/material'
@@ -20,6 +17,7 @@ import { PageContainer } from '../components/PageContainer'
 import { MapWithLocationsAndPath } from '../components/map-related/MapWithLocationsAndPath'
 import Title from 'antd/es/typography/Title'
 import InfoYoutubeModal from '../components/YoutubeModal'
+import { useSingleLineData } from 'src/hooks/useSingleLineData'
 
 const SingleLineMapPage = () => {
   const { search, setSearch } = useContext(SearchContext)
@@ -53,67 +51,16 @@ const SingleLineMapPage = () => {
     [routes, routeKey],
   )
   const selectedRouteIds = selectedRoute?.routeIds
-  const { locations, isLoading: locationsIsLoading } = useVehicleLocations({
-    from: selectedRouteIds ? +new Date(timestamp).setHours(0, 0, 0, 0) : 0,
-    to: selectedRouteIds ? +new Date(timestamp).setHours(23, 59, 59, 999) : 0,
-    lineRef: selectedRoute?.lineRef ?? 0,
-    splitMinutes: 20,
-  })
 
-  const positions = useMemo(() => {
-    const pos = locations.map<Point>((location) => ({
-      loc: [location.lat, location.lon],
-      color: location.velocity,
-      operator: location.siri_route__operator_ref,
-      bearing: location.bearing,
-      recorded_at_time: new Date(location.recorded_at_time).getTime(),
-      point: location,
-    }))
-
-    return pos
-  }, [locations])
-
-  const options = useMemo(() => {
-    const options = positions
-      .map((position) => position.point?.siri_ride__scheduled_start_time) // get all start times
-      .filter((time, i, arr) => arr.indexOf(time) === i) // unique
-      .map((time) => new Date(time ?? 0).toLocaleTimeString()) // convert to strings
-      .map((time) => ({
-        // convert to options
-        value: time,
-        label: time,
-      }))
-    return options
-  }, [positions])
-
-  const [filteredPositions, setFilteredPositions] = useState<Point[]>([])
-  const [startTime, setStartTime] = useState<string>('00:00:00')
-  const [plannedRouteStops, setPlannedRouteStops] = useState<BusStop[]>([])
-
-  useEffect(() => {
-    if (startTime !== '00:00:00' && positions.length > 0) {
-      setFilteredPositions(
-        positions.filter(
-          (position) =>
-            new Date(position.point?.siri_ride__scheduled_start_time ?? 0).toLocaleTimeString() ===
-            startTime,
-        ),
-      )
-    }
-    if (startTime !== '00:00:00' && selectedRouteIds && selectedRouteIds.length > 0) {
-      const [hours, minutes] = startTime.split(':')
-      const startTimeTimestamp = +new Date(
-        positions[0].point?.siri_ride__scheduled_start_time ?? 0,
-      ).setHours(+hours, +minutes, 0, 0)
-      handlePlannedRouteStops(selectedRouteIds, startTimeTimestamp)
-    }
-  }, [startTime])
-
-  // this function fetch & set state of planned route stops by selected route ids & start time
-  const handlePlannedRouteStops = async (routeIds: number[], startTimeTs: number) => {
-    const stops = await getStopsForRouteAsync(routeIds, moment(startTimeTs))
-    setPlannedRouteStops(stops)
-  }
+  const {
+    positions,
+    filteredPositions,
+    locationsAreLoading,
+    options,
+    plannedRouteStops,
+    startTime,
+    setStartTime,
+  } = useSingleLineData(selectedRoute?.lineRef, selectedRouteIds)
 
   return (
     <PageContainer className="map-container">
@@ -153,6 +100,7 @@ const SingleLineMapPage = () => {
         </Grid>
         <Grid container spacing={2} xs={12} alignContent={'center'}>
           <Grid sm={6} xs={12}>
+            {/* choose route */}
             {routes &&
               (routes.length === 0 ? (
                 <NotFound>{t('line_not_found')}</NotFound>
@@ -164,11 +112,10 @@ const SingleLineMapPage = () => {
                 />
               ))}
           </Grid>
-          {/* choose route */}
           {positions && (
             <>
               <Grid sm={2} xs={12}>
-                {locationsIsLoading && (
+                {locationsAreLoading && (
                   <Tooltip title={t('loading_times_tooltip_content')}>
                     <CircularProgress />
                   </Tooltip>
