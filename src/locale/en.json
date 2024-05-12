@@ -114,6 +114,7 @@
   "velocity": "velocity",
   "kmh": "kmh",
   "sample_time": "sample time",
+  "at_time": "at",
   "vehicle_ref": "vehicle plate",
   "drive_direction": "drive direction",
   "bearing": "bearing",
