@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { BusToolTip, BusToolTipProps } from './BusToolTip'
+import { BrowserRouter } from 'react-router-dom'
 
 const meta = {
   title: 'Components/MapLayers/BusToolTip',
@@ -52,4 +53,10 @@ const defaultArgs: BusToolTipProps = {
 
 export const Default: Story = {
   args: defaultArgs,
+  // Wrap the component render function with BrowserRouter
+  render: (args) => (
+    <BrowserRouter>
+      <BusToolTip {...args} />
+    </BrowserRouter>
+  ),
 }

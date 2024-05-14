@@ -14,15 +14,12 @@ const ToggleThemeButton: React.FC<ToggleThemeButtonProps> = ({ toggleTheme, isDa
 
   return (
     <button
-      className="theme-icon"
+      className="header-link"
       onClick={toggleTheme}
       aria-label={tooltip_title}
-      title={tooltip_title}>
-      {isDarkTheme ? (
-        <BulbOutlined style={{ color: '#fff', fontSize: '1.5em' }} />
-      ) : (
-        <BulbFilled style={{ fontSize: '1.5em' }} />
-      )}
+      title={tooltip_title}
+      style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}>
+      {isDarkTheme ? <BulbOutlined className="bulb-dark" /> : <BulbFilled />}
     </button>
   )
 }

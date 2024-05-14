@@ -1,10 +1,19 @@
 import TimelinePage from '../src/test_pages/TimelinePage'
 import { getPastDate, test, urlMatcher } from './utils'
+import i18next from 'i18next'
+import Backend from 'i18next-fs-backend'
 
 test.describe('Timeline Page Tests', () => {
   let timelinePage: TimelinePage
 
   test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
+    await i18next.use(Backend).init({
+      lng: 'he',
+      backend: {
+        loadPath: 'src/locale/{{lng}}.json',
+      },
+    })
+
     await advancedRouteFromHAR('tests/HAR/timeline.har', {
       updateContent: 'embed',
       update: false,
@@ -15,7 +24,7 @@ test.describe('Timeline Page Tests', () => {
     timelinePage = new TimelinePage(page) // Initialize timelinePage before each test
     await timelinePage.setFakeTime(getPastDate())
     await page.goto('/')
-    await page.getByText('לוח זמנים היסטורי', { exact: true }).click()
+    await page.getByText(i18next.t('timeline_page_title'), { exact: true }).click()
     await page.getByRole('progressbar').waitFor({ state: 'hidden' })
     await timelinePage.validatePageUrl(/timeline/)
   })
@@ -84,7 +93,7 @@ test.describe('Timeline Page Tests', () => {
     await timelinePage.verifyRouteSelectionVisible(timelinePage.stationSelect, true, 3000)
   })
 
-  test.fixme('Test Verify no duplications in stations list', async () => {
+  test('Test Verify no duplications in stations list', async () => {
     await timelinePage.selectOperatorFromDropbox(
       timelinePage.operatorsDropDown,
       timelinePage.operatorsList,
@@ -103,28 +112,25 @@ test.describe('Timeline Page Tests', () => {
     // await timelinePage.verifyNoDuplications()
   })
 
-  test.fixme(
-    'Test choosing [Operator -> Line # -> Route -> Stop station] opens the timestamp graph',
-    async () => {
-      await timelinePage.selectOperatorFromDropbox(
-        timelinePage.operatorsDropDown,
-        timelinePage.operatorsList,
-        'אגד',
-      )
-      await timelinePage.fillLineNumber('1')
-      await timelinePage.verifyRouteSelectionVisible(timelinePage.routeSelect, true, 3000)
-      await timelinePage.selectOperatorFromDropbox(
-        timelinePage.routeSelect,
-        timelinePage.routeList,
-        'שדרות מנחם בגין/כביש 7-גדרה ⟵ שדרות מנחם בגין/כביש 7-גדרה  ',
-      )
-      await timelinePage.verifyRouteSelectionVisible(timelinePage.stationSelect, true)
-      await timelinePage.selectOperatorFromDropbox(
-        timelinePage.stationSelect,
-        timelinePage.stationList,
-        'חיים הרצוג/שדרות מנחם בגין (גדרה)',
-      )
-      await timelinePage.verifyRouteSelectionVisible(timelinePage.timelineGraph, true, 100000)
-    },
-  )
+  test('Test choosing [Operator -> Line # -> Route -> Stop station] opens the timestamp graph', async () => {
+    await timelinePage.selectOperatorFromDropbox(
+      timelinePage.operatorsDropDown,
+      timelinePage.operatorsList,
+      'אגד',
+    )
+    await timelinePage.fillLineNumber('1')
+    await timelinePage.verifyRouteSelectionVisible(timelinePage.routeSelect, true, 3000)
+    await timelinePage.selectOperatorFromDropbox(
+      timelinePage.routeSelect,
+      timelinePage.routeList,
+      'שדרות מנחם בגין/כביש 7-גדרה ⟵ שדרות מנחם בגין/כביש 7-גדרה  ',
+    )
+    await timelinePage.verifyRouteSelectionVisible(timelinePage.stationSelect, true)
+    await timelinePage.selectOperatorFromDropbox(
+      timelinePage.stationSelect,
+      timelinePage.stationList,
+      'חיים הרצוג/שדרות מנחם בגין (גדרה)',
+    )
+    await timelinePage.verifyRouteSelectionVisible(timelinePage.timelineGraph, true, 100000)
+  })
 })

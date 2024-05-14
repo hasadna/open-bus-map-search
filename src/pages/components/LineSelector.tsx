@@ -34,7 +34,7 @@ const LineSelector = ({ lineNumber, setLineNumber }: LineSelectorProps) => {
     <TextField
       className={textFieldClass}
       label={t('choose_line')}
-      type="number"
+      type="text"
       value={value && +value < 0 ? 0 : value}
       onChange={(e) => {
         setValue(e.target.value)

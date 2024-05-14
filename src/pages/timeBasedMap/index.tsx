@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { MapContainer, Marker, Polyline, Popup, TileLayer, useMap } from 'react-leaflet'
 import MarkerClusterGroup from 'react-leaflet-cluster'
 import { useTranslation } from 'react-i18next'
-import { Button, Spin, Typography } from 'antd'
+import { Button, Spin, Typography, Alert, Space } from 'antd'
 import { ExpandAltOutlined } from '@ant-design/icons'
 import moment from 'moment'
 import getAgencyList, { Agency } from 'src/api/agencyList'
@@ -20,6 +20,7 @@ import createClusterCustomIcon from '../components/utils/customCluster/customClu
 import { TimeSelector } from '../components/TimeSelector'
 import { busIcon, busIconPath } from '../components/utils/BusIcon'
 import { BusToolTip } from 'src/pages/components/map-related/MapLayers/BusToolTip'
+import InfoYoutubeModal from '../components/YoutubeModal'
 
 const { Title } = Typography
 
@@ -42,7 +43,7 @@ interface Path {
 const fiveMinutesAgo = moment().subtract(5, 'minutes')
 const fourMinutesAgo = moment(fiveMinutesAgo).add(1, 'minutes')
 
-export default function RealtimeMapPage() {
+export default function TimeBasedMapPage() {
   const [isExpanded, setIsExpanded] = useState<boolean>(false)
   const toggleExpanded = useCallback(() => setIsExpanded((expanded) => !expanded), [])
 
@@ -97,11 +98,18 @@ export default function RealtimeMapPage() {
   return (
     <PageContainer className="map-container">
       <Title className="page-title" level={3}>
-        {t('realtime_map_explanation').slice(0, 25)}
+        {t('time_based_map_page_title')}
+        <InfoYoutubeModal
+          label={t('open_video_about_this_page')}
+          title={t('youtube_modal_info_title')}
+          videoUrl="https://www.youtube-nocookie.com/embed/bXg50_j_hTA?si=t8PiTrTA1budRZg-&amp;start=150"
+        />
       </Title>
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
         <Grid xs={12} className="hideOnMobile">
-          <Label text={t('realtime_map_explanation')} />
+          <Space direction="vertical" size="middle" style={{ marginBottom: '22px' }}>
+            <Alert message={t('time_based_map_page_description')} type="info" />
+          </Space>
         </Grid>
         {/* from date */}
         <Grid xs={2} className="hideOnMobile">

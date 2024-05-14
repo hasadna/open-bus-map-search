@@ -27,7 +27,7 @@ module.exports = [
     },
   },
   {
-    settings: { 'import/resolver': { typescript: {} } },
+    settings: { 'import/resolver': { typescript: {} }, react: { version: 'detect' } },
     languageOptions: {
       parser: typescriptEslintParser,
       parserOptions: {
@@ -52,14 +52,13 @@ module.exports = [
       'react/react-in-jsx-scope': 'off',
       '@typescript-eslint/no-explicit-any': 'warn',
       // ...eslintPluginImport.configs.recommended.rules,
+      '@typescript-eslint/no-unsafe-call': 'off',
       '@typescript-eslint/no-unsafe-member-access': 'off',
-      '@typescript-eslint/no-unsafe-return': 'off',
       '@typescript-eslint/no-floating-promises': 'off',
       '@typescript-eslint/restrict-template-expressions': 'off',
       '@typescript-eslint/no-base-to-string': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
-      '@typescript-eslint/no-unsafe-argument': 'off',
-      "import/no-unused-modules": "error" ,
+      'import/no-unused-modules': 'error',
       'prettier/prettier': [
         'error',
         {
@@ -84,7 +83,7 @@ module.exports = [
       'storybook-static',
       'eslint.config.js',
       '.nx',
-      'jest.config.ts'
+      'jest.config.ts',
     ],
   },
 ]

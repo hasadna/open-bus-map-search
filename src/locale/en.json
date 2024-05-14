@@ -1,10 +1,16 @@
 {
-  "realtime_map_explanation": "Location data of buses collected in real time",
-  "timeline_page_title": "Historical timeline",
-  "realtime_map_page_title": "Real time map",
+  "dashboard_page_title": "Public transport operators according to planned trips",
+  "dashboard_page_description": "A graphic display of public transportation rides - ratio of successful actual rides / total rides scheduled. Grouped by bus operators (Egged, Dan, Metropolin etc)",
+  "timeline_page_title": "Trips History",
+  "timeline_page_description": "Displays actual vs scheduled stop times by user-given bus operator, route number & stop name",
+  "time_based_map_page_title": "Time based map",
+  "time_based_map_page_description": "Displays all buses locations on map based on user-given date, time & minutes range",
   "gaps_page_title": "Trips that didn't take place",
+  "gaps_page_description": "Displays routes that did not take place according to schedule by user-given bus operator, route number. route & date",
   "gaps_patterns_page_title": "patterns",
+  "gaps_patterns_page_description": "A graphic display of routes performed according to schedule, grouped by time of day\\severity, by user-given bus operator, route number, route & date",
   "singleline_map_page_title": "Map by line",
+  "singleline_map_page_description": "Display of bus route on map by user-given bus operator, route number, route, date & time",
   "choose_datetime": "Date and time",
   "choose_date": "Date",
   "choose_time": "Time",
@@ -35,14 +41,12 @@
   "ride_extra": "🧐 An unplanned trip",
   "ride_duped": "❇️ Double ride",
   "checkbox_only_gaps": "Only gaps",
-  "dashboard_page_title": "Public transport operators according to planned trips",
   "dashboard_tooltip_content": "A GPS is attached to every line in Israel that reports the location of the bus every few moments.\nSo what is a missed trip? This is a trip that was planned, but was not reported to have taken place in the GPS data. You can see it in the app for example, but when you wait at the station, it will never arrive",
   "worst_lines_page_title": "Least Efficient Lines",
   "rides_planned": "planned trips",
   "rides_history": "Trips History",
   "rides_actual": "Trips out",
   "dashboard_page_graph_title": "Exit percentages of total trips by time",
-  "gapspatterns_page_title": "Exit percentages of total trips",
   "from_date": "dated",
   "to_date": "Until",
   "watch_locations_in_range": "View bus locations within a range of",
@@ -76,7 +80,7 @@
   "github_link": "Go to GitHub",
   "dark_mode_tooltip": "Move to Dark mode",
   "light_mode_tooltip": "Move to Light mode",
-  "Change Language": "שנה שפה",
+  "Change Language": "עברית",
   "bug_title": "Title/Summary",
   "bug_title_message": "Please enter a title/summary!",
   "bug_description": "Description",
@@ -104,18 +108,37 @@
   "funding_paragraph": "The Databus project is developed by the Hasadna for public knowledge, by the contributions of volunteers, and based upon",
   "all_rides_completed": "All/Almost the rides are completed",
   "missing_rides": "Of the rides are missing",
-  "line": "line",
+  "line": "Line",
   "from": "from",
   "destination": "destination",
   "velocity": "velocity",
   "kmh": "kmh",
   "sample_time": "sample time",
+  "at_time": "at",
   "vehicle_ref": "vehicle plate",
   "drive_direction": "drive direction",
   "bearing": "bearing",
   "coords": "coords",
-  "hide_document": "hide document",
-  "show_document": "show document",
+  "hide_document": "Hide geeks data",
+  "show_document": "Show geeks data",
+  "lineProfile": {
+    "title": "Profile for Line",
+    "notFound": "We couldn't find the line you were looking for :(",
+    "id": "ID",
+    "date": "Date",
+    "lineReference": "Line Reference",
+    "operatorReference": "Operator Reference",
+    "agencyName": "Agency Name",
+    "route": {
+      "shortName": "Route Short Name",
+      "start": "Start",
+      "end": "End",
+      "mkt": "Route MKT",
+      "direction": "Route Direction",
+      "alternative": "Route Alternative",
+      "type": "Route Type"
+    }
+  },
   "aboutPage": {
     "title": "About us",
     "privacyText": "<0>Google Analytics</0> service is embedded in the website to analyze the usage patterns and positioning of the website in search engines. This code reveals to the operators of the service information regarding the behavior of the users. <1>Learn more</1> about the privacy policy of the service.",
@@ -135,8 +158,7 @@
   "order_by_severity": "by severity",
   "choose_dates": "Dates",
   "single_line_map_title": "Locations of selected lines",
-  "operatorSelectorOptions":
-  {
+  "operatorSelectorOptions": {
     "all": "all"
   },
   "reportBug": {
@@ -146,5 +168,7 @@
     "viewIssue": "View issue"
   },
   "plannedRoute": "Planned Route",
-  "actualRoute": "Actual Route"
+  "actualRoute": "Actual Route",
+  "youtube_modal_info_title": "Video tutorial (Hebrew)",
+  "open_video_about_this_page": "Open video about this page"
 }

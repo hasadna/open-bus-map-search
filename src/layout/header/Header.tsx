@@ -3,11 +3,12 @@ import { useContext } from 'react'
 import { LayoutContextInterface, LayoutCtx } from '../LayoutContext'
 import { useTheme } from '../ThemeContext'
 import { MenuOutlined } from '@ant-design/icons'
-import GitHubLink from './GitHubLink/GitHubLink'
 import './Header.css'
 import cn from 'classnames'
 import ToggleThemeButton from './ToggleThemeButton'
 import { DonationButton } from './DonationButton'
+import HeaderLinks from './HeaderLinks/HeaderLinks'
+import { LanguageToggle } from './LanguageToggle'
 
 const { Header } = Layout
 
@@ -18,9 +19,11 @@ const MainHeader = () => {
     <Header className={cn('main-header', { dark: isDarkTheme })}>
       <MenuOutlined onClick={() => setDrawerOpen(true)} className="hideOnDesktop" />
       <div style={{ flex: 1 }}>&nbsp;</div>
-      <GitHubLink />
-      <ToggleThemeButton toggleTheme={toggleTheme} isDarkTheme={isDarkTheme} />
-      <DonationButton />
+      <HeaderLinks>
+        <LanguageToggle />
+        <ToggleThemeButton toggleTheme={toggleTheme} isDarkTheme={isDarkTheme} />
+        <DonationButton />
+      </HeaderLinks>
     </Header>
   )
 }

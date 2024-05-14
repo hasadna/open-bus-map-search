@@ -23,22 +23,20 @@ export function DateSelector({ time, onChange, customLabel, minDate }: DataAndTi
   }, [error])
 
   return (
-    <>
-      <DatePicker
-        sx={{ width: '100%' }}
-        value={time}
-        onChange={(ts) => onChange(ts!)}
-        format="DD/MM/YYYY"
-        label={customLabel || t('choose_date')}
-        disableFuture
-        minDate={minDate}
-        onError={(err) => setError(err)}
-        slotProps={{
-          textField: {
-            helperText: errorMessage,
-          },
-        }}
-      />
-    </>
+    <DatePicker
+      sx={{ width: '100%' }}
+      value={time}
+      onChange={(ts) => onChange(ts!)}
+      format="DD/MM/YYYY"
+      label={customLabel || t('choose_date')}
+      disableFuture
+      minDate={minDate}
+      onError={(err) => setError(err)}
+      slotProps={{
+        textField: {
+          helperText: errorMessage,
+        },
+      }}
+    />
   )
 }

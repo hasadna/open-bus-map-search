@@ -1,6 +1,5 @@
 name: Complaint
-on:
-  pull_request:
+on: pull_request
 jobs:
   test-complaint:
     timeout-minutes: 60

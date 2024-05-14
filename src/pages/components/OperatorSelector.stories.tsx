@@ -1,7 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import '../../shared/shared.css'
-import OperatorSelector, { FilterOperatorOptions } from './OperatorSelector'
+import OperatorSelector from './OperatorSelector'
 import { useState } from 'react'
+import { MAJOR_OPERATORS } from 'src/model/operator'
 
 const OperatorSelectorStory = () => {
   const [operatorId, setOperatorId] = useState<string>()
@@ -12,17 +13,9 @@ const OperatorSelectorStory = () => {
       <OperatorSelector
         operatorId={operatorId}
         setOperatorId={setOperatorId}
-        filter={FilterOperatorOptions.MAJOR}></OperatorSelector>
+        filter={MAJOR_OPERATORS}></OperatorSelector>
       <h1>בחירת כל המפעילים</h1>
-      <OperatorSelector
-        operatorId={operatorId}
-        setOperatorId={setOperatorId}
-        filter={FilterOperatorOptions.ALL}></OperatorSelector>
-      <h1>בחירת המפעילים הרלוונטיים</h1>
-      <OperatorSelector
-        operatorId={operatorId}
-        setOperatorId={() => ''}
-        filter={FilterOperatorOptions.RELEVANT}></OperatorSelector>
+      <OperatorSelector operatorId={operatorId} setOperatorId={setOperatorId}></OperatorSelector>
     </div>
   )
 }

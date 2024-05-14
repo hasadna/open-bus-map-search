@@ -14,10 +14,11 @@ import { Alert, Typography } from 'antd'
 import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
 
 // Components
-import OperatorSelector, { FilterOperatorOptions } from 'src/pages/components/OperatorSelector'
+import OperatorSelector from 'src/pages/components/OperatorSelector'
 import DayTimeChart from './ArrivalByTimeChart/DayTimeChart'
 import AllLinesChart from './AllLineschart/AllLinesChart'
 import WorstLinesChart from './WorstLinesChart/WorstLinesChart'
+import InfoYoutubeModal from '../components/YoutubeModal'
 
 // Declarations
 const { Title } = Typography
@@ -32,9 +33,14 @@ const DashboardPage = () => {
   return (
     <PageContainer>
       <Title className="page-title" level={3}>
-        ביצועי תחבורה ציבורית
+        {t('dashboard_page_title')}
+        <InfoYoutubeModal
+          label="Open video about this page"
+          title={t('youtube_modal_info_title')}
+          videoUrl="https://www.youtube.com/embed/bXg50_j_hTA?si=4rpSZwMRbMomE4g1"
+        />
       </Title>
-      <Alert message="תפקוד תחבורה ציבורית לפי פרמטרים שונים" type="info" />
+      <Alert message={t('dashboard_page_description')} type="info" />
       {startDate > endDate ? (
         <Alert closable showIcon message={t('bug_date_alert')} type="error" />
       ) : null}
@@ -61,13 +67,8 @@ const DashboardPage = () => {
             />
           </Grid>
         </Grid>
-
         <Grid lg={6} xs={12}>
-          <OperatorSelector
-            operatorId={operatorId}
-            setOperatorId={setOperatorId}
-            filter={FilterOperatorOptions.MAJOR}
-          />
+          <OperatorSelector operatorId={operatorId} setOperatorId={setOperatorId} />
         </Grid>
       </Grid>
       <Grid container spacing={2} alignItems="flex-start">

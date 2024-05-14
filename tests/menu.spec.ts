@@ -15,13 +15,12 @@ test('menu', async ({ page }) => {
   await expect(page.locator('h1.sidebar-logo')).toContainText('דאטאבוס')
   const menuItemsInOrder = [
     'קיום נסיעות',
-    'לוח זמנים היסטורי',
-    'נסיעות שלא יצאו',
-    'דפוסי נסיעות שלא יצאו',
-    'מפה בזמן אמת',
+    'היסטוריית נסיעות',
+    'נסיעות שלא בוצעו',
+    'דפוסי נסיעות שלא בוצעו',
+    'מפה לפי זמן',
     'מפה לפי קו',
     'אודות',
-    'לתרומות',
   ]
   await expect(page.locator('ul > li a')).toContainText(menuItemsInOrder)
 })

@@ -12,12 +12,13 @@ export function parseTime(time: 'null'): null
 export function parseTime(time: Exclude<string, 'null'>): Moment
 
 export function parseTime(time: string): Moment | null {
+  if (time == 'null') return null
+
   const utcMoment: Moment = moment.utc(time).tz('Asia/Jerusalem')
-  if (time !== 'null' && utcMoment.isValid()) {
-    return utcMoment
-  } else {
-    return null
-  }
+
+  if (!utcMoment.isValid()) return null
+
+  return utcMoment
 }
 
 const USE_API = true

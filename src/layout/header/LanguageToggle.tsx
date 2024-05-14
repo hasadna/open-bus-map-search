@@ -1,7 +1,6 @@
 import { useReducer } from 'react'
 import { useTranslation } from 'react-i18next'
-import { EasterEgg } from './EasterEgg'
-import { Button } from '@mui/material'
+import { GlobalOutlined } from '@ant-design/icons'
 
 export const LanguageToggle = () => {
   const { t, i18n } = useTranslation()
@@ -12,13 +11,12 @@ export const LanguageToggle = () => {
   }, 'he')
 
   return (
-    <EasterEgg code="english">
-      <Button
-        onClick={handleChangeLanguage}
-        variant="contained"
-        style={{ margin: 'auto', display: 'block' }}>
-        {t('Change Language')}
-      </Button>
-    </EasterEgg>
+    <button
+      className="header-link"
+      onClick={handleChangeLanguage}
+      aria-label={t('Change Language')}
+      title={t('Change Language')}>
+      <GlobalOutlined />
+    </button>
   )
 }
