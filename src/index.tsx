@@ -4,7 +4,7 @@ import './index.css'
 import App from './App'
 import ReactGA from 'react-ga4'
 import './locale/allTranslations'
-import { QueryClient, QueryClientProvider } from 'react-query'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 ReactGA.initialize('G-0YRQT80GG1')
 
