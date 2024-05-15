@@ -1,10 +1,9 @@
 import { useEffect } from 'react'
 import { LatLngTuple } from 'leaflet'
 import { useMap } from 'react-leaflet'
-import { position } from './MapWithLocationsAndPath'
 import { MapProps } from './map-types'
 
-export function useRecenterOnDataChange({ positions, plannedRouteStops }: MapProps) {
+export function useRecenterOnDataChange({ positions, plannedRouteStops, position }: MapProps) {
   const map = useMap()
   const positionsSum = positions.reduce(
     (acc, { loc }) => [acc[0] + loc[0], acc[1] + loc[1]],
@@ -16,6 +15,8 @@ export function useRecenterOnDataChange({ positions, plannedRouteStops }: MapPro
   ]
   console.log('mean: ', mean)
   useEffect(() => {
-    map.setView(mean, map.getZoom(), { animate: true })
+    if (mean[0] || mean[1]) {
+      map.setView(mean, map.getZoom(), { animate: true })
+    }
   }, [positions, plannedRouteStops])
 }

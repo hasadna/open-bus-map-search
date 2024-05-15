@@ -9,8 +9,8 @@ import { MapProps } from './map-types'
 import { useRecenterOnDataChange } from './useRecenterOnDataChange'
 import { MapIndex } from './MapIndex'
 
-export function MapContent({ positions, plannedRouteStops }: MapProps) {
-  useRecenterOnDataChange({ positions, plannedRouteStops })
+export function MapContent({ positions, plannedRouteStops, position }: MapProps) {
+  useRecenterOnDataChange({ positions, plannedRouteStops, position })
 
   const agencyList = useAgencyList()
 

@@ -7,7 +7,7 @@ import { Button } from 'antd'
 import { ExpandAltOutlined } from '@ant-design/icons'
 import '../../Map.scss'
 
-export const position: Point = {
+const position: Point = {
   loc: [32.3057988, 34.85478613], // arbitrary default value... Netanya - best city to live & die in
   color: 0,
 }
@@ -26,7 +26,11 @@ export function MapWithLocationsAndPath({ positions, plannedRouteStops }: MapPro
         icon={<ExpandAltOutlined />}
       />
       <MapContainer center={position.loc} zoom={13} scrollWheelZoom={true}>
-        <MapContent positions={positions} plannedRouteStops={plannedRouteStops} />
+        <MapContent
+          positions={positions}
+          plannedRouteStops={plannedRouteStops}
+          position={position}
+        />
       </MapContainer>
     </div>
   )
