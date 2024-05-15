@@ -175,7 +175,7 @@ const Contributors = () => {
 
   return (
     <Widget>
-      <h2>{t('contributors')}</h2>
+      <h2>{t('aboutPage.contributors')}</h2>
       <ul>
         {isLoading && <p>Loading...</p>}
         {isError && <p>Error...</p>}
