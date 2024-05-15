@@ -153,7 +153,7 @@
     "contributors": "Contributors",
     "contributions": "Contributions",
     "contributorsText": "Databus is developed by the Public Knowledge Workshop, by the contributions of volunteers, and based upon",
-    "contributorsReadMore": "<1>Read more</1> about how you can contribute to the project"
+    "contributorsReadMore": "<0>Read more</0> about how you can contribute to the project"
   },
   "dashboard_page_graph_title_hour": "Percentage of rides out, by hour",
   "dashboard_page_graph_title_day": "Percentage of rides out, by day",
