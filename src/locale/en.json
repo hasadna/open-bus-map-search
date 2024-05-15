@@ -149,7 +149,8 @@
       "sadna": "Contact us",
       "slack": "Chat with us on Slack",
       "donations": "Servers cost money - help us continue to maintain and develop the project!"
-    }
+    },
+    "contributors": "Contributors"
   },
   "dashboard_page_graph_title_hour": "Percentage of rides out, by hour",
   "dashboard_page_graph_title_day": "Percentage of rides out, by day",
