@@ -15,8 +15,8 @@ export function FilterPositionsByStartTimeSelector({
   startTime,
   setStartTime,
 }: FilterPositionsByStartTimeSelectorProps) {
-  const valueFinned = options.find((option) => option.value === startTime)
-  const value = valueFinned ? valueFinned : null
+  const foundValue = options.find((option) => option.value === startTime)
+  const value = foundValue || null
 
   const { t } = useTranslation()
 

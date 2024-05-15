@@ -27,7 +27,7 @@ module.exports = [
     },
   },
   {
-    settings: { 'import/resolver': { typescript: {} } },
+    settings: { 'import/resolver': { typescript: {} }, react: { version: 'detect' } },
     languageOptions: {
       parser: typescriptEslintParser,
       parserOptions: {
