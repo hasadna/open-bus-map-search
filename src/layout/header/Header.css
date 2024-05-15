@@ -9,6 +9,28 @@
   background: #303230;
 }
 
+.theme-icon {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.1s;
+}
+
+.theme-icon:hover {
+  transform: scale(1.1);
+}
+
 .bulb-dark {
   color: #fff;
+}
+
+.close-modal-icon {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  cursor: pointer;
+  transition: all 0.1s;
+  border: none;
+  background: transparent;
+
 }
