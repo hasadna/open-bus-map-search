@@ -79,6 +79,12 @@ export const PAGES = [
     icon: <InfoCircleOutlined />,
     element: <About />,
   },
+  {
+    label: 'donate_title',
+    path: 'https://www.jgive.com/new/he/ils/donation-targets/3268#donation-modal',
+    icon: <DollarOutlined />,
+    element: null,
+  },
 ] as const
 
 export const HEADER_LINKS = [
