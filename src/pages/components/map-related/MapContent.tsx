@@ -92,3 +92,4 @@ export function MapContent({ positions, plannedRouteStops, position }: MapProps)
     </>
   )
 }
+
