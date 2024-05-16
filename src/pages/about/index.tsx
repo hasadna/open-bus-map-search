@@ -5,6 +5,8 @@ import Widget from 'src/shared/Widget'
 import { Space, Typography } from 'antd'
 
 import './About.scss'
+import { useQuery } from '@tanstack/react-query'
+
 const { Title } = Typography
 const pageName = 'aboutPage'
 const About = () => {
@@ -22,6 +24,7 @@ const About = () => {
         <Questions />
         <Funding />
         <Attributions />
+        <Contributors />
       </Space>
     </AboutStyle>
   )
@@ -167,6 +170,40 @@ const Attributions = () => {
   )
 }
 
+const Contributors = () => {
+  const { t } = useTranslation()
+  const { contributors, isLoading, isError } = useContributions()
+
+  return (
+    <Widget>
+      <h2>{t('aboutPage.contributors')}</h2>
+      <p>
+        {t('aboutPage.contributorsText')}
+        <br />
+        <Trans i18nKey="aboutPage.contributorsReadMore">
+          <a href="https://github.com/hasadna/open-bus-map-search/blob/main/CONTRIBUTING.md"></a>
+        </Trans>
+      </p>
+      <ul className="contributions">
+        {isLoading && <p>Loading...</p>}
+        {isError && <p>Error...</p>}
+        {contributors &&
+          contributors.map((author) => (
+            <li key={author.id}>
+              <a href={author.html_url}>
+                <h2>{author.login}</h2>
+                <img src={author.avatar_url} alt={author.login} />
+                <p>
+                  {author.contributions} {t('aboutPage.contributions')}
+                </p>
+              </a>
+            </li>
+          ))}
+      </ul>
+    </Widget>
+  )
+}
+
 const AboutStyle = styled.div`
   display: flex;
   flex-direction: column;
@@ -179,5 +216,82 @@ const AboutStyle = styled.div`
     }
   }
 `
+function useContributions(start: Date = new Date('2023-01-01'), end: Date = new Date()) {
+  const owner = 'hasadna'
+  const repos = [
+    'open-bus-map-search',
+    'open-bus-stride-api',
+    'open-bus-backend',
+    'open-bus-pipelines',
+    'open-bus-siri-requester',
+    'open-bus-gtfs-etl',
+    'open-bus-stride-etl',
+  ]
+
+  const apis = repos.map(
+    (repo) =>
+      `https://api.github.com/repos/${owner}/${repo}/contributors?order=desc&until=${end.toISOString()}&since=${start.toISOString()}`,
+  )
+
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['contributors'],
+    queryFn: () =>
+      Promise.all(
+        apis.map((api) =>
+          fetch(api)
+            .then((res) => res.json())
+            .catch(() => ({})),
+        ),
+      ),
+    gcTime: Infinity,
+    staleTime: 3 * 24 * 60 * 60 * 1000, // refresh the cached data every 3 days
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchOnMount: false,
+    networkMode: 'offlineFirst',
+  })
+
+  try {
+    const contributors = (data?.flat() as Author[])
+      // filter repos with no contributors
+      .filter(Boolean)
+      // filter out bots
+      .filter((a) => a.type === 'User')
+      // sort by contributions
+      .sort((a: Author, b: Author) => b.contributions - a.contributions)
+      .reduce(combineAuthor, [] as Author[])
+    return { contributors, isLoading, isError }
+  } catch (error) {
+    return { contributors: [] as const, isLoading: false, isError: true }
+  }
+}
+
+// sum contributions of the same user
+function combineAuthor(authors: Author[], author: Author) {
+  const sameUser = authors.find((a) => a.login === author.login)
+  if (!sameUser) {
+    authors.push(author)
+  } else {
+    sameUser.contributions += author.contributions
+  }
+  return authors
+}
+
+type Author = {
+  avatar_url: string
+  contributions: number
+  html_url: string
+  id: number
+  login: string
+  node_id: string
+  organizations_url: string
+  received_events_url: string
+  repos_url: string
+  site_admin: boolean
+  starred_url: string
+  subscriptions_url: string
+  type: string
+  url: string
+}
 
 export default About
