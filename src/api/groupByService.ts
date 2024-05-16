@@ -1,7 +1,7 @@
 import { BASE_PATH } from './apiConfig'
 import agencyList from 'open-bus-stride-client/agencies/agencyList'
 import { Moment } from 'moment'
-import { useQuery } from 'react-query'
+import { useQuery } from '@tanstack/react-query'
 
 type groupByField =
   | 'gtfs_route_date'
@@ -64,17 +64,15 @@ export type GroupByRes = Replace<
 >
 
 async function fetchGroupBy({
-  dateTo,
-  dateFrom,
+  dateToStr,
+  dateFromStr,
   groupBy,
 }: {
-  dateTo: Moment
-  dateFrom: Moment
+  dateToStr: string
+  dateFromStr: string
   groupBy: groupByFields
 }): Promise<GroupByRes[]> {
   // example: https://open-bus-stride-api.hasadna.org.il/gtfs_rides_agg/group_by?date_from=2023-01-27&date_to=2023-01-29&group_by=operator_ref
-  const dateToStr = dateTo.toISOString().split('T')[0]
-  const dateFromStr = dateFrom.toISOString().split('T')[0]
   const excludes = 'exclude_hour_from=23&exclude_hour_to=2'
 
   const response = await fetch(
@@ -102,10 +100,12 @@ export function useGroupBy({
   dateFrom: Moment
   groupBy: groupByFields
 }) {
-  const { isLoading, isError, data, error } = useQuery(
-    ['groupBy', dateFrom.toISOString(), dateTo.toISOString(), groupBy],
-    () => fetchGroupBy({ dateTo, dateFrom, groupBy }),
-  )
+  const dateToStr = dateTo.toISOString().split('T')[0]
+  const dateFromStr = dateFrom.toISOString().split('T')[0]
+  const { isLoading, isError, data, error } = useQuery({
+    queryKey: ['groupBy', dateToStr, dateFromStr, groupBy],
+    queryFn: () => fetchGroupBy({ dateToStr, dateFromStr, groupBy }),
+  })
 
   return [data ? data : [], isLoading, isError ? error : null] as const
 }

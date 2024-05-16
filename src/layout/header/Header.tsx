@@ -6,6 +6,7 @@ import { MenuOutlined } from '@ant-design/icons'
 import './Header.css'
 import cn from 'classnames'
 import ToggleThemeButton from './ToggleThemeButton'
+import { DonationButton } from './DonationButton'
 import HeaderLinks from './HeaderLinks/HeaderLinks'
 import { LanguageToggle } from './LanguageToggle'
 
@@ -21,6 +22,7 @@ const MainHeader = () => {
       <HeaderLinks>
         <LanguageToggle />
         <ToggleThemeButton toggleTheme={toggleTheme} isDarkTheme={isDarkTheme} />
+        <DonationButton />
       </HeaderLinks>
     </Header>
   )

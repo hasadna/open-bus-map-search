@@ -6,3 +6,27 @@ ul {
 li img {
     width: 1.9em;
 }
+
+.contributions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    justify-content: flex-start;
+
+    > li {
+        margin: 0.5em;
+        text-align: center;
+
+        h2 {
+            max-width: 7em;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        img {
+            border-radius: 50%;
+            width: 10em;
+        }
+    }
+}
