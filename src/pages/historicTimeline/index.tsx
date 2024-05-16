@@ -15,7 +15,10 @@ import RouteSelector from 'src/pages/components/RouteSelector'
 import { Label } from 'src/pages/components/Label'
 import { useTranslation } from 'react-i18next'
 import StopSelector from 'src/pages/components/StopSelector'
-import { Spin, Typography, Alert, Space } from 'antd'
+import { Space } from 'antd'
+import Typography from '@mui/material/Typography';
+import Alert from '@mui/material/Alert';
+import CircularProgress from '@mui/material/CircularProgress';
 import { getSiriStopHitTimesAsync } from 'src/api/siriService'
 import { TimelineBoard } from 'src/pages/components/timeline/TimelineBoard'
 import { PageContainer } from '../components/PageContainer'
@@ -25,7 +28,6 @@ import moment from 'moment'
 import { DateSelector } from '../components/DateSelector'
 import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
 
-const { Title } = Typography
 
 const StyledTimelineBoard = styled(TimelineBoard)`
   margin-top: ${MARGIN_MEDIUM * 3}px;
@@ -140,10 +142,16 @@ const TimelinePage = () => {
 
   return (
     <PageContainer>
-      <Title level={3}>{t('timeline_page_title')}</Title>
-      <Space direction="vertical" size="middle" style={{ marginBottom: '22px' }}>
+      <Typography variant="h4" gutterBottom>{t('timeline_page_title')}</Typography>
+
+      {/* <Space direction="vertical" size="middle" style={{ marginBottom: '22px' }}>
         <Alert message={t('timeline_page_description')} type="info" />
-      </Space>
+      </Space> */}
+      {/* <Space direction="vertical" size="middle" style={{ marginBottom: '22px' }}> */}
+      <Alert severity="info" variant="outlined" sx={{ bgcolor: '#eaf5fe' }} icon={false}>
+        {t('timeline_page_description')}
+      </Alert>
+      {/* </Space> */}
 
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
         {/* choose date */}
@@ -183,7 +191,7 @@ const TimelinePage = () => {
           {routesIsLoading && (
             <Row>
               <Label text={t('loading_routes')} />
-              <Spin />
+              <CircularProgress />
             </Row>
           )}
           {!routesIsLoading &&
@@ -203,7 +211,7 @@ const TimelinePage = () => {
           {stopsIsLoading && (
             <Row>
               <Label text={t('loading_stops')} />
-              <Spin />
+              <CircularProgress />
             </Row>
           )}
           {!stopsIsLoading && stops && (
@@ -224,7 +232,7 @@ const TimelinePage = () => {
           {hitsIsLoading && (
             <Row>
               <Label text={t('loading_hits')} />
-              <Spin />
+              <CircularProgress />
             </Row>
           )}
         </Grid>

@@ -1,7 +1,9 @@
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Form, Input, Button, Upload, message, Select, FormProps, Card } from 'antd'
-import { UploadOutlined } from '@ant-design/icons'
+import { Form, Input, Button, Upload, message, Select, FormProps } from 'antd'
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import FileUploadOutlinedIcon from '@mui/icons-material/FileUploadOutlined';
 import axios from 'axios'
 import './BugReportForm.scss'
 import { UploadChangeParam, UploadFile } from 'antd/lib/upload'
@@ -65,6 +67,7 @@ const BugReportForm = () => {
 
   return (
     <Card className="bug-report-form-container">
+       <CardContent>
       <h1 className="logo">
         דאטאבוס
         <InfoYoutubeModal
@@ -165,7 +168,7 @@ const BugReportForm = () => {
             listType="picture"
             fileList={fileList}
             onChange={onFileChange}>
-            <Button icon={<UploadOutlined />}>{t('bug_attachments_upload_button')}</Button>
+            <Button icon={<FileUploadOutlinedIcon fontSize='small'/>}>{t('bug_attachments_upload_button')}</Button>
           </Upload>
         </Form.Item>
 
@@ -175,6 +178,7 @@ const BugReportForm = () => {
           </Button>
         </Form.Item>
       </Form>
+      </CardContent>
     </Card>
   )
 }

@@ -6,8 +6,8 @@ import { busIcon, busIconPath } from '../utils/BusIcon'
 import { BusToolTip } from './MapLayers/BusToolTip'
 import { VehicleLocation } from 'src/model/vehicleLocation'
 import { useCallback, useEffect, useState } from 'react'
-import { Button } from 'antd'
-import { ExpandAltOutlined } from '@ant-design/icons'
+import IconButton from '@mui/material/IconButton';
+import OpenInFullRoundedIcon from '@mui/icons-material/OpenInFullRounded';
 import { BusStop } from 'src/model/busStop'
 import { t } from 'i18next'
 import '../../Map.scss'
@@ -50,13 +50,14 @@ export function MapWithLocationsAndPath({ positions, plannedRouteStops }: MapPro
 
   return (
     <div className={`map-info ${isExpanded ? 'expanded' : 'collapsed'}`}>
-      <Button
-        type="primary"
+      <IconButton
+        color="primary"
         className="expand-button"
-        shape="circle"
         onClick={toggleExpanded}
-        icon={<ExpandAltOutlined />}
-      />
+      >
+        <OpenInFullRoundedIcon fontSize="large"/>
+      </IconButton>
+
       <MapContainer center={position.loc} zoom={13} scrollWheelZoom={true}>
         <TileLayer
           attribution='&copy <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

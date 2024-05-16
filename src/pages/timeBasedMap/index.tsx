@@ -2,8 +2,12 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { MapContainer, Marker, Polyline, Popup, TileLayer, useMap } from 'react-leaflet'
 import MarkerClusterGroup from 'react-leaflet-cluster'
 import { useTranslation } from 'react-i18next'
-import { Button, Spin, Typography, Alert, Space } from 'antd'
-import { ExpandAltOutlined } from '@ant-design/icons'
+// import { Space } from 'antd'
+import Alert from '@mui/material/Alert';
+import Typography from '@mui/material/Typography';
+import CircularProgress from '@mui/material/CircularProgress';
+import IconButton from '@mui/material/IconButton';
+import OpenInFullRoundedIcon from '@mui/icons-material/OpenInFullRounded';
 import moment from 'moment'
 import getAgencyList, { Agency } from 'src/api/agencyList'
 import useVehicleLocations from 'src/api/useVehicleLocations'
@@ -21,8 +25,6 @@ import { TimeSelector } from '../components/TimeSelector'
 import { busIcon, busIconPath } from '../components/utils/BusIcon'
 import { BusToolTip } from 'src/pages/components/map-related/MapLayers/BusToolTip'
 import InfoYoutubeModal from '../components/YoutubeModal'
-
-const { Title } = Typography
 
 export interface Point {
   loc: [number, number]
@@ -97,19 +99,21 @@ export default function TimeBasedMapPage() {
 
   return (
     <PageContainer className="map-container">
-      <Title className="page-title" level={3}>
+      <Typography variant="h4" className="page-title" >
         {t('time_based_map_page_title')}
         <InfoYoutubeModal
           label={t('open_video_about_this_page')}
           title={t('youtube_modal_info_title')}
           videoUrl="https://www.youtube-nocookie.com/embed/bXg50_j_hTA?si=t8PiTrTA1budRZg-&amp;start=150"
         />
-      </Title>
+      </Typography>
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
         <Grid xs={12} className="hideOnMobile">
-          <Space direction="vertical" size="middle" style={{ marginBottom: '22px' }}>
-            <Alert message={t('time_based_map_page_description')} type="info" />
-          </Space>
+          {/* <Space direction="vertical" size="middle" style={{ marginBottom: '22px' }}> */}
+            <Alert severity="info" variant="outlined" sx={{ bgcolor: '#eaf5fe' }} icon={false}>
+              {t('time_based_map_page_description')}
+            </Alert>
+          {/* </Space> */}
         </Grid>
         {/* from date */}
         <Grid xs={2} className="hideOnMobile">
@@ -161,16 +165,16 @@ export default function TimeBasedMapPage() {
               .replace('YYY', moment(to).format('hh:mm A'))}
           </p>
         </Grid>
-        <Grid xs={1}>{isLoading && <Spin size="small" />}</Grid>
+        <Grid xs={1}>{isLoading && <CircularProgress size="20px" />}</Grid>
       </Grid>
       <div className={`map-info ${isExpanded ? 'expanded' : 'collapsed'}`}>
-        <Button
-          type="primary"
-          className="expand-button"
-          shape="circle"
-          onClick={toggleExpanded}
-          icon={<ExpandAltOutlined />}
-        />
+      <IconButton
+        color="primary"
+        className="expand-button"
+        onClick={toggleExpanded}
+      >
+        <OpenInFullRoundedIcon fontSize="large"/>
+      </IconButton>
         <MapContainer center={position.loc} zoom={8} scrollWheelZoom={true}>
           <TileLayer
             attribution='&copy <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

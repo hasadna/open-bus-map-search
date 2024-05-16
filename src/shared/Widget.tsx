@@ -1,7 +1,8 @@
-import { Card } from 'antd'
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
 
 const Widget = (props: { children: React.ReactNode }) => {
-  return <Card>{props.children}</Card>
+  return <Card > <CardContent>{props.children} </CardContent></Card>
 }
 
 export default Widget
