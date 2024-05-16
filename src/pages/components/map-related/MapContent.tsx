@@ -9,6 +9,7 @@ import { MapProps } from './map-types'
 import { useRecenterOnDataChange } from './useRecenterOnDataChange'
 import { MapIndex } from './MapIndex'
 
+
 export function MapContent({ positions, plannedRouteStops, position }: MapProps) {
   useRecenterOnDataChange({ positions, plannedRouteStops, position })
 
