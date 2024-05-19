@@ -79,6 +79,7 @@ https://github.com/hasadna/open-bus-map-search/blob/main/src/model/busStop.ts#L4
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/YuvalMasada"><img src="https://avatars.githubusercontent.com/u/5049780?v=4?s=100" width="100px;" alt="Yuval"/><br /><sub><b>Yuval</b></sub></a><br /><a href="#code-YuvalMasada" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Haswell-s"><img src="https://avatars.githubusercontent.com/u/62185136?v=4?s=100" width="100px;" alt="Haswell-s"/><br /><sub><b>Haswell-s</b></sub></a><br /><a href="#code-Haswell-s" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/itsoriki"><img src="https://avatars.githubusercontent.com/u/93577239?v=4?s=100" width="100px;" alt="Ori Hazan"/><br /><sub><b>Ori Hazan</b></sub></a><br /><a href="#code-itsoriki" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/dorinzrihen"><img src="https://avatars.githubusercontent.com/u/20385035?v=4?s=100" width="100px;" alt="dorinzrihen"/><br /><sub><b>dorinzrihen</b></sub></a><br /><a href="#code-dorinzrihen" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
