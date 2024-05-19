@@ -37,7 +37,7 @@ export function Logo() {
         <circle className="st0" cx="3442.6" cy="1960.6" r="65.8" />
         <circle className="st0" cx="3223.9" cy="2225.35" r="65.8" />
       </svg>
-      דאטאבוס
+      <span>דאטאבוס</span>
     </h1>
   )
 }
