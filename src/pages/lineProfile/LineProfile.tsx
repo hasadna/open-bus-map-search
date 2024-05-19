@@ -18,7 +18,7 @@ import { BusRoute } from 'src/model/busRoute'
 import { useSingleLineData } from 'src/hooks/useSingleLineData'
 import { FilterPositionsByStartTimeSelector } from '../components/FilterPositionsByStartTimeSelector'
 import { Tooltip } from 'antd'
-import CircularProgress from '@mui/material/CircularProgress';
+import CircularProgress from '@mui/material/CircularProgress'
 import './LineProfile.scss'
 
 const LineProfileWrapper = () => (

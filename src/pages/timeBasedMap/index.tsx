@@ -2,12 +2,11 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { MapContainer, Marker, Polyline, Popup, TileLayer, useMap } from 'react-leaflet'
 import MarkerClusterGroup from 'react-leaflet-cluster'
 import { useTranslation } from 'react-i18next'
-// import { Space } from 'antd'
-import Alert from '@mui/material/Alert';
-import Typography from '@mui/material/Typography';
-import CircularProgress from '@mui/material/CircularProgress';
-import IconButton from '@mui/material/IconButton';
-import OpenInFullRoundedIcon from '@mui/icons-material/OpenInFullRounded';
+import Alert from '@mui/material/Alert'
+import Typography from '@mui/material/Typography'
+import CircularProgress from '@mui/material/CircularProgress'
+import IconButton from '@mui/material/IconButton'
+import OpenInFullRoundedIcon from '@mui/icons-material/OpenInFullRounded'
 import moment from 'moment'
 import getAgencyList, { Agency } from 'src/api/agencyList'
 import useVehicleLocations from 'src/api/useVehicleLocations'
@@ -99,7 +98,7 @@ export default function TimeBasedMapPage() {
 
   return (
     <PageContainer className="map-container">
-      <Typography variant="h4" className="page-title" >
+      <Typography variant="h4" className="page-title">
         {t('time_based_map_page_title')}
         <InfoYoutubeModal
           label={t('open_video_about_this_page')}
@@ -109,11 +108,9 @@ export default function TimeBasedMapPage() {
       </Typography>
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
         <Grid xs={12} className="hideOnMobile">
-          {/* <Space direction="vertical" size="middle" style={{ marginBottom: '22px' }}> */}
-            <Alert severity="info" variant="outlined" sx={{ bgcolor: '#eaf5fe' }} icon={false}>
-              {t('time_based_map_page_description')}
-            </Alert>
-          {/* </Space> */}
+          <Alert severity="info" variant="outlined" sx={{ bgcolor: '#eaf5fe' }} icon={false}>
+            {t('time_based_map_page_description')}
+          </Alert>
         </Grid>
         {/* from date */}
         <Grid xs={2} className="hideOnMobile">
@@ -168,13 +165,9 @@ export default function TimeBasedMapPage() {
         <Grid xs={1}>{isLoading && <CircularProgress size="20px" />}</Grid>
       </Grid>
       <div className={`map-info ${isExpanded ? 'expanded' : 'collapsed'}`}>
-      <IconButton
-        color="primary"
-        className="expand-button"
-        onClick={toggleExpanded}
-      >
-        <OpenInFullRoundedIcon fontSize="large"/>
-      </IconButton>
+        <IconButton color="primary" className="expand-button" onClick={toggleExpanded}>
+          <OpenInFullRoundedIcon fontSize="large" />
+        </IconButton>
         <MapContainer center={position.loc} zoom={8} scrollWheelZoom={true}>
           <TileLayer
             attribution='&copy <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

@@ -6,8 +6,8 @@ import { busIcon, busIconPath } from '../utils/BusIcon'
 import { BusToolTip } from './MapLayers/BusToolTip'
 import { VehicleLocation } from 'src/model/vehicleLocation'
 import { useCallback, useEffect, useState } from 'react'
-import IconButton from '@mui/material/IconButton';
-import OpenInFullRoundedIcon from '@mui/icons-material/OpenInFullRounded';
+import IconButton from '@mui/material/IconButton'
+import OpenInFullRoundedIcon from '@mui/icons-material/OpenInFullRounded'
 import { BusStop } from 'src/model/busStop'
 import { t } from 'i18next'
 import '../../Map.scss'
@@ -50,12 +50,8 @@ export function MapWithLocationsAndPath({ positions, plannedRouteStops }: MapPro
 
   return (
     <div className={`map-info ${isExpanded ? 'expanded' : 'collapsed'}`}>
-      <IconButton
-        color="primary"
-        className="expand-button"
-        onClick={toggleExpanded}
-      >
-        <OpenInFullRoundedIcon fontSize="large"/>
+      <IconButton color="primary" className="expand-button" onClick={toggleExpanded}>
+        <OpenInFullRoundedIcon fontSize="large" />
       </IconButton>
 
       <MapContainer center={position.loc} zoom={13} scrollWheelZoom={true}>

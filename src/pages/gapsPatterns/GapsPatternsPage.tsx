@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from 'react'
 import './GapsPatternsPage.scss'
 import { Moment } from 'moment'
 import { Skeleton, Radio, RadioChangeEvent, Space } from 'antd'
-import CircularProgress from '@mui/material/CircularProgress';
+import CircularProgress from '@mui/material/CircularProgress'
 import moment from 'moment/moment'
 import { useDate } from '../components/DateTimePicker'
 import { PageContainer } from '../components/PageContainer'
@@ -15,8 +15,8 @@ import RouteSelector from '../components/RouteSelector'
 import { SearchContext } from '../../model/pageState'
 import { getRoutesAsync } from '../../api/gtfsService'
 import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
-import Typography from '@mui/material/Typography';
-import Alert from '@mui/material/Alert';
+import Typography from '@mui/material/Typography'
+import Alert from '@mui/material/Alert'
 import {
   Bar,
   CartesianGrid,
@@ -190,7 +190,7 @@ const GapsPatternsPage = () => {
         </Alert>
       </Space>
       {startDate > endDate ? (
-        <Alert severity="error" variant="outlined" sx={{ bgcolor: '#feeaea' }} >
+        <Alert severity="error" variant="outlined" sx={{ bgcolor: '#feeaea' }}>
           {t('bug_date_alert')}
         </Alert>
       ) : null}

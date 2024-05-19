@@ -10,8 +10,8 @@ import './DashboardPage.scss'
 import 'src/App.scss'
 import { PageContainer } from '../components/PageContainer'
 import { useTranslation } from 'react-i18next'
-import Typography from '@mui/material/Typography';
-import Alert from '@mui/material/Alert';
+import Typography from '@mui/material/Typography'
+import Alert from '@mui/material/Alert'
 import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
 
 // Components
@@ -40,12 +40,12 @@ const DashboardPage = () => {
           videoUrl="https://www.youtube.com/embed/bXg50_j_hTA?si=4rpSZwMRbMomE4g1"
         />
       </Typography>
-       <Alert severity="info" variant="outlined" sx={{ bgcolor: '#eaf5fe' }} icon={false}>
+      <Alert severity="info" variant="outlined" sx={{ bgcolor: '#eaf5fe' }} icon={false}>
         {t('dashboard_page_description')}
       </Alert>
       {startDate > endDate ? (
-        <Alert severity="error" variant="outlined" sx={{ bgcolor: '#feeaea' }} >
-           {t('bug_date_alert')}
+        <Alert severity="error" variant="outlined" sx={{ bgcolor: '#feeaea' }}>
+          {t('bug_date_alert')}
         </Alert>
       ) : null}
       <Grid

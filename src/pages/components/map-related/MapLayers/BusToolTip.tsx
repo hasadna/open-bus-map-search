@@ -7,7 +7,7 @@ import './BusToolTip.scss'
 import { getSiriRideWithRelated } from 'src/api/siriService'
 import { SiriRideWithRelatedPydanticModel } from 'open-bus-stride-client/openapi/models/SiriRideWithRelatedPydanticModel'
 import { useTranslation } from 'react-i18next'
-import CircularProgress from '@mui/material/CircularProgress';
+import CircularProgress from '@mui/material/CircularProgress'
 import cn from 'classnames'
 import CustomTreeView from '../../CustomTreeView'
 

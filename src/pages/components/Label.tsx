@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import Typography from '@mui/material/Typography';
+import Typography from '@mui/material/Typography'
 
 const StyledDiv = styled.div`
   display: inline-flex;
@@ -15,6 +15,6 @@ type LabelProps = {
 
 export const Label = ({ text }: LabelProps) => (
   <StyledDiv>
-    <Typography >{text}</Typography>
+    <Typography>{text}</Typography>
   </StyledDiv>
 )

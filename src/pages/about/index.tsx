@@ -2,8 +2,8 @@ import styled from 'styled-components'
 import SlackIcon from '../../resources/slack-icon.svg'
 import { Trans, useTranslation } from 'react-i18next'
 import Widget from 'src/shared/Widget'
-import Typography from '@mui/material/Typography';
-import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography'
+import Stack from '@mui/material/Stack'
 import './About.scss'
 import { useQuery } from '@tanstack/react-query'
 
@@ -12,9 +12,9 @@ const About = () => {
   const { t } = useTranslation()
   return (
     <AboutStyle>
-        <Stack  spacing={4}>
+      <Stack spacing={4}>
         <Typography variant="h4" gutterBottom className="page-title">
-            {t(`${pageName}.title`)}
+          {t(`${pageName}.title`)}
         </Typography>
         <WhatIsWebsite />
         <DiscoveredMistake />
@@ -24,7 +24,7 @@ const About = () => {
         <Funding />
         <Attributions />
       </Stack>
-        <Contributors />
+      <Contributors />
     </AboutStyle>
   )
 }

@@ -15,7 +15,7 @@ import { CircularProgress, Tooltip } from '@mui/material'
 import { FilterPositionsByStartTimeSelector } from '../components/FilterPositionsByStartTimeSelector'
 import { PageContainer } from '../components/PageContainer'
 import { MapWithLocationsAndPath } from '../components/map-related/MapWithLocationsAndPath'
-import Typography from '@mui/material/Typography';
+import Typography from '@mui/material/Typography'
 import InfoYoutubeModal from '../components/YoutubeModal'
 import { useSingleLineData } from 'src/hooks/useSingleLineData'
 
