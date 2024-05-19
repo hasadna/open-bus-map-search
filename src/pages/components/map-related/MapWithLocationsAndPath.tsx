@@ -26,11 +26,7 @@ export function MapWithLocationsAndPath({ positions, plannedRouteStops }: MapPro
         icon={<ExpandAltOutlined />}
       />
       <MapContainer center={position.loc} zoom={13} scrollWheelZoom={true}>
-        <MapContent
-          positions={positions}
-          plannedRouteStops={plannedRouteStops}
-          position={position}
-        />
+        <MapContent positions={positions} plannedRouteStops={plannedRouteStops} />
       </MapContainer>
     </div>
   )

@@ -12,5 +12,4 @@ export interface Path {
 export interface MapProps {
   positions: Point[]
   plannedRouteStops: BusStop[]
-  position: Point
 }
