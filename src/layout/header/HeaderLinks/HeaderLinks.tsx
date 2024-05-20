@@ -7,9 +7,14 @@ import { HEADER_LINKS } from 'src/routes'
 
 type LinkType = Omit<(typeof HEADER_LINKS)[number], 'element'>
 
-const HeaderLinks: FC = () => {
+type HeaderLinksProps = {
+  children?: React.ReactNode
+}
+
+const HeaderLinks: FC<HeaderLinksProps> = ({ children }) => {
   return (
     <div className="header-links">
+      {children}
       {HEADER_LINKS.map((item) => {
         if (item.element === null) {
           return (

@@ -6,10 +6,10 @@ const DashboardPage = lazy(() => import('../pages/dashboard/DashboardPage'))
 const TimelinePage = lazy(() => import('../pages/historicTimeline'))
 const GapsPage = lazy(() => import('../pages/gaps'))
 const GapsPatternsPage = lazy(() => import('../pages/gapsPatterns'))
-const RealtimeMapPage = lazy(() => import('../pages/realtimeMap'))
+const TimeBasedMapPage = lazy(() => import('../pages/timeBasedMap'))
 const SingleLineMapPage = lazy(() => import('../pages/singleLineMap'))
 const About = lazy(() => import('../pages/about'))
-const Profile = lazy(() => import('../pages/Profile'))
+const Profile = lazy(() => import('../pages/lineProfile/LineProfile'))
 const BugReportForm = lazy(() => import('../pages/BugReportForm '))
 const DataResearch = lazy(() =>
   import('../pages/DataResearch/DataResearch').then((m) => ({
@@ -63,10 +63,10 @@ export const PAGES = [
     element: <GapsPatternsPage />,
   },
   {
-    label: 'realtime_map_page_title',
+    label: 'time_based_map_page_title',
     path: '/map',
     icon: <HeatMapOutlined />,
-    element: <RealtimeMapPage />,
+    element: <TimeBasedMapPage />,
   },
   {
     label: 'singleline_map_page_title',
@@ -80,6 +80,12 @@ export const PAGES = [
     path: '/about',
     icon: <InfoCircleOutlined />,
     element: <About />,
+  },
+  {
+    label: 'donate_title',
+    path: 'https://www.jgive.com/new/he/ils/donation-targets/3268#donation-modal',
+    icon: <DollarOutlined />,
+    element: null,
   },
   {
     label: 'public_appeal_title',

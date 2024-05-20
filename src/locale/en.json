@@ -3,8 +3,8 @@
   "dashboard_page_description": "A graphic display of public transportation rides - ratio of successful actual rides / total rides scheduled. Grouped by bus operators (Egged, Dan, Metropolin etc)",
   "timeline_page_title": "Trips History",
   "timeline_page_description": "Displays actual vs scheduled stop times by user-given bus operator, route number & stop name",
-  "realtime_map_page_title": "Real time map",
-  "realtime_map_page_description": "Displays all buses locations on map based on user-given date, time & minutes range",
+  "time_based_map_page_title": "Time based map",
+  "time_based_map_page_description": "Displays all buses locations on map based on user-given date, time & minutes range",
   "gaps_page_title": "Trips that didn't take place",
   "gaps_page_description": "Displays routes that did not take place according to schedule by user-given bus operator, route number. route & date",
   "gaps_patterns_page_title": "patterns",
@@ -80,7 +80,7 @@
   "github_link": "Go to GitHub",
   "dark_mode_tooltip": "Move to Dark mode",
   "light_mode_tooltip": "Move to Light mode",
-  "Change Language": "שנה שפה",
+  "Change Language": "עברית",
   "bug_title": "Title/Summary",
   "bug_title_message": "Please enter a title/summary!",
   "bug_description": "Description",
@@ -108,18 +108,37 @@
   "funding_paragraph": "The Databus project is developed by the Hasadna for public knowledge, by the contributions of volunteers, and based upon",
   "all_rides_completed": "All/Almost the rides are completed",
   "missing_rides": "Of the rides are missing",
-  "line": "line",
+  "line": "Line",
   "from": "from",
   "destination": "destination",
   "velocity": "velocity",
   "kmh": "kmh",
   "sample_time": "sample time",
+  "at_time": "at",
   "vehicle_ref": "vehicle plate",
   "drive_direction": "drive direction",
   "bearing": "bearing",
   "coords": "coords",
-  "hide_document": "hide document",
-  "show_document": "show document",
+  "hide_document": "Hide geeks data",
+  "show_document": "Show geeks data",
+  "lineProfile": {
+    "title": "Profile for Line",
+    "notFound": "We couldn't find the line you were looking for :(",
+    "id": "ID",
+    "date": "Date",
+    "lineReference": "Line Reference",
+    "operatorReference": "Operator Reference",
+    "agencyName": "Agency Name",
+    "route": {
+      "shortName": "Route Short Name",
+      "start": "Start",
+      "end": "End",
+      "mkt": "Route MKT",
+      "direction": "Route Direction",
+      "alternative": "Route Alternative",
+      "type": "Route Type"
+    }
+  },
   "aboutPage": {
     "title": "About us",
     "privacyText": "<0>Google Analytics</0> service is embedded in the website to analyze the usage patterns and positioning of the website in search engines. This code reveals to the operators of the service information regarding the behavior of the users. <1>Learn more</1> about the privacy policy of the service.",
@@ -130,7 +149,11 @@
       "sadna": "Contact us",
       "slack": "Chat with us on Slack",
       "donations": "Servers cost money - help us continue to maintain and develop the project!"
-    }
+    },
+    "contributors": "Contributors",
+    "contributions": "Contributions",
+    "contributorsText": "Databus is developed by the Public Knowledge Workshop, by the contributions of volunteers, and based upon",
+    "contributorsReadMore": "<0>Read more</0> about how you can contribute to the project"
   },
   "dashboard_page_graph_title_hour": "Percentage of rides out, by hour",
   "dashboard_page_graph_title_day": "Percentage of rides out, by day",
@@ -139,8 +162,7 @@
   "order_by_severity": "by severity",
   "choose_dates": "Dates",
   "single_line_map_title": "Locations of selected lines",
-  "operatorSelectorOptions":
-  {
+  "operatorSelectorOptions": {
     "all": "all"
   },
   "reportBug": {
@@ -150,5 +172,7 @@
     "viewIssue": "View issue"
   },
   "plannedRoute": "Planned Route",
-  "actualRoute": "Actual Route"
+  "actualRoute": "Actual Route",
+  "youtube_modal_info_title": "Video tutorial (Hebrew)",
+  "open_video_about_this_page": "Open video about this page"
 }

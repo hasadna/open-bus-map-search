@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react'
 import { BASE_PATH } from './apiConfig'
 import agencyList from 'open-bus-stride-client/agencies/agencyList'
 import { Moment } from 'moment'
+import { useQuery } from '@tanstack/react-query'
 
 type groupByField =
   | 'gtfs_route_date'
@@ -63,24 +63,32 @@ export type GroupByRes = Replace<
   | undefined
 >
 
-async function groupbyAsync({
-  dateTo,
-  dateFrom,
+async function fetchGroupBy({
+  dateToStr,
+  dateFromStr,
   groupBy,
 }: {
-  dateTo: Moment
-  dateFrom: Moment
+  dateToStr: string
+  dateFromStr: string
   groupBy: groupByFields
-}): Promise<GroupByResponse> {
+}): Promise<GroupByRes[]> {
   // example: https://open-bus-stride-api.hasadna.org.il/gtfs_rides_agg/group_by?date_from=2023-01-27&date_to=2023-01-29&group_by=operator_ref
-  const dateToStr = dateTo.toISOString().split('T')[0]
-  const dateFromStr = dateFrom.toISOString().split('T')[0]
   const excludes = 'exclude_hour_from=23&exclude_hour_to=2'
-  return (
-    await fetch(
-      `${BASE_PATH}/gtfs_rides_agg/group_by?date_from=${dateFromStr}&date_to=${dateToStr}&group_by=${groupBy}&${excludes}`,
-    )
-  ).json() as Promise<GroupByResponse>
+
+  const response = await fetch(
+    `${BASE_PATH}/gtfs_rides_agg/group_by?date_from=${dateFromStr}&date_to=${dateToStr}&group_by=${groupBy}&${excludes}`,
+  ).then((res) => res.json())
+
+  return response
+    .map((dataRecord: { operator_ref: unknown }) => ({
+      ...dataRecord,
+      operator_ref: agencyList.find(
+        (agency) => agency.agency_id === String(dataRecord.operator_ref),
+      ),
+    }))
+    .filter(
+      (dataRecord: { operator_ref: undefined }) => dataRecord.operator_ref !== undefined,
+    ) as Promise<GroupByRes[]>
 }
 
 export function useGroupBy({
@@ -92,44 +100,12 @@ export function useGroupBy({
   dateFrom: Moment
   groupBy: groupByFields
 }) {
-  const [loading, setLoading] = useState<boolean>(false)
-  const [error, setError] = useState<string | null>(null)
-  const [data, setData] = useState<
-    Replace<
-      GroupByResponse[0],
-      'operator_ref',
-      | {
-          agency_id: string
-          agency_name: string
-          agency_url: string
-          agency_timezone: string
-          agency_lang: string
-          agency_phone: string
-          agency_fare_url: string
-        }
-      | undefined
-    >[]
-  >([])
+  const dateToStr = dateTo.toISOString().split('T')[0]
+  const dateFromStr = dateFrom.toISOString().split('T')[0]
+  const { isLoading, isError, data, error } = useQuery({
+    queryKey: ['groupBy', dateToStr, dateFromStr, groupBy],
+    queryFn: () => fetchGroupBy({ dateToStr, dateFromStr, groupBy }),
+  })
 
-  useEffect(() => {
-    setLoading(true)
-    groupbyAsync({ dateTo, dateFrom, groupBy })
-      .then((data) => {
-        setData(
-          data
-            .map((dataRecord) => ({
-              ...dataRecord,
-              operator_ref: agencyList.find(
-                (agency) => agency.agency_id === String(dataRecord.operator_ref),
-              ),
-            }))
-            // should filter operator 22 (which is the Dankal TLV light train)
-            .filter((dataRecord) => dataRecord.operator_ref !== undefined),
-        )
-      })
-      .catch((er: string) => setError(er))
-      .finally(() => setLoading(false))
-  }, [+dateTo, +dateFrom, groupBy])
-
-  return [data, loading, error] as const
+  return [data ? data : [], isLoading, isError ? error : null] as const
 }

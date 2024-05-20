@@ -7,7 +7,6 @@ import { PAGES } from 'src/routes'
 import type { MenuProps } from 'antd'
 import { Menu } from 'antd'
 import { LayoutContextInterface, LayoutCtx } from 'src/layout/LayoutContext'
-import { LanguageToggle } from 'src/pages/EasterEgg/LanguageToggle'
 type MenuItem = Required<MenuProps>['items'][number]
 function getItem(
   label: React.ReactNode,
@@ -53,16 +52,13 @@ const MainMenu = () => {
     setCurrent(key)
   }
   return (
-    <>
-      <Menu
-        onClick={handleClick}
-        theme="light"
-        selectedKeys={[current]}
-        mode="inline"
-        items={items}
-      />
-      {<LanguageToggle />}
-    </>
+    <Menu
+      onClick={handleClick}
+      theme="light"
+      selectedKeys={[current]}
+      mode="inline"
+      items={items}
+    />
   )
 }
 

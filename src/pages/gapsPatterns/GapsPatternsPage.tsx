@@ -34,6 +34,7 @@ import { INPUT_SIZE } from 'src/resources/sizes'
 const { Title } = Typography
 import { useTranslation } from 'react-i18next'
 import Widget from 'src/shared/Widget'
+import InfoYoutubeModal from '../components/YoutubeModal'
 // Define prop types for the component
 interface BusLineStatisticsProps {
   lineRef: number
@@ -174,7 +175,14 @@ const GapsPatternsPage = () => {
 
   return (
     <PageContainer>
-      <Title level={3}>{t('gaps_patterns_page_title')}</Title>
+      <Title level={3}>
+        {t('gaps_patterns_page_title')}
+        <InfoYoutubeModal
+          label={t('open_video_about_this_page')}
+          title={t('youtube_modal_info_title')}
+          videoUrl="https://www.youtube-nocookie.com/embed?v=-C_rZlbHBmk&list=PL6Rh06rT7uiX1AQE-lm55hy-seL3idx3T&index=4"
+        />
+      </Title>
       <Space direction="vertical" size="middle" style={{ marginBottom: '22px' }}>
         <Alert message={t('gaps_patterns_page_description')} type="info" />
       </Space>

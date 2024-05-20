@@ -5,6 +5,7 @@ import { UploadOutlined } from '@ant-design/icons'
 import axios from 'axios'
 import './BugReportForm.scss'
 import { UploadChangeParam, UploadFile } from 'antd/lib/upload'
+import InfoYoutubeModal from './components/YoutubeModal'
 const { Option } = Select
 
 interface BugReportFormData {
@@ -64,10 +65,15 @@ const BugReportForm = () => {
 
   return (
     <Card className="bug-report-form-container">
-      <h1 className="logo">דאטאבוס</h1>
-
+      <h1 className="logo">
+        דאטאבוס
+        <InfoYoutubeModal
+          label={t('open_video_about_this_page')}
+          title={t('youtube_modal_info_title')}
+          videoUrl="https://www.youtube-nocookie.com/embed?v=F6sD9Bz4Xj0&list=PL6Rh06rT7uiX1AQE-lm55hy-seL3idx3T&index=11"
+        />
+      </h1>
       <span> {t('reportBug.description')}</span>
-
       <p>
         {submittedUrl && (
           <a href={submittedUrl} target="_blank" rel="noopener noreferrer">
@@ -75,7 +81,6 @@ const BugReportForm = () => {
           </a>
         )}
       </p>
-
       <Form
         form={form}
         name="bug-report"

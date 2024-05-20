@@ -1,11 +1,11 @@
-import { MapContainer, Marker, Polyline, Popup, TileLayer } from 'react-leaflet'
-import { Icon, IconOptions } from 'leaflet'
+import { MapContainer, Marker, Polyline, Popup, TileLayer, useMap } from 'react-leaflet'
+import { Icon, IconOptions, LatLngTuple } from 'leaflet'
 import { useAgencyList } from 'src/api/agencyList'
-import { Point } from 'src/pages/realtimeMap'
+import { Point } from 'src/pages/timeBasedMap'
 import { busIcon, busIconPath } from '../utils/BusIcon'
 import { BusToolTip } from './MapLayers/BusToolTip'
 import { VehicleLocation } from 'src/model/vehicleLocation'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Button } from 'antd'
 import { ExpandAltOutlined } from '@ant-design/icons'
 import { BusStop } from 'src/model/busStop'
@@ -24,17 +24,15 @@ export interface Path {
   vehicleRef: number
 }
 
-export function MapWithLocationsAndPath({
-  positions,
-  plannedRouteStops,
-}: {
+interface MapProps {
   positions: Point[]
   plannedRouteStops: BusStop[]
-}) {
+}
+
+export function MapWithLocationsAndPath({ positions, plannedRouteStops }: MapProps) {
   const agencyList = useAgencyList()
   const [isExpanded, setIsExpanded] = useState<boolean>(false)
   const toggleExpanded = useCallback(() => setIsExpanded((expanded) => !expanded), [])
-  console.log('MapWithLocationsAndPath', `${isExpanded ? 'expanded' : 'collapsed'}`)
 
   const getIcon = (path: string, width: number = 10, height: number = 10): Icon<IconOptions> => {
     return new Icon<IconOptions>({
@@ -119,6 +117,7 @@ export function MapWithLocationsAndPath({
             positions={positions.map((position) => position.loc)}
           />
         )}
+        <RecenterOnDataChange positions={positions} plannedRouteStops={plannedRouteStops} />
       </MapContainer>
     </div>
   )
@@ -146,4 +145,23 @@ export function MapIndex({
       </div>
     </div>
   )
+}
+
+function RecenterOnDataChange({ positions, plannedRouteStops }: MapProps) {
+  const map = useMap()
+
+  useEffect(() => {
+    const positionsSum = positions.reduce(
+      (acc, { loc }) => [acc[0] + loc[0], acc[1] + loc[1]],
+      [0, 0],
+    )
+    const mean: LatLngTuple = [
+      positionsSum[0] / positions.length || position.loc[0],
+      positionsSum[1] / positions.length || position.loc[1],
+    ]
+
+    map.setView(mean, map.getZoom(), { animate: true })
+  }, [positions, plannedRouteStops])
+
+  return null
 }

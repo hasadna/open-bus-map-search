@@ -18,24 +18,30 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
-      - name: Run all the local tests
+      - name: make sure no yarn.json is added
         run: |
-            err=$(mktemp)
             if [ -f yarn.json ]; then
                 echo "::error file=yarn.json::yarn.json is being added"
-            elif [ ! -f package-lock.json ]; then
-                echo "::error file=package-lock.json::package-lock.json is being removed"
-            elif ! npm ci &> /dev/null; then
-                echo "::error file=package-lock.json::package-lock.json is not updated"
-            elif npm run lint 1>/dev/null 2>$err; then
-                if npx madge --extensions js,ts --circular . 1>/dev/null 2>$err; then
-                    if npm run test:unit 1>/dev/null 2>$err; then
-                        exit 0
-                    fi
-                fi
+                exit 1
             fi
-            if [ -s $err ]; then echo "::error ::$(head -n1 $err)"; fi
-            exit 1
+      - name: make sure no package-lock.json is removed
+        run: |
+            if [ ! -f package-lock.json ]; then
+                echo "::error file=package-lock.json::package-lock.json is being removed"
+                exit 1
+            fi
+      - name: make sure package-lock.json is updated
+        run: |
+            if ! npm ci; then
+                echo "::error file=package-lock.json::package-lock.json is not updated"
+                exit 1
+            fi
+      - name: lint
+        run: npm run lint
+      - name: madge
+        run: npx madge --extensions js,ts --circular .
+      - name: unit tests
+        run: npm run test:unit
   build:
     runs-on: ubuntu-latest
     steps:
@@ -92,7 +98,7 @@ jobs:
   publish-test-results:
     runs-on: ubuntu-latest
     needs: test
-    if: always()
+    if: always() && github.event.repository.fork == false
     env:
       AWS_KEY_ID: ${{ secrets.AWS_KEY_ID }}
     steps:
@@ -122,6 +128,20 @@ jobs:
           status: success
           context: 'Test results'
           targetUrl: 'https://s3.amazonaws.com/noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.sha }}/test-results/index.html'
+  build-outside-docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Run install
+        run: npm ci
+      - name: build
+        run: npm run build
+      - name: build storybook
+        run: npm run build-storybook
+      
   all-passed:
     runs-on: ubuntu-latest
     needs: [local-tests, test]

@@ -24,8 +24,6 @@ We've hidden a couple of fun surprises in our web app, just for you. Discovering
 
    - **Type "storybook":**
      Watch the magic unfold as you type "storybook" on your keyboard. You might just stumble upon our Storybook, a treasure trove of UI components showcasing the beauty and functionality of our app.
-   - **Type "english":**
-     Feel like switching up the language? Type "english" and see the language toggle in action. Our app is multilingual, and you can experience it by triggering this secret command.
    - **Type "geek":**
      To get some experimental charts with some additional data and aggregation
 
@@ -63,6 +61,28 @@ https://github.com/hasadna/open-bus-map-search/blob/main/src/model/busStop.ts#L4
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/ShayAdler"><img src="https://avatars.githubusercontent.com/u/61648359?v=4?s=100" width="100px;" alt="Shay"/><br /><sub><b>Shay</b></sub></a><br /><a href="#code-ShayAdler" title="Code">💻</a> <a href="#doc-ShayAdler" title="Documentation">📖</a> <a href="#mentoring-ShayAdler" title="Mentoring">🧑‍🏫</a> <a href="#ideas-ShayAdler" title="Ideas, Planning, & Feedback">🤔</a> <a href="#research-ShayAdler" title="Research">🔬</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://noam-gaash.co.il"><img src="https://avatars.githubusercontent.com/u/11145132?v=4?s=100" width="100px;" alt="Noam Gaash"/><br /><sub><b>Noam Gaash</b></sub></a><br /><a href="#projectManagement-NoamGaash" title="Project Management">📆</a> <a href="#test-NoamGaash" title="Tests">⚠️</a> <a href="#code-NoamGaash" title="Code">💻</a> <a href="#doc-NoamGaash" title="Documentation">📖</a> <a href="#review-NoamGaash" title="Reviewed Pull Requests">👀</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/KirilCycle"><img src="https://avatars.githubusercontent.com/u/118115736?v=4?s=100" width="100px;" alt="Kiril Volskiy"/><br /><sub><b>Kiril Volskiy</b></sub></a><br /><a href="#code-KirilCycle" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/R894"><img src="https://avatars.githubusercontent.com/u/54629307?v=4?s=100" width="100px;" alt="R894"/><br /><sub><b>R894</b></sub></a><br /><a href="#code-R894" title="Code">💻</a> <a href="#test-R894" title="Tests">⚠️</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://www.linkedin.com/in/tamir-abutbul-10a695178/"><img src="https://avatars.githubusercontent.com/u/34707669?v=4?s=100" width="100px;" alt="Tamir Abutbul"/><br /><sub><b>Tamir Abutbul</b></sub></a><br /><a href="#code-Tamir198" title="Code">💻</a> <a href="#review-Tamir198" title="Reviewed Pull Requests">👀</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/aviv1620"><img src="https://avatars.githubusercontent.com/u/44925669?v=4?s=100" width="100px;" alt="aviv1620"/><br /><sub><b>aviv1620</b></sub></a><br /><a href="#review-aviv1620" title="Reviewed Pull Requests">👀</a> <a href="#code-aviv1620" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/davis0011"><img src="https://avatars.githubusercontent.com/u/104071579?v=4?s=100" width="100px;" alt="davis0011"/><br /><sub><b>davis0011</b></sub></a><br /><a href="#code-davis0011" title="Code">💻</a></td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://arkadik94.github.io/"><img src="https://avatars.githubusercontent.com/u/76536506?v=4?s=100" width="100px;" alt="Arkadi Koifman"/><br /><sub><b>Arkadi Koifman</b></sub></a><br /><a href="#review-ArkadiK94" title="Reviewed Pull Requests">👀</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/OriHoch"><img src="https://avatars.githubusercontent.com/u/1198854?v=4?s=100" width="100px;" alt="Ori Hoch"/><br /><sub><b>Ori Hoch</b></sub></a><br /><a href="#code-OriHoch" title="Code">💻</a> <a href="#data-OriHoch" title="Data">🔣</a> <a href="#doc-OriHoch" title="Documentation">📖</a> <a href="#infra-OriHoch" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a> <a href="#maintenance-OriHoch" title="Maintenance">🚧</a> <a href="#mentoring-OriHoch" title="Mentoring">🧑‍🏫</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/zushar"><img src="https://avatars.githubusercontent.com/u/100128949?v=4?s=100" width="100px;" alt="israel zusha rotenberg"/><br /><sub><b>israel zusha rotenberg</b></sub></a><br /><a href="#code-zushar" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/YuvalMasada"><img src="https://avatars.githubusercontent.com/u/5049780?v=4?s=100" width="100px;" alt="Yuval"/><br /><sub><b>Yuval</b></sub></a><br /><a href="#code-YuvalMasada" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Haswell-s"><img src="https://avatars.githubusercontent.com/u/62185136?v=4?s=100" width="100px;" alt="Haswell-s"/><br /><sub><b>Haswell-s</b></sub></a><br /><a href="#code-Haswell-s" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/itsoriki"><img src="https://avatars.githubusercontent.com/u/93577239?v=4?s=100" width="100px;" alt="Ori Hazan"/><br /><sub><b>Ori Hazan</b></sub></a><br /><a href="#code-itsoriki" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/dorinzrihen"><img src="https://avatars.githubusercontent.com/u/20385035?v=4?s=100" width="100px;" alt="dorinzrihen"/><br /><sub><b>dorinzrihen</b></sub></a><br /><a href="#code-dorinzrihen" title="Code">💻</a></td>
+    </tr>
+  </tbody>
+</table>
 
 <!-- markdownlint-restore -->
 <!-- prettier-ignore-end -->

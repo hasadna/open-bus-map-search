@@ -3,8 +3,8 @@
   "dashboard_page_description": "תצוגה גרפית של אחוז הנסיעות שיצאו בפועל מתוך סך הנסיעות המתוכננות, מפולח לפי חברות תחבורה ציבורית (אגד, דן, מטרופולין וכו')",
   "timeline_page_title": "היסטוריית נסיעות",
   "timeline_page_description": "תצוגה של זמני עצירה בתחנות לפי חברה מפעילה, מספר קו ותחנה. השוואה בין שעת העצירה בפועל לעומת שעת העצירה המתוכננת",
-  "realtime_map_page_title": "מפה בזמן אמת",
-  "realtime_map_page_description": "תצוגה של מיקום כל האוטובוסים בתאריך, שעה וטווח הדקות שהוכנסו ע\"י המשתמש",
+  "time_based_map_page_title": "מפה לפי זמן",
+  "time_based_map_page_description": "תצוגה של מיקום כל האוטובוסים בתאריך, שעה וטווח הדקות שהוכנסו ע\"י המשתמש",
   "gaps_page_title": "נסיעות שלא בוצעו",
   "gaps_page_description": "תצוגה של כל הנסיעות שלא יצאו כמתוכנן לפי חברה מפעילה, קו, מסלול ותאריך",
   "gaps_patterns_page_title": "דפוסי נסיעות שלא בוצעו",
@@ -15,9 +15,9 @@
   "choose_date": "תאריך",
   "choose_time": "שעה",
   "choose_operator": "חברה מפעילה",
-  "operator_placeholder": "לדוגמא: דן",
+  "operator_placeholder": "לדוגמה: דן",
   "choose_line": "מספר קו",
-  "line_placeholder": "לדוגמא: 17א",
+  "line_placeholder": "לדוגמה: 17א",
   "choose_route": "בחירת מסלול נסיעה (XXX אפשרויות)",
   "choose_stop": "בחירת תחנה (XXX אפשרויות)",
   "direction_arrow": "⟵",
@@ -83,7 +83,7 @@
   "github_link": "למעבר אל GitHub",
   "dark_mode_tooltip": "עבור למצב חשוך",
   "light_mode_tooltip": "עבור למצב בהיר",
-  "Change Language": "Change Language",
+  "Change Language": "English",
   "bug_title": "כותרת/סיכום",
   "bug_title_message": "אנא הזן כותרת/סיכום!",
   "bug_description": "תיאור",
@@ -119,15 +119,30 @@
   "velocity": "מהירות",
   "kmh": "קמ״ש",
   "sample_time": "זמן דגימה",
+  "at_time": "בשעה",
   "vehicle_ref": "לוחית רישוי",
-  "drive_direction": "כיוון נסיעה:",
+  "drive_direction": "כיוון נסיעה",
   "bearing": "מעלות",
   "coords": "נ.צ.",
   "hide_document": "הסתר מידע לגיקים",
   "show_document": "הצג מידע לגיקים",
   "lineProfile": {
     "title": "פרופיל קו",
-    "notFound": "לא הצלחנו למצוא את הקו שחיפשת :("
+    "notFound": "לא הצלחנו למצוא את הקו שחיפשת :(",
+    "id": "מזהה טכני",
+    "date": "תאריך",
+    "lineReference": "מזהה קו",
+    "operatorReference": "מזהה חברה מפעילה",
+    "agencyName": "שם חברה מפעילה",
+    "route": {
+      "shortName": "מס' קו",
+      "start": "מוצא",
+      "end": "יעד",
+      "mkt": "מק\"ט קו",
+      "direction": "כיוון קו",
+      "alternative": "חלופה מס'",
+      "type": "סוג קו"
+    }
   },
   "errorPage": {
     "title": "אופס, משהו השתבש",
@@ -146,10 +161,13 @@
       "sadna": "צרו איתנו קשר",
       "slack": " דברו איתנו על זה בסלאק",
       "donations": "שרתים עולים כסף - עזרו לנו להמשיך לתחזק ולפתח את הפרויקט!"
-    }
+    },
+    "contributors": "תורמי קוד",
+    "contributions": "תרומות",
+    "contributorsText": "דאטאבוס מתאפשרת בין היתר בזכות הרבה אנשים חרוצים שתורמים קוד ומפתחים יחד איתנו. נשמח לראותך מצטרף לצוות!",
+    "contributorsReadMore": "<0>קרא כאן</0> על כיצד ניתן לתרום ולהשתתף בפיתוח"
   },
-  "operatorSelectorOptions":
-  {
+  "operatorSelectorOptions": {
     "all": "הכל"
   },
   "dashboard_page_graph_title_hour": "אחוזי יציאה מסך הנסיעות לפי שעה",
@@ -167,6 +185,8 @@
   },
   "plannedRoute": "מסלול מתוכנן",
   "actualRoute": "מסלול בפועל",
+  "youtube_modal_info_title": "סרטון הסבר",
+  "open_video_about_this_page": "לפתוח סרטון על העמוד הזה",
   "publicAppealPage": {
     "title": "קול קורא",
     "tasks": [
@@ -185,11 +205,6 @@
         "description": "TO COMPLETE",
         "swagger": "Open Bus Stride API"
       }
-    ],
-    "contactLinksText": {
-      "sadna": "צרו איתנו קשר",
-      "slack": " דברו איתנו על זה בסלאק",
-      "donations": "שרתים עולים כסף - עזרו לנו להמשיך לתחזק ולפתח את הפרויקט!"
-    }
+    ]
   }
 }
