@@ -33,7 +33,7 @@ import {
 } from '@ant-design/icons'
 import { MainRoute } from './MainRoute'
 import { ErrorPage } from 'src/pages/ErrorPage'
-import PsychologyIcon from '@mui/icons-material/Psychology';
+import PsychologyIcon from '@mui/icons-material/Psychology'
 
 export const PAGES = [
   {
@@ -92,7 +92,7 @@ export const PAGES = [
     path: '/public-appeal',
     icon: <PsychologyIcon />,
     element: <PublicAppeal />,
-  }
+  },
 ] as const
 
 export const HEADER_LINKS = [
