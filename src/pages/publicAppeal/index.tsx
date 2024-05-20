@@ -30,8 +30,7 @@ const Task = (props: any) => {
     <Widget key={props.index}>
       <h2 className='public'>{props.task.title}</h2>
       <p>{props.task.description}</p>
-      <a href="https://www.google.com">{props.task.swagger}</a>
-      <p>jupyter notebook </p>
+      <a href="https://open-bus-stride-api.hasadna.org.il/docs">{props.task.swagger}</a>
     </Widget>
   )
 }
