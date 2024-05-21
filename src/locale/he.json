@@ -192,18 +192,15 @@
     "tasks": [
       {
         "title": "What affect does the traffic have on the overal execusion time of bus ride?",
-        "description": "calculating the standard deviation of bus ride durations can indicate problems with traffic.",
-        "swagger": "Open Bus Stride API"
+        "description": "calculating the standard deviation of bus ride durations can indicate problems with traffic."
       },
       {
         "title": "Calculate time estimation for when the bus left it's origin",
-        "description": "TO COMPLETE",
-        "swagger": "Open Bus Stride API"
+        "description": "TO COMPLETE"
       },
       {
         "title": "How to classify bus-lines to meaningful geographical clusters?",
-        "description": "TO COMPLETE",
-        "swagger": "Open Bus Stride API"
+        "description": "TO COMPLETE"
       }
     ]
   }

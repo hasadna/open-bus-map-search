@@ -17,19 +17,25 @@ const PublicAppeal = () => {
           {t(`${pageName}.title`)}
         </Title>
         {tasks.map((task, i) => (
-          <Task task={task} index={i} key={i} />
+          <Task title= {task.title} description={task.description} index={i} key={i} />
         ))}
       </Space>
     </PublicAppealStyle>
   )
 }
 
-const Task = (props: any) => {
+type TaskDetails = {
+  index: number
+  title: string
+  description: string
+}
+
+const Task = ({index, title, description}: TaskDetails) => {
   return (
-    <Widget key={props.index}>
-      <h2 className="public">{props.task.title}</h2>
-      <p>{props.task.description}</p>
-      <a href="https://open-bus-stride-api.hasadna.org.il/docs">{props.task.swagger}</a>
+    <Widget key={index}>
+      <h2 className="public">{title}</h2>
+      <p>{description}</p>
+      <a href="https://open-bus-stride-api.hasadna.org.il/docs">Open Bus Stride API</a>
     </Widget>
   )
 }
