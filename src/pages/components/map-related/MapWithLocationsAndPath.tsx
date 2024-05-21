@@ -11,6 +11,8 @@ import { ExpandAltOutlined } from '@ant-design/icons'
 import { BusStop } from 'src/model/busStop'
 import { t } from 'i18next'
 import '../../Map.scss'
+import { useTheme } from 'src/layout/ThemeContext'
+import cn from 'classnames'
 
 const position: Point = {
   loc: [32.3057988, 34.85478613], // arbitrary default value... Netanya - best city to live & die in
@@ -30,6 +32,7 @@ interface MapProps {
 }
 
 export function MapWithLocationsAndPath({ positions, plannedRouteStops }: MapProps) {
+  const { isDarkTheme } = useTheme()
   const agencyList = useAgencyList()
   const [isExpanded, setIsExpanded] = useState<boolean>(false)
   const toggleExpanded = useCallback(() => setIsExpanded((expanded) => !expanded), [])
@@ -62,7 +65,7 @@ export function MapWithLocationsAndPath({ positions, plannedRouteStops }: MapPro
           attribution='&copy <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
         />
-        <div className="map-index">
+        <div className={cn('map-index', { dark: isDarkTheme })}>
           <MapIndex
             lineColor={actualRouteLineColor}
             imgSrc={actualRouteStopMarkerPath}
