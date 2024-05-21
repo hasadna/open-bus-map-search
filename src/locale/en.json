@@ -1,4 +1,14 @@
 {
+  "homepage": {
+    "welcome": "Welcome to Databus",
+    "databus_definition": "The open platform for real data on the quality of public transportation lines in Israel",
+    "website_goal": "The purpose of the site is to improve the quality of public transportation in Israel by providing reliable information to journalists, citizens, transportation companies, and government officials in Israel.",
+    "timeline": "Schedule history",
+    "gaps": "Rides that didn't take place",
+    "gaps_patterns": "Patterns",
+    "map": "Time based map",
+    "copyright": "© The Public Knowledge Workshop"
+  },
   "dashboard_page_title": "Public transport operators according to planned trips",
   "dashboard_page_description": "A graphic display of public transportation rides - ratio of successful actual rides / total rides scheduled. Grouped by bus operators (Egged, Dan, Metropolin etc)",
   "timeline_page_title": "Trips History",
