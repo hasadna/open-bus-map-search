@@ -174,5 +174,25 @@
   "plannedRoute": "Planned Route",
   "actualRoute": "Actual Route",
   "youtube_modal_info_title": "Video tutorial (Hebrew)",
-  "open_video_about_this_page": "Open video about this page"
+  "open_video_about_this_page": "Open video about this page",
+  "publicAppealPage": {
+    "title": "קול קורא",
+    "tasks": [
+      {
+        "title": "What affect does the traffic have on the overal execusion time of bus ride?",
+        "description": "calculating the standard deviation of bus ride durations can indicate problems with traffic.",
+        "swagger": "Open Bus Stride API"
+      },
+      {
+        "title": "Calculate time estimation for when the bus left it's origin",
+        "description": "TO COMPLETE",
+        "swagger": "Open Bus Stride API"
+      },
+      {
+        "title": "How to classify bus-lines to meaningful geographical clusters?",
+        "description": "TO COMPLETE",
+        "swagger": "Open Bus Stride API"
+      }
+    ]
+  }
 }
