@@ -18,11 +18,11 @@ test.describe('dashboard tests', () => {
   test('page is working', async () => {})
 
   test('dark mode use localstorage', async ({ page }) => {
-    await page.getByLabel('עבור למצב חשוך').click()
+    await page.getByLabel('עבור למצב כהה').click()
     await page.reload()
     await page.getByLabel('עבור למצב בהיר').click()
     await page.reload()
-    await page.getByLabel('עבור למצב חשוך').click()
+    await page.getByLabel('עבור למצב כהה').click()
     await page.getByLabel('עבור למצב בהיר').click()
   })
 })
