@@ -17,7 +17,7 @@ const PublicAppeal = () => {
           {t(`${pageName}.title`)}
         </Title>
         {tasks.map((task, i) => (
-          <Task title= {task.title} description={task.description} index={i} key={i} />
+          <Task title={task.title} description={task.description} index={i} key={i} />
         ))}
       </Space>
     </PublicAppealStyle>
@@ -30,7 +30,7 @@ type TaskDetails = {
   description: string
 }
 
-const Task = ({index, title, description}: TaskDetails) => {
+const Task = ({ index, title, description }: TaskDetails) => {
   return (
     <Widget key={index}>
       <h2 className="public">{title}</h2>
