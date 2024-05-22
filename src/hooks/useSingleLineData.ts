@@ -18,7 +18,8 @@ export const useSingleLineData = (lineRef?: number, routeIds?: number[]) => {
     from: +new Date(timestamp).setHours(0, 0, 0, 0),
     to: +new Date(timestamp).setHours(23, 59, 59, 999),
     lineRef,
-    splitMinutes: 20,
+    splitMinutes: 60,
+    pause: !lineRef,
   })
 
   const positions = useMemo(() => {
