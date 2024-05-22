@@ -16,6 +16,7 @@ const DataResearch = lazy(() =>
     default: m.DataResearch,
   })),
 )
+const PublicAppeal = lazy(() => import('../pages/publicAppeal'))
 
 import {
   HomeOutlined,
@@ -32,6 +33,7 @@ import {
 } from '@ant-design/icons'
 import { MainRoute } from './MainRoute'
 import { ErrorPage } from 'src/pages/ErrorPage'
+import PsychologyIcon from '@mui/icons-material/Psychology'
 
 export const PAGES = [
   {
@@ -84,6 +86,12 @@ export const PAGES = [
     path: 'https://www.jgive.com/new/he/ils/donation-targets/3268#donation-modal',
     icon: <DollarOutlined />,
     element: null,
+  },
+  {
+    label: 'public_appeal_title',
+    path: '/public-appeal',
+    icon: <PsychologyIcon />,
+    element: <PublicAppeal />,
   },
 ] as const
 

@@ -61,6 +61,7 @@
   "start": "התחלה",
   "end": "סיום",
   "about_title": "אודות",
+  "public_appeal_title": "קול קורא",
   "donate_title": "לתרומות",
   "report_a_bug_title": "דיווח על באג",
   "website_name": "דאטאבוס",
@@ -185,5 +186,22 @@
   "plannedRoute": "מסלול מתוכנן",
   "actualRoute": "מסלול בפועל",
   "youtube_modal_info_title": "סרטון הסבר",
-  "open_video_about_this_page": "לפתוח סרטון על העמוד הזה"
+  "open_video_about_this_page": "לפתוח סרטון על העמוד הזה",
+  "publicAppealPage": {
+    "title": "קול קורא",
+    "tasks": [
+      {
+        "title": "What affect does the traffic have on the overal execusion time of bus ride?",
+        "description": "calculating the standard deviation of bus ride durations can indicate problems with traffic."
+      },
+      {
+        "title": "Calculate time estimation for when the bus left it's origin",
+        "description": "TO COMPLETE"
+      },
+      {
+        "title": "How to classify bus-lines to meaningful geographical clusters?",
+        "description": "TO COMPLETE"
+      }
+    ]
+  }
 }
