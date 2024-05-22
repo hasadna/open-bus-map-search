@@ -20,14 +20,14 @@ export const HomePage = () => {
       <h2>{t('homepage.databus_definition')}</h2>
       <p>{t('homepage.website_goal')}</p>
       <section className="links">
-        <PageLink icon={<HistoryOutlined />} label={t('homepage.timeline')} to="/timeline" />
-        <PageLink icon={<DirectionsBusOutlined />} label={t('homepage.gaps')} to="/gaps" />
+        <PageLink icon={<HistoryOutlined />} label={t('timeline_page_title')} to="/timeline" />
+        <PageLink icon={<DirectionsBusOutlined />} label={t('gaps_page_title')} to="/gaps" />
         <PageLink
           icon={<ViewKanbanOutlined />}
-          label={t('homepage.gaps_patterns')}
+          label={t('gaps_patterns_page_title')}
           to="/gaps_patterns"
         />
-        <PageLink icon={<MapOutlined />} label={t('homepage.map')} to="/map" />
+        <PageLink icon={<MapOutlined />} label={t('time_based_map_page_title')} to="/map" />
       </section>
       <footer>{`${t('homepage.copyright')} ${new Date().getFullYear()}`}</footer>
     </div>
@@ -42,12 +42,16 @@ const PageLink = ({
   icon: React.ReactElement<SvgIconProps>
   label: string
   to: To
-}) => (
-  <div className="page-link">
-    {icon}
-    <span>{label}</span>
-    <NavLink to={to}>הצג</NavLink>
-  </div>
-)
+}) => {
+  const { t } = useTranslation()
+
+  return (
+    <div className="page-link">
+      {icon}
+      <span>{label}</span>
+      <NavLink to={to}>{t('homepage.show_button')}</NavLink>
+    </div>
+  )
+}
 
 export default HomePage

@@ -35,6 +35,12 @@ import { ErrorPage } from 'src/pages/ErrorPage'
 
 export const PAGES = [
   {
+    label: 'homepage_title',
+    path: '/',
+    icon: <HomeOutlined />,
+    element: <HomePage />,
+  },
+  {
     label: 'dashboard_page_title',
     path: '/dashboard',
     icon: <LaptopOutlined />,
@@ -110,12 +116,6 @@ export const HEADER_LINKS = [
 
 const HIDDEN_PAGES = [
   {
-    label: 'home_page',
-    path: '/home',
-    icon: <HomeOutlined />,
-    element: <HomePage />, //need to build - created only the file and routing
-  },
-  {
     label: 'data-research',
     path: '/data-research',
     icon: <InfoCircleOutlined />,
@@ -125,7 +125,7 @@ const HIDDEN_PAGES = [
 
 const getRoutesList = () => {
   const pages = [...PAGES, ...HIDDEN_PAGES, ...HEADER_LINKS]
-  const RedirectToDashboard = () => <Navigate to={pages[0].path} replace />
+  const RedirectToHomepage = () => <Navigate to={pages[0].path} replace />
   const routes = pages.filter((r) => r.element)
   return (
     <Route element={<MainRoute />}>
@@ -147,7 +147,7 @@ const getRoutesList = () => {
           return gtfs_route
         }}
       />
-      <Route path="*" element={<RedirectToDashboard />} key="back" />
+      <Route path="*" element={<RedirectToHomepage />} key="back" />
     </Route>
     // </Suspense>
   )

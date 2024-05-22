@@ -1,8 +1,11 @@
+import { useTranslation } from 'react-i18next'
 import { useTheme } from '../ThemeContext'
 import cn from 'classnames'
 
 export function Logo() {
   const { isDarkTheme } = useTheme()
+  const { t } = useTranslation()
+
   return (
     <h1 className={cn('sidebar-logo', { dark: isDarkTheme })}>
       <svg viewBox="450 900 3200 1730" xmlSpace="preserve">
@@ -37,7 +40,7 @@ export function Logo() {
         <circle className="st0" cx="3442.6" cy="1960.6" r="65.8" />
         <circle className="st0" cx="3223.9" cy="2225.35" r="65.8" />
       </svg>
-      <span>דאטאבוס</span>
+      <span>{t('website_name')}</span>
     </h1>
   )
 }
