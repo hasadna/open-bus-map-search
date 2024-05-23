@@ -14,6 +14,7 @@ test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
 test('menu', async ({ page }) => {
   await expect(page.locator('h1.sidebar-logo')).toContainText('דאטאבוס')
   const menuItemsInOrder = [
+    'ראשי',
     'קיום נסיעות',
     'היסטוריית נסיעות',
     'נסיעות שלא בוצעו',
@@ -21,6 +22,7 @@ test('menu', async ({ page }) => {
     'מפה לפי זמן',
     'מפה לפי קו',
     'אודות',
+    'לתרומות',
   ]
   await expect(page.locator('ul > li a')).toContainText(menuItemsInOrder)
 })

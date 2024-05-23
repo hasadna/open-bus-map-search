@@ -11,7 +11,7 @@ test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
   await page.goto('/')
 })
 test('time-based-map page', async ({ page }) => {
-  await page.getByText('מפה לפי זמן', { exact: true }).click()
+  await page.getByText('מפה לפי זמן', { exact: true }).and(page.getByRole('link')).click()
   await page.waitForURL(/map/)
   await page.getByRole('progressbar').waitFor({ state: 'hidden' })
   await page.getByLabel('תאריך').fill(new Date().toLocaleDateString('en-GB'))
