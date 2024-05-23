@@ -83,6 +83,7 @@ https://github.com/hasadna/open-bus-map-search/blob/main/src/model/busStop.ts#L4
     </tr>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://portfolio-next-js-phi.vercel.app/"><img src="https://avatars.githubusercontent.com/u/57066118?v=4?s=100" width="100px;" alt="Dafna Pundak"/><br /><sub><b>Dafna Pundak</b></sub></a><br /><a href="#code-DafnaPundak" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://reallyliri.com"><img src="https://avatars.githubusercontent.com/u/16985735?v=4?s=100" width="100px;" alt="Liri S"/><br /><sub><b>Liri S</b></sub></a><br /><a href="#code-ReallyLiri" title="Code">💻</a> <a href="#infra-ReallyLiri" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a> <a href="#ideas-ReallyLiri" title="Ideas, Planning, & Feedback">🤔</a></td>
     </tr>
   </tbody>
 </table>
