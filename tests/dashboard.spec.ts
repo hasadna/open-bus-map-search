@@ -9,7 +9,7 @@ test.describe('dashboard tests', () => {
       url: /stride-api/,
       matcher: urlMatcher,
     })
-    await page.goto('/')
+    await page.goto('/dashboard')
     await page.getByText('הקווים הגרועים ביותר').waitFor()
     const skeletons = await page.locator('.ant-skeleton').all()
     await Promise.all(skeletons.map((skeleton) => skeleton.waitFor({ state: 'hidden' })))
