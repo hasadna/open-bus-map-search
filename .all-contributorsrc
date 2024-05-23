@@ -160,6 +160,17 @@
       ]
     },
     {
+      "login": "ReallyLiri",
+      "name": "Liri S",
+      "avatar_url": "https://avatars.githubusercontent.com/u/16985735?v=4",
+      "profile": "https://reallyliri.com",
+      "contributions": [
+        "code",
+        "infra",
+        "ideas"
+      ]
+    },
+    {
       "login": "EtayZaslavsky",
       "name": "Etay Zaslavsky",
       "avatar_url": "https://avatars.githubusercontent.com/u/105246259?v=4",
