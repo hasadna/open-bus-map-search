@@ -17,6 +17,8 @@ test.describe('Visual Tests', () => {
     eyes.getConfiguration().setUseDom(true)
     eyes.setParentBranchName('main')
     eyes.setBranchName((await getBranch()) || 'main')
+    console.log('batch id:', eyes.getBatch().id)
+    console.log('commit sha:', process.env.GITHUB_SHA)
   })
 
   test.beforeEach(async ({ page }, testinfo) => {
