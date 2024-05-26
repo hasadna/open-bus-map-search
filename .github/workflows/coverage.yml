@@ -14,6 +14,7 @@ jobs:
     env:
       APPLITOOLS_API_KEY: ${{ secrets.APPLITOOLS_API_KEY }}
     steps:
+      - run: echo "Running tests with coverage on commit ${{ github.sha }} or PR ${{ github.event.pull_request.head.sha }} or ${{ github.event.pull_request.head.ref }} or ${{ github.event.pull_request.head.label }}"
       - uses: actions/checkout@v3
         with:
           ref: ${{ github.event.pull_request.head.sha }}
