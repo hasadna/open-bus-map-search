@@ -8,8 +8,8 @@ test.describe('Visual Tests', () => {
     if (process.env.CI) {
       // set batch id to the commit sha
       eyes.setBatch({
-        id: process.env.GITHUB_SHA,
-        name: 'openbus test commit ' + process.env.GITHUB_SHA + ' branch ' + process.env.GITHUB_REF,
+        id: process.env.SHA,
+        name: 'openbus test branch ' + process.env.GITHUB_REF + ' commit ' + process.env.SHA,
       })
     } else {
       eyes.setBatch(username() + ' is testing openbus ' + new Date().toLocaleString().split(',')[0])
@@ -18,7 +18,7 @@ test.describe('Visual Tests', () => {
     eyes.setParentBranchName('main')
     eyes.setBranchName((await getBranch()) || 'main')
     console.log('batch id:', eyes.getBatch().id)
-    console.log('commit sha:', process.env.GITHUB_SHA)
+    console.log('commit sha:', process.env.SHA)
   })
 
   test.beforeEach(async ({ page }, testinfo) => {
