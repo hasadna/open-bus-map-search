@@ -15,6 +15,8 @@ jobs:
       APPLITOOLS_API_KEY: ${{ secrets.APPLITOOLS_API_KEY }}
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
       - name: Use Node.js
         uses: actions/setup-node@v3
         with:
