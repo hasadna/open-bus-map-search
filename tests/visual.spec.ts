@@ -9,7 +9,7 @@ test.describe('Visual Tests', () => {
       // set batch id to the commit sha
       eyes.setBatch({
         id: process.env.GITHUB_SHA,
-        name: 'openbus',
+        name: 'openbus test commit ' + process.env.GITHUB_SHA + ' branch ' + process.env.GITHUB_REF,
       })
     } else {
       eyes.setBatch(username() + ' is testing openbus ' + new Date().toLocaleString().split(',')[0])
