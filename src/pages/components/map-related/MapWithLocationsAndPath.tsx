@@ -12,6 +12,7 @@ const position: Point = {
   color: 0,
 }
 
+
 export function MapWithLocationsAndPath({ positions, plannedRouteStops }: MapProps) {
   const [isExpanded, setIsExpanded] = useState<boolean>(false)
   const toggleExpanded = useCallback(() => setIsExpanded((expanded) => !expanded), [])
