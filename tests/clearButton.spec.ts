@@ -7,7 +7,7 @@ import Selectors from './SelectorsModel'
 
 async function visitPage(page: Page, pageName: string, url: RegExp) {
   await page.goto('/')
-  await page.getByText(pageName, { exact: true }).click()
+  await page.getByText(pageName, { exact: true }).and(page.getByRole('link')).click()
   await page.waitForURL(url)
   await page.getByRole('progressbar').waitFor({ state: 'hidden' })
 }

@@ -81,6 +81,11 @@ https://github.com/hasadna/open-bus-map-search/blob/main/src/model/busStop.ts#L4
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/itsoriki"><img src="https://avatars.githubusercontent.com/u/93577239?v=4?s=100" width="100px;" alt="Ori Hazan"/><br /><sub><b>Ori Hazan</b></sub></a><br /><a href="#code-itsoriki" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/dorinzrihen"><img src="https://avatars.githubusercontent.com/u/20385035?v=4?s=100" width="100px;" alt="dorinzrihen"/><br /><sub><b>dorinzrihen</b></sub></a><br /><a href="#code-dorinzrihen" title="Code">💻</a></td>
     </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://portfolio-next-js-phi.vercel.app/"><img src="https://avatars.githubusercontent.com/u/57066118?v=4?s=100" width="100px;" alt="Dafna Pundak"/><br /><sub><b>Dafna Pundak</b></sub></a><br /><a href="#code-DafnaPundak" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://reallyliri.com"><img src="https://avatars.githubusercontent.com/u/16985735?v=4?s=100" width="100px;" alt="Liri S"/><br /><sub><b>Liri S</b></sub></a><br /><a href="#code-ReallyLiri" title="Code">💻</a> <a href="#infra-ReallyLiri" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a> <a href="#ideas-ReallyLiri" title="Ideas, Planning, & Feedback">🤔</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/EtayZaslavsky"><img src="https://avatars.githubusercontent.com/u/105246259?v=4?s=100" width="100px;" alt="Etay Zaslavsky"/><br /><sub><b>Etay Zaslavsky</b></sub></a><br /><a href="#code-EtayZaslavsky" title="Code">💻</a></td>
+    </tr>
   </tbody>
 </table>
 

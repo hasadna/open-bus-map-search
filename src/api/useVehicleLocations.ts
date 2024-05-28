@@ -166,16 +166,19 @@ export default function useVehicleLocations({
   lineRef,
   operatorRef,
   splitMinutes: split = 1,
+  pause = false,
 }: {
   from: Dateable
   to: Dateable
   lineRef?: number
   operatorRef?: number
   splitMinutes?: false | number
+  pause?: boolean
 }) {
   const [locations, setLocations] = useState<VehicleLocation[]>([])
   const [isLoading, setIsLoading] = useState<boolean[]>([])
   useEffect(() => {
+    if (pause) return
     const range = split ? getMinutesInRange(from, to, split) : [{ from, to }]
     setIsLoading(range.map(() => true))
     const unmounts = range.map(({ from, to }, i) =>

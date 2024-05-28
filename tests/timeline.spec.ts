@@ -24,7 +24,10 @@ test.describe('Timeline Page Tests', () => {
     timelinePage = new TimelinePage(page) // Initialize timelinePage before each test
     await timelinePage.setFakeTime(getPastDate())
     await page.goto('/')
-    await page.getByText(i18next.t('timeline_page_title'), { exact: true }).click()
+    await page
+      .getByText(i18next.t('timeline_page_title'), { exact: true })
+      .and(page.getByRole('link'))
+      .click()
     await page.getByRole('progressbar').waitFor({ state: 'hidden' })
     await timelinePage.validatePageUrl(/timeline/)
   })
