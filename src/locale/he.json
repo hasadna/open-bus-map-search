@@ -1,4 +1,12 @@
 {
+  "homepage": {
+    "welcome": "ברוכים הבאים לדאטאבוס",
+    "databus_definition": "הפלטפורמה הפתוחה לנתוני אמת על איכות קווי התחבורה הציבורית בישראל",
+    "website_goal": "מטרת האתר היא לשפר את איכות התחבורה הציבורית בארץ ע\"י מתן מידע אמין לעיתונאים, אזרחים, חברות התחבורה, וגורמי ממשל בישראל.",
+    "show_button": "הצג",
+    "copyright": "© הסדנא לידע ציבורי (ע\"ר)"
+  },
+  "homepage_title": "ראשי",
   "dashboard_page_title": "קיום נסיעות",
   "dashboard_page_description": "תצוגה גרפית של אחוז הנסיעות שיצאו בפועל מתוך סך הנסיעות המתוכננות, מפולח לפי חברות תחבורה ציבורית (אגד, דן, מטרופולין וכו')",
   "timeline_page_title": "היסטוריית נסיעות",
@@ -61,6 +69,7 @@
   "start": "התחלה",
   "end": "סיום",
   "about_title": "אודות",
+  "public_appeal_title": "קול קורא",
   "donate_title": "לתרומות",
   "report_a_bug_title": "דיווח על באג",
   "website_name": "דאטאבוס",
@@ -80,7 +89,7 @@
   "and_smaller_donors": "ותרומות קטנות נוספות של ידידי ואוהדי הסדנא.",
 
   "github_link": "למעבר אל GitHub",
-  "dark_mode_tooltip": "עבור למצב חשוך",
+  "dark_mode_tooltip": "עבור למצב כהה",
   "light_mode_tooltip": "עבור למצב בהיר",
   "Change Language": "English",
   "bug_title": "כותרת/סיכום",
@@ -185,5 +194,22 @@
   "plannedRoute": "מסלול מתוכנן",
   "actualRoute": "מסלול בפועל",
   "youtube_modal_info_title": "סרטון הסבר",
-  "open_video_about_this_page": "לפתוח סרטון על העמוד הזה"
+  "open_video_about_this_page": "לפתוח סרטון על העמוד הזה",
+  "publicAppealPage": {
+    "title": "קול קורא",
+    "tasks": [
+      {
+        "title": "What affect does the traffic have on the overal execusion time of bus ride?",
+        "description": "calculating the standard deviation of bus ride durations can indicate problems with traffic."
+      },
+      {
+        "title": "Calculate time estimation for when the bus left it's origin",
+        "description": "TO COMPLETE"
+      },
+      {
+        "title": "How to classify bus-lines to meaningful geographical clusters?",
+        "description": "TO COMPLETE"
+      }
+    ]
+  }
 }
