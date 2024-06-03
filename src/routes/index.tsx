@@ -145,14 +145,16 @@ const getRoutesList = () => {
         key={'/profile/:gtfsRideGtfsRouteId'}
         element={<Profile />}
         ErrorBoundary={ErrorPage}
-        loader={async ({ params: { gtfsRideGtfsRouteId } }) => {
-          const resp = await fetch(
-            `https://open-bus-stride-api.hasadna.org.il/gtfs_routes/get?id=${gtfsRideGtfsRouteId}`,
-          )
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const gtfs_route = await resp.json()
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-          return gtfs_route
+        loader = {async ({ params: { gtfsRideGtfsRouteId } }) => {
+          try {
+            const response = await fetch(`https://open-bus-stride-api.hasadna.org.il/gtfs_routes/get?id=${gtfsRideGtfsRouteId}`);
+            if (!response.ok) {
+              throw new Error('Network response was not ok');
+            }
+            return response.json();
+          } catch (error) {
+            console.error('Fetch error:', error);
+          }
         }}
       />
       <Route path="*" element={<RedirectToHomepage />} key="back" />
