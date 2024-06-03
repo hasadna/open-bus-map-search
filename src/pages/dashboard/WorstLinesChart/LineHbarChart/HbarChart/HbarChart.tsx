@@ -52,7 +52,9 @@ export function HbarChart({
                 {wrapWithTooltip(
                   <div
                     className="barDisplay"
-                    style={{ width: `${entry.percent}%`, backgroundColor: entry.color }}>{entry.percent.toFixed(2)}%</div>,
+                    style={{ width: `${entry.percent}%`, backgroundColor: entry.color }}>
+                    {entry.percent.toFixed(2)}%
+                  </div>,
                   entry,
                 )}
               </div>

@@ -23,10 +23,14 @@ export const HomePage = () => {
       <h1>{t('homepage.welcome')}</h1>
       <h2>{t('homepage.databus_definition')}</h2>
       <p>{t('homepage.website_goal')}</p>
-      <section className="menu_link">
-        <PageLink icon={<MenuOutlined />} label={t('homepage.open_menu')} to={() => setDrawerOpen(true)} />
+      <section className="menLink">
+        <PageLink
+          icon={<MenuOutlined />}
+          label={t('homepage.open_menu')}
+          to={() => setDrawerOpen(true)}
+        />
       </section>
-      <section className="links" >
+      <section className="links">
         <PageLink icon={<HistoryOutlined />} label={t('timeline_page_title')} to="/timeline" />
         <PageLink icon={<DirectionsBusOutlined />} label={t('gaps_page_title')} to="/gaps" />
         <PageLink
@@ -59,7 +63,7 @@ const PageLink = ({
       {typeof to == 'function' ? (
         <a onClick={to}>{t('homepage.show_button')}</a>
       ) : (
-      <NavLink to={to}>{t('homepage.show_button')}</NavLink>
+        <NavLink to={to}>{t('homepage.show_button')}</NavLink>
       )}
     </div>
   )

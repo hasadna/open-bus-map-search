@@ -9,6 +9,7 @@
   align-items: center;
   text-align: center;
   overflow: hidden;
+
   :hover{
     cursor: default;
   }
@@ -44,10 +45,11 @@ footer {
   @media (width <= 600px) {
     margin-bottom: 3rem;
   }
+
   margin-bottom: 10vh;
 }
 
-.menu_link{
+.menuLink{
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -87,11 +89,12 @@ footer {
   }
 }
 
-@media screen and (min-width: 600px){
+@media (min-width = 600px) {
   .links{
     display:grid
   }
-  .menu_link{
+
+  .menuLink{
     display: none
   }
 }

@@ -35,6 +35,7 @@ const { Title } = Typography
 import { useTranslation } from 'react-i18next'
 import Widget from 'src/shared/Widget'
 import InfoYoutubeModal from '../components/YoutubeModal'
+
 // Define prop types for the component
 interface BusLineStatisticsProps {
   lineRef: number
@@ -62,7 +63,9 @@ const CustomTooltip = ({ active, payload }: TooltipProps<number, string>) => {
 
 function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatisticsProps) {
   const sorting_mode = sessionStorage.getItem('sorting_mode') as 'hour' | 'severity'
-  const [sortingMode, setSortingMode] = useState<'hour' | 'severity'>(sorting_mode ? sorting_mode : 'hour')
+  const [sortingMode, setSortingMode] = useState<'hour' | 'severity'>(
+    sorting_mode ? sorting_mode : 'hour',
+  )
   const hourlyData = useGapsList(fromDate, toDate, operatorRef, lineRef, sortingMode)
   const isLoading = !hourlyData.length
   const { t } = useTranslation()
@@ -71,7 +74,7 @@ function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatistic
     ...hourlyData.map((entry) => entry.actual_rides),
   )
 
-  function changeSorting(e: RadioChangeEvent){
+  function changeSorting(e: RadioChangeEvent) {
     setSortingMode(e.target.value as 'hour' | 'severity')
     sessionStorage.setItem('sorting_mode', e.target.value as 'hour' | 'severity')
   }
@@ -88,7 +91,7 @@ function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatistic
               onChange={changeSorting}
               value={sortingMode}>
               <Radio.Button value="hour">{t('order_by_hour')}</Radio.Button>
-              <Radio.Button value="severity">{t('order_by_severity')} </Radio.Button>
+              <Radio.Button value="severity">{t('order_by_severity')}</Radio.Button>
             </Radio.Group>
             <ResponsiveContainer width="100%" height={hourlyData.length * 50}>
               <ComposedChart
@@ -129,13 +132,13 @@ function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatistic
                 <Legend />
                 <Bar dataKey="actual_rides" barSize={20} radius={9} xAxisId={1} opacity={30}>
                   {hourlyData.map((entry, index) => (
-                      <Cell
+                    <Cell
                       key={`cell-${index}`}
                       fill={mapColorByExecution(entry.planned_rides, entry.actual_rides)}
                     />
                   ))}
                 </Bar>
-                <Bar dataKey='planned_rides' barSize={20} fill="#413ea055" radius={9} xAxisId={0} />
+                <Bar dataKey="planned_rides" barSize={20} fill="#413ea055" radius={9} xAxisId={0} />
               </ComposedChart>
             </ResponsiveContainer>
           </>
@@ -219,7 +222,7 @@ const GapsPatternsPage = () => {
               customLabel={t('end')}
             />
           </Grid>
-          </Grid>
+        </Grid>
 
         <Grid xs={4} className="hideOnMobile">
           <Label text={t('choose_operator')} />
@@ -245,9 +248,8 @@ const GapsPatternsPage = () => {
               <Label text={t('loading_routes')} />
               <Spin />
             </Row>
-          ) 
-          :
-          !routesIsLoading &&
+          ) : (
+            !routesIsLoading &&
             routes &&
             (routes.length === 0 ? (
               <NotFound>{t('line_not_found')}</NotFound>
@@ -259,7 +261,8 @@ const GapsPatternsPage = () => {
                   setRouteKey={(key) => setSearch((current) => ({ ...current, routeKey: key }))}
                 />
               </>
-            ))}
+            ))
+          )}
         </Grid>
       </Grid>
       <Grid xs={12}>
