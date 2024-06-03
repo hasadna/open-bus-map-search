@@ -41,16 +41,6 @@ export const HomePage = () => {
   )
 }
 
-// export const HomePage = () => {
-//   const { t } = useTranslation()
-//   return (
-//     <>
-//         <HomeBuild />
-//         <footer>{`${t('homepage.copyright')} ${new Date().getFullYear()}`}</footer>
-//     </>
-//   )
-// }
-
 const PageLink = ({
   icon,
   label,
