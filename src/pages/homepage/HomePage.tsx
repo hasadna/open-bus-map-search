@@ -13,7 +13,7 @@ import { SvgIconProps } from '@mui/material'
 import React, { useContext } from 'react'
 import { LayoutContextInterface, LayoutCtx } from 'src/layout/LayoutContext'
 
-export const HomeBuild = () => {
+export const HomePage = () => {
   const { t } = useTranslation()
   const { setDrawerOpen } = useContext<LayoutContextInterface>(LayoutCtx)
 
@@ -36,19 +36,20 @@ export const HomeBuild = () => {
         />
         <PageLink icon={<MapOutlined />} label={t('time_based_map_page_title')} to="/map" />
       </section>
+      <footer>{`${t('homepage.copyright')} ${new Date().getFullYear()}`}</footer>
     </div>
   )
 }
 
-export const HomePage = () => {
-  const { t } = useTranslation()
-  return (
-    <>
-        <HomeBuild />
-        <footer>{`${t('homepage.copyright')} ${new Date().getFullYear()}`}</footer>
-    </>
-  )
-}
+// export const HomePage = () => {
+//   const { t } = useTranslation()
+//   return (
+//     <>
+//         <HomeBuild />
+//         <footer>{`${t('homepage.copyright')} ${new Date().getFullYear()}`}</footer>
+//     </>
+//   )
+// }
 
 const PageLink = ({
   icon,
