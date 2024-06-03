@@ -17,7 +17,6 @@ export function HbarChart({
   const percents = entries
     .map((o) => (o.actual / o.total) * 100)
     .map((p) => (complement ? Math.max(100 - p, 0) : p))
-
   const rows = entries.map((entry, idx) => ({
     percent: percents[idx],
     ...entry,
@@ -49,16 +48,11 @@ export function HbarChart({
               <div className="entryName" style={{ borderBottomColor: entry.color }}>
                 {entry.name.split('|').slice(0, 2).join(' | ')}
               </div>
-
               <div className="entryBar">
                 {wrapWithTooltip(
                   <div
                     className="barDisplay"
-                    style={{ width: `${entry.percent}%`, backgroundColor: entry.color }}></div>,
-                  entry,
-                )}
-                {wrapWithTooltip(
-                  <div className="entryBarTotal">{entry.percent.toFixed(2)}%</div>,
+                    style={{ width: `${entry.percent}%`, backgroundColor: entry.color }}>{entry.percent.toFixed(2)}%</div>,
                   entry,
                 )}
               </div>

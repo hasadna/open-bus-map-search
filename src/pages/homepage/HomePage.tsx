@@ -6,12 +6,16 @@ import {
   DirectionsBusOutlined,
   HistoryOutlined,
   MapOutlined,
+  MenuOutlined,
   ViewKanbanOutlined,
 } from '@mui/icons-material'
 import { SvgIconProps } from '@mui/material'
+import React, { useContext } from 'react'
+import { LayoutContextInterface, LayoutCtx } from 'src/layout/LayoutContext'
 
-export const HomePage = () => {
+export const HomeBuild = () => {
   const { t } = useTranslation()
+  const { setDrawerOpen } = useContext<LayoutContextInterface>(LayoutCtx)
 
   return (
     <div className="container">
@@ -19,7 +23,10 @@ export const HomePage = () => {
       <h1>{t('homepage.welcome')}</h1>
       <h2>{t('homepage.databus_definition')}</h2>
       <p>{t('homepage.website_goal')}</p>
-      <section className="links">
+      <section className="menu_link">
+        <PageLink icon={<MenuOutlined />} label={t('homepage.open_menu')} to={() => setDrawerOpen(true)} />
+      </section>
+      <section className="links" >
         <PageLink icon={<HistoryOutlined />} label={t('timeline_page_title')} to="/timeline" />
         <PageLink icon={<DirectionsBusOutlined />} label={t('gaps_page_title')} to="/gaps" />
         <PageLink
@@ -29,8 +36,17 @@ export const HomePage = () => {
         />
         <PageLink icon={<MapOutlined />} label={t('time_based_map_page_title')} to="/map" />
       </section>
-      <footer>{`${t('homepage.copyright')} ${new Date().getFullYear()}`}</footer>
     </div>
+  )
+}
+
+export const HomePage = () => {
+  const { t } = useTranslation()
+  return (
+    <>
+        <HomeBuild />
+        <footer>{`${t('homepage.copyright')} ${new Date().getFullYear()}`}</footer>
+    </>
   )
 }
 
@@ -41,7 +57,7 @@ const PageLink = ({
 }: {
   icon: React.ReactElement<SvgIconProps>
   label: string
-  to: To
+  to: To | (() => void)
 }) => {
   const { t } = useTranslation()
 
@@ -49,7 +65,11 @@ const PageLink = ({
     <div className="page-link">
       {icon}
       <span>{label}</span>
+      {typeof to == 'function' ? (
+        <a onClick={to}>{t('homepage.show_button')}</a>
+      ) : (
       <NavLink to={to}>{t('homepage.show_button')}</NavLink>
+      )}
     </div>
   )
 }

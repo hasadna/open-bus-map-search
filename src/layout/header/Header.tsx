@@ -22,7 +22,6 @@ const MainHeader = () => {
       <HeaderLinks>
         <LanguageToggle />
         <ToggleThemeButton toggleTheme={toggleTheme} isDarkTheme={isDarkTheme} />
-        <DonationButton />
       </HeaderLinks>
     </Header>
   )

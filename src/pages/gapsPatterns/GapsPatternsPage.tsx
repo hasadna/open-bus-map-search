@@ -61,7 +61,8 @@ const CustomTooltip = ({ active, payload }: TooltipProps<number, string>) => {
 }
 
 function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatisticsProps) {
-  const [sortingMode, setSortingMode] = useState<'hour' | 'severity'>('hour')
+  const sorting_mode = sessionStorage.getItem('sorting_mode') as 'hour' | 'severity'
+  const [sortingMode, setSortingMode] = useState<'hour' | 'severity'>(sorting_mode ? sorting_mode : 'hour')
   const hourlyData = useGapsList(fromDate, toDate, operatorRef, lineRef, sortingMode)
   const isLoading = !hourlyData.length
   const { t } = useTranslation()
@@ -69,6 +70,11 @@ function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatistic
     ...hourlyData.map((entry) => entry.planned_rides),
     ...hourlyData.map((entry) => entry.actual_rides),
   )
+
+  function changeSorting(e: RadioChangeEvent){
+    setSortingMode(e.target.value as 'hour' | 'severity')
+    sessionStorage.setItem('sorting_mode', e.target.value as 'hour' | 'severity')
+  }
 
   return (
     lineRef > 0 && (
@@ -79,9 +85,7 @@ function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatistic
           <>
             <Radio.Group
               style={{ marginBottom: '10px' }}
-              onChange={(e: RadioChangeEvent) =>
-                setSortingMode(e.target.value as 'hour' | 'severity')
-              }
+              onChange={changeSorting}
               value={sortingMode}>
               <Radio.Button value="hour">{t('order_by_hour')}</Radio.Button>
               <Radio.Button value="severity">{t('order_by_severity')} </Radio.Button>
@@ -125,13 +129,13 @@ function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatistic
                 <Legend />
                 <Bar dataKey="actual_rides" barSize={20} radius={9} xAxisId={1} opacity={30}>
                   {hourlyData.map((entry, index) => (
-                    <Cell
+                      <Cell
                       key={`cell-${index}`}
                       fill={mapColorByExecution(entry.planned_rides, entry.actual_rides)}
                     />
                   ))}
                 </Bar>
-                <Bar dataKey="planned_rides" barSize={20} fill="#413ea055" radius={9} xAxisId={0} />
+                <Bar dataKey='planned_rides' barSize={20} fill="#413ea055" radius={9} xAxisId={0} />
               </ComposedChart>
             </ResponsiveContainer>
           </>
@@ -215,7 +219,7 @@ const GapsPatternsPage = () => {
               customLabel={t('end')}
             />
           </Grid>
-        </Grid>
+          </Grid>
 
         <Grid xs={4} className="hideOnMobile">
           <Label text={t('choose_operator')} />
@@ -236,13 +240,14 @@ const GapsPatternsPage = () => {
           />
         </Grid>
         <Grid xs={12}>
-          {routesIsLoading && (
+          {routesIsLoading ? (
             <Row>
               <Label text={t('loading_routes')} />
               <Spin />
             </Row>
-          )}
-          {!routesIsLoading &&
+          ) 
+          :
+          !routesIsLoading &&
             routes &&
             (routes.length === 0 ? (
               <NotFound>{t('line_not_found')}</NotFound>
