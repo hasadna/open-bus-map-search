@@ -31,9 +31,9 @@ import {
   LineChartOutlined,
   GithubOutlined,
 } from '@ant-design/icons'
+import PsychologyIcon from '@mui/icons-material/Psychology'
 import { MainRoute } from './MainRoute'
 import { ErrorPage } from 'src/pages/ErrorPage'
-import PsychologyIcon from '@mui/icons-material/Psychology'
 
 export const PAGES = [
   {

@@ -1,13 +1,13 @@
 import { Marker, Polyline, Popup, TileLayer } from 'react-leaflet'
 import { Icon, IconOptions } from 'leaflet'
-import { useAgencyList } from 'src/api/agencyList'
+import { t } from 'i18next'
 import { busIcon, busIconPath } from '../utils/BusIcon'
 import { BusToolTip } from './MapLayers/BusToolTip'
-import { t } from 'i18next'
 import '../../Map.scss'
 import { MapProps } from './map-types'
 import { useRecenterOnDataChange } from './useRecenterOnDataChange'
 import { MapIndex } from './MapIndex'
+import { useAgencyList } from 'src/api/agencyList'
 
 export function MapContent({ positions, plannedRouteStops }: MapProps) {
   useRecenterOnDataChange({ positions, plannedRouteStops })

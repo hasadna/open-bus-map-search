@@ -3,18 +3,7 @@ import './GapsPatternsPage.scss'
 import { Moment } from 'moment'
 import { Skeleton, Spin, Radio, Typography, RadioChangeEvent, Alert, Space } from 'antd'
 import moment from 'moment/moment'
-import { useDate } from '../components/DateTimePicker'
-import { PageContainer } from '../components/PageContainer'
-import { Row } from '../components/Row'
-import { Label } from '../components/Label'
-import OperatorSelector from '../components/OperatorSelector'
-import LineNumberSelector from '../components/LineSelector'
-import { NotFound } from '../components/NotFound'
-import RouteSelector from '../components/RouteSelector'
-import { SearchContext } from '../../model/pageState'
-import { getRoutesAsync } from '../../api/gtfsService'
 import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
-
 import {
   Bar,
   CartesianGrid,
@@ -27,14 +16,25 @@ import {
   TooltipProps,
   ResponsiveContainer,
 } from 'recharts'
+import { useTranslation } from 'react-i18next'
+import { useDate } from '../components/DateTimePicker'
+import { PageContainer } from '../components/PageContainer'
+import { Row } from '../components/Row'
+import { Label } from '../components/Label'
+import OperatorSelector from '../components/OperatorSelector'
+import LineNumberSelector from '../components/LineSelector'
+import { NotFound } from '../components/NotFound'
+import RouteSelector from '../components/RouteSelector'
+import { SearchContext } from '../../model/pageState'
+import { getRoutesAsync } from '../../api/gtfsService'
+
 import { mapColorByExecution } from '../components/utils'
-import { useGapsList } from './useGapsList'
 import { DateSelector } from '../components/DateSelector'
+import InfoYoutubeModal from '../components/YoutubeModal'
+import { useGapsList } from './useGapsList'
 import { INPUT_SIZE } from 'src/resources/sizes'
 const { Title } = Typography
-import { useTranslation } from 'react-i18next'
 import Widget from 'src/shared/Widget'
-import InfoYoutubeModal from '../components/YoutubeModal'
 // Define prop types for the component
 interface BusLineStatisticsProps {
   lineRef: number

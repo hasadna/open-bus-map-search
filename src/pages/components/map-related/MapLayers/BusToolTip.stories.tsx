@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { BusToolTip, BusToolTipProps } from './BusToolTip'
 import { BrowserRouter } from 'react-router-dom'
+import { BusToolTip, BusToolTipProps } from './BusToolTip'
 
 const meta = {
   title: 'Components/MapLayers/BusToolTip',

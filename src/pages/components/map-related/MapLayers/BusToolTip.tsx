@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Point } from 'src/pages/timeBasedMap'
 import { Button } from '@mui/material'
 import moment from 'moment-timezone'
 import './BusToolTip.scss'
-import { getSiriRideWithRelated } from 'src/api/siriService'
 import { SiriRideWithRelatedPydanticModel } from 'open-bus-stride-client/openapi/models/SiriRideWithRelatedPydanticModel'
 import { useTranslation } from 'react-i18next'
 import { Spin } from 'antd'
 import cn from 'classnames'
 import CustomTreeView from '../../CustomTreeView'
+import { getSiriRideWithRelated } from 'src/api/siriService'
+import { Point } from 'src/pages/timeBasedMap'
 
 export type BusToolTipProps = { position: Point; icon: string }
 

@@ -1,11 +1,11 @@
 import styled from 'styled-components'
-import SlackIcon from '../../resources/slack-icon.svg'
 import { Trans, useTranslation } from 'react-i18next'
-import Widget from 'src/shared/Widget'
 import { Space, Typography } from 'antd'
 
 import './About.scss'
 import { useQuery } from '@tanstack/react-query'
+import SlackIcon from '../../resources/slack-icon.svg'
+import Widget from 'src/shared/Widget'
 
 const { Title } = Typography
 const pageName = 'aboutPage'

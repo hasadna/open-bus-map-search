@@ -1,5 +1,4 @@
 import { NavLink, To } from 'react-router-dom'
-import busImage from '../../img/busImg.png'
 import './HomePage.scss'
 import { useTranslation } from 'react-i18next'
 import {
@@ -9,6 +8,7 @@ import {
   ViewKanbanOutlined,
 } from '@mui/icons-material'
 import { SvgIconProps } from '@mui/material'
+import busImage from '../../img/busImg.png'
 
 export const HomePage = () => {
   const { t } = useTranslation()
