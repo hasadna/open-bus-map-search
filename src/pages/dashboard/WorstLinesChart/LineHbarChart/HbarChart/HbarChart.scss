@@ -15,9 +15,12 @@
             align-items: center;
 
             .barDisplay {
-                height: 7px;
+                display: inline-block;
                 border-radius: 10px;
                 margin-left: 10px;
+                text-align: center;
+                font-weight: bold;
+                color: rgb(255, 255, 255);
             }
 
             .entryBarTotal {
@@ -27,4 +30,8 @@
             }
          }
     }
+}
+
+.HbarChart:hover {
+    cursor: default;
 }
