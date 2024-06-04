@@ -4,7 +4,8 @@
     "databus_definition": "The open platform for real data on the quality of public transportation lines in Israel",
     "website_goal": "The purpose of the site is to improve the quality of public transportation in Israel by providing reliable information to journalists, citizens, transportation companies, and government officials in Israel.",
     "show_button": "Show",
-    "copyright": "© The Public Knowledge Workshop"
+    "copyright": "© The Public Knowledge Workshop",
+    "open_menu": "Start Exploring"
   },
   "homepage_title": "Home",
   "dashboard_page_title": "Public transport operators according to planned trips",
