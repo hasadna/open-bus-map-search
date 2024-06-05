@@ -140,6 +140,54 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "dorinzrihen",
+      "name": "dorinzrihen",
+      "avatar_url": "https://avatars.githubusercontent.com/u/20385035?v=4",
+      "profile": "https://github.com/dorinzrihen",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "DafnaPundak",
+      "name": "Dafna Pundak",
+      "avatar_url": "https://avatars.githubusercontent.com/u/57066118?v=4",
+      "profile": "https://portfolio-next-js-phi.vercel.app/",
+      "contributions": [
+        "code",
+        "review"
+      ]
+    },
+    {
+      "login": "ReallyLiri",
+      "name": "Liri S",
+      "avatar_url": "https://avatars.githubusercontent.com/u/16985735?v=4",
+      "profile": "https://reallyliri.com",
+      "contributions": [
+        "code",
+        "infra",
+        "ideas"
+      ]
+    },
+    {
+      "login": "EtayZaslavsky",
+      "name": "Etay Zaslavsky",
+      "avatar_url": "https://avatars.githubusercontent.com/u/105246259?v=4",
+      "profile": "https://github.com/EtayZaslavsky",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "menachem95",
+      "name": "menachem95",
+      "avatar_url": "https://avatars.githubusercontent.com/u/105776588?v=4",
+      "profile": "https://github.com/menachem95",
+      "contributions": [
+        "code"
+      ]
     }
   ]
 }

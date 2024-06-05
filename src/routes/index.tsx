@@ -16,6 +16,7 @@ const DataResearch = lazy(() =>
     default: m.DataResearch,
   })),
 )
+const PublicAppeal = lazy(() => import('../pages/publicAppeal'))
 
 import {
   HomeOutlined,
@@ -32,8 +33,15 @@ import {
 } from '@ant-design/icons'
 import { MainRoute } from './MainRoute'
 import { ErrorPage } from 'src/pages/ErrorPage'
+import PsychologyIcon from '@mui/icons-material/Psychology'
 
 export const PAGES = [
+  {
+    label: 'homepage_title',
+    path: '/',
+    icon: <HomeOutlined />,
+    element: <HomePage />,
+  },
   {
     label: 'dashboard_page_title',
     path: '/dashboard',
@@ -85,6 +93,12 @@ export const PAGES = [
     icon: <DollarOutlined />,
     element: null,
   },
+  {
+    label: 'public_appeal_title',
+    path: '/public-appeal',
+    icon: <PsychologyIcon />,
+    element: <PublicAppeal />,
+  },
 ] as const
 
 export const HEADER_LINKS = [
@@ -93,12 +107,6 @@ export const HEADER_LINKS = [
     path: 'report-a-bug',
     icon: <BugOutlined />,
     element: <BugReportForm />,
-  },
-  {
-    label: 'donate_title',
-    path: 'https://www.jgive.com/new/he/ils/donation-targets/3268#donation-modal',
-    icon: <DollarOutlined />,
-    element: null,
   },
   {
     label: 'github_link',
@@ -110,12 +118,6 @@ export const HEADER_LINKS = [
 
 const HIDDEN_PAGES = [
   {
-    label: 'home_page',
-    path: '/home',
-    icon: <HomeOutlined />,
-    element: <HomePage />, //need to build - created only the file and routing
-  },
-  {
     label: 'data-research',
     path: '/data-research',
     icon: <InfoCircleOutlined />,
@@ -125,7 +127,7 @@ const HIDDEN_PAGES = [
 
 const getRoutesList = () => {
   const pages = [...PAGES, ...HIDDEN_PAGES, ...HEADER_LINKS]
-  const RedirectToDashboard = () => <Navigate to={pages[0].path} replace />
+  const RedirectToHomepage = () => <Navigate to={pages[0].path} replace />
   const routes = pages.filter((r) => r.element)
   return (
     <Route element={<MainRoute />}>
@@ -147,7 +149,7 @@ const getRoutesList = () => {
           return gtfs_route
         }}
       />
-      <Route path="*" element={<RedirectToDashboard />} key="back" />
+      <Route path="*" element={<RedirectToHomepage />} key="back" />
     </Route>
     // </Suspense>
   )
