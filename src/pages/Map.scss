@@ -32,22 +32,27 @@ main > div,
       align-items: center;
 
       &-config {
+        display: flex;
         align-items: center;
+        justify-content: center;
+        position: relative;
         margin-left: 1em;
       }
 
       &-line {
+        position: absolute;
         width: 25px;
         height: 4px;
       }
 
       &-icon {
-        width: 20px;
-        height: 20px;
-        margin: 0 auto;
-        background-size: contain;
-        background-position: center;
-        background-repeat: no-repeat;
+        display: flex;
+
+        img {
+          width: 20px;
+          height: 20px;
+      }
+
       }
 
       &-title {
