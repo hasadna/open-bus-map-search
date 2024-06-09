@@ -10,6 +10,9 @@ import { useTranslation } from 'react-i18next'
 import { Spin } from 'antd'
 import cn from 'classnames'
 import CustomTreeView from '../../CustomTreeView'
+import { EasterEgg } from '../../../EasterEgg/EasterEgg'
+
+import ComplaintModal from './ComplaintModal'
 
 export type BusToolTipProps = { position: Point; icon: string }
 
@@ -18,6 +21,7 @@ export function BusToolTip({ position, icon }: BusToolTipProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [showJson, setShowJson] = useState(false)
   const { t, i18n } = useTranslation()
+  const [modalOpen, setModalOpen] = useState(false)
 
   useEffect(() => {
     setIsLoading(true)
@@ -93,6 +97,26 @@ export function BusToolTip({ position, icon }: BusToolTipProps) {
               onClick={() => setShowJson((showJson) => !showJson)}>
               {showJson ? t('hide_document') : t('show_document')}
             </Button>
+
+            {/* Open Complaint Button */}
+            <EasterEgg code="complaint">
+              <Button
+                variant="contained"
+                color="success"
+                onClick={() => setModalOpen((prev) => !prev)}
+                style={{ borderRadius: '50px' }}>
+                {t('open_complaint')}
+              </Button>
+            </EasterEgg>
+
+            {/* Complaint Modal */}
+            <ComplaintModal
+              modalOpen={modalOpen}
+              setModalOpen={setModalOpen}
+              position={position}
+              siriRide={siriRide}
+            />
+
             {showJson && (
               <div onClick={(e) => e.stopPropagation()}>
                 <CustomTreeView<Point>
