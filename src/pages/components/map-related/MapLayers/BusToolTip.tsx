@@ -7,7 +7,7 @@ import './BusToolTip.scss'
 import { getSiriRideWithRelated } from 'src/api/siriService'
 import { SiriRideWithRelatedPydanticModel } from 'open-bus-stride-client/openapi/models/SiriRideWithRelatedPydanticModel'
 import { useTranslation } from 'react-i18next'
-import { Spin } from 'antd'
+import CircularProgress from '@mui/material/CircularProgress'
 import cn from 'classnames'
 import CustomTreeView from '../../CustomTreeView'
 
@@ -35,7 +35,7 @@ export function BusToolTip({ position, icon }: BusToolTipProps) {
       {isLoading || !siriRide ? (
         <div className="loading">
           <span>{t('loading_routes')}</span>
-          <Spin />
+          <CircularProgress />
         </div>
       ) : (
         <>
