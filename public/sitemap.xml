@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+        
+            <url>
+                <loc>https://open-bus-map-search.hasadna.org.il/</loc>
+                <changefreq>weekly</changefreq>
+                <priority>0.8</priority>
+                <lastmod>2024-06-09T12:59:28.629Z</lastmod>
+             </url> 
+          
+
+            <url>
+                <loc>https://open-bus-map-search.hasadna.org.il/dashboard</loc>
+                <changefreq>weekly</changefreq>
+                <priority>0.8</priority>
+                <lastmod>2024-06-09T12:59:28.630Z</lastmod>
+             </url> 
+          
+
+            <url>
+                <loc>https://open-bus-map-search.hasadna.org.il/timeline</loc>
+                <changefreq>weekly</changefreq>
+                <priority>0.8</priority>
+                <lastmod>2024-06-09T12:59:28.630Z</lastmod>
+             </url> 
+          
+
+            <url>
+                <loc>https://open-bus-map-search.hasadna.org.il/gaps</loc>
+                <changefreq>weekly</changefreq>
+                <priority>0.8</priority>
+                <lastmod>2024-06-09T12:59:28.630Z</lastmod>
+             </url> 
+          
+
+            <url>
+                <loc>https://open-bus-map-search.hasadna.org.il/gaps_patterns</loc>
+                <changefreq>weekly</changefreq>
+                <priority>0.8</priority>
+                <lastmod>2024-06-09T12:59:28.630Z</lastmod>
+             </url> 
+          
+
+            <url>
+                <loc>https://open-bus-map-search.hasadna.org.il/map</loc>
+                <changefreq>weekly</changefreq>
+                <priority>0.8</priority>
+                <lastmod>2024-06-09T12:59:28.630Z</lastmod>
+             </url> 
+          
+
+            <url>
+                <loc>https://open-bus-map-search.hasadna.org.il/single-line-map</loc>
+                <changefreq>weekly</changefreq>
+                <priority>0.8</priority>
+                <lastmod>2024-06-09T12:59:28.630Z</lastmod>
+             </url> 
+          
+
+            <url>
+                <loc>https://open-bus-map-search.hasadna.org.il/about</loc>
+                <changefreq>weekly</changefreq>
+                <priority>0.8</priority>
+                <lastmod>2024-06-09T12:59:28.630Z</lastmod>
+             </url> 
+          
+
+            <url>
+                <loc>https://open-bus-map-search.hasadna.org.il/public-appeal</loc>
+                <changefreq>weekly</changefreq>
+                <priority>0.8</priority>
+                <lastmod>2024-06-09T12:59:28.630Z</lastmod>
+             </url> 
+          
+
+            <url>
+                <loc>https://open-bus-map-search.hasadna.org.il/report-a-bug</loc>
+                <changefreq>weekly</changefreq>
+                <priority>0.8</priority>
+                <lastmod>2024-06-09T12:59:28.630Z</lastmod>
+             </url> 
+          
+
+            <url>
+                <loc>https://open-bus-map-search.hasadna.org.il/data-research</loc>
+                <changefreq>weekly</changefreq>
+                <priority>0.8</priority>
+                <lastmod>2024-06-09T12:59:28.630Z</lastmod>
+             </url> 
+          
+    </urlset>
