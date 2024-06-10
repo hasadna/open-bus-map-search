@@ -17,7 +17,8 @@ import { getRoutesAsync } from 'src/api/gtfsService'
 import { BusRoute } from 'src/model/busRoute'
 import { useSingleLineData } from 'src/hooks/useSingleLineData'
 import { FilterPositionsByStartTimeSelector } from '../components/FilterPositionsByStartTimeSelector'
-import { Spin, Tooltip } from 'antd'
+import { Tooltip } from 'antd'
+import CircularProgress from '@mui/material/CircularProgress'
 import './LineProfile.scss'
 
 const LineProfileWrapper = () => (
@@ -95,7 +96,7 @@ const LineProfile = () => {
           <div className="startTime">
             {locationsAreLoading && (
               <Tooltip title={t('loading_times_tooltip_content')}>
-                <Spin />
+                <CircularProgress />
               </Tooltip>
             )}
             <FilterPositionsByStartTimeSelector

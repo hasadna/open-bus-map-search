@@ -1,9 +1,9 @@
 import { MapContainer } from 'react-leaflet'
 import { Point } from 'src/pages/timeBasedMap'
+import IconButton from '@mui/material/IconButton'
+import OpenInFullRoundedIcon from '@mui/icons-material/OpenInFullRounded'
 import { MapProps } from './map-types'
 import { useCallback, useState } from 'react'
-import { Button } from 'antd'
-import { ExpandAltOutlined } from '@ant-design/icons'
 import '../../Map.scss'
 import { MapContent } from './MapContent'
 
@@ -18,13 +18,10 @@ export function MapWithLocationsAndPath({ positions, plannedRouteStops }: MapPro
 
   return (
     <div className={`map-info ${isExpanded ? 'expanded' : 'collapsed'}`}>
-      <Button
-        type="primary"
-        className="expand-button"
-        shape="circle"
-        onClick={toggleExpanded}
-        icon={<ExpandAltOutlined />}
-      />
+      <IconButton color="primary" className="expand-button" onClick={toggleExpanded}>
+        <OpenInFullRoundedIcon fontSize="large" />
+      </IconButton>
+
       <MapContainer center={position.loc} zoom={13} scrollWheelZoom={true}>
         <MapContent positions={positions} plannedRouteStops={plannedRouteStops} />
       </MapContainer>

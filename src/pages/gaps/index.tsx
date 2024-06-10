@@ -8,7 +8,7 @@ import LineNumberSelector from '../components/LineSelector'
 import { SearchContext } from '../../model/pageState'
 import { Gap, GapsList } from '../../model/gaps'
 import { getGapsAsync } from '../../api/gapsService'
-import { Spin } from 'antd'
+import CircularProgress from '@mui/material/CircularProgress'
 import RouteSelector from '../components/RouteSelector'
 import { NotFound } from '../components/NotFound'
 import { getRoutesAsync } from '../../api/gtfsService'
@@ -21,9 +21,8 @@ import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
 import { INPUT_SIZE } from 'src/resources/sizes'
 import DisplayGapsPercentage from '../components/DisplayGapsPercentage'
 import axios from 'axios'
-import { Typography, Alert } from 'antd'
-
-const { Title } = Typography
+import Typography from '@mui/material/Typography'
+import Alert from '@mui/material/Alert'
 
 const Cell = styled.div`
   width: 120px;
@@ -117,10 +116,12 @@ const GapsPage = () => {
 
   return (
     <PageContainer>
-      <Title className="page-title" level={3}>
+      <Typography className="page-title" variant="h4">
         {t('gaps_page_title')}
-      </Title>
-      <Alert message={t('gaps_page_description')} type="info" />
+      </Typography>
+      <Alert severity="info" variant="outlined" sx={{ bgcolor: '#eaf5fe' }} icon={false}>
+        {t('gaps_page_description')}
+      </Alert>
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
         {/* choose date */}
         <Grid xs={4}>
@@ -159,7 +160,7 @@ const GapsPage = () => {
           {routesIsLoading && (
             <Row>
               <Label text={t('loading_routes')} />
-              <Spin />
+              <CircularProgress />
             </Row>
           )}
           {!routesIsLoading &&
@@ -178,7 +179,7 @@ const GapsPage = () => {
           {gapsIsLoading && (
             <Row>
               <Label text={t('loading_gaps')} />
-              <Spin />
+              <CircularProgress />
             </Row>
           )}
         </Grid>

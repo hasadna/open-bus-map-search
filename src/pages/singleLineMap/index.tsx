@@ -15,7 +15,7 @@ import { CircularProgress, Tooltip } from '@mui/material'
 import { FilterPositionsByStartTimeSelector } from '../components/FilterPositionsByStartTimeSelector'
 import { PageContainer } from '../components/PageContainer'
 import { MapWithLocationsAndPath } from '../components/map-related/MapWithLocationsAndPath'
-import Title from 'antd/es/typography/Title'
+import Typography from '@mui/material/Typography'
 import InfoYoutubeModal from '../components/YoutubeModal'
 import { useSingleLineData } from 'src/hooks/useSingleLineData'
 
@@ -64,14 +64,14 @@ const SingleLineMapPage = () => {
 
   return (
     <PageContainer className="map-container">
-      <Title className="page-title" level={3}>
+      <Typography className="page-title" variant="h4">
         {t('singleline_map_page_title')}
         <InfoYoutubeModal
           label={t('open_video_about_this_page')}
           title={t('time_based_map_page_description')}
           videoUrl="https://www.youtube-nocookie.com/embed/bXg50_j_hTA?si=inyvqDylStvgNRA6&amp;start=93"
         />
-      </Title>
+      </Typography>
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
         <Grid container spacing={2} xs={12}>
           {/* choose date*/}

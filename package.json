@@ -22,7 +22,7 @@
     "axios": "^1.6.8",
     "babel-plugin-transform-import-meta": "^2.2.1",
     "classnames": "^2.5.1",
-    "dayjs": "^1.11.9",
+    "dayjs": "^1.11.11",
     "geolib": "^3.3.3",
     "git-username": "^1.0.0",
     "http-proxy-middleware": "^3.0.0",
