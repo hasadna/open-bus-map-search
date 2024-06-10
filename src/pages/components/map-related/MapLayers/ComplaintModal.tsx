@@ -15,8 +15,8 @@ import { useTranslation } from 'react-i18next'
 interface ComplaintModalProps {
   modalOpen: boolean
   setModalOpen: (open: boolean) => void
-  position: any
-  siriRide: any
+  position: { lat: number; lng: number }
+  siriRide: { gtfsRideGtfsRouteId: string }
 }
 
 const ComplaintModal = ({ modalOpen, setModalOpen, position, siriRide }: ComplaintModalProps) => {
@@ -32,7 +32,7 @@ const ComplaintModal = ({ modalOpen, setModalOpen, position, siriRide }: Complai
   })
 
   const modalStyle = {
-    position: 'absolute' as 'absolute',
+    position: 'absolute' as const,
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
