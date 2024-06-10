@@ -1,8 +1,13 @@
 .HbarChart {
     .entry {
         position: relative;
+        margin-bottom: 2%;
+        padding: 3px;
+        border-radius: 8px;
 
-        .entryName {
+        .entryData {
+            display: flex;
+            justify-content: space-between;
             margin-left: 10px;
             font-size: 16px;
             font-weight: 500;
@@ -15,9 +20,13 @@
             align-items: center;
 
             .barDisplay {
-                height: 7px;
-                border-radius: 10px;
+                height: 5px;
+                display: inline-block;
+                border-radius: 4px;
                 margin-left: 10px;
+                text-align: center;
+                font-weight: bold;
+                color: white;
             }
 
             .entryBarTotal {
@@ -27,4 +36,12 @@
             }
          }
     }
+}
+
+.HbarChart:hover {
+    cursor: default;
+}
+
+.entry:hover{
+    background-color: gray
 }
