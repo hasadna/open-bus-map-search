@@ -15,8 +15,8 @@ import { useTranslation } from 'react-i18next'
 interface ComplaintModalProps {
   modalOpen: boolean
   setModalOpen: (open: boolean) => void
-  position: { lat: number; lng: number }
-  siriRide: { gtfsRideGtfsRouteId: string }
+  position: any
+  siriRide: any
 }
 
 const ComplaintModal = ({ modalOpen, setModalOpen, position, siriRide }: ComplaintModalProps) => {
