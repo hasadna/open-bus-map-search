@@ -51,9 +51,8 @@ const ComplaintModal = ({ modalOpen, setModalOpen, position, siriRide }: Complai
 
   const handleSelectChange = (e: SelectChangeEvent<string>) => {
     const { name, value } = e.target
-    setComplaintData((prevData) => ({ ...prevData, [name]: value } as const))
+    setComplaintData((prevData) => ({ ...prevData, [name]: value }) as const)
   }
-
   const handleSubmit = () => {
     const complaintPayload = {
       userData: complaintData,
