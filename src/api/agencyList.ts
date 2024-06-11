@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { BASE_PATH } from './apiConfig'
+import moment from 'moment'
 export interface Agency {
   date: string // example - "2019-07-01"
   operator_ref: number // example - 25,
@@ -14,7 +15,8 @@ let agencyList: Agency[]
  */
 export default async function getAgencyList(): Promise<Agency[]> {
   if (!agencyList) {
-    const response = await fetch(`${BASE_PATH}/gtfs_agencies/list`)
+    const yesterday = moment().clone().subtract(1, 'day').format('YYYY-MM-DD')
+    const response = await fetch(`${BASE_PATH}/gtfs_agencies/list?date_from=${yesterday}`)
     const data = (await response.json()) as Awaited<Agency[]>
     agencyList = data.filter(Boolean) // filter empty entries
   }
