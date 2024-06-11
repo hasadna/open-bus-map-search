@@ -82,7 +82,6 @@ const ComplaintModal = ({ modalOpen, setModalOpen, position, siriRide }: Complai
             onChange={handleInputChange}
             fullWidth
             margin="normal"
-            //sx={{ textAlign: i18n.language === 'he' ? 'left' : 'right' }}
           />
           <TextField
             label={t('last_name')}
