@@ -36,13 +36,10 @@ const DashboardPage = () => {
         {t('dashboard_page_title')}
         <InfoYoutubeModal
           label="Open video about this page"
-          title={t('youtube_modal_info_title')}
+          title={t('dashboard_page_description')}
           videoUrl="https://www.youtube.com/embed/bXg50_j_hTA?si=4rpSZwMRbMomE4g1"
         />
       </Typography>
-      <Alert severity="info" variant="outlined" sx={{ bgcolor: '#eaf5fe' }} icon={false}>
-        {t('dashboard_page_description')}
-      </Alert>
       {startDate > endDate ? (
         <Alert severity="error" variant="outlined" sx={{ bgcolor: '#feeaea' }}>
           {t('bug_date_alert')}
