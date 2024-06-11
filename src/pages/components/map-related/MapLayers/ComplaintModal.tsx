@@ -42,7 +42,7 @@ const ComplaintModal = ({ modalOpen, setModalOpen, position, siriRide }: Complai
     boxShadow: 24,
     p: 4,
     textAlign: i18n.language === 'he' ? 'left' : 'right',
-  }
+  } as const
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
