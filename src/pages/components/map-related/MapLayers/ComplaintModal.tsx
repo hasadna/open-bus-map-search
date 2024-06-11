@@ -11,16 +11,18 @@ import {
   SelectChangeEvent,
 } from '@mui/material'
 import { useTranslation } from 'react-i18next'
+import { Point } from 'src/pages/timeBasedMap'
 
 interface ComplaintModalProps {
   modalOpen: boolean
   setModalOpen: (open: boolean) => void
-  position: any
+  position: Point
   siriRide: any
 }
 
 const ComplaintModal = ({ modalOpen, setModalOpen, position, siriRide }: ComplaintModalProps) => {
   const { t, i18n } = useTranslation()
+
   const [complaintData, setComplaintData] = useState({
     firstName: '',
     lastName: '',
