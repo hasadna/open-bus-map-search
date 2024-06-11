@@ -22,7 +22,7 @@ import { INPUT_SIZE } from 'src/resources/sizes'
 import DisplayGapsPercentage from '../components/DisplayGapsPercentage'
 import axios from 'axios'
 import Typography from '@mui/material/Typography'
-import Alert from '@mui/material/Alert'
+import InfoYoutubeModal from '../components/YoutubeModal'
 
 const Cell = styled.div`
   width: 120px;
@@ -116,12 +116,14 @@ const GapsPage = () => {
 
   return (
     <PageContainer>
-      <Typography className="page-title" variant="h4">
+      <Typography variant="h4" className="page-title">
         {t('gaps_page_title')}
+        <InfoYoutubeModal
+          label={t('open_video_about_this_page')}
+          title={t('gaps_page_description')}
+          videoUrl=""
+        />
       </Typography>
-      <Alert severity="info" variant="outlined" sx={{ bgcolor: '#eaf5fe' }} icon={false}>
-        {t('gaps_page_description')}
-      </Alert>
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
         {/* choose date */}
         <Grid xs={4}>
