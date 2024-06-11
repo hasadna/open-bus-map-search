@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { MapContainer, Marker, Polyline, Popup, TileLayer, useMap } from 'react-leaflet'
 import MarkerClusterGroup from 'react-leaflet-cluster'
 import { useTranslation } from 'react-i18next'
-import Alert from '@mui/material/Alert'
 import Typography from '@mui/material/Typography'
 import CircularProgress from '@mui/material/CircularProgress'
 import IconButton from '@mui/material/IconButton'
@@ -102,20 +101,12 @@ export default function TimeBasedMapPage() {
         {t('time_based_map_page_title')}
         <InfoYoutubeModal
           label={t('open_video_about_this_page')}
-          title={t('youtube_modal_info_title')}
+          title={t('time_based_map_page_description')}
           videoUrl="https://www.youtube-nocookie.com/embed/bXg50_j_hTA?si=t8PiTrTA1budRZg-&amp;start=150"
         />
       </Typography>
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
-        <Grid xs={12} className="hideOnMobile">
-          <Alert severity="info" variant="outlined" sx={{ bgcolor: '#eaf5fe' }} icon={false}>
-            {t('time_based_map_page_description')}
-          </Alert>
-        </Grid>
         {/* from date */}
-        <Grid xs={2} className="hideOnMobile">
-          <Label text={t('from_date')} />
-        </Grid>
         <Grid sm={5} xs={6}>
           <DateSelector
             time={to}
