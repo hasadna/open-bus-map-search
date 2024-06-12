@@ -15,7 +15,7 @@ let agencyList: Agency[]
  */
 export default async function getAgencyList(): Promise<Agency[]> {
   if (!agencyList) {
-    const yesterday = moment().clone().subtract(1, 'day').format('YYYY-MM-DD')
+    const yesterday = moment().subtract(1, 'day').format('YYYY-MM-DD')
     const response = await fetch(`${BASE_PATH}/gtfs_agencies/list?date_from=${yesterday}`)
     const data = (await response.json()) as Awaited<Agency[]>
     agencyList = data.filter(Boolean) // filter empty entries
