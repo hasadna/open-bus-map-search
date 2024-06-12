@@ -13,7 +13,7 @@ import MapFooterButtons from './MapFooterButtons/MapFooterButtons'
 
 export function MapContent({ positions, plannedRouteStops, showNavigationButtons }: MapProps) {
   useRecenterOnDataChange({ positions, plannedRouteStops })
-  const markerRef = useRef<{[key: number]: LeafletMarker | null}>({})
+  const markerRef = useRef<{ [key: number]: LeafletMarker | null }>({})
   const map = useMap()
   const agencyList = useAgencyList()
   const getIcon = (path: string, width: number = 10, height: number = 10): Icon<IconOptions> => {
@@ -31,12 +31,12 @@ export function MapContent({ positions, plannedRouteStops, showNavigationButtons
   const plannedRouteStopMarker = getIcon(plannedRouteStopMarkerPath, 20, 25)
 
   const navigateMarkers = (positionId: number) => {
-    const loc = positions[positionId].loc
+    const loc = positions[positionId]?.loc
     if (!map || !loc) return
     const marker = markerRef?.current && markerRef?.current[positionId]
     if (marker) {
       map.flyTo(loc, map.getZoom())
-      marker.openPopup();
+      marker.openPopup()
     }
   }
 
@@ -62,16 +62,26 @@ export function MapContent({ positions, plannedRouteStops, showNavigationButtons
         const icon =
           i === 0
             ? busIcon({
-              operator_id: pos.operator?.toString() || 'default',
-              name: agencyList.find((agency) => agency.operator_ref === pos.operator)
-                ?.agency_name,
-            })
+                operator_id: pos.operator?.toString() || 'default',
+                name: agencyList.find((agency) => agency.operator_ref === pos.operator)
+                  ?.agency_name,
+              })
             : actualRouteStopMarker
         return (
-          <Marker ref={ref => markerRef.current[i] = ref} position={pos.loc} icon={icon} key={i}>
+          <Marker
+            ref={(ref) => (markerRef.current[i] = ref)}
+            position={pos.loc}
+            icon={icon}
+            key={i}>
             <Popup minWidth={300} maxWidth={700}>
               <BusToolTip position={pos} icon={busIconPath(pos.operator!)}>
-                {showNavigationButtons && <MapFooterButtons index={i} positions={positions} navigateMarkers={navigateMarkers}/>}
+                {showNavigationButtons && (
+                  <MapFooterButtons
+                    index={i}
+                    positions={positions}
+                    navigateMarkers={navigateMarkers}
+                  />
+                )}
               </BusToolTip>
             </Popup>
           </Marker>

@@ -11,7 +11,7 @@ import CircularProgress from '@mui/material/CircularProgress'
 import cn from 'classnames'
 import CustomTreeView from '../../CustomTreeView'
 
-export type BusToolTipProps = { position: Point; icon: string, children: ReactNode }
+export type BusToolTipProps = { position: Point; icon: string; children: ReactNode }
 
 export function BusToolTip({ position, icon, children }: BusToolTipProps) {
   const [siriRide, setSiriRide] = useState<SiriRideWithRelatedPydanticModel | undefined>()

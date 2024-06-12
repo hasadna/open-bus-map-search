@@ -12,7 +12,11 @@ const position: Point = {
   color: 0,
 }
 
-export function MapWithLocationsAndPath({ positions, plannedRouteStops, showNavigationButtons }: MapProps) {
+export function MapWithLocationsAndPath({
+  positions,
+  plannedRouteStops,
+  showNavigationButtons,
+}: MapProps) {
   const [isExpanded, setIsExpanded] = useState<boolean>(false)
   const toggleExpanded = useCallback(() => setIsExpanded((expanded) => !expanded), [])
 
@@ -23,7 +27,11 @@ export function MapWithLocationsAndPath({ positions, plannedRouteStops, showNavi
       </IconButton>
 
       <MapContainer center={position.loc} zoom={13} scrollWheelZoom={true}>
-        <MapContent positions={positions} plannedRouteStops={plannedRouteStops} showNavigationButtons={showNavigationButtons}/>
+        <MapContent
+          positions={positions}
+          plannedRouteStops={plannedRouteStops}
+          showNavigationButtons={showNavigationButtons}
+        />
       </MapContainer>
     </div>
   )

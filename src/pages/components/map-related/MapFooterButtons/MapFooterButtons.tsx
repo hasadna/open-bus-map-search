@@ -1,18 +1,33 @@
-import {
-    LeftOutlined,
-    RightOutlined
-} from '@ant-design/icons'
+import { LeftOutlined, RightOutlined } from '@ant-design/icons'
 import { Point } from 'src/pages/timeBasedMap'
+import './MapFooterButtons.scss'
 
-function MapFooterButtons({index, positions, navigateMarkers}: {index: number, positions: Point[], navigateMarkers: (id: number) => void}){
-    const checkIfValidStep = (i: number) => {
-        return Boolean(positions.at(i))
-    } 
+type TMapFooterButtons = {
+  index: number
+  positions: Point[]
+  navigateMarkers: (id: number) => void
+}
 
-    return <>
-        <RightOutlined disabled={!checkIfValidStep(index+1)} onClick={() => navigateMarkers(index+1)} />
-        <LeftOutlined disabled={!checkIfValidStep(index-1)} onClick={() => navigateMarkers(index-1)} />
-    </>
+function MapFooterButtons({ index, positions, navigateMarkers }: TMapFooterButtons) {
+  const rightStep = index + 1
+  const leftStep = index - 1
+
+  const checkIfValidStep = (i: number) => {
+    return Boolean(positions.at(i))
+  }
+
+  return (
+    <div className="map-footer-buttons">
+      <RightOutlined
+        className={`${checkIfValidStep(rightStep) ? '' : 'disabled'}`}
+        onClick={() => navigateMarkers(rightStep)}
+      />
+      <LeftOutlined
+        className={`${checkIfValidStep(leftStep) ? '' : 'disabled'}`}
+        onClick={() => navigateMarkers(leftStep)}
+      />
+    </div>
+  )
 }
 
 export default MapFooterButtons

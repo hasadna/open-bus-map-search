@@ -137,7 +137,7 @@ const SingleLineMapPage = () => {
         positions={filteredPositions}
         plannedRouteStops={plannedRouteStops}
         showNavigationButtons
-        />
+      />
     </PageContainer>
   )
 }

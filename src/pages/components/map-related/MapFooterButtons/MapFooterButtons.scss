@@ -1,0 +1,9 @@
+.map-footer-buttons {
+    display: flex;
+    justify-content: space-between;
+
+    .disabled {
+        pointer-events: none;
+        opacity: 0.5;
+    }
+}

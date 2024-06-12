@@ -11,6 +11,6 @@ export interface Path {
 
 export interface MapProps {
   positions: Point[]
-  plannedRouteStops: BusStop[],
-  showNavigationButtons?: boolean,
+  plannedRouteStops: BusStop[]
+  showNavigationButtons?: boolean
 }
