@@ -136,7 +136,8 @@ const SingleLineMapPage = () => {
       <MapWithLocationsAndPath
         positions={filteredPositions}
         plannedRouteStops={plannedRouteStops}
-      />
+        showNavigationButtons
+        />
     </PageContainer>
   )
 }
