@@ -110,12 +110,7 @@ export function BusToolTip({ position, icon }: BusToolTipProps) {
             </EasterEgg>
 
             {/* Complaint Modal */}
-            <ComplaintModal
-              modalOpen={modalOpen}
-              setModalOpen={setModalOpen}
-              position={position}
-              siriRide={siriRide}
-            />
+            <ComplaintModal modalOpen={modalOpen} setModalOpen={setModalOpen} position={position} />
 
             {showJson && (
               <div onClick={(e) => e.stopPropagation()}>
