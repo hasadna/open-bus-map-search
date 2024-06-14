@@ -35,7 +35,7 @@ jobs:
           pr_number=$(cat pr_number)
           echo "PR_NUMBER=${pr_number}" >> $GITHUB_ENV
       - uses: shallwefootball/s3-upload-action@master
-        name: Upload trace to S3
+        name: Upload preview to S3
         if: always()
         id: s3-trace
         continue-on-error: true
@@ -44,10 +44,10 @@ jobs:
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
           aws_bucket: noam-gaash.co.il
           source_dir: dist
-          destination_dir: ${{ github.run_id }}/open-bus/${{ github.sha }}
+          destination_dir: ${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}
       - name: find comment
         uses: peter-evans/find-comment@v1
-        if: github.event_name == 'pull_request'
+        if: env.PR_NUMBER
         id: fc
         with:
           issue-number: ${{ env.PR_NUMBER }}
@@ -60,13 +60,13 @@ jobs:
           comment-id: ${{ steps.fc.outputs.comment-id }}
           edit-mode: replace
           body: |
-            Preview: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.sha }}/index.html
-            Preview Storybook: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.sha }}/storybook/index.html
+            Preview: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}/index.html
+            Preview Storybook: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}/storybook/index.html
       - name: create comment
         uses: peter-evans/create-or-update-comment@v1
         if: steps.fc.outputs.comment-id == ''
         with:
           issue-number: ${{ env.PR_NUMBER }}
           body: |
-            Preview: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.sha }}/index.html
-            Preview Storybook: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.sha }}/storybook/index.html
+            Preview: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}/index.html
+            Preview Storybook: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}/storybook/index.html
