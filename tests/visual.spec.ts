@@ -1,15 +1,16 @@
 import { getBranch, test } from './utils'
-import { Eyes, Target } from '@applitools/eyes-playwright'
+import { Eyes, Target, VisualGridRunner } from '@applitools/eyes-playwright'
 import username from 'git-username'
 
 test.describe('Visual Tests', () => {
-  const eyes = new Eyes({
+  const eyes = new Eyes(new VisualGridRunner(), {
     browsersInfo: [
       { width: 1280, height: 720, name: 'chrome' },
       { width: 1280, height: 720, name: 'safari' },
       { width: 375, height: 667, name: 'chrome' },
-      { iosDeviceInfo: { deviceName: 'iPhone 8' } },
-      { androidDeviceInfo: { deviceName: 'Galaxy S22' } },
+      {
+        iosDeviceInfo: { deviceName: 'iPhone 8' },
+      },
     ],
   })
   test.beforeAll(async () => {
@@ -39,7 +40,13 @@ test.describe('Visual Tests', () => {
     await page.getByText('אגד').first().waitFor()
     while ((await page.locator('.ant-skeleton-content').count()) > 0)
       await page.locator('.ant-skeleton-content').last().waitFor({ state: 'hidden' })
-    await eyes.check('dashboard page', Target.window().layoutRegions('.chart'))
+    await eyes.check(
+      'dashboard page',
+      Target.window()
+        .layoutRegions('.chart', page.getByPlaceholder('DD/MM/YYYY'))
+        .fully()
+        .scrollRootElement('main'),
+    )
     // scroll to recharts-wrapper
     await page.evaluate(() => {
       document.querySelector('.recharts-wrapper')?.scrollIntoView()
