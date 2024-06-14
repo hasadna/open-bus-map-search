@@ -10,15 +10,25 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Download artifact
-        uses: actions/download-artifact@v2
+        uses: dawidd6/action-download-artifact@v2
         with:
-          name: dist
-          path: dist
+            workflow: 'Build'
+            workflow_conclusion: success
+            github_token: ${{ secrets.GITHUB_TOKEN }}
+            run_id: ${{ github.event.workflow_run.id }}
+            run_number: ${{ github.event.workflow_run.run_number }}
+            name: dist
+            path: dist
       - name: Download pr number
-        uses: actions/download-artifact@v2
+        uses: dawidd6/action-download-artifact@v2
         with:
-          name: pr_number
-          path: .
+            workflow: 'Build'
+            workflow_conclusion: success
+            github_token: ${{ secrets.GITHUB_TOKEN }}
+            run_id: ${{ github.event.workflow_run.id }}
+            run_number: ${{ github.event.workflow_run.run_number }}
+            name: pr_number
+            path: .
       - name: Read PR number
         id: read-pr
         run: |
