@@ -5,18 +5,8 @@ import username from 'git-username'
 test.describe('Visual Tests', () => {
   const eyes = new Eyes()
   test.beforeAll(async () => {
-    if (process.env.CI) {
-      // set batch id to the commit sha
-      eyes.setBatch({
-        id: process.env.SHA,
-        name: 'openbus test branch ' + process.env.GITHUB_REF + ' commit ' + process.env.SHA,
-      })
-    } else {
-      eyes.setBatch(username() + ' is testing openbus ' + new Date().toLocaleString().split(',')[0])
-    }
-    eyes.getConfiguration().setUseDom(true).setEnablePatterns(true)
-    eyes.setParentBranchName('main')
-    eyes.setBranchName((await getBranch()) || 'main')
+    setBatchName(eyes)
+    await setEyesSettings(eyes)
   })
 
   test.beforeEach(async ({ page }, testinfo) => {
@@ -49,6 +39,11 @@ test.describe('Visual Tests', () => {
     await eyes.check('dashboard page - recharts', Target.window().layoutRegions('.chart'))
   })
 
+  test('front page should look good', async ({ page }) => {
+    await page.goto('/')
+    await eyes.check('front page', Target.window())
+  })
+
   test('about page should look good', async ({ page }) => {
     await page.goto('/about')
     await eyes.check('about page', Target.window())
@@ -76,3 +71,21 @@ test.describe('Visual Tests', () => {
     await eyes.check('map page', Target.window())
   })
 })
+
+function setBatchName(eyes: Eyes) {
+  if (process.env.CI) {
+    // set batch id to the commit sha
+    eyes.setBatch({
+      id: process.env.SHA,
+      name: 'openbus test branch ' + process.env.GITHUB_REF + ' commit ' + process.env.SHA,
+    })
+  } else {
+    eyes.setBatch(username() + ' is testing openbus ' + new Date().toLocaleString().split(',')[0])
+  }
+}
+
+async function setEyesSettings(eyes: Eyes) {
+  eyes.getConfiguration().setUseDom(true).setEnablePatterns(true)
+  eyes.setParentBranchName('main')
+  eyes.setBranchName((await getBranch()) || 'main')
+}
