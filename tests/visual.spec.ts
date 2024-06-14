@@ -3,7 +3,15 @@ import { Eyes, Target } from '@applitools/eyes-playwright'
 import username from 'git-username'
 
 test.describe('Visual Tests', () => {
-  const eyes = new Eyes()
+  const eyes = new Eyes({
+    browsersInfo: [
+      { width: 1280, height: 720, name: 'chrome' },
+      { width: 1280, height: 720, name: 'safari' },
+      { width: 375, height: 667, name: 'chrome' },
+      { iosDeviceInfo: { deviceName: 'iPhone 8' } },
+      { androidDeviceInfo: { deviceName: 'Galaxy S22' } },
+    ],
+  })
   test.beforeAll(async () => {
     setBatchName(eyes)
     await setEyesSettings(eyes)
