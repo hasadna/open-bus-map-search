@@ -9,16 +9,20 @@
     align-items: center;
     text-align: center;
     overflow: hidden;
+
     img {
         height: 15rem;
     }
+
     h1 {
         margin: 0;
     }
+
     p {
         margin-bottom: 2rem;
         font-size: large;
     }
+
     footer {
         background-color: #b0d0a4;
         width: 100%;
@@ -33,6 +37,7 @@
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 1rem;
+
     @media (width <=600px) {
         margin-bottom: 3rem;
     }
@@ -44,22 +49,27 @@
     align-items: center;
     font-size: medium;
     font-weight: 600;
+
     svg {
         margin-bottom: 0.3rem;
     }
+
     span {
         margin-bottom: 0.3rem;
     }
+
     p {
         font-size: small;
         font-weight: 500;
     }
+
     a {
         background-color: #b74c42;
         color: white;
         padding: 0 1.5rem;
         border-radius: 0.5rem;
         transition: 0.2s ease-in-out 0s;
+
         &:hover {
             transform: scale(1.25);
         }
