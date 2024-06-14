@@ -14,7 +14,7 @@ test.describe('Visual Tests', () => {
     } else {
       eyes.setBatch(username() + ' is testing openbus ' + new Date().toLocaleString().split(',')[0])
     }
-    eyes.getConfiguration().setUseDom(true)
+    eyes.getConfiguration().setUseDom(true).setEnablePatterns(true)
     eyes.setParentBranchName('main')
     eyes.setBranchName((await getBranch()) || 'main')
   })

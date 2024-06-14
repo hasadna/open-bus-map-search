@@ -1,19 +1,19 @@
-import { useEffect, useState } from 'react'
+import { ReactNode, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Button } from '@mui/material'
 import moment from 'moment-timezone'
 import './BusToolTip.scss'
 import { SiriRideWithRelatedPydanticModel } from 'open-bus-stride-client/openapi/models/SiriRideWithRelatedPydanticModel'
 import { useTranslation } from 'react-i18next'
-import { Spin } from 'antd'
+import CircularProgress from '@mui/material/CircularProgress'
 import cn from 'classnames'
 import CustomTreeView from '../../CustomTreeView'
 import { getSiriRideWithRelated } from 'src/api/siriService'
 import { Point } from 'src/pages/timeBasedMap'
 
-export type BusToolTipProps = { position: Point; icon: string }
+export type BusToolTipProps = { position: Point; icon: string; children?: ReactNode }
 
-export function BusToolTip({ position, icon }: BusToolTipProps) {
+export function BusToolTip({ position, icon, children }: BusToolTipProps) {
   const [siriRide, setSiriRide] = useState<SiriRideWithRelatedPydanticModel | undefined>()
   const [isLoading, setIsLoading] = useState(false)
   const [showJson, setShowJson] = useState(false)
@@ -35,7 +35,7 @@ export function BusToolTip({ position, icon }: BusToolTipProps) {
       {isLoading || !siriRide ? (
         <div className="loading">
           <span>{t('loading_routes')}</span>
-          <Spin />
+          <CircularProgress />
         </div>
       ) : (
         <>
@@ -110,6 +110,7 @@ export function BusToolTip({ position, icon }: BusToolTipProps) {
               </div>
             )}
           </div>
+          {children}
         </>
       )}
     </div>

@@ -3,7 +3,8 @@ import { useTranslation } from 'react-i18next'
 import { useLoaderData } from 'react-router-dom'
 import { useContext, useEffect, useState } from 'react'
 import moment from 'moment'
-import { Spin, Tooltip } from 'antd'
+import { Tooltip } from 'antd'
+import CircularProgress from '@mui/material/CircularProgress'
 import { NotFound } from '../components/NotFound'
 import { PageContainer } from '../components/PageContainer'
 import { MapWithLocationsAndPath } from '../components/map-related/MapWithLocationsAndPath'
@@ -95,7 +96,7 @@ const LineProfile = () => {
           <div className="startTime">
             {locationsAreLoading && (
               <Tooltip title={t('loading_times_tooltip_content')}>
-                <Spin />
+                <CircularProgress />
               </Tooltip>
             )}
             <FilterPositionsByStartTimeSelector

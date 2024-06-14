@@ -39,6 +39,7 @@
   gap: 1rem;
 
   @media (width <= 600px) {
+    grid-template-columns: repeat(2, 1fr);
     margin-bottom: 3rem;
   }
 }
@@ -61,6 +62,7 @@
     padding: 0 1.5rem;
     border-radius: 0.5rem;
     transition: 0.2s ease-in-out 0s;
+    margin-bottom: 0.25rem;
 
     &:hover {
       transform: scale(1.25);

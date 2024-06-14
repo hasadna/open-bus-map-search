@@ -109,12 +109,6 @@ export const HEADER_LINKS = [
     element: <BugReportForm />,
   },
   {
-    label: 'donate_title',
-    path: 'https://www.jgive.com/new/he/ils/donation-targets/3268#donation-modal',
-    icon: <DollarOutlined />,
-    element: null,
-  },
-  {
     label: 'github_link',
     path: 'https://github.com/hasadna/open-bus-map-search',
     icon: <GithubOutlined />,

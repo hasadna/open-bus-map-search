@@ -1,13 +1,14 @@
 import { useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Spin } from 'antd'
 import moment, { Moment } from 'moment'
 import styled from 'styled-components'
 import { useSessionStorage } from 'usehooks-ts'
 import { FormControlLabel, Switch } from '@mui/material'
 import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
+import CircularProgress from '@mui/material/CircularProgress'
 import axios from 'axios'
-import { Typography, Alert } from 'antd'
+import Typography from '@mui/material/Typography'
+import Alert from '@mui/material/Alert'
 import { PageContainer } from '../components/PageContainer'
 import { Row } from '../components/Row'
 import { Label } from '../components/Label'
@@ -22,8 +23,6 @@ import { getRoutesAsync } from '../../api/gtfsService'
 import { DateSelector } from '../components/DateSelector'
 import DisplayGapsPercentage from '../components/DisplayGapsPercentage'
 import { INPUT_SIZE } from 'src/resources/sizes'
-
-const { Title } = Typography
 
 const Cell = styled.div`
   width: 120px;
@@ -117,10 +116,12 @@ const GapsPage = () => {
 
   return (
     <PageContainer>
-      <Title className="page-title" level={3}>
+      <Typography className="page-title" variant="h4">
         {t('gaps_page_title')}
-      </Title>
-      <Alert message={t('gaps_page_description')} type="info" />
+      </Typography>
+      <Alert severity="info" variant="outlined" sx={{ bgcolor: '#eaf5fe' }} icon={false}>
+        {t('gaps_page_description')}
+      </Alert>
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
         {/* choose date */}
         <Grid xs={4}>
@@ -159,7 +160,7 @@ const GapsPage = () => {
           {routesIsLoading && (
             <Row>
               <Label text={t('loading_routes')} />
-              <Spin />
+              <CircularProgress />
             </Row>
           )}
           {!routesIsLoading &&
@@ -178,7 +179,7 @@ const GapsPage = () => {
           {gapsIsLoading && (
             <Row>
               <Label text={t('loading_gaps')} />
-              <Spin />
+              <CircularProgress />
             </Row>
           )}
         </Grid>
