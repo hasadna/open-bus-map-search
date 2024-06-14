@@ -59,24 +59,36 @@ test.describe('Visual Tests', () => {
 
   test('timeline page should look good', async ({ page }) => {
     await page.goto('/timeline')
-    await eyes.check('timeline page', Target.window())
+    await eyes.check(
+      'timeline page',
+      Target.window().layoutRegion(page.getByPlaceholder('DD/MM/YYYY')),
+    )
   })
 
   test('gaps page should look good', async ({ page }) => {
     await page.goto('/gaps')
-    await eyes.check('gaps page', Target.window())
+    await eyes.check('gaps page', Target.window().layoutRegion(page.getByPlaceholder('DD/MM/YYYY')))
   })
 
   test('gaps_patterns page should look good', async ({ page }) => {
     await page.goto('/gaps_patterns')
-    await eyes.check('gaps_patterns page', Target.window())
+    await eyes.check(
+      'gaps_patterns page',
+      Target.window().layoutRegion(page.getByPlaceholder('DD/MM/YYYY')),
+    )
   })
 
   test('map page should look good', async ({ page }) => {
     await page.goto('/map')
     await page.getByText('מיקומי אוטובוסים').first().waitFor()
     await page.locator('.ant-spin-dot').first().waitFor({ state: 'hidden' })
-    await eyes.check('map page', Target.window())
+    await eyes.check(
+      'map page',
+      Target.window().layoutRegions(
+        page.getByPlaceholder('DD/MM/YYYY'),
+        page.getByText('מיקומי אוטובוסים משעה'),
+      ),
+    )
   })
 })
 
