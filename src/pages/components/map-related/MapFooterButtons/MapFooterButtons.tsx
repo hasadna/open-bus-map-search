@@ -19,10 +19,12 @@ function MapFooterButtons({ index, positions, navigateMarkers }: TMapFooterButto
   return (
     <div className="map-footer-buttons">
       <RightOutlined
+        title={'right-chevron'}
         className={`${checkIfValidStep(rightStep) ? '' : 'disabled'}`}
         onClick={() => navigateMarkers(rightStep)}
       />
       <LeftOutlined
+        title={'left-chevron'}
         className={`${checkIfValidStep(leftStep) ? '' : 'disabled'}`}
         onClick={() => navigateMarkers(leftStep)}
       />
