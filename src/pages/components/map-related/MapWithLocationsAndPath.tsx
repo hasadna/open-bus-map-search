@@ -1,11 +1,11 @@
 import { MapContainer } from 'react-leaflet'
-import { Point } from 'src/pages/timeBasedMap'
+import { useCallback, useState } from 'react'
 import IconButton from '@mui/material/IconButton'
 import OpenInFullRoundedIcon from '@mui/icons-material/OpenInFullRounded'
 import { MapProps } from './map-types'
-import { useCallback, useState } from 'react'
 import '../../Map.scss'
 import { MapContent } from './MapContent'
+import { Point } from 'src/pages/timeBasedMap'
 
 const position: Point = {
   loc: [32.3057988, 34.85478613], // arbitrary default value... Netanya - best city to live & die in

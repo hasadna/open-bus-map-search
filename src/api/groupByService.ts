@@ -1,7 +1,7 @@
-import { BASE_PATH } from './apiConfig'
 import agencyList from 'open-bus-stride-client/agencies/agencyList'
 import { Moment } from 'moment'
 import { useQuery } from '@tanstack/react-query'
+import { BASE_PATH } from './apiConfig'
 
 type groupByField =
   | 'gtfs_route_date'

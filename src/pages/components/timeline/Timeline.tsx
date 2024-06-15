@@ -1,6 +1,11 @@
 import moment, { Moment } from 'moment'
 import styled from 'styled-components'
 import {
+  GtfsRideStopPydanticModel,
+  SiriVehicleLocationWithRelatedPydanticModel,
+} from 'open-bus-stride-client'
+import { useTranslation } from 'react-i18next'
+import {
   LabeledPoint,
   NEUTRAL_COLOR,
   Point,
@@ -10,12 +15,7 @@ import {
   pointTypeToDescription,
 } from 'src/pages/components/timeline/TimelinePoint'
 import { PADDING } from 'src/pages/components/timeline/TimelineBoard'
-import {
-  GtfsRideStopPydanticModel,
-  SiriVehicleLocationWithRelatedPydanticModel,
-} from 'open-bus-stride-client'
 import { Coordinates } from 'src/model/location'
-import { useTranslation } from 'react-i18next'
 
 const Line = styled.div<{ totalHeight: number }>`
   height: ${({ totalHeight }) => totalHeight + PADDING * 3}px;

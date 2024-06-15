@@ -1,7 +1,7 @@
 import React from 'react'
 import './LineProfileDetails.scss'
-import { Route } from './Route.interface'
 import { useTranslation } from 'react-i18next'
+import { Route } from './Route.interface'
 
 type Props = Route
 

@@ -1,16 +1,16 @@
 import { useCallback } from 'react'
 import moment, { Moment } from 'moment'
-import { MAX_HITS_COUNT } from 'src/api/apiConfig'
 import styled from 'styled-components'
-import { Timeline } from 'src/pages/components/timeline/Timeline'
-import { PointType } from 'src/pages/components/timeline/TimelinePoint'
-import { HorizontalLine } from 'src/pages/components/timeline/HorizontalLine'
 import {
   GtfsRideStopPydanticModel,
   SiriVehicleLocationWithRelatedPydanticModel,
 } from 'open-bus-stride-client'
-import { Coordinates } from 'src/model/location'
 import { useTranslation } from 'react-i18next'
+import { MAX_HITS_COUNT } from 'src/api/apiConfig'
+import { Timeline } from 'src/pages/components/timeline/Timeline'
+import { PointType } from 'src/pages/components/timeline/TimelinePoint'
+import { HorizontalLine } from 'src/pages/components/timeline/HorizontalLine'
+import { Coordinates } from 'src/model/location'
 
 const COLUMN_WIDTH = 140
 export const PADDING = 10
