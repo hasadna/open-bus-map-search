@@ -39,7 +39,7 @@ const DashboardPage = () => {
           videoUrl="https://www.youtube.com/embed/bXg50_j_hTA?si=4rpSZwMRbMomE4g1"
         />
       </Typography>
-      <Alert severity="info" variant="outlined" sx={{ bgcolor: '#eaf5fe' }} icon={false}>
+      <Alert severity="info" variant="outlined" icon={false}>
         {t('dashboard_page_description')}
       </Alert>
       {startDate > endDate ? (

@@ -144,7 +144,7 @@ const TimelinePage = () => {
         {t('timeline_page_title')}
       </Typography>
 
-      <Alert severity="info" variant="outlined" sx={{ bgcolor: '#eaf5fe' }} icon={false}>
+      <Alert severity="info" variant="outlined" icon={false}>
         {t('timeline_page_description')}
       </Alert>
 
