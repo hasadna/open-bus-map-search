@@ -186,7 +186,7 @@ const GapsPatternsPage = () => {
         />
       </Typography>
       <Space direction="vertical" size="middle" style={{ marginBottom: '22px' }}>
-        <Alert severity="info" variant="outlined" sx={{ bgcolor: '#eaf5fe' }} icon={false}>
+        <Alert severity="info" variant="outlined" icon={false}>
           {t('gaps_patterns_page_description')}
         </Alert>
       </Space>
