@@ -108,7 +108,7 @@ export default function TimeBasedMapPage() {
       </Typography>
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
         <Grid xs={12} className="hideOnMobile">
-          <Alert severity="info" variant="outlined" sx={{ bgcolor: '#eaf5fe' }} icon={false}>
+          <Alert severity="info" variant="outlined" icon={false}>
             {t('time_based_map_page_description')}
           </Alert>
         </Grid>
