@@ -1,5 +1,4 @@
-import { getBranch, test } from './utils'
-import { Eyes, Target } from '@applitools/eyes-playwright'
+import { Eyes, Target, VisualGridRunner } from '@applitools/eyes-playwright'
 import username from 'git-username'
 import { getBranch, test } from './utils'
 
