@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
 import { Moment } from 'moment'
+import axios from 'axios'
 import { getGapsAsync } from '../../api/gapsService'
 
 import { sortByMode, HourlyData } from '../components/utils'
 import { GapsList } from 'src/model/gaps'
-import axios from 'axios'
 
 type HourlyDataList = HourlyData[]
 // Convert gapsList into HourlyDataList structure

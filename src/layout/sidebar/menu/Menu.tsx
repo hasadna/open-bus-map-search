@@ -2,10 +2,10 @@ import React, { useEffect, useState, useContext } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import './menu.scss'
 import { useTranslation } from 'react-i18next'
-import { PAGES } from 'src/routes'
 
 import type { MenuProps } from 'antd'
 import { Menu } from 'antd'
+import { PAGES } from 'src/routes'
 import { LayoutContextInterface, LayoutCtx } from 'src/layout/LayoutContext'
 type MenuItem = Required<MenuProps>['items'][number]
 function getItem(

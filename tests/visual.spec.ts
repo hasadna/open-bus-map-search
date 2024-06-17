@@ -1,6 +1,7 @@
 import { getBranch, test } from './utils'
-import { Eyes, Target, VisualGridRunner } from '@applitools/eyes-playwright'
+import { Eyes, Target } from '@applitools/eyes-playwright'
 import username from 'git-username'
+import { getBranch, test } from './utils'
 
 test.describe('Visual Tests', () => {
   const eyes = new Eyes(new VisualGridRunner(), {

@@ -1,6 +1,6 @@
 import moment, { Moment } from 'moment-timezone'
-import { GapsList } from '../model/gaps'
 import axios, { CancelTokenSource } from 'axios'
+import { GapsList } from '../model/gaps'
 import { BASE_PATH } from './apiConfig'
 
 type RawGapsList = {

@@ -1,5 +1,5 @@
-import { parseTime } from 'src/api/gapsService'
 import { HourlyData, sortByMode } from '.'
+import { parseTime } from 'src/api/gapsService'
 import { GapsList } from 'src/model/gaps'
 import { convertGapsToHourlyStruct as processData } from 'src/pages/gapsPatterns/useGapsList'
 

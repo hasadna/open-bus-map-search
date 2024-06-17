@@ -1,7 +1,7 @@
 import styled, { css } from 'styled-components'
-import { NEUTRAL_COLOR } from 'src/pages/components/timeline/TimelinePoint'
 import { useRef } from 'react'
 import { useHover } from 'usehooks-ts'
+import { NEUTRAL_COLOR } from 'src/pages/components/timeline/TimelinePoint'
 
 type HorizontalLineProps = {
   top: number

@@ -4,16 +4,6 @@ import { Moment } from 'moment'
 import { Skeleton, Radio, RadioChangeEvent, Space } from 'antd'
 import CircularProgress from '@mui/material/CircularProgress'
 import moment from 'moment/moment'
-import { useDate } from '../components/DateTimePicker'
-import { PageContainer } from '../components/PageContainer'
-import { Row } from '../components/Row'
-import { Label } from '../components/Label'
-import OperatorSelector from '../components/OperatorSelector'
-import LineNumberSelector from '../components/LineSelector'
-import { NotFound } from '../components/NotFound'
-import RouteSelector from '../components/RouteSelector'
-import { SearchContext } from '../../model/pageState'
-import { getRoutesAsync } from '../../api/gtfsService'
 import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
 import Typography from '@mui/material/Typography'
 import Alert from '@mui/material/Alert'
@@ -29,13 +19,24 @@ import {
   TooltipProps,
   ResponsiveContainer,
 } from 'recharts'
-import { mapColorByExecution } from '../components/utils'
-import { useGapsList } from './useGapsList'
-import { DateSelector } from '../components/DateSelector'
-import { INPUT_SIZE } from 'src/resources/sizes'
 import { useTranslation } from 'react-i18next'
-import Widget from 'src/shared/Widget'
+import { useDate } from '../components/DateTimePicker'
+import { PageContainer } from '../components/PageContainer'
+import { Row } from '../components/Row'
+import { Label } from '../components/Label'
+import OperatorSelector from '../components/OperatorSelector'
+import LineNumberSelector from '../components/LineSelector'
+import { NotFound } from '../components/NotFound'
+import RouteSelector from '../components/RouteSelector'
+import { SearchContext } from '../../model/pageState'
+import { getRoutesAsync } from '../../api/gtfsService'
+
+import { mapColorByExecution } from '../components/utils'
+import { DateSelector } from '../components/DateSelector'
 import InfoYoutubeModal from '../components/YoutubeModal'
+import { useGapsList } from './useGapsList'
+import { INPUT_SIZE } from 'src/resources/sizes'
+import Widget from 'src/shared/Widget'
 // Define prop types for the component
 interface BusLineStatisticsProps {
   lineRef: number
@@ -185,7 +186,7 @@ const GapsPatternsPage = () => {
         />
       </Typography>
       <Space direction="vertical" size="middle" style={{ marginBottom: '22px' }}>
-        <Alert severity="info" variant="outlined" sx={{ bgcolor: '#eaf5fe' }} icon={false}>
+        <Alert severity="info" variant="outlined" icon={false}>
           {t('gaps_patterns_page_description')}
         </Alert>
       </Space>
