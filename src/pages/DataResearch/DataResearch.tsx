@@ -1,10 +1,6 @@
 import React, { useMemo, useState } from 'react'
-import { useGroupBy } from 'src/api/groupByService'
-import Widget from 'src/shared/Widget'
-import { useDate } from '../components/DateTimePicker'
 import moment from 'moment'
 import { Grid } from '@mui/material'
-import { DateSelector } from '../components/DateSelector'
 import { useTranslation } from 'react-i18next'
 import { Skeleton } from 'antd'
 import {
@@ -16,10 +12,14 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
+import { DateSelector } from '../components/DateSelector'
+import { useDate } from '../components/DateTimePicker'
 import { PageContainer } from '../components/PageContainer'
 import { getColorName } from '../dashboard/AllLineschart/OperatorHbarChart/OperatorHbarChart'
 import './DataResearch.scss'
 import OperatorSelector from '../components/OperatorSelector'
+import { useGroupBy } from 'src/api/groupByService'
+import Widget from 'src/shared/Widget'
 
 const now = moment()
 const unique: (value: string, index: number, self: string[]) => boolean = (value, index, self) =>

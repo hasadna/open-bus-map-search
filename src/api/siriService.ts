@@ -1,11 +1,11 @@
 import { SiriApi, SiriVehicleLocationWithRelatedPydanticModel } from 'open-bus-stride-client'
+import moment, { Moment } from 'moment'
+import { SiriRideWithRelatedPydanticModel } from 'open-bus-stride-client/openapi/models/SiriRideWithRelatedPydanticModel'
 import { API_CONFIG, MAX_HITS_COUNT } from 'src/api/apiConfig'
 import { BusStop } from 'src/model/busStop'
-import moment, { Moment } from 'moment'
 import { geoLocationBoundary, nearestLocation } from 'src/api/geoService'
 import { Coordinates } from 'src/model/location'
 import { BusRoute } from 'src/model/busRoute'
-import { SiriRideWithRelatedPydanticModel } from 'open-bus-stride-client/openapi/models/SiriRideWithRelatedPydanticModel'
 
 const SIRI_API = new SiriApi(API_CONFIG)
 const LOCATION_DELTA_METERS = 500

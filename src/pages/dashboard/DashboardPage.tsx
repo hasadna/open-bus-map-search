@@ -1,25 +1,24 @@
 import { useState } from 'react'
 
 // Services and libraries
-import { DateSelector } from '../components/DateSelector'
-import { useDate } from '../components/DateTimePicker'
 import moment from 'moment'
-
 // Styling
 import './DashboardPage.scss'
 import 'src/App.scss'
-import { PageContainer } from '../components/PageContainer'
 import { useTranslation } from 'react-i18next'
 import Typography from '@mui/material/Typography'
 import Alert from '@mui/material/Alert'
 import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
+import { useDate } from '../components/DateTimePicker'
+import { DateSelector } from '../components/DateSelector'
+import { PageContainer } from '../components/PageContainer'
 
 // Components
-import OperatorSelector from 'src/pages/components/OperatorSelector'
+import InfoYoutubeModal from '../components/YoutubeModal'
 import DayTimeChart from './ArrivalByTimeChart/DayTimeChart'
 import AllLinesChart from './AllLineschart/AllLinesChart'
 import WorstLinesChart from './WorstLinesChart/WorstLinesChart'
-import InfoYoutubeModal from '../components/YoutubeModal'
+import OperatorSelector from 'src/pages/components/OperatorSelector'
 
 // Declarations
 const now = moment()

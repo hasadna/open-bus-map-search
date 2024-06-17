@@ -1,9 +1,19 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import styled from 'styled-components'
+import { useTranslation } from 'react-i18next'
+import moment from 'moment'
+import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
+import Typography from '@mui/material/Typography'
+import Alert from '@mui/material/Alert'
+import CircularProgress from '@mui/material/CircularProgress'
+import { PageContainer } from '../components/PageContainer'
+import { SearchContext, TimelinePageState } from '../../model/pageState'
+import { NotFound } from '../components/NotFound'
+import { DateSelector } from '../components/DateSelector'
 import LineNumberSelector from 'src/pages/components/LineSelector'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
 import { Row } from 'src/pages/components/Row'
 import { INPUT_SIZE, MARGIN_MEDIUM } from 'src/resources/sizes'
-import styled from 'styled-components'
 import 'src/App.scss'
 
 import {
@@ -13,7 +23,6 @@ import {
 } from 'src/api/gtfsService'
 import RouteSelector from 'src/pages/components/RouteSelector'
 import { Label } from 'src/pages/components/Label'
-import { useTranslation } from 'react-i18next'
 import StopSelector from 'src/pages/components/StopSelector'
 import Typography from '@mui/material/Typography'
 import CircularProgress from '@mui/material/CircularProgress'
@@ -148,7 +157,6 @@ const TimelinePage = () => {
           videoUrl=""
         />
       </Typography>
-
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
         {/* choose date */}
         <Grid xs={4} className="hideOnMobile">
