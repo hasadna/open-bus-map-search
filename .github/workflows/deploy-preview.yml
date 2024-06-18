@@ -9,6 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+
       - name: Download artifact
         uses: dawidd6/action-download-artifact@v2
         with:
@@ -19,6 +20,7 @@ jobs:
             run_number: ${{ github.event.workflow_run.run_number }}
             name: dist
             path: dist
+
       - name: Download pr number
         uses: dawidd6/action-download-artifact@v2
         with:
@@ -29,11 +31,13 @@ jobs:
             run_number: ${{ github.event.workflow_run.run_number }}
             name: pr_number
             path: .
+
       - name: Read PR number
         id: read-pr
         run: |
           pr_number=$(cat pr_number)
           echo "PR_NUMBER=${pr_number}" >> $GITHUB_ENV
+          
       - uses: shallwefootball/s3-upload-action@master
         name: Upload preview to S3
         if: always()
