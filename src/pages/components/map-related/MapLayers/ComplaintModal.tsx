@@ -12,8 +12,8 @@ import {
   CircularProgress,
 } from '@mui/material'
 import { useTranslation } from 'react-i18next'
-import { Point } from 'src/pages/timeBasedMap'
 import { SiriRideWithRelatedPydanticModel } from 'open-bus-stride-client'
+import { Point } from 'src/pages/timeBasedMap'
 import { getSiriRideWithRelated } from 'src/api/siriService'
 
 interface ComplaintModalProps {
