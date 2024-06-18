@@ -55,7 +55,7 @@ jobs:
           comment-author: 'github-actions[bot]'
           body-includes: 'Preview'
 
-      - name: find comment: 'Test Results:'
+      - name: find comment 'Test Results'
         uses: peter-evans/find-comment@v1
         if: env.PR_NUMBER
         id: fc-tr
