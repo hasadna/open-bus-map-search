@@ -24,8 +24,17 @@ import {
 import RouteSelector from 'src/pages/components/RouteSelector'
 import { Label } from 'src/pages/components/Label'
 import StopSelector from 'src/pages/components/StopSelector'
+import Typography from '@mui/material/Typography'
+import CircularProgress from '@mui/material/CircularProgress'
 import { getSiriStopHitTimesAsync } from 'src/api/siriService'
 import { TimelineBoard } from 'src/pages/components/timeline/TimelineBoard'
+import { PageContainer } from '../components/PageContainer'
+import { SearchContext, TimelinePageState } from '../../model/pageState'
+import { NotFound } from '../components/NotFound'
+import moment from 'moment'
+import { DateSelector } from '../components/DateSelector'
+import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
+import InfoYoutubeModal from '../components/YoutubeModal'
 
 const StyledTimelineBoard = styled(TimelineBoard)`
   margin-top: ${MARGIN_MEDIUM * 3}px;
@@ -140,14 +149,14 @@ const TimelinePage = () => {
 
   return (
     <PageContainer>
-      <Typography variant="h4" gutterBottom>
+      <Typography variant="h4" className="page-title">
         {t('timeline_page_title')}
+        <InfoYoutubeModal
+          label={t('open_video_about_this_page')}
+          title={t('timeline_page_description')}
+          videoUrl=""
+        />
       </Typography>
-
-      <Alert severity="info" variant="outlined" icon={false}>
-        {t('timeline_page_description')}
-      </Alert>
-
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
         {/* choose date */}
         <Grid xs={4} className="hideOnMobile">

@@ -29,12 +29,15 @@ const InfoYoutubeModal = ({ videoUrl, label, title }: InfoYoutubeModalProps) => 
         onCancel={() => {
           setVisible(false)
         }}>
-        <div className="modal-iframe-container">
-          <iframe allowFullScreen src={videoUrl} />
-        </div>
+        {videoUrl.includes('youtube') ? (
+          <div className="modal-iframe-container">
+            <iframe allowFullScreen src={videoUrl} />
+          </div>
+        ) : (
+          <></>
+        )}
       </Modal>
     </>
   )
 }
-
 export default InfoYoutubeModal
