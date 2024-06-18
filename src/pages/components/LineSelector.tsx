@@ -2,9 +2,9 @@ import { useCallback, useLayoutEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import debounce from 'lodash.debounce'
 import { TextField } from '@mui/material'
+import classNames from 'classnames'
 import ClearButton from './ClearButton'
 import './Selector.scss'
-import classNames from 'classnames'
 
 type LineSelectorProps = {
   lineNumber: string | undefined

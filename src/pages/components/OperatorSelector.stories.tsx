@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import '../../shared/shared.css'
-import OperatorSelector from './OperatorSelector'
 import { useState } from 'react'
+import OperatorSelector from './OperatorSelector'
 import { MAJOR_OPERATORS } from 'src/model/operator'
 
 const OperatorSelectorStory = () => {

@@ -1,22 +1,22 @@
 import moment from 'moment'
 import { useContext, useEffect, useMemo } from 'react'
-import { getRoutesAsync } from 'src/api/gtfsService'
-import LineNumberSelector from 'src/pages/components/LineSelector'
-import OperatorSelector from 'src/pages/components/OperatorSelector'
-import RouteSelector from 'src/pages/components/RouteSelector'
-import { INPUT_SIZE } from 'src/resources/sizes'
 import { useTranslation } from 'react-i18next'
+import Grid from '@mui/material/Unstable_Grid2'
+import { CircularProgress, Tooltip } from '@mui/material'
+import Typography from '@mui/material/Typography'
 import { SearchContext } from '../../model/pageState'
 import { NotFound } from '../components/NotFound'
-import Grid from '@mui/material/Unstable_Grid2'
 import '../Map.scss'
 import { DateSelector } from '../components/DateSelector'
-import { CircularProgress, Tooltip } from '@mui/material'
 import { FilterPositionsByStartTimeSelector } from '../components/FilterPositionsByStartTimeSelector'
 import { PageContainer } from '../components/PageContainer'
 import { MapWithLocationsAndPath } from '../components/map-related/MapWithLocationsAndPath'
-import Typography from '@mui/material/Typography'
 import InfoYoutubeModal from '../components/YoutubeModal'
+import { INPUT_SIZE } from 'src/resources/sizes'
+import RouteSelector from 'src/pages/components/RouteSelector'
+import OperatorSelector from 'src/pages/components/OperatorSelector'
+import LineNumberSelector from 'src/pages/components/LineSelector'
+import { getRoutesAsync } from 'src/api/gtfsService'
 import { useSingleLineData } from 'src/hooks/useSingleLineData'
 
 const SingleLineMapPage = () => {
@@ -136,6 +136,7 @@ const SingleLineMapPage = () => {
       <MapWithLocationsAndPath
         positions={filteredPositions}
         plannedRouteStops={plannedRouteStops}
+        showNavigationButtons
       />
     </PageContainer>
   )

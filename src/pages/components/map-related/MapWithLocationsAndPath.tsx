@@ -1,18 +1,22 @@
 import { MapContainer } from 'react-leaflet'
-import { Point } from 'src/pages/timeBasedMap'
+import { useCallback, useState } from 'react'
 import IconButton from '@mui/material/IconButton'
 import OpenInFullRoundedIcon from '@mui/icons-material/OpenInFullRounded'
 import { MapProps } from './map-types'
-import { useCallback, useState } from 'react'
 import '../../Map.scss'
 import { MapContent } from './MapContent'
+import { Point } from 'src/pages/timeBasedMap'
 
 const position: Point = {
   loc: [32.3057988, 34.85478613], // arbitrary default value... Netanya - best city to live & die in
   color: 0,
 }
 
-export function MapWithLocationsAndPath({ positions, plannedRouteStops }: MapProps) {
+export function MapWithLocationsAndPath({
+  positions,
+  plannedRouteStops,
+  showNavigationButtons,
+}: MapProps) {
   const [isExpanded, setIsExpanded] = useState<boolean>(false)
   const toggleExpanded = useCallback(() => setIsExpanded((expanded) => !expanded), [])
 
@@ -23,7 +27,11 @@ export function MapWithLocationsAndPath({ positions, plannedRouteStops }: MapPro
       </IconButton>
 
       <MapContainer center={position.loc} zoom={13} scrollWheelZoom={true}>
-        <MapContent positions={positions} plannedRouteStops={plannedRouteStops} />
+        <MapContent
+          positions={positions}
+          plannedRouteStops={plannedRouteStops}
+          showNavigationButtons={showNavigationButtons}
+        />
       </MapContainer>
     </div>
   )

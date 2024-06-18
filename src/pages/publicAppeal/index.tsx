@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 import { useTranslation } from 'react-i18next'
-import Widget from 'src/shared/Widget'
 import { Space, Typography } from 'antd'
+import Widget from 'src/shared/Widget'
 
 import './PublicAppeal.scss'
 const { Title } = Typography
