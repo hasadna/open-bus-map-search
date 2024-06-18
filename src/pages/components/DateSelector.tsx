@@ -12,6 +12,7 @@ export function DateSelector({ time, onChange, customLabel, minDate }: DataAndTi
     switch (error) {
       case 'maxDate':
       case 'minDate':
+        return t('bug_date_alert')
       case 'invalidDate': {
         return t('bug_date_invalid_format')
       }
@@ -20,7 +21,7 @@ export function DateSelector({ time, onChange, customLabel, minDate }: DataAndTi
         return ''
       }
     }
-  }, [error])
+  }, [error, t])
 
   return (
     <DatePicker
