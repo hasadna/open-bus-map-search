@@ -45,7 +45,8 @@ jobs:
           aws_bucket: noam-gaash.co.il
           source_dir: dist
           destination_dir: ${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}
-      - name: find comment
+
+      - name: find comment 'Preview'
         uses: peter-evans/find-comment@v1
         if: env.PR_NUMBER
         id: fc
@@ -53,6 +54,16 @@ jobs:
           issue-number: ${{ env.PR_NUMBER }}
           comment-author: 'github-actions[bot]'
           body-includes: 'Preview'
+
+      - name: find comment 'Test Results'
+        uses: peter-evans/find-comment@v1
+        if: env.PR_NUMBER
+        id: fc-tr
+        with:
+          issue-number: ${{ env.PR_NUMBER }}
+          comment-author: 'github-actions[bot]'
+          body-includes: 'Test Results:'
+
       - name: update comment
         uses: peter-evans/create-or-update-comment@v1
         if: steps.fc.outputs.comment-id
@@ -62,11 +73,22 @@ jobs:
           body: |
             Preview: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}/index.html
             Preview Storybook: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}/storybook/index.html
+
+      - name: update comment
+        uses: peter-evans/create-or-update-comment@v1
+        if: steps.fc-tr.outputs.comment-id
+        with:
+          comment-id: ${{ steps.fc-tr.outputs.comment-id }}
+          edit-mode: append
+          body: |
+            Test Results: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.sha }}/test-results/index.html
+
       - name: create comment
         uses: peter-evans/create-or-update-comment@v1
-        if: steps.fc.outputs.comment-id == ''
+        if: (steps.fc.outputs.comment-id == '') && (steps.fc-tr.outputs.comment-id == '')
         with:
           issue-number: ${{ env.PR_NUMBER }}
           body: |
             Preview: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}/index.html
             Preview Storybook: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}/storybook/index.html
+            Test Results: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.sha }}/test-results/index.html
