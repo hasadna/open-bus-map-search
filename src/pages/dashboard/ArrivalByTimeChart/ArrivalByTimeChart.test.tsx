@@ -1,6 +1,6 @@
 import { type RenderResult, render, screen } from '@testing-library/react'
-import ArrivalByTimeChart from './ArrivalByTimeChart'
 import type { ReactElement } from 'react'
+import ArrivalByTimeChart from './ArrivalByTimeChart'
 import testBusData from './testdata/data.json'
 
 jest.mock('recharts', () => {

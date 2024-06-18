@@ -1,22 +1,21 @@
-import { getBranch, test } from './utils'
-import { Eyes, Target } from '@applitools/eyes-playwright'
+import { Eyes, Target, VisualGridRunner } from '@applitools/eyes-playwright'
 import username from 'git-username'
+import { getBranch, test } from './utils'
 
 test.describe('Visual Tests', () => {
-  const eyes = new Eyes()
+  const eyes = new Eyes(new VisualGridRunner(), {
+    browsersInfo: [
+      { width: 1280, height: 720, name: 'chrome' },
+      { width: 1280, height: 720, name: 'safari' },
+      { width: 375, height: 667, name: 'chrome' },
+      {
+        iosDeviceInfo: { deviceName: 'iPhone 8' },
+      },
+    ],
+  })
   test.beforeAll(async () => {
-    if (process.env.CI) {
-      // set batch id to the commit sha
-      eyes.setBatch({
-        id: process.env.SHA,
-        name: 'openbus test branch ' + process.env.GITHUB_REF + ' commit ' + process.env.SHA,
-      })
-    } else {
-      eyes.setBatch(username() + ' is testing openbus ' + new Date().toLocaleString().split(',')[0])
-    }
-    eyes.getConfiguration().setUseDom(true).setEnablePatterns(true)
-    eyes.setParentBranchName('main')
-    eyes.setBranchName((await getBranch()) || 'main')
+    setBatchName(eyes)
+    await setEyesSettings(eyes)
   })
 
   test.beforeEach(async ({ page }, testinfo) => {
@@ -41,12 +40,23 @@ test.describe('Visual Tests', () => {
     await page.getByText('אגד').first().waitFor()
     while ((await page.locator('.ant-skeleton-content').count()) > 0)
       await page.locator('.ant-skeleton-content').last().waitFor({ state: 'hidden' })
-    await eyes.check('dashboard page', Target.window().layoutRegions('.chart'))
+    await eyes.check(
+      'dashboard page',
+      Target.window()
+        .layoutRegions('.chart', page.getByPlaceholder('DD/MM/YYYY'))
+        .fully()
+        .scrollRootElement('main'),
+    )
     // scroll to recharts-wrapper
     await page.evaluate(() => {
       document.querySelector('.recharts-wrapper')?.scrollIntoView()
     })
     await eyes.check('dashboard page - recharts', Target.window().layoutRegions('.chart'))
+  })
+
+  test('front page should look good', async ({ page }) => {
+    await page.goto('/')
+    await eyes.check('front page', Target.window())
   })
 
   test('about page should look good', async ({ page }) => {
@@ -56,23 +66,53 @@ test.describe('Visual Tests', () => {
 
   test('timeline page should look good', async ({ page }) => {
     await page.goto('/timeline')
-    await eyes.check('timeline page', Target.window())
+    await eyes.check(
+      'timeline page',
+      Target.window().layoutRegion(page.getByPlaceholder('DD/MM/YYYY')),
+    )
   })
 
   test('gaps page should look good', async ({ page }) => {
     await page.goto('/gaps')
-    await eyes.check('gaps page', Target.window())
+    await eyes.check('gaps page', Target.window().layoutRegion(page.getByPlaceholder('DD/MM/YYYY')))
   })
 
   test('gaps_patterns page should look good', async ({ page }) => {
     await page.goto('/gaps_patterns')
-    await eyes.check('gaps_patterns page', Target.window())
+    await eyes.check(
+      'gaps_patterns page',
+      Target.window().layoutRegion(page.getByPlaceholder('DD/MM/YYYY')),
+    )
   })
 
   test('map page should look good', async ({ page }) => {
     await page.goto('/map')
     await page.getByText('מיקומי אוטובוסים').first().waitFor()
     await page.locator('.ant-spin-dot').first().waitFor({ state: 'hidden' })
-    await eyes.check('map page', Target.window())
+    await eyes.check(
+      'map page',
+      Target.window().layoutRegions(
+        page.getByPlaceholder('DD/MM/YYYY'),
+        page.getByText('מיקומי אוטובוסים משעה'),
+      ),
+    )
   })
 })
+
+function setBatchName(eyes: Eyes) {
+  if (process.env.CI) {
+    // set batch id to the commit sha
+    eyes.setBatch({
+      id: process.env.SHA,
+      name: 'openbus test branch ' + process.env.GITHUB_REF + ' commit ' + process.env.SHA,
+    })
+  } else {
+    eyes.setBatch(username() + ' is testing openbus ' + new Date().toLocaleString().split(',')[0])
+  }
+}
+
+async function setEyesSettings(eyes: Eyes) {
+  eyes.getConfiguration().setUseDom(true).setEnablePatterns(true)
+  eyes.setParentBranchName('main')
+  eyes.setBranchName((await getBranch()) || 'main')
+}

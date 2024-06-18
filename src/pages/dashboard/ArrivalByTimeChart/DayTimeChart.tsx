@@ -1,9 +1,9 @@
 import React, { FC, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Skeleton, Radio, RadioChangeEvent } from 'antd'
+import { Moment } from 'moment/moment'
 import ArrivalByTimeChart from './ArrivalByTimeChart'
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
-import { Moment } from 'moment/moment'
 import Widget from 'src/shared/Widget'
 
 const convertToGraphCompatibleStruct = (arr: GroupByRes[]) => {

@@ -1,7 +1,7 @@
-import { test, expect, urlMatcher, setBrowserTime, getPastDate } from './utils'
 import type { Locator, Page } from '@playwright/test'
 import i18next from 'i18next'
 import Backend from 'i18next-fs-backend'
+import { test, expect, urlMatcher, setBrowserTime, getPastDate } from './utils'
 
 import Selectors from './SelectorsModel'
 

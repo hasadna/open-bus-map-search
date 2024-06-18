@@ -1,11 +1,11 @@
 import './App.scss'
 import 'leaflet/dist/leaflet.css'
 import 'moment/locale/he'
-import router from './routes'
 import { RouterProvider } from 'react-router-dom'
 import { Suspense } from 'react'
-import Preloader from './shared/Preloader'
 import moment from 'moment-timezone'
+import Preloader from './shared/Preloader'
+import router from './routes'
 import 'moment/dist/locale/he'
 
 moment.tz.setDefault('Asia/Jerusalem')

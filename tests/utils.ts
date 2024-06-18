@@ -2,9 +2,9 @@
 import * as fs from 'fs'
 import * as path from 'path'
 import * as crypto from 'crypto'
+import { exec } from 'child_process'
 import { Matcher, test as baseTest, customMatcher } from 'playwright-advanced-har'
 import { BrowserContext, Page } from '@playwright/test'
-import { exec } from 'child_process'
 
 const istanbulCLIOutput = path.join(process.cwd(), '.nyc_output')
 

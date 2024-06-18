@@ -1,5 +1,5 @@
-import { getPastDate, test, urlMatcher } from './utils'
 import SinglelinePage from '../src/test_pages/SinglelinePage'
+import { getPastDate, test, urlMatcher } from './utils'
 
 test.describe('Single line page tests', () => {
   let singleLinePage: SinglelinePage

@@ -8,22 +8,22 @@ import CircularProgress from '@mui/material/CircularProgress'
 import IconButton from '@mui/material/IconButton'
 import OpenInFullRoundedIcon from '@mui/icons-material/OpenInFullRounded'
 import moment from 'moment'
-import getAgencyList, { Agency } from 'src/api/agencyList'
-import useVehicleLocations from 'src/api/useVehicleLocations'
-import { VehicleLocation } from 'src/model/vehicleLocation'
 import '../Map.scss'
-import { DateSelector } from '../components/DateSelector'
-import MinuteSelector from '../components/MinuteSelector'
 import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
+import MinuteSelector from '../components/MinuteSelector'
+import { DateSelector } from '../components/DateSelector'
 import { PageContainer } from '../components/PageContainer'
-import { INPUT_SIZE } from 'src/resources/sizes'
 import { Label } from '../components/Label'
 import { getColorByHashString } from '../dashboard/AllLineschart/OperatorHbarChart/utils'
 import createClusterCustomIcon from '../components/utils/customCluster/customCluster'
 import { TimeSelector } from '../components/TimeSelector'
 import { busIcon, busIconPath } from '../components/utils/BusIcon'
-import { BusToolTip } from 'src/pages/components/map-related/MapLayers/BusToolTip'
 import InfoYoutubeModal from '../components/YoutubeModal'
+import { BusToolTip } from 'src/pages/components/map-related/MapLayers/BusToolTip'
+import { INPUT_SIZE } from 'src/resources/sizes'
+import { VehicleLocation } from 'src/model/vehicleLocation'
+import useVehicleLocations from 'src/api/useVehicleLocations'
+import getAgencyList, { Agency } from 'src/api/agencyList'
 
 export interface Point {
   loc: [number, number]
@@ -108,7 +108,7 @@ export default function TimeBasedMapPage() {
       </Typography>
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
         <Grid xs={12} className="hideOnMobile">
-          <Alert severity="info" variant="outlined" sx={{ bgcolor: '#eaf5fe' }} icon={false}>
+          <Alert severity="info" variant="outlined" icon={false}>
             {t('time_based_map_page_description')}
           </Alert>
         </Grid>
