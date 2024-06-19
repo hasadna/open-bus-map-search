@@ -9,6 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+
       - name: Download artifact
         uses: dawidd6/action-download-artifact@v2
         with:
@@ -19,6 +20,7 @@ jobs:
             run_number: ${{ github.event.workflow_run.run_number }}
             name: dist
             path: dist
+
       - name: Download pr number
         uses: dawidd6/action-download-artifact@v2
         with:
@@ -29,11 +31,13 @@ jobs:
             run_number: ${{ github.event.workflow_run.run_number }}
             name: pr_number
             path: .
+
       - name: Read PR number
         id: read-pr
         run: |
           pr_number=$(cat pr_number)
           echo "PR_NUMBER=${pr_number}" >> $GITHUB_ENV
+
       - uses: shallwefootball/s3-upload-action@master
         name: Upload preview to S3
         if: always()
@@ -45,6 +49,7 @@ jobs:
           aws_bucket: noam-gaash.co.il
           source_dir: dist
           destination_dir: ${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}
+
       - name: find comment
         uses: peter-evans/find-comment@v1
         if: env.PR_NUMBER
@@ -53,6 +58,16 @@ jobs:
           issue-number: ${{ env.PR_NUMBER }}
           comment-author: 'github-actions[bot]'
           body-includes: 'Preview'
+
+      - name: find comment
+        uses: peter-evans/find-comment@v1
+        if: env.PR_NUMBER
+        id: fc-tr
+        with:
+          issue-number: ${{ env.PR_NUMBER }}
+          comment-author: 'github-actions[bot]'
+          body-includes: 'Test results'
+
       - name: update comment
         uses: peter-evans/create-or-update-comment@v1
         if: steps.fc.outputs.comment-id
@@ -62,6 +77,16 @@ jobs:
           body: |
             Preview: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}/index.html
             Preview Storybook: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}/storybook/index.html
+
+      - name: update comment
+        uses: peter-evans/create-or-update-comments@1
+        if: steps.fc-tr.outputs.comment-id
+        with:
+          comment-id: ${{ steps.fc-tr.outputs.comment-id }}
+          edit-mode: append
+          body: |
+            Test results: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.sha }}/test-results/index.html'
+
       - name: create comment
         uses: peter-evans/create-or-update-comment@v1
         if: steps.fc.outputs.comment-id == ''
@@ -70,3 +95,5 @@ jobs:
           body: |
             Preview: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}/index.html
             Preview Storybook: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}/storybook/index.html
+            Test results: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.sha }}/test-results/index.html'
+
