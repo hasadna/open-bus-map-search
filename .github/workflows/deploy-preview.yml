@@ -79,7 +79,7 @@ jobs:
             Preview Storybook: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}/storybook/index.html
 
       - name: update comment
-        uses: peter-evans/create-or-update-comments@1
+        uses: peter-evans/create-or-update-comment@v1
         if: steps.fc-tr.outputs.comment-id
         with:
           comment-id: ${{ steps.fc-tr.outputs.comment-id }}
