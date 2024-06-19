@@ -59,7 +59,7 @@ jobs:
           comment-author: 'github-actions[bot]'
           body-includes: 'Preview'
 
-      - name: find comment
+      - name: find comment3
         uses: peter-evans/find-comment@v1
         if: env.PR_NUMBER
         id: fc-tr
