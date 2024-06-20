@@ -25,7 +25,7 @@
 
     footer {
         background-color: #b0d0a4;
-        width: 100%;
+        width: 100vw;
         font-weight: 500;
         position: absolute;
         bottom: 0;
@@ -37,10 +37,15 @@
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 1rem;
-
+    margin-bottom:10%;
+    
     @media (width <=600px) {
         margin-bottom: 3rem;
     }
+}
+
+.menu-link {
+    margin-bottom: 15%;
 }
 
 .page-link {
