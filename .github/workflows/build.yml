@@ -30,7 +30,7 @@ jobs:
       - name: Run install
         run: npm ci
       - name: Build Storybook
-        run: npm run build-storybook -o dist/storybook
+        run: npm run build-storybook -- -o dist/storybook
       - name: upload artifact
         uses: actions/upload-artifact@v2
         with:
