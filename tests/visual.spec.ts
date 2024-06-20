@@ -51,7 +51,10 @@ test.describe('Visual Tests', () => {
     await page.evaluate(() => {
       document.querySelector('.recharts-wrapper')?.scrollIntoView()
     })
-    await eyes.check('dashboard page - recharts', Target.window().layoutRegions('.chart'))
+    await eyes.check(
+      'dashboard page - recharts',
+      Target.window().layoutRegions('.chart', page.getByPlaceholder('DD/MM/YYYY')),
+    )
   })
 
   test('front page should look good', async ({ page }) => {
@@ -87,7 +90,7 @@ test.describe('Visual Tests', () => {
 
   test('map page should look good', async ({ page }) => {
     await page.goto('/map')
-    await page.getByText('מיקומי אוטובוסים').first().waitFor()
+    await page.locator('.leaflet-marker-icon').first().waitFor({ state: 'visible' })
     await page.locator('.ant-spin-dot').first().waitFor({ state: 'hidden' })
     await eyes.check(
       'map page',
