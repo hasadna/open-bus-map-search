@@ -7,6 +7,8 @@ import type { MenuProps } from 'antd'
 import { Menu } from 'antd'
 import { PAGES } from 'src/routes'
 import { LayoutContextInterface, LayoutCtx } from 'src/layout/LayoutContext'
+import DonateModal from 'src/pages/DonateModal/DonateModal'
+
 type MenuItem = Required<MenuProps>['items'][number]
 function getItem(
   label: React.ReactNode,
@@ -25,7 +27,24 @@ function getItem(
 const MainMenu = () => {
   const { t } = useTranslation()
   const { setDrawerOpen } = useContext<LayoutContextInterface>(LayoutCtx)
+  const [isDonateModalVisible, setDonateModalVisible] = useState(false)
+
+  const handleDonateClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    setDonateModalVisible(true)
+    setDrawerOpen(false)
+  }
+
   const items: MenuItem[] = PAGES.map((itm) => {
+    if (itm.label === 'donate_title') {
+      return getItem(
+        <a href="#" onClick={handleDonateClick}>
+          {t(itm.label)}
+        </a>,
+        itm.path,
+        itm.icon,
+      )
+    } else {
     return getItem(
       <Link to={itm.path} onClick={() => setDrawerOpen(false)}>
         {t(itm.label)}
@@ -33,6 +52,7 @@ const MainMenu = () => {
       itm.path,
       itm.icon,
     )
+    }
   })
 
   const location = useLocation()
@@ -52,6 +72,7 @@ const MainMenu = () => {
     setCurrent(key)
   }
   return (
+  <>
     <Menu
       onClick={handleClick}
       theme="light"
@@ -59,6 +80,8 @@ const MainMenu = () => {
       mode="inline"
       items={items}
     />
+    <DonateModal isVisible={isDonateModalVisible} onClose={() => setDonateModalVisible(false)} />
+  </>
   )
 }
 
