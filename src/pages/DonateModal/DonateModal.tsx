@@ -44,7 +44,10 @@ const DonateModal: React.FC<DonateModalProps> = ({ isVisible, onClose }) => {
           <Grid item xs={6}>
             <Typography id="modal-modal-description" sx={{ mt: 2 }}>
               <h2>תרומה דרך אתר jgive.com</h2>
-              <a href="https://www.jgive.com/new/he/ils/donation-targets/3268" target="_blank">
+              <a
+                href="https://www.jgive.com/new/he/ils/donation-targets/3268"
+                target="_blank"
+                rel="noreferrer">
                 <img
                   src="https://www.hasadna.org.il/wp-content/uploads/2017/12/%D7%AA%D7%A8%D7%95%D7%9E%D7%95%D7%AA.jpg"
                   alt="קישור לתרומה"

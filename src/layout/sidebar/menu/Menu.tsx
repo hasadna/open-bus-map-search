@@ -45,13 +45,13 @@ const MainMenu = () => {
         itm.icon,
       )
     } else {
-    return getItem(
-      <Link to={itm.path} onClick={() => setDrawerOpen(false)}>
-        {t(itm.label)}
-      </Link>,
-      itm.path,
-      itm.icon,
-    )
+      return getItem(
+        <Link to={itm.path} onClick={() => setDrawerOpen(false)}>
+          {t(itm.label)}
+        </Link>,
+        itm.path,
+        itm.icon,
+      )
     }
   })
 
@@ -72,16 +72,16 @@ const MainMenu = () => {
     setCurrent(key)
   }
   return (
-  <>
-    <Menu
-      onClick={handleClick}
-      theme="light"
-      selectedKeys={[current]}
-      mode="inline"
-      items={items}
-    />
-    <DonateModal isVisible={isDonateModalVisible} onClose={() => setDonateModalVisible(false)} />
-  </>
+    <>
+      <Menu
+        onClick={handleClick}
+        theme="light"
+        selectedKeys={[current]}
+        mode="inline"
+        items={items}
+      />
+      <DonateModal isVisible={isDonateModalVisible} onClose={() => setDonateModalVisible(false)} />
+    </>
   )
 }
 
