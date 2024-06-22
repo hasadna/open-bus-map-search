@@ -18,7 +18,10 @@ const MainHeader = () => {
   return (
     <Header className={cn('main-header', { dark: isDarkTheme })}>
       <MenuOutlined onClick={() => setDrawerOpen(true)} className="hideOnDesktop" />
-      <div style={{ flex: 1 }}>&nbsp;</div>
+      <div style={{ flex: 1, lineHeight: '1em' }}>
+        לתשומת לבכם - עבור נסיעות שבוצעו לאחר ה12.06.2024 ישנם פערי נתונים. התקלה בתחקור ושאר
+        הנתונים זמינים לשימושכם, תודה על ההבנה.
+      </div>
       <HeaderLinks>
         <LanguageToggle />
         <ToggleThemeButton toggleTheme={toggleTheme} isDarkTheme={isDarkTheme} />
