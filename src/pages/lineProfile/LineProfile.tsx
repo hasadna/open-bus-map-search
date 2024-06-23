@@ -1,23 +1,24 @@
 import Grid from '@mui/material/Unstable_Grid2'
+import { useTranslation } from 'react-i18next'
+import { useLoaderData } from 'react-router-dom'
+import { useContext, useEffect, useState } from 'react'
+import moment from 'moment'
+import { Tooltip } from 'antd'
+import CircularProgress from '@mui/material/CircularProgress'
 import { NotFound } from '../components/NotFound'
 import { PageContainer } from '../components/PageContainer'
-import { useTranslation } from 'react-i18next'
-import Widget from 'src/shared/Widget'
-import { useLoaderData } from 'react-router-dom'
 import { MapWithLocationsAndPath } from '../components/map-related/MapWithLocationsAndPath'
+import { DateSelector } from '../components/DateSelector'
+import RouteSelector from '../components/RouteSelector'
+import { FilterPositionsByStartTimeSelector } from '../components/FilterPositionsByStartTimeSelector'
 import LineProfileHeader from './LineProfileHeader'
 import { LineProfileDetails } from './LineProfileDetails'
 import { Route } from './Route.interface'
-import { DateSelector } from '../components/DateSelector'
+import Widget from 'src/shared/Widget'
 import { SearchContext } from 'src/model/pageState'
-import { useContext, useEffect, useState } from 'react'
-import moment from 'moment'
-import RouteSelector from '../components/RouteSelector'
 import { getRoutesAsync } from 'src/api/gtfsService'
 import { BusRoute } from 'src/model/busRoute'
 import { useSingleLineData } from 'src/hooks/useSingleLineData'
-import { FilterPositionsByStartTimeSelector } from '../components/FilterPositionsByStartTimeSelector'
-import { Spin, Tooltip } from 'antd'
 import './LineProfile.scss'
 
 const LineProfileWrapper = () => (
@@ -95,7 +96,7 @@ const LineProfile = () => {
           <div className="startTime">
             {locationsAreLoading && (
               <Tooltip title={t('loading_times_tooltip_content')}>
-                <Spin />
+                <CircularProgress />
               </Tooltip>
             )}
             <FilterPositionsByStartTimeSelector

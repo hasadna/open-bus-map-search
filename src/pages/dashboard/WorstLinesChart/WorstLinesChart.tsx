@@ -1,8 +1,8 @@
 import { Skeleton } from 'antd'
-import { GroupByRes, useGroupBy } from 'src/api/groupByService'
-import LinesHbarChart from './LineHbarChart/LinesHbarChart'
 import { useTranslation } from 'react-i18next'
 import { Moment } from 'moment/moment'
+import LinesHbarChart from './LineHbarChart/LinesHbarChart'
+import { GroupByRes, useGroupBy } from 'src/api/groupByService'
 import Widget from 'src/shared/Widget'
 import { MAJOR_OPERATORS } from 'src/model/operator'
 

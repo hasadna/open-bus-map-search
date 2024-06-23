@@ -59,6 +59,7 @@ module.exports = [
       '@typescript-eslint/no-base-to-string': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
       'import/no-unused-modules': 'error',
+      'import/order': 'error',
       'prettier/prettier': [
         'error',
         {

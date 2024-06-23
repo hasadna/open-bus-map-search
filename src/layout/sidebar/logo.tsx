@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
-import { useTheme } from '../ThemeContext'
 import cn from 'classnames'
+import { useTheme } from '../ThemeContext'
 
 export function Logo() {
   const { isDarkTheme } = useTheme()

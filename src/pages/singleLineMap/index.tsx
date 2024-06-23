@@ -1,22 +1,22 @@
 import moment from 'moment'
 import { useContext, useEffect, useMemo } from 'react'
-import { getRoutesAsync } from 'src/api/gtfsService'
-import LineNumberSelector from 'src/pages/components/LineSelector'
-import OperatorSelector from 'src/pages/components/OperatorSelector'
-import RouteSelector from 'src/pages/components/RouteSelector'
-import { INPUT_SIZE } from 'src/resources/sizes'
 import { useTranslation } from 'react-i18next'
+import Grid from '@mui/material/Unstable_Grid2'
+import { CircularProgress, Tooltip } from '@mui/material'
+import Typography from '@mui/material/Typography'
 import { SearchContext } from '../../model/pageState'
 import { NotFound } from '../components/NotFound'
-import Grid from '@mui/material/Unstable_Grid2'
 import '../Map.scss'
 import { DateSelector } from '../components/DateSelector'
-import { CircularProgress, Tooltip } from '@mui/material'
 import { FilterPositionsByStartTimeSelector } from '../components/FilterPositionsByStartTimeSelector'
 import { PageContainer } from '../components/PageContainer'
 import { MapWithLocationsAndPath } from '../components/map-related/MapWithLocationsAndPath'
-import Title from 'antd/es/typography/Title'
 import InfoYoutubeModal from '../components/YoutubeModal'
+import { INPUT_SIZE } from 'src/resources/sizes'
+import RouteSelector from 'src/pages/components/RouteSelector'
+import OperatorSelector from 'src/pages/components/OperatorSelector'
+import LineNumberSelector from 'src/pages/components/LineSelector'
+import { getRoutesAsync } from 'src/api/gtfsService'
 import { useSingleLineData } from 'src/hooks/useSingleLineData'
 
 const SingleLineMapPage = () => {
@@ -64,14 +64,14 @@ const SingleLineMapPage = () => {
 
   return (
     <PageContainer className="map-container">
-      <Title className="page-title" level={3}>
+      <Typography className="page-title" variant="h4">
         {t('singleline_map_page_title')}
         <InfoYoutubeModal
           label={t('open_video_about_this_page')}
           title={t('time_based_map_page_description')}
           videoUrl="https://www.youtube-nocookie.com/embed/bXg50_j_hTA?si=inyvqDylStvgNRA6&amp;start=93"
         />
-      </Title>
+      </Typography>
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
         <Grid container spacing={2} xs={12}>
           {/* choose date*/}
@@ -136,6 +136,7 @@ const SingleLineMapPage = () => {
       <MapWithLocationsAndPath
         positions={filteredPositions}
         plannedRouteStops={plannedRouteStops}
+        showNavigationButtons
       />
     </PageContainer>
   )

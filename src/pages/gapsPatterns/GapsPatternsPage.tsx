@@ -1,20 +1,12 @@
 import { useContext, useEffect, useState } from 'react'
 import './GapsPatternsPage.scss'
 import { Moment } from 'moment'
-import { Skeleton, Spin, Radio, Typography, RadioChangeEvent, Alert, Space } from 'antd'
+import { Skeleton, Radio, RadioChangeEvent, Space } from 'antd'
+import CircularProgress from '@mui/material/CircularProgress'
 import moment from 'moment/moment'
-import { useDate } from '../components/DateTimePicker'
-import { PageContainer } from '../components/PageContainer'
-import { Row } from '../components/Row'
-import { Label } from '../components/Label'
-import OperatorSelector from '../components/OperatorSelector'
-import LineNumberSelector from '../components/LineSelector'
-import { NotFound } from '../components/NotFound'
-import RouteSelector from '../components/RouteSelector'
-import { SearchContext } from '../../model/pageState'
-import { getRoutesAsync } from '../../api/gtfsService'
 import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
-
+import Typography from '@mui/material/Typography'
+import Alert from '@mui/material/Alert'
 import {
   Bar,
   CartesianGrid,
@@ -27,14 +19,24 @@ import {
   TooltipProps,
   ResponsiveContainer,
 } from 'recharts'
-import { mapColorByExecution } from '../components/utils'
-import { useGapsList } from './useGapsList'
-import { DateSelector } from '../components/DateSelector'
-import { INPUT_SIZE } from 'src/resources/sizes'
-const { Title } = Typography
 import { useTranslation } from 'react-i18next'
-import Widget from 'src/shared/Widget'
+import { useDate } from '../components/DateTimePicker'
+import { PageContainer } from '../components/PageContainer'
+import { Row } from '../components/Row'
+import { Label } from '../components/Label'
+import OperatorSelector from '../components/OperatorSelector'
+import LineNumberSelector from '../components/LineSelector'
+import { NotFound } from '../components/NotFound'
+import RouteSelector from '../components/RouteSelector'
+import { SearchContext } from '../../model/pageState'
+import { getRoutesAsync } from '../../api/gtfsService'
+
+import { mapColorByExecution } from '../components/utils'
+import { DateSelector } from '../components/DateSelector'
 import InfoYoutubeModal from '../components/YoutubeModal'
+import { useGapsList } from './useGapsList'
+import { INPUT_SIZE } from 'src/resources/sizes'
+import Widget from 'src/shared/Widget'
 // Define prop types for the component
 interface BusLineStatisticsProps {
   lineRef: number
@@ -175,20 +177,25 @@ const GapsPatternsPage = () => {
 
   return (
     <PageContainer>
-      <Title level={3}>
+      <Typography variant="h4">
         {t('gaps_patterns_page_title')}
         <InfoYoutubeModal
           label={t('open_video_about_this_page')}
           title={t('youtube_modal_info_title')}
           videoUrl="https://www.youtube-nocookie.com/embed?v=-C_rZlbHBmk&list=PL6Rh06rT7uiX1AQE-lm55hy-seL3idx3T&index=4"
         />
-      </Title>
+      </Typography>
       <Space direction="vertical" size="middle" style={{ marginBottom: '22px' }}>
-        <Alert message={t('gaps_patterns_page_description')} type="info" />
+        <Alert severity="info" variant="outlined" icon={false}>
+          {t('gaps_patterns_page_description')}
+        </Alert>
       </Space>
       {startDate > endDate ? (
-        <Alert closable showIcon message={t('bug_date_alert')} type="error" />
+        <Alert severity="error" variant="outlined">
+          {t('bug_date_alert')}
+        </Alert>
       ) : null}
+
       <Grid container spacing={2} alignItems="center" sx={{ maxWidth: INPUT_SIZE }}>
         <Grid sm={4} className="hideOnMobile">
           <Label text={t('choose_dates')} />
@@ -239,7 +246,7 @@ const GapsPatternsPage = () => {
           {routesIsLoading && (
             <Row>
               <Label text={t('loading_routes')} />
-              <Spin />
+              <CircularProgress />
             </Row>
           )}
           {!routesIsLoading &&

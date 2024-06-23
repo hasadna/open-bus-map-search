@@ -1,8 +1,8 @@
 import { useState, useMemo } from 'react'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import { useTranslation } from 'react-i18next'
-import { DataAndTimeSelectorProps } from './utils/dateAndTime'
 import { DateValidationError } from '@mui/x-date-pickers'
+import { DataAndTimeSelectorProps } from './utils/dateAndTime'
 
 export function DateSelector({ time, onChange, customLabel, minDate }: DataAndTimeSelectorProps) {
   const [error, setError] = useState<DateValidationError | null>(null)

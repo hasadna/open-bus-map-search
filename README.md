@@ -86,6 +86,8 @@ https://github.com/hasadna/open-bus-map-search/blob/main/src/model/busStop.ts#L4
       <td align="center" valign="top" width="14.28%"><a href="https://reallyliri.com"><img src="https://avatars.githubusercontent.com/u/16985735?v=4?s=100" width="100px;" alt="Liri S"/><br /><sub><b>Liri S</b></sub></a><br /><a href="#code-ReallyLiri" title="Code">💻</a> <a href="#infra-ReallyLiri" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a> <a href="#ideas-ReallyLiri" title="Ideas, Planning, & Feedback">🤔</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/EtayZaslavsky"><img src="https://avatars.githubusercontent.com/u/105246259?v=4?s=100" width="100px;" alt="Etay Zaslavsky"/><br /><sub><b>Etay Zaslavsky</b></sub></a><br /><a href="#code-EtayZaslavsky" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/menachem95"><img src="https://avatars.githubusercontent.com/u/105776588?v=4?s=100" width="100px;" alt="menachem95"/><br /><sub><b>menachem95</b></sub></a><br /><a href="#code-menachem95" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/LiadOvdat5"><img src="https://avatars.githubusercontent.com/u/61656328?v=4?s=100" width="100px;" alt="Liad Ovdat"/><br /><sub><b>Liad Ovdat</b></sub></a><br /><a href="#code-LiadOvdat5" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/asidelnik"><img src="https://avatars.githubusercontent.com/u/10272524?v=4?s=100" width="100px;" alt="Amos Sidelnik"/><br /><sub><b>Amos Sidelnik</b></sub></a><br /><a href="#code-asidelnik" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>

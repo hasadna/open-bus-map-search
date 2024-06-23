@@ -1,10 +1,10 @@
 import { Layout } from 'antd'
 import { useContext } from 'react'
+import { MenuOutlined } from '@ant-design/icons'
+import cn from 'classnames'
 import { LayoutContextInterface, LayoutCtx } from '../LayoutContext'
 import { useTheme } from '../ThemeContext'
-import { MenuOutlined } from '@ant-design/icons'
 import './Header.css'
-import cn from 'classnames'
 import ToggleThemeButton from './ToggleThemeButton'
 import { DonationButton } from './DonationButton'
 import HeaderLinks from './HeaderLinks/HeaderLinks'
@@ -18,7 +18,10 @@ const MainHeader = () => {
   return (
     <Header className={cn('main-header', { dark: isDarkTheme })}>
       <MenuOutlined onClick={() => setDrawerOpen(true)} className="hideOnDesktop" />
-      <div style={{ flex: 1 }}>&nbsp;</div>
+      <div style={{ flex: 1, lineHeight: '1em' }}>
+        לתשומת לבכם - עבור נסיעות שבוצעו לאחר ה12.06.2024 ישנם פערי נתונים. התקלה בתחקור ושאר
+        הנתונים זמינים לשימושכם, תודה על ההבנה.
+      </div>
       <HeaderLinks>
         <LanguageToggle />
         <ToggleThemeButton toggleTheme={toggleTheme} isDarkTheme={isDarkTheme} />

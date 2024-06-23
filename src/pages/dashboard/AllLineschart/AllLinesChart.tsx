@@ -2,12 +2,12 @@ import { Tooltip } from '@mui/material'
 import { Skeleton } from 'antd'
 import { Fragment } from 'react'
 import { useTranslation } from 'react-i18next'
-import OperatorHbarChart from './OperatorHbarChart/OperatorHbarChart'
-import { GroupByRes, useGroupBy } from 'src/api/groupByService'
 import { FC } from 'react'
 import { Moment } from 'moment/moment'
-import Widget from 'src/shared/Widget'
 import { InfoCircleOutlined } from '@ant-design/icons'
+import OperatorHbarChart from './OperatorHbarChart/OperatorHbarChart'
+import { GroupByRes, useGroupBy } from 'src/api/groupByService'
+import Widget from 'src/shared/Widget'
 
 const convertToChartCompatibleStruct = (arr: GroupByRes[]) => {
   return arr.map((item: GroupByRes) => ({
