@@ -78,7 +78,9 @@ const SingleLineMapPage = () => {
           <Grid sm={4} xs={12}>
             <DateSelector
               time={moment(timestamp)}
-              onChange={(ts) => setSearch((current) => ({ ...current, timestamp: ts.valueOf() }))}
+              onChange={(ts) =>
+                setSearch((current) => ({ ...current, timestamp: ts?.valueOf() ?? Date.now() }))
+              }
             />
           </Grid>
           {/* choose operator */}

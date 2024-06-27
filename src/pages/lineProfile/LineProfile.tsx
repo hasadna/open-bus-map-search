@@ -86,7 +86,9 @@ const LineProfile = () => {
         <Grid xs={12} sm={4} className="inputs">
           <DateSelector
             time={moment(timestamp)}
-            onChange={(ts) => setSearch((current) => ({ ...current, timestamp: ts.valueOf() }))}
+            onChange={(ts) =>
+              setSearch((current) => ({ ...current, timestamp: ts?.valueOf() ?? Date.now() }))
+            }
           />
           <RouteSelector
             routes={availableRoutes ?? []}
