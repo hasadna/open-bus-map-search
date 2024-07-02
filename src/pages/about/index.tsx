@@ -17,6 +17,7 @@ const About = () => {
           {t(`${pageName}.title`)}
         </Typography>
         <WhatIsWebsite />
+        <YoutubePlaylist />
         <DiscoveredMistake />
         <Privacy />
         <License />
@@ -43,7 +44,19 @@ const WhatIsWebsite = () => {
     </Widget>
   )
 }
-
+const YoutubePlaylist = () => {
+  return (
+    <iframe
+      width="560"
+      height="315"
+      src="https://www.youtube.com/embed/videoseries?si=oTULlxq8Is188hPu&amp;list=PL6Rh06rT7uiX1AQE-lm55hy-seL3idx3T"
+      title="YouTube video player"
+      frameBorder="0"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      referrerPolicy="strict-origin-when-cross-origin"
+      allowFullScreen></iframe>
+  )
+}
 const DiscoveredMistake = () => {
   const { t } = useTranslation()
 
