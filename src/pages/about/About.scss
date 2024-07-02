@@ -2,6 +2,13 @@ ul {
     list-style: none;
     padding: 0;
 }
+iframe {
+    border: none;
+    border-radius: 8px;
+    position: relative;
+    width: 100%;
+    height: 32rem;
+}
 
 li img {
     width: 1.9em;
