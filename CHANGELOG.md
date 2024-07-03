@@ -1,5 +1,67 @@
 # Changelog
 
+## [1.1.0](https://github.com/hasadna/open-bus-map-search/compare/v1.0.0...v1.1.0) (2024-07-02)
+
+
+### Features
+
+* Add an Operator Selector to data-research page  ([#444](https://github.com/hasadna/open-bus-map-search/issues/444)) ([ee2cc1b](https://github.com/hasadna/open-bus-map-search/commit/ee2cc1b5cb84e8b74de8762a08064b0aef99bb71))
+* add caching to groupByService ([#727](https://github.com/hasadna/open-bus-map-search/issues/727)) ([c80851f](https://github.com/hasadna/open-bus-map-search/commit/c80851f04ab1f12a84976c0745411971a6039beb))
+* add donations modal ([#552](https://github.com/hasadna/open-bus-map-search/issues/552)) ([8cda1a6](https://github.com/hasadna/open-bus-map-search/commit/8cda1a6d9630317f37e2ff67d396d0e65136dfe4))
+* add HBarChart variations to stories ([#669](https://github.com/hasadna/open-bus-map-search/issues/669)) ([e0ced28](https://github.com/hasadna/open-bus-map-search/commit/e0ced28ac1797b11862adac142d2019488cfdcc9))
+* add language button ([#692](https://github.com/hasadna/open-bus-map-search/issues/692)) ([9556d92](https://github.com/hasadna/open-bus-map-search/commit/9556d9263a5099843f9e813b3234a5dc195eb57b))
+* add SEO tags ([#745](https://github.com/hasadna/open-bus-map-search/issues/745)) ([#759](https://github.com/hasadna/open-bus-map-search/issues/759)) ([9facbce](https://github.com/hasadna/open-bus-map-search/commit/9facbce6059c75073324385fe4e4b70156df7f18))
+* add to single line map arrowa to navigate between points ([#798](https://github.com/hasadna/open-bus-map-search/issues/798)) ([11a602c](https://github.com/hasadna/open-bus-map-search/commit/11a602c6fe13f56348c73bb137e22b695fe0f8dc))
+* add tooltips to homepage icons and restructure icons for responsive design ([#827](https://github.com/hasadna/open-bus-map-search/issues/827)) ([783d32e](https://github.com/hasadna/open-bus-map-search/commit/783d32e02cd5e10a052d10d25a0135b7208387b6))
+* Added complaint button, hidden as an easter egg 'complaint'. ([#791](https://github.com/hasadna/open-bus-map-search/issues/791)) ([dbbf9a0](https://github.com/hasadna/open-bus-map-search/commit/dbbf9a0903b21eed99374afed7a4f6e81cc0b7d1))
+* Added Treeview feature ([#558](https://github.com/hasadna/open-bus-map-search/issues/558)) ([4aa6213](https://github.com/hasadna/open-bus-map-search/commit/4aa6213ae1824a931666e7a6335fbd32aa1673f9))
+* dispaly graph accuratly, add getRange() ([b1f789c](https://github.com/hasadna/open-bus-map-search/commit/b1f789ce69663688e9194324237e011913017139))
+* implement homepage design according to figma ([#762](https://github.com/hasadna/open-bus-map-search/issues/762)) ([b5fa6c8](https://github.com/hasadna/open-bus-map-search/commit/b5fa6c85846bcd51f925935e4967e524848e2589))
+* improve page descriptions ([#452](https://github.com/hasadna/open-bus-map-search/issues/452)) ([43a25b5](https://github.com/hasadna/open-bus-map-search/commit/43a25b516e3fab5f5a0b9572c943117b29c503aa))
+* **line-profile:** add a map ([#557](https://github.com/hasadna/open-bus-map-search/issues/557)) ([8a928f5](https://github.com/hasadna/open-bus-map-search/commit/8a928f5fcd092ca5aef1cdedbd0db94bafc6d5ac))
+* Link bus tooltip to line profile ([#463](https://github.com/hasadna/open-bus-map-search/issues/463)) ([02bb9c1](https://github.com/hasadna/open-bus-map-search/commit/02bb9c1c0affdd7bad07a34055569d0a96cc30c0))
+* make LineProfilePage actually work & improve BusTooltip  ([#744](https://github.com/hasadna/open-bus-map-search/issues/744)) ([cf0e663](https://github.com/hasadna/open-bus-map-search/commit/cf0e663670cdef35474473849999d640346d9f28))
+* **map:** New alternative PR in light of CiCD issues ([#566](https://github.com/hasadna/open-bus-map-search/issues/566)) ([ed0ff1f](https://github.com/hasadna/open-bus-map-search/commit/ed0ff1f33b4fefd2f3528788001f03fbe6e66fe1))
+* planned route map ([#434](https://github.com/hasadna/open-bus-map-search/issues/434)) ([b6994a6](https://github.com/hasadna/open-bus-map-search/commit/b6994a6abe1ecc28f3005a0908d0411a7549a6f2))
+* public appeal ([#756](https://github.com/hasadna/open-bus-map-search/issues/756)) ([bfc73b9](https://github.com/hasadna/open-bus-map-search/commit/bfc73b90679704d09c2f9edaba237af62e35bcf1))
+* wip - add contributors ([#751](https://github.com/hasadna/open-bus-map-search/issues/751)) ([04f7aac](https://github.com/hasadna/open-bus-map-search/commit/04f7aac3738600c1a1740f5128249af1ef96397c))
+* youtube videos modal ([#651](https://github.com/hasadna/open-bus-map-search/issues/651)) ([390fe95](https://github.com/hasadna/open-bus-map-search/commit/390fe9547f1c50842e10c32594d08bb205e68ad7))
+
+
+### Bug Fixes
+
+* Add scroll and bottom margin to live map ([#724](https://github.com/hasadna/open-bus-map-search/issues/724)) ([0fe52e4](https://github.com/hasadna/open-bus-map-search/commit/0fe52e41c47c52e75e6e6cb14954da5402b536fa))
+* Block end date[#309](https://github.com/hasadna/open-bus-map-search/issues/309) ([#521](https://github.com/hasadna/open-bus-map-search/issues/521)) ([70dee7d](https://github.com/hasadna/open-bus-map-search/commit/70dee7d9eeff86001780e39c9cfe5a2f30b1b756))
+* dark mode hides map legend ([#760](https://github.com/hasadna/open-bus-map-search/issues/760)) ([f413ae5](https://github.com/hasadna/open-bus-map-search/commit/f413ae5d646e44a834f5d18116a5c8f5cf1ac175))
+* databus logo out of alignment in English mode ([#754](https://github.com/hasadna/open-bus-map-search/issues/754)) ([3b1f0b3](https://github.com/hasadna/open-bus-map-search/commit/3b1f0b3935b1f82d600f21332a16311799ce892a))
+* exception thrown on `/gaps` ([#539](https://github.com/hasadna/open-bus-map-search/issues/539)) ([a5460eb](https://github.com/hasadna/open-bus-map-search/commit/a5460eb9a99ea907db039742c2e4d32920b0ab6b))
+* Fix for issue [#428](https://github.com/hasadna/open-bus-map-search/issues/428) unable to run project locally ([#430](https://github.com/hasadna/open-bus-map-search/issues/430)) ([94f7c68](https://github.com/hasadna/open-bus-map-search/commit/94f7c68a0e9b93743cfbd72e8e694b5c6c4782ae))
+* **gtfs-service-api:** change routes filter to correctly check if a route is in the given range ([#741](https://github.com/hasadna/open-bus-map-search/issues/741)) ([01d8e69](https://github.com/hasadna/open-bus-map-search/commit/01d8e6936b77bc275d1ecca45262113dfd719313))
+* homepage link hover effect contained, hompage links grid mobile … ([#799](https://github.com/hasadna/open-bus-map-search/issues/799)) ([521530e](https://github.com/hasadna/open-bus-map-search/commit/521530e1d8bbae4ff5a9c95c765453dae2d1d87e))
+* improperly aligned header links ([#712](https://github.com/hasadna/open-bus-map-search/issues/712)) ([645e3c4](https://github.com/hasadna/open-bus-map-search/commit/645e3c46800ffa72dd26511a1f0ecc6fca793a6e))
+* in the single line tab the legend icon was not center ([#785](https://github.com/hasadna/open-bus-map-search/issues/785)) ([4e58b09](https://github.com/hasadna/open-bus-map-search/commit/4e58b09b68baf9abfa8b33d688a4aae6dbfa5af8))
+* jest warning value provided is not in a recognized RFC2822 or ISO format. ([#553](https://github.com/hasadna/open-bus-map-search/issues/553)) ([b30089f](https://github.com/hasadna/open-bus-map-search/commit/b30089f79b98084bdd8bcfaf70a14a81df394a78))
+* line selector can now get letters as well ([#556](https://github.com/hasadna/open-bus-map-search/issues/556)) ([04518e6](https://github.com/hasadna/open-bus-map-search/commit/04518e61fff54eafdc2f8674a84298e44370766d))
+* lint and tests ([5709fa8](https://github.com/hasadna/open-bus-map-search/commit/5709fa8faef8505866f0f789d4ba7de5942b264b))
+* lint errors [#450](https://github.com/hasadna/open-bus-map-search/issues/450) ([#573](https://github.com/hasadna/open-bus-map-search/issues/573)) ([bf8632b](https://github.com/hasadna/open-bus-map-search/commit/bf8632b12147c589c9057c883a4a790942b76141))
+* **mobile:** close menu after navigation ([#414](https://github.com/hasadna/open-bus-map-search/issues/414)) ([e99683f](https://github.com/hasadna/open-bus-map-search/commit/e99683faec6910d8f24318e97175ad57fbf1304d))
+* new agencies should appear in the dashboard ([#797](https://github.com/hasadna/open-bus-map-search/issues/797)) ([ea7551e](https://github.com/hasadna/open-bus-map-search/commit/ea7551ed4970d76c13ac7a4e9cb9eaa368d2a2c4))
+* OperatorSelector inconsistencies, operator filter bugs ([#522](https://github.com/hasadna/open-bus-map-search/issues/522)) ([024a34b](https://github.com/hasadna/open-bus-map-search/commit/024a34b8e4ebdf979f725fa758f3c10f4608b900))
+* refresh client when new version is released ([#587](https://github.com/hasadna/open-bus-map-search/issues/587)) ([a114051](https://github.com/hasadna/open-bus-map-search/commit/a114051072b4a89713fc33d2e77bf102e1b69867))
+* remove css override of white background on darkmode ([#815](https://github.com/hasadna/open-bus-map-search/issues/815)) ([9813128](https://github.com/hasadna/open-bus-map-search/commit/9813128649d81b70c405c91fdc69cfec1a284b88))
+* remove duplicated header donation button ([#771](https://github.com/hasadna/open-bus-map-search/issues/771)) ([33473c7](https://github.com/hasadna/open-bus-map-search/commit/33473c7363d207a3b1f1cf3517e29a1ea1b66a11))
+* Remove unknown data ([#438](https://github.com/hasadna/open-bus-map-search/issues/438)) ([56cb59a](https://github.com/hasadna/open-bus-map-search/commit/56cb59a1bbf02886e885c01dcb1bff1fb4d82266))
+* scrollbar color on dark mode ([#431](https://github.com/hasadna/open-bus-map-search/issues/431)) ([dfcedf1](https://github.com/hasadna/open-bus-map-search/commit/dfcedf121ef824598d0f5258219211652f798342))
+* store dark/light theme mode in `localStorage` ([#418](https://github.com/hasadna/open-bus-map-search/issues/418)) ([c4ab0fc](https://github.com/hasadna/open-bus-map-search/commit/c4ab0fcc6bb42a430a0181c5ce252c88bf40a428))
+* video urls ([#683](https://github.com/hasadna/open-bus-map-search/issues/683)) ([130b24b](https://github.com/hasadna/open-bus-map-search/commit/130b24bc63f9144199e7eb39dce51d008951e2f3))
+* wrong line profile information ([#569](https://github.com/hasadna/open-bus-map-search/issues/569)) ([c0ce0ef](https://github.com/hasadna/open-bus-map-search/commit/c0ce0efa6846042f4797ac5e69d8ec0a0df416bd))
+
+
+### Performance Improvements
+
+* **SingleLinePage:** don't fetch irrelevant data ([#761](https://github.com/hasadna/open-bus-map-search/issues/761)) ([68e35b8](https://github.com/hasadna/open-bus-map-search/commit/68e35b8f55ef57d9f9f529bbb619be1d3f6b8f4e))
+* upgrade react query and use local storage persistor ([#750](https://github.com/hasadna/open-bus-map-search/issues/750)) ([5661d66](https://github.com/hasadna/open-bus-map-search/commit/5661d66b1924a4d19297fa40e127e21ea3506867))
+
 ## 1.0.0 (2024-06-22)
 
 
