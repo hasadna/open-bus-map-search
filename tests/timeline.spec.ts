@@ -74,9 +74,9 @@ test.describe('Timeline Page Tests', () => {
     await timelinePage.selectOperatorFromDropbox(
       timelinePage.operatorsDropDown,
       timelinePage.operatorsList,
-      'אגד תעבורה',
+      'דן בדרום',
     )
-    await timelinePage.fillLineNumber('2')
+    await timelinePage.fillLineNumber('9999')
     await timelinePage.verifyLineNumberNotFound()
   })
 

@@ -191,7 +191,7 @@ const GapsPatternsPage = () => {
         </Alert>
       </Space>
       {startDate > endDate ? (
-        <Alert severity="error" variant="outlined" sx={{ bgcolor: '#feeaea' }}>
+        <Alert severity="error" variant="outlined">
           {t('bug_date_alert')}
         </Alert>
       ) : null}
