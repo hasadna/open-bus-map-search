@@ -1,15 +1,13 @@
 import { useState, ChangeEvent, useEffect } from 'react'
 import {
-  Box,
   Button,
-  FormControl,
-  InputLabel,
   MenuItem,
-  Modal,
-  Select,
   TextField,
-  SelectChangeEvent,
   CircularProgress,
+  DialogTitle,
+  DialogContent,
+  Dialog,
+  DialogActions,
 } from '@mui/material'
 import { useTranslation } from 'react-i18next'
 import { SiriRideWithRelatedPydanticModel } from 'open-bus-stride-client'
@@ -21,6 +19,40 @@ interface ComplaintModalProps {
   setModalOpen: (open: boolean) => void
   position: Point
 }
+
+type complaintTypeStrings =
+  | 'other'
+  | 'no_stop'
+  | 'no_ride'
+  | 'delay'
+  | 'overcrowded'
+  | 'driver_behavior'
+  | 'early'
+  | 'cleanliness'
+  | 'fine_appeal'
+  | 'route_change'
+  | 'line_switch'
+  | 'station_signs'
+
+type complaintType = {
+  value: complaintTypeStrings
+  label: complaintTypeStrings
+}
+
+const complaintTypes: complaintType[] = [
+  { value: 'other', label: 'other' },
+  { value: 'no_stop', label: 'no_stop' },
+  { value: 'no_ride', label: 'no_ride' },
+  { value: 'delay', label: 'delay' },
+  { value: 'overcrowded', label: 'overcrowded' },
+  { value: 'driver_behavior', label: 'driver_behavior' },
+  { value: 'early', label: 'early' },
+  { value: 'cleanliness', label: 'cleanliness' },
+  { value: 'fine_appeal', label: 'fine_appeal' },
+  { value: 'route_change', label: 'route_change' },
+  { value: 'line_switch', label: 'line_switch' },
+  { value: 'station_signs', label: 'station_signs' },
+]
 
 const ComplaintModal = ({ modalOpen, setModalOpen, position }: ComplaintModalProps) => {
   const { t, i18n } = useTranslation()
@@ -47,29 +79,21 @@ const ComplaintModal = ({ modalOpen, setModalOpen, position }: ComplaintModalPro
       .finally(() => setIsLoading(false))
   }, [position])
 
-  const modalStyle = {
-    position: 'absolute' as const,
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 400,
-    bgcolor: 'background.paper',
-    border: '2px solid #000',
-    boxShadow: 24,
-    p: 4,
-    textAlign: i18n.language === 'he' ? 'left' : 'right',
-  } as const
-
+  const textDirection = i18n.language === 'he' ? 'rtl' : 'ltr'
   const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setComplaintData((prevData) => ({ ...prevData, [name]: value }))
   }
 
-  const handleSelectChange = (e: SelectChangeEvent<string>) => {
+  // const handleSelectChange = (e: SelectChangeEvent<typeof complaintTypes>) => {
+  const handleSelectChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
+    console.log(e)
     setComplaintData((prevData) => ({ ...prevData, [name]: value }) as const)
   }
-  const handleSubmit = () => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    console.log(`lalalala`)
+    e.preventDefault()
     const complaintPayload = {
       userData: complaintData,
       databusData: {
@@ -90,102 +114,94 @@ const ComplaintModal = ({ modalOpen, setModalOpen, position }: ComplaintModalPro
           <CircularProgress />
         </div>
       ) : (
-        <Modal
+        <Dialog
+          dir={textDirection}
           open={modalOpen}
           onClose={() => setModalOpen(false)}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description">
-          <Box className="modal" sx={modalStyle}>
-            <h2>{t('complaint')}</h2>
-            <form>
-              <TextField
-                label={t('first_name')}
-                name="firstName"
-                value={complaintData.firstName}
-                onChange={handleInputChange}
-                fullWidth
-                margin="normal"
-              />
-              <TextField
-                label={t('last_name')}
-                name="lastName"
-                value={complaintData.lastName}
-                onChange={handleInputChange}
-                fullWidth
-                margin="normal"
-              />
-              <TextField
-                label={t('id')}
-                name="id"
-                value={complaintData.id}
-                onChange={handleInputChange}
-                fullWidth
-                margin="normal"
-              />
-              <TextField
-                label={t('email')}
-                name="email"
-                value={complaintData.email}
-                onChange={handleInputChange}
-                fullWidth
-                margin="normal"
-              />
-              <TextField
-                label={t('phone')}
-                name="phone"
-                value={complaintData.phone}
-                onChange={handleInputChange}
-                fullWidth
-                margin="normal"
-              />
-              <FormControl fullWidth margin="normal">
-                <InputLabel>{t('complaint_type')}</InputLabel>
-                <Select
-                  name="complaintType"
-                  value={complaintData.complaintType}
-                  onChange={handleSelectChange}
-                  sx={{ textAlign: i18n.language === 'he' ? 'left' : 'right' }}>
-                  <MenuItem value="other">{t('other')}</MenuItem>
-                  <MenuItem value="no_stop">{t('no_stop')}</MenuItem>
-                  <MenuItem value="no_ride">{t('no_ride')}</MenuItem>
-                  <MenuItem value="delay">{t('delay')}</MenuItem>
-                  <MenuItem value="overcrowded">{t('overcrowded')}</MenuItem>
-                  <MenuItem value="driver_behavior">{t('driver_behavior')}</MenuItem>
-                  <MenuItem value="early">{t('early')}</MenuItem>
-                  <MenuItem value="cleanliness">{t('cleanliness')}</MenuItem>
-                  <MenuItem value="fine_appeal">{t('fine_appeal')}</MenuItem>
-                  <MenuItem value="route_change">{t('route_change')}</MenuItem>
-                  <MenuItem value="line_switch">{t('line_switch')}</MenuItem>
-                  <MenuItem value="station_signs">{t('station_signs')}</MenuItem>
-                </Select>
-              </FormControl>
-              <TextField
-                label={t('description')}
-                name="description"
-                value={complaintData.description}
-                onChange={handleInputChange}
-                multiline
-                rows={4}
-                fullWidth
-                margin="normal"
-              />
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleSubmit}
-                style={{ marginTop: '16px', borderRadius: '50px' }}>
+          PaperProps={{
+            component: 'form',
+            onSubmit: handleSubmit,
+          }}>
+          <DialogTitle>{t('complaint')}</DialogTitle>
+          <DialogContent>
+            <TextField
+              label={t('first_name')}
+              name="firstName"
+              value={complaintData.firstName}
+              onChange={handleInputChange}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label={t('last_name')}
+              name="lastName"
+              value={complaintData.lastName}
+              onChange={handleInputChange}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label={t('id')}
+              name="id"
+              value={complaintData.id}
+              onChange={handleInputChange}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label={t('email')}
+              name="email"
+              type="email"
+              value={complaintData.email}
+              onChange={handleInputChange}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label={t('phone')}
+              name="phone"
+              type="tel"
+              value={complaintData.phone}
+              onChange={handleInputChange}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              id="complaint_type"
+              select
+              margin="normal"
+              label={t('complaint_type')}
+              fullWidth
+              name="complaintType"
+              value={complaintData.complaintType}
+              onChange={handleSelectChange}>
+              {complaintTypes.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {t(option.label)}
+                </MenuItem>
+              ))}
+            </TextField>
+            <TextField
+              label={t('description')}
+              name="description"
+              type="text"
+              value={complaintData.description}
+              onChange={handleInputChange}
+              multiline
+              rows={4}
+              fullWidth
+              margin="normal"
+            />
+            <DialogActions sx={{ gap: '5px', justifyContent: 'flex-end' }}>
+              <Button variant="contained" color="warning" onClick={() => setModalOpen(false)}>
+                {t('close_complaint')}
+              </Button>
+              <Button type="submit" variant="contained" color="primary">
                 {t('submit_complaint')}
               </Button>
-            </form>
-            <Button
-              variant="contained"
-              color="success"
-              onClick={() => setModalOpen(false)}
-              style={{ marginTop: '16px', borderRadius: '50px' }}>
-              {t('close_complaint')}
-            </Button>
-          </Box>
-        </Modal>
+            </DialogActions>
+          </DialogContent>
+        </Dialog>
       )}
     </div>
   )
