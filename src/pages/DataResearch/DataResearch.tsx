@@ -115,14 +115,14 @@ function StackedResearchInputs({
         <Grid xs={6} item>
           <DateSelector
             time={startDate}
-            onChange={(data) => setStartDate(data)}
+            onChange={(data) => data && setStartDate(data)}
             customLabel={t('start')}
           />
         </Grid>
         <Grid xs={6} item>
           <DateSelector
             time={endDate}
-            onChange={(data) => setEndDate(data)}
+            onChange={(data) => data && setEndDate(data)}
             customLabel={t('end')}
           />
         </Grid>
