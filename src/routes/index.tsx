@@ -89,9 +89,9 @@ export const PAGES = [
   },
   {
     label: 'donate_title',
-    path: 'https://www.jgive.com/new/he/ils/donation-targets/3268#donation-modal',
+    path: '/donate',
     icon: <DollarOutlined />,
-    element: null,
+    element: null, //DonateModal
   },
   {
     label: 'public_appeal_title',
