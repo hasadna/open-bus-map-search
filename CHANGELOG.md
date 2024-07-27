@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.2.0](https://github.com/hasadna/open-bus-map-search/compare/v1.1.0...v1.2.0) (2024-07-27)
+
+
+### Features
+
+* add Donation Modal as menu item  ([#833](https://github.com/hasadna/open-bus-map-search/issues/833)) ([ef02293](https://github.com/hasadna/open-bus-map-search/commit/ef0229318137e17ddd8b33015729f9a884f1aa28))
+
+
+### Bug Fixes
+
+* DateSelector selector validation message issues ([#823](https://github.com/hasadna/open-bus-map-search/issues/823)) ([7beccc4](https://github.com/hasadna/open-bus-map-search/commit/7beccc4f3b6aaca8beaa463d8997821fb1647248))
+
 ## [1.1.0](https://github.com/hasadna/open-bus-map-search/compare/v1.0.0...v1.1.0) (2024-07-02)
 
 
