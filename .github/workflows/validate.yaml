@@ -126,7 +126,7 @@ jobs:
         with:
           sha: ${{ github.sha }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          description: 'Test results: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.sha }}/test-results/index.html'
+          description: 'See Playwright test results'
           status: success
           context: 'Test results'
           targetUrl: 'https://s3.amazonaws.com/noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.sha }}/test-results/index.html'
