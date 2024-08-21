@@ -70,6 +70,7 @@
   "start": "start",
   "end": "end",
   "about_title": "About",
+  "public_appeal_title": "Public Appeal",
   "donate_title": "For Donations",
   "report_a_bug_title": "Report a bug",
   "website_name": "Databus",
