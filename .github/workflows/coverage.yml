@@ -14,6 +14,7 @@ jobs:
     runs-on: ubuntu-22.04
     env:
       APPLITOOLS_API_KEY: ${{ secrets.APPLITOOLS_API_KEY }}
+      LONG_TIMEOUT: true
     steps:
       - uses: actions/checkout@v3
       - name: Use Node.js

@@ -1,5 +1,7 @@
 import { defineConfig, devices } from '@playwright/test'
 
+const extraTimeout = process.env.LONG_TIMEOUT ? 10 * 60 * 1000 : 0
+
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
@@ -37,7 +39,7 @@ export default defineConfig({
   webServer: {
     command: 'npm start',
     reuseExistingServer: true,
-    timeout: 120 * 1000,
+    timeout: 120 * 1000 + extraTimeout,
     port: 3000,
   },
 })
