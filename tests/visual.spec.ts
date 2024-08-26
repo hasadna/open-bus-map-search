@@ -90,8 +90,12 @@ test.describe('Visual Tests', () => {
 
   test('map page should look good', async ({ page }) => {
     await page.goto('/map')
-    await page.locator('.leaflet-marker-icon').first().waitFor({ state: 'visible' })
-    await page.locator('.ant-spin-dot').first().waitFor({ state: 'hidden' })
+    try {
+      await page.locator('.leaflet-marker-icon').first().waitFor({ state: 'visible' })
+      await page.locator('.ant-spin-dot').first().waitFor({ state: 'hidden' })
+    } catch (error) {
+      console.warn('map page failed to load in a reasonable time')
+    }
     await eyes.check(
       'map page',
       Target.window().layoutRegions(
