@@ -124,9 +124,8 @@ jobs:
         uses: myrotvorets/set-commit-status-action@master
         if: always() && ${{ env.AWS_KEY_ID }}
         with:
-          sha: ${{ github.sha }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          description: 'Test results: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.sha }}/test-results/index.html'
+          description: 'Test results'
           status: success
           context: 'Test results'
           targetUrl: 'https://s3.amazonaws.com/noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.sha }}/test-results/index.html'
