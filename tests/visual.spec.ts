@@ -30,9 +30,7 @@ test.describe('Visual Tests', () => {
   })
 
   test.afterEach(async () => {
-    if (process.env.APPLITOOLS_API_KEY) {
-      await eyes.close(false)
-    }
+    await eyes.close(false)
   })
 
   test('dashboard page should look good', async ({ page }) => {
