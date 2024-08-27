@@ -1,5 +1,9 @@
 import axios from 'axios'
-import { GtfsApi, GtfsRideWithRelatedPydanticModel } from 'open-bus-stride-client'
+import {
+  GtfsApi,
+  GtfsRideStopPydanticModel,
+  GtfsRideWithRelatedPydanticModel,
+} from 'open-bus-stride-client'
 import moment, { Moment } from 'moment'
 import { BusRoute, fromGtfsRoute } from 'src/model/busRoute'
 import { BusStop, fromGtfsStop } from 'src/model/busStop'
@@ -127,8 +131,8 @@ export async function getGtfsStopHitTimesAsync(stop: BusStop, timestamp: Moment)
 
   const rideIds = closestInTimeRides.map((ride) => ride.id).join(JOIN_SEPARATOR)
 
-  const maxEndTime = Math.max(...rides.map((ride) => Number(ride.endTime)))
   const minStartTime = Math.min(...rides.map((ride) => Number(ride.startTime)))
+  const maxEndTime = Math.max(...rides.map((ride) => Number(ride.endTime)))
 
   /* Fix StopHits bugs next steps TODO:
   1. Add a test to ensure this feature is working correctly.
@@ -156,7 +160,9 @@ export async function getGtfsStopHitTimesAsync(stop: BusStop, timestamp: Moment)
       throw new Error(`No stop hits found`)
     }
 
+    const stopHits: GtfsRideStopPydanticModel[] = stopHitsRes.data
 
+    return stopHits.sort((hit1, hit2) => +hit1.arrivalTime! - +hit2.arrivalTime!)
   } catch (error) {
     console.error(`Error fetching stop hits:`, error)
     return []
