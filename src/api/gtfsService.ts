@@ -1,14 +1,22 @@
+import axios from 'axios'
 import { GtfsApi, GtfsRideWithRelatedPydanticModel } from 'open-bus-stride-client'
 import moment, { Moment } from 'moment'
 import { BusRoute, fromGtfsRoute } from 'src/model/busRoute'
 import { BusStop, fromGtfsStop } from 'src/model/busStop'
-import { API_CONFIG, MAX_HITS_COUNT } from 'src/api/apiConfig'
+import { API_CONFIG, MAX_HITS_COUNT, BASE_PATH } from 'src/api/apiConfig'
 // import { Route } from 'react-router'
 
 const GTFS_API = new GtfsApi(API_CONFIG)
 //const USER_CASES_API = new UserCasesApi(API_CONFIG)
 const JOIN_SEPARATOR = ','
 const SEARCH_MARGIN_HOURS = 4
+
+type StopHitsPayLoadType = {
+  gtfsRideIds: string
+  gtfsStopIds: string
+  arrival_time_to: number
+  arrival_time_from: number
+}
 
 export async function getRoutesAsync(
   fromTimestamp: moment.Moment,
@@ -118,9 +126,33 @@ export async function getGtfsStopHitTimesAsync(stop: BusStop, timestamp: Moment)
     .slice(0, MAX_HITS_COUNT)
 
   const rideIds = closestInTimeRides.map((ride) => ride.id).join(JOIN_SEPARATOR)
-  const stopHits = await GTFS_API.gtfsRideStopsListGet({
-    gtfsRideIds: rideIds,
-    gtfsStopIds: stop.stopId.toString(),
-  })
-  return stopHits.sort((hit1, hit2) => +hit1.arrivalTime! - +hit2.arrivalTime!)
+
+  const maxEndTime = Math.max(...rides.map((ride) => Number(ride.endTime)))
+  const minStartTime = Math.min(...rides.map((ride) => Number(ride.startTime)))
+
+  /* Fix StopHits bugs next steps TODO:
+  1. Add a test to ensure this feature is working correctly.
+  2. Optimize the axios request to minimize latency. - Currently takes forever.
+  3. Fix any on this- define the hit type
+  */
+
+  try {
+    const stopHitsRequestPayLoad: StopHitsPayLoadType = {
+      gtfsRideIds: rideIds,
+      gtfsStopIds: stop.stopId.toString(),
+      arrival_time_from: minStartTime,
+      arrival_time_to: maxEndTime,
+    }
+
+    const stopHitsRes = await axios.get(`${BASE_PATH}/gtfs_ride_stops/list`, {
+      params: stopHitsRequestPayLoad,
+    })
+
+
+    return stopHitsRes.data.sort((hit1, hit2) => +hit1.arrivalTime! - +hit2.arrivalTime!)
+
+
+  } catch (error) {
+    console.error(`Error fetching stop hits for stop ${stop.stopId}:`, error)
+  }
 }
