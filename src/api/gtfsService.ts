@@ -148,11 +148,17 @@ export async function getGtfsStopHitTimesAsync(stop: BusStop, timestamp: Moment)
       params: stopHitsRequestPayLoad,
     })
 
+    if (stopHitsRes.status !== 200) {
+      throw new Error(`Error fetching stop hits: ${stopHitsRes.statusText}`)
+    }
 
-    return stopHitsRes.data.sort((hit1, hit2) => +hit1.arrivalTime! - +hit2.arrivalTime!)
+    if (stopHitsRes.data.length === 0) {
+      throw new Error(`No stop hits found`)
+    }
 
 
   } catch (error) {
-    console.error(`Error fetching stop hits for stop ${stop.stopId}:`, error)
+    console.error(`Error fetching stop hits:`, error)
+    return []
   }
 }
