@@ -9,6 +9,4 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "weekly"
-    reviewers:
-      - "aviv1620"
     open-pull-requests-limit: 3
