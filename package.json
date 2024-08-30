@@ -92,7 +92,7 @@
     "@jest/globals": "^29.7.0",
     "@nx/eslint": "^18.2.2",
     "@nx/eslint-plugin": "^18.3.4",
-    "@playwright/test": "^1.43.1",
+    "@playwright/test": "^1.46.1",
     "@storybook/addon-essentials": "^7.5.3",
     "@storybook/addon-interactions": "^7.6.17",
     "@storybook/addon-links": "^7.6.17",
