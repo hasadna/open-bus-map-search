@@ -87,6 +87,7 @@ test.describe('Visual Tests', () => {
   })
 
   test('map page should look good', async ({ page }) => {
+    await page.clock.setFixedTime(new Date('2023-05-01T00:00:00.000Z'))
     await page.goto('/map')
     try {
       await page.locator('.leaflet-marker-icon').first().waitFor({ state: 'visible' })
