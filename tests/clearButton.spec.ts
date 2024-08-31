@@ -166,6 +166,7 @@ test.describe('clearButton functionality', () => {
     test('after clear the `minutes` input - it should has value equals to `1`', async ({
       page,
     }) => {
+      await page.clock.setFixedTime(new Date('2023-05-01T00:00:00.000Z'))
       await visitPage(page, 'מפה לפי זמן', /map/)
       const minutes = page.getByLabel('דקות')
       let getValueAttribute = await minutes.getAttribute('value')

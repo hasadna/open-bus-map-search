@@ -127,7 +127,7 @@ jobs:
           sha: ${{ github.sha }}
           token: ${{ secrets.GITHUB_TOKEN }}
           description: 'See Playwright test results'
-          status: success
+          status: ${{needs.test.result}}
           context: 'Test results'
           targetUrl: 'https://s3.amazonaws.com/noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.sha }}/test-results/index.html'
   build-outside-docker:
