@@ -3,3 +3,8 @@
   padding: 20px;
   margin-bottom: 20px;
 }
+
+.card.dark {
+  background: linear-gradient(145deg, #252525, #141414);
+  border: 1px solid #fff;
+}
