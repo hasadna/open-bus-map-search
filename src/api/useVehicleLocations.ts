@@ -11,7 +11,7 @@ import { VehicleLocation } from 'src/model/vehicleLocation'
 
 const config = {
   apiUrl: 'https://open-bus-stride-api.hasadna.org.il/siri_vehicle_locations/list?get_count=false',
-  limit: 500, // the maximum number of vehicles to load in one request
+  limit: 10000, // the maximum number of vehicles to load in one request
   fromField: 'recorded_at_time_from',
   toField: 'recorded_at_time_to',
   lineRefField: 'siri_routes__line_ref',

@@ -18,7 +18,7 @@ export const useSingleLineData = (lineRef?: number, routeIds?: number[]) => {
     from: +new Date(timestamp).setHours(0, 0, 0, 0),
     to: +new Date(timestamp).setHours(23, 59, 59, 999),
     lineRef,
-    splitMinutes: 60,
+    splitMinutes: 360,
     pause: !lineRef,
   })
 
