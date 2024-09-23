@@ -55,7 +55,7 @@ jobs:
           tags: ${{ env.DOCKER_APP_IMAGE_NAME }}:${{ env.DOCKER_APP_IMAGE_TAG }}
           outputs: type=docker, dest=/tmp/docker-image.tar
       - name: Save Docker image
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: docker-image
           path: /tmp/docker-image.tar
@@ -87,13 +87,13 @@ jobs:
         run: npm test
       - name: upload playwright artifacts
         if: always()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: playwright
           path: test-results
       - name: upload report
         if: always()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: playwright
           path: playwright-report
