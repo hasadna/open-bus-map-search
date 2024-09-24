@@ -85,18 +85,19 @@ jobs:
       - run: npx playwright install
       - name: Run test
         run: npm test
-      - name: upload playwright artifacts
+      - name: Prepare playwright artifact directory
+        if: always()
+        run: |
+          mkdir -p playwright-artifact
+          cp -r test-results/* playwright-artifact/
+          cp -r playwright-report/* playwright-artifact/
+      - name: upload combined playwright artifact
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: playwright
-          path: test-results
-      - name: upload report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: playwright
-          path: playwright-report
+          path: playwright-artifact
+
   publish-test-results:
     runs-on: ubuntu-latest
     needs: test
