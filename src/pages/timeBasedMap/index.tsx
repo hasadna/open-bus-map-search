@@ -41,8 +41,8 @@ interface Path {
   vehicleRef: number
 }
 
-const fiveMinutesAgo = moment().subtract(5, 'minutes')
-const fourMinutesAgo = moment(fiveMinutesAgo).add(1, 'minutes')
+const defaultStart = moment('2023-03-14T15:00:00Z')
+const defaultEnd = moment(defaultStart).add(1, 'minutes')
 
 export default function TimeBasedMapPage() {
   const [isExpanded, setIsExpanded] = useState<boolean>(false)
@@ -54,8 +54,8 @@ export default function TimeBasedMapPage() {
   }
 
   //TODO (another PR and another issue) load from url like in another pages.
-  const [from, setFrom] = useState(fiveMinutesAgo)
-  const [to, setTo] = useState(fourMinutesAgo)
+  const [from, setFrom] = useState(defaultStart)
+  const [to, setTo] = useState(defaultEnd)
 
   const { locations, isLoading } = useVehicleLocations({
     from,
