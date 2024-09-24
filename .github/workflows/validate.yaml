@@ -88,7 +88,7 @@ jobs:
       - name: Run Storybook tests
         env:
           APPLITOOLS_BATCH_ID: ${{ github.sha }}
-        run: npx -y @applitools/eyes-storybook
+        run: npx -y @applitools/eyes-storybook --url http://localhost:3000/storybook/index.html
       - name: upload playwright artifacts
         if: always()
         uses: actions/upload-artifact@v2
