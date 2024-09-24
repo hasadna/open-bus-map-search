@@ -11,6 +11,13 @@ import 'moment/dist/locale/he'
 moment.tz.setDefault('Asia/Jerusalem')
 moment.locale('he')
 
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker
+    .register('/service-worker.js')
+    .then((reg) => console.log('Service Worker Registered', reg))
+    .catch((err) => console.error('Service Worker Registration Failed', err))
+}
+
 export const RoutedApp = () => (
   <Suspense fallback={<Preloader />}>
     <RouterProvider router={router} />

@@ -55,7 +55,7 @@ jobs:
           tags: ${{ env.DOCKER_APP_IMAGE_NAME }}:${{ env.DOCKER_APP_IMAGE_TAG }}
           outputs: type=docker, dest=/tmp/docker-image.tar
       - name: Save Docker image
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: docker-image
           path: /tmp/docker-image.tar
@@ -66,7 +66,7 @@ jobs:
       APPLITOOLS_API_KEY: ${{ secrets.APPLITOOLS_API_KEY }}
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: docker-image
           path: /tmp
@@ -89,18 +89,19 @@ jobs:
         env:
           APPLITOOLS_BATCH_ID: ${{ github.sha }}
         run: npx -y @applitools/eyes-storybook
-      - name: upload playwright artifacts
+      - name: Prepare playwright artifact directory
         if: always()
-        uses: actions/upload-artifact@v2
+        run: |
+          mkdir -p playwright-artifact
+          cp -r test-results/* playwright-artifact/
+          cp -r playwright-report/* playwright-artifact/
+      - name: upload combined playwright artifact
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
           name: playwright
-          path: test-results
-      - name: upload report
-        if: always()
-        uses: actions/upload-artifact@v2
-        with:
-          name: playwright
-          path: playwright-report
+          path: playwright-artifact
+
   publish-test-results:
     runs-on: ubuntu-latest
     needs: test
@@ -109,7 +110,7 @@ jobs:
       AWS_KEY_ID: ${{ secrets.AWS_KEY_ID }}
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: playwright
           path: test-results
