@@ -5,7 +5,7 @@ test.describe('Single line page tests', () => {
   let singleLinePage: SinglelinePage
 
   test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
-    advancedRouteFromHAR('tests/HAR/singleline.har', {
+    await advancedRouteFromHAR('tests/HAR/singleline.har', {
       updateContent: 'embed',
       update: false,
       notFound: 'abort',
@@ -42,4 +42,19 @@ test.describe('Single line page tests', () => {
     await singleLinePage.fillLineNumber('1')
     await singleLinePage.selectRandomRoute()
   })
+})
+
+test('should find route', async ({ page }) => {
+  await page.getByRole('link', { name: 'מפה לפי קו' }).click()
+  await page.getByLabel('חברה מפעילה').click()
+  await page.getByRole('option', { name: 'בית שמש אקספרס' }).click()
+  await page.getByPlaceholder('לדוגמה: 17א').fill('6')
+  await page
+    .locator('div')
+    .filter({ hasText: /^בחירת מסלול נסיעה \(2 אפשרויות\)$/ })
+    .getByLabel('Open')
+    .click()
+  await page
+    .getByRole('option', { name: 'בן איש חי/יוסף קארו-בית שמש ⟵ זכריה הנביא/אליהו הנביא-בית שמש' })
+    .click()
 })
