@@ -9,7 +9,7 @@
     "@emotion/styled": "^11.11.5",
     "@mui/icons-material": "^5.15.14",
     "@mui/lab": "^5.0.0-alpha.169",
-    "@mui/material": "^5.15.14",
+    "@mui/material": "^5.16.7",
     "@mui/x-date-pickers": "^7.1.0",
     "@mui/x-tree-view": "^6.17.0",
     "@tanstack/query-sync-storage-persister": "^5.36.0",
