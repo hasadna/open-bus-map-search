@@ -90,6 +90,9 @@ https://github.com/hasadna/open-bus-map-search/blob/main/src/model/busStop.ts#L4
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/asidelnik"><img src="https://avatars.githubusercontent.com/u/10272524?v=4?s=100" width="100px;" alt="Amos Sidelnik"/><br /><sub><b>Amos Sidelnik</b></sub></a><br /><a href="#code-asidelnik" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/TomRytt"><img src="https://avatars.githubusercontent.com/u/86921461?v=4?s=100" width="100px;" alt="Tom Rytt"/><br /><sub><b>Tom Rytt</b></sub></a><br /><a href="#code-TomRytt" title="Code">💻</a></td>
     </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/griseduardo"><img src="https://avatars.githubusercontent.com/u/34499486?v=4?s=100" width="100px;" alt="Eduardo Henrique Gris"/><br /><sub><b>Eduardo Henrique Gris</b></sub></a><br /><a href="#code-griseduardo" title="Code">💻</a></td>
+    </tr>
   </tbody>
 </table>
 
