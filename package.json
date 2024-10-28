@@ -137,7 +137,7 @@
     "stylelint-config-standard-scss": "^13.1.0",
     "ts-jest": "^29.1.2",
     "ts-node": "^10.9.2",
-    "vite": "^5.2.11",
+    "vite": "^5.4.10",
     "vite-plugin-istanbul": "^5.0.0"
   },
   "nx": {
