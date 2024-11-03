@@ -30,8 +30,13 @@ test.describe('Visual Tests', () => {
   })
 
   test.afterEach(async () => {
-    if (process.env.APPLITOOLS_API_KEY) {
-      await eyes.close(false)
+    try {
+      test.setTimeout(0)
+      if (process.env.APPLITOOLS_API_KEY) {
+        await eyes.close(false)
+      }
+    } catch (e) {
+      console.error(e)
     }
   })
 
