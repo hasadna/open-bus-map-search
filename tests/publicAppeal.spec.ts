@@ -13,5 +13,5 @@ test('clicking "Open Bus Stride API" link should lead to "https://open-bus-strid
   await page.getByText('קול קורא').click()
   await page.getByRole('link', { name: 'Open Bus Stride API' }).first().click()
   await page.getByRole('heading', { name: 'Open Bus Stride API' }).waitFor()
-  await expect(page).toHaveURL(/open-bus-stride-api.hasadna.org.il/)
+  await expect(page).toHaveURL(/open-bus-stride-api\.hasadna\.org\.il/)
 })
