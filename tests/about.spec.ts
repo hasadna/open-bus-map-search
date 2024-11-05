@@ -29,13 +29,13 @@ test.describe('About Page Tests', () => {
   })
 
   test('clicking the links under "privacy" should lead to Google analytics', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/')
     await page.getByText('אודות').click()
-    await page.getByRole('link', { name: 'Google Analytics' }).click();
-    await expect(page).toHaveURL("https://marketingplatform\.google\.com\/about\/analytics/")
-    await page.goto('/');
+    await page.getByRole('link', { name: 'Google Analytics' }).click()
+    await expect(page).toHaveURL('https://marketingplatform.google.com/about/analytics/')
+    await page.goto('/')
     await page.getByText('אודות').click()
-    await page.getByRole('link', { name: 'קראו כאן' }).click();
+    await page.getByRole('link', { name: 'קראו כאן' }).click()
     await expect(page).toHaveURL(/support\.google\.com\/analytics\/answer\/6004245\?hl=iw/)
-  });
+  })
 })
