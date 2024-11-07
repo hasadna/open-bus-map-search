@@ -38,4 +38,16 @@ test.describe('About Page Tests', () => {
     await page.getByRole('link', { name: 'קראו כאן' }).click()
     await expect(page).toHaveURL(/support\.google\.com\/analytics\/answer\/6004245\?hl=iw/)
   })
+
+  test('clicking the links under "user license" should lead to creativecommons.org', async ({
+    page,
+  }) => {
+    await page.goto('/')
+    await page.getByRole('link', { name: 'אודות' }).click()
+    await page.getByRole('link', { name: 'רישיון CC BY-SA' }).click()
+    await expect(page).toHaveURL('https://creativecommons.org/licenses/by-sa/4.0/')
+    await page.goto('/about')
+    await page.getByRole('link', { name: 'Creative Commons' }).click()
+    await expect(page).toHaveURL('https://creativecommons.org/')
+  })
 })
