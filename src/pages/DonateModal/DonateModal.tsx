@@ -24,7 +24,6 @@ const DonateModal: React.FC<DonateModalProps> = ({ isVisible, onClose }) => {
     <Modal
       open={isVisible}
       onClose={onClose}
-      div
       style={{ color: '#1498e5' }}
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description">
