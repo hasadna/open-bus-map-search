@@ -48,6 +48,7 @@ export const ThemeProvider: FC<PropsWithChildren> = ({ children }) => {
         algorithm: isDarkTheme ? darkAlgorithm : defaultAlgorithm,
         token: {
           colorBgBase: isDarkTheme ? '#1c1d1c' : '#ffffff',
+          colorTextBase: isDarkTheme ? '#ffffff' : '#000000',
         },
       }}>
       <MuiThemeProvider theme={isDarkTheme ? darkTheme : lightTheme}>
