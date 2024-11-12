@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { DollarOutlined } from '@ant-design/icons'
 import { Box, Grid, Modal, Typography } from '@mui/material'
 import i18n from 'src/locale/allTranslations'
+import { useTheme } from "../../layout/ThemeContext"
 
 const style = {
   position: 'fixed',
@@ -17,6 +18,7 @@ const style = {
 } as const
 
 export const DonationButton = () => {
+  const { isDarkTheme } = useTheme();
   const { t } = useTranslation()
   const [open, setOpen] = useState(false)
 
@@ -37,6 +39,7 @@ export const DonationButton = () => {
       <Modal
         open={open}
         onClose={onClose}
+        style={{ color: isDarkTheme ? '#ffffff' : '#000000'}}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description">
         <Box dir={i18n.dir()} sx={style}>
