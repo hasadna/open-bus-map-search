@@ -1,7 +1,7 @@
 import Grid from '@mui/material/Unstable_Grid2'
 import { useTranslation } from 'react-i18next'
 import { useLoaderData } from 'react-router-dom'
-import { useContext, useEffect, useState } from 'react'
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import moment from 'moment'
 import { Tooltip } from 'antd'
 import CircularProgress from '@mui/material/CircularProgress'
@@ -15,11 +15,11 @@ import LineProfileHeader from './LineProfileHeader'
 import { LineProfileDetails } from './LineProfileDetails'
 import { Route } from './Route.interface'
 import Widget from 'src/shared/Widget'
-import { SearchContext } from 'src/model/pageState'
-import { getRoutesAsync } from 'src/api/gtfsService'
-import { BusRoute } from 'src/model/busRoute'
+import { SearchContext, TimelinePageState } from 'src/model/pageState'
+import { getStopsForRouteAsync } from 'src/api/gtfsService'
 import { useSingleLineData } from 'src/hooks/useSingleLineData'
 import './LineProfile.scss'
+import StopSelector from 'src/pages/components/StopSelector'
 
 const LineProfileWrapper = () => (
   <PageContainer className="line-data-container">
@@ -29,37 +29,40 @@ const LineProfileWrapper = () => (
 
 const LineProfile = () => {
   const { t } = useTranslation()
-  const {
-    search: { timestamp },
-    setSearch,
-  } = useContext(SearchContext)
   const route = useLoaderData() as Route & { message?: string }
-  const [availableRoutes, setAvailableRoutes] = useState<BusRoute[] | null>(null)
-  const [selectedRouteKey, setSelectedRouteKey] = useState<string>('')
+  const [state, setState] = useState<TimelinePageState>({})
+  const { stopKey, stops } = state
+  const { search, setSearch } = useContext(SearchContext)
+  const { timestamp, routes, routeKey } = search
+  const selectedRoute = useMemo(
+    () => routes?.find((route) => route.key === routeKey),
+    [routes, routeKey],
+  )
+  
+  const selectedRouteIds = selectedRoute?.routeIds
+  const clearStops = useCallback(() => {
+    setState((current) => ({
+      ...current,
+      stops: undefined,
+      stopName: undefined,
+      stopKey: undefined,
+      gtfsHitTimes: undefined,
+      siriHitTimes: undefined,
+    }))
+  }, [setState])
+
+  useEffect(() => {
+    clearStops()
+    if (!routeKey || !selectedRouteIds) {
+      return
+    }
+    getStopsForRouteAsync(selectedRouteIds, moment(timestamp))
+      .then((stops) => setState((current) => ({ ...current, stops: stops })))
+  }, [route, routeKey, clearStops])
 
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [])
-
-  useEffect(() => {
-    const controller = new AbortController()
-    const signal = controller.signal
-
-    getRoutesAsync(
-      moment(timestamp),
-      moment(timestamp),
-      route.operator_ref.toString(),
-      route.route_short_name,
-      signal,
-    )
-      .then((routes) => setAvailableRoutes(routes))
-      .catch((err) => {
-        console.error(err)
-        controller.abort()
-      })
-
-    return () => controller.abort()
-  }, [route])
 
   const {
     filteredPositions,
@@ -91,10 +94,22 @@ const LineProfile = () => {
             }
           />
           <RouteSelector
-            routes={availableRoutes ?? []}
-            routeKey={selectedRouteKey}
-            setRouteKey={(routeKey) => setSelectedRouteKey(routeKey)}
+            routes={routes ?? []}
+            routeKey={routeKey}
+            setRouteKey={(key) => setSearch((current) => ({ ...current, routeKey: key }))}
           />
+          {stops && (
+            <StopSelector
+              stops={stops}
+              stopKey={stopKey}
+              setStopKey={(key) =>
+                setState((current) => {
+                  const stop = current.stops?.find((stop) => stop.key === key)
+                  return { ...current, stopKey: key, stopName: stop?.name }
+                })
+              }
+            />
+          )}
           <div className="startTime">
             {locationsAreLoading && (
               <Tooltip title={t('loading_times_tooltip_content')}>
