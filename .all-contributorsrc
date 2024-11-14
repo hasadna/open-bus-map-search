@@ -215,6 +215,25 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "griseduardo",
+      "name": "Eduardo Henrique Gris",
+      "avatar_url": "https://avatars.githubusercontent.com/u/34499486?v=4",
+      "profile": "https://github.com/griseduardo",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "YaelChen",
+      "name": "Yael Chen",
+      "avatar_url": "https://avatars.githubusercontent.com/u/51058584?v=4",
+      "profile": "https://github.com/YaelChen",
+      "contributions": [
+        "code",
+        "test"
+      ]
     }
   ]
 }
