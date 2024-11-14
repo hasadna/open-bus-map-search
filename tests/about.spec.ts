@@ -51,3 +51,24 @@ test.describe('About Page Tests', () => {
     await expect(page).toHaveURL('https://creativecommons.org/')
   })
 })
+
+test('clicking the links under "questions" should lead to the correct contact ways', async ({
+  page,
+}) => {
+  await page.goto('/')
+  await page.getByRole('link', { name: 'אודות' }).click()
+  await page.getByRole('link', { name: 'צרו איתנו קשר' }).click()
+  await expect(page).toHaveURL('https://www.hasadna.org.il/צור-קשר/')
+  await page.goto('/about')
+  await page.getByRole('link', { name: 'דברו איתנו על זה בסלאק' }).click()
+  await expect(page).toHaveURL(
+    'https://hasadna.slack.com/join/shared_invite/zt-167h764cg-J18ZcY1odoitq978IyMMig#/shared-invite/email',
+  )
+  await page.goto('/about')
+  await page
+    .getByRole('link', { name: 'שרתים עולים כסף - עזרו לנו להמשיך לתחזק ולפתח את הפרויקט!' })
+    .click()
+  await expect(page).toHaveURL(
+    'https://www.jgive.com/new/he/ils/donation-targets/3268#donation-modal',
+  )
+})
