@@ -118,18 +118,18 @@ async function fetchWithQueue(url: string) {
   const task = async () => {
     for (let attempt = 0; attempt < 3; attempt++) {
       try {
-        return await fetch(url);
+        return await fetch(url)
       } catch {
-        if (attempt === 2) throw new Error(`Failed after 3 attempts`);
-        await new Promise((resolve) => setTimeout(resolve, 1000 * 2 ** attempt));
+        if (attempt === 2) throw new Error(`Failed after 3 attempts`)
+        await new Promise((resolve) => setTimeout(resolve, 1000 * 2 ** attempt))
       }
     }
-  };
+  }
 
-  const queue = pool.shift()!;
-  const result = queue.then(task).finally(() => pool.push(Promise.resolve()));
-  pool.push(result);
-  return result;
+  const queue = pool.shift()!
+  const result = queue.then(task).finally(() => pool.push(Promise.resolve()))
+  pool.push(result)
+  return result
 }
 
 // this function checks the cache for the data, and if it's not there, it loads it
