@@ -80,7 +80,7 @@ const MainMenu = () => {
         mode="inline"
         items={items}
       />
-      <DonateModal  isVisible={isDonateModalVisible} onClose={() => setDonateModalVisible(false)} />
+      <DonateModal isVisible={isDonateModalVisible} onClose={() => setDonateModalVisible(false)} />
     </>
   )
 }

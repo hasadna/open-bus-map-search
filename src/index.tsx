@@ -6,7 +6,7 @@ import './locale/allTranslations'
 import { QueryClient } from '@tanstack/react-query'
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client'
 import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister'
-import { ThemeProvider } from "./layout/ThemeContext"
+import { ThemeProvider } from './layout/ThemeContext'
 import App from './App'
 
 const persister = createSyncStoragePersister({
@@ -30,10 +30,10 @@ ReactGA.initialize('G-0YRQT80GG1')
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
   <React.StrictMode>
-    <ThemeProvider>
     <PersistQueryClientProvider client={queryClient} persistOptions={{ persister }}>
-      <App />
+      <ThemeProvider>
+        <App />
+      </ThemeProvider>
     </PersistQueryClientProvider>
-    </ThemeProvider>
   </React.StrictMode>,
 )
