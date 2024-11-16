@@ -25,7 +25,7 @@
     "dayjs": "^1.11.11",
     "geolib": "^3.3.3",
     "git-username": "^1.0.0",
-    "http-proxy-middleware": "^3.0.0",
+    "http-proxy-middleware": "^3.0.3",
     "i18next": "^23.11.3",
     "i18next-fs-backend": "^2.3.1",
     "leaflet": "^1.8.0",
