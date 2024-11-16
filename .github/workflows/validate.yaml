@@ -64,6 +64,8 @@ jobs:
     needs: build
     env:
       APPLITOOLS_API_KEY: ${{ secrets.APPLITOOLS_API_KEY }}
+      APPLITOOLS_LOG_DIR: ./logs
+      APPLITOOLS_SHOW_LOGS: true
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v4
@@ -102,6 +104,14 @@ jobs:
         with:
           name: playwright
           path: playwright-artifact
+      - name: upload logs if exists
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: logs
+          path: logs
+          if-no-files-found: warn
+
 
   publish-test-results:
     runs-on: ubuntu-latest
