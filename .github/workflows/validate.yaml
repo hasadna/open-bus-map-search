@@ -88,8 +88,6 @@ jobs:
       - name: Run test
         run: npm test
       - name: Run Storybook tests
-        env:
-          APPLITOOLS_BATCH_ID: ${{ github.sha }}
         if: env.APPLITOOLS_API_KEY
         run: npx -y @applitools/eyes-storybook --storybook-url http://localhost:3000/storybook/index.html
       - name: Prepare playwright artifact directory
