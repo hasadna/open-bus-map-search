@@ -37,6 +37,8 @@ export const DonationButton = () => {
       <Modal
         open={open}
         onClose={onClose}
+        aria-modal="true"
+        role="dialog"
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description">
         <Box dir={i18n.dir()} sx={style}>

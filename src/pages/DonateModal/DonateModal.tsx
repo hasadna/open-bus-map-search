@@ -25,6 +25,8 @@ const DonateModal: React.FC<DonateModalProps> = ({ isVisible, onClose }) => {
       open={isVisible}
       onClose={onClose}
       style={{ color: '#1498e5' }}
+      aria-modal="true"
+      role="dialog"
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description">
       <Box dir={i18n.dir()} sx={style}>
