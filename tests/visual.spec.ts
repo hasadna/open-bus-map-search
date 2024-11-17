@@ -9,7 +9,7 @@ test.describe('Visual Tests', () => {
       { width: 1280, height: 720, name: 'safari' },
       { width: 375, height: 667, name: 'chrome' },
       {
-        iosDeviceInfo: { deviceName: 'iPhone 8' },
+        iosDeviceInfo: { deviceName: 'iPhone 16' },
       },
     ],
   })

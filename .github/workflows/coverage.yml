@@ -12,8 +12,6 @@ env:
 jobs:
   test-with-coverage:
     runs-on: ubuntu-22.04
-    env:
-      APPLITOOLS_API_KEY: ${{ secrets.APPLITOOLS_API_KEY }}
     steps:
       - uses: actions/checkout@v3
       - name: Use Node.js
