@@ -24,9 +24,11 @@ const DonateModal: React.FC<DonateModalProps> = ({ isVisible, onClose }) => {
     <Modal
       open={isVisible}
       onClose={onClose}
-      style={{ color: '#1498e5' }}
       aria-labelledby="modal-modal-title"
-      aria-describedby="modal-modal-description">
+      aria-describedby="modal-modal-description"
+      sx={{
+        color: 'text.primary', // Dynamically uses the theme’s text color
+      }}>
       <Box dir={i18n.dir()} sx={style}>
         <button onClick={onClose} className="close-modal-icon">
           X

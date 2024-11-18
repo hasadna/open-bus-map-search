@@ -37,6 +37,9 @@ export const DonationButton = () => {
       <Modal
         open={open}
         onClose={onClose}
+        sx={{
+          color: 'text.primary', // Dynamically uses the theme’s text color
+        }}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description">
         <Box dir={i18n.dir()} sx={style}>
