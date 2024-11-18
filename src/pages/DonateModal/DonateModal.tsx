@@ -1,6 +1,5 @@
 import React from 'react'
 import { Box, Grid, Modal, Typography } from '@mui/material'
-import { useTheme } from '../../layout/ThemeContext'
 import i18n from 'src/locale/allTranslations'
 
 interface DonateModalProps {
@@ -21,14 +20,15 @@ const style = {
 } as const
 
 const DonateModal: React.FC<DonateModalProps> = ({ isVisible, onClose }) => {
-  const { isDarkTheme } = useTheme()
   return (
     <Modal
       open={isVisible}
       onClose={onClose}
-      style={{ color: isDarkTheme ? '#ffffff' : '#000000' }}
       aria-labelledby="modal-modal-title"
-      aria-describedby="modal-modal-description">
+      aria-describedby="modal-modal-description"
+      sx={{
+        color: 'text.primary', // Dynamically uses the theme’s text color
+      }}>
       <Box dir={i18n.dir()} sx={style}>
         <button onClick={onClose} className="close-modal-icon">
           X

@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { DollarOutlined } from '@ant-design/icons'
 import { Box, Grid, Modal, Typography } from '@mui/material'
-import { useTheme } from '../../layout/ThemeContext'
 import i18n from 'src/locale/allTranslations'
 
 const style = {
@@ -18,7 +17,6 @@ const style = {
 } as const
 
 export const DonationButton = () => {
-  const { isDarkTheme } = useTheme()
   const { t } = useTranslation()
   const [open, setOpen] = useState(false)
 
@@ -39,7 +37,9 @@ export const DonationButton = () => {
       <Modal
         open={open}
         onClose={onClose}
-        style={{ color: isDarkTheme ? '#ffffff' : '#000000' }}
+        sx={{
+          color: 'text.primary', // Dynamically uses the theme’s text color
+        }}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description">
         <Box dir={i18n.dir()} sx={style}>
