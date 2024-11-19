@@ -13,10 +13,12 @@ export const useSingleLineData = (lineRef?: number, routeIds?: number[]) => {
   const [filteredPositions, setFilteredPositions] = useState<Point[]>([])
   const [startTime, setStartTime] = useState<string>('00:00:00')
   const [plannedRouteStops, setPlannedRouteStops] = useState<BusStop[]>([])
-
+  const today = new Date(timestamp)
+  const tomorrow = new Date(today)
+  tomorrow.setDate(tomorrow.getDate() + 1)
   const { locations, isLoading: locationsAreLoading } = useVehicleLocations({
-    from: +new Date(timestamp).setHours(0, 0, 0, 0),
-    to: +new Date(timestamp).setHours(23, 59, 59, 999),
+    from: +today.setHours(0, 0, 0, 0),
+    to: +new Date(tomorrow).setHours(0, 0, 0, 0),
     lineRef,
     splitMinutes: 60,
     pause: !lineRef,
