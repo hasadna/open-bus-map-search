@@ -50,16 +50,30 @@ export const useSingleLineData = (lineRef?: number, routeIds?: number[]) => {
   }
 
   const options = useMemo(() => {
-    const options = positions
-      .map((position) => position.point?.siri_ride__scheduled_start_time) // get all start times
-      .filter((time, i, arr) => arr.indexOf(time) === i) // unique
-      .map((time) => new Date(time ?? 0).toLocaleTimeString()) // convert to strings
+    const filteredPositions = positions.filter(
+      (position) =>
+        !!position.recorded_at_time && position.recorded_at_time > +today.setHours(0, 0, 0, 0),
+    )
+
+    const uniqueTimes = Array.from(
+      new Set(
+        filteredPositions
+          .map((position) => position.point?.siri_ride__scheduled_start_time)
+          .filter((time): time is string => !!time)
+          .map((time) => time.trim()),
+      ),
+    )
+      .map((time) => new Date(time).toLocaleTimeString()) // Convert to 24-hour time string
       .map((time) => ({
-        // convert to options
         value: time,
         label: time,
       }))
-    return options
+
+    const sortedOptions = uniqueTimes.sort(
+      (a, b) => convertTo24HourAndToNumber(a.value) - convertTo24HourAndToNumber(b.value),
+    )
+
+    return sortedOptions
   }, [positions])
 
   useEffect(() => {
