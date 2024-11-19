@@ -37,6 +37,18 @@ export const useSingleLineData = (lineRef?: number, routeIds?: number[]) => {
     return pos
   }, [locations])
 
+  function convertTo24HourAndToNumber(time: string): number {
+    const match = time.match(/(\d+):(\d+):(\d+)\s(AM|PM)/)
+    if (!match) return 0
+
+    const [, hour, minute, , modifier] = match
+    let newHour = parseInt(hour, 10)
+    if (modifier === 'AM' && newHour === 12) newHour = 0
+    if (modifier === 'PM' && newHour !== 12) newHour += 12
+
+    return newHour * 60 + parseInt(minute, 10)
+  }
+
   const options = useMemo(() => {
     const options = positions
       .map((position) => position.point?.siri_ride__scheduled_start_time) // get all start times
