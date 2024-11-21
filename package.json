@@ -42,7 +42,7 @@
     "react-leaflet-cluster": "^2.1.0",
     "react-router-dom": "^6.26.2",
     "recharts": "^2.12.7",
-    "sass": "^1.72.0",
+    "sass": "^1.81.0",
     "styled-components": "^6.1.11",
     "stylis-plugin-rtl": "^2.1.1",
     "typescript": "^5.4.5",
@@ -87,7 +87,7 @@
   "devDependencies": {
     "@babel/preset-env": "^7.24.7",
     "@babel/preset-react": "^7.24.7",
-    "@eslint/eslintrc": "^3.0.2",
+    "@eslint/eslintrc": "^3.2.0",
     "@eslint/js": "~8.57.0",
     "@jest/globals": "^29.7.0",
     "@nx/eslint": "^18.2.2",
