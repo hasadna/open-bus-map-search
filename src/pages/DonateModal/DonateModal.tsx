@@ -19,7 +19,7 @@ const style = {
   p: 4,
 } as const
 
-const DonateModal: React.FC<DonateModalProps> = ({ isVisible, onClose }) => {
+export const DonateModal: React.FC<DonateModalProps> = ({ isVisible, onClose }) => {
   return (
     <Modal
       open={isVisible}
