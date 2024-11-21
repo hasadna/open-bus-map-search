@@ -4,7 +4,7 @@ test.describe('About Page Tests', () => {
     advancedRouteFromHAR('tests/HAR/clearbutton.har', {
       updateContent: 'embed',
       update: false,
-      notFound: 'abort',
+      notFound: 'fallback',
       url: /stride-api/,
     })
   })
@@ -67,6 +67,18 @@ test.describe('About Page Tests', () => {
     await page
       .getByRole('link', { name: 'שרתים עולים כסף - עזרו לנו להמשיך לתחזק ולפתח את הפרויקט!' })
       .click()
+    await expect(page).toHaveURL(
+      'https://www.jgive.com/new/he/ils/donation-targets/3268#donation-modal',
+    )
+  })
+
+  test('links under "Funding" should lead to OpenAPI and donations sites', async ({ page }) => {
+    await page.goto('/')
+    await page.getByRole('link', { name: 'אודות' }).click()
+    await page.getByRole('link', { name: 'Open API' }).click()
+    await page.getByRole('heading', { name: 'Open Bus Stride API' }).waitFor()
+    await page.goto('/about')
+    await page.getByRole('link', { name: 'ותרומות קטנות נוספות של ידידי ואוהדי הסדנא' }).click()
     await expect(page).toHaveURL(
       'https://www.jgive.com/new/he/ils/donation-targets/3268#donation-modal',
     )
