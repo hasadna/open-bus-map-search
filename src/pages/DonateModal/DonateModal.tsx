@@ -12,9 +12,12 @@ const style = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  maxWidth: 1000,
-  width: '90%',
+  maxWidth: '1250px',
+  maxHeight: 'calc(100vh - 210px)',
+  overflowY: 'auto',
+  width: '80%',
   bgcolor: 'background.paper',
+  textAlign: 'center',
   boxShadow: 24,
   p: 4,
 } as const
@@ -62,11 +65,13 @@ export const DonateModal: React.FC<DonateModalProps> = ({ isVisible, onClose }) 
                 <img
                   src="https://www.hasadna.org.il/wp-content/uploads/2017/12/%D7%AA%D7%A8%D7%95%D7%9E%D7%95%D7%AA.jpg"
                   alt="קישור לתרומה"
+                  width={'90%'}
+                  style={{ maxWidth: '420px' }}
                 />
                 <img
                   src="https://www.hasadna.org.il/wp-content/uploads/2018/08/button-300x73.png"
                   alt="תרום עכשיו"
-                  style={{ display: shouldImgCollapse ? 'block' : 'inline' }}
+                  style={{ margin: 'auto', display: 'block' }}
                 />
               </a>
             </Typography>
