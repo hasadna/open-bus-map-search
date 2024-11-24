@@ -1,5 +1,5 @@
 import React from 'react'
-import { Box, Grid, Modal, Typography } from '@mui/material'
+import { Box, Grid, Modal, Typography, useMediaQuery } from '@mui/material'
 import i18n from 'src/locale/allTranslations'
 
 interface DonateModalProps {
@@ -20,6 +20,11 @@ const style = {
 } as const
 
 export const DonateModal: React.FC<DonateModalProps> = ({ isVisible, onClose }) => {
+  /**
+   * @description This hook is used to determine if the image should collapse or not based on if the user is a mobile, tablet user or not.
+   */
+  const shouldImgCollapse = useMediaQuery('(max-width: 950px)')
+
   return (
     <Modal
       open={isVisible}
@@ -46,7 +51,7 @@ export const DonateModal: React.FC<DonateModalProps> = ({ isVisible, onClose }) 
           ועושה עוד המון עבודה שוטפת כדי שהפרוייקטים שלנו ייצרו שינוי בעולם. אנחנו זקוקים לתמיכה של
           הקהילה כדי להמשיך ולפעול למען ממשל פתוח יותר. היו אבירי שקיפות והצטרפו בתמיכה חודשית.
         </p>
-        <Grid container spacing={2}>
+        <Grid container spacing={2} direction={shouldImgCollapse ? 'column-reverse' : 'row'}>
           <Grid item xs={6}>
             <Typography id="modal-modal-description" sx={{ mt: 2 }}>
               <h2>תרומה דרך אתר jgive.com</h2>
@@ -61,6 +66,7 @@ export const DonateModal: React.FC<DonateModalProps> = ({ isVisible, onClose }) 
                 <img
                   src="https://www.hasadna.org.il/wp-content/uploads/2018/08/button-300x73.png"
                   alt="תרום עכשיו"
+                  style={{ display: shouldImgCollapse ? 'block' : 'inline' }}
                 />
               </a>
             </Typography>
