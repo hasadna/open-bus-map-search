@@ -37,6 +37,8 @@ export const DonationButton = () => {
       <Modal
         open={open}
         onClose={onClose}
+        aria-modal="true"
+        role="dialog"
         sx={{
           color: 'text.primary', // Dynamically uses the theme’s text color
         }}
