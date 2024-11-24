@@ -106,6 +106,19 @@ test.describe('Visual Tests', () => {
       ),
     )
   })
+  test('donation modal should look good', async ({ page }) => {
+    await page.goto('/')
+    await page.getByLabel('לתרומות').click()
+    await page.locator('.MuiTypography-root').first().waitFor()
+    await eyes.check('donation modal', Target.region(page.getByRole('dialog')))
+  })
+  test('donation modal should look good in dark mode', async ({ page }) => {
+    await page.goto('/')
+    await page.getByLabel('עבור למצב כהה').click()
+    await page.getByLabel('לתרומות').click()
+    await page.locator('.MuiTypography-root').first().waitFor()
+    await eyes.check('donation modal dark mode', Target.region(page.getByRole('dialog')))
+  })
 })
 
 function setBatchName(eyes: Eyes) {
