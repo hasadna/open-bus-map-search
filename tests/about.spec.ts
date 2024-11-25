@@ -88,7 +88,7 @@ test.describe('About Page Tests', () => {
     await page.goto('/')
     await page.getByRole('link', { name: 'אודות' }).click()
     await page.getByRole('link', { name: 'Applitools' }).click()
-    await expect(page).toHaveURL('https://www.applitools.com/')
+    await expect(page).toHaveURL('https://applitools.com/')
     await page.goto('/about')
     const page1Promise = page.waitForEvent('popup')
     await page.getByRole('link', { name: 'pch.vector' }).click()
