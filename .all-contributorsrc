@@ -234,6 +234,24 @@
         "code",
         "test"
       ]
+    },
+    {
+      "login": "LeoBonjo",
+      "name": "Leo Green",
+      "avatar_url": "https://avatars.githubusercontent.com/u/139697327?v=4",
+      "profile": "https://github.com/LeoBonjo",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "yontank",
+      "name": "Yehonatan Avrahimi",
+      "avatar_url": "https://avatars.githubusercontent.com/u/48332126?v=4",
+      "profile": "https://github.com/yontank",
+      "contributions": [
+        "code"
+      ]
     }
   ]
 }

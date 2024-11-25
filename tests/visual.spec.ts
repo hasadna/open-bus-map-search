@@ -9,7 +9,7 @@ test.describe('Visual Tests', () => {
       { width: 1280, height: 720, name: 'safari' },
       { width: 375, height: 667, name: 'chrome' },
       {
-        iosDeviceInfo: { deviceName: 'iPhone 8' },
+        iosDeviceInfo: { deviceName: 'iPhone 16' },
       },
     ],
   })
@@ -105,6 +105,19 @@ test.describe('Visual Tests', () => {
         page.getByText('מיקומי אוטובוסים משעה'),
       ),
     )
+  })
+  test('donation modal should look good', async ({ page }) => {
+    await page.goto('/')
+    await page.getByLabel('לתרומות').click()
+    await page.locator('.MuiTypography-root').first().waitFor()
+    await eyes.check('donation modal', Target.region(page.getByRole('dialog')))
+  })
+  test('donation modal should look good in dark mode', async ({ page }) => {
+    await page.goto('/')
+    await page.getByLabel('עבור למצב כהה').click()
+    await page.getByLabel('לתרומות').click()
+    await page.locator('.MuiTypography-root').first().waitFor()
+    await eyes.check('donation modal dark mode', Target.region(page.getByRole('dialog')))
   })
 })
 
