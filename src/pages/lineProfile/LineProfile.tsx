@@ -38,7 +38,7 @@ const LineProfile = () => {
     () => routes?.find((route) => route.key === routeKey),
     [routes, routeKey],
   )
-  
+
   const selectedRouteIds = selectedRoute?.routeIds
   const clearStops = useCallback(() => {
     setState((current) => ({
@@ -56,8 +56,9 @@ const LineProfile = () => {
     if (!routeKey || !selectedRouteIds) {
       return
     }
-    getStopsForRouteAsync(selectedRouteIds, moment(timestamp))
-      .then((stops) => setState((current) => ({ ...current, stops: stops })))
+    getStopsForRouteAsync(selectedRouteIds, moment(timestamp)).then((stops) =>
+      setState((current) => ({ ...current, stops: stops })),
+    )
   }, [route, routeKey, clearStops])
 
   useEffect(() => {
