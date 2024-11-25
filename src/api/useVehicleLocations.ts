@@ -114,16 +114,22 @@ class LocationObservable {
 }
 
 const pool = new Array(10).fill(0).map(() => Promise.resolve<void | Response>(void 0))
-async function fetchWithQueue(url: string, retries = 10) {
-  let queue = pool.shift()!
-  queue = queue
-    .then(() => fetch(url))
-    .catch(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 10000 * Math.random() + 100))
-      return fetchWithQueue(url, retries - 1)
-    })
-  pool.push(queue)
-  return queue
+async function fetchWithQueue(url: string) {
+  const task = async () => {
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        return await fetch(url)
+      } catch {
+        if (attempt === 2) throw new Error(`Failed after 3 attempts`)
+        await new Promise((resolve) => setTimeout(resolve, 1000 * 2 ** attempt))
+      }
+    }
+  }
+
+  const queue = pool.shift()!
+  const result = queue.then(task).finally(() => pool.push(Promise.resolve()))
+  pool.push(result)
+  return result
 }
 
 // this function checks the cache for the data, and if it's not there, it loads it
