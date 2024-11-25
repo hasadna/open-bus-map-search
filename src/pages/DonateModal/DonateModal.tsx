@@ -19,11 +19,13 @@ const style = {
   p: 4,
 } as const
 
-const DonateModal: React.FC<DonateModalProps> = ({ isVisible, onClose }) => {
+export const DonateModal: React.FC<DonateModalProps> = ({ isVisible, onClose }) => {
   return (
     <Modal
       open={isVisible}
       onClose={onClose}
+      aria-modal="true"
+      role="dialog"
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
       sx={{
