@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next'
 import { DollarOutlined } from '@ant-design/icons'
 import DonateModal from 'src/pages/DonateModal/DonateModal'
 
-
 export const DonationButton = () => {
   const { t } = useTranslation()
   const [open, setOpen] = useState(false)
