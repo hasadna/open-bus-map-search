@@ -9,9 +9,8 @@ export const DonationButton = () => {
 
   const tooltip_title = t('donate_title')
 
-  const onClose = () => setOpen(false)
   const onOpen = () => setOpen(true)
-
+  const onClose = () => setOpen(false)
   return (
     <>
       <button
