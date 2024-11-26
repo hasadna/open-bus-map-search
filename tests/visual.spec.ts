@@ -9,7 +9,7 @@ test.describe('Visual Tests', () => {
       { width: 1280, height: 720, name: 'safari' },
       { width: 375, height: 667, name: 'chrome' },
       {
-        iosDeviceInfo: { deviceName: 'iPhone 11' },
+        iosDeviceInfo: { deviceName: 'iPhone 16' },
       },
     ],
   })
@@ -19,6 +19,7 @@ test.describe('Visual Tests', () => {
   })
 
   test.beforeEach(async ({ page }, testinfo) => {
+    await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
     if (!process.env.APPLITOOLS_API_KEY) {
       eyes.setIsDisabled(true)
       console.log('APPLITOOLS_API_KEY is not defined, please ask noamgaash for the key')
