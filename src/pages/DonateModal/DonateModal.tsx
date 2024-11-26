@@ -7,26 +7,26 @@ interface DonateModalProps {
   onClose: () => void
 }
 
-const style = {
-  position: 'fixed',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  maxWidth: '1250px',
-  maxHeight: 'calc(100vh - 210px)',
-  overflowY: 'auto',
-  width: '80%',
-  bgcolor: 'background.paper',
-  textAlign: 'center',
-  boxShadow: 24,
-  p: 4,
-} as const
-
 export const DonateModal: React.FC<DonateModalProps> = ({ isVisible, onClose }) => {
   /**
    * @description This hook is used to determine if the image should collapse or not based on if the user is a mobile, tablet user or not.
    */
   const shouldImgCollapse = useMediaQuery('(max-width: 950px)')
+
+  const boxStyle = {
+    position: 'fixed',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    maxWidth: '1250px',
+    maxHeight: 'calc(100vh - 210px)',
+    overflowY: 'auto',
+    width: '80%',
+    bgcolor: 'background.paper',
+    textAlign: shouldImgCollapse ? 'center' : 'left',
+    boxShadow: 24,
+    p: 4,
+  } as const
 
   return (
     <Modal
@@ -39,7 +39,7 @@ export const DonateModal: React.FC<DonateModalProps> = ({ isVisible, onClose }) 
       sx={{
         color: 'text.primary', // Dynamically uses the theme’s text color
       }}>
-      <Box dir={i18n.dir()} sx={style}>
+      <Box dir={i18n.dir()} sx={boxStyle}>
         <button onClick={onClose} className="close-modal-icon">
           X
         </button>
@@ -70,7 +70,7 @@ export const DonateModal: React.FC<DonateModalProps> = ({ isVisible, onClose }) 
                 <img
                   src="https://www.hasadna.org.il/wp-content/uploads/2018/08/button-300x73.png"
                   alt="תרום עכשיו"
-                  style={{ margin: 'auto', display: 'block' }}
+                  style={{ margin: shouldImgCollapse ? 'auto' : '', display: 'block' }}
                 />
               </a>
             </Typography>
