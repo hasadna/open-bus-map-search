@@ -2,6 +2,7 @@ import { test, urlMatcher } from './utils'
 
 test.describe('dashboard tests', () => {
   test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
+    await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
     advancedRouteFromHAR('tests/HAR/dashboard.har', {
       updateContent: 'embed',
       update: false,
