@@ -1,6 +1,7 @@
 import React from 'react'
 import { Box, Grid, Modal, Typography } from '@mui/material'
 import i18n from 'src/locale/allTranslations'
+import './DonateModal.scss'
 
 interface DonateModalProps {
   isVisible: boolean
@@ -57,10 +58,14 @@ export const DonateModal: React.FC<DonateModalProps> = ({ isVisible, onClose }) 
                   src="https://www.hasadna.org.il/wp-content/uploads/2017/12/%D7%AA%D7%A8%D7%95%D7%9E%D7%95%D7%AA.jpg"
                   alt="קישור לתרומה"
                 />
-                <img
-                  src="https://www.hasadna.org.il/wp-content/uploads/2018/08/button-300x73.png"
-                  alt="תרום עכשיו"
-                />
+                <a
+                  href="https://www.jgive.com/new/he/ils/donation-targets/3268"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="donate-button"
+                >
+                  לתרום לסדנא →
+                </a>
               </a>
             </Typography>
           </Grid>
