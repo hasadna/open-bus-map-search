@@ -1,7 +1,7 @@
 import { test, expect, urlMatcher } from './utils'
 
 test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
-  advancedRouteFromHAR('tests/HAR/menu.har', {
+  advancedRouteFromHAR('tests/HAR/tripExistence.har', {
     updateContent: 'embed',
     update: false,
     notFound: 'abort',
