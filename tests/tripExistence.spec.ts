@@ -8,16 +8,17 @@ test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
     url: /stride-api/,
     matcher: urlMatcher,
   })
-  await page.goto('/')
 })
 
 test('Trip Existence page items', async ({ page }) => {
+  await page.goto('/')
   await page.getByRole('link', { name: 'קיום נסיעות' }).click()
   const itemsInOrder = ['קיום נסיעות', 'הקווים הגרועים ביותר', 'אחוזי יציאה מסך הנסיעות לפי יום']
   await expect(page.locator('h2')).toContainText(itemsInOrder)
 })
 
 test('choosing params in "קיום נסיעות" and organize by date/hour ', async ({ page }) => {
+  await page.goto('/')
   await page.getByRole('link', { name: 'קיום נסיעות' }).click()
   await page.getByLabel('התחלה').click()
   await page.getByLabel('התחלה').fill('02/6/2024')
