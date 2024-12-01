@@ -1,6 +1,7 @@
 import { test, expect } from './utils'
 test.describe('About Page Tests', () => {
-  test.beforeEach(({ advancedRouteFromHAR }) => {
+  test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
+    await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
     advancedRouteFromHAR('tests/HAR/clearbutton.har', {
       updateContent: 'embed',
       update: false,
