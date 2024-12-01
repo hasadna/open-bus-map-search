@@ -1,6 +1,6 @@
 import { test, expect } from './utils'
 test.describe('Trip Existence Page Tests', () => {
-  test.beforeEach(({ page, advancedRouteFromHAR }) => {
+  test.beforeEach(({ advancedRouteFromHAR }) => {
     advancedRouteFromHAR('tests/HAR/tripExistence.har', {
       updateContent: 'embed',
       update: false,
@@ -28,5 +28,4 @@ test.describe('Trip Existence Page Tests', () => {
     await page.getByText('קיבוץ לפי שעה').click()
     await page.getByText('קיבוץ לפי יום').click()
   })
-
 })
