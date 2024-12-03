@@ -1,4 +1,4 @@
-import { test, expect } from './utils'
+import { test, expect, urlMatcher } from './utils'
 test.describe('Trip Existence Page Tests', () => {
   test.beforeEach(({ advancedRouteFromHAR }) => {
     advancedRouteFromHAR('tests/HAR/tripExistence.har', {
@@ -6,6 +6,7 @@ test.describe('Trip Existence Page Tests', () => {
       update: false,
       notFound: 'abort',
       url: /stride-api/,
+      matcher: urlMatcher,
     })
   })
 
