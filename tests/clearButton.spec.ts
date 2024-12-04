@@ -24,6 +24,7 @@ async function selectLineNumberAndRoute(page: Page, lineNumber: Locator, route: 
 
 test.describe('clearButton functionality', () => {
   test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
+    await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
     await i18next.use(Backend).init({
       lng: 'he',
       backend: {

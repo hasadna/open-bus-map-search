@@ -1,5 +1,5 @@
 import React from 'react'
-import { Box, Grid, Modal, Typography } from '@mui/material'
+import { Box, Grid, Modal, Typography, useMediaQuery } from '@mui/material'
 import i18n from 'src/locale/allTranslations'
 import './DonateModal.scss'
 
@@ -8,19 +8,27 @@ interface DonateModalProps {
   onClose: () => void
 }
 
-const style = {
+const boxStyle = {
   position: 'fixed',
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  maxWidth: 1000,
-  width: '90%',
+  maxWidth: '1250px',
+  maxHeight: 'calc(100vh - 210px)',
+  overflowY: 'auto',
+  width: '80%',
   bgcolor: 'background.paper',
+  textAlign: 'left',
   boxShadow: 24,
   p: 4,
 } as const
 
 export const DonateModal: React.FC<DonateModalProps> = ({ isVisible, onClose }) => {
+  /**
+   * @description This hook is used to determine if the image should collapse or not based on if the user is a mobile, tablet user or not.
+   */
+  const shouldImgCollapse = useMediaQuery('(max-width: 950px)')
+
   return (
     <Modal
       open={isVisible}
@@ -32,7 +40,7 @@ export const DonateModal: React.FC<DonateModalProps> = ({ isVisible, onClose }) 
       sx={{
         color: 'text.primary', // Dynamically uses the theme’s text color
       }}>
-      <Box dir={i18n.dir()} sx={style}>
+      <Box dir={i18n.dir()} sx={boxStyle}>
         <button onClick={onClose} className="close-modal-icon">
           X
         </button>
@@ -46,7 +54,7 @@ export const DonateModal: React.FC<DonateModalProps> = ({ isVisible, onClose }) 
           ועושה עוד המון עבודה שוטפת כדי שהפרוייקטים שלנו ייצרו שינוי בעולם. אנחנו זקוקים לתמיכה של
           הקהילה כדי להמשיך ולפעול למען ממשל פתוח יותר. היו אבירי שקיפות והצטרפו בתמיכה חודשית.
         </p>
-        <Grid container spacing={2}>
+        <Grid container spacing={2} direction={shouldImgCollapse ? 'column-reverse' : 'row'}>
           <Grid item xs={6}>
             <Typography id="modal-modal-description" sx={{ mt: 2 }}>
               <h2>תרומה דרך אתר jgive.com</h2>
@@ -57,6 +65,8 @@ export const DonateModal: React.FC<DonateModalProps> = ({ isVisible, onClose }) 
                 <img
                   src="https://www.hasadna.org.il/wp-content/uploads/2017/12/%D7%AA%D7%A8%D7%95%D7%9E%D7%95%D7%AA.jpg"
                   alt="קישור לתרומה"
+                  width={'90%'}
+                  style={{ maxWidth: '420px' }}
                 />
                 <a
                   href="https://www.jgive.com/new/he/ils/donation-targets/3268"
