@@ -64,7 +64,7 @@ export const DonateModal: React.FC<DonateModalProps> = ({ isVisible, onClose }) 
                   rel="noreferrer"
                   className="donate-button"
                 >
-                  לתרום לסדנא →
+                  לתרום לסדנא  ←
                 </a>
               </a>
             </Typography>
