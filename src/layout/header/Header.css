@@ -9,6 +9,11 @@
   background: #303230;
 }
 
+.align-right {
+  position: absolute;
+  right: 5%;
+}
+
 .theme-icon {
   border: none;
   background: transparent;
