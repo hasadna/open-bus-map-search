@@ -13,10 +13,12 @@ export const useSingleLineData = (lineRef?: number, routeIds?: number[]) => {
   const [filteredPositions, setFilteredPositions] = useState<Point[]>([])
   const [startTime, setStartTime] = useState<string>('00:00:00')
   const [plannedRouteStops, setPlannedRouteStops] = useState<BusStop[]>([])
-
+  const today = new Date(timestamp)
+  const tomorrow = new Date(today)
+  tomorrow.setDate(tomorrow.getDate() + 1)
   const { locations, isLoading: locationsAreLoading } = useVehicleLocations({
-    from: +new Date(timestamp).setHours(0, 0, 0, 0),
-    to: +new Date(timestamp).setHours(23, 59, 59, 999),
+    from: +today.setHours(0, 0, 0, 0),
+    to: +tomorrow.setHours(0, 0, 0, 0),
     lineRef,
     splitMinutes: 360,
     pause: !lineRef,
@@ -35,17 +37,45 @@ export const useSingleLineData = (lineRef?: number, routeIds?: number[]) => {
     return pos
   }, [locations])
 
+  function convertTo24HourAndToNumber(time: string): number {
+    const match = time.match(/(\d+):(\d+):(\d+)\s(AM|PM)/)
+    if (!match) return 0
+
+    const [, hour, minute, , modifier] = match
+    let newHour = parseInt(hour, 10)
+    if (modifier === 'AM' && newHour === 12) newHour = 0
+    if (modifier === 'PM' && newHour !== 12) newHour += 12
+
+    return newHour * 60 + parseInt(minute, 10)
+  }
+
   const options = useMemo(() => {
-    const options = positions
-      .map((position) => position.point?.siri_ride__scheduled_start_time) // get all start times
-      .filter((time, i, arr) => arr.indexOf(time) === i) // unique
-      .map((time) => new Date(time ?? 0).toLocaleTimeString()) // convert to strings
+    const filteredPositions = positions.filter((position) => {
+      const startTime = position.point?.siri_ride__scheduled_start_time
+      return !!startTime && +new Date(startTime) > +today.setHours(0, 0, 0, 0)
+    })
+
+    if (filteredPositions.length === 0) return []
+
+    const uniqueTimes = Array.from(
+      new Set(
+        filteredPositions
+          .map((position) => position.point?.siri_ride__scheduled_start_time)
+          .filter((time): time is string => !!time)
+          .map((time) => time.trim()),
+      ),
+    )
+      .map((time) => new Date(time).toLocaleTimeString()) // Convert to 24-hour time string
       .map((time) => ({
-        // convert to options
         value: time,
         label: time,
       }))
-    return options
+
+    const sortedOptions = uniqueTimes.sort(
+      (a, b) => convertTo24HourAndToNumber(a.value) - convertTo24HourAndToNumber(b.value),
+    )
+
+    return sortedOptions
   }, [positions])
 
   useEffect(() => {
