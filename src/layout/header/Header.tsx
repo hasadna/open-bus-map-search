@@ -17,7 +17,7 @@ const MainHeader = () => {
   const { setDrawerOpen } = useContext<LayoutContextInterface>(LayoutCtx)
   return (
     <Header className={cn('main-header', { dark: isDarkTheme })}>
-      <MenuOutlined onClick={() => setDrawerOpen(true)} className="hideOnDesktop " />
+      <MenuOutlined onClick={() => setDrawerOpen(true)} className="hideOnDesktop" />
       <HeaderLinks>
         <LanguageToggle />
         <ToggleThemeButton toggleTheme={toggleTheme} isDarkTheme={isDarkTheme} />
