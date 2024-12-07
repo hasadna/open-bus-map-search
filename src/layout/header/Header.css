@@ -1,17 +1,12 @@
 .main-header {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
   background: #fff;
 }
 
 .main-header.dark {
   background: #303230;
-}
-
-.align-right {
-  position: absolute;
-  right: 5%;
 }
 
 .theme-icon {
