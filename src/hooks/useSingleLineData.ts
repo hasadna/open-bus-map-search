@@ -18,9 +18,9 @@ export const useSingleLineData = (lineRef?: number, routeIds?: number[]) => {
   tomorrow.setDate(tomorrow.getDate() + 1)
   const { locations, isLoading: locationsAreLoading } = useVehicleLocations({
     from: +today.setHours(0, 0, 0, 0),
-    to: +new Date(tomorrow).setHours(0, 0, 0, 0),
+    to: +tomorrow.setHours(0, 0, 0, 0),
     lineRef,
-    splitMinutes: 60,
+    splitMinutes: 360,
     pause: !lineRef,
   })
 
@@ -50,10 +50,12 @@ export const useSingleLineData = (lineRef?: number, routeIds?: number[]) => {
   }
 
   const options = useMemo(() => {
-    const filteredPositions = positions.filter(
-      (position) =>
-        !!position.recorded_at_time && position.recorded_at_time > +today.setHours(0, 0, 0, 0),
-    )
+    const filteredPositions = positions.filter((position) => {
+      const startTime = position.point?.siri_ride__scheduled_start_time
+      return !!startTime && +new Date(startTime) > +today.setHours(0, 0, 0, 0)
+    })
+
+    if (filteredPositions.length === 0) return []
 
     const uniqueTimes = Array.from(
       new Set(

@@ -215,6 +215,52 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "griseduardo",
+      "name": "Eduardo Henrique Gris",
+      "avatar_url": "https://avatars.githubusercontent.com/u/34499486?v=4",
+      "profile": "https://github.com/griseduardo",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "YaelChen",
+      "name": "Yael Chen",
+      "avatar_url": "https://avatars.githubusercontent.com/u/51058584?v=4",
+      "profile": "https://github.com/YaelChen",
+      "contributions": [
+        "code",
+        "test"
+      ]
+    },
+    {
+      "login": "LeoBonjo",
+      "name": "Leo Green",
+      "avatar_url": "https://avatars.githubusercontent.com/u/139697327?v=4",
+      "profile": "https://github.com/LeoBonjo",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "yontank",
+      "name": "Yehonatan Avrahimi",
+      "avatar_url": "https://avatars.githubusercontent.com/u/48332126?v=4",
+      "profile": "https://github.com/yontank",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "Tami-Co",
+      "name": "Tami-Co",
+      "avatar_url": "https://avatars.githubusercontent.com/u/158340919?v=4",
+      "profile": "https://github.com/Tami-Co",
+      "contributions": [
+        "code"
+      ]
     }
   ]
 }

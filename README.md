@@ -90,6 +90,13 @@ https://github.com/hasadna/open-bus-map-search/blob/main/src/model/busStop.ts#L4
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/asidelnik"><img src="https://avatars.githubusercontent.com/u/10272524?v=4?s=100" width="100px;" alt="Amos Sidelnik"/><br /><sub><b>Amos Sidelnik</b></sub></a><br /><a href="#code-asidelnik" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/TomRytt"><img src="https://avatars.githubusercontent.com/u/86921461?v=4?s=100" width="100px;" alt="Tom Rytt"/><br /><sub><b>Tom Rytt</b></sub></a><br /><a href="#code-TomRytt" title="Code">💻</a></td>
     </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/griseduardo"><img src="https://avatars.githubusercontent.com/u/34499486?v=4?s=100" width="100px;" alt="Eduardo Henrique Gris"/><br /><sub><b>Eduardo Henrique Gris</b></sub></a><br /><a href="#code-griseduardo" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/YaelChen"><img src="https://avatars.githubusercontent.com/u/51058584?v=4?s=100" width="100px;" alt="Yael Chen"/><br /><sub><b>Yael Chen</b></sub></a><br /><a href="#code-YaelChen" title="Code">💻</a> <a href="#test-YaelChen" title="Tests">⚠️</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/LeoBonjo"><img src="https://avatars.githubusercontent.com/u/139697327?v=4?s=100" width="100px;" alt="Leo Green"/><br /><sub><b>Leo Green</b></sub></a><br /><a href="#code-LeoBonjo" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/yontank"><img src="https://avatars.githubusercontent.com/u/48332126?v=4?s=100" width="100px;" alt="Yehonatan Avrahimi"/><br /><sub><b>Yehonatan Avrahimi</b></sub></a><br /><a href="#code-yontank" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Tami-Co"><img src="https://avatars.githubusercontent.com/u/158340919?v=4?s=100" width="100px;" alt="Tami-Co"/><br /><sub><b>Tami-Co</b></sub></a><br /><a href="#code-Tami-Co" title="Code">💻</a></td>
+    </tr>
   </tbody>
 </table>
 

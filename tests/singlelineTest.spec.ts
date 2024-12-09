@@ -5,6 +5,7 @@ test.describe('Single line page tests', () => {
   let singleLinePage: SinglelinePage
 
   test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
+    await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
     advancedRouteFromHAR('tests/HAR/singleline.har', {
       updateContent: 'embed',
       update: false,

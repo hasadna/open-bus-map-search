@@ -9,7 +9,7 @@ test.describe('Visual Tests', () => {
       { width: 1280, height: 720, name: 'safari' },
       { width: 375, height: 667, name: 'chrome' },
       {
-        iosDeviceInfo: { deviceName: 'iPhone 8' },
+        iosDeviceInfo: { deviceName: 'iPhone 16' },
       },
     ],
   })
@@ -19,6 +19,7 @@ test.describe('Visual Tests', () => {
   })
 
   test.beforeEach(async ({ page }, testinfo) => {
+    await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
     if (!process.env.APPLITOOLS_API_KEY) {
       eyes.setIsDisabled(true)
       console.log('APPLITOOLS_API_KEY is not defined, please ask noamgaash for the key')
@@ -30,8 +31,13 @@ test.describe('Visual Tests', () => {
   })
 
   test.afterEach(async () => {
-    if (process.env.APPLITOOLS_API_KEY) {
-      await eyes.close(false)
+    try {
+      test.setTimeout(0)
+      if (process.env.APPLITOOLS_API_KEY) {
+        await eyes.close(false)
+      }
+    } catch (e) {
+      console.error(e)
     }
   })
 
@@ -100,6 +106,19 @@ test.describe('Visual Tests', () => {
         page.getByText('מיקומי אוטובוסים משעה'),
       ),
     )
+  })
+  test('donation modal should look good', async ({ page }) => {
+    await page.goto('/')
+    await page.getByLabel('לתרומות').click()
+    await page.locator('.MuiTypography-root').first().waitFor()
+    await eyes.check('donation modal', Target.region(page.getByRole('dialog')))
+  })
+  test('donation modal should look good in dark mode', async ({ page }) => {
+    await page.goto('/')
+    await page.getByLabel('עבור למצב כהה').click()
+    await page.getByLabel('לתרומות').click()
+    await page.locator('.MuiTypography-root').first().waitFor()
+    await eyes.check('donation modal dark mode', Target.region(page.getByRole('dialog')))
   })
 })
 
