@@ -8,7 +8,6 @@ interface DonateModalProps {
 }
 
 const boxStyle = {
-  // textAlign: `${i18n.dir() === 'rtl' ? 'right' : 'left'}` as const,
   position: 'fixed',
   top: '50%',
   left: '50%',
