@@ -79,13 +79,13 @@ export const DonateModal: React.FC<DonateModalProps> = ({ isVisible, onClose }) 
             <h2>{t('donation_through_bank_title')}</h2>
             <p>{t('donation_through_bank_reccomendation')}</p>
             <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-              {t('bank')} :{t('donation_through_bank_details_bank')}
+              {t('bank')}: {t('donation_through_bank_details_bank')}
               <br />
-              {t('branch')} :{t('donation_through_bank_details_branch')}
+              {t('branch')}: {t('donation_through_bank_details_branch')}
               <br />
-              {t('account')} :{t('donation_through_bank_details_account')}
+              {t('account')}: {t('donation_through_bank_details_account')}
               <br />
-              {t('account_name')} :{t('donation_through_bank_details_account_name')}
+              {t('account_name')}: {t('donation_through_bank_details_account_name')}
             </Typography>
             <sub>{t('donation_through_bank_details_additional_message')}</sub>
           </Grid>
