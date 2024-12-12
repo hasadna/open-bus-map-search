@@ -28,9 +28,11 @@ export const DonateModal: React.FC<DonateModalProps> = ({ isVisible, onClose }) 
   const shouldImgCollapse = useMediaQuery('(max-width: 950px)')
   const { t } = useTranslation()
 
+  const dir = i18n.dir()
+
   return (
     <Modal
-      dir={i18n.dir()}
+      dir={dir}
       open={isVisible}
       onClose={onClose}
       aria-modal="true"
@@ -38,7 +40,7 @@ export const DonateModal: React.FC<DonateModalProps> = ({ isVisible, onClose }) 
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
       sx={{
-        textAlign: `${i18n.dir() === 'ltr' ? 'right' : 'left'}` as const,
+        textAlign: `${dir === 'ltr' ? 'right' : 'left'}` as const,
         color: 'text.primary', // Dynamically uses the theme’s text color
       }}>
       <Box dir={i18n.dir()} sx={boxStyle}>
