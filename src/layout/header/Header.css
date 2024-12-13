@@ -1,12 +1,22 @@
 .main-header {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   background: #fff;
 }
 
 .main-header.dark {
   background: #303230;
+}
+
+@media (width < 768px) {
+  .main-header {
+    justify-content: space-between;
+  }
+
+  .main-header.dark {
+    justify-content: space-between;
+  }
 }
 
 .theme-icon {
