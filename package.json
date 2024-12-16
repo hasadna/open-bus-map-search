@@ -32,7 +32,7 @@
     "lodash.debounce": "^4.0.8",
     "madge": "^6.1.0",
     "moment": "^2.30.1",
-    "moment-timezone": "^0.5.45",
+    "moment-timezone": "^0.5.46",
     "open-bus-stride-client": "0.1.2",
     "react": "^18.2.0",
     "react-dom": "^18.3.1",
