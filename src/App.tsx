@@ -20,19 +20,19 @@ if ('serviceWorker' in navigator) {
 }
 
 export const RoutedApp = () => {
-  const { i18n } = useTranslation(); // Access i18n for language management
-  const currentLanguage = i18n.language; // Get the current language
+  const { i18n } = useTranslation() // Access i18n for language management
+  const currentLanguage = i18n.language // Get the current language
 
   // Effect hook to update the title based on the current language
   useEffect(() => {
-    const title = currentLanguage === 'he' ? 'דאטאבוס' : 'Databus'; // Set title based on language
-    document.title = title; // Update the <title> tag in the document
-  }, [currentLanguage]); // Re-run when the language changes
+    const title = currentLanguage === 'he' ? 'דאטאבוס' : 'Databus' // Set title based on language
+    document.title = title // Update the <title> tag in the document
+  }, [currentLanguage]) // Re-run when the language changes
 
   return (
     <Suspense fallback={<Preloader />}>
       <RouterProvider router={router} />
     </Suspense>
-  );
-};
+  )
+}
 export default RoutedApp
