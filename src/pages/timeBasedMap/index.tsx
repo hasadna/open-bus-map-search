@@ -24,6 +24,7 @@ import { INPUT_SIZE } from 'src/resources/sizes'
 import { VehicleLocation } from 'src/model/vehicleLocation'
 import useVehicleLocations from 'src/api/useVehicleLocations'
 import getAgencyList, { Agency } from 'src/api/agencyList'
+import i18n from 'src/locale/allTranslations'
 
 export interface Point {
   loc: [number, number]
@@ -158,8 +159,8 @@ export default function TimeBasedMapPage() {
             {loaded} {`- `}
             {t('show_x_bus_locations')} {` `}
             {t('from_time_x_to_time_y')
-              .replace('XXX', moment(from).format('hh:mm A'))
-              .replace('YYY', moment(to).format('hh:mm A'))}
+              .replace('XXX', moment(from).locale(i18n.language).format('hh:mm A'))
+              .replace('YYY', moment(to).locale(i18n.language).format('hh:mm A'))}
           </p>
         </Grid>
         <Grid xs={1}>{isLoading && <CircularProgress size="20px" />}</Grid>
