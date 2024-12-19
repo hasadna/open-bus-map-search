@@ -1,13 +1,13 @@
 import './App.scss'
 import 'leaflet/dist/leaflet.css'
 import 'moment/locale/he'
+import { useTranslation } from 'react-i18next'
 import { RouterProvider } from 'react-router-dom'
 import { Suspense, useEffect } from 'react'
 import moment from 'moment-timezone'
 import Preloader from './shared/Preloader'
 import router from './routes'
 import 'moment/dist/locale/he'
-import { useTranslation } from 'react-i18next'
 
 moment.tz.setDefault('Asia/Jerusalem')
 moment.locale('he')
