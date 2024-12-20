@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.3.0](https://github.com/hasadna/open-bus-map-search/compare/v1.2.0...v1.3.0) (2024-12-20)
+
+
+### Features
+
+* add stops list in the line profile page ([#929](https://github.com/hasadna/open-bus-map-search/issues/929)) ([af09276](https://github.com/hasadna/open-bus-map-search/commit/af092761816dd213915c43f8ac215a433cb0949f))
+* **donation modal:** add English translation ([#973](https://github.com/hasadna/open-bus-map-search/issues/973)) ([ccbad02](https://github.com/hasadna/open-bus-map-search/commit/ccbad0275beb58fc7e47a4c841ad922ce069d02a))
+
+
+### Bug Fixes
+
+* add English text for Public Appeal ([#963](https://github.com/hasadna/open-bus-map-search/issues/963)) ([779c64a](https://github.com/hasadna/open-bus-map-search/commit/779c64ab8bccaff0fec9018ae7d1b71450a6910e))
+* allow donate modal to dynamically change for devices  ([#945](https://github.com/hasadna/open-bus-map-search/issues/945)) ([670df7a](https://github.com/hasadna/open-bus-map-search/commit/670df7a7f5ec573bc6b13b1e5a59cdd5d6160e4a))
+* donation modal text dark mode ([#920](https://github.com/hasadna/open-bus-map-search/issues/920)) ([eb9f605](https://github.com/hasadna/open-bus-map-search/commit/eb9f605a7f2c48d87f0416f1b7f2284ca9c6392a))
+* Temporary fix suggestion of the unreadable text in the Donate Modal ([#908](https://github.com/hasadna/open-bus-map-search/issues/908)) ([267d1c7](https://github.com/hasadna/open-bus-map-search/commit/267d1c7fab608932c0764dff11d36e954a39c4dd))
+* time related issues in the "map by line" page ([#936](https://github.com/hasadna/open-bus-map-search/issues/936)) ([26c8c3e](https://github.com/hasadna/open-bus-map-search/commit/26c8c3e1912ec8231cd400f684949a86b8ba0fb8))
+
+
+### Performance Improvements
+
+* reduce number of concurrent requests ([#919](https://github.com/hasadna/open-bus-map-search/issues/919)) ([8003efe](https://github.com/hasadna/open-bus-map-search/commit/8003efeb734d6f3330ec451dea1315c1ddcc89a2))
+
 ## [1.2.0](https://github.com/hasadna/open-bus-map-search/compare/v1.1.0...v1.2.0) (2024-11-04)
 
 
