@@ -19,10 +19,12 @@ test.describe('About Page Tests', () => {
     const locator = page.locator('li').filter({ hasText: 'אודות' })
     await expect(locator).toHaveClass(/menu-item-selected/)
   })
+
   test('page title should be `מהו אתר “דאטאבוס”?`', async ({ page }) => {
     await page.goto('/about')
     await expect(page.getByRole('heading', { name: 'מהו אתר “דאטאבוס”?' })).toBeVisible()
   })
+
   test('clicking dontaions link should lead to "sadna" site', async ({ page }) => {
     await page.goto('/about')
     await page.getByRole('link', { name: 'תרומות קטנות נוספות' }).click()
@@ -103,5 +105,14 @@ test.describe('About Page Tests', () => {
     await expect(page).toHaveURL(
       'https://github.com/hasadna/open-bus-map-search/blob/main/CONTRIBUTING.md',
     )
+  })
+
+  test('About YouTube modal plays video', async ({ page }) => {
+    await page.goto('/about')
+    const videoFrame = page.frameLocator('iframe[title="YouTube video player"]')
+    await videoFrame.locator('.ytp-cued-thumbnail-overlay-image').click({ force: true })
+    await page.waitForTimeout(3000)
+    const playButtonLabel = await videoFrame.locator('.ytp-play-button').getAttribute('aria-label')
+    expect(playButtonLabel).toBe('Pause keyboard shortcut k')
   })
 })
