@@ -26,9 +26,7 @@ export const DonateModal: React.FC<DonateModalProps> = ({ isVisible, onClose }) 
    */
   const shouldImgCollapse = useMediaQuery('(max-width: 950px)')
   const { t } = useTranslation()
-  const theme = useTheme()
-
-  const direction = theme.direction
+  const { direction } = useTheme()
 
   return (
     <Modal
