@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { GlobalOutlined } from '@ant-design/icons'
 import { useTheme } from '../ThemeContext'
 
-export const LanguageToggleBtn = () => {
+export const LanguageToggleButton = () => {
   const { toggleLanguage } = useTheme()
   const { t } = useTranslation()
 
