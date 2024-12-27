@@ -1,19 +1,15 @@
-import { useReducer } from 'react'
 import { useTranslation } from 'react-i18next'
 import { GlobalOutlined } from '@ant-design/icons'
+import { useTheme } from '../ThemeContext'
 
-export const LanguageToggle = () => {
-  const { t, i18n } = useTranslation()
-  const [, handleChangeLanguage] = useReducer((state: string) => {
-    const newLanguage = { he: 'en', en: 'he' }[state]
-    i18n.changeLanguage(newLanguage)
-    return newLanguage!
-  }, 'he')
+export const LanguageToggleBtn = () => {
+  const { toggleLanguage } = useTheme()
+  const { t } = useTranslation()
 
   return (
     <button
       className="header-link"
-      onClick={handleChangeLanguage}
+      onClick={toggleLanguage}
       aria-label={t('Change Language')}
       title={t('Change Language')}>
       <GlobalOutlined />
