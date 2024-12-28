@@ -28,6 +28,13 @@ export const DonateModal: React.FC<DonateModalProps> = ({ isVisible, onClose }) 
   const { t } = useTranslation()
   const { direction } = useTheme()
 
+  const donateNowImageUrlEN =
+    'https://www.hasadna.org.il/wp-content/uploads/2018/08/button-300x73.png'
+  const donateNowImageUrlHE =
+    'https://www.hasadna.org.il/wp-content/uploads/2018/08/button-EN-300x73.png'
+
+  // Use Image with Hebrew text for RTL and English text for LTR
+
   return (
     <Modal
       dir={direction}
@@ -59,14 +66,14 @@ export const DonateModal: React.FC<DonateModalProps> = ({ isVisible, onClose }) 
                 rel="noreferrer">
                 <img
                   src="https://www.hasadna.org.il/wp-content/uploads/2017/12/%D7%AA%D7%A8%D7%95%D7%9E%D7%95%D7%AA.jpg"
-                  alt="קישור לתרומה"
+                  alt={t('donation_link')}
                   width={'90%'}
                   style={{ maxWidth: '420px' }}
                 />
                 <img
                   width={'90%'}
-                  src="https://www.hasadna.org.il/wp-content/uploads/2018/08/button-300x73.png"
-                  alt="תרום עכשיו"
+                  src={direction === 'rtl' ? donateNowImageUrlEN : donateNowImageUrlHE}
+                  alt={t('donate_to_hasadna')}
                   // style={{ margin: shouldImgCollapse ? 'auto' : '', display: 'block' }}
                   style={{ display: 'block', maxWidth: '300px' }}
                 />
