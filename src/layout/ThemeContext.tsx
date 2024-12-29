@@ -1,4 +1,4 @@
-import { FC, PropsWithChildren, createContext, useContext, useMemo, useState } from 'react'
+import { FC, PropsWithChildren, createContext, useContext, useMemo } from 'react'
 import { ThemeProvider as MuiThemeProvider, createTheme } from '@mui/material/styles'
 import ScopedCssBaseline from '@mui/material/ScopedCssBaseline'
 import { ConfigProvider, theme } from 'antd'
@@ -18,7 +18,6 @@ const { defaultAlgorithm, darkAlgorithm } = theme
 
 export const ThemeProvider: FC<PropsWithChildren> = ({ children }) => {
   const [isDarkTheme, setIsDarkTheme] = useLocalStorage<boolean>('isDarkTheme')
-  const [direction, setDirection] = useState<'ltr' | 'rtl'>('rtl')
   const { i18n } = useTranslation()
 
   const toggleTheme = () => {
@@ -28,7 +27,6 @@ export const ThemeProvider: FC<PropsWithChildren> = ({ children }) => {
   const toggleLanguage = () => {
     const newLanguage = i18n.language === 'en' ? 'he' : 'en'
     i18n.changeLanguage(newLanguage)
-    setDirection(newLanguage === 'he' ? 'rtl' : 'ltr') // Update direction directly in MUI theme when language changes
   }
 
   const contextValue = {
@@ -38,16 +36,15 @@ export const ThemeProvider: FC<PropsWithChildren> = ({ children }) => {
   }
 
   // Re-create the theme when the theme changes or the language changes
-  const theme = useMemo(
-    () =>
-      createTheme({
-        direction,
-        palette: {
-          mode: isDarkTheme ? 'dark' : 'light',
-        },
-      }),
-    [isDarkTheme, direction],
-  )
+  const theme = useMemo(() => {
+    const direction = i18n.language === 'he' ? 'rtl' : 'ltr'
+    return createTheme({
+      direction,
+      palette: {
+        mode: isDarkTheme ? 'dark' : 'light',
+      },
+    })
+  }, [isDarkTheme, i18n.language])
 
   return (
     <ConfigProvider
