@@ -1,7 +1,6 @@
 import React from 'react'
-import { Box, Grid, Modal, Typography, useMediaQuery } from '@mui/material'
+import { Box, Grid, Modal, Typography, useMediaQuery, useTheme } from '@mui/material'
 import { useTranslation } from 'react-i18next'
-import i18n from 'src/locale/allTranslations'
 interface DonateModalProps {
   isVisible: boolean
   onClose: () => void
@@ -27,12 +26,11 @@ export const DonateModal: React.FC<DonateModalProps> = ({ isVisible, onClose }) 
    */
   const shouldImgCollapse = useMediaQuery('(max-width: 950px)')
   const { t } = useTranslation()
-
-  const dir = i18n.dir()
+  const { direction } = useTheme()
 
   return (
     <Modal
-      dir={dir}
+      dir={direction}
       open={isVisible}
       onClose={onClose}
       aria-modal="true"
@@ -40,10 +38,10 @@ export const DonateModal: React.FC<DonateModalProps> = ({ isVisible, onClose }) 
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
       sx={{
-        textAlign: `${dir === 'ltr' ? 'right' : 'left'}` as const,
+        textAlign: `${direction === 'ltr' ? 'right' : 'left'}` as const,
         color: 'text.primary', // Dynamically uses the theme’s text color
       }}>
-      <Box dir={i18n.dir()} sx={boxStyle}>
+      <Box dir={direction} sx={boxStyle}>
         <button onClick={onClose} className="close-modal-icon">
           X
         </button>
@@ -75,7 +73,7 @@ export const DonateModal: React.FC<DonateModalProps> = ({ isVisible, onClose }) 
               </a>
             </Typography>
           </Grid>
-          <Grid item dir={i18n.dir()} xs={6}>
+          <Grid item dir={direction} xs={6}>
             <h2>{t('donation_through_bank_title')}</h2>
             <p>{t('donation_through_bank_reccomendation')}</p>
             <Typography id="modal-modal-description" sx={{ mt: 2 }}>
