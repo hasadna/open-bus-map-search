@@ -9,6 +9,7 @@
 
 # production
 /dist
+sitemap.xml
 
 # misc
 .DS_Store

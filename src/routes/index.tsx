@@ -104,7 +104,7 @@ export const PAGES = [
 export const HEADER_LINKS = [
   {
     label: 'report_a_bug_title',
-    path: 'report-a-bug',
+    path: '/report-a-bug',
     icon: <BugOutlined />,
     element: <BugReportForm />,
   },
@@ -125,7 +125,7 @@ const HIDDEN_PAGES = [
   },
 ] as const
 
-const getRoutesList = () => {
+export const getRoutesList = () => {
   const pages = [...PAGES, ...HIDDEN_PAGES, ...HEADER_LINKS]
   const RedirectToHomepage = () => <Navigate to={pages[0].path} replace />
   const routes = pages.filter((r) => r.element)
