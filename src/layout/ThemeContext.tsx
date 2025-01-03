@@ -1,4 +1,4 @@
-import { FC, PropsWithChildren, createContext, useContext } from 'react'
+import { FC, PropsWithChildren, createContext, useContext, useMemo } from 'react'
 import { ThemeProvider as MuiThemeProvider, createTheme } from '@mui/material/styles'
 import ScopedCssBaseline from '@mui/material/ScopedCssBaseline'
 import { ConfigProvider, theme } from 'antd'
@@ -8,37 +8,43 @@ import { useLocalStorage } from 'src/locale/useLocalStorage'
 
 export interface ThemeContextInterface {
   toggleTheme: () => void
+  toggleLanguage: () => void
   isDarkTheme?: boolean
 }
 
 const ThemeContext = createContext({} as ThemeContextInterface)
 
-const darkTheme = createTheme({
-  palette: {
-    mode: 'dark',
-  },
-})
-
-const lightTheme = createTheme({
-  palette: {
-    mode: 'light',
-  },
-})
-
 const { defaultAlgorithm, darkAlgorithm } = theme
 
 export const ThemeProvider: FC<PropsWithChildren> = ({ children }) => {
   const [isDarkTheme, setIsDarkTheme] = useLocalStorage<boolean>('isDarkTheme')
-
   const { i18n } = useTranslation()
+
   const toggleTheme = () => {
     setIsDarkTheme((prevTheme: boolean) => !prevTheme)
   }
 
+  const toggleLanguage = () => {
+    const newLanguage = i18n.language === 'en' ? 'he' : 'en'
+    i18n.changeLanguage(newLanguage)
+  }
+
   const contextValue = {
     isDarkTheme,
+    toggleLanguage,
     toggleTheme,
   }
+
+  // Re-create the theme when the theme changes or the language changes
+  const theme = useMemo(() => {
+    const direction = i18n.language === 'he' ? 'rtl' : 'ltr'
+    return createTheme({
+      direction,
+      palette: {
+        mode: isDarkTheme ? 'dark' : 'light',
+      },
+    })
+  }, [isDarkTheme, i18n.language])
 
   return (
     <ConfigProvider
@@ -51,7 +57,7 @@ export const ThemeProvider: FC<PropsWithChildren> = ({ children }) => {
           colorTextBase: isDarkTheme ? '#ffffff' : '#000000',
         },
       }}>
-      <MuiThemeProvider theme={isDarkTheme ? darkTheme : lightTheme}>
+      <MuiThemeProvider theme={theme}>
         <ScopedCssBaseline enableColorScheme>
           <ThemeContext.Provider value={contextValue}>{children}</ThemeContext.Provider>
         </ScopedCssBaseline>
@@ -60,6 +66,4 @@ export const ThemeProvider: FC<PropsWithChildren> = ({ children }) => {
   )
 }
 
-export const useTheme = () => {
-  return useContext(ThemeContext)
-}
+export const useTheme = () => useContext(ThemeContext)
