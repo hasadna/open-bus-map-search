@@ -24,6 +24,7 @@ import { INPUT_SIZE } from 'src/resources/sizes'
 import { VehicleLocation } from 'src/model/vehicleLocation'
 import useVehicleLocations from 'src/api/useVehicleLocations'
 import getAgencyList, { Agency } from 'src/api/agencyList'
+import i18n from 'src/locale/allTranslations'
 
 export interface Point {
   loc: [number, number]
@@ -41,8 +42,8 @@ interface Path {
   vehicleRef: number
 }
 
-const fiveMinutesAgo = moment().subtract(5, 'minutes')
-const fourMinutesAgo = moment(fiveMinutesAgo).add(1, 'minutes')
+const defaultStart = moment('2023-03-14T15:00:00Z')
+const defaultEnd = moment(defaultStart).add(1, 'minutes')
 
 export default function TimeBasedMapPage() {
   const [isExpanded, setIsExpanded] = useState<boolean>(false)
@@ -54,8 +55,8 @@ export default function TimeBasedMapPage() {
   }
 
   //TODO (another PR and another issue) load from url like in another pages.
-  const [from, setFrom] = useState(fiveMinutesAgo)
-  const [to, setTo] = useState(fourMinutesAgo)
+  const [from, setFrom] = useState(defaultStart)
+  const [to, setTo] = useState(defaultEnd)
 
   const { locations, isLoading } = useVehicleLocations({
     from,
@@ -158,8 +159,8 @@ export default function TimeBasedMapPage() {
             {loaded} {`- `}
             {t('show_x_bus_locations')} {` `}
             {t('from_time_x_to_time_y')
-              .replace('XXX', moment(from).format('hh:mm A'))
-              .replace('YYY', moment(to).format('hh:mm A'))}
+              .replace('XXX', moment(from).locale(i18n.language).format('hh:mm A'))
+              .replace('YYY', moment(to).locale(i18n.language).format('hh:mm A'))}
           </p>
         </Grid>
         <Grid xs={1}>{isLoading && <CircularProgress size="20px" />}</Grid>

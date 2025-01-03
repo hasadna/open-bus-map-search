@@ -7,6 +7,7 @@ test.describe('Timeline Page Tests', () => {
   let timelinePage: TimelinePage
 
   test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
+    await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
     await i18next.use(Backend).init({
       lng: 'he',
       backend: {
@@ -74,9 +75,9 @@ test.describe('Timeline Page Tests', () => {
     await timelinePage.selectOperatorFromDropbox(
       timelinePage.operatorsDropDown,
       timelinePage.operatorsList,
-      'אגד תעבורה',
+      'דן בדרום',
     )
-    await timelinePage.fillLineNumber('2')
+    await timelinePage.fillLineNumber('9999')
     await timelinePage.verifyLineNumberNotFound()
   })
 

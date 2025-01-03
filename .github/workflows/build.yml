@@ -10,15 +10,18 @@ jobs:
         with:
           node-version: 18
           cache: 'npm'
+      - name: Get Commit Hash and generate Version File
+        run: echo "$(git rev-parse --short HEAD)" >> public/hash.txt
       - name: Run install
         run: npm ci
       - name: Build
         run: npm run build
-      - name: upload artifact
-        uses: actions/upload-artifact@v2
+      - name: Upload artifact (build)
+        uses: actions/upload-artifact@v4
         with:
-          name: dist
+          name: dist-build
           path: dist
+
   build-storybook:
     runs-on: ubuntu-latest
     steps:
@@ -31,11 +34,11 @@ jobs:
         run: npm ci
       - name: Build Storybook
         run: npm run build-storybook -- -o dist/storybook
-      - name: upload artifact
-        uses: actions/upload-artifact@v2
+      - name: Upload artifact (storybook)
+        uses: actions/upload-artifact@v4
         with:
-          name: dist
-          path: dist
+          name: dist-storybook
+          path: dist/storybook
   
       - name: Save PR number
         env:

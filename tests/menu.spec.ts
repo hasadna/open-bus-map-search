@@ -1,6 +1,7 @@
 import { test, expect, urlMatcher } from './utils'
 
 test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
+  await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
   advancedRouteFromHAR('tests/HAR/menu.har', {
     updateContent: 'embed',
     update: false,

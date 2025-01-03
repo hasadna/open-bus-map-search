@@ -86,6 +86,7 @@ module.exports = [
       '.nx',
       'jest.config.ts',
       'sitemap.js',
+      'public',
     ],
   },
 ]

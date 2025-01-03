@@ -206,6 +206,88 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "TomRytt",
+      "name": "Tom Rytt",
+      "avatar_url": "https://avatars.githubusercontent.com/u/86921461?v=4",
+      "profile": "https://github.com/TomRytt",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "griseduardo",
+      "name": "Eduardo Henrique Gris",
+      "avatar_url": "https://avatars.githubusercontent.com/u/34499486?v=4",
+      "profile": "https://github.com/griseduardo",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "YaelChen",
+      "name": "Yael Chen",
+      "avatar_url": "https://avatars.githubusercontent.com/u/51058584?v=4",
+      "profile": "https://github.com/YaelChen",
+      "contributions": [
+        "code",
+        "test"
+      ]
+    },
+    {
+      "login": "LeoBonjo",
+      "name": "Leo Green",
+      "avatar_url": "https://avatars.githubusercontent.com/u/139697327?v=4",
+      "profile": "https://github.com/LeoBonjo",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "yontank",
+      "name": "Yehonatan Avrahimi",
+      "avatar_url": "https://avatars.githubusercontent.com/u/48332126?v=4",
+      "profile": "https://github.com/yontank",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "Tami-Co",
+      "name": "Tami-Co",
+      "avatar_url": "https://avatars.githubusercontent.com/u/158340919?v=4",
+      "profile": "https://github.com/Tami-Co",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "rivka14",
+      "name": "Rivka Weiss",
+      "avatar_url": "https://avatars.githubusercontent.com/u/85113156?v=4",
+      "profile": "https://github.com/rivka14",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "EstherKal",
+      "name": "EstherKalsmith",
+      "avatar_url": "https://avatars.githubusercontent.com/u/160218199?v=4",
+      "profile": "https://github.com/EstherKal",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "ofirc77",
+      "name": "ofirc77",
+      "avatar_url": "https://avatars.githubusercontent.com/u/170853216?v=4",
+      "profile": "https://github.com/ofirc77",
+      "contributions": [
+        "code"
+      ]
     }
   ]
 }

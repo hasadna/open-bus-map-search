@@ -9,6 +9,16 @@
   background: #303230;
 }
 
+@media (width < 768px) {
+  .main-header {
+    justify-content: space-between;
+  }
+
+  .main-header.dark {
+    justify-content: space-between;
+  }
+}
+
 .theme-icon {
   border: none;
   background: transparent;

@@ -9,7 +9,7 @@ export function TimeSelector({ time, onChange }: DataAndTimeSelectorProps) {
       sx={{ width: '100%' }}
       label={t('choose_time')}
       value={time}
-      onChange={(ts) => onChange(ts!)}
+      onChange={(ts) => onChange(ts)}
       ampm={false}
       viewRenderers={{
         hours: renderTimeViewClock,
