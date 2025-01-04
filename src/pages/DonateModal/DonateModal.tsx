@@ -27,7 +27,7 @@ export const DonateModal: React.FC<DonateModalProps> = ({ isVisible, onClose }) 
   const shouldImgCollapse = useMediaQuery('(max-width: 950px)')
   const { t } = useTranslation()
   const { direction } = useTheme()
-  
+
   // Use Image with Hebrew text for RTL and English text for LTR
   const donateNowImageUrlEN =
     'https://www.hasadna.org.il/wp-content/uploads/2018/08/button-300x73.png'
