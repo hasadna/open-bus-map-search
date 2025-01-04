@@ -85,6 +85,7 @@ module.exports = [
       'eslint.config.js',
       '.nx',
       'jest.config.ts',
+      'sitemap.js',
       'public',
     ],
   },
