@@ -11,7 +11,7 @@ jobs:
           node-version: 18
           cache: 'npm'
       - name: Get Commit Hash and generate Version File
-        run: echo "$(git rev-parse --short HEAD)" >> public/hash.txt
+        run: echo "${{ github.event.pull_request.head.sha }}" >> public/hash.txt
       - name: Run install
         run: npm ci
       - name: Build
