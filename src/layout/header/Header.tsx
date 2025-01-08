@@ -8,7 +8,7 @@ import './Header.css'
 import ToggleThemeButton from './ToggleThemeButton'
 import { DonationButton } from './DonationButton'
 import HeaderLinks from './HeaderLinks/HeaderLinks'
-import { LanguageToggle } from './LanguageToggle'
+import { LanguageToggleButton } from './LanguageToggleButton'
 
 const { Header } = Layout
 
@@ -19,7 +19,7 @@ const MainHeader = () => {
     <Header className={cn('main-header', { dark: isDarkTheme })}>
       <MenuOutlined onClick={() => setDrawerOpen(true)} className="hideOnDesktop" />
       <HeaderLinks>
-        <LanguageToggle />
+        <LanguageToggleButton />
         <ToggleThemeButton toggleTheme={toggleTheme} isDarkTheme={isDarkTheme} />
         <DonationButton />
       </HeaderLinks>

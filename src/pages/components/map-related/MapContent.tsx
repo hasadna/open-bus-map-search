@@ -1,5 +1,6 @@
 import { t } from 'i18next'
-import { useRef } from 'react'
+import { useRef, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Marker, Polyline, Popup, TileLayer, useMap } from 'react-leaflet'
 import { Icon, IconOptions, Marker as LeafletMarker } from 'leaflet'
 import { busIcon, busIconPath } from '../utils/BusIcon'
@@ -29,7 +30,6 @@ export function MapContent({ positions, plannedRouteStops, showNavigationButtons
   const plannedRouteLineColor = 'black'
   const actualRouteStopMarker = getIcon(actualRouteStopMarkerPath, 20, 20)
   const plannedRouteStopMarker = getIcon(plannedRouteStopMarkerPath, 20, 25)
-
   const navigateMarkers = (positionId: number) => {
     const loc = positions[positionId]?.loc
     if (!map || !loc) return
@@ -39,12 +39,28 @@ export function MapContent({ positions, plannedRouteStops, showNavigationButtons
       marker.openPopup()
     }
   }
+  const { i18n } = useTranslation()
+  const [tileUrl, setTileUrl] = useState('https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png')
+  useEffect(() => {
+    const handleLanguageChange = (lng: string) => {
+      console.log('Language changed to:', lng)
+      const newUrl =
+        lng === 'he'
+          ? 'https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png'
+          : 'https://tile-a.openstreetmap.fr/osmfr/{z}/{x}/{y}.png?lang=en'
+      setTileUrl(newUrl)
+    }
+    i18n.on('languageChanged', handleLanguageChange)
+    return () => {
+      i18n.off('languageChanged', handleLanguageChange)
+    }
+  }, [])
 
   return (
     <>
       <TileLayer
         attribution='&copy <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
+        url={tileUrl}
       />
       <div className="map-index">
         <MapIndex
