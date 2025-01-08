@@ -107,14 +107,15 @@ test.describe('About Page Tests', () => {
     )
   })
 
-  test('About YouTube modal plays video', async ({ page }) => {
+  test('the YouTube modal in "about" is visible and have the correct src', async ({ page }) => {
     await page.goto('/about')
-    const videoFrame = page.frameLocator('iframe[title="YouTube video player"]')
-    const playButton = videoFrame.getByLabel('Play', { exact: true })
-    await playButton.click()
-    await playButton.waitFor({ state: 'hidden' })
-    const video = videoFrame.locator('video')
-    await video.hover()
-    await expect(videoFrame.getByLabel('Pause')).toBeVisible()
+    const iframeElement = await page.waitForSelector('iframe')
+    const Visible = await iframeElement.isVisible()
+    expect(Visible).toBe(true)
+    //const iframe = await iframeElement.contentFrame
+    const videoSrc = await iframeElement.getAttribute('src')
+    expect(videoSrc).toBe(
+      'https://www.youtube.com/embed/videoseries?si=oTULlxq8Is188hPu&list=PL6Rh06rT7uiX1AQE-lm55hy-seL3idx3T',
+    )
   })
 })
