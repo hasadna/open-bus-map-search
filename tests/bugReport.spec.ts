@@ -1,6 +1,8 @@
 import { test, expect } from '@playwright/test'
 
-test('the YouTube modal in "report a bug" is visible and have the correct src', async ({page,}) => {
+test('the YouTube modal in "report a bug" is visible and have the correct src', async ({
+  page,
+}) => {
   await page.goto('/')
   await page.getByLabel('bug').locator('svg').click()
   await page.getByLabel('לפתוח סרטון על העמוד הזה').locator('svg').click()
