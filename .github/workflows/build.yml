@@ -10,6 +10,8 @@ jobs:
         with:
           node-version: 18
           cache: 'npm'
+      - name: Get Commit Hash and generate Version File
+        run: echo "$(git rev-parse --short HEAD)" >> public/hash.txt
       - name: Run install
         run: npm ci
       - name: Build
