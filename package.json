@@ -20,7 +20,7 @@
     "@vitejs/plugin-react-swc": "^3.6.0",
     "antd": "^5.22.3",
     "axios": "^1.7.5",
-    "babel-plugin-transform-import-meta": "^2.2.1",
+    "babel-plugin-transform-import-meta": "^2.3.2",
     "classnames": "^2.5.1",
     "dayjs": "^1.11.11",
     "geolib": "^3.3.3",
