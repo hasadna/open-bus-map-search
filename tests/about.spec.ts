@@ -19,10 +19,12 @@ test.describe('About Page Tests', () => {
     const locator = page.locator('li').filter({ hasText: 'אודות' })
     await expect(locator).toHaveClass(/menu-item-selected/)
   })
+
   test('page title should be `מהו אתר “דאטאבוס”?`', async ({ page }) => {
     await page.goto('/about')
     await expect(page.getByRole('heading', { name: 'מהו אתר “דאטאבוס”?' })).toBeVisible()
   })
+
   test('clicking dontaions link should lead to "sadna" site', async ({ page }) => {
     await page.goto('/about')
     await page.getByRole('link', { name: 'תרומות קטנות נוספות' }).click()
@@ -102,6 +104,17 @@ test.describe('About Page Tests', () => {
     await page.getByRole('link', { name: 'קרא כאן' }).click()
     await expect(page).toHaveURL(
       'https://github.com/hasadna/open-bus-map-search/blob/main/CONTRIBUTING.md',
+    )
+  })
+
+  test('the YouTube modal in "about" is visible and have the correct src', async ({ page }) => {
+    await page.goto('/about')
+    const iframeElement = await page.waitForSelector('iframe')
+    expect(iframeElement.isVisible())
+    const videoSrc = page.locator('iframe')
+    await expect(videoSrc).toHaveAttribute(
+      'src',
+      'https://www.youtube.com/embed/videoseries?si=oTULlxq8Is188hPu&list=PL6Rh06rT7uiX1AQE-lm55hy-seL3idx3T',
     )
   })
 })
