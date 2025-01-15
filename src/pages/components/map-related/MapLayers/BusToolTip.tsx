@@ -98,7 +98,7 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
                 <span>{position.point?.siri_ride__vehicle_ref}</span>
               </li>
               <li>
-                {`${t('drive_direction')}: `                }
+                {`${t('drive_direction')}: `}
                 <span>
                   {/* ({position.point?.bearing} {t('bearing')}) */}
                   {position.point?.bearing} {t('bearing')} ({position.point?.bearing !== undefined ? getDirectionFromAngle(position.point.bearing) : t('unknown', { defaultValue: 'unknown' })}) 
