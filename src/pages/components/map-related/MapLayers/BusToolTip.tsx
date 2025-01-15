@@ -33,6 +33,23 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
       .finally(() => setIsLoading(false))
   }, [position])
 
+  function getDirectionFromAngle(angle: number): string {
+    // Normalize the angle to the range 0-360
+    angle = ((angle % 360) + 360) % 360;
+  
+    // Define the cardinal directions in clockwise order
+    const directions: string[] = [
+      "North", "Northeast", "East", "Southeast",
+      "South", "Southwest", "West", "Northwest"
+    ];
+  
+    // Divide the angle into 8 equal sections (45 degrees each)
+    const index: number = Math.round(angle / 45) % 8;
+  
+    return directions[index];
+  } 
+
+  
   return (
     <div className={cn('bus-tooltip', { hebrew: i18n.language === 'he' })}>
       {isLoading || !siriRide ? (
@@ -81,9 +98,10 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
                 <span>{position.point?.siri_ride__vehicle_ref}</span>
               </li>
               <li>
-                {`${t('drive_direction')}: `}
+                {`${t('drive_direction')}: `                }
                 <span>
-                  ({position.point?.bearing} {t('bearing')})
+                  {/* ({position.point?.bearing} {t('bearing')}) */}
+                  {position.point?.bearing} {t('bearing')} ({position.point?.bearing !== undefined ? getDirectionFromAngle(position.point.bearing) : t('unknown', { defaultValue: 'unknown' })}) 
                 </span>
               </li>
               <li>
