@@ -35,21 +35,24 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
 
   function getDirectionFromAngle(angle: number): string {
     // Normalize the angle to the range 0-360
-    angle = ((angle % 360) + 360) % 360;
-  
+    angle = ((angle % 360) + 360) % 360
     // Define the cardinal directions in clockwise order
     const directions: string[] = [
-      "North", "Northeast", "East", "Southeast",
-      "South", "Southwest", "West", "Northwest"
-    ];
-  
+      t('directions.North', { defaultValue: 'North' }),
+      t('directions.Northeast', { defaultValue: 'Northeast' }),
+      t('directions.East', { defaultValue: 'East' }),
+      t('directions.Southeast', { defaultValue: 'Southeast' }),
+      t('directions.South', { defaultValue: 'South' }),
+      t('directions.Southwest', { defaultValue: 'Southwest' }),
+      t('directions.West', { defaultValue: 'West' }),
+      t('directions.Northwest', { defaultValue: 'Northwest' }),
+    ]
     // Divide the angle into 8 equal sections (45 degrees each)
-    const index: number = Math.round(angle / 45) % 8;
-  
-    return directions[index];
-  } 
+    const index: number = Math.round(angle / 45) % 8
 
-  
+    return directions[index]
+  }
+
   return (
     <div className={cn('bus-tooltip', { hebrew: i18n.language === 'he' })}>
       {isLoading || !siriRide ? (
@@ -73,6 +76,7 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
           <div className="content">
             <ul>
               <li>
+                {' '}
                 {`${t('from')}: `}
                 <span>{siriRide.gtfsRouteRouteLongName?.split('<->')[0]}</span>
               </li>
@@ -101,7 +105,11 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
                 {`${t('drive_direction')}: `}
                 <span>
                   {/* ({position.point?.bearing} {t('bearing')}) */}
-                  {position.point?.bearing} {t('bearing')} ({position.point?.bearing !== undefined ? getDirectionFromAngle(position.point.bearing) : t('unknown', { defaultValue: 'unknown' })}) 
+                  {position.point?.bearing} {t('bearing')} (
+                  {position.point?.bearing !== undefined
+                    ? getDirectionFromAngle(position.point.bearing)
+                    : t('unknown', { defaultValue: 'unknown' })}
+                  )
                 </span>
               </li>
               <li>
