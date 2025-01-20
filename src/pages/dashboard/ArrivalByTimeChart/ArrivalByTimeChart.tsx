@@ -75,7 +75,9 @@ export default function ArrivalByTimeChart({
     const pointsPerOperator = arrayGroup(data, (item) => item.id).map((operatorData) => {
       return allRange.map((time) => {
         const current = operatorData.find(
-          (item) => time.includes(item.gtfs_route_date!) || time.includes(item.gtfs_route_hour!),
+          (item) =>
+            time.includes(item.gtfs_route_date!.split('T')[0]) ||
+            time.includes(item.gtfs_route_hour!),
         )
         return {
           id: operatorData[0].id,
