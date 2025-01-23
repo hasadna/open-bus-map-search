@@ -154,6 +154,16 @@
   "at_time": "בשעה",
   "vehicle_ref": "לוחית רישוי",
   "drive_direction": "כיוון נסיעה",
+  "directions":{
+    "North": "צפון",
+    "Northeast": "צפון-מזרח",
+    "East": "מזרח",
+    "Southeast": "דרום-מזרח",
+    "South": "דרום",
+    "Southwest": "דרום-מערב",
+    "West": "מערב",
+    "Northwest": "צפון-מערב"
+  },
   "bearing": "מעלות",
   "coords": "נ.צ.",
   "hide_document": "הסתר מידע לגיקים",
