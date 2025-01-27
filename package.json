@@ -41,7 +41,7 @@
     "react-leaflet": "^4.0.1",
     "react-leaflet-cluster": "^2.1.0",
     "react-router-dom": "^6.26.2",
-    "recharts": "^2.12.7",
+    "recharts": "^2.15.0",
     "sass": "^1.81.0",
     "styled-components": "^6.1.11",
     "stylis-plugin-rtl": "^2.1.1",
