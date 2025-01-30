@@ -1,33 +1,33 @@
 .HbarChart {
-    .entry {
-        position: relative;
-        margin-bottom: 2%;
-        padding: 3px;
-        border-radius: 8px;
+  .entry {
+    position: relative;
+    margin-bottom: 2%;
+    padding: 3px;
+    border-radius: 8px;
 
-        .entryName {
-            margin-left: 10px;
-            font-size: 16px;
-            font-weight: 500;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .entryBar {
-            display: flex;
-            align-items: center;
-
-            .barDisplay {
-                height: 7px;
-                border-radius: 10px;
-                margin-left: 10px;
-            }
-
-            .entryBarTotal {
-                .entryBarActual {
-                    font-size: 15px;
-                }
-            }
-         }
+    .entryName {
+      margin-left: 10px;
+      font-size: 16px;
+      font-weight: 500;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
+
+    .entryBar {
+      display: flex;
+      align-items: center;
+
+      .barDisplay {
+        height: 7px;
+        border-radius: 10px;
+        margin-left: 10px;
+      }
+
+      .entryBarTotal {
+        .entryBarActual {
+          font-size: 15px;
+        }
+      }
+    }
+  }
 }

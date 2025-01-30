@@ -1,40 +1,40 @@
 ul {
-    list-style: none;
-    padding: 0;
+  list-style: none;
+  padding: 0;
 }
 
 iframe {
-    border: none;
-    border-radius: 8px;
-    position: relative;
-    width: 100%;
-    height: 32rem;
+  border: none;
+  border-radius: 8px;
+  position: relative;
+  width: 100%;
+  height: 32rem;
 }
 
 li img {
-    width: 1.9em;
+  width: 1.9em;
 }
 
 .contributions {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    justify-content: flex-start;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  justify-content: flex-start;
 
-    > li {
-        margin: 0.5em;
-        text-align: center;
+  > li {
+    margin: 0.5em;
+    text-align: center;
 
-        h2 {
-            max-width: 7em;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            overflow: hidden;
-        }
-
-        img {
-            border-radius: 50%;
-            width: 10em;
-        }
+    h2 {
+      max-width: 7em;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
     }
+
+    img {
+      border-radius: 50%;
+      width: 10em;
+    }
+  }
 }

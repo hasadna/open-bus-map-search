@@ -20,7 +20,7 @@ export default {
     '!**/src/pages/DataResearch/**',
     '!**/src/pages/homepage/**',
     '!**/src/**/{setupProxy,log}.{ts,tsx}',
-    '!**/*.{test,spec,config,stories}.*'
+    '!**/*.{test,spec,config,stories}.*',
   ],
   modulePaths: ['<rootDir>'],
   setupFilesAfterEnv: ['<rootDir>/setupTests.ts'],
