@@ -39,7 +39,7 @@ jobs:
         with:
           name: dist-storybook
           path: dist/storybook
-  
+
       - name: Save PR number
         env:
           PR_NUMBER: ${{ github.event.number }}
