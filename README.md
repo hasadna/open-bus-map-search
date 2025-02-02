@@ -101,6 +101,7 @@ https://github.com/hasadna/open-bus-map-search/blob/main/src/model/busStop.ts#L4
     </tr>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/ofirc77"><img src="https://avatars.githubusercontent.com/u/170853216?v=4?s=100" width="100px;" alt="ofirc77"/><br /><sub><b>ofirc77</b></sub></a><br /><a href="#code-ofirc77" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/GuyKe5"><img src="https://avatars.githubusercontent.com/u/101594251?v=4?s=100" width="100px;" alt="Guy Keren"/><br /><sub><b>Guy Keren</b></sub></a><br /><a href="#code-GuyKe5" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
