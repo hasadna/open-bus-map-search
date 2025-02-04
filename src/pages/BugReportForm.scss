@@ -7,7 +7,7 @@
   padding: 30px;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
-
+  
   @media (width <= 600px) {
     padding: 15px;
 
@@ -23,9 +23,9 @@
     }
 
     .ant-btn-primary {
-      max-width: calc(100% - 100px);
-      margin: 0 auto;
-      display: block;
+      max-width: calc(100% - 100px); 
+      margin: 0 auto; 
+      display: block; 
     }
   }
 
@@ -38,7 +38,7 @@
     border-bottom: 8px solid gray;
     padding-bottom: 0;
     line-height: 25px;
-    text-align: center;
+    text-align: center; 
     display: flex;
   }
 
@@ -47,7 +47,7 @@
 
     &-label {
       font-weight: bold;
-      text-align: right;
+      text-align: right; 
     }
   }
 
@@ -66,7 +66,7 @@
     &-primary {
       background-color: #1890ff;
       border-color: #1890ff;
-      width: 100%;
+      width: 100%; 
 
       &:hover {
         background-color: #40a9ff;

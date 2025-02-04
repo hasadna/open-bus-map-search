@@ -20,22 +20,22 @@ jobs:
           node-version: 18
       - name: make sure no yarn.json is added
         run: |
-          if [ -f yarn.json ]; then
-              echo "::error file=yarn.json::yarn.json is being added"
-              exit 1
-          fi
+            if [ -f yarn.json ]; then
+                echo "::error file=yarn.json::yarn.json is being added"
+                exit 1
+            fi
       - name: make sure no package-lock.json is removed
         run: |
-          if [ ! -f package-lock.json ]; then
-              echo "::error file=package-lock.json::package-lock.json is being removed"
-              exit 1
-          fi
+            if [ ! -f package-lock.json ]; then
+                echo "::error file=package-lock.json::package-lock.json is being removed"
+                exit 1
+            fi
       - name: make sure package-lock.json is updated
         run: |
-          if ! npm ci; then
-              echo "::error file=package-lock.json::package-lock.json is not updated"
-              exit 1
-          fi
+            if ! npm ci; then
+                echo "::error file=package-lock.json::package-lock.json is not updated"
+                exit 1
+            fi
       - name: lint
         run: npm run lint
       - name: madge
@@ -110,6 +110,7 @@ jobs:
           path: logs
           if-no-files-found: warn
 
+
   publish-test-results:
     runs-on: ubuntu-latest
     needs: test
@@ -156,7 +157,7 @@ jobs:
         run: npm run build
       - name: build storybook
         run: npm run build-storybook
-
+      
   all-passed:
     runs-on: ubuntu-latest
     needs: [local-tests, test]
