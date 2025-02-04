@@ -46,6 +46,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - name: Get Commit Hash and generate Version File
+        run: echo "$(git rev-parse --short HEAD)" >> public/hash.txt
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Build and Export Docker image
