@@ -81,14 +81,14 @@ export const useSingleVehicleData = (vehicleRef?: number, routeIds?: number[]) =
 
     return sortedOptions
   }, [positions])
-  //עדכון ברירת מחדל ל-startTime כאשר יש options
+//עדכון ברירת מחדל ל-startTime כאשר יש options
   useEffect(() => {
     if (options.length > 0 && startTime === '00:00:00') {
       setStartTime(options[0].value)
       // console.log('Updated startTime to:', options[0].value)
     }
   }, [options])
-
+  
   // חיפוש לפי startTime
   useEffect(() => {
     if (positions.length === 0) {
@@ -99,9 +99,9 @@ export const useSingleVehicleData = (vehicleRef?: number, routeIds?: number[]) =
 
     if (startTime !== '00:00:00') {
       const newFilteredPositions = positions.filter((position) => {
-        const scheduledStartTime = moment(position.point?.siri_ride__scheduled_start_time)
-          .utc()
-          .format('HH:mm:ss') // המרת הזמן לפורמט HH:mm:ss
+        const scheduledStartTime = moment(
+          position.point?.siri_ride__scheduled_start_time,
+        ).utc().format('HH:mm:ss') // המרת הזמן לפורמט HH:mm:ss
 
         const formattedStartTime = moment(startTime, 'HH:mm:ss').utc().format('HH:mm:ss')
 

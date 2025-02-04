@@ -1,31 +1,32 @@
 @import '../../../resources/variables';
 
 .menu {
-  flex-direction: column;
-  list-style: none;
-  padding: 0;
+    flex-direction: column;
+    list-style: none;
+    padding: 0;
 
-  .menu-item {
-    display: flex;
-    align-items: center;
-    width: 240px;
-    padding: 12px 23px;
-    font-size: 16px;
-    cursor: pointer;
-    border-radius: 9px;
-    margin-bottom: 4px;
-    line-height: 21px;
-    box-sizing: border-box;
-    transition: all 0.2s ease-in-out;
+    .menu-item {
+        display: flex;
+        align-items: center;
+        width: 240px;
+        padding: 12px 23px;
+        font-size: 16px;
+        cursor: pointer;
+        border-radius: 9px;
+        margin-bottom: 4px;
+        line-height: 21px;
+        box-sizing: border-box;
+        transition: all 0.2s ease-in-out;
 
-    &:hover {
-      background-color: #f2f2f2;
+        &:hover {
+            background-color: #f2f2f2;
+        }
+
+        &.active {
+            background-color: $color-active;
+            color: #1677ff;
+            border: none;
+        }
     }
-
-    &.active {
-      background-color: $color-active;
-      color: #1677ff;
-      border: none;
-    }
-  }
 }
+
