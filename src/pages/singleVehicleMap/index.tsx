@@ -5,17 +5,15 @@ import { CircularProgress, Tooltip } from '@mui/material'
 import Grid from '@mui/material/Unstable_Grid2'
 import Typography from '@mui/material/Typography'
 import { SearchContext } from '../../model/pageState'
-import { NotFound } from '../components/NotFound'
 import '../Map.scss'
 import { MapWithLocationsAndPath } from '../components/map-related/MapWithLocationsAndPath'
-import { INPUT_SIZE } from 'src/resources/sizes'
 import { useSingleVehicleData } from 'src/hooks/useSingleVehicleData'
 import { getRoutesAsync } from 'src/api/gtfsService'
+import VehicleNumberSelector from 'src/pages/components/VehicleSelector'
 import { PageContainer } from '../components/PageContainer'
 import InfoYoutubeModal from '../components/YoutubeModal'
-import OperatorSelector from 'src/pages/components/OperatorSelector'
-import VehicleNumberSelector from 'src/pages/components/VehicleSelector'
 import { DateSelector } from '../components/DateSelector'
+import { INPUT_SIZE } from 'src/resources/sizes'
 
 const SingleVehicleMap = () => {
   const { search, setSearch } = useContext(SearchContext)
@@ -63,17 +61,8 @@ const SingleVehicleMap = () => {
     useSingleVehicleData(vehicleNumber, selectedRouteIds)
 
   // console.log('positions:', positions)
-
   // console.log('filteredPositions:', filteredPositions)
   // console.log('plannedRouteStops:', plannedRouteStops)
-  useEffect(() => {
-    if (!locationsAreLoading && filteredPositions.length > 0) {
-      // אחרי שהנתונים הוטענו, אנו יכולים להפסיק את ההסתובבות
-      console.log('הנתונים נטענו')
-    } else {
-      console.log('הנתונים עדיין בטעינה...')
-    }
-  }, [locationsAreLoading, filteredPositions])
 
   return (
     <PageContainer className="map-container">
@@ -101,16 +90,12 @@ const SingleVehicleMap = () => {
           <>
             {/* choose vehicle number */}
             <Grid sm={4} xs={12}>
-              {/* {vehicleNumber === undefined || vehicleNumber === 0 ? (
-            <NotFound>{t('vehicle_id_not_found')}</NotFound>
-          ) : ( */}
               <VehicleNumberSelector
                 vehicleNumber={vehicleNumber}
                 setVehicleNumber={(number) =>
                   setSearch((current) => ({ ...current, vehicleNumber: number }))
                 }
               />
-              {/* )} */}
             </Grid>
             <Grid sm={2} xs={12}>
               {locationsAreLoading && (
@@ -127,7 +112,6 @@ const SingleVehicleMap = () => {
         positions={filteredPositions}
         plannedRouteStops={plannedRouteStops}
         showNavigationButtons={false}
-        // vehicleIdsMap={vehicleIdsMap}
       />
     </PageContainer>
   )
