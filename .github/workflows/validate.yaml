@@ -93,7 +93,7 @@ jobs:
             exit 1
           fi
           mime_type=$(file --mime-type -b /tmp/hash.txt)
-          if [ "$mime_type" != "text/html" ]; then
+          if [ "$mime_type" != "text/plain" ]; then
             echo "Error: hash.txt does not have MIME type text/plain. Found: $mime_type"
             exit 1
           fi
