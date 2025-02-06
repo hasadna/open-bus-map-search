@@ -51,7 +51,7 @@ test('tooltip appears after clicking on map point', async ({ page }) => {
             .map((node) => node.textContent?.trim() || ''),
         )
         .flat()
-        .filter((value) => (value) !== '')
+        .filter((value) => value !== '')
     })
     expect(textList).toEqual(contentItemsInOrder)
   })
