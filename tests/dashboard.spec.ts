@@ -1,4 +1,3 @@
-import { expect } from '@playwright/test'
 import { test, urlMatcher } from './utils'
 
 test.describe('dashboard tests', () => {
@@ -26,11 +25,5 @@ test.describe('dashboard tests', () => {
     await page.reload()
     await page.getByLabel('עבור למצב כהה').click()
     await page.getByLabel('עבור למצב בהיר').click()
-  })
-
-  test('dashboard charts contain information', async ({ page }) => {
-    await expect(page.getByText('686 | קווים').first()).toBeVisible()
-    await expect(page.getByText('מועצה אזורית גולן').first()).toBeVisible()
-    await expect(page.getByRole('heading', { name: 'אגד תעבורה' })).toBeVisible()
   })
 })

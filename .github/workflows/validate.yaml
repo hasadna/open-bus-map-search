@@ -60,7 +60,7 @@ jobs:
           name: docker-image
           path: /tmp/docker-image.tar
   test:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     needs: build
     env:
       APPLITOOLS_API_KEY: ${{ secrets.APPLITOOLS_API_KEY }}
