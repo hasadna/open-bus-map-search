@@ -138,7 +138,8 @@
     "ts-jest": "^29.1.2",
     "ts-node": "^10.9.2",
     "vite": "^5.4.11",
-    "vite-plugin-istanbul": "^5.0.0"
+    "vite-plugin-istanbul": "^5.0.0",
+    "vitest": "^3.0.5"
   },
   "nx": {
     "targets": {
