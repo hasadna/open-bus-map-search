@@ -1,4 +1,4 @@
-@import '../../resources/variables';
+@use '../../resources/variables' as *;
 
 .gaps-percentage-displayed {
   font-weight: bold;
