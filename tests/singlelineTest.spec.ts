@@ -44,7 +44,7 @@ test.describe('Single line page tests', () => {
     await singleLinePage.selectRandomRoute()
   })
 
-  test('test67', async ({ page }) => {
+  test('tooltip appears after clicking on map point in single line map', async ({ page }) => {
     await test.step('Navigate to "Map By Line"', async () => {
       await page.goto('/')
       await page.getByRole('link', { name: 'מפה לפי קו' }).click()
