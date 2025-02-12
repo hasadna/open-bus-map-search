@@ -1,5 +1,5 @@
 import SinglelinePage from '../src/test_pages/SinglelinePage'
-import { getPastDate, test, urlMatcher } from './utils'
+import { getPastDate, test, expect, urlMatcher } from './utils'
 
 test.describe('Single line page tests', () => {
   let singleLinePage: SinglelinePage
@@ -42,5 +42,58 @@ test.describe('Single line page tests', () => {
     await singleLinePage.selectOperatorFromDropbox('אגד')
     await singleLinePage.fillLineNumber('1')
     await singleLinePage.selectRandomRoute()
+  })
+
+  test('tooltip appears after clicking on map point in single line map', async ({ page }) => {
+    await test.step('Navigate to "Map By Line"', async () => {
+      await page.goto('/')
+      await page.getByRole('link', { name: 'מפה לפי קו' }).click()
+    })
+
+    await test.step('Fill line info', async () => {
+      await page.getByLabel('חברה מפעילה').click()
+      await page.getByRole('option', { name: 'דן', exact: true }).click()
+      await page.getByPlaceholder('לדוגמה: 17א').fill('67')
+      await page.getByLabel('בחירת מסלול נסיעה (2 אפשרויות)').click()
+      await page
+        .getByRole('option', { name: 'קניון איילון-רמת גן ⟵ איצטדיון וינטר-רמת גן' })
+        .click()
+      await page.getByLabel('בחירת שעת התחלה').click()
+      await page.getByRole('option', { name: ':58:00' }).click()
+    })
+
+    await test.step('Click on bus button', async () => {
+      const button = page.locator('.leaflet-pane > img:nth-child(7)')
+      await button.click()
+      await button.click({ force: true })
+    })
+
+    await test.step('Click inside tooltip"', async () => {
+      await page.getByRole('button', { name: 'הצג מידע לגיקים' }).click()
+      await page.getByRole('button', { name: 'הסתר מידע לגיקים' }).click()
+    })
+
+    await test.step('Expecting the tooltip to have the correct content', async () => {
+      const contentItemsInOrder = [
+        'מוצא:',
+        'יעד:',
+        'מהירות:',
+        'זמן דגימה:',
+        'לוחית רישוי:',
+        'כיוון נסיעה:',
+        'נ.צ.:',
+      ]
+      const textList = await page.evaluate(() => {
+        return Array.from(document.querySelectorAll('div.content ul li'))
+          .map((li) =>
+            Array.from(li.childNodes)
+              .filter((node) => node.nodeType === Node.TEXT_NODE)
+              .map((node) => node.textContent?.trim() || ''),
+          )
+          .flat()
+          .filter((value) => value !== '')
+      })
+      expect(textList).toEqual(contentItemsInOrder)
+    })
   })
 })
