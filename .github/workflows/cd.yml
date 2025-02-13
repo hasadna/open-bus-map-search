@@ -9,6 +9,8 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v2
+    - name: Get Commit Hash and generate Version File
+      run: echo "$(git rev-parse --short HEAD)" >> public/hash.txt
     - env:
         DOCKER_APP_IMAGE_NAME: "ghcr.io/hasadna/open-bus-map-search/open-bus-map-search"
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
