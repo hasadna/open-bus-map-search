@@ -253,5 +253,7 @@
         "description": "Wikipedia - In public transport, bus bunching is a phenomenon whereby two or more transit vehicles that were scheduled at regular intervals along a common route instead bunch together and form a platoon. This occurs when leading vehicles are unable to keep their schedule and fall behind to such an extent that trailing vehicles catch up to them."
       }
     ]
-  }
+  },
+  "version": "Current version identifier",
+  "failedToFetchVersion": "Failed to fetch current version identifier"
 }
