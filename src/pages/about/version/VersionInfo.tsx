@@ -8,7 +8,6 @@ const versionUrl = 'https://open-bus-map-search.hasadna.org.il/hash.txt'
 
 export const VersionInfo = () => {
   const { t } = useTranslation()
-  // const [version, setVersion] = useState<string | null>(null)
   const {
     data: version,
     isLoading,
