@@ -98,7 +98,7 @@
     "@storybook/addon-links": "^8.5.3",
     "@storybook/addon-onboarding": "^8.5.3",
     "@storybook/blocks": "^8.5.3",
-    "@storybook/react": "^8.5.3",
+    "@storybook/react": "^8.5.6",
     "@storybook/react-vite": "^8.5.3",
     "@storybook/test": "^8.5.3",
     "@swc/cli": "^0.3.9",
