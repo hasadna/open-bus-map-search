@@ -21,7 +21,7 @@ export const VersionInfo = () => {
       <h2>{t('version')}</h2>
       {isLoading && <p>{t('loading')}</p>}
       {isError && <p>{t('failedToFetchVersion')}</p>}
-      {version && <p>{version}</p>}
+      {version && <p className="version">{version}</p>}
     </Widget>
   )
 }
