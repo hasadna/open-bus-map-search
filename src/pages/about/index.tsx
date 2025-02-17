@@ -5,6 +5,7 @@ import Stack from '@mui/material/Stack'
 import './About.scss'
 import { useQuery } from '@tanstack/react-query'
 import SlackIcon from '../../resources/slack-icon.svg'
+import { VersionInfo } from './version/VersionInfo'
 import Widget from 'src/shared/Widget'
 
 const pageName = 'aboutPage'
@@ -24,8 +25,9 @@ const About = () => {
         <Questions />
         <Funding />
         <Attributions />
+        <VersionInfo />
+        <Contributors />
       </Stack>
-      <Contributors />
     </AboutStyle>
   )
 }
