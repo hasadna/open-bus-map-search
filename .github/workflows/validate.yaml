@@ -130,8 +130,6 @@ jobs:
           name: logs
           path: logs
           if-no-files-found: warn
-
-
   publish-test-results:
     runs-on: ubuntu-latest
     needs: test
@@ -185,3 +183,4 @@ jobs:
     steps:
       - name: All passed
         run: echo "All passed"
+
