@@ -9,7 +9,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-
       - name: Download dist-build artifact
         uses: dawidd6/action-download-artifact@v6
         with:
@@ -59,7 +58,7 @@ jobs:
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_bucket: noam-gaash.co.il
           source_dir: .  # Upload the root directory
-          destination_dir: ${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}
+          destination_dir: ${{ github.event.workflow_run.id }}/open-bus/${GITHUB_SHA}
 
       - name: find comment
         uses: peter-evans/find-comment@v1
@@ -77,9 +76,9 @@ jobs:
           comment-id: ${{ steps.fc.outputs.comment-id }}
           edit-mode: replace
           body: |
-            Preview: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}/index.html
-            Preview Storybook: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}/storybook/index.html
-            Test Report (if available): 'https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.head_sha }}/test-results/index.html'
+            Preview: https://s3.amazonaws.com/noam-gaash.co.il/${GITHUB_REF_NAME}/open-bus/${GITHUB_SHA}/index.html
+            Preview Storybook: https://s3.amazonaws.com/noam-gaash.co.il/${GITHUB_REF_NAME}/open-bus/${GITHUB_SHA}/storybook/index.html
+            Test Report (if available): 'https://s3.amazonaws.com/noam-gaash.co.il/${GITHUB_REF_NAME}/open-bus/${GITHUB_SHA}/test-results/index.html'
 
       - name: create comment
         uses: peter-evans/create-or-update-comment@v1
@@ -87,6 +86,6 @@ jobs:
         with:
           issue-number: ${{ env.PR_NUMBER }}
           body: |
-            Preview: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}/index.html
-            Preview Storybook: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}/storybook/index.html
-            Test Report (if available): 'https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.head_sha }}/test-results/index.html'
+            Preview: https://s3.amazonaws.com/noam-gaash.co.il/${GITHUB_REF_NAME}/open-bus/${GITHUB_SHA}/index.html
+            Preview Storybook: https://s3.amazonaws.com/noam-gaash.co.il/${GITHUB_REF_NAME}/open-bus/${GITHUB_SHA}/storybook/index.html
+            Test Report (if available): 'https://s3.amazonaws.com/noam-gaash.co.il/${GITHUB_REF_NAME}/open-bus/${GITHUB_SHA}/test-results/index.html'
