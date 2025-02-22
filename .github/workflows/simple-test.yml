@@ -1,6 +1,13 @@
+name: Simple Test
+
+# on:
+#   push:
+#     branches-ignore:
+#       - main  # Don't run on main branch
+
 on:
     workflow_run:
-      workflows: ['Build']
+      workflows: ['Build']  # Make sure this matches exactly
       types:
         - completed
 
@@ -74,6 +81,14 @@ jobs:
             comment-author: 'github-actions[bot]'
             body-includes: 'Preview'
   
+        - name: Debug workflow version
+          run: |
+            echo "Current workflow content:"
+            cat $GITHUB_WORKSPACE/.github/workflows/deploy-preview-test.yml
+            echo "---"
+            echo "Workflow run ID: ${{ github.event.workflow_run.id }}"
+            echo "Run number: ${{ github.event.workflow_run.run_number }}"
+  
         - name: update comment
           uses: peter-evans/create-or-update-comment@v4
           if: steps.fc.outputs.comment-id
@@ -81,9 +96,11 @@ jobs:
             comment-id: ${{ steps.fc.outputs.comment-id }}
             edit-mode: replace
             body: |
+              [TEST WORKFLOW]
+              Last updated: ${{ github.event.workflow_run.updated_at }}
               Preview: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}/index.html
               Preview Storybook: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}/storybook/index.html
-              Test Report (if available): https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.head_sha }}/test-results/index.html
+              Test: 1234
   
         - name: create comment
           uses: peter-evans/create-or-update-comment@v4
@@ -91,7 +108,32 @@ jobs:
           with:
             issue-number: ${{ env.PR_NUMBER }}
             body: |
+              [TEST WORKFLOW]
               Preview: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}/index.html
               Preview Storybook: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}/storybook/index.html
-              Test Report (if available): https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.head_sha }}/test-results/index.html
+              Test Report (if available): https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}/test-results/index.html
   
+# jobs:
+#   debug:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v4
+      
+#       - name: Basic Debug Info
+#         run: |
+#           echo "=== Basic Debug Info ==="
+#           echo "Event: ${{ github.event_name }}"
+#           echo "Branch: ${{ github.ref_name }}"
+#           echo "Commit: ${{ github.sha }}"
+#           echo "Repository: ${{ github.repository }}"
+          
+#       - name: List Workflows
+#         run: |
+#           echo "=== Available Workflows ==="
+#           ls -l .github/workflows/
+          
+#       - name: Current Time
+#         run: |
+#           echo "=== Timestamp ==="
+#           date
+#           echo "Test completed successfully!"
