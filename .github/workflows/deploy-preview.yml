@@ -9,7 +9,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-
       - name: Download dist-build artifact
         uses: dawidd6/action-download-artifact@v6
         with:
@@ -49,6 +48,50 @@ jobs:
           pr_number=$(cat pr_number)
           echo "PR_NUMBER=${pr_number}" >> $GITHUB_ENV
 
+      - name: Wait for Validate workflow
+        id: wait-for-validate
+        run: |
+          MAX_ATTEMPTS=30
+          SLEEP_TIME=30
+          attempt=1
+          
+          while [ $attempt -le $MAX_ATTEMPTS ]; do
+            validate_status=$(gh api \
+              repos/${{ github.repository }}/commits/${{ github.event.workflow_run.head_sha }}/check-runs \
+              --jq '.check_runs[] | select(.name=="Validate") | .status')
+            
+            if [ "$validate_status" = "completed" ]; then
+              echo "Validate workflow completed"
+              exit 0
+            fi
+            
+            echo "Attempt $attempt: Validate workflow still running, waiting ${SLEEP_TIME}s..."
+            sleep $SLEEP_TIME
+            attempt=$((attempt + 1))
+          done
+          
+          echo "::error::Timed out waiting for Validate workflow"
+          exit 1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Download test paths
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          workflow: 'Validate'
+          workflow_conclusion: success
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          # Use the correct run ID from the PR that triggered this workflow
+          pr_number: ${{ github.event.workflow_run.pull_requests[0].number }}
+          name: test_paths
+          path: .
+
+      - name: Read test paths
+        run: |
+          TEST_BRANCH=$(cat test_branch.txt)
+          TEST_SHA=$(cat test_sha.txt)
+          echo "TEST_PATH=${TEST_BRANCH}/open-bus/${TEST_SHA}/test-results" >> $GITHUB_ENV
+
       - uses: shallwefootball/s3-upload-action@master
         name: Upload preview to S3
         if: always()
@@ -58,8 +101,8 @@ jobs:
           aws_key_id: ${{ secrets.AWS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_bucket: noam-gaash.co.il
-          source_dir: .  # Upload the root directory
-          destination_dir: ${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}
+          source_dir: .
+          destination_dir: ${{ github.head_ref || github.ref_name }}/open-bus/${{ github.sha }}
 
       - name: find comment
         uses: peter-evans/find-comment@v1
@@ -77,9 +120,9 @@ jobs:
           comment-id: ${{ steps.fc.outputs.comment-id }}
           edit-mode: replace
           body: |
-            Preview: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}/index.html
-            Preview Storybook: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}/storybook/index.html
-            Test Report (if available): 'https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.head_sha }}/test-results/index.html'
+            Preview: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.head_ref || github.ref_name }}/open-bus/${{ github.sha }}/index.html
+            Preview Storybook: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.head_ref || github.ref_name }}/open-bus/${{ github.sha }}/storybook/index.html
+            Test Report: https://s3.amazonaws.com/noam-gaash.co.il/${{ env.TEST_PATH }}/index.html
 
       - name: create comment
         uses: peter-evans/create-or-update-comment@v1
@@ -87,6 +130,6 @@ jobs:
         with:
           issue-number: ${{ env.PR_NUMBER }}
           body: |
-            Preview: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}/index.html
-            Preview Storybook: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}/storybook/index.html
-            Test Report (if available): 'https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.head_sha }}/test-results/index.html'
+            Preview: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.head_ref || github.ref_name }}/open-bus/${{ github.sha }}/index.html
+            Preview Storybook: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.head_ref || github.ref_name }}/open-bus/${{ github.sha }}/storybook/index.html
+            Test Report: https://s3.amazonaws.com/noam-gaash.co.il/${{ env.TEST_PATH }}/index.html
