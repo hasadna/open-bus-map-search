@@ -47,7 +47,7 @@ test('verify API call to gtfs_agencies/list - "Planned trips"', async ({ page })
   expect(apiCallMade).toBeTruthy()
 })
 
-test('Verify date_from parameter from "Planned trips"', async ({ page }) => {
+test('the dateFrom parameter should be recent when visiting the "Planned trips" tabs', async ({ page }) => {
   const apiRequest = page.waitForRequest((request) => request.url().includes('gtfs_agencies/list'))
 
   await page.goto('/')
