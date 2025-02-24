@@ -154,7 +154,7 @@ jobs:
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
           aws_bucket: noam-gaash.co.il
           source_dir: test-results
-          destination_dir: ${{ github.run_id }}/open-bus/${{ github.sha }}/test-results
+          destination_dir: ${{ github.event.pull_request.number }}/open-bus/${{ github.event.pull_request.number }}-sha-${{ github.sha }}/test-results
       - name: Set test results
         uses: myrotvorets/set-commit-status-action@master
         if: always() && ${{ env.AWS_KEY_ID }}
@@ -164,7 +164,7 @@ jobs:
           description: 'Playwright html report with traces'
           status: ${{needs.test.result}}
           context: 'Test results'
-          targetUrl: 'https://s3.amazonaws.com/noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.sha }}/test-results/index.html'
+          targetUrl: 'https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.pull_request.number }}/open-bus/${{ github.event.pull_request.number }}-sha-${{ github.sha }}/test-results/index.html'
   build-outside-docker:
     runs-on: ubuntu-latest
     steps:
@@ -185,3 +185,22 @@ jobs:
     steps:
       - name: All passed
         run: echo "All passed"
+      - name: Generate PULL_REQUEST and UNIQUE_ID Variables
+        run: |
+          # Generate variables dynamically based on pull request context or commit SHA.
+          PULL_REQUEST=${{ github.event.pull_request.number || 'undefined' }}
+          UNIQUE_ID="pr-${{ github.event.pull_request.number || 'undefined' }}-sha-${{ github.sha }}"
+
+          # Debug: Print the variables to verify they are set correctly
+          echo "PULL_REQUEST=$PULL_REQUEST"
+          echo "UNIQUE_ID=$UNIQUE_ID"
+
+          # Save variables to a file to be used as an artifact.
+          echo "PULL_REQUEST=$PULL_REQUEST" > vars.env
+          echo "UNIQUE_ID=$UNIQUE_ID" >> vars.env
+
+      - name: Upload Variables as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr-vars # Artifact containing the variables.
+          path: vars.env
