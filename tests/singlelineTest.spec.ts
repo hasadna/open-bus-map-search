@@ -128,15 +128,6 @@ test('Verify date_from parameter from "Map by line"', async ({ page }) => {
   console.log(dateFrom)
   console.log(daysAgo)
 
-  // // הוסף קוד שעוקב אחרי כל הבקשות
-  // page.on('request', (request) => {
-  //   if (request.url().includes('gtfs_agencies/list')) {
-  //     console.log('Request URL:', request.url())
-  //     console.log('Request headers:', request.headers())
-  //     console.log('Request source:', request.frame().url())
-  //   }
-  // })
-
   expect(daysAgo).toBeGreaterThanOrEqual(0)
   expect(daysAgo).toBeLessThanOrEqual(3)
 })
