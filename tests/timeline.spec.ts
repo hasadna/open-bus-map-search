@@ -1,7 +1,8 @@
 import i18next from 'i18next'
 import Backend from 'i18next-fs-backend'
+import moment from 'moment'
 import TimelinePage from '../src/test_pages/TimelinePage'
-import { getPastDate, test, urlMatcher } from './utils'
+import { getPastDate, test, expect, urlMatcher } from './utils'
 
 test.describe('Timeline Page Tests', () => {
   let timelinePage: TimelinePage
@@ -137,4 +138,36 @@ test.describe('Timeline Page Tests', () => {
     )
     await timelinePage.verifyRouteSelectionVisible(timelinePage.timelineGraph, true, 100000)
   })
+})
+
+test('verify API call to gtfs_agencies/list - "Trips history"', async ({ page }) => {
+  let apiCallMade = false
+  page.on('request', (request) => {
+    if (request.url().includes('gtfs_agencies/list')) {
+      apiCallMade = true
+    }
+  })
+
+  await page.goto('/')
+  await page.getByRole('link', { name: 'היסטוריית נסיעות' }).click()
+  await page.getByLabel('חברה מפעילה').click()
+  expect(apiCallMade).toBeTruthy()
+})
+
+test('the dateFrom parameter should be recent when visiting the "Trips history"', async ({
+  page,
+}) => {
+  const apiRequest = page.waitForRequest((request) => request.url().includes('gtfs_agencies/list'))
+
+  await page.goto('/')
+  await page.getByRole('link', { name: 'היסטוריית נסיעות' }).click()
+
+  const request = await apiRequest
+  const url = new URL(request.url())
+  const dateFromParam = url.searchParams.get('date_from')
+  const dateFrom = moment(dateFromParam)
+  const daysAgo = moment().diff(dateFrom, 'days')
+
+  expect(daysAgo).toBeGreaterThanOrEqual(0)
+  expect(daysAgo).toBeLessThanOrEqual(3)
 })
