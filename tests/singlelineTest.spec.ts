@@ -1,3 +1,4 @@
+import moment from 'moment'
 import SinglelinePage from '../src/test_pages/SinglelinePage'
 import { getPastDate, test, expect, urlMatcher } from './utils'
 
@@ -96,4 +97,46 @@ test.describe('Single line page tests', () => {
       expect(textList).toEqual(contentItemsInOrder)
     })
   })
+})
+
+test('verify API call to gtfs_agencies/list - "Map by line"', async ({ page }) => {
+  let apiCallMade = false
+  page.on('request', (request) => {
+    if (request.url().includes('gtfs_agencies/list')) {
+      apiCallMade = true
+    }
+  })
+
+  await page.goto('/')
+  await page.getByRole('link', { name: 'מפה לפי קו' }).click()
+  await page.getByLabel('חברה מפעילה').click()
+  expect(apiCallMade).toBeTruthy()
+})
+
+test('Verify date_from parameter from "Map by line"', async ({ page }) => {
+  const apiRequest = page.waitForRequest((request) => request.url().includes('gtfs_agencies/list'))
+
+  await page.goto('/')
+  await page.getByRole('link', { name: 'מפה לפי קו' }).click()
+
+  const request = await apiRequest
+  const url = new URL(request.url())
+  const dateFromParam = url.searchParams.get('date_from')
+  const dateFrom = moment(dateFromParam)
+  const daysAgo = moment().diff(dateFrom, 'days')
+  console.log(dateFromParam)
+  console.log(dateFrom)
+  console.log(daysAgo)
+
+  // // הוסף קוד שעוקב אחרי כל הבקשות
+  // page.on('request', (request) => {
+  //   if (request.url().includes('gtfs_agencies/list')) {
+  //     console.log('Request URL:', request.url())
+  //     console.log('Request headers:', request.headers())
+  //     console.log('Request source:', request.frame().url())
+  //   }
+  // })
+
+  expect(daysAgo).toBeGreaterThanOrEqual(0)
+  expect(daysAgo).toBeLessThanOrEqual(3)
 })
