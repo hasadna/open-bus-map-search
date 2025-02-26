@@ -124,9 +124,6 @@ test('Verify date_from parameter from "Map by line"', async ({ page }) => {
   const dateFromParam = url.searchParams.get('date_from')
   const dateFrom = moment(dateFromParam)
   const daysAgo = moment().diff(dateFrom, 'days')
-  console.log(dateFromParam)
-  console.log(dateFrom)
-  console.log(daysAgo)
 
   expect(daysAgo).toBeGreaterThanOrEqual(0)
   expect(daysAgo).toBeLessThanOrEqual(3)
