@@ -154,6 +154,7 @@
   "at_time": "בשעה",
   "vehicle_ref": "לוחית רישוי",
   "drive_direction": "כיוון נסיעה",
+  "gtfs_manual": "מדריך GTFS",
   "directions":{
     "North": "צפון",
     "Northeast": "צפון-מזרח",

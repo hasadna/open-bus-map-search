@@ -14,6 +14,8 @@ import { getSiriRideWithRelated } from 'src/api/siriService'
 import type { Point } from 'src/pages/timeBasedMap'
 
 export type BusToolTipProps = { position: Point; icon: string; children?: ReactNode }
+const manualUrl: string =
+  'https://www.gov.il/BlobFolder/generalpage/gtfs_general_transit_feed_specifications/he/GTFS_Developer_Information_2024.11.21b.pdf'
 
 export function BusToolTip({ position, icon, children }: BusToolTipProps) {
   const [siriRide, setSiriRide] = useState<SiriRideWithRelatedPydanticModel | undefined>()
@@ -139,6 +141,15 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
 
             {showJson && (
               <div onClick={(e) => e.stopPropagation()}>
+                <a
+                  href={manualUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{ display: 'flex', padding: '5px', backgroundColor: 'white' }}
+                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'lightgray')}
+                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'white')}>
+                  {t('gtfs_manual')}
+                </a>
                 <CustomTreeView<Point>
                   id={position.point?.id + ''}
                   data={position}
