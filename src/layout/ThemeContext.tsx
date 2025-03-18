@@ -1,12 +1,12 @@
 import { FC, PropsWithChildren, createContext, useContext, useMemo } from 'react'
 import { ThemeProvider as MuiThemeProvider, createTheme } from '@mui/material/styles'
 import ScopedCssBaseline from '@mui/material/ScopedCssBaseline'
+import { LocalizationProvider } from '@mui/x-date-pickers'
+import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 import { ConfigProvider, theme } from 'antd'
 import heIL from 'antd/es/locale/he_IL'
 import { useTranslation } from 'react-i18next'
 import { useLocalStorage } from 'src/locale/useLocalStorage'
-import { LocalizationProvider } from '@mui/x-date-pickers'
-import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 
 export interface ThemeContextInterface {
   toggleTheme: () => void
