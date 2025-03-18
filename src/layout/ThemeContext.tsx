@@ -5,6 +5,8 @@ import { ConfigProvider, theme } from 'antd'
 import heIL from 'antd/es/locale/he_IL'
 import { useTranslation } from 'react-i18next'
 import { useLocalStorage } from 'src/locale/useLocalStorage'
+import { LocalizationProvider } from '@mui/x-date-pickers'
+import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 
 export interface ThemeContextInterface {
   toggleTheme: () => void
@@ -47,22 +49,24 @@ export const ThemeProvider: FC<PropsWithChildren> = ({ children }) => {
   }, [isDarkTheme, i18n.language])
 
   return (
-    <ConfigProvider
-      direction={i18n.dir()}
-      locale={heIL}
-      theme={{
-        algorithm: isDarkTheme ? darkAlgorithm : defaultAlgorithm,
-        token: {
-          colorBgBase: isDarkTheme ? '#1c1d1c' : '#ffffff',
-          colorTextBase: isDarkTheme ? '#ffffff' : '#000000',
-        },
-      }}>
-      <MuiThemeProvider theme={theme}>
-        <ScopedCssBaseline enableColorScheme>
-          <ThemeContext.Provider value={contextValue}>{children}</ThemeContext.Provider>
-        </ScopedCssBaseline>
-      </MuiThemeProvider>
-    </ConfigProvider>
+    <LocalizationProvider dateAdapter={AdapterMoment} adapterLocale={i18n.language}>
+      <ConfigProvider
+        direction={i18n.dir()}
+        locale={heIL}
+        theme={{
+          algorithm: isDarkTheme ? darkAlgorithm : defaultAlgorithm,
+          token: {
+            colorBgBase: isDarkTheme ? '#1c1d1c' : '#ffffff',
+            colorTextBase: isDarkTheme ? '#ffffff' : '#000000',
+          },
+        }}>
+        <MuiThemeProvider theme={theme} i18nIsDynamicList>
+          <ScopedCssBaseline enableColorScheme>
+            <ThemeContext.Provider value={contextValue}>{children}</ThemeContext.Provider>
+          </ScopedCssBaseline>
+        </MuiThemeProvider>
+      </ConfigProvider>
+    </LocalizationProvider>
   )
 }
 
