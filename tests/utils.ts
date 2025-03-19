@@ -5,6 +5,7 @@ import * as crypto from 'crypto'
 import { exec } from 'child_process'
 import { Matcher, test as baseTest, customMatcher } from 'playwright-advanced-har'
 import { BrowserContext, Page } from '@playwright/test'
+import moment from 'moment'
 
 const istanbulCLIOutput = path.join(process.cwd(), '.nyc_output')
 
@@ -87,3 +88,33 @@ export const getBranch = () =>
   })
 
 export const expect = test.expect
+
+export async function verifyApiCallToGtfsAgenciesList(page: Page, linkName: string): Promise<void> {
+  let apiCallMade = false
+  page.on('request', (request) => {
+    if (request.url().includes('gtfs_agencies/list')) {
+      apiCallMade = true
+    }
+  })
+
+  await page.goto('/')
+  await page.getByRole('link', { name: linkName, exact: true }).click()
+  await page.getByLabel('חברה מפעילה').click()
+  expect(apiCallMade).toBeTruthy()
+}
+
+export async function verifyDateFromParameter(page: Page, linkName: string): Promise<void> {
+  const apiRequest = page.waitForRequest((request) => request.url().includes('gtfs_agencies/list'))
+
+  await page.goto('/')
+  await page.getByRole('link', { name: linkName, exact: true }).click()
+
+  const request = await apiRequest
+  const url = new URL(request.url())
+  const dateFromParam = url.searchParams.get('date_from')
+  const dateFrom = moment(dateFromParam)
+  const daysAgo = moment().diff(dateFrom, 'days')
+
+  expect(daysAgo).toBeGreaterThanOrEqual(0)
+  expect(daysAgo).toBeLessThanOrEqual(3)
+}
