@@ -26,6 +26,8 @@ export const ThemeProvider: FC<PropsWithChildren> = ({ children }) => {
 
   const toggleLanguage = () => {
     const newLanguage = i18n.language === 'en' ? 'he' : 'en'
+    window.document.dir = newLanguage === 'en' ? 'ltr' : 'rtl'
+    window.document.documentElement.lang = newLanguage
     i18n.changeLanguage(newLanguage)
   }
 
