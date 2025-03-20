@@ -40,6 +40,8 @@ export const ThemeProvider: FC<PropsWithChildren> = ({ children }) => {
   // Re-create the theme when the theme changes or the language changes
   const theme = useMemo(() => {
     const direction = i18n.language === 'he' ? 'rtl' : 'ltr'
+    document.documentElement.dir = direction
+    document.documentElement.lang = i18n.language
     return createTheme({
       direction,
       palette: {
@@ -60,7 +62,7 @@ export const ThemeProvider: FC<PropsWithChildren> = ({ children }) => {
             colorTextBase: isDarkTheme ? '#ffffff' : '#000000',
           },
         }}>
-        <MuiThemeProvider theme={theme} i18nIsDynamicList>
+        <MuiThemeProvider theme={theme}>
           <ScopedCssBaseline enableColorScheme>
             <ThemeContext.Provider value={contextValue}>{children}</ThemeContext.Provider>
           </ScopedCssBaseline>
