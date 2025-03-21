@@ -6,7 +6,7 @@ import { BusStop } from 'src/model/busStop'
 import { SearchContext } from 'src/model/pageState'
 import { Point } from 'src/pages/timeBasedMap'
 
-export const useSingleLineData = (lineRef?: number, routeIds?: number[]) => {
+export const useSingleLineData = (lineRef?: number, routeIds?: number[], locale: string = 'he') => {
   const {
     search: { timestamp },
   } = useContext(SearchContext)
@@ -65,7 +65,7 @@ export const useSingleLineData = (lineRef?: number, routeIds?: number[]) => {
           .map((time) => time.trim()),
       ),
     )
-      .map((time) => new Date(time).toLocaleTimeString()) // Convert to 24-hour time string
+      .map((time) => new Date(time).toLocaleTimeString(locale))
       .map((time) => ({
         value: time,
         label: time,
@@ -76,15 +76,16 @@ export const useSingleLineData = (lineRef?: number, routeIds?: number[]) => {
     )
 
     return sortedOptions
-  }, [positions])
+  }, [positions, locale])
 
   useEffect(() => {
     if (startTime !== '00:00:00' && positions.length > 0) {
       setFilteredPositions(
         positions.filter(
           (position) =>
-            new Date(position.point?.siri_ride__scheduled_start_time ?? 0).toLocaleTimeString() ===
-            startTime,
+            new Date(position.point?.siri_ride__scheduled_start_time ?? 0).toLocaleTimeString(
+              locale,
+            ) === startTime,
         ),
       )
     }
@@ -95,7 +96,7 @@ export const useSingleLineData = (lineRef?: number, routeIds?: number[]) => {
       ).setHours(+hours, +minutes, 0, 0)
       handlePlannedRouteStops(routeIds ?? [], startTimeTimestamp)
     }
-  }, [startTime])
+  }, [startTime, locale])
 
   const handlePlannedRouteStops = async (routeIds: number[], startTimeTs: number) => {
     const stops = await getStopsForRouteAsync(routeIds, moment(startTimeTs))

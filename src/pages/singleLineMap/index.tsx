@@ -22,7 +22,7 @@ import { useSingleLineData } from 'src/hooks/useSingleLineData'
 const SingleLineMapPage = () => {
   const { search, setSearch } = useContext(SearchContext)
   const { operatorId, lineNumber, timestamp, routes, routeKey } = search
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
 
   useEffect(() => {
     const controller = new AbortController()
@@ -60,7 +60,7 @@ const SingleLineMapPage = () => {
     plannedRouteStops,
     startTime,
     setStartTime,
-  } = useSingleLineData(selectedRoute?.lineRef, selectedRouteIds)
+  } = useSingleLineData(selectedRoute?.lineRef, selectedRouteIds, i18n.language)
 
   return (
     <PageContainer className="map-container">
