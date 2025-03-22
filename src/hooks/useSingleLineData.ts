@@ -10,7 +10,7 @@ import { Point } from 'src/pages/timeBasedMap'
 
 export const useSingleLineData = (lineRef?: number, routeIds?: number[]) => {
   const { search } = useContext(SearchContext)
-  const { operatorId, lineNumber, timestamp, routes, routeKey } = search
+  const { operatorId, timestamp, routes, routeKey } = search
 
   const [filteredPositions, setFilteredPositions] = useState<Point[]>([])
   const [startTime, setStartTime] = useState<string | null>(null)
@@ -84,7 +84,7 @@ export const useSingleLineData = (lineRef?: number, routeIds?: number[]) => {
     } else {
       setFilteredPositions([])
     }
-  }, [startTime, positions, options])
+  }, [startTime, positions])
 
   useEffect(() => {
     if (routeIds?.length && routeKey) {
@@ -116,30 +116,16 @@ export const useSingleLineData = (lineRef?: number, routeIds?: number[]) => {
     const source = axios.CancelToken.source()
     const today = moment(timestamp).startOf('day')
 
-    const fetchGaps = async () => {
-      try {
-        const gaps = await getGapsAsync(
-          today,
-          today,
-          operatorId,
-          selectedRoute.lineRef,
-          source.token,
-        )
-        const filteredGaps = gaps
+    getGapsAsync(today, today, operatorId, selectedRoute.lineRef, source.token)
+      .then((gaps) =>
+        gaps
           .filter((gap) => !gap.gtfsTime || !gap.siriTime)
-          .map((gap) => moment(gap.gtfsTime || gap.siriTime))
-        setGaps(filteredGaps)
-      } catch (err) {
-        if (!axios.isCancel(err)) {
-          console.error('Failed to fetch gaps:', err instanceof Error ? err.message : err)
-        }
-        setGaps([])
-      }
-    }
+          .map((gap) => moment(gap.gtfsTime || gap.siriTime)),
+      )
+      .then(setGaps)
+      .catch(() => setGaps([]))
 
-    fetchGaps()
-
-    return () => source.cancel('Operation canceled by the user.')
+    return () => source.cancel()
   }, [operatorId, routes, routeKey, timestamp])
 
   return {
