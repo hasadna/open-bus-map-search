@@ -1,4 +1,5 @@
-import moment from 'moment'
+import axios from 'axios'
+import moment, { Moment } from 'moment'
 import { useContext, useEffect, useMemo, useState } from 'react'
 import { getStopsForRouteAsync } from 'src/api/gtfsService'
 import useVehicleLocations from 'src/api/useVehicleLocations'
@@ -6,19 +7,24 @@ import { BusStop } from 'src/model/busStop'
 import { SearchContext } from 'src/model/pageState'
 import { Point } from 'src/pages/timeBasedMap'
 
-export const useSingleLineData = (lineRef?: number, routeIds?: number[], locale: string = 'he') => {
-  const {
-    search: { timestamp },
-  } = useContext(SearchContext)
+export const useSingleLineData = (lineRef?: number, routeIds?: number[]) => {
+  const { search } = useContext(SearchContext)
+  const { operatorId, lineNumber, timestamp, routes, routeKey } = search
+
   const [filteredPositions, setFilteredPositions] = useState<Point[]>([])
-  const [startTime, setStartTime] = useState<string>('00:00:00')
+  const [startTime, setStartTime] = useState<string | null>(null)
   const [plannedRouteStops, setPlannedRouteStops] = useState<BusStop[]>([])
-  const today = new Date(timestamp)
-  const tomorrow = new Date(today)
-  tomorrow.setDate(tomorrow.getDate() + 1)
+  const [gaps, setGaps] = useState<Moment[]>([])
+
+  const [today, tomorrow] = useMemo(() => {
+    const today = moment(timestamp).startOf('day')
+    const tomorrow = moment(today).add(1, 'day')
+    return [today, tomorrow]
+  }, [timestamp])
+
   const { locations, isLoading: locationsAreLoading } = useVehicleLocations({
-    from: +today.setHours(0, 0, 0, 0),
-    to: +tomorrow.setHours(0, 0, 0, 0),
+    from: today,
+    to: tomorrow,
     lineRef,
     splitMinutes: 360,
     pause: !lineRef,
@@ -79,7 +85,7 @@ export const useSingleLineData = (lineRef?: number, routeIds?: number[], locale:
   }, [positions, locale])
 
   useEffect(() => {
-    if (startTime !== '00:00:00' && positions.length > 0) {
+    if (startTime) {
       setFilteredPositions(
         positions.filter(
           (position) =>

@@ -60,7 +60,7 @@ const SingleLineMapPage = () => {
     plannedRouteStops,
     startTime,
     setStartTime,
-  } = useSingleLineData(selectedRoute?.lineRef, selectedRouteIds, i18n.language)
+  } = useSingleLineData(selectedRoute?.lineRef, selectedRouteIds)
 
   return (
     <PageContainer className="map-container">

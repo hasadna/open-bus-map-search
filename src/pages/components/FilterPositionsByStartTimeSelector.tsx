@@ -5,9 +5,10 @@ type FilterPositionsByStartTimeSelectorProps = {
   options: {
     value: string
     label: string
+    gap: boolean
   }[]
-  startTime?: string
-  setStartTime: (time: string) => void
+  startTime?: string | null
+  setStartTime: (time: string | null) => void
 }
 
 export function FilterPositionsByStartTimeSelector({
@@ -25,7 +26,7 @@ export function FilterPositionsByStartTimeSelector({
       sx={{ width: '100%' }}
       disablePortal
       value={value}
-      onChange={(e, value) => setStartTime(value ? value.value : '0')}
+      onChange={(e, value) => setStartTime(value ? value.value : null)}
       id="start-time-select"
       options={options}
       renderInput={(params) => <TextField {...params} label={t('choose_start_time')} />}
