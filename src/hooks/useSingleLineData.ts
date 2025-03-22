@@ -1,6 +1,7 @@
 import axios from 'axios'
 import moment, { Moment } from 'moment'
 import { useContext, useEffect, useMemo, useState } from 'react'
+import { getGapsAsync } from 'src/api/gapsService'
 import { getStopsForRouteAsync } from 'src/api/gtfsService'
 import useVehicleLocations from 'src/api/useVehicleLocations'
 import { BusStop } from 'src/model/busStop'
@@ -43,71 +44,103 @@ export const useSingleLineData = (lineRef?: number, routeIds?: number[]) => {
     return pos
   }, [locations])
 
-  function convertTo24HourAndToNumber(time: string): number {
-    const match = time.match(/(\d+):(\d+):(\d+)\s(AM|PM)/)
-    if (!match) return 0
+  const formatTime = (time: string | Moment) => moment(time).format('HH:mm:ss')
 
-    const [, hour, minute, , modifier] = match
-    let newHour = parseInt(hour, 10)
-    if (modifier === 'AM' && newHour === 12) newHour = 0
-    if (modifier === 'PM' && newHour !== 12) newHour += 12
-
-    return newHour * 60 + parseInt(minute, 10)
+  const calculateStartTimeTimestamp = (startTime: string, today: Moment) => {
+    const [hours, minutes] = startTime.split(':').map(Number)
+    return today.clone().set({ hour: hours, minute: minutes, second: 0, millisecond: 0 }).valueOf()
   }
 
   const options = useMemo(() => {
-    const filteredPositions = positions.filter((position) => {
-      const startTime = position.point?.siri_ride__scheduled_start_time
-      return !!startTime && +new Date(startTime) > +today.setHours(0, 0, 0, 0)
+    const uniqueTimes = new Map<string, boolean>()
+
+    positions.forEach((position) => {
+      const time = position.point?.siri_ride__scheduled_start_time
+      if (time && moment(time).isAfter(today)) {
+        uniqueTimes.set(formatTime(time), false)
+      }
     })
 
-    if (filteredPositions.length === 0) return []
+    gaps.forEach((gap) => {
+      uniqueTimes.set(formatTime(gap), true)
+    })
 
-    const uniqueTimes = Array.from(
-      new Set(
-        filteredPositions
-          .map((position) => position.point?.siri_ride__scheduled_start_time)
-          .filter((time): time is string => !!time)
-          .map((time) => time.trim()),
-      ),
-    )
-      .map((time) => new Date(time).toLocaleTimeString(locale))
-      .map((time) => ({
+    return Array.from(uniqueTimes.entries())
+      .sort(([a], [b]) => moment(a, 'HH:mm:ss').diff(moment(b, 'HH:mm:ss')))
+      .map(([time, gap]) => ({
         value: time,
         label: time,
+        gap: gap,
       }))
-
-    const sortedOptions = uniqueTimes.sort(
-      (a, b) => convertTo24HourAndToNumber(a.value) - convertTo24HourAndToNumber(b.value),
-    )
-
-    return sortedOptions
-  }, [positions, locale])
+  }, [positions, today, gaps])
 
   useEffect(() => {
     if (startTime) {
-      setFilteredPositions(
-        positions.filter(
-          (position) =>
-            new Date(position.point?.siri_ride__scheduled_start_time ?? 0).toLocaleTimeString(
-              locale,
-            ) === startTime,
-        ),
-      )
+      const filtered = positions.filter((position) => {
+        const scheduledTime = position.point?.siri_ride__scheduled_start_time
+        return scheduledTime && formatTime(scheduledTime) === startTime
+      })
+      setFilteredPositions(filtered)
+    } else {
+      setFilteredPositions([])
     }
-    if (startTime !== '00:00:00') {
-      const [hours, minutes] = startTime.split(':')
-      const startTimeTimestamp = +new Date(
-        positions[0].point?.siri_ride__scheduled_start_time ?? 0,
-      ).setHours(+hours, +minutes, 0, 0)
-      handlePlannedRouteStops(routeIds ?? [], startTimeTimestamp)
+  }, [startTime, positions, options])
+
+  useEffect(() => {
+    if (routeIds?.length && routeKey) {
+      const startTimeTimestamp = calculateStartTimeTimestamp(startTime || '', today)
+      handlePlannedRouteStops(routeIds, startTimeTimestamp)
+    } else {
+      setPlannedRouteStops([])
     }
-  }, [startTime, locale])
+  }, [startTime, routeIds, today])
 
   const handlePlannedRouteStops = async (routeIds: number[], startTimeTs: number) => {
     const stops = await getStopsForRouteAsync(routeIds, moment(startTimeTs))
     setPlannedRouteStops(stops)
   }
+
+  useEffect(() => {
+    if (
+      !operatorId ||
+      !routes ||
+      !routeKey ||
+      !timestamp ||
+      !routes.some((route) => route.key === routeKey)
+    ) {
+      setGaps([])
+      return
+    }
+
+    const selectedRoute = routes.find((route) => route.key === routeKey)!
+    const source = axios.CancelToken.source()
+    const today = moment(timestamp).startOf('day')
+
+    const fetchGaps = async () => {
+      try {
+        const gaps = await getGapsAsync(
+          today,
+          today,
+          operatorId,
+          selectedRoute.lineRef,
+          source.token,
+        )
+        const filteredGaps = gaps
+          .filter((gap) => !gap.gtfsTime || !gap.siriTime)
+          .map((gap) => moment(gap.gtfsTime || gap.siriTime))
+        setGaps(filteredGaps)
+      } catch (err) {
+        if (!axios.isCancel(err)) {
+          console.error('Failed to fetch gaps:', err instanceof Error ? err.message : err)
+        }
+        setGaps([])
+      }
+    }
+
+    fetchGaps()
+
+    return () => source.cancel('Operation canceled by the user.')
+  }, [operatorId, routes, routeKey, timestamp])
 
   return {
     locationsAreLoading,
