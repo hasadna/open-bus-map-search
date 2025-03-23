@@ -1,5 +1,37 @@
 # Changelog
 
+## [1.3.0](https://github.com/hasadna/open-bus-map-search/compare/v1.2.0...v1.3.0) (2025-03-23)
+
+
+### Features
+
+* **about:** add version info component ([#1037](https://github.com/hasadna/open-bus-map-search/issues/1037)) ([d92aed9](https://github.com/hasadna/open-bus-map-search/commit/d92aed9df5e1c16fbb79f14dbd0e24fbb7870b6f))
+* add donate button for english donate modal ([#992](https://github.com/hasadna/open-bus-map-search/issues/992)) ([1a5b121](https://github.com/hasadna/open-bus-map-search/commit/1a5b121dcac87fc40f734509421d40a623caa165))
+* add stops list in the line profile page ([#929](https://github.com/hasadna/open-bus-map-search/issues/929)) ([af09276](https://github.com/hasadna/open-bus-map-search/commit/af092761816dd213915c43f8ac215a433cb0949f))
+* **donation modal:** add English translation ([#973](https://github.com/hasadna/open-bus-map-search/issues/973)) ([ccbad02](https://github.com/hasadna/open-bus-map-search/commit/ccbad0275beb58fc7e47a4c841ad922ce069d02a))
+* generate sitemap ([#790](https://github.com/hasadna/open-bus-map-search/issues/790)) ([66d34b0](https://github.com/hasadna/open-bus-map-search/commit/66d34b0b0dfd7b9495b764cd553fc7ecae5499c7))
+* represent bearing as geographic terms ([#1009](https://github.com/hasadna/open-bus-map-search/issues/1009)) ([c74509a](https://github.com/hasadna/open-bus-map-search/commit/c74509a1574e92e9eb7aa5b62927648581395fde))
+* serve latest commit version ([#988](https://github.com/hasadna/open-bus-map-search/issues/988)) ([75338ac](https://github.com/hasadna/open-bus-map-search/commit/75338ac324b592a708bed9675068e3c414b23873))
+
+
+### Bug Fixes
+
+* add English text for Public Appeal ([#963](https://github.com/hasadna/open-bus-map-search/issues/963)) ([779c64a](https://github.com/hasadna/open-bus-map-search/commit/779c64ab8bccaff0fec9018ae7d1b71450a6910e))
+* add hash.txt to cd.yaml (deployment) file ([#1034](https://github.com/hasadna/open-bus-map-search/issues/1034)) ([2cc77f6](https://github.com/hasadna/open-bus-map-search/commit/2cc77f6c1c792284d8715511594e86724206693a))
+* allow donate modal to dynamically change for devices  ([#945](https://github.com/hasadna/open-bus-map-search/issues/945)) ([670df7a](https://github.com/hasadna/open-bus-map-search/commit/670df7a7f5ec573bc6b13b1e5a59cdd5d6160e4a))
+* arrival by day chart ([#1016](https://github.com/hasadna/open-bus-map-search/issues/1016)) ([885e054](https://github.com/hasadna/open-bus-map-search/commit/885e054ecf972e23d795d8ef1572c52691635407))
+* changing map language ([#981](https://github.com/hasadna/open-bus-map-search/issues/981)) ([df8a2e3](https://github.com/hasadna/open-bus-map-search/commit/df8a2e379173a08083cecd67f61f1f6bcd94c4eb))
+* donation modal text dark mode ([#920](https://github.com/hasadna/open-bus-map-search/issues/920)) ([eb9f605](https://github.com/hasadna/open-bus-map-search/commit/eb9f605a7f2c48d87f0416f1b7f2284ca9c6392a))
+* fix hash.txt issue from build.yaml ([#1001](https://github.com/hasadna/open-bus-map-search/issues/1001)) ([ec13a2a](https://github.com/hasadna/open-bus-map-search/commit/ec13a2adfe94143f4e2ab8734f480300b624b706))
+* Moved language toggle to themeContext and update theme.direction on language change  ([#991](https://github.com/hasadna/open-bus-map-search/issues/991)) ([8da17e1](https://github.com/hasadna/open-bus-map-search/commit/8da17e1516e59e2a26281c1061aef29b60c0c1a6))
+* Temporary fix suggestion of the unreadable text in the Donate Modal ([#908](https://github.com/hasadna/open-bus-map-search/issues/908)) ([267d1c7](https://github.com/hasadna/open-bus-map-search/commit/267d1c7fab608932c0764dff11d36e954a39c4dd))
+* time related issues in the "map by line" page ([#936](https://github.com/hasadna/open-bus-map-search/issues/936)) ([26c8c3e](https://github.com/hasadna/open-bus-map-search/commit/26c8c3e1912ec8231cd400f684949a86b8ba0fb8))
+
+
+### Performance Improvements
+
+* reduce number of concurrent requests ([#919](https://github.com/hasadna/open-bus-map-search/issues/919)) ([8003efe](https://github.com/hasadna/open-bus-map-search/commit/8003efeb734d6f3330ec451dea1315c1ddcc89a2))
+
 ## [1.2.0](https://github.com/hasadna/open-bus-map-search/compare/v1.1.0...v1.2.0) (2024-11-04)
 
 
