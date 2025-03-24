@@ -1,10 +1,10 @@
-import moment, { Moment } from 'moment'
+import moment from 'moment'
 import { useContext, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import Grid from '@mui/material/Unstable_Grid2'
 import { CircularProgress, Tooltip } from '@mui/material'
 import Typography from '@mui/material/Typography'
-import { PageSearchState, SearchContext } from '../../model/pageState'
+import { SearchContext } from '../../model/pageState'
 import { NotFound } from '../components/NotFound'
 import '../Map.scss'
 import { DateSelector } from '../components/DateSelector'
@@ -68,8 +68,20 @@ const SingleLineMapPage = () => {
     setStartTime,
   } = useSingleLineData(selectedRoute?.lineRef, selectedRoute?.routeIds)
 
-  const handleChange = <K extends keyof PageSearchState>(key: K, value: PageSearchState[K]) => {
-    setSearch((current) => ({ ...current, [key]: value }))
+  const handleTimestampChange = (time: moment.Moment | null) => {
+    setSearch((current) => ({ ...current, timestamp: time?.valueOf() ?? Date.now() }))
+  }
+
+  const handleOperatorChange = (operatorId: string) => {
+    setSearch((current) => ({ ...current, operatorId }))
+  }
+
+  const handleLineNumberChange = (lineNumber: string) => {
+    setSearch((current) => ({ ...current, lineNumber }))
+  }
+
+  const handleRouteKeyChange = (routeKey?: string) => {
+    setSearch((current) => ({ ...current, routeKey }))
   }
 
   return (
@@ -86,24 +98,15 @@ const SingleLineMapPage = () => {
         <Grid container spacing={2} xs={12}>
           {/* choose date*/}
           <Grid sm={4} xs={12}>
-            <DateSelector
-              time={moment(timestamp)}
-              onChange={(time) => handleChange('timestamp', time?.valueOf() ?? Date.now())}
-            />
+            <DateSelector time={moment(timestamp)} onChange={handleTimestampChange} />
           </Grid>
           {/* choose operator */}
           <Grid sm={4} xs={12}>
-            <OperatorSelector
-              operatorId={operatorId}
-              setOperatorId={(id) => handleChange('operatorId', id)}
-            />
+            <OperatorSelector operatorId={operatorId} setOperatorId={handleOperatorChange} />
           </Grid>
           {/* choose line number */}
           <Grid sm={4} xs={12}>
-            <LineNumberSelector
-              lineNumber={lineNumber}
-              setLineNumber={(line) => handleChange('lineNumber', line)}
-            />
+            <LineNumberSelector lineNumber={lineNumber} setLineNumber={handleLineNumberChange} />
           </Grid>
         </Grid>
         <Grid container spacing={2} xs={12} alignContent={'center'}>
@@ -116,7 +119,7 @@ const SingleLineMapPage = () => {
                 <RouteSelector
                   routes={routes}
                   routeKey={routeKey}
-                  setRouteKey={(key) => handleChange('routeKey', key)}
+                  setRouteKey={handleRouteKeyChange}
                 />
               ))}
           </Grid>
