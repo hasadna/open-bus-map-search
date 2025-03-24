@@ -1,38 +1,37 @@
-import axios from 'axios'
 import moment, { Moment } from 'moment'
 import { useContext, useEffect, useMemo, useState } from 'react'
-import { getGapsAsync } from 'src/api/gapsService'
 import { getStopsForRouteAsync } from 'src/api/gtfsService'
 import useVehicleLocations from 'src/api/useVehicleLocations'
 import { BusStop } from 'src/model/busStop'
 import { SearchContext } from 'src/model/pageState'
 import { Point } from 'src/pages/timeBasedMap'
 
+const formatTime = (time: Moment) => time.format('HH:mm:ss')
+
 export const useSingleLineData = (lineRef?: number, routeIds?: number[]) => {
-  const { search } = useContext(SearchContext)
-  const { operatorId, timestamp, routes, routeKey } = search
+  const {
+    search: { timestamp },
+  } = useContext(SearchContext)
 
   const [filteredPositions, setFilteredPositions] = useState<Point[]>([])
-  const [startTime, setStartTime] = useState<string | null>(null)
+  const [startTime, setStartTime] = useState<string>()
   const [plannedRouteStops, setPlannedRouteStops] = useState<BusStop[]>([])
-  const [gaps, setGaps] = useState<Moment[]>([])
 
-  const [today, tomorrow] = useMemo(() => {
-    const today = moment(timestamp).startOf('day')
-    const tomorrow = moment(today).add(1, 'day')
-    return [today, tomorrow]
+  const [selectDay, nextDay] = useMemo(() => {
+    const selectDay = moment(timestamp).startOf('day')
+    return [selectDay, selectDay.clone().add(1, 'day')]
   }, [timestamp])
 
   const { locations, isLoading: locationsAreLoading } = useVehicleLocations({
-    from: today,
-    to: tomorrow,
+    from: selectDay,
+    to: nextDay,
     lineRef,
     splitMinutes: 360,
     pause: !lineRef,
   })
 
   const positions = useMemo(() => {
-    const pos = locations.map<Point>((location) => ({
+    return locations.map<Point>((location) => ({
       loc: [location.lat, location.lon],
       color: location.velocity,
       operator: location.siri_route__operator_ref,
@@ -40,45 +39,30 @@ export const useSingleLineData = (lineRef?: number, routeIds?: number[]) => {
       recorded_at_time: new Date(location.recorded_at_time).getTime(),
       point: location,
     }))
-
-    return pos
   }, [locations])
 
-  const formatTime = (time: string | Moment) => moment(time).format('HH:mm:ss')
-
-  const calculateStartTimeTimestamp = (startTime: string, today: Moment) => {
-    const [hours, minutes] = startTime.split(':').map(Number)
-    return today.clone().set({ hour: hours, minute: minutes, second: 0, millisecond: 0 }).valueOf()
-  }
-
   const options = useMemo(() => {
-    const uniqueTimes = new Map<string, boolean>()
+    return [
+      ...new Set(
+        positions
+          .map((position) =>
+            position.point?.siri_ride__scheduled_start_time
+              ? moment(position.point?.siri_ride__scheduled_start_time)
+              : undefined,
+          )
+          .filter((time): time is Moment => !!time && time.isBetween(selectDay, nextDay))
+          .sort((a, b) => a.valueOf() - b.valueOf())
+          .map(formatTime),
+      ),
+    ].map((time) => ({ value: time, label: time }))
+  }, [positions, selectDay, nextDay])
 
-    positions.forEach((position) => {
-      const time = position.point?.siri_ride__scheduled_start_time
-      if (time && moment(time).isAfter(today)) {
-        uniqueTimes.set(formatTime(time), false)
-      }
-    })
-
-    gaps.forEach((gap) => {
-      uniqueTimes.set(formatTime(gap), true)
-    })
-
-    return Array.from(uniqueTimes.entries())
-      .sort(([a], [b]) => moment(a, 'HH:mm:ss').diff(moment(b, 'HH:mm:ss')))
-      .map(([time, gap]) => ({
-        value: time,
-        label: time,
-        gap: gap,
-      }))
-  }, [positions, today, gaps])
-
+  // Set Bus Postion
   useEffect(() => {
     if (startTime) {
       const filtered = positions.filter((position) => {
         const scheduledTime = position.point?.siri_ride__scheduled_start_time
-        return scheduledTime && formatTime(scheduledTime) === startTime
+        return scheduledTime && formatTime(moment(scheduledTime)) === startTime
       })
       setFilteredPositions(filtered)
     } else {
@@ -86,47 +70,37 @@ export const useSingleLineData = (lineRef?: number, routeIds?: number[]) => {
     }
   }, [startTime, positions])
 
+  // Set Bus Planned Stop
   useEffect(() => {
-    if (routeIds?.length && routeKey) {
-      const startTimeTimestamp = calculateStartTimeTimestamp(startTime || '', today)
-      handlePlannedRouteStops(routeIds, startTimeTimestamp)
+    const abortController = new AbortController()
+
+    if (routeIds?.length) {
+      const startTimeTimestamp = startTime
+        ? selectDay.clone().set({
+            hour: Number(startTime.split(':')[0]),
+            minute: Number(startTime.split(':')[1]),
+            second: 0,
+            millisecond: 0,
+          })
+        : selectDay
+
+      getStopsForRouteAsync(routeIds, startTimeTimestamp)
+        .then((stops) => {
+          if (!abortController.signal.aborted) {
+            setPlannedRouteStops(stops)
+          }
+        })
+        .catch(() => {
+          if (!abortController.signal.aborted) {
+            setPlannedRouteStops([])
+          }
+        })
     } else {
       setPlannedRouteStops([])
     }
-  }, [startTime, routeIds, today])
 
-  const handlePlannedRouteStops = async (routeIds: number[], startTimeTs: number) => {
-    const stops = await getStopsForRouteAsync(routeIds, moment(startTimeTs))
-    setPlannedRouteStops(stops)
-  }
-
-  useEffect(() => {
-    if (
-      !operatorId ||
-      !routes ||
-      !routeKey ||
-      !timestamp ||
-      !routes.some((route) => route.key === routeKey)
-    ) {
-      setGaps([])
-      return
-    }
-
-    const selectedRoute = routes.find((route) => route.key === routeKey)!
-    const source = axios.CancelToken.source()
-    const today = moment(timestamp).startOf('day')
-
-    getGapsAsync(today, today, operatorId, selectedRoute.lineRef, source.token)
-      .then((gaps) =>
-        gaps
-          .filter((gap) => !gap.gtfsTime || !gap.siriTime)
-          .map((gap) => moment(gap.gtfsTime || gap.siriTime)),
-      )
-      .then(setGaps)
-      .catch(() => setGaps([]))
-
-    return () => source.cancel()
-  }, [operatorId, routes, routeKey, timestamp])
+    return () => abortController.abort()
+  }, [startTime, selectDay, routeIds])
 
   return {
     locationsAreLoading,
