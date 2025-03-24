@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import Grid from '@mui/material/Unstable_Grid2'
 import { CircularProgress, Tooltip } from '@mui/material'
 import Typography from '@mui/material/Typography'
-import { SearchContext } from '../../model/pageState'
+import { PageSearchState, SearchContext } from '../../model/pageState'
 import { NotFound } from '../components/NotFound'
 import '../Map.scss'
 import { DateSelector } from '../components/DateSelector'
@@ -39,7 +39,7 @@ const SingleLineMapPage = () => {
           ...current,
           routes,
           routeKey:
-            // if is same line it save route key
+            // if is same line it keep route key
             current.lineNumber === lineNumber && current.operatorId === operatorId
               ? current.routeKey
               : undefined,
@@ -68,17 +68,9 @@ const SingleLineMapPage = () => {
     setStartTime,
   } = useSingleLineData(selectedRoute?.lineRef, selectedRoute?.routeIds)
 
-  const handleTimestampChange = (ts: Moment | null) =>
-    setSearch((current) => ({ ...current, timestamp: ts?.valueOf() ?? Date.now() }))
-
-  const handleOperatorChange = (operatorId: string) =>
-    setSearch((current) => ({ ...current, operatorId }))
-
-  const handleLineNumberChange = (lineNumber: string) =>
-    setSearch((current) => ({ ...current, lineNumber }))
-
-  const handleRouteKeyChange = (routeKey?: string) =>
-    setSearch((current) => ({ ...current, routeKey }))
+  const handleChange = <K extends keyof PageSearchState>(key: K, value: PageSearchState[K]) => {
+    setSearch((current) => ({ ...current, [key]: value }))
+  }
 
   return (
     <PageContainer className="map-container">
@@ -94,15 +86,24 @@ const SingleLineMapPage = () => {
         <Grid container spacing={2} xs={12}>
           {/* choose date*/}
           <Grid sm={4} xs={12}>
-            <DateSelector time={moment(timestamp)} onChange={handleTimestampChange} />
+            <DateSelector
+              time={moment(timestamp)}
+              onChange={(time) => handleChange('timestamp', time?.valueOf() ?? Date.now())}
+            />
           </Grid>
           {/* choose operator */}
           <Grid sm={4} xs={12}>
-            <OperatorSelector operatorId={operatorId} setOperatorId={handleOperatorChange} />
+            <OperatorSelector
+              operatorId={operatorId}
+              setOperatorId={(id) => handleChange('operatorId', id)}
+            />
           </Grid>
           {/* choose line number */}
           <Grid sm={4} xs={12}>
-            <LineNumberSelector lineNumber={lineNumber} setLineNumber={handleLineNumberChange} />
+            <LineNumberSelector
+              lineNumber={lineNumber}
+              setLineNumber={(line) => handleChange('lineNumber', line)}
+            />
           </Grid>
         </Grid>
         <Grid container spacing={2} xs={12} alignContent={'center'}>
@@ -115,7 +116,7 @@ const SingleLineMapPage = () => {
                 <RouteSelector
                   routes={routes}
                   routeKey={routeKey}
-                  setRouteKey={handleRouteKeyChange}
+                  setRouteKey={(key) => handleChange('routeKey', key)}
                 />
               ))}
           </Grid>
