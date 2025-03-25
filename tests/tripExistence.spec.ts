@@ -1,4 +1,3 @@
-import { verifyApiCallToGtfsAgenciesList, verifyDateFromParameter } from '../tests/utils.js'
 import { test, expect, urlMatcher } from './utils'
 
 test.describe('Trip Existence Page Tests', () => {
@@ -33,10 +32,21 @@ test.describe('Trip Existence Page Tests', () => {
   })
 })
 
-test('verify API call to gtfs_agencies/list - "Planned trips"', async ({ page }) => {
-  await verifyApiCallToGtfsAgenciesList(page, 'קיום נסיעות')
+test('verify API call to gtfs_agencies/list - "planned trips"', async ({ page }) => {
+  const callAssertion = expect(page).toCall('gtfs_agencies/list')
+
+  await page.goto('/')
+  await page.getByRole('link', { name: 'קיום נסיעות', exact: true }).click()
+  await page.getByLabel('חברה מפעילה').click()
+
+  await callAssertion
 })
 
 test('Verify date_from parameter from "planned trips"', async ({ page }) => {
-  await verifyDateFromParameter(page, 'קיום נסיעות')
+  const dateAssertion = expect(page).toHaveRecentDateFrom('gtfs_agencies/list')
+
+  await page.goto('/')
+  await page.getByRole('link', { name: 'קיום נסיעות', exact: true }).click()
+
+  await dateAssertion
 })

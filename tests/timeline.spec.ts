@@ -1,8 +1,7 @@
 import i18next from 'i18next'
 import Backend from 'i18next-fs-backend'
 import TimelinePage from '../src/test_pages/TimelinePage'
-import { verifyApiCallToGtfsAgenciesList, verifyDateFromParameter } from '../tests/utils.js'
-import { getPastDate, test, urlMatcher } from './utils'
+import { getPastDate, test, expect, urlMatcher } from './utils'
 
 test.describe('Timeline Page Tests', () => {
   let timelinePage: TimelinePage
@@ -140,10 +139,21 @@ test.describe('Timeline Page Tests', () => {
   })
 })
 
-test('verify API call to gtfs_agencies/list - "Trips history"', async ({ page }) => {
-  await verifyApiCallToGtfsAgenciesList(page, 'היסטוריית נסיעות')
+test('verify API call to gtfs_agencies/list - "trips history"', async ({ page }) => {
+  const callAssertion = expect(page).toCall('gtfs_agencies/list')
+
+  await page.goto('/')
+  await page.getByRole('link', { name: 'היסטוריית נסיעות', exact: true }).click()
+  await page.getByLabel('חברה מפעילה').click()
+
+  await callAssertion
 })
 
-test('Verify date_from parameter from "Trips history"', async ({ page }) => {
-  await verifyDateFromParameter(page, 'היסטוריית נסיעות')
+test('Verify date_from parameter from "trips history"', async ({ page }) => {
+  const dateAssertion = expect(page).toHaveRecentDateFrom('gtfs_agencies/list')
+
+  await page.goto('/')
+  await page.getByRole('link', { name: 'היסטוריית נסיעות', exact: true }).click()
+
+  await dateAssertion
 })

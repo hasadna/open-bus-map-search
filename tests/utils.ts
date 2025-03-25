@@ -4,7 +4,7 @@ import * as path from 'path'
 import * as crypto from 'crypto'
 import { exec } from 'child_process'
 import { Matcher, test as baseTest, customMatcher } from 'playwright-advanced-har'
-import { BrowserContext, Page } from '@playwright/test'
+import { BrowserContext, Page, expect as baseExpect } from '@playwright/test'
 import moment from 'moment'
 
 const istanbulCLIOutput = path.join(process.cwd(), '.nyc_output')
@@ -87,34 +87,132 @@ export const getBranch = () =>
     })
   })
 
-export const expect = test.expect
+export const expect = baseExpect.extend({
+  async toCall(page: Page, urlPart: string) {
+    let requestFound = false
 
-export async function verifyApiCallToGtfsAgenciesList(page: Page, linkName: string): Promise<void> {
-  let apiCallMade = false
-  page.on('request', (request) => {
-    if (request.url().includes('gtfs_agencies/list')) {
-      apiCallMade = true
+    // Add type annotation for request parameter
+    const listener = (request: { url(): string }) => {
+      if (request.url().includes(urlPart)) {
+        requestFound = true
+      }
     }
-  })
 
-  await page.goto('/')
-  await page.getByRole('link', { name: linkName, exact: true }).click()
-  await page.getByLabel('חברה מפעילה').click()
-  expect(apiCallMade).toBeTruthy()
-}
+    page.on('request', listener)
 
-export async function verifyDateFromParameter(page: Page, linkName: string): Promise<void> {
-  const apiRequest = page.waitForRequest((request) => request.url().includes('gtfs_agencies/list'))
+    // Explicitly type the resolve function
+    const checkPromise = new Promise<void>((resolve: (value: void | PromiseLike<void>) => void) => {
+      const checkInterval = setInterval(() => {
+        if (requestFound) {
+          clearInterval(checkInterval)
+          page.removeListener('request', listener)
+          resolve()
+        }
+      }, 100)
 
-  await page.goto('/')
-  await page.getByRole('link', { name: linkName, exact: true }).click()
+      // Safety timeout after 10 seconds
+      setTimeout(() => {
+        if (!requestFound) {
+          clearInterval(checkInterval)
+          page.removeListener('request', listener)
+          resolve()
+        }
+      }, 10000)
+    })
 
-  const request = await apiRequest
-  const url = new URL(request.url())
-  const dateFromParam = url.searchParams.get('date_from')
-  const dateFrom = moment(dateFromParam)
-  const daysAgo = moment().diff(dateFrom, 'days')
+    return {
+      message: () => `Expected page to ${this.isNot ? 'not ' : ''}make a request to ${urlPart}`,
+      pass: true,
+      async then(resolve: (result: { message: () => string; pass: boolean }) => void) {
+        await checkPromise
+        resolve({
+          message: () =>
+            `Expected page to ${!requestFound ? '' : 'not '}make a request to ${urlPart}`,
+          pass: requestFound,
+        })
+      },
+    }
+  },
 
-  expect(daysAgo).toBeGreaterThanOrEqual(0)
-  expect(daysAgo).toBeLessThanOrEqual(3)
-}
+  async toHaveRecentDateFrom(page: Page, urlPart: string, maxDaysAgo: number = 3) {
+    // Explicitly type the request predicate
+    const apiRequestPromise = page.waitForRequest((request: { url(): string }) =>
+      request.url().includes(urlPart),
+    )
+
+    return {
+      message: () =>
+        `Expected page to make a request to ${urlPart} with recent date_from parameter`,
+      pass: true,
+      async then(resolve: (result: { message: () => string; pass: boolean }) => void) {
+        try {
+          const request = await apiRequestPromise
+          const url = new URL(request.url())
+          const dateFromParam = url.searchParams.get('date_from')
+
+          // Add null check for dateFromParam
+          if (!dateFromParam) {
+            throw new Error('date_from parameter not found')
+          }
+
+          const dateFrom = moment(dateFromParam)
+          const daysAgo = moment().diff(dateFrom, 'days')
+
+          console.log(`Request to ${urlPart}, dateFromParam: ${dateFromParam}, daysAgo: ${daysAgo}`)
+
+          const isRecent = daysAgo >= 0 && daysAgo <= maxDaysAgo
+
+          if (resolve) {
+            resolve({
+              message: () =>
+                `Expected date_from parameter to ${this.isNot ? 'not ' : ''}be within ${maxDaysAgo} days ` +
+                `(actual: ${daysAgo} days ago, date: ${dateFromParam})`,
+              pass: isRecent,
+            })
+          }
+        } catch (error) {
+          if (resolve) {
+            resolve({
+              message: () =>
+                `Failed to capture request to ${urlPart}: ${error instanceof Error ? error.message : String(error)}`,
+              pass: false,
+            })
+          }
+        }
+      },
+    }
+  },
+})
+
+//-----//
+// export const expect = test.expect
+
+// export async function verifyApiCallToGtfsAgenciesList(page: Page, linkName: string): Promise<void> {
+//   let apiCallMade = false
+//   page.on('request', (request) => {
+//     if (request.url().includes('gtfs_agencies/list')) {
+//       apiCallMade = true
+//     }
+//   })
+
+//   await page.goto('/')
+//   await page.getByRole('link', { name: linkName, exact: true }).click()
+//   await page.getByLabel('חברה מפעילה').click()
+//   expect(apiCallMade).toBeTruthy()
+// }
+
+// export async function verifyDateFromParameter(page: Page, linkName: string): Promise<void> {
+//   const apiRequest = page.waitForRequest((request) => request.url().includes('gtfs_agencies/list'))
+
+//   await page.goto('/')
+//   await page.getByRole('link', { name: linkName, exact: true }).click()
+
+//   const request = await apiRequest
+//   const url = new URL(request.url())
+//   const dateFromParam = url.searchParams.get('date_from')
+//   const dateFrom = moment(dateFromParam)
+//   const daysAgo = moment().diff(dateFrom, 'days')
+
+//   expect(daysAgo).toBeGreaterThanOrEqual(0)
+//   expect(daysAgo).toBeLessThanOrEqual(3)
+// }

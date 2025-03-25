@@ -1,5 +1,4 @@
 import SinglelinePage from '../src/test_pages/SinglelinePage'
-import { verifyApiCallToGtfsAgenciesList, verifyDateFromParameter } from '../tests/utils.js'
 import { getPastDate, test, expect, urlMatcher } from './utils'
 
 test.describe('Single line page tests', () => {
@@ -100,9 +99,20 @@ test.describe('Single line page tests', () => {
 })
 
 test('verify API call to gtfs_agencies/list - "Map by line"', async ({ page }) => {
-  await verifyApiCallToGtfsAgenciesList(page, 'מפה לפי קו')
+  const callAssertion = expect(page).toCall('gtfs_agencies/list')
+
+  await page.goto('/')
+  await page.getByRole('link', { name: 'מפה לפי קו' }).click()
+  await page.getByLabel('חברה מפעילה').click()
+
+  await callAssertion
 })
 
 test('Verify date_from parameter from "Map by line"', async ({ page }) => {
-  await verifyDateFromParameter(page, 'מפה לפי קו')
+  const dateAssertion = expect(page).toHaveRecentDateFrom('gtfs_agencies/list')
+
+  await page.goto('/')
+  await page.getByRole('link', { name: 'מפה לפי קו' }).click()
+
+  await dateAssertion
 })
