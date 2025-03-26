@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.1](https://github.com/hasadna/open-bus-map-search/compare/v1.3.0...v1.3.1) (2025-03-26)
+
+
+### Bug Fixes
+
+* Calendar displays hebrew month name in english locale [#1040](https://github.com/hasadna/open-bus-map-search/issues/1040) ([#1062](https://github.com/hasadna/open-bus-map-search/issues/1062)) ([8cbb3d4](https://github.com/hasadna/open-bus-map-search/commit/8cbb3d48bcbc72145b950ae9f0274d1338c8bf4d))
+
 ## [1.3.0](https://github.com/hasadna/open-bus-map-search/compare/v1.2.0...v1.3.0) (2025-03-23)
 
 
