@@ -1,4 +1,4 @@
-import moment, { Moment } from 'moment'
+import moment from 'moment'
 import { useContext, useEffect, useMemo, useState } from 'react'
 import { getStopsForRouteAsync } from 'src/api/gtfsService'
 import useVehicleLocations from 'src/api/useVehicleLocations'
@@ -6,7 +6,7 @@ import { BusStop } from 'src/model/busStop'
 import { SearchContext } from 'src/model/pageState'
 import { Point } from 'src/pages/timeBasedMap'
 
-const formatTime = (time: Moment) => time.format('HH:mm:ss')
+const formatTime = (time: moment.Moment) => time.format('HH:mm:ss')
 
 export const useSingleLineData = (lineRef?: number, routeIds?: number[]) => {
   const {
@@ -42,47 +42,44 @@ export const useSingleLineData = (lineRef?: number, routeIds?: number[]) => {
   }, [locations])
 
   const options = useMemo(() => {
-    return [
-      ...new Set(
-        positions
-          .map((position) =>
-            position.point?.siri_ride__scheduled_start_time
-              ? moment(position.point?.siri_ride__scheduled_start_time)
-              : undefined,
-          )
-          .filter((time): time is Moment => !!time && time.isBetween(selectDay, nextDay))
-          .sort((a, b) => a.valueOf() - b.valueOf())
-          .map(formatTime),
-      ),
-    ].map((time) => ({ value: time, label: time }))
+    const uniqueTimes = new Set<string>()
+
+    for (const position of positions) {
+      const startTime = position.point?.siri_ride__scheduled_start_time
+      if (startTime) {
+        const momentTime = moment(startTime)
+        if (momentTime.isBetween(selectDay, nextDay)) {
+          uniqueTimes.add(formatTime(momentTime))
+        }
+      }
+    }
+
+    return Array.from(uniqueTimes)
+      .sort()
+      .map((time) => ({ value: time, label: time }))
   }, [positions, selectDay, nextDay])
 
-  // Set Bus Postion
-  useEffect(() => {
-    if (startTime) {
-      const filtered = positions.filter((position) => {
-        const scheduledTime = position.point?.siri_ride__scheduled_start_time
-        return scheduledTime && formatTime(moment(scheduledTime)) === startTime
-      })
-      setFilteredPositions(filtered)
-    } else {
-      setFilteredPositions([])
-    }
+  // Set Bus Postions
+  const filteredBusPositions = useMemo(() => {
+    if (!startTime) return []
+
+    return positions.filter((position) => {
+      const scheduledTime = position.point?.siri_ride__scheduled_start_time
+      return scheduledTime && formatTime(moment(scheduledTime)) === startTime
+    })
   }, [startTime, positions])
+
+  useEffect(() => {
+    setFilteredPositions(filteredBusPositions)
+  }, [filteredBusPositions])
 
   // Set Bus Planned Stop
   useEffect(() => {
     const abortController = new AbortController()
 
     if (routeIds?.length) {
-      const startTimeTimestamp = startTime
-        ? selectDay.clone().set({
-            hour: Number(startTime.split(':')[0]),
-            minute: Number(startTime.split(':')[1]),
-            second: 0,
-            millisecond: 0,
-          })
-        : selectDay
+      const [hour, minute] = startTime ? startTime.split(':').map(Number) : [0, 0]
+      const startTimeTimestamp = selectDay.clone().set({ hour, minute, second: 0, millisecond: 0 })
 
       getStopsForRouteAsync(routeIds, startTimeTimestamp)
         .then((stops) => {
