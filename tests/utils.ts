@@ -87,11 +87,15 @@ export const getBranch = () =>
     })
   })
 
+interface CustomMatcherResult {
+  message: () => string
+  pass: boolean
+}
+
 export const expect = baseExpect.extend({
   async toCall(page: Page, urlPart: string) {
     let requestFound = false
 
-    // Add type annotation for request parameter
     const listener = (request: { url(): string }) => {
       if (request.url().includes(urlPart)) {
         requestFound = true
@@ -100,43 +104,37 @@ export const expect = baseExpect.extend({
 
     page.on('request', listener)
 
-    // Explicitly type the resolve function
-    const checkPromise = new Promise<void>((resolve: (value: void | PromiseLike<void>) => void) => {
+    const checkPromise = await new Promise<boolean>((resolve) => {
       const checkInterval = setInterval(() => {
         if (requestFound) {
           clearInterval(checkInterval)
           page.removeListener('request', listener)
-          resolve()
+          resolve(true)
         }
       }, 100)
 
-      // Safety timeout after 10 seconds
       setTimeout(() => {
-        if (!requestFound) {
-          clearInterval(checkInterval)
-          page.removeListener('request', listener)
-          resolve()
-        }
+        clearInterval(checkInterval)
+        page.removeListener('request', listener)
+        resolve(false)
       }, 10000)
     })
 
     return {
-      message: () => `Expected page to ${this.isNot ? 'not ' : ''}make a request to ${urlPart}`,
+      message: () => `Expected page to make a request to ${urlPart}`,
       pass: true,
-      async then(resolve: (result: { message: () => string; pass: boolean }) => void) {
-        await checkPromise
+      async then(resolve: (result: CustomMatcherResult) => void) {
+        await Promise.resolve()
         resolve({
-          message: () =>
-            `Expected page to ${!requestFound ? '' : 'not '}make a request to ${urlPart}`,
-          pass: requestFound,
+          message: () => `Expected page to make a request to ${urlPart}`,
+          pass: checkPromise,
         })
       },
-    }
+    } as CustomMatcherResult
   },
 
   async toHaveRecentDateFrom(page: Page, urlPart: string, maxDaysAgo: number = 3) {
-    // Explicitly type the request predicate
-    const apiRequestPromise = page.waitForRequest((request: { url(): string }) =>
+    const request = await page.waitForRequest((request: { url(): string }) =>
       request.url().includes(urlPart),
     )
 
@@ -144,13 +142,13 @@ export const expect = baseExpect.extend({
       message: () =>
         `Expected page to make a request to ${urlPart} with recent date_from parameter`,
       pass: true,
-      async then(resolve: (result: { message: () => string; pass: boolean }) => void) {
+      async then(resolve: (result: CustomMatcherResult) => void) {
+        await Promise.resolve()
+
         try {
-          const request = await apiRequestPromise
           const url = new URL(request.url())
           const dateFromParam = url.searchParams.get('date_from')
 
-          // Add null check for dateFromParam
           if (!dateFromParam) {
             throw new Error('date_from parameter not found')
           }
@@ -162,57 +160,20 @@ export const expect = baseExpect.extend({
 
           const isRecent = daysAgo >= 0 && daysAgo <= maxDaysAgo
 
-          if (resolve) {
-            resolve({
-              message: () =>
-                `Expected date_from parameter to ${this.isNot ? 'not ' : ''}be within ${maxDaysAgo} days ` +
-                `(actual: ${daysAgo} days ago, date: ${dateFromParam})`,
-              pass: isRecent,
-            })
-          }
+          resolve({
+            message: () =>
+              `Expected date_from parameter to be within ${maxDaysAgo} days ` +
+              `(actual: ${daysAgo} days ago, date: ${dateFromParam})`,
+            pass: isRecent,
+          })
         } catch (error) {
-          if (resolve) {
-            resolve({
-              message: () =>
-                `Failed to capture request to ${urlPart}: ${error instanceof Error ? error.message : String(error)}`,
-              pass: false,
-            })
-          }
+          resolve({
+            message: () =>
+              `Failed to capture request to ${urlPart}: ${error instanceof Error ? error.message : String(error)}`,
+            pass: false,
+          })
         }
       },
-    }
+    } as CustomMatcherResult
   },
 })
-
-//-----//
-// export const expect = test.expect
-
-// export async function verifyApiCallToGtfsAgenciesList(page: Page, linkName: string): Promise<void> {
-//   let apiCallMade = false
-//   page.on('request', (request) => {
-//     if (request.url().includes('gtfs_agencies/list')) {
-//       apiCallMade = true
-//     }
-//   })
-
-//   await page.goto('/')
-//   await page.getByRole('link', { name: linkName, exact: true }).click()
-//   await page.getByLabel('חברה מפעילה').click()
-//   expect(apiCallMade).toBeTruthy()
-// }
-
-// export async function verifyDateFromParameter(page: Page, linkName: string): Promise<void> {
-//   const apiRequest = page.waitForRequest((request) => request.url().includes('gtfs_agencies/list'))
-
-//   await page.goto('/')
-//   await page.getByRole('link', { name: linkName, exact: true }).click()
-
-//   const request = await apiRequest
-//   const url = new URL(request.url())
-//   const dateFromParam = url.searchParams.get('date_from')
-//   const dateFrom = moment(dateFromParam)
-//   const daysAgo = moment().diff(dateFrom, 'days')
-
-//   expect(daysAgo).toBeGreaterThanOrEqual(0)
-//   expect(daysAgo).toBeLessThanOrEqual(3)
-// }
