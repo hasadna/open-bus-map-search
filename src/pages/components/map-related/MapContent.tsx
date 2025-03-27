@@ -41,6 +41,13 @@ export function MapContent({ positions, plannedRouteStops, showNavigationButtons
   }
   const { i18n } = useTranslation()
   const [tileUrl, setTileUrl] = useState('https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png')
+
+  const agencyList = useAgencyList()
+  const map = useMap()
+  const { i18n } = useTranslation()
+
+  useRecenterOnDataChange({ positions, plannedRouteStops })
+
   useEffect(() => {
     const handleLanguageChange = (lng: string) => {
       console.log('Language changed to:', lng)
