@@ -126,7 +126,7 @@ export function MapContent({ positions, plannedRouteStops, showNavigationButtons
           const { latitude, longitude } = stop.location
           return (
             <Marker
-              key={'' + latitude + longitude}
+              key={stop.key}
               position={[latitude, longitude]}
               icon={plannedRouteStopMarker}></Marker>
           )
