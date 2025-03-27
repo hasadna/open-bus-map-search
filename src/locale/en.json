@@ -151,6 +151,7 @@
   "at_time": "at",
   "vehicle_ref": "vehicle plate",
   "drive_direction": "drive direction",
+  "gtfs_manual": "GTFS manual",
   "bearing": "bearing",
   "coords": "coords",
   "hide_document": "Hide geeks data",
