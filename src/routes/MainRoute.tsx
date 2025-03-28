@@ -9,6 +9,8 @@ import { CacheProvider } from '@emotion/react'
 import createCache from '@emotion/cache'
 import rtlPlugin from 'stylis-plugin-rtl'
 import 'moment/locale/he'
+import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
+import { LocalizationProvider } from '@mui/x-date-pickers'
 import { PageSearchState, SearchContext } from '../model/pageState'
 import { ThemeProvider } from '../layout/ThemeContext'
 import { PAGES } from '../routes'
@@ -76,9 +78,11 @@ export const MainRoute = () => {
   return (
     <SearchContext.Provider value={{ search, setSearch: safeSetSearch }}>
       <CacheProvider value={cacheRtl}>
-        <ThemeProvider>
-          <MainLayout />
-        </ThemeProvider>
+        <LocalizationProvider dateAdapter={AdapterMoment} adapterLocale="he">
+          <ThemeProvider>
+            <MainLayout />
+          </ThemeProvider>
+        </LocalizationProvider>
       </CacheProvider>
     </SearchContext.Provider>
   )
