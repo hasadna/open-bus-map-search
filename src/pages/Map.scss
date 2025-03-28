@@ -52,20 +52,20 @@ main > div,
         img {
           width: 20px;
           height: 20px;
-      }
-
+        }
       }
 
       &-title {
         width: 100px;
         text-align: left;
+        color: black;
       }
     }
   }
+}
 
-  .map-index.dark {
-    background-color: #303230;
-  }
+.map-index.dark {
+  background-color: #303230;
 }
 
 pre {

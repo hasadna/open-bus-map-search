@@ -7,8 +7,8 @@ import { formatted } from 'src/locale/utils'
 
 type RouteSelectorProps = {
   routes: BusRoute[]
-  routeKey: string | undefined
-  setRouteKey: (routeKey: string) => void
+  routeKey?: string
+  setRouteKey: (routeKey?: string) => void
 }
 
 const getRouteTitle = (route: BusRoute, t: TFunction<'translation', undefined>) =>
@@ -39,7 +39,7 @@ const RouteSelector = ({ routes, routeKey, setRouteKey }: RouteSelectorProps) =>
     <Autocomplete
       disablePortal
       value={value}
-      onChange={(e, value) => setRouteKey(value ? value.key : '0')}
+      onChange={(e, value) => setRouteKey(value?.key)}
       id="route-select"
       options={routes}
       renderInput={(params) => (
