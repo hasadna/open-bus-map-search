@@ -125,10 +125,7 @@ export function MapContent({ positions, plannedRouteStops, showNavigationButtons
         plannedRouteStops.map((stop) => {
           const { latitude, longitude } = stop.location
           return (
-            <Marker
-              key={stop.key}
-              position={[latitude, longitude]}
-              icon={plannedRouteStopMarker}></Marker>
+            <Marker key={stop.key} position={[latitude, longitude]} icon={plannedRouteStopMarker} />
           )
         })}
       {positions.length && (

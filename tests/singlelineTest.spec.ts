@@ -61,9 +61,9 @@ test.describe('Single line page tests', () => {
         .click()
     })
 
-    await test.step('Verify bus stop marker is visible', async () => {
-      const stopMarker = page.locator('leaflet-pane > img[src="/marker-bus-stop.png"]')
-      await expect(stopMarker).toBeVisible()
+    await test.step('Verify bus stop marker is in the page', async () => {
+      const stopMarker = page.locator('.leaflet-marker-pane > img[src$="marker-bus-stop.png"]')
+      await expect(stopMarker).toHaveCount(33)
     })
   })
 
@@ -86,7 +86,7 @@ test.describe('Single line page tests', () => {
     })
 
     await test.step('Click on bus button', async () => {
-      const button = page.locator('leaflet-pane>img[src="/marker-dot.png"]:nth-child(7)')
+      const button = page.locator('.leaflet-marker-pane > img[src$="marker-dot.png"]').nth(6)
       await button.click()
       await button.click({ force: true })
     })
