@@ -92,9 +92,10 @@ const ComplaintModal = ({ modalOpen, setModalOpen, position }: ComplaintModalPro
     setComplaintData((prevData) => ({ ...prevData, [name]: value }) as const)
   }
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    console.log(`lalalala`)
     e.preventDefault()
     const complaintPayload = {
+      reportId: new Date().toISOString(),
+      reportType: 'databusUiComplaint',
       userData: complaintData,
       databusData: {
         operator: siriRide?.gtfsRideGtfsRouteId,
@@ -102,8 +103,18 @@ const ComplaintModal = ({ modalOpen, setModalOpen, position }: ComplaintModalPro
       },
     }
     console.log(complaintPayload)
-    // Handle the form submission, e.g., send it to an API
-    setModalOpen(false)
+
+    fetch('https://u50mqjjsc2.execute-api.us-west-1.amazonaws.com/report', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(complaintPayload),
+    })
+      .then((response) => response.json())
+      .then((data) => console.log(data))
+      .catch((error) => console.error(error))
+      .then(() => setModalOpen(false))
   }
 
   return (
