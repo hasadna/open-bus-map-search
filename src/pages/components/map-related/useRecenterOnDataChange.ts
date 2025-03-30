@@ -1,47 +1,33 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { LatLngTuple } from 'leaflet'
 import { useMap } from 'react-leaflet'
 import { MapProps } from './map-types'
-import { BusStop } from 'src/model/busStop'
-import { Point } from 'src/pages/timeBasedMap'
-
-const calculatePoint = (acc: LatLngTuple, curr: Point | BusStop): LatLngTuple => {
-  if ('loc' in curr && curr.loc) {
-    return [acc[0] + curr.loc[0], acc[1] + curr.loc[1]]
-  }
-  if ('location' in curr && curr.location) {
-    return [acc[0] + curr.location.latitude, acc[1] + curr.location.longitude]
-  }
-  return acc
-}
-
-const calculateMean = (
-  positionsSum: LatLngTuple,
-  stopsSum: LatLngTuple,
-  totalPoints: number,
-): LatLngTuple => {
-  return [
-    (positionsSum[0] + stopsSum[0]) / totalPoints,
-    (positionsSum[1] + stopsSum[1]) / totalPoints,
-  ]
-}
 
 export function useRecenterOnDataChange({ positions = [], plannedRouteStops = [] }: MapProps) {
   const map = useMap()
 
-  useEffect(() => {
-    if (positions.length === 0 && plannedRouteStops.length === 0) return
-
-    const positionsSum = positions.reduce(calculatePoint, [0, 0])
-    const stopsSum = plannedRouteStops.reduce(calculatePoint, [0, 0])
+  const { center, totalPoints } = useMemo(() => {
+    const sum = [0, 0]
     const totalPoints = positions.length + plannedRouteStops.length
 
-    if (totalPoints === 0) return
-
-    const mean = calculateMean(positionsSum, stopsSum, totalPoints)
-
-    if (mean[0] !== 0 || mean[1] !== 0) {
-      map.setView(mean, map.getZoom(), { animate: true })
+    for (const position of positions) {
+      sum[0] += position.loc[0]
+      sum[1] += position.loc[1]
     }
-  }, [positions, plannedRouteStops, map])
+
+    for (const stop of plannedRouteStops) {
+      sum[0] += stop.location.latitude
+      sum[1] += stop.location.longitude
+    }
+
+    const center: LatLngTuple = [sum[0] / totalPoints, sum[1] / totalPoints]
+
+    return { center, totalPoints }
+  }, [positions, plannedRouteStops])
+
+  useEffect(() => {
+    if (totalPoints === 0 || (center[0] === 0 && center[1] === 0)) return
+
+    map.setView(center, map.getZoom(), { animate: true })
+  }, [center, totalPoints, map])
 }
