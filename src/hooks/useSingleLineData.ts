@@ -14,17 +14,17 @@ export const useSingleLineData = (lineRef?: number, routeIds?: number[]) => {
   } = useContext(SearchContext)
 
   const [filteredPositions, setFilteredPositions] = useState<Point[]>([])
-  const [startTime, setStartTime] = useState<string>()
   const [plannedRouteStops, setPlannedRouteStops] = useState<BusStop[]>([])
+  const [startTime, setStartTime] = useState<string>()
 
-  const [selectDay, nextDay] = useMemo(() => {
-    const selectDay = moment(timestamp).startOf('day')
-    return [selectDay, selectDay.clone().add(1, 'day')]
+  const [today, tomorrow] = useMemo(() => {
+    const today = moment(timestamp).startOf('day')
+    return [today, today.clone().add(1, 'day')]
   }, [timestamp])
 
   const { locations, isLoading: locationsAreLoading } = useVehicleLocations({
-    from: selectDay.valueOf(),
-    to: nextDay.valueOf(),
+    from: today.valueOf(),
+    to: tomorrow.valueOf(),
     lineRef,
     splitMinutes: 360,
     pause: !lineRef,
@@ -48,7 +48,7 @@ export const useSingleLineData = (lineRef?: number, routeIds?: number[]) => {
       const startTime = position.point?.siri_ride__scheduled_start_time
       if (startTime) {
         const momentTime = moment(startTime)
-        if (momentTime.isBetween(selectDay, nextDay)) {
+        if (momentTime.isBetween(today, tomorrow)) {
           uniqueTimes.add(formatTime(momentTime))
         }
       }
@@ -57,7 +57,7 @@ export const useSingleLineData = (lineRef?: number, routeIds?: number[]) => {
     return Array.from(uniqueTimes)
       .sort()
       .map((time) => ({ value: time, label: time }))
-  }, [positions, selectDay, nextDay])
+  }, [positions, today, tomorrow])
 
   // Set Bus Postions
   useEffect(() => {
@@ -80,7 +80,7 @@ export const useSingleLineData = (lineRef?: number, routeIds?: number[]) => {
 
     if (routeIds?.length) {
       const [hour, minute] = startTime ? startTime.split(':').map(Number) : [0, 0]
-      const startTimeTimestamp = selectDay.clone().set({ hour, minute, second: 0, millisecond: 0 })
+      const startTimeTimestamp = today.clone().set({ hour, minute, second: 0, millisecond: 0 })
 
       getStopsForRouteAsync(routeIds, startTimeTimestamp)
         .then((stops) => {
@@ -98,7 +98,7 @@ export const useSingleLineData = (lineRef?: number, routeIds?: number[]) => {
     }
 
     return () => abortController.abort()
-  }, [startTime, selectDay, routeIds])
+  }, [startTime, today, routeIds])
 
   return {
     locationsAreLoading,
