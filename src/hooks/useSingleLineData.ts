@@ -23,8 +23,8 @@ export const useSingleLineData = (lineRef?: number, routeIds?: number[]) => {
   }, [timestamp])
 
   const { locations, isLoading: locationsAreLoading } = useVehicleLocations({
-    from: selectDay,
-    to: nextDay,
+    from: selectDay.valueOf(),
+    to: nextDay.valueOf(),
     lineRef,
     splitMinutes: 360,
     pause: !lineRef,
@@ -60,18 +60,19 @@ export const useSingleLineData = (lineRef?: number, routeIds?: number[]) => {
   }, [positions, selectDay, nextDay])
 
   // Set Bus Postions
-  const filteredBusPositions = useMemo(() => {
-    if (!startTime) return []
+  useEffect(() => {
+    if (!startTime) {
+      setFilteredPositions([])
+      return
+    }
 
-    return positions.filter((position) => {
+    const filtered = positions.filter((position) => {
       const scheduledTime = position.point?.siri_ride__scheduled_start_time
       return scheduledTime && formatTime(moment(scheduledTime)) === startTime
     })
-  }, [startTime, positions])
 
-  useEffect(() => {
-    setFilteredPositions(filteredBusPositions)
-  }, [filteredBusPositions])
+    setFilteredPositions(filtered)
+  }, [startTime, positions])
 
   // Set Bus Planned Stop
   useEffect(() => {

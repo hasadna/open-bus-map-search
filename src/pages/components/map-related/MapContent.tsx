@@ -38,7 +38,6 @@ export function MapContent({ positions, plannedRouteStops, showNavigationButtons
 
   useEffect(() => {
     const handleLanguageChange = (lng: string) => {
-      // console.log('Language changed to:', lng)
       const newUrl =
         lng === 'he'
           ? 'https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png'

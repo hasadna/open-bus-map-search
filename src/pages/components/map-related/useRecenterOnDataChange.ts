@@ -3,12 +3,14 @@ import { LatLngTuple } from 'leaflet'
 import { useMap } from 'react-leaflet'
 import { MapProps } from './map-types'
 
-export function useRecenterOnDataChange({ positions = [], plannedRouteStops = [] }: MapProps) {
+export function useRecenterOnDataChange({ positions, plannedRouteStops }: MapProps) {
   const map = useMap()
 
-  const { center, totalPoints } = useMemo(() => {
-    const sum = [0, 0]
+  const center = useMemo(() => {
+    const sum: LatLngTuple = [0, 0]
     const totalPoints = positions.length + plannedRouteStops.length
+
+    if (totalPoints === 0) return sum
 
     for (const position of positions) {
       sum[0] += position.loc[0]
@@ -20,14 +22,15 @@ export function useRecenterOnDataChange({ positions = [], plannedRouteStops = []
       sum[1] += stop.location.longitude
     }
 
-    const center: LatLngTuple = [sum[0] / totalPoints, sum[1] / totalPoints]
+    sum[0] /= totalPoints
+    sum[1] /= totalPoints
 
-    return { center, totalPoints }
+    return sum
   }, [positions, plannedRouteStops])
 
   useEffect(() => {
-    if (totalPoints === 0 || (center[0] === 0 && center[1] === 0)) return
-
-    map.setView(center, map.getZoom(), { animate: true })
-  }, [center, totalPoints, map])
+    if (center[0] || center[1]) {
+      map.setView(center, map.getZoom(), { animate: true })
+    }
+  }, [...center, map])
 }
