@@ -1,20 +1,20 @@
-const nxPlugin = require('@nx/eslint-plugin')
-const { FlatCompat } = require('@eslint/eslintrc')
-const eslintPluginReact = require('eslint-plugin-react')
-const eslintPluginReactHooks = require('eslint-plugin-react-hooks')
-const eslintPluginImport = require('eslint-plugin-import')
-const typescriptEslintEslintPlugin = require('@typescript-eslint/eslint-plugin')
-const typescriptEslintParser = require('@typescript-eslint/parser')
-const globals = require('globals')
-const js = require('@eslint/js')
-const eslintPluginPrettierRecommended = require('eslint-plugin-prettier/recommended')
+import nxPlugin from '@nx/eslint-plugin'
+import { FlatCompat } from '@eslint/eslintrc'
+import eslintPluginReact, { configs } from 'eslint-plugin-react'
+import eslintPluginReactHooks from 'eslint-plugin-react-hooks'
+import eslintPluginImport from 'eslint-plugin-import'
+import typescriptEslintEslintPlugin, { configs as _configs } from '@typescript-eslint/eslint-plugin'
+import typescriptEslintParser from '@typescript-eslint/parser'
+import { browser, es2021 } from 'globals'
+import { configs as __configs } from '@eslint/js'
+import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended'
 
 const compat = new FlatCompat({
   baseDirectory: __dirname,
-  recommendedConfig: js.configs.recommended,
+  recommendedConfig: __configs.recommended,
 })
 
-module.exports = [
+export default [
   ...compat.extends('plugin:@typescript-eslint/recommended', 'plugin:react/recommended'),
   eslintPluginPrettierRecommended,
   {
@@ -36,19 +36,19 @@ module.exports = [
         sourceType: 'module',
         project: './tsconfig.json',
       },
-      globals: { ...globals.browser, ...globals.es2021 },
+      globals: { ...browser, ...es2021 },
     },
   },
   {
     rules: {
-      ...typescriptEslintEslintPlugin.configs.recommended.rules,
-      ...eslintPluginReact.configs.recommended.rules,
+      ..._configs.recommended.rules,
+      ...configs.recommended.rules,
       'react-hooks/rules-of-hooks': 'error',
       'react/jsx-filename-extension': [1, { extensions: ['.tsx'] }],
-      ...typescriptEslintEslintPlugin.configs['eslint-recommended'].rules,
-      ...typescriptEslintEslintPlugin.configs['recommended'].rules,
-      ...typescriptEslintEslintPlugin.configs['recommended-requiring-type-checking'].rules,
-      ...eslintPluginReact.configs['recommended'].rules,
+      ..._configs['eslint-recommended'].rules,
+      ..._configs['recommended'].rules,
+      ..._configs['recommended-requiring-type-checking'].rules,
+      ...configs['recommended'].rules,
       'react/react-in-jsx-scope': 'off',
       '@typescript-eslint/no-explicit-any': 'warn',
       // ...eslintPluginImport.configs.recommended.rules,
