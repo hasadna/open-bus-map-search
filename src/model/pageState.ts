@@ -12,6 +12,7 @@ export type PageSearchState = {
   timestamp: number
   operatorId?: string
   lineNumber?: string
+  vehicleNumber?: number
   routeKey?: string
   routes?: BusRoute[]
 }
