@@ -27,7 +27,7 @@ export default function SideBar() {
         onClose={() => setDrawerOpen(false)}
         open={drawerOpen}
         className="hideOnDesktop"
-        bodyStyle={{ padding: '0' }}>
+        styles={{ body: { padding: '0' } }}>
         <Logo />
         <div className="sidebar-divider"></div>
         <Menu />
@@ -41,6 +41,7 @@ export default function SideBar() {
         collapsible
         collapsed={collapsed}
         reverseArrow={isRtl}
+        style={{ overflowY: 'auto', marginBottom: '48px' }}
         onCollapse={(value: boolean) => setCollapsed(value)}
         className="hideOnMobile">
         <Link to={PAGES[0].path} replace>
