@@ -17,7 +17,7 @@
     "@tanstack/react-query-persist-client": "^5.66.0",
     "@types/git-username": "^1.0.5",
     "@types/leaflet.markercluster": "^1.5.5",
-    "@vitejs/plugin-react-swc": "^3.6.0",
+    "@vitejs/plugin-react-swc": "^3.8.1",
     "antd": "^5.22.3",
     "axios": "^1.8.4",
     "babel-plugin-transform-import-meta": "^2.3.2",
@@ -137,7 +137,7 @@
     "ts-jest": "^29.1.2",
     "ts-node": "^10.9.2",
     "vite": "^5.4.17",
-    "vite-plugin-istanbul": "^5.0.0",
+    "vite-plugin-istanbul": "^7.0.0",
     "vitest": "^3.0.5"
   },
   "nx": {
