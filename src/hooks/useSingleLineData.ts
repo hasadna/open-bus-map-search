@@ -6,26 +6,32 @@ import { BusStop } from 'src/model/busStop'
 import { SearchContext } from 'src/model/pageState'
 import { Point } from 'src/pages/timeBasedMap'
 
+const formatTime = (time: moment.Moment) => time.format('HH:mm:ss')
+
 export const useSingleLineData = (lineRef?: number, routeIds?: number[]) => {
   const {
     search: { timestamp },
   } = useContext(SearchContext)
+
   const [filteredPositions, setFilteredPositions] = useState<Point[]>([])
-  const [startTime, setStartTime] = useState<string>('00:00:00')
   const [plannedRouteStops, setPlannedRouteStops] = useState<BusStop[]>([])
-  const today = new Date(timestamp)
-  const tomorrow = new Date(today)
-  tomorrow.setDate(tomorrow.getDate() + 1)
+  const [startTime, setStartTime] = useState<string>()
+
+  const [today, tomorrow] = useMemo(() => {
+    const today = moment(timestamp).startOf('day')
+    return [today, today.clone().add(1, 'day')]
+  }, [timestamp])
+
   const { locations, isLoading: locationsAreLoading } = useVehicleLocations({
-    from: +today.setHours(0, 0, 0, 0),
-    to: +tomorrow.setHours(0, 0, 0, 0),
+    from: today.valueOf(),
+    to: tomorrow.valueOf(),
     lineRef,
     splitMinutes: 360,
     pause: !lineRef,
   })
 
   const positions = useMemo(() => {
-    const pos = locations.map<Point>((location) => ({
+    return locations.map<Point>((location) => ({
       loc: [location.lat, location.lon],
       color: location.velocity,
       operator: location.siri_route__operator_ref,
@@ -33,74 +39,66 @@ export const useSingleLineData = (lineRef?: number, routeIds?: number[]) => {
       recorded_at_time: new Date(location.recorded_at_time).getTime(),
       point: location,
     }))
-
-    return pos
   }, [locations])
 
-  function convertTo24HourAndToNumber(time: string): number {
-    const match = time.match(/(\d+):(\d+):(\d+)\s(AM|PM)/)
-    if (!match) return 0
-
-    const [, hour, minute, , modifier] = match
-    let newHour = parseInt(hour, 10)
-    if (modifier === 'AM' && newHour === 12) newHour = 0
-    if (modifier === 'PM' && newHour !== 12) newHour += 12
-
-    return newHour * 60 + parseInt(minute, 10)
-  }
-
   const options = useMemo(() => {
-    const filteredPositions = positions.filter((position) => {
+    const uniqueTimes = new Set<string>()
+
+    for (const position of positions) {
       const startTime = position.point?.siri_ride__scheduled_start_time
-      return !!startTime && +new Date(startTime) > +today.setHours(0, 0, 0, 0)
+      if (startTime) {
+        const momentTime = moment(startTime)
+        if (momentTime.isBetween(today, tomorrow)) {
+          uniqueTimes.add(formatTime(momentTime))
+        }
+      }
+    }
+
+    return Array.from(uniqueTimes)
+      .sort()
+      .map((time) => ({ value: time, label: time }))
+  }, [positions, today, tomorrow])
+
+  // Set Bus Postions
+  useEffect(() => {
+    if (!startTime) {
+      setFilteredPositions([])
+      return
+    }
+
+    const filtered = positions.filter((position) => {
+      const scheduledTime = position.point?.siri_ride__scheduled_start_time
+      return scheduledTime && formatTime(moment(scheduledTime)) === startTime
     })
 
-    if (filteredPositions.length === 0) return []
+    setFilteredPositions(filtered)
+  }, [startTime, positions])
 
-    const uniqueTimes = Array.from(
-      new Set(
-        filteredPositions
-          .map((position) => position.point?.siri_ride__scheduled_start_time)
-          .filter((time): time is string => !!time)
-          .map((time) => time.trim()),
-      ),
-    )
-      .map((time) => new Date(time).toLocaleTimeString()) // Convert to 24-hour time string
-      .map((time) => ({
-        value: time,
-        label: time,
-      }))
-
-    const sortedOptions = uniqueTimes.sort(
-      (a, b) => convertTo24HourAndToNumber(a.value) - convertTo24HourAndToNumber(b.value),
-    )
-
-    return sortedOptions
-  }, [positions])
-
+  // Set Bus Planned Stop
   useEffect(() => {
-    if (startTime !== '00:00:00' && positions.length > 0) {
-      setFilteredPositions(
-        positions.filter(
-          (position) =>
-            new Date(position.point?.siri_ride__scheduled_start_time ?? 0).toLocaleTimeString() ===
-            startTime,
-        ),
-      )
-    }
-    if (startTime !== '00:00:00') {
-      const [hours, minutes] = startTime.split(':')
-      const startTimeTimestamp = +new Date(
-        positions[0].point?.siri_ride__scheduled_start_time ?? 0,
-      ).setHours(+hours, +minutes, 0, 0)
-      handlePlannedRouteStops(routeIds ?? [], startTimeTimestamp)
-    }
-  }, [startTime])
+    const abortController = new AbortController()
 
-  const handlePlannedRouteStops = async (routeIds: number[], startTimeTs: number) => {
-    const stops = await getStopsForRouteAsync(routeIds, moment(startTimeTs))
-    setPlannedRouteStops(stops)
-  }
+    if (routeIds?.length) {
+      const [hour, minute] = startTime ? startTime.split(':').map(Number) : [0, 0]
+      const startTimeTimestamp = today.clone().set({ hour, minute, second: 0, millisecond: 0 })
+
+      getStopsForRouteAsync(routeIds, startTimeTimestamp)
+        .then((stops) => {
+          if (!abortController.signal.aborted) {
+            setPlannedRouteStops(stops)
+          }
+        })
+        .catch(() => {
+          if (!abortController.signal.aborted) {
+            setPlannedRouteStops([])
+          }
+        })
+    } else {
+      setPlannedRouteStops([])
+    }
+
+    return () => abortController.abort()
+  }, [startTime, today, routeIds])
 
   return {
     locationsAreLoading,
