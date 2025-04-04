@@ -2,6 +2,10 @@
   position: relative;
 }
 
+.ant-layout-content:has(> div > div > footer) {
+  margin-bottom: 2.5rem;
+}
+
 .container {
   width: 100%;
   display: flex;
@@ -25,10 +29,11 @@
 
   footer {
     background-color: #b0d0a4;
-    width: 100vw;
+    width: 100%;
     font-weight: 500;
     position: absolute;
     bottom: 0;
+    right: 0;
     padding: 0.5rem 0;
   }
 }
@@ -37,11 +42,7 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 1rem;
-  margin-bottom: 10%;
-
-  @media (width <=600px) {
-    margin-bottom: 3rem;
-  }
+  margin-bottom: 3rem;
 }
 
 .menu-link {
