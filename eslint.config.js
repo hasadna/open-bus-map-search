@@ -53,7 +53,7 @@ export default [
       '@typescript-eslint/no-floating-promises': 'off',
       '@typescript-eslint/restrict-template-expressions': 'off',
       '@typescript-eslint/no-base-to-string': 'off',
-      '@typescript-eslint/no-unsafe-assignment': 'warn',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
       'import/no-unused-modules': 'error',
       'import/order': 'error',
       'prettier/prettier': [
