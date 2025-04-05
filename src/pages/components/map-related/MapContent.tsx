@@ -1,5 +1,5 @@
 import { t } from 'i18next'
-import { useRef, useEffect, useState } from 'react'
+import { useRef, useEffect, useState, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Marker, Polyline, Popup, TileLayer, useMap } from 'react-leaflet'
 import { Icon, IconOptions, Marker as LeafletMarker } from 'leaflet'
@@ -12,38 +12,32 @@ import { MapIndex } from './MapIndex'
 import MapFooterButtons from './MapFooterButtons/MapFooterButtons'
 import { useAgencyList } from 'src/api/agencyList'
 
+// configs for planned & actual routes - line color & marker icon
+const getIcon = (path: string, width: number = 10, height: number = 10): Icon<IconOptions> => {
+  return new Icon<IconOptions>({
+    iconUrl: path,
+    iconSize: [width, height],
+  })
+}
+const actualRouteStopMarkerPath = '/marker-dot.png'
+const plannedRouteStopMarkerPath = '/marker-bus-stop.png'
+const actualRouteLineColor = 'orange'
+const plannedRouteLineColor = 'black'
+const actualRouteStopMarker = getIcon(actualRouteStopMarkerPath, 20, 20)
+const plannedRouteStopMarker = getIcon(plannedRouteStopMarkerPath, 20, 25)
+
 export function MapContent({ positions, plannedRouteStops, showNavigationButtons }: MapProps) {
-  useRecenterOnDataChange({ positions, plannedRouteStops })
   const markerRef = useRef<{ [key: number]: LeafletMarker | null }>({})
-  const map = useMap()
-  const agencyList = useAgencyList()
-  const getIcon = (path: string, width: number = 10, height: number = 10): Icon<IconOptions> => {
-    return new Icon<IconOptions>({
-      iconUrl: path,
-      iconSize: [width, height],
-    })
-  }
-  // configs for planned & actual routes - line color & marker icon
-  const actualRouteStopMarkerPath = '/marker-dot.png'
-  const plannedRouteStopMarkerPath = '/marker-bus-stop.png'
-  const actualRouteLineColor = 'orange'
-  const plannedRouteLineColor = 'black'
-  const actualRouteStopMarker = getIcon(actualRouteStopMarkerPath, 20, 20)
-  const plannedRouteStopMarker = getIcon(plannedRouteStopMarkerPath, 20, 25)
-  const navigateMarkers = (positionId: number) => {
-    const loc = positions[positionId]?.loc
-    if (!map || !loc) return
-    const marker = markerRef?.current && markerRef?.current[positionId]
-    if (marker) {
-      map.flyTo(loc, map.getZoom())
-      marker.openPopup()
-    }
-  }
-  const { i18n } = useTranslation()
   const [tileUrl, setTileUrl] = useState('https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png')
+
+  const agencyList = useAgencyList()
+  const map = useMap()
+  const { i18n } = useTranslation()
+
+  useRecenterOnDataChange({ positions, plannedRouteStops })
+
   useEffect(() => {
     const handleLanguageChange = (lng: string) => {
-      console.log('Language changed to:', lng)
       const newUrl =
         lng === 'he'
           ? 'https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png'
@@ -55,6 +49,19 @@ export function MapContent({ positions, plannedRouteStops, showNavigationButtons
       i18n.off('languageChanged', handleLanguageChange)
     }
   }, [])
+
+  const navigateMarkers = useCallback(
+    (positionId: number) => {
+      const pos = positions[positionId]
+      if (!map || !pos?.loc) return
+      const marker = markerRef.current[positionId]
+      if (marker) {
+        map.flyTo(pos.loc, map.getZoom())
+        marker.openPopup()
+      }
+    },
+    [map, positions],
+  )
 
   return (
     <>
@@ -117,10 +124,7 @@ export function MapContent({ positions, plannedRouteStops, showNavigationButtons
         plannedRouteStops.map((stop) => {
           const { latitude, longitude } = stop.location
           return (
-            <Marker
-              key={'' + latitude + longitude}
-              position={[latitude, longitude]}
-              icon={plannedRouteStopMarker}></Marker>
+            <Marker key={stop.key} position={[latitude, longitude]} icon={plannedRouteStopMarker} />
           )
         })}
       {positions.length && (
