@@ -1,7 +1,6 @@
 import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react-swc'
 import IstanbulPlugin from 'vite-plugin-istanbul'
-import EnvironmentPlugin from 'vite-plugin-environment'
 
 const ASSET_URL = process.env.ASSET_URL || ''
 
@@ -19,7 +18,6 @@ export default defineConfig({
           }),
         ]
       : []),
-    EnvironmentPlugin('all'),
   ],
   resolve: {
     alias: {
