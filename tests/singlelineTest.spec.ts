@@ -44,6 +44,28 @@ test.describe('Single line page tests', () => {
     await singleLinePage.selectRandomRoute()
   })
 
+  test('Test route appears after select route', async ({ page }) => {
+    await test.step('Navigate to "Map By Line"', async () => {
+      await page.goto('/')
+      await page.getByRole('link', { name: 'מפה לפי קו' }).click()
+    })
+
+    await test.step('Fill line info', async () => {
+      await page.getByLabel('חברה מפעילה').click()
+      await page.getByRole('option', { name: 'דן', exact: true }).click()
+      await page.getByPlaceholder('לדוגמה: 17א').fill('67')
+      await page.getByLabel('בחירת מסלול נסיעה (2 אפשרויות)').click()
+      await page
+        .getByRole('option', { name: 'קניון איילון-רמת גן ⟵ איצטדיון וינטר-רמת גן' })
+        .click()
+    })
+
+    await test.step('Verify bus stop marker is in the page', async () => {
+      const stopMarker = page.locator('.leaflet-marker-pane > img[src$="marker-bus-stop.png"]')
+      await expect(stopMarker).toHaveCount(33)
+    })
+  })
+
   test('tooltip appears after clicking on map point in single line map', async ({ page }) => {
     await test.step('Navigate to "Map By Line"', async () => {
       await page.goto('/')
@@ -63,7 +85,7 @@ test.describe('Single line page tests', () => {
     })
 
     await test.step('Click on bus button', async () => {
-      const button = page.locator('.leaflet-pane > img:nth-child(7)')
+      const button = page.locator('.leaflet-marker-pane > img[src$="marker-dot.png"]').nth(6)
       await button.click()
       await button.click({ force: true })
     })

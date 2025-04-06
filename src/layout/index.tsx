@@ -13,6 +13,7 @@ const { Content } = Layout
 
 const StyledLayout = styled(Layout)`
   height: 100vh;
+  overflow: hidden;
 `
 const StyledContent = styled(Content)`
   margin: 24px 16px 0;
