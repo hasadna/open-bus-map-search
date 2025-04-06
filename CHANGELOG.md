@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.4.0](https://github.com/hasadna/open-bus-map-search/compare/v1.3.0...v1.4.0) (2025-04-06)
+
+
+### Features
+
+* see planned rout even when no actual ride was executed ([#1070](https://github.com/hasadna/open-bus-map-search/issues/1070)) ([01b778f](https://github.com/hasadna/open-bus-map-search/commit/01b778f6870a028e63311d0f71dfa8b6de8265da))
+
+
+### Bug Fixes
+
+* Bug Horizontal scroll ([#1074](https://github.com/hasadna/open-bus-map-search/issues/1074)) ([0749d8b](https://github.com/hasadna/open-bus-map-search/commit/0749d8b224066e3b709482b367fcb8e34bdaa9c2))
+* Calendar displays hebrew month name in english locale [#1040](https://github.com/hasadna/open-bus-map-search/issues/1040) ([#1062](https://github.com/hasadna/open-bus-map-search/issues/1062)) ([8cbb3d4](https://github.com/hasadna/open-bus-map-search/commit/8cbb3d48bcbc72145b950ae9f0274d1338c8bf4d))
+
 ## [1.3.0](https://github.com/hasadna/open-bus-map-search/compare/v1.2.0...v1.3.0) (2025-03-23)
 
 
