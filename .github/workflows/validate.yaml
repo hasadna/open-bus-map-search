@@ -155,6 +155,10 @@ jobs:
           aws_bucket: noam-gaash.co.il
           source_dir: test-results
           destination_dir: ${{ github.run_id }}/open-bus/${{ github.sha }}/test-results
+      - name: Construct Target URL
+        run: |
+          TARGET_URL="https://s3.amazonaws.com/noam-gaash.co.il/${GITHUB_REF_NAME}/open-bus/${GITHUB_SHA}/test-results/index.html"
+          echo "TARGET_URL=$TARGET_URL" >> $GITHUB_ENV
       - name: Set test results
         uses: myrotvorets/set-commit-status-action@master
         if: always() && ${{ env.AWS_KEY_ID }}
@@ -164,7 +168,7 @@ jobs:
           description: 'Playwright html report with traces'
           status: ${{needs.test.result}}
           context: 'Test results'
-          targetUrl: 'https://s3.amazonaws.com/noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.sha }}/test-results/index.html'
+          targetUrl: ${{ env.TARGET_URL }}
   build-outside-docker:
     runs-on: ubuntu-latest
     steps:
