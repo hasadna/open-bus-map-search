@@ -1,8 +1,10 @@
 import { readFileSync, writeFileSync } from 'fs'
-import { join } from 'path'
+import { join, dirname } from 'path'
+import { fileURLToPath } from 'url'
 
 const sitemap = () => {
-  const app = readFileSync(join(import.meta.dirname, 'src/routes/index.tsx'), 'utf8')
+  const __dirname = dirname(fileURLToPath(import.meta.url))
+  const app = readFileSync(join(__dirname, '/src/routes/index.tsx'), 'utf8')
 
   const routes = app.match(/'\/[a-z_-]*'/g)
   const urls = routes.map((route) => route.slice(1, -1))
@@ -22,7 +24,7 @@ const sitemap = () => {
     )
     .join('\n')}
           </urlset>`
-  writeFileSync(join(import.meta.dirname, 'public/sitemap.xml'), sitemap)
+  writeFileSync(join(__dirname, '/public/sitemap.xml'), sitemap)
 }
 
 sitemap()
