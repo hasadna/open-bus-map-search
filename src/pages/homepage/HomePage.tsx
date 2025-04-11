@@ -54,11 +54,13 @@ export const HomePage = () => {
   const { setDrawerOpen } = useContext<LayoutContextInterface>(LayoutCtx)
 
   useEffect(() => {
-    window.addEventListener('resize', () => {
+    const handleResize = () => {
       setIsWide(window.innerWidth > 450 ? true : false)
-    })
+    }
+
+    window.addEventListener('resize', handleResize)
     return () => {
-      window.removeEventListener('resize', () => console.log('done'))
+      window.removeEventListener('resize', handleResize)
     }
   }, [])
 
