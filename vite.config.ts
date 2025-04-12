@@ -6,21 +6,20 @@ import IstanbulPlugin from 'vite-plugin-istanbul'
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd())
-  console.log(
-    env.VITE_COVERAGE ? 'true' : 'false',
-    import.meta.env.VITE_COVERAGE ? 'true' : 'false',
-  )
 
   return {
     base: env?.ASSET_URL || '',
     plugins: [
       react(),
-      IstanbulPlugin({
-        include: 'src/*',
-        exclude: ['node_modules', 'test/'],
-        extension: ['.js', '.ts', '.tsx'],
-        requireEnv: true,
-      }),
+      ...(env?.VITE_COVERAGE
+        ? [
+            IstanbulPlugin({
+              include: 'src/*',
+              exclude: ['node_modules', 'test/'],
+              extension: ['.js', '.ts', '.tsx'],
+            }),
+          ]
+        : []),
     ],
     resolve: {
       alias: {
