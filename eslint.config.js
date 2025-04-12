@@ -1,20 +1,20 @@
-const nxPlugin = require('@nx/eslint-plugin')
-const { FlatCompat } = require('@eslint/eslintrc')
-const eslintPluginReact = require('eslint-plugin-react')
-const eslintPluginReactHooks = require('eslint-plugin-react-hooks')
-const eslintPluginImport = require('eslint-plugin-import')
-const typescriptEslintEslintPlugin = require('@typescript-eslint/eslint-plugin')
-const typescriptEslintParser = require('@typescript-eslint/parser')
-const globals = require('globals')
-const js = require('@eslint/js')
-const eslintPluginPrettierRecommended = require('eslint-plugin-prettier/recommended')
+import nxPlugin from '@nx/eslint-plugin'
+import { FlatCompat } from '@eslint/eslintrc'
+import eslintPluginReact from 'eslint-plugin-react'
+import eslintPluginReactHooks from 'eslint-plugin-react-hooks'
+import eslintPluginImport from 'eslint-plugin-import'
+import typescriptEslintEslintPlugin from '@typescript-eslint/eslint-plugin'
+import typescriptEslintParser from '@typescript-eslint/parser'
+import globals from 'globals'
+import eslintJs from '@eslint/js'
+import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended'
 
 const compat = new FlatCompat({
-  baseDirectory: __dirname,
-  recommendedConfig: js.configs.recommended,
+  baseDirectory: import.meta.dirname,
+  recommendedConfig: eslintJs.configs.recommended,
 })
 
-module.exports = [
+export default [
   ...compat.extends('plugin:@typescript-eslint/recommended', 'plugin:react/recommended'),
   eslintPluginPrettierRecommended,
   {
@@ -42,16 +42,12 @@ module.exports = [
   {
     rules: {
       ...typescriptEslintEslintPlugin.configs.recommended.rules,
+      ...typescriptEslintEslintPlugin.configs['recommended-requiring-type-checking'].rules,
       ...eslintPluginReact.configs.recommended.rules,
       'react-hooks/rules-of-hooks': 'error',
       'react/jsx-filename-extension': [1, { extensions: ['.tsx'] }],
-      ...typescriptEslintEslintPlugin.configs['eslint-recommended'].rules,
-      ...typescriptEslintEslintPlugin.configs['recommended'].rules,
-      ...typescriptEslintEslintPlugin.configs['recommended-requiring-type-checking'].rules,
-      ...eslintPluginReact.configs['recommended'].rules,
       'react/react-in-jsx-scope': 'off',
       '@typescript-eslint/no-explicit-any': 'warn',
-      // ...eslintPluginImport.configs.recommended.rules,
       '@typescript-eslint/no-unsafe-call': 'off',
       '@typescript-eslint/no-unsafe-member-access': 'off',
       '@typescript-eslint/no-floating-promises': 'off',
