@@ -6,7 +6,7 @@ on:
     branches: [main]
 
 env:
-  USE_BABEL_PLUGIN_ISTANBUL: 1
+  VITE_COVERAGE: true
   SHA: ${{ github.event.pull_request.head.sha || github.sha }}
 
 jobs:
