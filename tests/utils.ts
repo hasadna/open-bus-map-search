@@ -12,7 +12,7 @@ export function generateUUID(): string {
   return crypto.randomBytes(16).toString('hex')
 }
 
-export const test = baseTest.extend({
+export const test = baseTest.extend<{ context: BrowserContext }>({
   context: async ({ context }, use) => {
     await context.addInitScript(() =>
       window.addEventListener('beforeunload', () =>
@@ -22,11 +22,12 @@ export const test = baseTest.extend({
     )
     await fs.promises.mkdir(istanbulCLIOutput, { recursive: true })
     await context.exposeFunction('collectIstanbulCoverage', (coverageJSON: string) => {
-      if (coverageJSON)
+      if (coverageJSON) {
         fs.writeFileSync(
           path.join(istanbulCLIOutput, `playwright_coverage_${generateUUID()}.json`),
           coverageJSON,
         )
+      }
     })
     await use(context)
     for (const page of context.pages()) {
