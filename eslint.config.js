@@ -11,11 +11,7 @@ import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended'
 
 export default defineConfig([
   {
-    extends: [
-      // typescriptEslintEslintPlugin.configs.recommended,
-      // eslintPluginReact.configs.recommended,
-      eslintJs.configs.recommended,
-    ],
+    extends: [eslintJs.configs.recommended],
     plugins: {
       react: eslintPluginReact,
       'react-hooks': eslintPluginReactHooks,
@@ -41,9 +37,6 @@ export default defineConfig([
       ...typescriptEslintEslintPlugin.configs.recommended.rules,
       ...typescriptEslintEslintPlugin.configs['recommended-requiring-type-checking'].rules,
       ...eslintPluginReact.configs.recommended.rules,
-      'react-hooks/rules-of-hooks': 'error',
-      'react/jsx-filename-extension': ['warn', { extensions: ['.tsx'] }],
-      'react/react-in-jsx-scope': 'off',
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/no-unsafe-call': 'off',
       '@typescript-eslint/no-unsafe-member-access': 'off',
@@ -51,6 +44,9 @@ export default defineConfig([
       '@typescript-eslint/restrict-template-expressions': 'off',
       '@typescript-eslint/no-base-to-string': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
+      'react-hooks/rules-of-hooks': 'error',
+      'react/jsx-filename-extension': ['warn', { extensions: ['.tsx'] }],
+      'react/react-in-jsx-scope': 'off',
       'import/no-unused-modules': ['error', { unusedExports: true }],
       'import/order': [
         'error',

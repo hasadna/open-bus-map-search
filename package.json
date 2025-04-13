@@ -59,7 +59,7 @@
   },
   "scripts": {
     "start": "vite",
-    "build": "nx exec -- npm run _build -- && node sitemap.js",
+    "build": "nx exec -- npm run _build && node sitemap.js",
     "serve": "vite preview",
     "test": "jest && playwright test",
     "test:e2e:ui": "cross-env APPLITOOLS_BATCH_ID=`uuidgen` playwright test --ui",
