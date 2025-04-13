@@ -1,5 +1,5 @@
+import { defineConfig } from 'eslint/config'
 import nxPlugin from '@nx/eslint-plugin'
-import { FlatCompat } from '@eslint/eslintrc'
 import eslintPluginReact from 'eslint-plugin-react'
 import eslintPluginReactHooks from 'eslint-plugin-react-hooks'
 import eslintPluginImport from 'eslint-plugin-import'
@@ -9,15 +9,13 @@ import globals from 'globals'
 import eslintJs from '@eslint/js'
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended'
 
-const compat = new FlatCompat({
-  baseDirectory: import.meta.dirname,
-  recommendedConfig: eslintJs.configs.recommended,
-})
-
-export default [
-  ...compat.extends('plugin:@typescript-eslint/recommended', 'plugin:react/recommended'),
-  eslintPluginPrettierRecommended,
+export default defineConfig([
   {
+    extends: [
+      // typescriptEslintEslintPlugin.configs.recommended,
+      // eslintPluginReact.configs.recommended,
+      eslintJs.configs.recommended,
+    ],
     plugins: {
       react: eslintPluginReact,
       'react-hooks': eslintPluginReactHooks,
@@ -25,27 +23,26 @@ export default [
       '@nx': nxPlugin,
       import: eslintPluginImport,
     },
-  },
-  {
-    settings: { 'import/resolver': { typescript: {} }, react: { version: 'detect' } },
+    settings: {
+      'import/resolver': { typescript: {} },
+      react: { version: 'detect' },
+    },
     languageOptions: {
       parser: typescriptEslintParser,
       parserOptions: {
         ecmaFeatures: { jsx: true },
-        ecmaVersion: 12,
+        ecmaVersion: 2021,
         sourceType: 'module',
         project: './tsconfig.json',
       },
       globals: { ...globals.browser, ...globals.es2021 },
     },
-  },
-  {
     rules: {
       ...typescriptEslintEslintPlugin.configs.recommended.rules,
       ...typescriptEslintEslintPlugin.configs['recommended-requiring-type-checking'].rules,
       ...eslintPluginReact.configs.recommended.rules,
       'react-hooks/rules-of-hooks': 'error',
-      'react/jsx-filename-extension': [1, { extensions: ['.tsx'] }],
+      'react/jsx-filename-extension': ['warn', { extensions: ['.tsx'] }],
       'react/react-in-jsx-scope': 'off',
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/no-unsafe-call': 'off',
@@ -54,8 +51,15 @@ export default [
       '@typescript-eslint/restrict-template-expressions': 'off',
       '@typescript-eslint/no-base-to-string': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
-      'import/no-unused-modules': 'error',
-      'import/order': 'error',
+      'import/no-unused-modules': ['error', { unusedExports: true }],
+      'import/order': [
+        'error',
+        {
+          groups: [['builtin', 'external'], 'internal', ['parent', 'sibling', 'index']],
+          'newlines-between': 'always',
+          alphabetize: { order: 'asc', caseInsensitive: true },
+        },
+      ],
       'prettier/prettier': [
         'error',
         {
@@ -70,19 +74,19 @@ export default [
         },
       ],
     },
-  },
-  {
     ignores: [
-      'dist',
-      'coverage',
-      'test-results',
-      'playwright-report',
-      'storybook-static',
+      'dist/**/*',
+      'coverage/**/*',
+      'test-results/**/*',
+      'playwright-report/**/*',
+      'storybook-static/**/*',
       'eslint.config.js',
-      '.nx',
+      '.nx/**/*',
       'jest.config.ts',
       'sitemap.js',
-      'public',
+      'public/**/*',
+      '*.har',
     ],
   },
-]
+  eslintPluginPrettierRecommended,
+])
