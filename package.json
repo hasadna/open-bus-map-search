@@ -66,8 +66,8 @@
     "test:e2e": "cross-env APPLITOOLS_BATCH_ID=`uuidgen` playwright test",
     "test:unit": "jest",
     "test:unit:ci": "jest --coverage",
-    "lint": "eslint . --max-warnings 0 && stylelint '**/*.{css,scss}' --max-warnings 0",
-    "lint:fix": "eslint . --fix && stylelint '**/*.{css,scss}' --fix",
+    "lint": "eslint --max-warnings 0 && stylelint '**/*.{css,scss}' --max-warnings 0",
+    "lint:fix": "eslint --fix && stylelint '**/*.{css,scss}' --fix",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "nx exec -- storybook build",
     "_build": "tsc && vite build"

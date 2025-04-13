@@ -11,6 +11,22 @@ import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended'
 
 export default defineConfig([
   {
+    ignores: [
+      '\.nx/**/*',
+      'dist/**/*',
+      'coverage/**/*',
+      'test-results/**/*',
+      'node_modules/**/*',
+      'playwright-report/**/*',
+      'storybook-static/**/*',
+      'eslint.config.js',
+      'sitemap.js',
+      'public/service-worker.js',
+      'src/complaint/complaint.js',
+      'tests/mocks/fileMock.js',
+    ],
+  },
+  {
     extends: [eslintJs.configs.recommended],
     plugins: {
       react: eslintPluginReact,
@@ -29,7 +45,7 @@ export default defineConfig([
         ecmaFeatures: { jsx: true },
         ecmaVersion: 2021,
         sourceType: 'module',
-        project: './tsconfig.json',
+        project: 'tsconfig.json',
       },
       globals: { ...globals.browser, ...globals.es2021 },
     },
@@ -70,19 +86,6 @@ export default defineConfig([
         },
       ],
     },
-    ignores: [
-      'dist/**/*',
-      'coverage/**/*',
-      'test-results/**/*',
-      'playwright-report/**/*',
-      'storybook-static/**/*',
-      'eslint.config.js',
-      '.nx/**/*',
-      'jest.config.ts',
-      'sitemap.js',
-      'public/**/*',
-      '*.har',
-    ],
   },
   eslintPluginPrettierRecommended,
 ])
