@@ -5,7 +5,7 @@
   "type": "module",
   "dependencies": {
     "@applitools/eyes-playwright": "^1.32.0",
-    "@emotion/react": "^11.13.5",
+    "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.11.5",
     "@mui/icons-material": "^5.16.11",
     "@mui/lab": "^5.0.0-alpha.169",
