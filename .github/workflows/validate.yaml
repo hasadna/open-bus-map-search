@@ -130,7 +130,16 @@ jobs:
           name: logs
           path: logs
           if-no-files-found: warn
-
+      - name: Save test paths
+        run: |
+          echo "${{ github.head_ref || github.ref_name }}" > test_branch.txt
+          echo "${{ github.sha }}" > test_sha.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: test_paths
+          path: |
+            test_branch.txt
+            test_sha.txt
 
   publish-test-results:
     runs-on: ubuntu-latest
@@ -154,7 +163,12 @@ jobs:
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
           aws_bucket: noam-gaash.co.il
           source_dir: test-results
-          destination_dir: ${{ github.run_id }}/open-bus/${{ github.sha }}/test-results
+          destination_dir: ${{ github.head_ref || github.ref_name }}/open-bus/${{ github.sha }}/test-results
+      - name: Construct Target URL
+        run: |
+          BRANCH_NAME="${{ github.head_ref || github.ref_name }}"
+          TARGET_URL="https://s3.amazonaws.com/noam-gaash.co.il/${BRANCH_NAME}/open-bus/${{ github.sha }}/test-results/index.html"
+          echo "TARGET_URL=$TARGET_URL" >> $GITHUB_ENV
       - name: Set test results
         uses: myrotvorets/set-commit-status-action@master
         if: always() && ${{ env.AWS_KEY_ID }}
@@ -164,7 +178,7 @@ jobs:
           description: 'Playwright html report with traces'
           status: ${{needs.test.result}}
           context: 'Test results'
-          targetUrl: 'https://s3.amazonaws.com/noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.sha }}/test-results/index.html'
+          targetUrl: ${{ env.TARGET_URL }}
   build-outside-docker:
     runs-on: ubuntu-latest
     steps:
