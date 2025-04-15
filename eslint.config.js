@@ -1,5 +1,5 @@
-import { defineConfig } from 'eslint/config'
 import nxPlugin from '@nx/eslint-plugin'
+import { FlatCompat } from '@eslint/eslintrc'
 import eslintPluginReact from 'eslint-plugin-react'
 import eslintPluginReactHooks from 'eslint-plugin-react-hooks'
 import eslintPluginImport from 'eslint-plugin-import'
@@ -9,25 +9,15 @@ import globals from 'globals'
 import eslintJs from '@eslint/js'
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended'
 
-export default defineConfig([
+const compat = new FlatCompat({
+  baseDirectory: import.meta.dirname,
+  recommendedConfig: eslintJs.configs.recommended,
+})
+
+export default [
+  ...compat.extends('plugin:@typescript-eslint/recommended', 'plugin:react/recommended'),
+  eslintPluginPrettierRecommended,
   {
-    ignores: [
-      '\.nx/**/*',
-      'dist/**/*',
-      'coverage/**/*',
-      'test-results/**/*',
-      'node_modules/**/*',
-      'playwright-report/**/*',
-      'storybook-static/**/*',
-      'eslint.config.js',
-      'sitemap.js',
-      'public/service-worker.js',
-      'src/complaint/complaint.js',
-      'tests/mocks/fileMock.js',
-    ],
-  },
-  {
-    extends: [eslintJs.configs.recommended],
     plugins: {
       react: eslintPluginReact,
       'react-hooks': eslintPluginReactHooks,
@@ -35,24 +25,27 @@ export default defineConfig([
       '@nx': nxPlugin,
       import: eslintPluginImport,
     },
-    settings: {
-      'import/resolver': { typescript: {} },
-      react: { version: 'detect' },
-    },
+  },
+  {
+    settings: { 'import/resolver': { typescript: true }, react: { version: 'detect' } },
     languageOptions: {
       parser: typescriptEslintParser,
       parserOptions: {
         ecmaFeatures: { jsx: true },
-        ecmaVersion: 2021,
         sourceType: 'module',
-        project: 'tsconfig.json',
+        project: './tsconfig.json',
       },
-      globals: { ...globals.browser, ...globals.es2021 },
+      globals: { ...globals.browser, ...globals.jest },
     },
+  },
+  {
     rules: {
       ...typescriptEslintEslintPlugin.configs.recommended.rules,
       ...typescriptEslintEslintPlugin.configs['recommended-requiring-type-checking'].rules,
       ...eslintPluginReact.configs.recommended.rules,
+      'react-hooks/rules-of-hooks': 'error',
+      'react/jsx-filename-extension': [1, { extensions: ['.tsx'] }],
+      'react/react-in-jsx-scope': 'off',
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/no-unsafe-call': 'off',
       '@typescript-eslint/no-unsafe-member-access': 'off',
@@ -60,18 +53,8 @@ export default defineConfig([
       '@typescript-eslint/restrict-template-expressions': 'off',
       '@typescript-eslint/no-base-to-string': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
-      'react-hooks/rules-of-hooks': 'error',
-      'react/jsx-filename-extension': ['warn', { extensions: ['.tsx'] }],
-      'react/react-in-jsx-scope': 'off',
-      'import/no-unused-modules': ['error', { unusedExports: true }],
-      'import/order': [
-        'error',
-        {
-          groups: [['builtin', 'external'], 'internal', ['parent', 'sibling', 'index']],
-          'newlines-between': 'always',
-          alphabetize: { order: 'asc', caseInsensitive: true },
-        },
-      ],
+      'import/no-unused-modules': 'error',
+      'import/order': 'error',
       'prettier/prettier': [
         'error',
         {
@@ -87,5 +70,18 @@ export default defineConfig([
       ],
     },
   },
-  eslintPluginPrettierRecommended,
-])
+  {
+    ignores: [
+      'dist',
+      'coverage',
+      'test-results',
+      'playwright-report',
+      'storybook-static',
+      'eslint.config.js',
+      '.nx',
+      'jest.config.ts',
+      'sitemap.js',
+      'public',
+    ],
+  },
+]
