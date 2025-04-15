@@ -16,7 +16,6 @@ export const test = baseTest.extend<{ context: BrowserContext }>({
   context: async ({ context }, use) => {
     await context.addInitScript(() =>
       window.addEventListener('beforeunload', () =>
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- window will always stay `any`, see: https://github.com/hasadna/open-bus-map-search/issues/450#issuecomment-1931862354
         (window as any).collectIstanbulCoverage(JSON.stringify((window as any).__coverage__)),
       ),
     )

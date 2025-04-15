@@ -1,6 +1,4 @@
 import type { Preview } from '@storybook/react'
-import React from 'react'
-import i18n from 'src/locale/allTranslations'
 
 const preview: Preview = {
   parameters: {
@@ -14,7 +12,6 @@ const preview: Preview = {
   },
   decorators: [
     (Story) => {
-      i18n
       return (
         <div style={{ direction: 'rtl' }}>
           <Story />
