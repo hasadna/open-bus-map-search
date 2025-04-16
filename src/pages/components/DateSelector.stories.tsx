@@ -19,11 +19,35 @@ const meta: Meta<typeof DateSelector> = {
     time: moment().startOf('day'),
   },
   argTypes: {
-    time: { control: 'date' },
-    minDate: { control: 'date' },
-    customLabel: { control: 'text', type: 'string' },
-    disabled: { control: 'boolean', type: 'boolean' },
-    onChange: { action: 'onChange', type: 'function' },
+    time: {
+      control: 'date',
+      description: 'The currently selected date',
+      table: {
+        type: { summary: 'Moment' },
+        defaultValue: { summary: 'moment()' },
+      },
+    },
+    onChange: {
+      control: false,
+      description: 'Callback function when date is changed',
+      table: {
+        type: { summary: '(timeValid: moment.Moment | null) => void' },
+      },
+    },
+    minDate: {
+      control: 'date',
+      description: 'Minimum selectable date',
+      table: {
+        type: { summary: 'Moment' },
+      },
+    },
+    disabled: {
+      control: 'boolean',
+      description: 'Whether the date selector is disabled',
+      table: {
+        type: { summary: 'boolean' },
+      },
+    },
   },
   tags: ['autodocs'],
 }
