@@ -7,6 +7,12 @@ const meta: Meta<typeof Label> = {
   parameters: {
     layout: 'centered',
   },
+  argTypes: {
+    text: {
+      description: 'The text content of the label.',
+      control: { type: 'text' },
+    },
+  },
   tags: ['autodocs'],
 }
 

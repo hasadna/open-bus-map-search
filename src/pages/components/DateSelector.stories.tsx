@@ -28,7 +28,7 @@ const meta: Meta<typeof DateSelector> = {
       },
     },
     onChange: {
-      control: false,
+      action: 'onChange',
       description: 'Callback function when date is changed',
       table: {
         type: { summary: '(timeValid: moment.Moment | null) => void' },
