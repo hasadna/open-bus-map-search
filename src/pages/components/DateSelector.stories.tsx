@@ -1,32 +1,29 @@
 import { Meta, StoryObj } from '@storybook/react'
+import { fn } from '@storybook/test'
 import moment from 'moment'
-import { type DataSelectorProps, DateSelector } from './DateSelector'
-
-const convertDates = (args: DataSelectorProps): DataSelectorProps => ({
-  ...args,
-  time: moment(args.time),
-  minDate: args.minDate ? moment(args.minDate) : undefined,
-})
+import { DateSelector } from './DateSelector'
 
 const meta: Meta<typeof DateSelector> = {
   title: 'Components/DateSelector',
   component: DateSelector,
-  render: (args: DataSelectorProps) => {
-    const transformedArgs = convertDates(args)
-    return <DateSelector {...transformedArgs} />
+  render: ({ time, minDate, ...args }) => {
+    return (
+      <DateSelector {...args} time={moment(time)} minDate={minDate ? moment(minDate) : undefined} />
+    )
   },
   parameters: {
     layout: 'centered',
   },
   args: {
+    onChange: fn(),
     time: moment().startOf('day'),
-    disabled: false,
   },
   argTypes: {
     time: { control: 'date' },
     minDate: { control: 'date' },
-    customLabel: { control: 'text' },
-    disabled: { control: 'boolean' },
+    customLabel: { control: 'text', type: 'string' },
+    disabled: { control: 'boolean', type: 'boolean' },
+    onChange: { action: 'onChange', type: 'function' },
   },
   tags: ['autodocs'],
 }
