@@ -7,12 +7,14 @@ type FilterPositionsByStartTimeSelectorProps = {
     label: string
   }[]
   startTime?: string
+  disabled?: boolean
   setStartTime: (time?: string) => void
 }
 
 export function FilterPositionsByStartTimeSelector({
   options,
   startTime,
+  disabled,
   setStartTime,
 }: FilterPositionsByStartTimeSelectorProps) {
   const foundValue = options.find((option) => option.value === startTime)
@@ -23,6 +25,7 @@ export function FilterPositionsByStartTimeSelector({
   return (
     <Autocomplete
       sx={{ width: '100%' }}
+      disabled={disabled}
       disablePortal
       value={value}
       onChange={(e, value) => setStartTime(value?.value)}
