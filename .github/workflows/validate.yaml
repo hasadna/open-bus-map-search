@@ -110,7 +110,7 @@ jobs:
         run: npm test
       - name: Run Storybook tests
         if: env.APPLITOOLS_API_KEY
-        run: npx -y @applitools/eyes-storybook --storybook-url http://localhost:3000/storybook/index.html
+        run: npx -y @applitools/eyes-storybook --storybook-url http://localhost:3000/storybook/index.html --no-sandbox
       - name: Prepare playwright artifact directory
         if: always()
         run: |
