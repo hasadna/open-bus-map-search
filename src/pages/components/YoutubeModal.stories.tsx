@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import InfoYoutubeModal from './YoutubeModal'
 import { useTranslation } from 'react-i18next'
+import InfoYoutubeModal from './YoutubeModal'
 
 const meta: Meta<typeof InfoYoutubeModal> = {
   title: 'Components/InfoYoutubeModal',
