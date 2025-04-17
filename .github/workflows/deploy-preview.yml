@@ -1,47 +1,47 @@
 on:
-    workflow_run:
-      workflows: ["Build"]
-      types:
-        - completed
-  
+  workflow_run:
+    workflows: ['Build']
+    types:
+      - completed
+
 jobs:
   deploy-to-s3:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Download dist-build artifact
-        uses: dawidd6/action-download-artifact@v6
+        uses: dawidd6/action-download-artifact@v9
         with:
-            workflow: 'Build'
-            workflow_conclusion: success
-            github_token: ${{ secrets.GITHUB_TOKEN }}
-            run_id: ${{ github.event.workflow_run.id }}
-            run_number: ${{ github.event.workflow_run.run_number }}
-            name: dist-build
-            path: .
+          workflow: 'Build'
+          workflow_conclusion: success
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          run_id: ${{ github.event.workflow_run.id }}
+          run_number: ${{ github.event.workflow_run.run_number }}
+          name: dist-build
+          path: .
 
       - name: Download dist-storybook artifact
-        uses: dawidd6/action-download-artifact@v6
+        uses: dawidd6/action-download-artifact@v9
         with:
-            workflow: 'Build'
-            workflow_conclusion: success
-            github_token: ${{ secrets.GITHUB_TOKEN }}
-            run_id: ${{ github.event.workflow_run.id }}
-            run_number: ${{ github.event.workflow_run.run_number }}
-            name: dist-storybook
-            path: storybook
+          workflow: 'Build'
+          workflow_conclusion: success
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          run_id: ${{ github.event.workflow_run.id }}
+          run_number: ${{ github.event.workflow_run.run_number }}
+          name: dist-storybook
+          path: storybook
 
       - name: Download pr number
-        uses: dawidd6/action-download-artifact@v6
+        uses: dawidd6/action-download-artifact@v9
         with:
-            workflow: 'Build'
-            workflow_conclusion: success
-            github_token: ${{ secrets.GITHUB_TOKEN }}
-            run_id: ${{ github.event.workflow_run.id }}
-            run_number: ${{ github.event.workflow_run.run_number }}
-            name: pr_number
-            path: .
+          workflow: 'Build'
+          workflow_conclusion: success
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          run_id: ${{ github.event.workflow_run.id }}
+          run_number: ${{ github.event.workflow_run.run_number }}
+          name: pr_number
+          path: .
 
       - name: Read PR number
         id: read-pr
@@ -58,11 +58,11 @@ jobs:
           aws_key_id: ${{ secrets.AWS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_bucket: noam-gaash.co.il
-          source_dir: .  # Upload the root directory
+          source_dir: . # Upload the root directory
           destination_dir: ${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}
 
       - name: find comment
-        uses: peter-evans/find-comment@v1
+        uses: peter-evans/find-comment@v3
         if: env.PR_NUMBER
         id: fc
         with:
@@ -71,7 +71,7 @@ jobs:
           body-includes: 'Preview'
 
       - name: update comment
-        uses: peter-evans/create-or-update-comment@v1
+        uses: peter-evans/create-or-update-comment@v4
         if: steps.fc.outputs.comment-id
         with:
           comment-id: ${{ steps.fc.outputs.comment-id }}
@@ -82,7 +82,7 @@ jobs:
             Test Report (if available): 'https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.head_sha }}/test-results/index.html'
 
       - name: create comment
-        uses: peter-evans/create-or-update-comment@v1
+        uses: peter-evans/create-or-update-comment@v4
         if: steps.fc.outputs.comment-id == ''
         with:
           issue-number: ${{ env.PR_NUMBER }}

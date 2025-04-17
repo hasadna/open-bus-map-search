@@ -5,28 +5,28 @@ jobs:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - run: npm run docker:build
-      working-directory: src/complaint 
-    - run: npm run docker:run
-      working-directory: src/complaint
-    - uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: playwright-trace
-        path: src/complaint/traces
-        retention-days: 30\
-    - uses: shallwefootball/s3-upload-action@master
-      name: Upload trace to S3
-      if: always()
-      id: s3-trace
-      continue-on-error: true
-      with:
-        aws_key_id: ${{ secrets.AWS_KEY_ID }}
-        aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
-        aws_bucket: noam-gaash.co.il
-        source_dir: src/complaint/traces
-        destination_dir: ${{ github.run_id }}/open-bus/complaint
-    - name: output link to report to the trace
-      if: always() && steps.s3-trace.outcome == 'success'
-      run: echo "link to trace - https://trace.playwright.dev/?trace=https://s3.amazonaws.com/noam-gaash.co.il/${{ github.run_id }}/open-bus/complaint/trace.zip" >> $GITHUB_STEP_SUMMARY
+      - uses: actions/checkout@v4
+      - run: npm run docker:build
+        working-directory: src/complaint
+      - run: npm run docker:run
+        working-directory: src/complaint
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-trace
+          path: src/complaint/traces
+          retention-days: 30\
+      - uses: shallwefootball/s3-upload-action@master
+        name: Upload trace to S3
+        if: always()
+        id: s3-trace
+        continue-on-error: true
+        with:
+          aws_key_id: ${{ secrets.AWS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
+          aws_bucket: noam-gaash.co.il
+          source_dir: src/complaint/traces
+          destination_dir: ${{ github.run_id }}/open-bus/complaint
+      - name: output link to report to the trace
+        if: always() && steps.s3-trace.outcome == 'success'
+        run: echo "link to trace - https://trace.playwright.dev/?trace=https://s3.amazonaws.com/noam-gaash.co.il/${{ github.run_id }}/open-bus/complaint/trace.zip" >> $GITHUB_STEP_SUMMARY
