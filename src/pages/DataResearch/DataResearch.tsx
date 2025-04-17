@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react'
 import moment from 'moment'
-import { Grid } from '@mui/material'
+import Grid from '@mui/material/Grid'
 import { useTranslation } from 'react-i18next'
 import { Skeleton } from 'antd'
 import {
@@ -112,14 +112,14 @@ function StackedResearchInputs({
   return (
     <>
       <Grid container>
-        <Grid xs={6} item>
+        <Grid size={{ xs: 6 }}>
           <DateSelector
             time={startDate}
             onChange={(data) => data && setStartDate(data)}
             customLabel={t('start')}
           />
         </Grid>
-        <Grid xs={6} item>
+        <Grid size={{ xs: 6 }}>
           <DateSelector
             time={endDate}
             onChange={(data) => data && setEndDate(data)}
