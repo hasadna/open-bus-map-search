@@ -1,4 +1,4 @@
-import Grid from '@mui/material/GridLegacy'
+import Grid from '@mui/material/Grid'
 import { useTranslation } from 'react-i18next'
 import { useLoaderData } from 'react-router-dom'
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
@@ -87,7 +87,7 @@ const LineProfile = () => {
   return (
     <div className="container">
       <Grid container spacing={4}>
-        <Grid xs={12} sm={4} className="inputs">
+        <Grid size={{ xs: 12, sm: 4 }} className="inputs">
           <DateSelector
             time={moment(timestamp)}
             onChange={(ts) =>
@@ -124,7 +124,7 @@ const LineProfile = () => {
             />
           </div>
         </Grid>
-        <Grid xs={12} sm={8}>
+        <Grid size={{ xs: 12, sm: 8 }}>
           <Widget>
             <LineProfileHeader {...route} />
             <LineProfileDetails {...route} />

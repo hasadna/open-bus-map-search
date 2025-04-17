@@ -9,7 +9,7 @@ import IconButton from '@mui/material/IconButton'
 import OpenInFullRoundedIcon from '@mui/icons-material/OpenInFullRounded'
 import moment from 'moment'
 import '../Map.scss'
-import Grid from '@mui/material/GridLegacy'
+import Grid from '@mui/material/Grid'
 import MinuteSelector from '../components/MinuteSelector'
 import { DateSelector } from '../components/DateSelector'
 import { PageContainer } from '../components/PageContainer'
@@ -108,16 +108,16 @@ export default function TimeBasedMapPage() {
         />
       </Typography>
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
-        <Grid xs={12} className="hideOnMobile">
+        <Grid size={{ xs: 12 }} className="hideOnMobile">
           <Alert severity="info" variant="outlined" icon={false}>
             {t('time_based_map_page_description')}
           </Alert>
         </Grid>
         {/* from date */}
-        <Grid xs={2} className="hideOnMobile">
+        <Grid size={{ xs: 2 }} className="hideOnMobile">
           <Label text={t('from_date')} />
         </Grid>
-        <Grid sm={5} xs={6}>
+        <Grid size={{ sm: 5, xs: 6 }}>
           <DateSelector
             time={to}
             onChange={(ts) => {
@@ -127,7 +127,7 @@ export default function TimeBasedMapPage() {
             }}
           />
         </Grid>
-        <Grid sm={5} xs={6}>
+        <Grid size={{ sm: 5, xs: 6 }}>
           <TimeSelector
             time={to}
             onChange={(ts) => {
@@ -138,10 +138,10 @@ export default function TimeBasedMapPage() {
           />
         </Grid>
         {/*minutes*/}
-        <Grid sm={5} xs={12}>
+        <Grid size={{ sm: 5, xs: 12 }}>
           <Label text={t('watch_locations_in_range')} />
         </Grid>
-        <Grid sm={6} xs={12}>
+        <Grid size={{ sm: 6, xs: 12 }}>
           <MinuteSelector
             num={to.diff(from) / 1000 / 60}
             setNum={(num) => {
@@ -149,12 +149,12 @@ export default function TimeBasedMapPage() {
             }}
           />
         </Grid>
-        <Grid xs={1} className="hideOnMobile">
+        <Grid size={{ xs: 1 }} className="hideOnMobile">
           <Label text={t('minutes')} />
         </Grid>
         {/* Buttons */}
         {/* loaded info */}
-        <Grid xs={11}>
+        <Grid size={{ xs: 11 }}>
           <p>
             {loaded} {`- `}
             {t('show_x_bus_locations')} {` `}
@@ -163,7 +163,7 @@ export default function TimeBasedMapPage() {
               .replace('YYY', moment(to).locale(i18n.language).format('hh:mm A'))}
           </p>
         </Grid>
-        <Grid xs={1}>{isLoading && <CircularProgress size="20px" />}</Grid>
+        <Grid size={{ xs: 1 }}>{isLoading && <CircularProgress size="20px" />}</Grid>
       </Grid>
       <div className={`map-info ${isExpanded ? 'expanded' : 'collapsed'}`}>
         <IconButton color="primary" className="expand-button" onClick={toggleExpanded}>

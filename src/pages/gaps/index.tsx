@@ -4,7 +4,7 @@ import moment, { Moment } from 'moment'
 import styled from 'styled-components'
 import { useSessionStorage } from 'usehooks-ts'
 import { FormControlLabel, Switch } from '@mui/material'
-import Grid from '@mui/material/GridLegacy'
+import Grid from '@mui/material/Grid'
 import CircularProgress from '@mui/material/CircularProgress'
 import axios from 'axios'
 import Typography from '@mui/material/Typography'
@@ -124,10 +124,10 @@ const GapsPage = () => {
       </Alert>
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
         {/* choose date */}
-        <Grid xs={4}>
+        <Grid size={{ xs: 4 }}>
           <Label text={t('choose_date')} />
         </Grid>
-        <Grid xs={8}>
+        <Grid size={{ xs: 8 }}>
           <DateSelector
             time={moment(timestamp)}
             onChange={(ts) =>
@@ -136,27 +136,27 @@ const GapsPage = () => {
           />
         </Grid>
         {/* choose operator */}
-        <Grid xs={4}>
+        <Grid size={{ xs: 4 }}>
           <Label text={t('choose_operator')} />
         </Grid>
-        <Grid xs={8}>
+        <Grid size={{ xs: 8 }}>
           <OperatorSelector
             operatorId={operatorId}
             setOperatorId={(id) => setSearch((current) => ({ ...current, operatorId: id }))}
           />
         </Grid>
         {/* choose line */}
-        <Grid xs={4}>
+        <Grid size={{ xs: 4 }}>
           <Label text={t('choose_line')} />
         </Grid>
-        <Grid xs={8}>
+        <Grid size={{ xs: 8 }}>
           <LineNumberSelector
             lineNumber={lineNumber}
             setLineNumber={(number) => setSearch((current) => ({ ...current, lineNumber: number }))}
           />
         </Grid>
         {/* choose routes */}
-        <Grid xs={12}>
+        <Grid size={{ xs: 12 }}>
           {routesIsLoading && (
             <Row>
               <Label text={t('loading_routes')} />
@@ -175,7 +175,7 @@ const GapsPage = () => {
               />
             ))}
         </Grid>
-        <Grid xs={12}>
+        <Grid size={{ xs: 12 }}>
           {gapsIsLoading && (
             <Row>
               <Label text={t('loading_gaps')} />

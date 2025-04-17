@@ -2,7 +2,7 @@ import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import styled from 'styled-components'
 import { useTranslation } from 'react-i18next'
 import moment from 'moment'
-import Grid from '@mui/material/GridLegacy'
+import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
 import Alert from '@mui/material/Alert'
 import CircularProgress from '@mui/material/CircularProgress'
@@ -150,10 +150,10 @@ const TimelinePage = () => {
 
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
         {/* choose date */}
-        <Grid xs={4} className="hideOnMobile">
+        <Grid size={{ xs: 4 }} className="hideOnMobile">
           <Label text={t('choose_date')} />
         </Grid>
-        <Grid sm={8} xs={12}>
+        <Grid size={{ sm: 8, xs: 12 }}>
           <DateSelector
             time={moment(timestamp)}
             onChange={(ts) =>
@@ -162,27 +162,27 @@ const TimelinePage = () => {
           />
         </Grid>
         {/* choose operator */}
-        <Grid xs={4} className="hideOnMobile">
+        <Grid size={{ xs: 4 }} className="hideOnMobile">
           <Label text={t('choose_operator')} />
         </Grid>
-        <Grid sm={8} xs={12}>
+        <Grid size={{ sm: 8, xs: 12 }}>
           <OperatorSelector
             operatorId={operatorId}
             setOperatorId={(id) => setSearch((current) => ({ ...current, operatorId: id }))}
           />
         </Grid>
         {/* choose line */}
-        <Grid xs={4} className="hideOnMobile">
+        <Grid size={{ xs: 4 }} className="hideOnMobile">
           <Label text={t('choose_line')} />
         </Grid>
-        <Grid sm={8} xs={12}>
+        <Grid size={{ sm: 8, xs: 12 }}>
           <LineNumberSelector
             lineNumber={lineNumber}
             setLineNumber={(number) => setSearch((current) => ({ ...current, lineNumber: number }))}
           />
         </Grid>
         {/* routes */}
-        <Grid xs={12}>
+        <Grid size={{ xs: 12 }}>
           {routesIsLoading && (
             <Row>
               <Label text={t('loading_routes')} />
@@ -202,7 +202,7 @@ const TimelinePage = () => {
             ))}
         </Grid>
         {/* stops */}
-        <Grid xs={12}>
+        <Grid size={{ xs: 12 }}>
           {stopsIsLoading && (
             <Row>
               <Label text={t('loading_stops')} />
@@ -223,7 +223,7 @@ const TimelinePage = () => {
           )}
         </Grid>
         {/* its Loading */}
-        <Grid xs={12}>
+        <Grid size={{ xs: 12 }}>
           {hitsIsLoading && (
             <Row>
               <Label text={t('loading_hits')} />
