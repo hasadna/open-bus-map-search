@@ -38,7 +38,7 @@ const WhatIsWebsite = () => {
     <Widget>
       <h2>{t('what_is_website')}</h2>
       <p>{t('what_is_website_paragraph')}</p>
-      <ul style={{ listStyle: 'disc', paddingRight: '40px' }}>
+      <ul style={{ listStyle: 'disc', paddingInlineStart: '40px' }}>
         <li>{t('planning_information')}</li>
         <li>{t('performance_information')}</li>
       </ul>
@@ -50,9 +50,9 @@ const YoutubePlaylist = () => {
     <iframe
       width="560"
       height="315"
+      style={{ border: 'none' }}
       src="https://www.youtube.com/embed/videoseries?si=oTULlxq8Is188hPu&amp;list=PL6Rh06rT7uiX1AQE-lm55hy-seL3idx3T"
       title="YouTube video player"
-      frameBorder="0"
       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
       referrerPolicy="strict-origin-when-cross-origin"
       allowFullScreen></iframe>
