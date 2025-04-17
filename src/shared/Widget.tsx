@@ -1,5 +1,4 @@
-import Card from '@mui/material/Card'
-import CardContent from '@mui/material/CardContent'
+import { Card, CardContent } from '@mui/material'
 import cn from 'classnames'
 
 import { useTheme } from 'src/layout/ThemeContext'

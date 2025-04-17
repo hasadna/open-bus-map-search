@@ -2,14 +2,10 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { MapContainer, Marker, Polyline, Popup, TileLayer, useMap } from 'react-leaflet'
 import MarkerClusterGroup from 'react-leaflet-cluster'
 import { useTranslation } from 'react-i18next'
-import Alert from '@mui/material/Alert'
-import Typography from '@mui/material/Typography'
-import CircularProgress from '@mui/material/CircularProgress'
-import IconButton from '@mui/material/IconButton'
-import OpenInFullRoundedIcon from '@mui/icons-material/OpenInFullRounded'
+import { Alert, Typography, CircularProgress, Grid, IconButton } from '@mui/material'
+import { OpenInFullRounded } from '@mui/icons-material/'
 import moment from 'moment'
 import '../Map.scss'
-import Grid from '@mui/material/Grid'
 import MinuteSelector from '../components/MinuteSelector'
 import { DateSelector } from '../components/DateSelector'
 import { PageContainer } from '../components/PageContainer'
@@ -167,7 +163,7 @@ export default function TimeBasedMapPage() {
       </Grid>
       <div className={`map-info ${isExpanded ? 'expanded' : 'collapsed'}`}>
         <IconButton color="primary" className="expand-button" onClick={toggleExpanded}>
-          <OpenInFullRoundedIcon fontSize="large" />
+          <OpenInFullRounded fontSize="large" />
         </IconButton>
         <MapContainer center={position.loc} zoom={8} scrollWheelZoom={true}>
           <TileLayer

@@ -2,11 +2,8 @@ import { useContext, useEffect, useState } from 'react'
 import './GapsPatternsPage.scss'
 import { Moment } from 'moment'
 import { Skeleton, Radio, RadioChangeEvent, Space } from 'antd'
-import CircularProgress from '@mui/material/CircularProgress'
+import { CircularProgress, Grid, Typography, Alert } from '@mui/material'
 import moment from 'moment/moment'
-import Grid from '@mui/material/Grid'
-import Typography from '@mui/material/Typography'
-import Alert from '@mui/material/Alert'
 import {
   Bar,
   CartesianGrid,

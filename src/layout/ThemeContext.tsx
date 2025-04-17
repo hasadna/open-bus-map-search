@@ -1,10 +1,10 @@
-import { FC, PropsWithChildren, createContext, useContext, useMemo } from 'react'
-import { ThemeProvider as MuiThemeProvider, createTheme } from '@mui/material/styles'
 import ScopedCssBaseline from '@mui/material/ScopedCssBaseline'
+import { ThemeProvider as MuiThemeProvider, createTheme } from '@mui/material/styles'
 import { LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 import { ConfigProvider, theme } from 'antd'
 import heIL from 'antd/es/locale/he_IL'
+import { PropsWithChildren, createContext, useContext, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLocalStorage } from 'src/locale/useLocalStorage'
 
@@ -18,7 +18,7 @@ const ThemeContext = createContext({} as ThemeContextInterface)
 
 const { defaultAlgorithm, darkAlgorithm } = theme
 
-export const ThemeProvider: FC<PropsWithChildren> = ({ children }) => {
+export const ThemeProvider = ({ children }: PropsWithChildren) => {
   const [isDarkTheme, setIsDarkTheme] = useLocalStorage<boolean>('isDarkTheme')
   const { i18n } = useTranslation()
 

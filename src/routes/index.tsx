@@ -31,7 +31,7 @@ import {
   LineChartOutlined,
   GithubOutlined,
 } from '@ant-design/icons'
-import PsychologyIcon from '@mui/icons-material/Psychology'
+import { Psychology } from '@mui/icons-material'
 import { MainRoute } from './MainRoute'
 import { ErrorPage } from 'src/pages/ErrorPage'
 
@@ -96,7 +96,7 @@ export const PAGES = [
   {
     label: 'public_appeal_title',
     path: '/public-appeal',
-    icon: <PsychologyIcon />,
+    icon: <Psychology />,
     element: <PublicAppeal />,
   },
 ] as const

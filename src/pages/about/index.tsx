@@ -1,7 +1,6 @@
 import styled from 'styled-components'
 import { Trans, useTranslation } from 'react-i18next'
-import Typography from '@mui/material/Typography'
-import Stack from '@mui/material/Stack'
+import { Typography, Stack } from '@mui/material'
 import './About.scss'
 import { useQuery } from '@tanstack/react-query'
 import SlackIcon from '../../resources/slack-icon.svg'

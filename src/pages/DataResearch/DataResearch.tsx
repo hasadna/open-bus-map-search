@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react'
 import moment from 'moment'
-import Grid from '@mui/material/Grid'
+import { Grid } from '@mui/material'
 import { useTranslation } from 'react-i18next'
 import { Skeleton } from 'antd'
 import {
