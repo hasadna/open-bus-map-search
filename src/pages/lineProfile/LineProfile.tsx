@@ -29,7 +29,7 @@ const LineProfileWrapper = () => (
 
 const LineProfile = () => {
   const { t } = useTranslation()
-  const route = useLoaderData() as Route & { message?: string }
+  const route = useLoaderData<Route & { message?: string }>()
   const [state, setState] = useState<TimelinePageState>({})
   const { stopKey, stops } = state
   const { search, setSearch } = useContext(SearchContext)
