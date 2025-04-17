@@ -34,6 +34,14 @@ const meta: Meta<typeof OperatorSelector> = {
         defaultValue: { summary: 'undefined' },
       },
     },
+    disabled: {
+      description: 'Whether the operator selector is disabled.',
+      control: { type: 'boolean' },
+      table: {
+        type: { summary: 'boolean' },
+        defaultValue: { summary: 'false' },
+      },
+    },
   },
   tags: ['autodocs'],
   decorators: [
@@ -68,3 +76,9 @@ export const MarjorOperators: Story = {
 }
 
 export const AllOperators: Story = {}
+
+export const Disabled: Story = {
+  args: {
+    disabled: true,
+  },
+}
