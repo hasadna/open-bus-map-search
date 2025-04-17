@@ -31,16 +31,14 @@ const meta: Meta<typeof InfoYoutubeModal> = {
       const { t } = useTranslation()
 
       return (
-        <div>
-          <Story
-            args={{
-              label: t('open_video_about_this_page'),
-              title: t('youtube_modal_info_title'),
-              videoUrl:
-                'https://www.youtube-nocookie.com/embed?v=F6sD9Bz4Xj0&list=PL6Rh06rT7uiX1AQE-lm55hy-seL3idx3T&index=11',
-            }}
-          />
-        </div>
+        <Story
+          args={{
+            label: t('open_video_about_this_page'),
+            title: t('youtube_modal_info_title'),
+            videoUrl:
+              'https://www.youtube-nocookie.com/embed?v=F6sD9Bz4Xj0&list=PL6Rh06rT7uiX1AQE-lm55hy-seL3idx3T&index=11',
+          }}
+        />
       )
     },
   ],
