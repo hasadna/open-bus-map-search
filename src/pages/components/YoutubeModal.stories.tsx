@@ -26,6 +26,13 @@ const meta: Meta<typeof InfoYoutubeModal> = {
       },
     },
   },
+}
+
+export default meta
+
+type Story = StoryObj<typeof meta>
+
+export const Default: Story = {
   decorators: [
     (Story) => {
       const { t } = useTranslation()
@@ -43,9 +50,3 @@ const meta: Meta<typeof InfoYoutubeModal> = {
     },
   ],
 }
-
-export default meta
-
-type Story = StoryObj<typeof meta>
-
-export const Default: Story = {}

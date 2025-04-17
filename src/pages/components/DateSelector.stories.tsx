@@ -1,5 +1,4 @@
 import { Meta, StoryObj } from '@storybook/react'
-import { fn } from '@storybook/test'
 import moment from 'moment'
 import { DateSelector } from './DateSelector'
 
@@ -15,7 +14,6 @@ const meta: Meta<typeof DateSelector> = {
     layout: 'centered',
   },
   args: {
-    onChange: fn(),
     time: moment().startOf('day'),
   },
   argTypes: {
