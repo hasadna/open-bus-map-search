@@ -3,7 +3,7 @@ import { MapContainer, Marker, Polyline, Popup, TileLayer, useMap } from 'react-
 import MarkerClusterGroup from 'react-leaflet-cluster'
 import { useTranslation } from 'react-i18next'
 import { Alert, Typography, CircularProgress, Grid, IconButton } from '@mui/material'
-import { OpenInFullRounded } from '@mui/icons-material/'
+import { OpenInFullRounded } from '@mui/icons-material'
 import moment from 'moment'
 import '../Map.scss'
 import MinuteSelector from '../components/MinuteSelector'
