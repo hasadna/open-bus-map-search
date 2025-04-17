@@ -1,7 +1,7 @@
 import './sidebar.scss'
 import { Drawer, Layout } from 'antd'
 import { useContext, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router'
 import { useTranslation } from 'react-i18next'
 import { LayoutContextInterface, LayoutCtx } from '../LayoutContext'
 import Menu from './menu/Menu'

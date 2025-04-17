@@ -1,4 +1,4 @@
-import { Navigate, Route, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
+import { Navigate, Route, createBrowserRouter, createRoutesFromElements } from 'react-router'
 import { lazy } from 'react'
 
 const HomePage = lazy(() => import('../pages/homepage/HomePage'))

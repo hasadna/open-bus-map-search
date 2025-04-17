@@ -1,5 +1,5 @@
 import { ReactNode, useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router'
 import { Button, CircularProgress } from '@mui/material'
 import moment from 'moment-timezone'
 import './BusToolTip.scss'

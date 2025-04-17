@@ -1,6 +1,6 @@
 import { Grid, CircularProgress } from '@mui/material'
 import { useTranslation } from 'react-i18next'
-import { useLoaderData } from 'react-router-dom'
+import { useLoaderData } from 'react-router'
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import moment from 'moment'
 import { Tooltip } from 'antd'
