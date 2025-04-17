@@ -276,6 +276,7 @@ function useContributions(start: Date = new Date('2023-01-01'), end: Date = new 
       .reduce(combineAuthor, [] as Author[])
     return { contributors, isLoading, isError }
   } catch (error) {
+    console.error(error)
     return { contributors: [] as const, isLoading: false, isError: true }
   }
 }

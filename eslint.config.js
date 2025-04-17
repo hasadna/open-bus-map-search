@@ -18,6 +18,19 @@ export default [
   ...compat.extends('plugin:@typescript-eslint/recommended', 'plugin:react/recommended'),
   eslintPluginPrettierRecommended,
   {
+    ignores: [
+      'dist',
+      'coverage',
+      'test-results',
+      'playwright-report',
+      'storybook-static',
+      '.nx',
+      'jest.config.ts',
+      '**/*.js',
+      'public',
+    ],
+  },
+  {
     plugins: {
       react: eslintPluginReact,
       'react-hooks': eslintPluginReactHooks,
@@ -27,16 +40,15 @@ export default [
     },
   },
   {
-    settings: { 'import/resolver': { typescript: {} }, react: { version: 'detect' } },
+    settings: { 'import/resolver': { typescript: true }, react: { version: 'detect' } },
     languageOptions: {
       parser: typescriptEslintParser,
       parserOptions: {
         ecmaFeatures: { jsx: true },
-        ecmaVersion: 12,
         sourceType: 'module',
         project: './tsconfig.json',
       },
-      globals: { ...globals.browser, ...globals.es2021 },
+      globals: { ...globals.browser, ...globals.jest },
     },
   },
   {
@@ -70,19 +82,5 @@ export default [
         },
       ],
     },
-  },
-  {
-    ignores: [
-      'dist',
-      'coverage',
-      'test-results',
-      'playwright-report',
-      'storybook-static',
-      'eslint.config.js',
-      '.nx',
-      'jest.config.ts',
-      'sitemap.js',
-      'public',
-    ],
   },
 ]

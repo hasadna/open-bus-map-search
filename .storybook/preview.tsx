@@ -16,7 +16,6 @@ const preview: Preview = {
   decorators: [
     (Story, context) => {
       const { locale, darkMode } = context.globals
-
       return (
         <Suspense>
           <ThemeProvider>

@@ -25,9 +25,9 @@ type StopHitsPayLoadType = {
 export async function getRoutesAsync(
   fromTimestamp: moment.Moment,
   toTimestamp: moment.Moment,
-  operatorId: string | undefined,
-  lineNumber: string | undefined,
-  signal?: AbortSignal | undefined,
+  operatorId?: string,
+  lineNumber?: string,
+  signal?: AbortSignal,
 ): Promise<BusRoute[]> {
   const gtfsRoutes = await GTFS_API.gtfsRoutesListGet(
     {
