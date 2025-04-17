@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/playwright:v1.38.0-jammy
+FROM mcr.microsoft.com/playwright:v1.52.0-noble
 
 COPY complaint.js /complaint.js
 COPY package.json /package.json
