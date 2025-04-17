@@ -12,7 +12,7 @@ export function useLocalStorage<T>(key: string) {
 
     return [state, setItem] as const
   } catch (error) {
-    console.log('No support for local storage')
+    console.log('No support for local storage', error)
     return [
       undefined,
       () => {
