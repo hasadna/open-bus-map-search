@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Skeleton, Radio, RadioChangeEvent } from 'antd'
 import { Moment } from 'moment/moment'
@@ -24,9 +24,9 @@ interface DayTimeChartProps {
   operatorId: string
 }
 
-const DayTimeChart: FC<DayTimeChartProps> = ({ startDate, endDate, operatorId }) => {
+const DayTimeChart = ({ startDate, endDate, operatorId }: DayTimeChartProps) => {
   const { t } = useTranslation()
-  const [groupByHour, setGroupByHour] = React.useState<boolean>(false)
+  const [groupByHour, setGroupByHour] = useState<boolean>(false)
 
   const [data, loadingGraph] = useGroupBy({
     dateTo: endDate,

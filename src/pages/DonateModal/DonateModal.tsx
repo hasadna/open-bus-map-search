@@ -20,7 +20,7 @@ const boxStyle = {
   p: 4,
 } as const
 
-export const DonateModal: React.FC<DonateModalProps> = ({ isVisible, onClose }) => {
+export const DonateModal = ({ isVisible, onClose }: DonateModalProps) => {
   /**
    * @description This hook is used to determine if the image should collapse or not based on if the user is a mobile, tablet user or not.
    */

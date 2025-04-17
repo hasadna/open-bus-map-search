@@ -1,11 +1,8 @@
-import React from 'react'
 import './LineProfileDetails.scss'
 import { useTranslation } from 'react-i18next'
 import { Route } from './Route.interface'
 
-type Props = Route
-
-export const LineProfileDetails: React.FC<Props> = ({
+export const LineProfileDetails = ({
   id,
   date,
   line_ref,
@@ -17,7 +14,7 @@ export const LineProfileDetails: React.FC<Props> = ({
   route_alternative,
   agency_name,
   route_type,
-}) => {
+}: Route) => {
   const { t } = useTranslation()
 
   const [route_start, route_end] = route_long_name.split('<->')
