@@ -65,7 +65,7 @@ const objectToTreeNode = <T extends Record<string, unknown>>(
 }
 
 // Render tree function utilizing the TreeNode interface
-const renderTree = <T extends BaseTreeNode>(nodes: TreeNode<T>): JSX.Element => (
+const renderTree = <T extends BaseTreeNode>(nodes: TreeNode<T>) => (
   <TreeItem key={nodes.id} itemId={nodes.id} label={nodes.name}>
     {nodes.children?.map((node) => renderTree(node))}
   </TreeItem>
