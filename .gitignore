@@ -31,3 +31,4 @@ npm-debug.log*
 storybook-static
 
 .nx/cache
+.nx/workspace-data
