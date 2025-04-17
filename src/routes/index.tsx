@@ -143,7 +143,6 @@ export const getRoutesList = () => {
           const resp = await fetch(
             `https://open-bus-stride-api.hasadna.org.il/gtfs_routes/get?id=${gtfsRideGtfsRouteId}`,
           )
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-return
           return await resp.json()
         }}
       />
