@@ -4,7 +4,7 @@ import moment, { Moment } from 'moment'
 import styled from 'styled-components'
 import { useSessionStorage } from 'usehooks-ts'
 import { FormControlLabel, Switch } from '@mui/material'
-import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
+import Grid from '@mui/material/GridLegacy'
 import CircularProgress from '@mui/material/CircularProgress'
 import axios from 'axios'
 import Typography from '@mui/material/Typography'

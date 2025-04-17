@@ -1,7 +1,7 @@
 import moment from 'moment'
 import { useContext, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import Grid from '@mui/material/Unstable_Grid2'
+import Grid from '@mui/material/GridLegacy'
 import { CircularProgress, Tooltip } from '@mui/material'
 import Typography from '@mui/material/Typography'
 import { SearchContext } from '../../model/pageState'

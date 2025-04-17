@@ -8,7 +8,7 @@ import 'src/App.scss'
 import { useTranslation } from 'react-i18next'
 import Typography from '@mui/material/Typography'
 import Alert from '@mui/material/Alert'
-import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
+import Grid from '@mui/material/GridLegacy'
 import { useDate } from '../components/DateTimePicker'
 import { DateSelector } from '../components/DateSelector'
 import { PageContainer } from '../components/PageContainer'

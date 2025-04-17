@@ -4,7 +4,7 @@ import { Moment } from 'moment'
 import { Skeleton, Radio, RadioChangeEvent, Space } from 'antd'
 import CircularProgress from '@mui/material/CircularProgress'
 import moment from 'moment/moment'
-import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
+import Grid from '@mui/material/GridLegacy'
 import Typography from '@mui/material/Typography'
 import Alert from '@mui/material/Alert'
 import {

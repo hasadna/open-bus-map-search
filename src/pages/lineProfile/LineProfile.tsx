@@ -1,4 +1,4 @@
-import Grid from '@mui/material/Unstable_Grid2'
+import Grid from '@mui/material/GridLegacy'
 import { useTranslation } from 'react-i18next'
 import { useLoaderData } from 'react-router-dom'
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'

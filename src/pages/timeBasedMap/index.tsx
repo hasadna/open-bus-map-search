@@ -9,7 +9,7 @@ import IconButton from '@mui/material/IconButton'
 import OpenInFullRoundedIcon from '@mui/icons-material/OpenInFullRounded'
 import moment from 'moment'
 import '../Map.scss'
-import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
+import Grid from '@mui/material/GridLegacy'
 import MinuteSelector from '../components/MinuteSelector'
 import { DateSelector } from '../components/DateSelector'
 import { PageContainer } from '../components/PageContainer'
