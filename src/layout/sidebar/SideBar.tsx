@@ -2,6 +2,7 @@ import './sidebar.scss'
 import { Drawer, Layout } from 'antd'
 import { useContext, useState } from 'react'
 import { Link } from 'react-router'
+import { useTranslation } from 'react-i18next'
 import { LayoutContextInterface, LayoutCtx } from '../LayoutContext'
 import Menu from './menu/Menu'
 import { Logo } from './logo'
@@ -13,11 +14,12 @@ const CollapsedLogo = () => <h1 className={'sidebar-logo-collapsed'}>🚌</h1>
 export default function SideBar() {
   const { drawerOpen, setDrawerOpen } = useContext<LayoutContextInterface>(LayoutCtx)
   const [collapsed, setCollapsed] = useState(false)
+  const { i18n } = useTranslation()
 
   return (
     <>
       <Drawer
-        placement="right"
+        placement={i18n.dir() === 'rtl' ? 'right' : 'left'}
         mask
         width={280}
         onClose={() => setDrawerOpen(false)}
