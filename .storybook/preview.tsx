@@ -1,6 +1,7 @@
 import type { Preview } from '@storybook/react'
 import { Suspense, useEffect } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { BrowserRouter } from 'react-router-dom'
 import { ThemeProvider, useTheme } from 'src/layout/ThemeContext'
 import i18n from 'src/locale/allTranslations'
 
@@ -33,13 +34,15 @@ const preview: Preview = {
       const { locale, darkMode } = context.globals
       return (
         <Suspense>
-          <QueryClientProvider client={queryClient}>
-            <ThemeProvider>
-              <StoryBookWrapper locale={locale} darkMode={darkMode}>
-                <Story />
-              </StoryBookWrapper>
-            </ThemeProvider>
-          </QueryClientProvider>
+          <BrowserRouter>
+            <QueryClientProvider client={queryClient}>
+              <ThemeProvider>
+                <StoryBookWrapper locale={locale} darkMode={darkMode}>
+                  <Story />
+                </StoryBookWrapper>
+              </ThemeProvider>
+            </QueryClientProvider>
+          </BrowserRouter>
         </Suspense>
       )
     },

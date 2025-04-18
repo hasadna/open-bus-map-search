@@ -1,26 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { BusToolTip, BusToolTipProps } from './BusToolTip'
-import Widget from 'src/shared/Widget'
 
-const meta = {
-  title: 'Map/MapLayers/BusToolTip',
-  component: BusToolTip,
-  parameters: {
-    layout: 'centered',
-  },
-  decorators: [
-    (Story) => (
-      <Widget>
-        <Story />
-      </Widget>
-    ),
-  ],
-  tags: ['autodocs'],
-} satisfies Meta<typeof BusToolTip>
-
-export default meta
-
-type Story = StoryObj<typeof meta>
+import { BusToolTipProps } from '../MapLayers/BusToolTip'
+import MapFooterButtons from './MapFooterButtons'
 
 const defaultArgs: BusToolTipProps = {
   position: {
@@ -58,6 +39,22 @@ const defaultArgs: BusToolTipProps = {
   icon: '/bus-logos/3.svg',
 }
 
-export const Default: Story = {
-  args: defaultArgs,
-}
+const meta = {
+  component: MapFooterButtons,
+  title: 'Map/MapLayers/MapFooterButtons',
+  tags: ['autodocs'],
+  parameters: {
+    layout: 'centered',
+  },
+  args: {
+    positions: [defaultArgs.position],
+    index: 3,
+    navigateMarkers: () => {},
+  },
+} satisfies Meta<typeof MapFooterButtons>
+
+export default meta
+
+type Story = StoryObj<typeof meta>
+
+export const Default: Story = {}

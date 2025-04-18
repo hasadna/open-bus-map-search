@@ -53,6 +53,13 @@ const meta: Meta<typeof FilterPositionsByStartTimeSelector> = {
         },
       },
     },
+    disabled: {
+      control: { type: 'boolean' },
+      description: 'Disables the Filter Positions By Start Time Selector',
+      table: {
+        type: { summary: 'boolean' },
+      },
+    },
   },
   decorators: [
     (Story, meta) => {
