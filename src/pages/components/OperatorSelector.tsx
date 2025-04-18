@@ -6,28 +6,30 @@ import { Operator, getOperators } from 'src/model/operator'
 type OperatorSelectorProps = {
   operatorId?: string
   setOperatorId: (operatorId: string) => void
+  disabled?: boolean
   filter?: string[]
 }
 
 export default function OperatorSelector({
   operatorId,
   setOperatorId,
+  disabled,
   filter,
 }: OperatorSelectorProps) {
   const { t } = useTranslation()
   const [operators, setOperators] = useState<Operator[]>([])
 
   useEffect(() => {
-    getOperators(filter).then((o) => setOperators(o))
+    getOperators(filter).then(setOperators)
   }, [filter])
 
-  const valueFinned = operators.find((operator) => operator.id === operatorId)
-  const value = valueFinned ? valueFinned : null
+  const value = operators.find((operator) => operator.id === operatorId)
 
   return (
     <Autocomplete
       disablePortal
-      style={{ width: '100%' }}
+      disabled={disabled}
+      fullWidth
       value={value}
       onChange={(_, value) => setOperatorId(value ? value.id : '')}
       id="operator-select"

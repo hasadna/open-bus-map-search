@@ -15,8 +15,8 @@ import { Point } from 'src/pages/timeBasedMap'
 import { getSiriRideWithRelated } from 'src/api/siriService'
 
 interface ComplaintModalProps {
-  modalOpen: boolean
-  setModalOpen: (open: boolean) => void
+  modalOpen?: boolean
+  setModalOpen?: (open: boolean) => void
   position: Point
 }
 
@@ -54,7 +54,7 @@ const complaintTypes: complaintType[] = [
   { value: 'station_signs', label: 'station_signs' },
 ]
 
-const ComplaintModal = ({ modalOpen, setModalOpen, position }: ComplaintModalProps) => {
+const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: ComplaintModalProps) => {
   const { t, i18n } = useTranslation()
   const [siriRide, setSiriRide] = useState<SiriRideWithRelatedPydanticModel | undefined>()
   const [isLoading, setIsLoading] = useState(false)
@@ -103,7 +103,7 @@ const ComplaintModal = ({ modalOpen, setModalOpen, position }: ComplaintModalPro
     }
     console.log(complaintPayload)
     // Handle the form submission, e.g., send it to an API
-    setModalOpen(false)
+    setModalOpen?.(false)
   }
 
   return (
@@ -117,7 +117,7 @@ const ComplaintModal = ({ modalOpen, setModalOpen, position }: ComplaintModalPro
         <Dialog
           dir={textDirection}
           open={modalOpen}
-          onClose={() => setModalOpen(false)}
+          onClose={() => setModalOpen?.(false)}
           PaperProps={{
             component: 'form',
             onSubmit: handleSubmit,
@@ -193,7 +193,7 @@ const ComplaintModal = ({ modalOpen, setModalOpen, position }: ComplaintModalPro
               margin="normal"
             />
             <DialogActions sx={{ gap: '5px', justifyContent: 'flex-end' }}>
-              <Button variant="contained" color="warning" onClick={() => setModalOpen(false)}>
+              <Button variant="contained" color="warning" onClick={() => setModalOpen?.(false)}>
                 {t('close_complaint')}
               </Button>
               <Button type="submit" variant="contained" color="primary">
