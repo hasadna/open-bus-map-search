@@ -31,7 +31,7 @@ const HoverTarget = styled.div<HorizontalLineProps>`
 `
 
 export const HorizontalLine = ({ top }: HorizontalLineProps) => {
-  const hoverRef = useRef<HTMLDivElement>(null!)
+  const hoverRef = useRef<HTMLDivElement>(null)
   const isHovering = useHover(hoverRef)
   return (
     <>

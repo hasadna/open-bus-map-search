@@ -2,6 +2,7 @@ import { Tooltip } from '@mui/material'
 import { Skeleton } from 'antd'
 import { Fragment } from 'react'
 import { useTranslation } from 'react-i18next'
+import { FC } from 'react'
 import { Moment } from 'moment/moment'
 import { InfoCircleOutlined } from '@ant-design/icons'
 import OperatorHbarChart from './OperatorHbarChart/OperatorHbarChart'
@@ -22,7 +23,7 @@ interface AllChartComponentProps {
   endDate: Moment
 }
 
-export const AllLinesChart = ({ startDate, endDate }: AllChartComponentProps) => {
+export const AllLinesChart: FC<AllChartComponentProps> = ({ startDate, endDate }) => {
   const [groupByOperatorData, groupByOperatorLoading] = useGroupBy({
     dateTo: endDate,
     dateFrom: startDate,

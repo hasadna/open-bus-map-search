@@ -1,7 +1,9 @@
+import { FC } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router'
-import { HEADER_LINKS } from 'src/routes'
+
 import './HeaderLinks.scss'
+import { HEADER_LINKS } from 'src/routes'
 
 type LinkType = Omit<(typeof HEADER_LINKS)[number], 'element'>
 
@@ -9,7 +11,7 @@ type HeaderLinksProps = {
   children?: React.ReactNode
 }
 
-const HeaderLinks = ({ children }: HeaderLinksProps) => {
+const HeaderLinks: FC<HeaderLinksProps> = ({ children }) => {
   return (
     <div className="header-links">
       {children}

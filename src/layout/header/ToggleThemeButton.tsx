@@ -1,12 +1,13 @@
-import { BulbFilled, BulbOutlined } from '@ant-design/icons'
+import React from 'react'
 import { useTranslation } from 'react-i18next'
+import { BulbFilled, BulbOutlined } from '@ant-design/icons'
 
 interface ToggleThemeButtonProps {
   toggleTheme: () => void
   isDarkTheme?: boolean
 }
 
-const ToggleThemeButton = ({ toggleTheme, isDarkTheme }: ToggleThemeButtonProps) => {
+const ToggleThemeButton: React.FC<ToggleThemeButtonProps> = ({ toggleTheme, isDarkTheme }) => {
   const { t } = useTranslation()
 
   const tooltip_title = isDarkTheme ? t('light_mode_tooltip') : t('dark_mode_tooltip')
