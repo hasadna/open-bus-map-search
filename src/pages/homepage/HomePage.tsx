@@ -1,4 +1,4 @@
-import { NavLink, To } from 'react-router-dom'
+import { NavLink, To } from 'react-router'
 import './HomePage.scss'
 import { useTranslation } from 'react-i18next'
 import {

@@ -40,12 +40,14 @@ const LineSelector = ({ lineNumber, setLineNumber }: LineSelectorProps) => {
         setValue(e.target.value)
         debouncedSetLineNumber(e.target.value)
       }}
-      InputLabelProps={{
-        shrink: true,
-      }}
-      InputProps={{
-        placeholder: t('line_placeholder'),
-        endAdornment: <ClearButton onClearInput={handleClearInput} />,
+      slotProps={{
+        inputLabel: {
+          shrink: true,
+        },
+        input: {
+          placeholder: t('line_placeholder'),
+          endAdornment: <ClearButton onClearInput={handleClearInput} />,
+        },
       }}
     />
   )

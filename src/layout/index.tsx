@@ -1,6 +1,6 @@
 import { Layout } from 'antd'
 import styled from 'styled-components'
-import { Link, Outlet } from 'react-router-dom'
+import { Link, Outlet } from 'react-router'
 import { Suspense } from 'react'
 import MainHeader from './header/Header'
 import SideBar from './sidebar/SideBar'

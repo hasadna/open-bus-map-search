@@ -26,11 +26,13 @@ const MinuteSelector = ({ num, setNum }: MinuteSelectorProps) => {
       type="number"
       value={num}
       onChange={(e) => setNum(+e.target.value)}
-      InputLabelProps={{
-        shrink: true,
-      }}
-      InputProps={{
-        endAdornment: <ClearButton onClearInput={handleClearInput} />,
+      slotProps={{
+        inputLabel: {
+          shrink: true,
+        },
+        input: {
+          endAdornment: <ClearButton onClearInput={handleClearInput} />,
+        },
       }}
     />
   )

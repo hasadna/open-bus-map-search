@@ -53,7 +53,7 @@ export const ThemeProvider: FC<PropsWithChildren> = ({ children }) => {
   return (
     <LocalizationProvider dateAdapter={AdapterMoment} adapterLocale={i18n.language}>
       <ConfigProvider
-        direction={i18n.dir()}
+        direction={i18n.language === 'he' ? 'rtl' : 'ltr'}
         locale={heIL}
         theme={{
           algorithm: isDarkTheme ? darkAlgorithm : defaultAlgorithm,
