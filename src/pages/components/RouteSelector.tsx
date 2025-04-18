@@ -21,11 +21,7 @@ const getRouteTitle = (route: BusRoute, t: TFunction<'translation', undefined>) 
 
 const RouteSelector = ({ routes, routeKey, disabled, setRouteKey }: RouteSelectorProps) => {
   const { t } = useTranslation()
-  const value = routes.find((route) => {
-    console.log(route.key, routeKey)
-
-    return route.key === routeKey
-  })
+  const value = routes.find((route) => route.key === routeKey)
 
   useEffect(() => {
     routes.sort((a, b) => {

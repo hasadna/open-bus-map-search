@@ -23,13 +23,13 @@ const meta: Meta<{ items: number }> = {
   },
   decorators: [
     (Story, meta) => (
-      <Story>
+      <Row>
         {Array.from({ length: meta.args.items }).map((_, i) => (
           <Widget key={i}>
             <div style={{ width: 50, height: 50 }} />
           </Widget>
         ))}
-      </Story>
+      </Row>
     ),
   ],
 }
@@ -38,8 +38,4 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-export const Default: Story = {
-  args: {
-    items: 3,
-  },
-}
+export const Default: Story = {}
