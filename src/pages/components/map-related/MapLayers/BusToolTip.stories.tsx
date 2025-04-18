@@ -8,7 +8,7 @@ const meta = {
   parameters: {
     layout: 'centered',
   },
-  tags: ['map', 'tooltip', 'autodocs'],
+  tags: ['autodocs'],
 } satisfies Meta<typeof BusToolTip>
 
 export default meta

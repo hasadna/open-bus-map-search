@@ -4,7 +4,7 @@ import { HbarChart, Entry } from './HbarChart'
 const meta = {
   title: 'Components/MapLayers/HbarChart',
   component: HbarChart,
-  tags: ['map', 'tooltip', 'autodocs'],
+  tags: ['autodocs'],
 } satisfies Meta<typeof HbarChart>
 
 export default meta
