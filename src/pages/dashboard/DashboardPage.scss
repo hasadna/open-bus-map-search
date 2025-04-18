@@ -1,4 +1,4 @@
-@use '../../resources/variables' as *;
+@use "../../resources/variables" as *;
 
 .title {
   font-weight: 500;
@@ -6,7 +6,9 @@
   line-height: 35px;
 }
 
-.widget .chart {
-  height: 400px;
-  overflow-y: scroll;
+.widget {
+  .chart {
+    height: 400px;
+    overflow-y: scroll;
+  }
 }

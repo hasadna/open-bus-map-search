@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import React from 'react'
 import { Box, Grid, Modal, Typography, useMediaQuery, useTheme } from '@mui/material'
 import { useTranslation } from 'react-i18next'
 interface DonateModalProps {
@@ -20,7 +20,7 @@ const boxStyle = {
   p: 4,
 } as const
 
-export const DonateModal: FC<DonateModalProps> = ({ isVisible, onClose }) => {
+export const DonateModal: React.FC<DonateModalProps> = ({ isVisible, onClose }) => {
   /**
    * @description This hook is used to determine if the image should collapse or not based on if the user is a mobile, tablet user or not.
    */

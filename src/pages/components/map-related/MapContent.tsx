@@ -92,9 +92,7 @@ export function MapContent({ positions, plannedRouteStops, showNavigationButtons
             : actualRouteStopMarker
         return (
           <Marker
-            ref={(ref) => {
-              markerRef.current[i] = ref
-            }}
+            ref={(ref) => (markerRef.current[i] = ref)}
             position={pos.loc}
             icon={icon}
             key={i}>

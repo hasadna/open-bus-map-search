@@ -12,9 +12,9 @@ const { Sider } = Layout
 const CollapsedLogo = () => <h1 className={'sidebar-logo-collapsed'}>🚌</h1>
 
 export default function SideBar() {
+  const { i18n } = useTranslation()
   const { drawerOpen, setDrawerOpen } = useContext<LayoutContextInterface>(LayoutCtx)
   const [collapsed, setCollapsed] = useState(false)
-  const { i18n } = useTranslation()
 
   return (
     <>
