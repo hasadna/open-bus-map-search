@@ -1,7 +1,7 @@
 import './sidebar.scss'
 import { Drawer, Layout } from 'antd'
 import { useContext, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router'
 import { useTranslation } from 'react-i18next'
 import { LayoutContextInterface, LayoutCtx } from '../LayoutContext'
 import Menu from './menu/Menu'
@@ -16,18 +16,16 @@ export default function SideBar() {
   const { drawerOpen, setDrawerOpen } = useContext<LayoutContextInterface>(LayoutCtx)
   const [collapsed, setCollapsed] = useState(false)
 
-  const isRtl = i18n.language === 'he'
-
   return (
     <>
       <Drawer
-        placement="right"
+        placement={i18n.dir() === 'rtl' ? 'right' : 'left'}
         mask
         width={280}
         onClose={() => setDrawerOpen(false)}
         open={drawerOpen}
         className="hideOnDesktop"
-        bodyStyle={{ padding: '0' }}>
+        styles={{ body: { padding: '0' } }}>
         <Logo />
         <div className="sidebar-divider"></div>
         <Menu />
@@ -40,7 +38,7 @@ export default function SideBar() {
         width={250}
         collapsible
         collapsed={collapsed}
-        reverseArrow={isRtl}
+        style={{ overflowY: 'auto', marginBottom: '48px' }}
         onCollapse={(value: boolean) => setCollapsed(value)}
         className="hideOnMobile">
         <Link to={PAGES[0].path} replace>

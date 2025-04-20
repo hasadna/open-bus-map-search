@@ -1,10 +1,10 @@
 import styled from 'styled-components'
 import { Trans, useTranslation } from 'react-i18next'
-import Typography from '@mui/material/Typography'
-import Stack from '@mui/material/Stack'
+import { Typography, Stack } from '@mui/material'
 import './About.scss'
 import { useQuery } from '@tanstack/react-query'
 import SlackIcon from '../../resources/slack-icon.svg'
+import { VersionInfo } from './version/VersionInfo'
 import Widget from 'src/shared/Widget'
 
 const pageName = 'aboutPage'
@@ -24,8 +24,9 @@ const About = () => {
         <Questions />
         <Funding />
         <Attributions />
+        <VersionInfo />
+        <Contributors />
       </Stack>
-      <Contributors />
     </AboutStyle>
   )
 }
@@ -37,7 +38,7 @@ const WhatIsWebsite = () => {
     <Widget>
       <h2>{t('what_is_website')}</h2>
       <p>{t('what_is_website_paragraph')}</p>
-      <ul style={{ listStyle: 'disc', paddingRight: '40px' }}>
+      <ul style={{ listStyle: 'disc', paddingInlineStart: '40px' }}>
         <li>{t('planning_information')}</li>
         <li>{t('performance_information')}</li>
       </ul>
@@ -49,9 +50,9 @@ const YoutubePlaylist = () => {
     <iframe
       width="560"
       height="315"
+      style={{ border: 'none' }}
       src="https://www.youtube.com/embed/videoseries?si=oTULlxq8Is188hPu&amp;list=PL6Rh06rT7uiX1AQE-lm55hy-seL3idx3T"
       title="YouTube video player"
-      frameBorder="0"
       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
       referrerPolicy="strict-origin-when-cross-origin"
       allowFullScreen></iframe>
@@ -274,6 +275,7 @@ function useContributions(start: Date = new Date('2023-01-01'), end: Date = new 
       .reduce(combineAuthor, [] as Author[])
     return { contributors, isLoading, isError }
   } catch (error) {
+    console.error(error)
     return { contributors: [] as const, isLoading: false, isError: true }
   }
 }

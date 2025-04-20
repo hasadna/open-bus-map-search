@@ -1,6 +1,6 @@
 import { Layout } from 'antd'
 import styled from 'styled-components'
-import { Link, Outlet } from 'react-router-dom'
+import { Link, Outlet } from 'react-router'
 import { Suspense } from 'react'
 import MainHeader from './header/Header'
 import SideBar from './sidebar/SideBar'
@@ -13,6 +13,7 @@ const { Content } = Layout
 
 const StyledLayout = styled(Layout)`
   height: 100vh;
+  overflow: hidden;
 `
 const StyledContent = styled(Content)`
   margin: 24px 16px 0;

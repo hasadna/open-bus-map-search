@@ -1,9 +1,7 @@
 import moment from 'moment'
 import { useContext, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import Grid from '@mui/material/Unstable_Grid2'
-import { CircularProgress, Tooltip } from '@mui/material'
-import Typography from '@mui/material/Typography'
+import { Grid, CircularProgress, Tooltip, Typography } from '@mui/material'
 import { SearchContext } from '../../model/pageState'
 import { NotFound } from '../components/NotFound'
 import '../Map.scss'
@@ -25,24 +23,32 @@ const SingleLineMapPage = () => {
   const { t } = useTranslation()
 
   useEffect(() => {
-    const controller = new AbortController()
-    const signal = controller.signal
     if (!operatorId || operatorId === '0' || !lineNumber) {
       setSearch((current) => ({ ...current, routes: undefined, routeKey: undefined }))
+      setStartTime(undefined)
       return
     }
 
-    getRoutesAsync(moment(timestamp), moment(timestamp), operatorId, lineNumber, signal)
-      .then((routes) =>
-        setSearch((current) =>
-          search.lineNumber === lineNumber ? { ...current, routes: routes } : current,
-        ),
-      )
+    const controller = new AbortController()
+    const time = moment(timestamp)
+
+    getRoutesAsync(time, time, operatorId, lineNumber, controller.signal)
+      .then((routes) => {
+        setSearch((current) => ({
+          ...current,
+          routes,
+          routeKey:
+            // if is same line it keep route key
+            current.lineNumber === lineNumber && current.operatorId === operatorId
+              ? current.routeKey
+              : undefined,
+        }))
+      })
       .catch((err) => {
         console.error(err)
         setSearch((current) => ({ ...current, routes: undefined, routeKey: undefined }))
-        controller.abort()
       })
+
     return () => controller.abort()
   }, [operatorId, lineNumber, timestamp])
 
@@ -50,7 +56,6 @@ const SingleLineMapPage = () => {
     () => routes?.find((route) => route.key === routeKey),
     [routes, routeKey],
   )
-  const selectedRouteIds = selectedRoute?.routeIds
 
   const {
     positions,
@@ -60,7 +65,23 @@ const SingleLineMapPage = () => {
     plannedRouteStops,
     startTime,
     setStartTime,
-  } = useSingleLineData(selectedRoute?.lineRef, selectedRouteIds)
+  } = useSingleLineData(selectedRoute?.lineRef, selectedRoute?.routeIds)
+
+  const handleTimestampChange = (time: moment.Moment | null) => {
+    setSearch((current) => ({ ...current, timestamp: time?.valueOf() ?? Date.now() }))
+  }
+
+  const handleOperatorChange = (operatorId: string) => {
+    setSearch((current) => ({ ...current, operatorId }))
+  }
+
+  const handleLineNumberChange = (lineNumber: string) => {
+    setSearch((current) => ({ ...current, lineNumber }))
+  }
+
+  const handleRouteKeyChange = (routeKey?: string) => {
+    setSearch((current) => ({ ...current, routeKey }))
+  }
 
   return (
     <PageContainer className="map-container">
@@ -73,35 +94,22 @@ const SingleLineMapPage = () => {
         />
       </Typography>
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
-        <Grid container spacing={2} xs={12}>
+        <Grid container spacing={2} size={{ xs: 12 }}>
           {/* choose date*/}
-          <Grid sm={4} xs={12}>
-            <DateSelector
-              time={moment(timestamp)}
-              onChange={(ts) =>
-                setSearch((current) => ({ ...current, timestamp: ts?.valueOf() ?? Date.now() }))
-              }
-            />
+          <Grid size={{ sm: 4, xs: 12 }}>
+            <DateSelector time={moment(timestamp)} onChange={handleTimestampChange} />
           </Grid>
           {/* choose operator */}
-          <Grid sm={4} xs={12}>
-            <OperatorSelector
-              operatorId={operatorId}
-              setOperatorId={(id) => setSearch((current) => ({ ...current, operatorId: id }))}
-            />
+          <Grid size={{ sm: 4, xs: 12 }}>
+            <OperatorSelector operatorId={operatorId} setOperatorId={handleOperatorChange} />
           </Grid>
           {/* choose line number */}
-          <Grid sm={4} xs={12}>
-            <LineNumberSelector
-              lineNumber={lineNumber}
-              setLineNumber={(number) =>
-                setSearch((current) => ({ ...current, lineNumber: number }))
-              }
-            />
+          <Grid size={{ sm: 4, xs: 12 }}>
+            <LineNumberSelector lineNumber={lineNumber} setLineNumber={handleLineNumberChange} />
           </Grid>
         </Grid>
-        <Grid container spacing={2} xs={12} alignContent={'center'}>
-          <Grid sm={6} xs={12}>
+        <Grid container spacing={2} size={{ xs: 12 }} alignContent={'center'}>
+          <Grid size={{ sm: 6, xs: 12 }}>
             {/* choose route */}
             {routes &&
               (routes.length === 0 ? (
@@ -110,13 +118,13 @@ const SingleLineMapPage = () => {
                 <RouteSelector
                   routes={routes}
                   routeKey={routeKey}
-                  setRouteKey={(key) => setSearch((current) => ({ ...current, routeKey: key }))}
+                  setRouteKey={handleRouteKeyChange}
                 />
               ))}
           </Grid>
           {positions && (
             <>
-              <Grid sm={2} xs={12}>
+              <Grid size={{ sm: 2, xs: 12 }}>
                 {locationsAreLoading && (
                   <Tooltip title={t('loading_times_tooltip_content')}>
                     <CircularProgress />
@@ -124,7 +132,7 @@ const SingleLineMapPage = () => {
                 )}
               </Grid>
               {/* choose start time */}
-              <Grid sm={4} xs={12}>
+              <Grid size={{ sm: 4, xs: 12 }}>
                 <FilterPositionsByStartTimeSelector
                   options={options}
                   startTime={startTime}

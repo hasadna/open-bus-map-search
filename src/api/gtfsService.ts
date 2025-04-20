@@ -25,9 +25,9 @@ type StopHitsPayLoadType = {
 export async function getRoutesAsync(
   fromTimestamp: moment.Moment,
   toTimestamp: moment.Moment,
-  operatorId: string | undefined,
-  lineNumber: string | undefined,
-  signal?: AbortSignal | undefined,
+  operatorId?: string,
+  lineNumber?: string,
+  signal?: AbortSignal,
 ): Promise<BusRoute[]> {
   const gtfsRoutes = await GTFS_API.gtfsRoutesListGet(
     {
@@ -87,8 +87,9 @@ export async function getStopsForRouteAsync(
     })
     await Promise.all(
       rideStops.map(async (rideStop) => {
+        if (!rideStop.gtfsStopId) return
         const stop = await GTFS_API.gtfsStopsGetGet({ id: rideStop.gtfsStopId })
-        stops.push(fromGtfsStop(rideStop, stop, rideRepresentative))
+        stops.push(fromGtfsStop(rideStop as GtfsRideStopPydanticModel, stop, rideRepresentative))
       }),
     )
   }

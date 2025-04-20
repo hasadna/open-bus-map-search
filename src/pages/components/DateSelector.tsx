@@ -1,6 +1,5 @@
 import { useState } from 'react'
-import { DatePicker } from '@mui/x-date-pickers/DatePicker'
-import { DateValidationError } from '@mui/x-date-pickers'
+import { DatePicker, DateValidationError } from '@mui/x-date-pickers'
 import { useTranslation } from 'react-i18next'
 import { DataAndTimeSelectorProps } from './utils/dateAndTime'
 
@@ -22,7 +21,6 @@ export function DateSelector({ time, onChange, customLabel, minDate }: DataAndTi
 
   return (
     <DatePicker
-      sx={{ width: '100%' }}
       value={time}
       onChange={(ts) => onChange(ts)}
       format="DD/MM/YYYY"
@@ -31,7 +29,16 @@ export function DateSelector({ time, onChange, customLabel, minDate }: DataAndTi
       minDate={minDate}
       onError={(err) => setError(err)}
       slotProps={{
+        calendarHeader: {
+          sx: {
+            '.MuiPickersCalendarHeader-labelContainer': {
+              margin: '0',
+              marginInlineEnd: 'auto',
+            },
+          },
+        },
         textField: {
+          fullWidth: true,
           helperText: errorMessageKey && t(errorMessageKey),
         },
       }}

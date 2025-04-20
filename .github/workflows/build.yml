@@ -5,10 +5,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
           cache: 'npm'
       - name: Get Commit Hash and generate Version File
         run: echo "${{ github.event.pull_request.head.sha }}" >> public/hash.txt
@@ -25,10 +25,10 @@ jobs:
   build-storybook:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
           cache: 'npm'
       - name: Run install
         run: npm ci
@@ -39,7 +39,7 @@ jobs:
         with:
           name: dist-storybook
           path: dist/storybook
-  
+
       - name: Save PR number
         env:
           PR_NUMBER: ${{ github.event.number }}

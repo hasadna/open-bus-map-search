@@ -1,16 +1,13 @@
 import { useCallback, useEffect } from 'react'
 import 'leaflet/dist/leaflet.css'
-import { useSearchParams } from 'react-router-dom'
+import { useSearchParams, useLocation } from 'react-router'
 import moment from 'moment'
 import { useSessionStorage } from 'usehooks-ts'
-import { useLocation } from 'react-router-dom'
 import ReactGA from 'react-ga4'
 import { CacheProvider } from '@emotion/react'
 import createCache from '@emotion/cache'
 import rtlPlugin from 'stylis-plugin-rtl'
 import 'moment/locale/he'
-import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
-import { LocalizationProvider } from '@mui/x-date-pickers'
 import { PageSearchState, SearchContext } from '../model/pageState'
 import { ThemeProvider } from '../layout/ThemeContext'
 import { PAGES } from '../routes'
@@ -84,11 +81,9 @@ export const MainRoute = () => {
   return (
     <SearchContext.Provider value={{ search, setSearch: safeSetSearch }}>
       <CacheProvider value={cacheRtl}>
-        <LocalizationProvider dateAdapter={AdapterMoment} adapterLocale="he">
-          <ThemeProvider>
-            <MainLayout />
-          </ThemeProvider>
-        </LocalizationProvider>
+        <ThemeProvider>
+          <MainLayout />
+        </ThemeProvider>
       </CacheProvider>
     </SearchContext.Provider>
   )
