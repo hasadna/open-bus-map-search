@@ -1,6 +1,5 @@
 import { useState } from 'react'
-import { DatePicker } from '@mui/x-date-pickers/DatePicker'
-import { DateValidationError } from '@mui/x-date-pickers'
+import { DatePicker, DateValidationError } from '@mui/x-date-pickers'
 import { useTranslation } from 'react-i18next'
 
 export type DataSelectorProps = {
