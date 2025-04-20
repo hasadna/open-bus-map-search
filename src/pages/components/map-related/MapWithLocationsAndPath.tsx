@@ -1,7 +1,7 @@
 import { MapContainer } from 'react-leaflet'
 import { useCallback, useState } from 'react'
-import IconButton from '@mui/material/IconButton'
-import OpenInFullRoundedIcon from '@mui/icons-material/OpenInFullRounded'
+import { IconButton } from '@mui/material'
+import { OpenInFullRounded } from '@mui/icons-material'
 import { MapProps } from './map-types'
 import '../../Map.scss'
 import { MapContent } from './MapContent'
@@ -23,7 +23,7 @@ export function MapWithLocationsAndPath({
   return (
     <div className={`map-info ${isExpanded ? 'expanded' : 'collapsed'}`}>
       <IconButton color="primary" className="expand-button" onClick={toggleExpanded}>
-        <OpenInFullRoundedIcon fontSize="large" />
+        <OpenInFullRounded fontSize="large" />
       </IconButton>
 
       <MapContainer center={position.loc} zoom={13} scrollWheelZoom={true}>

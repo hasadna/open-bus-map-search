@@ -56,7 +56,7 @@ export const DonateModal: React.FC<DonateModalProps> = ({ isVisible, onClose }) 
         </Typography>
         <p>{t('how_to_donate_text')}</p>
         <Grid container spacing={2} direction={shouldImgCollapse ? 'column-reverse' : 'row'}>
-          <Grid item xs={6}>
+          <Grid size={{ xs: 6 }}>
             <Typography id="modal-modal-description" sx={{ mt: 2 }}>
               <h2>{t('donate_through_jgive.com_title')}</h2>
               <a
@@ -79,7 +79,7 @@ export const DonateModal: React.FC<DonateModalProps> = ({ isVisible, onClose }) 
               </a>
             </Typography>
           </Grid>
-          <Grid item dir={direction} xs={6}>
+          <Grid dir={direction} size={{ xs: 6 }}>
             <h2>{t('donation_through_bank_title')}</h2>
             <p>{t('donation_through_bank_reccomendation')}</p>
             <Typography id="modal-modal-description" sx={{ mt: 2 }}>

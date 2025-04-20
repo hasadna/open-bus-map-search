@@ -1,9 +1,7 @@
 import moment from 'moment'
 import { useContext, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import Grid from '@mui/material/Unstable_Grid2'
-import { CircularProgress, Tooltip } from '@mui/material'
-import Typography from '@mui/material/Typography'
+import { Grid, CircularProgress, Tooltip, Typography } from '@mui/material'
 import { SearchContext } from '../../model/pageState'
 import { NotFound } from '../components/NotFound'
 import '../Map.scss'
@@ -96,22 +94,22 @@ const SingleLineMapPage = () => {
         />
       </Typography>
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
-        <Grid container spacing={2} xs={12}>
+        <Grid container spacing={2} size={{ xs: 12 }}>
           {/* choose date*/}
-          <Grid sm={4} xs={12}>
+          <Grid size={{ sm: 4, xs: 12 }}>
             <DateSelector time={moment(timestamp)} onChange={handleTimestampChange} />
           </Grid>
           {/* choose operator */}
-          <Grid sm={4} xs={12}>
+          <Grid size={{ sm: 4, xs: 12 }}>
             <OperatorSelector operatorId={operatorId} setOperatorId={handleOperatorChange} />
           </Grid>
           {/* choose line number */}
-          <Grid sm={4} xs={12}>
+          <Grid size={{ sm: 4, xs: 12 }}>
             <LineNumberSelector lineNumber={lineNumber} setLineNumber={handleLineNumberChange} />
           </Grid>
         </Grid>
-        <Grid container spacing={2} xs={12} alignContent={'center'}>
-          <Grid sm={6} xs={12}>
+        <Grid container spacing={2} size={{ xs: 12 }} alignContent={'center'}>
+          <Grid size={{ sm: 6, xs: 12 }}>
             {/* choose route */}
             {routes &&
               (routes.length === 0 ? (
@@ -126,7 +124,7 @@ const SingleLineMapPage = () => {
           </Grid>
           {positions && (
             <>
-              <Grid sm={2} xs={12}>
+              <Grid size={{ sm: 2, xs: 12 }}>
                 {locationsAreLoading && (
                   <Tooltip title={t('loading_times_tooltip_content')}>
                     <CircularProgress />
@@ -134,7 +132,7 @@ const SingleLineMapPage = () => {
                 )}
               </Grid>
               {/* choose start time */}
-              <Grid sm={4} xs={12}>
+              <Grid size={{ sm: 4, xs: 12 }}>
                 <FilterPositionsByStartTimeSelector
                   options={options}
                   startTime={startTime}
