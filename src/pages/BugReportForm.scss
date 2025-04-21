@@ -1,10 +1,10 @@
-// BugReportForm.scss
-main:has(> div > div.bug-report-form-container) {
+main:has(> div > .bug-report-form-container) {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 0;
+  margin: 0 !important;
   padding: 24px;
+
   > div {
     display: contents;
   }
@@ -18,10 +18,9 @@ main:has(> div > div.bug-report-form-container) {
   padding: 24px;
   max-height: 100%;
   display: flex;
-
   flex-direction: column;
 
-  > div {
+  .MuiCardContent-root {
     display: contents;
   }
 
@@ -64,7 +63,8 @@ main:has(> div > div.bug-report-form-container) {
     &:last-child {
       margin-bottom: 0;
       text-align: end;
-      > div > div {
+
+      & > div > div {
         max-width: 100%;
       }
     }
