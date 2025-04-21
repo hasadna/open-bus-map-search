@@ -4,11 +4,10 @@
   max-width: 800px;
   width: 100%;
   margin: 0 auto;
+  padding: 30px;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
-  max-height: 95vh;
-  overflow-y: auto !important;
-
+  
   @media (width <= 600px) {
     padding: 15px;
 
@@ -19,10 +18,14 @@
       border-bottom: 6px solid gray;
     }
 
+    .ant-form-item-label {
+      text-align: left;
+    }
+
     .ant-btn-primary {
-      max-width: calc(100% - 100px);
-      margin: 0 auto;
-      display: block;
+      max-width: calc(100% - 100px); 
+      margin: 0 auto; 
+      display: block; 
     }
   }
 
@@ -35,23 +38,16 @@
     border-bottom: 8px solid gray;
     padding-bottom: 0;
     line-height: 25px;
-    text-align: center;
+    text-align: center; 
     display: flex;
   }
 
   .ant-form-item {
     margin-bottom: 20px;
-    width: 100%;
-
-    &:last-child {
-      margin-bottom: 0;
-    }
 
     &-label {
-      text-align: start;
       font-weight: bold;
-      white-space: warp;
-      text-wrap: pretty;
+      text-align: right; 
     }
   }
 
@@ -70,7 +66,7 @@
     &-primary {
       background-color: #1890ff;
       border-color: #1890ff;
-      width: 100%;
+      width: 100%; 
 
       &:hover {
         background-color: #40a9ff;

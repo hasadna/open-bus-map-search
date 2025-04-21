@@ -3,7 +3,7 @@ import { BusToolTip, BusToolTipProps } from './BusToolTip'
 import Widget from 'src/shared/Widget'
 
 const meta = {
-  title: 'Map/MapLayers/BusToolTip',
+  title: 'Map/Layers/BusToolTip',
   component: BusToolTip,
   parameters: {
     layout: 'centered',

@@ -4,7 +4,7 @@ import ComplaintModal from './ComplaintModal'
 import { BusToolTipProps } from './BusToolTip'
 
 const meta = {
-  title: 'Map/MapLayers/ComplaintModal',
+  title: 'Map/Layers/ComplaintModal',
   component: ComplaintModal,
   tags: ['autodocs'],
   parameters: {

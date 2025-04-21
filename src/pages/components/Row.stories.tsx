@@ -23,13 +23,15 @@ const meta: Meta<{ items: number }> = {
   },
   decorators: [
     (Story, meta) => (
-      <Row>
-        {Array.from({ length: meta.args.items }).map((_, i) => (
-          <Widget key={i}>
-            <div style={{ width: 50, height: 50 }} />
-          </Widget>
-        ))}
-      </Row>
+      <Widget>
+        <Row>
+          {Array.from({ length: meta.args.items }).map((_, i) => (
+            <Widget key={i}>
+              <div style={{ width: 50, height: 50 }} />
+            </Widget>
+          ))}
+        </Row>
+      </Widget>
     ),
   ],
 }

@@ -1,9 +1,12 @@
 import type { Preview } from '@storybook/react'
 import { Suspense, useEffect } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { BrowserRouter } from 'react-router-dom'
+import { BrowserRouter } from 'react-router'
 import { ThemeProvider, useTheme } from 'src/layout/ThemeContext'
 import i18n from 'src/locale/allTranslations'
+import 'src/index.css'
+import 'src/App.scss'
+import 'leaflet/dist/leaflet.css'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -27,6 +30,9 @@ const preview: Preview = {
         color: /(background|color)$/i,
         date: /Date$/i,
       },
+    },
+    storySort: {
+      method: 'alphabetical',
     },
   },
   decorators: [
