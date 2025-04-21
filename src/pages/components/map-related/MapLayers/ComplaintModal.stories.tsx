@@ -1,22 +1,58 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { BusToolTip, BusToolTipProps } from './BusToolTip'
-import Widget from 'src/shared/Widget'
+import { useState } from 'react'
+import ComplaintModal from './ComplaintModal'
+import { BusToolTipProps } from './BusToolTip'
 
 const meta = {
-  title: 'Map/Layers/BusToolTip',
-  component: BusToolTip,
+  title: 'Map/Layers/ComplaintModal',
+  component: ComplaintModal,
+  tags: ['autodocs'],
   parameters: {
     layout: 'centered',
   },
+  argTypes: {
+    modalOpen: {
+      control: 'boolean',
+    },
+    setModalOpen: {
+      action: 'setModalOpen',
+    },
+    position: {
+      control: 'object',
+      description: 'The position of the bus',
+      table: {
+        type: { summary: 'BusToolTipProps' },
+      },
+    },
+  },
   decorators: [
-    (Story) => (
-      <Widget>
-        <Story />
-      </Widget>
-    ),
+    (Story, meta) => {
+      const [modalOpen, setModalOpen] = useState(meta.args.modalOpen)
+
+      return (
+        <>
+          <button
+            onClick={() => {
+              setModalOpen(true)
+              meta.args.setModalOpen?.(true)
+            }}>
+            Open Model
+          </button>
+          <Story
+            args={{
+              ...meta.args,
+              modalOpen,
+              setModalOpen: (open) => {
+                setModalOpen(open)
+                meta.args.setModalOpen?.(open)
+              },
+            }}
+          />
+        </>
+      )
+    },
   ],
-  tags: ['autodocs'],
-} satisfies Meta<typeof BusToolTip>
+} satisfies Meta<typeof ComplaintModal>
 
 export default meta
 
@@ -59,5 +95,8 @@ const defaultArgs: BusToolTipProps = {
 }
 
 export const Default: Story = {
-  args: defaultArgs,
+  args: {
+    position: defaultArgs.position,
+    modalOpen: true,
+  },
 }

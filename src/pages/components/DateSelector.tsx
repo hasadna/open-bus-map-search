@@ -1,7 +1,14 @@
 import { useState } from 'react'
 import { DatePicker, DateValidationError } from '@mui/x-date-pickers'
 import { useTranslation } from 'react-i18next'
-import { DataAndTimeSelectorProps } from './utils/dateAndTime'
+
+export type DataSelectorProps = {
+  time: moment.Moment
+  minDate?: moment.Moment
+  customLabel?: string
+  disabled?: boolean
+  onChange: (timeValid: moment.Moment | null) => void
+}
 
 const getErrorMessageKey = (error?: DateValidationError) => {
   switch (error) {
@@ -13,7 +20,13 @@ const getErrorMessageKey = (error?: DateValidationError) => {
   }
 }
 
-export function DateSelector({ time, onChange, customLabel, minDate }: DataAndTimeSelectorProps) {
+export function DateSelector({
+  time,
+  onChange,
+  customLabel,
+  minDate,
+  disabled,
+}: DataSelectorProps) {
   const [error, setError] = useState<DateValidationError>()
   const { t } = useTranslation()
 
@@ -27,6 +40,7 @@ export function DateSelector({ time, onChange, customLabel, minDate }: DataAndTi
       label={customLabel || t('choose_date')}
       disableFuture
       minDate={minDate}
+      disabled={disabled}
       onError={(err) => setError(err)}
       slotProps={{
         calendarHeader: {
