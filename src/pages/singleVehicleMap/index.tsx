@@ -2,7 +2,7 @@ import moment from 'moment'
 import React, { useContext, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { CircularProgress, Tooltip } from '@mui/material'
-import Grid from '@mui/material/Unstable_Grid2'
+import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
 import { SearchContext } from '../../model/pageState'
 import '../Map.scss'
@@ -77,7 +77,7 @@ const SingleVehicleMap = () => {
 
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
         {/* choose date*/}
-        <Grid sm={4} xs={12}>
+        <Grid size={{ sm: 4, xs: 12 }}>
           <DateSelector
             time={moment(timestamp)}
             onChange={(ts) =>
@@ -89,7 +89,7 @@ const SingleVehicleMap = () => {
         {positions && (
           <>
             {/* choose vehicle number */}
-            <Grid sm={4} xs={12}>
+            <Grid size={{ sm: 4, xs: 12 }}>
               <VehicleNumberSelector
                 vehicleNumber={vehicleNumber}
                 setVehicleNumber={(number) =>
@@ -97,7 +97,7 @@ const SingleVehicleMap = () => {
                 }
               />
             </Grid>
-            <Grid sm={2} xs={12}>
+            <Grid size={{ sm: 2, xs: 12 }}>
               {locationsAreLoading && (
                 <Tooltip title={t('loading_times_tooltip_content')}>
                   <CircularProgress />
