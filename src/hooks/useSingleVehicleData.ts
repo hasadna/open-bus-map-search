@@ -12,7 +12,6 @@ export const useSingleVehicleData = (vehicleRef?: number, routeIds?: number[]) =
   } = useContext(SearchContext)
   const [filteredPositions, setFilteredPositions] = useState<Point[]>([])
   const [startTime, setStartTime] = useState<string>('00:00:00')
-  const [plannedRouteStops, setPlannedRouteStops] = useState<BusStop[]>([])
 
   const today = new Date(timestamp)
   const tomorrow = new Date(today)
@@ -119,27 +118,14 @@ export const useSingleVehicleData = (vehicleRef?: number, routeIds?: number[]) =
       const startTimeTimestamp = +new Date(
         positions[0].point?.siri_ride__scheduled_start_time ?? 0,
       ).setHours(+hours, +minutes, 0, 0)
-      handlePlannedRouteStops(routeIds ?? [], startTimeTimestamp)
     }
   }, [startTime, positions])
-
-  // הפונקציה להוצאת תחנות למזהה רכבת (או רכב)
-  const handlePlannedRouteStops = async (routeIds: number[], startTimeTs: number) => {
-    try {
-      const stops = await getStopsForRouteAsync(routeIds, moment(startTimeTs))
-      // console.log('Retrieved stops:', stops)
-      setPlannedRouteStops(stops)
-    } catch (error) {
-      console.error('Error retrieving stops:', error)
-    }
-  }
 
   return {
     locationsAreLoading,
     positions,
     options,
     filteredPositions,
-    plannedRouteStops,
     startTime,
     setStartTime,
   }

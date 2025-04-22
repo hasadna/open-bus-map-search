@@ -8,7 +8,7 @@ export function useRecenterOnDataChange({ positions, plannedRouteStops }: MapPro
 
   const center = useMemo(() => {
     const sum: LatLngTuple = [0, 0]
-    const totalPoints = positions.length + plannedRouteStops.length
+    const totalPoints = positions.length + (plannedRouteStops?.length ?? 0);
 
     if (totalPoints === 0) return sum
 
@@ -17,11 +17,12 @@ export function useRecenterOnDataChange({ positions, plannedRouteStops }: MapPro
       sum[1] += position.loc[1]
     }
 
-    for (const stop of plannedRouteStops) {
-      sum[0] += stop.location.latitude
-      sum[1] += stop.location.longitude
+    if (plannedRouteStops) {
+      for (const stop of plannedRouteStops) {
+        sum[0] += stop.location.latitude
+        sum[1] += stop.location.longitude
+      }
     }
-
     sum[0] /= totalPoints
     sum[1] /= totalPoints
 

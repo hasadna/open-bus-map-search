@@ -57,12 +57,11 @@ const SingleVehicleMap = () => {
 
   const selectedRouteIds = selectedRoute?.routeIds
   // console.log('selectedRouteIds:', selectedRouteIds)
-  const { positions, filteredPositions, locationsAreLoading, plannedRouteStops } =
+  const { positions, filteredPositions, locationsAreLoading } =
     useSingleVehicleData(vehicleNumber, selectedRouteIds)
 
   // console.log('positions:', positions)
   // console.log('filteredPositions:', filteredPositions)
-  // console.log('plannedRouteStops:', plannedRouteStops)
 
   return (
     <PageContainer className="map-container">
@@ -110,7 +109,6 @@ const SingleVehicleMap = () => {
 
       <MapWithLocationsAndPath
         positions={filteredPositions}
-        plannedRouteStops={plannedRouteStops}
         showNavigationButtons={false}
       />
     </PageContainer>
