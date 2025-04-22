@@ -58,7 +58,7 @@ const SingleVehicleMap = () => {
   const selectedRouteIds = selectedRoute?.routeIds
   // console.log('selectedRouteIds:', selectedRouteIds)
   const { positions, filteredPositions, locationsAreLoading } =
-    useSingleVehicleData(vehicleNumber, selectedRouteIds)
+    useSingleVehicleData(vehicleNumber)
 
   // console.log('positions:', positions)
   // console.log('filteredPositions:', filteredPositions)
