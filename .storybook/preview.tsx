@@ -1,7 +1,26 @@
 import type { Preview } from '@storybook/react'
 import { Suspense, useEffect } from 'react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { BrowserRouter } from 'react-router'
 import { ThemeProvider, useTheme } from 'src/layout/ThemeContext'
 import i18n from 'src/locale/allTranslations'
+import 'src/index.css'
+import 'src/App.scss'
+import 'leaflet/dist/leaflet.css'
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      gcTime: Infinity,
+      staleTime: 1000 * 60 * 60 * 24, // 24 hours
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+    },
+  },
+})
+
+queryClient.setQueryData(['version'], '1.2.3')
 
 const preview: Preview = {
   parameters: {
@@ -12,17 +31,24 @@ const preview: Preview = {
         date: /Date$/i,
       },
     },
+    storySort: {
+      method: 'alphabetical',
+    },
   },
   decorators: [
     (Story, context) => {
       const { locale, darkMode } = context.globals
       return (
         <Suspense>
-          <ThemeProvider>
-            <StoryBookWrapper locale={locale} darkMode={darkMode}>
-              <Story />
-            </StoryBookWrapper>
-          </ThemeProvider>
+          <BrowserRouter>
+            <QueryClientProvider client={queryClient}>
+              <ThemeProvider>
+                <StoryBookWrapper locale={locale} darkMode={darkMode}>
+                  <Story />
+                </StoryBookWrapper>
+              </ThemeProvider>
+            </QueryClientProvider>
+          </BrowserRouter>
         </Suspense>
       )
     },

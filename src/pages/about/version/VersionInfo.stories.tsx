@@ -1,16 +1,21 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import type { Meta, StoryObj } from '@storybook/react'
 import { VersionInfo } from './VersionInfo'
 
-export default {
-  title: 'About/VersionInfo',
+const meta: Meta<typeof VersionInfo> = {
+  title: 'Pages/About/VersionInfo',
   component: VersionInfo,
+  tags: ['autodocs'],
+  parameters: {
+    docs: {
+      description: {
+        component: 'Displays version information for the application.',
+      },
+    },
+  },
 }
 
-const queryClient = new QueryClient()
-queryClient.setQueryData(['version'], '1.2.3')
+export default meta
 
-export const Default = () => (
-  <QueryClientProvider client={queryClient}>
-    <VersionInfo />
-  </QueryClientProvider>
-)
+type Story = StoryObj<typeof meta>
+
+export const Default: Story = {}
