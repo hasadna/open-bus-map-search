@@ -1,12 +1,10 @@
 import moment from 'moment'
 import { useContext, useEffect, useMemo, useState } from 'react'
-import { getStopsForRouteAsync } from 'src/api/gtfsService'
 import useVehicleLocations from 'src/api/useVehicleLocations'
-import { BusStop } from 'src/model/busStop'
 import { SearchContext } from 'src/model/pageState'
 import { Point } from 'src/pages/timeBasedMap'
 
-export const useSingleVehicleData = (vehicleRef?: number, routeIds?: number[]) => {
+export const useSingleVehicleData = (vehicleRef?: number) => {
   const {
     search: { timestamp },
   } = useContext(SearchContext)
@@ -111,13 +109,6 @@ export const useSingleVehicleData = (vehicleRef?: number, routeIds?: number[]) =
       })
       setFilteredPositions(newFilteredPositions)
       // console.log('New filtered positions:', newFilteredPositions)
-    }
-
-    if (positions.length > 0 && startTime !== '00:00:00') {
-      const [hours, minutes] = startTime.split(':')
-      const startTimeTimestamp = +new Date(
-        positions[0].point?.siri_ride__scheduled_start_time ?? 0,
-      ).setHours(+hours, +minutes, 0, 0)
     }
   }, [startTime, positions])
 
