@@ -55,10 +55,7 @@ const SingleVehicleMap = () => {
     [routes, routeKey],
   )
 
-  const selectedRouteIds = selectedRoute?.routeIds
-  // console.log('selectedRouteIds:', selectedRouteIds)
-  const { positions, filteredPositions, locationsAreLoading } =
-    useSingleVehicleData(vehicleNumber)
+  const { positions, filteredPositions, locationsAreLoading } = useSingleVehicleData(vehicleNumber)
 
   // console.log('positions:', positions)
   // console.log('filteredPositions:', filteredPositions)
@@ -107,10 +104,7 @@ const SingleVehicleMap = () => {
         )}
       </Grid>
 
-      <MapWithLocationsAndPath
-        positions={filteredPositions}
-        showNavigationButtons={false}
-      />
+      <MapWithLocationsAndPath positions={filteredPositions} showNavigationButtons={false} />
     </PageContainer>
   )
 }
