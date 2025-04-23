@@ -17,7 +17,7 @@ import { INPUT_SIZE } from 'src/resources/sizes'
 
 const SingleVehicleMap = () => {
   const { search, setSearch } = useContext(SearchContext)
-  const { operatorId, timestamp, vehicleNumber, routes, routeKey } = search
+  const { operatorId, timestamp, vehicleNumber } = search
   const { t } = useTranslation()
 
   useEffect(() => {
@@ -50,9 +50,7 @@ const SingleVehicleMap = () => {
     return () => controller.abort()
   }, [operatorId, vehicleNumber, timestamp])
 
-
   const { positions, filteredPositions, locationsAreLoading } = useSingleVehicleData(vehicleNumber)
-
   // console.log('positions:', positions)
   // console.log('filteredPositions:', filteredPositions)
 
