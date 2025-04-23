@@ -1,5 +1,5 @@
 import moment from 'moment'
-import React, { useContext, useEffect, useMemo } from 'react'
+import { useContext, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { CircularProgress, Tooltip } from '@mui/material'
 import Grid from '@mui/material/Grid'
@@ -50,10 +50,6 @@ const SingleVehicleMap = () => {
     return () => controller.abort()
   }, [operatorId, vehicleNumber, timestamp])
 
-  const selectedRoute = useMemo(
-    () => routes?.find((route) => route.key === routeKey),
-    [routes, routeKey],
-  )
 
   const { positions, filteredPositions, locationsAreLoading } = useSingleVehicleData(vehicleNumber)
 
