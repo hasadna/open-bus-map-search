@@ -11,6 +11,7 @@ const meta: Meta<typeof DisplayGapsPercentage> = {
 }
 
 export default meta
+
 type Story = StoryObj<typeof DisplayGapsPercentage>
 
 export const GreatGapPercentage: Story = {

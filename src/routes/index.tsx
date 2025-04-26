@@ -1,4 +1,4 @@
-import { Navigate, Route, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
+import { Navigate, Route, createBrowserRouter, createRoutesFromElements } from 'react-router'
 import { lazy } from 'react'
 
 const HomePage = lazy(() => import('../pages/homepage/HomePage'))
@@ -31,7 +31,7 @@ import {
   LineChartOutlined,
   GithubOutlined,
 } from '@ant-design/icons'
-import PsychologyIcon from '@mui/icons-material/Psychology'
+import { Psychology } from '@mui/icons-material'
 import { MainRoute } from './MainRoute'
 import { ErrorPage } from 'src/pages/ErrorPage'
 
@@ -96,7 +96,7 @@ export const PAGES = [
   {
     label: 'public_appeal_title',
     path: '/public-appeal',
-    icon: <PsychologyIcon />,
+    icon: <Psychology />,
     element: <PublicAppeal />,
   },
 ] as const
@@ -143,10 +143,7 @@ export const getRoutesList = () => {
           const resp = await fetch(
             `https://open-bus-stride-api.hasadna.org.il/gtfs_routes/get?id=${gtfsRideGtfsRouteId}`,
           )
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const gtfs_route = await resp.json()
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-          return gtfs_route
+          return await resp.json()
         }}
       />
       <Route path="*" element={<RedirectToHomepage />} key="back" />

@@ -1,13 +1,33 @@
-// BugReportForm.scss
+main:has(> div > .bug-report-form-container) {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 !important;
+  padding: 24px;
+
+  > div {
+    display: contents;
+  }
+}
 
 .bug-report-form-container {
   max-width: 800px;
   width: 100%;
-  margin: 0 auto;
-  padding: 30px;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
-  
+  padding: 24px;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  .MuiCardContent-root {
+    display: contents;
+  }
+
+  form {
+    overflow-y: auto !important;
+  }
+
   @media (width <= 600px) {
     padding: 15px;
 
@@ -18,14 +38,8 @@
       border-bottom: 6px solid gray;
     }
 
-    .ant-form-item-label {
-      text-align: left;
-    }
-
     .ant-btn-primary {
-      max-width: calc(100% - 100px); 
-      margin: 0 auto; 
-      display: block; 
+      width: 100%;
     }
   }
 
@@ -38,16 +52,28 @@
     border-bottom: 8px solid gray;
     padding-bottom: 0;
     line-height: 25px;
-    text-align: center; 
+    text-align: center;
     display: flex;
   }
 
   .ant-form-item {
     margin-bottom: 20px;
+    width: 100%;
+
+    &:last-child {
+      margin-bottom: 0;
+      text-align: end;
+
+      & > div > div {
+        max-width: 100%;
+      }
+    }
 
     &-label {
+      text-align: start;
       font-weight: bold;
-      text-align: right; 
+      white-space: warp;
+      text-wrap: pretty;
     }
   }
 
@@ -60,22 +86,19 @@
     width: 100%;
   }
 
-  .ant-btn {
-    margin-right: 8px;
+  .ant-btn-primary {
+    background-color: #1890ff;
+    border-color: #1890ff;
+    display: inline-block;
+    font-weight: 500;
 
-    &-primary {
-      background-color: #1890ff;
-      border-color: #1890ff;
-      width: 100%; 
+    &:hover {
+      background-color: #40a9ff;
+      border-color: #40a9ff;
+    }
 
-      &:hover {
-        background-color: #40a9ff;
-        border-color: #40a9ff;
-      }
-
-      &:focus {
-        box-shadow: 0 0 0 2px rgb(24 144 255 / 20%);
-      }
+    &:focus {
+      box-shadow: 0 0 0 2px rgb(24 144 255 / 20%);
     }
   }
 }

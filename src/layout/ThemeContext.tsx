@@ -1,6 +1,8 @@
 import { FC, PropsWithChildren, createContext, useContext, useMemo } from 'react'
 import { ThemeProvider as MuiThemeProvider, createTheme } from '@mui/material/styles'
 import ScopedCssBaseline from '@mui/material/ScopedCssBaseline'
+import { LocalizationProvider } from '@mui/x-date-pickers'
+import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 import { ConfigProvider, theme } from 'antd'
 import heIL from 'antd/es/locale/he_IL'
 import { useTranslation } from 'react-i18next'
@@ -38,6 +40,8 @@ export const ThemeProvider: FC<PropsWithChildren> = ({ children }) => {
   // Re-create the theme when the theme changes or the language changes
   const theme = useMemo(() => {
     const direction = i18n.language === 'he' ? 'rtl' : 'ltr'
+    document.documentElement.dir = direction
+    document.documentElement.lang = i18n.language
     return createTheme({
       direction,
       palette: {
@@ -47,22 +51,24 @@ export const ThemeProvider: FC<PropsWithChildren> = ({ children }) => {
   }, [isDarkTheme, i18n.language])
 
   return (
-    <ConfigProvider
-      direction={i18n.dir()}
-      locale={heIL}
-      theme={{
-        algorithm: isDarkTheme ? darkAlgorithm : defaultAlgorithm,
-        token: {
-          colorBgBase: isDarkTheme ? '#1c1d1c' : '#ffffff',
-          colorTextBase: isDarkTheme ? '#ffffff' : '#000000',
-        },
-      }}>
-      <MuiThemeProvider theme={theme}>
-        <ScopedCssBaseline enableColorScheme>
-          <ThemeContext.Provider value={contextValue}>{children}</ThemeContext.Provider>
-        </ScopedCssBaseline>
-      </MuiThemeProvider>
-    </ConfigProvider>
+    <LocalizationProvider dateAdapter={AdapterMoment} adapterLocale={i18n.language}>
+      <ConfigProvider
+        direction={i18n.language === 'he' ? 'rtl' : 'ltr'}
+        locale={heIL}
+        theme={{
+          algorithm: isDarkTheme ? darkAlgorithm : defaultAlgorithm,
+          token: {
+            colorBgBase: isDarkTheme ? '#1c1d1c' : '#ffffff',
+            colorTextBase: isDarkTheme ? '#ffffff' : '#000000',
+          },
+        }}>
+        <MuiThemeProvider theme={theme}>
+          <ScopedCssBaseline enableColorScheme>
+            <ThemeContext.Provider value={contextValue}>{children}</ThemeContext.Provider>
+          </ScopedCssBaseline>
+        </MuiThemeProvider>
+      </ConfigProvider>
+    </LocalizationProvider>
   )
 }
 

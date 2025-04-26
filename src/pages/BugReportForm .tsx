@@ -1,9 +1,8 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Form, Input, Button, Upload, message, Select, FormProps } from 'antd'
-import Card from '@mui/material/Card'
-import CardContent from '@mui/material/CardContent'
-import FileUploadOutlinedIcon from '@mui/icons-material/FileUploadOutlined'
+import { Card, CardContent } from '@mui/material'
+import { FileUploadOutlined } from '@mui/icons-material'
 import axios from 'axios'
 import './BugReportForm.scss'
 import { UploadChangeParam, UploadFile } from 'antd/lib/upload'
@@ -168,15 +167,15 @@ const BugReportForm = () => {
               listType="picture"
               fileList={fileList}
               onChange={onFileChange}>
-              <Button icon={<FileUploadOutlinedIcon fontSize="small" />}>
+              <Button icon={<FileUploadOutlined fontSize="small" />}>
                 {t('bug_attachments_upload_button')}
               </Button>
             </Upload>
           </Form.Item>
 
-          <Form.Item wrapperCol={{ offset: 4, span: 16 }}>
+          <Form.Item>
             <Button type="primary" htmlType="submit">
-              {t('bug_submit')}{' '}
+              {t('bug_submit')}
             </Button>
           </Form.Item>
         </Form>
