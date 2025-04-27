@@ -276,7 +276,7 @@
   "loading": "טוען...",
   "version": "מזהה גרסה",
   "failedToFetchVersion": "נכשל בטעינת מידע אודות מזהה הגרסה הנוכחית",
-  "operator_title": "מפעילים",
+  "operator_title": "חברה מפעילה",
   "operator": {
     "ref": "מזהה חברה",
     "founded": "שנת הקמה",
@@ -285,7 +285,6 @@
     "area": {
       "nationwide": "ארצי",
       "central_southern": "מרכז, דרום",
-      "gush_dan": "גוש דן",
       "northern": "צפון",
       "southern": "דרום",
       "central": "מרכז",
@@ -304,12 +303,14 @@
       "cable_car": "רכבל",
       "taxi": "מוניות שירות"
     },
-    "all_lines": "כל הקווים",
+    "all_lines": "כל המסלולים",
     "line": "קו",
     "profile": "פרופיל",
     "map": "מפה",
     "id": "מזהה טכני",
     "origin": "מוצא",
-    "destination": "יעד"
+    "destination": "יעד",
+    "total": "סך כל המסלולים",
+    "statistics": "סטטיסטיקה יומית"
   }
 }
