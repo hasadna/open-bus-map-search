@@ -26,8 +26,8 @@ const LineProfileWrapper = () => (
 
 const LineProfile = () => {
   const { t } = useTranslation()
-  const { setSearch } = useContext(SearchContext)
   const { route, message } = useLoaderData<{ route?: GtfsRoutePydanticModel; message?: string }>()
+  const { setSearch } = useContext(SearchContext)
   const [{ stopKey }, setState] = useState<TimelinePageState>({})
 
   useEffect(() => {

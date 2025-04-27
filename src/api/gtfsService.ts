@@ -1,13 +1,13 @@
 import axios from 'axios'
+import moment from 'moment'
 import {
   GtfsApi,
   GtfsRideStopPydanticModel,
   GtfsRideWithRelatedPydanticModel,
 } from 'open-bus-stride-client'
-import moment, { Moment } from 'moment'
+import { API_CONFIG, BASE_PATH, MAX_HITS_COUNT } from 'src/api/apiConfig'
 import { BusRoute, fromGtfsRoute } from 'src/model/busRoute'
 import { BusStop, fromGtfsStop } from 'src/model/busStop'
-import { API_CONFIG, MAX_HITS_COUNT, BASE_PATH } from 'src/api/apiConfig'
 // import { Route } from 'react-router'
 
 const GTFS_API = new GtfsApi(API_CONFIG)
@@ -66,7 +66,7 @@ export async function getRoutesAsync(
 
 export async function getStopsForRouteAsync(
   routeIds: number[],
-  timestamp: Moment,
+  timestamp: moment.Moment,
 ): Promise<BusStop[]> {
   const stops: BusStop[] = []
 
@@ -100,7 +100,7 @@ export async function getStopsForRouteAsync(
   )
 }
 
-export async function getGtfsStopHitTimesAsync(stop: BusStop, timestamp: Moment) {
+export async function getGtfsStopHitTimesAsync(stop: BusStop, timestamp: moment.Moment) {
   const targetStartTime = moment(timestamp).subtract(stop.minutesFromRouteStartTime, 'minutes')
 
   const rides = await GTFS_API.gtfsRidesListGet({

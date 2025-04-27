@@ -5,9 +5,9 @@ import { useTranslation } from 'react-i18next'
 import { DateSelector } from '../components/DateSelector'
 import OperatorSelector from '../components/OperatorSelector'
 import { PageContainer } from '../components/PageContainer'
+import { OperatorGaps } from './OperatorGaps'
 import { OperatorInfo } from './OperatorInfo'
 import { OperatorRoutes } from './OperatorRoutes'
-import { OperatorGaps } from './OperatorGaps'
 import { SearchContext } from 'src/model/pageState'
 
 const OperatorPage = () => {

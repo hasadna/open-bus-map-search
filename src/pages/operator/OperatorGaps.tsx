@@ -1,12 +1,12 @@
-import { useMemo } from 'react'
 import { Stack, Typography } from '@mui/material'
-import { PieChart, Pie, Cell } from 'recharts'
-import { useTranslation } from 'react-i18next'
 import { Skeleton } from 'antd'
 import moment from 'moment'
+import { useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
+import { Cell, Pie, PieChart } from 'recharts'
 import { InfoItem, InfoTable } from '../components/InfoTable'
-import Widget from 'src/shared/Widget'
 import { useGroupBy } from 'src/api/groupByService'
+import Widget from 'src/shared/Widget'
 
 export const OperatorGaps = ({
   operatorId,

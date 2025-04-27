@@ -1,5 +1,22 @@
-import { Navigate, Route, createBrowserRouter, createRoutesFromElements } from 'react-router'
+import {
+  BarChartOutlined,
+  BugOutlined,
+  DollarOutlined,
+  FieldTimeOutlined,
+  GithubOutlined,
+  HeatMapOutlined,
+  HomeOutlined,
+  InfoCircleOutlined,
+  LaptopOutlined,
+  LineChartOutlined,
+  RadarChartOutlined,
+} from '@ant-design/icons'
+import { AirportShuttle, Psychology } from '@mui/icons-material'
 import { lazy } from 'react'
+import { Navigate, Route, createBrowserRouter, createRoutesFromElements } from 'react-router'
+import { MainRoute } from './MainRoute'
+import { getRouteById } from 'src/api/gtfsService'
+import { ErrorPage } from 'src/pages/ErrorPage'
 
 const HomePage = lazy(() => import('../pages/homepage/HomePage'))
 const DashboardPage = lazy(() => import('../pages/dashboard/DashboardPage'))
@@ -18,24 +35,6 @@ const DataResearch = lazy(() =>
   })),
 )
 const PublicAppeal = lazy(() => import('../pages/publicAppeal'))
-
-import {
-  HomeOutlined,
-  RadarChartOutlined,
-  InfoCircleOutlined,
-  DollarOutlined,
-  HeatMapOutlined,
-  LaptopOutlined,
-  FieldTimeOutlined,
-  BugOutlined,
-  BarChartOutlined,
-  LineChartOutlined,
-  GithubOutlined,
-} from '@ant-design/icons'
-import { AirportShuttle, Psychology } from '@mui/icons-material'
-import { MainRoute } from './MainRoute'
-import { ErrorPage } from 'src/pages/ErrorPage'
-import { getRouteById } from 'src/api/gtfsService'
 
 export const PAGES = [
   {
