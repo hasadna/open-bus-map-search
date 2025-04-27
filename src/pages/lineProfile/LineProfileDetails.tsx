@@ -1,46 +1,46 @@
 import { Link } from 'react-router'
 import './LineProfileDetails.scss'
 import { useTranslation } from 'react-i18next'
+import { GtfsRoutePydanticModel } from 'open-bus-stride-client'
 import { InfoItem, InfoTable } from '../components/InfoTable'
 import { routeStartEnd } from '../components/utils/rotueUtils'
-import { Route } from './Route.interface'
 
 export const LineProfileDetails = ({
   id,
   date,
-  line_ref,
-  operator_ref,
-  route_short_name,
-  route_long_name,
-  route_mkt,
-  route_direction,
-  route_alternative,
-  agency_name,
-  route_type,
-}: Route) => {
-  const { t } = useTranslation()
+  lineRef,
+  operatorRef,
+  routeShortName,
+  routeLongName,
+  routeMkt,
+  routeDirection,
+  routeAlternative,
+  agencyName,
+  routeType,
+}: GtfsRoutePydanticModel) => {
+  const { t, i18n } = useTranslation()
 
-  const [route_start, route_end] = routeStartEnd(route_long_name)
+  const [route_start, route_end] = routeStartEnd(routeLongName)
 
   const data = [
     { label: t('lineProfile.id'), value: id },
-    { label: t('lineProfile.date'), value: date },
-    { label: t('lineProfile.lineReference'), value: line_ref },
+    { label: t('lineProfile.date'), value: date.toLocaleDateString(i18n.language) },
+    { label: t('lineProfile.lineReference'), value: lineRef },
     {
       label: t('lineProfile.operatorReference'),
-      value: <Link to={'/operator?operatorId=' + operator_ref}>{operator_ref}</Link>,
+      value: <Link to={'/operator?operatorId=' + operatorRef}>{operatorRef}</Link>,
     },
     {
       label: t('lineProfile.agencyName'),
-      value: <Link to={'/operator?operatorId=' + operator_ref}>{agency_name}</Link>,
+      value: <Link to={'/operator?operatorId=' + operatorRef}>{agencyName}</Link>,
     },
-    { label: t('lineProfile.route.shortName'), value: route_short_name },
+    { label: t('lineProfile.route.shortName'), value: routeShortName },
     { label: t('lineProfile.route.start'), value: route_start },
     { label: t('lineProfile.route.end'), value: route_end },
-    { label: t('lineProfile.route.mkt'), value: route_mkt },
-    { label: t('lineProfile.route.direction'), value: route_direction },
-    { label: t('lineProfile.route.type'), value: route_type },
-    { label: t('lineProfile.route.alternative'), value: route_alternative },
+    { label: t('lineProfile.route.mkt'), value: routeMkt },
+    { label: t('lineProfile.route.direction'), value: routeDirection },
+    { label: t('lineProfile.route.type'), value: routeType },
+    { label: t('lineProfile.route.alternative'), value: routeAlternative },
   ]
 
   return (

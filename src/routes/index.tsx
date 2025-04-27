@@ -35,6 +35,7 @@ import {
 import { AirportShuttle, Psychology } from '@mui/icons-material'
 import { MainRoute } from './MainRoute'
 import { ErrorPage } from 'src/pages/ErrorPage'
+import { getRouteById } from 'src/api/gtfsService'
 
 export const PAGES = [
   {
@@ -144,14 +145,18 @@ export const getRoutesList = () => {
       ))}
       <Route
         path="/profile/:gtfsRideGtfsRouteId"
-        key={'/profile/:gtfsRideGtfsRouteId'}
         element={<Profile />}
         ErrorBoundary={ErrorPage}
         loader={async ({ params: { gtfsRideGtfsRouteId } }) => {
-          const resp = await fetch(
-            `https://open-bus-stride-api.hasadna.org.il/gtfs_routes/get?id=${gtfsRideGtfsRouteId}`,
-          )
-          return await resp.json()
+          try {
+            const route = await getRouteById(Number(gtfsRideGtfsRouteId))
+            return { route }
+          } catch (error) {
+            if (error instanceof Error) {
+              return { route: null, message: error?.message }
+            }
+            return { route: null, message: error || 'An unknown error occurred' }
+          }
         }}
       />
       <Route path="*" element={<RedirectToHomepage />} key="back" />
