@@ -1,6 +1,7 @@
 .widget {
   border-radius: 4px;
 }
+
 .widget.marginBottom {
   margin-bottom: 16px;
 }
