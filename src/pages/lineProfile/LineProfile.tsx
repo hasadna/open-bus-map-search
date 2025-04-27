@@ -1,24 +1,23 @@
 import { Grid, CircularProgress } from '@mui/material'
 import { useTranslation } from 'react-i18next'
 import { useLoaderData } from 'react-router'
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { useContext, useEffect, useMemo, useState } from 'react'
 import moment from 'moment'
 import { Tooltip } from 'antd'
 import { NotFound } from '../components/NotFound'
 import { PageContainer } from '../components/PageContainer'
 import { MapWithLocationsAndPath } from '../components/map-related/MapWithLocationsAndPath'
-import { DateSelector } from '../components/DateSelector'
-import RouteSelector from '../components/RouteSelector'
 import { FilterPositionsByStartTimeSelector } from '../components/FilterPositionsByStartTimeSelector'
 import LineProfileHeader from './LineProfileHeader'
 import { LineProfileDetails } from './LineProfileDetails'
 import { Route } from './Route.interface'
 import Widget from 'src/shared/Widget'
 import { SearchContext, TimelinePageState } from 'src/model/pageState'
-import { getStopsForRouteAsync } from 'src/api/gtfsService'
+import { getRoutesAsync } from 'src/api/gtfsService'
 import { useSingleLineData } from 'src/hooks/useSingleLineData'
 import './LineProfile.scss'
 import StopSelector from 'src/pages/components/StopSelector'
+import { BusRoute } from 'src/model/busRoute'
 
 const LineProfileWrapper = () => (
   <PageContainer className="line-data-container">
@@ -29,36 +28,34 @@ const LineProfileWrapper = () => (
 const LineProfile = () => {
   const { t } = useTranslation()
   const route = useLoaderData<Route & { message?: string }>()
-  const [state, setState] = useState<TimelinePageState>({})
-  const { stopKey, stops } = state
-  const { search, setSearch } = useContext(SearchContext)
-  const { timestamp, routes, routeKey } = search
+  const [{ stopKey }, setState] = useState<TimelinePageState>({})
+  const [routes, setRoutes] = useState<BusRoute[]>()
+  const { setSearch } = useContext(SearchContext)
+
   const selectedRoute = useMemo(
-    () => routes?.find((route) => route.key === routeKey),
-    [routes, routeKey],
+    () => routes?.find((r) => r.routeIds[0] === route.id),
+    [routes, route],
   )
 
-  const selectedRouteIds = selectedRoute?.routeIds
-  const clearStops = useCallback(() => {
-    setState((current) => ({
-      ...current,
-      stops: undefined,
-      stopName: undefined,
-      stopKey: undefined,
-      gtfsHitTimes: undefined,
-      siriHitTimes: undefined,
-    }))
-  }, [setState])
-
   useEffect(() => {
-    clearStops()
-    if (!routeKey || !selectedRouteIds) {
+    if (!route.id) {
       return
     }
-    getStopsForRouteAsync(selectedRouteIds, moment(timestamp)).then((stops) =>
-      setState((current) => ({ ...current, stops: stops })),
+    const time = moment(route.date)
+    getRoutesAsync(time, time, route.operator_ref.toString(), route.route_short_name).then(
+      (routes) => {
+        setSearch(() => ({
+          timestamp: time.valueOf(),
+          operatorId: route.operator_ref.toString(),
+          lineNumber: route.route_short_name,
+          routes,
+          routeKey: route.route_long_name,
+        }))
+        setRoutes(routes)
+        setState({})
+      },
     )
-  }, [route, routeKey, clearStops])
+  }, [route.id])
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -71,7 +68,11 @@ const LineProfile = () => {
     plannedRouteStops,
     startTime,
     setStartTime,
-  } = useSingleLineData(route.line_ref, [route.id])
+  } = useSingleLineData(
+    selectedRoute?.lineRef,
+    selectedRoute?.routeIds,
+    selectedRoute?.date.getTime(),
+  )
 
   if (route.message)
     return (
@@ -87,29 +88,16 @@ const LineProfile = () => {
     <div className="container">
       <Grid container spacing={4}>
         <Grid size={{ xs: 12, sm: 4 }} className="inputs">
-          <DateSelector
-            time={moment(timestamp)}
-            onChange={(ts) =>
-              setSearch((current) => ({ ...current, timestamp: ts?.valueOf() ?? Date.now() }))
+          <StopSelector
+            stops={plannedRouteStops || []}
+            stopKey={stopKey}
+            setStopKey={(key) =>
+              setState((current) => {
+                const stop = plannedRouteStops?.find((stop) => stop.key === key)
+                return { ...current, stopKey: key, stopName: stop?.name }
+              })
             }
           />
-          <RouteSelector
-            routes={routes ?? []}
-            routeKey={routeKey}
-            setRouteKey={(key) => setSearch((current) => ({ ...current, routeKey: key }))}
-          />
-          {stops && (
-            <StopSelector
-              stops={stops}
-              stopKey={stopKey}
-              setStopKey={(key) =>
-                setState((current) => {
-                  const stop = current.stops?.find((stop) => stop.key === key)
-                  return { ...current, stopKey: key, stopName: stop?.name }
-                })
-              }
-            />
-          )}
           <div className="startTime">
             {locationsAreLoading && (
               <Tooltip title={t('loading_times_tooltip_content')}>
@@ -133,6 +121,7 @@ const LineProfile = () => {
       <MapWithLocationsAndPath
         positions={filteredPositions}
         plannedRouteStops={plannedRouteStops}
+        showNavigationButtons
       />
     </div>
   )
