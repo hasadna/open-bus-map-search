@@ -10,8 +10,7 @@ type StopSelectorProps = {
 }
 
 const StopSelector = ({ stops, stopKey, setStopKey }: StopSelectorProps) => {
-  const valueFinned = stops.find((stop) => stop.key === stopKey)
-  const value = valueFinned ? valueFinned : null
+  const value = stops.find((stop) => stop.key === stopKey) || null
   const { t } = useTranslation()
 
   return (
