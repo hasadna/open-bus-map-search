@@ -7,7 +7,6 @@ export type Operator = {
   area:
     | 'nationwide'
     | 'central_southern'
-    | 'gush_dan'
     | 'northern'
     | 'southern'
     | 'central'
@@ -53,7 +52,7 @@ export const operatorList: Operator[] = [
     eng_name: 'Dan Bus Company',
     founded: 1945,
     website: 'https://www.dan.co.il',
-    area: 'gush_dan',
+    area: 'central',
     type: 'bus',
   },
   {
@@ -158,7 +157,7 @@ export const operatorList: Operator[] = [
   {
     ref: '23',
     name: 'גלים',
-    eng_name: 'Galim',
+    eng_name: 'Galeem',
     founded: 1996,
     website: 'https://www.galeem.co.il',
     area: 'southern',
@@ -256,8 +255,8 @@ export const operatorList: Operator[] = [
   },
   {
     ref: '42',
-    name: 'ירושלים-רמאללה איחוד',
-    eng_name: 'Jerusalem-Ramallah Union',
+    name: 'ירושלים - רמאללה איחוד',
+    eng_name: 'Jerusalem - Ramallah Union',
     founded: undefined,
     website: 'https://www.ramallahbus.com/',
     area: 'jerusalem',
@@ -265,8 +264,8 @@ export const operatorList: Operator[] = [
   },
   {
     ref: '44',
-    name: 'ירושלים-אבו-תור-ענאתא איחוד',
-    eng_name: 'Jerusalem-Abu Tor-Anata Union',
+    name: 'ירושלים - אבו-תור - ענאתא איחוד',
+    eng_name: 'Jerusalem - Abu-Tor - Anata Union',
     founded: undefined,
     website: 'https://atabuses.com/',
     area: 'jerusalem',
@@ -274,8 +273,8 @@ export const operatorList: Operator[] = [
   },
   {
     ref: '45',
-    name: 'ירושלים-אלווסט איחוד',
-    eng_name: 'Jerusalem-Al-Wast Union',
+    name: 'ירושלים - אלווסט איחוד',
+    eng_name: 'Jerusalem - Al-Wast Union',
     founded: undefined,
     website: undefined,
     area: 'jerusalem',
@@ -283,8 +282,8 @@ export const operatorList: Operator[] = [
   },
   {
     ref: '47',
-    name: 'ירושלים-הר הזיתים',
-    eng_name: 'Jerusalem-Mount of Olives',
+    name: 'ירושלים - הר הזיתים',
+    eng_name: 'Jerusalem - Mount of Olives',
     founded: undefined,
     website: 'https://mountofolivesbus.com/',
     area: 'jerusalem',
@@ -293,7 +292,7 @@ export const operatorList: Operator[] = [
   {
     ref: '49',
     name: 'ירושלים - עיסאוויה מחנה שעפאט איחוד',
-    eng_name: 'Jerusalem-Issawiya Shuafat Camp Union',
+    eng_name: 'Jerusalem - Issawiya Shuafat Camp Union',
     founded: undefined,
     website: 'https://www.shufatbus.com/',
     area: 'jerusalem',
@@ -301,8 +300,8 @@ export const operatorList: Operator[] = [
   },
   {
     ref: '50',
-    name: 'ירושלים-דרום איחוד',
-    eng_name: 'Jerusalem-South Union',
+    name: 'ירושלים - דרום איחוד',
+    eng_name: 'Jerusalem - South Union',
     founded: undefined,
     website: 'https://south-buses.com/',
     area: 'jerusalem',
@@ -310,8 +309,8 @@ export const operatorList: Operator[] = [
   },
   {
     ref: '51',
-    name: 'ירושלים-צור באהר איחוד',
-    eng_name: 'Jerusalem-Tzur Baher Union',
+    name: 'ירושלים - צור באהר איחוד',
+    eng_name: 'Jerusalem - Tzur Baher Union',
     founded: undefined,
     website: undefined,
     area: 'jerusalem',

@@ -256,7 +256,7 @@
   },
   "version": "Current version identifier",
   "failedToFetchVersion": "Failed to fetch current version identifier",
-  "operator_title": "Operators",
+  "operator_title": "Operator",
   "operator": {
     "ref": "Operator ID",
     "founded": "Founded",
@@ -265,7 +265,6 @@
     "area": {
       "nationwide": "Nationwide",
       "central_southern": "Central, Southern",
-      "gush_dan": "Gush Dan",
       "northern": "Northern",
       "southern": "Southern",
       "central": "Central",
@@ -284,12 +283,14 @@
       "cable_car": "Cable Car",
       "taxi": "Share taxi"
     },
-    "all_lines": "All Lines",
+    "all_lines": "All Routes",
     "line": "Line",
     "profile": "Profile",
     "map": "Map",
     "id": "ID",
     "origin": "Origin",
-    "destination": "Destination"
+    "destination": "Destination",
+    "total": "Total Routes",
+    "statistics": "Daily Statistics"
   }
 }
