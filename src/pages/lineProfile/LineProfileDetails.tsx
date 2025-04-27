@@ -1,9 +1,9 @@
-import { Link } from 'react-router'
-import './LineProfileDetails.scss'
-import { useTranslation } from 'react-i18next'
 import { GtfsRoutePydanticModel } from 'open-bus-stride-client'
+import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router'
 import { InfoItem, InfoTable } from '../components/InfoTable'
 import { routeStartEnd } from '../components/utils/rotueUtils'
+import './LineProfileDetails.scss'
 
 export const LineProfileDetails = ({
   id,

@@ -1,8 +1,8 @@
-import styled from 'styled-components'
-import { useTranslation } from 'react-i18next'
-import { Typography } from '@mui/material'
 import { MultipleStopOutlined } from '@mui/icons-material'
+import { Typography } from '@mui/material'
 import { GtfsRoutePydanticModel } from 'open-bus-stride-client'
+import { useTranslation } from 'react-i18next'
+import styled from 'styled-components'
 import { routeStartEnd } from '../components/utils/rotueUtils'
 
 const LineProfileHeader = ({

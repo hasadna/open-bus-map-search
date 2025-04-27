@@ -1,4 +1,4 @@
-import { Typography, Stack } from '@mui/material'
+import { Stack, Typography } from '@mui/material'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { InfoItem, InfoTable } from '../components/InfoTable'
