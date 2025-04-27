@@ -66,7 +66,7 @@ const SingleLineMapPage = () => {
     plannedRouteStops,
     startTime,
     setStartTime,
-  } = useSingleLineData(selectedRoute?.lineRef, selectedRoute?.routeIds, timestamp)
+  } = useSingleLineData(selectedRoute?.lineRef, selectedRoute?.routeIds)
 
   const handleTimestampChange = (time: moment.Moment | null) => {
     setSearch((current) => ({ ...current, timestamp: time?.valueOf() ?? Date.now() }))
