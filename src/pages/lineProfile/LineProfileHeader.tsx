@@ -2,29 +2,29 @@ import styled from 'styled-components'
 import { useTranslation } from 'react-i18next'
 import { Typography } from '@mui/material'
 import { MultipleStopOutlined } from '@mui/icons-material'
+import { GtfsRoutePydanticModel } from 'open-bus-stride-client'
 import { routeStartEnd } from '../components/utils/rotueUtils'
-import { Route } from './Route.interface'
 
 const LineProfileHeader = ({
-  operator_ref,
-  agency_name,
-  route_short_name,
-  route_long_name,
-}: Route) => {
+  operatorRef,
+  agencyName,
+  routeShortName,
+  routeLongName,
+}: GtfsRoutePydanticModel) => {
   const { t } = useTranslation()
-  const [route_start, route_end] = routeStartEnd(route_long_name)
+  const [route_start, route_end] = routeStartEnd(routeLongName)
 
   return (
     <>
       <OperatorCard>
-        <img src={`../operators-logos/${operator_ref}.svg`} />
+        <img src={`../operators-logos/${operatorRef}.svg`} />
         <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-          {agency_name}
+          {agencyName}
         </Typography>
       </OperatorCard>
       <HeaderContainer>
         <h2 className="title">
-          {t('lineProfile.title')} {route_short_name}
+          {t('lineProfile.title')} {routeShortName}
         </h2>
         <div className="route-wrapper">
           {route_start} <MultipleStopOutlined /> {route_end}

@@ -1,23 +1,22 @@
-import { Grid, CircularProgress } from '@mui/material'
+import { CircularProgress, Grid } from '@mui/material'
+import { Tooltip } from 'antd'
+import moment from 'moment'
+import { GtfsRoutePydanticModel } from 'open-bus-stride-client'
+import { useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLoaderData } from 'react-router'
-import { useContext, useEffect, useMemo, useState } from 'react'
-import moment from 'moment'
-import { Tooltip } from 'antd'
+import { FilterPositionsByStartTimeSelector } from '../components/FilterPositionsByStartTimeSelector'
 import { NotFound } from '../components/NotFound'
 import { PageContainer } from '../components/PageContainer'
 import { MapWithLocationsAndPath } from '../components/map-related/MapWithLocationsAndPath'
-import { FilterPositionsByStartTimeSelector } from '../components/FilterPositionsByStartTimeSelector'
-import LineProfileHeader from './LineProfileHeader'
+import './LineProfile.scss'
 import { LineProfileDetails } from './LineProfileDetails'
-import { Route } from './Route.interface'
-import Widget from 'src/shared/Widget'
-import { SearchContext, TimelinePageState } from 'src/model/pageState'
+import LineProfileHeader from './LineProfileHeader'
 import { getRoutesAsync } from 'src/api/gtfsService'
 import { useSingleLineData } from 'src/hooks/useSingleLineData'
-import './LineProfile.scss'
+import { SearchContext, TimelinePageState } from 'src/model/pageState'
 import StopSelector from 'src/pages/components/StopSelector'
-import { BusRoute } from 'src/model/busRoute'
+import Widget from 'src/shared/Widget'
 
 const LineProfileWrapper = () => (
   <PageContainer className="line-data-container">
@@ -27,39 +26,50 @@ const LineProfileWrapper = () => (
 
 const LineProfile = () => {
   const { t } = useTranslation()
-  const route = useLoaderData<Route & { message?: string }>()
-  const [{ stopKey }, setState] = useState<TimelinePageState>({})
-  const [routes, setRoutes] = useState<BusRoute[]>()
   const { setSearch } = useContext(SearchContext)
-
-  const selectedRoute = useMemo(
-    () => routes?.find((r) => r.routeIds[0] === route.id),
-    [routes, route],
-  )
-
-  useEffect(() => {
-    if (!route.id) {
-      return
-    }
-    const time = moment(route.date)
-    getRoutesAsync(time, time, route.operator_ref.toString(), route.route_short_name).then(
-      (routes) => {
-        setSearch(() => ({
-          timestamp: time.valueOf(),
-          operatorId: route.operator_ref.toString(),
-          lineNumber: route.route_short_name,
-          routes,
-          routeKey: route.route_long_name,
-        }))
-        setRoutes(routes)
-        setState({})
-      },
-    )
-  }, [route.id])
+  const { route, message } = useLoaderData<{ route?: GtfsRoutePydanticModel; message?: string }>()
+  const [{ stopKey }, setState] = useState<TimelinePageState>({})
 
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [])
+
+  useEffect(() => {
+    if (!route?.id) {
+      return
+    }
+    const abortController = new AbortController()
+
+    const loader = async () => {
+      try {
+        const time = moment(route.date)
+        const routes = await getRoutesAsync(
+          time,
+          time,
+          route.operatorRef.toString(),
+          route.routeShortName,
+        )
+        setState({})
+        setSearch(() => ({
+          timestamp: time.valueOf(),
+          operatorId: route.operatorRef.toString(),
+          lineNumber: route.routeShortName,
+          routes,
+          routeKey: route.routeLongName,
+        }))
+      } catch (error) {
+        console.error(error)
+      }
+    }
+
+    loader()
+
+    return () => {
+      abortController.abort()
+    }
+  }, [route?.id])
+
+  const routeIds = useMemo(() => (route?.id ? [route?.id] : undefined), [route?.id])
 
   const {
     filteredPositions,
@@ -68,18 +78,14 @@ const LineProfile = () => {
     plannedRouteStops,
     startTime,
     setStartTime,
-  } = useSingleLineData(
-    selectedRoute?.lineRef,
-    selectedRoute?.routeIds,
-    selectedRoute?.date.getTime(),
-  )
+  } = useSingleLineData(route?.lineRef, routeIds, route?.date.getTime())
 
-  if (route.message)
+  if (!route || message)
     return (
       <NotFound>
         <Widget>
           <h1>{t('lineProfile.notFound')}</h1>
-          <pre>{route.message}</pre>
+          <pre>{message}</pre>
         </Widget>
       </NotFound>
     )
