@@ -255,5 +255,41 @@
     ]
   },
   "version": "Current version identifier",
-  "failedToFetchVersion": "Failed to fetch current version identifier"
+  "failedToFetchVersion": "Failed to fetch current version identifier",
+  "operator_title": "Operators",
+  "operator": {
+    "ref": "Operator ID",
+    "founded": "Founded",
+    "website": "Website",
+    "area_title": "Service area",
+    "area": {
+      "nationwide": "Nationwide",
+      "central_southern": "Central, Southern",
+      "gush_dan": "Gush Dan",
+      "northern": "Northern",
+      "southern": "Southern",
+      "central": "Central",
+      "haifa": "Haifa",
+      "jerusalem": "Jerusalem",
+      "tel_aviv": "Tel Aviv",
+      "beersheba": "Beersheba",
+      "beit_shemesh": "Beit Shemesh"
+    },
+    "type_title": "Service type",
+    "type": {
+      "bus": "Bus",
+      "rail": "Rail",
+      "light_rail": "Light Rail",
+      "subway": "Subway",
+      "cable_car": "Cable Car",
+      "taxi": "Share taxi"
+    },
+    "all_lines": "All Lines",
+    "line": "Line",
+    "profile": "Profile",
+    "map": "Map",
+    "id": "ID",
+    "origin": "Origin",
+    "destination": "Destination"
+  }
 }

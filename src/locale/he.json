@@ -154,7 +154,7 @@
   "at_time": "בשעה",
   "vehicle_ref": "לוחית רישוי",
   "drive_direction": "כיוון נסיעה",
-  "directions":{
+  "directions": {
     "North": "צפון",
     "Northeast": "צפון-מזרח",
     "East": "מזרח",
@@ -275,5 +275,41 @@
   },
   "loading": "טוען...",
   "version": "מזהה גרסה",
-  "failedToFetchVersion": "נכשל בטעינת מידע אודות מזהה הגרסה הנוכחית"
+  "failedToFetchVersion": "נכשל בטעינת מידע אודות מזהה הגרסה הנוכחית",
+  "operator_title": "מפעילים",
+  "operator": {
+    "ref": "מזהה חברה",
+    "founded": "שנת הקמה",
+    "website": "אתר אינטרנט",
+    "area_title": "איזר תפעול",
+    "area": {
+      "nationwide": "ארצי",
+      "central_southern": "מרכז, דרום",
+      "gush_dan": "גוש דן",
+      "northern": "צפון",
+      "southern": "דרום",
+      "central": "מרכז",
+      "haifa": "חיפה",
+      "jerusalem": "ירושלים",
+      "tel_aviv": "תל אביב",
+      "beersheba": "באר שבע",
+      "beit_shemesh": "בית שמש"
+    },
+    "type_title": "סוג השרות",
+    "type": {
+      "bus": "אוטובוס",
+      "rail": "רכבת",
+      "light_rail": "רכבת קלה",
+      "subway": "רכבת תחתית",
+      "cable_car": "רכבל",
+      "taxi": "מוניות שירות"
+    },
+    "all_lines": "כל הקווים",
+    "line": "קו",
+    "profile": "פרופיל",
+    "map": "מפה",
+    "id": "מזהה טכני",
+    "origin": "מוצא",
+    "destination": "יעד"
+  }
 }

@@ -1,18 +1,13 @@
 import moment from 'moment'
-import { useContext, useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { getStopsForRouteAsync } from 'src/api/gtfsService'
 import useVehicleLocations from 'src/api/useVehicleLocations'
 import { BusStop } from 'src/model/busStop'
-import { SearchContext } from 'src/model/pageState'
 import { Point } from 'src/pages/timeBasedMap'
 
 const formatTime = (time: moment.Moment) => time.format('HH:mm:ss')
 
-export const useSingleLineData = (lineRef?: number, routeIds?: number[]) => {
-  const {
-    search: { timestamp },
-  } = useContext(SearchContext)
-
+export const useSingleLineData = (lineRef?: number, routeIds?: number[], timestamp?: number) => {
   const [filteredPositions, setFilteredPositions] = useState<Point[]>([])
   const [plannedRouteStops, setPlannedRouteStops] = useState<BusStop[]>([])
   const [startTime, setStartTime] = useState<string>()

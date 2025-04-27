@@ -1,11 +1,11 @@
-import React from 'react'
+import { Link } from 'react-router'
 import './LineProfileDetails.scss'
 import { useTranslation } from 'react-i18next'
+import { InfoItem, InfoTable } from '../components/InfoTable'
+import { routeStartEnd } from '../components/utils/rotueUtils'
 import { Route } from './Route.interface'
 
-type Props = Route
-
-export const LineProfileDetails: React.FC<Props> = ({
+export const LineProfileDetails = ({
   id,
   date,
   line_ref,
@@ -17,17 +17,23 @@ export const LineProfileDetails: React.FC<Props> = ({
   route_alternative,
   agency_name,
   route_type,
-}) => {
+}: Route) => {
   const { t } = useTranslation()
 
-  const [route_start, route_end] = route_long_name.split('<->')
+  const [route_start, route_end] = routeStartEnd(route_long_name)
 
   const data = [
     { label: t('lineProfile.id'), value: id },
     { label: t('lineProfile.date'), value: date },
     { label: t('lineProfile.lineReference'), value: line_ref },
-    { label: t('lineProfile.operatorReference'), value: operator_ref },
-    { label: t('lineProfile.agencyName'), value: agency_name },
+    {
+      label: t('lineProfile.operatorReference'),
+      value: <Link to={'/operator?operatorId=' + operator_ref}>{operator_ref}</Link>,
+    },
+    {
+      label: t('lineProfile.agencyName'),
+      value: <Link to={'/operator?operatorId=' + operator_ref}>{agency_name}</Link>,
+    },
     { label: t('lineProfile.route.shortName'), value: route_short_name },
     { label: t('lineProfile.route.start'), value: route_start },
     { label: t('lineProfile.route.end'), value: route_end },
@@ -38,17 +44,10 @@ export const LineProfileDetails: React.FC<Props> = ({
   ]
 
   return (
-    <table>
-      <tbody>
-        {data.map(({ label, value }) => (
-          <tr key={`${label}-${value}`}>
-            <td>
-              <strong>{label}</strong>
-            </td>
-            <td>{value}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <InfoTable>
+      {data.map(({ label, value }) => (
+        <InfoItem key={`${label}-${value}`} lable={label} value={value} />
+      ))}
+    </InfoTable>
   )
 }

@@ -2,18 +2,17 @@ import styled from 'styled-components'
 import { useTranslation } from 'react-i18next'
 import { Typography } from '@mui/material'
 import { MultipleStopOutlined } from '@mui/icons-material'
+import { routeStartEnd } from '../components/utils/rotueUtils'
 import { Route } from './Route.interface'
-
-type Props = Route
 
 const LineProfileHeader = ({
   operator_ref,
   agency_name,
   route_short_name,
   route_long_name,
-}: Props) => {
+}: Route) => {
   const { t } = useTranslation()
-  const [firstRoute, secondRoute] = route_long_name.split('<->')
+  const [route_start, route_end] = routeStartEnd(route_long_name)
 
   return (
     <>
@@ -28,7 +27,7 @@ const LineProfileHeader = ({
           {t('lineProfile.title')} {route_short_name}
         </h2>
         <div className="route-wrapper">
-          {firstRoute} <MultipleStopOutlined /> {secondRoute}
+          {route_start} <MultipleStopOutlined /> {route_end}
         </div>
       </HeaderContainer>
     </>
