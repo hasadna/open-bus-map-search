@@ -12,7 +12,7 @@ const Widget = ({
   const { isDarkTheme } = useTheme()
   return (
     <Card className={cn('card widget', { dark: isDarkTheme, marginBottom })}>
-      <CardContent>{children} </CardContent>
+      <CardContent>{children}</CardContent>
     </Card>
   )
 }
