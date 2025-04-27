@@ -188,7 +188,7 @@ const Contributors = () => {
   const { contributors, isLoading, isError } = useContributions()
 
   return (
-    <Widget>
+    <Widget marginBottom>
       <h2>{t('aboutPage.contributors')}</h2>
       <p>
         {t('aboutPage.contributorsText')}

@@ -71,7 +71,7 @@ function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatistic
 
   return (
     lineRef > 0 && (
-      <Widget>
+      <Widget marginBottom>
         {isLoading && lineRef ? (
           <Skeleton active />
         ) : (

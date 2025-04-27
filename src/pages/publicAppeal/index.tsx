@@ -17,7 +17,7 @@ const PublicAppeal = () => {
           {t(`${pageName}.title`)}
         </Title>
         {tasks.map((task, i) => (
-          <Task title={task.title} description={task.description} index={i} key={i} />
+          <Task {...task} marginBottom={tasks.length - 1 === i} key={i} />
         ))}
       </Space>
     </PublicAppealStyle>
@@ -25,14 +25,14 @@ const PublicAppeal = () => {
 }
 
 type TaskDetails = {
-  index: number
   title: string
   description: string
+  marginBottom?: boolean
 }
 
-const Task = ({ index, title, description }: TaskDetails) => {
+const Task = ({ title, description, marginBottom }: TaskDetails) => {
   return (
-    <Widget key={index}>
+    <Widget marginBottom={marginBottom}>
       <h2 className="public">{title}</h2>
       <p>{description}</p>
       <a href="https://open-bus-stride-api.hasadna.org.il/docs">Open Bus Stride API</a>

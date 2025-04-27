@@ -45,8 +45,9 @@ const SingleLineMapPage = () => {
         }))
       })
       .catch((err) => {
-        console.error(err)
-        setSearch((current) => ({ ...current, routes: undefined, routeKey: undefined }))
+        if (err?.cause?.name !== 'AbortError') {
+          setSearch((current) => ({ ...current, routes: undefined, routeKey: undefined }))
+        }
       })
 
     return () => controller.abort()
@@ -65,7 +66,7 @@ const SingleLineMapPage = () => {
     plannedRouteStops,
     startTime,
     setStartTime,
-  } = useSingleLineData(selectedRoute?.lineRef, selectedRoute?.routeIds)
+  } = useSingleLineData(selectedRoute?.lineRef, selectedRoute?.routeIds, timestamp)
 
   const handleTimestampChange = (time: moment.Moment | null) => {
     setSearch((current) => ({ ...current, timestamp: time?.valueOf() ?? Date.now() }))
