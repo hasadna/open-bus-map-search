@@ -9,6 +9,7 @@ const GapsPatternsPage = lazy(() => import('../pages/gapsPatterns'))
 const TimeBasedMapPage = lazy(() => import('../pages/timeBasedMap'))
 const SingleLineMapPage = lazy(() => import('../pages/singleLineMap'))
 const About = lazy(() => import('../pages/about'))
+const Operator = lazy(() => import('../pages/operator'))
 const Profile = lazy(() => import('../pages/lineProfile/LineProfile'))
 const BugReportForm = lazy(() => import('../pages/BugReportForm '))
 const DataResearch = lazy(() =>
@@ -31,7 +32,7 @@ import {
   LineChartOutlined,
   GithubOutlined,
 } from '@ant-design/icons'
-import { Psychology } from '@mui/icons-material'
+import { AirportShuttle, Psychology } from '@mui/icons-material'
 import { MainRoute } from './MainRoute'
 import { ErrorPage } from 'src/pages/ErrorPage'
 
@@ -80,6 +81,13 @@ export const PAGES = [
     searchParamsRequired: true,
     icon: <RadarChartOutlined />,
     element: <SingleLineMapPage />,
+  },
+  {
+    label: 'operator_title',
+    path: '/operator',
+    searchParamsRequired: true,
+    icon: <AirportShuttle />,
+    element: <Operator />,
   },
   {
     label: 'about_title',
@@ -148,7 +156,6 @@ export const getRoutesList = () => {
       />
       <Route path="*" element={<RedirectToHomepage />} key="back" />
     </Route>
-    // </Suspense>
   )
 }
 
