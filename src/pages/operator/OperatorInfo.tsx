@@ -12,7 +12,9 @@ export const OperatorInfo = ({ operatorId }: { operatorId?: string }) => {
 
   return (
     <Widget>
-      <Typography variant="h5">
+      <Typography
+        sx={{ margin: '17.5px 0 0.5rem', fontWeight: 'bold', fontSize: 24, lineHeight: '35px' }}
+        variant="h2">
         {i18n.language === 'en' ? operator?.eng_name : operator?.name}
       </Typography>
       <Stack justifyContent="space-between" flexDirection="row">

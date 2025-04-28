@@ -29,7 +29,9 @@ export const OperatorRoutes = ({
 
   return (
     <Widget marginBottom>
-      <Typography sx={{ marginInlineStart: '0.5rem' }} variant="h5">
+      <Typography
+        sx={{ margin: '17.5px 0.5rem', fontWeight: 'bold', fontSize: 24, lineHeight: '35px' }}
+        variant="h2">
         {t('operator.all_lines')}
       </Typography>
       <TableContainer sx={{ height: 345 }}>

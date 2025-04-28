@@ -39,16 +39,15 @@ const LineProfile = () => {
       return
     }
     const abortController = new AbortController()
-
-    const loader = async () => {
-      try {
-        const time = moment(route.date)
-        const routes = await getRoutesAsync(
-          time,
-          time,
-          route.operatorRef.toString(),
-          route.routeShortName,
-        )
+    const time = moment(route.date)
+    getRoutesAsync(
+      time,
+      time,
+      route.operatorRef.toString(),
+      route.routeShortName,
+      abortController.signal,
+    )
+      .then((routes) => {
         setState({})
         setSearch(() => ({
           timestamp: time.valueOf(),
@@ -57,12 +56,8 @@ const LineProfile = () => {
           routes,
           routeKey: route.routeLongName,
         }))
-      } catch (error) {
-        console.error(error)
-      }
-    }
-
-    loader()
+      })
+      .catch((error) => console.error(error))
 
     return () => {
       abortController.abort()
@@ -116,6 +111,33 @@ const LineProfile = () => {
               setStartTime={setStartTime}
             />
           </div>
+          <Widget>
+            <div>journey id {filteredPositions[0]?.point?.siri_ride__journey_ref}</div>
+            <div>car id {filteredPositions[0]?.point?.siri_ride__vehicle_ref}</div>
+            <div>{filteredPositions[0]?.point?.siri_ride__duration_minutes}min</div>
+            <div>ride id {filteredPositions[0]?.point?.siri_ride__id}</div>
+            <div>
+              {moment(
+                filteredPositions[0]?.point?.siri_ride__scheduled_start_time,
+              ).toLocaleString()}
+            </div>
+          </Widget>
+
+          <Widget>
+            {plannedRouteStops?.map((b) => {
+              if (b.key === stopKey) {
+                return (
+                  <>
+                    <div>{b.name}</div>
+                    <div>{b.code}</div>
+                    <div>
+                      {b.location.latitude} - {b.location.longitude}
+                    </div>
+                  </>
+                )
+              }
+            })}
+          </Widget>
         </Grid>
         <Grid size={{ xs: 12, sm: 8 }}>
           <Widget>
