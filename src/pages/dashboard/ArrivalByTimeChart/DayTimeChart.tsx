@@ -40,7 +40,7 @@ const DayTimeChart: FC<DayTimeChartProps> = ({ startDate, endDate, operatorId })
   )
 
   return (
-    <Widget>
+    <Widget marginBottom>
       <h2 className="title">
         {groupByHour ? t('dashboard_page_graph_title_hour') : t('dashboard_page_graph_title_day')}
       </h2>
