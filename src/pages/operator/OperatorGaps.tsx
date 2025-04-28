@@ -11,60 +11,74 @@ import Widget from 'src/shared/Widget'
 export const OperatorGaps = ({
   operatorId,
   timestamp,
+  timeRange = 'day',
 }: {
   operatorId?: string
   timestamp?: number
+  timeRange?: 'day' | 'week' | 'month' | 'year'
 }) => {
   const { t, i18n } = useTranslation()
   const [groupByOperatorData, isLoading] = useGroupBy({
-    dateFrom: moment(timestamp).add(-1, 'day').endOf('day'),
-    dateTo: moment(timestamp).endOf('day'),
+    dateFrom: moment(timestamp).add(-1, timeRange),
+    dateTo: moment(timestamp),
     groupBy: 'operator_ref',
   })
 
   const data = useMemo(() => {
     const operator = groupByOperatorData?.find((d) => d.operator_ref?.agency_id === operatorId)
+    if (!operator) return []
 
+    const missing = operator?.total_planned_rides - operator?.total_actual_rides
     return [
-      { name: t('ride_as_planned'), value: operator?.total_planned_rides, color: '#00C49F' },
-      { name: t('ride_extra'), value: 2000, color: '#FFBB28' },
-      { name: t('ride_missing'), value: operator?.total_routes, color: '#FF4040' },
+      { name: t('ride_as_planned'), value: operator?.total_actual_rides, color: '#00C49F' },
+      { name: t('ride_missing'), value: missing, color: '#FF4040' },
+      // { name: t('ride_extra'), value: 0, color: '#FFBB28' },
     ]
   }, [operatorId, timestamp, groupByOperatorData, i18n.language])
 
+  if (isLoading)
+    <Widget>
+      <Skeleton active paragraph={{ rows: 4 }} />
+    </Widget>
+
   return (
     <Widget>
-      <Typography variant="h5">{t('operator.statistics')}</Typography>
-      {isLoading ? (
-        <Skeleton active paragraph={{ rows: 4 }} />
-      ) : (
-        <Stack flexDirection="row" justifyContent="space-between">
-          <div>
-            <InfoTable>
-              {data.map((d) => (
-                <InfoItem key={d.name} lable={d.name} value={d.value} />
-              ))}
-            </InfoTable>
-          </div>
-          <PieChart width={160} height={160}>
-            <Pie data={data} innerRadius={65} outerRadius={80} paddingAngle={5} dataKey="value">
-              {data.map((entry) => (
-                <Cell key={entry.name} fill={entry.color} />
-              ))}
-            </Pie>
-            <text
-              x="50%"
-              y="50%"
-              textAnchor="middle"
-              dominantBaseline="middle"
-              fill="currentColor"
-              fontSize="32"
-              fontWeight={500}>
-              {calculatePercentage(data[0].value, data[2].value, data[1].value)}
-            </text>
-          </PieChart>
-        </Stack>
-      )}
+      <Stack flexDirection="row" justifyContent="space-between">
+        <div>
+          <Typography
+            sx={{
+              margin: '17.5px 0 0.5rem ',
+              fontWeight: 'bold',
+              fontSize: 24,
+              lineHeight: '35px',
+            }}
+            variant="h2">
+            {t('operator.statistics')} {t(`operator.time_range.${timeRange}`)}
+          </Typography>
+          <InfoTable>
+            {data.map((d) => (
+              <InfoItem key={d.name} lable={d.name} value={d.value} />
+            ))}
+          </InfoTable>
+        </div>
+        <PieChart width={160} height={160}>
+          <Pie data={data} innerRadius={65} outerRadius={80} paddingAngle={3} dataKey="value">
+            {data.map((entry) => (
+              <Cell key={entry.name} fill={entry.color} />
+            ))}
+          </Pie>
+          <text
+            x="50%"
+            y="50%"
+            textAnchor="middle"
+            dominantBaseline="middle"
+            fill="currentColor"
+            fontSize="32"
+            fontWeight={500}>
+            {calculatePercentage(data[0]?.value, data[1]?.value)}
+          </text>
+        </PieChart>
+      </Stack>
     </Widget>
   )
 }

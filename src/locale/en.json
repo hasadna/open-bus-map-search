@@ -283,6 +283,12 @@
       "cable_car": "Cable Car",
       "taxi": "Share taxi"
     },
+    "time_range": {
+      "day": "Daily",
+      "week": "Weekly",
+      "month": "Monthly",
+      "year": "Yearly"
+    },
     "all_lines": "All Routes",
     "line": "Line",
     "profile": "Profile",
@@ -291,6 +297,6 @@
     "origin": "Origin",
     "destination": "Destination",
     "total": "Total Routes",
-    "statistics": "Daily Statistics"
+    "statistics": "Statistics"
   }
 }
