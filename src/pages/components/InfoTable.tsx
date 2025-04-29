@@ -1,8 +1,10 @@
+import styled from 'styled-components'
+
 export const InfoTable = ({ children }: { children?: React.ReactNode }) => {
   return (
-    <table>
+    <Table>
       <tbody>{children}</tbody>
-    </table>
+    </Table>
   )
 }
 
@@ -16,3 +18,13 @@ export const InfoItem = ({ lable, value }: { lable: React.ReactNode; value?: Rea
     </tr>
   )
 }
+
+const Table = styled.table`
+  border-collapse: collapse;
+  & > * {
+    font-size: 1em;
+  }
+  td {
+    padding: 0.125rem;
+  }
+`

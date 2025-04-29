@@ -36,11 +36,13 @@ export const OperatorGaps = ({
     ]
   }, [operatorId, timestamp, groupByOperatorData, i18n.language])
 
-  if (isLoading)
-    <Widget>
-      <Skeleton active paragraph={{ rows: 4 }} />
-    </Widget>
-
+  if (isLoading) {
+    return (
+      <Widget>
+        <Skeleton active paragraph={{ rows: 4 }} />
+      </Widget>
+    )
+  }
   return (
     <Widget>
       <Stack flexDirection="row" justifyContent="space-between">
