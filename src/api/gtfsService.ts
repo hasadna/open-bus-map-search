@@ -1,5 +1,5 @@
 import axios from 'axios'
-import moment from 'moment'
+import moment, { Moment } from 'moment'
 import {
   GtfsApi,
   GtfsRideStopPydanticModel,
@@ -23,8 +23,8 @@ type StopHitsPayLoadType = {
 }
 
 export async function getRoutesAsync(
-  fromTimestamp: moment.Moment,
-  toTimestamp: moment.Moment,
+  fromTimestamp: Moment,
+  toTimestamp: Moment,
   operatorId?: string,
   lineNumber?: string,
   signal?: AbortSignal,
@@ -66,7 +66,7 @@ export async function getRoutesAsync(
 
 export async function getStopsForRouteAsync(
   routeIds: number[],
-  timestamp: moment.Moment,
+  timestamp: Moment,
 ): Promise<BusStop[]> {
   const stops: BusStop[] = []
 
@@ -100,7 +100,7 @@ export async function getStopsForRouteAsync(
   )
 }
 
-export async function getGtfsStopHitTimesAsync(stop: BusStop, timestamp: moment.Moment) {
+export async function getGtfsStopHitTimesAsync(stop: BusStop, timestamp: Moment) {
   const targetStartTime = moment(timestamp).subtract(stop.minutesFromRouteStartTime, 'minutes')
 
   const rides = await GTFS_API.gtfsRidesListGet({

@@ -29,11 +29,11 @@ const LineProfileWrapper = () => (
 const LineProfile = () => {
   const { t } = useTranslation()
   const { route, message } = useLoaderData<{ route?: GtfsRoutePydanticModel; message?: string }>()
+  const [{ stopKey }, setState] = useState<TimelinePageState>({})
   const {
     search: { timestamp },
     setSearch,
   } = useContext(SearchContext)
-  const [{ stopKey }, setState] = useState<TimelinePageState>({})
 
   useEffect(() => {
     window.scrollTo(0, 0)
