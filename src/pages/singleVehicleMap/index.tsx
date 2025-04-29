@@ -66,7 +66,6 @@ const SingleVehicleMap = () => {
       </Typography>
 
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
-        {/* choose date*/}
         <Grid size={{ sm: 4, xs: 12 }}>
           <DateSelector
             time={moment(timestamp)}
@@ -78,7 +77,6 @@ const SingleVehicleMap = () => {
 
         {positions && (
           <>
-            {/* choose vehicle number */}
             <Grid size={{ sm: 4, xs: 12 }}>
               <VehicleNumberSelector
                 vehicleNumber={vehicleNumber}
