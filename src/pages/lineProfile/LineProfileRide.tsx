@@ -13,7 +13,7 @@ export const LineProfileRide = ({ point }: { point?: VehicleLocation }) => {
       <InfoTable>
         <InfoItem lable="Journey ID" value={point?.siri_ride__journey_ref} />
         <InfoItem lable="Ride ID" value={point?.siri_ride__id} />
-        <InfoItem lable="Car ID" value={vehicleIDFormat(point?.siri_ride__vehicle_ref)} />
+        <InfoItem lable="Vehicle ID" value={vehicleIDFormat(point?.siri_ride__vehicle_ref)} />
         <InfoItem
           lable="Ride Duration"
           value={point?.siri_ride__duration_minutes && point?.siri_ride__duration_minutes + ' min'}

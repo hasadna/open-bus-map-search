@@ -1,5 +1,6 @@
 import { MultipleStopOutlined } from '@mui/icons-material'
 import { Typography } from '@mui/material'
+import moment from 'moment'
 import { GtfsRoutePydanticModel } from 'open-bus-stride-client'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
@@ -21,7 +22,7 @@ export const LineProfileDetails = ({
   agencyName,
   routeType,
 }: GtfsRoutePydanticModel) => {
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
   const [route_start, route_end] = routeStartEnd(routeLongName)
 
   return (
@@ -43,7 +44,7 @@ export const LineProfileDetails = ({
       <TableContainer>
         <InfoTable>
           <InfoItem lable={t('lineProfile.id')} value={id} />
-          <InfoItem lable={t('lineProfile.date')} value={date.toLocaleDateString(i18n.language)} />
+          <InfoItem lable={t('lineProfile.date')} value={moment(date).format('DD-MM-YYYY')} />
           <InfoItem lable={t('lineProfile.lineReference')} value={lineRef} />
           <InfoItem
             lable={t('lineProfile.operatorReference')}
