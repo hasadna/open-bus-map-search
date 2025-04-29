@@ -2,6 +2,7 @@ import { Grid, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material
 import moment from 'moment'
 import { useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import styled from 'styled-components'
 import { DateSelector } from '../components/DateSelector'
 import OperatorSelector from '../components/OperatorSelector'
 import { PageContainer } from '../components/PageContainer'
@@ -52,6 +53,7 @@ const OperatorPage = () => {
                 sx={{ height: 56 }}
                 exclusive
                 fullWidth
+                dir="rtl"
                 onChange={(_, value: (typeof TIME_RANGES)[number]) =>
                   value ? setTimeRange(value) : undefined
                 }>
@@ -66,18 +68,20 @@ const OperatorPage = () => {
         )}
       </Grid>
       {operatorId && (
-        <Grid container spacing={2} alignItems="stretch">
+        <Grid container spacing={2}>
           <Grid size={{ lg: 6, xs: 12 }}>
             <OperatorInfo operatorId={operatorId} />
-            <div style={{ marginTop: '1rem' }} />
+            <Spacing />
             <OperatorGaps operatorId={operatorId} timestamp={timestamp} timeRange={timeRange} />
           </Grid>
-          <Grid size={{ lg: 6, xs: 12 }} sx={{ height: 443, display: 'grid' }}>
-            <WorstLinesChart
-              operatorId={operatorId}
-              startDate={moment(timestamp).add(-1, timeRange)}
-              endDate={moment(timestamp)}
-            />
+          <Grid size={{ lg: 6, xs: 12 }}>
+            <ChartWrapper>
+              <WorstLinesChart
+                operatorId={operatorId}
+                startDate={moment(timestamp).add(-1, timeRange)}
+                endDate={moment(timestamp)}
+              />
+            </ChartWrapper>
           </Grid>
           <Grid size={{ xs: 12 }}>
             <OperatorRoutes operatorId={operatorId} timestamp={timestamp} />
@@ -89,3 +93,17 @@ const OperatorPage = () => {
 }
 
 export default OperatorPage
+
+const ChartWrapper = styled.div`
+  height: 100%;
+  > div {
+    height: 100%;
+  }
+  .chart {
+    height: 335.15px;
+    overflow-y: scroll;
+  }
+`
+const Spacing = styled.div`
+  margin-top: 1rem;
+`

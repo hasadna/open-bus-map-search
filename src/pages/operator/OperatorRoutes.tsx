@@ -10,7 +10,7 @@ import {
 import { Skeleton } from 'antd'
 import { useContext } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import styled from 'styled-components'
 import { useAllRoutes } from '../../hooks/useAllRoutes'
 import { SearchContext } from 'src/model/pageState'
@@ -26,6 +26,8 @@ export const OperatorRoutes = ({
   const { setSearch } = useContext(SearchContext)
   const { t } = useTranslation()
   const { routes, isLoading } = useAllRoutes(operatorId, timestamp)
+
+  const navigate = useNavigate()
 
   return (
     <Widget marginBottom>
@@ -59,14 +61,16 @@ export const OperatorRoutes = ({
                   </TableCell>
                   <TableCell>
                     <Link
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.preventDefault()
                         setSearch((current) => ({
                           ...current,
                           lineNumber: route.line + route.suffix,
                           routeKey: route.routeKey,
                         }))
+                        navigate('/single-line-map')
                       }}
-                      to="/single-line-map">
+                      to={`/single-line-map`}>
                       {t('operator.map')}
                     </Link>
                   </TableCell>

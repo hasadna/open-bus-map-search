@@ -5,13 +5,15 @@ import { GtfsRoutePydanticModel } from 'open-bus-stride-client'
 import { useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLoaderData } from 'react-router'
+import { DateSelector } from '../components/DateSelector'
 import { FilterPositionsByStartTimeSelector } from '../components/FilterPositionsByStartTimeSelector'
 import { NotFound } from '../components/NotFound'
 import { PageContainer } from '../components/PageContainer'
 import { MapWithLocationsAndPath } from '../components/map-related/MapWithLocationsAndPath'
 import './LineProfile.scss'
 import { LineProfileDetails } from './LineProfileDetails'
-import LineProfileHeader from './LineProfileHeader'
+import { LineProfileRide } from './LineProfileRide'
+import { LineProfileStop } from './LineProfileStop'
 import { getRoutesAsync } from 'src/api/gtfsService'
 import { useSingleLineData } from 'src/hooks/useSingleLineData'
 import { SearchContext, TimelinePageState } from 'src/model/pageState'
@@ -27,7 +29,10 @@ const LineProfileWrapper = () => (
 const LineProfile = () => {
   const { t } = useTranslation()
   const { route, message } = useLoaderData<{ route?: GtfsRoutePydanticModel; message?: string }>()
-  const { setSearch } = useContext(SearchContext)
+  const {
+    search: { timestamp },
+    setSearch,
+  } = useContext(SearchContext)
   const [{ stopKey }, setState] = useState<TimelinePageState>({})
 
   useEffect(() => {
@@ -50,7 +55,7 @@ const LineProfile = () => {
       .then((routes) => {
         setState({})
         setSearch(() => ({
-          timestamp: time.valueOf(),
+          timestamp: route.date.getTime(),
           operatorId: route.operatorRef.toString(),
           lineNumber: route.routeShortName,
           routes,
@@ -62,7 +67,7 @@ const LineProfile = () => {
     return () => {
       abortController.abort()
     }
-  }, [route?.id])
+  }, [route?.id, timestamp])
 
   const routeIds = useMemo(() => (route?.id ? [route?.id] : undefined), [route?.id])
 
@@ -74,6 +79,10 @@ const LineProfile = () => {
     startTime,
     setStartTime,
   } = useSingleLineData(route?.lineRef, routeIds, route?.date.getTime())
+
+  const handleTimestampChange = (time: moment.Moment | null) => {
+    setSearch((current) => ({ ...current, timestamp: time?.valueOf() ?? Date.now() }))
+  }
 
   if (!route || message)
     return (
@@ -89,6 +98,20 @@ const LineProfile = () => {
     <div className="container">
       <Grid container spacing={4}>
         <Grid size={{ xs: 12, sm: 4 }} className="inputs">
+          <DateSelector time={moment(timestamp)} onChange={handleTimestampChange} />
+          <div className="startTime">
+            <FilterPositionsByStartTimeSelector
+              options={options}
+              startTime={startTime}
+              setStartTime={setStartTime}
+            />
+            {locationsAreLoading && (
+              <Tooltip title={t('loading_times_tooltip_content')}>
+                <CircularProgress />
+              </Tooltip>
+            )}
+          </div>
+          <LineProfileRide point={filteredPositions[0]?.point} />
           <StopSelector
             stops={plannedRouteStops || []}
             stopKey={stopKey}
@@ -99,51 +122,10 @@ const LineProfile = () => {
               })
             }
           />
-          <div className="startTime">
-            {locationsAreLoading && (
-              <Tooltip title={t('loading_times_tooltip_content')}>
-                <CircularProgress />
-              </Tooltip>
-            )}
-            <FilterPositionsByStartTimeSelector
-              options={options}
-              startTime={startTime}
-              setStartTime={setStartTime}
-            />
-          </div>
-          <Widget>
-            <div>journey id {filteredPositions[0]?.point?.siri_ride__journey_ref}</div>
-            <div>car id {filteredPositions[0]?.point?.siri_ride__vehicle_ref}</div>
-            <div>{filteredPositions[0]?.point?.siri_ride__duration_minutes}min</div>
-            <div>ride id {filteredPositions[0]?.point?.siri_ride__id}</div>
-            <div>
-              {moment(
-                filteredPositions[0]?.point?.siri_ride__scheduled_start_time,
-              ).toLocaleString()}
-            </div>
-          </Widget>
-
-          <Widget>
-            {plannedRouteStops?.map((b) => {
-              if (b.key === stopKey) {
-                return (
-                  <>
-                    <div>{b.name}</div>
-                    <div>{b.code}</div>
-                    <div>
-                      {b.location.latitude} - {b.location.longitude}
-                    </div>
-                  </>
-                )
-              }
-            })}
-          </Widget>
+          <LineProfileStop stop={plannedRouteStops.find((s) => s.key === stopKey)} />
         </Grid>
         <Grid size={{ xs: 12, sm: 8 }}>
-          <Widget>
-            <LineProfileHeader {...route} />
-            <LineProfileDetails {...route} />
-          </Widget>
+          <LineProfileDetails {...route} />
         </Grid>
       </Grid>
       <MapWithLocationsAndPath
