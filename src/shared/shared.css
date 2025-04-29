@@ -2,8 +2,8 @@
   border-radius: 4px;
 }
 
-.widget:last-of-type {
-  margin-bottom: 20px;
+.widget.marginBottom {
+  margin-bottom: 16px;
 }
 
 .card.dark {

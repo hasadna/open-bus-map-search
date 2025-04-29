@@ -45,8 +45,9 @@ const SingleLineMapPage = () => {
         }))
       })
       .catch((err) => {
-        console.error(err)
-        setSearch((current) => ({ ...current, routes: undefined, routeKey: undefined }))
+        if (err?.cause?.name !== 'AbortError') {
+          setSearch((current) => ({ ...current, routes: undefined, routeKey: undefined }))
+        }
       })
 
     return () => controller.abort()
