@@ -9,6 +9,7 @@ import { DateSelector } from '../components/DateSelector'
 import { FilterPositionsByStartTimeSelector } from '../components/FilterPositionsByStartTimeSelector'
 import { NotFound } from '../components/NotFound'
 import { PageContainer } from '../components/PageContainer'
+import RouteSelector from '../components/RouteSelector'
 import { MapWithLocationsAndPath } from '../components/map-related/MapWithLocationsAndPath'
 import './LineProfile.scss'
 import { LineProfileDetails } from './LineProfileDetails'
@@ -31,7 +32,7 @@ const LineProfile = () => {
   const { route, message } = useLoaderData<{ route?: GtfsRoutePydanticModel; message?: string }>()
   const [{ stopKey }, setState] = useState<TimelinePageState>({})
   const {
-    search: { timestamp },
+    search: { timestamp, routes },
     setSearch,
   } = useContext(SearchContext)
 
@@ -96,9 +97,20 @@ const LineProfile = () => {
 
   return (
     <div className="container">
-      <Grid container spacing={4}>
-        <Grid size={{ xs: 12, sm: 4 }} className="inputs">
+      <Grid container spacing={2} className="inputs">
+        <Grid size={{ xs: 12, sm: 4 }}>
           <DateSelector time={moment(timestamp)} onChange={handleTimestampChange} />
+        </Grid>
+        <Grid size={{ xs: 12, sm: 4 }}>
+          <RouteSelector
+            routes={routes ?? []}
+            routeKey={route.routeLongName}
+            setRouteKey={(key) => setSearch((current) => ({ ...current, routeKey: key }))}
+          />
+        </Grid>
+      </Grid>
+      <Grid container spacing={2} className="inputs">
+        <Grid container spacing={2} flexDirection="column" size={{ xs: 12, sm: 4 }}>
           <div className="startTime">
             <FilterPositionsByStartTimeSelector
               options={options}
