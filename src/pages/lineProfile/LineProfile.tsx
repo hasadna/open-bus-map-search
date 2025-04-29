@@ -67,7 +67,7 @@ const LineProfile = () => {
     return () => {
       abortController.abort()
     }
-  }, [route?.id, timestamp])
+  }, [route?.id])
 
   const routeIds = useMemo(() => (route?.id ? [route?.id] : undefined), [route?.id])
 
