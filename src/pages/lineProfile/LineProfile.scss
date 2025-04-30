@@ -1,13 +1,6 @@
-.container .map-info {
-  height: 15rem;
-}
-
-.inputs {
-  margin: 1rem 0;
-}
-
-.startTime {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
+.container {
+  width: 100%;
+  .map-info {
+    height: 15rem;
+  }
 }

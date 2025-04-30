@@ -195,6 +195,19 @@
       "direction": "Route Direction",
       "alternative": "Route Alternative",
       "type": "Route Type"
+    },
+    "ride": {
+      "journey": "Journey ID",
+      "id": "Ride ID",
+      "duration": "Ride Duration",
+      "scheduled": "Scheduled Ride"
+    },
+    "stop": {
+      "name": "Stop Name",
+      "code": "Stop ID",
+      "route": "Stop Route",
+      "of": "of",
+      "location": "Location"
     }
   },
   "aboutPage": {

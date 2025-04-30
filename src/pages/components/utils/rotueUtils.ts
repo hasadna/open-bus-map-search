@@ -6,7 +6,7 @@ export const routeStartEnd = (routeLongName?: string) => {
 }
 
 export const vehicleIDFormat = (id?: number | string): string => {
-  if (!id) return ''
+  if (!id) return '-'
   const d = String(id)
   if (d.length === 7) return `${d.slice(0, 2)}-${d.slice(2, 5)}-${d.slice(5, 8)}`
   if (d.length === 8) return `${d.slice(0, 3)}-${d.slice(3, 5)}-${d.slice(5, 9)}`

@@ -4,7 +4,7 @@ import moment from 'moment'
 import { GtfsRoutePydanticModel } from 'open-bus-stride-client'
 import { useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useLoaderData } from 'react-router'
+import { useLoaderData, useNavigate } from 'react-router'
 import { DateSelector } from '../components/DateSelector'
 import { FilterPositionsByStartTimeSelector } from '../components/FilterPositionsByStartTimeSelector'
 import { NotFound } from '../components/NotFound'
@@ -21,14 +21,9 @@ import { SearchContext, TimelinePageState } from 'src/model/pageState'
 import StopSelector from 'src/pages/components/StopSelector'
 import Widget from 'src/shared/Widget'
 
-const LineProfileWrapper = () => (
-  <PageContainer className="line-data-container">
-    <LineProfile />
-  </PageContainer>
-)
-
 const LineProfile = () => {
   const { t } = useTranslation()
+  const navigate = useNavigate()
   const { route, message } = useLoaderData<{ route?: GtfsRoutePydanticModel; message?: string }>()
   const [{ stopKey }, setState] = useState<TimelinePageState>({})
   const {
@@ -41,9 +36,8 @@ const LineProfile = () => {
   }, [])
 
   useEffect(() => {
-    if (!route?.id) {
-      return
-    }
+    if (!route?.id) return
+
     const abortController = new AbortController()
     const time = moment(route.date)
     getRoutesAsync(
@@ -70,7 +64,7 @@ const LineProfile = () => {
     }
   }, [route?.id])
 
-  const routeIds = useMemo(() => (route?.id ? [route?.id] : undefined), [route?.id])
+  const routeIds = useMemo(() => (route?.id ? [route.id] : undefined), [route?.id])
 
   const {
     filteredPositions,
@@ -82,36 +76,48 @@ const LineProfile = () => {
   } = useSingleLineData(route?.lineRef, routeIds, route?.date.getTime())
 
   const handleTimestampChange = (time: moment.Moment | null) => {
-    setSearch((current) => ({ ...current, timestamp: time?.valueOf() ?? Date.now() }))
+    if (!time || !route) return
+
+    const abortController = new AbortController()
+    getRoutesAsync(
+      time,
+      time,
+      route?.operatorRef.toString(),
+      route?.routeShortName,
+      abortController.signal,
+    )
+      .then((routes) => {
+        const newRoute = routes?.find((route) => route.key === route.key)
+        if (newRoute?.routeIds?.[0]) {
+          navigate(`/profile/${newRoute.routeIds[0]}`)
+        }
+      })
+      .catch((error) => console.error(error))
   }
 
-  if (!route || message)
-    return (
-      <NotFound>
-        <Widget>
-          <h1>{t('lineProfile.notFound')}</h1>
-          <pre>{message}</pre>
-        </Widget>
-      </NotFound>
-    )
+  const handelRouteChange = (key?: string) => {
+    if (!key || !routes) return
+    const newRoute = routes?.find((route) => route.key === key)
+    if (newRoute?.routeIds?.[0]) {
+      navigate(`/profile/${newRoute.routeIds[0]}`)
+    }
+  }
+
+  const handelStopChange = (key?: string) => {
+    const stop = plannedRouteStops?.find((stop) => stop.key === key)
+    setState((current) => ({ ...current, stopKey: key, stopName: stop?.name }))
+  }
+
+  if (message || !route) {
+    return <LineProfileError title={t('lineProfile.notFound')} message={message} />
+  }
 
   return (
-    <div className="container">
-      <Grid container spacing={2} className="inputs">
-        <Grid size={{ xs: 12, sm: 4 }}>
+    <PageContainer className="container">
+      <Grid container spacing={2} sx={{ marginTop: '1rem' }}>
+        <Grid size={{ xs: 12, sm: 4 }} container spacing={2} flexDirection="column">
           <DateSelector time={moment(timestamp)} onChange={handleTimestampChange} />
-        </Grid>
-        <Grid size={{ xs: 12, sm: 4 }}>
-          <RouteSelector
-            routes={routes ?? []}
-            routeKey={route.routeLongName}
-            setRouteKey={(key) => setSearch((current) => ({ ...current, routeKey: key }))}
-          />
-        </Grid>
-      </Grid>
-      <Grid container spacing={2} className="inputs">
-        <Grid container spacing={2} flexDirection="column" size={{ xs: 12, sm: 4 }}>
-          <div className="startTime">
+          <Grid container flexWrap="nowrap" alignItems="center">
             <FilterPositionsByStartTimeSelector
               options={options}
               startTime={startTime}
@@ -122,31 +128,42 @@ const LineProfile = () => {
                 <CircularProgress />
               </Tooltip>
             )}
-          </div>
+          </Grid>
           <LineProfileRide point={filteredPositions[0]?.point} />
-          <StopSelector
-            stops={plannedRouteStops || []}
-            stopKey={stopKey}
-            setStopKey={(key) =>
-              setState((current) => {
-                const stop = plannedRouteStops?.find((stop) => stop.key === key)
-                return { ...current, stopKey: key, stopName: stop?.name }
-              })
-            }
+          <StopSelector stops={plannedRouteStops} stopKey={stopKey} setStopKey={handelStopChange} />
+          <LineProfileStop
+            stop={plannedRouteStops.find((s) => s.key === stopKey)}
+            total={plannedRouteStops.length}
           />
-          <LineProfileStop stop={plannedRouteStops.find((s) => s.key === stopKey)} />
         </Grid>
-        <Grid size={{ xs: 12, sm: 8 }}>
+        <Grid size={{ xs: 12, sm: 8 }} container spacing={2} flexDirection="column">
+          <RouteSelector
+            routes={routes ?? []}
+            routeKey={route.routeLongName}
+            setRouteKey={handelRouteChange}
+          />
           <LineProfileDetails {...route} />
         </Grid>
       </Grid>
       <MapWithLocationsAndPath
         positions={filteredPositions}
         plannedRouteStops={plannedRouteStops}
-        showNavigationButtons
       />
-    </div>
+    </PageContainer>
   )
 }
 
-export default LineProfileWrapper
+export default LineProfile
+
+const LineProfileError = ({ title, message }: { title?: string; message?: string }) => {
+  return (
+    <PageContainer>
+      <NotFound>
+        <Widget>
+          <h1>{title}</h1>
+          <pre>{message}</pre>
+        </Widget>
+      </NotFound>
+    </PageContainer>
+  )
+}

@@ -207,6 +207,19 @@
       "direction": "כיוון קו",
       "alternative": "חלופה מס'",
       "type": "סוג קו"
+    },
+    "ride": {
+      "journey ": "מזהה נסיעה",
+      "id": "מזהה טכני",
+      "duration": "זמן נסיעה",
+      "scheduled": "זמן מתוכנן"
+    },
+    "stop": {
+      "name": "שם תחנה",
+      "code": "מספר תחנה",
+      "route": "מסלול תחנה",
+      "of": "מתוך",
+      "location": "נ\"צ"
     }
   },
   "errorPage": {

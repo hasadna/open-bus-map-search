@@ -11,15 +11,18 @@ export const LineProfileRide = ({ point }: { point?: VehicleLocation }) => {
   return (
     <Widget>
       <InfoTable>
-        <InfoItem lable="Journey ID" value={point?.siri_ride__journey_ref} />
-        <InfoItem lable="Ride ID" value={point?.siri_ride__id} />
-        <InfoItem lable="Vehicle ID" value={vehicleIDFormat(point?.siri_ride__vehicle_ref)} />
+        <InfoItem lable={t('lineProfile.ride.journey ')} value={point?.siri_ride__journey_ref} />
+        <InfoItem lable={t('lineProfile.ride.id')} value={point?.siri_ride__id} />
+        <InfoItem lable={t('vehicle_ref')} value={vehicleIDFormat(point?.siri_ride__vehicle_ref)} />
         <InfoItem
-          lable="Ride Duration"
-          value={point?.siri_ride__duration_minutes && point?.siri_ride__duration_minutes + ' min'}
+          lable={t('lineProfile.ride.duration')}
+          value={
+            point?.siri_ride__duration_minutes &&
+            `${point?.siri_ride__duration_minutes} ${t('minutes')}`
+          }
         />
         <InfoItem
-          lable="Ride Start Scheduled"
+          lable={t('lineProfile.ride.scheduled')}
           value={
             point?.siri_ride__scheduled_start_time &&
             moment(point?.siri_ride__scheduled_start_time).format(t('datetime_format'))
