@@ -194,6 +194,8 @@
       "end": "End",
       "mkt": "Route MKT",
       "direction": "Route Direction",
+      "direction_front": "Front",
+      "direction_back": "Back",
       "alternative": "Route Alternative",
       "type": "Route Type"
     },
@@ -295,7 +297,8 @@
       "light_rail": "Light Rail",
       "subway": "Subway",
       "cable_car": "Cable Car",
-      "taxi": "Share taxi"
+      "taxi": "Share taxi",
+      "flex": "Flexible Service Line"
     },
     "time_range": {
       "day": "Daily",

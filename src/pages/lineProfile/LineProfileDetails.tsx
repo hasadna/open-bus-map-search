@@ -25,6 +25,21 @@ export const LineProfileDetails = ({
   const { t } = useTranslation()
   const [route_start, route_end] = routeStartEnd(routeLongName)
 
+  const routeTypes = {
+    '0': t('operator.type.light_rail'),
+    '2': t('operator.type.rail'),
+    '3': t('operator.type.bus'),
+    '5': operatorRef === 33 ? t('operator.type.cable_car') : t('operator.type.subway'),
+    '8': t('operator.type.taxi'),
+    '715': t('operator.type.flex'),
+  }
+
+  const diractionTypes = {
+    '1': t('lineProfile.route.direction_front'),
+    '2': t('lineProfile.route.direction_back'),
+    '3': t('lineProfile.route.direction_front'),
+  }
+
   return (
     <Widget>
       <OperatorCard>
@@ -58,8 +73,14 @@ export const LineProfileDetails = ({
           <InfoItem lable={t('lineProfile.route.start')} value={route_start} />
           <InfoItem lable={t('lineProfile.route.end')} value={route_end} />
           <InfoItem lable={t('lineProfile.route.mkt')} value={routeMkt} />
-          <InfoItem lable={t('lineProfile.route.direction')} value={routeDirection} />
-          <InfoItem lable={t('lineProfile.route.type')} value={routeType} />
+          <InfoItem
+            lable={t('lineProfile.route.direction')}
+            value={diractionTypes[routeDirection as keyof typeof diractionTypes] ?? routeDirection}
+          />
+          <InfoItem
+            lable={t('lineProfile.route.type')}
+            value={routeTypes[routeType as keyof typeof routeTypes] ?? routeType}
+          />
           <InfoItem lable={t('lineProfile.route.alternative')} value={routeAlternative} />
         </InfoTable>
       </TableContainer>

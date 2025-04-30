@@ -206,6 +206,8 @@
       "end": "יעד",
       "mkt": "מק\"ט קו",
       "direction": "כיוון קו",
+      "direction_front": "הלוך",
+      "direction_back": "חזור",
       "alternative": "חלופה מס'",
       "type": "סוג קו"
     },
@@ -315,7 +317,8 @@
       "light_rail": "רכבת קלה",
       "subway": "רכבת תחתית",
       "cable_car": "רכבל",
-      "taxi": "מוניות שירות"
+      "taxi": "מוניות שירות",
+      "flex": "קו בשירות גמיש"
     },
     "time_range": {
       "day": "יומית",
