@@ -30,8 +30,9 @@ export const OperatorGaps = ({
 
     const missing = operator?.total_planned_rides - operator?.total_actual_rides
     return [
-      { name: t('ride_as_planned'), value: operator?.total_actual_rides, color: '#00C49F' },
-      { name: t('ride_missing'), value: missing, color: '#FF4040' },
+      { name: t('rides_planned'), value: operator?.total_planned_rides },
+      { name: t('rides_actual'), value: operator?.total_actual_rides, color: '#00C49F' },
+      { name: t('rides_missing'), value: missing, color: '#FF4040' },
       // { name: t('ride_extra'), value: 0, color: '#FFBB28' },
     ]
   }, [operatorId, timestamp, groupByOperatorData, i18n.language])
@@ -43,6 +44,7 @@ export const OperatorGaps = ({
       </Widget>
     )
   }
+
   return (
     <Widget>
       <Stack flexDirection="row" justifyContent="space-between">
@@ -64,10 +66,17 @@ export const OperatorGaps = ({
           </InfoTable>
         </div>
         <PieChart width={160} height={160}>
-          <Pie data={data} innerRadius={65} outerRadius={80} paddingAngle={3} dataKey="value">
-            {data.map((entry) => (
-              <Cell key={entry.name} fill={entry.color} />
-            ))}
+          <Pie
+            data={data.filter((data) => data?.color)}
+            innerRadius={65}
+            outerRadius={80}
+            paddingAngle={3}
+            dataKey="value">
+            {data
+              .filter((data) => data?.color)
+              .map((entry) => (
+                <Cell key={entry.name} fill={entry.color} />
+              ))}
           </Pie>
           <text
             x="50%"
@@ -77,7 +86,7 @@ export const OperatorGaps = ({
             fill="currentColor"
             fontSize="32"
             fontWeight={500}>
-            {calculatePercentage(data[0]?.value, data[1]?.value)}
+            {calculatePercentage(data[1]?.value, data[2]?.value)}
           </text>
         </PieChart>
       </Stack>

@@ -56,6 +56,7 @@
   "rides_planned": "planned trips",
   "rides_history": "Trips History",
   "rides_actual": "Trips out",
+  "rides_missing": "Trips missing",
   "dashboard_page_graph_title": "Exit percentages of total trips by time",
   "from_date": "dated",
   "to_date": "Until",
@@ -207,7 +208,7 @@
       "code": "Stop ID",
       "route": "Stop Route",
       "of": "of",
-      "location": "Location"
+      "location": "Stop Location"
     }
   },
   "aboutPage": {
