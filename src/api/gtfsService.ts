@@ -170,19 +170,6 @@ export async function getGtfsStopHitTimesAsync(stop: BusStop, timestamp: Moment)
   }
 }
 
-export async function getAllRoutesList(operatorId: string, date: Date, signal?: AbortSignal) {
-  return await GTFS_API.gtfsRoutesListGet(
-    {
-      operatorRefs: operatorId,
-      dateFrom: date,
-      dateTo: date,
-      orderBy: 'route_long_name asc',
-      limit: -1,
-    },
-    { signal },
-  )
-}
-
 export async function getRouteById(routeId?: string, signal?: AbortSignal) {
   try {
     if (!routeId?.trim()) {

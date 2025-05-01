@@ -11,7 +11,7 @@ import {
   LineChartOutlined,
   RadarChartOutlined,
 } from '@ant-design/icons'
-import { AirportShuttle, Psychology } from '@mui/icons-material'
+import { Psychology } from '@mui/icons-material'
 import { lazy } from 'react'
 import { Navigate, Route, createBrowserRouter, createRoutesFromElements } from 'react-router'
 import { MainRoute } from './MainRoute'
@@ -26,7 +26,6 @@ const GapsPatternsPage = lazy(() => import('../pages/gapsPatterns'))
 const TimeBasedMapPage = lazy(() => import('../pages/timeBasedMap'))
 const SingleLineMapPage = lazy(() => import('../pages/singleLineMap'))
 const About = lazy(() => import('../pages/about'))
-const Operator = lazy(() => import('../pages/operator'))
 const Profile = lazy(() => import('../pages/lineProfile/LineProfile'))
 const BugReportForm = lazy(() => import('../pages/BugReportForm '))
 const DataResearch = lazy(() =>
@@ -81,13 +80,6 @@ export const PAGES = [
     searchParamsRequired: true,
     icon: <RadarChartOutlined />,
     element: <SingleLineMapPage />,
-  },
-  {
-    label: 'operator_title',
-    path: '/operator',
-    searchParamsRequired: true,
-    icon: <AirportShuttle />,
-    element: <Operator />,
   },
   {
     label: 'about_title',
