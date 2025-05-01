@@ -190,7 +190,7 @@ export async function getRouteById(routeId?: string, signal?: AbortSignal) {
     }
     const id = Number(routeId)
     if (!Number.isInteger(id) || id <= 0 || id > Number.MAX_SAFE_INTEGER) {
-      throw new Error(`Invalid route id: ${routeId}. Must be a positive integer.`)
+      throw new Error(`Invalid route id: ${routeId}.`)
     }
     return await GTFS_API.gtfsRoutesGetGet({ id }, { signal })
   } catch (error) {
