@@ -125,13 +125,12 @@ const HIDDEN_PAGES = [
   },
 ] as const
 
+const routesList = [...PAGES, ...HIDDEN_PAGES, ...HEADER_LINKS].filter((r) => r.element)
+
 export const getRoutesList = () => {
-  const pages = [...PAGES, ...HIDDEN_PAGES, ...HEADER_LINKS]
-  const RedirectToHomepage = () => <Navigate to={pages[0].path} replace />
-  const routes = pages.filter((r) => r.element)
   return (
     <Route element={<MainRoute />}>
-      {routes.map(({ path, element }) => (
+      {routesList.map(({ path, element }) => (
         <Route key={path} path={path} element={element} ErrorBoundary={ErrorPage} />
       ))}
       <Route
@@ -150,7 +149,7 @@ export const getRoutesList = () => {
           }
         }}
       />
-      <Route path="*" element={<RedirectToHomepage />} key="back" />
+      <Route path="*" element={<Navigate to={routesList[0].path} replace />} key="back" />
     </Route>
   )
 }
