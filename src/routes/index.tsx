@@ -15,7 +15,6 @@ import { AirportShuttle, Psychology } from '@mui/icons-material'
 import { lazy } from 'react'
 import { Navigate, Route, createBrowserRouter, createRoutesFromElements } from 'react-router'
 import { MainRoute } from './MainRoute'
-import { getRouteById } from 'src/api/gtfsService'
 import { ErrorPage } from 'src/pages/ErrorPage'
 
 const HomePage = lazy(() => import('../pages/homepage/HomePage'))
@@ -144,18 +143,14 @@ export const getRoutesList = () => {
       ))}
       <Route
         path="/profile/:gtfsRideGtfsRouteId"
+        key={'/profile/:gtfsRideGtfsRouteId'}
         element={<Profile />}
         ErrorBoundary={ErrorPage}
         loader={async ({ params: { gtfsRideGtfsRouteId } }) => {
-          try {
-            const route = await getRouteById(gtfsRideGtfsRouteId)
-            return { route }
-          } catch (error) {
-            return {
-              route: null,
-              message: (error as Error).message,
-            }
-          }
+          const resp = await fetch(
+            `https://open-bus-stride-api.hasadna.org.il/gtfs_routes/get?id=${gtfsRideGtfsRouteId}`,
+          )
+          return await resp.json()
         }}
       />
       <Route path="*" element={<RedirectToHomepage />} key="back" />

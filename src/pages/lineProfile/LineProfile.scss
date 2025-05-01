@@ -1,3 +1,22 @@
-.line-profile-container .map-info {
-  height: 15rem;
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+
+  > .map-info {
+    height: 15rem;
+  }
+}
+
+.inputs {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.startTime {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
 }

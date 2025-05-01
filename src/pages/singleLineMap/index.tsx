@@ -1,21 +1,21 @@
-import { CircularProgress, Grid, Tooltip, Typography } from '@mui/material'
 import moment from 'moment'
 import { useContext, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Grid, CircularProgress, Tooltip, Typography } from '@mui/material'
 import { SearchContext } from '../../model/pageState'
+import { NotFound } from '../components/NotFound'
+import '../Map.scss'
 import { DateSelector } from '../components/DateSelector'
 import { FilterPositionsByStartTimeSelector } from '../components/FilterPositionsByStartTimeSelector'
-import { MapWithLocationsAndPath } from '../components/map-related/MapWithLocationsAndPath'
-import { NotFound } from '../components/NotFound'
 import { PageContainer } from '../components/PageContainer'
+import { MapWithLocationsAndPath } from '../components/map-related/MapWithLocationsAndPath'
 import InfoYoutubeModal from '../components/YoutubeModal'
-import '../Map.scss'
+import { INPUT_SIZE } from 'src/resources/sizes'
+import RouteSelector from 'src/pages/components/RouteSelector'
+import OperatorSelector from 'src/pages/components/OperatorSelector'
+import LineNumberSelector from 'src/pages/components/LineSelector'
 import { getRoutesAsync } from 'src/api/gtfsService'
 import { useSingleLineData } from 'src/hooks/useSingleLineData'
-import LineNumberSelector from 'src/pages/components/LineSelector'
-import OperatorSelector from 'src/pages/components/OperatorSelector'
-import RouteSelector from 'src/pages/components/RouteSelector'
-import { INPUT_SIZE } from 'src/resources/sizes'
 
 const SingleLineMapPage = () => {
   const { search, setSearch } = useContext(SearchContext)
@@ -66,7 +66,7 @@ const SingleLineMapPage = () => {
     plannedRouteStops,
     startTime,
     setStartTime,
-  } = useSingleLineData(selectedRoute?.lineRef, selectedRoute?.routeIds, timestamp)
+  } = useSingleLineData(selectedRoute?.lineRef, selectedRoute?.routeIds)
 
   const handleTimestampChange = (time: moment.Moment | null) => {
     setSearch((current) => ({ ...current, timestamp: time?.valueOf() ?? Date.now() }))
