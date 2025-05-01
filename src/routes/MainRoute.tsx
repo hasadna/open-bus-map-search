@@ -24,6 +24,7 @@ export const MainRoute = () => {
   const [searchParams, setSearchParams] = useSearchParams()
   const operatorId = searchParams.get('operatorId')
   const lineNumber = searchParams.get('lineNumber')
+  const vehicleNumber = searchParams.get('vehicleNumber')
   const routeKey = searchParams.get('routeKey')
   const timestamp = searchParams.get('timestamp')
 
@@ -35,6 +36,7 @@ export const MainRoute = () => {
     timestamp: +timestamp! || moment().valueOf(),
     operatorId: operatorId || '',
     lineNumber: lineNumber || '',
+    vehicleNumber: vehicleNumber ? Number(vehicleNumber) : undefined,
     routeKey: routeKey || '',
   })
 
@@ -51,6 +53,9 @@ export const MainRoute = () => {
       if (search.lineNumber) {
         params.set('lineNumber', search.lineNumber)
       }
+      if (search.vehicleNumber) {
+        params.set('vehicleNumber', search.vehicleNumber.toString())
+      }
       if (search.routeKey) {
         params.set('routeKey', search.routeKey)
       }
@@ -58,6 +63,7 @@ export const MainRoute = () => {
     }
   }, [
     search.lineNumber,
+    search.vehicleNumber,
     search.operatorId,
     search.routeKey,
     search.timestamp,

@@ -24,6 +24,7 @@ const GapsPage = lazy(() => import('../pages/gaps'))
 const GapsPatternsPage = lazy(() => import('../pages/gapsPatterns'))
 const TimeBasedMapPage = lazy(() => import('../pages/timeBasedMap'))
 const SingleLineMapPage = lazy(() => import('../pages/singleLineMap'))
+const SingleVehicleMapPage = lazy(() => import('../pages/singleVehicleMap'))
 const About = lazy(() => import('../pages/about'))
 const Operator = lazy(() => import('../pages/operator'))
 const Profile = lazy(() => import('../pages/lineProfile/LineProfile'))
@@ -80,6 +81,13 @@ export const PAGES = [
     searchParamsRequired: true,
     icon: <RadarChartOutlined />,
     element: <SingleLineMapPage />,
+  },
+  {
+    label: 'singlevehicle_map_page_title',
+    path: '/single-vehicle-map',
+    searchParamsRequired: true,
+    icon: <RadarChartOutlined />,
+    element: <SingleVehicleMapPage />,
   },
   {
     label: 'operator_title',
