@@ -26,7 +26,7 @@ const GapsPatternsPage = lazy(() => import('../pages/gapsPatterns'))
 const TimeBasedMapPage = lazy(() => import('../pages/timeBasedMap'))
 const SingleLineMapPage = lazy(() => import('../pages/singleLineMap'))
 const About = lazy(() => import('../pages/about'))
-const Profile = lazy(() => import('../pages/lineProfile/LineProfile'))
+const Profile = lazy(() => import('../pages/lineProfile'))
 const BugReportForm = lazy(() => import('../pages/BugReportForm '))
 const DataResearch = lazy(() =>
   import('../pages/DataResearch/DataResearch').then((m) => ({
@@ -138,9 +138,9 @@ export const getRoutesList = () => {
         path="/profile/:gtfsRideGtfsRouteId"
         element={<Profile />}
         ErrorBoundary={ErrorPage}
-        loader={async ({ params: { gtfsRideGtfsRouteId } }) => {
+        loader={async ({ params }) => {
           try {
-            const route = await getRouteById(gtfsRideGtfsRouteId)
+            const route = await getRouteById(params?.gtfsRideGtfsRouteId)
             return { route }
           } catch (error) {
             return {
