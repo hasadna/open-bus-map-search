@@ -11,7 +11,7 @@ import {
   LineChartOutlined,
   RadarChartOutlined,
 } from '@ant-design/icons'
-import { AirportShuttle, Psychology } from '@mui/icons-material'
+import { Psychology } from '@mui/icons-material'
 import { lazy } from 'react'
 import { Navigate, Route, createBrowserRouter, createRoutesFromElements } from 'react-router'
 import { MainRoute } from './MainRoute'
@@ -26,7 +26,6 @@ const GapsPatternsPage = lazy(() => import('../pages/gapsPatterns'))
 const TimeBasedMapPage = lazy(() => import('../pages/timeBasedMap'))
 const SingleLineMapPage = lazy(() => import('../pages/singleLineMap'))
 const About = lazy(() => import('../pages/about'))
-const Operator = lazy(() => import('../pages/operator'))
 const Profile = lazy(() => import('../pages/lineProfile/LineProfile'))
 const BugReportForm = lazy(() => import('../pages/BugReportForm '))
 const DataResearch = lazy(() =>
@@ -83,13 +82,6 @@ export const PAGES = [
     element: <SingleLineMapPage />,
   },
   {
-    label: 'operator_title',
-    path: '/operator',
-    searchParamsRequired: true,
-    icon: <AirportShuttle />,
-    element: <Operator />,
-  },
-  {
     label: 'about_title',
     path: '/about',
     icon: <InfoCircleOutlined />,
@@ -133,22 +125,22 @@ const HIDDEN_PAGES = [
   },
 ] as const
 
+const routesList = [...PAGES, ...HIDDEN_PAGES, ...HEADER_LINKS].filter((r) => r.element)
+const RedirectToHomepage = <Navigate to={routesList[0].path} replace />
+
 export const getRoutesList = () => {
-  const pages = [...PAGES, ...HIDDEN_PAGES, ...HEADER_LINKS]
-  const RedirectToHomepage = () => <Navigate to={pages[0].path} replace />
-  const routes = pages.filter((r) => r.element)
   return (
     <Route element={<MainRoute />}>
-      {routes.map(({ path, element }) => (
+      {routesList.map(({ path, element }) => (
         <Route key={path} path={path} element={element} ErrorBoundary={ErrorPage} />
       ))}
       <Route
         path="/profile/:gtfsRideGtfsRouteId"
         element={<Profile />}
         ErrorBoundary={ErrorPage}
-        loader={async ({ params: { gtfsRideGtfsRouteId } }) => {
+        loader={async ({ params }) => {
           try {
-            const route = await getRouteById(gtfsRideGtfsRouteId)
+            const route = await getRouteById(params?.gtfsRideGtfsRouteId)
             return { route }
           } catch (error) {
             return {
@@ -158,7 +150,7 @@ export const getRoutesList = () => {
           }
         }}
       />
-      <Route path="*" element={<RedirectToHomepage />} key="back" />
+      <Route path="*" element={RedirectToHomepage} key="back" />
     </Route>
   )
 }
