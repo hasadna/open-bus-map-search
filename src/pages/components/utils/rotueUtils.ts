@@ -5,8 +5,8 @@ export const routeStartEnd = (routeLongName?: string) => {
   return [start.trim(), end.trim(), suffix.trim()] as [start: string, end: string, suffix: string]
 }
 
-export const vehicleIDFormat = (id?: number | string): string => {
-  if (!id) return '-'
+export const vehicleIDFormat = (id?: number | string) => {
+  if (!id) return undefined
   const d = String(id)
   if (d.length === 7) return `${d.slice(0, 2)}-${d.slice(2, 5)}-${d.slice(5, 8)}`
   if (d.length === 8) return `${d.slice(0, 3)}-${d.slice(3, 5)}-${d.slice(5, 9)}`

@@ -183,6 +183,32 @@ export async function getAllRoutesList(operatorId: string, date: Date, signal?: 
   )
 }
 
-export async function getRouteById(id: number, signal?: AbortSignal) {
-  return await GTFS_API.gtfsRoutesGetGet({ id }, { signal })
+export async function getRouteById(routeId?: string, signal?: AbortSignal) {
+  try {
+    // Validate route ID
+    if (!routeId?.trim()) {
+      throw new Error('Route id is required and cannot be empty')
+    }
+
+    // Parse and validate ID is a positive integer within safe range
+    const id = Number(routeId)
+    if (!Number.isInteger(id) || id <= 0 || id > Number.MAX_SAFE_INTEGER) {
+      throw new Error(`Invalid route id: ${routeId}. Must be a positive integer.`)
+    }
+
+    return await GTFS_API.gtfsRoutesGetGet({ id }, { signal })
+  } catch (error) {
+    let errorMessage: string
+    if (error instanceof Error) {
+      errorMessage =
+        error.message === 'Response returned an error code'
+          ? `Route with id ${routeId} not found`
+          : error.message
+    } else {
+      errorMessage = 'An unexpected error occurred while fetching route data'
+    }
+
+    console.error(`Failed to get route ${routeId}:`, errorMessage)
+    throw new Error(errorMessage)
+  }
 }

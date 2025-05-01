@@ -148,13 +148,13 @@ export const getRoutesList = () => {
         ErrorBoundary={ErrorPage}
         loader={async ({ params: { gtfsRideGtfsRouteId } }) => {
           try {
-            const route = await getRouteById(Number(gtfsRideGtfsRouteId))
+            const route = await getRouteById(gtfsRideGtfsRouteId)
             return { route }
           } catch (error) {
-            if (error instanceof Error) {
-              return { route: null, message: error?.message }
+            return {
+              route: null,
+              message: (error as Error).message,
             }
-            return { route: null, message: error || 'An unknown error occurred' }
           }
         }}
       />

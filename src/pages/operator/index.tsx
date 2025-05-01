@@ -19,7 +19,7 @@ const OperatorPage = () => {
     search: { operatorId, timestamp },
     setSearch,
   } = useContext(SearchContext)
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
 
   const [timeRange, setTimeRange] = useState<(typeof TIME_RANGES)[number]>('day')
   useEffect(() => {
@@ -41,31 +41,34 @@ const OperatorPage = () => {
         <Grid size={{ sm: 4, xs: 12 }}>
           <OperatorSelector operatorId={operatorId} setOperatorId={handleOperatorChange} />
         </Grid>
-        {operatorId && (
-          <>
-            <Grid size={{ sm: 4, xs: 12 }}>
-              <DateSelector time={moment(timestamp)} onChange={handleTimestampChange} />
-            </Grid>
-            <Grid size={{ sm: 4, xs: 12 }}>
-              <ToggleButtonGroup
-                color="primary"
-                value={timeRange}
-                sx={{ height: 56 }}
-                exclusive
-                fullWidth
-                dir="rtl"
-                onChange={(_, value: (typeof TIME_RANGES)[number]) =>
-                  value ? setTimeRange(value) : undefined
-                }>
-                {TIME_RANGES.map((time) => (
-                  <ToggleButton key={time} value={time}>
-                    {t(`operator.time_range.${time}`)}
-                  </ToggleButton>
-                ))}
-              </ToggleButtonGroup>
-            </Grid>
-          </>
-        )}
+
+        <Grid size={{ sm: 4, xs: 12 }}>
+          <DateSelector
+            time={moment(timestamp)}
+            disabled={!operatorId}
+            onChange={handleTimestampChange}
+          />
+        </Grid>
+
+        <Grid size={{ sm: 4, xs: 12 }}>
+          <ToggleButtonGroup
+            color={!operatorId ? 'standard' : 'primary'}
+            value={timeRange}
+            disabled={!operatorId}
+            sx={{ height: 56 }}
+            exclusive
+            fullWidth
+            dir="rtl"
+            onChange={(_, value: (typeof TIME_RANGES)[number]) =>
+              value ? setTimeRange(value) : undefined
+            }>
+            {(i18n.dir() === 'rtl' ? TIME_RANGES : TIME_RANGES.toReversed()).map((time) => (
+              <ToggleButton key={time} value={time}>
+                {t(`operator.time_range.${time}`)}
+              </ToggleButton>
+            ))}
+          </ToggleButtonGroup>
+        </Grid>
       </Grid>
       {operatorId && (
         <Grid container spacing={2}>

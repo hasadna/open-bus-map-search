@@ -17,15 +17,17 @@ export const LineProfileRide = ({ point }: { point?: VehicleLocation }) => {
         <InfoItem
           lable={t('lineProfile.ride.duration')}
           value={
-            point?.siri_ride__duration_minutes &&
-            `${point?.siri_ride__duration_minutes} ${t('minutes')}`
+            point?.siri_ride__duration_minutes
+              ? `${point?.siri_ride__duration_minutes} ${t('minutes')}`
+              : undefined
           }
         />
         <InfoItem
           lable={t('lineProfile.ride.scheduled')}
           value={
-            point?.siri_ride__scheduled_start_time &&
-            moment(point?.siri_ride__scheduled_start_time).format(t('datetime_format'))
+            point?.siri_ride__scheduled_start_time
+              ? moment(point?.siri_ride__scheduled_start_time).format(t('datetime_format'))
+              : undefined
           }
         />
       </InfoTable>

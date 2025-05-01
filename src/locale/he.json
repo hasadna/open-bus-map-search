@@ -206,7 +206,7 @@
       "end": "יעד",
       "mkt": "מק\"ט קו",
       "direction": "כיוון קו",
-      "direction_front": "הלוך",
+      "direction_forth": "הלוך",
       "direction_back": "חזור",
       "alternative": "חלופה מס'",
       "type": "סוג קו"

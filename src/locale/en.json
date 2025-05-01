@@ -194,8 +194,8 @@
       "end": "End",
       "mkt": "Route MKT",
       "direction": "Route Direction",
-      "direction_front": "Front",
-      "direction_back": "Back",
+      "direction_forth": "Forward",
+      "direction_back": "Backward",
       "alternative": "Route Alternative",
       "type": "Route Type"
     },

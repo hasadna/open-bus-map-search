@@ -32,7 +32,7 @@ const LineProfile = () => {
   } = useContext(SearchContext)
 
   useEffect(() => {
-    window.scrollTo(0, 0)
+    document.querySelector('main')?.scrollTo(0, 0)
   }, [])
 
   useEffect(() => {
@@ -113,9 +113,17 @@ const LineProfile = () => {
   }
 
   return (
-    <PageContainer className="container">
-      <Grid container spacing={2} sx={{ marginTop: '1rem' }}>
-        <Grid size={{ xs: 12, sm: 4 }} container spacing={2} flexDirection="column">
+    <PageContainer className="line-profile-container">
+      <Grid container spacing={2} sx={{ marginTop: '0.5rem' }}>
+        <Grid size={{ xs: 12, lg: 7 }} container spacing={2} flexDirection="column">
+          <LineProfileDetails {...route} />
+        </Grid>
+        <Grid size={{ xs: 12, lg: 5 }} container spacing={2} flexDirection="column">
+          <RouteSelector
+            routes={routes ?? []}
+            routeKey={route.routeLongName}
+            setRouteKey={handelRouteChange}
+          />
           <DateSelector time={moment(timestamp)} onChange={handleTimestampChange} />
           <Grid container flexWrap="nowrap" alignItems="center">
             <FilterPositionsByStartTimeSelector
@@ -135,14 +143,6 @@ const LineProfile = () => {
             stop={plannedRouteStops.find((s) => s.key === stopKey)}
             total={plannedRouteStops.length}
           />
-        </Grid>
-        <Grid size={{ xs: 12, sm: 8 }} container spacing={2} flexDirection="column">
-          <RouteSelector
-            routes={routes ?? []}
-            routeKey={route.routeLongName}
-            setRouteKey={handelRouteChange}
-          />
-          <LineProfileDetails {...route} />
         </Grid>
       </Grid>
       <MapWithLocationsAndPath

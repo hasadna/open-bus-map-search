@@ -1,10 +1,9 @@
 import { MultipleStopOutlined } from '@mui/icons-material'
-import { Typography } from '@mui/material'
+import { Grid, Typography } from '@mui/material'
 import moment from 'moment'
 import { GtfsRoutePydanticModel } from 'open-bus-stride-client'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
-import styled from 'styled-components'
 import { InfoItem, InfoTable } from '../components/InfoTable'
 import { routeStartEnd } from '../components/utils/rotueUtils'
 import Widget from 'src/shared/Widget'
@@ -35,28 +34,29 @@ export const LineProfileDetails = ({
   }
 
   const diractionTypes = {
-    '1': t('lineProfile.route.direction_front'),
+    '1': t('lineProfile.route.direction_forth'),
     '2': t('lineProfile.route.direction_back'),
-    '3': t('lineProfile.route.direction_front'),
+    '3': t('lineProfile.route.direction_forth'),
   }
 
   return (
     <Widget>
-      <OperatorCard>
-        <img src={`../operators-logos/${operatorRef}.svg`} />
-        <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-          {agencyName}
-        </Typography>
-      </OperatorCard>
-      <HeaderContainer>
-        <h2 className="title">
+      <Grid container alignItems="center" flexDirection="column">
+        <img src={`../operators-logos/${operatorRef}.svg`} height={60} />
+        <Typography variant="h6">{agencyName}</Typography>
+        <Typography variant="h2" fontSize="28px" fontWeight="bold" margin="21.5px 0">
           {t('lineProfile.title')} {routeShortName}
-        </h2>
-        <div className="route-wrapper">
+        </Typography>
+
+        <Grid
+          container
+          flexDirection="column"
+          justifyContent="center"
+          alignItems="center"
+          marginBottom="2.5em">
           {route_start} <MultipleStopOutlined /> {route_end}
-        </div>
-      </HeaderContainer>
-      <TableContainer>
+        </Grid>
+
         <InfoTable>
           <InfoItem lable={t('lineProfile.id')} value={id} />
           <InfoItem lable={t('lineProfile.date')} value={moment(date).format('DD-MM-YYYY')} />
@@ -83,36 +83,7 @@ export const LineProfileDetails = ({
           />
           <InfoItem lable={t('lineProfile.route.alternative')} value={routeAlternative} />
         </InfoTable>
-      </TableContainer>
+      </Grid>
     </Widget>
   )
 }
-
-const HeaderContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 2rem;
-  .route-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-  }
-`
-
-const OperatorCard = styled.div`
-  position: absolute;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: fit-content;
-  img {
-    width: 60px;
-    height: 60px;
-  }
-`
-
-const TableContainer = styled.div`
-  display: flex;
-  justify-content: center;
-`

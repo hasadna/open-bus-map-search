@@ -14,8 +14,11 @@ export const LineProfileStop = ({ stop, total }: { stop?: BusStop; total: number
       <InfoTable>
         <InfoItem lable={t('lineProfile.stop.name')} value={stop?.name} />
         <InfoItem lable={t('lineProfile.stop.code')} value={stop?.code} />
-        <InfoItem lable={t('lineProfile.stop.route')} value={stop && stopRoute} />
-        <InfoItem lable={t('lineProfile.stop.location')} value={stop?.location && stopLocation} />
+        <InfoItem lable={t('lineProfile.stop.route')} value={stop ? stopRoute : undefined} />
+        <InfoItem
+          lable={t('lineProfile.stop.location')}
+          value={stop?.location ? stopLocation : undefined}
+        />
       </InfoTable>
     </Widget>
   )
