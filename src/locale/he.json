@@ -59,6 +59,7 @@
   "worst_lines_page_title": "הקווים הגרועים ביותר",
   "rides_planned": "נסיעות שתוכננו",
   "rides_actual": "נסיעות שיצאו",
+  "rides_missing": "נסיעות חסרות",
   "rides_history": "היסטוריית נסיעות",
   "dashboard_page_graph_title": "אחוזי יציאה מסך הנסיעות לפי זמן",
 
@@ -158,7 +159,7 @@
   "at_time": "בשעה",
   "vehicle_ref": "לוחית רישוי",
   "drive_direction": "כיוון נסיעה",
-  "directions":{
+  "directions": {
     "North": "צפון",
     "Northeast": "צפון-מזרח",
     "East": "מזרח",
@@ -209,8 +210,23 @@
       "end": "יעד",
       "mkt": "מק\"ט קו",
       "direction": "כיוון קו",
+      "direction_forth": "הלוך",
+      "direction_back": "חזור",
       "alternative": "חלופה מס'",
       "type": "סוג קו"
+    },
+    "ride": {
+      "journey ": "מזהה נסיעה",
+      "id": "מזהה טכני",
+      "duration": "זמן נסיעה",
+      "scheduled": "זמן מתוכנן"
+    },
+    "stop": {
+      "name": "שם תחנה",
+      "code": "מספר תחנה",
+      "route": "מסלול תחנה",
+      "of": "מתוך",
+      "location": "נ\"צ"
     }
   },
   "errorPage": {
@@ -279,5 +295,49 @@
   },
   "loading": "טוען...",
   "version": "מזהה גרסה",
-  "failedToFetchVersion": "נכשל בטעינת מידע אודות מזהה הגרסה הנוכחית"
+  "failedToFetchVersion": "נכשל בטעינת מידע אודות מזהה הגרסה הנוכחית",
+  "operator_title": "חברה מפעילה",
+  "operator": {
+    "ref": "מזהה חברה",
+    "founded": "שנת הקמה",
+    "website": "אתר אינטרנט",
+    "area_title": "איזר תפעול",
+    "area": {
+      "nationwide": "ארצי",
+      "central_southern": "מרכז, דרום",
+      "northern": "צפון",
+      "southern": "דרום",
+      "central": "מרכז",
+      "haifa": "חיפה",
+      "jerusalem": "ירושלים",
+      "tel_aviv": "תל אביב",
+      "beersheba": "באר שבע",
+      "beit_shemesh": "בית שמש"
+    },
+    "type_title": "סוג השרות",
+    "type": {
+      "bus": "אוטובוס",
+      "rail": "רכבת",
+      "light_rail": "רכבת קלה",
+      "subway": "רכבת תחתית",
+      "cable_car": "רכבל",
+      "taxi": "מוניות שירות",
+      "flex": "קו בשירות גמיש"
+    },
+    "time_range": {
+      "day": "יומית",
+      "week": "שבועית",
+      "month": "חודשית",
+      "year": "שנתית"
+    },
+    "all_lines": "כל המסלולים",
+    "line": "קו",
+    "profile": "פרופיל",
+    "map": "מפה",
+    "id": "מזהה טכני",
+    "origin": "מוצא",
+    "destination": "יעד",
+    "total": "סך כל המסלולים",
+    "statistics": "סטטיסטיקה"
+  }
 }
