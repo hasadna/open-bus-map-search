@@ -194,3 +194,16 @@ export async function getRouteById(routeId?: string, signal?: AbortSignal) {
     throw new Error(errorMessage)
   }
 }
+
+export async function getAllRoutesList(operatorId: string, date: Date, signal?: AbortSignal) {
+  return await GTFS_API.gtfsRoutesListGet(
+    {
+      operatorRefs: operatorId,
+      dateFrom: date,
+      dateTo: date,
+      orderBy: 'route_long_name asc',
+      limit: -1,
+    },
+    { signal },
+  )
+}

@@ -11,7 +11,7 @@ import {
   LineChartOutlined,
   RadarChartOutlined,
 } from '@ant-design/icons'
-import { Psychology } from '@mui/icons-material'
+import { AirportShuttle, Psychology } from '@mui/icons-material'
 import { lazy } from 'react'
 import { Navigate, Route, createBrowserRouter, createRoutesFromElements } from 'react-router'
 import { MainRoute } from './MainRoute'
@@ -25,7 +25,9 @@ const GapsPage = lazy(() => import('../pages/gaps'))
 const GapsPatternsPage = lazy(() => import('../pages/gapsPatterns'))
 const TimeBasedMapPage = lazy(() => import('../pages/timeBasedMap'))
 const SingleLineMapPage = lazy(() => import('../pages/singleLineMap'))
+const SingleVehicleMapPage = lazy(() => import('../pages/singleVehicleMap'))
 const About = lazy(() => import('../pages/about'))
+const Operator = lazy(() => import('../pages/operator'))
 const Profile = lazy(() => import('../pages/lineProfile/LineProfile'))
 const BugReportForm = lazy(() => import('../pages/BugReportForm '))
 const DataResearch = lazy(() =>
@@ -80,6 +82,20 @@ export const PAGES = [
     searchParamsRequired: true,
     icon: <RadarChartOutlined />,
     element: <SingleLineMapPage />,
+  },
+  {
+    label: 'singlevehicle_map_page_title',
+    path: '/single-vehicle-map',
+    searchParamsRequired: true,
+    icon: <RadarChartOutlined />,
+    element: <SingleVehicleMapPage />,
+  },
+  {
+    label: 'operator_title',
+    path: '/operator',
+    searchParamsRequired: true,
+    icon: <AirportShuttle />,
+    element: <Operator />,
   },
   {
     label: 'about_title',
