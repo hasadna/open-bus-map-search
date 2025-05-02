@@ -126,6 +126,7 @@ const HIDDEN_PAGES = [
 ] as const
 
 const routesList = [...PAGES, ...HIDDEN_PAGES, ...HEADER_LINKS].filter((r) => r.element)
+const RedirectToHomepage = <Navigate to={routesList[0].path} replace />
 
 export const getRoutesList = () => {
   return (
@@ -149,7 +150,7 @@ export const getRoutesList = () => {
           }
         }}
       />
-      <Route path="*" element={<Navigate to={routesList[0].path} replace />} key="back" />
+      <Route path="*" element={RedirectToHomepage} key="back" />
     </Route>
   )
 }
