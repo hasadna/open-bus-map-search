@@ -61,7 +61,7 @@ export const OperatorGaps = ({
           </Typography>
           <InfoTable>
             {data.map((d) => (
-              <InfoItem key={d.name} lable={d.name} value={d.value} />
+              <InfoItem key={d.name} label={d.name} value={d.value} />
             ))}
           </InfoTable>
         </div>

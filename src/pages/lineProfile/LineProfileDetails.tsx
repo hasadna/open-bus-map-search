@@ -58,30 +58,30 @@ export const LineProfileDetails = ({
         </Grid>
 
         <InfoTable>
-          <InfoItem lable={t('lineProfile.id')} value={id} />
-          <InfoItem lable={t('lineProfile.date')} value={moment(date).format('DD-MM-YYYY')} />
-          <InfoItem lable={t('lineProfile.lineReference')} value={lineRef} />
+          <InfoItem label={t('lineProfile.id')} value={id} />
+          <InfoItem label={t('lineProfile.date')} value={moment(date).format('DD-MM-YYYY')} />
+          <InfoItem label={t('lineProfile.lineReference')} value={lineRef} />
           <InfoItem
-            lable={t('lineProfile.operatorReference')}
+            label={t('lineProfile.operatorReference')}
             value={<Link to={'/operator?operatorId=' + operatorRef}>{operatorRef}</Link>}
           />
           <InfoItem
-            lable={t('lineProfile.agencyName')}
+            label={t('lineProfile.agencyName')}
             value={<Link to={'/operator?operatorId=' + operatorRef}>{agencyName}</Link>}
           />
-          <InfoItem lable={t('lineProfile.route.shortName')} value={routeShortName} />
-          <InfoItem lable={t('lineProfile.route.start')} value={route_start} />
-          <InfoItem lable={t('lineProfile.route.end')} value={route_end} />
-          <InfoItem lable={t('lineProfile.route.mkt')} value={routeMkt} />
+          <InfoItem label={t('lineProfile.route.shortName')} value={routeShortName} />
+          <InfoItem label={t('lineProfile.route.start')} value={route_start} />
+          <InfoItem label={t('lineProfile.route.end')} value={route_end} />
+          <InfoItem label={t('lineProfile.route.mkt')} value={routeMkt} />
           <InfoItem
-            lable={t('lineProfile.route.direction')}
+            label={t('lineProfile.route.direction')}
             value={diractionTypes[routeDirection as keyof typeof diractionTypes] ?? routeDirection}
           />
           <InfoItem
-            lable={t('lineProfile.route.type')}
+            label={t('lineProfile.route.type')}
             value={routeTypes[routeType as keyof typeof routeTypes] ?? routeType}
           />
-          <InfoItem lable={t('lineProfile.route.alternative')} value={routeAlternative} />
+          <InfoItem label={t('lineProfile.route.alternative')} value={routeAlternative} />
         </InfoTable>
       </Grid>
     </Widget>
