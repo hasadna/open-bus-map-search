@@ -67,7 +67,7 @@ test.describe('clearButton functionality', () => {
       await operator.click()
       await page.getByRole('option', { name: 'אלקטרה אפיקים' }).click()
       await selectLineNumberAndRoute(page, lineNumber, route)
-      await page.getByRole('button', { name: 'Clear' }).click()
+      await page.getByRole('button', { name: 'נקה' }).click()
 
       await expect(stop).not.toBeVisible()
     })
@@ -98,7 +98,7 @@ test.describe('clearButton functionality', () => {
       await operator.click()
       await page.getByRole('option', { name: 'אלקטרה אפיקים' }).click()
       await selectLineNumberAndRoute(page, lineNumber, route)
-      await page.getByRole('button', { name: 'Clear' }).click()
+      await page.getByRole('button', { name: 'נקה' }).click()
 
       await expect(stop).not.toBeVisible()
     })
@@ -129,7 +129,7 @@ test.describe('clearButton functionality', () => {
       await operator.click()
       await page.getByRole('option', { name: 'אלקטרה אפיקים' }).click()
       await selectLineNumberAndRoute(page, lineNumber, route)
-      await page.getByRole('button', { name: 'Clear' }).click()
+      await page.getByRole('button', { name: 'נקה' }).click()
       await expect(stop).not.toBeVisible()
     })
   })
@@ -158,7 +158,7 @@ test.describe('clearButton functionality', () => {
       await operator.click()
       await page.getByRole('option', { name: 'אלקטרה אפיקים' }).click()
       await selectLineNumberAndRoute(page, lineNumber, route)
-      await page.getByRole('button', { name: 'Clear' }).click()
+      await page.getByRole('button', { name: 'נקה' }).click()
 
       await expect(stop).not.toBeVisible()
     })
