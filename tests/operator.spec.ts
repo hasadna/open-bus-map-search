@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '@playwright/test'
 import i18next from 'i18next'
 import Backend from 'i18next-fs-backend'
-import { getPastDate, setBrowserTime } from './utils'
+import { getPastDate, waitForSkeletonsToHide } from './utils'
 import { operatorList } from 'src/pages/operator/data'
 
 const getLabelValue = async (label: string, page: Page) => {
@@ -19,11 +19,6 @@ const selectRandomOperator = async (label: string, page: Page) => {
   return options.nth(randomIndex)
 }
 
-const waitForSkeletonsToHide = async (page: Page) => {
-  const skeletons = await page.locator('.ant-skeleton').all()
-  await Promise.all(skeletons.map((skeleton) => skeleton.waitFor({ state: 'hidden' })))
-}
-
 test.describe('Operator Page Tests', () => {
   test.beforeEach(async ({ page }) => {
     await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
@@ -33,7 +28,7 @@ test.describe('Operator Page Tests', () => {
         loadPath: 'src/locale/{{lng}}.json',
       },
     })
-    await setBrowserTime(getPastDate(), page)
+    await page.clock.setFixedTime(getPastDate())
     await page.goto('/')
     await page
       .getByText(i18next.t('operator_title'), { exact: true })
