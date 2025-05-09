@@ -84,4 +84,9 @@ export const getBranch = () =>
     })
   })
 
+export const waitForSkeletonsToHide = async (page: Page) => {
+  const skeletons = await page.locator('.ant-skeleton').all()
+  await Promise.all(skeletons.map((skeleton) => skeleton.waitFor({ state: 'hidden' })))
+}
+
 export const expect = test.expect

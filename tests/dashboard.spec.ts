@@ -1,5 +1,5 @@
 import { expect } from '@playwright/test'
-import { test, urlMatcher } from './utils'
+import { getPastDate, test, urlMatcher, waitForSkeletonsToHide } from './utils'
 
 test.describe('dashboard tests', () => {
   test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
@@ -11,10 +11,10 @@ test.describe('dashboard tests', () => {
       url: /stride-api/,
       matcher: urlMatcher,
     })
+    await page.clock.setFixedTime(getPastDate())
     await page.goto('/dashboard')
     await page.getByText('הקווים הגרועים ביותר').waitFor()
-    const skeletons = await page.locator('.ant-skeleton').all()
-    await Promise.all(skeletons.map((skeleton) => skeleton.waitFor({ state: 'hidden' })))
+    await waitForSkeletonsToHide(page)
   })
 
   test('page is working', async () => {})
