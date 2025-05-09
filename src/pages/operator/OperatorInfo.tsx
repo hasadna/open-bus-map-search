@@ -19,18 +19,18 @@ export const OperatorInfo = ({ operatorId }: { operatorId?: string }) => {
       </Typography>
       <Stack justifyContent="space-between" flexDirection="row">
         <InfoTable>
-          <InfoItem lable={t('operator.ref')} value={operator?.ref} />
-          <InfoItem lable={t('operator.founded')} value={operator?.founded} />
+          <InfoItem label={t('operator.ref')} value={operator?.ref} />
+          <InfoItem label={t('operator.founded')} value={operator?.founded} />
           <InfoItem
-            lable={t('operator.area_title')}
+            label={t('operator.area_title')}
             value={operator?.area && t(`operator.area.${operator?.area}`)}
           />
           <InfoItem
-            lable={t('operator.type_title')}
+            label={t('operator.type_title')}
             value={operator?.type && t(`operator.type.${operator?.type}`)}
           />
           <InfoItem
-            lable={t('operator.website')}
+            label={t('operator.website')}
             value={
               operator?.website && (
                 <a dir="ltr" href={operator?.website} target="_blank" rel="noreferrer">
