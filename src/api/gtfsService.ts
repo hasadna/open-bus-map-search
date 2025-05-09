@@ -182,3 +182,21 @@ export async function getAllRoutesList(operatorId: string, date: Date, signal?: 
     { signal },
   )
 }
+
+export async function getRoutesByLineRef(
+  operatorId: string,
+  lineRefs: string,
+  date: Date,
+  signal?: AbortSignal,
+) {
+  return await GTFS_API.gtfsRoutesListGet(
+    {
+      operatorRefs: operatorId,
+      dateFrom: date,
+      dateTo: date,
+      lineRefs,
+      limit: 1,
+    },
+    { signal },
+  )
+}
