@@ -13,6 +13,7 @@ test.describe('Visual Tests', () => {
       },
     ],
   })
+
   test.beforeAll(async () => {
     setBatchName(eyes)
     await setEyesSettings(eyes)
@@ -107,12 +108,32 @@ test.describe('Visual Tests', () => {
       ),
     )
   })
+
+  test('operator page should look good', async ({ page }) => {
+    await page.clock.setFixedTime(new Date('2024-02-12T00:00:00.000Z'))
+    await page.goto('/operator')
+    await page.getByRole('combobox', { name: 'חברה מפעילה' }).click()
+    await page.getByRole('option', { name: 'אגד' }).click()
+    const skeletons = await page.locator('.ant-skeleton').all()
+    await Promise.all(skeletons.map((skeleton) => skeleton.waitFor({ state: 'hidden' })))
+    await eyes.check(
+      'operator page',
+      Target.window().layoutRegions(
+        page.getByPlaceholder('DD/MM/YYYY'),
+        page.getByText('סטטיסטיקה יומית'),
+        page.getByText('כל המסלולים'),
+        page.getByText('הקווים הגרועים ביותר'),
+      ),
+    )
+  })
+
   test('donation modal should look good', async ({ page }) => {
     await page.goto('/')
     await page.getByLabel('לתרומות').click()
     await page.locator('.MuiTypography-root').first().waitFor()
     await eyes.check('donation modal', Target.region(page.getByRole('dialog')))
   })
+
   test('donation modal should look good in dark mode', async ({ page }) => {
     await page.goto('/')
     await page.getByLabel('עבור למצב כהה').click()
