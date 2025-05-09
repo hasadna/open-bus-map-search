@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.4.0](https://github.com/hasadna/open-bus-map-search/compare/v1.3.0...v1.4.0) (2025-05-09)
+
+
+### Features
+
+* add trip search by license plate number ([#1022](https://github.com/hasadna/open-bus-map-search/issues/1022)) ([090223f](https://github.com/hasadna/open-bus-map-search/commit/090223f75921c813a0ddd693939dce0dfd043ade))
+* link the bustooltip to the operator profile page ([#1110](https://github.com/hasadna/open-bus-map-search/issues/1110)) ([995fd09](https://github.com/hasadna/open-bus-map-search/commit/995fd09c55491a3bbd6e54f2dc577a3da35e1248))
+* operator page ([#1096](https://github.com/hasadna/open-bus-map-search/issues/1096)) ([498c78a](https://github.com/hasadna/open-bus-map-search/commit/498c78a76cb3ce0b66b0365dc22c87d0bef99c14))
+* see planned rout even when no actual ride was executed ([#1070](https://github.com/hasadna/open-bus-map-search/issues/1070)) ([01b778f](https://github.com/hasadna/open-bus-map-search/commit/01b778f6870a028e63311d0f71dfa8b6de8265da))
+
+
+### Bug Fixes
+
+* Bug Horizontal scroll ([#1074](https://github.com/hasadna/open-bus-map-search/issues/1074)) ([0749d8b](https://github.com/hasadna/open-bus-map-search/commit/0749d8b224066e3b709482b367fcb8e34bdaa9c2))
+* bug report add scroll if the screen to small ([#1089](https://github.com/hasadna/open-bus-map-search/issues/1089)) ([576841c](https://github.com/hasadna/open-bus-map-search/commit/576841c927bb04081cb0752038c8502c665e2411))
+* Calendar displays hebrew month name in english locale [#1040](https://github.com/hasadna/open-bus-map-search/issues/1040) ([#1062](https://github.com/hasadna/open-bus-map-search/issues/1062)) ([8cbb3d4](https://github.com/hasadna/open-bus-map-search/commit/8cbb3d48bcbc72145b950ae9f0274d1338c8bf4d))
+
 ## [1.3.0](https://github.com/hasadna/open-bus-map-search/compare/v1.2.0...v1.3.0) (2025-03-23)
 
 
