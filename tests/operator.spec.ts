@@ -1,7 +1,6 @@
 import { expect, test, type Page } from '@playwright/test'
 import i18next from 'i18next'
-import Backend from 'i18next-fs-backend'
-import { getPastDate, waitForSkeletonsToHide } from './utils'
+import { getPastDate, loadTranslate, waitForSkeletonsToHide } from './utils'
 import { operatorList } from 'src/pages/operator/data'
 
 const getLabelValue = async (label: string, page: Page) => {
@@ -22,12 +21,7 @@ const selectRandomOperator = async (label: string, page: Page) => {
 test.describe('Operator Page Tests', () => {
   test.beforeEach(async ({ page }) => {
     await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
-    await i18next.use(Backend).init({
-      lng: 'he',
-      backend: {
-        loadPath: 'src/locale/{{lng}}.json',
-      },
-    })
+    await loadTranslate(i18next)
     await page.clock.setFixedTime(getPastDate())
     await page.goto('/')
     await page

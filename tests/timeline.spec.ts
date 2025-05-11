@@ -1,21 +1,14 @@
 import i18next from 'i18next'
-import Backend from 'i18next-fs-backend'
 import moment from 'moment'
 import TimelinePage from '../src/test_pages/TimelinePage'
-import { getPastDate, test, expect, urlMatcher } from './utils'
+import { getPastDate, test, expect, urlMatcher, loadTranslate } from './utils'
 
 test.describe('Timeline Page Tests', () => {
   let timelinePage: TimelinePage
 
   test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
     await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
-    await i18next.use(Backend).init({
-      lng: 'he',
-      backend: {
-        loadPath: 'src/locale/{{lng}}.json',
-      },
-    })
-
+    await loadTranslate(i18next)
     await advancedRouteFromHAR('tests/HAR/timeline.har', {
       updateContent: 'embed',
       update: false,
