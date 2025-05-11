@@ -2,11 +2,8 @@ import { useContext, useEffect, useState } from 'react'
 import './GapsPatternsPage.scss'
 import { Moment } from 'moment'
 import { Skeleton, Radio, RadioChangeEvent, Space } from 'antd'
-import CircularProgress from '@mui/material/CircularProgress'
+import { CircularProgress, Grid, Typography, Alert } from '@mui/material'
 import moment from 'moment/moment'
-import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
-import Typography from '@mui/material/Typography'
-import Alert from '@mui/material/Alert'
 import {
   Bar,
   CartesianGrid,
@@ -74,7 +71,7 @@ function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatistic
 
   return (
     lineRef > 0 && (
-      <Widget>
+      <Widget marginBottom>
         {isLoading && lineRef ? (
           <Skeleton active />
         ) : (
@@ -197,24 +194,23 @@ const GapsPatternsPage = () => {
       ) : null}
 
       <Grid container spacing={2} alignItems="center" sx={{ maxWidth: INPUT_SIZE }}>
-        <Grid sm={4} className="hideOnMobile">
+        <Grid size={{ xs: 12, sm: 4 }} className="hideOnMobile">
           <Label text={t('choose_dates')} />
         </Grid>
         <Grid
           container
+          size={{ xs: 12, sm: 8 }}
           spacing={2}
-          xs={12}
-          sm={8}
           alignItems="center"
           justifyContent="space-between">
-          <Grid xs={6}>
+          <Grid size={{ xs: 6 }}>
             <DateSelector
               time={startDate}
               onChange={(data) => setStartDate(data)}
               customLabel={t('start')}
             />
           </Grid>
-          <Grid xs={6}>
+          <Grid size={{ xs: 6 }}>
             <DateSelector
               time={endDate}
               onChange={(data) => setEndDate(data)}
@@ -224,25 +220,25 @@ const GapsPatternsPage = () => {
           </Grid>
         </Grid>
 
-        <Grid xs={4} className="hideOnMobile">
+        <Grid size={{ xs: 12, sm: 4 }} className="hideOnMobile">
           <Label text={t('choose_operator')} />
         </Grid>
-        <Grid xs={12} sm={8}>
+        <Grid size={{ xs: 12, sm: 8 }}>
           <OperatorSelector
             operatorId={operatorId}
             setOperatorId={(id) => setSearch((current) => ({ ...current, operatorId: id }))}
           />
         </Grid>
-        <Grid xs={4} className="hideOnMobile">
+        <Grid size={{ xs: 12, sm: 4 }} className="hideOnMobile">
           <Label text={t('choose_line')} />
         </Grid>
-        <Grid xs={12} sm={8}>
+        <Grid size={{ xs: 12, sm: 8 }}>
           <LineNumberSelector
             lineNumber={lineNumber}
             setLineNumber={(number) => setSearch((current) => ({ ...current, lineNumber: number }))}
           />
         </Grid>
-        <Grid xs={12}>
+        <Grid size={{ xs: 12 }}>
           {routesIsLoading && (
             <Row>
               <Label text={t('loading_routes')} />
@@ -264,7 +260,7 @@ const GapsPatternsPage = () => {
             ))}
         </Grid>
       </Grid>
-      <Grid xs={12}>
+      <Grid size={{ xs: 12 }}>
         <GapsByHour
           lineRef={routes?.find((route) => route.key === routeKey)?.lineRef || 0}
           operatorRef={operatorId || ''}

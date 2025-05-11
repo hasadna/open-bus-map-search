@@ -6,39 +6,39 @@ on:
 jobs:
   cd:
     environment: production
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Get Commit Hash and generate Version File
-      run: echo "$(git rev-parse --short HEAD)" >> public/hash.txt
-    - env:
-        DOCKER_APP_IMAGE_NAME: "ghcr.io/hasadna/open-bus-map-search/open-bus-map-search"
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        HASADNA_K8S_DEPLOY_KEY: ${{ secrets.HASADNA_K8S_DEPLOY_KEY }}
-      run: |
-        echo "${GITHUB_TOKEN}" | docker login ghcr.io -u hasadna --password-stdin &&\
-        if docker pull "${DOCKER_APP_IMAGE_NAME}:latest"; then
-          CACHE_FROM_ARG="--cache-from ${DOCKER_APP_IMAGE_NAME}:latest"
-        else
-          CACHE_FROM_ARG=""
-        fi &&\
-        docker build $CACHE_FROM_ARG --build-arg VERSION=${GITHUB_SHA} -t app . &&\
-        docker tag app "${DOCKER_APP_IMAGE_NAME}:${GITHUB_SHA}" &&\
-        docker push "${DOCKER_APP_IMAGE_NAME}:${GITHUB_SHA}" &&\
-        if [ "${GITHUB_REF}" == "refs/heads/main" ]; then
-          docker tag app "${DOCKER_APP_IMAGE_NAME}:latest" &&\
-          docker push "${DOCKER_APP_IMAGE_NAME}:latest" &&\
-          if ! git log -1 --pretty=format:"%s" | grep -- --no-deploy; then
-            cd `mktemp -d` &&\
-            echo "${HASADNA_K8S_DEPLOY_KEY}" > hasadna_k8s_deploy_key &&\
-            chmod 400 hasadna_k8s_deploy_key &&\
-            export GIT_SSH_COMMAND="ssh -i `pwd`/hasadna_k8s_deploy_key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" &&\
-            git clone git@github.com:hasadna/hasadna-k8s.git &&\
-            cd hasadna-k8s &&\
-            python update_yaml.py '{"mapSearchImage":"'"${DOCKER_APP_IMAGE_NAME}:${GITHUB_SHA}"'"}' apps/openbus/values-hasadna-auto-updated.yaml &&\
-            git config --global user.name "Open Bus Map Search CI" &&\
-            git config --global user.email "open-bus-map-search-ci@localhost" &&\
-            git add apps/openbus/values-hasadna-auto-updated.yaml && git commit -m "automatic update of open bus map search" &&\
-            git push origin master
+      - uses: actions/checkout@v4
+      - name: Get Commit Hash and generate Version File
+        run: echo "$(git rev-parse --short HEAD)" >> public/hash.txt
+      - env:
+          DOCKER_APP_IMAGE_NAME: 'ghcr.io/hasadna/open-bus-map-search/open-bus-map-search'
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HASADNA_K8S_DEPLOY_KEY: ${{ secrets.HASADNA_K8S_DEPLOY_KEY }}
+        run: |
+          echo "${GITHUB_TOKEN}" | docker login ghcr.io -u hasadna --password-stdin &&\
+          if docker pull "${DOCKER_APP_IMAGE_NAME}:latest"; then
+            CACHE_FROM_ARG="--cache-from ${DOCKER_APP_IMAGE_NAME}:latest"
+          else
+            CACHE_FROM_ARG=""
+          fi &&\
+          docker build $CACHE_FROM_ARG --build-arg VERSION=${GITHUB_SHA} -t app . &&\
+          docker tag app "${DOCKER_APP_IMAGE_NAME}:${GITHUB_SHA}" &&\
+          docker push "${DOCKER_APP_IMAGE_NAME}:${GITHUB_SHA}" &&\
+          if [ "${GITHUB_REF}" == "refs/heads/main" ]; then
+            docker tag app "${DOCKER_APP_IMAGE_NAME}:latest" &&\
+            docker push "${DOCKER_APP_IMAGE_NAME}:latest" &&\
+            if ! git log -1 --pretty=format:"%s" | grep -- --no-deploy; then
+              cd `mktemp -d` &&\
+              echo "${HASADNA_K8S_DEPLOY_KEY}" > hasadna_k8s_deploy_key &&\
+              chmod 400 hasadna_k8s_deploy_key &&\
+              export GIT_SSH_COMMAND="ssh -i `pwd`/hasadna_k8s_deploy_key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" &&\
+              git clone git@github.com:hasadna/hasadna-k8s.git &&\
+              cd hasadna-k8s &&\
+              python update_yaml.py '{"mapSearchImage":"'"${DOCKER_APP_IMAGE_NAME}:${GITHUB_SHA}"'"}' apps/openbus/values-hasadna-auto-updated.yaml &&\
+              git config --global user.name "Open Bus Map Search CI" &&\
+              git config --global user.email "open-bus-map-search-ci@localhost" &&\
+              git add apps/openbus/values-hasadna-auto-updated.yaml && git commit -m "automatic update of open bus map search" &&\
+              git push origin master
+            fi
           fi
-        fi

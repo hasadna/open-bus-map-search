@@ -8,6 +8,7 @@ import { formatted } from 'src/locale/utils'
 type RouteSelectorProps = {
   routes: BusRoute[]
   routeKey?: string
+  disabled?: boolean
   setRouteKey: (routeKey?: string) => void
 }
 
@@ -18,10 +19,10 @@ const getRouteTitle = (route: BusRoute, t: TFunction<'translation', undefined>) 
       : `(${t('halufa_ride')} ${route.routeAlternative})`
   }`
 
-const RouteSelector = ({ routes, routeKey, setRouteKey }: RouteSelectorProps) => {
-  const valueFinned = routes.find((route) => route.key === routeKey)
-  const value = valueFinned ? valueFinned : null
+const RouteSelector = ({ routes, routeKey, disabled, setRouteKey }: RouteSelectorProps) => {
   const { t } = useTranslation()
+  const value = routes.find((route) => route.key === routeKey) || null
+
   useEffect(() => {
     routes.sort((a, b) => {
       if (
@@ -35,9 +36,11 @@ const RouteSelector = ({ routes, routeKey, setRouteKey }: RouteSelectorProps) =>
       return a.fromName > b.fromName ? 1 : -1
     })
   }, [routes])
+
   return (
     <Autocomplete
       disablePortal
+      disabled={disabled}
       value={value}
       onChange={(e, value) => setRouteKey(value?.key)}
       id="route-select"

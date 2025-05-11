@@ -1,13 +1,13 @@
 import axios from 'axios'
+import moment, { Moment } from 'moment'
 import {
   GtfsApi,
   GtfsRideStopPydanticModel,
   GtfsRideWithRelatedPydanticModel,
 } from 'open-bus-stride-client'
-import moment, { Moment } from 'moment'
+import { API_CONFIG, BASE_PATH, MAX_HITS_COUNT } from 'src/api/apiConfig'
 import { BusRoute, fromGtfsRoute } from 'src/model/busRoute'
 import { BusStop, fromGtfsStop } from 'src/model/busStop'
-import { API_CONFIG, MAX_HITS_COUNT, BASE_PATH } from 'src/api/apiConfig'
 // import { Route } from 'react-router'
 
 const GTFS_API = new GtfsApi(API_CONFIG)
@@ -23,11 +23,11 @@ type StopHitsPayLoadType = {
 }
 
 export async function getRoutesAsync(
-  fromTimestamp: moment.Moment,
-  toTimestamp: moment.Moment,
-  operatorId: string | undefined,
-  lineNumber: string | undefined,
-  signal?: AbortSignal | undefined,
+  fromTimestamp: Moment,
+  toTimestamp: Moment,
+  operatorId?: string,
+  lineNumber?: string,
+  signal?: AbortSignal,
 ): Promise<BusRoute[]> {
   const gtfsRoutes = await GTFS_API.gtfsRoutesListGet(
     {
@@ -87,8 +87,9 @@ export async function getStopsForRouteAsync(
     })
     await Promise.all(
       rideStops.map(async (rideStop) => {
+        if (!rideStop.gtfsStopId) return
         const stop = await GTFS_API.gtfsStopsGetGet({ id: rideStop.gtfsStopId })
-        stops.push(fromGtfsStop(rideStop, stop, rideRepresentative))
+        stops.push(fromGtfsStop(rideStop as GtfsRideStopPydanticModel, stop, rideRepresentative))
       }),
     )
   }
@@ -167,4 +168,35 @@ export async function getGtfsStopHitTimesAsync(stop: BusStop, timestamp: Moment)
     console.error(`Error fetching stop hits:`, error)
     return []
   }
+}
+
+export async function getAllRoutesList(operatorId: string, date: Date, signal?: AbortSignal) {
+  return await GTFS_API.gtfsRoutesListGet(
+    {
+      operatorRefs: operatorId,
+      dateFrom: date,
+      dateTo: date,
+      orderBy: 'route_long_name asc',
+      limit: -1,
+    },
+    { signal },
+  )
+}
+
+export async function getRoutesByLineRef(
+  operatorId: string,
+  lineRefs: string,
+  date: Date,
+  signal?: AbortSignal,
+) {
+  return await GTFS_API.gtfsRoutesListGet(
+    {
+      operatorRefs: operatorId,
+      dateFrom: date,
+      dateTo: date,
+      lineRefs,
+      limit: 1,
+    },
+    { signal },
+  )
 }

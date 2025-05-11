@@ -1,10 +1,9 @@
-import Grid from '@mui/material/Unstable_Grid2'
+import { Grid, CircularProgress } from '@mui/material'
 import { useTranslation } from 'react-i18next'
-import { useLoaderData } from 'react-router-dom'
+import { useLoaderData } from 'react-router'
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import moment from 'moment'
 import { Tooltip } from 'antd'
-import CircularProgress from '@mui/material/CircularProgress'
 import { NotFound } from '../components/NotFound'
 import { PageContainer } from '../components/PageContainer'
 import { MapWithLocationsAndPath } from '../components/map-related/MapWithLocationsAndPath'
@@ -29,7 +28,7 @@ const LineProfileWrapper = () => (
 
 const LineProfile = () => {
   const { t } = useTranslation()
-  const route = useLoaderData() as Route & { message?: string }
+  const route = useLoaderData<Route & { message?: string }>()
   const [state, setState] = useState<TimelinePageState>({})
   const { stopKey, stops } = state
   const { search, setSearch } = useContext(SearchContext)
@@ -87,7 +86,7 @@ const LineProfile = () => {
   return (
     <div className="container">
       <Grid container spacing={4}>
-        <Grid xs={12} sm={4} className="inputs">
+        <Grid size={{ xs: 12, sm: 4 }} className="inputs">
           <DateSelector
             time={moment(timestamp)}
             onChange={(ts) =>
@@ -124,7 +123,7 @@ const LineProfile = () => {
             />
           </div>
         </Grid>
-        <Grid xs={12} sm={8}>
+        <Grid size={{ xs: 12, sm: 8 }}>
           <Widget>
             <LineProfileHeader {...route} />
             <LineProfileDetails {...route} />

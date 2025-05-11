@@ -1,10 +1,12 @@
 import { FC, PropsWithChildren, createContext, useContext, useMemo } from 'react'
-import { ThemeProvider as MuiThemeProvider, createTheme } from '@mui/material/styles'
-import ScopedCssBaseline from '@mui/material/ScopedCssBaseline'
+import { ThemeProvider as MuiThemeProvider, createTheme, ScopedCssBaseline } from '@mui/material'
+import { heIL, enUS } from '@mui/material/locale'
+import { heIL as dateHeIL, enUS as dateEnUS } from '@mui/x-date-pickers/locales'
+
 import { LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 import { ConfigProvider, theme } from 'antd'
-import heIL from 'antd/es/locale/he_IL'
+import antdHeIL from 'antd/es/locale/he_IL'
 import { useTranslation } from 'react-i18next'
 import { useLocalStorage } from 'src/locale/useLocalStorage'
 
@@ -42,19 +44,23 @@ export const ThemeProvider: FC<PropsWithChildren> = ({ children }) => {
     const direction = i18n.language === 'he' ? 'rtl' : 'ltr'
     document.documentElement.dir = direction
     document.documentElement.lang = i18n.language
-    return createTheme({
-      direction,
-      palette: {
-        mode: isDarkTheme ? 'dark' : 'light',
+    return createTheme(
+      {
+        direction,
+        palette: {
+          mode: isDarkTheme ? 'dark' : 'light',
+        },
       },
-    })
+      i18n.language === 'he' ? heIL : enUS,
+      i18n.language === 'he' ? dateHeIL : dateEnUS,
+    )
   }, [isDarkTheme, i18n.language])
 
   return (
     <LocalizationProvider dateAdapter={AdapterMoment} adapterLocale={i18n.language}>
       <ConfigProvider
-        direction={i18n.dir()}
-        locale={heIL}
+        direction={i18n.language === 'he' ? 'rtl' : 'ltr'}
+        locale={antdHeIL}
         theme={{
           algorithm: isDarkTheme ? darkAlgorithm : defaultAlgorithm,
           token: {

@@ -97,6 +97,7 @@ test.describe('Single line page tests', () => {
 
     await test.step('Expecting the tooltip to have the correct content', async () => {
       const contentItemsInOrder = [
+        'שם חברה מפעילה:',
         'מוצא:',
         'יעד:',
         'מהירות:',
