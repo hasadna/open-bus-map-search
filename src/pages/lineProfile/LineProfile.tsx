@@ -73,7 +73,7 @@ const LineProfile = () => {
     plannedRouteStops,
     startTime,
     setStartTime,
-  } = useSingleLineData(route?.lineRef, routeIds, route?.date.getTime())
+  } = useSingleLineData(route?.lineRef, routeIds)
 
   const handleTimestampChange = (time: moment.Moment | null) => {
     if (!time || !route) return
