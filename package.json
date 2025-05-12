@@ -10,7 +10,7 @@
     "@mui/icons-material": "^7.1.0",
     "@mui/material": "^7.1.0",
     "@mui/x-date-pickers": "^7.29.2",
-    "@mui/x-tree-view": "^8.2.0",
+    "@mui/x-tree-view": "^8.3.0",
     "@tanstack/query-sync-storage-persister": "^5.75.5",
     "@tanstack/react-query": "^5.76.0",
     "@tanstack/react-query-persist-client": "^5.75.5",
