@@ -5,6 +5,8 @@ import * as crypto from 'crypto'
 import { exec } from 'child_process'
 import { Matcher, test as baseTest, customMatcher } from 'playwright-advanced-har'
 import { BrowserContext, Page } from '@playwright/test'
+import { i18n } from 'i18next'
+import Backend from 'i18next-fs-backend'
 
 const istanbulCLIOutput = path.join(process.cwd(), '.nyc_output')
 
@@ -83,5 +85,21 @@ export const getBranch = () =>
       else if (typeof stdout === 'string') resolve(stdout.trim())
     })
   })
+
+export const waitForSkeletonsToHide = async (page: Page) => {
+  while ((await page.locator('.ant-skeleton-content').count()) > 0) {
+    await page.locator('.ant-skeleton-content').last().waitFor({ state: 'hidden' })
+  }
+}
+
+export const loadTranslate = async (i18next: i18n) => {
+  await i18next.use(Backend).init({
+    lng: 'he',
+    fallbackLng: 'en',
+    backend: {
+      loadPath: 'src/locale/{{lng}}.json',
+    },
+  })
+}
 
 export const expect = test.expect
