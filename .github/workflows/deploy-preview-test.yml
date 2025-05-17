@@ -1,6 +1,7 @@
+name: Deploy Preview TEST
 on:
     workflow_run:
-      workflows: ['Build']
+      workflows: ['Lint PR']
       types:
         - completed
 
@@ -70,6 +71,14 @@ jobs:
             comment-author: 'github-actions[bot]'
             body-includes: 'Preview'
   
+        - name: Debug workflow version
+          run: |
+            echo "Current workflow content:"
+            cat $GITHUB_WORKSPACE/.github/workflows/deploy-preview-test.yml
+            echo "---"
+            echo "Workflow run ID: ${{ github.event.workflow_run.id }}"
+            echo "Run number: ${{ github.event.workflow_run.run_number }}"
+  
         - name: update comment
           uses: peter-evans/create-or-update-comment@v4
           if: steps.fc.outputs.comment-id
@@ -77,9 +86,11 @@ jobs:
             comment-id: ${{ steps.fc.outputs.comment-id }}
             edit-mode: replace
             body: |
+              [TEST WORKFLOW]
+              Last updated: ${{ github.event.workflow_run.updated_at }}
               Preview: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}/index.html
               Preview Storybook: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}/storybook/index.html
-              Test Report (if available): https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.head_sha }}/test-results/index.html
+              Test: 1234
   
         - name: create comment
           uses: peter-evans/create-or-update-comment@v4
@@ -87,7 +98,8 @@ jobs:
           with:
             issue-number: ${{ env.PR_NUMBER }}
             body: |
+              [TEST WORKFLOW]
               Preview: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}/index.html
               Preview Storybook: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}/storybook/index.html
-              Test Report (if available): https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.head_sha }}/test-results/index.html
+              Test Report (if available): https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}/test-results/index.html
   
