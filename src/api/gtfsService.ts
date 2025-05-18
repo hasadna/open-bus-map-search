@@ -170,6 +170,31 @@ export async function getGtfsStopHitTimesAsync(stop: BusStop, timestamp: Moment)
   }
 }
 
+export async function getRouteById(routeId?: string, signal?: AbortSignal) {
+  try {
+    if (!routeId?.trim()) {
+      throw new Error('Route id is required and cannot be empty')
+    }
+    const id = Number(routeId)
+    if (!Number.isInteger(id) || id <= 0 || id > Number.MAX_SAFE_INTEGER) {
+      throw new Error(`Invalid route id: ${routeId}.`)
+    }
+    return await GTFS_API.gtfsRoutesGetGet({ id }, { signal })
+  } catch (error) {
+    let errorMessage: string
+    if (error instanceof Error) {
+      errorMessage =
+        error.message === 'Response returned an error code'
+          ? `Route with id ${routeId} not found`
+          : error.message
+    } else {
+      errorMessage = 'An unexpected error occurred while fetching route data'
+    }
+    console.error(`Failed to get route ${routeId}:`, errorMessage)
+    throw new Error(errorMessage)
+  }
+}
+
 export async function getAllRoutesList(operatorId: string, date: Date, signal?: AbortSignal) {
   return await GTFS_API.gtfsRoutesListGet(
     {
@@ -178,6 +203,24 @@ export async function getAllRoutesList(operatorId: string, date: Date, signal?: 
       dateTo: date,
       orderBy: 'route_long_name asc',
       limit: -1,
+    },
+    { signal },
+  )
+}
+
+export async function getRoutesByLineRef(
+  operatorId: string,
+  lineRefs: string,
+  date: Date,
+  signal?: AbortSignal,
+) {
+  return await GTFS_API.gtfsRoutesListGet(
+    {
+      operatorRefs: operatorId,
+      dateFrom: date,
+      dateTo: date,
+      lineRefs,
+      limit: 1,
     },
     { signal },
   )

@@ -8,11 +8,17 @@ export const InfoTable = ({ children }: { children?: React.ReactNode }) => {
   )
 }
 
-export const InfoItem = ({ lable, value }: { lable: React.ReactNode; value?: React.ReactNode }) => {
+export const InfoItem = ({
+  label,
+  value,
+}: {
+  label?: React.ReactNode
+  value?: React.ReactNode
+}) => {
   return (
     <tr>
       <td>
-        <strong>{lable}:</strong>
+        <strong>{label}:</strong>
       </td>
       <td>{value ?? '-'}</td>
     </tr>

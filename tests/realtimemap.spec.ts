@@ -35,6 +35,7 @@ test('tooltip appears after clicking on map point', async ({ page }) => {
 
   await test.step('Expecting the tooltip to have the correct content', async () => {
     const contentItemsInOrder = [
+      'שם חברה מפעילה:',
       'מוצא:',
       'יעד:',
       'מהירות:',
