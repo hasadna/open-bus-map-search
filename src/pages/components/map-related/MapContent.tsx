@@ -26,11 +26,7 @@ const plannedRouteLineColor = 'black'
 const actualRouteStopMarker = getIcon(actualRouteStopMarkerPath, 20, 20)
 const plannedRouteStopMarker = getIcon(plannedRouteStopMarkerPath, 20, 25)
 
-export function MapContent({
-  positions,
-  plannedRouteStops,
-  showNavigationButtons,
-}: MapProps) {
+export function MapContent({ positions, plannedRouteStops, showNavigationButtons }: MapProps) {
   const markerRef = useRef<{ [key: number]: LeafletMarker | null }>({})
   const [tileUrl, setTileUrl] = useState('https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png')
 

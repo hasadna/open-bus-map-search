@@ -96,10 +96,7 @@ const SingleVehicleMap = () => {
         )}
       </Grid>
 
-      <MapWithLocationsAndPath
-        positions={filteredPositions}
-        showNavigationButtons={false}
-      />
+      <MapWithLocationsAndPath positions={filteredPositions} showNavigationButtons={false} />
     </PageContainer>
   )
 }
