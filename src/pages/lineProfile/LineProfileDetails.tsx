@@ -1,54 +1,89 @@
-import React from 'react'
-import './LineProfileDetails.scss'
+import { MultipleStopOutlined } from '@mui/icons-material'
+import { Grid, Typography } from '@mui/material'
+import moment from 'moment'
+import { GtfsRoutePydanticModel } from 'open-bus-stride-client'
 import { useTranslation } from 'react-i18next'
-import { Route } from './Route.interface'
+import { Link } from 'react-router'
+import { InfoItem, InfoTable } from '../components/InfoTable'
+import { routeStartEnd } from '../components/utils/rotueUtils'
+import Widget from 'src/shared/Widget'
 
-type Props = Route
-
-export const LineProfileDetails: React.FC<Props> = ({
+export const LineProfileDetails = ({
   id,
   date,
-  line_ref,
-  operator_ref,
-  route_short_name,
-  route_long_name,
-  route_mkt,
-  route_direction,
-  route_alternative,
-  agency_name,
-  route_type,
-}) => {
+  lineRef,
+  operatorRef,
+  routeShortName,
+  routeLongName,
+  routeMkt,
+  routeDirection,
+  routeAlternative,
+  agencyName,
+  routeType,
+}: GtfsRoutePydanticModel) => {
   const { t } = useTranslation()
+  const [route_start, route_end] = routeStartEnd(routeLongName)
 
-  const [route_start, route_end] = route_long_name.split('<->')
+  const routeTypes = {
+    '0': t('operator.type.light_rail'),
+    '2': t('operator.type.rail'),
+    '3': t('operator.type.bus'),
+    '5': operatorRef === 33 ? t('operator.type.cable_car') : t('operator.type.subway'),
+    '8': t('operator.type.taxi'),
+    '715': t('operator.type.flex'),
+  }
 
-  const data = [
-    { label: t('lineProfile.id'), value: id },
-    { label: t('lineProfile.date'), value: date },
-    { label: t('lineProfile.lineReference'), value: line_ref },
-    { label: t('lineProfile.operatorReference'), value: operator_ref },
-    { label: t('lineProfile.agencyName'), value: agency_name },
-    { label: t('lineProfile.route.shortName'), value: route_short_name },
-    { label: t('lineProfile.route.start'), value: route_start },
-    { label: t('lineProfile.route.end'), value: route_end },
-    { label: t('lineProfile.route.mkt'), value: route_mkt },
-    { label: t('lineProfile.route.direction'), value: route_direction },
-    { label: t('lineProfile.route.type'), value: route_type },
-    { label: t('lineProfile.route.alternative'), value: route_alternative },
-  ]
+  const diractionTypes = {
+    '1': t('lineProfile.route.direction_forth'),
+    '2': t('lineProfile.route.direction_back'),
+    '3': t('lineProfile.route.direction_forth'),
+  }
 
   return (
-    <table>
-      <tbody>
-        {data.map(({ label, value }) => (
-          <tr key={`${label}-${value}`}>
-            <td>
-              <strong>{label}</strong>
-            </td>
-            <td>{value}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <Widget>
+      <Grid container alignItems="center" flexDirection="column">
+        <img src={`../operators-logos/${operatorRef}.svg`} height={60} />
+        <Typography variant="h6">{agencyName}</Typography>
+        <Typography variant="h2" fontSize="28px" fontWeight="bold" margin="21.5px 0">
+          {t('lineProfile.title')} {routeShortName}
+        </Typography>
+
+        <Grid
+          container
+          flexDirection="column"
+          justifyContent="center"
+          alignItems="center"
+          marginBottom="2.5em">
+          {route_start} <MultipleStopOutlined /> {route_end}
+        </Grid>
+
+        <InfoTable>
+          <InfoItem label={t('lineProfile.id')} value={id} />
+          <InfoItem label={t('lineProfile.date')} value={moment(date).format('DD-MM-YYYY')} />
+          <InfoItem label={t('lineProfile.lineReference')} value={lineRef} />
+          <InfoItem
+            label={t('lineProfile.operatorReference')}
+            value={<Link to={'/operator?operatorId=' + operatorRef}>{operatorRef}</Link>}
+          />
+          <InfoItem
+            label={t('lineProfile.agencyName')}
+            value={<Link to={'/operator?operatorId=' + operatorRef}>{agencyName}</Link>}
+          />
+          <InfoItem label={t('lineProfile.route.shortName')} value={routeShortName} />
+          <InfoItem label={t('lineProfile.route.start')} value={route_start} />
+          <InfoItem label={t('lineProfile.route.end')} value={route_end} />
+          <InfoItem label={t('lineProfile.route.mkt')} value={routeMkt} />
+          <InfoItem
+            label={t('lineProfile.route.direction')}
+            value={diractionTypes[routeDirection as keyof typeof diractionTypes] ?? routeDirection}
+          />
+          <InfoItem
+            label={t('lineProfile.route.type')}
+            value={routeTypes[routeType as keyof typeof routeTypes] ?? routeType}
+          />
+          <InfoItem label={t('lineProfile.route.alternative')} value={routeAlternative} />
+        </InfoTable>
+      </Grid>
+    </Widget>
   )
 }
