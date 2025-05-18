@@ -99,7 +99,6 @@ const SingleVehicleMap = () => {
       <MapWithLocationsAndPath
         positions={filteredPositions}
         showNavigationButtons={false}
-        showPlannedRoute={false}
       />
     </PageContainer>
   )

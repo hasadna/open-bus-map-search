@@ -30,7 +30,6 @@ export function MapContent({
   positions,
   plannedRouteStops,
   showNavigationButtons,
-  showPlannedRoute = true,
 }: MapProps) {
   const markerRef = useRef<{ [key: number]: LeafletMarker | null }>({})
   const [tileUrl, setTileUrl] = useState('https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png')
@@ -80,7 +79,7 @@ export function MapContent({
           imgSrc={actualRouteStopMarkerPath}
           title={t('actualRoute')}
         />
-        {showPlannedRoute && (
+        {plannedRouteStops && (
           <MapIndex
             lineColor={plannedRouteLineColor}
             imgSrc={plannedRouteStopMarkerPath}
