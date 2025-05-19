@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { OperatorRoutes } from './OperatorRoutes'
 import { waitForContent, getPastDate } from '../../../.storybook/utils.test'
+import { OperatorRoutes } from './OperatorRoutes'
 
 const meta = {
   component: OperatorRoutes,

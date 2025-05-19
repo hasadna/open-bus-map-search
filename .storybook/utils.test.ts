@@ -2,6 +2,7 @@ import { waitFor } from '@storybook/test'
 
 const isTestEnvironment = (): boolean => {
   if (typeof navigator !== 'undefined' && navigator.webdriver) return true
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   if (typeof window !== 'undefined' && (window as any).Cypress) return true
   if (typeof process !== 'undefined' && process.env.NODE_ENV === 'test') return true
   return false

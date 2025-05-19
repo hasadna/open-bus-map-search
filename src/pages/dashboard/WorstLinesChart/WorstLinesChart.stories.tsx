@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import moment from 'moment'
-import WorstLinesChart from './WorstLinesChart'
 import { getPastDate, waitForContent } from '../../../../.storybook/utils.test'
+import WorstLinesChart from './WorstLinesChart'
 
 const meta: Meta<typeof WorstLinesChart> = {
   component: WorstLinesChart,
