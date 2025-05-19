@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import moment from 'moment'
 import WorstLinesChart from './WorstLinesChart'
+import { getPastDate, waitForContent } from '../../../../.storybook/utils.test'
 
 const meta: Meta<typeof WorstLinesChart> = {
   component: WorstLinesChart,
@@ -14,9 +15,7 @@ const meta: Meta<typeof WorstLinesChart> = {
       control: 'date',
       description: 'The start date of the chart.',
       table: {
-        type: {
-          summary: 'Moment',
-        },
+        type: { summary: 'Moment' },
       },
     },
     endDate: {
@@ -28,12 +27,15 @@ const meta: Meta<typeof WorstLinesChart> = {
       description: 'The operator id of the chart.',
     },
   },
+  play: ({ canvasElement }) => waitForContent(canvasElement),
   render: (args) => (
-    <WorstLinesChart
-      startDate={moment(args.startDate)}
-      endDate={moment(args.endDate)}
-      operatorId={args.operatorId}
-    />
+    <div style={{ width: 700 }}>
+      <WorstLinesChart
+        startDate={moment(args.startDate)}
+        endDate={moment(args.endDate)}
+        operatorId={args.operatorId}
+      />
+    </div>
   ),
 }
 
@@ -43,8 +45,8 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   args: {
-    startDate: moment(),
-    endDate: moment().add(-7, 'day'),
+    startDate: getPastDate(true),
+    endDate: getPastDate(),
     operatorId: '3',
   },
 }

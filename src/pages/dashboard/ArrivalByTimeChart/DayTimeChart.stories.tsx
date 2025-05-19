@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import moment from 'moment'
 import DayTimeChart from './DayTimeChart'
+import { getPastDate, waitForContent } from '../../../../.storybook/utils.test'
 
 const meta: Meta<typeof DayTimeChart> = {
   component: DayTimeChart,
@@ -14,18 +15,14 @@ const meta: Meta<typeof DayTimeChart> = {
       control: 'date',
       description: 'The start date of the chart.',
       table: {
-        type: {
-          summary: 'Moment',
-        },
+        type: { summary: 'Moment' },
       },
     },
     endDate: {
       control: 'date',
       description: 'The end date of the chart.',
       table: {
-        type: {
-          summary: 'Moment',
-        },
+        type: { summary: 'Moment' },
       },
     },
     operatorId: {
@@ -33,12 +30,15 @@ const meta: Meta<typeof DayTimeChart> = {
       description: 'The operator id of the chart.',
     },
   },
+  play: ({ canvasElement }) => waitForContent(canvasElement),
   render: (args) => (
-    <DayTimeChart
-      startDate={moment(args.startDate)}
-      endDate={moment(args.endDate)}
-      operatorId={args.operatorId}
-    />
+    <div style={{ height: 350, width: 700 }}>
+      <DayTimeChart
+        startDate={moment(args.startDate)}
+        endDate={moment(args.endDate)}
+        operatorId={args.operatorId}
+      />
+    </div>
   ),
 }
 
@@ -48,8 +48,8 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   args: {
-    startDate: moment(),
-    endDate: moment().add(-7, 'day'),
+    startDate: getPastDate(true),
+    endDate: getPastDate(),
     operatorId: '3',
   },
 }

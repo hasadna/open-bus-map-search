@@ -1,4 +1,5 @@
 import { Button, CircularProgress } from '@mui/material'
+import { Skeleton } from 'antd'
 import cn from 'classnames'
 import moment from 'moment-timezone'
 import { GtfsRoutePydanticModel } from 'open-bus-stride-client'
@@ -30,6 +31,7 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
       position.point?.siri_route__line_ref.toString(),
       new Date(position.point?.siri_ride__scheduled_start_time),
     )
+      // .then((res) => new Promise<typeof res>((resolve) => setTimeout(() => resolve(res), 3000))) // test delay
       .then((routes) => {
         setRoute(routes[0])
         setIsLoading(false)
@@ -65,9 +67,12 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
   return (
     <div className={cn('bus-tooltip', { hebrew: i18n.language === 'he' })}>
       {isLoading || !route ? (
-        <div className="loading">
-          <span>{t('loading_routes')}</span>
-          <CircularProgress />
+        <div>
+          <h1 className="loading title">
+            <span>{t('loading_routes')}</span>
+            <CircularProgress />
+          </h1>
+          <Skeleton title={false} paragraph={{ rows: 7 }} />
         </div>
       ) : (
         <>

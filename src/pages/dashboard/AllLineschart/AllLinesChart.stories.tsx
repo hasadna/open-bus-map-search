@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import moment from 'moment'
+import { waitForContent, getPastDate } from '../../../../.storybook/utils.test'
 import AllLinesChart from './AllLinesChart'
 
 const meta: Meta<typeof AllLinesChart> = {
@@ -14,23 +15,22 @@ const meta: Meta<typeof AllLinesChart> = {
       control: 'date',
       description: 'The start date of the chart.',
       table: {
-        type: {
-          summary: 'Moment',
-        },
+        type: { summary: 'Moment' },
       },
     },
     endDate: {
       control: 'date',
       description: 'The end date of the chart.',
       table: {
-        type: {
-          summary: 'Moment',
-        },
+        type: { summary: 'Moment' },
       },
     },
   },
+  play: ({ canvasElement }) => waitForContent(canvasElement),
   render: (args) => (
-    <AllLinesChart startDate={moment(args.startDate)} endDate={moment(args.endDate)} />
+    <div style={{ width: 700 }}>
+      <AllLinesChart startDate={moment(args.startDate)} endDate={moment(args.endDate)} />
+    </div>
   ),
 }
 
@@ -40,7 +40,7 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   args: {
-    startDate: moment(),
-    endDate: moment().add(-7, 'day'),
+    startDate: getPastDate(),
+    endDate: getPastDate(),
   },
 }

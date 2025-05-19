@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { HbarChart, Entry } from './HbarChart'
 
 const meta = {
-  title: 'Components/MapLayers/HbarChart',
+  title: 'Pages/Dashboard/Bar/HbarChart',
   component: HbarChart,
   tags: ['autodocs'],
 } satisfies Meta<typeof HbarChart>

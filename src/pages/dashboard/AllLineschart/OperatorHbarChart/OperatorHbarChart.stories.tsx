@@ -2,7 +2,7 @@ import { Meta, StoryObj } from '@storybook/react'
 import OperatorHbarChart from './OperatorHbarChart'
 
 const meta: Meta<typeof OperatorHbarChart> = {
-  title: 'Components/MapLayers/HbarChart/OperatorHbarChart',
+  title: 'Pages/Dashboard/Bar/OperatorHbarChart',
   component: OperatorHbarChart,
   tags: ['autodocs'],
 }
