@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { waitForContent, getPastDate } from '../../../.storybook/utils.test'
+import { waitForContent, getPastDate } from '../../../.storybook/utils'
 import { OperatorRoutes } from './OperatorRoutes'
 
 const meta = {

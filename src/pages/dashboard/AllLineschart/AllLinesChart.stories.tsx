@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import moment from 'moment'
-import { waitForContent, getPastDate } from '../../../../.storybook/utils.test'
+import { waitForContent, getPastDate } from '../../../../.storybook/utils'
 import AllLinesChart from './AllLinesChart'
 
 const meta: Meta<typeof AllLinesChart> = {

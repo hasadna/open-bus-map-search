@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { waitForContent } from '../../../../../.storybook/utils.test'
+import { waitForContent } from '../../../../../.storybook/utils'
 import { BusToolTip, BusToolTipProps } from './BusToolTip'
 import Widget from 'src/shared/Widget'
 

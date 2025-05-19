@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import moment from 'moment'
-import { getPastDate, waitForContent } from '../../../../.storybook/utils.test'
+import { getPastDate, waitForContent } from '../../../../.storybook/utils'
 import DayTimeChart from './DayTimeChart'
 
 const meta: Meta<typeof DayTimeChart> = {
