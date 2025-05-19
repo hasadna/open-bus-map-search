@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import moment from 'moment'
-import { waitForContent, getPastDate } from '../../../../.storybook/utils'
+import { getPastDate } from '../../../../tests/utils'
 import AllLinesChart from './AllLinesChart'
 
 const meta: Meta<typeof AllLinesChart> = {
@@ -26,7 +26,6 @@ const meta: Meta<typeof AllLinesChart> = {
       },
     },
   },
-  play: ({ canvasElement }) => waitForContent(canvasElement),
   render: (args) => (
     <div style={{ width: 700 }}>
       <AllLinesChart startDate={moment(args.startDate)} endDate={moment(args.endDate)} />

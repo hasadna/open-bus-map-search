@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import moment from 'moment'
-import { getPastDate, waitForContent } from '../../../../.storybook/utils'
+import { getPastDate } from '../../../../tests/utils'
 import DayTimeChart from './DayTimeChart'
 
 const meta: Meta<typeof DayTimeChart> = {
@@ -30,7 +30,6 @@ const meta: Meta<typeof DayTimeChart> = {
       description: 'The operator id of the chart.',
     },
   },
-  play: ({ canvasElement }) => waitForContent(canvasElement),
   render: (args) => (
     <div style={{ height: 350, width: 700 }}>
       <DayTimeChart

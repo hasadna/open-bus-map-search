@@ -40,10 +40,9 @@ export const test = baseTest.extend<{ context: BrowserContext }>({
   },
 })
 
-export function getPastDate(): Date {
-  return new Date('2024-02-12 15:00:00')
+export const getPastDate = (week?: boolean) => {
+  return new Date(week ? '2024-02-5 15:00:00' : '2024-02-12 15:00:00')
 }
-
 export async function setBrowserTime(date: Date, page: Page | BrowserContext) {
   const fakeNow = date.valueOf()
 

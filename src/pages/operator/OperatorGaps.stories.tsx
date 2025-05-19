@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { getPastDate, waitForContent } from '../../../.storybook/utils'
+import { getPastDate } from '../../../tests/utils'
 import { OperatorGaps } from './OperatorGaps'
 
 const meta = {
@@ -22,7 +22,6 @@ const meta = {
       options: ['day', 'week', 'month'],
     },
   },
-  play: ({ canvasElement }) => waitForContent(canvasElement),
 } satisfies Meta<typeof OperatorGaps>
 
 export default meta

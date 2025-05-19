@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import moment from 'moment'
-import { getPastDate, waitForContent } from '../../../../.storybook/utils'
+import { getPastDate } from '../../../../tests/utils'
 import WorstLinesChart from './WorstLinesChart'
 
 const meta: Meta<typeof WorstLinesChart> = {
@@ -27,7 +27,6 @@ const meta: Meta<typeof WorstLinesChart> = {
       description: 'The operator id of the chart.',
     },
   },
-  play: ({ canvasElement }) => waitForContent(canvasElement),
   render: (args) => (
     <div style={{ width: 700 }}>
       <WorstLinesChart
