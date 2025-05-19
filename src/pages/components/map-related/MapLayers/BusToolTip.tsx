@@ -31,7 +31,6 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
       position.point?.siri_route__line_ref.toString(),
       new Date(position.point?.siri_ride__scheduled_start_time),
     )
-      // .then((res) => new Promise<typeof res>((resolve) => setTimeout(() => resolve(res), 3000))) // test delay
       .then((routes) => {
         setRoute(routes[0])
         setIsLoading(false)

@@ -39,7 +39,7 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   args: {
-    startDate: getPastDate(),
+    startDate: getPastDate(true),
     endDate: getPastDate(),
   },
 }
