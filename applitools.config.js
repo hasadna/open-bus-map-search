@@ -1,3 +1,9 @@
-// export function waitBeforeCapture() {
-//   return !document.querySelector('.ant-skeleton-content')
-// }
+export default {
+  async waitBeforeCapture() {
+    while (!document.querySelector('.ant-skeleton-content')) {
+      await new Promise((resolve) => {
+        setTimeout(resolve, 100)
+      })
+    }
+  },
+}
