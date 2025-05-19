@@ -15,6 +15,7 @@ const config = {
   fromField: 'recorded_at_time_from',
   toField: 'recorded_at_time_to',
   lineRefField: 'siri_routes__line_ref',
+  vehicleRefField: 'siri_ride__vehicle_ref',
   operatorRefField: 'siri_routes__operator_ref',
 } as const
 
@@ -44,14 +45,16 @@ class LocationObservable {
     from,
     to,
     lineRef,
+    vehicleRef,
     operatorRef,
   }: {
     from: Dateable
     to: Dateable
     lineRef?: number
+    vehicleRef?: number
     operatorRef?: number
   }) {
-    this.#loadData({ from, to, lineRef, operatorRef })
+    this.#loadData({ from, to, lineRef, vehicleRef, operatorRef })
   }
 
   data: VehicleLocation[] = []
@@ -61,11 +64,13 @@ class LocationObservable {
     from,
     to,
     lineRef,
+    vehicleRef,
     operatorRef,
   }: {
     from: Dateable
     to: Dateable
     lineRef?: number
+    vehicleRef?: number
     operatorRef?: number
   }) {
     let offset = 0
@@ -76,6 +81,7 @@ class LocationObservable {
       }&offset=${offset}`
       if (operatorRef) url += `&${config.operatorRefField}=${operatorRef}`
       if (lineRef) url += `&${config.lineRefField}=${lineRef}`
+      if (vehicleRef) url += `&${config.vehicleRefField}=${vehicleRef}`
 
       const response = await fetchWithQueue(url)
       const data: VehicleLocation[] = await response!.json()
@@ -136,18 +142,20 @@ function getLocations({
   from,
   to,
   lineRef,
+  vehicleRef,
   onUpdate,
   operatorRef,
 }: {
   from: Dateable
   to: Dateable
   lineRef?: number
+  vehicleRef?: number
   operatorRef?: number
   onUpdate: (locations: VehicleLocation[] | { finished: true }) => void // the observer will be called every time with all the locations that were loaded
 }) {
-  const key = `${formatTime(from)}-${formatTime(to)}-${operatorRef}-${lineRef}`
+  const key = `${formatTime(from)}-${formatTime(to)}-${operatorRef}-${lineRef}-${vehicleRef}`
   if (!loadedLocations.has(key)) {
-    loadedLocations.set(key, new LocationObservable({ from, to, lineRef, operatorRef }))
+    loadedLocations.set(key, new LocationObservable({ from, to, lineRef, vehicleRef, operatorRef }))
   }
   const observable = loadedLocations.get(key)!
   return observable.observe(onUpdate)
@@ -169,6 +177,7 @@ export default function useVehicleLocations({
   from,
   to,
   lineRef,
+  vehicleRef,
   operatorRef,
   splitMinutes: split = 1,
   pause = false,
@@ -176,6 +185,7 @@ export default function useVehicleLocations({
   from: Dateable
   to: Dateable
   lineRef?: number
+  vehicleRef?: number
   operatorRef?: number
   splitMinutes?: false | number
   pause?: boolean
@@ -191,6 +201,7 @@ export default function useVehicleLocations({
         from,
         to,
         lineRef,
+        vehicleRef,
         operatorRef,
         onUpdate: (data) => {
           if ('finished' in data) {
@@ -215,7 +226,7 @@ export default function useVehicleLocations({
       unmounts.forEach((unmount) => unmount())
       setIsLoading([])
     }
-  }, [from, to, lineRef, split])
+  }, [from, to, lineRef, vehicleRef, split])
   return {
     locations,
     isLoading: isLoading.some((loading) => loading),

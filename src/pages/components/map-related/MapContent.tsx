@@ -75,11 +75,13 @@ export function MapContent({ positions, plannedRouteStops, showNavigationButtons
           imgSrc={actualRouteStopMarkerPath}
           title={t('actualRoute')}
         />
-        <MapIndex
-          lineColor={plannedRouteLineColor}
-          imgSrc={plannedRouteStopMarkerPath}
-          title={t('plannedRoute')}
-        />
+        {plannedRouteStops && (
+          <MapIndex
+            lineColor={plannedRouteLineColor}
+            imgSrc={plannedRouteStopMarkerPath}
+            title={t('plannedRoute')}
+          />
+        )}
       </div>
       {positions.map((pos, i) => {
         const icon =

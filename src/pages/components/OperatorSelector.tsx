@@ -23,7 +23,7 @@ export default function OperatorSelector({
     getOperators(filter).then(setOperators)
   }, [filter])
 
-  const value = operators.find((operator) => operator.id === operatorId)
+  const value = operators.find((operator) => operator.id === operatorId) || null
 
   return (
     <Autocomplete

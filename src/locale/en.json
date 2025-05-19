@@ -19,7 +19,9 @@
   "gaps_patterns_page_title": "patterns",
   "gaps_patterns_page_description": "A graphic display of routes performed according to schedule, grouped by time of day\\severity, by user-given bus operator, route number, route & date",
   "singleline_map_page_title": "Map by line",
+  "singlevehicle_map_page_title": "Map by vehicle",
   "singleline_map_page_description": "Display of bus route on map by user-given bus operator, route number, route, date & time",
+  "singlevehicle_map_page_description": "Display of bus route on map by user-given bus operator, vehicle number, route, date & time",
   "open_menu_description": "Displays different options and parameters which are accessible in the application",
   "choose_datetime": "Date and time",
   "choose_date": "Date",
@@ -27,7 +29,9 @@
   "choose_operator": "Operating Company",
   "operator_placeholder": "For example: Dan",
   "choose_line": "line number",
+  "choose_vehicle": "Vehicle number",
   "line_placeholder": "For example: 17a",
+  "vehicle_placeholder": "For example: 12345",
   "choose_route": "Choosing a travel route (XXX options)",
   "choose_stop": "Select a station (XXX options)",
   "direction_arrow": "⟵",
@@ -56,6 +60,7 @@
   "rides_planned": "planned trips",
   "rides_history": "Trips History",
   "rides_actual": "Trips out",
+  "rides_missing": "Trips missing",
   "dashboard_page_graph_title": "Exit percentages of total trips by time",
   "from_date": "dated",
   "to_date": "Until",
@@ -193,8 +198,23 @@
       "end": "End",
       "mkt": "Route MKT",
       "direction": "Route Direction",
+      "direction_forth": "Forward",
+      "direction_back": "Backward",
       "alternative": "Route Alternative",
       "type": "Route Type"
+    },
+    "ride": {
+      "journey": "Journey ID",
+      "id": "Ride ID",
+      "duration": "Ride Duration",
+      "scheduled": "Scheduled Ride"
+    },
+    "stop": {
+      "name": "Stop Name",
+      "code": "Stop ID",
+      "route": "Stop Route",
+      "of": "of",
+      "location": "Stop Location"
     }
   },
   "aboutPage": {
@@ -255,5 +275,49 @@
     ]
   },
   "version": "Current version identifier",
-  "failedToFetchVersion": "Failed to fetch current version identifier"
+  "failedToFetchVersion": "Failed to fetch current version identifier",
+  "operator_title": "Operator",
+  "operator": {
+    "ref": "Operator ID",
+    "founded": "Founded",
+    "website": "Website",
+    "area_title": "Service area",
+    "area": {
+      "nationwide": "Nationwide",
+      "central_southern": "Central, Southern",
+      "northern": "Northern",
+      "southern": "Southern",
+      "central": "Central",
+      "haifa": "Haifa",
+      "jerusalem": "Jerusalem",
+      "tel_aviv": "Tel Aviv",
+      "beersheba": "Beersheba",
+      "beit_shemesh": "Beit Shemesh"
+    },
+    "type_title": "Service type",
+    "type": {
+      "bus": "Bus",
+      "rail": "Rail",
+      "light_rail": "Light Rail",
+      "subway": "Subway",
+      "cable_car": "Cable Car",
+      "taxi": "Share taxi",
+      "flex": "Flexible Service Line"
+    },
+    "time_range": {
+      "day": "Daily",
+      "week": "Weekly",
+      "month": "Monthly",
+      "year": "Yearly"
+    },
+    "all_lines": "All Routes",
+    "line": "Line",
+    "profile": "Profile",
+    "map": "Map",
+    "id": "ID",
+    "origin": "Origin",
+    "destination": "Destination",
+    "total": "Total Routes",
+    "statistics": "Statistics"
+  }
 }
