@@ -1,3 +1,3 @@
-module.exports = {
-  waitBeforeCapture: () => !document.querySelector('.ant-skeleton-content'),
-}
+// export function waitBeforeCapture() {
+//   return !document.querySelector('.ant-skeleton-content')
+// }

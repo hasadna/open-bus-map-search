@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { getPastDate } from '../../../tests/utils'
+import { getPastDate } from '../../../.storybook/main'
 import { OperatorGaps } from './OperatorGaps'
 
 const meta = {
