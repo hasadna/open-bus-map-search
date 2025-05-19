@@ -4,7 +4,8 @@ import * as path from 'path'
 import * as crypto from 'crypto'
 import { exec } from 'child_process'
 import { Matcher, test as baseTest, customMatcher } from 'playwright-advanced-har'
-import { BrowserContext, Page } from '@playwright/test'
+import { BrowserContext, Page, expect as baseExpect } from '@playwright/test'
+import moment from 'moment'
 import { i18n } from 'i18next'
 import Backend from 'i18next-fs-backend'
 
@@ -85,6 +86,97 @@ export const getBranch = () =>
       else if (typeof stdout === 'string') resolve(stdout.trim())
     })
   })
+
+interface CustomMatcherResult {
+  message: () => string
+  pass: boolean
+}
+
+export const expect = baseExpect.extend({
+  async toCall(page: Page, urlPart: string) {
+    let requestFound = false
+
+    const listener = (request: { url(): string }) => {
+      if (request.url().includes(urlPart)) {
+        requestFound = true
+      }
+    }
+
+    page.on('request', listener)
+
+    const checkPromise = await new Promise<boolean>((resolve) => {
+      const checkInterval = setInterval(() => {
+        if (requestFound) {
+          clearInterval(checkInterval)
+          page.removeListener('request', listener)
+          resolve(true)
+        }
+      }, 100)
+
+      setTimeout(() => {
+        clearInterval(checkInterval)
+        page.removeListener('request', listener)
+        resolve(false)
+      }, 10000)
+    })
+
+    return {
+      message: () => `Expected page to make a request to ${urlPart}`,
+      pass: true,
+      async then(resolve: (result: CustomMatcherResult) => void) {
+        await Promise.resolve()
+        resolve({
+          message: () => `Expected page to make a request to ${urlPart}`,
+          pass: checkPromise,
+        })
+      },
+    } as CustomMatcherResult
+  },
+
+  async toHaveRecentDateFrom(page: Page, urlPart: string, maxDaysAgo: number = 3) {
+    const request = await page.waitForRequest((request: { url(): string }) =>
+      request.url().includes(urlPart),
+    )
+
+    return {
+      message: () =>
+        `Expected page to make a request to ${urlPart} with recent date_from parameter`,
+      pass: true,
+      async then(resolve: (result: CustomMatcherResult) => void) {
+        await Promise.resolve()
+
+        try {
+          const url = new URL(request.url())
+          const dateFromParam = url.searchParams.get('date_from')
+
+          if (!dateFromParam) {
+            throw new Error('date_from parameter not found')
+          }
+
+          const dateFrom = moment(dateFromParam)
+          const daysAgo = moment().diff(dateFrom, 'days')
+
+          console.log(`Request to ${urlPart}, dateFromParam: ${dateFromParam}, daysAgo: ${daysAgo}`)
+
+          const isRecent = daysAgo >= 0 && daysAgo <= maxDaysAgo
+
+          resolve({
+            message: () =>
+              `Expected date_from parameter to be within ${maxDaysAgo} days ` +
+              `(actual: ${daysAgo} days ago, date: ${dateFromParam})`,
+            pass: isRecent,
+          })
+        } catch (error) {
+          resolve({
+            message: () =>
+              `Failed to capture request to ${urlPart}: ${error instanceof Error ? error.message : String(error)}`,
+            pass: false,
+          })
+        }
+      },
+    } as CustomMatcherResult
+  },
+})
 
 export const waitForSkeletonsToHide = async (page: Page) => {
   while ((await page.locator('.ant-skeleton-content').count()) > 0) {

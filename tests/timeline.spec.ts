@@ -1,4 +1,5 @@
 import i18next from 'i18next'
+import Backend from 'i18next-fs-backend'
 import moment from 'moment'
 import TimelinePage from '../src/test_pages/TimelinePage'
 import { getPastDate, test, expect, urlMatcher, loadTranslate } from './utils'
@@ -133,34 +134,21 @@ test.describe('Timeline Page Tests', () => {
   })
 })
 
-test('verify API call to gtfs_agencies/list - "Trips history"', async ({ page }) => {
-  let apiCallMade = false
-  page.on('request', (request) => {
-    if (request.url().includes('gtfs_agencies/list')) {
-      apiCallMade = true
-    }
-  })
+test('verify API call to gtfs_agencies/list - "trips history"', async ({ page }) => {
+  const callAssertion = expect(page).toCall('gtfs_agencies/list')
 
   await page.goto('/')
-  await page.getByRole('link', { name: 'היסטוריית נסיעות' }).click()
+  await page.getByRole('link', { name: 'היסטוריית נסיעות', exact: true }).click()
   await page.getByLabel('חברה מפעילה').click()
-  expect(apiCallMade).toBeTruthy()
+
+  await callAssertion
 })
 
-test('the dateFrom parameter should be recent when visiting the "Trips history"', async ({
-  page,
-}) => {
-  const apiRequest = page.waitForRequest((request) => request.url().includes('gtfs_agencies/list'))
+test('Verify date_from parameter from "trips history"', async ({ page }) => {
+  const dateAssertion = expect(page).toHaveRecentDateFrom('gtfs_agencies/list')
 
   await page.goto('/')
-  await page.getByRole('link', { name: 'היסטוריית נסיעות' }).click()
+  await page.getByRole('link', { name: 'היסטוריית נסיעות', exact: true }).click()
 
-  const request = await apiRequest
-  const url = new URL(request.url())
-  const dateFromParam = url.searchParams.get('date_from')
-  const dateFrom = moment(dateFromParam)
-  const daysAgo = moment().diff(dateFrom, 'days')
-
-  expect(daysAgo).toBeGreaterThanOrEqual(0)
-  expect(daysAgo).toBeLessThanOrEqual(3)
+  await dateAssertion
 })
