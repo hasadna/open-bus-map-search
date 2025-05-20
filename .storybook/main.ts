@@ -6,8 +6,8 @@ const config: StorybookConfig = {
   addons: [
     '@storybook/addon-links',
     '@storybook/addon-essentials',
-    '@storybook/addon-interactions',
     '@storybook/addon-onboarding',
+    '@storybook/addon-interactions',
   ],
   framework: {
     name: '@storybook/react-vite',
@@ -27,14 +27,14 @@ export const getPastDate = (week?: boolean) => {
 }
 
 export async function waitForContent({}) {
-  // if (
-  //   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  //   (typeof window !== 'undefined' && (window as any).Cypress) ||
-  //   (typeof navigator !== 'undefined' && navigator.webdriver) ||
-  //   (typeof process !== 'undefined' && process.env.NODE_ENV === 'test')
-  // ) {
-  //   return
-  // }
+  if (
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (typeof window !== 'undefined' && (window as any).Cypress) ||
+    (typeof navigator !== 'undefined' && navigator.webdriver) ||
+    (typeof process !== 'undefined' && process.env.NODE_ENV === 'test')
+  ) {
+    return
+  }
   return await waitFor(
     () => {
       if (document.querySelector('.ant-skeleton-content')) {

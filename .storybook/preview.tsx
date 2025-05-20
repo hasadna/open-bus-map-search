@@ -2,7 +2,6 @@ import type { Preview } from '@storybook/react'
 import { Suspense, useEffect } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { BrowserRouter } from 'react-router'
-import { waitForContent } from './main'
 import { ThemeProvider, useTheme } from 'src/layout/ThemeContext'
 import i18n from 'src/locale/allTranslations'
 import 'src/index.css'
@@ -38,24 +37,15 @@ const preview: Preview = {
         order: [],
       },
     },
-    eyes: {
-      waitBeforeCapture: waitForContent,
-    },
   },
   decorators: [
     (Story, context) => {
       const { locale, darkMode } = context.globals
       return (
         <Suspense fallback={null}>
-          <BrowserRouter>
-            <QueryClientProvider client={queryClient}>
-              <ThemeProvider>
-                <StoryBookWrapper locale={locale} darkMode={darkMode}>
-                  <Story />
-                </StoryBookWrapper>
-              </ThemeProvider>
-            </QueryClientProvider>
-          </BrowserRouter>
+          <StoryBookWrapper locale={locale} darkMode={darkMode}>
+            <Story />
+          </StoryBookWrapper>
         </Suspense>
       )
     },
@@ -114,5 +104,11 @@ const StoryBookWrapper = ({
     i18n.changeLanguage(locale)
   }, [locale])
 
-  return children
+  return (
+    <BrowserRouter>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider>{children}</ThemeProvider>
+      </QueryClientProvider>
+    </BrowserRouter>
+  )
 }
