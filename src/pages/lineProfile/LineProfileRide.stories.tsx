@@ -6,6 +6,9 @@ const meta = {
   component: LineProfileRide,
   tags: ['autodocs'],
   title: 'Pages/Profile/LineProfileRide',
+  parameters: {
+    layout: 'centered',
+  },
   argTypes: {
     point: {
       control: 'object',

@@ -1,12 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react'
-
 import { LineProfileDetails } from './LineProfileDetails'
 
 const meta = {
   component: LineProfileDetails,
   tags: ['autodocs'],
   title: 'Pages/Profile/LineProfileDetails',
-
+  parameters: {
+    layout: 'centered',
+  },
   argTypes: {
     id: {
       control: 'number',

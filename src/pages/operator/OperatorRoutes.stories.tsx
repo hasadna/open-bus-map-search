@@ -6,6 +6,9 @@ const meta = {
   component: OperatorRoutes,
   tags: ['autodocs'],
   title: 'Pages/Operator/OperatorRoutes',
+  parameters: {
+    layout: 'centered',
+  },
   argTypes: {
     operatorId: {
       control: 'text',

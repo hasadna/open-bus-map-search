@@ -5,6 +5,9 @@ const meta = {
   component: OperatorInfo,
   tags: ['autodocs'],
   title: 'Pages/Operator/OperatorInfo',
+  parameters: {
+    layout: 'centered',
+  },
   argTypes: {
     operatorId: {
       control: 'text',

@@ -6,7 +6,9 @@ const meta = {
   component: OperatorGaps,
   tags: ['autodocs'],
   title: 'Pages/Operator/OperatorGaps',
-
+  parameters: {
+    layout: 'centered',
+  },
   argTypes: {
     operatorId: {
       control: 'text',

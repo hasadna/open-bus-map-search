@@ -5,6 +5,9 @@ import { LineProfileStop } from './LineProfileStop'
 const meta = {
   title: 'Pages/Profile/LineProfileStop',
   tags: ['autodocs'],
+  parameters: {
+    layout: 'centered',
+  },
   argTypes: {
     stop: {
       control: 'object',
