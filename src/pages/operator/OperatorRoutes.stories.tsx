@@ -25,7 +25,7 @@ const meta = {
       </div>
     ),
   ],
-  play: waitForContent,
+  play: ({ canvasElement }) => waitForContent(canvasElement),
 } satisfies Meta<typeof OperatorRoutes>
 
 export default meta

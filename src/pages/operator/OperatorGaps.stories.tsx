@@ -30,7 +30,7 @@ const meta = {
       </div>
     ),
   ],
-  play: waitForContent,
+  play: ({ canvasElement }) => waitForContent(canvasElement),
 } satisfies Meta<typeof OperatorGaps>
 
 export default meta

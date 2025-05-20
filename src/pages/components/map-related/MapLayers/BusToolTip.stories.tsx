@@ -16,7 +16,7 @@ const meta = {
       </Widget>
     ),
   ],
-  play: waitForContent,
+  play: ({ canvasElement }) => waitForContent(canvasElement),
 } satisfies Meta<typeof BusToolTip>
 
 export default meta

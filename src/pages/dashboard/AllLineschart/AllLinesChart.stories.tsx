@@ -30,7 +30,7 @@ const meta: Meta<typeof AllLinesChart> = {
       <AllLinesChart startDate={moment(args.startDate)} endDate={moment(args.endDate)} />
     </div>
   ),
-  play: waitForContent,
+  play: ({ canvasElement }) => waitForContent(canvasElement),
 }
 
 export default meta

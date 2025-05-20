@@ -38,7 +38,7 @@ const meta: Meta<typeof DayTimeChart> = {
       />
     </div>
   ),
-  play: waitForContent,
+  play: ({ canvasElement }) => waitForContent(canvasElement),
 }
 
 export default meta

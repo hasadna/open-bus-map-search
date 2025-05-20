@@ -35,7 +35,7 @@ const meta: Meta<typeof WorstLinesChart> = {
       />
     </div>
   ),
-  play: waitForContent,
+  play: ({ canvasElement }) => waitForContent(canvasElement),
 }
 
 export default meta
