@@ -6,7 +6,6 @@ import { filteredPositions, plannedRouteStops } from './mapStorybookData'
 const meta = {
   component: MapContent,
   title: 'Map/MapContent',
-  tags: ['autodocs'],
   decorators: [
     (Story) => {
       return (

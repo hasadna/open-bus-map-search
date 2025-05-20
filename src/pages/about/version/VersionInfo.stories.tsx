@@ -4,7 +4,6 @@ import { VersionInfo } from './VersionInfo'
 const meta: Meta<typeof VersionInfo> = {
   title: 'Pages/About/VersionInfo',
   component: VersionInfo,
-  tags: ['autodocs'],
   parameters: {
     docs: {
       description: {

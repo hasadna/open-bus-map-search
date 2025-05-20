@@ -4,7 +4,6 @@ import LinesHbarChart from './LinesHbarChart'
 const meta: Meta<typeof LinesHbarChart> = {
   title: 'Pages/Dashboard/Bar/LinesHbarChart',
   component: LinesHbarChart,
-  tags: ['autodocs'],
 }
 
 export default meta

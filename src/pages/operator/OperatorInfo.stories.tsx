@@ -3,7 +3,6 @@ import { OperatorInfo } from './OperatorInfo'
 
 const meta = {
   component: OperatorInfo,
-  tags: ['autodocs'],
   title: 'Pages/Operator/OperatorInfo',
   parameters: {
     layout: 'centered',

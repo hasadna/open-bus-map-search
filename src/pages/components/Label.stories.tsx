@@ -13,7 +13,6 @@ const meta: Meta<typeof Label> = {
       control: { type: 'text' },
     },
   },
-  tags: ['autodocs'],
 }
 
 export default meta

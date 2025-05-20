@@ -5,7 +5,6 @@ import { ErrorPage } from '../ErrorPage'
 const meta: Meta<typeof ErrorPage> = {
   title: 'Pages/ErrorPage',
   component: ErrorPage,
-  tags: ['autodocs'],
 }
 
 export default meta

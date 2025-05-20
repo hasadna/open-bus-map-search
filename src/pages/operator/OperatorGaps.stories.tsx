@@ -1,10 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { getPastDate } from '../../../.storybook/main'
+import { getPastDate, waitForContent } from '../../../.storybook/main'
 import { OperatorGaps } from './OperatorGaps'
 
 const meta = {
   component: OperatorGaps,
-  tags: ['autodocs'],
   title: 'Pages/Operator/OperatorGaps',
   parameters: {
     layout: 'centered',
@@ -24,6 +23,14 @@ const meta = {
       options: ['day', 'week', 'month'],
     },
   },
+  decorators: [
+    (Story) => (
+      <div style={{ width: 700 }}>
+        <Story />
+      </div>
+    ),
+  ],
+  play: waitForContent,
 } satisfies Meta<typeof OperatorGaps>
 
 export default meta

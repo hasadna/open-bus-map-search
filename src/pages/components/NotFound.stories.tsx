@@ -8,7 +8,6 @@ const meta: Meta<typeof NotFound> = {
   parameters: {
     layout: 'centered',
   },
-  tags: ['autodocs'],
   argTypes: {
     children: {
       description: 'The text content of the not found component.',

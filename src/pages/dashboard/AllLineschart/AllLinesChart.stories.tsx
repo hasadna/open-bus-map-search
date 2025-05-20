@@ -1,12 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import moment from 'moment'
-import { getPastDate } from '../../../../.storybook/main'
+import { getPastDate, waitForContent } from '../../../../.storybook/main'
 import AllLinesChart from './AllLinesChart'
 
 const meta: Meta<typeof AllLinesChart> = {
   component: AllLinesChart,
   title: 'Pages/Dashboard/AllLinesChart',
-  tags: ['autodocs'],
   parameters: {
     layout: 'centered',
   },
@@ -31,6 +30,7 @@ const meta: Meta<typeof AllLinesChart> = {
       <AllLinesChart startDate={moment(args.startDate)} endDate={moment(args.endDate)} />
     </div>
   ),
+  play: waitForContent,
 }
 
 export default meta

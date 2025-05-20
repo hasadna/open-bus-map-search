@@ -5,7 +5,6 @@ import { filteredPositions, plannedRouteStops } from './mapStorybookData'
 const meta = {
   component: MapWithLocationsAndPath,
   title: 'Map/MapWithLocationsAndPath',
-  tags: ['autodocs'],
   args: {
     plannedRouteStops: [],
     positions: [],

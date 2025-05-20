@@ -78,7 +78,6 @@ const meta: Meta<typeof RouteSelector> = {
   parameters: {
     layout: 'centered',
   },
-  tags: ['autodocs'],
   argTypes: {
     routeKey: {
       control: { type: 'text' },

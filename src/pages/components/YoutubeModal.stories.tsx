@@ -8,7 +8,6 @@ const meta: Meta<typeof InfoYoutubeModal> = {
   parameters: {
     layout: 'centered',
   },
-  tags: ['autodocs'],
   argTypes: {
     label: {
       description: 'The label of the button',

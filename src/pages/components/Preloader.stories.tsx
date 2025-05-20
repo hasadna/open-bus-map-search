@@ -7,7 +7,6 @@ const css = `.preloader{width:80px;height:80px;border:2px solid #f3f3f3;border-t
 const meta: Meta<typeof Preloader> = {
   component: Preloader,
   title: 'Components/Preloader',
-  tags: ['autodocs'],
   parameters: {
     layout: 'centered',
   },

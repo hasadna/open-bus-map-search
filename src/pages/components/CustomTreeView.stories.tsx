@@ -26,7 +26,6 @@ const meta: Meta<typeof CustomTreeView> = {
   parameters: {
     layout: 'centered',
   },
-  tags: ['autodocs'],
 } satisfies Meta<typeof CustomTreeView>
 
 export default meta

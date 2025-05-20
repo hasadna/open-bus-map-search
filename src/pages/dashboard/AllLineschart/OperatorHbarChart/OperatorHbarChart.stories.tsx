@@ -4,7 +4,6 @@ import OperatorHbarChart from './OperatorHbarChart'
 const meta: Meta<typeof OperatorHbarChart> = {
   title: 'Pages/Dashboard/Bar/OperatorHbarChart',
   component: OperatorHbarChart,
-  tags: ['autodocs'],
 }
 
 export default meta

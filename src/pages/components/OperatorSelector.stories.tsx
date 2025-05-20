@@ -43,7 +43,6 @@ const meta: Meta<typeof OperatorSelector> = {
       },
     },
   },
-  tags: ['autodocs'],
   decorators: [
     (Story, meta) => {
       const [operator, setOperator] = useState<string | undefined>(meta.args.operatorId)

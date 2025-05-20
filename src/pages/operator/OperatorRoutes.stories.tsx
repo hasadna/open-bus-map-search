@@ -1,10 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { getPastDate } from '../../../.storybook/main'
+import { getPastDate, waitForContent } from '../../../.storybook/main'
 import { OperatorRoutes } from './OperatorRoutes'
 
 const meta = {
   component: OperatorRoutes,
-  tags: ['autodocs'],
   title: 'Pages/Operator/OperatorRoutes',
   parameters: {
     layout: 'centered',
@@ -19,6 +18,14 @@ const meta = {
       description: 'The timestamp of the chart.',
     },
   },
+  decorators: [
+    (Story) => (
+      <div style={{ minWidth: 700 }}>
+        <Story />
+      </div>
+    ),
+  ],
+  play: waitForContent,
 } satisfies Meta<typeof OperatorRoutes>
 
 export default meta

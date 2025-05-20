@@ -1,12 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import moment from 'moment'
-import { getPastDate } from '../../../../.storybook/main'
+import { getPastDate, waitForContent } from '../../../../.storybook/main'
 import DayTimeChart from './DayTimeChart'
 
 const meta: Meta<typeof DayTimeChart> = {
   component: DayTimeChart,
   title: 'Pages/Dashboard/ArrivalByTimeChart',
-  tags: ['autodocs'],
   parameters: {
     layout: 'centered',
   },
@@ -39,6 +38,7 @@ const meta: Meta<typeof DayTimeChart> = {
       />
     </div>
   ),
+  play: waitForContent,
 }
 
 export default meta

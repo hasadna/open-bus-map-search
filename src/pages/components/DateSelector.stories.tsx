@@ -47,7 +47,6 @@ const meta: Meta<typeof DateSelector> = {
       },
     },
   },
-  tags: ['autodocs'],
 }
 
 export default meta

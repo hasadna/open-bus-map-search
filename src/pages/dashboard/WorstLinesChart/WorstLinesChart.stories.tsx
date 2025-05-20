@@ -1,12 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import moment from 'moment'
-import { getPastDate } from '../../../../.storybook/main'
+import { getPastDate, waitForContent } from '../../../../.storybook/main'
 import WorstLinesChart from './WorstLinesChart'
 
 const meta: Meta<typeof WorstLinesChart> = {
   component: WorstLinesChart,
   title: 'Pages/Dashboard/WorstLinesChart',
-  tags: ['autodocs'],
   parameters: {
     layout: 'centered',
   },
@@ -36,6 +35,7 @@ const meta: Meta<typeof WorstLinesChart> = {
       />
     </div>
   ),
+  play: waitForContent,
 }
 
 export default meta

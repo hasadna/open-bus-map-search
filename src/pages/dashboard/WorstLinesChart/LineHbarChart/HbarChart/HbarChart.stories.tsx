@@ -4,7 +4,6 @@ import { HbarChart, Entry } from './HbarChart'
 const meta = {
   title: 'Pages/Dashboard/Bar/HbarChart',
   component: HbarChart,
-  tags: ['autodocs'],
 } satisfies Meta<typeof HbarChart>
 
 export default meta

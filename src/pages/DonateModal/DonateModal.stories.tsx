@@ -6,7 +6,6 @@ import DonateModal from './DonateModal'
 const meta: Meta<typeof DonateModal> = {
   component: DonateModal,
   title: 'Pages/DonateModal',
-  tags: ['autodocs'],
   parameters: {
     layout: 'centered',
   },

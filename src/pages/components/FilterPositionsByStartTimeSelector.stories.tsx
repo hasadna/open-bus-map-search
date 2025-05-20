@@ -27,7 +27,6 @@ const timeOptions = [
 const meta: Meta<typeof FilterPositionsByStartTimeSelector> = {
   title: 'Components/FilterPositionsByStartTimeSelector',
   component: FilterPositionsByStartTimeSelector,
-  tags: ['autodocs'],
   parameters: {
     layout: 'centered',
   },
