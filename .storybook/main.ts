@@ -27,14 +27,21 @@ export const getPastDate = (week?: boolean) => {
 }
 
 export async function waitForContent() {
-  return await waitFor(
-    () => {
-      if (document.querySelector('.ant-skeleton-content')) {
-        throw new Error('Skeleton still visible after timeout')
-      }
-    },
-    { timeout: 180_000, interval: 100 },
-  )
+  if (
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (typeof window !== 'undefined' && (window as any).Cypress) ||
+    (typeof navigator !== 'undefined' && navigator.webdriver) ||
+    (typeof process !== 'undefined' && process.env.NODE_ENV === 'test')
+  ) {
+    await waitFor(
+      () => {
+        if (document.querySelector('.ant-skeleton-content')) {
+          throw new Error('Skeleton still visible after timeout')
+        }
+      },
+      { timeout: 180_000, interval: 100 },
+    )
+  }
 }
 
 export default config
