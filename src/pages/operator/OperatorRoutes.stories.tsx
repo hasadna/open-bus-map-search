@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { getPastDate, waitForContent } from '../../../.storybook/main'
+import { getPastDate } from '../../../.storybook/main'
 import { OperatorRoutes } from './OperatorRoutes'
 
 const meta = {
@@ -25,7 +25,6 @@ const meta = {
       </div>
     ),
   ],
-  play: ({ canvasElement }) => waitForContent(canvasElement),
 } satisfies Meta<typeof OperatorRoutes>
 
 export default meta
