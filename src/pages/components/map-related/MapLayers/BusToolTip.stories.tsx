@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react'
+import { waitForContent } from '../../../../../.storybook/main'
 import { BusToolTip, BusToolTipProps } from './BusToolTip'
 import Widget from 'src/shared/Widget'
 
@@ -15,6 +16,7 @@ const meta = {
       </Widget>
     ),
   ],
+  play: waitForContent,
 } satisfies Meta<typeof BusToolTip>
 
 export default meta
