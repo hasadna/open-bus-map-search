@@ -2,6 +2,7 @@ import type { Preview } from '@storybook/react'
 import { Suspense, useEffect } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { BrowserRouter } from 'react-router'
+import { waitForContent } from './main'
 import { ThemeProvider, useTheme } from 'src/layout/ThemeContext'
 import i18n from 'src/locale/allTranslations'
 import 'src/index.css'
@@ -36,6 +37,9 @@ const preview: Preview = {
         method: 'alphabetical',
         order: [],
       },
+    },
+    eyes: {
+      waitBeforeCapture: waitForContent,
     },
   },
   decorators: [
