@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import moment from 'moment'
 import { BASE_PATH } from './apiConfig'
+
 export interface Agency {
   date: string // example - "2019-07-01"
   operator_ref: number // example - 25,
@@ -9,20 +10,32 @@ export interface Agency {
 
 let agencyList: Agency[]
 
+const tryDates = [
+  moment().subtract(1, 'day').format('YYYY-MM-DD'),
+  moment().subtract(8, 'day').format('YYYY-MM-DD'),
+  '2025-05-18',
+]
+
 /**
  * Fetch agency data from MOT api
  * @returns Agency data array, might contain DUPLICATE agencies with different `date` values
  */
 export default async function getAgencyList(): Promise<Agency[]> {
-  if (!agencyList) {
-    // Temporary workaround: using a fixed date for testing purposes.
-    // Replace with dynamic date logic when Backend fix.
-    // const yesterday = moment().subtract(1, 'day').format('YYYY-MM-DD')
-    const yesterday = moment('2025-05-18').format('YYYY-MM-DD')
-    const response = await fetch(`${BASE_PATH}/gtfs_agencies/list?date_from=${yesterday}`)
-    const data = (await response.json()) as Awaited<Agency[]>
-    agencyList = data.filter(Boolean) // filter empty entries
+  if (agencyList) return agencyList
+
+  let data: Agency[] = []
+  for (const date of tryDates) {
+    try {
+      const response = await fetch(`${BASE_PATH}/gtfs_agencies/list?date_from=${date}`)
+      if (!response.ok) continue
+      data = (await response.json()) as Agency[]
+      if (data.length > 0) break
+    } catch (err) {
+      console.error(err)
+    }
   }
+
+  agencyList = data.filter(Boolean)
   return agencyList
 }
 
