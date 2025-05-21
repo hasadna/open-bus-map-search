@@ -1,7 +1,7 @@
 import { Meta, StoryObj } from '@storybook/react'
 import { Label } from './Label'
 
-const meta: Meta<typeof Label> = {
+const meta = {
   title: 'Components/Label',
   component: Label,
   parameters: {
@@ -13,7 +13,7 @@ const meta: Meta<typeof Label> = {
       control: { type: 'text' },
     },
   },
-}
+} satisfies Meta<typeof Label>
 
 export default meta
 

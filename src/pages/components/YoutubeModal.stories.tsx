@@ -2,12 +2,13 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { useTranslation } from 'react-i18next'
 import InfoYoutubeModal from './YoutubeModal'
 
-const meta: Meta<typeof InfoYoutubeModal> = {
+const meta = {
   title: 'Components/InfoYoutubeModal',
   component: InfoYoutubeModal,
   parameters: {
     layout: 'centered',
   },
+  args: { label: '', title: '', videoUrl: '' },
   argTypes: {
     label: {
       description: 'The label of the button',
@@ -25,7 +26,7 @@ const meta: Meta<typeof InfoYoutubeModal> = {
       },
     },
   },
-}
+} satisfies Meta<typeof InfoYoutubeModal>
 
 export default meta
 

@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import moment from 'moment'
-import { getPastDate } from '../../../../.storybook/main'
+import { getPastDate, waitForContent } from '../../../../.storybook/main'
 import AllLinesChart from './AllLinesChart'
 
-const meta: Meta<typeof AllLinesChart> = {
+const meta = {
   component: AllLinesChart,
   title: 'Pages/Dashboard/AllLinesChart',
   parameters: {
@@ -30,7 +30,8 @@ const meta: Meta<typeof AllLinesChart> = {
       <AllLinesChart startDate={moment(args.startDate)} endDate={moment(args.endDate)} />
     </div>
   ),
-}
+  play: waitForContent,
+} satisfies Meta<typeof AllLinesChart>
 
 export default meta
 
@@ -38,7 +39,7 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   args: {
-    startDate: getPastDate(true),
-    endDate: getPastDate(),
+    startDate: moment(getPastDate(true)),
+    endDate: moment(getPastDate()),
   },
 }

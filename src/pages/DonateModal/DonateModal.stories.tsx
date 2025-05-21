@@ -3,11 +3,15 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import DonateModal from './DonateModal'
 
-const meta: Meta<typeof DonateModal> = {
+const meta = {
   component: DonateModal,
   title: 'Pages/DonateModal',
   parameters: {
     layout: 'centered',
+  },
+  args: {
+    isVisible: true,
+    onClose: () => {},
   },
   argTypes: {
     onClose: {
@@ -36,7 +40,7 @@ const meta: Meta<typeof DonateModal> = {
       )
     },
   ],
-}
+} satisfies Meta<typeof DonateModal>
 
 export default meta
 

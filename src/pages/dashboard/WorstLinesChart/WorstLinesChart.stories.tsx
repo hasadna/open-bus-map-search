@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import moment from 'moment'
-import { getPastDate } from '../../../../.storybook/main'
+import { getPastDate, waitForContent } from '../../../../.storybook/main'
 import WorstLinesChart from './WorstLinesChart'
 
-const meta: Meta<typeof WorstLinesChart> = {
+const meta = {
   component: WorstLinesChart,
   title: 'Pages/Dashboard/WorstLinesChart',
   parameters: {
@@ -35,7 +35,8 @@ const meta: Meta<typeof WorstLinesChart> = {
       />
     </div>
   ),
-}
+  play: waitForContent,
+} satisfies Meta<typeof WorstLinesChart>
 
 export default meta
 
@@ -43,8 +44,8 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   args: {
-    startDate: getPastDate(true),
-    endDate: getPastDate(),
+    startDate: moment(getPastDate(true)),
+    endDate: moment(getPastDate()),
     operatorId: '3',
   },
 }

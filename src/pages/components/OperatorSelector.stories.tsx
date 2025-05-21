@@ -3,11 +3,14 @@ import { useState } from 'react'
 import OperatorSelector from './OperatorSelector'
 import { MAJOR_OPERATORS } from 'src/model/operator'
 
-const meta: Meta<typeof OperatorSelector> = {
+const meta = {
   title: 'Components/OperatorSelector',
   component: OperatorSelector,
   parameters: {
     layout: 'centered',
+  },
+  args: {
+    setOperatorId: () => {},
   },
   argTypes: {
     operatorId: {
@@ -54,7 +57,7 @@ const meta: Meta<typeof OperatorSelector> = {
               operatorId: operator,
               setOperatorId: (operator) => {
                 setOperator(operator)
-                meta.args.setOperatorId(operator)
+                meta.args.setOperatorId?.(operator)
               },
             }}
           />
@@ -62,7 +65,7 @@ const meta: Meta<typeof OperatorSelector> = {
       )
     },
   ],
-}
+} satisfies Meta<typeof OperatorSelector>
 
 export default meta
 

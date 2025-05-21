@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { getPastDate } from '../../../.storybook/main'
+import { getPastDate, waitForContent } from '../../../.storybook/main'
 import { OperatorGaps } from './OperatorGaps'
 
 const meta = {
@@ -30,6 +30,7 @@ const meta = {
       </div>
     ),
   ],
+  play: waitForContent,
 } satisfies Meta<typeof OperatorGaps>
 
 export default meta

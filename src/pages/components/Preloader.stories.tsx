@@ -4,13 +4,13 @@ import Preloader from 'src/shared/Preloader'
 
 const css = `.preloader{width:80px;height:80px;border:2px solid #f3f3f3;border-top:3px solid #f25a41;border-radius:100%;top:0;bottom:0;left:0;right:0;margin:auto;animation:1s linear infinite spin}@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}.preloader-bus{position:absolute;top:50%;left:50%;font-size:25px;transform:translate(-50%,-50%)}`
 
-const meta: Meta<typeof Preloader> = {
+const meta = {
   component: Preloader,
   title: 'Components/Preloader',
   parameters: {
     layout: 'centered',
   },
-}
+} satisfies Meta<typeof Preloader>
 
 export default meta
 

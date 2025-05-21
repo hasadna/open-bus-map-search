@@ -2,10 +2,10 @@ import type { Meta, StoryObj } from '@storybook/react'
 
 import { ErrorPage } from '../ErrorPage'
 
-const meta: Meta<typeof ErrorPage> = {
+const meta = {
   title: 'Pages/ErrorPage',
   component: ErrorPage,
-}
+} satisfies Meta<typeof ErrorPage>
 
 export default meta
 

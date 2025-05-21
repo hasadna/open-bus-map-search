@@ -2,7 +2,7 @@ import { Meta, StoryObj } from '@storybook/react'
 import moment from 'moment'
 import { DateSelector } from './DateSelector'
 
-const meta: Meta<typeof DateSelector> = {
+const meta = {
   title: 'Components/DateSelector',
   component: DateSelector,
   render: ({ time, minDate, ...args }) => {
@@ -15,6 +15,7 @@ const meta: Meta<typeof DateSelector> = {
   },
   args: {
     time: moment().startOf('day'),
+    onChange: () => {},
   },
   argTypes: {
     time: {
@@ -47,11 +48,11 @@ const meta: Meta<typeof DateSelector> = {
       },
     },
   },
-}
+} satisfies Meta<typeof DateSelector>
 
 export default meta
 
-type Story = StoryObj<typeof DateSelector>
+type Story = StoryObj<typeof meta>
 
 export const Default: Story = {}
 
