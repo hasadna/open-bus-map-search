@@ -96,7 +96,7 @@ test.describe('Visual Tests', () => {
   test('operator page should look good', async ({ page }) => {
     await page.goto('/operator')
     await page.getByRole('combobox', { name: 'חברה מפעילה' }).click()
-    await page.getByRole('option', { name: 'אגד' }).click()
+    await page.getByRole('option', { name: 'אגד', exact: true }).click()
     await waitForSkeletonsToHide(page)
     await eyes.check('operator page', Target.window().layoutRegions('.chart', '.recharts-wrapper'))
   })
