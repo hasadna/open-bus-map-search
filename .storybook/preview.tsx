@@ -43,9 +43,15 @@ const preview: Preview = {
       const { locale, darkMode } = context.globals
       return (
         <Suspense fallback={null}>
-          <StoryBookWrapper locale={locale} darkMode={darkMode}>
-            <Story />
-          </StoryBookWrapper>
+          <BrowserRouter>
+            <QueryClientProvider client={queryClient}>
+              <ThemeProvider>
+                <StoryBookWrapper locale={locale} darkMode={darkMode}>
+                  <Story />
+                </StoryBookWrapper>
+              </ThemeProvider>
+            </QueryClientProvider>
+          </BrowserRouter>
         </Suspense>
       )
     },
@@ -104,11 +110,5 @@ const StoryBookWrapper = ({
     i18n.changeLanguage(locale)
   }, [locale])
 
-  return (
-    <BrowserRouter>
-      <QueryClientProvider client={queryClient}>
-        <ThemeProvider>{children}</ThemeProvider>
-      </QueryClientProvider>
-    </BrowserRouter>
-  )
+  return children
 }
