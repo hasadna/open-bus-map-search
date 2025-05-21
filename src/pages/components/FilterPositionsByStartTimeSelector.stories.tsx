@@ -49,9 +49,7 @@ const meta = {
       description: 'Array of time options with value and label',
       control: 'object',
       table: {
-        type: {
-          summary: '{ value: string, label: string }[]',
-        },
+        type: { summary: '{ value: string, label: string }[]' },
       },
     },
     disabled: {

@@ -26,13 +26,13 @@ const meta = {
     positions: {
       control: false,
       table: {
-        type: { detail: '', summary: 'Point[]' },
+        type: { summary: 'Point[]' },
       },
     },
     plannedRouteStops: {
       control: false,
       table: {
-        type: { detail: '', summary: 'BusStop[]' },
+        type: { summary: 'BusStop[]' },
       },
     },
     showNavigationButtons: {
