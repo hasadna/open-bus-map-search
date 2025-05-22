@@ -1,5 +1,5 @@
-import moment from 'moment'
-import { test, expect, urlMatcher } from './utils'
+import { expect, test, urlMatcher } from './utils'
+import dayjs from 'src/dayjs'
 
 test.describe('Trip Existence Page Tests', () => {
   test.beforeEach(({ advancedRouteFromHAR }) => {
@@ -58,8 +58,8 @@ test('the dateFrom parameter should be recent when visiting the "Planned trips" 
   const request = await apiRequest
   const url = new URL(request.url())
   const dateFromParam = url.searchParams.get('date_from')
-  const dateFrom = moment(dateFromParam)
-  const daysAgo = moment().diff(dateFrom, 'days')
+  const dateFrom = dayjs(dateFromParam)
+  const daysAgo = dayjs().diff(dateFrom, 'days')
 
   expect(daysAgo).toBeGreaterThanOrEqual(0)
   expect(daysAgo).toBeLessThanOrEqual(3)

@@ -1,26 +1,25 @@
+import { OpenInFullRounded } from '@mui/icons-material'
+import { Alert, CircularProgress, Grid, IconButton, Typography } from '@mui/material'
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { MapContainer, Marker, Polyline, Popup, TileLayer, useMap } from 'react-leaflet'
 import MarkerClusterGroup from 'react-leaflet-cluster'
-import { useTranslation } from 'react-i18next'
-import { Alert, Typography, CircularProgress, Grid, IconButton } from '@mui/material'
-import { OpenInFullRounded } from '@mui/icons-material'
-import moment from 'moment'
-import '../Map.scss'
-import MinuteSelector from '../components/MinuteSelector'
 import { DateSelector } from '../components/DateSelector'
-import { PageContainer } from '../components/PageContainer'
 import { Label } from '../components/Label'
-import { getColorByHashString } from '../dashboard/AllLineschart/OperatorHbarChart/utils'
-import createClusterCustomIcon from '../components/utils/customCluster/customCluster'
+import MinuteSelector from '../components/MinuteSelector'
+import { PageContainer } from '../components/PageContainer'
 import { TimeSelector } from '../components/TimeSelector'
 import { busIcon, busIconPath } from '../components/utils/BusIcon'
+import createClusterCustomIcon from '../components/utils/customCluster/customCluster'
 import InfoYoutubeModal from '../components/YoutubeModal'
+import { getColorByHashString } from '../dashboard/AllLineschart/OperatorHbarChart/utils'
+import getAgencyList, { Agency } from 'src/api/agencyList'
+import useVehicleLocations from 'src/api/useVehicleLocations'
+import { VehicleLocation } from 'src/model/vehicleLocation'
 import { BusToolTip } from 'src/pages/components/map-related/MapLayers/BusToolTip'
 import { INPUT_SIZE } from 'src/resources/sizes'
-import { VehicleLocation } from 'src/model/vehicleLocation'
-import useVehicleLocations from 'src/api/useVehicleLocations'
-import getAgencyList, { Agency } from 'src/api/agencyList'
-import i18n from 'src/locale/allTranslations'
+import dayjs from 'src/dayjs'
+import '../Map.scss'
 
 export interface Point {
   loc: [number, number]
@@ -38,9 +37,6 @@ interface Path {
   vehicleRef: number
 }
 
-const defaultStart = moment('2023-03-14T15:00:00Z')
-const defaultEnd = moment(defaultStart).add(1, 'minutes')
-
 export default function TimeBasedMapPage() {
   const [isExpanded, setIsExpanded] = useState<boolean>(false)
   const toggleExpanded = useCallback(() => setIsExpanded((expanded) => !expanded), [])
@@ -51,13 +47,10 @@ export default function TimeBasedMapPage() {
   }
 
   //TODO (another PR and another issue) load from url like in another pages.
-  const [from, setFrom] = useState(defaultStart)
-  const [to, setTo] = useState(defaultEnd)
+  const [from, setFrom] = useState(dayjs('2023-03-14T15:00:00Z'))
+  const [to, setTo] = useState(dayjs(from).add(1, 'minutes'))
 
-  const { locations, isLoading } = useVehicleLocations({
-    from,
-    to,
-  })
+  const { locations, isLoading } = useVehicleLocations({ from, to })
 
   const loaded = locations.length
   const { t } = useTranslation()
@@ -118,8 +111,8 @@ export default function TimeBasedMapPage() {
             time={to}
             onChange={(ts) => {
               const val = ts ? ts : to
-              setFrom(moment(val).subtract(moment(to).diff(moment(from)))) // keep the same time difference
-              setTo(moment(val))
+              setFrom(dayjs(val).subtract(dayjs(to).diff(dayjs(from)))) // keep the same time difference
+              setTo(dayjs(val))
             }}
           />
         </Grid>
@@ -128,8 +121,8 @@ export default function TimeBasedMapPage() {
             time={to}
             onChange={(ts) => {
               const val = ts ? ts : from
-              setFrom(moment(val).subtract(moment(to).diff(moment(from))))
-              setTo(moment(val)) // keep the same time difference
+              setFrom(dayjs(val).subtract(dayjs(to).diff(dayjs(from))))
+              setTo(dayjs(val)) // keep the same time difference
             }}
           />
         </Grid>
@@ -141,7 +134,7 @@ export default function TimeBasedMapPage() {
           <MinuteSelector
             num={to.diff(from) / 1000 / 60}
             setNum={(num) => {
-              setFrom(moment(to).subtract(Math.abs(+num) || 1, 'minutes'))
+              setFrom(dayjs(to).subtract(Math.abs(+num) || 1, 'minutes'))
             }}
           />
         </Grid>
@@ -152,11 +145,9 @@ export default function TimeBasedMapPage() {
         {/* loaded info */}
         <Grid size={{ xs: 11 }}>
           <p>
-            {loaded} {`- `}
-            {t('show_x_bus_locations')} {` `}
-            {t('from_time_x_to_time_y')
-              .replace('XXX', moment(from).locale(i18n.language).format('hh:mm A'))
-              .replace('YYY', moment(to).locale(i18n.language).format('hh:mm A'))}
+            {`${loaded}- ${t('show_x_bus_locations')} ${t('from_time_x_to_time_y')
+              .replace('XXX', dayjs(from).format('LT'))
+              .replace('YYY', dayjs(to).format('LT'))}`}
           </p>
         </Grid>
         <Grid size={{ xs: 1 }}>{isLoading && <CircularProgress size="20px" />}</Grid>

@@ -30,6 +30,7 @@
     "playwright.config.ts",
     ".storybook/preview.tsx",
     ".storybook/main.ts",
-    "jest.config.ts"
+    "jest.config.ts",
+    "src/dayjs.ts"
   ]
 }

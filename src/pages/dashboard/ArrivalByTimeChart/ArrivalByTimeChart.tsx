@@ -1,16 +1,15 @@
+import { useMemo } from 'react'
 import {
-  LineChart,
+  CartesianGrid,
   Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
 } from 'recharts'
-
+import dayjs from 'src/dayjs'
 import './ArrivalByTimeChats.scss'
-import { useMemo } from 'react'
-import moment, { MomentInput } from 'moment'
 
 /**
  * Group array items by a common property value returned from the callback (ie. group by value of id).
@@ -109,7 +108,7 @@ export default function ArrivalByTimeChart({
                 dataKey={
                   'gtfs_route_date' in operatorData[0] ? 'gtfs_route_date' : 'gtfs_route_hour'
                 }
-                tickFormatter={(tick: MomentInput) => moment(tick).format('dddd')}
+                tickFormatter={(tick: dayjs.ConfigType) => dayjs(tick).format('dddd')}
                 interval={'gtfs_route_hour' in operatorData[0] ? 23 : 0}
               />
               <YAxis domain={[0, 100]} tickMargin={35} unit={'%'} />
@@ -122,12 +121,12 @@ export default function ArrivalByTimeChart({
                           <span className="label">זמן: </span>
                           <span className="value">
                             {payload[0].payload.gtfs_route_date
-                              ? moment
-                                  .utc(payload[0].payload.gtfs_route_date as MomentInput)
+                              ? dayjs
+                                  .utc(payload[0].payload.gtfs_route_date as dayjs.ConfigType)
                                   .format('יום ddd, L')
-                              : moment(payload[0].payload.gtfs_route_hour as MomentInput).format(
-                                  'יום ddd, L, LT',
-                                )}
+                              : dayjs(
+                                  payload[0].payload.gtfs_route_hour as dayjs.ConfigType,
+                                ).format('יום ddd, L, LT')}
                           </span>
                         </li>
                         <li>

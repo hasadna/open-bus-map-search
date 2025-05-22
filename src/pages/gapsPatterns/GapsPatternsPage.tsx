@@ -1,48 +1,46 @@
+import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
+import { Radio, RadioChangeEvent, Skeleton, Space } from 'antd'
 import { useContext, useEffect, useState } from 'react'
-import './GapsPatternsPage.scss'
-import { Moment } from 'moment'
-import { Skeleton, Radio, RadioChangeEvent, Space } from 'antd'
-import { CircularProgress, Grid, Typography, Alert } from '@mui/material'
-import moment from 'moment/moment'
+import { useTranslation } from 'react-i18next'
 import {
   Bar,
   CartesianGrid,
+  Cell,
+  ComposedChart,
   Legend,
+  ResponsiveContainer,
   Tooltip,
+  TooltipProps,
   XAxis,
   YAxis,
-  ComposedChart,
-  Cell,
-  TooltipProps,
-  ResponsiveContainer,
 } from 'recharts'
-import { useTranslation } from 'react-i18next'
+import { getRoutesAsync } from '../../api/gtfsService'
+import { SearchContext } from '../../model/pageState'
+import { DateSelector } from '../components/DateSelector'
 import { useDate } from '../components/DateTimePicker'
-import { PageContainer } from '../components/PageContainer'
-import { Row } from '../components/Row'
 import { Label } from '../components/Label'
-import OperatorSelector from '../components/OperatorSelector'
 import LineNumberSelector from '../components/LineSelector'
 import { NotFound } from '../components/NotFound'
+import OperatorSelector from '../components/OperatorSelector'
+import { PageContainer } from '../components/PageContainer'
 import RouteSelector from '../components/RouteSelector'
-import { SearchContext } from '../../model/pageState'
-import { getRoutesAsync } from '../../api/gtfsService'
-
+import { Row } from '../components/Row'
 import { mapColorByExecution } from '../components/utils'
-import { DateSelector } from '../components/DateSelector'
 import InfoYoutubeModal from '../components/YoutubeModal'
+import './GapsPatternsPage.scss'
 import { useGapsList } from './useGapsList'
 import { INPUT_SIZE } from 'src/resources/sizes'
 import Widget from 'src/shared/Widget'
-// Define prop types for the component
+import dayjs from 'src/dayjs'
+
 interface BusLineStatisticsProps {
   lineRef: number
   operatorRef: string
-  fromDate: Moment
-  toDate: Moment
+  fromDate: dayjs.Dayjs
+  toDate: dayjs.Dayjs
 }
 
-const now = moment()
+const now = dayjs()
 
 const CustomTooltip = ({ active, payload }: TooltipProps<number, string>) => {
   if (active && payload && payload.length > 1) {
@@ -151,8 +149,8 @@ const GapsPatternsPage = () => {
   const loadSearchData = async (signal: AbortSignal | undefined) => {
     setRoutesIsLoading(true)
     const routes = await getRoutesAsync(
-      moment(startDate),
-      moment(endDate),
+      dayjs(startDate),
+      dayjs(endDate),
       operatorId as string,
       lineNumber as string,
       signal,
