@@ -3,7 +3,7 @@ import utc from 'dayjs/plugin/utc.js'
 import timezone from 'dayjs/plugin/timezone.js'
 import minMax from 'dayjs/plugin/minMax.js'
 import isoWeek from 'dayjs/plugin/isoWeek.js'
-import 'dayjs/locale/he'
+import 'dayjs/locale/he.js'
 
 // Extend dayjs with all required plugins
 dayjs.extend(utc)
