@@ -1,11 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react'
+import { getPastDate, waitForContent } from '../../../../.storybook/main'
 import DayTimeChart from './DayTimeChart'
 import dayjs from 'src/dayjs'
 
-const meta: Meta<typeof DayTimeChart> = {
+const meta = {
   component: DayTimeChart,
   title: 'Pages/Dashboard/ArrivalByTimeChart',
-  tags: ['autodocs'],
   parameters: {
     layout: 'centered',
   },
@@ -14,9 +14,7 @@ const meta: Meta<typeof DayTimeChart> = {
       control: 'date',
       description: 'The start date of the chart.',
       table: {
-        type: {
-          summary: 'Dayjs',
-        },
+        type: { summary: 'Dayjs' },
       },
     },
     endDate: {
@@ -40,7 +38,8 @@ const meta: Meta<typeof DayTimeChart> = {
       operatorId={args.operatorId}
     />
   ),
-}
+  play: waitForContent,
+} satisfies Meta<typeof DayTimeChart>
 
 export default meta
 
@@ -48,8 +47,8 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   args: {
-    startDate: dayjs(),
-    endDate: dayjs().add(-7, 'day'),
+    startDate: dayjs(getPastDate()),
+    endDate: dayjs(getPastDate()).add(-7, 'day'),
     operatorId: '3',
   },
 }

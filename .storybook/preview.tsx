@@ -31,15 +31,18 @@ const preview: Preview = {
         date: /Date$/i,
       },
     },
-    storySort: {
-      method: 'alphabetical',
+    options: {
+      storySort: {
+        method: 'alphabetical',
+        order: [],
+      },
     },
   },
   decorators: [
     (Story, context) => {
       const { locale, darkMode } = context.globals
       return (
-        <Suspense>
+        <Suspense fallback={null}>
           <BrowserRouter>
             <QueryClientProvider client={queryClient}>
               <ThemeProvider>

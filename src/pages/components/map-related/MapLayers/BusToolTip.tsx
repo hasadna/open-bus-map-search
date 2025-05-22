@@ -1,4 +1,5 @@
 import { Button, CircularProgress } from '@mui/material'
+import { Skeleton } from 'antd'
 import cn from 'classnames'
 import { GtfsRoutePydanticModel } from 'open-bus-stride-client'
 import { ReactNode, useEffect, useState } from 'react'
@@ -65,9 +66,12 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
   return (
     <div className={cn('bus-tooltip', { hebrew: i18n.language === 'he' })}>
       {isLoading || !route ? (
-        <div className="loading">
-          <span>{t('loading_routes')}</span>
-          <CircularProgress />
+        <div>
+          <h1 className="loading title">
+            <span>{t('loading_routes')}</span>
+            <CircularProgress />
+          </h1>
+          <Skeleton title={false} paragraph={{ rows: 7 }} />
         </div>
       ) : (
         <>

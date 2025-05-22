@@ -72,13 +72,16 @@ const d = [
 
 const exempleRouts = d.map(fromGtfsRoute)
 
-const meta: Meta<typeof RouteSelector> = {
+const meta = {
   title: 'Components/RouteSelector',
   component: RouteSelector,
   parameters: {
     layout: 'centered',
   },
-  tags: ['autodocs'],
+  args: {
+    routes: exempleRouts,
+    setRouteKey: () => {},
+  },
   argTypes: {
     routeKey: {
       control: { type: 'text' },
@@ -116,20 +119,16 @@ const meta: Meta<typeof RouteSelector> = {
       </div>
     ),
   ],
-}
+} satisfies Meta<typeof RouteSelector>
 
 export default meta
-type Story = StoryObj<typeof RouteSelector>
 
-export const Default: Story = {
-  args: {
-    routes: exempleRouts,
-  },
-}
+type Story = StoryObj<typeof meta>
+
+export const Default: Story = {}
 
 export const RoutesSelected: Story = {
   args: {
-    routes: exempleRouts,
     routeKey: 'הנדיב/המייסדים-זכרון יעקב<->הנדיב/המייסדים-זכרון יעקב-3#',
   },
 }
