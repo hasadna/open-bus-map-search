@@ -1,19 +1,19 @@
-import moment from 'moment'
-import { useContext, useEffect } from 'react'
-import { useTranslation } from 'react-i18next'
 import { CircularProgress, Tooltip } from '@mui/material'
 import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
+import { useContext, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { SearchContext } from '../../model/pageState'
-import '../Map.scss'
+import { DateSelector } from '../components/DateSelector'
 import { PageContainer } from '../components/PageContainer'
 import InfoYoutubeModal from '../components/YoutubeModal'
-import { DateSelector } from '../components/DateSelector'
 import { MapWithLocationsAndPath } from '../components/map-related/MapWithLocationsAndPath'
-import VehicleNumberSelector from 'src/pages/components/VehicleSelector'
-import { useSingleVehicleData } from 'src/hooks/useSingleVehicleData'
 import { getRoutesAsync } from 'src/api/gtfsService'
+import { useSingleVehicleData } from 'src/hooks/useSingleVehicleData'
+import VehicleNumberSelector from 'src/pages/components/VehicleSelector'
 import { INPUT_SIZE } from 'src/resources/sizes'
+import dayjs from 'src/dayjs'
+import '../Map.scss'
 
 const SingleVehicleMap = () => {
   const { search, setSearch } = useContext(SearchContext)
@@ -31,8 +31,8 @@ const SingleVehicleMap = () => {
     }
 
     getRoutesAsync(
-      moment(timestamp),
-      moment(timestamp),
+      dayjs(timestamp),
+      dayjs(timestamp),
       operatorId,
       vehicleNumber?.toString(),
       signal,
@@ -68,7 +68,7 @@ const SingleVehicleMap = () => {
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
         <Grid size={{ sm: 4, xs: 12 }}>
           <DateSelector
-            time={moment(timestamp)}
+            time={dayjs(timestamp)}
             onChange={(ts) =>
               setSearch((current) => ({ ...current, timestamp: ts?.valueOf() ?? Date.now() }))
             }

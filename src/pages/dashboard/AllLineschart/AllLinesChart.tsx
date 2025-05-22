@@ -1,13 +1,12 @@
+import { InfoCircleOutlined } from '@ant-design/icons'
 import { Tooltip } from '@mui/material'
 import { Skeleton } from 'antd'
-import { Fragment } from 'react'
+import { FC, Fragment } from 'react'
 import { useTranslation } from 'react-i18next'
-import { FC } from 'react'
-import { Moment } from 'moment/moment'
-import { InfoCircleOutlined } from '@ant-design/icons'
 import OperatorHbarChart from './OperatorHbarChart/OperatorHbarChart'
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
 import Widget from 'src/shared/Widget'
+import { Dayjs } from 'src/dayjs'
 
 const convertToChartCompatibleStruct = (arr: GroupByRes[]) => {
   return arr.map((item: GroupByRes) => ({
@@ -19,8 +18,8 @@ const convertToChartCompatibleStruct = (arr: GroupByRes[]) => {
 }
 
 interface AllChartComponentProps {
-  startDate: Moment
-  endDate: Moment
+  startDate: Dayjs
+  endDate: Dayjs
 }
 
 export const AllLinesChart: FC<AllChartComponentProps> = ({ startDate, endDate }) => {

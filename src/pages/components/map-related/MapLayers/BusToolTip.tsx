@@ -1,7 +1,6 @@
 import { Button, CircularProgress } from '@mui/material'
 import { Skeleton } from 'antd'
 import cn from 'classnames'
-import moment from 'moment-timezone'
 import { GtfsRoutePydanticModel } from 'open-bus-stride-client'
 import { ReactNode, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -12,6 +11,7 @@ import ComplaintModal from './ComplaintModal'
 import { getRoutesByLineRef } from 'src/api/gtfsService'
 import { routeStartEnd, vehicleIDFormat } from 'src/pages/components/utils/rotueUtils'
 import type { Point } from 'src/pages/timeBasedMap'
+import dayjs from 'src/dayjs'
 import './BusToolTip.scss'
 
 export type BusToolTipProps = { position: Point; icon: string; children?: ReactNode }
@@ -113,9 +113,9 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
                 {`${t('sample_time')}: `}
                 <span>
                   {/* eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion */}
-                  {moment(position.point!.recorded_at_time as string, moment.ISO_8601)
+                  {dayjs(position.point!.recorded_at_time as string)
                     .tz('Israel')
-                    .format(`DD/MM/yyyy [${t('at_time')}] HH:mm`)}
+                    .format(`l [${t('at_time')}] LT`)}
                 </span>
               </li>
               <li>

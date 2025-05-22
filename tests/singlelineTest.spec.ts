@@ -1,6 +1,6 @@
-import moment from 'moment'
-import SinglelinePage from '../src/test_pages/SinglelinePage'
-import { getPastDate, test, expect, urlMatcher } from './utils'
+import { expect, getPastDate, test, urlMatcher } from './utils'
+import SinglelinePage from 'src/test_pages/SinglelinePage'
+import dayjs from 'src/dayjs'
 
 test.describe('Single line page tests', () => {
   let singleLinePage: SinglelinePage
@@ -145,8 +145,8 @@ test('Verify date_from parameter from "Map by line"', async ({ page }) => {
   const request = await apiRequest
   const url = new URL(request.url())
   const dateFromParam = url.searchParams.get('date_from')
-  const dateFrom = moment(dateFromParam)
-  const daysAgo = moment().diff(dateFrom, 'days')
+  const dateFrom = dayjs(dateFromParam)
+  const daysAgo = dayjs().diff(dateFrom, 'days')
 
   expect(daysAgo).toBeGreaterThanOrEqual(0)
   expect(daysAgo).toBeLessThanOrEqual(3)

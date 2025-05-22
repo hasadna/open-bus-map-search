@@ -1,10 +1,11 @@
-import moment, { Moment } from 'moment'
-import styled from 'styled-components'
 import {
   GtfsRideStopPydanticModel,
   SiriVehicleLocationWithRelatedPydanticModel,
 } from 'open-bus-stride-client'
 import { useTranslation } from 'react-i18next'
+import styled from 'styled-components'
+import { Coordinates } from 'src/model/location'
+import { PADDING } from 'src/pages/components/timeline/TimelineBoard'
 import {
   LabeledPoint,
   NEUTRAL_COLOR,
@@ -14,8 +15,7 @@ import {
   pointTypeToColor,
   pointTypeToDescription,
 } from 'src/pages/components/timeline/TimelinePoint'
-import { PADDING } from 'src/pages/components/timeline/TimelineBoard'
-import { Coordinates } from 'src/model/location'
+import dayjs from 'src/dayjs'
 
 const Line = styled.div<{ totalHeight: number }>`
   height: ${({ totalHeight }) => totalHeight + PADDING * 3}px;
@@ -46,7 +46,7 @@ type TimelineProps = {
     | Date[]
   totalHeight: number
   pointType: PointType
-  timestampToTop: (timestamp: Moment) => number
+  timestampToTop: (timestamp: dayjs.Dayjs) => number
 }
 
 export const Timeline = ({
@@ -73,9 +73,9 @@ export const Timeline = ({
         return (
           <LabeledPoint
             key={t.toString()}
-            top={timestampToTop(moment(t))}
+            top={timestampToTop(dayjs(t))}
             type={pointType}
-            timestamp={moment(t)}
+            timestamp={dayjs(t)}
           />
         )
       })}

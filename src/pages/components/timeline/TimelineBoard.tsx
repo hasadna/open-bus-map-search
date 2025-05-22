@@ -1,24 +1,22 @@
-import { useCallback } from 'react'
-import moment, { Moment } from 'moment'
-import styled from 'styled-components'
 import {
   GtfsRideStopPydanticModel,
   SiriVehicleLocationWithRelatedPydanticModel,
 } from 'open-bus-stride-client'
+import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
+import styled from 'styled-components'
 import { MAX_HITS_COUNT } from 'src/api/apiConfig'
+import { Coordinates } from 'src/model/location'
+import { HorizontalLine } from 'src/pages/components/timeline/HorizontalLine'
 import { Timeline } from 'src/pages/components/timeline/Timeline'
 import { PointType } from 'src/pages/components/timeline/TimelinePoint'
-import { HorizontalLine } from 'src/pages/components/timeline/HorizontalLine'
-import { Coordinates } from 'src/model/location'
+import dayjs from 'src/dayjs'
 
 const COLUMN_WIDTH = 140
 export const PADDING = 10
 
 const getRange = (timestamps: Date[]) =>
-  timestamps.length > 0
-    ? moment(timestamps[timestamps.length - 1]).diff(timestamps[0], 'seconds')
-    : 0
+  timestamps.length > 0 ? dayjs(timestamps[timestamps.length - 1]).diff(timestamps[0], 'second') : 0
 
 const minDate = (date1: Date, date2: Date) => (date1 <= date2 ? date1 : date2)
 
@@ -39,7 +37,7 @@ const StyledTimeline = styled(Timeline)`
 
 type TimelineBoardProps = {
   className?: string
-  target: Moment
+  target: dayjs.Dayjs
   gtfsTimes: GtfsRideStopPydanticModel[]
   siriTimes: (SiriVehicleLocationWithRelatedPydanticModel & Coordinates)[]
 }
@@ -58,8 +56,8 @@ export const TimelineBoard = ({ className, target, gtfsTimes, siriTimes }: Timel
   const allTimestamps: Set<Date> = new Set([target.toDate(), ...gtfsDates, ...siriDates])
 
   const timestampToTop = useCallback(
-    (timestamp: Moment) => {
-      const deltaFromTop = timestamp.diff(lowerBound, 'seconds')
+    (timestamp: dayjs.Dayjs) => {
+      const deltaFromTop = timestamp.diff(lowerBound, 'second')
       const portionOfHeight = deltaFromTop / totalRange
       return Math.min(PADDING + portionOfHeight * totalHeight, totalHeight)
     },
@@ -68,7 +66,7 @@ export const TimelineBoard = ({ className, target, gtfsTimes, siriTimes }: Timel
   return (
     <StyledContainer>
       <h4>
-        {t('timestamp_target')} {target.format('DD/MM/yyyy HH:mm:ss')}
+        {t('timestamp_target')} {target.format('DD/MM/YYYY HH:mm:ss')}
       </h4>
       <Container className={className}>
         <StyledTimeline
@@ -84,7 +82,7 @@ export const TimelineBoard = ({ className, target, gtfsTimes, siriTimes }: Timel
           timestampToTop={timestampToTop}
         />
         {Array.from(allTimestamps).map((timestamp, index) => (
-          <HorizontalLine key={index} top={timestampToTop(moment(timestamp))} />
+          <HorizontalLine key={index} top={timestampToTop(dayjs(timestamp))} />
         ))}
       </Container>
     </StyledContainer>

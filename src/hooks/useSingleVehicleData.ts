@@ -1,8 +1,8 @@
-import moment from 'moment'
 import { useContext, useEffect, useMemo, useState } from 'react'
 import useVehicleLocations from 'src/api/useVehicleLocations'
 import { SearchContext } from 'src/model/pageState'
 import { Point } from 'src/pages/timeBasedMap'
+import dayjs from 'src/dayjs'
 
 export const useSingleVehicleData = (vehicleRef?: number) => {
   const {
@@ -96,11 +96,11 @@ export const useSingleVehicleData = (vehicleRef?: number) => {
 
     if (startTime !== '00:00:00') {
       const newFilteredPositions = positions.filter((position) => {
-        const scheduledStartTime = moment(position.point?.siri_ride__scheduled_start_time)
+        const scheduledStartTime = dayjs(position.point?.siri_ride__scheduled_start_time)
           .utc()
           .format('HH:mm:ss') // המרת הזמן לפורמט HH:mm:ss
 
-        const formattedStartTime = moment(startTime, 'HH:mm:ss').utc().format('HH:mm:ss')
+        const formattedStartTime = dayjs(startTime, 'HH:mm:ss').utc().format('HH:mm:ss')
 
         // console.log('Scheduled start time (formatted):', scheduledStartTime)
         // console.log('Start time (formatted):', formattedStartTime)

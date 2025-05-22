@@ -47,7 +47,7 @@ export async function getGtfsRidesList(
 //   route_date_from?: string,
 //   route_date_to?: string,
 // ): Promise<RawRidesList> => {
-//   // const startOfDay = moment(fromTimestamp).startOf('day')
+//   // const startOfDay = dayjs(fromTimestamp).startOf('day')
 //   const data = USE_API
 //     ? (0
 //         await axios.get<RawRidesList>(`${BASE_PATH}/rides_rides/list`, {

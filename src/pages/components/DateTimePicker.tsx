@@ -1,9 +1,9 @@
-import { Moment } from 'moment'
-import React, { useCallback } from 'react'
+import { useCallback, useState } from 'react'
+import { Dayjs } from 'src/dayjs'
 
-export function useDate(initialValue: Moment) {
-  const [date, setDate] = React.useState<Moment>(initialValue)
-  const onChange = useCallback((date: Moment | null) => {
+export function useDate(initialValue: Dayjs) {
+  const [date, setDate] = useState<Dayjs>(initialValue)
+  const onChange = useCallback((date: Dayjs | null) => {
     if (date) {
       setDate(date)
     }

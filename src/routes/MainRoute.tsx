@@ -1,17 +1,16 @@
-import { useCallback, useEffect } from 'react'
-import 'leaflet/dist/leaflet.css'
-import { useSearchParams, useLocation } from 'react-router'
-import moment from 'moment'
-import { useSessionStorage } from 'usehooks-ts'
-import ReactGA from 'react-ga4'
-import { CacheProvider } from '@emotion/react'
 import createCache from '@emotion/cache'
+import { CacheProvider } from '@emotion/react'
+import 'leaflet/dist/leaflet.css'
+import { useCallback, useEffect } from 'react'
+import ReactGA from 'react-ga4'
+import { useLocation, useSearchParams } from 'react-router'
 import rtlPlugin from 'stylis-plugin-rtl'
-import 'moment/locale/he'
-import { PageSearchState, SearchContext } from '../model/pageState'
-import { ThemeProvider } from '../layout/ThemeContext'
-import { PAGES } from '../routes'
+import { useSessionStorage } from 'usehooks-ts'
 import { MainLayout } from '../layout'
+import { ThemeProvider } from '../layout/ThemeContext'
+import { PageSearchState, SearchContext } from '../model/pageState'
+import { PAGES } from '../routes'
+import dayjs from 'src/dayjs'
 
 // Create rtl cache
 const cacheRtl = createCache({
@@ -33,7 +32,7 @@ export const MainRoute = () => {
   }, [location])
 
   const [search, setSearch] = useSessionStorage<PageSearchState>('search', {
-    timestamp: +timestamp! || moment().valueOf(),
+    timestamp: +timestamp! || dayjs().valueOf(),
     operatorId: operatorId || '',
     lineNumber: lineNumber || '',
     vehicleNumber: vehicleNumber ? Number(vehicleNumber) : undefined,

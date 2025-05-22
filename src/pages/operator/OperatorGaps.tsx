@@ -1,12 +1,12 @@
 import { Stack, Typography } from '@mui/material'
 import { Skeleton } from 'antd'
-import moment from 'moment'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Cell, Pie, PieChart } from 'recharts'
 import { InfoItem, InfoTable } from '../components/InfoTable'
 import { useGroupBy } from 'src/api/groupByService'
 import Widget from 'src/shared/Widget'
+import dayjs from 'src/dayjs'
 
 export const OperatorGaps = ({
   operatorId,
@@ -19,8 +19,8 @@ export const OperatorGaps = ({
 }) => {
   const { t, i18n } = useTranslation()
   const [groupByOperatorData, isLoading] = useGroupBy({
-    dateFrom: moment(timestamp).add(-1, timeRange),
-    dateTo: moment(timestamp),
+    dateFrom: dayjs(timestamp).add(-1, timeRange),
+    dateTo: dayjs(timestamp),
     groupBy: 'operator_ref',
   })
 

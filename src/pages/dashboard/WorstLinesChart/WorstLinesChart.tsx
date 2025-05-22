@@ -1,14 +1,14 @@
 import { Skeleton } from 'antd'
 import { useTranslation } from 'react-i18next'
-import { Moment } from 'moment/moment'
 import LinesHbarChart from './LineHbarChart/LinesHbarChart'
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
-import Widget from 'src/shared/Widget'
 import { MAJOR_OPERATORS } from 'src/model/operator'
+import Widget from 'src/shared/Widget'
+import { Dayjs } from 'src/dayjs'
 
 interface WorstLinesChartProps {
-  startDate: Moment
-  endDate: Moment
+  startDate: Dayjs
+  endDate: Dayjs
   operatorId: string
 }
 
