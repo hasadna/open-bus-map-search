@@ -18,7 +18,7 @@ import { PageContainer } from '../components/PageContainer'
 import RouteSelector from '../components/RouteSelector'
 import { Row } from '../components/Row'
 import { INPUT_SIZE } from 'src/resources/sizes'
-import dayjs from 'src/pages/components/utils/dayjs'
+import dayjs from 'src/dayjs'
 
 const Cell = styled.div`
   width: 120px;

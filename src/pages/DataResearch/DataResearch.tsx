@@ -18,7 +18,7 @@ import { PageContainer } from '../components/PageContainer'
 import { getColorName } from '../dashboard/AllLineschart/OperatorHbarChart/OperatorHbarChart'
 import { useGroupBy } from 'src/api/groupByService'
 import Widget from 'src/shared/Widget'
-import dayjs from 'src/pages/components/utils/dayjs'
+import dayjs from 'src/dayjs'
 import './DataResearch.scss'
 
 const now = dayjs()

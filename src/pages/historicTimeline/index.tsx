@@ -20,7 +20,7 @@ import { Row } from 'src/pages/components/Row'
 import StopSelector from 'src/pages/components/StopSelector'
 import { TimelineBoard } from 'src/pages/components/timeline/TimelineBoard'
 import { INPUT_SIZE, MARGIN_MEDIUM } from 'src/resources/sizes'
-import dayjs from 'src/pages/components/utils/dayjs'
+import dayjs from 'src/dayjs'
 import 'src/App.scss'
 
 const StyledTimelineBoard = styled(TimelineBoard)`

@@ -10,7 +10,7 @@ import { OperatorGaps } from './OperatorGaps'
 import { OperatorInfo } from './OperatorInfo'
 import { OperatorRoutes } from './OperatorRoutes'
 import { SearchContext } from 'src/model/pageState'
-import dayjs from 'src/pages/components/utils/dayjs'
+import dayjs from 'src/dayjs'
 
 const TIME_RANGES = ['day', 'week', 'month'] as const //  'year'
 

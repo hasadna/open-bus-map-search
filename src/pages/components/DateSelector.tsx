@@ -1,7 +1,7 @@
 import { DatePicker, DateValidationError } from '@mui/x-date-pickers'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import dayjs from 'src/pages/components/utils/dayjs'
+import dayjs from 'src/dayjs'
 
 export type DataSelectorProps = {
   time: dayjs.Dayjs

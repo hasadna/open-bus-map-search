@@ -17,7 +17,7 @@ import WorstLinesChart from './WorstLinesChart/WorstLinesChart'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
 
 // Services and libraries
-import dayjs from 'src/pages/components/utils/dayjs'
+import dayjs from 'src/dayjs'
 
 // Declarations
 const now = dayjs()

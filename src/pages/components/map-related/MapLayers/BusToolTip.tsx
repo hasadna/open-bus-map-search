@@ -10,7 +10,7 @@ import ComplaintModal from './ComplaintModal'
 import { getRoutesByLineRef } from 'src/api/gtfsService'
 import { routeStartEnd, vehicleIDFormat } from 'src/pages/components/utils/rotueUtils'
 import type { Point } from 'src/pages/timeBasedMap'
-import dayjs from 'src/pages/components/utils/dayjs'
+import dayjs from 'src/dayjs'
 import './BusToolTip.scss'
 
 export type BusToolTipProps = { position: Point; icon: string; children?: ReactNode }

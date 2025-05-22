@@ -6,7 +6,7 @@ import { Link } from 'react-router'
 import { InfoItem, InfoTable } from '../components/InfoTable'
 import { routeStartEnd } from '../components/utils/rotueUtils'
 import Widget from 'src/shared/Widget'
-import dayjs from 'src/pages/components/utils/dayjs'
+import dayjs from 'src/dayjs'
 
 export const LineProfileDetails = ({
   id,

@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next'
 import OperatorHbarChart from './OperatorHbarChart/OperatorHbarChart'
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
 import Widget from 'src/shared/Widget'
-import { Dayjs } from 'src/pages/components/utils/dayjs'
+import { Dayjs } from 'src/dayjs'
 
 const convertToChartCompatibleStruct = (arr: GroupByRes[]) => {
   return arr.map((item: GroupByRes) => ({

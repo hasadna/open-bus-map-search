@@ -12,7 +12,7 @@ import { getRoutesAsync } from 'src/api/gtfsService'
 import { useSingleVehicleData } from 'src/hooks/useSingleVehicleData'
 import VehicleNumberSelector from 'src/pages/components/VehicleSelector'
 import { INPUT_SIZE } from 'src/resources/sizes'
-import dayjs from 'src/pages/components/utils/dayjs'
+import dayjs from 'src/dayjs'
 import '../Map.scss'
 
 const SingleVehicleMap = () => {

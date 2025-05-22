@@ -14,7 +14,7 @@ import LineNumberSelector from 'src/pages/components/LineSelector'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
 import RouteSelector from 'src/pages/components/RouteSelector'
 import { INPUT_SIZE } from 'src/resources/sizes'
-import dayjs from 'src/pages/components/utils/dayjs'
+import dayjs from 'src/dayjs'
 import '../Map.scss'
 
 const SingleLineMapPage = () => {

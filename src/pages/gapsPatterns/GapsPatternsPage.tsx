@@ -31,7 +31,7 @@ import './GapsPatternsPage.scss'
 import { useGapsList } from './useGapsList'
 import { INPUT_SIZE } from 'src/resources/sizes'
 import Widget from 'src/shared/Widget'
-import dayjs from 'src/pages/components/utils/dayjs'
+import dayjs from 'src/dayjs'
 
 interface BusLineStatisticsProps {
   lineRef: number

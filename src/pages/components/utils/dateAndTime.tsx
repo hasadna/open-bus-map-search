@@ -1,4 +1,4 @@
-import dayjs from 'src/pages/components/utils/dayjs'
+import dayjs from 'src/dayjs'
 
 export type DataAndTimeSelectorProps = {
   time: dayjs.Dayjs

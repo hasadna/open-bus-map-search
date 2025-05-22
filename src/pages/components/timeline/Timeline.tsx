@@ -15,7 +15,7 @@ import {
   pointTypeToColor,
   pointTypeToDescription,
 } from 'src/pages/components/timeline/TimelinePoint'
-import dayjs from 'src/pages/components/utils/dayjs'
+import dayjs from 'src/dayjs'
 
 const Line = styled.div<{ totalHeight: number }>`
   height: ${({ totalHeight }) => totalHeight + PADDING * 3}px;

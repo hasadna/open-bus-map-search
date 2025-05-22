@@ -4,7 +4,7 @@ import LinesHbarChart from './LineHbarChart/LinesHbarChart'
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
 import { MAJOR_OPERATORS } from 'src/model/operator'
 import Widget from 'src/shared/Widget'
-import { Dayjs } from 'src/pages/components/utils/dayjs'
+import { Dayjs } from 'src/dayjs'
 
 interface WorstLinesChartProps {
   startDate: Dayjs

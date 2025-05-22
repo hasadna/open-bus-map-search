@@ -18,7 +18,7 @@ import { useSingleLineData } from 'src/hooks/useSingleLineData'
 import { SearchContext, TimelinePageState } from 'src/model/pageState'
 import StopSelector from 'src/pages/components/StopSelector'
 import Widget from 'src/shared/Widget'
-import dayjs from 'src/pages/components/utils/dayjs'
+import dayjs from 'src/dayjs'
 import './LineProfile.scss'
 
 const LineProfile = () => {

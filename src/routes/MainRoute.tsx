@@ -11,7 +11,7 @@ import { MainLayout } from '../layout'
 import { ThemeProvider } from '../layout/ThemeContext'
 import { PageSearchState, SearchContext } from '../model/pageState'
 import { PAGES } from '../routes'
-import dayjs from 'src/pages/components/utils/dayjs'
+import dayjs from 'src/dayjs'
 
 // Create rtl cache
 const cacheRtl = createCache({

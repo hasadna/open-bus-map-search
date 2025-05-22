@@ -19,7 +19,7 @@ import i18n from 'src/locale/allTranslations'
 import { VehicleLocation } from 'src/model/vehicleLocation'
 import { BusToolTip } from 'src/pages/components/map-related/MapLayers/BusToolTip'
 import { INPUT_SIZE } from 'src/resources/sizes'
-import dayjs from 'src/pages/components/utils/dayjs'
+import dayjs from 'src/dayjs'
 import '../Map.scss'
 
 export interface Point {

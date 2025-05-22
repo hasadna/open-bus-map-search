@@ -7,7 +7,7 @@ import { ConfigProvider, theme } from 'antd'
 import antdHeIL from 'antd/es/locale/he_IL'
 import { FC, PropsWithChildren, createContext, useContext, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import dayjs from '../dayjs'
+import dayjs from 'src/dayjs'
 import { useLocalStorage } from 'src/locale/useLocalStorage'
 
 export interface ThemeContextInterface {

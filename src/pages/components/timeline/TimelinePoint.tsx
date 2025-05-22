@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { Dayjs } from 'src/pages/components/utils/dayjs'
+import { Dayjs } from 'src/dayjs'
 
 export const POINT_SIZE = 8
 

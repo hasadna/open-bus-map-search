@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import AllLinesChart from './AllLinesChart'
-import dayjs from 'src/pages/components/utils/dayjs'
+import dayjs from 'src/dayjs'
 
 const meta: Meta<typeof AllLinesChart> = {
   component: AllLinesChart,
