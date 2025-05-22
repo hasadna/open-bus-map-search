@@ -1,5 +1,4 @@
 import axios from 'axios'
-import minMax from 'dayjs/plugin/minMax'
 import {
   GtfsApi,
   GtfsRideStopPydanticModel,
@@ -10,8 +9,6 @@ import { API_CONFIG, BASE_PATH, MAX_HITS_COUNT } from 'src/api/apiConfig'
 import { BusRoute, fromGtfsRoute } from 'src/model/busRoute'
 import { BusStop, fromGtfsStop } from 'src/model/busStop'
 // import { Route } from 'react-router'
-
-dayjs.extend(minMax)
 
 const GTFS_API = new GtfsApi(API_CONFIG)
 //const USER_CASES_API = new UserCasesApi(API_CONFIG)

@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next'
 import { RouterProvider } from 'react-router'
 import router from './routes'
 import Preloader from './shared/Preloader'
-import 'src/dayjs'
 import './App.scss'
 import 'leaflet/dist/leaflet.css'
 

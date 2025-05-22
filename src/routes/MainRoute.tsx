@@ -1,6 +1,5 @@
 import createCache from '@emotion/cache'
 import { CacheProvider } from '@emotion/react'
-import 'dayjs/locale/he'
 import 'leaflet/dist/leaflet.css'
 import { useCallback, useEffect } from 'react'
 import ReactGA from 'react-ga4'
