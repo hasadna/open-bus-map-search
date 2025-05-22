@@ -1,7 +1,7 @@
 import axios, { CancelTokenSource } from 'axios'
-import dayjs from '../pages/components/utils/dayjs'
 import { GapsList } from '../model/gaps'
 import { BASE_PATH } from './apiConfig'
+import dayjs from 'src/dayjs'
 
 type RawGapsList = {
   planned_start_time: string

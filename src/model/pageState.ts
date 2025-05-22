@@ -6,7 +6,7 @@ import { createContext, Dispatch } from 'react'
 import { BusRoute } from './busRoute'
 import { BusStop } from './busStop'
 import { Coordinates } from './location'
-import dayjs from 'src/pages/components/utils/dayjs'
+import dayjs from 'src/dayjs'
 
 export type PageSearchState = {
   timestamp: number

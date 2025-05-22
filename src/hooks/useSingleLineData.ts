@@ -4,7 +4,7 @@ import useVehicleLocations from 'src/api/useVehicleLocations'
 import { BusStop } from 'src/model/busStop'
 import { SearchContext } from 'src/model/pageState'
 import { Point } from 'src/pages/timeBasedMap'
-import dayjs from 'src/pages/components/utils/dayjs'
+import dayjs from 'src/dayjs'
 
 const formatTime = (time: dayjs.Dayjs) => time.format('HH:mm:ss')
 

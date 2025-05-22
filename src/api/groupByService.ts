@@ -1,7 +1,7 @@
 import agencyList from 'open-bus-stride-client/agencies/agencyList'
 import { useQuery } from '@tanstack/react-query'
 import { BASE_PATH } from './apiConfig'
-import { Dayjs } from 'src/pages/components/utils/dayjs'
+import { Dayjs } from 'src/dayjs'
 
 type groupByField =
   | 'gtfs_route_date'

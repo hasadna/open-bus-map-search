@@ -1,13 +1,13 @@
-import { FC, PropsWithChildren, createContext, useContext, useMemo } from 'react'
-import { ThemeProvider as MuiThemeProvider, createTheme, ScopedCssBaseline } from '@mui/material'
-import { heIL, enUS } from '@mui/material/locale'
-import { heIL as dateHeIL, enUS as dateEnUS } from '@mui/x-date-pickers/locales'
-
+import { ThemeProvider as MuiThemeProvider, ScopedCssBaseline, createTheme } from '@mui/material'
+import { enUS, heIL } from '@mui/material/locale'
 import { LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import { enUS as dateEnUS, heIL as dateHeIL } from '@mui/x-date-pickers/locales'
 import { ConfigProvider, theme } from 'antd'
 import antdHeIL from 'antd/es/locale/he_IL'
+import { FC, PropsWithChildren, createContext, useContext, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
+import dayjs from '../dayjs'
 import { useLocalStorage } from 'src/locale/useLocalStorage'
 
 export interface ThemeContextInterface {
@@ -44,6 +44,7 @@ export const ThemeProvider: FC<PropsWithChildren> = ({ children }) => {
     const direction = i18n.language === 'he' ? 'rtl' : 'ltr'
     document.documentElement.dir = direction
     document.documentElement.lang = i18n.language
+    dayjs.locale(i18n.language)
     return createTheme(
       {
         direction,

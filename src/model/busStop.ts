@@ -3,7 +3,7 @@ import {
   GtfsStopPydanticModel,
 } from 'open-bus-stride-client/openapi/models'
 import { GtfsRideWithRelatedPydanticModel } from 'open-bus-stride-client'
-import dayjs from 'src/pages/components/utils/dayjs'
+import dayjs from 'src/dayjs'
 import { Coordinates } from 'src/model/location'
 
 export type BusStop = {

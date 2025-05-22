@@ -7,7 +7,7 @@
 import _ from 'lodash'
 import { useEffect, useState } from 'react'
 import { VehicleLocation } from 'src/model/vehicleLocation'
-import dayjs from 'src/pages/components/utils/dayjs'
+import dayjs from 'src/dayjs'
 
 const config = {
   apiUrl: 'https://open-bus-stride-api.hasadna.org.il/siri_vehicle_locations/list?get_count=false',
