@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import dayjs from 'dayjs'
 import WorstLinesChart from './WorstLinesChart'
+import dayjs from 'src/pages/components/utils/dayjs'
 
 const meta: Meta<typeof WorstLinesChart> = {
   component: WorstLinesChart,

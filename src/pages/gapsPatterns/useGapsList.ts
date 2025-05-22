@@ -1,10 +1,9 @@
-import { useEffect, useState } from 'react'
-import dayjs from 'dayjs'
 import axios from 'axios'
+import { useEffect, useState } from 'react'
 import { getGapsAsync } from '../../api/gapsService'
-
-import { sortByMode, HourlyData } from '../components/utils'
+import { HourlyData, sortByMode } from '../components/utils'
 import { GapsList } from 'src/model/gaps'
+import dayjs from 'src/pages/components/utils/dayjs'
 
 type HourlyDataList = HourlyData[]
 // Convert gapsList into HourlyDataList structure

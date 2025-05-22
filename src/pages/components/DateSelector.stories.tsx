@@ -1,6 +1,6 @@
 import { Meta, StoryObj } from '@storybook/react'
-import dayjs from 'dayjs'
 import { DateSelector } from './DateSelector'
+import dayjs from 'src/pages/components/utils/dayjs'
 
 const meta: Meta<typeof DateSelector> = {
   title: 'Components/DateSelector',

@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import dayjs from 'dayjs'
+import dayjs from 'src/pages/components/utils/dayjs'
 
 test('verify API call to gtfs_agencies/list - "missing rides"', async ({ page }) => {
   let apiCallMade = false

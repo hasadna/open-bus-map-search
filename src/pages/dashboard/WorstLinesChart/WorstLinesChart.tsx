@@ -1,10 +1,10 @@
 import { Skeleton } from 'antd'
 import { useTranslation } from 'react-i18next'
-import { Dayjs } from 'dayjs'
 import LinesHbarChart from './LineHbarChart/LinesHbarChart'
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
-import Widget from 'src/shared/Widget'
 import { MAJOR_OPERATORS } from 'src/model/operator'
+import Widget from 'src/shared/Widget'
+import { Dayjs } from 'src/pages/components/utils/dayjs'
 
 interface WorstLinesChartProps {
   startDate: Dayjs

@@ -1,7 +1,5 @@
 import { useState } from 'react'
 
-// Services and libraries
-import dayjs from 'dayjs'
 // Styling
 import './DashboardPage.scss'
 import 'src/App.scss'
@@ -17,6 +15,9 @@ import DayTimeChart from './ArrivalByTimeChart/DayTimeChart'
 import AllLinesChart from './AllLineschart/AllLinesChart'
 import WorstLinesChart from './WorstLinesChart/WorstLinesChart'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
+
+// Services and libraries
+import dayjs from 'src/pages/components/utils/dayjs'
 
 // Declarations
 const now = dayjs()

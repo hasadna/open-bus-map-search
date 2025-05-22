@@ -1,16 +1,16 @@
-import { useCallback } from 'react'
-import dayjs from 'dayjs'
-import styled from 'styled-components'
 import {
   GtfsRideStopPydanticModel,
   SiriVehicleLocationWithRelatedPydanticModel,
 } from 'open-bus-stride-client'
+import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
+import styled from 'styled-components'
 import { MAX_HITS_COUNT } from 'src/api/apiConfig'
+import { Coordinates } from 'src/model/location'
+import { HorizontalLine } from 'src/pages/components/timeline/HorizontalLine'
 import { Timeline } from 'src/pages/components/timeline/Timeline'
 import { PointType } from 'src/pages/components/timeline/TimelinePoint'
-import { HorizontalLine } from 'src/pages/components/timeline/HorizontalLine'
-import { Coordinates } from 'src/model/location'
+import dayjs from 'src/pages/components/utils/dayjs'
 
 const COLUMN_WIDTH = 140
 export const PADDING = 10

@@ -1,5 +1,5 @@
-import dayjs from 'dayjs'
-import { test, expect, urlMatcher } from './utils'
+import { expect, test, urlMatcher } from './utils'
+import dayjs from 'src/pages/components/utils/dayjs'
 
 test.describe('Trip Existence Page Tests', () => {
   test.beforeEach(({ advancedRouteFromHAR }) => {

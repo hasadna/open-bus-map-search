@@ -1,12 +1,12 @@
 import { Stack, Typography } from '@mui/material'
 import { Skeleton } from 'antd'
-import dayjs from 'dayjs'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Cell, Pie, PieChart } from 'recharts'
 import { InfoItem, InfoTable } from '../components/InfoTable'
 import { useGroupBy } from 'src/api/groupByService'
 import Widget from 'src/shared/Widget'
+import dayjs from 'src/pages/components/utils/dayjs'
 
 export const OperatorGaps = ({
   operatorId,

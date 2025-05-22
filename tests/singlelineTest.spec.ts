@@ -1,6 +1,6 @@
-import dayjs from 'dayjs'
-import SinglelinePage from '../src/test_pages/SinglelinePage'
-import { getPastDate, test, expect, urlMatcher } from './utils'
+import { expect, getPastDate, test, urlMatcher } from './utils'
+import SinglelinePage from 'src/test_pages/SinglelinePage'
+import dayjs from 'src/pages/components/utils/dayjs'
 
 test.describe('Single line page tests', () => {
   let singleLinePage: SinglelinePage

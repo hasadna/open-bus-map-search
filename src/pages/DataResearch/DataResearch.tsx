@@ -1,25 +1,25 @@
-import React, { useMemo, useState } from 'react'
-import dayjs from 'dayjs'
 import { Grid } from '@mui/material'
-import { useTranslation } from 'react-i18next'
 import { Skeleton } from 'antd'
+import React, { useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   Area,
-  Tooltip,
   AreaChart,
   CartesianGrid,
   ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
 } from 'recharts'
 import { DateSelector } from '../components/DateSelector'
 import { useDate } from '../components/DateTimePicker'
+import OperatorSelector from '../components/OperatorSelector'
 import { PageContainer } from '../components/PageContainer'
 import { getColorName } from '../dashboard/AllLineschart/OperatorHbarChart/OperatorHbarChart'
-import './DataResearch.scss'
-import OperatorSelector from '../components/OperatorSelector'
 import { useGroupBy } from 'src/api/groupByService'
 import Widget from 'src/shared/Widget'
+import dayjs from 'src/pages/components/utils/dayjs'
+import './DataResearch.scss'
 
 const now = dayjs()
 const unique: (value: string, index: number, self: string[]) => boolean = (value, index, self) =>

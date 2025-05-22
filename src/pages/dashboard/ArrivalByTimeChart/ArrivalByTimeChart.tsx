@@ -1,16 +1,15 @@
+import { useMemo } from 'react'
 import {
-  LineChart,
+  CartesianGrid,
   Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
 } from 'recharts'
-
+import dayjs from 'src/pages/components/utils/dayjs'
 import './ArrivalByTimeChats.scss'
-import { useMemo } from 'react'
-import dayjs from 'dayjs'
 
 /**
  * Group array items by a common property value returned from the callback (ie. group by value of id).

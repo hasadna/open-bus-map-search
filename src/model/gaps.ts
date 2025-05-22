@@ -1,4 +1,4 @@
-import dayjs from 'dayjs'
+import dayjs from 'src/pages/components/utils/dayjs'
 
 export type Gap = {
   siriTime: dayjs.Dayjs | null

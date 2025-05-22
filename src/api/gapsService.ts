@@ -1,9 +1,9 @@
-import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
 dayjs.extend(utc)
 dayjs.extend(timezone)
 import axios, { CancelTokenSource } from 'axios'
+import dayjs from '../pages/components/utils/dayjs'
 import { GapsList } from '../model/gaps'
 import { BASE_PATH } from './apiConfig'
 

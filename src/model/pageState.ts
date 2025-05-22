@@ -1,12 +1,12 @@
-import { createContext, Dispatch } from 'react'
-import dayjs from 'dayjs'
 import {
   GtfsRideStopPydanticModel,
   SiriVehicleLocationWithRelatedPydanticModel,
 } from 'open-bus-stride-client'
-import { BusStop } from './busStop'
+import { createContext, Dispatch } from 'react'
 import { BusRoute } from './busRoute'
+import { BusStop } from './busStop'
 import { Coordinates } from './location'
+import dayjs from 'src/pages/components/utils/dayjs'
 
 export type PageSearchState = {
   timestamp: number

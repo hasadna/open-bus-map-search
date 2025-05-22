@@ -1,10 +1,11 @@
-import dayjs from 'dayjs'
-import styled from 'styled-components'
 import {
   GtfsRideStopPydanticModel,
   SiriVehicleLocationWithRelatedPydanticModel,
 } from 'open-bus-stride-client'
 import { useTranslation } from 'react-i18next'
+import styled from 'styled-components'
+import { Coordinates } from 'src/model/location'
+import { PADDING } from 'src/pages/components/timeline/TimelineBoard'
 import {
   LabeledPoint,
   NEUTRAL_COLOR,
@@ -14,8 +15,7 @@ import {
   pointTypeToColor,
   pointTypeToDescription,
 } from 'src/pages/components/timeline/TimelinePoint'
-import { PADDING } from 'src/pages/components/timeline/TimelineBoard'
-import { Coordinates } from 'src/model/location'
+import dayjs from 'src/pages/components/utils/dayjs'
 
 const Line = styled.div<{ totalHeight: number }>`
   height: ${({ totalHeight }) => totalHeight + PADDING * 3}px;

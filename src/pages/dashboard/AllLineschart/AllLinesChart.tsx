@@ -1,13 +1,12 @@
+import { InfoCircleOutlined } from '@ant-design/icons'
 import { Tooltip } from '@mui/material'
 import { Skeleton } from 'antd'
-import { Fragment } from 'react'
+import { FC, Fragment } from 'react'
 import { useTranslation } from 'react-i18next'
-import { FC } from 'react'
-import { Dayjs } from 'dayjs'
-import { InfoCircleOutlined } from '@ant-design/icons'
 import OperatorHbarChart from './OperatorHbarChart/OperatorHbarChart'
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
 import Widget from 'src/shared/Widget'
+import { Dayjs } from 'src/pages/components/utils/dayjs'
 
 const convertToChartCompatibleStruct = (arr: GroupByRes[]) => {
   return arr.map((item: GroupByRes) => ({

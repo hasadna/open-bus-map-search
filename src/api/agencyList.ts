@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import dayjs from 'dayjs'
 import { BASE_PATH } from './apiConfig'
+import dayjs from 'src/pages/components/utils/dayjs'
 
 export interface Agency {
   date: string // example - "2019-07-01"

@@ -1,5 +1,4 @@
 import { Grid, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
-import dayjs from 'dayjs'
 import { useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
@@ -11,6 +10,7 @@ import { OperatorGaps } from './OperatorGaps'
 import { OperatorInfo } from './OperatorInfo'
 import { OperatorRoutes } from './OperatorRoutes'
 import { SearchContext } from 'src/model/pageState'
+import dayjs from 'src/pages/components/utils/dayjs'
 
 const TIME_RANGES = ['day', 'week', 'month'] as const //  'year'
 

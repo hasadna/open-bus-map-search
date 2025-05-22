@@ -1,8 +1,8 @@
-import dayjs from 'dayjs'
 import { useContext, useEffect, useMemo, useState } from 'react'
 import useVehicleLocations from 'src/api/useVehicleLocations'
 import { SearchContext } from 'src/model/pageState'
 import { Point } from 'src/pages/timeBasedMap'
+import dayjs from 'src/pages/components/utils/dayjs'
 
 export const useSingleVehicleData = (vehicleRef?: number) => {
   const {

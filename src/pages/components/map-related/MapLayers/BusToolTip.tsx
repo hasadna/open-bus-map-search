@@ -1,9 +1,5 @@
 import { Button, CircularProgress } from '@mui/material'
 import cn from 'classnames'
-import dayjs from 'dayjs'
-import isoWeek from 'dayjs/plugin/isoWeek'
-import utc from 'dayjs/plugin/utc'
-import timezone from 'dayjs/plugin/timezone'
 import { GtfsRoutePydanticModel } from 'open-bus-stride-client'
 import { ReactNode, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -14,11 +10,8 @@ import ComplaintModal from './ComplaintModal'
 import { getRoutesByLineRef } from 'src/api/gtfsService'
 import { routeStartEnd, vehicleIDFormat } from 'src/pages/components/utils/rotueUtils'
 import type { Point } from 'src/pages/timeBasedMap'
+import dayjs from 'src/pages/components/utils/dayjs'
 import './BusToolTip.scss'
-
-dayjs.extend(isoWeek)
-dayjs.extend(utc)
-dayjs.extend(timezone)
 
 export type BusToolTipProps = { position: Point; icon: string; children?: ReactNode }
 

@@ -1,11 +1,11 @@
 import axios from 'axios'
-import dayjs from 'dayjs'
 import minMax from 'dayjs/plugin/minMax'
 import {
   GtfsApi,
   GtfsRideStopPydanticModel,
   GtfsRideWithRelatedPydanticModel,
 } from 'open-bus-stride-client'
+import dayjs from '../pages/components/utils/dayjs'
 import { API_CONFIG, BASE_PATH, MAX_HITS_COUNT } from 'src/api/apiConfig'
 import { BusRoute, fromGtfsRoute } from 'src/model/busRoute'
 import { BusStop, fromGtfsStop } from 'src/model/busStop'

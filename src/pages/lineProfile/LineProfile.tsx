@@ -1,6 +1,5 @@
 import { CircularProgress, Grid } from '@mui/material'
 import { Tooltip } from 'antd'
-import dayjs from 'dayjs'
 import { GtfsRoutePydanticModel } from 'open-bus-stride-client'
 import { useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -11,7 +10,6 @@ import { NotFound } from '../components/NotFound'
 import { PageContainer } from '../components/PageContainer'
 import RouteSelector from '../components/RouteSelector'
 import { MapWithLocationsAndPath } from '../components/map-related/MapWithLocationsAndPath'
-import './LineProfile.scss'
 import { LineProfileDetails } from './LineProfileDetails'
 import { LineProfileRide } from './LineProfileRide'
 import { LineProfileStop } from './LineProfileStop'
@@ -20,6 +18,8 @@ import { useSingleLineData } from 'src/hooks/useSingleLineData'
 import { SearchContext, TimelinePageState } from 'src/model/pageState'
 import StopSelector from 'src/pages/components/StopSelector'
 import Widget from 'src/shared/Widget'
+import dayjs from 'src/pages/components/utils/dayjs'
+import './LineProfile.scss'
 
 const LineProfile = () => {
   const { t } = useTranslation()

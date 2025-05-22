@@ -1,10 +1,10 @@
-import dayjs from 'dayjs'
 import { useContext, useEffect, useMemo, useState } from 'react'
 import { getStopsForRouteAsync } from 'src/api/gtfsService'
 import useVehicleLocations from 'src/api/useVehicleLocations'
 import { BusStop } from 'src/model/busStop'
 import { SearchContext } from 'src/model/pageState'
 import { Point } from 'src/pages/timeBasedMap'
+import dayjs from 'src/pages/components/utils/dayjs'
 
 const formatTime = (time: dayjs.Dayjs) => time.format('HH:mm:ss')
 

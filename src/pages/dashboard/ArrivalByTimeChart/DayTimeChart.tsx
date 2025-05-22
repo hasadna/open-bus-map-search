@@ -1,10 +1,10 @@
+import { Radio, RadioChangeEvent, Skeleton } from 'antd'
 import { FC, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Skeleton, Radio, RadioChangeEvent } from 'antd'
-import { Dayjs } from 'dayjs'
 import ArrivalByTimeChart from './ArrivalByTimeChart'
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
 import Widget from 'src/shared/Widget'
+import { Dayjs } from 'src/pages/components/utils/dayjs'
 
 const convertToGraphCompatibleStruct = (arr: GroupByRes[]) => {
   return arr.map((item: GroupByRes) => ({

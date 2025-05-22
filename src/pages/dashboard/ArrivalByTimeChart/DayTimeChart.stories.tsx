@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import dayjs from 'dayjs'
 import DayTimeChart from './DayTimeChart'
+import dayjs from 'src/pages/components/utils/dayjs'
 
 const meta: Meta<typeof DayTimeChart> = {
   component: DayTimeChart,
