@@ -5,7 +5,7 @@
  */
 
 import _ from 'lodash'
-import moment, { Moment } from 'moment'
+import dayjs from 'dayjs'
 import { useEffect, useState } from 'react'
 import { VehicleLocation } from 'src/model/vehicleLocation'
 
@@ -19,10 +19,10 @@ const config = {
   operatorRefField: 'siri_routes__operator_ref',
 } as const
 
-type Dateable = Date | number | string | Moment
+type Dateable = Date | number | string | dayjs.Dayjs
 
 function formatTime(time: Dateable) {
-  if (moment.isMoment(time)) {
+  if (dayjs.isDayjs(time)) {
     return time.toISOString()
   } else {
     const date = new Date(time).toISOString()
@@ -162,13 +162,13 @@ function getLocations({
 }
 
 function getMinutesInRange(from: Dateable, to: Dateable, gap = 1) {
-  const start = moment(from).startOf('minute')
-  const end = moment(to).startOf('minute')
+  const start = dayjs(from).startOf('minute')
+  const end = dayjs(to).startOf('minute')
 
   // array of minutes to load
   const minutes = Array.from({ length: end.diff(start, 'minutes') / gap }, (_, i) => ({
-    from: start.clone().add(i * gap, 'minutes'),
-    to: start.clone().add((i + 1) * gap, 'minutes'),
+    from: start.add(i * gap, 'minutes'),
+    to: start.add((i + 1) * gap, 'minutes'),
   }))
   return minutes
 }

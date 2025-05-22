@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import moment, { Moment } from 'moment'
+import dayjs from 'dayjs'
 import styled from 'styled-components'
 import { useSessionStorage } from 'usehooks-ts'
 import { Alert, Typography, CircularProgress, Grid, FormControlLabel, Switch } from '@mui/material'
@@ -37,7 +37,7 @@ const GapsPage = () => {
   const [gapsIsLoading, setGapsIsLoading] = useState(false)
   const [onlyGapped, setOnlyGapped] = useSessionStorage('onlyGapped', false)
 
-  function formatTime(time: Moment) {
+  function formatTime(time: dayjs.Dayjs) {
     return time.format(t('time_format'))
   }
 
@@ -72,8 +72,8 @@ const GapsPage = () => {
       }
       setGapsIsLoading(true)
       getGapsAsync(
-        moment(timestamp),
-        moment(timestamp),
+        dayjs(timestamp),
+        dayjs(timestamp),
         operatorId,
         selectedRoute.lineRef,
         source.token,
@@ -97,7 +97,7 @@ const GapsPage = () => {
       return
     }
     setRoutesIsLoading(true)
-    getRoutesAsync(moment(timestamp), moment(timestamp), operatorId, lineNumber, signal)
+    getRoutesAsync(dayjs(timestamp), dayjs(timestamp), operatorId, lineNumber, signal)
       .then((routes) =>
         setSearch((current) =>
           search.lineNumber === lineNumber ? { ...current, routes: routes } : current,
@@ -125,7 +125,7 @@ const GapsPage = () => {
         </Grid>
         <Grid size={{ xs: 8 }}>
           <DateSelector
-            time={moment(timestamp)}
+            time={dayjs(timestamp)}
             onChange={(ts) =>
               setSearch((current) => ({ ...current, timestamp: ts ? ts.valueOf() : 0 }))
             }
@@ -205,7 +205,7 @@ const GapsPage = () => {
             })
             .map((gap, i) => (
               <Row key={i}>
-                <Cell>{formatTime(gap.gtfsTime || gap.siriTime || moment())}</Cell>
+                <Cell>{formatTime(gap.gtfsTime || gap.siriTime || dayjs())}</Cell>
                 <Cell>{formatStatus(gaps, gap)}</Cell>
               </Row>
             ))}

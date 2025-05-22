@@ -1,6 +1,6 @@
 import { CircularProgress, Grid } from '@mui/material'
 import { Tooltip } from 'antd'
-import moment from 'moment'
+import dayjs from 'dayjs'
 import { GtfsRoutePydanticModel } from 'open-bus-stride-client'
 import { useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -39,7 +39,7 @@ const LineProfile = () => {
     if (!route?.id) return
 
     const abortController = new AbortController()
-    const time = moment(route.date)
+    const time = dayjs(route.date)
     getRoutesAsync(
       time,
       time,
@@ -66,16 +66,10 @@ const LineProfile = () => {
 
   const routeIds = useMemo(() => (route?.id ? [route.id] : undefined), [route?.id])
 
-  const {
-    filteredPositions,
-    locationsAreLoading,
-    options,
-    plannedRouteStops,
-    startTime,
-    setStartTime,
-  } = useSingleLineData(route?.lineRef, routeIds)
+  const { positions, locationsAreLoading, options, plannedRouteStops, startTime, setStartTime } =
+    useSingleLineData(route?.lineRef, routeIds)
 
-  const handleTimestampChange = (time: moment.Moment | null) => {
+  const handleTimestampChange = (time: dayjs.Dayjs | null) => {
     if (!time || !route) return
 
     const abortController = new AbortController()
@@ -124,7 +118,7 @@ const LineProfile = () => {
             routeKey={route.routeLongName}
             setRouteKey={handelRouteChange}
           />
-          <DateSelector time={moment(timestamp)} onChange={handleTimestampChange} />
+          <DateSelector time={dayjs(timestamp)} onChange={handleTimestampChange} />
           <Grid container flexWrap="nowrap" alignItems="center">
             <FilterPositionsByStartTimeSelector
               options={options}
@@ -137,7 +131,7 @@ const LineProfile = () => {
               </Tooltip>
             )}
           </Grid>
-          <LineProfileRide point={filteredPositions[0]?.point} />
+          <LineProfileRide point={positions[0]?.point} />
           <StopSelector stops={plannedRouteStops} stopKey={stopKey} setStopKey={handelStopChange} />
           <LineProfileStop
             stop={plannedRouteStops.find((s) => s.key === stopKey)}
@@ -145,10 +139,7 @@ const LineProfile = () => {
           />
         </Grid>
       </Grid>
-      <MapWithLocationsAndPath
-        positions={filteredPositions}
-        plannedRouteStops={plannedRouteStops}
-      />
+      <MapWithLocationsAndPath positions={positions} plannedRouteStops={plannedRouteStops} />
     </PageContainer>
   )
 }

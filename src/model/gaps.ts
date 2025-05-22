@@ -1,7 +1,7 @@
-import moment from 'moment'
+import dayjs from 'dayjs'
 
 export type Gap = {
-  siriTime: moment.Moment | null
-  gtfsTime: moment.Moment | null
+  siriTime: dayjs.Dayjs | null
+  gtfsTime: dayjs.Dayjs | null
 }
 export type GapsList = Gap[]

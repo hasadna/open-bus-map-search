@@ -1,5 +1,5 @@
 import { Grid, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
-import moment from 'moment'
+import dayjs from 'dayjs'
 import { useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
@@ -30,7 +30,7 @@ const OperatorPage = () => {
     setSearch((current) => ({ ...current, operatorId }))
   }
 
-  const handleTimestampChange = (time: moment.Moment | null) => {
+  const handleTimestampChange = (time: dayjs.Dayjs | null) => {
     setSearch((current) => ({ ...current, timestamp: time?.valueOf() ?? Date.now() }))
   }
 
@@ -44,7 +44,7 @@ const OperatorPage = () => {
 
         <Grid size={{ sm: 4, xs: 12 }}>
           <DateSelector
-            time={moment(timestamp)}
+            time={dayjs(timestamp)}
             disabled={!operatorId}
             onChange={handleTimestampChange}
           />
@@ -81,8 +81,8 @@ const OperatorPage = () => {
             <ChartWrapper>
               <WorstLinesChart
                 operatorId={operatorId}
-                startDate={moment(timestamp).add(-1, timeRange)}
-                endDate={moment(timestamp)}
+                startDate={dayjs(timestamp).add(-1, timeRange)}
+                endDate={dayjs(timestamp)}
               />
             </ChartWrapper>
           </Grid>

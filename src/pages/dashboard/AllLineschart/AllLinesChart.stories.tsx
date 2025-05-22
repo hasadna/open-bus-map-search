@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import moment from 'moment'
+import dayjs from 'dayjs'
 import AllLinesChart from './AllLinesChart'
 
 const meta: Meta<typeof AllLinesChart> = {
@@ -15,7 +15,7 @@ const meta: Meta<typeof AllLinesChart> = {
       description: 'The start date of the chart.',
       table: {
         type: {
-          summary: 'Moment',
+          summary: 'Dayjs',
         },
       },
     },
@@ -24,13 +24,13 @@ const meta: Meta<typeof AllLinesChart> = {
       description: 'The end date of the chart.',
       table: {
         type: {
-          summary: 'Moment',
+          summary: 'Dayjs',
         },
       },
     },
   },
   render: (args) => (
-    <AllLinesChart startDate={moment(args.startDate)} endDate={moment(args.endDate)} />
+    <AllLinesChart startDate={dayjs(args.startDate)} endDate={dayjs(args.endDate)} />
   ),
 }
 
@@ -40,7 +40,7 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   args: {
-    startDate: moment(),
-    endDate: moment().add(-7, 'day'),
+    startDate: dayjs(),
+    endDate: dayjs().add(-7, 'day'),
   },
 }

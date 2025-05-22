@@ -4,7 +4,7 @@ import MarkerClusterGroup from 'react-leaflet-cluster'
 import { useTranslation } from 'react-i18next'
 import { Alert, Typography, CircularProgress, Grid, IconButton } from '@mui/material'
 import { OpenInFullRounded } from '@mui/icons-material'
-import moment from 'moment'
+import dayjs from 'dayjs'
 import '../Map.scss'
 import MinuteSelector from '../components/MinuteSelector'
 import { DateSelector } from '../components/DateSelector'
@@ -38,8 +38,8 @@ interface Path {
   vehicleRef: number
 }
 
-const defaultStart = moment('2023-03-14T15:00:00Z')
-const defaultEnd = moment(defaultStart).add(1, 'minutes')
+const defaultStart = dayjs('2023-03-14T15:00:00Z')
+const defaultEnd = dayjs(defaultStart).add(1, 'minutes')
 
 export default function TimeBasedMapPage() {
   const [isExpanded, setIsExpanded] = useState<boolean>(false)
@@ -118,8 +118,8 @@ export default function TimeBasedMapPage() {
             time={to}
             onChange={(ts) => {
               const val = ts ? ts : to
-              setFrom(moment(val).subtract(moment(to).diff(moment(from)))) // keep the same time difference
-              setTo(moment(val))
+              setFrom(dayjs(val).subtract(dayjs(to).diff(dayjs(from)))) // keep the same time difference
+              setTo(dayjs(val))
             }}
           />
         </Grid>
@@ -128,8 +128,8 @@ export default function TimeBasedMapPage() {
             time={to}
             onChange={(ts) => {
               const val = ts ? ts : from
-              setFrom(moment(val).subtract(moment(to).diff(moment(from))))
-              setTo(moment(val)) // keep the same time difference
+              setFrom(dayjs(val).subtract(dayjs(to).diff(dayjs(from))))
+              setTo(dayjs(val)) // keep the same time difference
             }}
           />
         </Grid>
@@ -141,7 +141,7 @@ export default function TimeBasedMapPage() {
           <MinuteSelector
             num={to.diff(from) / 1000 / 60}
             setNum={(num) => {
-              setFrom(moment(to).subtract(Math.abs(+num) || 1, 'minutes'))
+              setFrom(dayjs(to).subtract(Math.abs(+num) || 1, 'minutes'))
             }}
           />
         </Grid>
@@ -155,8 +155,8 @@ export default function TimeBasedMapPage() {
             {loaded} {`- `}
             {t('show_x_bus_locations')} {` `}
             {t('from_time_x_to_time_y')
-              .replace('XXX', moment(from).locale(i18n.language).format('hh:mm A'))
-              .replace('YYY', moment(to).locale(i18n.language).format('hh:mm A'))}
+              .replace('XXX', dayjs(from).locale(i18n.language).format('hh:mm A'))
+              .replace('YYY', dayjs(to).locale(i18n.language).format('hh:mm A'))}
           </p>
         </Grid>
         <Grid size={{ xs: 1 }}>{isLoading && <CircularProgress size="20px" />}</Grid>

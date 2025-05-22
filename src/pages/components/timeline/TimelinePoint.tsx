@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { Moment } from 'moment'
+import { Dayjs } from 'dayjs'
 
 export const POINT_SIZE = 8
 
@@ -53,7 +53,7 @@ const Label = styled.div<PointProps>`
 `
 
 type LabeledPointProps = {
-  timestamp: Moment
+  timestamp: Dayjs
 } & PointProps
 
 export const LabeledPoint = ({ timestamp, top, type }: LabeledPointProps) => {

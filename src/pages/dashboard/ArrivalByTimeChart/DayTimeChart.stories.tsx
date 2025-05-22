@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import moment from 'moment'
+import dayjs from 'dayjs'
 import DayTimeChart from './DayTimeChart'
 
 const meta: Meta<typeof DayTimeChart> = {
@@ -15,7 +15,7 @@ const meta: Meta<typeof DayTimeChart> = {
       description: 'The start date of the chart.',
       table: {
         type: {
-          summary: 'Moment',
+          summary: 'Dayjs',
         },
       },
     },
@@ -24,7 +24,7 @@ const meta: Meta<typeof DayTimeChart> = {
       description: 'The end date of the chart.',
       table: {
         type: {
-          summary: 'Moment',
+          summary: 'Dayjs',
         },
       },
     },
@@ -35,8 +35,8 @@ const meta: Meta<typeof DayTimeChart> = {
   },
   render: (args) => (
     <DayTimeChart
-      startDate={moment(args.startDate)}
-      endDate={moment(args.endDate)}
+      startDate={dayjs(args.startDate)}
+      endDate={dayjs(args.endDate)}
       operatorId={args.operatorId}
     />
   ),
@@ -48,8 +48,8 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   args: {
-    startDate: moment(),
-    endDate: moment().add(-7, 'day'),
+    startDate: dayjs(),
+    endDate: dayjs().add(-7, 'day'),
     operatorId: '3',
   },
 }

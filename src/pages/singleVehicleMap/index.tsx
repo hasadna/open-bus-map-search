@@ -1,4 +1,4 @@
-import moment from 'moment'
+import dayjs from 'dayjs'
 import { useContext, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { CircularProgress, Tooltip } from '@mui/material'
@@ -31,8 +31,8 @@ const SingleVehicleMap = () => {
     }
 
     getRoutesAsync(
-      moment(timestamp),
-      moment(timestamp),
+      dayjs(timestamp),
+      dayjs(timestamp),
       operatorId,
       vehicleNumber?.toString(),
       signal,
@@ -68,7 +68,7 @@ const SingleVehicleMap = () => {
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
         <Grid size={{ sm: 4, xs: 12 }}>
           <DateSelector
-            time={moment(timestamp)}
+            time={dayjs(timestamp)}
             onChange={(ts) =>
               setSearch((current) => ({ ...current, timestamp: ts?.valueOf() ?? Date.now() }))
             }

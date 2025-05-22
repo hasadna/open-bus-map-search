@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import moment from 'moment'
+import dayjs from 'dayjs'
 import { BASE_PATH } from './apiConfig'
 
 export interface Agency {
@@ -11,8 +11,8 @@ export interface Agency {
 let agencyList: Agency[]
 
 const tryDates = [
-  moment().subtract(1, 'day').format('YYYY-MM-DD'),
-  moment().subtract(8, 'day').format('YYYY-MM-DD'),
+  dayjs().subtract(1, 'day').format('YYYY-MM-DD'),
+  dayjs().subtract(8, 'day').format('YYYY-MM-DD'),
   '2025-05-18',
 ]
 

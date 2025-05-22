@@ -1,6 +1,6 @@
 import { Stack, Typography } from '@mui/material'
 import { Skeleton } from 'antd'
-import moment from 'moment'
+import dayjs from 'dayjs'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Cell, Pie, PieChart } from 'recharts'
@@ -19,8 +19,8 @@ export const OperatorGaps = ({
 }) => {
   const { t, i18n } = useTranslation()
   const [groupByOperatorData, isLoading] = useGroupBy({
-    dateFrom: moment(timestamp).add(-1, timeRange),
-    dateTo: moment(timestamp),
+    dateFrom: dayjs(timestamp).add(-1, timeRange),
+    dateTo: dayjs(timestamp),
     groupBy: 'operator_ref',
   })
 

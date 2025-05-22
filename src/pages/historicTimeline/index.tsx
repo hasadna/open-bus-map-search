@@ -1,7 +1,7 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import styled from 'styled-components'
 import { useTranslation } from 'react-i18next'
-import moment from 'moment'
+import dayjs from 'dayjs'
 import { Grid, Typography, Alert, CircularProgress } from '@mui/material'
 import { PageContainer } from '../components/PageContainer'
 import { SearchContext, TimelinePageState } from '../../model/pageState'
@@ -70,7 +70,7 @@ const TimelinePage = () => {
       return
     }
     setRoutesIsLoading(true)
-    getRoutesAsync(moment(timestamp), moment(timestamp), operatorId, lineNumber, signal)
+    getRoutesAsync(dayjs(timestamp), dayjs(timestamp), operatorId, lineNumber, signal)
       .then((routes) =>
         setSearch((current) =>
           search.lineNumber === lineNumber ? { ...current, routes: routes } : current,
@@ -96,7 +96,7 @@ const TimelinePage = () => {
       return
     }
     setStopsIsLoading(true)
-    getStopsForRouteAsync(selectedRouteIds, moment(timestamp))
+    getStopsForRouteAsync(selectedRouteIds, dayjs(timestamp))
       .then((stops) => setState((current) => ({ ...current, stops: stops })))
       .finally(() => setStopsIsLoading(false))
   }, [selectedRouteIds, routeKey, clearStops])
@@ -112,8 +112,8 @@ const TimelinePage = () => {
     if (stop) {
       setHitsIsLoading(true)
       Promise.all([
-        getGtfsStopHitTimesAsync(stop, moment(timestamp)),
-        getSiriStopHitTimesAsync(selectedRoute, stop, moment(timestamp)),
+        getGtfsStopHitTimesAsync(stop, dayjs(timestamp)),
+        getSiriStopHitTimesAsync(selectedRoute, stop, dayjs(timestamp)),
       ])
         .then(([gtfsTimes, siriTimes]) =>
           setState((current) => ({ ...current, gtfsHitTimes: gtfsTimes, siriHitTimes: siriTimes })),
@@ -152,7 +152,7 @@ const TimelinePage = () => {
         </Grid>
         <Grid size={{ sm: 8, xs: 12 }}>
           <DateSelector
-            time={moment(timestamp)}
+            time={dayjs(timestamp)}
             onChange={(ts) =>
               setSearch((current) => ({ ...current, timestamp: ts ? ts.valueOf() : 0 }))
             }
@@ -234,7 +234,7 @@ const TimelinePage = () => {
         siriHitTimes !== undefined &&
         (gtfsHitTimes.length > 0 || siriHitTimes.length > 0 ? (
           <StyledTimelineBoard
-            target={moment(timestamp)}
+            target={dayjs(timestamp)}
             gtfsTimes={gtfsHitTimes}
             siriTimes={siriHitTimes}
           />

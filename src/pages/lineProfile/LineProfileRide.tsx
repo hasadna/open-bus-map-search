@@ -1,4 +1,4 @@
-import moment from 'moment'
+import dayjs from 'dayjs'
 import { useTranslation } from 'react-i18next'
 import { InfoItem, InfoTable } from '../components/InfoTable'
 import { vehicleIDFormat } from '../components/utils/rotueUtils'
@@ -26,7 +26,7 @@ export const LineProfileRide = ({ point }: { point?: VehicleLocation }) => {
           label={t('lineProfile.ride.scheduled')}
           value={
             point?.siri_ride__scheduled_start_time
-              ? moment(point?.siri_ride__scheduled_start_time).format(t('datetime_format'))
+              ? dayjs(point?.siri_ride__scheduled_start_time).format(t('datetime_format'))
               : undefined
           }
         />

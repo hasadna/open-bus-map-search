@@ -1,9 +1,8 @@
 import { useContext, useEffect, useState } from 'react'
 import './GapsPatternsPage.scss'
-import { Moment } from 'moment'
 import { Skeleton, Radio, RadioChangeEvent, Space } from 'antd'
 import { CircularProgress, Grid, Typography, Alert } from '@mui/material'
-import moment from 'moment/moment'
+import dayjs from 'dayjs'
 import {
   Bar,
   CartesianGrid,
@@ -38,11 +37,11 @@ import Widget from 'src/shared/Widget'
 interface BusLineStatisticsProps {
   lineRef: number
   operatorRef: string
-  fromDate: Moment
-  toDate: Moment
+  fromDate: dayjs.Dayjs
+  toDate: dayjs.Dayjs
 }
 
-const now = moment()
+const now = dayjs()
 
 const CustomTooltip = ({ active, payload }: TooltipProps<number, string>) => {
   if (active && payload && payload.length > 1) {
@@ -151,8 +150,8 @@ const GapsPatternsPage = () => {
   const loadSearchData = async (signal: AbortSignal | undefined) => {
     setRoutesIsLoading(true)
     const routes = await getRoutesAsync(
-      moment(startDate),
-      moment(endDate),
+      dayjs(startDate),
+      dayjs(endDate),
       operatorId as string,
       lineNumber as string,
       signal,

@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react'
-import moment from 'moment'
+import dayjs from 'dayjs'
 import { Grid } from '@mui/material'
 import { useTranslation } from 'react-i18next'
 import { Skeleton } from 'antd'
@@ -21,7 +21,7 @@ import OperatorSelector from '../components/OperatorSelector'
 import { useGroupBy } from 'src/api/groupByService'
 import Widget from 'src/shared/Widget'
 
-const now = moment()
+const now = dayjs()
 const unique: (value: string, index: number, self: string[]) => boolean = (value, index, self) =>
   self.indexOf(value) === index
 
@@ -41,7 +41,7 @@ function StackedResearchSection() {
   const [startDate, setStartDate] = useDate(now.clone().subtract(7, 'days'))
   const [endDate, setEndDate] = useDate(now.clone().subtract(1, 'day'))
   const [operatorId, setOperatorId] = useState('')
-  const [groupByHour, setGroupByHour] = React.useState<boolean>(false)
+  const [groupByHour, setGroupByHour] = useState<boolean>(false)
   const [graphData, loadingGraph] = useGroupBy({
     dateTo: endDate,
     dateFrom: startDate,
@@ -99,10 +99,10 @@ function StackedResearchInputs({
   operatorId,
   setOperatorId,
 }: {
-  startDate: moment.Moment
-  setStartDate: (date: moment.Moment) => void
-  endDate: moment.Moment
-  setEndDate: (date: moment.Moment) => void
+  startDate: dayjs.Dayjs
+  setStartDate: (date: dayjs.Dayjs) => void
+  endDate: dayjs.Dayjs
+  setEndDate: (date: dayjs.Dayjs) => void
   groupByHour: boolean
   setGroupByHour: (value: boolean) => void
   operatorId: string

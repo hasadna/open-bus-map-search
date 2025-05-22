@@ -1,6 +1,6 @@
 import { MultipleStopOutlined } from '@mui/icons-material'
 import { Grid, Typography } from '@mui/material'
-import moment from 'moment'
+import dayjs from 'dayjs'
 import { GtfsRoutePydanticModel } from 'open-bus-stride-client'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
@@ -59,7 +59,7 @@ export const LineProfileDetails = ({
 
         <InfoTable>
           <InfoItem label={t('lineProfile.id')} value={id} />
-          <InfoItem label={t('lineProfile.date')} value={moment(date).format('DD-MM-YYYY')} />
+          <InfoItem label={t('lineProfile.date')} value={dayjs(date).format('DD-MM-YYYY')} />
           <InfoItem label={t('lineProfile.lineReference')} value={lineRef} />
           <InfoItem
             label={t('lineProfile.operatorReference')}

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
 // Services and libraries
-import moment from 'moment'
+import dayjs from 'dayjs'
 // Styling
 import './DashboardPage.scss'
 import 'src/App.scss'
@@ -19,11 +19,11 @@ import WorstLinesChart from './WorstLinesChart/WorstLinesChart'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
 
 // Declarations
-const now = moment()
+const now = dayjs()
 
 const DashboardPage = () => {
-  const [startDate, setStartDate] = useDate(now.clone().subtract(7, 'days'))
-  const [endDate, setEndDate] = useDate(now.clone().subtract(1, 'day'))
+  const [startDate, setStartDate] = useDate(now.subtract(7, 'day'))
+  const [endDate, setEndDate] = useDate(now.subtract(1, 'day'))
   const [operatorId, setOperatorId] = useState('')
   const { t } = useTranslation()
 

@@ -1,5 +1,5 @@
 import agencyList from 'open-bus-stride-client/agencies/agencyList'
-import { Moment } from 'moment'
+import { Dayjs } from 'dayjs'
 import { useQuery } from '@tanstack/react-query'
 import { BASE_PATH } from './apiConfig'
 
@@ -96,8 +96,8 @@ export function useGroupBy({
   dateFrom,
   groupBy,
 }: {
-  dateTo: Moment
-  dateFrom: Moment
+  dateTo: Dayjs
+  dateFrom: Dayjs
   groupBy: groupByFields
 }) {
   const dateToStr = dateTo.toISOString().split('T')[0]

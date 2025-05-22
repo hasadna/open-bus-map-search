@@ -1,16 +1,19 @@
 import './App.scss'
 import 'leaflet/dist/leaflet.css'
-import 'moment/locale/he'
+import 'dayjs/locale/he'
 import { useTranslation } from 'react-i18next'
 import { RouterProvider } from 'react-router'
 import { Suspense, useEffect } from 'react'
-import moment from 'moment-timezone'
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
+import timezone from 'dayjs/plugin/timezone'
 import Preloader from './shared/Preloader'
 import router from './routes'
-import 'moment/dist/locale/he'
 
-moment.tz.setDefault('Asia/Jerusalem')
-moment.locale('he')
+dayjs.extend(utc)
+dayjs.extend(timezone)
+dayjs.tz.setDefault('Asia/Jerusalem')
+dayjs.locale('he')
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker

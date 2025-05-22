@@ -4,7 +4,7 @@ import { heIL, enUS } from '@mui/material/locale'
 import { heIL as dateHeIL, enUS as dateEnUS } from '@mui/x-date-pickers/locales'
 
 import { LocalizationProvider } from '@mui/x-date-pickers'
-import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { ConfigProvider, theme } from 'antd'
 import antdHeIL from 'antd/es/locale/he_IL'
 import { useTranslation } from 'react-i18next'
@@ -57,7 +57,7 @@ export const ThemeProvider: FC<PropsWithChildren> = ({ children }) => {
   }, [isDarkTheme, i18n.language])
 
   return (
-    <LocalizationProvider dateAdapter={AdapterMoment} adapterLocale={i18n.language}>
+    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={i18n.language}>
       <ConfigProvider
         direction={i18n.language === 'he' ? 'rtl' : 'ltr'}
         locale={antdHeIL}

@@ -1,5 +1,5 @@
 import { createContext, Dispatch } from 'react'
-import moment from 'moment'
+import dayjs from 'dayjs'
 import {
   GtfsRideStopPydanticModel,
   SiriVehicleLocationWithRelatedPydanticModel,
@@ -22,7 +22,7 @@ type MutateStateAction<S> = (prevState: S) => S
 export const SearchContext = createContext<{
   search: PageSearchState
   setSearch: Dispatch<MutateStateAction<PageSearchState>>
-}>({ search: { timestamp: moment().valueOf() }, setSearch: (search) => search })
+}>({ search: { timestamp: dayjs().valueOf() }, setSearch: (search) => search })
 
 export type TimelinePageState = {
   stops?: BusStop[]

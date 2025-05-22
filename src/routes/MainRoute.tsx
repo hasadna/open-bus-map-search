@@ -1,13 +1,13 @@
 import { useCallback, useEffect } from 'react'
 import 'leaflet/dist/leaflet.css'
 import { useSearchParams, useLocation } from 'react-router'
-import moment from 'moment'
+import dayjs from 'dayjs'
 import { useSessionStorage } from 'usehooks-ts'
 import ReactGA from 'react-ga4'
 import { CacheProvider } from '@emotion/react'
 import createCache from '@emotion/cache'
 import rtlPlugin from 'stylis-plugin-rtl'
-import 'moment/locale/he'
+import 'dayjs/locale/he'
 import { PageSearchState, SearchContext } from '../model/pageState'
 import { ThemeProvider } from '../layout/ThemeContext'
 import { PAGES } from '../routes'
@@ -33,7 +33,7 @@ export const MainRoute = () => {
   }, [location])
 
   const [search, setSearch] = useSessionStorage<PageSearchState>('search', {
-    timestamp: +timestamp! || moment().valueOf(),
+    timestamp: +timestamp! || dayjs().valueOf(),
     operatorId: operatorId || '',
     lineNumber: lineNumber || '',
     vehicleNumber: vehicleNumber ? Number(vehicleNumber) : undefined,

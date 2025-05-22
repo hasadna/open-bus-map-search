@@ -1,8 +1,8 @@
-import moment from 'moment'
+import dayjs from 'dayjs'
 
 export type DataAndTimeSelectorProps = {
-  time: moment.Moment
-  onChange: (timeValid: moment.Moment | null) => void
+  time: dayjs.Dayjs
+  onChange: (timeValid: dayjs.Dayjs | null) => void
   customLabel?: string
-  minDate?: moment.Moment
+  minDate?: dayjs.Dayjs
 }

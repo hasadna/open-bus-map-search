@@ -1,4 +1,4 @@
-import moment, { Moment } from 'moment'
+import dayjs from 'dayjs'
 import styled from 'styled-components'
 import {
   GtfsRideStopPydanticModel,
@@ -46,7 +46,7 @@ type TimelineProps = {
     | Date[]
   totalHeight: number
   pointType: PointType
-  timestampToTop: (timestamp: Moment) => number
+  timestampToTop: (timestamp: dayjs.Dayjs) => number
 }
 
 export const Timeline = ({
@@ -73,9 +73,9 @@ export const Timeline = ({
         return (
           <LabeledPoint
             key={t.toString()}
-            top={timestampToTop(moment(t))}
+            top={timestampToTop(dayjs(t))}
             type={pointType}
-            timestamp={moment(t)}
+            timestamp={dayjs(t)}
           />
         )
       })}

@@ -1,5 +1,5 @@
 import i18next from 'i18next'
-import moment from 'moment'
+import dayjs from 'dayjs'
 import TimelinePage from '../src/test_pages/TimelinePage'
 import { getPastDate, test, expect, urlMatcher, loadTranslate } from './utils'
 
@@ -158,8 +158,8 @@ test('the dateFrom parameter should be recent when visiting the "Trips history"'
   const request = await apiRequest
   const url = new URL(request.url())
   const dateFromParam = url.searchParams.get('date_from')
-  const dateFrom = moment(dateFromParam)
-  const daysAgo = moment().diff(dateFrom, 'days')
+  const dateFrom = dayjs(dateFromParam)
+  const daysAgo = dayjs().diff(dateFrom, 'days')
 
   expect(daysAgo).toBeGreaterThanOrEqual(0)
   expect(daysAgo).toBeLessThanOrEqual(3)

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Moment } from 'moment'
+import dayjs from 'dayjs'
 import axios from 'axios'
 import { getGapsAsync } from '../../api/gapsService'
 
@@ -36,8 +36,8 @@ export const convertGapsToHourlyStruct = (gapsList: GapsList): HourlyDataList =>
 }
 
 export const useGapsList = (
-  fromDate: Moment,
-  toDate: Moment,
+  fromDate: dayjs.Dayjs,
+  toDate: dayjs.Dayjs,
   operatorRef: string,
   lineRef: number,
   sortingMode: string,

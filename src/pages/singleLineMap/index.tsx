@@ -1,5 +1,5 @@
 import { CircularProgress, Grid, Tooltip, Typography } from '@mui/material'
-import moment from 'moment'
+import dayjs from 'dayjs'
 import { useContext, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { SearchContext } from '../../model/pageState'
@@ -30,7 +30,7 @@ const SingleLineMapPage = () => {
     }
 
     const controller = new AbortController()
-    const time = moment(timestamp)
+    const time = dayjs(timestamp)
 
     getRoutesAsync(time, time, operatorId, lineNumber, controller.signal)
       .then((routes) => {
@@ -58,17 +58,10 @@ const SingleLineMapPage = () => {
     [routes, routeKey],
   )
 
-  const {
-    positions,
-    filteredPositions,
-    locationsAreLoading,
-    options,
-    plannedRouteStops,
-    startTime,
-    setStartTime,
-  } = useSingleLineData(selectedRoute?.lineRef, selectedRoute?.routeIds)
+  const { positions, locationsAreLoading, options, plannedRouteStops, startTime, setStartTime } =
+    useSingleLineData(selectedRoute?.lineRef, selectedRoute?.routeIds)
 
-  const handleTimestampChange = (time: moment.Moment | null) => {
+  const handleTimestampChange = (time: dayjs.Dayjs | null) => {
     setSearch((current) => ({ ...current, timestamp: time?.valueOf() ?? Date.now() }))
   }
 
@@ -98,7 +91,7 @@ const SingleLineMapPage = () => {
         <Grid container spacing={2} size={{ xs: 12 }}>
           {/* choose date*/}
           <Grid size={{ sm: 4, xs: 12 }}>
-            <DateSelector time={moment(timestamp)} onChange={handleTimestampChange} />
+            <DateSelector time={dayjs(timestamp)} onChange={handleTimestampChange} />
           </Grid>
           {/* choose operator */}
           <Grid size={{ sm: 4, xs: 12 }}>
@@ -145,7 +138,7 @@ const SingleLineMapPage = () => {
         </Grid>
       </Grid>
       <MapWithLocationsAndPath
-        positions={filteredPositions}
+        positions={positions}
         plannedRouteStops={plannedRouteStops}
         showNavigationButtons
       />
