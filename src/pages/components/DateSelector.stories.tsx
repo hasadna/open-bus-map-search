@@ -14,12 +14,8 @@ const meta = {
     layout: 'centered',
   },
   args: {
-<<<<<<< HEAD
-    time: moment().startOf('day'),
-    onChange: () => {},
-=======
     time: dayjs().startOf('day'),
->>>>>>> main
+    onChange: () => {},
   },
   argTypes: {
     time: {
