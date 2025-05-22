@@ -15,7 +15,6 @@ import InfoYoutubeModal from '../components/YoutubeModal'
 import { getColorByHashString } from '../dashboard/AllLineschart/OperatorHbarChart/utils'
 import getAgencyList, { Agency } from 'src/api/agencyList'
 import useVehicleLocations from 'src/api/useVehicleLocations'
-import i18n from 'src/locale/allTranslations'
 import { VehicleLocation } from 'src/model/vehicleLocation'
 import { BusToolTip } from 'src/pages/components/map-related/MapLayers/BusToolTip'
 import { INPUT_SIZE } from 'src/resources/sizes'
@@ -38,9 +37,6 @@ interface Path {
   vehicleRef: number
 }
 
-const defaultStart = dayjs('2023-03-14T15:00:00Z')
-const defaultEnd = dayjs(defaultStart).add(1, 'minutes')
-
 export default function TimeBasedMapPage() {
   const [isExpanded, setIsExpanded] = useState<boolean>(false)
   const toggleExpanded = useCallback(() => setIsExpanded((expanded) => !expanded), [])
@@ -51,13 +47,10 @@ export default function TimeBasedMapPage() {
   }
 
   //TODO (another PR and another issue) load from url like in another pages.
-  const [from, setFrom] = useState(defaultStart)
-  const [to, setTo] = useState(defaultEnd)
+  const [from, setFrom] = useState(dayjs('2023-03-14T15:00:00Z'))
+  const [to, setTo] = useState(dayjs(from).add(1, 'minutes'))
 
-  const { locations, isLoading } = useVehicleLocations({
-    from,
-    to,
-  })
+  const { locations, isLoading } = useVehicleLocations({ from, to })
 
   const loaded = locations.length
   const { t } = useTranslation()
@@ -152,11 +145,9 @@ export default function TimeBasedMapPage() {
         {/* loaded info */}
         <Grid size={{ xs: 11 }}>
           <p>
-            {loaded} {`- `}
-            {t('show_x_bus_locations')} {` `}
-            {t('from_time_x_to_time_y')
-              .replace('XXX', dayjs(from).locale(i18n.language).format('hh:mm A'))
-              .replace('YYY', dayjs(to).locale(i18n.language).format('hh:mm A'))}
+            {`${loaded}- ${t('show_x_bus_locations')} ${t('from_time_x_to_time_y')
+              .replace('XXX', dayjs(from).format('LT'))
+              .replace('YYY', dayjs(to).format('LT'))}`}
           </p>
         </Grid>
         <Grid size={{ xs: 1 }}>{isLoading && <CircularProgress size="20px" />}</Grid>
