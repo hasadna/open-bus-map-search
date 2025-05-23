@@ -31,12 +31,6 @@ export const ThemeProvider = ({ children }: PropsWithChildren) => {
   const [language, setLanguage] = useLocalStorage<string>('language', 'he')
   const { i18n } = useTranslation()
 
-  useEffect(() => {
-    const forceLang = language === 'en' ? 'en' : 'he'
-    if (i18n.language !== forceLang) i18n.changeLanguage(forceLang)
-    if (language !== forceLang) setLanguage(forceLang)
-  }, [language, i18n, setLanguage])
-
   const toggleTheme = useCallback(() => setIsDarkTheme((prev) => !prev), [setIsDarkTheme])
 
   const toggleLanguage = useCallback(() => {
@@ -53,6 +47,12 @@ export const ThemeProvider = ({ children }: PropsWithChildren) => {
     }),
     [isDarkTheme, toggleLanguage, toggleTheme],
   )
+
+  useEffect(() => {
+    const forceLang = language === 'en' ? 'en' : 'he'
+    if (i18n.language !== forceLang) i18n.changeLanguage(forceLang)
+    if (language !== forceLang) setLanguage(forceLang)
+  }, [language, i18n, setLanguage])
 
   const muiTheme = useMemo(() => {
     const isEnglish = language === 'en'
