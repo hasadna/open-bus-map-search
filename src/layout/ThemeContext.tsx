@@ -5,6 +5,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { enUS as dateEnUS, heIL as dateHeIL } from '@mui/x-date-pickers/locales'
 import { ConfigProvider, ConfigProviderProps, theme as antdlgorithm } from 'antd'
 import antdHeIL from 'antd/es/locale/he_IL'
+import antdEnUS from 'antd/es/locale/en_US'
 import {
   PropsWithChildren,
   createContext,
@@ -72,7 +73,7 @@ export const ThemeProvider = ({ children }: PropsWithChildren) => {
     const direction = language === 'he' ? 'rtl' : 'ltr'
     return {
       direction,
-      locale: language === 'he' ? antdHeIL : undefined,
+      locale: language === 'he' ? antdHeIL : antdEnUS,
       theme: {
         algorithm: isDarkTheme ? antdlgorithm.darkAlgorithm : antdlgorithm.defaultAlgorithm,
         token: {
