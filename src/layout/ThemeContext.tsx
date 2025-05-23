@@ -55,7 +55,8 @@ export const ThemeProvider = ({ children }: PropsWithChildren) => {
   )
 
   const muiTheme = useMemo(() => {
-    const direction = language === 'he' ? 'rtl' : 'ltr'
+    const isEnglish = language === 'en'
+    const direction = isEnglish ? 'ltr' : 'rtl'
     document.documentElement.dir = direction
     document.documentElement.lang = language || 'he'
     dayjs.locale(language)
@@ -64,16 +65,15 @@ export const ThemeProvider = ({ children }: PropsWithChildren) => {
         direction,
         palette: { mode: isDarkTheme ? 'dark' : 'light' },
       },
-      language === 'he' ? heIL : enUS,
-      language === 'he' ? dateHeIL : dateEnUS,
+      isEnglish ? enUS : heIL,
+      isEnglish ? dateEnUS : dateHeIL,
     )
   }, [isDarkTheme, language])
 
   const antdTheme = useMemo<ConfigProviderProps>(() => {
-    const direction = language === 'he' ? 'rtl' : 'ltr'
     return {
-      direction,
-      locale: language === 'he' ? antdHeIL : antdEnUS,
+      direction: language === 'en' ? 'ltr' : 'rtl',
+      locale: language === 'en' ? antdEnUS : antdHeIL,
       theme: {
         algorithm: isDarkTheme ? antdlgorithm.darkAlgorithm : antdlgorithm.defaultAlgorithm,
         token: {
