@@ -4,8 +4,8 @@ import { LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { enUS as dateEnUS, heIL as dateHeIL } from '@mui/x-date-pickers/locales'
 import { ConfigProvider, ConfigProviderProps, theme as antdlgorithm } from 'antd'
-import antdHeIL from 'antd/es/locale/he_IL'
 import antdEnUS from 'antd/es/locale/en_US'
+import antdHeIL from 'antd/es/locale/he_IL'
 import {
   PropsWithChildren,
   createContext,
@@ -15,8 +15,8 @@ import {
   useMemo,
 } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useLocalStorage } from 'usehooks-ts'
 import dayjs from 'src/dayjs'
-import { useLocalStorage } from 'src/locale/useLocalStorage'
 
 export interface ThemeContextInterface {
   toggleTheme: () => void
