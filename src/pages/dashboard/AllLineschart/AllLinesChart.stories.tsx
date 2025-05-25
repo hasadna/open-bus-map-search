@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { getPastDate, waitForContent } from '../../../../.storybook/main'
+import { getPastDate } from '../../../../.storybook/main'
 import AllLinesChart from './AllLinesChart'
 import dayjs from 'src/dayjs'
 
@@ -28,7 +28,6 @@ const meta = {
   render: (args) => (
     <AllLinesChart startDate={dayjs(args.startDate)} endDate={dayjs(args.endDate)} />
   ),
-  play: waitForContent,
 } satisfies Meta<typeof AllLinesChart>
 
 export default meta
