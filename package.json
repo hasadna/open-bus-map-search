@@ -4,8 +4,6 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "@applitools/eyes-playwright": "^1.37.2",
-    "@applitools/eyes-storybook": "^3.55.5",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@mui/icons-material": "^7.1.0",
@@ -81,6 +79,8 @@
     ]
   },
   "devDependencies": {
+    "@applitools/eyes-playwright": "^1.37.2",
+    "@applitools/eyes-storybook": "^3.55.5",
     "@babel/preset-env": "^7.27.2",
     "@babel/preset-react": "^7.27.1",
     "@eslint/eslintrc": "^3.3.1",
