@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { getPastDate, waitForContent } from '../../../../.storybook/main'
+import { getPastDate } from '../../../../.storybook/main'
 import DayTimeChart from './DayTimeChart'
 import dayjs from 'src/dayjs'
 
@@ -38,7 +38,6 @@ const meta = {
       operatorId={args.operatorId}
     />
   ),
-  play: waitForContent,
 } satisfies Meta<typeof DayTimeChart>
 
 export default meta
