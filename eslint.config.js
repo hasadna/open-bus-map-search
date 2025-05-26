@@ -28,6 +28,7 @@ export default [
       'jest.config.ts',
       '**/*.js',
       'public',
+      'applitools.config.cjs',
     ],
   },
   {

@@ -1,14 +1,15 @@
 import { Meta, StoryObj } from '@storybook/react'
 import LinesHbarChart from './LinesHbarChart'
 
-const meta: Meta<typeof LinesHbarChart> = {
-  title: 'Components/MapLayers/HbarChart/LinesHBarChart',
+const meta = {
+  title: 'Pages/Dashboard/Bar/LinesHbarChart',
   component: LinesHbarChart,
-  tags: ['autodocs'],
-}
+} satisfies Meta<typeof LinesHbarChart>
 
 export default meta
+
 type Story = StoryObj<typeof LinesHbarChart>
+
 const mockLines = [
   {
     id: '1',

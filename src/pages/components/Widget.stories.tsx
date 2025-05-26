@@ -16,7 +16,6 @@ const meta = {
   parameters: {
     layout: 'centered',
   },
-  tags: ['autodocs'],
 } satisfies Meta<typeof BusToolTip>
 
 export default meta

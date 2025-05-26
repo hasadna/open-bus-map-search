@@ -4,7 +4,6 @@ import Widget from 'src/shared/Widget'
 
 const meta = {
   component: InfoItem,
-  tags: ['autodocs'],
   title: 'Components/InfoTable/InfoItem',
   args: { label: 'Label' },
   argTypes: {

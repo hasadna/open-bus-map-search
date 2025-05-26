@@ -15,7 +15,6 @@ const meta = {
       </Widget>
     ),
   ],
-  tags: ['autodocs'],
 } satisfies Meta<typeof BusToolTip>
 
 export default meta

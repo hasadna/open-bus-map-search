@@ -5,7 +5,6 @@ import Widget from 'src/shared/Widget'
 const meta = {
   component: MapFooterButtons,
   title: 'Map/Layers/MapFooterButtons',
-  tags: ['autodocs'],
   parameters: {
     layout: 'centered',
   },

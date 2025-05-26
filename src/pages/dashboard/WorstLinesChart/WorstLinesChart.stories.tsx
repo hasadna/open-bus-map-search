@@ -1,14 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react'
+import { getPastDate } from '../../../../.storybook/main'
 import WorstLinesChart from './WorstLinesChart'
 import dayjs from 'src/dayjs'
 
-const meta: Meta<typeof WorstLinesChart> = {
+const meta = {
   component: WorstLinesChart,
   title: 'Pages/Dashboard/WorstLinesChart',
-  tags: ['autodocs'],
-  parameters: {
-    layout: 'centered',
-  },
   argTypes: {
     startDate: {
       control: 'date',
@@ -35,7 +32,7 @@ const meta: Meta<typeof WorstLinesChart> = {
       operatorId={args.operatorId}
     />
   ),
-}
+} satisfies Meta<typeof WorstLinesChart>
 
 export default meta
 
@@ -43,8 +40,8 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   args: {
-    startDate: dayjs(),
-    endDate: dayjs().add(-7, 'day'),
+    startDate: dayjs(getPastDate()).subtract(7, 'day'),
+    endDate: dayjs(getPastDate()),
     operatorId: '3',
   },
 }

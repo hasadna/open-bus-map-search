@@ -1,13 +1,13 @@
 import { Meta, StoryObj } from '@storybook/react'
 import OperatorHbarChart from './OperatorHbarChart'
 
-const meta: Meta<typeof OperatorHbarChart> = {
-  title: 'Components/MapLayers/HbarChart/OperatorHbarChart',
+const meta = {
+  title: 'Pages/Dashboard/Bar/OperatorHbarChart',
   component: OperatorHbarChart,
-  tags: ['autodocs'],
-}
+} satisfies Meta<typeof OperatorHbarChart>
 
 export default meta
+
 type Story = StoryObj<typeof OperatorHbarChart>
 
 const mockOperatorsData = [
