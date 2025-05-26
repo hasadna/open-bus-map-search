@@ -5,9 +5,6 @@ import { OperatorRoutes } from './OperatorRoutes'
 const meta = {
   component: OperatorRoutes,
   title: 'Pages/Operator/OperatorRoutes',
-  parameters: {
-    layout: 'centered',
-  },
   argTypes: {
     operatorId: {
       control: 'text',

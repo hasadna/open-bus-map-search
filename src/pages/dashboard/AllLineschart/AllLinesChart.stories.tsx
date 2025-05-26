@@ -6,9 +6,6 @@ import dayjs from 'src/dayjs'
 const meta = {
   component: AllLinesChart,
   title: 'Pages/Dashboard/AllLinesChart',
-  parameters: {
-    layout: 'centered',
-  },
   argTypes: {
     startDate: {
       control: 'date',

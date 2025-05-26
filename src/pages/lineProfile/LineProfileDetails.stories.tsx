@@ -4,9 +4,6 @@ import { LineProfileDetails } from './LineProfileDetails'
 const meta = {
   component: LineProfileDetails,
   title: 'Pages/Profile/LineProfileDetails',
-  parameters: {
-    layout: 'centered',
-  },
   argTypes: {
     id: {
       control: 'number',

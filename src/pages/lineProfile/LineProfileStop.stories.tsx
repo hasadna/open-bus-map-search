@@ -4,9 +4,7 @@ import { LineProfileStop } from './LineProfileStop'
 
 const meta = {
   title: 'Pages/Profile/LineProfileStop',
-  parameters: {
-    layout: 'centered',
-  },
+  component: LineProfileStop,
   argTypes: {
     stop: {
       control: 'object',
@@ -20,7 +18,6 @@ const meta = {
       description: 'The total number of stops in the line profile.',
     },
   },
-  component: LineProfileStop,
 } satisfies Meta<typeof LineProfileStop>
 
 export default meta

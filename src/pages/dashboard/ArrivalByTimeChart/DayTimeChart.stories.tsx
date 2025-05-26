@@ -6,9 +6,6 @@ import dayjs from 'src/dayjs'
 const meta = {
   component: DayTimeChart,
   title: 'Pages/Dashboard/ArrivalByTimeChart',
-  parameters: {
-    layout: 'centered',
-  },
   argTypes: {
     startDate: {
       control: 'date',

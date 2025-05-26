@@ -5,9 +5,6 @@ import { OperatorGaps } from './OperatorGaps'
 const meta = {
   component: OperatorGaps,
   title: 'Pages/Operator/OperatorGaps',
-  parameters: {
-    layout: 'centered',
-  },
   argTypes: {
     operatorId: {
       control: 'text',
@@ -23,13 +20,6 @@ const meta = {
       options: ['day', 'week', 'month'],
     },
   },
-  decorators: [
-    (Story) => (
-      <div style={{ width: 700 }}>
-        <Story />
-      </div>
-    ),
-  ],
 } satisfies Meta<typeof OperatorGaps>
 
 export default meta

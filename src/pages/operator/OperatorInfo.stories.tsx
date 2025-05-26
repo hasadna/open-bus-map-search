@@ -4,9 +4,6 @@ import { OperatorInfo } from './OperatorInfo'
 const meta = {
   component: OperatorInfo,
   title: 'Pages/Operator/OperatorInfo',
-  parameters: {
-    layout: 'centered',
-  },
   argTypes: {
     operatorId: {
       control: 'text',

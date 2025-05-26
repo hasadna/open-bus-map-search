@@ -6,9 +6,6 @@ import dayjs from 'src/dayjs'
 const meta = {
   component: WorstLinesChart,
   title: 'Pages/Dashboard/WorstLinesChart',
-  parameters: {
-    layout: 'centered',
-  },
   argTypes: {
     startDate: {
       control: 'date',

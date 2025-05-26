@@ -5,9 +5,6 @@ import { LineProfileRide } from './LineProfileRide'
 const meta = {
   component: LineProfileRide,
   title: 'Pages/Profile/LineProfileRide',
-  parameters: {
-    layout: 'centered',
-  },
   argTypes: {
     point: {
       control: 'object',
