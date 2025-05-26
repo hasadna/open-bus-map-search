@@ -36,7 +36,7 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   args: {
-    startDate: dayjs(getPastDate()),
-    endDate: dayjs(getPastDate()).add(-7, 'day'),
+    startDate: dayjs(getPastDate()).subtract(7, 'day'),
+    endDate: dayjs(getPastDate()),
   },
 }
