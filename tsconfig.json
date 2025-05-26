@@ -14,7 +14,7 @@
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
@@ -29,6 +29,7 @@
     "setupTests.ts",
     "playwright.config.ts",
     ".storybook/*",
-    "jest.config.ts"
+    "jest.config.ts",
+    "applitools.config.cjs"
   ]
 }

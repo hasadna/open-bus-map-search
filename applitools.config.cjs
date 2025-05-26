@@ -1,3 +1,6 @@
+/**
+ * @type {import('@applitools/eyes-playwright').Configuration}
+ */
 module.exports = {
   waitBeforeCapture: async () => {
     const startTime = Date.now()
