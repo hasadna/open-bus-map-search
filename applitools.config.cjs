@@ -14,6 +14,7 @@ module.exports = {
         break
       }
     }
+    return true
   },
   // puppeteerOptions: {headless: false, devtools: true},
   showBrowserLogs: true,
