@@ -131,7 +131,7 @@ test.describe('Timeline Page Tests', () => {
     )
     await timelinePage.verifyRouteSelectionVisible(timelinePage.timelineGraph, true, 100000)
   })
-  test('should update URL query parameters when form inputs change', async ({ page }) => {
+  test('Should sync form input changes with URL query parameters', async ({ page }) => {
     // No need to provide a date — it is initialized in the beforeEach method
     const form = {
       operator: 'אגד',
@@ -169,8 +169,7 @@ test.describe('Timeline Page Tests', () => {
     //Applying a small change to the URL (setting lineNumber to 3 inside the new URL) to verify that the form inputs reflect the new value
     const newURL =
       'http://localhost:3000/timeline?timestamp=1707742800000&operatorId=3&lineNumber=3&routeKey=%D7%A9%D7%93%D7%A8%D7%95%D7%AA+%D7%9E%D7%A0%D7%97%D7%9D+%D7%91%D7%92%D7%99%D7%9F%2F%D7%9B%D7%91%D7%99%D7%A9+7-%D7%92%D7%93%D7%A8%D7%94%3C-%3E%D7%A9%D7%93%D7%A8%D7%95%D7%AA+%D7%9E%D7%A0%D7%97%D7%9D+%D7%91%D7%92%D7%99%D7%9F%2F%D7%9B%D7%91%D7%99%D7%A9+7-%D7%92%D7%93%D7%A8%D7%94-3%23'
-    await page.goto(newURL, { timeout: 10000 })
-    console.log(page.url())
+    await page.goto(newURL, { timeout: 1000 })
     expect(url.searchParams.get('lineNumber')).toBe('3')
 
     //Navigate to a different route to ensure the inputs remain unchanged
