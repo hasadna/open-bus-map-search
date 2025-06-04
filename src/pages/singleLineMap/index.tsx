@@ -79,64 +79,66 @@ const SingleLineMapPage = () => {
 
   return (
     <PageContainer className="map-container">
-      <Typography className="page-title" variant="h4">
-        {t('singleline_map_page_title')}
-        <InfoYoutubeModal
-          label={t('open_video_about_this_page')}
-          title={t('time_based_map_page_description')}
-          videoUrl="https://www.youtube-nocookie.com/embed/bXg50_j_hTA?si=inyvqDylStvgNRA6&amp;start=93"
-        />
-      </Typography>
-      <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
-        <Grid container spacing={2} size={{ xs: 12 }}>
-          {/* choose date*/}
-          <Grid size={{ sm: 4, xs: 12 }}>
-            <DateSelector time={dayjs(timestamp)} onChange={handleTimestampChange} />
+      <div className="position-stiky-header">
+        <Typography className="page-title" variant="h4">
+          {t('singleline_map_page_title')}
+          <InfoYoutubeModal
+            label={t('open_video_about_this_page')}
+            title={t('time_based_map_page_description')}
+            videoUrl="https://www.youtube-nocookie.com/embed/bXg50_j_hTA?si=inyvqDylStvgNRA6&amp;start=93"
+          />
+        </Typography>
+        <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
+          <Grid container spacing={2} size={{ xs: 12 }}>
+            {/* choose date*/}
+            <Grid size={{ sm: 4, xs: 12 }}>
+              <DateSelector time={dayjs(timestamp)} onChange={handleTimestampChange} />
+            </Grid>
+            {/* choose operator */}
+            <Grid size={{ sm: 4, xs: 12 }}>
+              <OperatorSelector operatorId={operatorId} setOperatorId={handleOperatorChange} />
+            </Grid>
+            {/* choose line number */}
+            <Grid size={{ sm: 4, xs: 12 }}>
+              <LineNumberSelector lineNumber={lineNumber} setLineNumber={handleLineNumberChange} />
+            </Grid>
           </Grid>
-          {/* choose operator */}
-          <Grid size={{ sm: 4, xs: 12 }}>
-            <OperatorSelector operatorId={operatorId} setOperatorId={handleOperatorChange} />
-          </Grid>
-          {/* choose line number */}
-          <Grid size={{ sm: 4, xs: 12 }}>
-            <LineNumberSelector lineNumber={lineNumber} setLineNumber={handleLineNumberChange} />
+          <Grid container spacing={2} size={{ xs: 12 }} alignContent={'center'}>
+            <Grid size={{ sm: 6, xs: 12 }}>
+              {/* choose route */}
+              {routes &&
+                (routes.length === 0 ? (
+                  <NotFound>{t('line_not_found')}</NotFound>
+                ) : (
+                  <RouteSelector
+                    routes={routes}
+                    routeKey={routeKey}
+                    setRouteKey={handleRouteKeyChange}
+                  />
+                ))}
+            </Grid>
+            {positions && (
+              <>
+                <Grid size={{ sm: 2, xs: 12 }}>
+                  {locationsAreLoading && (
+                    <Tooltip title={t('loading_times_tooltip_content')}>
+                      <CircularProgress />
+                    </Tooltip>
+                  )}
+                </Grid>
+                {/* choose start time */}
+                <Grid size={{ sm: 4, xs: 12 }}>
+                  <FilterPositionsByStartTimeSelector
+                    options={options}
+                    startTime={startTime}
+                    setStartTime={setStartTime}
+                  />
+                </Grid>
+              </>
+            )}
           </Grid>
         </Grid>
-        <Grid container spacing={2} size={{ xs: 12 }} alignContent={'center'}>
-          <Grid size={{ sm: 6, xs: 12 }}>
-            {/* choose route */}
-            {routes &&
-              (routes.length === 0 ? (
-                <NotFound>{t('line_not_found')}</NotFound>
-              ) : (
-                <RouteSelector
-                  routes={routes}
-                  routeKey={routeKey}
-                  setRouteKey={handleRouteKeyChange}
-                />
-              ))}
-          </Grid>
-          {positions && (
-            <>
-              <Grid size={{ sm: 2, xs: 12 }}>
-                {locationsAreLoading && (
-                  <Tooltip title={t('loading_times_tooltip_content')}>
-                    <CircularProgress />
-                  </Tooltip>
-                )}
-              </Grid>
-              {/* choose start time */}
-              <Grid size={{ sm: 4, xs: 12 }}>
-                <FilterPositionsByStartTimeSelector
-                  options={options}
-                  startTime={startTime}
-                  setStartTime={setStartTime}
-                />
-              </Grid>
-            </>
-          )}
-        </Grid>
-      </Grid>
+      </div>
       <MapWithLocationsAndPath
         positions={positions}
         plannedRouteStops={plannedRouteStops}
