@@ -88,70 +88,72 @@ export default function TimeBasedMapPage() {
 
   return (
     <PageContainer className="map-container">
-      <Typography variant="h4" className="page-title">
-        {t('time_based_map_page_title')}
-        <InfoYoutubeModal
-          label={t('open_video_about_this_page')}
-          title={t('youtube_modal_info_title')}
-          videoUrl="https://www.youtube-nocookie.com/embed/bXg50_j_hTA?si=t8PiTrTA1budRZg-&amp;start=150"
-        />
-      </Typography>
-      <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
-        <Grid size={{ xs: 12 }} className="hideOnMobile">
-          <Alert severity="info" variant="outlined" icon={false}>
-            {t('time_based_map_page_description')}
-          </Alert>
-        </Grid>
-        {/* from date */}
-        <Grid size={{ xs: 2 }} className="hideOnMobile">
-          <Label text={t('from_date')} />
-        </Grid>
-        <Grid size={{ sm: 5, xs: 6 }}>
-          <DateSelector
-            time={to}
-            onChange={(ts) => {
-              const val = ts ? ts : to
-              setFrom(dayjs(val).subtract(dayjs(to).diff(dayjs(from)))) // keep the same time difference
-              setTo(dayjs(val))
-            }}
+      <div className="position-stiky-header height-1988">
+        <Typography variant="h4" className="page-title">
+          {t('time_based_map_page_title')}
+          <InfoYoutubeModal
+            label={t('open_video_about_this_page')}
+            title={t('youtube_modal_info_title')}
+            videoUrl="https://www.youtube-nocookie.com/embed/bXg50_j_hTA?si=t8PiTrTA1budRZg-&amp;start=150"
           />
+        </Typography>
+        <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
+          <Grid size={{ xs: 12 }} className="hideOnMobile">
+            <Alert severity="info" variant="outlined" icon={false}>
+              {t('time_based_map_page_description')}
+            </Alert>
+          </Grid>
+          {/* from date */}
+          <Grid size={{ xs: 2 }} className="hideOnMobile">
+            <Label text={t('from_date')} />
+          </Grid>
+          <Grid size={{ sm: 5, xs: 6 }}>
+            <DateSelector
+              time={to}
+              onChange={(ts) => {
+                const val = ts ? ts : to
+                setFrom(dayjs(val).subtract(dayjs(to).diff(dayjs(from)))) // keep the same time difference
+                setTo(dayjs(val))
+              }}
+            />
+          </Grid>
+          <Grid size={{ sm: 5, xs: 6 }}>
+            <TimeSelector
+              time={to}
+              onChange={(ts) => {
+                const val = ts ? ts : from
+                setFrom(dayjs(val).subtract(dayjs(to).diff(dayjs(from))))
+                setTo(dayjs(val)) // keep the same time difference
+              }}
+            />
+          </Grid>
+          {/*minutes*/}
+          <Grid size={{ sm: 5, xs: 12 }}>
+            <Label text={t('watch_locations_in_range')} />
+          </Grid>
+          <Grid size={{ sm: 6, xs: 12 }}>
+            <MinuteSelector
+              num={to.diff(from) / 1000 / 60}
+              setNum={(num) => {
+                setFrom(dayjs(to).subtract(Math.abs(+num) || 1, 'minutes'))
+              }}
+            />
+          </Grid>
+          <Grid size={{ xs: 1 }} className="hideOnMobile">
+            <Label text={t('minutes')} />
+          </Grid>
+          {/* Buttons */}
+          {/* loaded info */}
+          <Grid size={{ xs: 11 }}>
+            <p>
+              {`${loaded}- ${t('show_x_bus_locations')} ${t('from_time_x_to_time_y')
+                .replace('XXX', dayjs(from).format('LT'))
+                .replace('YYY', dayjs(to).format('LT'))}`}
+            </p>
+          </Grid>
+          <Grid size={{ xs: 1 }}>{isLoading && <CircularProgress size="20px" />}</Grid>
         </Grid>
-        <Grid size={{ sm: 5, xs: 6 }}>
-          <TimeSelector
-            time={to}
-            onChange={(ts) => {
-              const val = ts ? ts : from
-              setFrom(dayjs(val).subtract(dayjs(to).diff(dayjs(from))))
-              setTo(dayjs(val)) // keep the same time difference
-            }}
-          />
-        </Grid>
-        {/*minutes*/}
-        <Grid size={{ sm: 5, xs: 12 }}>
-          <Label text={t('watch_locations_in_range')} />
-        </Grid>
-        <Grid size={{ sm: 6, xs: 12 }}>
-          <MinuteSelector
-            num={to.diff(from) / 1000 / 60}
-            setNum={(num) => {
-              setFrom(dayjs(to).subtract(Math.abs(+num) || 1, 'minutes'))
-            }}
-          />
-        </Grid>
-        <Grid size={{ xs: 1 }} className="hideOnMobile">
-          <Label text={t('minutes')} />
-        </Grid>
-        {/* Buttons */}
-        {/* loaded info */}
-        <Grid size={{ xs: 11 }}>
-          <p>
-            {`${loaded}- ${t('show_x_bus_locations')} ${t('from_time_x_to_time_y')
-              .replace('XXX', dayjs(from).format('LT'))
-              .replace('YYY', dayjs(to).format('LT'))}`}
-          </p>
-        </Grid>
-        <Grid size={{ xs: 1 }}>{isLoading && <CircularProgress size="20px" />}</Grid>
-      </Grid>
+      </div>
       <div className={`map-info ${isExpanded ? 'expanded' : 'collapsed'}`}>
         <IconButton color="primary" className="expand-button" onClick={toggleExpanded}>
           <OpenInFullRounded fontSize="large" />

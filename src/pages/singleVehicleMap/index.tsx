@@ -56,45 +56,47 @@ const SingleVehicleMap = () => {
 
   return (
     <PageContainer className="map-container">
-      <Typography className="page-title" variant="h4">
-        {t('singlevehicle_map_page_title')}
-        <InfoYoutubeModal
-          label={t('open_video_about_this_page')}
-          title={t('singlevehicle_map_page_description')}
-          videoUrl="https://www.youtube-nocookie.com/embed/bXg50_j_hTA?si=inyvqDylStvgNRA6&amp;start=93"
-        />
-      </Typography>
-
-      <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
-        <Grid size={{ sm: 4, xs: 12 }}>
-          <DateSelector
-            time={dayjs(timestamp)}
-            onChange={(ts) =>
-              setSearch((current) => ({ ...current, timestamp: ts?.valueOf() ?? Date.now() }))
-            }
+      <div className="position-stiky-header height-725">
+        <Typography className="page-title" variant="h4">
+          {t('singlevehicle_map_page_title')}
+          <InfoYoutubeModal
+            label={t('open_video_about_this_page')}
+            title={t('singlevehicle_map_page_description')}
+            videoUrl="https://www.youtube-nocookie.com/embed/bXg50_j_hTA?si=inyvqDylStvgNRA6&amp;start=93"
           />
-        </Grid>
+        </Typography>
 
-        {positions && (
-          <>
-            <Grid size={{ sm: 4, xs: 12 }}>
-              <VehicleNumberSelector
-                vehicleNumber={vehicleNumber}
-                setVehicleNumber={(number) =>
-                  setSearch((current) => ({ ...current, vehicleNumber: number }))
-                }
-              />
-            </Grid>
-            <Grid size={{ sm: 2, xs: 12 }}>
-              {locationsAreLoading && (
-                <Tooltip title={t('loading_times_tooltip_content')}>
-                  <CircularProgress />
-                </Tooltip>
-              )}
-            </Grid>
-          </>
-        )}
-      </Grid>
+        <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
+          <Grid size={{ sm: 4, xs: 12 }}>
+            <DateSelector
+              time={dayjs(timestamp)}
+              onChange={(ts) =>
+                setSearch((current) => ({ ...current, timestamp: ts?.valueOf() ?? Date.now() }))
+              }
+            />
+          </Grid>
+
+          {positions && (
+            <>
+              <Grid size={{ sm: 4, xs: 12 }}>
+                <VehicleNumberSelector
+                  vehicleNumber={vehicleNumber}
+                  setVehicleNumber={(number) =>
+                    setSearch((current) => ({ ...current, vehicleNumber: number }))
+                  }
+                />
+              </Grid>
+              <Grid size={{ sm: 2, xs: 12 }}>
+                {locationsAreLoading && (
+                  <Tooltip title={t('loading_times_tooltip_content')}>
+                    <CircularProgress />
+                  </Tooltip>
+                )}
+              </Grid>
+            </>
+          )}
+        </Grid>
+      </div>
 
       <MapWithLocationsAndPath positions={filteredPositions} showNavigationButtons={false} />
     </PageContainer>

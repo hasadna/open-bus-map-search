@@ -10,3 +10,23 @@
 .page-title{
     margin-top: 0;
 }
+
+.position-stiky-header {
+  position: sticky;
+  top: 0;
+  z-index: 2000;
+  background-color: #f5f5f5;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 11.88rem;
+}
+
+.height-725 {
+  height: 7.25rem;
+}
+
+.height-1988 {
+  height: 19.88rem;
+}
+
