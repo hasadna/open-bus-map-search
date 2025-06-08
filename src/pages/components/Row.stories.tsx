@@ -5,7 +5,6 @@ import Widget from 'src/shared/Widget'
 const meta: Meta<{ items: number }> = {
   title: 'Components/Row',
   component: Row,
-  tags: ['autodocs'],
   parameters: {
     layout: 'centered',
   },

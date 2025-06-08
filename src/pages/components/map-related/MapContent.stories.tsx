@@ -6,7 +6,6 @@ import { filteredPositions, plannedRouteStops } from './mapStorybookData'
 const meta = {
   component: MapContent,
   title: 'Map/MapContent',
-  tags: ['autodocs'],
   decorators: [
     (Story) => {
       return (
@@ -27,13 +26,13 @@ const meta = {
     positions: {
       control: false,
       table: {
-        type: { detail: '', summary: 'Point[]' },
+        type: { summary: 'Point[]' },
       },
     },
     plannedRouteStops: {
       control: false,
       table: {
-        type: { detail: '', summary: 'BusStop[]' },
+        type: { summary: 'BusStop[]' },
       },
     },
     showNavigationButtons: {
