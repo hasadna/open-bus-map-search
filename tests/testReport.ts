@@ -7,32 +7,29 @@ import type {
   FullResult,
 } from '@playwright/test/reporter'
 
-let executedCount = 0
-let totalCount = 0
-
-function countAllTests(suite: Suite): number {
-  return suite.suites.reduce((acc, child) => acc + countAllTests(child), suite.tests.length)
-}
-
-function getStatusIcon(status: string) {
-  return status === 'passed' ? '✅' : status === 'failed' ? '❌' : '⚠️'
-}
-
 class TestReporter implements Reporter {
+  executedCount = 0
+  totalCount = 0
+
+  countAllTests(suite: Suite): number {
+    return suite.suites.reduce((acc, child) => acc + this.countAllTests(child), suite.tests.length)
+  }
+
   onBegin(config: FullConfig, suite: Suite) {
-    totalCount = countAllTests(suite)
-    console.log(`🔎 Starting test run: ${totalCount} tests found`)
+    this.totalCount = this.countAllTests(suite)
+    console.log(`🔎 Starting test run: ${this.totalCount} tests found`)
   }
 
   onTestEnd(test: TestCase, result: TestResult) {
+    const statisIcon = result.status === 'passed' ? '✅' : result.status === 'failed' ? '❌' : '⚠️'
     console.log(
-      `${getStatusIcon(result.status)} Test ${++executedCount}/${totalCount}: ${test.title} - ${result.status}`,
+      `Test ${++this.executedCount} of ${this.totalCount}: ${test.title} - ${result.status} ${statisIcon} `,
     )
   }
 
   onEnd(result: FullResult) {
     console.log(
-      `${getStatusIcon(result.status)} Test run completed: ${executedCount}/${totalCount} tests executed in ${result.duration}ms`,
+      `📝 Test run completed ${result.status}: ${this.executedCount} tests executed in ${(result.duration / 1000 / 60).toFixed(2)} min`,
     )
     if (result.status === 'failed') {
       console.error('Some tests failed. Please check the logs above for details.')
