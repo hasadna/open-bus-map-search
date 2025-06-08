@@ -6,7 +6,6 @@ import { BusToolTipProps } from './BusToolTip'
 const meta = {
   title: 'Map/Layers/ComplaintModal',
   component: ComplaintModal,
-  tags: ['autodocs'],
   parameters: {
     layout: 'centered',
   },
