@@ -87,7 +87,7 @@ const SingleLineMapPage = () => {
           videoUrl="https://www.youtube-nocookie.com/embed/bXg50_j_hTA?si=inyvqDylStvgNRA6&amp;start=93"
         />
       </Typography>
-      <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
+      <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }} className="display-sticky">
         <Grid container spacing={2} size={{ xs: 12 }}>
           {/* choose date*/}
           <Grid size={{ sm: 4, xs: 12 }}>

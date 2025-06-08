@@ -56,7 +56,7 @@ const SingleVehicleMap = () => {
 
   return (
     <PageContainer className="map-container">
-      <Typography className="page-title" variant="h4">
+      <Typography className="page-title display-sticky" variant="h4">
         {t('singlevehicle_map_page_title')}
         <InfoYoutubeModal
           label={t('open_video_about_this_page')}
