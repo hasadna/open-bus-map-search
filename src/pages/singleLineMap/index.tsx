@@ -16,11 +16,13 @@ import RouteSelector from 'src/pages/components/RouteSelector'
 import { INPUT_SIZE } from 'src/resources/sizes'
 import dayjs from 'src/dayjs'
 import '../Map.scss'
+import { useStickyObserver } from 'src/hooks/useStickyObserver'
 
 const SingleLineMapPage = () => {
   const { search, setSearch } = useContext(SearchContext)
   const { operatorId, lineNumber, timestamp, routes, routeKey } = search
   const { t } = useTranslation()
+  const { sentinelRef } = useStickyObserver()
 
   useEffect(() => {
     if (!operatorId || operatorId === '0' || !lineNumber) {
@@ -78,71 +80,74 @@ const SingleLineMapPage = () => {
   }
 
   return (
-    <PageContainer className="map-container">
-      <Typography className="page-title" variant="h4">
-        {t('singleline_map_page_title')}
-        <InfoYoutubeModal
-          label={t('open_video_about_this_page')}
-          title={t('time_based_map_page_description')}
-          videoUrl="https://www.youtube-nocookie.com/embed/bXg50_j_hTA?si=inyvqDylStvgNRA6&amp;start=93"
+    <>
+      <div ref={sentinelRef} style={{ height: 0 }} />
+      <PageContainer className="map-container">
+        <Typography className="page-title" variant="h4">
+          {t('singleline_map_page_title')}
+          <InfoYoutubeModal
+            label={t('open_video_about_this_page')}
+            title={t('time_based_map_page_description')}
+            videoUrl="https://www.youtube-nocookie.com/embed/bXg50_j_hTA?si=inyvqDylStvgNRA6&amp;start=93"
+          />
+        </Typography>
+        <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }} className="display-sticky">
+          <Grid container spacing={2} size={{ xs: 12 }}>
+            {/* choose date*/}
+            <Grid size={{ sm: 4, xs: 12 }}>
+              <DateSelector time={dayjs(timestamp)} onChange={handleTimestampChange} />
+            </Grid>
+            {/* choose operator */}
+            <Grid size={{ sm: 4, xs: 12 }}>
+              <OperatorSelector operatorId={operatorId} setOperatorId={handleOperatorChange} />
+            </Grid>
+            {/* choose line number */}
+            <Grid size={{ sm: 4, xs: 12 }}>
+              <LineNumberSelector lineNumber={lineNumber} setLineNumber={handleLineNumberChange} />
+            </Grid>
+          </Grid>
+          <Grid container spacing={2} size={{ xs: 12 }} alignContent={'center'}>
+            <Grid size={{ sm: 6, xs: 12 }}>
+              {/* choose route */}
+              {routes &&
+                (routes.length === 0 ? (
+                  <NotFound>{t('line_not_found')}</NotFound>
+                ) : (
+                  <RouteSelector
+                    routes={routes}
+                    routeKey={routeKey}
+                    setRouteKey={handleRouteKeyChange}
+                  />
+                ))}
+            </Grid>
+            {positions && (
+              <>
+                <Grid size={{ sm: 2, xs: 12 }}>
+                  {locationsAreLoading && (
+                    <Tooltip title={t('loading_times_tooltip_content')}>
+                      <CircularProgress />
+                    </Tooltip>
+                  )}
+                </Grid>
+                {/* choose start time */}
+                <Grid size={{ sm: 4, xs: 12 }}>
+                  <FilterPositionsByStartTimeSelector
+                    options={options}
+                    startTime={startTime}
+                    setStartTime={setStartTime}
+                  />
+                </Grid>
+              </>
+            )}
+          </Grid>
+        </Grid>
+        <MapWithLocationsAndPath
+          positions={positions}
+          plannedRouteStops={plannedRouteStops}
+          showNavigationButtons
         />
-      </Typography>
-      <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }} className="display-sticky">
-        <Grid container spacing={2} size={{ xs: 12 }}>
-          {/* choose date*/}
-          <Grid size={{ sm: 4, xs: 12 }}>
-            <DateSelector time={dayjs(timestamp)} onChange={handleTimestampChange} />
-          </Grid>
-          {/* choose operator */}
-          <Grid size={{ sm: 4, xs: 12 }}>
-            <OperatorSelector operatorId={operatorId} setOperatorId={handleOperatorChange} />
-          </Grid>
-          {/* choose line number */}
-          <Grid size={{ sm: 4, xs: 12 }}>
-            <LineNumberSelector lineNumber={lineNumber} setLineNumber={handleLineNumberChange} />
-          </Grid>
-        </Grid>
-        <Grid container spacing={2} size={{ xs: 12 }} alignContent={'center'}>
-          <Grid size={{ sm: 6, xs: 12 }}>
-            {/* choose route */}
-            {routes &&
-              (routes.length === 0 ? (
-                <NotFound>{t('line_not_found')}</NotFound>
-              ) : (
-                <RouteSelector
-                  routes={routes}
-                  routeKey={routeKey}
-                  setRouteKey={handleRouteKeyChange}
-                />
-              ))}
-          </Grid>
-          {positions && (
-            <>
-              <Grid size={{ sm: 2, xs: 12 }}>
-                {locationsAreLoading && (
-                  <Tooltip title={t('loading_times_tooltip_content')}>
-                    <CircularProgress />
-                  </Tooltip>
-                )}
-              </Grid>
-              {/* choose start time */}
-              <Grid size={{ sm: 4, xs: 12 }}>
-                <FilterPositionsByStartTimeSelector
-                  options={options}
-                  startTime={startTime}
-                  setStartTime={setStartTime}
-                />
-              </Grid>
-            </>
-          )}
-        </Grid>
-      </Grid>
-      <MapWithLocationsAndPath
-        positions={positions}
-        plannedRouteStops={plannedRouteStops}
-        showNavigationButtons
-      />
-    </PageContainer>
+      </PageContainer>
+    </>
   )
 }
 
