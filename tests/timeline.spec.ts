@@ -131,6 +131,53 @@ test.describe('Timeline Page Tests', () => {
     )
     await timelinePage.verifyRouteSelectionVisible(timelinePage.timelineGraph, true, 100000)
   })
+  test('Should sync form input changes with URL query parameters', async ({ page }) => {
+    // No need to provide a date — it is initialized in the beforeEach method
+    const form = {
+      operator: 'אגד',
+      operatorID: '3',
+      lineNumber: '1',
+      route: 'שדרות מנחם בגין/כביש 7-גדרה ⟵ שדרות מנחם בגין/כביש 7-גדרה ',
+    }
+    await timelinePage.selectOperatorFromDropbox(
+      timelinePage.operatorsDropDown,
+      timelinePage.operatorsList,
+      form.operator,
+    )
+    await timelinePage.fillLineNumber(form.lineNumber)
+    await timelinePage.verifyRouteSelectionVisible(timelinePage.routeSelect, true, 3000)
+    await timelinePage.selectOperatorFromDropbox(
+      timelinePage.routeSelect,
+      timelinePage.routeList,
+      'שדרות מנחם בגין/כביש 7-גדרה ⟵ שדרות מנחם בגין/כביש 7-גדרה  ',
+    )
+    await timelinePage.verifyRouteSelectionVisible(timelinePage.stationSelect, true)
+    await timelinePage.selectOperatorFromDropbox(
+      timelinePage.stationSelect,
+      timelinePage.stationList,
+      'חיים הרצוג/שדרות מנחם בגין (גדרה)',
+    )
+    //Verify URL is updated according to form inputs
+    const url = new URL(decodeURIComponent(page.url())) //for getting the real routeKey
+    expect(url.searchParams.get('timestamp')).toBe(getPastDate().getTime().toString()) //Check if the date matches the test input
+    expect(url.searchParams.get('operatorId')).toBe(form.operatorID)
+    expect(url.searchParams.get('lineNumber')).toBe(form.lineNumber)
+    expect(normalizeRouteName(url.searchParams.get('routeKey') || ' ')).toBe(
+      normalizeRouteName(form.route) || ' ',
+    )
+
+    //Applying a small change to the URL (setting lineNumber to 3 inside the new URL) to verify that the form inputs reflect the new value
+    const newURL =
+      'http://localhost:3000/timeline?timestamp=1707742800000&operatorId=3&lineNumber=3&routeKey=%D7%A9%D7%93%D7%A8%D7%95%D7%AA+%D7%9E%D7%A0%D7%97%D7%9D+%D7%91%D7%92%D7%99%D7%9F%2F%D7%9B%D7%91%D7%99%D7%A9+7-%D7%92%D7%93%D7%A8%D7%94%3C-%3E%D7%A9%D7%93%D7%A8%D7%95%D7%AA+%D7%9E%D7%A0%D7%97%D7%9D+%D7%91%D7%92%D7%99%D7%9F%2F%D7%9B%D7%91%D7%99%D7%A9+7-%D7%92%D7%93%D7%A8%D7%94-3%23'
+    await page.goto(newURL, { timeout: 3000 })
+    expect(url.searchParams.get('lineNumber')).toBe('3') // the test didn't pass here
+    //Navigate to a different route to ensure the inputs remain unchanged
+    await page.click('a:text-is("קיום נסיעות")')
+    expect(decodeURIComponent(page.url())).not.toBe(decodeURIComponent(newURL))
+    await page.click('a:text-is("היסטוריית נסיעות")')
+    await page.waitForTimeout(6000)
+    expect(decodeURIComponent(page.url())).toBe(decodeURIComponent(newURL))
+  })
 })
 
 test('verify API call to gtfs_agencies/list - "Trips history"', async ({ page }) => {
@@ -164,3 +211,12 @@ test('the dateFrom parameter should be recent when visiting the "Trips history"'
   expect(daysAgo).toBeGreaterThanOrEqual(0)
   expect(daysAgo).toBeLessThanOrEqual(3)
 })
+
+//Normalize route name by removing spaces, standardizing arrows, and trimming trailing numbers
+function normalizeRouteName(route: string): string {
+  if (!route) return ''
+  return route
+    .replace(/\s/g, '')
+    .replace(/<->|⟵/g, '<->')
+    .replace(/-?\d+$/, '')
+}
