@@ -4,16 +4,15 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "@applitools/eyes-playwright": "^1.37.2",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@mui/icons-material": "^7.1.0",
     "@mui/material": "^7.1.1",
     "@mui/x-date-pickers": "^7.29.2",
-    "@mui/x-tree-view": "^8.3.0",
-    "@tanstack/query-sync-storage-persister": "^5.75.5",
+    "@mui/x-tree-view": "^8.5.1",
+    "@tanstack/query-sync-storage-persister": "^5.80.6",
     "@tanstack/react-query": "^5.76.0",
-    "@tanstack/react-query-persist-client": "^5.76.1",
+    "@tanstack/react-query-persist-client": "^5.80.6",
     "@vitejs/plugin-react-swc": "^3.9.0",
     "antd": "^5.24.9",
     "axios": "^1.9.0",
@@ -64,7 +63,8 @@
     "lint:fix": "eslint --fix && stylelint '**/*.{css,scss}' --fix",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "nx exec -- storybook build",
-    "_build": "tsc && vite build"
+    "_build": "tsc && vite build",
+    "test:storybook": "eyes-storybook"
   },
   "browserslist": {
     "production": [
@@ -79,6 +79,8 @@
     ]
   },
   "devDependencies": {
+    "@applitools/eyes-playwright": "^1.37.2",
+    "@applitools/eyes-storybook": "^3.55.5",
     "@babel/preset-env": "^7.27.2",
     "@babel/preset-react": "^7.27.1",
     "@eslint/eslintrc": "^3.3.1",

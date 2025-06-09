@@ -7,7 +7,6 @@ const meta = {
   component: InfoTable,
   subcomponents: { InfoItem },
   title: 'Components/InfoTable',
-  tags: ['autodocs'],
   decorators: [
     (Story) => (
       <div dir="ltr">
