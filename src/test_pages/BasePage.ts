@@ -41,6 +41,14 @@ export abstract class BasePage {
     }
   }
 
+  protected async verifySelectionEnable(locator: Locator, isEnable: boolean, timeout?: number) {
+    if (isEnable) {
+      await expect(locator).toBeEnabled({ timeout: timeout || 5000 })
+    } else {
+      await expect(locator).toBeDisabled({ timeout: timeout || 5000 })
+    }
+  }
+
   protected async selectFrom_UL_LI_Dropbox(
     dropElement: Locator,
     optionsListElement: Locator,
