@@ -11,13 +11,6 @@ export function useStickyObserver() {
       ([entry]) => {
         console.log(entry.boundingClientRect.bottom)
         setIsSticky(entry.boundingClientRect.bottom <= 86)
-        if (entry.boundingClientRect.bottom <= 86) {
-          // Sticky has reached the top
-          console.log('Sticky element is at the top!')
-          // Trigger your event here
-        } else {
-          console.log('Sticky element is not at the top.')
-        }
       },
       {
         root: null,

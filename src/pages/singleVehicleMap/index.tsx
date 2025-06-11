@@ -14,11 +14,13 @@ import VehicleNumberSelector from 'src/pages/components/VehicleSelector'
 import { INPUT_SIZE } from 'src/resources/sizes'
 import dayjs from 'src/dayjs'
 import '../Map.scss'
+import { useStickyObserver } from 'src/hooks/useStickyObserver'
 
 const SingleVehicleMap = () => {
   const { search, setSearch } = useContext(SearchContext)
   const { operatorId, timestamp, vehicleNumber } = search
   const { t } = useTranslation()
+  const { sentinelRef, isSticky } = useStickyObserver()
 
   useEffect(() => {
     // console.log('vehicleNumber:', vehicleNumber)
@@ -55,49 +57,56 @@ const SingleVehicleMap = () => {
   // console.log('filteredPositions:', filteredPositions)
 
   return (
-    <PageContainer className="map-container">
-      <Typography className="page-title display-sticky" variant="h4">
-        {t('singlevehicle_map_page_title')}
-        <InfoYoutubeModal
-          label={t('open_video_about_this_page')}
-          title={t('singlevehicle_map_page_description')}
-          videoUrl="https://www.youtube-nocookie.com/embed/bXg50_j_hTA?si=inyvqDylStvgNRA6&amp;start=93"
-        />
-      </Typography>
-
-      <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
-        <Grid size={{ sm: 4, xs: 12 }}>
-          <DateSelector
-            time={dayjs(timestamp)}
-            onChange={(ts) =>
-              setSearch((current) => ({ ...current, timestamp: ts?.valueOf() ?? Date.now() }))
-            }
+    <>
+      <div ref={sentinelRef} style={{ height: 0 }} />
+      <PageContainer className="map-container">
+        <Typography className="page-title" variant="h4">
+          {t('singlevehicle_map_page_title')}
+          <InfoYoutubeModal
+            label={t('open_video_about_this_page')}
+            title={t('singlevehicle_map_page_description')}
+            videoUrl="https://www.youtube-nocookie.com/embed/bXg50_j_hTA?si=inyvqDylStvgNRA6&amp;start=93"
           />
+        </Typography>
+
+        <Grid
+          container
+          spacing={2}
+          sx={{ maxWidth: INPUT_SIZE }}
+          className={`display-sticky${isSticky ? ' zoom-out' : ''}${!isSticky ? ' zoom-in' : ''}`}>
+          <Grid size={{ sm: 4, xs: 12 }}>
+            <DateSelector
+              time={dayjs(timestamp)}
+              onChange={(ts) =>
+                setSearch((current) => ({ ...current, timestamp: ts?.valueOf() ?? Date.now() }))
+              }
+            />
+          </Grid>
+
+          {positions && (
+            <>
+              <Grid size={{ sm: 4, xs: 12 }}>
+                <VehicleNumberSelector
+                  vehicleNumber={vehicleNumber}
+                  setVehicleNumber={(number) =>
+                    setSearch((current) => ({ ...current, vehicleNumber: number }))
+                  }
+                />
+              </Grid>
+              <Grid size={{ sm: 2, xs: 12 }}>
+                {locationsAreLoading && (
+                  <Tooltip title={t('loading_times_tooltip_content')}>
+                    <CircularProgress />
+                  </Tooltip>
+                )}
+              </Grid>
+            </>
+          )}
         </Grid>
 
-        {positions && (
-          <>
-            <Grid size={{ sm: 4, xs: 12 }}>
-              <VehicleNumberSelector
-                vehicleNumber={vehicleNumber}
-                setVehicleNumber={(number) =>
-                  setSearch((current) => ({ ...current, vehicleNumber: number }))
-                }
-              />
-            </Grid>
-            <Grid size={{ sm: 2, xs: 12 }}>
-              {locationsAreLoading && (
-                <Tooltip title={t('loading_times_tooltip_content')}>
-                  <CircularProgress />
-                </Tooltip>
-              )}
-            </Grid>
-          </>
-        )}
-      </Grid>
-
-      <MapWithLocationsAndPath positions={filteredPositions} showNavigationButtons={false} />
-    </PageContainer>
+        <MapWithLocationsAndPath positions={filteredPositions} showNavigationButtons={false} />
+      </PageContainer>
+    </>
   )
 }
 

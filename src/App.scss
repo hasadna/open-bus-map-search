@@ -17,3 +17,19 @@
   background-color: #f5f5f5;
   z-index: 2000;
 }
+
+.zoom-out {
+  transition: transform 0.5s ease;
+  transform: scale(0.7);
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.zoom-in {
+  transition: transform 0.5s ease;
+  transform: scale(1);
+  padding: 0.0rem;
+  border-radius: 0.0rem;
+  box-shadow: none;
+}

@@ -22,7 +22,7 @@ const SingleLineMapPage = () => {
   const { search, setSearch } = useContext(SearchContext)
   const { operatorId, lineNumber, timestamp, routes, routeKey } = search
   const { t } = useTranslation()
-  const { sentinelRef } = useStickyObserver()
+  const { sentinelRef, isSticky } = useStickyObserver()
 
   useEffect(() => {
     if (!operatorId || operatorId === '0' || !lineNumber) {
@@ -91,7 +91,11 @@ const SingleLineMapPage = () => {
             videoUrl="https://www.youtube-nocookie.com/embed/bXg50_j_hTA?si=inyvqDylStvgNRA6&amp;start=93"
           />
         </Typography>
-        <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }} className="display-sticky">
+        <Grid
+          container
+          spacing={2}
+          sx={{ maxWidth: INPUT_SIZE }}
+          className={`display-sticky${isSticky ? ' zoom-out' : ''}${!isSticky ? ' zoom-in' : ''}`}>
           <Grid container spacing={2} size={{ xs: 12 }}>
             {/* choose date*/}
             <Grid size={{ sm: 4, xs: 12 }}>
