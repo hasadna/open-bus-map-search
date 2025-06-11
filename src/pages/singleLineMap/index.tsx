@@ -24,9 +24,9 @@ import VehicleNumberSelector from 'src/pages/components/VehicleSelector'
 import '../Map.scss'
 
 const SingleLineMapPage = () => {
-  const [type, setType] = useState<'routes' | 'vehicle'>('routes')
   const { search, setSearch } = useContext(SearchContext)
   const { operatorId, lineNumber, vehicleNumber, timestamp } = search
+  const [type, setType] = useState<'routes' | 'vehicle'>(vehicleNumber ? 'vehicle' : 'routes')
   const { t } = useTranslation()
 
   const {
