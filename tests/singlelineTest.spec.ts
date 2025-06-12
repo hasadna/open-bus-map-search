@@ -28,15 +28,15 @@ test.describe('Single line page tests', () => {
   test('Test "choose route" dropdown appears after selecting line', async () => {
     await singleLinePage.selectOperatorFromDropbox('אגד')
     await singleLinePage.fillLineNumber('1')
-    await singleLinePage.verifyRouteSelectionVisible(true)
+    await singleLinePage.verifyRouteSelectionEnable(true)
   })
 
   test('Test "choose route" dropdown disappears after removing line', async () => {
     await singleLinePage.selectOperatorFromDropbox('אגד')
     await singleLinePage.fillLineNumber('1')
-    await singleLinePage.verifyRouteSelectionVisible(true)
+    await singleLinePage.verifyRouteSelectionEnable(true)
     await singleLinePage.closeLineNumber()
-    await singleLinePage.verifyRouteSelectionVisible(false)
+    await singleLinePage.verifyRouteSelectionEnable(false)
   })
 
   test('Test "choose route" options are selectable', async () => {
@@ -82,7 +82,7 @@ test.describe('Single line page tests', () => {
         .getByRole('option', { name: 'קניון איילון-רמת גן ⟵ איצטדיון וינטר-רמת גן' })
         .click()
       await page.getByLabel('בחירת שעת התחלה').click()
-      await page.getByRole('option', { name: ':58:00' }).click()
+      await page.getByRole('option', { name: ':58' }).click()
     })
 
     await test.step('Click on bus button', async () => {

@@ -25,7 +25,7 @@ const InfoYoutubeModal = ({ videoUrl, label, title }: InfoYoutubeModalProps) => 
         footer={null}
         title={title}
         open={visible}
-        destroyOnClose={true}
+        destroyOnHidden={true}
         onCancel={() => {
           setVisible(false)
         }}>
