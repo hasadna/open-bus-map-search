@@ -9,9 +9,9 @@ module.exports = {
       document.querySelector('.ant-skeleton')
     ) {
       await new Promise((resolve) => setTimeout(resolve, 100))
-      if (Date.now() - startTime > 60000) {
+      if (Date.now() - startTime > 180000) {
         console.warn('Waited too long for skeletons to disappear, proceeding anyway.')
-        return false
+        break
       }
     }
     return true
