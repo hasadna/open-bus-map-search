@@ -138,7 +138,7 @@ export const useSingleLineData = (
             return {
               value: `${option.scheduledTime}|${option.position.point!.siri_ride__vehicle_ref}|${option.position.point!.siri_route__line_ref}`,
               label: routes[0]?.routeLongName
-                ? `${option.scheduledTime} (${start} - ${end})`
+                ? `${option.scheduledTime} (${routes[0]?.routeShortName} - ${start} ⇄ ${end})`
                 : `${option.scheduledTime} (${vehicleIDFormat(option.position.point!.siri_ride__vehicle_ref)})`,
             }
           }),
@@ -197,7 +197,6 @@ export const useSingleLineData = (
           routeIds = (
             await getRoutesByLineRef(operatorId, scheduledLine, startTimeTimestamp.toDate())
           ).map((route) => route.id)
-          console.log(routeIds)
         }
         if (!routeIds || routeIds.length === 0) {
           setPlannedRouteStops([])
