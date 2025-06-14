@@ -1,15 +1,17 @@
 import { useEffect, useRef, useState } from 'react'
+import { useHeaderEvent } from 'src/layout/LayoutContext'
 
 export function useStickyObserver() {
   const sentinelRef = useRef<HTMLDivElement | null>(null)
   const [isSticky, setIsSticky] = useState(false)
+
+  const { triggerHeaderEvent } = useHeaderEvent()
 
   useEffect(() => {
     if (!sentinelRef.current) return
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        console.log(entry.boundingClientRect.bottom)
         setIsSticky(entry.boundingClientRect.bottom <= 86)
       },
       {
@@ -24,6 +26,12 @@ export function useStickyObserver() {
       observer.disconnect()
     }
   }, [])
+
+  useEffect(() => {
+    if (triggerHeaderEvent) {
+      triggerHeaderEvent(isSticky)
+    }
+  }, [isSticky])
 
   return { sentinelRef, isSticky }
 }
