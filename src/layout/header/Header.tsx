@@ -23,7 +23,12 @@ const MainHeader = () => {
   }, [headerEventTriggered])
 
   return (
-    <Header className={cn('main-header', { dark: isDarkTheme })}>
+    <Header
+      className={cn('main-header', {
+        dark: isDarkTheme,
+        'header-display-none': headerEventTriggered,
+        'header-display-flex': !headerEventTriggered,
+      })}>
       <MenuOutlined onClick={() => setDrawerOpen(true)} className="hideOnDesktop" />
       <HeaderLinks>
         <LanguageToggleButton />

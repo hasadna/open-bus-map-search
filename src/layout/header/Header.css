@@ -44,3 +44,15 @@
   background: transparent;
 
 }
+
+.header-display-none {
+  height: 0;
+  overflow: hidden;
+  transition: height 0.5s ease-out;
+}
+
+.header-display-flex {
+  height: 64px;
+  overflow: hidden;
+  transition: height 0.5s ease-out;
+}

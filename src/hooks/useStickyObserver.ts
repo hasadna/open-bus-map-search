@@ -12,7 +12,7 @@ export function useStickyObserver() {
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        setIsSticky(entry.boundingClientRect.bottom <= 86)
+        setIsSticky(!entry.isIntersecting)
       },
       {
         root: null,
