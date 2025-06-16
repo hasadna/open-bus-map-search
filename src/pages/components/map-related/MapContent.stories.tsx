@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { MapContainer } from 'react-leaflet'
 import { MapContent } from './MapContent'
 import { filteredPositions, plannedRouteStops } from './mapStorybookData'
