@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { getPastDate } from '../../../../.storybook/main'
 import WorstLinesChart from './WorstLinesChart'
 import dayjs from 'src/dayjs'
