@@ -1,7 +1,9 @@
-import type { Preview } from '@storybook/react-vite'
+import type { Parameters, Decorator } from '@storybook/react-vite'
+import type { GlobalTypes } from 'storybook/internal/csf'
 import { Suspense, useEffect } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { BrowserRouter } from 'react-router'
+import { waitFor } from '@testing-library/react'
 import { ThemeProvider, useTheme } from 'src/layout/ThemeContext'
 import i18n from 'src/locale/allTranslations'
 import 'src/index.css'
@@ -22,44 +24,33 @@ const queryClient = new QueryClient({
 
 queryClient.setQueryData(['version'], '1.2.3')
 
-const preview: Preview = {
-  parameters: {
-    actions: { argTypesRegex: '^on[A-Z].*' },
-    controls: {
-      matchers: {
-        color: /(background|color)$/i,
-        date: /Date$/i,
-      },
-    },
-    options: {
-      storySort: {
-        method: 'alphabetical',
-        order: [],
-      },
-    },
-  },
-
-  decorators: [
-    (Story, context) => {
-      const { locale, darkMode } = context.globals
-      return (
-        <Suspense fallback={null}>
-          <BrowserRouter>
-            <QueryClientProvider client={queryClient}>
-              <ThemeProvider>
-                <StoryBookWrapper locale={locale} darkMode={darkMode}>
-                  <Story />
-                </StoryBookWrapper>
-              </ThemeProvider>
-            </QueryClientProvider>
-          </BrowserRouter>
-        </Suspense>
+export const parameters = {
+  eyes: {
+    beforeCaptureScreenshot: async () => {
+      await waitFor(
+        () => {
+          if (document.querySelector('.ant-skeleton')) {
+            throw new Error('Skeleton still visible')
+          }
+        },
+        { timeout: 5000 },
       )
     },
-  ],
-
-  tags: ['autodocs'],
-}
+  },
+  actions: { argTypesRegex: '^on[A-Z].*' },
+  controls: {
+    matchers: {
+      color: /(background|color)$/i,
+      date: /Date$/i,
+    },
+  },
+  options: {
+    storySort: {
+      method: 'alphabetical',
+      order: [],
+    },
+  },
+} satisfies Parameters
 
 export const globalTypes = {
   locale: {
@@ -88,9 +79,26 @@ export const globalTypes = {
       showName: true,
     },
   },
-}
+} satisfies GlobalTypes
 
-export default preview
+export const decorators = [
+  (Story, context) => {
+    const { locale, darkMode } = context.globals
+    return (
+      <Suspense fallback={null}>
+        <BrowserRouter>
+          <QueryClientProvider client={queryClient}>
+            <ThemeProvider>
+              <StoryBookWrapper locale={locale} darkMode={darkMode}>
+                <Story />
+              </StoryBookWrapper>
+            </ThemeProvider>
+          </QueryClientProvider>
+        </BrowserRouter>
+      </Suspense>
+    )
+  },
+] satisfies Decorator[]
 
 const StoryBookWrapper = ({
   darkMode,
