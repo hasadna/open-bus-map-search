@@ -2,17 +2,11 @@
  * @type {import('@applitools/eyes-playwright').Configuration}
  */
 module.exports = {
-  waitBeforeCapture: async () => {
-    const startTime = Date.now()
-    while (
-      document.querySelector('.ant-skeleton-content') ||
-      document.querySelector('.ant-skeleton')
-    ) {
-      await new Promise((resolve) => setTimeout(resolve, 100))
-      if (Date.now() - startTime > 5000) {
-        console.warn('Waited too long for skeletons to disappear, proceeding anyway.')
-        break
-      }
+  waitBeforeCapture: async (page) => {
+    try {
+      await page.waitForSelector('.ant-skeleton', { state: 'hidden', timeout: 25000 })
+    } catch (error) {
+      console.warn('Error waiting for skeletons to disappear:', error.message)
     }
     return true
   },
