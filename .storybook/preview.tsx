@@ -3,7 +3,6 @@ import type { GlobalTypes } from 'storybook/internal/csf'
 import { Suspense, useEffect } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { BrowserRouter } from 'react-router'
-import { waitFor } from '@testing-library/react'
 import { ThemeProvider, useTheme } from 'src/layout/ThemeContext'
 import i18n from 'src/locale/allTranslations'
 import 'src/index.css'
@@ -27,14 +26,15 @@ queryClient.setQueryData(['version'], '1.2.3')
 export const parameters = {
   eyes: {
     beforeCaptureScreenshot: async () => {
-      await waitFor(
-        () => {
-          if (document.querySelector('.ant-skeleton')) {
-            throw new Error('Skeleton still visible')
-          }
-        },
-        { timeout: 5000 },
-      )
+      const timeout = 25000
+      const pollInterval = 100
+      const start = Date.now()
+      while (document.querySelector('.ant-skeleton')) {
+        if (Date.now() - start > timeout) {
+          throw new Error('Skeleton still visible')
+        }
+        await new Promise((resolve) => setTimeout(resolve, pollInterval))
+      }
     },
   },
   actions: { argTypesRegex: '^on[A-Z].*' },
