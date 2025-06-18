@@ -41,7 +41,7 @@ export abstract class BasePage {
     }
   }
 
-  protected async verifySelectionEnable(locator: Locator, isEnable: boolean, timeout?: number) {
+  protected async verifySelectionEnable(locator: Locator, isEnable = true, timeout = 5000) {
     if (isEnable) {
       await expect(locator).toBeEnabled({ timeout: timeout || 5000 })
     } else {

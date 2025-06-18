@@ -28,13 +28,13 @@ test.describe('Single line page tests', () => {
   test('Test "choose route" dropdown appears after selecting line', async () => {
     await singleLinePage.selectOperatorFromDropbox('אגד')
     await singleLinePage.fillLineNumber('1')
-    await singleLinePage.verifyRouteSelectionEnable(true)
+    await singleLinePage.verifyRouteSelectionEnable()
   })
 
   test('Test "choose route" dropdown disappears after removing line', async () => {
     await singleLinePage.selectOperatorFromDropbox('אגד')
     await singleLinePage.fillLineNumber('1')
-    await singleLinePage.verifyRouteSelectionEnable(true)
+    await singleLinePage.verifyRouteSelectionEnable()
     await singleLinePage.closeLineNumber()
     await singleLinePage.verifyRouteSelectionEnable(false)
   })

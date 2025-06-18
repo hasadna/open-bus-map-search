@@ -51,7 +51,7 @@ export default class SinglinePage extends BasePage {
     await this.clickOnElement(this.close_line_number)
   }
 
-  public async verifyRouteSelectionEnable(isEnable: boolean) {
+  public async verifyRouteSelectionEnable(isEnable = true) {
     await this.verifySelectionEnable(this.route_select, isEnable)
   }
 
