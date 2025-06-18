@@ -64,7 +64,7 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "nx exec -- storybook build",
     "_build": "tsc && vite build",
-    "test:storybook": "eyes-storybook"
+    "test:storybook": "eyes-storybook --config applitools.storybook.config.cjs"
   },
   "browserslist": {
     "production": [
