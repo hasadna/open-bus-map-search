@@ -26,7 +26,7 @@ queryClient.setQueryData(['version'], '1.2.3')
 export const parameters = {
   eyes: {
     beforeCaptureScreenshot: async () => {
-      const timeout = 25000
+      const timeout = 180000
       const pollInterval = 100
       const start = Date.now()
       while (document.querySelector('.ant-skeleton')) {
