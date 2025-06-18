@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { BusToolTip } from './map-related/MapLayers/BusToolTip'
 import '../../shared/shared.css'
 import Widget from 'src/shared/Widget'
