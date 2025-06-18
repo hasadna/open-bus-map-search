@@ -4,7 +4,7 @@
 module.exports = {
   waitBeforeCapture: async (page) => {
     try {
-      await page.waitForSelector('.ant-skeleton', { state: 'hidden', timeout: 25000 })
+      await page.waitForSelector('.ant-skeleton', { state: 'hidden', timeout: 180000 })
     } catch (error) {
       console.warn('Error waiting for skeletons to disappear:', error.message)
     }

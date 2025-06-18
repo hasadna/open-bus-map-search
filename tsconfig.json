@@ -30,7 +30,6 @@
     "playwright.config.ts",
     ".storybook/*",
     "jest.config.ts",
-    "applitools.config.cjs",
-    "applitools.storybook.config.cjs"
+    "applitools.config.cjs"
   ]
 }
