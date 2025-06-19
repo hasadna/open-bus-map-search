@@ -25,7 +25,7 @@ queryClient.setQueryData(['version'], '1.2.3')
 
 export const parameters = {
   eyes: {
-    beforeCaptureScreenshot: async () => {
+    waitBeforeCapture: async () => {
       const timeout = 300_000
       const pollInterval = 100
       const start = Date.now()
