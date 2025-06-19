@@ -76,7 +76,7 @@ export const useSingleLineData = (
   }, [search.timestamp])
 
   const validVehicleNumber = useMemo(() => {
-    return vehicleNumber && /^\d{8,9}$/.test(vehicleNumber.toString())
+    return vehicleNumber && /^\d{7,8}$/.test(vehicleNumber.toString())
       ? Number(vehicleNumber)
       : undefined
   }, [vehicleNumber])
