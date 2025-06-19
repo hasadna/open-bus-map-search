@@ -20,6 +20,8 @@
   "gaps_patterns_page_description": "תצוגה גרפית של אחוז הנסיעות שבוצעו בהתאם ללוח הזמנים בחלוקה לשעות\\רמת חומרה, לפי חברת אוטובוסים, מספר קו, מסלול ותאריך",
   "singleline_map_page_title": "מפה לפי קו",
   "singleline_map_page_description": "תצוגה של מסלול קו על מפה ע\"פ נתוני חברת אוטובוסים, מספר רכב, קו, מסלול, תאריך ושעה",
+  "singleline_map_page_route": "לפי מסלול",
+  "singleline_map_page_vehicle_id": "לפי מספר רכב",
   "open_menu_description": "תצוגה של שלל אפשרויות ופרמטרים שונים הניתנים לביצוע באפליקצייה",
   "choose_datetime": "תאריך ושעה",
   "choose_date": "תאריך",

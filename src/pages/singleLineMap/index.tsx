@@ -101,14 +101,13 @@ const SingleLineMapPage = () => {
             <ToggleButtonGroup
               value={type}
               color="primary"
+              dir="rtl"
               onChange={handleTypeChange}
               sx={{ height: 56 }}
               exclusive
               fullWidth>
-              <ToggleButton value="routes" defaultChecked>
-                לפי מסלול
-              </ToggleButton>
-              <ToggleButton value="vehicle">לפי מספר רכב</ToggleButton>
+              <ToggleButton value="routes">{t('singleline_map_page_route')}</ToggleButton>
+              <ToggleButton value="vehicle">{t('singleline_map_page_vehicle_id')}</ToggleButton>
             </ToggleButtonGroup>
           </Grid>
         </Grid>
