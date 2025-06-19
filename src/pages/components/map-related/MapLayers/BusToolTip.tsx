@@ -144,6 +144,14 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
               {showJson ? t('hide_document') : t('show_document')}
             </Button>
 
+            <Button
+              href="https://www.gov.il/BlobFolder/generalpage/gtfs_general_transit_feed_specifications/he/GTFS_Developer_Information_2024.11.21b.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              sx={i18n.language === 'he' ? { paddingLeft: 0 } : { paddingRight: 0 }}>
+              {t('homepage.manual')}
+            </Button>
+
             {/* Open Complaint Button */}
             <EasterEgg code="complaint">
               <Button
