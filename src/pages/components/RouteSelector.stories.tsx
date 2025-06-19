@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import RouteSelector from './RouteSelector'
 import { fromGtfsRoute } from 'src/model/busRoute'
 

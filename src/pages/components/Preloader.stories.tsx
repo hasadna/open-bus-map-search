@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Suspense } from 'react'
 import Preloader from 'src/shared/Preloader'
 
