@@ -1,8 +1,8 @@
 import React from 'react'
 import { Box, Grid, Modal, Typography, useMediaQuery, useTheme } from '@mui/material'
 import { useTranslation } from 'react-i18next'
-import './DonateModal.scss'
-
+import styled from 'styled-components'
+import { ArrowBackIosNewRounded } from '@mui/icons-material'
 interface DonateModalProps {
   isVisible: boolean
   onClose: () => void
@@ -22,6 +22,30 @@ const boxStyle = {
   p: 4,
 } as const
 
+const ButtonDonate = styled.a`
+  direction: rtl;
+  display: inline-flex;
+  margin-left: auto;
+  margin-right: 0;
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+`
+const ButtonDonateText = styled.span`
+  background-color: #16a9ff;
+  padding: 8px 16px;
+  border-radius: 0 1000px 1000px 0;
+  font-size: 32px;
+`
+
+const ButtonDonateIcon = styled.span`
+  padding: 16px;
+  border-radius: 1000px 0 0 1000px;
+  width: 32px;
+  height: 32px;
+  background-color: #1498e5;
+`
+
 export const DonateModal: React.FC<DonateModalProps> = ({ isVisible, onClose }) => {
   const shouldImgCollapse = useMediaQuery('(max-width: 950px)')
   const { t } = useTranslation()
@@ -29,7 +53,6 @@ export const DonateModal: React.FC<DonateModalProps> = ({ isVisible, onClose }) 
 
   return (
     <Modal
-      dir={direction}
       open={isVisible}
       onClose={onClose}
       aria-modal="true"
@@ -40,7 +63,7 @@ export const DonateModal: React.FC<DonateModalProps> = ({ isVisible, onClose }) 
         textAlign: `${direction === 'ltr' ? 'right' : 'left'}` as const,
         color: 'text.primary', // Dynamically uses the theme’s text color
       }}>
-      <Box dir={direction} sx={boxStyle}>
+      <Box sx={boxStyle}>
         <button onClick={onClose} className="close-modal-icon">
           X
         </button>
@@ -55,21 +78,24 @@ export const DonateModal: React.FC<DonateModalProps> = ({ isVisible, onClose }) 
               <a
                 href="https://www.jgive.com/new/he/ils/donation-targets/3268"
                 target="_blank"
-                rel="noreferrer">
+                rel="noreferrer"
+                style={{ textDecoration: 'none', color: 'inherit' }}>
                 <img
                   src="https://www.hasadna.org.il/wp-content/uploads/2017/12/%D7%AA%D7%A8%D7%95%D7%9E%D7%95%D7%AA.jpg"
                   alt={t('donation_link')}
                   width={'90%'}
                   style={{ maxWidth: '420px' }}
                 />
-                <a
-                  href="https://www.jgive.com/new/he/ils/donation-targets/3268"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="donate-button">
-                  לתרום לסדנא ←
-                </a>
               </a>
+              <ButtonDonate
+                href="https://www.jgive.com/new/he/ils/donation-targets/3268"
+                target="_blank"
+                rel="noreferrer">
+                <ButtonDonateText>{t('donate')}</ButtonDonateText>
+                <ButtonDonateIcon>
+                  <ArrowBackIosNewRounded sx={{ fontSize: 32 }} />
+                </ButtonDonateIcon>
+              </ButtonDonate>
             </Typography>
           </Grid>
           <Grid dir={direction} size={{ xs: 6 }}>
