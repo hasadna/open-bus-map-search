@@ -1,114 +1,227 @@
-import moment from 'moment'
-import { useContext, useEffect, useMemo, useState } from 'react'
-import { getStopsForRouteAsync } from 'src/api/gtfsService'
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { getRoutesAsync, getRoutesByLineRef, getStopsForRouteAsync } from 'src/api/gtfsService'
 import useVehicleLocations from 'src/api/useVehicleLocations'
 import { BusStop } from 'src/model/busStop'
+import { BusRoute } from 'src/model/busRoute'
 import { SearchContext } from 'src/model/pageState'
 import { Point } from 'src/pages/timeBasedMap'
+import dayjs from 'src/dayjs'
+import { vehicleIDFormat, routeStartEnd } from 'src/pages/components/utils/rotueUtils'
 
-export const useSingleLineData = (lineRef?: number, routeIds?: number[]) => {
-  const {
-    search: { timestamp },
-  } = useContext(SearchContext)
+const formatTime = (time: dayjs.Dayjs) => time.format('HH:mm')
+
+export const useSingleLineData = (
+  operatorId?: string,
+  lineNumber?: string,
+  vehicleNumber?: number,
+) => {
+  const { search, setSearch } = useContext(SearchContext)
+  const [routes, setRoutes] = useState<BusRoute[] | undefined>(search.routes)
+  const [routeKey, _setRouteKey] = useState<string | undefined>(search.routeKey)
   const [filteredPositions, setFilteredPositions] = useState<Point[]>([])
-  const [startTime, setStartTime] = useState<string>('00:00:00')
   const [plannedRouteStops, setPlannedRouteStops] = useState<BusStop[]>([])
-  const today = new Date(timestamp)
-  const tomorrow = new Date(today)
-  tomorrow.setDate(tomorrow.getDate() + 1)
+  const [options, setOptions] = useState<{ value: string; label: string }[]>([])
+  const [startTime, setStartTime] = useState<string>()
+  const [error, setError] = useState<string>()
+
+  const setRouteKey = useCallback(
+    (routeKey?: string) => {
+      _setRouteKey(routeKey)
+      setSearch((prev) => ({ ...prev, routeKey }))
+    },
+    [setSearch],
+  )
+
+  useEffect(() => {
+    if (!operatorId || !lineNumber) {
+      setRoutes(undefined)
+      setRouteKey(undefined)
+      setStartTime(undefined)
+      setError(undefined)
+      setSearch((prev) => ({ ...prev, routes: undefined, routeKey: undefined }))
+      return
+    }
+
+    const controller = new AbortController()
+    const time = dayjs(search.timestamp)
+
+    getRoutesAsync(time, time, operatorId, lineNumber, controller.signal)
+      .then((routes) => {
+        setRoutes(routes)
+        setSearch((prev) => ({ ...prev, routes }))
+        setError(undefined)
+        setStartTime(undefined)
+      })
+      .catch((err) => {
+        if (err?.cause?.name !== 'AbortError') {
+          setRoutes(undefined)
+          setSearch((prev) => ({ ...prev, routes: undefined }))
+          setRouteKey(undefined)
+          setError(err instanceof Error ? err.message : 'Failed to fetch routes')
+        }
+      })
+
+    return () => {
+      controller.abort()
+    }
+  }, [operatorId, lineNumber, search.timestamp, setSearch, setRouteKey])
+
+  const selectedRoute = useMemo(() => {
+    return routes?.find((route) => route.key === routeKey)
+  }, [routes, routeKey])
+
+  const [today, tomorrow] = useMemo(() => {
+    const today = dayjs(search.timestamp).startOf('day')
+    return [today, today.add(1, 'day')]
+  }, [search.timestamp])
+
+  const validVehicleNumber = useMemo(() => {
+    return vehicleNumber && /^\d{7,8}$/.test(vehicleNumber.toString())
+      ? Number(vehicleNumber)
+      : undefined
+  }, [vehicleNumber])
+
   const { locations, isLoading: locationsAreLoading } = useVehicleLocations({
-    from: +today.setHours(0, 0, 0, 0),
-    to: +tomorrow.setHours(0, 0, 0, 0),
-    lineRef,
+    from: today.valueOf(),
+    to: tomorrow.valueOf(),
+    operatorRef: operatorId ? Number(operatorId) : undefined,
+    lineRef: selectedRoute?.lineRef ? Number(selectedRoute.lineRef) : undefined,
+    vehicleRef: validVehicleNumber,
     splitMinutes: 360,
-    pause: !lineRef,
+    pause: !operatorId || (!selectedRoute?.lineRef && !validVehicleNumber),
   })
 
   const positions = useMemo(() => {
-    const pos = locations.map<Point>((location) => ({
-      loc: [location.lat, location.lon],
-      color: location.velocity,
-      operator: location.siri_route__operator_ref,
-      bearing: location.bearing,
-      recorded_at_time: new Date(location.recorded_at_time).getTime(),
-      point: location,
-    }))
-
-    return pos
-  }, [locations])
-
-  function convertTo24HourAndToNumber(time: string): number {
-    const match = time.match(/(\d+):(\d+):(\d+)\s(AM|PM)/)
-    if (!match) return 0
-
-    const [, hour, minute, , modifier] = match
-    let newHour = parseInt(hour, 10)
-    if (modifier === 'AM' && newHour === 12) newHour = 0
-    if (modifier === 'PM' && newHour !== 12) newHour += 12
-
-    return newHour * 60 + parseInt(minute, 10)
-  }
-
-  const options = useMemo(() => {
-    const filteredPositions = positions.filter((position) => {
-      const startTime = position.point?.siri_ride__scheduled_start_time
-      return !!startTime && +new Date(startTime) > +today.setHours(0, 0, 0, 0)
-    })
-
-    if (filteredPositions.length === 0) return []
-
-    const uniqueTimes = Array.from(
-      new Set(
-        filteredPositions
-          .map((position) => position.point?.siri_ride__scheduled_start_time)
-          .filter((time): time is string => !!time)
-          .map((time) => time.trim()),
-      ),
-    )
-      .map((time) => new Date(time).toLocaleTimeString()) // Convert to 24-hour time string
-      .map((time) => ({
-        value: time,
-        label: time,
+    return locations
+      .filter((l) =>
+        validVehicleNumber ? Number(l.siri_ride__vehicle_ref) === validVehicleNumber : true,
+      )
+      .map<Point>((location) => ({
+        loc: [location.lat, location.lon],
+        color: location.velocity,
+        operator: location.siri_route__operator_ref,
+        bearing: location.bearing,
+        recorded_at_time: new Date(location.recorded_at_time).getTime(),
+        point: location,
       }))
-
-    const sortedOptions = uniqueTimes.sort(
-      (a, b) => convertTo24HourAndToNumber(a.value) - convertTo24HourAndToNumber(b.value),
-    )
-
-    return sortedOptions
-  }, [positions])
+  }, [locations, validVehicleNumber])
 
   useEffect(() => {
-    if (startTime !== '00:00:00' && positions.length > 0) {
-      setFilteredPositions(
-        positions.filter(
-          (position) =>
-            new Date(position.point?.siri_ride__scheduled_start_time ?? 0).toLocaleTimeString() ===
-            startTime,
-        ),
-      )
-    }
-    if (startTime !== '00:00:00') {
-      const [hours, minutes] = startTime.split(':')
-      const startTimeTimestamp = +new Date(
-        positions[0].point?.siri_ride__scheduled_start_time ?? 0,
-      ).setHours(+hours, +minutes, 0, 0)
-      handlePlannedRouteStops(routeIds ?? [], startTimeTimestamp)
-    }
-  }, [startTime])
+    const fetchOptions = async () => {
+      const uniqueTimes = new Map<string, { scheduledTime: string; position: Point }>()
+      for (const position of positions) {
+        const startTime = position.point?.siri_ride__scheduled_start_time
+        if (!startTime) continue
+        const dayjsTime = dayjs(startTime)
+        if (dayjsTime.isAfter(today) && dayjsTime.isBefore(tomorrow)) {
+          const formattedTime = formatTime(dayjsTime)
+          const key = `${formattedTime}|${position.point?.siri_ride__vehicle_ref}`
+          if (!uniqueTimes.has(key)) {
+            uniqueTimes.set(key, { scheduledTime: formattedTime, position })
+          }
+        }
+      }
 
-  const handlePlannedRouteStops = async (routeIds: number[], startTimeTs: number) => {
-    const stops = await getStopsForRouteAsync(routeIds, moment(startTimeTs))
-    setPlannedRouteStops(stops)
-  }
+      const optionsArray = Array.from(uniqueTimes.values()).sort((a, b) =>
+        a.scheduledTime.localeCompare(b.scheduledTime),
+      )
+
+      if (vehicleNumber) {
+        const optionsArray2 = await Promise.all(
+          optionsArray.map(async (option) => {
+            const routes = await getRoutesByLineRef(
+              option.position.point!.siri_route__operator_ref.toString(),
+              option.position.point!.siri_route__line_ref.toString(),
+              new Date(option.position.point!.recorded_at_time),
+            )
+            const [start, end] = routeStartEnd(routes[0]?.routeLongName)
+            return {
+              value: `${option.scheduledTime}|${option.position.point!.siri_ride__vehicle_ref}|${option.position.point!.siri_route__line_ref}`,
+              label: routes[0]?.routeLongName
+                ? `${option.scheduledTime} (${routes[0]?.routeShortName} - ${start} ⇄ ${end})`
+                : `${option.scheduledTime} (${vehicleIDFormat(option.position.point!.siri_ride__vehicle_ref)})`,
+            }
+          }),
+        )
+        setOptions(optionsArray2)
+      } else {
+        setOptions(
+          optionsArray.map((option) => {
+            return {
+              value: `${option.scheduledTime}|${option.position.point!.siri_ride__vehicle_ref}`,
+              label: `${option.scheduledTime} (${vehicleIDFormat(option.position.point!.siri_ride__vehicle_ref)})`,
+            }
+          }),
+        )
+      }
+    }
+
+    fetchOptions()
+  }, [positions, today, tomorrow, vehicleNumber])
+
+  useEffect(() => {
+    if (!startTime) {
+      setFilteredPositions([])
+      return
+    }
+    const [scheduledTime, scheduledVehicle, scheduledLine] = startTime.split('|')
+
+    setFilteredPositions(
+      positions.filter((position) => {
+        const scheduledStart = position.point?.siri_ride__scheduled_start_time
+        const vehicleRef = position.point?.siri_ride__vehicle_ref.toString()
+        if (!scheduledStart || !vehicleRef || !scheduledTime || !scheduledVehicle) return false
+        return (
+          formatTime(dayjs(scheduledStart)) === scheduledTime &&
+          scheduledVehicle === vehicleRef &&
+          (scheduledLine ? scheduledLine === position.point?.siri_route__line_ref.toString() : true)
+        )
+      }),
+    )
+  }, [startTime, positions])
+
+  useEffect(() => {
+    const fetchStops = async () => {
+      try {
+        const [scheduledTime, , scheduledLine] = startTime?.split('|') || [
+          undefined,
+          undefined,
+          undefined,
+        ]
+        const [hour, minute] = scheduledTime ? scheduledTime.split(':').map(Number) : [0, 0]
+        const startTimeTimestamp = today.hour(hour).minute(minute).second(0).millisecond(0)
+        let routeIds: number[] | undefined
+        if (selectedRoute?.routeIds && selectedRoute.routeIds.length > 0) {
+          routeIds = selectedRoute.routeIds
+        } else if (scheduledLine && operatorId) {
+          routeIds = (
+            await getRoutesByLineRef(operatorId, scheduledLine, startTimeTimestamp.toDate())
+          ).map((route) => route.id)
+        }
+        if (!routeIds || routeIds.length === 0) {
+          setPlannedRouteStops([])
+          return
+        }
+        const stops = await getStopsForRouteAsync(routeIds, startTimeTimestamp)
+        setPlannedRouteStops(stops)
+      } catch (err) {
+        console.error(err)
+        setPlannedRouteStops([])
+      }
+    }
+    fetchStops()
+  }, [selectedRoute?.routeIds, operatorId, startTime, today])
 
   return {
-    locationsAreLoading,
-    positions,
-    options,
-    filteredPositions,
+    positions: filteredPositions,
     plannedRouteStops,
+    options,
     startTime,
+    locationsAreLoading,
+    routes,
+    routeKey,
+    error,
     setStartTime,
+    setRouteKey,
   }
 }

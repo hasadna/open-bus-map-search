@@ -1,31 +1,27 @@
+import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
-import styled from 'styled-components'
 import { useTranslation } from 'react-i18next'
-import moment from 'moment'
-import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
-import Typography from '@mui/material/Typography'
-import Alert from '@mui/material/Alert'
-import CircularProgress from '@mui/material/CircularProgress'
-import { PageContainer } from '../components/PageContainer'
+import styled from 'styled-components'
 import { SearchContext, TimelinePageState } from '../../model/pageState'
-import { NotFound } from '../components/NotFound'
 import { DateSelector } from '../components/DateSelector'
-import LineNumberSelector from 'src/pages/components/LineSelector'
-import OperatorSelector from 'src/pages/components/OperatorSelector'
-import { Row } from 'src/pages/components/Row'
-import { INPUT_SIZE, MARGIN_MEDIUM } from 'src/resources/sizes'
-import 'src/App.scss'
-
+import { NotFound } from '../components/NotFound'
+import { PageContainer } from '../components/PageContainer'
 import {
   getGtfsStopHitTimesAsync,
   getRoutesAsync,
   getStopsForRouteAsync,
 } from 'src/api/gtfsService'
-import RouteSelector from 'src/pages/components/RouteSelector'
-import { Label } from 'src/pages/components/Label'
-import StopSelector from 'src/pages/components/StopSelector'
 import { getSiriStopHitTimesAsync } from 'src/api/siriService'
+import { Label } from 'src/pages/components/Label'
+import LineNumberSelector from 'src/pages/components/LineSelector'
+import OperatorSelector from 'src/pages/components/OperatorSelector'
+import RouteSelector from 'src/pages/components/RouteSelector'
+import { Row } from 'src/pages/components/Row'
+import StopSelector from 'src/pages/components/StopSelector'
 import { TimelineBoard } from 'src/pages/components/timeline/TimelineBoard'
+import { INPUT_SIZE, MARGIN_MEDIUM } from 'src/resources/sizes'
+import dayjs from 'src/dayjs'
+import 'src/App.scss'
 
 const StyledTimelineBoard = styled(TimelineBoard)`
   margin-top: ${MARGIN_MEDIUM * 3}px;
@@ -73,7 +69,7 @@ const TimelinePage = () => {
       return
     }
     setRoutesIsLoading(true)
-    getRoutesAsync(moment(timestamp), moment(timestamp), operatorId, lineNumber, signal)
+    getRoutesAsync(dayjs(timestamp), dayjs(timestamp), operatorId, lineNumber, signal)
       .then((routes) =>
         setSearch((current) =>
           search.lineNumber === lineNumber ? { ...current, routes: routes } : current,
@@ -99,7 +95,7 @@ const TimelinePage = () => {
       return
     }
     setStopsIsLoading(true)
-    getStopsForRouteAsync(selectedRouteIds, moment(timestamp))
+    getStopsForRouteAsync(selectedRouteIds, dayjs(timestamp))
       .then((stops) => setState((current) => ({ ...current, stops: stops })))
       .finally(() => setStopsIsLoading(false))
   }, [selectedRouteIds, routeKey, clearStops])
@@ -115,8 +111,8 @@ const TimelinePage = () => {
     if (stop) {
       setHitsIsLoading(true)
       Promise.all([
-        getGtfsStopHitTimesAsync(stop, moment(timestamp)),
-        getSiriStopHitTimesAsync(selectedRoute, stop, moment(timestamp)),
+        getGtfsStopHitTimesAsync(stop, dayjs(timestamp)),
+        getSiriStopHitTimesAsync(selectedRoute, stop, dayjs(timestamp)),
       ])
         .then(([gtfsTimes, siriTimes]) =>
           setState((current) => ({ ...current, gtfsHitTimes: gtfsTimes, siriHitTimes: siriTimes })),
@@ -150,39 +146,39 @@ const TimelinePage = () => {
 
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
         {/* choose date */}
-        <Grid xs={4} className="hideOnMobile">
+        <Grid size={{ xs: 4 }} className="hideOnMobile">
           <Label text={t('choose_date')} />
         </Grid>
-        <Grid sm={8} xs={12}>
+        <Grid size={{ sm: 8, xs: 12 }}>
           <DateSelector
-            time={moment(timestamp)}
+            time={dayjs(timestamp)}
             onChange={(ts) =>
               setSearch((current) => ({ ...current, timestamp: ts ? ts.valueOf() : 0 }))
             }
           />
         </Grid>
         {/* choose operator */}
-        <Grid xs={4} className="hideOnMobile">
+        <Grid size={{ xs: 4 }} className="hideOnMobile">
           <Label text={t('choose_operator')} />
         </Grid>
-        <Grid sm={8} xs={12}>
+        <Grid size={{ sm: 8, xs: 12 }}>
           <OperatorSelector
             operatorId={operatorId}
             setOperatorId={(id) => setSearch((current) => ({ ...current, operatorId: id }))}
           />
         </Grid>
         {/* choose line */}
-        <Grid xs={4} className="hideOnMobile">
+        <Grid size={{ xs: 4 }} className="hideOnMobile">
           <Label text={t('choose_line')} />
         </Grid>
-        <Grid sm={8} xs={12}>
+        <Grid size={{ sm: 8, xs: 12 }}>
           <LineNumberSelector
             lineNumber={lineNumber}
             setLineNumber={(number) => setSearch((current) => ({ ...current, lineNumber: number }))}
           />
         </Grid>
         {/* routes */}
-        <Grid xs={12}>
+        <Grid size={{ xs: 12 }}>
           {routesIsLoading && (
             <Row>
               <Label text={t('loading_routes')} />
@@ -202,7 +198,7 @@ const TimelinePage = () => {
             ))}
         </Grid>
         {/* stops */}
-        <Grid xs={12}>
+        <Grid size={{ xs: 12 }}>
           {stopsIsLoading && (
             <Row>
               <Label text={t('loading_stops')} />
@@ -223,7 +219,7 @@ const TimelinePage = () => {
           )}
         </Grid>
         {/* its Loading */}
-        <Grid xs={12}>
+        <Grid size={{ xs: 12 }}>
           {hitsIsLoading && (
             <Row>
               <Label text={t('loading_hits')} />
@@ -237,7 +233,7 @@ const TimelinePage = () => {
         siriHitTimes !== undefined &&
         (gtfsHitTimes.length > 0 || siriHitTimes.length > 0 ? (
           <StyledTimelineBoard
-            target={moment(timestamp)}
+            target={dayjs(timestamp)}
             gtfsTimes={gtfsHitTimes}
             siriTimes={siriHitTimes}
           />

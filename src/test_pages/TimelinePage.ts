@@ -55,7 +55,7 @@ export default class TimelinePage extends BasePage {
     return this.page.locator('#stop-select')
   }
   public get operatorsDropDown() {
-    return this.page.locator("button[aria-label='Open']")
+    return this.page.locator("button[aria-label='פתח']")
   }
 
   public get timelineGraph() {

@@ -1,6 +1,6 @@
 import { Eyes, Target, VisualGridRunner } from '@applitools/eyes-playwright'
 import username from 'git-username'
-import { getBranch, test } from './utils'
+import { getBranch, getPastDate, test, waitForSkeletonsToHide } from './utils'
 
 test.describe('Visual Tests', () => {
   const eyes = new Eyes(new VisualGridRunner(), {
@@ -13,6 +13,7 @@ test.describe('Visual Tests', () => {
       },
     ],
   })
+
   test.beforeAll(async () => {
     setBatchName(eyes)
     await setEyesSettings(eyes)
@@ -20,6 +21,7 @@ test.describe('Visual Tests', () => {
 
   test.beforeEach(async ({ page }, testinfo) => {
     await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
+    await page.clock.setFixedTime(getPastDate())
     if (!process.env.APPLITOOLS_API_KEY) {
       eyes.setIsDisabled(true)
       console.log('APPLITOOLS_API_KEY is not defined, please ask noamgaash for the key')
@@ -44,23 +46,16 @@ test.describe('Visual Tests', () => {
   test('dashboard page should look good', async ({ page }) => {
     await page.goto('/dashboard')
     await page.getByText('אגד').first().waitFor()
-    while ((await page.locator('.ant-skeleton-content').count()) > 0)
-      await page.locator('.ant-skeleton-content').last().waitFor({ state: 'hidden' })
+    await waitForSkeletonsToHide(page)
     await eyes.check(
       'dashboard page',
-      Target.window()
-        .layoutRegions('.chart', page.getByPlaceholder('DD/MM/YYYY'))
-        .fully()
-        .scrollRootElement('main'),
+      Target.window().layoutRegions('.chart').fully().scrollRootElement('main'),
     )
     // scroll to recharts-wrapper
     await page.evaluate(() => {
       document.querySelector('.recharts-wrapper')?.scrollIntoView()
     })
-    await eyes.check(
-      'dashboard page - recharts',
-      Target.window().layoutRegions('.chart', page.getByPlaceholder('DD/MM/YYYY')),
-    )
+    await eyes.check('dashboard page - recharts', Target.window().layoutRegions('.chart'))
   })
 
   test('front page should look good', async ({ page }) => {
@@ -75,44 +70,44 @@ test.describe('Visual Tests', () => {
 
   test('timeline page should look good', async ({ page }) => {
     await page.goto('/timeline')
-    await eyes.check(
-      'timeline page',
-      Target.window().layoutRegion(page.getByPlaceholder('DD/MM/YYYY')),
-    )
+    await eyes.check('timeline page', Target.window())
   })
 
   test('gaps page should look good', async ({ page }) => {
     await page.goto('/gaps')
-    await eyes.check('gaps page', Target.window().layoutRegion(page.getByPlaceholder('DD/MM/YYYY')))
+    await eyes.check('gaps page', Target.window())
   })
 
   test('gaps_patterns page should look good', async ({ page }) => {
     await page.goto('/gaps_patterns')
-    await eyes.check(
-      'gaps_patterns page',
-      Target.window().layoutRegion(page.getByPlaceholder('DD/MM/YYYY')),
-    )
+    await eyes.check('gaps_patterns page', Target.window())
   })
 
   test('map page should look good', async ({ page }) => {
-    await page.clock.setFixedTime(new Date('2023-05-01T00:00:00.000Z'))
     await page.goto('/map')
     await page.locator('.leaflet-marker-icon').first().waitFor({ state: 'visible' })
     await page.locator('.ant-spin-dot').first().waitFor({ state: 'hidden' })
     await eyes.check(
       'map page',
-      Target.window().layoutRegions(
-        page.getByPlaceholder('DD/MM/YYYY'),
-        page.getByText('מיקומי אוטובוסים משעה'),
-      ),
+      Target.window().layoutRegions(page.getByText('מיקומי אוטובוסים משעה')),
     )
   })
+
+  test('operator page should look good', async ({ page }) => {
+    await page.goto('/operator')
+    await page.getByRole('combobox', { name: 'חברה מפעילה' }).click()
+    await page.getByRole('option', { name: 'אגד', exact: true }).click()
+    await waitForSkeletonsToHide(page)
+    await eyes.check('operator page', Target.window().layoutRegions('.chart', '.recharts-wrapper'))
+  })
+
   test('donation modal should look good', async ({ page }) => {
     await page.goto('/')
     await page.getByLabel('לתרומות').click()
     await page.locator('.MuiTypography-root').first().waitFor()
     await eyes.check('donation modal', Target.region(page.getByRole('dialog')))
   })
+
   test('donation modal should look good in dark mode', async ({ page }) => {
     await page.goto('/')
     await page.getByLabel('עבור למצב כהה').click()

@@ -1,27 +1,27 @@
-import React, { useMemo, useState } from 'react'
-import moment from 'moment'
 import { Grid } from '@mui/material'
-import { useTranslation } from 'react-i18next'
 import { Skeleton } from 'antd'
+import React, { useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   Area,
-  Tooltip,
   AreaChart,
   CartesianGrid,
   ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
 } from 'recharts'
 import { DateSelector } from '../components/DateSelector'
 import { useDate } from '../components/DateTimePicker'
+import OperatorSelector from '../components/OperatorSelector'
 import { PageContainer } from '../components/PageContainer'
 import { getColorName } from '../dashboard/AllLineschart/OperatorHbarChart/OperatorHbarChart'
-import './DataResearch.scss'
-import OperatorSelector from '../components/OperatorSelector'
 import { useGroupBy } from 'src/api/groupByService'
 import Widget from 'src/shared/Widget'
+import dayjs from 'src/dayjs'
+import './DataResearch.scss'
 
-const now = moment()
+const now = dayjs()
 const unique: (value: string, index: number, self: string[]) => boolean = (value, index, self) =>
   self.indexOf(value) === index
 
@@ -41,7 +41,7 @@ function StackedResearchSection() {
   const [startDate, setStartDate] = useDate(now.clone().subtract(7, 'days'))
   const [endDate, setEndDate] = useDate(now.clone().subtract(1, 'day'))
   const [operatorId, setOperatorId] = useState('')
-  const [groupByHour, setGroupByHour] = React.useState<boolean>(false)
+  const [groupByHour, setGroupByHour] = useState<boolean>(false)
   const [graphData, loadingGraph] = useGroupBy({
     dateTo: endDate,
     dateFrom: startDate,
@@ -99,10 +99,10 @@ function StackedResearchInputs({
   operatorId,
   setOperatorId,
 }: {
-  startDate: moment.Moment
-  setStartDate: (date: moment.Moment) => void
-  endDate: moment.Moment
-  setEndDate: (date: moment.Moment) => void
+  startDate: dayjs.Dayjs
+  setStartDate: (date: dayjs.Dayjs) => void
+  endDate: dayjs.Dayjs
+  setEndDate: (date: dayjs.Dayjs) => void
   groupByHour: boolean
   setGroupByHour: (value: boolean) => void
   operatorId: string
@@ -112,14 +112,14 @@ function StackedResearchInputs({
   return (
     <>
       <Grid container>
-        <Grid xs={6} item>
+        <Grid size={{ xs: 6 }}>
           <DateSelector
             time={startDate}
             onChange={(data) => data && setStartDate(data)}
             customLabel={t('start')}
           />
         </Grid>
-        <Grid xs={6} item>
+        <Grid size={{ xs: 6 }}>
           <DateSelector
             time={endDate}
             onChange={(data) => data && setEndDate(data)}

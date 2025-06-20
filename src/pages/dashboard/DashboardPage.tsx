@@ -1,14 +1,10 @@
 import { useState } from 'react'
 
-// Services and libraries
-import moment from 'moment'
 // Styling
 import './DashboardPage.scss'
 import 'src/App.scss'
 import { useTranslation } from 'react-i18next'
-import Typography from '@mui/material/Typography'
-import Alert from '@mui/material/Alert'
-import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
+import { Typography, Alert, Grid } from '@mui/material'
 import { useDate } from '../components/DateTimePicker'
 import { DateSelector } from '../components/DateSelector'
 import { PageContainer } from '../components/PageContainer'
@@ -20,12 +16,15 @@ import AllLinesChart from './AllLineschart/AllLinesChart'
 import WorstLinesChart from './WorstLinesChart/WorstLinesChart'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
 
+// Services and libraries
+import dayjs from 'src/dayjs'
+
 // Declarations
-const now = moment()
+const now = dayjs()
 
 const DashboardPage = () => {
-  const [startDate, setStartDate] = useDate(now.clone().subtract(7, 'days'))
-  const [endDate, setEndDate] = useDate(now.clone().subtract(1, 'day'))
+  const [startDate, setStartDate] = useDate(now.subtract(7, 'day'))
+  const [endDate, setEndDate] = useDate(now.subtract(1, 'day'))
   const [operatorId, setOperatorId] = useState('')
   const { t } = useTranslation()
 
@@ -53,15 +52,15 @@ const DashboardPage = () => {
         alignItems="center"
         sx={{ marginTop: '0px' }}
         justifyContent="space-between">
-        <Grid lg={6} xs={12} container spacing={2} alignItems="center">
-          <Grid xs={6}>
+        <Grid container size={{ xs: 12, lg: 6 }} spacing={2} alignItems="center">
+          <Grid size={{ xs: 6 }}>
             <DateSelector
               time={startDate}
               onChange={(data) => setStartDate(data)}
               customLabel={t('start')}
             />
           </Grid>
-          <Grid xs={6}>
+          <Grid size={{ xs: 6 }}>
             <DateSelector
               time={endDate}
               onChange={(data) => setEndDate(data)}
@@ -70,18 +69,18 @@ const DashboardPage = () => {
             />
           </Grid>
         </Grid>
-        <Grid lg={6} xs={12}>
+        <Grid size={{ xs: 12, lg: 6 }}>
           <OperatorSelector operatorId={operatorId} setOperatorId={setOperatorId} />
         </Grid>
       </Grid>
       <Grid container spacing={2} alignItems="flex-start">
-        <Grid xs={12} lg={6} className="widget">
+        <Grid size={{ xs: 12, lg: 6 }} className="widget">
           <AllLinesChart startDate={startDate} endDate={endDate} />
         </Grid>
-        <Grid xs={12} lg={6} className="widget">
+        <Grid size={{ xs: 12, lg: 6 }} className="widget">
           <WorstLinesChart startDate={startDate} endDate={endDate} operatorId={operatorId} />
         </Grid>
-        <Grid xs={12} className="widget">
+        <Grid size={{ xs: 12 }} className="widget">
           <DayTimeChart startDate={startDate} endDate={endDate} operatorId={operatorId} />
         </Grid>
       </Grid>

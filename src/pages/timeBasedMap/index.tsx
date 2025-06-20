@@ -1,29 +1,25 @@
+import { OpenInFullRounded } from '@mui/icons-material'
+import { Alert, CircularProgress, Grid, IconButton, Typography } from '@mui/material'
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { MapContainer, Marker, Polyline, Popup, TileLayer, useMap } from 'react-leaflet'
 import MarkerClusterGroup from 'react-leaflet-cluster'
-import { useTranslation } from 'react-i18next'
-import Alert from '@mui/material/Alert'
-import Typography from '@mui/material/Typography'
-import CircularProgress from '@mui/material/CircularProgress'
-import IconButton from '@mui/material/IconButton'
-import OpenInFullRoundedIcon from '@mui/icons-material/OpenInFullRounded'
-import moment from 'moment'
-import '../Map.scss'
-import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
-import MinuteSelector from '../components/MinuteSelector'
 import { DateSelector } from '../components/DateSelector'
-import { PageContainer } from '../components/PageContainer'
 import { Label } from '../components/Label'
-import { getColorByHashString } from '../dashboard/AllLineschart/OperatorHbarChart/utils'
-import createClusterCustomIcon from '../components/utils/customCluster/customCluster'
+import MinuteSelector from '../components/MinuteSelector'
+import { PageContainer } from '../components/PageContainer'
 import { TimeSelector } from '../components/TimeSelector'
 import { busIcon, busIconPath } from '../components/utils/BusIcon'
+import createClusterCustomIcon from '../components/utils/customCluster/customCluster'
 import InfoYoutubeModal from '../components/YoutubeModal'
+import { getColorByHashString } from '../dashboard/AllLineschart/OperatorHbarChart/utils'
+import getAgencyList, { Agency } from 'src/api/agencyList'
+import useVehicleLocations from 'src/api/useVehicleLocations'
+import { VehicleLocation } from 'src/model/vehicleLocation'
 import { BusToolTip } from 'src/pages/components/map-related/MapLayers/BusToolTip'
 import { INPUT_SIZE } from 'src/resources/sizes'
-import { VehicleLocation } from 'src/model/vehicleLocation'
-import useVehicleLocations from 'src/api/useVehicleLocations'
-import getAgencyList, { Agency } from 'src/api/agencyList'
+import dayjs from 'src/dayjs'
+import '../Map.scss'
 
 export interface Point {
   loc: [number, number]
@@ -41,9 +37,6 @@ interface Path {
   vehicleRef: number
 }
 
-const defaultStart = moment('2023-03-14T15:00:00Z')
-const defaultEnd = moment(defaultStart).add(1, 'minutes')
-
 export default function TimeBasedMapPage() {
   const [isExpanded, setIsExpanded] = useState<boolean>(false)
   const toggleExpanded = useCallback(() => setIsExpanded((expanded) => !expanded), [])
@@ -54,13 +47,10 @@ export default function TimeBasedMapPage() {
   }
 
   //TODO (another PR and another issue) load from url like in another pages.
-  const [from, setFrom] = useState(defaultStart)
-  const [to, setTo] = useState(defaultEnd)
+  const [from, setFrom] = useState(dayjs('2023-03-14T15:00:00Z'))
+  const [to, setTo] = useState(dayjs(from).add(1, 'minutes'))
 
-  const { locations, isLoading } = useVehicleLocations({
-    from,
-    to,
-  })
+  const { locations, isLoading } = useVehicleLocations({ from, to })
 
   const loaded = locations.length
   const { t } = useTranslation()
@@ -107,66 +97,64 @@ export default function TimeBasedMapPage() {
         />
       </Typography>
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
-        <Grid xs={12} className="hideOnMobile">
+        <Grid size={{ xs: 12 }} className="hideOnMobile">
           <Alert severity="info" variant="outlined" icon={false}>
             {t('time_based_map_page_description')}
           </Alert>
         </Grid>
         {/* from date */}
-        <Grid xs={2} className="hideOnMobile">
+        <Grid size={{ xs: 2 }} className="hideOnMobile">
           <Label text={t('from_date')} />
         </Grid>
-        <Grid sm={5} xs={6}>
+        <Grid size={{ sm: 5, xs: 6 }}>
           <DateSelector
             time={to}
             onChange={(ts) => {
               const val = ts ? ts : to
-              setFrom(moment(val).subtract(moment(to).diff(moment(from)))) // keep the same time difference
-              setTo(moment(val))
+              setFrom(dayjs(val).subtract(dayjs(to).diff(dayjs(from)))) // keep the same time difference
+              setTo(dayjs(val))
             }}
           />
         </Grid>
-        <Grid sm={5} xs={6}>
+        <Grid size={{ sm: 5, xs: 6 }}>
           <TimeSelector
             time={to}
             onChange={(ts) => {
               const val = ts ? ts : from
-              setFrom(moment(val).subtract(moment(to).diff(moment(from))))
-              setTo(moment(val)) // keep the same time difference
+              setFrom(dayjs(val).subtract(dayjs(to).diff(dayjs(from))))
+              setTo(dayjs(val)) // keep the same time difference
             }}
           />
         </Grid>
         {/*minutes*/}
-        <Grid sm={5} xs={12}>
+        <Grid size={{ sm: 5, xs: 12 }}>
           <Label text={t('watch_locations_in_range')} />
         </Grid>
-        <Grid sm={6} xs={12}>
+        <Grid size={{ sm: 6, xs: 12 }}>
           <MinuteSelector
             num={to.diff(from) / 1000 / 60}
             setNum={(num) => {
-              setFrom(moment(to).subtract(Math.abs(+num) || 1, 'minutes'))
+              setFrom(dayjs(to).subtract(Math.abs(+num) || 1, 'minutes'))
             }}
           />
         </Grid>
-        <Grid xs={1} className="hideOnMobile">
+        <Grid size={{ xs: 1 }} className="hideOnMobile">
           <Label text={t('minutes')} />
         </Grid>
         {/* Buttons */}
         {/* loaded info */}
-        <Grid xs={11}>
+        <Grid size={{ xs: 11 }}>
           <p>
-            {loaded} {`- `}
-            {t('show_x_bus_locations')} {` `}
-            {t('from_time_x_to_time_y')
-              .replace('XXX', moment(from).format('hh:mm A'))
-              .replace('YYY', moment(to).format('hh:mm A'))}
+            {`${loaded}- ${t('show_x_bus_locations')} ${t('from_time_x_to_time_y')
+              .replace('XXX', dayjs(from).format('LT'))
+              .replace('YYY', dayjs(to).format('LT'))}`}
           </p>
         </Grid>
-        <Grid xs={1}>{isLoading && <CircularProgress size="20px" />}</Grid>
+        <Grid size={{ xs: 1 }}>{isLoading && <CircularProgress size="20px" />}</Grid>
       </Grid>
       <div className={`map-info ${isExpanded ? 'expanded' : 'collapsed'}`}>
         <IconButton color="primary" className="expand-button" onClick={toggleExpanded}>
-          <OpenInFullRoundedIcon fontSize="large" />
+          <OpenInFullRounded fontSize="large" />
         </IconButton>
         <MapContainer center={position.loc} zoom={8} scrollWheelZoom={true}>
           <TileLayer

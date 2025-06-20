@@ -1,8 +1,6 @@
 import type { Locator, Page } from '@playwright/test'
 import i18next from 'i18next'
-import Backend from 'i18next-fs-backend'
-import { test, expect, urlMatcher, setBrowserTime, getPastDate } from './utils'
-
+import { test, expect, urlMatcher, setBrowserTime, getPastDate, loadTranslate } from './utils'
 import Selectors from './SelectorsModel'
 
 async function visitPage(page: Page, pageName: string, url: RegExp) {
@@ -25,13 +23,7 @@ async function selectLineNumberAndRoute(page: Page, lineNumber: Locator, route: 
 test.describe('clearButton functionality', () => {
   test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
     await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
-    await i18next.use(Backend).init({
-      lng: 'he',
-      backend: {
-        loadPath: 'src/locale/{{lng}}.json',
-      },
-    })
-
+    await loadTranslate(i18next)
     advancedRouteFromHAR('tests/HAR/clearbutton.har', {
       updateContent: 'embed',
       update: false,
@@ -67,7 +59,7 @@ test.describe('clearButton functionality', () => {
       await operator.click()
       await page.getByRole('option', { name: 'אלקטרה אפיקים' }).click()
       await selectLineNumberAndRoute(page, lineNumber, route)
-      await page.getByRole('button', { name: 'Clear' }).click()
+      await page.getByRole('button', { name: 'נקה' }).click()
 
       await expect(stop).not.toBeVisible()
     })
@@ -98,7 +90,7 @@ test.describe('clearButton functionality', () => {
       await operator.click()
       await page.getByRole('option', { name: 'אלקטרה אפיקים' }).click()
       await selectLineNumberAndRoute(page, lineNumber, route)
-      await page.getByRole('button', { name: 'Clear' }).click()
+      await page.getByRole('button', { name: 'נקה' }).click()
 
       await expect(stop).not.toBeVisible()
     })
@@ -129,7 +121,7 @@ test.describe('clearButton functionality', () => {
       await operator.click()
       await page.getByRole('option', { name: 'אלקטרה אפיקים' }).click()
       await selectLineNumberAndRoute(page, lineNumber, route)
-      await page.getByRole('button', { name: 'Clear' }).click()
+      await page.getByRole('button', { name: 'נקה' }).click()
       await expect(stop).not.toBeVisible()
     })
   })
@@ -147,8 +139,8 @@ test.describe('clearButton functionality', () => {
       await selectLineNumberAndRoute(page, lineNumber, route)
       await lineNumber.click()
       await page.getByLabel('close').locator('svg').click()
-      await expect(route).not.toBeVisible()
-      await expect(stop).not.toBeVisible()
+      await expect(route).toBeDisabled()
+      await expect(stop).toBeHidden()
     })
     test('after clear route input value - stop input should be hidden', async ({ page }) => {
       await visitPage(page, 'מפה לפי קו', /single-line/)
@@ -158,7 +150,7 @@ test.describe('clearButton functionality', () => {
       await operator.click()
       await page.getByRole('option', { name: 'אלקטרה אפיקים' }).click()
       await selectLineNumberAndRoute(page, lineNumber, route)
-      await page.getByRole('button', { name: 'Clear' }).click()
+      await page.getByRole('button', { name: 'נקה' }).click()
 
       await expect(stop).not.toBeVisible()
     })

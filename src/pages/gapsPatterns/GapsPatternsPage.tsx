@@ -1,51 +1,46 @@
+import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
+import { Radio, RadioChangeEvent, Skeleton, Space } from 'antd'
 import { useContext, useEffect, useState } from 'react'
-import './GapsPatternsPage.scss'
-import { Moment } from 'moment'
-import { Skeleton, Radio, RadioChangeEvent, Space } from 'antd'
-import CircularProgress from '@mui/material/CircularProgress'
-import moment from 'moment/moment'
-import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
-import Typography from '@mui/material/Typography'
-import Alert from '@mui/material/Alert'
+import { useTranslation } from 'react-i18next'
 import {
   Bar,
   CartesianGrid,
+  Cell,
+  ComposedChart,
   Legend,
+  ResponsiveContainer,
   Tooltip,
+  TooltipProps,
   XAxis,
   YAxis,
-  ComposedChart,
-  Cell,
-  TooltipProps,
-  ResponsiveContainer,
 } from 'recharts'
-import { useTranslation } from 'react-i18next'
+import { getRoutesAsync } from '../../api/gtfsService'
+import { SearchContext } from '../../model/pageState'
+import { DateSelector } from '../components/DateSelector'
 import { useDate } from '../components/DateTimePicker'
-import { PageContainer } from '../components/PageContainer'
-import { Row } from '../components/Row'
 import { Label } from '../components/Label'
-import OperatorSelector from '../components/OperatorSelector'
 import LineNumberSelector from '../components/LineSelector'
 import { NotFound } from '../components/NotFound'
+import OperatorSelector from '../components/OperatorSelector'
+import { PageContainer } from '../components/PageContainer'
 import RouteSelector from '../components/RouteSelector'
-import { SearchContext } from '../../model/pageState'
-import { getRoutesAsync } from '../../api/gtfsService'
-
+import { Row } from '../components/Row'
 import { mapColorByExecution } from '../components/utils'
-import { DateSelector } from '../components/DateSelector'
 import InfoYoutubeModal from '../components/YoutubeModal'
+import './GapsPatternsPage.scss'
 import { useGapsList } from './useGapsList'
 import { INPUT_SIZE } from 'src/resources/sizes'
 import Widget from 'src/shared/Widget'
-// Define prop types for the component
+import dayjs from 'src/dayjs'
+
 interface BusLineStatisticsProps {
   lineRef: number
   operatorRef: string
-  fromDate: Moment
-  toDate: Moment
+  fromDate: dayjs.Dayjs
+  toDate: dayjs.Dayjs
 }
 
-const now = moment()
+const now = dayjs()
 
 const CustomTooltip = ({ active, payload }: TooltipProps<number, string>) => {
   if (active && payload && payload.length > 1) {
@@ -74,7 +69,7 @@ function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatistic
 
   return (
     lineRef > 0 && (
-      <Widget>
+      <Widget marginBottom>
         {isLoading && lineRef ? (
           <Skeleton active />
         ) : (
@@ -154,8 +149,8 @@ const GapsPatternsPage = () => {
   const loadSearchData = async (signal: AbortSignal | undefined) => {
     setRoutesIsLoading(true)
     const routes = await getRoutesAsync(
-      moment(startDate),
-      moment(endDate),
+      dayjs(startDate),
+      dayjs(endDate),
       operatorId as string,
       lineNumber as string,
       signal,
@@ -197,24 +192,23 @@ const GapsPatternsPage = () => {
       ) : null}
 
       <Grid container spacing={2} alignItems="center" sx={{ maxWidth: INPUT_SIZE }}>
-        <Grid sm={4} className="hideOnMobile">
+        <Grid size={{ xs: 12, sm: 4 }} className="hideOnMobile">
           <Label text={t('choose_dates')} />
         </Grid>
         <Grid
           container
+          size={{ xs: 12, sm: 8 }}
           spacing={2}
-          xs={12}
-          sm={8}
           alignItems="center"
           justifyContent="space-between">
-          <Grid xs={6}>
+          <Grid size={{ xs: 6 }}>
             <DateSelector
               time={startDate}
               onChange={(data) => setStartDate(data)}
               customLabel={t('start')}
             />
           </Grid>
-          <Grid xs={6}>
+          <Grid size={{ xs: 6 }}>
             <DateSelector
               time={endDate}
               onChange={(data) => setEndDate(data)}
@@ -224,25 +218,25 @@ const GapsPatternsPage = () => {
           </Grid>
         </Grid>
 
-        <Grid xs={4} className="hideOnMobile">
+        <Grid size={{ xs: 12, sm: 4 }} className="hideOnMobile">
           <Label text={t('choose_operator')} />
         </Grid>
-        <Grid xs={12} sm={8}>
+        <Grid size={{ xs: 12, sm: 8 }}>
           <OperatorSelector
             operatorId={operatorId}
             setOperatorId={(id) => setSearch((current) => ({ ...current, operatorId: id }))}
           />
         </Grid>
-        <Grid xs={4} className="hideOnMobile">
+        <Grid size={{ xs: 12, sm: 4 }} className="hideOnMobile">
           <Label text={t('choose_line')} />
         </Grid>
-        <Grid xs={12} sm={8}>
+        <Grid size={{ xs: 12, sm: 8 }}>
           <LineNumberSelector
             lineNumber={lineNumber}
             setLineNumber={(number) => setSearch((current) => ({ ...current, lineNumber: number }))}
           />
         </Grid>
-        <Grid xs={12}>
+        <Grid size={{ xs: 12 }}>
           {routesIsLoading && (
             <Row>
               <Label text={t('loading_routes')} />
@@ -264,7 +258,7 @@ const GapsPatternsPage = () => {
             ))}
         </Grid>
       </Grid>
-      <Grid xs={12}>
+      <Grid size={{ xs: 12 }}>
         <GapsByHour
           lineRef={routes?.find((route) => route.key === routeKey)?.lineRef || 0}
           operatorRef={operatorId || ''}

@@ -34,9 +34,19 @@ export abstract class BasePage {
   }
 
   protected async verifySelectionVisible(locator: Locator, isVisible: boolean, timeout?: number) {
-    isVisible
-      ? await expect(locator).toBeVisible({ timeout: timeout || 5000 })
-      : await expect(locator).toBeHidden({ timeout: timeout || 5000 })
+    if (isVisible) {
+      await expect(locator).toBeVisible({ timeout: timeout || 5000 })
+    } else {
+      await expect(locator).toBeHidden({ timeout: timeout || 5000 })
+    }
+  }
+
+  protected async verifySelectionEnable(locator: Locator, isEnable = true, timeout = 5000) {
+    if (isEnable) {
+      await expect(locator).toBeEnabled({ timeout: timeout || 5000 })
+    } else {
+      await expect(locator).toBeDisabled({ timeout: timeout || 5000 })
+    }
   }
 
   protected async selectFrom_UL_LI_Dropbox(

@@ -1,28 +1,24 @@
+import { Alert, CircularProgress, FormControlLabel, Grid, Switch, Typography } from '@mui/material'
+import axios from 'axios'
 import { useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import moment, { Moment } from 'moment'
 import styled from 'styled-components'
 import { useSessionStorage } from 'usehooks-ts'
-import { FormControlLabel, Switch } from '@mui/material'
-import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
-import CircularProgress from '@mui/material/CircularProgress'
-import axios from 'axios'
-import Typography from '@mui/material/Typography'
-import Alert from '@mui/material/Alert'
-import { PageContainer } from '../components/PageContainer'
-import { Row } from '../components/Row'
-import { Label } from '../components/Label'
-import OperatorSelector from '../components/OperatorSelector'
-import LineNumberSelector from '../components/LineSelector'
-import { SearchContext } from '../../model/pageState'
-import { Gap, GapsList } from '../../model/gaps'
 import { getGapsAsync } from '../../api/gapsService'
-import RouteSelector from '../components/RouteSelector'
-import { NotFound } from '../components/NotFound'
 import { getRoutesAsync } from '../../api/gtfsService'
+import { Gap, GapsList } from '../../model/gaps'
+import { SearchContext } from '../../model/pageState'
 import { DateSelector } from '../components/DateSelector'
 import DisplayGapsPercentage from '../components/DisplayGapsPercentage'
+import { Label } from '../components/Label'
+import LineNumberSelector from '../components/LineSelector'
+import { NotFound } from '../components/NotFound'
+import OperatorSelector from '../components/OperatorSelector'
+import { PageContainer } from '../components/PageContainer'
+import RouteSelector from '../components/RouteSelector'
+import { Row } from '../components/Row'
 import { INPUT_SIZE } from 'src/resources/sizes'
+import dayjs from 'src/dayjs'
 
 const Cell = styled.div`
   width: 120px;
@@ -41,7 +37,7 @@ const GapsPage = () => {
   const [gapsIsLoading, setGapsIsLoading] = useState(false)
   const [onlyGapped, setOnlyGapped] = useSessionStorage('onlyGapped', false)
 
-  function formatTime(time: Moment) {
+  function formatTime(time: dayjs.Dayjs) {
     return time.format(t('time_format'))
   }
 
@@ -76,8 +72,8 @@ const GapsPage = () => {
       }
       setGapsIsLoading(true)
       getGapsAsync(
-        moment(timestamp),
-        moment(timestamp),
+        dayjs(timestamp),
+        dayjs(timestamp),
         operatorId,
         selectedRoute.lineRef,
         source.token,
@@ -101,7 +97,7 @@ const GapsPage = () => {
       return
     }
     setRoutesIsLoading(true)
-    getRoutesAsync(moment(timestamp), moment(timestamp), operatorId, lineNumber, signal)
+    getRoutesAsync(dayjs(timestamp), dayjs(timestamp), operatorId, lineNumber, signal)
       .then((routes) =>
         setSearch((current) =>
           search.lineNumber === lineNumber ? { ...current, routes: routes } : current,
@@ -124,39 +120,39 @@ const GapsPage = () => {
       </Alert>
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
         {/* choose date */}
-        <Grid xs={4}>
+        <Grid size={{ xs: 4 }}>
           <Label text={t('choose_date')} />
         </Grid>
-        <Grid xs={8}>
+        <Grid size={{ xs: 8 }}>
           <DateSelector
-            time={moment(timestamp)}
+            time={dayjs(timestamp)}
             onChange={(ts) =>
               setSearch((current) => ({ ...current, timestamp: ts ? ts.valueOf() : 0 }))
             }
           />
         </Grid>
         {/* choose operator */}
-        <Grid xs={4}>
+        <Grid size={{ xs: 4 }}>
           <Label text={t('choose_operator')} />
         </Grid>
-        <Grid xs={8}>
+        <Grid size={{ xs: 8 }}>
           <OperatorSelector
             operatorId={operatorId}
             setOperatorId={(id) => setSearch((current) => ({ ...current, operatorId: id }))}
           />
         </Grid>
         {/* choose line */}
-        <Grid xs={4}>
+        <Grid size={{ xs: 4 }}>
           <Label text={t('choose_line')} />
         </Grid>
-        <Grid xs={8}>
+        <Grid size={{ xs: 8 }}>
           <LineNumberSelector
             lineNumber={lineNumber}
             setLineNumber={(number) => setSearch((current) => ({ ...current, lineNumber: number }))}
           />
         </Grid>
         {/* choose routes */}
-        <Grid xs={12}>
+        <Grid size={{ xs: 12 }}>
           {routesIsLoading && (
             <Row>
               <Label text={t('loading_routes')} />
@@ -175,7 +171,7 @@ const GapsPage = () => {
               />
             ))}
         </Grid>
-        <Grid xs={12}>
+        <Grid size={{ xs: 12 }}>
           {gapsIsLoading && (
             <Row>
               <Label text={t('loading_gaps')} />
@@ -209,7 +205,7 @@ const GapsPage = () => {
             })
             .map((gap, i) => (
               <Row key={i}>
-                <Cell>{formatTime(gap.gtfsTime || gap.siriTime || moment())}</Cell>
+                <Cell>{formatTime(gap.gtfsTime || gap.siriTime || dayjs())}</Cell>
                 <Cell>{formatStatus(gaps, gap)}</Cell>
               </Row>
             ))}

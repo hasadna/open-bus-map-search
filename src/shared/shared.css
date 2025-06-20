@@ -1,7 +1,9 @@
 .widget {
   border-radius: 4px;
-  padding: 20px;
-  margin-bottom: 20px;
+}
+
+.widget.marginBottom {
+  margin-bottom: 16px;
 }
 
 .card.dark {

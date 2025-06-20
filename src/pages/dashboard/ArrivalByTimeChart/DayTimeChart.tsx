@@ -1,10 +1,10 @@
-import React, { FC, useMemo } from 'react'
+import { Radio, RadioChangeEvent, Skeleton } from 'antd'
+import { FC, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Skeleton, Radio, RadioChangeEvent } from 'antd'
-import { Moment } from 'moment/moment'
 import ArrivalByTimeChart from './ArrivalByTimeChart'
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
 import Widget from 'src/shared/Widget'
+import { Dayjs } from 'src/dayjs'
 
 const convertToGraphCompatibleStruct = (arr: GroupByRes[]) => {
   return arr.map((item: GroupByRes) => ({
@@ -19,14 +19,14 @@ const convertToGraphCompatibleStruct = (arr: GroupByRes[]) => {
 }
 
 interface DayTimeChartProps {
-  startDate: Moment
-  endDate: Moment
+  startDate: Dayjs
+  endDate: Dayjs
   operatorId: string
 }
 
 const DayTimeChart: FC<DayTimeChartProps> = ({ startDate, endDate, operatorId }) => {
   const { t } = useTranslation()
-  const [groupByHour, setGroupByHour] = React.useState<boolean>(false)
+  const [groupByHour, setGroupByHour] = useState<boolean>(false)
 
   const [data, loadingGraph] = useGroupBy({
     dateTo: endDate,
@@ -40,7 +40,7 @@ const DayTimeChart: FC<DayTimeChartProps> = ({ startDate, endDate, operatorId })
   )
 
   return (
-    <Widget>
+    <Widget marginBottom>
       <h2 className="title">
         {groupByHour ? t('dashboard_page_graph_title_hour') : t('dashboard_page_graph_title_day')}
       </h2>

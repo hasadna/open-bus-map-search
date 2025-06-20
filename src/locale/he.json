@@ -5,7 +5,8 @@
     "website_goal": "מטרת האתר היא לשפר את איכות התחבורה הציבורית בארץ ע\"י מתן מידע אמין לעיתונאים, אזרחים, חברות התחבורה, וגורמי ממשל בישראל.",
     "show_button": "הצג",
     "copyright": "© הסדנא לידע ציבורי (ע\"ר)",
-    "open_menu": "תתחיל לחקור"
+    "open_menu": "תתחיל לחקור",
+    "manual": "צפה במדריך"
   },
   "homepage_title": "ראשי",
   "dashboard_page_title": "קיום נסיעות",
@@ -19,7 +20,7 @@
   "gaps_patterns_page_title": "דפוסי נסיעות שלא בוצעו",
   "gaps_patterns_page_description": "תצוגה גרפית של אחוז הנסיעות שבוצעו בהתאם ללוח הזמנים בחלוקה לשעות\\רמת חומרה, לפי חברת אוטובוסים, מספר קו, מסלול ותאריך",
   "singleline_map_page_title": "מפה לפי קו",
-  "singleline_map_page_description": "תצוגה של מסלול קו על מפה ע\"פ נתוני חברת אוטובוסים, קו, מסלול, תאריך ושעה",
+  "singleline_map_page_description": "תצוגה של מסלול קו על מפה ע\"פ נתוני חברת אוטובוסים, מספר רכב, קו, מסלול, תאריך ושעה",
   "open_menu_description": "תצוגה של שלל אפשרויות ופרמטרים שונים הניתנים לביצוע באפליקצייה",
   "choose_datetime": "תאריך ושעה",
   "choose_date": "תאריך",
@@ -27,7 +28,9 @@
   "choose_operator": "חברה מפעילה",
   "operator_placeholder": "לדוגמה: דן",
   "choose_line": "מספר קו",
+  "choose_vehicle": "מספר רכב",
   "line_placeholder": "לדוגמה: 17א",
+  "vehicle_placeholder": "לדוגמה: 12345",
   "choose_route": "בחירת מסלול נסיעה (XXX אפשרויות)",
   "choose_stop": "בחירת תחנה (XXX אפשרויות)",
   "direction_arrow": "⟵",
@@ -55,6 +58,7 @@
   "worst_lines_page_title": "הקווים הגרועים ביותר",
   "rides_planned": "נסיעות שתוכננו",
   "rides_actual": "נסיעות שיצאו",
+  "rides_missing": "נסיעות חסרות",
   "rides_history": "היסטוריית נסיעות",
   "dashboard_page_graph_title": "אחוזי יציאה מסך הנסיעות לפי זמן",
 
@@ -73,6 +77,28 @@
   "about_title": "אודות",
   "public_appeal_title": "קול קורא",
   "donate_title": "לתרומות",
+
+  "how_to_donate_title": "כיצד לתרום?",
+  "how_to_donate_text": "מאחורי הקלעים של הפרוייקטים פועל צוות קטן ומסור, שדואג לארגון מפגשי הפיתוח וההאקתונים ותחזוקת השרתים, שמכתת רגליו בין משרדי ממשלה כדי לשכנע, ללחוץ, ולנדנד לשחרר עוד ועוד מאגרים; מוודא שהתקשורת תכיר את העבודה שלנו וגם תדע לפנות אלינו בשביל נתונים וניתוחים, ועושה עוד המון עבודה שוטפת כדי שהפרוייקטים שלנו ייצרו שינוי בעולם. אנחנו זקוקים לתמיכה של הקהילה כדי להמשיך ולפעול למען ממשל פתוח יותר. היו אבירי שקיפות והצטרפו בתמיכה חודשית.",
+
+  "donation_through_bank_title": "תרומה דרך העברה בנקאית",
+  "donation_through_bank_reccomendation": "מומלץ לתרום דרך העברה בנקאית לחשבון הבנק של הסדנא לידע ציבורי, מכיוון שבאפיק זה העמלה נמוכה יותר",
+  "donate_to_hasadna": "תרומה לסדנא",
+  "donation_link": "קישור לתרומה",
+
+  "bank": "בנק",
+  "branch": "סניף",
+  "account": "חשבון",
+  "account_name": "שם חשבון",
+
+  "donation_through_bank_details_bank": "יו בנק (26)",
+  "donation_through_bank_details_branch": "רחביה (262)",
+  "donation_through_bank_details_account": "419931",
+  "donation_through_bank_details_account_name": "הסדנא לידע ציבורי",
+
+  "donation_through_bank_details_additional_message": "נא לציין שם מלא וליצור קשר במייל info@hasadna.org.il לאחר התרומה על מנת שנוכל לשלוח קבלה",
+  "donate_through_jgive.com_title": "תרומה דרך אתר jgive.com",
+
   "report_a_bug_title": "דיווח על באג",
   "website_name": "דאטאבוס",
   "what_is_website": "מהו אתר “דאטאבוס”?",
@@ -132,6 +158,16 @@
   "at_time": "בשעה",
   "vehicle_ref": "לוחית רישוי",
   "drive_direction": "כיוון נסיעה",
+  "directions": {
+    "North": "צפון",
+    "Northeast": "צפון-מזרח",
+    "East": "מזרח",
+    "Southeast": "דרום-מזרח",
+    "South": "דרום",
+    "Southwest": "דרום-מערב",
+    "West": "מערב",
+    "Northwest": "צפון-מערב"
+  },
   "bearing": "מעלות",
   "coords": "נ.צ.",
   "hide_document": "הסתר מידע לגיקים",
@@ -173,8 +209,23 @@
       "end": "יעד",
       "mkt": "מק\"ט קו",
       "direction": "כיוון קו",
+      "direction_forth": "הלוך",
+      "direction_back": "חזור",
       "alternative": "חלופה מס'",
       "type": "סוג קו"
+    },
+    "ride": {
+      "journey ": "מזהה נסיעה",
+      "id": "מזהה טכני",
+      "duration": "זמן נסיעה",
+      "scheduled": "זמן מתוכנן"
+    },
+    "stop": {
+      "name": "שם תחנה",
+      "code": "מספר תחנה",
+      "route": "מסלול תחנה",
+      "of": "מתוך",
+      "location": "נ\"צ"
     }
   },
   "errorPage": {
@@ -240,5 +291,52 @@
         "description": "ויקיפדיה - בתחבורה ציבורית, התקבצות אוטובוסים (באנגלית: Bus Bunching) היא מצב שבו שני אוטובוסים או יותר שהיו אמורים להגיע לתחנה בזמנים שונים, מגיעים אליה יחד. מצב זה מתרחש כשמתרחשת חריגה מלוח הזמנים והאוטובוס שהיה אמור להגיע שני משתווה לראשון."
       }
     ]
+  },
+  "loading": "טוען...",
+  "version": "מזהה גרסה",
+  "failedToFetchVersion": "נכשל בטעינת מידע אודות מזהה הגרסה הנוכחית",
+  "operator_title": "חברה מפעילה",
+  "operator": {
+    "ref": "מזהה חברה",
+    "founded": "שנת הקמה",
+    "website": "אתר אינטרנט",
+    "area_title": "איזר תפעול",
+    "area": {
+      "nationwide": "ארצי",
+      "central_southern": "מרכז, דרום",
+      "northern": "צפון",
+      "southern": "דרום",
+      "central": "מרכז",
+      "haifa": "חיפה",
+      "jerusalem": "ירושלים",
+      "tel_aviv": "תל אביב",
+      "beersheba": "באר שבע",
+      "beit_shemesh": "בית שמש"
+    },
+    "type_title": "סוג השרות",
+    "type": {
+      "bus": "אוטובוס",
+      "rail": "רכבת",
+      "light_rail": "רכבת קלה",
+      "subway": "רכבת תחתית",
+      "cable_car": "רכבל",
+      "taxi": "מוניות שירות",
+      "flex": "קו בשירות גמיש"
+    },
+    "time_range": {
+      "day": "יומית",
+      "week": "שבועית",
+      "month": "חודשית",
+      "year": "שנתית"
+    },
+    "all_lines": "כל המסלולים",
+    "line": "קו",
+    "profile": "פרופיל",
+    "map": "מפה",
+    "id": "מזהה טכני",
+    "origin": "מוצא",
+    "destination": "יעד",
+    "total": "סך כל המסלולים",
+    "statistics": "סטטיסטיקה"
   }
 }

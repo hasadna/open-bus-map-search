@@ -96,6 +96,15 @@ https://github.com/hasadna/open-bus-map-search/blob/main/src/model/busStop.ts#L4
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/LeoBonjo"><img src="https://avatars.githubusercontent.com/u/139697327?v=4?s=100" width="100px;" alt="Leo Green"/><br /><sub><b>Leo Green</b></sub></a><br /><a href="#code-LeoBonjo" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/yontank"><img src="https://avatars.githubusercontent.com/u/48332126?v=4?s=100" width="100px;" alt="Yehonatan Avrahimi"/><br /><sub><b>Yehonatan Avrahimi</b></sub></a><br /><a href="#code-yontank" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Tami-Co"><img src="https://avatars.githubusercontent.com/u/158340919?v=4?s=100" width="100px;" alt="Tami-Co"/><br /><sub><b>Tami-Co</b></sub></a><br /><a href="#code-Tami-Co" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/rivka14"><img src="https://avatars.githubusercontent.com/u/85113156?v=4?s=100" width="100px;" alt="Rivka Weiss"/><br /><sub><b>Rivka Weiss</b></sub></a><br /><a href="#code-rivka14" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/EstherKal"><img src="https://avatars.githubusercontent.com/u/160218199?v=4?s=100" width="100px;" alt="EstherKalsmith"/><br /><sub><b>EstherKalsmith</b></sub></a><br /><a href="#code-EstherKal" title="Code">💻</a></td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/ofirc77"><img src="https://avatars.githubusercontent.com/u/170853216?v=4?s=100" width="100px;" alt="ofirc77"/><br /><sub><b>ofirc77</b></sub></a><br /><a href="#code-ofirc77" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/GuyKe5"><img src="https://avatars.githubusercontent.com/u/101594251?v=4?s=100" width="100px;" alt="Guy Keren"/><br /><sub><b>Guy Keren</b></sub></a><br /><a href="#code-GuyKe5" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/AvivAbachi"><img src="https://avatars.githubusercontent.com/u/15000215?v=4?s=100" width="100px;" alt="Aviv"/><br /><sub><b>Aviv</b></sub></a><br /><a href="#code-AvivAbachi" title="Code">💻</a> <a href="#test-AvivAbachi" title="Tests">⚠️</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/RGvirer"><img src="https://avatars.githubusercontent.com/u/150089166?v=4?s=100" width="100px;" alt="Rivka Gvirer"/><br /><sub><b>Rivka Gvirer</b></sub></a><br /><a href="#code-RGvirer" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/krasnoff"><img src="https://avatars.githubusercontent.com/u/3822883?v=4?s=100" width="100px;" alt="krasnoff"/><br /><sub><b>krasnoff</b></sub></a><br /><a href="#code-krasnoff" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>

@@ -1,20 +1,16 @@
-import { useCallback, useEffect } from 'react'
-import 'leaflet/dist/leaflet.css'
-import { useSearchParams } from 'react-router-dom'
-import moment from 'moment'
-import { useSessionStorage } from 'usehooks-ts'
-import { useLocation } from 'react-router-dom'
-import ReactGA from 'react-ga4'
-import { CacheProvider } from '@emotion/react'
 import createCache from '@emotion/cache'
+import { CacheProvider } from '@emotion/react'
+import 'leaflet/dist/leaflet.css'
+import { useCallback, useEffect } from 'react'
+import ReactGA from 'react-ga4'
+import { useLocation, useSearchParams } from 'react-router'
 import rtlPlugin from 'stylis-plugin-rtl'
-import 'moment/locale/he'
-import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
-import { LocalizationProvider } from '@mui/x-date-pickers'
-import { PageSearchState, SearchContext } from '../model/pageState'
-import { ThemeProvider } from '../layout/ThemeContext'
-import { PAGES } from '../routes'
+import { useSessionStorage } from 'usehooks-ts'
 import { MainLayout } from '../layout'
+import { ThemeProvider } from '../layout/ThemeContext'
+import { PageSearchState, SearchContext } from '../model/pageState'
+import { PAGES } from '../routes'
+import dayjs from 'src/dayjs'
 
 // Create rtl cache
 const cacheRtl = createCache({
@@ -27,6 +23,7 @@ export const MainRoute = () => {
   const [searchParams, setSearchParams] = useSearchParams()
   const operatorId = searchParams.get('operatorId')
   const lineNumber = searchParams.get('lineNumber')
+  const vehicleNumber = searchParams.get('vehicleNumber')
   const routeKey = searchParams.get('routeKey')
   const timestamp = searchParams.get('timestamp')
 
@@ -35,9 +32,10 @@ export const MainRoute = () => {
   }, [location])
 
   const [search, setSearch] = useSessionStorage<PageSearchState>('search', {
-    timestamp: +timestamp! || moment().valueOf(),
+    timestamp: +timestamp! || dayjs().valueOf(),
     operatorId: operatorId || '',
     lineNumber: lineNumber || '',
+    vehicleNumber: vehicleNumber ? Number(vehicleNumber) : undefined,
     routeKey: routeKey || '',
   })
 
@@ -54,6 +52,9 @@ export const MainRoute = () => {
       if (search.lineNumber) {
         params.set('lineNumber', search.lineNumber)
       }
+      if (search.vehicleNumber) {
+        params.set('vehicleNumber', search.vehicleNumber.toString())
+      }
       if (search.routeKey) {
         params.set('routeKey', search.routeKey)
       }
@@ -61,6 +62,7 @@ export const MainRoute = () => {
     }
   }, [
     search.lineNumber,
+    search.vehicleNumber,
     search.operatorId,
     search.routeKey,
     search.timestamp,
@@ -78,11 +80,9 @@ export const MainRoute = () => {
   return (
     <SearchContext.Provider value={{ search, setSearch: safeSetSearch }}>
       <CacheProvider value={cacheRtl}>
-        <LocalizationProvider dateAdapter={AdapterMoment} adapterLocale="he">
-          <ThemeProvider>
-            <MainLayout />
-          </ThemeProvider>
-        </LocalizationProvider>
+        <ThemeProvider>
+          <MainLayout />
+        </ThemeProvider>
       </CacheProvider>
     </SearchContext.Provider>
   )

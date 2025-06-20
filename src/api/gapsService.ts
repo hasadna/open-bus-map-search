@@ -1,7 +1,7 @@
-import moment, { Moment } from 'moment-timezone'
 import axios, { CancelTokenSource } from 'axios'
 import { GapsList } from '../model/gaps'
 import { BASE_PATH } from './apiConfig'
+import dayjs from 'src/dayjs'
 
 type RawGapsList = {
   planned_start_time: string
@@ -9,31 +9,31 @@ type RawGapsList = {
   gtfs_ride_id?: number
 }[]
 export function parseTime(time: 'null'): null
-export function parseTime(time: Exclude<string, 'null'>): Moment
+export function parseTime(time: Exclude<string, 'null'>): dayjs.Dayjs
 
-export function parseTime(time: string): Moment | null {
+export function parseTime(time: string): dayjs.Dayjs | null {
   if (time == 'null') return null
 
-  const utcMoment: Moment = moment.utc(time).tz('Asia/Jerusalem')
+  const utcDayjs = dayjs.utc(time).tz('Asia/Jerusalem')
 
-  if (!utcMoment.isValid()) return null
+  if (!utcDayjs.isValid()) return null
 
-  return utcMoment
+  return utcDayjs
 }
 
 const USE_API = true
 const LIMIT = 10000
 
 export const getGapsAsync = async (
-  fromTimestamp: Moment,
-  toTimestamp: Moment,
+  fromTimestamp: dayjs.Dayjs,
+  toTimestamp: dayjs.Dayjs,
   operatorId: string,
   lineRef: number,
   token: CancelTokenSource['token'],
 ): Promise<GapsList> => {
-  const fromDay = moment(fromTimestamp).startOf('day')
-  const toDay = moment(toTimestamp).startOf('day')
-  // const startOfDay = moment(fromTimestamp).startOf('day')
+  const fromDay = dayjs(fromTimestamp).startOf('day')
+  const toDay = dayjs(toTimestamp).startOf('day')
+  // const startOfDay = dayjs(fromTimestamp).startOf('day')
   const data = USE_API
     ? (
         await axios.get<RawGapsList>(`${BASE_PATH}/rides_execution/list`, {

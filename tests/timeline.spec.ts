@@ -1,20 +1,14 @@
 import i18next from 'i18next'
-import Backend from 'i18next-fs-backend'
-import TimelinePage from '../src/test_pages/TimelinePage'
-import { getPastDate, test, urlMatcher } from './utils'
+import { expect, getPastDate, loadTranslate, test, urlMatcher } from './utils'
+import TimelinePage from 'src/test_pages/TimelinePage'
+import dayjs from 'src/dayjs'
 
 test.describe('Timeline Page Tests', () => {
   let timelinePage: TimelinePage
 
   test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
     await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
-    await i18next.use(Backend).init({
-      lng: 'he',
-      backend: {
-        loadPath: 'src/locale/{{lng}}.json',
-      },
-    })
-
+    await loadTranslate(i18next)
     await advancedRouteFromHAR('tests/HAR/timeline.har', {
       updateContent: 'embed',
       update: false,
@@ -137,4 +131,36 @@ test.describe('Timeline Page Tests', () => {
     )
     await timelinePage.verifyRouteSelectionVisible(timelinePage.timelineGraph, true, 100000)
   })
+})
+
+test('verify API call to gtfs_agencies/list - "Trips history"', async ({ page }) => {
+  let apiCallMade = false
+  page.on('request', (request) => {
+    if (request.url().includes('gtfs_agencies/list')) {
+      apiCallMade = true
+    }
+  })
+
+  await page.goto('/')
+  await page.getByRole('link', { name: 'היסטוריית נסיעות' }).click()
+  await page.getByLabel('חברה מפעילה').click()
+  expect(apiCallMade).toBeTruthy()
+})
+
+test('the dateFrom parameter should be recent when visiting the "Trips history"', async ({
+  page,
+}) => {
+  const apiRequest = page.waitForRequest((request) => request.url().includes('gtfs_agencies/list'))
+
+  await page.goto('/')
+  await page.getByRole('link', { name: 'היסטוריית נסיעות' }).click()
+
+  const request = await apiRequest
+  const url = new URL(request.url())
+  const dateFromParam = url.searchParams.get('date_from')
+  const dateFrom = dayjs(dateFromParam)
+  const daysAgo = dayjs().diff(dateFrom, 'days')
+
+  expect(daysAgo).toBeGreaterThanOrEqual(0)
+  expect(daysAgo).toBeLessThanOrEqual(3)
 })

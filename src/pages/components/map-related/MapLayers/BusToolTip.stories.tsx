@@ -1,14 +1,20 @@
-import type { Meta, StoryObj } from '@storybook/react'
-import { BrowserRouter } from 'react-router-dom'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { BusToolTip, BusToolTipProps } from './BusToolTip'
+import Widget from 'src/shared/Widget'
 
 const meta = {
-  title: 'Components/MapLayers/BusToolTip',
+  title: 'Map/Layers/BusToolTip',
   component: BusToolTip,
   parameters: {
     layout: 'centered',
   },
-  tags: ['map', 'tooltip', 'autodocs'],
+  decorators: [
+    (Story) => (
+      <Widget>
+        <Story />
+      </Widget>
+    ),
+  ],
 } satisfies Meta<typeof BusToolTip>
 
 export default meta
@@ -53,10 +59,4 @@ const defaultArgs: BusToolTipProps = {
 
 export const Default: Story = {
   args: defaultArgs,
-  // Wrap the component render function with BrowserRouter
-  render: (args) => (
-    <BrowserRouter>
-      <BusToolTip {...args} />
-    </BrowserRouter>
-  ),
 }

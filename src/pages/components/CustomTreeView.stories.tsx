@@ -1,9 +1,6 @@
-// CustomTreeView.stories.tsx
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import CustomTreeView from './CustomTreeView'
-import '../../shared/shared.css' // Assuming you have some shared styles
 
-// Example data for the story
 const exampleData = {
   id: 'root',
   name: 'Root Node',
@@ -23,13 +20,12 @@ const exampleData = {
   ],
 }
 
-const meta: Meta<typeof CustomTreeView> = {
+const meta = {
   title: 'Components/CustomTreeView',
   component: CustomTreeView,
   parameters: {
     layout: 'centered',
   },
-  tags: ['tree', 'view', 'react', 'mui'], // Adjust tags as needed
 } satisfies Meta<typeof CustomTreeView>
 
 export default meta
@@ -38,6 +34,8 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   args: {
-    data: exampleData, // Using the example data for the default story
+    id: 'exampleData',
+    name: 'exampleData',
+    data: exampleData,
   },
 }

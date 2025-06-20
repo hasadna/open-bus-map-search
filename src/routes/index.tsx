@@ -1,5 +1,22 @@
-import { Navigate, Route, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
+import {
+  BarChartOutlined,
+  BugOutlined,
+  DollarOutlined,
+  FieldTimeOutlined,
+  GithubOutlined,
+  HeatMapOutlined,
+  HomeOutlined,
+  InfoCircleOutlined,
+  LaptopOutlined,
+  LineChartOutlined,
+  RadarChartOutlined,
+} from '@ant-design/icons'
+import { AirportShuttle, Psychology } from '@mui/icons-material'
 import { lazy } from 'react'
+import { Navigate, Route, createBrowserRouter, createRoutesFromElements } from 'react-router'
+import { MainRoute } from './MainRoute'
+import { getRouteById } from 'src/api/gtfsService'
+import { ErrorPage } from 'src/pages/ErrorPage'
 
 const HomePage = lazy(() => import('../pages/homepage/HomePage'))
 const DashboardPage = lazy(() => import('../pages/dashboard/DashboardPage'))
@@ -9,6 +26,7 @@ const GapsPatternsPage = lazy(() => import('../pages/gapsPatterns'))
 const TimeBasedMapPage = lazy(() => import('../pages/timeBasedMap'))
 const SingleLineMapPage = lazy(() => import('../pages/singleLineMap'))
 const About = lazy(() => import('../pages/about'))
+const Operator = lazy(() => import('../pages/operator'))
 const Profile = lazy(() => import('../pages/lineProfile/LineProfile'))
 const BugReportForm = lazy(() => import('../pages/BugReportForm '))
 const DataResearch = lazy(() =>
@@ -17,23 +35,6 @@ const DataResearch = lazy(() =>
   })),
 )
 const PublicAppeal = lazy(() => import('../pages/publicAppeal'))
-
-import {
-  HomeOutlined,
-  RadarChartOutlined,
-  InfoCircleOutlined,
-  DollarOutlined,
-  HeatMapOutlined,
-  LaptopOutlined,
-  FieldTimeOutlined,
-  BugOutlined,
-  BarChartOutlined,
-  LineChartOutlined,
-  GithubOutlined,
-} from '@ant-design/icons'
-import PsychologyIcon from '@mui/icons-material/Psychology'
-import { MainRoute } from './MainRoute'
-import { ErrorPage } from 'src/pages/ErrorPage'
 
 export const PAGES = [
   {
@@ -82,6 +83,13 @@ export const PAGES = [
     element: <SingleLineMapPage />,
   },
   {
+    label: 'operator_title',
+    path: '/operator',
+    searchParamsRequired: true,
+    icon: <AirportShuttle />,
+    element: <Operator />,
+  },
+  {
     label: 'about_title',
     path: '/about',
     icon: <InfoCircleOutlined />,
@@ -96,7 +104,7 @@ export const PAGES = [
   {
     label: 'public_appeal_title',
     path: '/public-appeal',
-    icon: <PsychologyIcon />,
+    icon: <Psychology />,
     element: <PublicAppeal />,
   },
 ] as const
@@ -104,7 +112,7 @@ export const PAGES = [
 export const HEADER_LINKS = [
   {
     label: 'report_a_bug_title',
-    path: 'report-a-bug',
+    path: '/report-a-bug',
     icon: <BugOutlined />,
     element: <BugReportForm />,
   },
@@ -125,33 +133,33 @@ const HIDDEN_PAGES = [
   },
 ] as const
 
-const getRoutesList = () => {
-  const pages = [...PAGES, ...HIDDEN_PAGES, ...HEADER_LINKS]
-  const RedirectToHomepage = () => <Navigate to={pages[0].path} replace />
-  const routes = pages.filter((r) => r.element)
+const routesList = [...PAGES, ...HIDDEN_PAGES, ...HEADER_LINKS].filter((r) => r.element)
+const RedirectToHomepage = <Navigate to={routesList[0].path} replace />
+
+export const getRoutesList = () => {
   return (
     <Route element={<MainRoute />}>
-      {routes.map(({ path, element }) => (
+      {routesList.map(({ path, element }) => (
         <Route key={path} path={path} element={element} ErrorBoundary={ErrorPage} />
       ))}
       <Route
         path="/profile/:gtfsRideGtfsRouteId"
-        key={'/profile/:gtfsRideGtfsRouteId'}
         element={<Profile />}
         ErrorBoundary={ErrorPage}
-        loader={async ({ params: { gtfsRideGtfsRouteId } }) => {
-          const resp = await fetch(
-            `https://open-bus-stride-api.hasadna.org.il/gtfs_routes/get?id=${gtfsRideGtfsRouteId}`,
-          )
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const gtfs_route = await resp.json()
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-          return gtfs_route
+        loader={async ({ params }) => {
+          try {
+            const route = await getRouteById(params?.gtfsRideGtfsRouteId)
+            return { route }
+          } catch (error) {
+            return {
+              route: null,
+              message: (error as Error).message,
+            }
+          }
         }}
       />
-      <Route path="*" element={<RedirectToHomepage />} key="back" />
+      <Route path="*" element={RedirectToHomepage} key="back" />
     </Route>
-    // </Suspense>
   )
 }
 
