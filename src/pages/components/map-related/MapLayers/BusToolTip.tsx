@@ -142,11 +142,11 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
               href="https://www.gov.il/BlobFolder/generalpage/gtfs_general_transit_feed_specifications/he/GTFS_Developer_Information_2024.11.21b.pdf"
               target="_blank"
               rel="noopener noreferrer"
-              sx={{ marginTop: '5px' }}>
+              sx={{ marginTop: '2px' }}>
               {t('homepage.manual')}
             </Button>
             <br />
-            <Button onClick={() => setShowJson((showJson) => !showJson)}>
+            <Button sx={{ margin: '2px 0' }} onClick={() => setShowJson((showJson) => !showJson)}>
               {showJson ? t('hide_document') : t('show_document')}
             </Button>
             {/* Open Complaint Button */}
