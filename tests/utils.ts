@@ -102,4 +102,9 @@ export const loadTranslate = async (i18next: i18n) => {
   })
 }
 
+export const setDarkMode = async (page: Page) => {
+  await page.getByLabel('עבור למצב כהה').click()
+  await page.waitForTimeout(300)
+}
+
 export const expect = test.expect

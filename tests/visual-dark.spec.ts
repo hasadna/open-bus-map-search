@@ -1,6 +1,6 @@
 import { Eyes, Target, VisualGridRunner } from '@applitools/eyes-playwright'
 import username from 'git-username'
-import { getBranch, getPastDate, test, waitForSkeletonsToHide } from './utils'
+import { getBranch, getPastDate, setDarkMode, test, waitForSkeletonsToHide } from './utils'
 
 test.describe('Visual Tests - Dark Mode', () => {
   const eyes = new Eyes(new VisualGridRunner(), {
@@ -22,7 +22,6 @@ test.describe('Visual Tests - Dark Mode', () => {
   test.beforeEach(async ({ page }, testinfo) => {
     await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
     await page.clock.setFixedTime(getPastDate())
-    await page.getByLabel('עבור למצב כהה').click()
     if (!process.env.APPLITOOLS_API_KEY) {
       eyes.setIsDisabled(true)
       console.log('APPLITOOLS_API_KEY is not defined, please ask noamgaash for the key')
@@ -30,6 +29,7 @@ test.describe('Visual Tests - Dark Mode', () => {
       return
     }
     await eyes.open(page, 'OpenBus', testinfo.title)
+    await setDarkMode(page)
   })
 
   test.afterEach(async () => {
