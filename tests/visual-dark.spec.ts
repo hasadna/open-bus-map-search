@@ -43,14 +43,14 @@ test.describe('Visual Tests - Dark Mode', () => {
   })
 
   test('Home Page Should Look Good - Dark Mode', async ({ page }) => {
-    await setDarkMode(page)
     await page.goto('/')
+    await setDarkMode(page)
     await eyes.check('home page', Target.window())
   })
 
   test('Dashboard Page Should Look Good - Dark Mode', async ({ page }) => {
-    await setDarkMode(page)
     await page.goto('/dashboard')
+    await setDarkMode(page)
     await page.getByText('אגד').first().waitFor()
     await waitForSkeletonsToHide(page)
     await eyes.check(
@@ -65,32 +65,32 @@ test.describe('Visual Tests - Dark Mode', () => {
   })
 
   test('About Page Should Look Good - Dark Mode', async ({ page }) => {
-    await setDarkMode(page)
     await page.goto('/about')
+    await setDarkMode(page)
     await eyes.check('about page', Target.window())
   })
 
   test('Timeline Page Should Look Good - Dark Mode', async ({ page }) => {
-    await setDarkMode(page)
     await page.goto('/timeline')
+    await setDarkMode(page)
     await eyes.check('timeline page', Target.window())
   })
 
   test('Gaps Page Should Look Good - Dark Mode', async ({ page }) => {
-    await setDarkMode(page)
     await page.goto('/gaps')
+    await setDarkMode(page)
     await eyes.check('gaps page', Target.window())
   })
 
   test('Gaps Patterns Page Should Look Good - Dark Mode', async ({ page }) => {
-    await setDarkMode(page)
     await page.goto('/gaps_patterns')
+    await setDarkMode(page)
     await eyes.check('gaps_patterns page', Target.window())
   })
 
   test('Map Page Should Look Good - Dark Mode', async ({ page }) => {
-    await setDarkMode(page)
     await page.goto('/map')
+    await setDarkMode(page)
     await page.locator('.leaflet-marker-icon').first().waitFor({ state: 'visible' })
     await page.locator('.ant-spin-dot').first().waitFor({ state: 'hidden' })
     await eyes.check(
@@ -100,8 +100,8 @@ test.describe('Visual Tests - Dark Mode', () => {
   })
 
   test('Operator Page Should Look Good - Dark Mode', async ({ page }) => {
-    await setDarkMode(page)
     await page.goto('/operator')
+    await setDarkMode(page)
     await page.getByRole('combobox', { name: 'חברה מפעילה' }).click()
     await page.getByRole('option', { name: 'אגד', exact: true }).click()
     await waitForSkeletonsToHide(page)
@@ -109,8 +109,8 @@ test.describe('Visual Tests - Dark Mode', () => {
   })
 
   test('Donation Modal Should Look Good - Dark Mode', async ({ page }) => {
-    await setDarkMode(page)
     await page.goto('/')
+    await setDarkMode(page)
     await page.getByLabel('לתרומות').click()
     await page.locator('.MuiTypography-root').first().waitFor()
     await eyes.check('donation modal', Target.region(page.getByRole('dialog')))
