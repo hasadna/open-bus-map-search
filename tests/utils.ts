@@ -102,4 +102,8 @@ export const loadTranslate = async (i18next: i18n) => {
   })
 }
 
+export const setDarkMode = async (page: Page) => {
+  await page.getByRole('button', { name: 'עבור למצב כהה' }).click()
+}
+
 export const expect = test.expect
