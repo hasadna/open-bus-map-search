@@ -1,92 +1,116 @@
 on:
-  workflow_run:
-    workflows: ['Build']
-    types:
-      - completed
+    workflow_run:
+      workflows: ['Build']
+      types:
+        - completed
+    push:
 
 jobs:
-  deploy-to-s3:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+    deploy-to-s3:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v4
+  
+        - name: Debug Workflow Info
+          run: |
+            echo "=== Workflow Debug Info ==="
+            echo "Event name: ${{ github.event_name }}"
+            if [ "${{ github.event_name }}" = "workflow_run" ]; then
+              echo "Workflow Run ID: ${{ github.event.workflow_run.id }}"
+              echo "Run Number: ${{ github.event.workflow_run.run_number }}"
+              echo "Head SHA: ${{ github.event.workflow_run.head_sha }}"
+              echo "Head Branch: ${{ github.event.workflow_run.head_branch }}"
+            else
+              echo "Push event details:"
+              echo "SHA: ${{ github.sha }}"
+              echo "Ref: ${{ github.ref }}"
+              echo "Branch: ${{ github.ref_name }}"
+            fi
+            echo "Repository: ${{ github.repository }}"
 
-      - name: Download dist-build artifact
-        uses: dawidd6/action-download-artifact@v9
-        with:
-          workflow: 'Build'
-          workflow_conclusion: success
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          run_id: ${{ github.event.workflow_run.id }}
-          run_number: ${{ github.event.workflow_run.run_number }}
-          name: dist-build
-          path: .
+        # Only download artifacts for workflow_run events
+        - name: Download dist-build artifact
+          if: github.event_name == 'workflow_run'
+          uses: dawidd6/action-download-artifact@v9
+          with:
+            workflow: Build
+            name: dist-build
+            path: .
+            github_token: ${{ secrets.GITHUB_TOKEN }}
+            pr: ${{ github.event.workflow_run.pull_requests[0].number }}
 
-      - name: Download dist-storybook artifact
-        uses: dawidd6/action-download-artifact@v9
-        with:
-          workflow: 'Build'
-          workflow_conclusion: success
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          run_id: ${{ github.event.workflow_run.id }}
-          run_number: ${{ github.event.workflow_run.run_number }}
-          name: dist-storybook
-          path: storybook
 
-      - name: Download pr number
-        uses: dawidd6/action-download-artifact@v9
-        with:
-          workflow: 'Build'
-          workflow_conclusion: success
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          run_id: ${{ github.event.workflow_run.id }}
-          run_number: ${{ github.event.workflow_run.run_number }}
-          name: pr_number
-          path: .
-
-      - name: Read PR number
-        id: read-pr
-        run: |
-          pr_number=$(cat pr_number)
-          echo "PR_NUMBER=${pr_number}" >> $GITHUB_ENV
-
-      - uses: shallwefootball/s3-upload-action@master
-        name: Upload preview to S3
-        if: always()
-        id: s3-trace
-        continue-on-error: true
-        with:
-          aws_key_id: ${{ secrets.AWS_KEY_ID }}
-          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws_bucket: noam-gaash.co.il
-          source_dir: . # Upload the root directory
-          destination_dir: ${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}
-
-      - name: find comment
-        uses: peter-evans/find-comment@v3
-        if: env.PR_NUMBER
-        id: fc
-        with:
-          issue-number: ${{ env.PR_NUMBER }}
-          comment-author: 'github-actions[bot]'
-          body-includes: 'Preview'
-
-      - name: update comment
-        uses: peter-evans/create-or-update-comment@v4
-        if: steps.fc.outputs.comment-id
-        with:
-          comment-id: ${{ steps.fc.outputs.comment-id }}
-          edit-mode: replace
-          body: |
-            Preview: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}/index.html
-            Preview Storybook: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}/storybook/index.html
-            Test Report (if available): 'https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.head_sha }}/test-results/index.html'
-
-      - name: create comment
-        uses: peter-evans/create-or-update-comment@v4
-        if: steps.fc.outputs.comment-id == ''
-        with:
-          issue-number: ${{ env.PR_NUMBER }}
-          body: |
-            Preview: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}/index.html
-            Preview Storybook: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}/storybook/index.html
-            Test Report (if available): 'https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.head_sha }}/test-results/index.html'
+        - name: Download dist-storybook artifact
+          uses: dawidd6/action-download-artifact@v9
+          with:
+            workflow: 'Build'
+            workflow_conclusion: success
+            github_token: ${{ secrets.GITHUB_TOKEN }}
+            run_id: ${{ github.event.workflow_run.id }}
+            run_number: ${{ github.event.workflow_run.run_number }}
+            name: dist-storybook
+            path: storybook
+  
+        - name: Download pr number
+          uses: dawidd6/action-download-artifact@v9
+          with:
+            workflow: 'Build'
+            workflow_conclusion: success
+            github_token: ${{ secrets.GITHUB_TOKEN }}
+            run_id: ${{ github.event.workflow_run.id }}
+            run_number: ${{ github.event.workflow_run.run_number }}
+            name: pr_number
+            path: .
+  
+        - name: Read and sanitize PR number
+          id: read-pr
+          run: |
+            pr_number=$(cat pr_number | tr -d '\n' | grep -E '^[0-9]+$' || echo "")
+            if [ -z "$pr_number" ]; then
+              echo "Error: Invalid PR number" >&2
+              exit 1
+            fi
+            echo "PR_NUMBER=${pr_number}" >> $GITHUB_ENV
+  
+        - uses: shallwefootball/s3-upload-action@master
+          name: Upload preview to S3
+          if: always()
+          id: s3-trace
+          continue-on-error: true
+          with:
+            aws_key_id: ${{ secrets.AWS_KEY_ID }}
+            aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            aws_bucket: noam-gaash.co.il
+            source_dir: . # Upload the root directory
+            destination_dir: ${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}
+  
+        - name: find comment
+          uses: peter-evans/find-comment@v3
+          if: env.PR_NUMBER
+          id: fc
+          with:
+            issue-number: ${{ env.PR_NUMBER }}
+            comment-author: 'github-actions[bot]'
+            body-includes: 'Preview'
+  
+        - name: update comment
+          uses: peter-evans/create-or-update-comment@v4
+          if: steps.fc.outputs.comment-id
+          with:
+            comment-id: ${{ steps.fc.outputs.comment-id }}
+            edit-mode: replace
+            body: |
+              Preview: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}/index.html
+              Preview Storybook: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}/storybook/index.html
+              Test Report (if available): https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/test_03/test-results/index.html
+  
+        - name: create comment
+          uses: peter-evans/create-or-update-comment@v4
+          if: steps.fc.outputs.comment-id == ''
+          with:
+            issue-number: ${{ env.PR_NUMBER }}
+            body: |
+              Preview: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}/index.html
+              Preview Storybook: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}/storybook/index.html
+              Test Report (if available): https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/test_03/test-results/index.html
+  
