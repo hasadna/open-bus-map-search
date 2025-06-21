@@ -28,6 +28,20 @@ const DashboardPage = () => {
   const [operatorId, setOperatorId] = useState('')
   const { t } = useTranslation()
 
+  const [AllChartsZeroLines, setAllChartsZeroLines] = useState(false)
+  const [WorstLineZeroLines, setWorstLineZeroLines] = useState(false)
+  const [AllDayTimeChartZeroLines, setAllDayTimeChartZeroLines] = useState(false)
+
+  const alertAllChartsZeroLinesHandling = (arg: boolean) => {
+    setAllChartsZeroLines(arg)
+  }
+  const alertWorstLineHandling = (arg: boolean) => {
+    setWorstLineZeroLines(arg)
+  }
+  const alertAllDayTimeChartHandling = (arg: boolean) => {
+      setAllDayTimeChartZeroLines(arg)
+  }
+
   return (
     <PageContainer>
       <Typography className="page-title" variant="h4">
@@ -38,6 +52,11 @@ const DashboardPage = () => {
           videoUrl="https://www.youtube.com/embed/bXg50_j_hTA?si=4rpSZwMRbMomE4g1"
         />
       </Typography>
+      {AllChartsZeroLines && WorstLineZeroLines && AllDayTimeChartZeroLines ? (
+        <Alert severity="warning" variant="outlined">
+          {t('no_data_from_ETL')}
+        </Alert>
+      ) : null}
       <Alert severity="info" variant="outlined" icon={false}>
         {t('dashboard_page_description')}
       </Alert>
@@ -75,13 +94,13 @@ const DashboardPage = () => {
       </Grid>
       <Grid container spacing={2} alignItems="flex-start">
         <Grid size={{ xs: 12, lg: 6 }} className="widget">
-          <AllLinesChart startDate={startDate} endDate={endDate} />
+          <AllLinesChart startDate={startDate} endDate={endDate} alertAllChartsZeroLinesHandling={(arg: boolean) => alertAllDayTimeChartHandling(arg)} />
         </Grid>
         <Grid size={{ xs: 12, lg: 6 }} className="widget">
-          <WorstLinesChart startDate={startDate} endDate={endDate} operatorId={operatorId} />
+          <WorstLinesChart startDate={startDate} endDate={endDate} operatorId={operatorId} alertWorstLineHandling={(arg: boolean) => alertWorstLineHandling(arg)} />
         </Grid>
         <Grid size={{ xs: 12 }} className="widget">
-          <DayTimeChart startDate={startDate} endDate={endDate} operatorId={operatorId} />
+          <DayTimeChart startDate={startDate} endDate={endDate} operatorId={operatorId} alertAllDayTimeChartHandling={(arg: boolean) => alertAllChartsZeroLinesHandling(arg)} />
         </Grid>
       </Grid>
     </PageContainer>
