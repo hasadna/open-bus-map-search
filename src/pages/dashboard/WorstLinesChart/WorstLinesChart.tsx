@@ -5,14 +5,16 @@ import { GroupByRes, useGroupBy } from 'src/api/groupByService'
 import { MAJOR_OPERATORS } from 'src/model/operator'
 import Widget from 'src/shared/Widget'
 import { Dayjs } from 'src/dayjs'
+import { useEffect } from 'react'
 
 interface WorstLinesChartProps {
   startDate: Dayjs
   endDate: Dayjs
   operatorId: string
+  alertWorstLineHandling: ((arg: boolean) => void)
 }
 
-export const WorstLinesChart = ({ startDate, endDate, operatorId }: WorstLinesChartProps) => {
+export const WorstLinesChart = ({ startDate, endDate, operatorId, alertWorstLineHandling }: WorstLinesChartProps) => {
   const [groupByLineData, lineDataLoading] = useGroupBy({
     dateTo: endDate,
     dateFrom: startDate,
@@ -37,6 +39,16 @@ export const WorstLinesChart = ({ startDate, endDate, operatorId }: WorstLinesCh
         actual: item.total_actual_rides,
       }))
   }
+
+  useEffect(() => {
+    const totalElements = groupByLineData.length;
+    const totalZeroElements = groupByLineData.filter(el => el.total_actual_rides === 0).length;
+    if (totalElements === 0 || totalZeroElements === totalElements) {
+      alertWorstLineHandling(true)
+    } else {
+      alertWorstLineHandling(false)
+    }
+  }, [groupByLineData])
 
   return (
     <Widget>
