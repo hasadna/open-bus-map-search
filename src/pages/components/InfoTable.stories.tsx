@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { InfoItem, InfoTable } from './InfoTable'
 import * as InfoItemStories from './InfoItem.stories'
 import Widget from 'src/shared/Widget'
@@ -7,7 +7,6 @@ const meta = {
   component: InfoTable,
   subcomponents: { InfoItem },
   title: 'Components/InfoTable',
-  tags: ['autodocs'],
   decorators: [
     (Story) => (
       <div dir="ltr">

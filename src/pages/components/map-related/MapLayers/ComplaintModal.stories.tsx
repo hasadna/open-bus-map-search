@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState } from 'react'
 import ComplaintModal from './ComplaintModal'
 import { BusToolTipProps } from './BusToolTip'
@@ -6,7 +6,6 @@ import { BusToolTipProps } from './BusToolTip'
 const meta = {
   title: 'Map/Layers/ComplaintModal',
   component: ComplaintModal,
-  tags: ['autodocs'],
   parameters: {
     layout: 'centered',
   },

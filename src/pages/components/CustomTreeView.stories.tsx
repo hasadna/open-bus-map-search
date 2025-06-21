@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import CustomTreeView from './CustomTreeView'
 
 const exampleData = {
@@ -20,13 +20,12 @@ const exampleData = {
   ],
 }
 
-const meta: Meta<typeof CustomTreeView> = {
+const meta = {
   title: 'Components/CustomTreeView',
   component: CustomTreeView,
   parameters: {
     layout: 'centered',
   },
-  tags: ['autodocs'],
 } satisfies Meta<typeof CustomTreeView>
 
 export default meta
@@ -35,6 +34,8 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   args: {
+    id: 'exampleData',
+    name: 'exampleData',
     data: exampleData,
   },
 }

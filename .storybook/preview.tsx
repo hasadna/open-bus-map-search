@@ -1,4 +1,4 @@
-import type { Preview } from '@storybook/react'
+import type { Preview } from '@storybook/react-vite'
 import { Suspense, useEffect } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { BrowserRouter } from 'react-router'
@@ -31,15 +31,19 @@ const preview: Preview = {
         date: /Date$/i,
       },
     },
-    storySort: {
-      method: 'alphabetical',
+    options: {
+      storySort: {
+        method: 'alphabetical',
+        order: [],
+      },
     },
   },
+
   decorators: [
     (Story, context) => {
       const { locale, darkMode } = context.globals
       return (
-        <Suspense>
+        <Suspense fallback={null}>
           <BrowserRouter>
             <QueryClientProvider client={queryClient}>
               <ThemeProvider>
@@ -53,6 +57,8 @@ const preview: Preview = {
       )
     },
   ],
+
+  tags: ['autodocs'],
 }
 
 export const globalTypes = {

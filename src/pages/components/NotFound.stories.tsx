@@ -1,14 +1,13 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useTranslation } from 'react-i18next'
 import { NotFound } from './NotFound'
 
-const meta: Meta<typeof NotFound> = {
+const meta = {
   title: 'Components/NotFound',
   component: NotFound,
   parameters: {
     layout: 'centered',
   },
-  tags: ['autodocs'],
   argTypes: {
     children: {
       description: 'The text content of the not found component.',
@@ -16,7 +15,7 @@ const meta: Meta<typeof NotFound> = {
       table: { type: { summary: 'React.ReactNode' } },
     },
   },
-}
+} satisfies Meta<typeof NotFound>
 
 export default meta
 

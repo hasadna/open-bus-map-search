@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { BusToolTip, BusToolTipProps } from './BusToolTip'
 import Widget from 'src/shared/Widget'
 
@@ -15,7 +15,6 @@ const meta = {
       </Widget>
     ),
   ],
-  tags: ['autodocs'],
 } satisfies Meta<typeof BusToolTip>
 
 export default meta

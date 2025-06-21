@@ -28,9 +28,8 @@
     "tests",
     "setupTests.ts",
     "playwright.config.ts",
-    ".storybook/preview.tsx",
-    ".storybook/main.ts",
+    ".storybook/*",
     "jest.config.ts",
-    "src/dayjs.ts"
+    "applitools.config.cjs"
   ]
 }

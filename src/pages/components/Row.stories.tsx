@@ -1,11 +1,10 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Row } from './Row'
 import Widget from 'src/shared/Widget'
 
 const meta: Meta<{ items: number }> = {
   title: 'Components/Row',
   component: Row,
-  tags: ['autodocs'],
   parameters: {
     layout: 'centered',
   },

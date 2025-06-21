@@ -1,12 +1,11 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 
 import { ErrorPage } from '../ErrorPage'
 
-const meta: Meta<typeof ErrorPage> = {
+const meta = {
   title: 'Pages/ErrorPage',
   component: ErrorPage,
-  tags: ['autodocs'],
-}
+} satisfies Meta<typeof ErrorPage>
 
 export default meta
 

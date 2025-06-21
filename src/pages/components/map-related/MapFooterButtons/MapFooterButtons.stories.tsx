@@ -1,11 +1,10 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import MapFooterButtons from './MapFooterButtons'
 import Widget from 'src/shared/Widget'
 
 const meta = {
   component: MapFooterButtons,
   title: 'Map/Layers/MapFooterButtons',
-  tags: ['autodocs'],
   parameters: {
     layout: 'centered',
   },

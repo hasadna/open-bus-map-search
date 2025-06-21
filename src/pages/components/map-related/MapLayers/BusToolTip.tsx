@@ -1,4 +1,5 @@
 import { Button, CircularProgress } from '@mui/material'
+import { Skeleton } from 'antd'
 import cn from 'classnames'
 import { GtfsRoutePydanticModel } from 'open-bus-stride-client'
 import { ReactNode, useEffect, useState } from 'react'
@@ -65,9 +66,12 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
   return (
     <div className={cn('bus-tooltip', { hebrew: i18n.language === 'he' })}>
       {isLoading || !route ? (
-        <div className="loading">
-          <span>{t('loading_routes')}</span>
-          <CircularProgress />
+        <div>
+          <h1 className="loading title">
+            <span>{t('loading_routes')}</span>
+            <CircularProgress />
+          </h1>
+          <Skeleton title={false} paragraph={{ rows: 7 }} />
         </div>
       ) : (
         <>
@@ -135,11 +139,16 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
               </li>
             </ul>
             <Button
-              sx={i18n.language === 'he' ? { paddingLeft: 0 } : { paddingRight: 0 }}
-              onClick={() => setShowJson((showJson) => !showJson)}>
+              href="https://www.gov.il/BlobFolder/generalpage/gtfs_general_transit_feed_specifications/he/GTFS_Developer_Information_2024.11.21b.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              sx={{ marginTop: '2px' }}>
+              {t('homepage.manual')}
+            </Button>
+            <br />
+            <Button sx={{ margin: '2px 0' }} onClick={() => setShowJson((showJson) => !showJson)}>
               {showJson ? t('hide_document') : t('show_document')}
             </Button>
-
             {/* Open Complaint Button */}
             <EasterEgg code="complaint">
               <Button
@@ -155,7 +164,7 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
             <ComplaintModal modalOpen={modalOpen} setModalOpen={setModalOpen} position={position} />
 
             {showJson && (
-              <div onClick={(e) => e.stopPropagation()}>
+              <div dir={i18n.language === 'en' ? 'rtl' : 'ltr'}>
                 <CustomTreeView<Point>
                   id={`${position.point?.id}`}
                   data={position}

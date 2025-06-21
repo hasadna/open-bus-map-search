@@ -1,10 +1,9 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { VersionInfo } from './VersionInfo'
 
-const meta: Meta<typeof VersionInfo> = {
+const meta = {
   title: 'Pages/About/VersionInfo',
   component: VersionInfo,
-  tags: ['autodocs'],
   parameters: {
     docs: {
       description: {
@@ -12,7 +11,7 @@ const meta: Meta<typeof VersionInfo> = {
       },
     },
   },
-}
+} satisfies Meta<typeof VersionInfo>
 
 export default meta
 

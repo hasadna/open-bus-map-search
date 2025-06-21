@@ -7,13 +7,14 @@ import ClearButton from './ClearButton'
 import './Selector.scss'
 
 type LineSelectorProps = {
+  disabled?: boolean
   lineNumber: string | undefined
   setLineNumber: (lineNumber: string) => void
 }
 
-const LineSelector = ({ lineNumber, setLineNumber }: LineSelectorProps) => {
+const LineSelector = ({ disabled, lineNumber, setLineNumber }: LineSelectorProps) => {
   const [value, setValue] = useState<LineSelectorProps['lineNumber']>(lineNumber)
-  const debouncedSetLineNumber = useCallback(debounce(setLineNumber, 200), [setLineNumber])
+  const debouncedSetLineNumber = useCallback(debounce(setLineNumber, 500), [setLineNumber])
   const { t } = useTranslation()
 
   useLayoutEffect(() => {
@@ -32,6 +33,7 @@ const LineSelector = ({ lineNumber, setLineNumber }: LineSelectorProps) => {
   })
   return (
     <TextField
+      disabled={disabled}
       className={textFieldClass}
       label={t('choose_line')}
       type="text"

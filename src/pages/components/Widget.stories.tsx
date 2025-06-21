@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { BusToolTip } from './map-related/MapLayers/BusToolTip'
 import '../../shared/shared.css'
 import Widget from 'src/shared/Widget'
@@ -16,7 +16,6 @@ const meta = {
   parameters: {
     layout: 'centered',
   },
-  tags: ['autodocs'],
 } satisfies Meta<typeof BusToolTip>
 
 export default meta

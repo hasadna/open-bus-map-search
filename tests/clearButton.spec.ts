@@ -139,8 +139,8 @@ test.describe('clearButton functionality', () => {
       await selectLineNumberAndRoute(page, lineNumber, route)
       await lineNumber.click()
       await page.getByLabel('close').locator('svg').click()
-      await expect(route).not.toBeVisible()
-      await expect(stop).not.toBeVisible()
+      await expect(route).toBeDisabled()
+      await expect(stop).toBeHidden()
     })
     test('after clear route input value - stop input should be hidden', async ({ page }) => {
       await visitPage(page, 'מפה לפי קו', /single-line/)

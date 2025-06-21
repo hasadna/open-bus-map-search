@@ -1,10 +1,10 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import BugReportForm from '../BugReportForm '
 
-const meta: Meta<typeof BugReportForm> = {
+const meta = {
   title: 'Components/BugReportForm',
   component: BugReportForm,
-}
+} satisfies Meta<typeof BugReportForm>
 
 export default meta
 

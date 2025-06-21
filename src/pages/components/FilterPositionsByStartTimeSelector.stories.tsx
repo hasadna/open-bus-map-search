@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { FilterPositionsByStartTimeSelector } from './FilterPositionsByStartTimeSelector'
@@ -24,15 +24,16 @@ const timeOptions = [
   { value: '23:00:00', label: '23:00:00' },
 ]
 
-const meta: Meta<typeof FilterPositionsByStartTimeSelector> = {
+const meta = {
   title: 'Components/FilterPositionsByStartTimeSelector',
   component: FilterPositionsByStartTimeSelector,
-  tags: ['autodocs'],
   parameters: {
     layout: 'centered',
   },
   args: {
+    startTime: '08:00:00',
     options: timeOptions,
+    setStartTime: () => {},
   },
   argTypes: {
     startTime: {
@@ -48,9 +49,7 @@ const meta: Meta<typeof FilterPositionsByStartTimeSelector> = {
       description: 'Array of time options with value and label',
       control: 'object',
       table: {
-        type: {
-          summary: '{ value: string, label: string }[]',
-        },
+        type: { summary: '{ value: string, label: string }[]' },
       },
     },
     disabled: {
@@ -74,7 +73,7 @@ const meta: Meta<typeof FilterPositionsByStartTimeSelector> = {
               startTime: time,
               setStartTime: (v) => {
                 setTime(v)
-                meta.args.setStartTime(v)
+                meta.args.setStartTime?.(v)
               },
             }}
           />
@@ -85,29 +84,23 @@ const meta: Meta<typeof FilterPositionsByStartTimeSelector> = {
       )
     },
   ],
-}
+} satisfies Meta<typeof FilterPositionsByStartTimeSelector>
 
 export default meta
 
-type Story = StoryObj<typeof FilterPositionsByStartTimeSelector>
+type Story = StoryObj<typeof meta>
 
-export const Default: Story = {
-  args: {
-    startTime: '08:00:00',
-    options: timeOptions,
-  },
-}
+export const Default: Story = {}
 
 export const Empty: Story = {
   args: {
+    startTime: '',
     options: [],
   },
 }
 
 export const Disabled: Story = {
   args: {
-    startTime: '08:00:00',
-    options: timeOptions,
     disabled: true,
   },
 }

@@ -299,13 +299,23 @@
       ]
     },
     {
+      "login": "Hatzilu",
+      "name": "Hatzilu",
+      "avatar_url": "https://avatars.githubusercontent.com/u/74069208?v=4",
+      "profile": "https://github.com/Hatzilu",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
       "login": "AvivAbachi",
       "name": "Aviv",
       "avatar_url": "https://avatars.githubusercontent.com/u/15000215?v=4",
       "profile": "https://github.com/AvivAbachi",
       "contributions": [
         "code",
-        "test"
+        "test",
+        "mentoring"
       ]
     },
     {
@@ -313,6 +323,15 @@
       "name": "Rivka Gvirer",
       "avatar_url": "https://avatars.githubusercontent.com/u/150089166?v=4",
       "profile": "https://github.com/RGvirer",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "krasnoff",
+      "name": "krasnoff",
+      "avatar_url": "https://avatars.githubusercontent.com/u/3822883?v=4",
+      "profile": "https://github.com/krasnoff",
       "contributions": [
         "code"
       ]

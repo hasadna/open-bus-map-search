@@ -5,7 +5,8 @@
     "website_goal": "מטרת האתר היא לשפר את איכות התחבורה הציבורית בארץ ע\"י מתן מידע אמין לעיתונאים, אזרחים, חברות התחבורה, וגורמי ממשל בישראל.",
     "show_button": "הצג",
     "copyright": "© הסדנא לידע ציבורי (ע\"ר)",
-    "open_menu": "תתחיל לחקור"
+    "open_menu": "תתחיל לחקור",
+    "manual": "צפה במדריך"
   },
   "homepage_title": "ראשי",
   "dashboard_page_title": "קיום נסיעות",
@@ -19,9 +20,9 @@
   "gaps_patterns_page_title": "דפוסי נסיעות שלא בוצעו",
   "gaps_patterns_page_description": "תצוגה גרפית של אחוז הנסיעות שבוצעו בהתאם ללוח הזמנים בחלוקה לשעות\\רמת חומרה, לפי חברת אוטובוסים, מספר קו, מסלול ותאריך",
   "singleline_map_page_title": "מפה לפי קו",
-  "singlevehicle_map_page_title": "מפה לפי רכב",
-  "singleline_map_page_description": "תצוגה של מסלול קו על מפה ע\"פ נתוני חברת אוטובוסים, קו, מסלול, תאריך ושעה",
-  "singlevehicle_map_page_description": "תצוגה של מיקום רכב על מפה ע\"פ נתוני חברת אוטובוסים, רכב, תאריך ושעה",
+  "singleline_map_page_description": "תצוגה של מסלול קו על מפה ע\"פ נתוני חברת אוטובוסים, מספר רכב, קו, מסלול, תאריך ושעה",
+  "singleline_map_page_route": "לפי מסלול",
+  "singleline_map_page_vehicle_id": "לפי מספר רכב",
   "open_menu_description": "תצוגה של שלל אפשרויות ופרמטרים שונים הניתנים לביצוע באפליקצייה",
   "choose_datetime": "תאריך ושעה",
   "choose_date": "תאריך",
@@ -92,6 +93,7 @@
   "account": "חשבון",
   "account_name": "שם חשבון",
 
+  "donate": "לתרום לסדנא",
   "donation_through_bank_details_bank": "יו בנק (26)",
   "donation_through_bank_details_branch": "רחביה (262)",
   "donation_through_bank_details_account": "419931",

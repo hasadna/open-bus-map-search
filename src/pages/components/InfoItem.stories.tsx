@@ -1,10 +1,9 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { InfoItem, InfoTable } from './InfoTable'
 import Widget from 'src/shared/Widget'
 
 const meta = {
   component: InfoItem,
-  tags: ['autodocs'],
   title: 'Components/InfoTable/InfoItem',
   args: { label: 'Label' },
   argTypes: {

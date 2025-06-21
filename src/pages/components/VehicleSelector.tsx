@@ -7,11 +7,12 @@ import ClearButton from './ClearButton'
 import './Selector.scss'
 
 type VehicleSelectorProps = {
+  disabled?: boolean
   vehicleNumber: number | undefined
   setVehicleNumber: (vehicleNumber: number) => void
 }
 
-const VehicleSelector = ({ vehicleNumber, setVehicleNumber }: VehicleSelectorProps) => {
+const VehicleSelector = ({ vehicleNumber, disabled, setVehicleNumber }: VehicleSelectorProps) => {
   const [value, setValue] = useState<VehicleSelectorProps['vehicleNumber']>(vehicleNumber)
   const debouncedSetVehicleNumber = useCallback(debounce(setVehicleNumber, 200), [setVehicleNumber])
   const { t } = useTranslation()
@@ -32,6 +33,8 @@ const VehicleSelector = ({ vehicleNumber, setVehicleNumber }: VehicleSelectorPro
   })
   return (
     <TextField
+      fullWidth
+      disabled={disabled}
       className={textFieldClass}
       label={t('choose_vehicle')}
       type="text"
@@ -42,12 +45,14 @@ const VehicleSelector = ({ vehicleNumber, setVehicleNumber }: VehicleSelectorPro
         setValue(numericValue)
         debouncedSetVehicleNumber(numericValue || 0)
       }}
-      InputLabelProps={{
-        shrink: true,
-      }}
-      InputProps={{
-        placeholder: t('vehicle_placeholder'),
-        endAdornment: <ClearButton onClearInput={handleClearInput} />,
+      slotProps={{
+        inputLabel: {
+          shrink: true,
+        },
+        input: {
+          placeholder: t('vehicle_placeholder'),
+          endAdornment: <ClearButton onClearInput={handleClearInput} />,
+        },
       }}
     />
   )
