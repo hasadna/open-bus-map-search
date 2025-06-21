@@ -44,7 +44,7 @@ test.describe('Visual Tests', () => {
   })
   test('Home Page Should Look Good', async ({ page }) => {
     await page.goto('/')
-    await eyes.check('front page', Target.window())
+    await eyes.check('home page', Target.window())
   })
 
   test('Dashboard Page Should Look Good', async ({ page }) => {
