@@ -22,6 +22,8 @@
   "gaps_patterns_page_description": "תצוגה גרפית של אחוז הנסיעות שבוצעו בהתאם ללוח הזמנים בחלוקה לשעות\\רמת חומרה, לפי חברת אוטובוסים, מספר קו, מסלול ותאריך",
   "singleline_map_page_title": "מפה לפי קו",
   "singleline_map_page_description": "תצוגה של מסלול קו על מפה ע\"פ נתוני חברת אוטובוסים, מספר רכב, קו, מסלול, תאריך ושעה",
+  "singleline_map_page_route": "לפי מסלול",
+  "singleline_map_page_vehicle_id": "לפי מספר רכב",
   "open_menu_description": "תצוגה של שלל אפשרויות ופרמטרים שונים הניתנים לביצוע באפליקצייה",
   "choose_datetime": "תאריך ושעה",
   "choose_date": "תאריך",
@@ -92,6 +94,7 @@
   "account": "חשבון",
   "account_name": "שם חשבון",
 
+  "donate": "לתרום לסדנא",
   "donation_through_bank_details_bank": "יו בנק (26)",
   "donation_through_bank_details_branch": "רחביה (262)",
   "donation_through_bank_details_account": "419931",

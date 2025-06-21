@@ -299,13 +299,23 @@
       ]
     },
     {
+      "login": "Hatzilu",
+      "name": "Hatzilu",
+      "avatar_url": "https://avatars.githubusercontent.com/u/74069208?v=4",
+      "profile": "https://github.com/Hatzilu",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
       "login": "AvivAbachi",
       "name": "Aviv",
       "avatar_url": "https://avatars.githubusercontent.com/u/15000215?v=4",
       "profile": "https://github.com/AvivAbachi",
       "contributions": [
         "code",
-        "test"
+        "test",
+        "mentoring"
       ]
     },
     {
