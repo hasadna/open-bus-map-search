@@ -29,8 +29,9 @@ const meta = {
     <WorstLinesChart
       startDate={dayjs(args.startDate)}
       endDate={dayjs(args.endDate)}
-      operatorId={args.operatorId}
-    />
+      operatorId={args.operatorId} alertWorstLineHandling={function (arg: boolean): void {
+        console.log('alertWorstLineHandling', arg)
+      } }    />
   ),
 } satisfies Meta<typeof WorstLinesChart>
 
@@ -43,5 +44,8 @@ export const Default: Story = {
     startDate: dayjs(getPastDate()).subtract(7, 'day'),
     endDate: dayjs(getPastDate()),
     operatorId: '3',
+    alertWorstLineHandling: (arg: boolean) => {
+      console.log('alertWorstLineHandling', arg)
+    },
   },
 }
