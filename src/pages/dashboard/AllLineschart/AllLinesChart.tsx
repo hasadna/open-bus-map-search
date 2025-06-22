@@ -20,10 +20,14 @@ const convertToChartCompatibleStruct = (arr: GroupByRes[]) => {
 interface AllChartComponentProps {
   startDate: Dayjs
   endDate: Dayjs
-  alertAllChartsZeroLinesHandling: ((arg: boolean) => void)
+  alertAllChartsZeroLinesHandling: (arg: boolean) => void
 }
 
-export const AllLinesChart: FC<AllChartComponentProps> = ({ startDate, endDate, alertAllChartsZeroLinesHandling }) => {
+export const AllLinesChart: FC<AllChartComponentProps> = ({
+  startDate,
+  endDate,
+  alertAllChartsZeroLinesHandling,
+}) => {
   const [groupByOperatorData, groupByOperatorLoading] = useGroupBy({
     dateTo: endDate,
     dateFrom: startDate,
@@ -32,8 +36,8 @@ export const AllLinesChart: FC<AllChartComponentProps> = ({ startDate, endDate, 
   const { t } = useTranslation()
 
   useEffect(() => {
-    const totalElements = groupByOperatorData.length;
-    const totalZeroElements = groupByOperatorData.filter(el => el.total_actual_rides === 0).length;
+    const totalElements = groupByOperatorData.length
+    const totalZeroElements = groupByOperatorData.filter((el) => el.total_actual_rides === 0).length
     if (totalElements === 0 || totalZeroElements === totalElements) {
       alertAllChartsZeroLinesHandling(true)
     } else {

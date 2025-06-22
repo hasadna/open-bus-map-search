@@ -32,9 +32,11 @@ const meta = {
     <DayTimeChart
       startDate={dayjs(args.startDate)}
       endDate={dayjs(args.endDate)}
-      operatorId={args.operatorId} alertAllDayTimeChartHandling={function (arg: boolean): void {
+      operatorId={args.operatorId}
+      alertAllDayTimeChartHandling={function (arg: boolean): void {
         console.log('alertAllDayTimeChartHandling', arg)
-      } }    />
+      }}
+    />
   ),
 } satisfies Meta<typeof DayTimeChart>
 

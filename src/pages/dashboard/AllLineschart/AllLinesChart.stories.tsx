@@ -23,9 +23,13 @@ const meta = {
     },
   },
   render: (args) => (
-    <AllLinesChart startDate={dayjs(args.startDate)} endDate={dayjs(args.endDate)} alertAllChartsZeroLinesHandling={function (arg: boolean): void {
-      console.log('alertAllChartsZeroLinesHandling', arg)
-    } } />
+    <AllLinesChart
+      startDate={dayjs(args.startDate)}
+      endDate={dayjs(args.endDate)}
+      alertAllChartsZeroLinesHandling={function (arg: boolean): void {
+        console.log('alertAllChartsZeroLinesHandling', arg)
+      }}
+    />
   ),
 } satisfies Meta<typeof AllLinesChart>
 

@@ -29,9 +29,11 @@ const meta = {
     <WorstLinesChart
       startDate={dayjs(args.startDate)}
       endDate={dayjs(args.endDate)}
-      operatorId={args.operatorId} alertWorstLineHandling={function (arg: boolean): void {
+      operatorId={args.operatorId}
+      alertWorstLineHandling={function (arg: boolean): void {
         console.log('alertWorstLineHandling', arg)
-      } }    />
+      }}
+    />
   ),
 } satisfies Meta<typeof WorstLinesChart>
 

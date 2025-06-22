@@ -22,10 +22,15 @@ interface DayTimeChartProps {
   startDate: Dayjs
   endDate: Dayjs
   operatorId: string
-  alertAllDayTimeChartHandling: ((arg: boolean) => void)
+  alertAllDayTimeChartHandling: (arg: boolean) => void
 }
 
-const DayTimeChart: FC<DayTimeChartProps> = ({ startDate, endDate, operatorId, alertAllDayTimeChartHandling }) => {
+const DayTimeChart: FC<DayTimeChartProps> = ({
+  startDate,
+  endDate,
+  operatorId,
+  alertAllDayTimeChartHandling,
+}) => {
   const { t } = useTranslation()
   const [groupByHour, setGroupByHour] = useState<boolean>(false)
 
@@ -41,8 +46,8 @@ const DayTimeChart: FC<DayTimeChartProps> = ({ startDate, endDate, operatorId, a
   )
 
   useEffect(() => {
-    const totalElements = data.length;
-    const totalZeroElements = data.filter(el => el.total_actual_rides === 0).length;
+    const totalElements = data.length
+    const totalZeroElements = data.filter((el) => el.total_actual_rides === 0).length
     if (totalElements === 0 || totalZeroElements === totalElements) {
       alertAllDayTimeChartHandling(true)
     } else {

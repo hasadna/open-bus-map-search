@@ -39,7 +39,7 @@ const DashboardPage = () => {
     setWorstLineZeroLines(arg)
   }
   const alertAllDayTimeChartHandling = (arg: boolean) => {
-      setAllDayTimeChartZeroLines(arg)
+    setAllDayTimeChartZeroLines(arg)
   }
 
   return (
@@ -94,13 +94,27 @@ const DashboardPage = () => {
       </Grid>
       <Grid container spacing={2} alignItems="flex-start">
         <Grid size={{ xs: 12, lg: 6 }} className="widget">
-          <AllLinesChart startDate={startDate} endDate={endDate} alertAllChartsZeroLinesHandling={(arg: boolean) => alertAllDayTimeChartHandling(arg)} />
+          <AllLinesChart
+            startDate={startDate}
+            endDate={endDate}
+            alertAllChartsZeroLinesHandling={(arg: boolean) => alertAllDayTimeChartHandling(arg)}
+          />
         </Grid>
         <Grid size={{ xs: 12, lg: 6 }} className="widget">
-          <WorstLinesChart startDate={startDate} endDate={endDate} operatorId={operatorId} alertWorstLineHandling={(arg: boolean) => alertWorstLineHandling(arg)} />
+          <WorstLinesChart
+            startDate={startDate}
+            endDate={endDate}
+            operatorId={operatorId}
+            alertWorstLineHandling={(arg: boolean) => alertWorstLineHandling(arg)}
+          />
         </Grid>
         <Grid size={{ xs: 12 }} className="widget">
-          <DayTimeChart startDate={startDate} endDate={endDate} operatorId={operatorId} alertAllDayTimeChartHandling={(arg: boolean) => alertAllChartsZeroLinesHandling(arg)} />
+          <DayTimeChart
+            startDate={startDate}
+            endDate={endDate}
+            operatorId={operatorId}
+            alertAllDayTimeChartHandling={(arg: boolean) => alertAllChartsZeroLinesHandling(arg)}
+          />
         </Grid>
       </Grid>
     </PageContainer>
