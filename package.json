@@ -10,7 +10,7 @@
     "@mui/material": "^7.1.1",
     "@mui/x-date-pickers": "^7.29.2",
     "@mui/x-tree-view": "^8.5.1",
-    "@tanstack/query-sync-storage-persister": "^5.80.6",
+    "@tanstack/query-sync-storage-persister": "^5.81.2",
     "@tanstack/react-query": "^5.76.0",
     "@tanstack/react-query-persist-client": "^5.80.6",
     "@vitejs/plugin-react-swc": "^3.9.0",
