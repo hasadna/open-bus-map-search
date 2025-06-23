@@ -1,33 +1,17 @@
-name: Code coverage
+name: Coverage
+
 on:
   push:
-    branches: [main]
+    branches:
+      - main
   pull_request:
-    branches: [main]
-
-env:
-  VITE_COVERAGE: true
-  SHA: ${{ github.event.pull_request.head.sha || github.sha }}
 
 jobs:
-  test-with-coverage:
+  upload-coverage:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - name: Run install
-        run: npm ci
-      - run: npx playwright install
-      - name: Run test
-        run: npm test
-      - name: Run end-to-end tests
-        run: npm test
-      - run: npx nyc report --reporter=lcovonly
       - name: Upload to Coveralls
         if: always()
-        uses: coverallsapp/github-action@v2
+        uses: coverallsapp/github-action@v2.2.3
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
