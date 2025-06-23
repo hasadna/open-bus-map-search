@@ -29,7 +29,7 @@
     "lodash.debounce": "^4.0.8",
     "madge": "^8.0.0",
     "open-bus-stride-client": "^0.1.3",
-    "react": "^18.3.1",
+    "react": "^19.1.0",
     "react-dom": "^18.3.1",
     "react-ga4": "^2.1.0",
     "react-i18next": "^15.5.1",
