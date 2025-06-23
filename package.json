@@ -121,7 +121,7 @@
     "globals": "^16.1.0",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^29.7.0",
-    "jest-environment-jsdom": "^29.7.0",
+    "jest-environment-jsdom": "^30.0.2",
     "jest-svg-transformer": "^1.0.0",
     "jsdom": "^26.1.0",
     "nx": "21.0.3",
