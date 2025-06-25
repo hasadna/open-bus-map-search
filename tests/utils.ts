@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-return */
 import * as fs from 'fs'
 import * as path from 'path'
 import * as crypto from 'crypto'
@@ -17,9 +17,9 @@ export function generateUUID(): string {
 export const test = baseTest.extend<{ context: BrowserContext }>({
   context: async ({ context }, use) => {
     await context.addInitScript(() =>
-      window.addEventListener('beforeunload', () =>
-        (window as any).collectIstanbulCoverage(JSON.stringify((window as any).__coverage__)),
-      ),
+      window.addEventListener('beforeunload', () => {
+        ;(window as any).collectIstanbulCoverage(JSON.stringify((window as any).__coverage__))
+      }),
     )
     await fs.promises.mkdir(istanbulCLIOutput, { recursive: true })
     await context.exposeFunction('collectIstanbulCoverage', (coverageJSON: string) => {
@@ -81,7 +81,7 @@ export const urlMatcher: Matcher = customMatcher({
 export const getBranch = () =>
   new Promise<string>((resolve, reject) => {
     return exec('git rev-parse --abbrev-ref HEAD', (err, stdout) => {
-      if (err) reject(new Error(`getBranch Error: ${err}`))
+      if (err) reject(new Error(`getBranch Error: ${err.name}`))
       else if (typeof stdout === 'string') resolve(stdout.trim())
     })
   })

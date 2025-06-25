@@ -22,13 +22,13 @@ export abstract class BasePage {
   }
 
   protected async fillTextToElement(element: Locator, textToFill: string) {
-    await test.step(`Filling the '${textToFill}' into the ${element}`, async () => {
+    await test.step(`Filling the '${textToFill}' into the input element`, async () => {
       await element.fill(textToFill)
     })
   }
 
   protected async clearTextFromElement(element: Locator) {
-    await test.step(`Clearing '${element}' from text`, async () => {
+    await test.step(`Clearing text from input element`, async () => {
       await element.clear()
     })
   }
@@ -54,7 +54,7 @@ export abstract class BasePage {
     optionsListElement: Locator,
     optionToSelect: string,
   ) {
-    await test.step(`Click on UL LI dropbox '${dropElement}' element and select '${optionToSelect}' from ${optionsListElement}`, async () => {
+    await test.step(`Click on UL LI dropbox element and select '${optionToSelect}'`, async () => {
       await this.clickOnElement(dropElement)
       await this.clickOnElement(optionsListElement.locator(`//li[text()='${optionToSelect}']`))
     })
