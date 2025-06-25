@@ -53,28 +53,6 @@ export function getPastDate(): Date {
   return new Date('2024-02-12 15:00:00')
 }
 
-export async function setBrowserTime(date: Date, page: Page | BrowserContext) {
-  const fakeNow = date.valueOf()
-
-  // Update the Date accordingly
-  await page.addInitScript((fakeNow) => {
-    // Extend Date constructor to default to fakeNow
-    ;(window as any).Date = class extends (window as any).Date {
-      constructor(...args: any[]) {
-        if (args.length === 0) {
-          super(fakeNow)
-        } else {
-          super(...args)
-        }
-      }
-    }
-    // Override Date.now() to start from fakeNow
-    const __DateNowOffset = fakeNow - Date.now()
-    const __DateNow = Date.now
-    Date.now = () => __DateNow() + __DateNowOffset
-  }, fakeNow)
-}
-
 export const urlMatcher: Matcher = customMatcher({
   urlComparator(a, b) {
     const fieldsToRemove = ['t', 'date_from', 'date_to']

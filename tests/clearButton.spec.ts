@@ -1,6 +1,6 @@
 import type { Locator, Page } from '@playwright/test'
 import i18next from 'i18next'
-import { test, expect, urlMatcher, setBrowserTime, getPastDate, loadTranslate } from './utils'
+import { test, expect, urlMatcher, getPastDate, loadTranslate } from './utils'
 import Selectors from './SelectorsModel'
 
 async function visitPage(page: Page, pageName: string, url: RegExp) {
@@ -23,6 +23,7 @@ async function selectLineNumberAndRoute(page: Page, lineNumber: Locator, route: 
 test.describe('clearButton functionality', () => {
   test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
     await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
+    await page.clock.setFixedTime(getPastDate())
     await loadTranslate(i18next)
     advancedRouteFromHAR('tests/HAR/clearbutton.har', {
       updateContent: 'embed',
@@ -31,7 +32,6 @@ test.describe('clearButton functionality', () => {
       url: /stride-api/,
       matcher: urlMatcher,
     })
-    setBrowserTime(getPastDate(), page)
   })
 
   test.describe('clearButton functionality at TimeLinePage', () => {
