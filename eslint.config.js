@@ -69,19 +69,7 @@ export default [
       '@typescript-eslint/no-unsafe-assignment': 'off',
       'import/no-unused-modules': 'error',
       'import/order': 'error',
-      'prettier/prettier': [
-        'error',
-        {
-          semi: false,
-          tabWidth: 2,
-          printWidth: 100,
-          singleQuote: true,
-          trailingComma: 'all',
-          bracketSameLine: true,
-          jsxSingleQuote: false,
-          endOfLine: 'auto',
-        },
-      ],
+      'prettier/prettier': 'error',
     },
   },
 ]

@@ -10,7 +10,7 @@ module.exports = {
     ) {
       await new Promise((resolve) => setTimeout(resolve, 100))
       if (Date.now() - startTime > 10000) {
-        console.warn('Waited too long for skeletons to disappear, proceeding anyway.')
+        console.warn('Waited too long for skeletons to disappear, proceeding anyway.');
         break
       }
     }
