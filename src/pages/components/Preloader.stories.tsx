@@ -49,7 +49,6 @@ let promise: Promise<void> | null = null
 
 const useTimeout = (ms: number) => {
   if (!fulfilled) {
-    // eslint-disable-next-line @typescript-eslint/only-throw-error
     throw (promise ||= new Promise((resolve) => {
       setTimeout(() => {
         fulfilled = true

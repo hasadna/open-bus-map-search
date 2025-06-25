@@ -112,7 +112,6 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
               <li>
                 {`${t('sample_time')}: `}
                 <span>
-                  {/* eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion */}
                   {dayjs(position.point!.recorded_at_time as string)
                     .tz('Israel')
                     .format(`l [${t('at_time')}] LT`)}
