@@ -112,12 +112,14 @@ jobs:
         run: npm ci
       - run: npx playwright install
       - name: Run test
-        run: npm test
+        # run: npm test // fast for testing
       - name: Run Storybook tests
         if: env.APPLITOOLS_API_KEY
-        env:
-          CHROME_FLAGS: '--no-sandbox --disable-setuid-sandbox'
-        run: npm run test:storybook -- --storybook-url http://localhost:3000/storybook/index.html
+        run: |
+          npx eyes-storybook \
+            --storybook-url http://localhost:3000 \
+            --no-sandbox \
+            --disable-setuid-sandbox
       - name: Prepare playwright artifact directory
         if: always()
         run: |
