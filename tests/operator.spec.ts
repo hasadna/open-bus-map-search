@@ -22,7 +22,7 @@ test.describe('Operator Page Tests', () => {
   test.beforeEach(async ({ page }) => {
     await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
     await loadTranslate(i18next)
-    await page.clock.setFixedTime(getPastDate())
+    await page.clock.setSystemTime(getPastDate())
     await page.goto('/')
     await page
       .getByText(i18next.t('operator_title'), { exact: true })

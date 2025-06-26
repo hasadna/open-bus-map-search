@@ -54,7 +54,7 @@ const useTimeout = (ms: number) => {
         fulfilled = true
         resolve()
       }, ms)
-    }))
+    })) as unknown as Error
   }
 }
 
