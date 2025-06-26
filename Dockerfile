@@ -1,6 +1,6 @@
 FROM node:lts AS builder
 WORKDIR /app
-COPY ..
+COPY . .
 RUN npm ci
 RUN npm run build
 RUN npm run build-storybook -- -o dist/storybook
