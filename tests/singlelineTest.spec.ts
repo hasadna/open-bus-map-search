@@ -7,7 +7,7 @@ test.describe('Single line page tests', () => {
 
   test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
     await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
-    await page.clock.setFixedTime(getPastDate())
+    await page.clock.setSystemTime(getPastDate())
     advancedRouteFromHAR('tests/HAR/singleline.har', {
       updateContent: 'embed',
       update: false,

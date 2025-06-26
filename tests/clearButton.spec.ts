@@ -23,7 +23,7 @@ async function selectLineNumberAndRoute(page: Page, lineNumber: Locator, route: 
 test.describe('clearButton functionality', () => {
   test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
     await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
-    await page.clock.setFixedTime(getPastDate())
+    await page.clock.setSystemTime(getPastDate())
     await loadTranslate(i18next)
     advancedRouteFromHAR('tests/HAR/clearbutton.har', {
       updateContent: 'embed',
@@ -159,7 +159,7 @@ test.describe('clearButton functionality', () => {
     test('after clear the `minutes` input - it should has value equals to `1`', async ({
       page,
     }) => {
-      await page.clock.setFixedTime(new Date('2023-05-01T00:00:00.000Z'))
+      await page.clock.setSystemTime(new Date('2023-05-01T00:00:00.000Z'))
       await visitPage(page, 'מפה לפי זמן', /map/)
       const minutes = page.getByLabel('דקות')
       let getValueAttribute = await minutes.getAttribute('value')
