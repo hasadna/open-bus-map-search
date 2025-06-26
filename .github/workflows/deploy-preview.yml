@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Download dist-build artifact
-        uses: dawidd6/action-download-artifact@v9
+        uses: dawidd6/action-download-artifact@v11
         with:
           workflow: 'Build'
           workflow_conclusion: success
@@ -27,7 +27,7 @@ jobs:
           path: .
 
       - name: Download dist-storybook artifact
-        uses: dawidd6/action-download-artifact@v9
+        uses: dawidd6/action-download-artifact@v11
         with:
           workflow: 'Build'
           workflow_conclusion: success
@@ -38,7 +38,7 @@ jobs:
           path: storybook
 
       - name: Download pr number
-        uses: dawidd6/action-download-artifact@v9
+        uses: dawidd6/action-download-artifact@v11
         with:
           workflow: 'Build'
           workflow_conclusion: success
