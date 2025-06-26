@@ -110,7 +110,7 @@ jobs:
           echo "hash.txt is valid with MIME type $mime_type and length $content_length characters."
       - name: Run install
         run: npm ci
-      - run: npx playwright install
+      - run: npx playwright install --with-deps
       # Disable for fast testing
       # - name: Run test
       #   run: npm test
