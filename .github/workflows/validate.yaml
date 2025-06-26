@@ -117,7 +117,7 @@ jobs:
       - name: Run Storybook tests
         if: env.APPLITOOLS_API_KEY
         run: |
-          npx eyes-storybook \
+          PLAYWRIGHT_SKIP_SANDBOX=1 npx eyes-storybook \
             --storybook-url http://localhost:3000 \
             --no-sandbox \
             --disable-setuid-sandbox
