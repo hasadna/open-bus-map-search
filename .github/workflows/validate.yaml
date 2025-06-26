@@ -112,8 +112,8 @@ jobs:
       - name: Run install
         run: npm ci
       - run: npx playwright install
-      # - name: Run test
-      #   run: npm test
+      - name: Run test
+        run: npm test
       - name: Run Storybook tests
         if: env.APPLITOOLS_API_KEY
         run: npm run test:storybook -- --storybook-url http://localhost:3000/storybook/index.html
