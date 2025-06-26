@@ -1,9 +1,10 @@
 name: Validate
+
 on:
   pull_request:
     branches: [main]
   push:
-    branches: main
+    branches: [main]
 
 permissions:
   contents: read
@@ -73,6 +74,7 @@ jobs:
       APPLITOOLS_API_KEY: ${{ secrets.APPLITOOLS_API_KEY }}
       APPLITOOLS_LOG_DIR: ./logs
       APPLITOOLS_SHOW_LOGS: true
+      PLAYWRIGHT_CHROMIUM_ARGS: '--no-sandbox'
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v4
@@ -111,16 +113,11 @@ jobs:
       - name: Run install
         run: npm ci
       - run: npx playwright install
-      # Disabled for fast testing
       # - name: Run test
       #   run: npm test
       - name: Run Storybook tests
         if: env.APPLITOOLS_API_KEY
-        run: |
-          PLAYWRIGHT_SKIP_SANDBOX=1 npx eyes-storybook \
-            --storybook-url http://localhost:3000 \
-            --no-sandbox \
-            --disable-setuid-sandbox
+        run: PLAYWRIGHT_CHROMIUM_ARGS="--no-sandbox" npm run test:storybook -- --storybook-url http://localhost:3000/storybook/index.html --no-sandbox
       - name: Prepare playwright artifact directory
         if: always()
         run: |

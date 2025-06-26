@@ -1,4 +1,5 @@
 name: Code coverage
+
 on:
   push:
     branches: [main]
