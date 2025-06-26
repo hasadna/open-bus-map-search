@@ -3,6 +3,19 @@ on:
   push:
     branches:
       - main
+
+permissions:
+  contents: write
+  packages: write
+  actions: none
+  checks: none
+  deployments: none
+  issues: none
+  pull-requests: none
+  repository-projects: none
+  security-events: none
+  statuses: none
+
 jobs:
   cd:
     environment: production

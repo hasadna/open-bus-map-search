@@ -1,6 +1,10 @@
 name: Build
 on: pull_request
 
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -8,7 +12,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: lts/*
           cache: 'npm'
       - name: Get Commit Hash and generate Version File
         run: echo "${{ github.event.pull_request.head.sha }}" >> public/hash.txt
@@ -28,7 +32,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: lts/*
           cache: 'npm'
       - name: Run install
         run: npm ci

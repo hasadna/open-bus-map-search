@@ -1,5 +1,9 @@
 name: Complaint
 on: pull_request
+
+permissions:
+  contents: read
+
 jobs:
   test-complaint:
     timeout-minutes: 60

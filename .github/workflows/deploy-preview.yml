@@ -1,8 +1,13 @@
+name: Deploy Preview
 on:
   workflow_run:
     workflows: ['Build']
     types:
       - completed
+
+permissions:
+  contents: read
+  issues: write
 
 jobs:
   deploy-to-s3:

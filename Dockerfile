@@ -1,5 +1,4 @@
-# Pulled March 21, 2023
-FROM node:22 as build
+FROM node:lts as build
 WORKDIR /app
 COPY . .
 RUN npm ci
