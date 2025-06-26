@@ -1,4 +1,4 @@
-FROM node:lts AS builder
+FROM node:lts as builder
 WORKDIR /app
 COPY . .
 RUN npm ci
