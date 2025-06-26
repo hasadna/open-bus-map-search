@@ -73,6 +73,8 @@ jobs:
       APPLITOOLS_API_KEY: ${{ secrets.APPLITOOLS_API_KEY }}
       APPLITOOLS_LOG_DIR: ./logs
       APPLITOOLS_SHOW_LOGS: true
+      PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 'true'
+      PUPPETEER_EXECUTABLE_PATH: '/usr/bin/google-chrome'
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v4
@@ -110,9 +112,15 @@ jobs:
           echo "hash.txt is valid with MIME type $mime_type and length $content_length characters."
       - name: Run install
         run: npm ci
+      - name: Install Google Chrome
+        run: |
+          wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+          sudo apt-get update
+          sudo apt install -y ./google-chrome-stable_current_amd64.deb
+          google-chrome --version
       - run: npx playwright install
       - name: Run test
-        # run: npm test // fast for testing
+        run: npm test:unit # fast for testing
       - name: Run Storybook tests
         if: env.APPLITOOLS_API_KEY
         run: |
