@@ -110,10 +110,18 @@ jobs:
           echo "hash.txt is valid with MIME type $mime_type and length $content_length characters."
       - name: Run install
         run: npm ci
-      - run: npx playwright install --with-deps
+      - run: npx playwright install
       # Disable for fast testing
       # - name: Run test
       #   run: npm test
+
+      - name: Install Chromium
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y chromium-browser
+      - name: Set Puppeteer executable path
+        run: echo "PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser" >> $GITHUB_ENV
+
       - name: Run Storybook tests
         if: env.APPLITOOLS_API_KEY
         run: |
