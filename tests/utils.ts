@@ -113,7 +113,7 @@ export function setBatchName() {
   }
 
   if (commit) {
-    batchName += commit.substring(0, 7)
+    batchName += commit
   }
 
   // Optionally add username for local runs

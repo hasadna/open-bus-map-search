@@ -14,7 +14,7 @@ env:
   DOCKER_APP_IMAGE_NAME: 'ghcr.io/hasadna/open-bus-map-search/open-bus-map-search'
   DOCKER_APP_IMAGE_TAG: 'latest'
   APPLITOOLS_API_KEY: ${{ secrets.APPLITOOLS_API_KEY }}
-  APPLITOOLS_BATCH_NAME: hasadna/open-bus-map-search/${{ github.event.pull_request.number || github.run_id }}/${{ (github.event.pull_request.head.sha || github.sha)[0:7] }}
+  APPLITOOLS_BATCH_NAME: hasadna/open-bus-map-search/${{ github.event.pull_request.number || github.run_id }}/${{ github.event.pull_request.head.sha || github.sha }}
   APPLITOOLS_LOG_DIR: ./logs
   APPLITOOLS_SHOW_LOGS: true
 jobs:
@@ -161,18 +161,6 @@ jobs:
       - name: Run Storybook visual tests
         if: env.APPLITOOLS_API_KEY
         run: npm run test:storybook -- --storybook-url http://localhost:3000/storybook/index.html
-      - name: Prepare Playwright artifact directory
-        if: always()
-        run: |
-          mkdir -p playwright-artifact
-          if [ -d test-results ]; then cp -r test-results/* playwright-artifact/; fi
-          if [ -d playwright-report ]; then cp -r playwright-report/* playwright-artifact/; fi
-      - name: Upload Playwright Storybook artifact
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: playwright-storybook
-          path: playwright-artifact
       - name: Upload Storybook logs if exists
         if: always()
         uses: actions/upload-artifact@v4
