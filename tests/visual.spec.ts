@@ -1,6 +1,5 @@
 import { Eyes, Target, VisualGridRunner } from '@applitools/eyes-playwright'
-import username from 'git-username'
-import { getBranch, getPastDate, test, waitForSkeletonsToHide } from './utils'
+import { getBranch, getPastDate, setBatchName, test, waitForSkeletonsToHide } from './utils'
 
 test.describe('Visual Tests', () => {
   const eyes = new Eyes(new VisualGridRunner(), {
@@ -8,9 +7,7 @@ test.describe('Visual Tests', () => {
       { width: 1280, height: 720, name: 'chrome' },
       { width: 1280, height: 720, name: 'safari' },
       { width: 375, height: 667, name: 'chrome' },
-      {
-        iosDeviceInfo: { deviceName: 'iPhone 16' },
-      },
+      { iosDeviceInfo: { deviceName: 'iPhone 16' } },
     ],
   })
 
@@ -116,18 +113,6 @@ test.describe('Visual Tests', () => {
     await eyes.check('donation modal dark mode', Target.region(page.getByRole('dialog')))
   })
 })
-
-function setBatchName(eyes: Eyes) {
-  if (process.env.CI) {
-    // set batch id to the commit sha
-    eyes.setBatch({
-      id: process.env.SHA,
-      name: 'openbus test branch ' + process.env.GITHUB_REF + ' commit ' + process.env.SHA,
-    })
-  } else {
-    eyes.setBatch(username() + ' is testing openbus ' + new Date().toLocaleString().split(',')[0])
-  }
-}
 
 async function setEyesSettings(eyes: Eyes) {
   eyes.getConfiguration().setUseDom(true).setEnablePatterns(true)

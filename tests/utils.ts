@@ -7,6 +7,8 @@ import { Matcher, test as baseTest, customMatcher } from 'playwright-advanced-ha
 import { BrowserContext, Page } from '@playwright/test'
 import { i18n } from 'i18next'
 import Backend from 'i18next-fs-backend'
+import { Eyes } from '@applitools/eyes-playwright'
+import username from 'git-username'
 
 const istanbulCLIOutput = path.join(process.cwd(), '.nyc_output')
 
@@ -100,6 +102,34 @@ export const loadTranslate = async (i18next: i18n) => {
       loadPath: 'src/locale/{{lng}}.json',
     },
   })
+}
+
+export function setBatchName(eyes: Eyes) {
+  const prNumber =
+    process.env.GITHUB_PR_NUMBER ||
+    process.env.GITHUB_PULL_REQUEST_NUMBER ||
+    process.env.PR_NUMBER ||
+    ''
+  const runId = process.env.GITHUB_RUN_ID || ''
+  const sha = process.env.GITHUB_HEAD_SHA || process.env.GITHUB_SHA || process.env.SHA || ''
+  const user = username() || 'unknown-user'
+  // Match workflow format: hasadna/open-bus-map-search/${prNumber || runId}/${sha}
+  let batchName = `hasadna/open-bus-map-search/`
+
+  if (prNumber) {
+    batchName += `${prNumber}/`
+  } else if (runId) {
+    batchName += `${runId}/`
+  }
+
+  batchName += sha
+
+  // Optionally add username for local runs
+  if (!prNumber && !runId && !sha) {
+    batchName += user
+  }
+
+  eyes.setBatch(batchName)
 }
 
 export const expect = test.expect
