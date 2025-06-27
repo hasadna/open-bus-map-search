@@ -190,8 +190,8 @@ jobs:
         with:
           name: playwright-test
           path: test-results
-      - uses: shallwefootball/s3-upload-action@master
       - name: Publish test results to S3
+        uses: shallwefootball/s3-upload-action@master
         if: always() && ${{ env.AWS_KEY_ID }}
         id: s3-trace
         continue-on-error: true
