@@ -161,6 +161,18 @@ jobs:
       - name: Run Storybook visual tests
         if: env.APPLITOOLS_API_KEY
         run: npm run test:storybook -- --storybook-url http://localhost:3000/storybook/index.html
+      - name: Prepare Playwright artifact directory
+        if: always()
+        run: |
+          mkdir -p playwright-artifact
+          if [ -d test-results ]; then cp -r test-results/* playwright-artifact/; fi
+          if [ -d playwright-report ]; then cp -r playwright-report/* playwright-artifact/; fi
+      - name: Upload Playwright Storybook artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-storybook
+          path: playwright-artifact
       - name: Upload Storybook logs if exists
         if: always()
         uses: actions/upload-artifact@v4
