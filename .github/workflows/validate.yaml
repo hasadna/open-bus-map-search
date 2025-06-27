@@ -14,7 +14,7 @@ env:
   DOCKER_APP_IMAGE_NAME: 'ghcr.io/hasadna/open-bus-map-search/open-bus-map-search'
   DOCKER_APP_IMAGE_TAG: 'latest'
   APPLITOOLS_API_KEY: ${{ secrets.APPLITOOLS_API_KEY }}
-  APPLITOOLS_BATCH_NAME: hasadna/open-bus-map-search/${{ github.event.pull_request.number || "main" }}/${{ github.sha }} # github.sha
+  APPLITOOLS_BATCH_NAME: hasadna/open-bus-map-search/${{ github.event.pull_request.number || 'main' }}/${{ github.sha }}
   APPLITOOLS_LOG_DIR: ./logs
   APPLITOOLS_SHOW_LOGS: true
 jobs:
