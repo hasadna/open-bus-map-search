@@ -161,6 +161,13 @@ jobs:
       - name: Run Storybook visual tests
         if: env.APPLITOOLS_API_KEY
         run: npm run test:storybook -- --storybook-url http://localhost:3000/storybook/index.html
+      - name: Upload Storybook logs if exists
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: logs-storybook
+          path: logs
+          if-no-files-found: warn
 
   publish-test-results:
     name: Publish Test Results
