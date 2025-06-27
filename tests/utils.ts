@@ -105,11 +105,11 @@ export const loadTranslate = async (i18next: i18n) => {
 
 export function setBatchName() {
   let batchName = 'hasadna/open-bus-map-search/'
-  const prNumber = process.env.GITHUB_REF
-  const commit = process.env.GITHUB_HEAD_REF || process.env.SHA
+  const pr = process.env.GITHUB_REF?.match(/.+\/(\d+\/).+/)?.[1]
+  const commit = process.env.GITHUB_SHA || process.env.SHA
 
-  if (prNumber) {
-    batchName += `${prNumber}/`
+  if (pr) {
+    batchName += pr
   }
 
   if (commit) {
@@ -117,7 +117,7 @@ export function setBatchName() {
   }
 
   // Optionally add username for local runs
-  if (!prNumber && !commit) {
+  if (!pr && !commit) {
     const user = username() || 'unknown-user'
     batchName += user
   }
