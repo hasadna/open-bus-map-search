@@ -38,7 +38,7 @@ const preview: Preview = {
       },
     },
     eyes: {
-      waitBeforeCapture: 500,
+      waitBeforeCapture: 1500,
     },
   },
 
