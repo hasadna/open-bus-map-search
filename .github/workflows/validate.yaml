@@ -114,6 +114,8 @@ jobs:
           mkdir -p playwright-artifact
           if [ -d test-results ]; then cp -r test-results/* playwright-artifact/; fi
           if [ -d playwright-report ]; then cp -r playwright-report/* playwright-artifact/; fi
+      - name: Run test
+        run: npm test
       - name: upload combined playwright artifact
         if: always()
         uses: actions/upload-artifact@v4
