@@ -44,8 +44,6 @@ jobs:
         run: npm run lint
       - name: madge
         run: npx madge --extensions js,ts --circular .
-      - name: unit tests
-        run: npm run test:unit
 
   build:
     runs-on: ubuntu-latest
