@@ -105,10 +105,8 @@ export const loadTranslate = async (i18next: i18n) => {
 
 export function setBatchName() {
   let name = 'hasadna/open-bus-map-search/'
-  const pr = process.env.GITHUB_REF?.startsWith('refs/pull/')
-    ? process.env.GITHUB_REF.match(/^refs\/pull\/(\d+\/)/)?.[1]
-    : 'main/'
-  const commit = process.env.GITHUB_SHA
+  const pr = process.env.GITHUB_REF
+  const commit = process.env.SHA
 
   if (pr) {
     name += pr
