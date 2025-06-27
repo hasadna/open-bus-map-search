@@ -18,6 +18,7 @@ permissions:
 
 jobs:
   cd:
+    name: CD Deploy
     environment: production
     runs-on: ubuntu-latest
     steps:

@@ -4,6 +4,7 @@ on: pull_request
 
 jobs:
   build:
+    name: Build Application
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -24,6 +25,7 @@ jobs:
           path: dist
 
   build-storybook:
+    name: Build Storybook
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

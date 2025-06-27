@@ -12,6 +12,7 @@ permissions:
 
 jobs:
   deploy-to-s3:
+    name: Deploy to S3
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
