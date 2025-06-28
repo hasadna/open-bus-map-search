@@ -1,31 +1,33 @@
-name: Coverage
-
+name: Code coverage
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   pull_request:
+    branches: [main]
+
+env:
+  VITE_COVERAGE: true
+  SHA: ${{ github.event.pull_request.head.sha || github.sha }}
 
 jobs:
-  upload-coverage:
+  test-with-coverage:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js
+      - uses: actions/checkout@v4
+      - name: Use Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
-
-      - name: Install dependencies
+      - name: Run install
         run: npm ci
-
-      - name: Run tests with coverage
-        run: npm run test:unit -- --coverage
-
+      - run: npx playwright install
+      - name: Run test
+        run: npm test
+      - name: Run end-to-end tests
+        run: npm test
+      - run: npx nyc report --reporter=lcovonly
       - name: Upload to Coveralls
-        uses: coverallsapp/github-action@v2.2.3
+        if: always()
+        uses: coverallsapp/github-action@v2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          path-to-lcov: ./coverage/lcov.info
