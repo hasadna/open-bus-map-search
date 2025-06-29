@@ -11,6 +11,7 @@
   "homepage_title": "Home",
   "dashboard_page_title": "Public transport operators according to planned trips",
   "dashboard_page_description": "A graphic display of public transportation rides - ratio of successful actual rides / total rides scheduled. Grouped by bus operators (Egged, Dan, Metropolin etc)",
+  "no_data_from_ETL": "We’re having trouble retrieving data from the server, We're working to resolve this issue",
   "timeline_page_title": "Trips History",
   "timeline_page_description": "Displays actual vs scheduled stop times by user-given bus operator, route number & stop name",
   "time_based_map_page_title": "Time based map",
