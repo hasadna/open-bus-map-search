@@ -89,7 +89,7 @@
     "@nx/eslint": "21.2.1",
     "@nx/eslint-plugin": "21.1.2",
     "@playwright/test": "^1.52.0",
-    "@storybook/addon-docs": "^9.0.13",
+    "@storybook/addon-docs": "^9.0.14",
     "@storybook/addon-links": "^9.0.13",
     "@storybook/addon-onboarding": "^9.0.13",
     "@storybook/react-vite": "^9.0.13",
