@@ -91,7 +91,7 @@
     "@playwright/test": "^1.52.0",
     "@storybook/addon-docs": "^9.0.13",
     "@storybook/addon-links": "^9.0.13",
-    "@storybook/addon-onboarding": "^9.0.13",
+    "@storybook/addon-onboarding": "^9.0.14",
     "@storybook/react-vite": "^9.0.13",
     "@swc/cli": "^0.7.4",
     "@swc/core": "^1.11.24",
