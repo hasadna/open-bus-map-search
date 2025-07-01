@@ -7,6 +7,7 @@ test.describe('Single line page tests', () => {
 
   test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
     await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
+    await page.clock.setSystemTime(getPastDate())
     advancedRouteFromHAR('tests/HAR/singleline.har', {
       updateContent: 'embed',
       update: false,
@@ -15,7 +16,6 @@ test.describe('Single line page tests', () => {
       matcher: urlMatcher,
     })
     singleLinePage = new SinglelinePage(page)
-    await singleLinePage.setFakeTime(getPastDate())
     await page.goto('/')
     await page.getByText('מפה לפי קו').click()
   })

@@ -112,7 +112,7 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
               <li>
                 {`${t('sample_time')}: `}
                 <span>
-                  {dayjs(position.point!.recorded_at_time as string)
+                  {dayjs(position.point!.recorded_at_time)
                     .tz('Israel')
                     .format(`l [${t('at_time')}] LT`)}
                 </span>

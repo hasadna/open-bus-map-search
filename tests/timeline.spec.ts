@@ -8,6 +8,7 @@ test.describe('Timeline Page Tests', () => {
 
   test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
     await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
+    await page.clock.setSystemTime(getPastDate())
     await loadTranslate(i18next)
     await advancedRouteFromHAR('tests/HAR/timeline.har', {
       updateContent: 'embed',
@@ -17,7 +18,6 @@ test.describe('Timeline Page Tests', () => {
       matcher: urlMatcher,
     })
     timelinePage = new TimelinePage(page) // Initialize timelinePage before each test
-    await timelinePage.setFakeTime(getPastDate())
     await page.goto('/')
     await page
       .getByText(i18next.t('timeline_page_title'), { exact: true })

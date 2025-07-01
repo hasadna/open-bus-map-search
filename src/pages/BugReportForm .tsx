@@ -23,7 +23,7 @@ interface BugReportFormData {
 
 const BugReportForm = () => {
   const { t } = useTranslation()
-  const [form] = Form.useForm()
+  const [form] = Form.useForm<BugReportFormData>()
   const [fileList, setFileList] = useState<UploadFile[]>([])
   const [selectedType, setSelectedType] = useState<string | undefined>(undefined)
   const [submittedUrl, setSubmittedUrl] = useState<string | undefined>(undefined)
@@ -86,7 +86,9 @@ const BugReportForm = () => {
         <Form
           form={form}
           name="bug-report"
-          onFinish={onFinish}
+          onFinish={(values) => {
+            onFinish(values)
+          }}
           onFinishFailed={onFinishFailed}
           labelCol={{ span: 6 }}
           wrapperCol={{ span: 18 }}>

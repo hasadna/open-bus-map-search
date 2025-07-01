@@ -32,7 +32,7 @@ const objectToTreeNode = <T extends Record<string, unknown>>(
       // Handle primitive types directly
       return {
         id: `${nodeId}-${index}`,
-        name: `${k}: ${value}`,
+        name: `${k}: ${String(value)}`,
       }
     } else if (Array.isArray(value)) {
       // If it's an array, create a node that lists all elements
