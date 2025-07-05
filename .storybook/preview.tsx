@@ -1,4 +1,5 @@
-import type { Preview } from '@storybook/react-vite'
+import type { Parameters, Decorator } from '@storybook/react-vite'
+import type { GlobalTypes } from 'storybook/internal/csf'
 import { Suspense, useEffect } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { BrowserRouter } from 'react-router'
@@ -22,44 +23,34 @@ const queryClient = new QueryClient({
 
 queryClient.setQueryData(['version'], '1.2.3')
 
-const preview: Preview = {
-  parameters: {
-    actions: { argTypesRegex: '^on[A-Z].*' },
-    controls: {
-      matchers: {
-        color: /(background|color)$/i,
-        date: /Date$/i,
-      },
-    },
-    options: {
-      storySort: {
-        method: 'alphabetical',
-        order: [],
-      },
+export const parameters = {
+  eyes: {
+    waitBeforeCapture: async () => {
+      const timeout = 300_000
+      const pollInterval = 100
+      const start = Date.now()
+      while (document.querySelector('.ant-skeleton')) {
+        if (Date.now() - start > timeout) {
+          throw new Error('Skeleton still visible')
+        }
+        await new Promise((resolve) => setTimeout(resolve, pollInterval))
+      }
     },
   },
-
-  decorators: [
-    (Story, context) => {
-      const { locale, darkMode } = context.globals
-      return (
-        <Suspense fallback={null}>
-          <BrowserRouter>
-            <QueryClientProvider client={queryClient}>
-              <ThemeProvider>
-                <StoryBookWrapper locale={locale} darkMode={darkMode}>
-                  <Story />
-                </StoryBookWrapper>
-              </ThemeProvider>
-            </QueryClientProvider>
-          </BrowserRouter>
-        </Suspense>
-      )
+  actions: { argTypesRegex: '^on[A-Z].*' },
+  controls: {
+    matchers: {
+      color: /(background|color)$/i,
+      date: /Date$/i,
     },
-  ],
-
-  tags: ['autodocs'],
-}
+  },
+  options: {
+    storySort: {
+      method: 'alphabetical',
+      order: [],
+    },
+  },
+} satisfies Parameters
 
 export const globalTypes = {
   locale: {
@@ -88,9 +79,26 @@ export const globalTypes = {
       showName: true,
     },
   },
-}
+} satisfies GlobalTypes
 
-export default preview
+export const decorators = [
+  (Story, context) => {
+    const { locale, darkMode } = context.globals
+    return (
+      <Suspense fallback={null}>
+        <BrowserRouter>
+          <QueryClientProvider client={queryClient}>
+            <ThemeProvider>
+              <StoryBookWrapper locale={locale} darkMode={darkMode}>
+                <Story />
+              </StoryBookWrapper>
+            </ThemeProvider>
+          </QueryClientProvider>
+        </BrowserRouter>
+      </Suspense>
+    )
+  },
+] satisfies Decorator[]
 
 const StoryBookWrapper = ({
   darkMode,
