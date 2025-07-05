@@ -37,6 +37,9 @@ const preview: Preview = {
         order: [],
       },
     },
+    eyes: {
+      waitBeforeCapture: 1500,
+    },
   },
 
   decorators: [

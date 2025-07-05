@@ -7,6 +7,7 @@ import { Matcher, test as baseTest, customMatcher } from 'playwright-advanced-ha
 import { BrowserContext, Page } from '@playwright/test'
 import { i18n } from 'i18next'
 import Backend from 'i18next-fs-backend'
+import username from 'git-username'
 
 const istanbulCLIOutput = path.join(process.cwd(), '.nyc_output')
 
@@ -100,6 +101,17 @@ export const loadTranslate = async (i18next: i18n) => {
       loadPath: 'src/locale/{{lng}}.json',
     },
   })
+}
+
+export function setBatchName() {
+  const name = process.env.APPLITOOLS_BATCH_NAME
+  const id = process.env.APPLITOOLS_BATCH_ID
+  // Optionally add username for local runs
+  if (!name && !id) {
+    const user = username() || 'unknown-user'
+    return { name: user, id: user }
+  }
+  return { name, id }
 }
 
 export const expect = test.expect
