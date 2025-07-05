@@ -7,6 +7,7 @@ import OperatorHbarChart from './OperatorHbarChart/OperatorHbarChart'
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
 import Widget from 'src/shared/Widget'
 import { Dayjs } from 'src/dayjs'
+import { useErrorContext } from '../context/ErrorContextProvider'
 
 const convertToChartCompatibleStruct = (arr: GroupByRes[]) => {
   return arr.map((item: GroupByRes) => ({
@@ -20,13 +21,11 @@ const convertToChartCompatibleStruct = (arr: GroupByRes[]) => {
 interface AllChartComponentProps {
   startDate: Dayjs
   endDate: Dayjs
-  alertAllChartsZeroLinesHandling: (arg: boolean) => void
 }
 
 export const AllLinesChart: FC<AllChartComponentProps> = ({
   startDate,
-  endDate,
-  alertAllChartsZeroLinesHandling,
+  endDate
 }) => {
   const [groupByOperatorData, groupByOperatorLoading] = useGroupBy({
     dateTo: endDate,
@@ -35,13 +34,15 @@ export const AllLinesChart: FC<AllChartComponentProps> = ({
   })
   const { t } = useTranslation()
 
+  const { setValue } = useErrorContext();
+
   useEffect(() => {
     const totalElements = groupByOperatorData.length
     const totalZeroElements = groupByOperatorData.filter((el) => el.total_actual_rides === 0).length
     if (totalElements === 0 || totalZeroElements === totalElements) {
-      alertAllChartsZeroLinesHandling(true)
+      setValue(true)
     } else {
-      alertAllChartsZeroLinesHandling(false)
+      setValue(false)
     }
   }, [groupByOperatorData])
 
