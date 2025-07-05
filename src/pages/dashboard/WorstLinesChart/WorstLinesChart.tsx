@@ -1,12 +1,12 @@
 import { Skeleton } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { useEffect } from 'react'
+import { useErrorContext } from '../context/ErrorContextProvider'
 import LinesHbarChart from './LineHbarChart/LinesHbarChart'
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
 import { MAJOR_OPERATORS } from 'src/model/operator'
 import Widget from 'src/shared/Widget'
 import { Dayjs } from 'src/dayjs'
-import { useErrorContext } from '../context/ErrorContextProvider'
 
 interface WorstLinesChartProps {
   startDate: Dayjs
@@ -14,18 +14,14 @@ interface WorstLinesChartProps {
   operatorId: string
 }
 
-export const WorstLinesChart = ({
-  startDate,
-  endDate,
-  operatorId
-}: WorstLinesChartProps) => {
+export const WorstLinesChart = ({ startDate, endDate, operatorId }: WorstLinesChartProps) => {
   const [groupByLineData, lineDataLoading] = useGroupBy({
     dateTo: endDate,
     dateFrom: startDate,
     groupBy: 'operator_ref,line_ref',
   })
 
-  const { setValue } = useErrorContext();
+  const { setValue } = useErrorContext()
 
   const { t } = useTranslation()
   const convertToWorstLineChartCompatibleStruct = (arr: GroupByRes[], operatorId: string) => {

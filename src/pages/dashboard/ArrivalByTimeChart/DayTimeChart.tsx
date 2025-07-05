@@ -1,11 +1,11 @@
 import { Radio, RadioChangeEvent, Skeleton } from 'antd'
 import { FC, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useErrorContext } from '../context/ErrorContextProvider'
 import ArrivalByTimeChart from './ArrivalByTimeChart'
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
 import Widget from 'src/shared/Widget'
 import { Dayjs } from 'src/dayjs'
-import { useErrorContext } from '../context/ErrorContextProvider'
 
 const convertToGraphCompatibleStruct = (arr: GroupByRes[]) => {
   return arr.map((item: GroupByRes) => ({
@@ -25,11 +25,7 @@ interface DayTimeChartProps {
   operatorId: string
 }
 
-const DayTimeChart: FC<DayTimeChartProps> = ({
-  startDate,
-  endDate,
-  operatorId
-}) => {
+const DayTimeChart: FC<DayTimeChartProps> = ({ startDate, endDate, operatorId }) => {
   const { t } = useTranslation()
   const [groupByHour, setGroupByHour] = useState<boolean>(false)
 
@@ -44,7 +40,7 @@ const DayTimeChart: FC<DayTimeChartProps> = ({
     [endDate, groupByHour, startDate, data.length],
   )
 
-  const { setValue } = useErrorContext();
+  const { setValue } = useErrorContext()
 
   useEffect(() => {
     const totalElements = data.length

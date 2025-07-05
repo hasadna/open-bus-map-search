@@ -23,10 +23,7 @@ const meta = {
     },
   },
   render: (args) => (
-    <AllLinesChart
-      startDate={dayjs(args.startDate)}
-      endDate={dayjs(args.endDate)}
-    />
+    <AllLinesChart startDate={dayjs(args.startDate)} endDate={dayjs(args.endDate)} />
   ),
 } satisfies Meta<typeof AllLinesChart>
 

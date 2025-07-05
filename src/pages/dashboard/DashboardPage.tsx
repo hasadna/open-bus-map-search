@@ -14,24 +14,24 @@ import InfoYoutubeModal from '../components/YoutubeModal'
 import DayTimeChart from './ArrivalByTimeChart/DayTimeChart'
 import AllLinesChart from './AllLineschart/AllLinesChart'
 import WorstLinesChart from './WorstLinesChart/WorstLinesChart'
+import { ErrorContextProvider, useErrorContext } from './context/ErrorContextProvider'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
 
 // Services and libraries
 import dayjs from 'src/dayjs'
-import { ErrorContextProvider, useErrorContext } from './context/ErrorContextProvider'
 
 // Declarations
 const now = dayjs()
 
 const DisplayValue = () => {
-  const { value } = useErrorContext();
-  const { t } = useTranslation();
+  const { value } = useErrorContext()
+  const { t } = useTranslation()
   return value ? (
     <Alert severity="warning" variant="outlined">
       {t('no_data_from_ETL')}
     </Alert>
-  ) : null;
-};
+  ) : null
+}
 
 const DashboardPage = () => {
   // const { value } = useErrorContext();
@@ -90,24 +90,13 @@ const DashboardPage = () => {
         </Grid>
         <Grid container spacing={2} alignItems="flex-start">
           <Grid size={{ xs: 12, lg: 6 }} className="widget">
-            <AllLinesChart
-              startDate={startDate}
-              endDate={endDate}
-            />
+            <AllLinesChart startDate={startDate} endDate={endDate} />
           </Grid>
           <Grid size={{ xs: 12, lg: 6 }} className="widget">
-            <WorstLinesChart
-              startDate={startDate}
-              endDate={endDate}
-              operatorId={operatorId}
-            />
+            <WorstLinesChart startDate={startDate} endDate={endDate} operatorId={operatorId} />
           </Grid>
           <Grid size={{ xs: 12 }} className="widget">
-            <DayTimeChart
-              startDate={startDate}
-              endDate={endDate}
-              operatorId={operatorId}
-            />
+            <DayTimeChart startDate={startDate} endDate={endDate} operatorId={operatorId} />
           </Grid>
         </Grid>
       </ErrorContextProvider>
