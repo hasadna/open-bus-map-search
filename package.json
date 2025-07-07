@@ -81,7 +81,7 @@
   "devDependencies": {
     "@applitools/eyes-playwright": "^1.37.2",
     "@applitools/eyes-storybook": "^3.55.6",
-    "@babel/preset-env": "^7.27.2",
+    "@babel/preset-env": "^7.28.0",
     "@babel/preset-react": "^7.27.1",
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.26.0",
