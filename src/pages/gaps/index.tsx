@@ -204,6 +204,11 @@ const GapsPage = () => {
           {gaps
             ?.filter((gap) => gap.gtfsTime || gap.siriTime)
             .filter((gap) => !onlyGapped || !gap.gtfsTime || !gap.siriTime)
+            .filter(
+              (gap) =>
+                (gap.gtfsTime && gap.gtfsTime.isBefore(moment())) ||
+                (gap.siriTime && gap.siriTime.isBefore(moment())),
+            )
             .sort((t1, t2) => {
               return Number((t1?.siriTime || t1?.gtfsTime)?.diff(t2?.siriTime || t2?.gtfsTime))
             })
