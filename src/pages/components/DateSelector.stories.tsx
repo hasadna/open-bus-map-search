@@ -1,6 +1,7 @@
 import { Meta, StoryObj } from '@storybook/react-vite'
 import { DateSelector } from './DateSelector'
 import dayjs from 'src/dayjs'
+import { getPastDate } from '.storybook/main'
 
 const meta = {
   title: 'Components/DateSelector',
@@ -14,7 +15,7 @@ const meta = {
     layout: 'centered',
   },
   args: {
-    time: dayjs().startOf('day'),
+    time: dayjs(getPastDate()).startOf('day'),
     onChange: () => {},
   },
   argTypes: {
@@ -64,7 +65,7 @@ export const Disabled: Story = {
 
 export const Invalid: Story = {
   args: {
-    time: dayjs().subtract(8, 'days').startOf('day'),
-    minDate: dayjs().subtract(7, 'days').startOf('day'),
+    time: dayjs(getPastDate()).subtract(8, 'days').startOf('day'),
+    minDate: dayjs(getPastDate()).subtract(7, 'days').startOf('day'),
   },
 }
