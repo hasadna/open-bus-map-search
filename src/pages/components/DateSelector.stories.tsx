@@ -1,7 +1,7 @@
 import { Meta, StoryObj } from '@storybook/react-vite'
+import { getPastDate } from '../../../.storybook/main'
 import { DateSelector } from './DateSelector'
 import dayjs from 'src/dayjs'
-import { getPastDate } from '.storybook/main'
 
 const meta = {
   title: 'Components/DateSelector',
