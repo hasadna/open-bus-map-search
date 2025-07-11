@@ -83,6 +83,9 @@ const OperatorPage = () => {
                 operatorId={operatorId}
                 startDate={dayjs(timestamp).add(-1, timeRange)}
                 endDate={dayjs(timestamp)}
+                alertWorstLineHandling={function (arg: boolean): void {
+                  console.log('alertWorstLineHandling', arg)
+                }}
               />
             </ChartWrapper>
           </Grid>
