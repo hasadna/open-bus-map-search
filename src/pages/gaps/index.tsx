@@ -60,9 +60,15 @@ const GapsPage = () => {
   }
 
   function getGapsPercentage(gaps: GapsList | undefined): number | undefined {
-    const ridesInTime = gaps?.filter((gap) => formatStatus([], gap) === t('ride_as_planned'))
-    if (!gaps || !ridesInTime) return undefined
-    const ridesInTimePercentage = (ridesInTime?.length / gaps?.length) * 100
+    if (!gaps) return undefined
+    const relevantGaps = gaps.filter(
+      (gap) =>
+        (gap.gtfsTime && gap.gtfsTime.isBefore(moment())) ||
+        (gap.siriTime && gap.siriTime.isBefore(moment())),
+    )
+    if (relevantGaps.length === 0) return undefined
+    const ridesInTime = relevantGaps.filter((gap) => formatStatus([], gap) === t('ride_as_planned'))
+    const ridesInTimePercentage = (ridesInTime.length / relevantGaps.length) * 100
     const allRidesPercentage = 100
     return allRidesPercentage - ridesInTimePercentage
   }
