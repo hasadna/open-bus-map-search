@@ -1,4 +1,5 @@
 import type { Preview } from '@storybook/react-vite'
+import type { Page } from '@playwright/test'
 import { Suspense, useEffect } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { BrowserRouter } from 'react-router'
@@ -38,7 +39,23 @@ const preview: Preview = {
       },
     },
     eyes: {
-      waitBeforeCapture: 1500,
+      waitBeforeCapture: async (page: Page) => {
+        await page.route(/tile\.openstreetmap\.org|openmap|carto\.com|mapbox\.com/, (route) =>
+          route.abort(),
+        )
+        const startTime = Date.now()
+        while (
+          document.querySelector('.ant-skeleton-content') ||
+          document.querySelector('.ant-skeleton')
+        ) {
+          await new Promise((resolve) => setTimeout(resolve, 100))
+          if (Date.now() - startTime > 10000) {
+            console.warn('Waited too long for skeletons to disappear, proceeding anyway.')
+            break
+          }
+        }
+        return true
+      },
     },
   },
 
