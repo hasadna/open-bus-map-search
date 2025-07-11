@@ -14,8 +14,6 @@ env:
   DOCKER_APP_IMAGE_NAME: 'ghcr.io/hasadna/open-bus-map-search/open-bus-map-search'
   DOCKER_APP_IMAGE_TAG: 'latest'
   APPLITOOLS_API_KEY: ${{ secrets.APPLITOOLS_API_KEY }}
-  BATCH_NAME: open-bus-map-search/${{ github.ref }}/${{ github.event.pull_request.head.sha }}/
-  APPLITOOLS_BATCH_NAME: open-bus-map-search/${{ github.ref }}/${{ github.event.pull_request.head.sha }}/storybook
   APPLITOOLS_LOG_DIR: ./logs
   APPLITOOLS_SHOW_LOGS: true
 jobs:
@@ -82,6 +80,8 @@ jobs:
         with:
           name: docker-image
           path: /tmp
+      - name: Set short SHA for PR
+        run: echo "SHORT_SHA=$(echo ${{ github.event.pull_request.head.sha }} | cut -c1-7)" >> $GITHUB_ENV
       - name: Load Docker image
         run: docker load -i /tmp/docker-image.tar
       - name: Start application container
@@ -116,6 +116,8 @@ jobs:
         run: npm ci
       - run: npx playwright install
       - name: Run Playwright tests
+        env:
+          BATCH_NAME: open-bus-map-search/${{ github.ref }}/${{ env.SHORT_SHA }}
         run: npm test
       - name: Prepare Playwright artifact directory
         if: always()
@@ -148,6 +150,8 @@ jobs:
         with:
           name: docker-image
           path: /tmp
+      - name: Set short SHA for PR
+        run: echo "SHORT_SHA=$(echo ${{ github.event.pull_request.head.sha }} | cut -c1-7)" >> $GITHUB_ENV
       - name: Load Docker image
         run: docker load -i /tmp/docker-image.tar
       - name: Start application container
@@ -164,6 +168,8 @@ jobs:
       - run: npx playwright install
       - name: Run Storybook visual tests
         if: env.APPLITOOLS_API_KEY
+        env:
+          APPLITOOLS_BATCH_NAME: open-bus-map-search/${{ github.ref }}/${{ env.SHORT_SHA }}/storybook
         run: npm run test:storybook -- --storybook-url http://localhost:3000/storybook/index.html
 
   publish-test-results:
