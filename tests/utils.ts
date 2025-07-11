@@ -103,15 +103,14 @@ export const loadTranslate = async (i18next: i18n) => {
   })
 }
 
-export function setBatchName() {
-  const name = process.env.APPLITOOLS_BATCH_NAME
-  const id = process.env.APPLITOOLS_BATCH_ID
-  // Optionally add username for local runs
-  if (!name && !id) {
+export function setBatchName(add?: string) {
+  const name = process.env.BATCH_NAME
+
+  if (!name) {
     const user = username() || 'unknown-user'
-    return { name: user, id: user }
+    return { name: user + add }
   }
-  return { name, id }
+  return { name: name + add }
 }
 
 export const expect = test.expect

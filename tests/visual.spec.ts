@@ -12,7 +12,7 @@ test.describe('Visual Tests', () => {
   })
 
   test.beforeAll(async () => {
-    eyes.setBatch(setBatchName())
+    eyes.setBatch(setBatchName('visual_tests'))
     await setEyesSettings(eyes)
   })
 

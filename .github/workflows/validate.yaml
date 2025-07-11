@@ -14,8 +14,8 @@ env:
   DOCKER_APP_IMAGE_NAME: 'ghcr.io/hasadna/open-bus-map-search/open-bus-map-search'
   DOCKER_APP_IMAGE_TAG: 'latest'
   APPLITOOLS_API_KEY: ${{ secrets.APPLITOOLS_API_KEY }}
-  APPLITOOLS_BATCH_NAME: open-bus-map-search/${{ github.ref }}/${{ github.event.pull_request.head.sha }}
-  APPLITOOLS_BATCH_ID: ${{ github.event.pull_request.head.sha }}
+  BATCH_NAME: open-bus-map-search/${{ github.ref }}/${{ github.event.pull_request.head.sha }}/
+  APPLITOOLS_BATCH_NAME: open-bus-map-search/${{ github.ref }}/${{ github.event.pull_request.head.sha }}/storybook
   APPLITOOLS_LOG_DIR: ./logs
   APPLITOOLS_SHOW_LOGS: true
 jobs:
@@ -27,6 +27,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: latest
+          cache: 'npm'
       - name: Check for yarn.json
         run: |
           if [ -f yarn.json ]; then
@@ -91,6 +92,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: latest
+          cache: 'npm'
       - name: Validate hash.txt endpoint
         run: |
           response=$(curl -s -w "%{http_code}" -o /tmp/hash.txt http://localhost:3000/hash.txt)
@@ -156,19 +158,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: latest
+          cache: 'npm'
       - name: Install Dependencies and Playwright
         run: npm ci
       - run: npx playwright install
       - name: Run Storybook visual tests
         if: env.APPLITOOLS_API_KEY
         run: npm run test:storybook -- --storybook-url http://localhost:3000/storybook/index.html
-      - name: Upload Storybook logs if exists
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: logs-storybook
-          path: logs
-          if-no-files-found: warn
 
   publish-test-results:
     name: Publish Test Results
@@ -213,6 +209,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: latest
+          cache: 'npm'
       - name: Install dependencies
         run: npm ci
       - name: Build application
