@@ -86,7 +86,6 @@ const BugReportForm = () => {
         <Form
           form={form}
           name="bug-report"
-          // eslint-disable-next-line @typescript-eslint/no-misused-promises
           onFinish={onFinish}
           onFinishFailed={onFinishFailed}
           labelCol={{ span: 6 }}
