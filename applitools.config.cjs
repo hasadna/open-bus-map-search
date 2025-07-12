@@ -1,6 +1,6 @@
 module.exports = {
-  testConcurrency:20,
-  
+  testConcurrency: 20,
+
   waitBeforeCapture: async () => {
     const startTime = Date.now()
     while (
