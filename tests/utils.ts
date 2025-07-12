@@ -102,13 +102,17 @@ export const loadTranslate = async (i18next: i18n) => {
   })
 }
 
-export const setDarkMode = async (page: Page) => {
-  // @ts-expect-error it saves as boolean, not as string
-  await page.evaluate(() => localStorage.setItem('isDarkTheme', true))
-}
-
-export const setLtrMode = async (page: Page) => {
-  await page.evaluate(() => localStorage.setItem('language', 'en'))
+export const setLocalStorage = async (page: Page, key: string, value?: string) => {
+  await page.evaluate(
+    ([k, v]) => {
+      if (v !== undefined) {
+        localStorage.setItem(k!, v)
+      } else {
+        localStorage.removeItem(k!)
+      }
+    },
+    [key, value],
+  )
 }
 
 export const expect = test.expect
