@@ -1,6 +1,7 @@
 import { Radio, RadioChangeEvent, Skeleton } from 'antd'
 import { FC, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useErrorContext } from '../context/ErrorContextProvider'
 import ArrivalByTimeChart from './ArrivalByTimeChart'
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
 import Widget from 'src/shared/Widget'
@@ -22,15 +23,9 @@ interface DayTimeChartProps {
   startDate: Dayjs
   endDate: Dayjs
   operatorId: string
-  alertAllDayTimeChartHandling: (arg: boolean) => void
 }
 
-const DayTimeChart: FC<DayTimeChartProps> = ({
-  startDate,
-  endDate,
-  operatorId,
-  alertAllDayTimeChartHandling,
-}) => {
+const DayTimeChart: FC<DayTimeChartProps> = ({ startDate, endDate, operatorId }) => {
   const { t } = useTranslation()
   const [groupByHour, setGroupByHour] = useState<boolean>(false)
 
@@ -45,13 +40,15 @@ const DayTimeChart: FC<DayTimeChartProps> = ({
     [endDate, groupByHour, startDate, data.length],
   )
 
+  const { setValue } = useErrorContext()
+
   useEffect(() => {
     const totalElements = data.length
     const totalZeroElements = data.filter((el) => el.total_actual_rides === 0).length
     if (totalElements === 0 || totalZeroElements === totalElements) {
-      alertAllDayTimeChartHandling(true)
+      setValue(true)
     } else {
-      alertAllDayTimeChartHandling(false)
+      setValue(false)
     }
   }, [data])
 

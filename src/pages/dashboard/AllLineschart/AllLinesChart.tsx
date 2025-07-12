@@ -3,6 +3,7 @@ import { Tooltip } from '@mui/material'
 import { Skeleton } from 'antd'
 import { FC, Fragment, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useErrorContext } from '../context/ErrorContextProvider'
 import OperatorHbarChart from './OperatorHbarChart/OperatorHbarChart'
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
 import Widget from 'src/shared/Widget'
@@ -20,14 +21,9 @@ const convertToChartCompatibleStruct = (arr: GroupByRes[]) => {
 interface AllChartComponentProps {
   startDate: Dayjs
   endDate: Dayjs
-  alertAllChartsZeroLinesHandling: (arg: boolean) => void
 }
 
-export const AllLinesChart: FC<AllChartComponentProps> = ({
-  startDate,
-  endDate,
-  alertAllChartsZeroLinesHandling,
-}) => {
+export const AllLinesChart: FC<AllChartComponentProps> = ({ startDate, endDate }) => {
   const [groupByOperatorData, groupByOperatorLoading] = useGroupBy({
     dateTo: endDate,
     dateFrom: startDate,
@@ -35,13 +31,15 @@ export const AllLinesChart: FC<AllChartComponentProps> = ({
   })
   const { t } = useTranslation()
 
+  const { setValue } = useErrorContext()
+
   useEffect(() => {
     const totalElements = groupByOperatorData.length
     const totalZeroElements = groupByOperatorData.filter((el) => el.total_actual_rides === 0).length
     if (totalElements === 0 || totalZeroElements === totalElements) {
-      alertAllChartsZeroLinesHandling(true)
+      setValue(true)
     } else {
-      alertAllChartsZeroLinesHandling(false)
+      setValue(false)
     }
   }, [groupByOperatorData])
 
