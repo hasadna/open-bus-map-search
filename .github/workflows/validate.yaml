@@ -17,16 +17,17 @@ env:
   APPLITOOLS_BATCH_ID: ${{ github.event.pull_request.head.sha }}
   APPLITOOLS_LOG_DIR: ./logs
   APPLITOOLS_SHOW_LOGS: true
+
 jobs:
   setup:
-    - name: Setup
-      runs-on: ubuntu-latest
-      outputs:
-        short_sha: ${{ steps.sha.outputs.short }}
-      steps:
-        - uses: actions/checkout@v4
-        - id: sha
-          run: echo "::set-output name=short::$(echo ${{ github.event.pull_request.head.sha }} | cut -c1-7)"
+    name: Setup
+    runs-on: ubuntu-latest
+    outputs:
+      short_sha: ${{ steps.sha.outputs.short }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: sha
+        run: echo "::set-output name=short::$(echo ${{ github.event.pull_request.head.sha }} | cut -c1-7)"
 
   local-tests:
     name: Local Tests
