@@ -63,13 +63,19 @@ export const urlMatcher: Matcher = customMatcher({
   },
 })
 
-export const getBranch = () =>
-  new Promise<string>((resolve, reject) => {
-    return exec('git rev-parse --abbrev-ref HEAD', (err, stdout) => {
-      if (err) reject(new Error(`getBranch Error: ${err.name}`))
-      else if (typeof stdout === 'string') resolve(stdout.trim())
+export const getBranch = async (): Promise<string> => {
+  return new Promise<string>((resolve, reject) => {
+    exec('git rev-parse --abbrev-ref HEAD', (err, stdout, stderr) => {
+      if (err) {
+        reject(new Error(`getBranch Error: ${err.message || err.name}`))
+      } else if (typeof stdout === 'string' && stdout.trim()) {
+        resolve(stdout.trim())
+      } else {
+        reject(new Error(`getBranch Error: No branch name found. Stderr: ${stderr}`))
+      }
     })
   })
+}
 
 export const waitForSkeletonsToHide = async (page: Page) => {
   while ((await page.locator('.ant-skeleton-content').count()) > 0) {

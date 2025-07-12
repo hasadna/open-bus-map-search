@@ -1,14 +1,17 @@
-name: test docker
+name: Test Docker
+
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   pull_request:
-    branches:
-      - main
+    branches: [main]
+
+permissions:
+  contents: read
 
 jobs:
   docker-build:
+    name: Docker Build Test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

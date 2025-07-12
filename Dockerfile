@@ -1,5 +1,5 @@
-# Pulled March 21, 2023
-FROM node:22 as build
+FROM node:24.3-alpine@sha256:49e45bf002728e35c3a466737d8bcfe12c29731c7c2f3e223f9a7c794fff19a4 AS builder
+
 WORKDIR /app
 COPY . .
 RUN npm ci
@@ -8,4 +8,4 @@ RUN npm run build-storybook -- -o dist/storybook
 
 FROM nginx
 COPY nginx-default.conf /etc/nginx/conf.d/default.conf
-COPY --from=build /app/dist /usr/share/nginx/html
+COPY --from=builder /app/dist /usr/share/nginx/html
