@@ -34,8 +34,8 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
       await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
       await page.clock.setSystemTime(getPastDate())
       await page.goto('/')
-      if (mode === 'Dark') await page.getByLabel('עבור למצב כהה').click()
-      if (mode === 'LTR') await page.getByLabel('English').click()
+      if (mode === 'Dark') await page.getByLabel('עבור למצב כהה').first().click()
+      if (mode === 'LTR') await page.getByLabel('English').first().click()
       if (process.env.APPLITOOLS_API_KEY) {
         await eyes.open(page, 'OpenBus', testinfo.title)
       }
@@ -106,8 +106,8 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
 
     test(`Operator Page Should Look Good [${mode}]`, async ({ page }) => {
       await page.goto('/operator')
-      await page.getByRole('combobox', { name: 'חברה מפעילה' }).click()
-      await page.getByRole('option', { name: 'אגד', exact: true }).click()
+      await page.getByRole('combobox', { name: 'חברה מפעילה' }).first().click()
+      await page.getByRole('option', { name: 'אגד', exact: true }).first().click()
       await waitForSkeletonsToHide(page)
       await eyes.check({
         ...Target.window().layoutRegions('.chart', '.recharts-wrapper'),
@@ -116,7 +116,7 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
     })
 
     test(`Donation modal Should Look Good [${mode}]`, async ({ page }) => {
-      await page.getByLabel('לתרומות').click()
+      await page.getByLabel('לתרומות').first().click()
       await page.locator('.MuiTypography-root').first().waitFor()
       await eyes.check({ ...Target.region(page.getByRole('dialog')), name: 'donation modal' })
     })
