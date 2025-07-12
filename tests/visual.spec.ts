@@ -1,6 +1,15 @@
-import { Eyes, Target, VisualGridRunner } from '@applitools/eyes-playwright'
+import {
+  Eyes,
+  Target,
+  VisualGridRunner,
+  type CheckSettingsAutomation,
+} from '@applitools/eyes-playwright'
 import username from 'git-username'
 import { getBranch, getPastDate, setLocalStorage, test, waitForSkeletonsToHide } from './utils'
+
+async function checkEyes(eyes: Eyes, name: string, target: CheckSettingsAutomation) {
+  await eyes.check({ ...target, name })
+}
 
 for (const mode of ['Light', 'Dark', 'LTR']) {
   test.describe(`Visual Tests [${mode}]`, () => {
@@ -29,7 +38,10 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
       await page.clock.setFixedTime(getPastDate())
       if (mode === 'Dark') await setLocalStorage(page, 'isDarkTheme', 'true')
       if (mode === 'LTR') await setLocalStorage(page, 'language', 'en')
-      await eyes.open(page, 'OpenBus', `${testinfo.title} [${mode}]`)
+      await page.goto('/')
+      if (process.env.APPLITOOLS_API_KEY) {
+        await eyes.open(page, 'OpenBus', `${testinfo.title} [${mode}]`)
+      }
     })
 
     test.afterEach(async () => {
@@ -43,16 +55,16 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
       }
     })
 
-    test('Home Page Should Look Good', async ({ page }) => {
-      await page.goto('/')
-      await eyes.check('home page', Target.window())
+    test('Home Page Should Look Good', async () => {
+      await checkEyes(eyes, 'home page', Target.window())
     })
 
     test('Dashboard Page Should Look Good', async ({ page }) => {
       await page.goto('/dashboard')
       await page.getByText('אגד').first().waitFor()
       await waitForSkeletonsToHide(page)
-      await eyes.check(
+      await checkEyes(
+        eyes,
         'dashboard page',
         Target.window().layoutRegions('.chart').fully().scrollRootElement('main'),
       )
@@ -60,34 +72,35 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
       await page.evaluate(() => {
         document.querySelector('.recharts-wrapper')?.scrollIntoView()
       })
-      await eyes.check('dashboard page - recharts', Target.window().layoutRegions('.chart'))
+      await checkEyes(eyes, 'dashboard page - recharts', Target.window().layoutRegions('.chart'))
     })
 
     test('About Page Should Look Good', async ({ page }) => {
       await page.goto('/about')
-      await eyes.check('about page', Target.window())
+      await checkEyes(eyes, 'about page', Target.window())
     })
 
     test('Timeline Page Should Look Good', async ({ page }) => {
       await page.goto('/timeline')
-      await eyes.check('timeline page', Target.window())
+      await checkEyes(eyes, 'timeline page', Target.window())
     })
 
     test('Gaps Page Should Look Good', async ({ page }) => {
       await page.goto('/gaps')
-      await eyes.check('gaps page', Target.window())
+      await checkEyes(eyes, 'gaps page', Target.window())
     })
 
     test('Gaps Patterns Page Should Look Good', async ({ page }) => {
       await page.goto('/gaps_patterns')
-      await eyes.check('gaps_patterns page', Target.window())
+      await checkEyes(eyes, 'gaps_patterns page', Target.window())
     })
 
     test('Map Page Should Look Good', async ({ page }) => {
       await page.goto('/map')
       await page.locator('.leaflet-marker-icon').first().waitFor({ state: 'visible' })
       await page.locator('.ant-spin-dot').first().waitFor({ state: 'hidden' })
-      await eyes.check(
+      await checkEyes(
+        eyes,
         'map page',
         Target.window().layoutRegions(page.getByText('מיקומי אוטובוסים משעה')),
       )
@@ -98,17 +111,22 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
       await page.getByRole('combobox', { name: 'חברה מפעילה' }).click()
       await page.getByRole('option', { name: 'אגד', exact: true }).click()
       await waitForSkeletonsToHide(page)
-      await eyes.check(
+      await checkEyes(
+        eyes,
         'operator page',
         Target.window().layoutRegions('.chart', '.recharts-wrapper'),
       )
     })
 
     test('Donation modal Should Look Good', async ({ page }) => {
-      await page.goto('/')
       await page.getByLabel('לתרומות').click()
       await page.locator('.MuiTypography-root').first().waitFor()
-      await eyes.check('donation modal', Target.region(page.getByRole('dialog')))
+      await checkEyes(eyes, 'donation modal', Target.region(page.getByRole('dialog')))
+    })
+
+    test('Public Appeal Page Should Look Good', async ({ page }) => {
+      await page.goto('/public-appeal')
+      await checkEyes(eyes, 'public appeal page', Target.window())
     })
   })
 }
