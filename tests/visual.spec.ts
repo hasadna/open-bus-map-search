@@ -10,7 +10,7 @@ const batchName = process.env.CI
 
 for (const mode of ['Light', 'Dark', 'LTR']) {
   test.describe(`Visual Tests [${mode}]`, () => {
-    const eyes = new Eyes(new VisualGridRunner({ testConcurrency: 20 }), {
+    const eyes = new Eyes(new VisualGridRunner({ testConcurrency: 4 }), {
       browsersInfo: [
         { width: 1280, height: 720, name: 'chrome' },
         { width: 1280, height: 720, name: 'safari' },
