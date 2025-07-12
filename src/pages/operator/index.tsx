@@ -11,6 +11,7 @@ import { OperatorInfo } from './OperatorInfo'
 import { OperatorRoutes } from './OperatorRoutes'
 import { SearchContext } from 'src/model/pageState'
 import dayjs from 'src/dayjs'
+import { ErrorContextProvider } from '../dashboard/context/ErrorContextProvider'
 
 const TIME_RANGES = ['day', 'week', 'month'] as const //  'year'
 
@@ -36,6 +37,7 @@ const OperatorPage = () => {
 
   return (
     <PageContainer>
+      <ErrorContextProvider>
       <Typography variant="h4">{t('operator_title')}</Typography>
       <Grid container spacing={2}>
         <Grid size={{ sm: 4, xs: 12 }}>
@@ -91,6 +93,7 @@ const OperatorPage = () => {
           </Grid>
         </Grid>
       )}
+      </ErrorContextProvider>
     </PageContainer>
   )
 }
