@@ -42,7 +42,11 @@ interface BusLineStatisticsProps {
 
 const now = dayjs()
 
-const CustomTooltip = ({ active, payload }: TooltipProps<number, string>) => {
+type CustomTooltipProps = TooltipProps<number, string> & {
+  payload?: { name: string; value?: number }[]
+}
+
+const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
   if (active && payload && payload.length > 1) {
     const actualRides = payload[0].value || 0
     const plannedRides = payload[1].value || 0
@@ -53,7 +57,6 @@ const CustomTooltip = ({ active, payload }: TooltipProps<number, string>) => {
       </div>
     )
   }
-
   return null
 }
 
@@ -118,7 +121,7 @@ function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatistic
                   orientation={'right'}
                   style={{ direction: 'ltr', marginTop: '-10px' }}
                 />
-                <Tooltip content={<CustomTooltip />} />
+                <Tooltip content={CustomTooltip} />
                 <Legend />
                 <Bar dataKey="actual_rides" barSize={20} radius={9} xAxisId={1} opacity={30}>
                   {hourlyData.map((entry, index) => (
