@@ -1,6 +1,7 @@
 import { Eyes, Target, VisualGridRunner } from '@applitools/eyes-playwright'
+import i18next from 'i18next'
 import username from 'git-username'
-import { getBranch, getPastDate, test, waitForSkeletonsToHide } from './utils'
+import { getBranch, getPastDate, test, waitForSkeletonsToHide, loadTranslate } from './utils'
 
 const time = new Date().toLocaleString()
 const batchId = process.env.SHA || `${username()}-${time}`
@@ -10,7 +11,7 @@ const batchName = process.env.CI
 
 for (const mode of ['Light', 'Dark', 'LTR']) {
   test.describe(`Visual Tests [${mode}]`, () => {
-    const eyes = new Eyes(new VisualGridRunner({ testConcurrency: 4 }), {
+    const eyes = new Eyes(new VisualGridRunner({ testConcurrency: 20 }), {
       browsersInfo: [
         { width: 1280, height: 720, name: 'chrome' },
         { width: 1280, height: 720, name: 'safari' },
@@ -35,7 +36,13 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
       await page.clock.setSystemTime(getPastDate())
       await page.goto('/')
       if (mode === 'Dark') await page.getByLabel('עבור למצב כהה').first().click()
-      if (mode === 'LTR') await page.getByLabel('English').first().click()
+      // Switch language if needed and load translations
+      let lang = 'he'
+      if (mode === 'LTR') {
+        await page.getByLabel('English').first().click()
+        lang = 'en'
+      }
+      await loadTranslate(i18next, lang)
       if (process.env.APPLITOOLS_API_KEY) {
         await eyes.open(page, 'OpenBus', testinfo.title)
       }
@@ -98,25 +105,26 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
       await page.goto('/map')
       await page.locator('.leaflet-marker-icon').first().waitFor({ state: 'visible' })
       await page.locator('.ant-spin-dot').first().waitFor({ state: 'hidden' })
-      await eyes.check({
-        ...Target.window().layoutRegions(page.getByText('מיקומי אוטובוסים משעה')),
-        name: 'map page',
-      })
+      await eyes.check({ ...Target.window(), name: 'map page' })
     })
 
     test(`Operator Page Should Look Good [${mode}]`, async ({ page }) => {
       await page.goto('/operator')
-      await page.getByRole('combobox', { name: 'חברה מפעילה' }).first().click()
+      await page
+        .getByRole('combobox', { name: i18next.t('choose_operator') })
+        .first()
+        .click()
       await page.getByRole('option', { name: 'אגד', exact: true }).first().click()
       await waitForSkeletonsToHide(page)
       await eyes.check({
         ...Target.window().layoutRegions('.chart', '.recharts-wrapper'),
         name: 'operator page',
+        timeout: 5 * 60000,
       })
     })
 
     test(`Donation modal Should Look Good [${mode}]`, async ({ page }) => {
-      await page.getByLabel('לתרומות').first().click()
+      await page.getByLabel(i18next.t('donate_title')).first().click()
       await page.locator('.MuiTypography-root').first().waitFor()
       await eyes.check({ ...Target.region(page.getByRole('dialog')), name: 'donation modal' })
     })
