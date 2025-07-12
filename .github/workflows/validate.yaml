@@ -98,8 +98,6 @@ jobs:
         with:
           name: docker-image
           path: /tmp
-      - name: Set short SHA for PR
-        run: echo "SHORT_SHA=$(echo ${{ github.event.pull_request.head.sha }} | cut -c1-7)" >> $GITHUB_ENV
       - name: Load Docker image
         run: docker load -i /tmp/docker-image.tar
       - name: Start application container
@@ -163,12 +161,12 @@ jobs:
     steps:
       - name: Set short SHA for PR
         run: echo "SHORT_SHA=$(echo ${{ github.event.pull_request.head.sha }} | cut -c1-7)" >> $GITHUB_ENV
-      - name: Load Docker image
       - name: Download Docker image artifact
         uses: actions/download-artifact@v4
         with:
           name: docker-image
           path: /tmp
+      - name: Load Docker image
         run: docker load -i /tmp/docker-image.tar
       - name: Start application container
         run: docker run -d -p 3000:80 ${{ env.DOCKER_APP_IMAGE_NAME }}:${{ env.DOCKER_APP_IMAGE_TAG }}
