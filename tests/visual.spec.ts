@@ -4,12 +4,11 @@ import username from 'git-username'
 import { getBranch, getPastDate, test, waitForSkeletonsToHide, loadTranslate } from './utils'
 
 export function setBatchName(add?: string) {
-  const name = process.env.BATCH_NAME
   const time = new Date().toLocaleString()
+  const name = process.env.APPLITOOLS_BATCH_NAME
   const id = process.env.SHA || `${username()}-${time}`
   if (!name) {
-    const user = `${username() || 'unknown-user'}-${time}`
-    return { name: user + add + time }
+    return { name: `${username() || 'unknown-user'}-${add}-${time}` }
   }
   return { name: name + add, id }
 }

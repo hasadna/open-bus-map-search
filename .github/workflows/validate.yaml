@@ -14,6 +14,7 @@ env:
   DOCKER_APP_IMAGE_NAME: 'ghcr.io/hasadna/open-bus-map-search/open-bus-map-search'
   DOCKER_APP_IMAGE_TAG: 'latest'
   APPLITOOLS_API_KEY: ${{ secrets.APPLITOOLS_API_KEY }}
+  APPLITOOLS_BATCH_ID: ${{ github.event.pull_request.head.sha }}
   APPLITOOLS_LOG_DIR: ./logs
   APPLITOOLS_SHOW_LOGS: true
 jobs:
@@ -70,10 +71,26 @@ jobs:
           name: docker-image
           path: /tmp/docker-image.tar
 
+  build-outside-docker:
+    name: Node.js Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: latest
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
+      - name: Build application
+        run: npm run build
+      - name: Build Storybook
+        run: npm run build-storybook
+
   test:
     name: Application & Playwright Tests
     runs-on: ubuntu-latest
-    needs: [local-tests, build]
+    needs: [local-tests, build, build-outside-docker]
     steps:
       - name: Download Docker image artifact
         uses: actions/download-artifact@v4
@@ -116,8 +133,6 @@ jobs:
         run: npm ci
       - run: npx playwright install
       - name: Run Playwright tests
-        env:
-          BATCH_NAME: open-bus-map-search/${{ github.ref }}/${{ env.SHORT_SHA }}
         run: npm test
       - name: Prepare Playwright artifact directory
         if: always()
@@ -143,7 +158,7 @@ jobs:
   storybook-test:
     name: Storybook Visual Tests
     runs-on: ubuntu-22.04 # not working whit ubuntu 23+
-    needs: [local-tests, build]
+    needs: [local-tests, build, build-outside-docker]
     steps:
       - name: Download Docker image artifact
         uses: actions/download-artifact@v4
@@ -171,6 +186,76 @@ jobs:
         env:
           APPLITOOLS_BATCH_NAME: open-bus-map-search/${{ github.ref }}/${{ env.SHORT_SHA }}/storybook
         run: npm run test:storybook -- --storybook-url http://localhost:3000/storybook/index.html
+
+  visual-test:
+    name: Application & Playwright Tests
+    runs-on: ubuntu-latest
+    needs: [local-tests, build, build-outside-docker]
+    steps:
+      - name: Download Docker image artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-image
+          path: /tmp
+      - name: Set short SHA for PR
+        run: echo "SHORT_SHA=$(echo ${{ github.event.pull_request.head.sha }} | cut -c1-7)" >> $GITHUB_ENV
+      - name: Load Docker image
+        run: docker load -i /tmp/docker-image.tar
+      - name: Start application container
+        run: docker run -d -p 3000:80 ${{ env.DOCKER_APP_IMAGE_NAME }}:${{ env.DOCKER_APP_IMAGE_TAG }}
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: latest
+          cache: 'npm'
+      - name: Validate hash.txt endpoint
+        run: |
+          response=$(curl -s -w "%{http_code}" -o /tmp/hash.txt http://localhost:3000/hash.txt)
+          http_code=${response: -3}
+          if [ "$http_code" -ne 200 ]; then
+            echo "Error: HTTP request failed with status code $http_code"
+            exit 1
+          fi
+          mime_type=$(file --mime-type -b /tmp/hash.txt)
+          if [ "$mime_type" != "text/plain" ]; then
+            echo "Error: hash.txt does not have MIME type text/plain. Found: $mime_type"
+            exit 1
+          fi
+          content_length=$(wc -c < /tmp/hash.txt | xargs)
+          if [ "$content_length" -ge 100 ]; then
+            echo "Error: hash.txt content exceeds 100 characters. Length: $content_length"
+            exit 1
+          fi
+          echo "hash.txt is valid with MIME type $mime_type and length $content_length characters."
+      - name: Install Dependencies and Playwright
+        run: npm ci
+      - run: npx playwright install
+      - name: Run Playwright Visual Tests
+        env:
+          APPLITOOLS_BATCH_NAME: open-bus-map-search/${{ github.ref }}/${{ env.SHORT_SHA }}
+        run: npm run test:e2e:visual
+      - name: Prepare Playwright artifact directory
+        if: always()
+        run: |
+          mkdir -p playwright-artifact
+          if [ -d test-results ]; then cp -r test-results/* playwright-artifact/; fi
+          if [ -d playwright-report ]; then cp -r playwright-report/* playwright-artifact/; fi
+          touch playwright-artifact/.keep
+      - name: Upload Playwright test artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-visual-test
+          path: playwright-artifact
+      - name: Upload logs if exists
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: logs-visual-test
+          path: logs
+          if-no-files-found: warn
 
   publish-test-results:
     name: Publish Test Results
@@ -206,22 +291,6 @@ jobs:
           status: ${{needs.test.result}}
           context: 'Test results'
           targetUrl: 'https://s3.amazonaws.com/noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.sha }}/test-results/index.html'
-
-  build-outside-docker:
-    name: Node.js Build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: latest
-          cache: 'npm'
-      - name: Install dependencies
-        run: npm ci
-      - name: Build application
-        run: npm run build
-      - name: Build Storybook
-        run: npm run build-storybook
 
   all-passed:
     name: All Jobs Passed
