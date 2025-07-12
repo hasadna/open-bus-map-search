@@ -1,15 +1,12 @@
-import {
-  Eyes,
-  Target,
-  VisualGridRunner,
-  type CheckSettingsAutomation,
-} from '@applitools/eyes-playwright'
+import { Eyes, Target, VisualGridRunner } from '@applitools/eyes-playwright'
 import username from 'git-username'
-import { getBranch, getPastDate, setLocalStorage, test, waitForSkeletonsToHide } from './utils'
+import { getBranch, getPastDate, test, waitForSkeletonsToHide } from './utils'
 
-async function checkEyes(eyes: Eyes, name: string, target: CheckSettingsAutomation) {
-  await eyes.check({ ...target, name })
-}
+const time = new Date().toLocaleString()
+const batchId = process.env.SHA || `${username()}-${time}`
+const batchName = process.env.CI
+  ? `openbus test branch ${process.env.GITHUB_REF} commit ${process.env.SHA}`
+  : `${username()} is testing openbus ${time}`
 
 for (const mode of ['Light', 'Dark', 'LTR']) {
   test.describe(`Visual Tests [${mode}]`, () => {
@@ -23,7 +20,7 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
     })
 
     test.beforeAll(async () => {
-      setBatchName(eyes)
+      eyes.setBatch({ id: batchId, name: batchName })
       await setEyesSettings(eyes)
       if (!process.env.APPLITOOLS_API_KEY) {
         eyes.setIsDisabled(true)
@@ -35,12 +32,13 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
 
     test.beforeEach(async ({ page }, testinfo) => {
       await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
-      await page.clock.setFixedTime(getPastDate())
-      if (mode === 'Dark') await setLocalStorage(page, 'isDarkTheme', 'true')
-      if (mode === 'LTR') await setLocalStorage(page, 'language', 'en')
+      await page.clock.setSystemTime(getPastDate())
       await page.goto('/')
+      if (mode === 'Dark') await page.getByLabel('עבור למצב כהה').click()
+      if (mode === 'LTR') await page.getByLabel('English').click()
+      await page.reload()
       if (process.env.APPLITOOLS_API_KEY) {
-        await eyes.open(page, 'OpenBus', `${testinfo.title} [${mode}]`)
+        await eyes.open(page, 'OpenBus', testinfo.title)
       }
     })
 
@@ -55,92 +53,80 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
       }
     })
 
-    test('Home Page Should Look Good', async () => {
-      await checkEyes(eyes, 'home page', Target.window())
+    test(`Home Page Should Look Good [${mode}]`, async () => {
+      await eyes.check({ ...Target.window(), name: 'home page' })
     })
 
-    test('Dashboard Page Should Look Good', async ({ page }) => {
+    test(`Dashboard Page Should Look Good [${mode}]`, async ({ page }) => {
       await page.goto('/dashboard')
       await page.getByText('אגד').first().waitFor()
       await waitForSkeletonsToHide(page)
-      await checkEyes(
-        eyes,
-        'dashboard page',
-        Target.window().layoutRegions('.chart').fully().scrollRootElement('main'),
-      )
+      await eyes.check({
+        ...Target.window().layoutRegions('.chart').fully().scrollRootElement('main'),
+        name: 'dashboard page',
+      })
       // scroll to recharts-wrapper
       await page.evaluate(() => {
         document.querySelector('.recharts-wrapper')?.scrollIntoView()
       })
-      await checkEyes(eyes, 'dashboard page - recharts', Target.window().layoutRegions('.chart'))
+      await eyes.check({
+        ...Target.window().layoutRegions('.chart'),
+        name: 'dashboard page - recharts',
+      })
     })
 
-    test('About Page Should Look Good', async ({ page }) => {
+    test(`About Page Should Look Good [${mode}]`, async ({ page }) => {
       await page.goto('/about')
-      await checkEyes(eyes, 'about page', Target.window())
+      await eyes.check({ ...Target.window(), name: 'about page' })
     })
 
-    test('Timeline Page Should Look Good', async ({ page }) => {
+    test(`Timeline Page Should Look Good [${mode}]`, async ({ page }) => {
       await page.goto('/timeline')
-      await checkEyes(eyes, 'timeline page', Target.window())
+      await eyes.check({ ...Target.window(), name: 'timeline page' })
     })
 
-    test('Gaps Page Should Look Good', async ({ page }) => {
+    test(`Gaps Page Should Look Good [${mode}]`, async ({ page }) => {
       await page.goto('/gaps')
-      await checkEyes(eyes, 'gaps page', Target.window())
+      await eyes.check({ ...Target.window(), name: 'gaps page' })
     })
 
-    test('Gaps Patterns Page Should Look Good', async ({ page }) => {
+    test(`Gaps Patterns Page Should Look Good [${mode}]`, async ({ page }) => {
       await page.goto('/gaps_patterns')
-      await checkEyes(eyes, 'gaps_patterns page', Target.window())
+      await eyes.check({ ...Target.window(), name: 'gaps_patterns page' })
     })
 
-    test('Map Page Should Look Good', async ({ page }) => {
+    test(`Map Page Should Look Good [${mode}]`, async ({ page }) => {
       await page.goto('/map')
       await page.locator('.leaflet-marker-icon').first().waitFor({ state: 'visible' })
       await page.locator('.ant-spin-dot').first().waitFor({ state: 'hidden' })
-      await checkEyes(
-        eyes,
-        'map page',
-        Target.window().layoutRegions(page.getByText('מיקומי אוטובוסים משעה')),
-      )
+      await eyes.check({
+        ...Target.window().layoutRegions(page.getByText('מיקומי אוטובוסים משעה')),
+        name: 'map page',
+      })
     })
 
-    test('Operator Page Should Look Good', async ({ page }) => {
+    test(`Operator Page Should Look Good [${mode}]`, async ({ page }) => {
       await page.goto('/operator')
       await page.getByRole('combobox', { name: 'חברה מפעילה' }).click()
       await page.getByRole('option', { name: 'אגד', exact: true }).click()
       await waitForSkeletonsToHide(page)
-      await checkEyes(
-        eyes,
-        'operator page',
-        Target.window().layoutRegions('.chart', '.recharts-wrapper'),
-      )
+      await eyes.check({
+        ...Target.window().layoutRegions('.chart', '.recharts-wrapper'),
+        name: 'operator page',
+      })
     })
 
-    test('Donation modal Should Look Good', async ({ page }) => {
+    test(`Donation modal Should Look Good [${mode}]`, async ({ page }) => {
       await page.getByLabel('לתרומות').click()
       await page.locator('.MuiTypography-root').first().waitFor()
-      await checkEyes(eyes, 'donation modal', Target.region(page.getByRole('dialog')))
+      await eyes.check({ ...Target.region(page.getByRole('dialog')), name: 'donation modal' })
     })
 
-    test('Public Appeal Page Should Look Good', async ({ page }) => {
+    test(`Public Appeal Page Should Look Good [${mode}]`, async ({ page }) => {
       await page.goto('/public-appeal')
-      await checkEyes(eyes, 'public appeal page', Target.window())
+      await eyes.check({ ...Target.window(), name: 'public appeal page' })
     })
   })
-}
-
-function setBatchName(eyes: Eyes) {
-  if (process.env.CI) {
-    // set batch id to the commit sha
-    eyes.setBatch({
-      id: process.env.SHA,
-      name: 'openbus test branch ' + process.env.GITHUB_REF + ' commit ' + process.env.SHA,
-    })
-  } else {
-    eyes.setBatch(username() + ' is testing openbus ' + new Date().toLocaleString().split(',')[0])
-  }
 }
 
 async function setEyesSettings(eyes: Eyes) {

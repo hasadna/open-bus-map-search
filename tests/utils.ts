@@ -87,17 +87,4 @@ export const loadTranslate = async (i18next: i18n) => {
   })
 }
 
-export const setLocalStorage = async (page: Page, key: string, value?: string) => {
-  await page.evaluate(
-    ([k, v]) => {
-      if (v !== undefined) {
-        localStorage.setItem(k!, v)
-      } else {
-        localStorage.removeItem(k!)
-      }
-    },
-    [key, value],
-  )
-}
-
 export const expect = test.expect
