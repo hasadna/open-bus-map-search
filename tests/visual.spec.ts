@@ -36,7 +36,6 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
       await page.goto('/')
       if (mode === 'Dark') await page.getByLabel('עבור למצב כהה').click()
       if (mode === 'LTR') await page.getByLabel('English').click()
-      await page.reload()
       if (process.env.APPLITOOLS_API_KEY) {
         await eyes.open(page, 'OpenBus', testinfo.title)
       }
