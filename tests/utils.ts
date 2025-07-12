@@ -106,4 +106,11 @@ export const setDarkMode = async (page: Page) => {
   await page.getByRole('button', { name: 'עבור למצב כהה' }).click()
 }
 
+export const setLtrMode = async (page: Page) => {
+  const englishButton = page.getByRole('button', { name: 'English' })
+  if ((await englishButton.count()) !== 0) {
+    await englishButton.first().click()
+  }
+}
+
 export const expect = test.expect
