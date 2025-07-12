@@ -103,11 +103,12 @@ export const loadTranslate = async (i18next: i18n) => {
 }
 
 export const setDarkMode = async (page: Page) => {
-  await page.getByRole('button', { name: 'עבור למצב כהה' }).click()
+  // @ts-expect-error it saves as boolean, not as string
+  await page.evaluate(() => localStorage.setItem('isDarkTheme', true))
 }
 
 export const setLtrMode = async (page: Page) => {
-  await page.getByRole('button', { name: 'English' }).click()
+  await page.evaluate(() => localStorage.setItem('language', 'en'))
 }
 
 export const expect = test.expect

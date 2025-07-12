@@ -27,10 +27,10 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
     })
 
     test.beforeEach(async ({ page }, testinfo) => {
-      if (mode === 'Dark') await setDarkMode(page)
-      if (mode === 'LTR') await setLtrMode(page)
       await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
       await page.clock.setFixedTime(getPastDate())
+      if (mode === 'Dark') await setDarkMode(page)
+      if (mode === 'LTR') await setLtrMode(page)
       if (!process.env.APPLITOOLS_API_KEY) {
         eyes.setIsDisabled(true)
         console.log('APPLITOOLS_API_KEY is not defined, please ask noamgaash for the key')
@@ -51,12 +51,12 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
       }
     })
 
-    test('Home Page Should Look Good', async ({ page }) => {
+    test('Home Page Should Look Good - ${mode} Mode', async ({ page }) => {
       await page.goto('/')
       await eyes.check('home page', Target.window())
     })
 
-    test('Dashboard Page Should Look Good', async ({ page }) => {
+    test('Dashboard Page Should Look Good - ${mode} Mode', async ({ page }) => {
       await page.goto('/dashboard')
       await page.getByText('אגד').first().waitFor()
       await waitForSkeletonsToHide(page)
@@ -71,27 +71,27 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
       await eyes.check('dashboard page - recharts', Target.window().layoutRegions('.chart'))
     })
 
-    test('About Page Should Look Good', async ({ page }) => {
+    test('About Page Should Look Good - ${mode} Mode', async ({ page }) => {
       await page.goto('/about')
       await eyes.check('about page', Target.window())
     })
 
-    test('Timeline Page Should Look Good', async ({ page }) => {
+    test('Timeline Page Should Look Good - ${mode} Mode', async ({ page }) => {
       await page.goto('/timeline')
       await eyes.check('timeline page', Target.window())
     })
 
-    test('Gaps Page Should Look Good', async ({ page }) => {
+    test('Gaps Page Should Look Good - ${mode} Mode', async ({ page }) => {
       await page.goto('/gaps')
       await eyes.check('gaps page', Target.window())
     })
 
-    test('Gaps Patterns Page Should Look Good', async ({ page }) => {
+    test('Gaps Patterns Page Should Look Good - ${mode} Mode', async ({ page }) => {
       await page.goto('/gaps_patterns')
       await eyes.check('gaps_patterns page', Target.window())
     })
 
-    test('Map Page Should Look Good', async ({ page }) => {
+    test('Map Page Should Look Good - ${mode} Mode', async ({ page }) => {
       await page.goto('/map')
       await page.locator('.leaflet-marker-icon').first().waitFor({ state: 'visible' })
       await page.locator('.ant-spin-dot').first().waitFor({ state: 'hidden' })
@@ -101,7 +101,7 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
       )
     })
 
-    test('Operator Page Should Look Good', async ({ page }) => {
+    test('Operator Page Should Look Good - ${mode} Mode', async ({ page }) => {
       await page.goto('/operator')
       await page.getByRole('combobox', { name: 'חברה מפעילה' }).click()
       await page.getByRole('option', { name: 'אגד', exact: true }).click()
@@ -112,7 +112,7 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
       )
     })
 
-    test('Donation modal Should Look Good', async ({ page }) => {
+    test('Donation modal Should Look Good - ${mode} Mode', async ({ page }) => {
       await page.goto('/')
       await page.getByLabel('לתרומות').click()
       await page.locator('.MuiTypography-root').first().waitFor()
