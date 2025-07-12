@@ -27,7 +27,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - id: sha
-        run: echo "::set-output name=short::$(echo ${{ github.event.pull_request.head.sha }} | cut -c1-7)"
+        run: echo "short=$(echo ${{ github.event.pull_request.head.sha }} | cut -c1-7)" >> $GITHUB_OUTPUT
 
   local-tests:
     name: Local Tests
