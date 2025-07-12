@@ -183,7 +183,7 @@ jobs:
       - name: Run Storybook visual tests
         if: env.APPLITOOLS_API_KEY
         env:
-          APPLITOOLS_BATCH_NAME: open-bus-map-search/${{ github.ref }}/${{ env.short_sha }}/storybook
+          APPLITOOLS_BATCH_NAME: open-bus-map-search/${{ github.ref }}/${{ env.SHORT_SHA }}/storybook
         run: npm run test:storybook -- --storybook-url http://localhost:3000/storybook/index.html
 
   visual-test:
@@ -205,7 +205,7 @@ jobs:
       - run: npx playwright install
       - name: Run Playwright Visual Tests
         env:
-          APPLITOOLS_BATCH_NAME: open-bus-map-search/${{ github.ref }}/${{ env.short_sha }}/
+          APPLITOOLS_BATCH_NAME: open-bus-map-search/${{ github.ref }}/${{ env.SHORT_SHA }}/
         run: npm run test:e2e:visual
       - name: Prepare Playwright artifact directory
         if: always()
