@@ -21,13 +21,12 @@ export function generateUUID(): string {
 
 export const test = baseTest.extend<{ context: BrowserContext }>({
   context: async ({ context }, use) => {
-    await context.addInitScript(() =>
-      window.addEventListener('beforeunload', () =>
-        (window as CollectIstanbulCoverageWindow).collectIstanbulCoverage(
-          JSON.stringify((window as CollectIstanbulCoverageWindow).__coverage__),
-        ),
-      ),
-    )
+    await context.addInitScript(() => {
+      const w = window as CollectIstanbulCoverageWindow
+      w.addEventListener('beforeunload', () => {
+        w.collectIstanbulCoverage(JSON.stringify(w.__coverage__))
+      })
+    })
     await fs.promises.mkdir(istanbulCLIOutput, { recursive: true })
     await context.exposeFunction('collectIstanbulCoverage', (coverageJSON: string) => {
       if (coverageJSON) {
@@ -40,11 +39,10 @@ export const test = baseTest.extend<{ context: BrowserContext }>({
     // eslint-disable-next-line react-hooks/rules-of-hooks
     await use(context)
     for (const page of context.pages()) {
-      await page.evaluate(() =>
-        (window as CollectIstanbulCoverageWindow).collectIstanbulCoverage(
-          JSON.stringify((window as CollectIstanbulCoverageWindow).__coverage__),
-        ),
-      )
+      await page.evaluate(() => {
+        const w = window as CollectIstanbulCoverageWindow
+        w.collectIstanbulCoverage(JSON.stringify(w.__coverage__))
+      })
     }
   },
 })
