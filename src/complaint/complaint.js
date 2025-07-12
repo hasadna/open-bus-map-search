@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { chromium } from 'playwright'
 // import { express } from 'express'
 
