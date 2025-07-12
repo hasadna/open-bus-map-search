@@ -6,7 +6,6 @@ import { Matcher, test as baseTest, customMatcher } from 'playwright-advanced-ha
 import { BrowserContext, Page } from '@playwright/test'
 import { i18n } from 'i18next'
 import Backend from 'i18next-fs-backend'
-import username from 'git-username'
 
 type CollectIstanbulCoverageWindow = Window &
   typeof globalThis & {
