@@ -3,16 +3,6 @@ import i18next from 'i18next'
 import username from 'git-username'
 import { getBranch, getPastDate, test, waitForSkeletonsToHide, loadTranslate } from './utils'
 
-export function setBatchName(add?: string) {
-  const time = new Date().toLocaleString()
-  const name = process.env.APPLITOOLS_BATCH_NAME
-  const id = process.env.SHA || `${username()}-${time}`
-  if (!name) {
-    return { name: `${username() || 'unknown-user'}-${add}-${time}` }
-  }
-  return { name: name + add, id }
-}
-
 for (const mode of ['Light', 'Dark', 'LTR']) {
   test.describe(`Visual Tests [${mode}]`, () => {
     const eyes = new Eyes(new VisualGridRunner({ testConcurrency: 20 }), {
@@ -25,7 +15,6 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
     })
 
     test.beforeAll(async () => {
-      eyes.setBatch(setBatchName('visual-tests'))
       await setEyesSettings(eyes)
       if (!process.env.APPLITOOLS_API_KEY) {
         eyes.setIsDisabled(true)
@@ -141,7 +130,25 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
 }
 
 async function setEyesSettings(eyes: Eyes) {
-  eyes.getConfiguration().setUseDom(true).setEnablePatterns(true)
+  const time = new Date().toISOString()
+  const user = username() || 'unknown-user'
+  const batchName = process.env.APPLITOOLS_BATCH_NAME
+    ? `${process.env.APPLITOOLS_BATCH_NAME}-visual-tests`
+    : `${user}-visual-tests-${time}`
+  const batchId = process.env.SHA || `${user}-${time}`
+
+  eyes.setBatch({ name: batchName, id: batchId })
+
+  const config = eyes.getConfiguration()
+  config.setUseDom(true)
+  config.setEnablePatterns(true)
+  eyes.setConfiguration(config)
+
   eyes.setParentBranchName('main')
-  eyes.setBranchName((await getBranch()) || 'main')
+  try {
+    const branch = (await getBranch()) || 'main'
+    eyes.setBranchName(branch)
+  } catch {
+    eyes.setBranchName('main')
+  }
 }
