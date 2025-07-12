@@ -16,6 +16,12 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
     test.beforeAll(async () => {
       setBatchName(eyes)
       await setEyesSettings(eyes)
+      if (!process.env.APPLITOOLS_API_KEY) {
+        eyes.setIsDisabled(true)
+        console.log('APPLITOOLS_API_KEY is not defined, please ask noamgaash for the key')
+        test.skip() // on forks, the secret is not available
+        return
+      }
     })
 
     test.beforeEach(async ({ page }, testinfo) => {
@@ -23,12 +29,6 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
       await page.clock.setFixedTime(getPastDate())
       if (mode === 'Dark') await setLocalStorage(page, 'isDarkTheme', 'true')
       if (mode === 'LTR') await setLocalStorage(page, 'language', 'en')
-      if (!process.env.APPLITOOLS_API_KEY) {
-        eyes.setIsDisabled(true)
-        console.log('APPLITOOLS_API_KEY is not defined, please ask noamgaash for the key')
-        test.skip() // on forks, the secret is not available
-        return
-      }
       await eyes.open(page, 'OpenBus', `${testinfo.title} [${mode}]`)
     })
 
