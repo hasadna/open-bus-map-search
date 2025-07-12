@@ -114,7 +114,7 @@ export default function ArrivalByTimeChart({
               <YAxis domain={[0, 100]} tickMargin={35} unit={'%'} />
               <Tooltip
                 content={({ payload }) =>
-                  payload?.[0] && (
+                  payload?.[0] ? (
                     <>
                       <ul>
                         <li>
@@ -148,7 +148,7 @@ export default function ArrivalByTimeChart({
                         </li>
                       </ul>
                     </>
-                  )
+                  ) : null
                 }
               />
               <Line type="monotone" dataKey="percent" stroke="#8884d8" activeDot={{ r: 8 }} />

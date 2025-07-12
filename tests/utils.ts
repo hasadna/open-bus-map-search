@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as fs from 'fs'
 import * as path from 'path'
 import * as crypto from 'crypto'
@@ -8,6 +7,12 @@ import { BrowserContext, Page } from '@playwright/test'
 import { i18n } from 'i18next'
 import Backend from 'i18next-fs-backend'
 
+type CollectIstanbulCoverageWindow = Window &
+  typeof globalThis & {
+    collectIstanbulCoverage: (coverage: string) => void
+    __coverage__?: Record<string, unknown>
+  }
+
 const istanbulCLIOutput = path.join(process.cwd(), '.nyc_output')
 
 export function generateUUID(): string {
@@ -16,11 +21,12 @@ export function generateUUID(): string {
 
 export const test = baseTest.extend<{ context: BrowserContext }>({
   context: async ({ context }, use) => {
-    await context.addInitScript(() =>
-      window.addEventListener('beforeunload', () =>
-        (window as any).collectIstanbulCoverage(JSON.stringify((window as any).__coverage__)),
-      ),
-    )
+    await context.addInitScript(() => {
+      const w = window as CollectIstanbulCoverageWindow
+      w.addEventListener('beforeunload', () => {
+        w.collectIstanbulCoverage(JSON.stringify(w.__coverage__))
+      })
+    })
     await fs.promises.mkdir(istanbulCLIOutput, { recursive: true })
     await context.exposeFunction('collectIstanbulCoverage', (coverageJSON: string) => {
       if (coverageJSON) {
@@ -33,37 +39,16 @@ export const test = baseTest.extend<{ context: BrowserContext }>({
     // eslint-disable-next-line react-hooks/rules-of-hooks
     await use(context)
     for (const page of context.pages()) {
-      await page.evaluate(() =>
-        (window as any).collectIstanbulCoverage(JSON.stringify((window as any).__coverage__)),
-      )
+      await page.evaluate(() => {
+        const w = window as CollectIstanbulCoverageWindow
+        w.collectIstanbulCoverage(JSON.stringify(w.__coverage__))
+      })
     }
   },
 })
 
 export function getPastDate(): Date {
   return new Date('2024-02-12 15:00:00')
-}
-
-export async function setBrowserTime(date: Date, page: Page | BrowserContext) {
-  const fakeNow = date.valueOf()
-
-  // Update the Date accordingly
-  await page.addInitScript((fakeNow) => {
-    // Extend Date constructor to default to fakeNow
-    ;(window as any).Date = class extends (window as any).Date {
-      constructor(...args: any[]) {
-        if (args.length === 0) {
-          super(fakeNow)
-        } else {
-          super(...args)
-        }
-      }
-    }
-    // Override Date.now() to start from fakeNow
-    const __DateNowOffset = fakeNow - Date.now()
-    const __DateNow = Date.now
-    Date.now = () => __DateNow() + __DateNowOffset
-  }, fakeNow)
 }
 
 export const urlMatcher: Matcher = customMatcher({
@@ -81,7 +66,7 @@ export const urlMatcher: Matcher = customMatcher({
 export const getBranch = () =>
   new Promise<string>((resolve, reject) => {
     return exec('git rev-parse --abbrev-ref HEAD', (err, stdout) => {
-      if (err) reject(new Error(`getBranch Error: ${err}`))
+      if (err) reject(new Error(`getBranch Error: ${err.name}`))
       else if (typeof stdout === 'string') resolve(stdout.trim())
     })
   })
