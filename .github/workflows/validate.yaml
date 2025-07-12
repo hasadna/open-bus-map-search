@@ -171,6 +171,17 @@ jobs:
     runs-on: ubuntu-22.04 # not working whit ubuntu 23+
     needs: [setup, local-tests, build, build-outside-docker]
     steps:
+      - name: Download Docker image artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-image
+          path: /tmp
+      - name: Set short SHA for PR
+        run: echo "SHORT_SHA=$(echo ${{ github.event.pull_request.head.sha }} | cut -c1-7)" >> $GITHUB_ENV
+      - name: Load Docker image
+        run: docker load -i /tmp/docker-image.tar
+      - name: Start application container
+        run: docker run -d -p 3000:80 ${{ env.DOCKER_APP_IMAGE_NAME }}:${{ env.DOCKER_APP_IMAGE_TAG }}
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.sha }}
