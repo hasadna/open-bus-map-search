@@ -8,6 +8,9 @@ const meta = {
   component: ComplaintModal,
   parameters: {
     layout: 'centered',
+    eyes: {
+      waitBeforeCapture: 'form', // Wait for the modal to open before capturing
+    },
   },
   argTypes: {
     modalOpen: {

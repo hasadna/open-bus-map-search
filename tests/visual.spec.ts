@@ -21,12 +21,10 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
       await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
       await page.route(/.*openstreetmap*/, (route) => route.abort())
       await page.clock.setSystemTime(getPastDate())
+      await page.emulateMedia({ reducedMotion: 'reduce' })
       await page.goto('/')
       if (mode === 'Dark') await page.getByLabel('עבור למצב כהה').first().click()
-      if (mode === 'LTR') {
-        await page.getByLabel('English').first().click()
-        await page.waitForSelector('h1.sidebar-logo>span:has-text("Databus")', { state: 'visible' })
-      }
+      if (mode === 'LTR') await page.getByLabel('English').first().click()
       await loadTranslate(i18next, mode === 'LTR' ? 'en' : 'he')
       if (process.env.APPLITOOLS_API_KEY) {
         await eyes.open(page, 'OpenBus', testinfo.title)
@@ -100,7 +98,6 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
       await eyes.check({
         ...Target.window().layoutRegions('.chart', '.recharts-wrapper'),
         name: 'operator page',
-        timeout: 5 * 60000,
       })
     })
 

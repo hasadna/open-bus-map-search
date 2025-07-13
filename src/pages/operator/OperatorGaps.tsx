@@ -37,6 +37,10 @@ export const OperatorGaps = ({
     ]
   }, [operatorId, timestamp, groupByOperatorData, i18n.language])
 
+  const prefersReducedMotion = useMemo(() => {
+    return window?.matchMedia('(prefers-reduced-motion: reduce)').matches
+  }, [])
+
   if (isLoading) {
     return (
       <Widget>
@@ -67,6 +71,7 @@ export const OperatorGaps = ({
         </div>
         <PieChart width={160} height={160}>
           <Pie
+            isAnimationActive={!prefersReducedMotion}
             data={data.filter((data) => data?.color)}
             innerRadius={65}
             outerRadius={80}
