@@ -11,7 +11,7 @@ test.describe('dashboard tests', () => {
       url: /stride-api/,
       matcher: urlMatcher,
     })
-    await page.clock.setFixedTime(getPastDate())
+    await page.clock.setSystemTime(getPastDate())
     await page.goto('/dashboard')
     await page.getByText('הקווים הגרועים ביותר').waitFor()
     await waitForSkeletonsToHide(page)
