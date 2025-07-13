@@ -25,6 +25,7 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
     })
 
     test.beforeEach(async ({ page }, testinfo) => {
+      await page.route('**/*tile.openstreetmap.org/**', (route) => route.abort())
       await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
       await page.clock.setSystemTime(getPastDate())
       await page.goto('/')

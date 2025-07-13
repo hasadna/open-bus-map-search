@@ -159,6 +159,10 @@ jobs:
     runs-on: ubuntu-22.04 # not working whit ubuntu 23+
     needs: [local-tests, build, build-outside-docker]
     steps:
+      - name: Block OpenStreetMap
+        run: |
+          echo "127.0.0.1 openstreetmap.org" | sudo tee -a /etc/hosts
+          echo "127.0.0.1 tile.openstreetmap.org" | sudo tee -a /etc/hosts
       - name: Set short SHA for PR
         run: echo "SHORT_SHA=$(echo ${{ github.event.pull_request.head.sha }} | cut -c1-7)" >> $GITHUB_ENV
       - name: Download Docker image artifact
@@ -191,6 +195,10 @@ jobs:
     runs-on: ubuntu-latest
     needs: [local-tests, build, build-outside-docker]
     steps:
+      - name: Block OpenStreetMap
+        run: |
+          echo "127.0.0.1 openstreetmap.org" | sudo tee -a /etc/hosts
+          echo "127.0.0.1 tile.openstreetmap.org" | sudo tee -a /etc/hosts
       - name: Set short SHA for PR
         run: echo "SHORT_SHA=$(echo ${{ github.event.pull_request.head.sha }} | cut -c1-7)" >> $GITHUB_ENV
       - uses: actions/checkout@v4
