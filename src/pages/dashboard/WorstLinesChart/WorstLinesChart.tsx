@@ -1,7 +1,7 @@
 import { Skeleton } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { useEffect } from 'react'
-import { useErrorContext } from '../context/ErrorContextProvider'
+import { useWarningContext } from '../context/WarningContextProvider'
 import LinesHbarChart from './LineHbarChart/LinesHbarChart'
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
 import { MAJOR_OPERATORS } from 'src/model/operator'
@@ -21,7 +21,7 @@ export const WorstLinesChart = ({ startDate, endDate, operatorId }: WorstLinesCh
     groupBy: 'operator_ref,line_ref',
   })
 
-  const { setValue } = useErrorContext()
+  const { setValue } = useWarningContext()
 
   const { t } = useTranslation()
   const convertToWorstLineChartCompatibleStruct = (arr: GroupByRes[], operatorId: string) => {

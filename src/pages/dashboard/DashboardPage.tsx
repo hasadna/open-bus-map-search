@@ -14,7 +14,7 @@ import InfoYoutubeModal from '../components/YoutubeModal'
 import DayTimeChart from './ArrivalByTimeChart/DayTimeChart'
 import AllLinesChart from './AllLineschart/AllLinesChart'
 import WorstLinesChart from './WorstLinesChart/WorstLinesChart'
-import { ErrorContextProvider, useErrorContext } from './context/ErrorContextProvider'
+import { WarningContextProvider, useWarningContext } from './context/WarningContextProvider'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
 
 // Services and libraries
@@ -24,7 +24,7 @@ import dayjs from 'src/dayjs'
 const now = dayjs()
 
 const DisplayValue = () => {
-  const { value } = useErrorContext()
+  const { value } = useWarningContext()
   const { t } = useTranslation()
   return value ? (
     <Alert severity="warning" variant="outlined">
@@ -34,7 +34,7 @@ const DisplayValue = () => {
 }
 
 const DashboardPage = () => {
-  // const { value } = useErrorContext();
+  // const { value } = useWarningContext();
 
   const [startDate, setStartDate] = useDate(now.subtract(7, 'day'))
   const [endDate, setEndDate] = useDate(now.subtract(1, 'day'))
@@ -43,7 +43,7 @@ const DashboardPage = () => {
 
   return (
     <PageContainer>
-      <ErrorContextProvider>
+      <WarningContextProvider>
         <Typography className="page-title" variant="h4">
           {t('dashboard_page_title')}
           <InfoYoutubeModal
@@ -99,7 +99,7 @@ const DashboardPage = () => {
             <DayTimeChart startDate={startDate} endDate={endDate} operatorId={operatorId} />
           </Grid>
         </Grid>
-      </ErrorContextProvider>
+      </WarningContextProvider>
     </PageContainer>
   )
 }

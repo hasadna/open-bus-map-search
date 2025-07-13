@@ -6,7 +6,7 @@ import { DateSelector } from '../components/DateSelector'
 import OperatorSelector from '../components/OperatorSelector'
 import { PageContainer } from '../components/PageContainer'
 import WorstLinesChart from '../dashboard/WorstLinesChart/WorstLinesChart'
-import { ErrorContextProvider } from '../dashboard/context/ErrorContextProvider'
+import { WarningContextProvider } from '../dashboard/context/WarningContextProvider'
 import { OperatorGaps } from './OperatorGaps'
 import { OperatorInfo } from './OperatorInfo'
 import { OperatorRoutes } from './OperatorRoutes'
@@ -37,7 +37,7 @@ const OperatorPage = () => {
 
   return (
     <PageContainer>
-      <ErrorContextProvider>
+      <WarningContextProvider>
         <Typography variant="h4">{t('operator_title')}</Typography>
         <Grid container spacing={2}>
           <Grid size={{ sm: 4, xs: 12 }}>
@@ -93,7 +93,7 @@ const OperatorPage = () => {
             </Grid>
           </Grid>
         )}
-      </ErrorContextProvider>
+      </WarningContextProvider>
     </PageContainer>
   )
 }

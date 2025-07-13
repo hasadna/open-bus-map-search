@@ -3,7 +3,7 @@ import { Tooltip } from '@mui/material'
 import { Skeleton } from 'antd'
 import { FC, Fragment, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useErrorContext } from '../context/ErrorContextProvider'
+import { useWarningContext } from '../context/WarningContextProvider'
 import OperatorHbarChart from './OperatorHbarChart/OperatorHbarChart'
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
 import Widget from 'src/shared/Widget'
@@ -31,7 +31,7 @@ export const AllLinesChart: FC<AllChartComponentProps> = ({ startDate, endDate }
   })
   const { t } = useTranslation()
 
-  const { setValue } = useErrorContext()
+  const { setValue } = useWarningContext()
 
   useEffect(() => {
     const totalElements = groupByOperatorData.length

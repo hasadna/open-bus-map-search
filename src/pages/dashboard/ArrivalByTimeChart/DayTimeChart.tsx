@@ -1,7 +1,7 @@
 import { Radio, RadioChangeEvent, Skeleton } from 'antd'
 import { FC, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useErrorContext } from '../context/ErrorContextProvider'
+import { useWarningContext } from '../context/WarningContextProvider'
 import ArrivalByTimeChart from './ArrivalByTimeChart'
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
 import Widget from 'src/shared/Widget'
@@ -40,7 +40,7 @@ const DayTimeChart: FC<DayTimeChartProps> = ({ startDate, endDate, operatorId })
     [endDate, groupByHour, startDate, data.length],
   )
 
-  const { setValue } = useErrorContext()
+  const { setValue } = useWarningContext()
 
   useEffect(() => {
     const totalElements = data.length
