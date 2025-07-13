@@ -42,7 +42,7 @@ interface BusLineStatisticsProps {
 
 // Extend TooltipProps to include a custom `payload` property
 interface CustomTooltipProps extends TooltipProps<number, string> {
-  payload?: any; // you can replace `any` with the specific type of your payload
+  payload?: any // you can replace `any` with the specific type of your payload
 }
 
 const now = dayjs()
