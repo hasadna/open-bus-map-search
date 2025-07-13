@@ -3,22 +3,12 @@ import i18next from 'i18next'
 import username from 'git-username'
 import { getBranch, getPastDate, test, waitForSkeletonsToHide, loadTranslate } from './utils'
 
-const eyes = new Eyes(new VisualGridRunner({ testConcurrency: 20 }), {
-  browsersInfo: [
-    { width: 1280, height: 720, name: 'chrome' },
-    { width: 1280, height: 720, name: 'safari' },
-    { width: 375, height: 667, name: 'chrome' },
-    { iosDeviceInfo: { deviceName: 'iPhone 16' } },
-  ],
-})
-let setSettings = false
+const eyes = await setEyesSettings()
+
 for (const mode of ['Light', 'Dark', 'LTR']) {
   test.describe('Visual Tests', () => {
-    test.beforeAll(async () => {
-      if (!setSettings) {
-        await setEyesSettings(eyes)
-        setSettings = true
-      }
+    test.describe.configure({ retries: 0 })
+    test.beforeAll(() => {
       if (!process.env.APPLITOOLS_API_KEY) {
         eyes.setIsDisabled(true)
         console.log('APPLITOOLS_API_KEY is not defined, please ask noamgaash for the key')
@@ -124,7 +114,16 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
   })
 }
 
-async function setEyesSettings(eyes: Eyes) {
+async function setEyesSettings() {
+  const eyes = new Eyes(new VisualGridRunner({ testConcurrency: 20 }), {
+    browsersInfo: [
+      { width: 1280, height: 720, name: 'chrome' },
+      { width: 1280, height: 720, name: 'safari' },
+      { width: 375, height: 667, name: 'chrome' },
+      { iosDeviceInfo: { deviceName: 'iPhone 16' } },
+    ],
+  })
+
   const time = new Date().toISOString()
   const user = username() || 'unknown-user'
   const batchName = process.env.APPLITOOLS_BATCH_NAME
@@ -145,5 +144,7 @@ async function setEyesSettings(eyes: Eyes) {
     eyes.setBranchName(branch)
   } catch {
     eyes.setBranchName('main')
+  } finally {
+    return eyes
   }
 }
