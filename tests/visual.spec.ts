@@ -11,13 +11,14 @@ const eyes = new Eyes(new VisualGridRunner({ testConcurrency: 20 }), {
     { iosDeviceInfo: { deviceName: 'iPhone 16' } },
   ],
 })
-const time = new Date()
-const user = username()
-
+let setSettings = false
 for (const mode of ['Light', 'Dark', 'LTR']) {
   test.describe('Visual Tests', () => {
     test.beforeAll(async () => {
-      await setEyesSettings(eyes, user, time)
+      if (!setSettings) {
+        await setEyesSettings(eyes)
+        setSettings = true
+      }
       if (!process.env.APPLITOOLS_API_KEY) {
         eyes.setIsDisabled(true)
         console.log('APPLITOOLS_API_KEY is not defined, please ask noamgaash for the key')
@@ -32,11 +33,8 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
       await page.clock.setSystemTime(getPastDate())
       await page.goto('/')
       if (mode === 'Dark') await page.getByLabel('עבור למצב כהה').first().click()
-      if (mode === 'LTR') {
-        await page.getByLabel('English').first().click()
-        await page.waitForSelector('דאטאבוס', { state: 'detached' })
-      }
-      await loadTranslate(i18next)
+      if (mode === 'LTR') await page.getByLabel('English').first().click()
+      await loadTranslate(i18next, mode === 'LTR' ? 'en' : 'he')
       if (process.env.APPLITOOLS_API_KEY) {
         await eyes.open(page, 'OpenBus', testinfo.title)
       }
@@ -126,11 +124,13 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
   })
 }
 
-async function setEyesSettings(eyes: Eyes, user: string | null = 'unknown-user', time: Date) {
+async function setEyesSettings(eyes: Eyes) {
+  const time = new Date().toISOString()
+  const user = username() || 'unknown-user'
   const batchName = process.env.APPLITOOLS_BATCH_NAME
     ? `${process.env.APPLITOOLS_BATCH_NAME}visual-tests`
-    : `${user}-visual-tests-${time.toISOString()}`
-  const batchId = process.env.SHA || `${user}-${time.toISOString()}`
+    : `${user}-visual-tests-${time}`
+  const batchId = process.env.SHA || `${user}-${time}`
 
   eyes.setBatch({ name: batchName, id: batchId })
 
