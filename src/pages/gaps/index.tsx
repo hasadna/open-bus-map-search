@@ -67,7 +67,7 @@ const GapsPage = () => {
     })
     if (relevantGaps.length === 0) return undefined
     const ridesInTime = relevantGaps.filter(
-      (gap) => formatStatus(gaps, gap) === t('ride_as_planned')
+      (gap) => formatStatus(gaps, gap) === t('ride_as_planned'),
     )
     const ridesInTimePercentage = (ridesInTime.length / relevantGaps.length) * 100
     const allRidesPercentage = 100
