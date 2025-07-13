@@ -40,9 +40,14 @@ interface BusLineStatisticsProps {
   toDate: dayjs.Dayjs
 }
 
+// Extend TooltipProps to include a custom `payload` property
+interface CustomTooltipProps extends TooltipProps<number, string> {
+  payload?: any; // you can replace `any` with the specific type of your payload
+}
+
 const now = dayjs()
 
-const CustomTooltip = ({ active, payload }: TooltipProps<number, string>) => {
+const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
   if (
     active &&
     payload &&
