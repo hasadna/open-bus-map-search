@@ -3,43 +3,40 @@ import i18next from 'i18next'
 import username from 'git-username'
 import { getBranch, getPastDate, test, waitForSkeletonsToHide, loadTranslate } from './utils'
 
-test.describe('Visual Tests', () => {
-  const time = new Date()
-  const user = username()
-  const eyes = new Eyes(new VisualGridRunner({ testConcurrency: 20 }), {
-    browsersInfo: [
-      { width: 1280, height: 720, name: 'chrome' },
-      { width: 1280, height: 720, name: 'safari' },
-      { width: 375, height: 667, name: 'chrome' },
-      { iosDeviceInfo: { deviceName: 'iPhone 16' } },
-    ],
-  })
+const eyes = new Eyes(new VisualGridRunner({ testConcurrency: 20 }), {
+  browsersInfo: [
+    { width: 1280, height: 720, name: 'chrome' },
+    { width: 1280, height: 720, name: 'safari' },
+    { width: 375, height: 667, name: 'chrome' },
+    { iosDeviceInfo: { deviceName: 'iPhone 16' } },
+  ],
+})
+const time = new Date()
+const user = username()
 
-  test.beforeAll(async () => {
-    await setEyesSettings(eyes, user, time)
-    if (!process.env.APPLITOOLS_API_KEY) {
-      eyes.setIsDisabled(true)
-      console.log('APPLITOOLS_API_KEY is not defined, please ask noamgaash for the key')
-      test.skip() // on forks, the secret is not available
-      return
-    }
-  })
+for (const mode of ['Light', 'Dark', 'LTR']) {
+  test.describe('Visual Tests', () => {
+    test.beforeAll(async () => {
+      await setEyesSettings(eyes, user, time)
+      if (!process.env.APPLITOOLS_API_KEY) {
+        eyes.setIsDisabled(true)
+        console.log('APPLITOOLS_API_KEY is not defined, please ask noamgaash for the key')
+        test.skip() // on forks, the secret is not available
+        return
+      }
+    })
 
-  for (const mode of ['Light', 'Dark', 'LTR']) {
     test.beforeEach(async ({ page }, testinfo) => {
-      await page.route(/.*openstreetmap*/, (route) => route.abort())
       await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
+      await page.route(/.*openstreetmap*/, (route) => route.abort())
       await page.clock.setSystemTime(getPastDate())
       await page.goto('/')
       if (mode === 'Dark') await page.getByLabel('עבור למצב כהה').first().click()
-      // Switch language if needed and load translations
-      let lang = 'he'
       if (mode === 'LTR') {
         await page.getByLabel('English').first().click()
-        lang = 'en'
+        await page.waitForSelector('דאטאבוס', { state: 'detached' })
       }
-      await loadTranslate(i18next, lang)
-      await page.reload({ waitUntil: 'networkidle' })
+      await loadTranslate(i18next)
       if (process.env.APPLITOOLS_API_KEY) {
         await eyes.open(page, 'OpenBus', testinfo.title)
       }
@@ -126,8 +123,8 @@ test.describe('Visual Tests', () => {
       await page.goto('/public-appeal')
       await eyes.check({ ...Target.window(), name: 'public appeal page' })
     })
-  }
-})
+  })
+}
 
 async function setEyesSettings(eyes: Eyes, user: string | null = 'unknown-user', time: Date) {
   const batchName = process.env.APPLITOOLS_BATCH_NAME

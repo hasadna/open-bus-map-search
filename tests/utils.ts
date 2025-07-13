@@ -83,9 +83,8 @@ export const waitForSkeletonsToHide = async (page: Page) => {
   }
 }
 
-export const loadTranslate = async (i18next: i18n, lng: string = 'he') => {
+export const loadTranslate = async (i18next: i18n) => {
   await i18next.use(Backend).init({
-    lng,
     backend: { loadPath: 'src/locale/{{lng}}.json' },
   })
 }
