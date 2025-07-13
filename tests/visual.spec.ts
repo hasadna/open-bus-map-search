@@ -3,19 +3,21 @@ import i18next from 'i18next'
 import username from 'git-username'
 import { getBranch, getPastDate, test, waitForSkeletonsToHide, loadTranslate } from './utils'
 
+const eyes = new Eyes(new VisualGridRunner({ testConcurrency: 20 }), {
+  browsersInfo: [
+    { width: 1280, height: 720, name: 'chrome' },
+    { width: 1280, height: 720, name: 'safari' },
+    { width: 375, height: 667, name: 'chrome' },
+    { iosDeviceInfo: { deviceName: 'iPhone 16' } },
+  ],
+})
+const time = new Date()
+const user = username()
+
 for (const mode of ['Light', 'Dark', 'LTR']) {
   test.describe(`Visual Tests [${mode}]`, () => {
-    const eyes = new Eyes(new VisualGridRunner({ testConcurrency: 20 }), {
-      browsersInfo: [
-        { width: 1280, height: 720, name: 'chrome' },
-        { width: 1280, height: 720, name: 'safari' },
-        { width: 375, height: 667, name: 'chrome' },
-        { iosDeviceInfo: { deviceName: 'iPhone 16' } },
-      ],
-    })
-
     test.beforeAll(async () => {
-      await setEyesSettings(eyes)
+      await setEyesSettings(eyes, user, time)
       if (!process.env.APPLITOOLS_API_KEY) {
         eyes.setIsDisabled(true)
         console.log('APPLITOOLS_API_KEY is not defined, please ask noamgaash for the key')
@@ -127,13 +129,11 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
   })
 }
 
-async function setEyesSettings(eyes: Eyes) {
-  const time = new Date().toISOString()
-  const user = username() || 'unknown-user'
+async function setEyesSettings(eyes: Eyes, user: string | null = 'unknown-user', time: Date) {
   const batchName = process.env.APPLITOOLS_BATCH_NAME
     ? `${process.env.APPLITOOLS_BATCH_NAME}visual-tests`
-    : `${user}-visual-tests-${time}`
-  const batchId = process.env.SHA || `${user}-${time}`
+    : `${user}-visual-tests-${time.toISOString()}`
+  const batchId = process.env.SHA || `${user}-${time.toISOString()}`
 
   eyes.setBatch({ name: batchName, id: batchId })
 
