@@ -23,7 +23,10 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
       await page.clock.setSystemTime(getPastDate())
       await page.goto('/')
       if (mode === 'Dark') await page.getByLabel('עבור למצב כהה').first().click()
-      if (mode === 'LTR') await page.getByLabel('English').first().click()
+      if (mode === 'LTR') {
+        await page.getByLabel('English').first().click()
+        await page.waitForSelector('h1.sidebar-logo>span:has-text("Databus")', { state: 'visible' })
+      }
       await loadTranslate(i18next, mode === 'LTR' ? 'en' : 'he')
       if (process.env.APPLITOOLS_API_KEY) {
         await eyes.open(page, 'OpenBus', testinfo.title)
