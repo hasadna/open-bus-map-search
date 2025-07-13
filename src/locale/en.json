@@ -277,6 +277,7 @@
       }
     ]
   },
+  "loading": "loading...",
   "version": "Current version identifier",
   "failedToFetchVersion": "Failed to fetch current version identifier",
   "operator_title": "Operator",

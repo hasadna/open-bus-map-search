@@ -14,7 +14,8 @@ test.describe('Version info tests', () => {
     await expect(page.getByRole('heading', { name: 'גרסה' })).toBeVisible()
     await expect(page.getByText('טוען...')).toBeVisible()
     await page.getByLabel('English').click()
-    await expect(page.getByText('Loading')).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Current version identifier' })).toBeVisible()
+    await expect(page.getByText('loading...')).toBeVisible()
   })
   test('should see version', async ({ page }) => {
     await page.route(versionUrl, (route) => route.fulfill({ body: 'my version' }))
