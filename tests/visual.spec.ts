@@ -25,7 +25,7 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
     })
 
     test.beforeEach(async ({ page }, testinfo) => {
-      await page.route('**/*tile.openstreetmap.org/**', (route) => route.abort())
+      await page.route(/.*openstreetmap*/, (route) => route.abort())
       await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
       await page.clock.setSystemTime(getPastDate())
       await page.goto('/')
@@ -46,7 +46,7 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
       try {
         test.setTimeout(0)
         if (process.env.APPLITOOLS_API_KEY) {
-          await eyes.close(false)
+          await eyes.close()
         }
       } catch (e) {
         console.error(e)
@@ -134,7 +134,7 @@ async function setEyesSettings(eyes: Eyes) {
   const time = new Date().toISOString()
   const user = username() || 'unknown-user'
   const batchName = process.env.APPLITOOLS_BATCH_NAME
-    ? `${process.env.APPLITOOLS_BATCH_NAME}-visual-tests`
+    ? `${process.env.APPLITOOLS_BATCH_NAME}visual-tests`
     : `${user}-visual-tests-${time}`
   const batchId = process.env.SHA || `${user}-${time}`
 

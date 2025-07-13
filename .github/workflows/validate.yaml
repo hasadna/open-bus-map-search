@@ -102,13 +102,6 @@ jobs:
         run: docker load -i /tmp/docker-image.tar
       - name: Start application container
         run: docker run -d -p 3000:80 ${{ env.DOCKER_APP_IMAGE_NAME }}:${{ env.DOCKER_APP_IMAGE_TAG }}
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-      - uses: actions/setup-node@v4
-        with:
-          node-version: latest
-          cache: 'npm'
       - name: Validate hash.txt endpoint
         run: |
           response=$(curl -s -w "%{http_code}" -o /tmp/hash.txt http://localhost:3000/hash.txt)
@@ -128,6 +121,13 @@ jobs:
             exit 1
           fi
           echo "hash.txt is valid with MIME type $mime_type and length $content_length characters."
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: latest
+          cache: 'npm'
       - name: Install Dependencies and Playwright
         run: npm ci
       - run: npx playwright install
@@ -159,12 +159,11 @@ jobs:
     runs-on: ubuntu-22.04 # not working whit ubuntu 23+
     needs: [local-tests, build, build-outside-docker]
     steps:
-      - name: Block OpenStreetMap
+      - name: Prepare for Testing
         run: |
           echo "127.0.0.1 openstreetmap.org" | sudo tee -a /etc/hosts
-          echo "127.0.0.1 tile.openstreetmap.org" | sudo tee -a /etc/hosts
-      - name: Set short SHA for PR
-        run: echo "SHORT_SHA=$(echo ${{ github.event.pull_request.head.sha }} | cut -c1-7)" >> $GITHUB_ENV
+          echo "127.0.0.1 tile-a.openstreetmap.fr" | sudo tee -a /etc/hosts
+          echo "SHORT_SHA=$(echo ${{ github.event.pull_request.head.sha }} | cut -c1-7)" >> $GITHUB_ENV
       - name: Download Docker image artifact
         uses: actions/download-artifact@v4
         with:
@@ -195,12 +194,11 @@ jobs:
     runs-on: ubuntu-latest
     needs: [local-tests, build, build-outside-docker]
     steps:
-      - name: Block OpenStreetMap
+      - name: Prepare for Testing
         run: |
           echo "127.0.0.1 openstreetmap.org" | sudo tee -a /etc/hosts
-          echo "127.0.0.1 tile.openstreetmap.org" | sudo tee -a /etc/hosts
-      - name: Set short SHA for PR
-        run: echo "SHORT_SHA=$(echo ${{ github.event.pull_request.head.sha }} | cut -c1-7)" >> $GITHUB_ENV
+          echo "127.0.0.1 tile-a.openstreetmap.fr" | sudo tee -a /etc/hosts
+          echo "SHORT_SHA=$(echo ${{ github.event.pull_request.head.sha }} | cut -c1-7)" >> $GITHUB_ENV
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.sha }}
