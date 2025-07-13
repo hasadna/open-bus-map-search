@@ -102,6 +102,13 @@ jobs:
         run: docker load -i /tmp/docker-image.tar
       - name: Start application container
         run: docker run -d -p 3000:80 ${{ env.DOCKER_APP_IMAGE_NAME }}:${{ env.DOCKER_APP_IMAGE_TAG }}
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: latest
+          cache: 'npm'
       - name: Validate hash.txt endpoint
         run: |
           response=$(curl -s -w "%{http_code}" -o /tmp/hash.txt http://localhost:3000/hash.txt)
@@ -121,13 +128,6 @@ jobs:
             exit 1
           fi
           echo "hash.txt is valid with MIME type $mime_type and length $content_length characters."
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-      - uses: actions/setup-node@v4
-        with:
-          node-version: latest
-          cache: 'npm'
       - name: Install Dependencies and Playwright
         run: npm ci
       - run: npx playwright install

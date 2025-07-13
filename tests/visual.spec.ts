@@ -37,19 +37,16 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
         lang = 'en'
       }
       await loadTranslate(i18next, lang)
+      await page.reload({ waitUntil: 'networkidle' })
       if (process.env.APPLITOOLS_API_KEY) {
         await eyes.open(page, 'OpenBus', testinfo.title)
       }
     })
 
     test.afterEach(async () => {
-      try {
-        test.setTimeout(0)
-        if (process.env.APPLITOOLS_API_KEY) {
-          await eyes.close()
-        }
-      } catch (e) {
-        console.error(e)
+      test.setTimeout(0)
+      if (process.env.APPLITOOLS_API_KEY) {
+        await eyes.close()
       }
     })
 
