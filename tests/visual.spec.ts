@@ -3,29 +3,29 @@ import i18next from 'i18next'
 import username from 'git-username'
 import { getBranch, getPastDate, test, waitForSkeletonsToHide, loadTranslate } from './utils'
 
-const eyes = new Eyes(new VisualGridRunner({ testConcurrency: 20 }), {
-  browsersInfo: [
-    { width: 1280, height: 720, name: 'chrome' },
-    { width: 1280, height: 720, name: 'safari' },
-    { width: 375, height: 667, name: 'chrome' },
-    { iosDeviceInfo: { deviceName: 'iPhone 16' } },
-  ],
-})
-const time = new Date()
-const user = username()
+test.describe('Visual Tests', () => {
+  const time = new Date()
+  const user = username()
+  const eyes = new Eyes(new VisualGridRunner({ testConcurrency: 20 }), {
+    browsersInfo: [
+      { width: 1280, height: 720, name: 'chrome' },
+      { width: 1280, height: 720, name: 'safari' },
+      { width: 375, height: 667, name: 'chrome' },
+      { iosDeviceInfo: { deviceName: 'iPhone 16' } },
+    ],
+  })
 
-for (const mode of ['Light', 'Dark', 'LTR']) {
-  test.describe(`Visual Tests [${mode}]`, () => {
-    test.beforeAll(async () => {
-      await setEyesSettings(eyes, user, time)
-      if (!process.env.APPLITOOLS_API_KEY) {
-        eyes.setIsDisabled(true)
-        console.log('APPLITOOLS_API_KEY is not defined, please ask noamgaash for the key')
-        test.skip() // on forks, the secret is not available
-        return
-      }
-    })
+  test.beforeAll(async () => {
+    await setEyesSettings(eyes, user, time)
+    if (!process.env.APPLITOOLS_API_KEY) {
+      eyes.setIsDisabled(true)
+      console.log('APPLITOOLS_API_KEY is not defined, please ask noamgaash for the key')
+      test.skip() // on forks, the secret is not available
+      return
+    }
+  })
 
+  for (const mode of ['Light', 'Dark', 'LTR']) {
     test.beforeEach(async ({ page }, testinfo) => {
       await page.route(/.*openstreetmap*/, (route) => route.abort())
       await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
@@ -126,8 +126,8 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
       await page.goto('/public-appeal')
       await eyes.check({ ...Target.window(), name: 'public appeal page' })
     })
-  })
-}
+  }
+})
 
 async function setEyesSettings(eyes: Eyes, user: string | null = 'unknown-user', time: Date) {
   const batchName = process.env.APPLITOOLS_BATCH_NAME
