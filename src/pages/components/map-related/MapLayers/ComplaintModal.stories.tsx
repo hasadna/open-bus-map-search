@@ -1,13 +1,17 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState } from 'react'
 import ComplaintModal from './ComplaintModal'
-import { BusToolTipProps } from './BusToolTip'
+import type { BusToolTipProps } from './BusToolTip'
+import type { VehicleLocation } from 'src/model/vehicleLocation'
 
 const meta = {
   title: 'Map/Layers/ComplaintModal',
   component: ComplaintModal,
   parameters: {
     layout: 'centered',
+    eyes: {
+      waitBeforeCapture: 'form', // Wait for the modal to open before capturing
+    },
   },
   argTypes: {
     modalOpen: {
@@ -82,13 +86,12 @@ const defaultArgs: BusToolTipProps = {
       siri_ride__id: 52703935,
       siri_ride__journey_ref: '2023-11-01-56650774',
       siri_ride__scheduled_start_time: '2023-11-01T03:30:00+00:00',
-      siri_ride__vehicle_ref: '23321002',
+      siri_ride__vehicle_ref: 23321002,
       siri_ride__first_vehicle_location_id: 2838509585,
       siri_ride__last_vehicle_location_id: 2838555351,
       siri_ride__duration_minutes: 27,
       siri_ride__gtfs_ride_id: 57365030,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } as any,
+    } as VehicleLocation,
   },
   icon: '/bus-logos/3.svg',
 }
