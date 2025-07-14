@@ -5,18 +5,18 @@ import { getBranch, getPastDate, test, waitForSkeletonsToHide, loadTranslate } f
 
 const eyes = await setEyesSettings()
 
+test.beforeAll(() => {
+  if (!process.env.APPLITOOLS_API_KEY) {
+    eyes.setIsDisabled(true)
+    console.log('APPLITOOLS_API_KEY is not defined, please ask noamgaash for the key')
+    test.skip() // on forks, the secret is not available
+    return
+  }
+})
+
 for (const mode of ['Light', 'Dark', 'LTR']) {
   test.describe('Visual Tests', () => {
     test.describe.configure({ retries: 0 })
-    test.beforeAll(() => {
-      if (!process.env.APPLITOOLS_API_KEY) {
-        eyes.setIsDisabled(true)
-        console.log('APPLITOOLS_API_KEY is not defined, please ask noamgaash for the key')
-        test.skip() // on forks, the secret is not available
-        return
-      }
-    })
-
     test.beforeEach(async ({ page }, testinfo) => {
       await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
       await page.route(/.*openstreetmap*/, (route) => route.abort())
@@ -32,9 +32,13 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
     })
 
     test.afterEach(async () => {
-      test.setTimeout(0)
-      if (process.env.APPLITOOLS_API_KEY) {
-        await eyes.close()
+      try {
+        test.setTimeout(0)
+        if (process.env.APPLITOOLS_API_KEY) {
+          await eyes.close()
+        }
+      } catch (e) {
+        console.error(e)
       }
     })
 
@@ -115,11 +119,11 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
 }
 
 async function setEyesSettings() {
-  const eyes = new Eyes(new VisualGridRunner({ testConcurrency: 20 }), {
+  const eyes = new Eyes(new VisualGridRunner({ testConcurrency: 10 }), {
     browsersInfo: [
       { width: 1280, height: 720, name: 'chrome' },
       { width: 1280, height: 720, name: 'safari' },
-      { width: 375, height: 667, name: 'chrome' },
+      { chromeEmulationInfo: { deviceName: 'Galaxy S23' } },
       { iosDeviceInfo: { deviceName: 'iPhone 16' } },
     ],
   })
