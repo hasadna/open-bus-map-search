@@ -120,7 +120,7 @@
     "eslint-plugin-storybook": "^9.0.13",
     "globals": "^16.1.0",
     "identity-obj-proxy": "^3.0.0",
-    "jest": "^30.0.2",
+    "jest": "^30.0.4",
     "jest-environment-jsdom": "^30.0.2",
     "jest-svg-transformer": "^1.0.0",
     "jsdom": "^26.1.0",
