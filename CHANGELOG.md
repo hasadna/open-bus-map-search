@@ -1,5 +1,31 @@
 # Changelog
 
+## [1.4.0](https://github.com/hasadna/open-bus-map-search/compare/v1.3.0...v1.4.0) (2025-07-14)
+
+
+### Features
+
+* Add more details about a line in the line profile page ([#1104](https://github.com/hasadna/open-bus-map-search/issues/1104)) ([6c03b43](https://github.com/hasadna/open-bus-map-search/commit/6c03b43cdb48472d97f21f9dee1e65509c483c43))
+* add trip search by license plate number ([#1022](https://github.com/hasadna/open-bus-map-search/issues/1022)) ([090223f](https://github.com/hasadna/open-bus-map-search/commit/090223f75921c813a0ddd693939dce0dfd043ade))
+* Added manual button to the bustooltips. ([#1163](https://github.com/hasadna/open-bus-map-search/issues/1163)) ([5d220f2](https://github.com/hasadna/open-bus-map-search/commit/5d220f2e60d8a11f71c54136eb89c8f72266222a))
+* link the bustooltip to the operator profile page ([#1110](https://github.com/hasadna/open-bus-map-search/issues/1110)) ([995fd09](https://github.com/hasadna/open-bus-map-search/commit/995fd09c55491a3bbd6e54f2dc577a3da35e1248))
+* Merge the single-line map with the vehicle map and add a selector for filtering by route or vehicle id. ([#1151](https://github.com/hasadna/open-bus-map-search/issues/1151)) ([34a966b](https://github.com/hasadna/open-bus-map-search/commit/34a966bb564bf9b2824a13e46a093bef00c198bf))
+* operator page ([#1096](https://github.com/hasadna/open-bus-map-search/issues/1096)) ([498c78a](https://github.com/hasadna/open-bus-map-search/commit/498c78a76cb3ce0b66b0365dc22c87d0bef99c14))
+* Save Selected Language in Local Storage ([#1131](https://github.com/hasadna/open-bus-map-search/issues/1131)) ([fb3e276](https://github.com/hasadna/open-bus-map-search/commit/fb3e2765de0f8495b18960aef1bc5aa4c724d0e6))
+* see planned rout even when no actual ride was executed ([#1070](https://github.com/hasadna/open-bus-map-search/issues/1070)) ([01b778f](https://github.com/hasadna/open-bus-map-search/commit/01b778f6870a028e63311d0f71dfa8b6de8265da))
+* Show a warning next to the dashboard page ([#1167](https://github.com/hasadna/open-bus-map-search/issues/1167)) ([67cca5f](https://github.com/hasadna/open-bus-map-search/commit/67cca5f8ac13a4ed02b9ef9e13b3174569fdb71d))
+
+
+### Bug Fixes
+
+* adjust debaunce from 200 miliseconds to 500 miliseconds ([#1142](https://github.com/hasadna/open-bus-map-search/issues/1142)) ([2915a58](https://github.com/hasadna/open-bus-map-search/commit/2915a587d0371f67c7cbafb9bab5eb113b872fa7))
+* Bug Horizontal scroll ([#1074](https://github.com/hasadna/open-bus-map-search/issues/1074)) ([0749d8b](https://github.com/hasadna/open-bus-map-search/commit/0749d8b224066e3b709482b367fcb8e34bdaa9c2))
+* bug report add scroll if the screen to small ([#1089](https://github.com/hasadna/open-bus-map-search/issues/1089)) ([576841c](https://github.com/hasadna/open-bus-map-search/commit/576841c927bb04081cb0752038c8502c665e2411))
+* Calendar displays hebrew month name in english locale [#1040](https://github.com/hasadna/open-bus-map-search/issues/1040) ([#1062](https://github.com/hasadna/open-bus-map-search/issues/1062)) ([8cbb3d4](https://github.com/hasadna/open-bus-map-search/commit/8cbb3d48bcbc72145b950ae9f0274d1338c8bf4d))
+* getAgencyList fallback  ([#1129](https://github.com/hasadna/open-bus-map-search/issues/1129)) ([9e0346c](https://github.com/hasadna/open-bus-map-search/commit/9e0346c4fb1330f77dd19d437f4e50f18bf41c57))
+* remove "Planned Route" label from Map by Vehicle ([#1123](https://github.com/hasadna/open-bus-map-search/issues/1123)) ([eeaa9af](https://github.com/hasadna/open-bus-map-search/commit/eeaa9af2242acbb3821c6ddea1252cbfbc66824f))
+* vehicle number length validation  ([#1159](https://github.com/hasadna/open-bus-map-search/issues/1159)) ([790665f](https://github.com/hasadna/open-bus-map-search/commit/790665f8f104e593dc723befa16fba06b222f272))
+
 ## [1.3.0](https://github.com/hasadna/open-bus-map-search/compare/v1.2.0...v1.3.0) (2025-03-23)
 
 ### Features
