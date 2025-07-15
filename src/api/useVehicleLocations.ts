@@ -4,7 +4,7 @@
  * if some of the interval has already been loaded,
  */
 
-import _ from 'lodash'
+import uniqBy from 'lodash.uniqby'
 import { useEffect, useState } from 'react'
 import { VehicleLocation } from 'src/model/vehicleLocation'
 import dayjs from 'src/dayjs'
@@ -212,9 +212,10 @@ export default function useVehicleLocations({
             })
           } else {
             setLocations((prev) =>
-              _.uniqBy(
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+              uniqBy<VehicleLocation>(
                 [...prev, ...data].sort((a, b) => a.id - b.id),
-                (loc) => loc.id,
+                (loc: VehicleLocation) => loc.id,
               ),
             )
           }
