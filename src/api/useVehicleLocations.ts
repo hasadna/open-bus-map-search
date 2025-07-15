@@ -212,7 +212,6 @@ export default function useVehicleLocations({
             })
           } else {
             setLocations((prev) =>
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-return
               uniqBy<VehicleLocation>(
                 [...prev, ...data].sort((a, b) => a.id - b.id),
                 (loc: VehicleLocation) => loc.id,
