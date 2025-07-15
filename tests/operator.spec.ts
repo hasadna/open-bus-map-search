@@ -1,6 +1,6 @@
-import { expect, test, type Page } from '@playwright/test'
+import { expect, type Page } from '@playwright/test'
 import i18next from 'i18next'
-import { getPastDate, loadTranslate, waitForSkeletonsToHide } from './utils'
+import { getPastDate, loadTranslate, test, urlMatcher, waitForSkeletonsToHide } from './utils'
 import { operatorList } from 'src/pages/operator/data'
 
 const getLabelValue = async (label: string, page: Page) => {
@@ -8,19 +8,16 @@ const getLabelValue = async (label: string, page: Page) => {
   return await row.locator('td').nth(1).textContent()
 }
 
-const selectRandomOperator = async (label: string, page: Page) => {
-  await page.getByRole('combobox', { name: label }).click()
-  const options = page.getByRole('option')
-  const optionsCount = await options.count()
-  const randomIndex = Math.floor(Math.random() * optionsCount)
-  await options.nth(randomIndex).scrollIntoViewIfNeeded()
-  await options.nth(randomIndex).click()
-  return options.nth(randomIndex)
-}
-
 test.describe('Operator Page Tests', () => {
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
     await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
+    advancedRouteFromHAR('tests/HAR/operator.har', {
+      updateContent: 'embed',
+      update: false,
+      notFound: 'abort',
+      url: /stride-api/,
+      matcher: urlMatcher,
+    })
     await loadTranslate(i18next)
     await page.clock.setSystemTime(getPastDate())
     await page.goto('/')
@@ -68,8 +65,9 @@ test.describe('Operator Page Tests', () => {
       ).toBeDisabled()
     })
 
-    await test.step('Select a random operator', async () => {
-      await selectRandomOperator(i18next.t('choose_operator'), page)
+    await test.step('Select operator', async () => {
+      await page.getByRole('combobox', { name: i18next.t('choose_operator') }).click()
+      await page.getByRole('option', { name: 'אגד', exact: true }).click()
     })
 
     await test.step('Validate inputs are enabled after selecting an operator', async () => {
@@ -90,8 +88,9 @@ test.describe('Operator Page Tests', () => {
   })
 
   test('Test operator info card', async ({ page }) => {
-    await test.step('Select a random operator', async () => {
-      await selectRandomOperator(i18next.t('choose_operator'), page)
+    await test.step('Select operator', async () => {
+      await page.getByRole('combobox', { name: i18next.t('choose_operator') }).click()
+      await page.getByRole('option', { name: 'אגד', exact: true }).click()
     })
     await test.step('Validate operator info card details', async () => {
       const id = await getLabelValue(i18next.t('operator.ref'), page)
@@ -122,8 +121,9 @@ test.describe('Operator Page Tests', () => {
   })
 
   test('Test operator gaps card', async ({ page }) => {
-    await test.step('Select a random operator', async () => {
-      await selectRandomOperator(i18next.t('choose_operator'), page)
+    await test.step('Select operator', async () => {
+      await page.getByRole('combobox', { name: i18next.t('choose_operator') }).click()
+      await page.getByRole('option', { name: 'אגד', exact: true }).click()
     })
 
     await test.step('Validate operator gaps', async () => {
@@ -140,8 +140,9 @@ test.describe('Operator Page Tests', () => {
   })
 
   test('Test operator routes card', async ({ page }) => {
-    await test.step('Select a random operator', async () => {
-      await selectRandomOperator(i18next.t('choose_operator'), page)
+    await test.step('Select operator', async () => {
+      await page.getByRole('combobox', { name: i18next.t('choose_operator') }).click()
+      await page.getByRole('option', { name: 'אגד', exact: true }).click()
     })
 
     await test.step('Validate operator routes', async () => {
