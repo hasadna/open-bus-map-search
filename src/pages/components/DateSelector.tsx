@@ -3,7 +3,6 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import dayjs from 'src/dayjs'
 
-
 export type DataSelectorProps = {
   time: dayjs.Dayjs
   minDate?: dayjs.Dayjs
@@ -21,7 +20,7 @@ const getErrorMessageKey = (error?: DateValidationError) => {
       return 'bug_date_invalid_format'
   }
 }
- 
+
 const startOfTime = dayjs('1-1-2023')
 
 export function DateSelector({
