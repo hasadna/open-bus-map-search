@@ -10,7 +10,7 @@ export default defineConfig(({ mode }) => {
   return {
     base: env?.ASSET_URL || '',
     plugins: [
-      react({}),
+      react(),
       ...(env?.VITE_COVERAGE
         ? [
             IstanbulPlugin({
