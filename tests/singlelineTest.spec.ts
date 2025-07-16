@@ -22,39 +22,35 @@ test.describe('Single line page tests', () => {
 
   test('Test single line operator company options are selectable', async () => {
     await singleLinePage.openOperatorSelection()
-    await singleLinePage.verifyOperatorExistsInDropbox('אגד')
+    await singleLinePage.verifyOperatorExistsInDropbox('דן')
   })
 
   test('Test "choose route" dropdown appears after selecting line', async () => {
-    await singleLinePage.selectOperatorFromDropbox('אגד')
-    await singleLinePage.fillLineNumber('1')
+    await singleLinePage.selectOperatorFromDropbox('דן')
+    await singleLinePage.fillLineNumber('67')
     await singleLinePage.verifyRouteSelectionEnable()
   })
 
   test('Test "choose route" dropdown disappears after removing line', async () => {
-    await singleLinePage.selectOperatorFromDropbox('אגד')
-    await singleLinePage.fillLineNumber('1')
+    await singleLinePage.selectOperatorFromDropbox('דן')
+    await singleLinePage.fillLineNumber('67')
     await singleLinePage.verifyRouteSelectionEnable()
     await singleLinePage.closeLineNumber()
     await singleLinePage.verifyRouteSelectionEnable(false)
   })
 
-  test('Test "choose route" options are selectable', async () => {
-    await singleLinePage.selectOperatorFromDropbox('אגד')
-    await singleLinePage.fillLineNumber('1')
-    await singleLinePage.selectRandomRoute()
+  test('Test "choose route" options are selectable', async ({ page }) => {
+    await singleLinePage.selectOperatorFromDropbox('דן')
+    await singleLinePage.fillLineNumber('67')
+    await singleLinePage.verifyRouteSelectionEnable()
+    await page.getByLabel('בחירת מסלול נסיעה (2 אפשרויות)').click()
+    await page.getByRole('option', { name: 'קניון איילון-רמת גן ⟵ איצטדיון וינטר-רמת גן' }).click()
   })
 
   test('Test route appears after select route', async ({ page }) => {
-    await test.step('Navigate to "Map By Line"', async () => {
-      await page.goto('/')
-      await page.getByRole('link', { name: 'מפה לפי קו' }).click()
-    })
-
     await test.step('Fill line info', async () => {
-      await page.getByLabel('חברה מפעילה').click()
-      await page.getByRole('option', { name: 'דן', exact: true }).click()
-      await page.getByPlaceholder('לדוגמה: 17א').fill('67')
+      await singleLinePage.selectOperatorFromDropbox('דן')
+      await singleLinePage.fillLineNumber('67')
       await page.getByLabel('בחירת מסלול נסיעה (2 אפשרויות)').click()
       await page
         .getByRole('option', { name: 'קניון איילון-רמת גן ⟵ איצטדיון וינטר-רמת גן' })
@@ -68,11 +64,6 @@ test.describe('Single line page tests', () => {
   })
 
   test('tooltip appears after clicking on map point in single line map', async ({ page }) => {
-    await test.step('Navigate to "Map By Line"', async () => {
-      await page.goto('/')
-      await page.getByRole('link', { name: 'מפה לפי קו' }).click()
-    })
-
     await test.step('Fill line info', async () => {
       await page.getByLabel('חברה מפעילה').click()
       await page.getByRole('option', { name: 'דן', exact: true }).click()
