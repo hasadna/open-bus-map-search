@@ -82,7 +82,7 @@ test.describe('Single line page tests', () => {
         .getByRole('option', { name: 'קניון איילון-רמת גן ⟵ איצטדיון וינטר-רמת גן' })
         .click()
       await page.getByLabel('בחירת שעת התחלה').click()
-      await page.getByRole('option', { name: ':58' }).click()
+      await page.getByRole('option', { name: '05:45' }).click()
     })
 
     await test.step('Click on bus button', async () => {
@@ -122,7 +122,20 @@ test.describe('Single line page tests', () => {
   })
 })
 
-test('verify API call to gtfs_agencies/list - "Map by line"', async ({ page }) => {
+test('verify API call to gtfs_agencies/list - "Map by line"', async ({
+  page,
+  advancedRouteFromHAR,
+}) => {
+  await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
+  await page.clock.setSystemTime(getPastDate())
+  advancedRouteFromHAR('tests/HAR/singleline.har', {
+    updateContent: 'embed',
+    update: false,
+    notFound: 'abort',
+    url: /stride-api/,
+    matcher: urlMatcher,
+  })
+
   let apiCallMade = false
   page.on('request', (request) => {
     if (request.url().includes('gtfs_agencies/list')) {
@@ -136,7 +149,16 @@ test('verify API call to gtfs_agencies/list - "Map by line"', async ({ page }) =
   expect(apiCallMade).toBeTruthy()
 })
 
-test('Verify date_from parameter from "Map by line"', async ({ page }) => {
+test('Verify date_from parameter from "Map by line"', async ({ page, advancedRouteFromHAR }) => {
+  await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
+  advancedRouteFromHAR('tests/HAR/singleline.har', {
+    updateContent: 'embed',
+    update: false,
+    notFound: 'abort',
+    url: /stride-api/,
+    matcher: urlMatcher,
+  })
+
   const apiRequest = page.waitForRequest((request) => request.url().includes('gtfs_agencies/list'))
 
   await page.goto('/')
