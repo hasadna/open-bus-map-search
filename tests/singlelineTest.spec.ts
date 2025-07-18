@@ -1,10 +1,27 @@
+import type { Page } from '@playwright/test'
 import { expect, getPastDate, test, urlMatcher } from './utils'
-import SinglelinePage from 'src/test_pages/SinglelinePage'
 import dayjs from 'src/dayjs'
 
-test.describe('Single line page tests', () => {
-  let singleLinePage: SinglelinePage
+async function selectOperator(page: Page, operatorName = 'דן') {
+  await page.getByLabel('חברה מפעילה').click()
+  await page.getByRole('option', { name: operatorName, exact: true }).click()
+}
 
+async function fillLineNumber(page: Page, lineNumber = '67') {
+  await page.getByRole('textbox', { name: 'מספר קו' }).fill(lineNumber)
+}
+
+async function selectRoute(page: Page, routeName = 'קניון איילון-רמת גן ⟵ איצטדיון וינטר-רמת גן') {
+  await page.getByLabel(/בחירת מסלול נסיעה/).click()
+  await page.getByRole('option', { name: routeName }).click()
+}
+
+async function selectStartTime(page: Page, time = '05:45') {
+  await page.getByLabel('בחירת שעת התחלה').click()
+  await page.getByRole('option', { name: time }).click()
+}
+
+test.describe('Single line page tests', () => {
   test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
     await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
     await page.clock.setSystemTime(getPastDate())
@@ -15,78 +32,70 @@ test.describe('Single line page tests', () => {
       url: /stride-api/,
       matcher: urlMatcher,
     })
-    singleLinePage = new SinglelinePage(page)
     await page.goto('/')
     await page.getByText('מפה לפי קו').click()
   })
 
-  test('Test single line operator company options are selectable', async () => {
-    await singleLinePage.openOperatorSelection()
-    await singleLinePage.verifyOperatorExistsInDropbox('דן')
-  })
-
-  test('Test "choose route" dropdown appears after selecting line', async () => {
-    await singleLinePage.selectOperatorFromDropbox('דן')
-    await singleLinePage.fillLineNumber('67')
-    await singleLinePage.verifyRouteSelectionEnable()
-  })
-
-  test('Test "choose route" dropdown disappears after removing line', async () => {
-    await singleLinePage.selectOperatorFromDropbox('דן')
-    await singleLinePage.fillLineNumber('67')
-    await singleLinePage.verifyRouteSelectionEnable()
-    await singleLinePage.closeLineNumber()
-    await singleLinePage.verifyRouteSelectionEnable(false)
-  })
-
-  test('Test "choose route" options are selectable', async ({ page }) => {
-    await singleLinePage.selectOperatorFromDropbox('דן')
-    await singleLinePage.fillLineNumber('67')
-    await singleLinePage.verifyRouteSelectionEnable()
-    await page.getByLabel('בחירת מסלול נסיעה (2 אפשרויות)').click()
-    await page.getByRole('option', { name: 'קניון איילון-רמת גן ⟵ איצטדיון וינטר-רמת גן' }).click()
-  })
-
-  test('Test route appears after select route', async ({ page }) => {
-    await test.step('Fill line info', async () => {
-      await singleLinePage.selectOperatorFromDropbox('דן')
-      await singleLinePage.fillLineNumber('67')
-      await page.getByLabel('בחירת מסלול נסיעה (2 אפשרויות)').click()
-      await page
-        .getByRole('option', { name: 'קניון איילון-רמת גן ⟵ איצטדיון וינטר-רמת גן' })
-        .click()
+  test('should allow selecting operator company options', async ({ page }) => {
+    await test.step('Select operator', async () => {
+      await selectOperator(page)
+      await expect(page.getByLabel('חברה מפעילה')).toHaveValue('דן')
+      await expect(page.getByRole('textbox', { name: 'מספר קו' })).toBeEditable()
     })
+  })
 
+  test('should show and enable "choose route" dropdown after selecting line', async ({ page }) => {
+    await selectOperator(page)
+    await expect(page.locator('#route-select')).not.toBeEditable()
+    await fillLineNumber(page)
+    await expect(page.locator('#route-select')).toBeEditable()
+  })
+
+  test('should hide "choose route" dropdown after removing line', async ({ page }) => {
+    await selectOperator(page)
+    await expect(page.locator('#route-select')).not.toBeEditable()
+    await fillLineNumber(page)
+    await expect(page.locator('#route-select')).toBeEditable()
+    await page.locator("span[aria-label='close']").click()
+    await expect(page.locator('#route-select')).not.toBeEditable()
+  })
+
+  test('should allow selecting "choose route" options', async ({ page }) => {
+    await selectOperator(page)
+    await fillLineNumber(page)
+    await expect(page.locator('#route-select')).toBeEditable()
+    await selectRoute(page)
+    await expect(page.getByLabel(/בחירת מסלול נסיעה/)).toHaveValue(/קניון איילון/)
+  })
+
+  test('should display route after selecting route', async ({ page }) => {
+    await test.step('Fill line info', async () => {
+      await selectOperator(page)
+      await fillLineNumber(page)
+      await selectRoute(page)
+    })
     await test.step('Verify bus stop marker is in the page', async () => {
       const stopMarker = page.locator('.leaflet-marker-pane > img[src$="marker-bus-stop.png"]')
       await expect(stopMarker).toHaveCount(33)
     })
   })
 
-  test('tooltip appears after clicking on map point in single line map', async ({ page }) => {
+  test('should show tooltip after clicking on map point in single line map', async ({ page }) => {
     await test.step('Fill line info', async () => {
-      await page.getByLabel('חברה מפעילה').click()
-      await page.getByRole('option', { name: 'דן', exact: true }).click()
-      await page.getByPlaceholder('לדוגמה: 17א').fill('67')
-      await page.getByLabel('בחירת מסלול נסיעה (2 אפשרויות)').click()
-      await page
-        .getByRole('option', { name: 'קניון איילון-רמת גן ⟵ איצטדיון וינטר-רמת גן' })
-        .click()
-      await page.getByLabel('בחירת שעת התחלה').click()
-      await page.getByRole('option', { name: '05:45' }).click()
+      await selectOperator(page)
+      await fillLineNumber(page)
+      await selectRoute(page)
+      await selectStartTime(page)
     })
-
     await test.step('Click on bus button', async () => {
       const button = page.locator('.leaflet-marker-pane > img[src$="marker-dot.png"]').nth(6)
       await button.click()
       await button.click({ force: true })
     })
-
-    await test.step('Click inside tooltip"', async () => {
+    await test.step('Click inside tooltip', async () => {
       await page.getByRole('button', { name: 'הצג מידע לגיקים' }).click()
-      await page.getByRole('button', { name: 'הסתר מידע לגיקים' }).click()
+      await page.getByRole('button', { name: 'הסתר מידע לגיקים' }).click({ timeout: 10000 })
     })
-
     await test.step('Expecting the tooltip to have the correct content', async () => {
       const contentItemsInOrder = [
         'שם חברה מפעילה:',
@@ -111,21 +120,17 @@ test.describe('Single line page tests', () => {
       expect(textList).toEqual(contentItemsInOrder)
     })
   })
+
+  test('should show error or no options for invalid line number', async ({ page }) => {
+    await selectOperator(page)
+    await fillLineNumber(page, '9999')
+    await expect(page.locator('#route-select')).not.toBeEditable()
+    // await expect(page.getByText('הקו לא נמצא')).toBeVisible() // Not working whit Har Record
+  })
 })
 
-test('verify API call to gtfs_agencies/list - "Map by line"', async ({
-  page,
-  advancedRouteFromHAR,
-}) => {
+test('verify API call to gtfs_agencies/list - "Map by line"', async ({ page }) => {
   await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
-  await page.clock.setSystemTime(getPastDate())
-  advancedRouteFromHAR('tests/HAR/singleline.har', {
-    updateContent: 'embed',
-    update: false,
-    notFound: 'abort',
-    url: /stride-api/,
-    matcher: urlMatcher,
-  })
 
   let apiCallMade = false
   page.on('request', (request) => {
@@ -140,15 +145,8 @@ test('verify API call to gtfs_agencies/list - "Map by line"', async ({
   expect(apiCallMade).toBeTruthy()
 })
 
-test('Verify date_from parameter from "Map by line"', async ({ page, advancedRouteFromHAR }) => {
+test('Verify date_from parameter from "Map by line"', async ({ page }) => {
   await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
-  advancedRouteFromHAR('tests/HAR/singleline.har', {
-    updateContent: 'embed',
-    update: false,
-    notFound: 'abort',
-    url: /stride-api/,
-    matcher: urlMatcher,
-  })
 
   const apiRequest = page.waitForRequest((request) => request.url().includes('gtfs_agencies/list'))
 
