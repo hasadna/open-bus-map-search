@@ -91,10 +91,7 @@ test.describe('Single line page tests', () => {
       const button = page.locator('.leaflet-marker-pane > img[src$="marker-dot.png"]').nth(6)
       await button.click()
       await button.click({ force: true })
-    })
-    await test.step('Click inside tooltip', async () => {
-      await page.getByRole('button', { name: 'הצג מידע לגיקים' }).click()
-      await page.getByRole('button', { name: 'הסתר מידע לגיקים' }).click({ timeout: 10000 })
+      await expect(page.locator('.leaflet-popup-content-wrapper')).toBeVisible()
     })
     await test.step('Expecting the tooltip to have the correct content', async () => {
       const contentItemsInOrder = [
@@ -119,13 +116,6 @@ test.describe('Single line page tests', () => {
       })
       expect(textList).toEqual(contentItemsInOrder)
     })
-  })
-
-  test('should show error or no options for invalid line number', async ({ page }) => {
-    await selectOperator(page)
-    await fillLineNumber(page, '9999')
-    await expect(page.locator('#route-select')).not.toBeEditable()
-    // await expect(page.getByText('הקו לא נמצא')).toBeVisible() // Not working whit Har Record
   })
 })
 

@@ -91,17 +91,4 @@ export const loadTranslate = async (i18next: i18n, lng: string = 'he') => {
   })
 }
 
-export const harRecording = (name: string = 'network') => {
-  const __filename = fileURLToPath(import.meta.url)
-  const __dirname = path.dirname(__filename)
-  test.use({
-    contextOptions: {
-      recordHar: {
-        path: path.join(__dirname, `${name}.har`),
-        content: 'embed',
-      },
-    },
-  })
-}
-
 export const expect = test.expect
