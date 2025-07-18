@@ -10,8 +10,8 @@ permissions:
   contents: read
 
 jobs:
-  docker-build:
-    name: Docker Build Test
+  docker-test:
+    name: Docker Test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
