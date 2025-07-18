@@ -32,7 +32,8 @@ export default [
       'public',
       '.nx',
       '**/*.js',
-      'applitools.config.cjs',
+      '*.js',
+      '*.cjs',
     ],
   },
   {
