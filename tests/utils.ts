@@ -1,7 +1,6 @@
 import * as fs from 'fs'
 import * as path from 'path'
 import * as crypto from 'crypto'
-import { fileURLToPath } from 'url'
 import { exec } from 'child_process'
 import { Matcher, test as baseTest, customMatcher } from 'playwright-advanced-har'
 import { BrowserContext, Page } from '@playwright/test'
