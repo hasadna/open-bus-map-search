@@ -27,7 +27,10 @@ export interface ThemeContextInterface {
 const ThemeContext = createContext<ThemeContextInterface>({} as ThemeContextInterface)
 
 export const ThemeProvider = ({ children }: PropsWithChildren) => {
-  const [isDarkTheme, setIsDarkTheme] = useLocalStorage<boolean>('isDarkTheme', false)
+  const [isDarkTheme, setIsDarkTheme] = useLocalStorage<boolean>(
+    'isDarkTheme',
+    window.matchMedia('(prefers-color-scheme: dark)').matches,
+  )
   const [language, setLanguage] = useLocalStorage<string>('language', 'he')
   const { i18n } = useTranslation()
 
@@ -40,31 +43,24 @@ export const ThemeProvider = ({ children }: PropsWithChildren) => {
   }, [language, i18n, setLanguage])
 
   const contextValue = useMemo(
-    () => ({
-      isDarkTheme,
-      toggleLanguage,
-      toggleTheme,
-    }),
+    () => ({ isDarkTheme, toggleLanguage, toggleTheme }),
     [isDarkTheme, toggleLanguage, toggleTheme],
   )
 
   useEffect(() => {
-    const forceLang = language === 'en' ? 'en' : 'he'
-    if (i18n.language !== forceLang) i18n.changeLanguage(forceLang)
-    if (language !== forceLang) setLanguage(forceLang)
-  }, [language, i18n, setLanguage])
+    if (!language) return
+    i18n.changeLanguage(language)
+    document.title = i18n.t('website_name')
+    document.documentElement.dir = i18n.dir()
+    document.documentElement.lang = language
+    dayjs.locale(language)
+  }, [language, i18n])
 
   const muiTheme = useMemo(() => {
     const isEnglish = language === 'en'
     const direction = isEnglish ? 'ltr' : 'rtl'
-    document.documentElement.dir = direction
-    document.documentElement.lang = language || 'he'
-    dayjs.locale(language)
     return createTheme(
-      {
-        direction,
-        palette: { mode: isDarkTheme ? 'dark' : 'light' },
-      },
+      { direction, palette: { mode: isDarkTheme ? 'dark' : 'light' } },
       isEnglish ? enUS : heIL,
       isEnglish ? dateEnUS : dateHeIL,
     )
