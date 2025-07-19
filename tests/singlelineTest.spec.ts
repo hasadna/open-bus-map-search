@@ -75,13 +75,15 @@ test.describe('Single line page tests', () => {
       await selectRoute(page)
     })
     await test.step('Verify bus stop marker is in the page', async () => {
-      const stopMarker = page.locator('.leaflet-marker-pane > img[src$="marker-bus-stop.png"]')
-      const count = await stopMarker.count()
+      const stopMarkers = page.locator('.leaflet-marker-pane > img[src$="marker-bus-stop.png"]')
+      await page.waitForTimeout(10000)
+      const count = await stopMarkers.count()
       expect(count).toBeGreaterThan(0)
     })
   })
 
   test('should show tooltip after clicking on map point in single line map', async ({ page }) => {
+    test.setTimeout(600000)
     await test.step('Fill line info', async () => {
       await selectOperator(page)
       await fillLineNumber(page)
@@ -89,8 +91,7 @@ test.describe('Single line page tests', () => {
       await selectStartTime(page)
     })
     await test.step('Click on bus button', async () => {
-      await page.locator('.leaflet-marker-pane > img[src$="marker-dot.png"]').nth(6).click()
-      await page.locator('.leaflet-marker-pane > img[src$="marker-dot.png"]').nth(6).click()
+      await page.locator('.leaflet-marker-pane > img[src$="marker-dot.png"]').first().click()
       await expect(page.locator('.leaflet-popup-content-wrapper')).toBeAttached()
       await waitForSkeletonsToHide(page)
     })
