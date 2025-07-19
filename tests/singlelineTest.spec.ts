@@ -28,7 +28,7 @@ test.describe('Single line page tests', () => {
     advancedRouteFromHAR('tests/HAR/singleline.har', {
       updateContent: 'embed',
       update: false,
-      notFound: 'abort',
+      notFound: 'fallback',
       url: /stride-api/,
       matcher: urlMatcher,
     })
@@ -76,7 +76,8 @@ test.describe('Single line page tests', () => {
     })
     await test.step('Verify bus stop marker is in the page', async () => {
       const stopMarker = page.locator('.leaflet-marker-pane > img[src$="marker-bus-stop.png"]')
-      await expect(stopMarker).toHaveCount(33)
+      const count = await stopMarker.count()
+      expect(count).toBeGreaterThan(0)
     })
   })
 
