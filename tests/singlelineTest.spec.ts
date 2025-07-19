@@ -1,5 +1,5 @@
 import type { Page } from '@playwright/test'
-import { expect, getPastDate, test, urlMatcher } from './utils'
+import { expect, getPastDate, test } from './utils'
 import dayjs from 'src/dayjs'
 
 async function selectOperator(page: Page, operatorName = 'דן') {
@@ -22,7 +22,7 @@ async function selectStartTime(page: Page, time = '05:45') {
 }
 
 test.describe('Single line page tests', () => {
-  test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
+  test.beforeEach(async ({ page }) => {
     await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
     await page.clock.setSystemTime(getPastDate())
     // advancedRouteFromHAR('tests/HAR/singleline.har', {
