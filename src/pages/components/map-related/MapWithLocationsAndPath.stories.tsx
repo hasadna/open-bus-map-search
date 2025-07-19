@@ -7,7 +7,7 @@ const meta = {
   title: 'Map/MapWithLocationsAndPath',
   parameters: {
     eyes: {
-      waitBeforeCapture: 1500,
+      waitBeforeCapture: 2000,
     },
   },
   args: {

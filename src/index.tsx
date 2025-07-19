@@ -5,10 +5,10 @@ import ReactGA from 'react-ga4'
 import './locale/allTranslations'
 import { QueryClient } from '@tanstack/react-query'
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client'
-import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister'
+import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister'
 import App from './App'
 
-const persister = createSyncStoragePersister({
+const persister = createAsyncStoragePersister({
   storage: window.localStorage,
 })
 

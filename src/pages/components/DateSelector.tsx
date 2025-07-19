@@ -21,6 +21,8 @@ const getErrorMessageKey = (error?: DateValidationError) => {
   }
 }
 
+const startOfTime = dayjs('1-1-2023')
+
 export function DateSelector({
   time,
   onChange,
@@ -36,11 +38,11 @@ export function DateSelector({
   return (
     <DatePicker
       value={time}
-      onChange={(ts) => onChange(ts)}
+      onChange={onChange}
       format="DD/MM/YYYY"
       label={customLabel || t('choose_date')}
       disableFuture
-      minDate={minDate}
+      minDate={minDate || startOfTime}
       disabled={disabled}
       onError={(err) => setError(err)}
       slotProps={{
@@ -48,7 +50,6 @@ export function DateSelector({
           sx: {
             '.MuiPickersCalendarHeader-labelContainer': {
               margin: '0',
-              marginInlineEnd: 'auto',
             },
           },
         },
