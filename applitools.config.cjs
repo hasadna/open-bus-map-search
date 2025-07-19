@@ -3,14 +3,15 @@ module.exports = {
 
   waitBeforeCapture: async () => {
     const startTime = Date.now()
-    const timeout = 3 * 60 * 1000
+    const timeout = 15 * 1000
     while (
       document.querySelector('.ant-skeleton-content') ||
       document.querySelector('.ant-skeleton')
     ) {
-      const duration = Date.now() - startTime
       await new Promise((resolve) => setTimeout(resolve, 100))
-      if (duration > timeout) {
+      const duration = Date.now() - startTime
+      const isTimeout = duration > timeout
+      if (isTimeout) {
         console.warn('Waited too long for skeletons to disappear.')
         throw new Error('Skeletons did not disappear in time on ' + window.location.href)
       }

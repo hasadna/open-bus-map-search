@@ -88,9 +88,8 @@ test.describe('Single line page tests', () => {
       await selectStartTime(page)
     })
     await test.step('Click on bus button', async () => {
-      const button = page.locator('.leaflet-marker-pane > img[src$="marker-dot.png"]').nth(6)
-      await button.click()
-      await button.click({ force: true })
+      await page.locator('.leaflet-marker-pane > img[src$="marker-dot.png"]').nth(6).click()
+      await page.locator('.leaflet-marker-pane > img[src$="marker-dot.png"]').nth(6).click()
       await expect(page.locator('.leaflet-popup-content-wrapper')).toBeAttached()
       await waitForSkeletonsToHide(page)
     })
