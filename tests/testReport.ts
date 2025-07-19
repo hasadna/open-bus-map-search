@@ -60,7 +60,7 @@ class TestReporter implements Reporter {
     const filePath = test.location ? test.location.file : 'unknown file'
     const retryInfo = isRetry ? `(RETRY #${result.retry})` : ''
     console.log(
-      `${statusIcon} Test ${this.executedCount} of ${this.totalCount}: ${test.title} - ${result.status} ${retryInfo} (${duration}) [${filePath}]`,
+      `${statusIcon} Test ${this.executedCount} of ${this.totalCount}: ${test.title} - ${result.status} (${duration}) [${filePath}] ${retryInfo}`,
     )
   }
 
