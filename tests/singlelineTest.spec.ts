@@ -94,12 +94,11 @@ test.describe('Single line page tests', () => {
       await page.locator('.leaflet-container').click()
       await page.locator('.leaflet-marker-pane > img[src$="marker-dot.png"]').nth(6).click()
       await page.waitForTimeout(500)
-
       await expect(page.locator('.leaflet-popup-content-wrapper')).toBeAttached()
       await waitForSkeletonsToHide(page)
     })
-    await test.step('Expecting the tooltip to have the correct content', async () => {
-      const contentItemsInOrder = [
+    await test.step('Verify tooltip content and order', async () => {
+      const expectedLabels = [
         'שם חברה מפעילה:',
         'מוצא:',
         'יעד:',
@@ -109,17 +108,22 @@ test.describe('Single line page tests', () => {
         'כיוון נסיעה:',
         'נ.צ.:',
       ]
-      const textList = await page.evaluate(() => {
-        return Array.from(document.querySelectorAll('div.content ul li'))
+
+      await expect(page.locator('div.content ul')).toBeVisible()
+
+      const actualLabels = await page.$$eval('div.content ul li', (items) =>
+        items
           .map((li) =>
             Array.from(li.childNodes)
               .filter((node) => node.nodeType === Node.TEXT_NODE)
-              .map((node) => node.textContent?.trim() || ''),
+              .map((node) => node.textContent?.trim() || '')
+              .join('')
+              .trim(),
           )
-          .flat()
-          .filter((value) => value !== '')
-      })
-      expect(textList).toEqual(contentItemsInOrder)
+          .filter(Boolean),
+      )
+
+      expect(actualLabels).toEqual(expectedLabels)
     })
   })
 
