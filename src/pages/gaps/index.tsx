@@ -42,6 +42,10 @@ const GapsPage = () => {
   }
 
   function formatStatus(all: GapsList, gap: Gap) {
+    const gapTime = gap.gtfsTime || gap.siriTime
+    if (gapTime && gapTime.isAfter(dayjs())) {
+      return t('ride_in_future')
+    }
     if (!gap.siriTime) {
       return t('ride_missing')
     }
@@ -56,9 +60,16 @@ const GapsPage = () => {
   }
 
   function getGapsPercentage(gaps: GapsList | undefined): number | undefined {
-    const ridesInTime = gaps?.filter((gap) => formatStatus([], gap) === t('ride_as_planned'))
-    if (!gaps || !ridesInTime) return undefined
-    const ridesInTimePercentage = (ridesInTime?.length / gaps?.length) * 100
+    if (!gaps) return undefined
+    const relevantGaps = gaps.filter((gap) => {
+      const gapTime = gap.gtfsTime || gap.siriTime
+      return gapTime && gapTime.isBefore(dayjs())
+    })
+    if (relevantGaps.length === 0) return undefined
+    const ridesInTime = relevantGaps.filter(
+      (gap) => formatStatus(gaps, gap) === t('ride_as_planned'),
+    )
+    const ridesInTimePercentage = (ridesInTime.length / relevantGaps.length) * 100
     const allRidesPercentage = 100
     return allRidesPercentage - ridesInTimePercentage
   }
@@ -200,6 +211,7 @@ const GapsPage = () => {
           {gaps
             ?.filter((gap) => gap.gtfsTime || gap.siriTime)
             .filter((gap) => !onlyGapped || !gap.gtfsTime || !gap.siriTime)
+            .filter((gap) => !onlyGapped || !(gap.gtfsTime || gap.siriTime)?.isAfter(dayjs()))
             .sort((t1, t2) => {
               return Number((t1?.siriTime || t1?.gtfsTime)?.diff(t2?.siriTime || t2?.gtfsTime))
             })
