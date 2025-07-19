@@ -25,13 +25,13 @@ test.describe('Single line page tests', () => {
   test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
     await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
     await page.clock.setSystemTime(getPastDate())
-    advancedRouteFromHAR('tests/HAR/singleline.har', {
-      updateContent: 'embed',
-      update: false,
-      notFound: 'fallback',
-      url: /stride-api/,
-      matcher: urlMatcher,
-    })
+    // advancedRouteFromHAR('tests/HAR/singleline.har', {
+    //   updateContent: 'embed',
+    //   update: false,
+    //   notFound: 'abort',
+    //   url: /stride-api/,
+    //   matcher: urlMatcher,
+    // })
     await page.goto('/')
     await page.getByText('מפה לפי קו').click()
   })
