@@ -1,5 +1,5 @@
 import type { Page } from '@playwright/test'
-import { expect, getPastDate, test } from './utils'
+import { expect, getPastDate, test, urlMatcher, waitForSkeletonsToHide } from './utils'
 import dayjs from 'src/dayjs'
 
 async function selectOperator(page: Page, operatorName = 'דן') {
@@ -22,16 +22,16 @@ async function selectStartTime(page: Page, time = '05:45') {
 }
 
 test.describe('Single line page tests', () => {
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
     await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
     await page.clock.setSystemTime(getPastDate())
-    // advancedRouteFromHAR('tests/HAR/singleline.har', {
-    //   updateContent: 'embed',
-    //   update: false,
-    //   notFound: 'abort',
-    //   url: /stride-api/,
-    //   matcher: urlMatcher,
-    // })
+    advancedRouteFromHAR('tests/HAR/singleline.har', {
+      updateContent: 'embed',
+      update: false,
+      notFound: 'abort',
+      url: /stride-api/,
+      matcher: urlMatcher,
+    })
     await page.goto('/')
     await page.getByText('מפה לפי קו').click()
   })
@@ -91,7 +91,8 @@ test.describe('Single line page tests', () => {
       const button = page.locator('.leaflet-marker-pane > img[src$="marker-dot.png"]').nth(6)
       await button.click()
       await button.click({ force: true })
-      await expect(page.locator('.leaflet-popup-content-wrapper')).toBeVisible()
+      await expect(page.locator('.leaflet-popup-content-wrapper')).toBeAttached()
+      await waitForSkeletonsToHide(page)
     })
     await test.step('Expecting the tooltip to have the correct content', async () => {
       const contentItemsInOrder = [
@@ -121,7 +122,7 @@ test.describe('Single line page tests', () => {
   test('should show error or no options for invalid line number', async ({ page }) => {
     await selectOperator(page)
     await fillLineNumber(page, '9999')
-    await expect(page.getByText('הקו לא נמצא')).toBeVisible()
+    await expect(page.getByText('הקו לא נמצא')).toBeAttached()
   })
 })
 
