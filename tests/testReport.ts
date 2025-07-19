@@ -26,11 +26,13 @@ class TestReporter implements Reporter {
     this.failedCount = 0
     this.skippedCount = 0
     this.timedOutCount = 0
-    console.log(`🔎  Starting test run: ${this.totalCount} tests found`)
+    console.log(`🔎 Starting test run: ${this.totalCount} tests found`)
   }
 
   onTestEnd(test: TestCase, result: TestResult) {
     let statusIcon = '⚠️'
+    const isRetry = typeof result.retry === 'number' && result.retry > 0
+
     switch (result.status) {
       case 'passed':
         statusIcon = '✅'
@@ -51,20 +53,23 @@ class TestReporter implements Reporter {
       default:
         break
     }
-    this.executedCount++
+    if (!isRetry) {
+      this.executedCount++
+    }
     const duration = result.duration ? `${(result.duration / 1000).toFixed(2)}s` : 'N/A'
     const filePath = test.location ? test.location.file : 'unknown file'
+    const retryInfo = isRetry ? `(RETRY #${result.retry})` : ''
     console.log(
-      `${statusIcon}  Test ${this.executedCount} of ${this.totalCount}: ${test.title} - ${result.status} (${duration}) [${filePath}]`,
+      `${statusIcon} Test ${this.executedCount} of ${this.totalCount}: ${test.title} - ${result.status} ${retryInfo} (${duration}) [${filePath}]`,
     )
   }
 
   onEnd(result: FullResult) {
     console.log(
-      `📝  Test run completed ${result.status}: ${this.executedCount} tests executed in ${(result.duration / 1000 / 60).toFixed(2)} min`,
+      `📝 Test run completed ${result.status}: ${this.executedCount} tests executed in ${(result.duration / 1000 / 60).toFixed(2)} min`,
     )
     console.log(
-      `🧾  Summary: ✅  Passed: ${this.passedCount}, ❌  Failed: ${this.failedCount}, ⏭️  Skipped: ${this.skippedCount}, ⏰  Timed Out: ${this.timedOutCount}`,
+      `🧾 Summary: ✅ Passed: ${this.passedCount}, ❌ Failed: ${this.failedCount}, ⏭️ Skipped: ${this.skippedCount}, ⏰ Timed Out: ${this.timedOutCount}`,
     )
     if (result.status === 'failed') {
       console.error('Some tests failed. Please check the logs above for details.')
