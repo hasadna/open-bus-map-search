@@ -1,10 +1,24 @@
 name: CD
+
 on:
   push:
-    branches:
-      - main
+    branches: [main]
+
+permissions:
+  contents: write
+  packages: write
+  actions: none
+  checks: none
+  deployments: none
+  issues: none
+  pull-requests: none
+  repository-projects: none
+  security-events: none
+  statuses: none
+
 jobs:
   cd:
+    name: CD Deploy
     environment: production
     runs-on: ubuntu-latest
     steps:

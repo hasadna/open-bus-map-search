@@ -1,14 +1,19 @@
 name: Build
 on: pull_request
 
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   build:
+    name: Build Application
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: latest
           cache: 'npm'
       - name: Get Commit Hash and generate Version File
         run: echo "${{ github.event.pull_request.head.sha }}" >> public/hash.txt
@@ -23,12 +28,13 @@ jobs:
           path: dist
 
   build-storybook:
+    name: Build Storybook
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: latest
           cache: 'npm'
       - name: Run install
         run: npm ci

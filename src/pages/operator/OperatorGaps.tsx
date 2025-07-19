@@ -37,59 +37,61 @@ export const OperatorGaps = ({
     ]
   }, [operatorId, timestamp, groupByOperatorData, i18n.language])
 
-  if (isLoading) {
-    return (
-      <Widget>
-        <Skeleton active paragraph={{ rows: 4 }} />
-      </Widget>
-    )
-  }
+  const prefersReducedMotion = useMemo(() => {
+    return window?.matchMedia('(prefers-reduced-motion: reduce)').matches
+  }, [])
 
   return (
     <Widget>
-      <Stack flexDirection="row" justifyContent="space-between">
-        <div>
-          <Typography
-            sx={{
-              margin: '17.5px 0 0.5rem ',
-              fontWeight: 'bold',
-              fontSize: 24,
-              lineHeight: '35px',
-            }}
-            variant="h2">
-            {t('operator.statistics')} {t(`operator.time_range.${timeRange}`)}
-          </Typography>
-          <InfoTable>
-            {data.map((d) => (
-              <InfoItem key={d.name} label={d.name} value={d.value} />
-            ))}
-          </InfoTable>
-        </div>
-        <PieChart width={160} height={160}>
-          <Pie
-            data={data.filter((data) => data?.color)}
-            innerRadius={65}
-            outerRadius={80}
-            paddingAngle={3}
-            dataKey="value">
-            {data
-              .filter((data) => data?.color)
-              .map((entry) => (
-                <Cell key={entry.name} fill={entry.color} />
+      <Typography
+        sx={{
+          margin: '17.5px 0 0.5rem ',
+          fontWeight: 'bold',
+          fontSize: 24,
+          lineHeight: '35px',
+        }}
+        variant="h2">
+        {t('operator.statistics')} {t(`operator.time_range.${timeRange}`)}
+      </Typography>
+      {isLoading ? (
+        <Skeleton active paragraph={{ rows: 2 }} />
+      ) : (
+        <Stack flexDirection="row" justifyContent="space-between">
+          <div>
+            <InfoTable>
+              {data.map((d) => (
+                <InfoItem key={d.name} label={d.name} value={d.value} />
               ))}
-          </Pie>
-          <text
-            x="50%"
-            y="50%"
-            textAnchor="middle"
-            dominantBaseline="middle"
-            fill="currentColor"
-            fontSize="32"
-            fontWeight={500}>
-            {calculatePercentage(data[1]?.value, data[2]?.value)}
-          </text>
-        </PieChart>
-      </Stack>
+            </InfoTable>
+          </div>
+
+          <PieChart width={160} height={160}>
+            <Pie
+              isAnimationActive={!prefersReducedMotion}
+              data={data.filter((data) => data?.color)}
+              innerRadius={65}
+              outerRadius={80}
+              paddingAngle={3}
+              dataKey="value">
+              {data
+                .filter((data) => data?.color)
+                .map((entry) => (
+                  <Cell key={entry.name} fill={entry.color} />
+                ))}
+            </Pie>
+            <text
+              x="50%"
+              y="50%"
+              textAnchor="middle"
+              dominantBaseline="middle"
+              fill="currentColor"
+              fontSize="32"
+              fontWeight={500}>
+              {calculatePercentage(data[1]?.value, data[2]?.value)}
+            </text>
+          </PieChart>
+        </Stack>
+      )}
     </Widget>
   )
 }
