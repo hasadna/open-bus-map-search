@@ -29,7 +29,6 @@
     "setupTests.ts",
     "playwright.config.ts",
     ".storybook/*",
-    "jest.config.ts",
-    "applitools.config.cjs"
+    "*.cjs"
   ]
 }
