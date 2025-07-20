@@ -111,15 +111,15 @@ function StackedResearchInputs({
   const { t } = useTranslation()
   return (
     <>
-      <Grid container>
-        <Grid size={{ xs: 6 }}>
+      <Grid container gap={2}>
+        <Grid size={{ md: 'grow', xs: 12 }}>
           <DateSelector
             time={startDate}
             onChange={(data) => data && setStartDate(data)}
             customLabel={t('start')}
           />
         </Grid>
-        <Grid size={{ xs: 6 }}>
+        <Grid size={{ md: 'grow', xs: 12 }}>
           <DateSelector
             time={endDate}
             onChange={(data) => data && setEndDate(data)}
