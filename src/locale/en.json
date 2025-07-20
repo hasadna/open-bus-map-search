@@ -54,6 +54,7 @@
   "planned_status": "status",
   "ride_as_planned": "✔️ came out as planned",
   "ride_missing": "❌ missing ride",
+  "ride_in_future": "🕛 ride in future",
   "ride_extra": "🧐 An unplanned trip",
   "ride_duped": "❇️ Double ride",
   "checkbox_only_gaps": "Only gaps",
@@ -277,6 +278,7 @@
       }
     ]
   },
+  "loading": "loading...",
   "version": "Current version identifier",
   "failedToFetchVersion": "Failed to fetch current version identifier",
   "operator_title": "Operator",

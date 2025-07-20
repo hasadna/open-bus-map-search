@@ -19,6 +19,7 @@ export default [
     'plugin:@typescript-eslint/recommended',
     'plugin:@typescript-eslint/recommended-requiring-type-checking',
     'plugin:react/recommended',
+    'plugin:storybook/recommended',
   ),
   eslintPluginPrettierRecommended,
   {
@@ -31,7 +32,8 @@ export default [
       'public',
       '.nx',
       '**/*.js',
-      'applitools.config.cjs',
+      '*.js',
+      '*.cjs',
     ],
   },
   {

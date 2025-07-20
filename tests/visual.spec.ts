@@ -3,46 +3,30 @@ import i18next from 'i18next'
 import username from 'git-username'
 import { getBranch, getPastDate, test, waitForSkeletonsToHide, loadTranslate } from './utils'
 
-const time = new Date().toLocaleString()
-const batchId = process.env.SHA || `${username()}-${time}`
-const batchName = process.env.CI
-  ? `openbus test branch ${process.env.GITHUB_REF} commit ${process.env.SHA}`
-  : `${username()} is testing openbus ${time}`
+const eyes = await setEyesSettings()
+
+test.beforeAll(() => {
+  if (!process.env.APPLITOOLS_API_KEY) {
+    eyes.setIsDisabled(true)
+    console.log('APPLITOOLS_API_KEY is not defined, please ask noamgaash for the key')
+    test.skip() // on forks, the secret is not available
+    return
+  }
+})
 
 for (const mode of ['Light', 'Dark', 'LTR']) {
-  test.describe(`Visual Tests [${mode}]`, () => {
-    const eyes = new Eyes(new VisualGridRunner({ testConcurrency: 20 }), {
-      browsersInfo: [
-        { width: 1280, height: 720, name: 'chrome' },
-        { width: 1280, height: 720, name: 'safari' },
-        { width: 375, height: 667, name: 'chrome' },
-        { iosDeviceInfo: { deviceName: 'iPhone 16' } },
-      ],
-    })
-
-    test.beforeAll(async () => {
-      eyes.setBatch({ id: batchId, name: batchName })
-      await setEyesSettings(eyes)
-      if (!process.env.APPLITOOLS_API_KEY) {
-        eyes.setIsDisabled(true)
-        console.log('APPLITOOLS_API_KEY is not defined, please ask noamgaash for the key')
-        test.skip() // on forks, the secret is not available
-        return
-      }
-    })
-
+  test.describe('Visual Tests', () => {
+    test.describe.configure({ retries: 0 })
     test.beforeEach(async ({ page }, testinfo) => {
       await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
+      await page.route(/.*openstreetmap*/, (route) => route.abort())
+      await page.route(/.*youtube*/, (route) => route.abort())
       await page.clock.setSystemTime(getPastDate())
+      await page.emulateMedia({ reducedMotion: 'reduce' })
       await page.goto('/')
       if (mode === 'Dark') await page.getByLabel('עבור למצב כהה').first().click()
-      // Switch language if needed and load translations
-      let lang = 'he'
-      if (mode === 'LTR') {
-        await page.getByLabel('English').first().click()
-        lang = 'en'
-      }
-      await loadTranslate(i18next, lang)
+      if (mode === 'LTR') await page.getByLabel('English').first().click()
+      await loadTranslate(i18next, mode === 'LTR' ? 'en' : 'he')
       if (process.env.APPLITOOLS_API_KEY) {
         await eyes.open(page, 'OpenBus', testinfo.title)
       }
@@ -52,7 +36,7 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
       try {
         test.setTimeout(0)
         if (process.env.APPLITOOLS_API_KEY) {
-          await eyes.close(false)
+          await eyes.close()
         }
       } catch (e) {
         console.error(e)
@@ -119,7 +103,6 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
       await eyes.check({
         ...Target.window().layoutRegions('.chart', '.recharts-wrapper'),
         name: 'operator page',
-        timeout: 5 * 60000,
       })
     })
 
@@ -136,8 +119,37 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
   })
 }
 
-async function setEyesSettings(eyes: Eyes) {
-  eyes.getConfiguration().setUseDom(true).setEnablePatterns(true)
+async function setEyesSettings() {
+  const eyes = new Eyes(new VisualGridRunner({ testConcurrency: 10 }), {
+    browsersInfo: [
+      { width: 1280, height: 720, name: 'chrome' },
+      { width: 1280, height: 720, name: 'safari' },
+      { chromeEmulationInfo: { deviceName: 'Galaxy S23' } },
+      { iosDeviceInfo: { deviceName: 'iPhone 16' } },
+    ],
+  })
+
+  const time = new Date().toISOString()
+  const user = username() || 'unknown-user'
+  const batchName = process.env.APPLITOOLS_BATCH_NAME
+    ? `${process.env.APPLITOOLS_BATCH_NAME}visual-tests`
+    : `${user}-visual-tests-${time}`
+  const batchId = process.env.SHA || `${user}-${time}`
+
+  eyes.setBatch({ name: batchName, id: batchId })
+
+  const config = eyes.getConfiguration()
+  config.setUseDom(true)
+  config.setEnablePatterns(true)
+  eyes.setConfiguration(config)
+
   eyes.setParentBranchName('main')
-  eyes.setBranchName((await getBranch()) || 'main')
+  try {
+    const branch = (await getBranch()) || 'main'
+    eyes.setBranchName(branch)
+  } catch {
+    eyes.setBranchName('main')
+  } finally {
+    return eyes
+  }
 }

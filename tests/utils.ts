@@ -53,23 +53,37 @@ export function getPastDate(): Date {
 
 export const urlMatcher: Matcher = customMatcher({
   urlComparator(a, b) {
-    const fieldsToRemove = ['t', 'date_from', 'date_to']
-    ;[a, b] = [a, b].map((url) => {
+    const paramsToIgnore = new Set(['t', 'limit', 'date_from', 'date_to'])
+    function normalize(url: string) {
       const urlObj = new URL(url)
-      fieldsToRemove.forEach((field) => urlObj.searchParams.delete(field))
+      for (const param of paramsToIgnore) {
+        urlObj.searchParams.delete(param)
+      }
+      const sortedParams = Array.from(urlObj.searchParams.entries()).sort(([a], [b]) =>
+        a.localeCompare(b),
+      )
+      urlObj.search = new URLSearchParams(sortedParams).toString()
+      urlObj.pathname = urlObj.pathname.replace(/\/$/, '')
       return urlObj.toString()
-    })
-    return a === b
+    }
+
+    return normalize(a) === normalize(b)
   },
 })
 
-export const getBranch = () =>
-  new Promise<string>((resolve, reject) => {
-    return exec('git rev-parse --abbrev-ref HEAD', (err, stdout) => {
-      if (err) reject(new Error(`getBranch Error: ${err.name}`))
-      else if (typeof stdout === 'string') resolve(stdout.trim())
+export const getBranch = async (): Promise<string> => {
+  return new Promise<string>((resolve, reject) => {
+    exec('git rev-parse --abbrev-ref HEAD', (err, stdout, stderr) => {
+      if (err) {
+        reject(new Error(`getBranch Error: ${err.message || err.name}`))
+      } else if (typeof stdout === 'string' && stdout.trim()) {
+        resolve(stdout.trim())
+      } else {
+        reject(new Error(`getBranch Error: No branch name found. Stderr: ${stderr}`))
+      }
     })
   })
+}
 
 export const waitForSkeletonsToHide = async (page: Page) => {
   while ((await page.locator('.ant-skeleton-content').count()) > 0) {
