@@ -3,7 +3,7 @@ import { Alert, CircularProgress, Grid, IconButton, Typography } from '@mui/mate
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { MapContainer, Marker, Polyline, Popup, TileLayer, useMap } from 'react-leaflet'
-import MarkerClusterGroup from 'react-leaflet-cluster'
+import MarkerClusterGroup from 'react-leaflet-markercluster'
 import { DateSelector } from '../components/DateSelector'
 import { Label } from '../components/Label'
 import MinuteSelector from '../components/MinuteSelector'

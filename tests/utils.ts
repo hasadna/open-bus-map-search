@@ -1,7 +1,6 @@
 import * as fs from 'fs'
 import * as path from 'path'
 import * as crypto from 'crypto'
-import { fileURLToPath } from 'url'
 import { exec } from 'child_process'
 import { Matcher, test as baseTest, customMatcher } from 'playwright-advanced-har'
 import { BrowserContext, Page } from '@playwright/test'
@@ -54,13 +53,21 @@ export function getPastDate(): Date {
 
 export const urlMatcher: Matcher = customMatcher({
   urlComparator(a, b) {
-    const fieldsToRemove = ['t', 'date_from', 'date_to']
-    ;[a, b] = [a, b].map((url) => {
+    const paramsToIgnore = new Set(['t', 'limit', 'date_from', 'date_to'])
+    function normalize(url: string) {
       const urlObj = new URL(url)
-      fieldsToRemove.forEach((field) => urlObj.searchParams.delete(field))
+      for (const param of paramsToIgnore) {
+        urlObj.searchParams.delete(param)
+      }
+      const sortedParams = Array.from(urlObj.searchParams.entries()).sort(([a], [b]) =>
+        a.localeCompare(b),
+      )
+      urlObj.search = new URLSearchParams(sortedParams).toString()
+      urlObj.pathname = urlObj.pathname.replace(/\/$/, '')
       return urlObj.toString()
-    })
-    return a === b
+    }
+
+    return normalize(a) === normalize(b)
   },
 })
 
@@ -88,19 +95,6 @@ export const loadTranslate = async (i18next: i18n, lng: string = 'he') => {
   await i18next.use(Backend).init({
     lng,
     backend: { loadPath: 'src/locale/{{lng}}.json' },
-  })
-}
-
-export const harRecording = (name: string = 'network') => {
-  const __filename = fileURLToPath(import.meta.url)
-  const __dirname = path.dirname(__filename)
-  test.use({
-    contextOptions: {
-      recordHar: {
-        path: path.join(__dirname, `${name}.har`),
-        content: 'embed',
-      },
-    },
   })
 }
 

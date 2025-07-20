@@ -20,6 +20,7 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
     test.beforeEach(async ({ page }, testinfo) => {
       await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
       await page.route(/.*openstreetmap*/, (route) => route.abort())
+      await page.route(/.*youtube*/, (route) => route.abort())
       await page.clock.setSystemTime(getPastDate())
       await page.emulateMedia({ reducedMotion: 'reduce' })
       await page.goto('/')

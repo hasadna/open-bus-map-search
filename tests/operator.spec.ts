@@ -33,10 +33,8 @@ test.describe('Operator Page Tests', () => {
   })
 
   test('all inputs should be intractable', async ({ page }) => {
-    await page.goto('/')
-    await page.getByRole('link', { name: 'חברה מפעילה' }).click()
     await page.getByRole('button', { name: 'פתח' }).click()
-    await page.getByRole('option', { name: 'דן', exact: true }).click()
+    await page.getByRole('option', { name: 'אגד', exact: true }).click()
     await page.getByRole('textbox', { name: 'תאריך' }).click()
     await page.getByRole('textbox', { name: 'תאריך' }).fill('06/05/2024')
     await page.getByRole('textbox', { name: 'תאריך' }).press('Enter')
@@ -47,7 +45,7 @@ test.describe('Operator Page Tests', () => {
     const h2Tags = await page.evaluate(() => {
       return Array.from(document.querySelectorAll('h2')).map((tag) => tag.textContent)
     })
-    expect(h2Tags).toEqual(['דן', 'סטטיסטיקה חודשית', 'הקווים הגרועים ביותר', 'כל המסלולים'])
+    expect(h2Tags).toEqual(['אגד', 'סטטיסטיקה חודשית', 'הקווים הגרועים ביותר', 'כל המסלולים'])
   })
 
   test('Test operator inputs', async ({ page }) => {
