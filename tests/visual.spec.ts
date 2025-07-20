@@ -1,136 +1,155 @@
 import { Eyes, Target, VisualGridRunner } from '@applitools/eyes-playwright'
+import i18next from 'i18next'
 import username from 'git-username'
-import { getBranch, getPastDate, test, waitForSkeletonsToHide } from './utils'
+import { getBranch, getPastDate, test, waitForSkeletonsToHide, loadTranslate } from './utils'
 
-test.describe('Visual Tests', () => {
-  const eyes = new Eyes(new VisualGridRunner(), {
+const eyes = await setEyesSettings()
+
+test.beforeAll(() => {
+  if (!process.env.APPLITOOLS_API_KEY) {
+    eyes.setIsDisabled(true)
+    console.log('APPLITOOLS_API_KEY is not defined, please ask noamgaash for the key')
+    test.skip() // on forks, the secret is not available
+    return
+  }
+})
+
+for (const mode of ['Light', 'Dark', 'LTR']) {
+  test.describe('Visual Tests', () => {
+    test.describe.configure({ retries: 0 })
+    test.beforeEach(async ({ page }, testinfo) => {
+      await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
+      await page.route(/.*openstreetmap*/, (route) => route.abort())
+      await page.route(/.*youtube*/, (route) => route.abort())
+      await page.clock.setSystemTime(getPastDate())
+      await page.emulateMedia({ reducedMotion: 'reduce' })
+      await page.goto('/')
+      if (mode === 'Dark') await page.getByLabel('עבור למצב כהה').first().click()
+      if (mode === 'LTR') await page.getByLabel('English').first().click()
+      await loadTranslate(i18next, mode === 'LTR' ? 'en' : 'he')
+      if (process.env.APPLITOOLS_API_KEY) {
+        await eyes.open(page, 'OpenBus', testinfo.title)
+      }
+    })
+
+    test.afterEach(async () => {
+      try {
+        test.setTimeout(0)
+        if (process.env.APPLITOOLS_API_KEY) {
+          await eyes.close()
+        }
+      } catch (e) {
+        console.error(e)
+      }
+    })
+
+    test(`Home Page Should Look Good [${mode}]`, async () => {
+      await eyes.check({ ...Target.window(), name: 'home page' })
+    })
+
+    test(`Dashboard Page Should Look Good [${mode}]`, async ({ page }) => {
+      await page.goto('/dashboard')
+      await page.getByText('אגד').first().waitFor()
+      await waitForSkeletonsToHide(page)
+      await eyes.check({
+        ...Target.window().layoutRegions('.chart').fully().scrollRootElement('main'),
+        name: 'dashboard page',
+      })
+      // scroll to recharts-wrapper
+      await page.evaluate(() => {
+        document.querySelector('.recharts-wrapper')?.scrollIntoView()
+      })
+      await eyes.check({
+        ...Target.window().layoutRegions('.chart'),
+        name: 'dashboard page - recharts',
+      })
+    })
+
+    test(`About Page Should Look Good [${mode}]`, async ({ page }) => {
+      await page.goto('/about')
+      await eyes.check({ ...Target.window(), name: 'about page' })
+    })
+
+    test(`Timeline Page Should Look Good [${mode}]`, async ({ page }) => {
+      await page.goto('/timeline')
+      await eyes.check({ ...Target.window(), name: 'timeline page' })
+    })
+
+    test(`Gaps Page Should Look Good [${mode}]`, async ({ page }) => {
+      await page.goto('/gaps')
+      await eyes.check({ ...Target.window(), name: 'gaps page' })
+    })
+
+    test(`Gaps Patterns Page Should Look Good [${mode}]`, async ({ page }) => {
+      await page.goto('/gaps_patterns')
+      await eyes.check({ ...Target.window(), name: 'gaps_patterns page' })
+    })
+
+    test(`Map Page Should Look Good [${mode}]`, async ({ page }) => {
+      await page.goto('/map')
+      await page.locator('.leaflet-marker-icon').first().waitFor({ state: 'visible' })
+      await page.locator('.ant-spin-dot').first().waitFor({ state: 'hidden' })
+      await eyes.check({ ...Target.window(), name: 'map page' })
+    })
+
+    test(`Operator Page Should Look Good [${mode}]`, async ({ page }) => {
+      await page.goto('/operator')
+      await page
+        .getByRole('combobox', { name: i18next.t('choose_operator') })
+        .first()
+        .click()
+      await page.getByRole('option', { name: 'אגד', exact: true }).first().click()
+      await waitForSkeletonsToHide(page)
+      await eyes.check({
+        ...Target.window().layoutRegions('.chart', '.recharts-wrapper'),
+        name: 'operator page',
+      })
+    })
+
+    test(`Donation modal Should Look Good [${mode}]`, async ({ page }) => {
+      await page.getByLabel(i18next.t('donate_title')).first().click()
+      await page.locator('.MuiTypography-root').first().waitFor()
+      await eyes.check({ ...Target.region(page.getByRole('dialog')), name: 'donation modal' })
+    })
+
+    test(`Public Appeal Page Should Look Good [${mode}]`, async ({ page }) => {
+      await page.goto('/public-appeal')
+      await eyes.check({ ...Target.window(), name: 'public appeal page' })
+    })
+  })
+}
+
+async function setEyesSettings() {
+  const eyes = new Eyes(new VisualGridRunner({ testConcurrency: 10 }), {
     browsersInfo: [
       { width: 1280, height: 720, name: 'chrome' },
       { width: 1280, height: 720, name: 'safari' },
-      { width: 375, height: 667, name: 'chrome' },
-      {
-        iosDeviceInfo: { deviceName: 'iPhone 16' },
-      },
+      { chromeEmulationInfo: { deviceName: 'Galaxy S23' } },
+      { iosDeviceInfo: { deviceName: 'iPhone 16' } },
     ],
   })
 
-  test.beforeAll(async () => {
-    setBatchName(eyes)
-    await setEyesSettings(eyes)
-  })
+  const time = new Date().toISOString()
+  const user = username() || 'unknown-user'
+  const batchName = process.env.APPLITOOLS_BATCH_NAME
+    ? `${process.env.APPLITOOLS_BATCH_NAME}visual-tests`
+    : `${user}-visual-tests-${time}`
+  const batchId = process.env.SHA || `${user}-${time}`
 
-  test.beforeEach(async ({ page }, testinfo) => {
-    await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
-    await page.clock.setFixedTime(getPastDate())
-    if (!process.env.APPLITOOLS_API_KEY) {
-      eyes.setIsDisabled(true)
-      console.log('APPLITOOLS_API_KEY is not defined, please ask noamgaash for the key')
-      test.skip() // on forks, the secret is not available
-      return
-    }
+  eyes.setBatch({ name: batchName, id: batchId })
 
-    await eyes.open(page, 'OpenBus', testinfo.title)
-  })
+  const config = eyes.getConfiguration()
+  config.setUseDom(true)
+  config.setEnablePatterns(true)
+  eyes.setConfiguration(config)
 
-  test.afterEach(async () => {
-    try {
-      test.setTimeout(0)
-      if (process.env.APPLITOOLS_API_KEY) {
-        await eyes.close(false)
-      }
-    } catch (e) {
-      console.error(e)
-    }
-  })
-
-  test('dashboard page should look good', async ({ page }) => {
-    await page.goto('/dashboard')
-    await page.getByText('אגד').first().waitFor()
-    await waitForSkeletonsToHide(page)
-    await eyes.check(
-      'dashboard page',
-      Target.window().layoutRegions('.chart').fully().scrollRootElement('main'),
-    )
-    // scroll to recharts-wrapper
-    await page.evaluate(() => {
-      document.querySelector('.recharts-wrapper')?.scrollIntoView()
-    })
-    await eyes.check('dashboard page - recharts', Target.window().layoutRegions('.chart'))
-  })
-
-  test('front page should look good', async ({ page }) => {
-    await page.goto('/')
-    await eyes.check('front page', Target.window())
-  })
-
-  test('about page should look good', async ({ page }) => {
-    await page.goto('/about')
-    await eyes.check('about page', Target.window())
-  })
-
-  test('timeline page should look good', async ({ page }) => {
-    await page.goto('/timeline')
-    await eyes.check('timeline page', Target.window())
-  })
-
-  test('gaps page should look good', async ({ page }) => {
-    await page.goto('/gaps')
-    await eyes.check('gaps page', Target.window())
-  })
-
-  test('gaps_patterns page should look good', async ({ page }) => {
-    await page.goto('/gaps_patterns')
-    await eyes.check('gaps_patterns page', Target.window())
-  })
-
-  test('map page should look good', async ({ page }) => {
-    await page.goto('/map')
-    await page.locator('.leaflet-marker-icon').first().waitFor({ state: 'visible' })
-    await page.locator('.ant-spin-dot').first().waitFor({ state: 'hidden' })
-    await eyes.check(
-      'map page',
-      Target.window().layoutRegions(page.getByText('מיקומי אוטובוסים משעה')),
-    )
-  })
-
-  test('operator page should look good', async ({ page }) => {
-    await page.goto('/operator')
-    await page.getByRole('combobox', { name: 'חברה מפעילה' }).click()
-    await page.getByRole('option', { name: 'אגד', exact: true }).click()
-    await waitForSkeletonsToHide(page)
-    await eyes.check('operator page', Target.window().layoutRegions('.chart', '.recharts-wrapper'))
-  })
-
-  test('donation modal should look good', async ({ page }) => {
-    await page.goto('/')
-    await page.getByLabel('לתרומות').click()
-    await page.locator('.MuiTypography-root').first().waitFor()
-    await eyes.check('donation modal', Target.region(page.getByRole('dialog')))
-  })
-
-  test('donation modal should look good in dark mode', async ({ page }) => {
-    await page.goto('/')
-    await page.getByLabel('עבור למצב כהה').click()
-    await page.getByLabel('לתרומות').click()
-    await page.locator('.MuiTypography-root').first().waitFor()
-    await eyes.check('donation modal dark mode', Target.region(page.getByRole('dialog')))
-  })
-})
-
-function setBatchName(eyes: Eyes) {
-  if (process.env.CI) {
-    // set batch id to the commit sha
-    eyes.setBatch({
-      id: process.env.SHA,
-      name: 'openbus test branch ' + process.env.GITHUB_REF + ' commit ' + process.env.SHA,
-    })
-  } else {
-    eyes.setBatch(username() + ' is testing openbus ' + new Date().toLocaleString().split(',')[0])
-  }
-}
-
-async function setEyesSettings(eyes: Eyes) {
-  eyes.getConfiguration().setUseDom(true).setEnablePatterns(true)
   eyes.setParentBranchName('main')
-  eyes.setBranchName((await getBranch()) || 'main')
+  try {
+    const branch = (await getBranch()) || 'main'
+    eyes.setBranchName(branch)
+  } catch {
+    eyes.setBranchName('main')
+  } finally {
+    return eyes
+  }
 }

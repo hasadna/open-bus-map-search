@@ -5,6 +5,11 @@ import { filteredPositions, plannedRouteStops } from './mapStorybookData'
 const meta = {
   component: MapWithLocationsAndPath,
   title: 'Map/MapWithLocationsAndPath',
+  parameters: {
+    eyes: {
+      waitBeforeCapture: 2000,
+    },
+  },
   args: {
     plannedRouteStops: [],
     positions: [],

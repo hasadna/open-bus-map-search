@@ -15,7 +15,12 @@ const compat = new FlatCompat({
 })
 
 export default [
-  ...compat.extends('plugin:@typescript-eslint/recommended', 'plugin:react/recommended'),
+  ...compat.extends(
+    'plugin:@typescript-eslint/recommended',
+    'plugin:@typescript-eslint/recommended-requiring-type-checking',
+    'plugin:react/recommended',
+    'plugin:storybook/recommended',
+  ),
   eslintPluginPrettierRecommended,
   {
     ignores: [
@@ -27,7 +32,8 @@ export default [
       'public',
       '.nx',
       '**/*.js',
-      'applitools.config.cjs',
+      '*.js',
+      '*.cjs',
     ],
   },
   {
@@ -58,14 +64,13 @@ export default [
     rules: {
       // React
       'react-hooks/rules-of-hooks': 'error',
-      'react/jsx-filename-extension': [1, { extensions: ['.tsx'] }],
+      'react/jsx-filename-extension': ['warn', { extensions: ['.tsx'] }],
       'react/react-in-jsx-scope': 'off',
       // TypeScript
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/no-unsafe-call': 'off',
       '@typescript-eslint/no-unsafe-member-access': 'off',
       '@typescript-eslint/no-floating-promises': 'off',
-      '@typescript-eslint/restrict-template-expressions': 'off',
       '@typescript-eslint/no-base-to-string': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
       // Import

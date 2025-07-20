@@ -6,6 +6,11 @@ import { filteredPositions, plannedRouteStops } from './mapStorybookData'
 const meta = {
   component: MapContent,
   title: 'Map/MapContent',
+  parameters: {
+    eyes: {
+      waitBeforeCapture: 2000,
+    },
+  },
   decorators: [
     (Story) => {
       return (

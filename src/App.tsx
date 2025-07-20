@@ -1,4 +1,4 @@
-import { Suspense, useEffect } from 'react'
+import { Suspense } from 'react'
 import { useTranslation } from 'react-i18next'
 import { RouterProvider } from 'react-router'
 import router from './routes'
@@ -14,18 +14,11 @@ if ('serviceWorker' in navigator) {
 }
 
 export const RoutedApp = () => {
-  const { i18n } = useTranslation() // Access i18n for language management
-  const currentLanguage = i18n.language // Get the current language
-
-  // Effect hook to update the title based on the current language
-  useEffect(() => {
-    const title = currentLanguage === 'he' ? 'דאטאבוס' : 'Databus' // Set title based on language
-    document.title = title // Update the <title> tag in the document
-  }, [currentLanguage]) // Re-run when the language changes
+  const { ready } = useTranslation()
 
   return (
     <Suspense fallback={<Preloader />}>
-      <RouterProvider router={router} />
+      {ready ? <RouterProvider router={router} /> : null}
     </Suspense>
   )
 }
