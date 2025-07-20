@@ -37,11 +37,10 @@ test.describe('Single line page tests', () => {
   })
 
   test('should allow selecting operator company options', async ({ page }) => {
-    await test.step('Select operator', async () => {
-      await selectOperator(page)
-      await expect(page.getByLabel('חברה מפעילה')).toHaveValue('דן')
-      await expect(page.getByRole('textbox', { name: 'מספר קו' })).toBeEditable()
-    })
+    await selectOperator(page)
+    await expect(page.getByRole('textbox', { name: 'מספר קו' })).not.toBeEditable()
+    await expect(page.getByLabel('חברה מפעילה')).toHaveValue('דן')
+    await expect(page.getByRole('textbox', { name: 'מספר קו' })).toBeEditable()
   })
 
   test('should show and enable "choose route" dropdown after selecting line', async ({ page }) => {
@@ -74,6 +73,7 @@ test.describe('Single line page tests', () => {
       await fillLineNumber(page)
       await selectRoute(page)
     })
+
     await test.step('Verify bus stop marker is in the page', async () => {
       const stopMarkers = page.locator('.leaflet-marker-pane > img[src$="marker-bus-stop.png"]')
       await page.waitForTimeout(5000)
@@ -83,6 +83,8 @@ test.describe('Single line page tests', () => {
   })
 
   test('should show tooltip after clicking on map point in single line map', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' })
+
     await test.step('Fill line info', async () => {
       await selectOperator(page)
       await fillLineNumber(page)
@@ -90,13 +92,24 @@ test.describe('Single line page tests', () => {
       await selectStartTime(page)
       await page.waitForTimeout(5000)
     })
+
     await test.step('Click on bus button', async () => {
       await page.locator('.leaflet-container').click()
-      await page.locator('.leaflet-marker-pane > img[src$="marker-dot.png"]').nth(6).click()
+      await page.waitForTimeout(5000)
+      await page
+        .locator('.leaflet-marker-pane > img[src$="marker-dot.png"]')
+        .nth(6)
+        .click({ force: true })
       await page.waitForTimeout(500)
       await expect(page.locator('.leaflet-popup-content-wrapper')).toBeAttached()
       await waitForSkeletonsToHide(page)
     })
+
+    await test.step('Click inside the tooltip', async () => {
+      await page.getByRole('button', { name: 'הצג מידע לגיקים' }).click()
+      await page.getByRole('button', { name: 'הסתר מידע לגיקים' }).click()
+    })
+
     await test.step('Verify tooltip content and order', async () => {
       const expectedLabels = [
         'שם חברה מפעילה:',
