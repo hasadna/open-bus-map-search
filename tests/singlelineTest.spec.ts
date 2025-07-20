@@ -37,8 +37,8 @@ test.describe('Single line page tests', () => {
   })
 
   test('should allow selecting operator company options', async ({ page }) => {
-    await selectOperator(page)
     await expect(page.getByRole('textbox', { name: 'מספר קו' })).not.toBeEditable()
+    await selectOperator(page)
     await expect(page.getByLabel('חברה מפעילה')).toHaveValue('דן')
     await expect(page.getByRole('textbox', { name: 'מספר קו' })).toBeEditable()
   })
