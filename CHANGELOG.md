@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.1](https://github.com/hasadna/open-bus-map-search/compare/v1.4.0...v1.4.1) (2025-07-24)
+
+
+### Bug Fixes
+
+* **rides:** filter out future rides from gap list ([#1192](https://github.com/hasadna/open-bus-map-search/issues/1192)) ([e692faf](https://github.com/hasadna/open-bus-map-search/commit/e692faf3debe89f3384009154b223b669f4fc16b))
+
 ## [1.4.0](https://github.com/hasadna/open-bus-map-search/compare/v1.3.0...v1.4.0) (2025-07-14)
 
 
