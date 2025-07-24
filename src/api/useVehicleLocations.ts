@@ -56,8 +56,8 @@ class LocationObservable {
         recordedAtTimeFrom: params.from.toDate(),
         recordedAtTimeTo: params.to.toDate(),
         siriRoutesLineRef: params.lineRef,
-        siriRoutesOperatorRef: params.lineRef,
-        siriVehicleLocationIds: params.lineRef,
+        siriRoutesOperatorRef: params.operatorRef,
+        siriVehicleLocationIds: params.vehicleRef,
         latGreaterOrEqual: params.latMin,
         latLowerOrEqual: params.latMax,
         lonGreaterOrEqual: params.lonMin,
@@ -198,8 +198,6 @@ export default function useVehicleLocations({
 
     setIsLoading(range.map(() => true))
 
-    // setLocations([])
-
     let unsubscrubed = false
     const unsubscribers: (() => void)[] = []
 
@@ -228,7 +226,7 @@ export default function useVehicleLocations({
       }),
     )
     return () => {
-      // setLocations([])
+      setLocations([])
       unsubscrubed = true
       unsubscribers.forEach((unmount) => unmount())
       setIsLoading([])

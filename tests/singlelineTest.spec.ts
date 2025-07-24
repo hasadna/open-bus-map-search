@@ -90,7 +90,7 @@ test.describe('Single line page tests', () => {
       await fillLineNumber(page)
       await selectRoute(page)
       await selectStartTime(page)
-      await page.waitForTimeout(2000)
+      await page.waitForTimeout(1000)
     })
 
     await test.step('Click on bus button', async () => {
