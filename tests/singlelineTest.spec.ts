@@ -90,7 +90,7 @@ test.describe('Single line page tests', () => {
       await fillLineNumber(page)
       await selectRoute(page)
       await selectStartTime(page)
-      await page.waitForTimeout(1000)
+      await page.waitForTimeout(2000)
     })
 
     await test.step('Click on bus button', async () => {
@@ -100,7 +100,7 @@ test.describe('Single line page tests', () => {
         .locator('.leaflet-marker-pane > img[src$="marker-dot.png"]')
         .nth(6)
         .click({ force: true })
-      await page.waitForTimeout(100)
+      await page.waitForTimeout(500)
       await expect(page.locator('.leaflet-popup-content-wrapper')).toBeAttached()
       await waitForSkeletonsToHide(page)
     })
