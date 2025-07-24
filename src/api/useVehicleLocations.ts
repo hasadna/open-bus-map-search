@@ -135,8 +135,8 @@ function getQueryKey({
   lonMin,
 }: SiriVehicleRequest) {
   return [
-    from.format('YYYY-MM-DD'),
-    to.format('YYYY-MM-DD'),
+    from.toISOString(),
+    to.toISOString(),
     operatorRef,
     lineRef,
     vehicleRef,
