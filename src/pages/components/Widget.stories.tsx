@@ -13,6 +13,9 @@ const meta = {
     title: {
       control: 'text',
       description: 'Title to be displayed at the top of the Widget',
+      table: {
+        type: { summary: 'React.ReactNode' },
+      },
     },
     children: {
       control: false,
