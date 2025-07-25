@@ -1,14 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import '../../shared/shared.css'
 import Widget from 'src/shared/Widget'
-
-const children = (
-  <>
-    שלום חברים!
-    <br />
-    ככה נראה widget util
-  </>
-)
 
 const meta = {
   title: 'Components/Widget',
@@ -18,11 +9,11 @@ const meta = {
       <Story />
     </div>
   ),
-  parameters: {},
-  args: {
-    children,
-  },
   argTypes: {
+    title: {
+      control: 'text',
+      description: 'Title to be displayed at the top of the Widget',
+    },
     children: {
       control: false,
       description: 'Content to be displayed inside the Widget',
@@ -59,8 +50,9 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-const defaultArgs = {}
-
 export const Default: Story = {
-  args: defaultArgs,
+  args: {
+    title: 'שלום חברים!',
+    children: 'ככה נראה Widget',
+  },
 }
