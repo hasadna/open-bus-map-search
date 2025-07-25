@@ -27,7 +27,7 @@ type SiriVehicleRequest = {
 }
 
 const SIRI_API = new SiriApi(API_CONFIG)
-const LIMIT = 10000
+const LIMIT = 1000
 const CONCURRENCY = 10
 const RETRY = 3
 
@@ -45,26 +45,29 @@ class LocationObservable {
     locations: SiriVehicleLocationWithRelatedPydanticModel[] | { finished: true },
   ) => void)[] = []
 
-  constructor(params: SiriVehicleRequest) {
-    this.loadData(params)
+  constructor(params: SiriVehicleRequest, signal?: AbortSignal) {
+    this.loadData(params, signal)
   }
 
-  private async loadData(params: SiriVehicleRequest) {
+  private async loadData(params: SiriVehicleRequest, signal?: AbortSignal) {
     let offset = 0
     while (this.loading) {
-      const response = await fetchWithQueue({
-        recordedAtTimeFrom: params.from.toDate(),
-        recordedAtTimeTo: params.to.toDate(),
-        siriRoutesLineRef: params.lineRef,
-        siriRoutesOperatorRef: params.operatorRef,
-        siriVehicleLocationIds: params.vehicleRef,
-        latGreaterOrEqual: params.latMin,
-        latLowerOrEqual: params.latMax,
-        lonGreaterOrEqual: params.lonMin,
-        lonLowerOrEqual: params.lonMax,
-        limit: LIMIT,
-        offset,
-      })
+      const response = await fetchWithQueue(
+        {
+          recordedAtTimeFrom: params.from.toDate(),
+          recordedAtTimeTo: params.to.toDate(),
+          siriRoutesLineRef: params.lineRef,
+          siriRoutesOperatorRef: params.operatorRef,
+          siriVehicleLocationIds: params.vehicleRef,
+          latGreaterOrEqual: params.latMin,
+          latLowerOrEqual: params.latMax,
+          lonGreaterOrEqual: params.lonMin,
+          lonLowerOrEqual: params.lonMax,
+          limit: LIMIT,
+          offset,
+        },
+        signal,
+      )
 
       const batch = response || []
 
@@ -98,29 +101,66 @@ class LocationObservable {
   }
 }
 
-const pool = new Array(CONCURRENCY)
-  .fill(0)
-  .map(() => Promise.resolve<void | SiriVehicleLocationWithRelatedPydanticModel[]>(void 0))
+type QueueTask = {
+  fn: () => Promise<void>
+  resolve: () => void
+  reject: () => void
+}
 
-async function fetchWithQueue(data: SiriVehicleLocationsListGetRequest) {
-  const task = async () => {
-    for (let attempt = 0; attempt <= RETRY; attempt++) {
-      try {
-        return await SIRI_API.siriVehicleLocationsListGet(data)
-      } catch {
-        if (attempt === RETRY) throw new Error(`Failed after ${RETRY} attempts`)
-        await new Promise((resolve) => setTimeout(resolve, 1000 * 2 ** (attempt - 1)))
+const queue: QueueTask[] = []
+let activeCount = 0
+
+async function fetchWithQueue(
+  data: SiriVehicleLocationsListGetRequest,
+  signal?: AbortSignal,
+): Promise<SiriVehicleLocationWithRelatedPydanticModel[] | void> {
+  return new Promise((resolve, reject) => {
+    const task = async () => {
+      for (let attempt = 0; attempt <= RETRY; attempt++) {
+        try {
+          const result = await SIRI_API.siriVehicleLocationsListGet(data, { signal })
+          resolve(result)
+          return
+        } catch {
+          if (attempt === RETRY) {
+            reject(new Error(`Failed after ${RETRY} attempts`))
+            return
+          }
+          await new Promise((r) => setTimeout(r, attempt === 0 ? 0 : 1000 * 2 ** (attempt - 1)))
+        }
       }
     }
-  }
 
-  const queued = pool
-    .shift()!
-    .then(task)
-    .finally(() => pool.push(Promise.resolve()))
+    const queueTask: QueueTask = { fn: task, resolve, reject }
 
-  pool.push(queued)
-  return queued
+    const runNext = () => {
+      if (activeCount < CONCURRENCY && queue.length > 0) {
+        const nextTask = queue.shift()
+        if (nextTask) {
+          activeCount++
+          nextTask
+            .fn()
+            .catch(nextTask.reject)
+            .finally(() => {
+              activeCount--
+              runNext()
+            })
+        }
+      }
+    }
+
+    if (activeCount < CONCURRENCY) {
+      activeCount++
+      task()
+        .catch(reject)
+        .finally(() => {
+          activeCount--
+          runNext()
+        })
+    } else {
+      queue.push(queueTask)
+    }
+  })
 }
 
 function getQueryKey({
@@ -149,15 +189,17 @@ function getQueryKey({
 
 // this function checks the cache for the data, and if it's not there, it loads it
 function getLocations({
+  signal,
   onUpdate,
   ...params
 }: SiriVehicleRequest & {
+  signal?: AbortSignal
   onUpdate: (locations: SiriVehicleLocationWithRelatedPydanticModel[] | { finished: true }) => void // the observer will be called every time with all the locations that were loaded
 }) {
   const key = getQueryKey(params)
 
   if (!loadedLocations.has(key)) {
-    loadedLocations.set(key, new LocationObservable(params))
+    loadedLocations.set(key, new LocationObservable(params, signal))
   }
   return loadedLocations.get(key)!.observe(onUpdate)
 }
@@ -217,7 +259,8 @@ export default function useVehicleLocations({
           } else {
             setLocations((prev) =>
               uniqBy(
-                [...prev, ...data].sort((a, b) => a.id! - b.id!),
+                data.length === 0 ? prev : [...prev, ...data],
+                //.sort((a, b) => a.id! - b.id!),
                 (loc) => loc.id,
               ),
             )
