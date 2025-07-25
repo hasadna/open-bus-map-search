@@ -32,8 +32,7 @@ type TaskDetails = {
 
 const Task = ({ title, description, marginBottom }: TaskDetails) => {
   return (
-    <Widget marginBottom={marginBottom}>
-      <h2 className="public">{title}</h2>
+    <Widget title={title} marginBottom={marginBottom}>
       <p>{description}</p>
       <a href="https://open-bus-stride-api.hasadna.org.il/docs">Open Bus Stride API</a>
     </Widget>

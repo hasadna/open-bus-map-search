@@ -60,7 +60,25 @@ export const ThemeProvider = ({ children }: PropsWithChildren) => {
     const isEnglish = language === 'en'
     const direction = isEnglish ? 'ltr' : 'rtl'
     return createTheme(
-      { direction, palette: { mode: isDarkTheme ? 'dark' : 'light' } },
+      {
+        components: {
+          MuiCard: {
+            styleOverrides: {
+              root: {
+                borderRadius: '12px',
+                boxShadow: isDarkTheme
+                  ? '0 4px 12px 0 rgba(0,0,0,0.7)'
+                  : '0 4px 12px 0 rgba(0,0,0,0.12)',
+                background: isDarkTheme ? 'linear-gradient(145deg, #252525, #141414)' : '',
+                border: isDarkTheme ? '1px solid #e0e0e0' : '1px solid transparent',
+                transition: 'background 0.3s, border 0.3s, box-shadow 0.3s',
+              },
+            },
+          },
+        },
+        direction,
+        palette: { mode: isDarkTheme ? 'dark' : 'light' },
+      },
       isEnglish ? enUS : heIL,
       isEnglish ? dateEnUS : dateHeIL,
     )

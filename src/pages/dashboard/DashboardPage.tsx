@@ -2,7 +2,6 @@ import { useState } from 'react'
 
 // Styling
 import './DashboardPage.scss'
-import 'src/App.scss'
 import { useTranslation } from 'react-i18next'
 import { Typography, Alert, Grid } from '@mui/material'
 import { useDate } from '../components/DateTimePicker'
@@ -43,7 +42,7 @@ const DashboardPage = () => {
   }
 
   return (
-    <PageContainer>
+    <PageContainer className="dashboard">
       <Typography className="page-title" variant="h4">
         {t('dashboard_page_title')}
         <InfoYoutubeModal
@@ -93,14 +92,14 @@ const DashboardPage = () => {
         </Grid>
       </Grid>
       <Grid container spacing={2} alignItems="flex-start">
-        <Grid size={{ xs: 12, lg: 6 }} className="widget">
+        <Grid size={{ xs: 12, lg: 6 }}>
           <AllLinesChart
             startDate={startDate}
             endDate={endDate}
             alertAllChartsZeroLinesHandling={(arg: boolean) => alertAllDayTimeChartHandling(arg)}
           />
         </Grid>
-        <Grid size={{ xs: 12, lg: 6 }} className="widget">
+        <Grid size={{ xs: 12, lg: 6 }}>
           <WorstLinesChart
             startDate={startDate}
             endDate={endDate}
@@ -108,7 +107,7 @@ const DashboardPage = () => {
             alertWorstLineHandling={(arg: boolean) => alertWorstLineHandling(arg)}
           />
         </Grid>
-        <Grid size={{ xs: 12 }} className="widget">
+        <Grid size={{ xs: 12 }}>
           <DayTimeChart
             startDate={startDate}
             endDate={endDate}

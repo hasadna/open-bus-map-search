@@ -116,6 +116,11 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
       await page.goto('/public-appeal')
       await eyes.check({ ...Target.window(), name: 'public appeal page' })
     })
+
+    test(`Data Research Page Should Look Good [${mode}]`, async ({ page }) => {
+      await page.goto('/data-research')
+      await eyes.check({ ...Target.window(), name: 'data research page' })
+    })
   })
 }
 

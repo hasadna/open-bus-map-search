@@ -56,8 +56,7 @@ export const WorstLinesChart = ({
   }, [groupByLineData])
 
   return (
-    <Widget>
-      <h2 className="title">{t('worst_lines_page_title')}</h2>
+    <Widget title={t('worst_lines_page_title')}>
       {lineDataLoading ? (
         <Skeleton active />
       ) : (
