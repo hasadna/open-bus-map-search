@@ -16,7 +16,7 @@ module.exports = {
         throw new Error('Skeletons did not disappear in time on ' + window.location.href)
       }
     }
-    await new Promise((resolve) => setTimeout(resolve, 1000)) // wait for end animations
+    await new Promise((resolve) => setTimeout(resolve, 2000)) // wait for end animations
     return true
   },
   // puppeteerOptions: {headless: false, devtools: true},

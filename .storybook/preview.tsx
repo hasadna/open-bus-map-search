@@ -25,7 +25,11 @@ queryClient.setQueryData(['version'], '1.2.3')
 
 const preview: Preview = {
   beforeAll: () => {
-    initialize()
+    initialize({
+      serviceWorker: {
+        url: import.meta.env.VITE_MSW_S3_URL || undefined,
+      },
+    })
   },
   loaders: [mswLoader],
   parameters: {
