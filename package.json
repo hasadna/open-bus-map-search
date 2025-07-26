@@ -120,7 +120,6 @@
     "jest-environment-jsdom": "^30.0.4",
     "jsdom": "^26.1.0",
     "lightningcss": "^1.30.1",
-    "madge": "^8.0.0",
     "msw": "^2.10.4",
     "msw-storybook-addon": "^2.0.5",
     "nx": "^21.3.1",
