@@ -15,8 +15,8 @@ import { API_CONFIG } from './apiConfig'
 import dayjs from 'src/dayjs'
 
 type SiriVehicleRequest = {
-  from: dayjs.Dayjs
-  to: dayjs.Dayjs
+  from: number
+  to: number
   lineRef?: string
   vehicleRef?: string
   operatorRef?: string
@@ -54,8 +54,8 @@ class LocationObservable {
     while (this.loading) {
       const response = await fetchWithQueue(
         {
-          recordedAtTimeFrom: params.from.toDate(),
-          recordedAtTimeTo: params.to.toDate(),
+          recordedAtTimeFrom: new Date(params.from),
+          recordedAtTimeTo: new Date(params.to),
           siriRoutesLineRef: params.lineRef,
           siriRoutesOperatorRef: params.operatorRef,
           siriVehicleLocationIds: params.vehicleRef,
@@ -174,17 +174,7 @@ function getQueryKey({
   lonMax,
   lonMin,
 }: SiriVehicleRequest) {
-  return [
-    from.toISOString(),
-    to.toISOString(),
-    operatorRef,
-    lineRef,
-    vehicleRef,
-    latMax,
-    latMin,
-    lonMax,
-    lonMin,
-  ].join('-')
+  return [from, to, operatorRef, lineRef, vehicleRef, latMax, latMin, lonMax, lonMin].join('-')
 }
 
 // this function checks the cache for the data, and if it's not there, it loads it
@@ -204,13 +194,13 @@ function getLocations({
   return loadedLocations.get(key)!.observe(onUpdate)
 }
 
-function getMinutesInRange(from: dayjs.Dayjs, to: dayjs.Dayjs, gap = 1) {
-  const start = from.startOf('minute')
-  const end = to.startOf('minute')
+function getMinutesInRange(from: number, to: number, gap = 1) {
+  const start = dayjs(from).startOf('minute')
+  const end = dayjs(to).startOf('minute')
   const total = end.diff(start, 'minutes')
   const minutes = Array.from({ length: Math.ceil(total / gap) }, (_, i) => ({
-    from: start.add(i * gap, 'minutes'),
-    to: start.add((i + 1) * gap, 'minutes'),
+    from: start.add(i * gap, 'minutes').valueOf(),
+    to: start.add((i + 1) * gap, 'minutes').valueOf(),
   }))
   return minutes
 }
@@ -259,8 +249,7 @@ export default function useVehicleLocations({
           } else {
             setLocations((prev) =>
               uniqBy(
-                data.length === 0 ? prev : [...prev, ...data],
-                //.sort((a, b) => a.id! - b.id!),
+                data.length === 0 ? prev : [...prev, ...data], //.sort((a, b) => a.id! - b.id!),
                 (loc) => loc.id,
               ),
             )

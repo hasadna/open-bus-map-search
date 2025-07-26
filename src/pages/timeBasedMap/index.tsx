@@ -50,7 +50,10 @@ export default function TimeBasedMapPage() {
   const [from, setFrom] = useState(dayjs('2023-03-14T15:00:00Z'))
   const [to, setTo] = useState(dayjs(from).add(1, 'minutes'))
 
-  const { locations, isLoading } = useVehicleLocations({ from, to })
+  const { locations, isLoading } = useVehicleLocations({
+    from: from.valueOf(),
+    to: to.valueOf(),
+  })
 
   const loaded = locations.length
   const { t } = useTranslation()
@@ -108,7 +111,7 @@ export default function TimeBasedMapPage() {
         </Grid>
         <Grid size={{ sm: 5, xs: 6 }}>
           <DateSelector
-            time={to}
+            time={dayjs(to)}
             onChange={(ts) => {
               const val = ts ? ts : to
               setFrom(dayjs(val).subtract(dayjs(to).diff(dayjs(from)))) // keep the same time difference
@@ -118,7 +121,7 @@ export default function TimeBasedMapPage() {
         </Grid>
         <Grid size={{ sm: 5, xs: 6 }}>
           <TimeSelector
-            time={to}
+            time={dayjs(to)}
             onChange={(ts) => {
               const val = ts ? ts : from
               setFrom(dayjs(val).subtract(dayjs(to).diff(dayjs(from))))

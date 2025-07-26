@@ -210,6 +210,7 @@ export async function getRoutesByLineRef(
   date?: Date,
   signal?: AbortSignal,
 ) {
+  if (!lineRefs) return []
   return await GTFS_API.gtfsRoutesListGet(
     {
       operatorRefs: operatorId,

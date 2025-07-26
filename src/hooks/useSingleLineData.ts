@@ -82,8 +82,8 @@ export const useSingleLineData = (
   }, [vehicleNumber])
 
   const { locations, isLoading: locationsAreLoading } = useVehicleLocations({
-    from: today,
-    to: tomorrow,
+    from: today.valueOf(),
+    to: tomorrow.valueOf(),
     operatorRef: operatorId,
     lineRef: selectedRoute?.lineRef.toString(),
     vehicleRef: validVehicleNumber?.toString(),
@@ -97,8 +97,8 @@ export const useSingleLineData = (
         validVehicleNumber ? Number(l.siriRideVehicleRef) === validVehicleNumber : true,
       )
       .map<Point>((location) => ({
-        loc: [location.lat!, location.lon!],
-        color: location.velocity!,
+        loc: [location.lat || NaN, location.lon || NaN],
+        color: location.velocity || 0,
         operator: location.siriRouteOperatorRef,
         bearing: location.bearing,
         recorded_at_time: location.recordedAtTime?.getTime(),
