@@ -8,7 +8,6 @@ on:
       - completed
 
 permissions:
-  contents: read
   issues: write
   pull-requests: write
 
@@ -53,9 +52,14 @@ jobs:
 
       - name: Read PR number
         id: read-pr
-        run: "pr_number=$(tr -d '\\n' < pr_number | grep -E '^[0-9]+$' || echo \"\"\
-          )\nif [ -z \"$pr_number\" ]; then\n  echo \"Error: Invalid PR number\" >&2\n\
-          \  exit 1\nfi\necho \"PR_NUMBER=${pr_number}\" >> $GITHUB_ENV"
+        run: |
+          pr_number=$(cat pr_number | tr -d '\n' | grep -E '^[0-9]+$' || echo "")
+          if [ -z "$pr_number" ]; then
+            echo "Error: Invalid PR number" >&2
+            exit 1
+          fi
+          echo "PR_NUMBER=${pr_number}" >> $GITHUB_ENV
+
       - uses: shallwefootball/s3-upload-action@master
         name: Upload preview to S3
         if: always()
@@ -81,6 +85,7 @@ jobs:
         uses: peter-evans/create-or-update-comment@v4
         if: steps.fc.outputs.comment-id
         with:
+          token: ${{ secrets.GH_PAT }}
           comment-id: ${{ steps.fc.outputs.comment-id }}
           edit-mode: replace
           body: |
@@ -92,6 +97,7 @@ jobs:
         uses: peter-evans/create-or-update-comment@v4
         if: steps.fc.outputs.comment-id == ''
         with:
+          token: ${{ secrets.GH_PAT }}
           issue-number: ${{ env.PR_NUMBER }}
           body: |
             Preview: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}/index.html
