@@ -1,10 +1,9 @@
 module.exports = {
-  testConcurrency: 10,
+  testConcurrency: 20,
+
   waitBeforeCapture: async () => {
     const startTime = Date.now()
-    const timeout = 20 * 1000
-    const WaitForAniamtion =
-      document.querySelector('.ant-skeleton-content') || document.querySelector('.ant-skeleton')
+    const timeout = 15 * 1000
     while (
       document.querySelector('.ant-skeleton-content') ||
       document.querySelector('.ant-skeleton')
@@ -16,9 +15,6 @@ module.exports = {
         console.warn('Waited too long for skeletons to disappear.')
         throw new Error('Skeletons did not disappear in time on ' + window.location.href)
       }
-    }
-    if (WaitForAniamtion) {
-      await new Promise((resolve) => setTimeout(resolve, 2000))
     }
     return true
   },
