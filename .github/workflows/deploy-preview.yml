@@ -86,7 +86,7 @@ jobs:
         if: steps.fc.outputs.comment-id
         with:
           comment-id: ${{ steps.fc.outputs.comment-id }}
-          -editmode: replace
+          edit-mode: replace
           body: |
             Preview: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}/index.html
             Preview Storybook: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}/storybook/index.html
