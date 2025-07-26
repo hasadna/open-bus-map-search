@@ -8,100 +8,96 @@ on:
       - completed
 
 permissions:
-  actions: read
   contents: read
-  pull-requests: write
+  issues: write
 
 jobs:
   deploy-to-s3:
     name: Deploy to S3
     runs-on: ubuntu-latest
-    env:
-      AWS_BUCKET: noam-gaash.co.il
-      S3_BASE_PATH: ${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
+      - uses: actions/checkout@v4
       - name: Download dist-build artifact
         uses: dawidd6/action-download-artifact@v11
         with:
-          workflow: 'Build'
+          workflow: Build
           workflow_conclusion: success
           github_token: ${{ secrets.GITHUB_TOKEN }}
           run_id: ${{ github.event.workflow_run.id }}
+          run_number: ${{ github.event.workflow_run.run_number }}
           name: dist-build
           path: .
 
       - name: Download dist-storybook artifact
         uses: dawidd6/action-download-artifact@v11
         with:
-          workflow: 'Build'
+          workflow: Build
           workflow_conclusion: success
           github_token: ${{ secrets.GITHUB_TOKEN }}
           run_id: ${{ github.event.workflow_run.id }}
+          run_number: ${{ github.event.workflow_run.run_number }}
           name: dist-storybook
           path: storybook
 
-      - name: Download PR number artifact
+      - name: Download pr number
         uses: dawidd6/action-download-artifact@v11
         with:
-          workflow: 'Build'
+          workflow: Build
           workflow_conclusion: success
           github_token: ${{ secrets.GITHUB_TOKEN }}
           run_id: ${{ github.event.workflow_run.id }}
+          run_number: ${{ github.event.workflow_run.run_number }}
           name: pr_number
           path: .
 
-      - name: Read PR number securely
+      - name: Read PR number
         id: read-pr
         run: |
           pr_number=$(cat pr_number | tr -d -c '0-9')
           if [[ -z "$pr_number" ]]; then
-            echo "PR number not found or invalid"
+            echo "Error: Invalid PR number" >&2
             exit 1
           fi
-          echo "PR_NUMBER=$pr_number" >> $GITHUB_ENV
+          echo "PR_NUMBER=${pr_number}" >> $GITHUB_ENV
 
-      - name: Upload preview to S3
-        uses: shallwefootball/s3-upload-action@master
+      - uses: shallwefootball/s3-upload-action@master
+        name: Upload preview to S3
         if: always()
-        id: s3-upload
+        id: s3-trace
         continue-on-error: true
         with:
           aws_key_id: ${{ secrets.AWS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws_bucket: ${{ env.AWS_BUCKET }}
+          aws_bucket: noam-gaash.co.il
           source_dir: .
-          destination_dir: ${{ env.S3_BASE_PATH }}
+          destination_dir: ${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}
 
-      - name: Find existing preview comment
+      - name: find comment
         uses: peter-evans/find-comment@v3
         if: env.PR_NUMBER
-        id: find-comment
+        id: fc
         with:
           issue-number: ${{ env.PR_NUMBER }}
-          comment-author: 'github-actions[bot]'
-          body-includes: 'Preview'
+          comment-author: github-actions[bot]
+          body-includes: Preview
 
-      - name: Update preview comment
+      - name: update comment
         uses: peter-evans/create-or-update-comment@v4
-        if: steps.find-comment.outputs.comment-id
+        if: steps.fc.outputs.comment-id
         with:
-          comment-id: ${{ steps.find-comment.outputs.comment-id }}
-          edit-mode: replace
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          -editmode: replace
           body: |
-            Preview: https://s3.amazonaws.com/${{ env.AWS_BUCKET }}/${{ env.S3_BASE_PATH }}/index.html  
-            Preview Storybook: https://s3.amazonaws.com/${{ env.AWS_BUCKET }}/${{ env.S3_BASE_PATH }}/storybook/index.html  
-            Test Report (if available): https://s3.amazonaws.com/${{ env.AWS_BUCKET }}/${{ github.event.workflow_run.head_sha }}/test-results/index.html
+            Preview: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}/index.html
+            Preview Storybook: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}/storybook/index.html
+            Test Report (if available): https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.head_sha }}/test-results/index.html
 
-      - name: Create preview comment
+      - name: create comment
         uses: peter-evans/create-or-update-comment@v4
-        if: steps.find-comment.outputs.comment-id == ''
+        if: steps.fc.outputs.comment-id == ''
         with:
           issue-number: ${{ env.PR_NUMBER }}
           body: |
-            Preview: https://s3.amazonaws.com/${{ env.AWS_BUCKET }}/${{ env.S3_BASE_PATH }}/index.html  
-            Preview Storybook: https://s3.amazonaws.com/${{ env.AWS_BUCKET }}/${{ env.S3_BASE_PATH }}/storybook/index.html  
-            Test Report (if available): https://s3.amazonaws.com/${{ env.AWS_BUCKET }}/${{ github.event.workflow_run.head_sha }}/test-results/index.html
+            Preview: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}/index.html
+            Preview Storybook: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}/storybook/index.html
+            Test Report (if available): https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.head_sha }}/test-results/index.html
