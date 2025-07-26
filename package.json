@@ -87,8 +87,6 @@
     "@nx/eslint-plugin": "^21.3.0",
     "@playwright/test": "^1.54.1",
     "@storybook/addon-docs": "^9.0.17",
-    "@storybook/addon-links": "^9.0.17",
-    "@storybook/addon-onboarding": "^9.0.17",
     "@storybook/react-vite": "^9.0.17",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
@@ -123,6 +121,8 @@
     "jsdom": "^26.1.0",
     "lightningcss": "^1.30.1",
     "madge": "^8.0.0",
+    "msw": "^2.10.4",
+    "msw-storybook-addon": "^2.0.5",
     "nx": "^21.3.1",
     "playwright-advanced-har": "^1.4.0",
     "prettier": "^3.6.2",
@@ -157,5 +157,10 @@
   "overrides": {
     "storybook": "$storybook",
     "vite": "npm:rolldown-vite@latest"
+  },
+  "msw": {
+    "workerDirectory": [
+      "public"
+    ]
   }
 }

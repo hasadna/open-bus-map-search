@@ -1,4 +1,5 @@
 import type { Preview } from '@storybook/react-vite'
+import { initialize, mswLoader } from 'msw-storybook-addon'
 import { Suspense, useEffect } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { BrowserRouter } from 'react-router'
@@ -23,6 +24,10 @@ const queryClient = new QueryClient({
 queryClient.setQueryData(['version'], '1.2.3')
 
 const preview: Preview = {
+  beforeAll: () => {
+    initialize()
+  },
+  loaders: [mswLoader],
   parameters: {
     actions: { argTypesRegex: '^on[A-Z].*' },
     controls: {
@@ -57,7 +62,6 @@ const preview: Preview = {
       )
     },
   ],
-
   tags: ['autodocs'],
 }
 

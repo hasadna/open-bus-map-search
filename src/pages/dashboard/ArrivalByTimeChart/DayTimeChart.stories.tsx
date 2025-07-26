@@ -1,5 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { http, HttpResponse } from 'msw'
 import { getPastDate } from '../../../../.storybook/main'
+import mockData from '../../../../.storybook/mockData'
 import DayTimeChart from './DayTimeChart'
 import dayjs from 'src/dayjs'
 
@@ -45,6 +47,15 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
+  parameters: {
+    msw: {
+      handlers: [
+        http.get(mockData.arrivalByTimeChart.url, () => {
+          return HttpResponse.json(mockData.arrivalByTimeChart.data)
+        }),
+      ],
+    },
+  },
   args: {
     startDate: dayjs(getPastDate()).subtract(7, 'day'),
     endDate: dayjs(getPastDate()),

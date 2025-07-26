@@ -1,7 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { getPastDate } from '../../../../.storybook/main'
+import mockData from '../../../../.storybook/mockData'
 import WorstLinesChart from './WorstLinesChart'
 import dayjs from 'src/dayjs'
+import { http, HttpResponse } from 'msw'
 
 const meta = {
   component: WorstLinesChart,
@@ -42,6 +44,15 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
+  parameters: {
+    msw: {
+      handlers: [
+        http.get(mockData.worstLinesChart.url, () => {
+          return HttpResponse.json(mockData.worstLinesChart.data)
+        }),
+      ],
+    },
+  },
   args: {
     startDate: dayjs(getPastDate()).subtract(7, 'day'),
     endDate: dayjs(getPastDate()),

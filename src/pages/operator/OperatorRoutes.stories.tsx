@@ -1,5 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { http, HttpResponse } from 'msw'
 import { getPastDate } from '../../../.storybook/main'
+import mockData from '../../../.storybook/mockData'
 import { OperatorRoutes } from './OperatorRoutes'
 
 const meta = {
@@ -29,6 +31,15 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
+  parameters: {
+    msw: {
+      handlers: [
+        http.get(mockData.operatorRoutes.url, () => {
+          return HttpResponse.json(mockData.operatorRoutes.data)
+        }),
+      ],
+    },
+  },
   args: {
     operatorId: '3',
     timestamp: getPastDate().getTime(),
