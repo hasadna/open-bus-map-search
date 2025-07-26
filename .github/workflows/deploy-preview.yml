@@ -7,6 +7,13 @@ on:
     types:
       - completed
 
+permissions:
+  actions: read
+  contents: read
+  issues: write
+  pull-requests: write
+  id-token: read
+
 jobs:
   deploy-to-s3:
     name: Deploy to S3
@@ -14,7 +21,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Download dist-build artifact
-        uses: dawidd6/action-download-artifact@v9
+        uses: dawidd6/action-download-artifact@v11
         with:
           workflow: Build
           workflow_conclusion: success
@@ -25,7 +32,7 @@ jobs:
           path: .
 
       - name: Download dist-storybook artifact
-        uses: dawidd6/action-download-artifact@v9
+        uses: dawidd6/action-download-artifact@v11
         with:
           workflow: Build
           workflow_conclusion: success
@@ -36,7 +43,7 @@ jobs:
           path: storybook
 
       - name: Download pr number
-        uses: dawidd6/action-download-artifact@v9
+        uses: dawidd6/action-download-artifact@v11
         with:
           workflow: Build
           workflow_conclusion: success
@@ -79,7 +86,7 @@ jobs:
 
       - name: update comment
         uses: peter-evans/create-or-update-comment@v4
-        if: steps.fc.outputs.comment-id
+        if: ${{ steps.fc.outputs.comment-id }}
         with:
           comment-id: ${{ steps.fc.outputs.comment-id }}
           edit-mode: replace
@@ -90,7 +97,7 @@ jobs:
 
       - name: create comment
         uses: peter-evans/create-or-update-comment@v4
-        if: steps.fc.outputs.comment-id == ''
+        if: ${{ !steps.fc.outputs.comment-id }}
         with:
           issue-number: ${{ env.PR_NUMBER }}
           body: |
