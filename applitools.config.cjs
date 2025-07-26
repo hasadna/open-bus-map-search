@@ -1,9 +1,10 @@
 module.exports = {
-  testConcurrency: 20,
-
+  testConcurrency: 10,
   waitBeforeCapture: async () => {
     const startTime = Date.now()
-    const timeout = 15 * 1000
+    const timeout = 20 * 1000
+    const WaitForAniamtion =
+      document.querySelector('.ant-skeleton-content') || document.querySelector('.ant-skeleton')
     while (
       document.querySelector('.ant-skeleton-content') ||
       document.querySelector('.ant-skeleton')
@@ -16,7 +17,9 @@ module.exports = {
         throw new Error('Skeletons did not disappear in time on ' + window.location.href)
       }
     }
-    await new Promise((resolve) => setTimeout(resolve, 2000)) // wait for end animations
+    if (WaitForAniamtion) {
+      await new Promise((resolve) => setTimeout(resolve, 2000))
+    }
     return true
   },
   // puppeteerOptions: {headless: false, devtools: true},
