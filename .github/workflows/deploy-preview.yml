@@ -6,8 +6,6 @@ on:
       - Build
     types:
       - completed
-env:
-  MSW_S3_URL: s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}/storybook/mockServiceWorker.js
 
 jobs:
   deploy-to-s3:
