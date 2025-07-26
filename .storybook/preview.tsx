@@ -25,6 +25,7 @@ queryClient.setQueryData(['version'], '1.2.3')
 
 const preview: Preview = {
   beforeAll: () => {
+    console.warn(import.meta.env.VITE_MSW_S3_URL)
     initialize(
       import.meta.env.VITE_MSW_S3_URL
         ? { serviceWorker: { url: import.meta.env.VITE_MSW_S3_URL } }
