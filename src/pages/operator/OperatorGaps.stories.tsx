@@ -27,17 +27,17 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
+const URL =
+  'https://open-bus-stride-api.hasadna.org.il/gtfs_rides_agg/group_by?date_from=2024-02-11&date_to=2024-02-12&group_by=operator_ref&exclude_hour_from=23&exclude_hour_to=2'
+
 export const Default: Story = {
   parameters: {
     msw: {
       handlers: [
-        http.get(
-          'https://open-bus-stride-api.hasadna.org.il/gtfs_rides_agg/group_by?date_from=2024-02-11&date_to=2024-02-12&group_by=operator_ref&exclude_hour_from=23&exclude_hour_to=2',
-          async () => {
-            const { operatorGaps } = await import('../../../.storybook/mockData')
-            return HttpResponse.json(operatorGaps)
-          },
-        ),
+        http.get(URL, async () => {
+          const { operatorGaps } = await import('../../../.storybook/mockData')
+          return HttpResponse.json(operatorGaps)
+        }),
       ],
     },
   },
