@@ -49,7 +49,9 @@ jobs:
       - name: Run linter
         run: npm run lint
       - name: Check for circular dependencies
-        run: npx madge --extensions js,ts --circular .
+        run: |
+          npm install madge@latest --no-save
+          npx madge --extensions js,ts --circular .
 
   build:
     name: Docker Build
