@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { http, HttpResponse } from 'msw'
 import { getPastDate } from '../../../.storybook/main'
-import mockData from '../../../.storybook/mockData'
 import { OperatorRoutes } from './OperatorRoutes'
 
 const meta = {
@@ -34,9 +33,13 @@ export const Default: Story = {
   parameters: {
     msw: {
       handlers: [
-        http.get(mockData.operatorRoutes.url, () => {
-          return HttpResponse.json(mockData.operatorRoutes.data)
-        }),
+        http.get(
+          'https://open-bus-stride-api.hasadna.org.il/gtfs_routes/list?limit=-1&date_from=2024-02-12&date_to=2024-02-12&operator_refs=3&order_by=route_long_name%20asc',
+          async () => {
+            const { operatorRoutes } = await import('../../../.storybook/mockData')
+            return HttpResponse.json(operatorRoutes)
+          },
+        ),
       ],
     },
   },
