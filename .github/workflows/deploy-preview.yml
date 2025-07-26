@@ -82,7 +82,7 @@ jobs:
           body-includes: Preview
 
       - name: update comment
-        uses: peter-evans/create-or-update-comment@v1
+        uses: peter-evans/create-or-update-comment@v4
         if: ${{ steps.fc.outputs.comment-id }}
         with:
           comment-id: ${{ steps.fc.outputs.comment-id }}
@@ -93,9 +93,10 @@ jobs:
             Test Report (if available): https://s3.amazonaws.com/noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.sha }}/test-results/index.html
 
       - name: create comment
-        uses: peter-evans/create-or-update-comment@v1
+        uses: peter-evans/create-or-update-comment@v4
         if: ${{ !steps.fc.outputs.comment-id }}
         with:
+          token: ${{ secrets.GITHUB_TOKEN }}
           issue-number: ${{ env.PR_NUMBER }}
           body: |
             Preview: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}/index.html
