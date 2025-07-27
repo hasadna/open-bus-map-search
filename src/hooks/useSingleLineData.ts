@@ -1,5 +1,5 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
-import { getRoutesAsync, getRoutesByLineRef, getStopsForRouteAsync } from 'src/api/gtfsService'
+import { getGTFSRoutes, getStopsForRouteAsync } from 'src/api/gtfsService'
 import useVehicleLocations from 'src/api/useVehicleLocations'
 import dayjs from 'src/dayjs'
 import { BusRoute } from 'src/model/busRoute'
@@ -45,7 +45,13 @@ export const useSingleLineData = (
     const controller = new AbortController()
     const time = dayjs(search.timestamp)
 
-    getRoutesAsync(time, time, operatorId, lineNumber, controller.signal)
+    getGTFSRoutes({
+      from: time.valueOf(),
+      operatorId,
+      routeShortName: lineNumber,
+      signal: controller.signal,
+      toBusRoute: true,
+    })
       .then((routes) => {
         setRoutes(routes)
         setSearch((prev) => ({ ...prev, routes }))
@@ -74,7 +80,7 @@ export const useSingleLineData = (
     const today = dayjs(search.timestamp).startOf('day')
     return [today, today.add(1, 'day')]
   }, [search.timestamp])
-
+  // 23311102
   const validVehicleNumber = useMemo(() => {
     return vehicleNumber && /^\d{1,8}$/.test(vehicleNumber.toString())
       ? Number(vehicleNumber)
@@ -129,11 +135,12 @@ export const useSingleLineData = (
       if (vehicleNumber) {
         const optionsArray2 = await Promise.all(
           optionsArray.map(async (option) => {
-            const routes = await getRoutesByLineRef(
-              option.position.point?.siriRouteOperatorRef?.toString(),
-              option.position.point?.siriRouteLineRef?.toString(),
-              option.position.point!.recordedAtTime,
-            )
+            const routes = await getGTFSRoutes({
+              operatorId: option.position.point?.siriRouteOperatorRef?.toString(),
+              lineRefs: option.position.point?.siriRouteLineRef?.toString(),
+              from: option.position.point!.recordedAtTime?.valueOf() || Date.now(),
+              limit: 1,
+            })
             const [start, end] = routeStartEnd(routes[0]?.routeLongName)
             return {
               value: `${option.scheduledTime}|${option.position.point?.siriRideVehicleRef}|${option.position.point?.siriRouteLineRef}`,
@@ -195,7 +202,12 @@ export const useSingleLineData = (
           routeIds = selectedRoute.routeIds
         } else if (scheduledLine && operatorId) {
           routeIds = (
-            await getRoutesByLineRef(operatorId, scheduledLine, startTimeTimestamp.toDate())
+            await getGTFSRoutes({
+              from: startTimeTimestamp.valueOf(),
+              operatorId,
+              lineRefs: scheduledLine,
+              limit: 1,
+            })
           ).map((route) => route.id)
         }
         if (!routeIds || routeIds.length === 0) {

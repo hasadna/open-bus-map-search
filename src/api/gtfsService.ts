@@ -3,15 +3,14 @@ import {
   GtfsApi,
   GtfsRideStopPydanticModel,
   GtfsRideWithRelatedPydanticModel,
+  GtfsRoutePydanticModel,
 } from 'open-bus-stride-client'
 import dayjs from 'src/dayjs'
 import { API_CONFIG, BASE_PATH, MAX_HITS_COUNT } from 'src/api/apiConfig'
-import { BusRoute, fromGtfsRoute } from 'src/model/busRoute'
 import { BusStop, fromGtfsStop } from 'src/model/busStop'
-// import { Route } from 'react-router'
+import { BusRoute, fromGtfsRoute } from 'src/model/busRoute'
 
 const GTFS_API = new GtfsApi(API_CONFIG)
-//const USER_CASES_API = new UserCasesApi(API_CONFIG)
 const JOIN_SEPARATOR = ','
 const SEARCH_MARGIN_HOURS = 4
 
@@ -22,45 +21,48 @@ type StopHitsPayLoadType = {
   arrival_time_from: number
 }
 
-export async function getRoutesAsync(
-  fromTimestamp: dayjs.Dayjs,
-  toTimestamp: dayjs.Dayjs,
-  operatorId?: string,
-  lineNumber?: string,
-  signal?: AbortSignal,
-): Promise<BusRoute[]> {
-  const gtfsRoutes = await GTFS_API.gtfsRoutesListGet(
+type GetGTFSRoutesParams = {
+  from?: number
+  to?: number
+  operatorId?: string
+  lineRefs?: string
+  routeShortName?: string
+  limit?: number
+  signal?: AbortSignal
+  toBusRoute?: false
+}
+
+type GetGTFSRoutesParamsBusRoute = Omit<GetGTFSRoutesParams, 'toBusRoute'> & { toBusRoute: true }
+
+export async function getGTFSRoutes(params: GetGTFSRoutesParams): Promise<GtfsRoutePydanticModel[]>
+export async function getGTFSRoutes(params: GetGTFSRoutesParamsBusRoute): Promise<BusRoute[]>
+export async function getGTFSRoutes({
+  from,
+  to,
+  operatorId,
+  lineRefs,
+  routeShortName,
+  limit = 100,
+  signal,
+  toBusRoute,
+}: GetGTFSRoutesParams | GetGTFSRoutesParamsBusRoute): Promise<
+  GtfsRoutePydanticModel[] | BusRoute[]
+> {
+  debugger
+  const dateFrom = dayjs(from).startOf('day').toDate()
+  const dateTo = dayjs.min(dayjs(to || from).endOf('day'), dayjs()).toDate()
+  const routes = await GTFS_API.gtfsRoutesListGet(
     {
-      routeShortName: lineNumber,
+      dateFrom,
+      dateTo,
       operatorRefs: operatorId,
-      dateFrom: fromTimestamp.startOf('day').toDate(),
-      dateTo: dayjs.min(toTimestamp.endOf('day'), dayjs()).toDate(),
-      limit: 100,
+      lineRefs,
+      routeShortName,
+      limit,
     },
     { signal },
   )
-  const routes = Object.values(
-    gtfsRoutes
-      .filter(
-        (route) =>
-          route.date.getDate() >= fromTimestamp.date() &&
-          route.date.getDate() <= toTimestamp.date(),
-      )
-      .map((route) => fromGtfsRoute(route))
-      .reduce(
-        (agg, line) => {
-          const groupByKey = line.key
-          const prevLine = agg[groupByKey] || { routeIds: [] }
-          agg[groupByKey] = {
-            ...line,
-            ...prevLine,
-            routeIds: [...prevLine.routeIds, ...line.routeIds],
-          }
-          return agg
-        },
-        {} as Record<string, BusRoute>,
-      ),
-  )
+  if (toBusRoute) return routes.map(fromGtfsRoute)
   return routes
 }
 
@@ -189,36 +191,4 @@ export async function getRouteById(routeId?: string, signal?: AbortSignal) {
     console.error(`Failed to get route ${routeId}:`, errorMessage)
     throw new Error(errorMessage)
   }
-}
-
-export async function getAllRoutesList(operatorId: string, date: Date, signal?: AbortSignal) {
-  return await GTFS_API.gtfsRoutesListGet(
-    {
-      operatorRefs: operatorId,
-      dateFrom: date,
-      dateTo: date,
-      orderBy: 'route_long_name asc',
-      limit: -1,
-    },
-    { signal },
-  )
-}
-
-export async function getRoutesByLineRef(
-  operatorId?: string,
-  lineRefs?: string,
-  date?: Date,
-  signal?: AbortSignal,
-) {
-  if (!lineRefs) return []
-  return await GTFS_API.gtfsRoutesListGet(
-    {
-      operatorRefs: operatorId,
-      dateFrom: date,
-      dateTo: date,
-      lineRefs,
-      limit: 1,
-    },
-    { signal },
-  )
 }

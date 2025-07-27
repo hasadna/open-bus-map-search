@@ -27,7 +27,7 @@ type SiriVehicleRequest = {
 }
 
 const SIRI_API = new SiriApi(API_CONFIG)
-const LIMIT = 1000
+const LIMIT = 10000
 const CONCURRENCY = 10
 const RETRY = 3
 
@@ -54,8 +54,8 @@ class LocationObservable {
     while (this.loading) {
       const response = await fetchWithQueue(
         {
-          recordedAtTimeFrom: new Date(params.from),
-          recordedAtTimeTo: new Date(params.to),
+          recordedAtTimeFrom: params.from ? new Date(params.from) : undefined,
+          recordedAtTimeTo: params.to ? new Date(params.to) : undefined,
           siriRoutesLineRef: params.lineRef,
           siriRoutesOperatorRef: params.operatorRef,
           siriVehicleLocationIds: params.vehicleRef,
@@ -208,6 +208,8 @@ function getMinutesInRange(from: number, to: number, gap = 1) {
 export default function useVehicleLocations({
   splitMinutes: split = 1,
   pause = false,
+  from,
+  to,
   ...params
 }: SiriVehicleRequest & {
   splitMinutes?: false | number
@@ -217,20 +219,18 @@ export default function useVehicleLocations({
   const [isLoading, setIsLoading] = useState<boolean[]>([])
   const lastQueryKeyRef = useRef('')
 
-  const queryKey = getQueryKey(params)
+  const queryKey = getQueryKey({ from, to, ...params })
 
   useEffect(() => {
     if (pause) return
 
     if (lastQueryKeyRef.current === queryKey) return
 
-    const range = split
-      ? getMinutesInRange(params.from, params.to, split)
-      : [{ from: params.from, to: params.to }]
+    const range = split ? getMinutesInRange(from, to, split) : [{ from, to }]
 
     setIsLoading(range.map(() => true))
 
-    let unsubscrubed = false
+    // let unsubscrubed = false
     const unsubscribers: (() => void)[] = []
 
     range.map(({ from, to }, i) =>
@@ -239,7 +239,7 @@ export default function useVehicleLocations({
         from,
         to,
         onUpdate: (data) => {
-          if (unsubscrubed) return
+          // if (unsubscrubed) return
           if ('finished' in data) {
             setIsLoading((prev) => {
               const newIsLoading = [...prev]
@@ -259,7 +259,7 @@ export default function useVehicleLocations({
     )
     return () => {
       setLocations([])
-      unsubscrubed = true
+      // unsubscrubed = true
       unsubscribers.forEach((unmount) => unmount())
       setIsLoading([])
     }

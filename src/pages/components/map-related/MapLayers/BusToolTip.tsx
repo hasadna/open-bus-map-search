@@ -8,7 +8,7 @@ import { Link } from 'react-router'
 import { EasterEgg } from '../../../EasterEgg/EasterEgg'
 import CustomTreeView from '../../CustomTreeView'
 import ComplaintModal from './ComplaintModal'
-import { getRoutesByLineRef } from 'src/api/gtfsService'
+import { getGTFSRoutes } from 'src/api/gtfsService'
 import dayjs from 'src/dayjs'
 import { routeStartEnd, vehicleIDFormat } from 'src/pages/components/utils/rotueUtils'
 import type { Point } from 'src/pages/timeBasedMap'
@@ -26,11 +26,12 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
   useEffect(() => {
     if (!position.point?.id) return
     setIsLoading(true)
-    getRoutesByLineRef(
-      position.point?.siriRouteOperatorRef?.toString(),
-      position.point?.siriRouteLineRef?.toString(),
-      position.point?.siriRideScheduledStartTime,
-    )
+    getGTFSRoutes({
+      from: position.point?.siriRideScheduledStartTime?.valueOf(),
+      operatorId: position.point?.siriRouteOperatorRef?.toString(),
+      lineRefs: position.point?.siriRouteLineRef?.toString(),
+      limit: 1,
+    })
       .then((routes) => {
         setRoute(routes[0])
         setIsLoading(false)
