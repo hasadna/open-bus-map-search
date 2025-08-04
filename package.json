@@ -98,7 +98,7 @@
     "@types/leaflet": "^1.9.20",
     "@types/lodash.debounce": "^4.0.9",
     "@types/lodash.uniqby": "^4.7.9",
-    "@types/node": "^24.0.15",
+    "@types/node": "^24.2.0",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
     "@types/styled-components": "^5.1.34",
