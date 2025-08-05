@@ -5,6 +5,9 @@ permissions:
   contents: read
   pull-requests: write
 
+env:
+  VITE_MSW_S3_URL: s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}/storybook/mockServiceWorker.js
+
 jobs:
   build:
     name: Build Application
@@ -30,8 +33,6 @@ jobs:
   build-storybook:
     name: Build Storybook
     runs-on: ubuntu-latest
-    env:
-      VITE_MSW_S3_URL: s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}/storybook/mockServiceWorker.js
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
