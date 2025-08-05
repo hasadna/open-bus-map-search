@@ -26,12 +26,10 @@ queryClient.setQueryData(['version'], '1.2.3')
 const preview: Preview = {
   beforeAll: () => {
     const isS3 = window.location.href.includes('s3.amazonaws')
-    const serviceWorkerUrl = isS3 ? import.meta.env.VITE_MSW_S3_URL || '' : 'mockServiceWorker.js'
-    console.log({
-      isS3,
-      serviceWorkerUrl,
-      env: import.meta.env,
-    })
+    const serviceWorkerUrl =
+      isS3 && import.meta.env.VITE_MSW_S3_URL
+        ? import.meta.env.VITE_MSW_S3_URL
+        : '/mockServiceWorker.js'
     initialize({
       serviceWorker: {
         url: serviceWorkerUrl,
