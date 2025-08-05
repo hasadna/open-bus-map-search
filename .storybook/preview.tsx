@@ -25,11 +25,13 @@ queryClient.setQueryData(['version'], '1.2.3')
 
 const preview: Preview = {
   beforeAll: () => {
+    const isS3 = window.location.href.includes('s3.amazonaws')
     initialize({
       serviceWorker: {
-        url: import.meta.env.VITE_MSW_S3_URL || 'mockServiceWorker.js',
+        url: isS3 ? import.meta.env.VITE_MSW_S3_URL || '' : 'mockServiceWorker.js',
       },
     })
+    import('./mockData') // Preload mock data
   },
   loaders: [mswLoader],
   parameters: {
@@ -43,11 +45,9 @@ const preview: Preview = {
     options: {
       storySort: {
         method: 'alphabetical',
-        order: [],
       },
     },
   },
-
   decorators: [
     (Story, context) => {
       const { locale, darkMode } = context.globals
@@ -98,8 +98,6 @@ export const globalTypes = {
   },
 }
 
-export default preview
-
 const StoryBookWrapper = ({
   darkMode,
   locale,
@@ -123,3 +121,5 @@ const StoryBookWrapper = ({
 
   return children
 }
+
+export default preview

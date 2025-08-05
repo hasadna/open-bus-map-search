@@ -2,14 +2,13 @@ name: Deploy Preview
 
 on:
   workflow_run:
-    workflows:
-      - Build
+    workflows: ['Build']
     types:
       - completed
 
 permissions:
   contents: read
-  pull-requests: write
+  issues: write
 
 jobs:
   deploy-to-s3:
@@ -20,7 +19,7 @@ jobs:
       - name: Download dist-build artifact
         uses: dawidd6/action-download-artifact@v11
         with:
-          workflow: Build
+          workflow: 'Build'
           workflow_conclusion: success
           github_token: ${{ secrets.GITHUB_TOKEN }}
           run_id: ${{ github.event.workflow_run.id }}
@@ -31,7 +30,7 @@ jobs:
       - name: Download dist-storybook artifact
         uses: dawidd6/action-download-artifact@v11
         with:
-          workflow: Build
+          workflow: 'Build'
           workflow_conclusion: success
           github_token: ${{ secrets.GITHUB_TOKEN }}
           run_id: ${{ github.event.workflow_run.id }}
@@ -42,7 +41,7 @@ jobs:
       - name: Download pr number
         uses: dawidd6/action-download-artifact@v11
         with:
-          workflow: Build
+          workflow: 'Build'
           workflow_conclusion: success
           github_token: ${{ secrets.GITHUB_TOKEN }}
           run_id: ${{ github.event.workflow_run.id }}
@@ -53,8 +52,8 @@ jobs:
       - name: Read PR number
         id: read-pr
         run: |
-          pr_number=$(cat pr_number | tr -d -c '0-9')
-          if [[ -z "$pr_number" ]]; then
+          pr_number=$(cat pr_number | tr -d '\n' | grep -E '^[0-9]+$' || echo "")
+          if [ -z "$pr_number" ]; then
             echo "Error: Invalid PR number" >&2
             exit 1
           fi
@@ -69,7 +68,7 @@ jobs:
           aws_key_id: ${{ secrets.AWS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_bucket: noam-gaash.co.il
-          source_dir: .
+          source_dir: . # Upload the root directory
           destination_dir: ${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}
 
       - name: find comment
@@ -78,27 +77,26 @@ jobs:
         id: fc
         with:
           issue-number: ${{ env.PR_NUMBER }}
-          comment-author: github-actions[bot]
-          body-includes: Preview
+          comment-author: 'github-actions[bot]'
+          body-includes: 'Preview'
 
       - name: update comment
         uses: peter-evans/create-or-update-comment@v4
-        if: ${{ steps.fc.outputs.comment-id }}
+        if: steps.fc.outputs.comment-id
         with:
           comment-id: ${{ steps.fc.outputs.comment-id }}
           edit-mode: replace
           body: |
             Preview: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}/index.html
             Preview Storybook: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}/storybook/index.html
-            Test Report (if available): https://s3.amazonaws.com/noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.sha }}/test-results/index.html
+            Test Report (if available): 'https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.head_sha }}/test-results/index.html'
 
       - name: create comment
         uses: peter-evans/create-or-update-comment@v4
-        if: ${{ !steps.fc.outputs.comment-id }}
+        if: steps.fc.outputs.comment-id == ''
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
           issue-number: ${{ env.PR_NUMBER }}
           body: |
             Preview: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}/index.html
             Preview Storybook: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}/storybook/index.html
-            Test Report (if available): https://s3.amazonaws.com/noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.sha }}/test-results/index.html
+            Test Report (if available): 'https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.head_sha }}/test-results/index.html'
