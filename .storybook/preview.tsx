@@ -31,7 +31,6 @@ const preview: Preview = {
         url: isS3 ? import.meta.env.VITE_MSW_S3_URL || '' : 'mockServiceWorker.js',
       },
     })
-    import('./mockData') // Preload mock data
   },
   loaders: [mswLoader],
   parameters: {
