@@ -9,11 +9,11 @@ import Widget from 'src/shared/Widget'
 import { Dayjs } from 'src/dayjs'
 
 const convertToChartCompatibleStruct = (arr: GroupByRes[]) => {
-  return arr.map((item: GroupByRes) => ({
-    id: item.operator_ref?.agency_id || 'Unknown',
-    name: item.operator_ref?.agency_name || 'Unknown',
-    total: item.total_planned_rides,
-    actual: item.total_actual_rides,
+  return arr.map((operator) => ({
+    id: operator.operatorRef?.operatorRef,
+    name: operator.operatorRef?.agencyName || 'Unknown',
+    total: operator.totalPlannedRides,
+    actual: operator.totalActualRides,
   }))
 }
 
@@ -37,7 +37,7 @@ export const AllLinesChart: FC<AllChartComponentProps> = ({
 
   useEffect(() => {
     const totalElements = groupByOperatorData.length
-    const totalZeroElements = groupByOperatorData.filter((el) => el.total_actual_rides === 0).length
+    const totalZeroElements = groupByOperatorData.filter((el) => el.totalActualRides === 0).length
     if (totalElements === 0 || totalZeroElements === totalElements) {
       alertAllChartsZeroLinesHandling(true)
     } else {

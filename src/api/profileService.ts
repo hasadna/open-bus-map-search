@@ -1,4 +1,4 @@
-import { GtfsApi /*, GtfsRideWithRelatedPydanticModel*/ } from 'open-bus-stride-client'
+import { GtfsApi /*, GtfsRideWithRelatedPydanticModel*/ } from '@hasadna/open-bus-api-client'
 import { API_CONFIG } from 'src/api/apiConfig'
 // import { BASE_PATH } from './apiConfig'
 
@@ -10,7 +10,7 @@ export async function getGtfsRidesList(
   lineNumber: string | undefined,
   routeKey: string | undefined,
 ) {
-  const gtfsRidesList = await GTFS_API.gtfsRidesListGet({
+  const gtfsRidesList = await GTFS_API.listGtfsRidesListGet({
     gtfsRouteDateFrom: date,
     gtfsRouteDateTo: date,
     gtfsRouteOperatorRefs: operator,

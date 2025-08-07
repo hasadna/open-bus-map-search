@@ -1,7 +1,14 @@
-import agencyList from 'open-bus-stride-client/agencies/agencyList'
+import {
+  AggregationsApi,
+  GtfsAgencyPydanticModel,
+  GtfsRidesAggGroupByPydanticModel,
+} from '@hasadna/open-bus-api-client'
 import { useQuery } from '@tanstack/react-query'
-import { BASE_PATH } from './apiConfig'
+import { API_CONFIG } from './apiConfig'
+import getAgencyList from './agencyList'
 import { Dayjs } from 'src/dayjs'
+
+const AGGREGATIONS_API = new AggregationsApi(API_CONFIG)
 
 type groupByField =
   | 'gtfs_route_date'
@@ -15,53 +22,9 @@ type groupByFields =
   | `${groupByField},${groupByField},${groupByField}`
   | `${groupByField},${groupByField},${groupByField},${groupByField}`
 
-type Identity<T> = { [P in keyof T]: T[P] }
-type Replace<T, K extends keyof T, TReplace> = Identity<
-  Pick<T, Exclude<keyof T, K>> & {
-    [P in K]: TReplace
-  }
->
-
-/*
-example response
-[
-  {
-    "gtfs_route_date": "2023-02-27",
-    "operator_ref": 0,
-    "day_of_week": "string",
-    "total_routes": 0,
-    "total_planned_rides": 0,
-    "total_actual_rides": 0
-  }
-]
-*/
-type GroupByResponse = {
-  gtfs_route_date: string
-  gtfs_route_hour: string
-  operator_ref: number
-  line_ref: number
-  day_of_week: string
-  total_routes: number
-  total_planned_rides: number
-  total_actual_rides: number
-  route_short_name: string
-  route_long_name: string
-}[]
-
-export type GroupByRes = Replace<
-  GroupByResponse[0],
-  'operator_ref',
-  | {
-      agency_id: string
-      agency_name: string
-      agency_url: string
-      agency_timezone: string
-      agency_lang: string
-      agency_phone: string
-      agency_fare_url: string
-    }
-  | undefined
->
+export type GroupByRes = Omit<GtfsRidesAggGroupByPydanticModel, 'operatorRef'> & {
+  operatorRef: GtfsAgencyPydanticModel | undefined
+}
 
 async function fetchGroupBy({
   dateToStr,
@@ -72,23 +35,20 @@ async function fetchGroupBy({
   dateFromStr: string
   groupBy: groupByFields
 }): Promise<GroupByRes[]> {
+  const agencies = await getAgencyList()
   // example: https://open-bus-stride-api.hasadna.org.il/gtfs_rides_agg/group_by?date_from=2023-01-27&date_to=2023-01-29&group_by=operator_ref
-  const excludes = 'exclude_hour_from=23&exclude_hour_to=2'
+  const data = await AGGREGATIONS_API.groupByGtfsRidesAggGroupByGet({
+    dateFrom: new Date(dateFromStr),
+    dateTo: new Date(dateToStr),
+    groupBy,
+    excludeHoursFrom: 23,
+    excludeHoursTo: 2,
+  })
 
-  const response = await fetch(
-    `${BASE_PATH}/gtfs_rides_agg/group_by?date_from=${dateFromStr}&date_to=${dateToStr}&group_by=${groupBy}&${excludes}`,
-  ).then((res) => res.json())
-
-  return response
-    .map((dataRecord: { operator_ref: unknown }) => ({
-      ...dataRecord,
-      operator_ref: agencyList.find(
-        (agency) => agency.agency_id === String(dataRecord.operator_ref),
-      ),
-    }))
-    .filter(
-      (dataRecord: { operator_ref: undefined }) => dataRecord.operator_ref !== undefined,
-    ) as Promise<GroupByRes[]>
+  return data.map((data) => ({
+    ...data,
+    operatorRef: agencies.find((agency) => agency.operatorRef === data.operatorRef),
+  }))
 }
 
 export function useGroupBy({

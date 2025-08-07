@@ -88,8 +88,7 @@ export function MapContent({ positions, plannedRouteStops, showNavigationButtons
           i === 0
             ? busIcon({
                 operator_id: pos.operator?.toString() || 'default',
-                name: agencyList.find((agency) => agency.operator_ref === pos.operator)
-                  ?.agency_name,
+                name: agencyList.find((agency) => agency.operatorRef === pos.operator)?.agencyName,
               })
             : actualRouteStopMarker
         return (

@@ -16,7 +16,7 @@ import { useDate } from '../components/DateTimePicker'
 import OperatorSelector from '../components/OperatorSelector'
 import { PageContainer } from '../components/PageContainer'
 import { getColorName } from '../dashboard/AllLineschart/OperatorHbarChart/OperatorHbarChart'
-import { useGroupBy } from 'src/api/groupByService'
+import { GroupByRes, useGroupBy } from 'src/api/groupByService'
 import Widget from 'src/shared/Widget'
 import dayjs from 'src/dayjs'
 import './DataResearch.scss'
@@ -40,7 +40,7 @@ export const DataResearch = () => {
 function StackedResearchSection() {
   const [startDate, setStartDate] = useDate(now.clone().subtract(7, 'days'))
   const [endDate, setEndDate] = useDate(now.clone().subtract(1, 'day'))
-  const [operatorId, setOperatorId] = useState('')
+  const [operatorId, setOperatorId] = useState<number>()
   const [groupByHour, setGroupByHour] = useState<boolean>(false)
   const [graphData, loadingGraph] = useGroupBy({
     dateTo: endDate,
@@ -64,7 +64,7 @@ function StackedResearchSection() {
       <StackedResearchChart
         graphData={graphData}
         isLoading={loadingGraph}
-        field="total_actual_rides"
+        field="totalActualRides"
         title="מספר נסיעות בפועל"
         description="כמה נסיעות נרשמו כהתבצעו בכל יום/שעה בטווח הזמן שבחרתם. (נסיעות = siri rides)"
         agencyId={operatorId}
@@ -72,7 +72,7 @@ function StackedResearchSection() {
       <StackedResearchChart
         graphData={graphData}
         isLoading={loadingGraph}
-        field="total_planned_rides"
+        field="totalPlannedRides"
         title="מספר נסיעות מתוכננות"
         description="כמה נסיעות היו אמורות להיות בכל יום/שעה בטווח הזמן שבחרתם. (נסיעות = נסיעות מתוכננות בgtfs)"
         agencyId={operatorId}
@@ -80,7 +80,7 @@ function StackedResearchSection() {
       <StackedResearchChart
         graphData={graphData}
         isLoading={loadingGraph}
-        field="total_missed_rides"
+        field="totalMissedRides"
         title="מספר נסיעות שלא התבצעו"
         description="כמה נסיעות היו אמורות להיות בכל יום/שעה בטווח הזמן שבחרתם אבל לא התבצעו. (הפרש בין שני הגרפים הקודמים)"
         agencyId={operatorId}
@@ -145,52 +145,44 @@ const StackedResearchChart = ({
   isLoading,
   title,
   description,
-  field = 'total_actual_rides',
+  field = 'totalActualRides',
   agencyId = '',
 }: {
-  graphData: {
-    gtfs_route_date: string
-    gtfs_route_hour: string
-    operator_ref?: {
-      agency_id?: string
-      agency_name?: string
-    }
-    total_actual_rides: number
-    total_planned_rides: number
-  }[]
+  graphData: GroupByRes[]
   isLoading?: boolean
   title?: string
   description?: string
-  field?: 'total_actual_rides' | 'total_planned_rides' | 'total_missed_rides'
-  agencyId?: string
+  field?: 'totalActualRides' | 'totalPlannedRides' | 'totalMissedRides'
+  agencyId?: number
 }) => {
-  const filteredGraphData =
-    agencyId == ''
-      ? graphData
-      : graphData.filter((dataRecord) => dataRecord.operator_ref?.agency_id === agencyId)
+  const filteredGraphData = agencyId
+    ? graphData
+    : graphData.filter((dataRecord) => dataRecord.operatorRef?.agencyName === agencyId)
   const data = useMemo(
     () =>
       filteredGraphData
         .reduce(
           (acc, curr) => {
             const val =
-              field === 'total_missed_rides'
-                ? curr.total_planned_rides - curr.total_actual_rides
+              field === 'totalMissedRides'
+                ? curr.totalPlannedRides - curr.totalActualRides
                 : curr[field]
-            const date = curr.gtfs_route_date ?? curr.gtfs_route_hour
+            const date = (curr.gtfsRouteDate ?? curr.gtfsRouteHour)?.valueOf() ?? 0
+            const agencyName = curr.operatorRef?.agencyName || 'Unknown'
             const entry = acc.find((item) => item.date === date)
+
             if (entry) {
-              if (val) entry[curr.operator_ref?.agency_name || 'Unknown'] = val
+              entry[agencyName] = val
             } else {
-              const newEntry = {
-                date: date,
-                [curr.operator_ref?.agency_name || 'Unknown']: val,
+              const newEntry: Record<string, number> = {
+                date,
+                agencyName: val,
               }
               acc.push(newEntry)
             }
             return acc
           },
-          [] as Record<string, string | number>[],
+          [] as Record<string, number>[],
         )
         .sort((a, b) => {
           if (a.date > b.date) return 1
@@ -201,7 +193,7 @@ const StackedResearchChart = ({
   )
 
   const operators = filteredGraphData
-    .map((operator) => operator.operator_ref?.agency_name || 'Unknown')
+    .map((operator) => operator.operatorRef?.agencyName || 'Unknown')
     .filter(unique)
 
   return (

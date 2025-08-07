@@ -25,13 +25,13 @@ export const OperatorGaps = ({
   })
 
   const data = useMemo(() => {
-    const operator = groupByOperatorData?.find((d) => d.operator_ref?.agency_id === operatorId)
+    const operator = groupByOperatorData?.find((d) => d.operatorRef?.operatorRef === operatorId)
     if (!operator) return []
 
-    const missing = operator?.total_planned_rides - operator?.total_actual_rides
+    const missing = operator?.totalPlannedRides - operator?.totalActualRides
     return [
-      { name: t('rides_planned'), value: operator?.total_planned_rides },
-      { name: t('rides_actual'), value: operator?.total_actual_rides, color: '#00C49F' },
+      { name: t('rides_planned'), value: operator?.totalPlannedRides },
+      { name: t('rides_actual'), value: operator?.totalActualRides, color: '#00C49F' },
       { name: t('rides_missing'), value: missing, color: '#FF4040' },
       // { name: t('ride_extra'), value: 0, color: '#FFBB28' },
     ]

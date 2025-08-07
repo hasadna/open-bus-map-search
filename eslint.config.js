@@ -73,6 +73,7 @@ export default [
       '@typescript-eslint/no-floating-promises': 'off',
       '@typescript-eslint/no-base-to-string': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-return': 'off',
       // Import
       'import/no-unused-modules': 'error',
       'import/order': 'error',

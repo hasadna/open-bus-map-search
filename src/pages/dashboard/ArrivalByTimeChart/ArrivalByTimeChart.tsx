@@ -10,39 +10,25 @@ import {
 } from 'recharts'
 import dayjs from 'src/dayjs'
 import './ArrivalByTimeChats.scss'
+import { GroupByRes } from 'src/api/groupByService'
 
-/**
- * Group array items by a common property value returned from the callback (ie. group by value of id).
- * @param array Data array
- * @param callback A callback that returns a group name
- * @returns New grouped array
- */
-export const arrayGroup = function <T>(array: T[], callback: (item: T) => string) {
-  const groups: Record<string, T[]> = {}
-  array.forEach(function (item) {
-    const groupName = callback(item)
-    groups[groupName] = groups[groupName] || []
-    groups[groupName].push(item)
-  })
-  return Object.keys(groups).map(function (group) {
-    return groups[group]
-  })
+export function arrayGroup<T>(array: T[], callback: (item: T) => string): T[][] {
+  return Object.values(
+    array.reduce<Record<string, T[]>>((acc, item) => {
+      const key = callback(item)
+      if (!acc[key]) acc[key] = []
+      acc[key].push(item)
+      return acc
+    }, {}),
+  )
 }
 
-/**
- * Creates an ISO string array between 2 points guided by an interval.
- * @param start ISO string (included)
- * @param end ISO string (excluded)
- * @param interval hour | day
- * @returns an array filled with dates from start to end (excluded)
- */
-export const getRange = (start: string, end: string, interval: 'hour' | 'day') => {
-  const startTime = new Date(start),
-    endTime = new Date(end)
-  const interval_ms = (interval == 'hour' ? 1 : 24) * 60 * 60 * 1000
-  const result = new Array((endTime.getTime() - startTime.getTime()) / interval_ms)
-    .fill(null)
-    .map((_, i) => new Date(startTime.getTime() + i * interval_ms).toISOString())
+export const getRange = (startTime: Date, endTime: Date, interval: 'hour' | 'day') => {
+  const intervalMs = (interval === 'hour' ? 1 : 24) * 60 * 60 * 1000
+  const result = []
+  for (let t = startTime.getTime(); t <= endTime.getTime(); t += intervalMs) {
+    result.push(new Date(t).toISOString())
+  }
   return result
 }
 
@@ -50,47 +36,61 @@ export default function ArrivalByTimeChart({
   data,
   operatorId,
 }: {
-  data: {
-    id: string
-    name: string
-    current: number
-    max: number
-    percent: number | null
-    gtfs_route_date?: string
-    gtfs_route_hour?: string
-  }[]
-  operatorId: string
+  data: GroupByRes[]
+  operatorId?: number
 }) {
-  if (operatorId) data = data.filter((item) => item.id === operatorId)
-  const dataByOperator = useMemo(() => {
-    const allTimes = data
-      .map((item) => item.gtfs_route_date ?? item.gtfs_route_hour!)
-      .filter(Boolean)
-    if (allTimes.length === 0) return []
-    const minTime = allTimes.reduce((a, b) => (a < b ? a : b))
-    const maxTime = allTimes.reduce((a, b) => (a > b ? a : b))
-    const allRange = getRange(minTime, maxTime, data[0].gtfs_route_hour ? 'hour' : 'day')
+  const filteredData = useMemo(() => {
+    if (operatorId) {
+      return data.filter((item) => item.operatorRef?.operatorRef === operatorId)
+    }
+    return data
+  }, [data, operatorId])
 
-    const pointsPerOperator = arrayGroup(data, (item) => item.id).map((operatorData) => {
-      return allRange.map((time) => {
-        const current = operatorData.find(
-          (item) =>
-            time.includes(item.gtfs_route_date!.split('T')[0]) ||
-            time.includes(item.gtfs_route_hour!),
-        )
-        return {
-          id: operatorData[0].id,
-          name: operatorData[0].name,
-          current: current?.current || 0,
-          max: current?.max || 0,
-          percent: current ? (current.current / current.max) * 100 : null,
-          ...(data[0]?.gtfs_route_hour ? { gtfs_route_hour: time } : { gtfs_route_date: time }),
-        }
-      })
+  const dataByOperator = useMemo(() => {
+    if (!filteredData.length) return []
+    const isByHour = !!filteredData[0]?.gtfsRouteHour
+    const allTimes = filteredData
+      .map((item) => new Date(isByHour ? item.gtfsRouteHour! : item.gtfsRouteDate!))
+      .filter((time) => time !== undefined)
+
+    if (!allTimes.length) return []
+    const minTime = allTimes.reduce((a, b) => (a.valueOf() < b.valueOf() ? a : b))
+    const maxTime = allTimes.reduce((a, b) => (a.valueOf() > b.valueOf() ? a : b))
+
+    const allRange = getRange(minTime, maxTime, isByHour ? 'hour' : 'day')
+
+    const grouped = arrayGroup(
+      filteredData,
+      (item) => item.operatorRef?.operatorRef?.toString() || '',
+    )
+    const pointsPerOperator = grouped.map((operatorData) => {
+      return allRange
+        .map((time) => {
+          const current = operatorData.find((item) => {
+            const dateStr = item.gtfsRouteDate?.toString()
+            const hourStr = item.gtfsRouteHour?.toString()
+            return time === dateStr || time === hourStr
+          })
+
+          const planned = current?.totalPlannedRides
+          const actual = current?.totalActualRides
+
+          return {
+            id: operatorData[0]?.operatorRef?.operatorRef,
+            name: operatorData[0]?.operatorRef?.agencyName,
+            current: actual,
+            max: planned,
+            percent: planned && actual ? (actual / planned) * 100 : null,
+            ...(isByHour ? { gtfsRouteHour: time } : { gtfsRouteDate: time }),
+          }
+        })
+        .filter((d) => d.percent)
     })
 
-    return pointsPerOperator.filter((operator) => operator.reduce((a, b) => a + b.current, 0) > 1) // filter out operators with no data
-  }, [data])
+    return pointsPerOperator.filter(
+      (operator) => operator.reduce((sum, point) => sum + (point.current || 0), 0) > 0,
+    )
+  }, [filteredData])
 
   return (
     <div className="chart">
@@ -105,11 +105,9 @@ export default function ArrivalByTimeChart({
               }}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis
-                dataKey={
-                  'gtfs_route_date' in operatorData[0] ? 'gtfs_route_date' : 'gtfs_route_hour'
-                }
+                dataKey={'gtfsRouteDate' in operatorData[0] ? 'gtfsRouteDate' : 'gtfsRouteHour'}
                 tickFormatter={(tick: dayjs.ConfigType) => dayjs(tick).format('dddd')}
-                interval={'gtfs_route_hour' in operatorData[0] ? 23 : 0}
+                interval={'gtfsRouteHour' in operatorData[0] ? 23 : 0}
               />
               <YAxis domain={[0, 100]} tickMargin={35} unit={'%'} />
               <Tooltip
@@ -120,13 +118,13 @@ export default function ArrivalByTimeChart({
                         <li>
                           <span className="label">זמן: </span>
                           <span className="value">
-                            {payload[0].payload.gtfs_route_date
+                            {payload[0].payload.gtfsRouteDate
                               ? dayjs
-                                  .utc(payload[0].payload.gtfs_route_date as dayjs.ConfigType)
+                                  .utc(payload[0].payload.gtfsRouteDate as dayjs.ConfigType)
                                   .format('יום ddd, L')
-                              : dayjs(
-                                  payload[0].payload.gtfs_route_hour as dayjs.ConfigType,
-                                ).format('יום ddd, L, LT')}
+                              : dayjs(payload[0].payload.gtfsRouteHour as dayjs.ConfigType).format(
+                                  'יום ddd, L, LT',
+                                )}
                           </span>
                         </li>
                         <li>

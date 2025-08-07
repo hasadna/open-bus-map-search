@@ -1,27 +1,15 @@
 import { Radio, RadioChangeEvent, Skeleton } from 'antd'
-import { FC, useEffect, useMemo, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import ArrivalByTimeChart from './ArrivalByTimeChart'
-import { GroupByRes, useGroupBy } from 'src/api/groupByService'
+import { useGroupBy } from 'src/api/groupByService'
 import Widget from 'src/shared/Widget'
 import { Dayjs } from 'src/dayjs'
-
-const convertToGraphCompatibleStruct = (arr: GroupByRes[]) => {
-  return arr.map((item: GroupByRes) => ({
-    id: item.operator_ref?.agency_id || 'Unknown',
-    name: item.operator_ref?.agency_name || 'Unknown',
-    current: item.total_actual_rides,
-    max: item.total_planned_rides,
-    percent: (item.total_actual_rides / item.total_planned_rides) * 100,
-    gtfs_route_date: item.gtfs_route_date,
-    gtfs_route_hour: item.gtfs_route_hour,
-  }))
-}
 
 interface DayTimeChartProps {
   startDate: Dayjs
   endDate: Dayjs
-  operatorId: string
+  operatorId?: number
   alertAllDayTimeChartHandling: (arg: boolean) => void
 }
 
@@ -40,14 +28,9 @@ const DayTimeChart: FC<DayTimeChartProps> = ({
     groupBy: groupByHour ? 'operator_ref,gtfs_route_hour' : 'operator_ref,gtfs_route_date',
   })
 
-  const graphData = useMemo(
-    () => convertToGraphCompatibleStruct(data),
-    [endDate, groupByHour, startDate, data.length],
-  )
-
   useEffect(() => {
     const totalElements = data.length
-    const totalZeroElements = data.filter((el) => el.total_actual_rides === 0).length
+    const totalZeroElements = data.filter((el) => el.totalActualRides === 0).length
     if (totalElements === 0 || totalZeroElements === totalElements) {
       alertAllDayTimeChartHandling(true)
     } else {
@@ -70,7 +53,7 @@ const DayTimeChart: FC<DayTimeChartProps> = ({
       {loadingGraph ? (
         <Skeleton active />
       ) : (
-        <ArrivalByTimeChart data={graphData} operatorId={operatorId} />
+        <ArrivalByTimeChart data={data} operatorId={operatorId} />
       )}
     </Widget>
   )
