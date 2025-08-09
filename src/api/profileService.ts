@@ -1,4 +1,4 @@
-import { GtfsApi /*, GtfsRideWithRelatedPydanticModel*/ } from 'open-bus-stride-client'
+import { GtfsApi /*, GtfsRideWithRelatedPydanticModel*/ } from '@hasadna/open-bus-api-client'
 import { API_CONFIG } from 'src/api/apiConfig'
 // import { BASE_PATH } from './apiConfig'
 
