@@ -10,7 +10,7 @@ import {
   DialogActions,
 } from '@mui/material'
 import { useTranslation } from 'react-i18next'
-import { SiriRideWithRelatedPydanticModel } from 'open-bus-stride-client'
+import { SiriRideWithRelatedPydanticModel } from '@hasadna/open-bus-api-client'
 import { Point } from 'src/pages/timeBasedMap'
 import { getSiriRideWithRelated } from 'src/api/siriService'
 

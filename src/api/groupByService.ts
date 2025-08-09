@@ -1,7 +1,9 @@
-import agencyList from 'open-bus-stride-client/agencies/agencyList'
 import { useQuery } from '@tanstack/react-query'
-import { BASE_PATH } from './apiConfig'
+import { GtfsAgencyPydanticModel, GtfsApi } from '@hasadna/open-bus-api-client'
+import { API_CONFIG, BASE_PATH } from './apiConfig'
 import { Dayjs } from 'src/dayjs'
+
+const GTFS_API = new GtfsApi(API_CONFIG)
 
 type groupByField =
   | 'gtfs_route_date'
@@ -51,16 +53,7 @@ type GroupByResponse = {
 export type GroupByRes = Replace<
   GroupByResponse[0],
   'operator_ref',
-  | {
-      agency_id: string
-      agency_name: string
-      agency_url: string
-      agency_timezone: string
-      agency_lang: string
-      agency_phone: string
-      agency_fare_url: string
-    }
-  | undefined
+  GtfsAgencyPydanticModel | undefined
 >
 
 async function fetchGroupBy({
@@ -74,6 +67,7 @@ async function fetchGroupBy({
 }): Promise<GroupByRes[]> {
   // example: https://open-bus-stride-api.hasadna.org.il/gtfs_rides_agg/group_by?date_from=2023-01-27&date_to=2023-01-29&group_by=operator_ref
   const excludes = 'exclude_hour_from=23&exclude_hour_to=2'
+  const agencyList = await GTFS_API.gtfsAgenciesListGet()
 
   const response = await fetch(
     `${BASE_PATH}/gtfs_rides_agg/group_by?date_from=${dateFromStr}&date_to=${dateToStr}&group_by=${groupBy}&${excludes}`,
@@ -82,9 +76,7 @@ async function fetchGroupBy({
   return response
     .map((dataRecord: { operator_ref: unknown }) => ({
       ...dataRecord,
-      operator_ref: agencyList.find(
-        (agency) => agency.agency_id === String(dataRecord.operator_ref),
-      ),
+      operator_ref: agencyList.find((agency) => agency.operatorRef === dataRecord.operator_ref),
     }))
     .filter(
       (dataRecord: { operator_ref: undefined }) => dataRecord.operator_ref !== undefined,

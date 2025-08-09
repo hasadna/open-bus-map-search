@@ -1,4 +1,4 @@
-import { GtfsRoutePydanticModel } from 'open-bus-stride-client/openapi/models'
+import { GtfsRoutePydanticModel } from '@hasadna/open-bus-api-client'
 import { strLeftBack } from 'underscore.string'
 
 export type BusRoute = {

@@ -1,4 +1,4 @@
-import { Configuration } from 'open-bus-stride-client'
+import { Configuration } from '@hasadna/open-bus-api-client'
 
 //const BASE_PATH = 'http://localhost:3000/api'
 export const BASE_PATH = process.env.VITE_BASE_PATH

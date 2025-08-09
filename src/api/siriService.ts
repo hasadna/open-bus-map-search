@@ -1,5 +1,8 @@
-import { SiriApi, SiriVehicleLocationWithRelatedPydanticModel } from 'open-bus-stride-client'
-import { SiriRideWithRelatedPydanticModel } from 'open-bus-stride-client/openapi/models/SiriRideWithRelatedPydanticModel'
+import {
+  SiriApi,
+  SiriRideWithRelatedPydanticModel,
+  SiriVehicleLocationWithRelatedPydanticModel,
+} from '@hasadna/open-bus-api-client'
 import dayjs from 'src/dayjs'
 import { API_CONFIG, MAX_HITS_COUNT } from 'src/api/apiConfig'
 import { BusStop } from 'src/model/busStop'

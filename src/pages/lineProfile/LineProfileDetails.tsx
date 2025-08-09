@@ -1,6 +1,6 @@
 import { MultipleStopOutlined } from '@mui/icons-material'
 import { Grid, Typography } from '@mui/material'
-import { GtfsRoutePydanticModel } from 'open-bus-stride-client'
+import { GtfsRoutePydanticModel } from '@hasadna/open-bus-api-client'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
 import { InfoItem, InfoTable } from '../components/InfoTable'

@@ -25,7 +25,9 @@ export const OperatorGaps = ({
   })
 
   const data = useMemo(() => {
-    const operator = groupByOperatorData?.find((d) => d.operator_ref?.agency_id === operatorId)
+    const operator = groupByOperatorData?.find(
+      (d) => d.operator_ref?.operatorRef.toString() === operatorId,
+    )
     if (!operator) return []
 
     const missing = operator?.total_planned_rides - operator?.total_actual_rides

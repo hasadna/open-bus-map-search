@@ -1,6 +1,6 @@
 import { CircularProgress, Grid } from '@mui/material'
 import { Tooltip } from 'antd'
-import { GtfsRoutePydanticModel } from 'open-bus-stride-client'
+import { GtfsRoutePydanticModel } from '@hasadna/open-bus-api-client'
 import { useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLoaderData, useNavigate } from 'react-router'

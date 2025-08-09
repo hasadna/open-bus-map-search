@@ -1,7 +1,7 @@
 import {
   GtfsRideStopPydanticModel,
   SiriVehicleLocationWithRelatedPydanticModel,
-} from 'open-bus-stride-client'
+} from '@hasadna/open-bus-api-client'
 import { createContext, Dispatch } from 'react'
 import { BusRoute } from './busRoute'
 import { BusStop } from './busStop'
