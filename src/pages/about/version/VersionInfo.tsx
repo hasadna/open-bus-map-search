@@ -17,8 +17,7 @@ export const VersionInfo = () => {
     queryFn: () => fetch(versionUrl).then((response) => response.text()),
   })
   return (
-    <Widget>
-      <h2>{t('version')}</h2>
+    <Widget title={t('version')}>
       {isLoading && <p>{t('loading')}</p>}
       {isError && <p>{t('failedToFetchVersion')}</p>}
       {version && <p className="version">{version}</p>}
