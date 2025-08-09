@@ -267,7 +267,7 @@ jobs:
           description: 'Playwright html report with traces'
           status: ${{needs.test.result}}
           context: 'Test results (click to see!)'
-          targetUrl: 'https://s3.amazonaws.com/noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.sha }}/test-results/index.html'
+          targetUrl: 'https://s3.amazonaws.com/noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.event.pull_request.head.sha }}/test-results/index.html'
 
   all-passed:
     name: All Jobs Passed
