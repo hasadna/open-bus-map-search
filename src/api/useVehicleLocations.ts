@@ -27,7 +27,7 @@ type SiriVehicleRequest = {
 }
 
 const SIRI_API = new SiriApi(API_CONFIG)
-const LIMIT = 10000
+const LIMIT = 1000
 const CONCURRENCY = 10
 const RETRY = 3
 
@@ -50,7 +50,7 @@ class LocationObservable {
   }
 
   private async loadData(params: SiriVehicleRequest, signal?: AbortSignal) {
-    let offset = 0
+    let i = 0
     while (this.loading) {
       const response = await fetchWithQueue(
         {
@@ -64,7 +64,7 @@ class LocationObservable {
           lonGreaterOrEqual: params.lonMin,
           lonLowerOrEqual: params.lonMax,
           limit: LIMIT,
-          offset,
+          offset: LIMIT * i++,
         },
         signal,
       )
@@ -77,7 +77,6 @@ class LocationObservable {
       } else {
         this.data.push(...batch)
         this.notifyObservers(batch)
-        offset += LIMIT
       }
     }
   }

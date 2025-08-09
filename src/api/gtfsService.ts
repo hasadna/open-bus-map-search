@@ -48,7 +48,6 @@ export async function getGTFSRoutes({
 }: GetGTFSRoutesParams | GetGTFSRoutesParamsBusRoute): Promise<
   GtfsRoutePydanticModel[] | BusRoute[]
 > {
-  debugger
   const dateFrom = dayjs(from).startOf('day').toDate()
   const dateTo = dayjs.min(dayjs(to || from).endOf('day'), dayjs()).toDate()
   const routes = await GTFS_API.gtfsRoutesListGet(
