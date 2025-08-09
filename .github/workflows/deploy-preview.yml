@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: write
   issues: write
 
 jobs:
@@ -95,7 +96,6 @@ jobs:
         uses: peter-evans/create-or-update-comment@v4
         if: steps.fc.outputs.comment-id == ''
         with:
-          edit-mode: replace
           issue-number: ${{ env.PR_NUMBER }}
           body: |
             Preview: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}/index.html
