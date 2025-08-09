@@ -1,12 +1,12 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
-import { getRoutesAsync, getRoutesByLineRef, getStopsForRouteAsync } from 'src/api/gtfsService'
+import { getGTFSRoutes, getStopsForRouteAsync } from 'src/api/gtfsService'
 import useVehicleLocations from 'src/api/useVehicleLocations'
-import { BusStop } from 'src/model/busStop'
-import { BusRoute } from 'src/model/busRoute'
-import { SearchContext } from 'src/model/pageState'
-import { Point } from 'src/pages/timeBasedMap'
 import dayjs from 'src/dayjs'
-import { vehicleIDFormat, routeStartEnd } from 'src/pages/components/utils/rotueUtils'
+import { BusRoute } from 'src/model/busRoute'
+import { BusStop } from 'src/model/busStop'
+import { SearchContext } from 'src/model/pageState'
+import { routeStartEnd, vehicleIDFormat } from 'src/pages/components/utils/rotueUtils'
+import { Point } from 'src/pages/timeBasedMap'
 
 const formatTime = (time: dayjs.Dayjs) => time.format('HH:mm')
 
@@ -45,7 +45,13 @@ export const useSingleLineData = (
     const controller = new AbortController()
     const time = dayjs(search.timestamp)
 
-    getRoutesAsync(time, time, operatorId, lineNumber, controller.signal)
+    getGTFSRoutes({
+      from: time.valueOf(),
+      operatorId,
+      routeShortName: lineNumber,
+      signal: controller.signal,
+      toBusRoute: true,
+    })
       .then((routes) => {
         setRoutes(routes)
         setSearch((prev) => ({ ...prev, routes }))
@@ -74,9 +80,9 @@ export const useSingleLineData = (
     const today = dayjs(search.timestamp).startOf('day')
     return [today, today.add(1, 'day')]
   }, [search.timestamp])
-
+  // 23311102
   const validVehicleNumber = useMemo(() => {
-    return vehicleNumber && /^\d{7,8}$/.test(vehicleNumber.toString())
+    return vehicleNumber && /^\d{1,8}$/.test(vehicleNumber.toString())
       ? Number(vehicleNumber)
       : undefined
   }, [vehicleNumber])
@@ -84,9 +90,9 @@ export const useSingleLineData = (
   const { locations, isLoading: locationsAreLoading } = useVehicleLocations({
     from: today.valueOf(),
     to: tomorrow.valueOf(),
-    operatorRef: operatorId ? Number(operatorId) : undefined,
-    lineRef: selectedRoute?.lineRef ? Number(selectedRoute.lineRef) : undefined,
-    vehicleRef: validVehicleNumber,
+    operatorRef: operatorId,
+    lineRef: selectedRoute?.lineRef.toString(),
+    vehicleRef: validVehicleNumber?.toString(),
     splitMinutes: 360,
     pause: !operatorId || (!selectedRoute?.lineRef && !validVehicleNumber),
   })
@@ -94,14 +100,14 @@ export const useSingleLineData = (
   const positions = useMemo(() => {
     return locations
       .filter((l) =>
-        validVehicleNumber ? Number(l.siri_ride__vehicle_ref) === validVehicleNumber : true,
+        validVehicleNumber ? Number(l.siriRideVehicleRef) === validVehicleNumber : true,
       )
       .map<Point>((location) => ({
-        loc: [location.lat, location.lon],
-        color: location.velocity,
-        operator: location.siri_route__operator_ref,
+        loc: [location.lat || NaN, location.lon || NaN],
+        color: location.velocity || 0,
+        operator: location.siriRouteOperatorRef,
         bearing: location.bearing,
-        recorded_at_time: new Date(location.recorded_at_time).getTime(),
+        recorded_at_time: location.recordedAtTime?.getTime(),
         point: location,
       }))
   }, [locations, validVehicleNumber])
@@ -110,12 +116,12 @@ export const useSingleLineData = (
     const fetchOptions = async () => {
       const uniqueTimes = new Map<string, { scheduledTime: string; position: Point }>()
       for (const position of positions) {
-        const startTime = position.point?.siri_ride__scheduled_start_time
+        const startTime = position.point?.siriRideScheduledStartTime
         if (!startTime) continue
         const dayjsTime = dayjs(startTime)
         if (dayjsTime.isAfter(today) && dayjsTime.isBefore(tomorrow)) {
           const formattedTime = formatTime(dayjsTime)
-          const key = `${formattedTime}|${position.point?.siri_ride__vehicle_ref}`
+          const key = `${formattedTime}|${position.point?.siriRideVehicleRef}`
           if (!uniqueTimes.has(key)) {
             uniqueTimes.set(key, { scheduledTime: formattedTime, position })
           }
@@ -129,17 +135,18 @@ export const useSingleLineData = (
       if (vehicleNumber) {
         const optionsArray2 = await Promise.all(
           optionsArray.map(async (option) => {
-            const routes = await getRoutesByLineRef(
-              option.position.point!.siri_route__operator_ref.toString(),
-              option.position.point!.siri_route__line_ref.toString(),
-              new Date(option.position.point!.recorded_at_time),
-            )
+            const routes = await getGTFSRoutes({
+              operatorId: option.position.point?.siriRouteOperatorRef?.toString(),
+              lineRefs: option.position.point?.siriRouteLineRef?.toString(),
+              from: option.position.point!.recordedAtTime?.valueOf() || Date.now(),
+              limit: 1,
+            })
             const [start, end] = routeStartEnd(routes[0]?.routeLongName)
             return {
-              value: `${option.scheduledTime}|${option.position.point!.siri_ride__vehicle_ref}|${option.position.point!.siri_route__line_ref}`,
+              value: `${option.scheduledTime}|${option.position.point?.siriRideVehicleRef}|${option.position.point?.siriRouteLineRef}`,
               label: routes[0]?.routeLongName
                 ? `${option.scheduledTime} (${routes[0]?.routeShortName} - ${start} ⇄ ${end})`
-                : `${option.scheduledTime} (${vehicleIDFormat(option.position.point!.siri_ride__vehicle_ref)})`,
+                : `${option.scheduledTime} (${vehicleIDFormat(option.position.point?.siriRideVehicleRef)})`,
             }
           }),
         )
@@ -148,8 +155,8 @@ export const useSingleLineData = (
         setOptions(
           optionsArray.map((option) => {
             return {
-              value: `${option.scheduledTime}|${option.position.point!.siri_ride__vehicle_ref}`,
-              label: `${option.scheduledTime} (${vehicleIDFormat(option.position.point!.siri_ride__vehicle_ref)})`,
+              value: `${option.scheduledTime}|${option.position.point?.siriRideVehicleRef}`,
+              label: `${option.scheduledTime} (${vehicleIDFormat(option.position.point?.siriRideVehicleRef)})`,
             }
           }),
         )
@@ -168,13 +175,13 @@ export const useSingleLineData = (
 
     setFilteredPositions(
       positions.filter((position) => {
-        const scheduledStart = position.point?.siri_ride__scheduled_start_time
-        const vehicleRef = position.point?.siri_ride__vehicle_ref.toString()
+        const scheduledStart = position.point?.siriRideScheduledStartTime
+        const vehicleRef = position.point?.siriRideVehicleRef
         if (!scheduledStart || !vehicleRef || !scheduledTime || !scheduledVehicle) return false
         return (
           formatTime(dayjs(scheduledStart)) === scheduledTime &&
           scheduledVehicle === vehicleRef &&
-          (scheduledLine ? scheduledLine === position.point?.siri_route__line_ref.toString() : true)
+          (scheduledLine ? scheduledLine === position.point?.siriRouteLineRef?.toString() : true)
         )
       }),
     )
@@ -195,7 +202,12 @@ export const useSingleLineData = (
           routeIds = selectedRoute.routeIds
         } else if (scheduledLine && operatorId) {
           routeIds = (
-            await getRoutesByLineRef(operatorId, scheduledLine, startTimeTimestamp.toDate())
+            await getGTFSRoutes({
+              from: startTimeTimestamp.valueOf(),
+              operatorId,
+              lineRefs: scheduledLine,
+              limit: 1,
+            })
           ).map((route) => route.id)
         }
         if (!routeIds || routeIds.length === 0) {

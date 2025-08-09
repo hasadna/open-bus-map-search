@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import { useSessionStorage } from 'usehooks-ts'
 import { getGapsAsync } from '../../api/gapsService'
-import { getRoutesAsync } from '../../api/gtfsService'
+import { getGTFSRoutes } from '../../api/gtfsService'
 import { Gap, GapsList } from '../../model/gaps'
 import { SearchContext } from '../../model/pageState'
 import { DateSelector } from '../components/DateSelector'
@@ -108,7 +108,13 @@ const GapsPage = () => {
       return
     }
     setRoutesIsLoading(true)
-    getRoutesAsync(dayjs(timestamp), dayjs(timestamp), operatorId, lineNumber, signal)
+    getGTFSRoutes({
+      from: timestamp,
+      operatorId,
+      routeShortName: lineNumber,
+      signal,
+      toBusRoute: true,
+    })
       .then((routes) =>
         setSearch((current) =>
           search.lineNumber === lineNumber ? { ...current, routes: routes } : current,

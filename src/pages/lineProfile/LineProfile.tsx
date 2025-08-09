@@ -13,7 +13,7 @@ import { MapWithLocationsAndPath } from '../components/map-related/MapWithLocati
 import { LineProfileDetails } from './LineProfileDetails'
 import { LineProfileRide } from './LineProfileRide'
 import { LineProfileStop } from './LineProfileStop'
-import { getRoutesAsync } from 'src/api/gtfsService'
+import { getGTFSRoutes } from 'src/api/gtfsService'
 import { useSingleLineData } from 'src/hooks/useSingleLineData'
 import { SearchContext } from 'src/model/pageState'
 import StopSelector from 'src/pages/components/StopSelector'
@@ -63,13 +63,13 @@ const LineProfile = () => {
     if (!time || !route) return
 
     const abortController = new AbortController()
-    getRoutesAsync(
-      time,
-      time,
-      route?.operatorRef.toString(),
-      route?.routeShortName,
-      abortController.signal,
-    )
+    getGTFSRoutes({
+      from: time.valueOf(),
+      operatorId: route?.operatorRef.toString(),
+      routeShortName: route?.routeShortName,
+      signal: abortController.signal,
+      toBusRoute: true,
+    })
       .then((routes) => {
         const newRoute = routes?.find((r) => r.key === route.routeLongName)
         if (newRoute?.routeIds?.[0]) {

@@ -8,10 +8,10 @@ import { Link } from 'react-router'
 import { EasterEgg } from '../../../EasterEgg/EasterEgg'
 import CustomTreeView from '../../CustomTreeView'
 import ComplaintModal from './ComplaintModal'
-import { getRoutesByLineRef } from 'src/api/gtfsService'
+import { getGTFSRoutes } from 'src/api/gtfsService'
+import dayjs from 'src/dayjs'
 import { routeStartEnd, vehicleIDFormat } from 'src/pages/components/utils/rotueUtils'
 import type { Point } from 'src/pages/timeBasedMap'
-import dayjs from 'src/dayjs'
 import './BusToolTip.scss'
 
 export type BusToolTipProps = { position: Point; icon: string; children?: ReactNode }
@@ -26,11 +26,12 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
   useEffect(() => {
     if (!position.point?.id) return
     setIsLoading(true)
-    getRoutesByLineRef(
-      position.point?.siri_route__operator_ref.toString(),
-      position.point?.siri_route__line_ref.toString(),
-      new Date(position.point?.siri_ride__scheduled_start_time),
-    )
+    getGTFSRoutes({
+      from: position.point?.siriRideScheduledStartTime?.valueOf(),
+      operatorId: position.point?.siriRouteOperatorRef?.toString(),
+      lineRefs: position.point?.siriRouteLineRef?.toString(),
+      limit: 1,
+    })
       .then((routes) => {
         setRoute(routes[0])
         setIsLoading(false)
@@ -82,7 +83,7 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
                 <Link to={`/profile/${route.id}`}>{route?.routeShortName || 'NaN'}</Link>
               </span>
             </h1>
-            <Link to={`/operator?operatorId=${position.point?.siri_route__operator_ref}`}>
+            <Link to={`/operator?operatorId=${position.point?.siriRouteOperatorRef}`}>
               <img src={icon} alt="bus icon" className="bus-icon" />
             </Link>
           </header>
@@ -92,7 +93,7 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
                 {`${t('lineProfile.agencyName')}: `}
 
                 <span>
-                  <Link to={`/operator?operatorId=${position.point?.siri_route__operator_ref}`}>
+                  <Link to={`/operator?operatorId=${position.point?.siriRouteOperatorRef}`}>
                     {route.agencyName}
                   </Link>
                 </span>
@@ -112,14 +113,14 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
               <li>
                 {`${t('sample_time')}: `}
                 <span>
-                  {dayjs(position.point!.recorded_at_time)
+                  {dayjs(position.point?.recordedAtTime)
                     .tz('Israel')
                     .format(`l [${t('at_time')}] LT`)}
                 </span>
               </li>
               <li>
                 {`${t('vehicle_ref')}: `}
-                <span>{vehicleIDFormat(position.point?.siri_ride__vehicle_ref)}</span>
+                <span>{vehicleIDFormat(position.point?.siriRideVehicleRef)}</span>
               </li>
               <li>
                 {`${t('drive_direction')}: `}
