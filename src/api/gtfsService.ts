@@ -4,7 +4,7 @@ import {
   GtfsRideStopPydanticModel,
   GtfsRideWithRelatedPydanticModel,
   GtfsRoutePydanticModel,
-} from 'open-bus-stride-client'
+} from '@hasadna/open-bus-api-client'
 import dayjs from 'src/dayjs'
 import { API_CONFIG, BASE_PATH, MAX_HITS_COUNT } from 'src/api/apiConfig'
 import { BusStop, fromGtfsStop } from 'src/model/busStop'

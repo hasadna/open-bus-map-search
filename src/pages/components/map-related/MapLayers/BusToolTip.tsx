@@ -1,7 +1,7 @@
 import { Button, CircularProgress } from '@mui/material'
 import { Skeleton } from 'antd'
 import cn from 'classnames'
-import { GtfsRoutePydanticModel } from 'open-bus-stride-client'
+import { GtfsRoutePydanticModel } from '@hasadna/open-bus-api-client'
 import { ReactNode, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'

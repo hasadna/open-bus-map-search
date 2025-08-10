@@ -10,8 +10,8 @@ import { Dayjs } from 'src/dayjs'
 
 const convertToChartCompatibleStruct = (arr: GroupByRes[]) => {
   return arr.map((item: GroupByRes) => ({
-    id: item.operator_ref?.agency_id || 'Unknown',
-    name: item.operator_ref?.agency_name || 'Unknown',
+    id: item.operator_ref?.operatorRef || 'Unknown',
+    name: item.operator_ref?.agencyName || 'Unknown',
     total: item.total_planned_rides,
     actual: item.total_actual_rides,
   }))

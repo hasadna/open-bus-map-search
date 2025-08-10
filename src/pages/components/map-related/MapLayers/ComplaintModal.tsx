@@ -8,7 +8,7 @@ import {
   MenuItem,
   TextField,
 } from '@mui/material'
-import { SiriRideWithRelatedPydanticModel } from 'open-bus-stride-client'
+import { SiriRideWithRelatedPydanticModel } from '@hasadna/open-bus-api-client'
 import { ChangeEvent, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { getSiriRideWithRelated } from 'src/api/siriService'
@@ -69,11 +69,12 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
   })
 
   useEffect(() => {
+    if (!position.point) return
     setIsLoading(true)
     getSiriRideWithRelated(
-      position.point!.siriRouteId?.toString(),
-      position.point!.siriRideVehicleRef,
-      position.point!.siriRouteLineRef?.toString(),
+      position.point.siriRouteId?.toString(),
+      position.point.siriRideVehicleRef,
+      position.point.siriRouteLineRef?.toString(),
     )
       .then((siriRideRes: SiriRideWithRelatedPydanticModel) => setSiriRide(siriRideRes))
       .finally(() => setIsLoading(false))

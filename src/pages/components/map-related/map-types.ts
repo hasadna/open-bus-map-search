@@ -1,4 +1,4 @@
-import { SiriVehicleLocationWithRelatedPydanticModel } from 'open-bus-stride-client'
+import { SiriVehicleLocationWithRelatedPydanticModel } from '@hasadna/open-bus-api-client'
 import { BusStop } from 'src/model/busStop'
 import { Point } from 'src/pages/timeBasedMap'
 

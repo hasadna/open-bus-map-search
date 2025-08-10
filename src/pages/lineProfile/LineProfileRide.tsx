@@ -1,4 +1,4 @@
-import { SiriVehicleLocationWithRelatedPydanticModel } from 'open-bus-stride-client'
+import { SiriVehicleLocationWithRelatedPydanticModel } from '@hasadna/open-bus-api-client'
 import { useTranslation } from 'react-i18next'
 import { InfoItem, InfoTable } from '../components/InfoTable'
 import { vehicleIDFormat } from '../components/utils/rotueUtils'

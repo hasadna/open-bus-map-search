@@ -32,16 +32,6 @@ const DashboardPage = () => {
   const [WorstLineZeroLines, setWorstLineZeroLines] = useState(false)
   const [AllDayTimeChartZeroLines, setAllDayTimeChartZeroLines] = useState(false)
 
-  const alertAllChartsZeroLinesHandling = (arg: boolean) => {
-    setAllChartsZeroLines(arg)
-  }
-  const alertWorstLineHandling = (arg: boolean) => {
-    setWorstLineZeroLines(arg)
-  }
-  const alertAllDayTimeChartHandling = (arg: boolean) => {
-    setAllDayTimeChartZeroLines(arg)
-  }
-
   return (
     <PageContainer>
       <Typography className="page-title" variant="h4">
@@ -97,7 +87,7 @@ const DashboardPage = () => {
           <AllLinesChart
             startDate={startDate}
             endDate={endDate}
-            alertAllChartsZeroLinesHandling={(arg: boolean) => alertAllDayTimeChartHandling(arg)}
+            alertAllChartsZeroLinesHandling={setAllChartsZeroLines}
           />
         </Grid>
         <Grid size={{ xs: 12, lg: 6 }} className="widget">
@@ -105,7 +95,7 @@ const DashboardPage = () => {
             startDate={startDate}
             endDate={endDate}
             operatorId={operatorId}
-            alertWorstLineHandling={(arg: boolean) => alertWorstLineHandling(arg)}
+            alertWorstLineHandling={setWorstLineZeroLines}
           />
         </Grid>
         <Grid size={{ xs: 12 }} className="widget">
@@ -113,7 +103,7 @@ const DashboardPage = () => {
             startDate={startDate}
             endDate={endDate}
             operatorId={operatorId}
-            alertAllDayTimeChartHandling={(arg: boolean) => alertAllChartsZeroLinesHandling(arg)}
+            alertAllDayTimeChartHandling={setAllDayTimeChartZeroLines}
           />
         </Grid>
       </Grid>

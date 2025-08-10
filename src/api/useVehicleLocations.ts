@@ -9,7 +9,7 @@ import {
   SiriApi,
   SiriVehicleLocationsListGetRequest,
   SiriVehicleLocationWithRelatedPydanticModel,
-} from 'open-bus-stride-client'
+} from '@hasadna/open-bus-api-client'
 import { useEffect, useRef, useState } from 'react'
 import { API_CONFIG } from './apiConfig'
 import dayjs from 'src/dayjs'
