@@ -14,7 +14,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
-import { getGTFSRoutes } from '../../api/gtfsService'
+import { getGtfsRoutes } from '../../api/gtfsService'
 import { SearchContext } from '../../model/pageState'
 import { DateSelector } from '../components/DateSelector'
 import { useDate } from '../components/DateTimePicker'
@@ -151,7 +151,7 @@ const GapsPatternsPage = () => {
 
   const loadSearchData = async (signal: AbortSignal | undefined) => {
     setRoutesIsLoading(true)
-    const routes = await getGTFSRoutes({
+    const routes = await getGtfsRoutes({
       from: startDate.valueOf(),
       to: endDate.valueOf(),
       operatorId,

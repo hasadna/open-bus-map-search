@@ -1,5 +1,5 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
-import { getGTFSRoutes, getStopsForRouteAsync } from 'src/api/gtfsService'
+import { getGtfsRoutes, getStopsForRouteAsync } from 'src/api/gtfsService'
 import useVehicleLocations from 'src/api/useVehicleLocations'
 import dayjs from 'src/dayjs'
 import { BusRoute } from 'src/model/busRoute'
@@ -45,7 +45,7 @@ export const useSingleLineData = (
     const controller = new AbortController()
     const time = dayjs(search.timestamp)
 
-    getGTFSRoutes({
+    getGtfsRoutes({
       from: time.valueOf(),
       operatorId,
       routeShortName: lineNumber,
@@ -80,7 +80,6 @@ export const useSingleLineData = (
     const today = dayjs(search.timestamp).startOf('day')
     return [today, today.add(1, 'day')]
   }, [search.timestamp])
-  // 23311102
   const validVehicleNumber = useMemo(() => {
     return vehicleNumber && /^\d{1,8}$/.test(vehicleNumber.toString())
       ? Number(vehicleNumber)
@@ -135,7 +134,7 @@ export const useSingleLineData = (
       if (vehicleNumber) {
         const optionsArray2 = await Promise.all(
           optionsArray.map(async (option) => {
-            const routes = await getGTFSRoutes({
+            const routes = await getGtfsRoutes({
               operatorId: option.position.point?.siriRouteOperatorRef?.toString(),
               lineRefs: option.position.point?.siriRouteLineRef?.toString(),
               from: option.position.point!.recordedAtTime?.valueOf() || Date.now(),
@@ -202,7 +201,7 @@ export const useSingleLineData = (
           routeIds = selectedRoute.routeIds
         } else if (scheduledLine && operatorId) {
           routeIds = (
-            await getGTFSRoutes({
+            await getGtfsRoutes({
               from: startTimeTimestamp.valueOf(),
               operatorId,
               lineRefs: scheduledLine,

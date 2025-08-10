@@ -6,7 +6,7 @@ import { SearchContext, TimelinePageState } from '../../model/pageState'
 import { DateSelector } from '../components/DateSelector'
 import { NotFound } from '../components/NotFound'
 import { PageContainer } from '../components/PageContainer'
-import { getGtfsStopHitTimesAsync, getGTFSRoutes, getStopsForRouteAsync } from 'src/api/gtfsService'
+import { getGtfsStopHitTimesAsync, getGtfsRoutes, getStopsForRouteAsync } from 'src/api/gtfsService'
 import { getSiriStopHitTimesAsync } from 'src/api/siriService'
 import { Label } from 'src/pages/components/Label'
 import LineNumberSelector from 'src/pages/components/LineSelector'
@@ -65,7 +65,7 @@ const TimelinePage = () => {
       return
     }
     setRoutesIsLoading(true)
-    getGTFSRoutes({
+    getGtfsRoutes({
       from: timestamp,
       operatorId,
       routeShortName: lineNumber,

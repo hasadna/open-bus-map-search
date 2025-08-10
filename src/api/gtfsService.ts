@@ -34,9 +34,9 @@ type GetGTFSRoutesParams = {
 
 type GetGTFSRoutesParamsBusRoute = Omit<GetGTFSRoutesParams, 'toBusRoute'> & { toBusRoute: true }
 
-export async function getGTFSRoutes(params: GetGTFSRoutesParams): Promise<GtfsRoutePydanticModel[]>
-export async function getGTFSRoutes(params: GetGTFSRoutesParamsBusRoute): Promise<BusRoute[]>
-export async function getGTFSRoutes({
+export async function getGtfsRoutes(params: GetGTFSRoutesParams): Promise<GtfsRoutePydanticModel[]>
+export async function getGtfsRoutes(params: GetGTFSRoutesParamsBusRoute): Promise<BusRoute[]>
+export async function getGtfsRoutes({
   from,
   to,
   operatorId,

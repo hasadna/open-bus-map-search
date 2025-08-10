@@ -1,6 +1,6 @@
 import { GtfsRoutePydanticModel } from '@hasadna/open-bus-api-client'
 import { useEffect, useState } from 'react'
-import { getGTFSRoutes } from 'src/api/gtfsService'
+import { getGtfsRoutes } from 'src/api/gtfsService'
 import { routeStartEnd } from 'src/pages/components/utils/rotueUtils'
 
 type AllRoutesState = {
@@ -21,7 +21,7 @@ export const useAllRoutes = (operatorId?: string, timestamp?: number) => {
     setState({ routes: [], isLoading: true, error: false })
     const controller = new AbortController()
 
-    getGTFSRoutes({ from: timestamp, operatorId, limit: -1, signal: controller.signal })
+    getGtfsRoutes({ from: timestamp, operatorId, limit: -1, signal: controller.signal })
       .then((routes) => {
         setState({ routes: mapperRoutes(routes), isLoading: false, error: false })
       })
