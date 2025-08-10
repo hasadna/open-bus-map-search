@@ -1,4 +1,5 @@
 import { Grid } from '@mui/material'
+import { GtfsAgencyPydanticModel } from '@hasadna/open-bus-api-client'
 import { Skeleton } from 'antd'
 import React, { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -149,10 +150,7 @@ const StackedResearchChart = ({
   graphData: {
     gtfs_route_date: string
     gtfs_route_hour: string
-    operator_ref?: {
-      agency_id?: string
-      agency_name?: string
-    }
+    operator_ref?: GtfsAgencyPydanticModel
     total_actual_rides: number
     total_planned_rides: number
   }[]
@@ -165,7 +163,9 @@ const StackedResearchChart = ({
   const filteredGraphData =
     agencyId == ''
       ? graphData
-      : graphData.filter((dataRecord) => dataRecord.operator_ref?.agency_id === agencyId)
+      : graphData.filter(
+          (dataRecord) => dataRecord.operator_ref?.operatorRef.toString() === agencyId,
+        )
   const data = useMemo(
     () =>
       filteredGraphData
@@ -178,11 +178,11 @@ const StackedResearchChart = ({
             const date = curr.gtfs_route_date ?? curr.gtfs_route_hour
             const entry = acc.find((item) => item.date === date)
             if (entry) {
-              if (val) entry[curr.operator_ref?.agency_name || 'Unknown'] = val
+              if (val) entry[curr.operator_ref?.operatorRef || 'Unknown'] = val
             } else {
               const newEntry = {
                 date: date,
-                [curr.operator_ref?.agency_name || 'Unknown']: val,
+                [curr.operator_ref?.agencyName || 'Unknown']: val,
               }
               acc.push(newEntry)
             }
@@ -199,7 +199,7 @@ const StackedResearchChart = ({
   )
 
   const operators = filteredGraphData
-    .map((operator) => operator.operator_ref?.agency_name || 'Unknown')
+    .map((operator) => operator.operator_ref?.agencyName || 'Unknown')
     .filter(unique)
 
   return (

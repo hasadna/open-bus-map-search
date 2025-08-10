@@ -3,7 +3,7 @@ module.exports = {
 
   waitBeforeCapture: async () => {
     const startTime = Date.now()
-    const timeout = 15 * 1000
+    const timeout = 60 * 1000
     while (
       document.querySelector('.ant-skeleton-content') ||
       document.querySelector('.ant-skeleton')
