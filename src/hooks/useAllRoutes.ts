@@ -1,4 +1,4 @@
-import { GtfsRoutePydanticModel } from 'open-bus-stride-client'
+import { GtfsRoutePydanticModel } from '@hasadna/open-bus-api-client'
 import { useEffect, useState } from 'react'
 import { getAllRoutesList } from 'src/api/gtfsService'
 import { routeStartEnd } from 'src/pages/components/utils/rotueUtils'

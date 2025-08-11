@@ -1,20 +1,35 @@
-import { Card, CardContent, SxProps, Theme } from '@mui/material'
-import cn from 'classnames'
-import { useTheme } from 'src/layout/ThemeContext'
+import { Card, CardContent, SxProps, Theme, Typography } from '@mui/material'
 
 interface WidgetProps {
   marginBottom?: boolean
   children?: React.ReactNode
   className?: string
   sx?: SxProps<Theme>
+  title?: React.ReactNode
+  titleSx?: SxProps<Theme>
 }
 
-const Widget = ({ marginBottom, children, className, sx }: WidgetProps) => {
-  const { isDarkTheme } = useTheme()
-
+const Widget = ({ marginBottom, children, className, sx, title, titleSx }: WidgetProps) => {
   return (
-    <Card sx={sx} className={cn('card widget', { dark: isDarkTheme, marginBottom }, className)}>
-      <CardContent>{children}</CardContent>
+    <Card
+      sx={{
+        ...(sx || {}),
+        marginBottom: marginBottom ? 2 : undefined,
+      }}
+      className={className}>
+      <CardContent>
+        {title && (
+          <Typography
+            variant="h2"
+            fontSize="28px"
+            fontWeight="bold"
+            marginBottom="8px"
+            sx={titleSx}>
+            {title}
+          </Typography>
+        )}
+        {children}
+      </CardContent>
     </Card>
   )
 }
