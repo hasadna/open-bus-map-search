@@ -3,7 +3,8 @@ import { Alert, CircularProgress, Grid, IconButton, Typography } from '@mui/mate
 import { SiriVehicleLocationWithRelatedPydanticModel } from '@hasadna/open-bus-api-client'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { MapContainer, Marker, Polyline, Popup, TileLayer, useMap } from 'react-leaflet'
+import { Map } from 'leaflet'
+import { MapContainer, Marker, Polyline, Popup, TileLayer } from 'react-leaflet'
 import MarkerClusterGroup from 'react-leaflet-markercluster'
 import { DateSelector } from '../components/DateSelector'
 import { Label } from '../components/Label'
@@ -14,7 +15,7 @@ import { busIcon, busIconPath } from '../components/utils/BusIcon'
 import createClusterCustomIcon from '../components/utils/customCluster/customCluster'
 import InfoYoutubeModal from '../components/YoutubeModal'
 import { getColorByHashString } from '../dashboard/AllLineschart/OperatorHbarChart/utils'
-import getAgencyList, { Agency } from 'src/api/agencyList'
+import { useAgencyList } from 'src/api/agencyList'
 import useVehicleLocations from 'src/api/useVehicleLocations'
 import dayjs from 'src/dayjs'
 import { BusToolTip } from 'src/pages/components/map-related/MapLayers/BusToolTip'
@@ -37,29 +38,62 @@ interface Path {
   vehicleRef: string
 }
 
+const position: Point = {
+  loc: [32.3057988, 34.85478613], // arbitrary default value... Netanya - best city to live & die in
+  color: 0,
+}
+
+const rounded = (num?: number) => {
+  return num ? Math.trunc(num * 1000) / 1000 : undefined
+}
+
 export default function TimeBasedMapPage() {
+  const [map, setMap] = useState<Map | null>(null)
+  const [bound, setBound] = useState<Record<string, number | undefined>>({
+    latMax: undefined,
+    latMin: undefined,
+    lonMax: undefined,
+    lonMin: undefined,
+  })
+
   const [isExpanded, setIsExpanded] = useState<boolean>(false)
   const toggleExpanded = useCallback(() => setIsExpanded((expanded) => !expanded), [])
 
-  const position: Point = {
-    loc: [32.3057988, 34.85478613], // arbitrary default value... Netanya - best city to live & die in
-    color: 0,
-  }
-
-  //TODO (another PR and another issue) load from url like in another pages.
   const [from, setFrom] = useState(dayjs('2023-03-14T15:00:00Z'))
   const [to, setTo] = useState(dayjs(from).add(1, 'minutes'))
 
   const { locations, isLoading } = useVehicleLocations({
     from: from.valueOf(),
     to: to.valueOf(),
+    ...bound,
+    pause: !bound.latMax,
   })
 
-  const loaded = locations.length
   const { t } = useTranslation()
 
+  const onMove = useCallback(() => {
+    const bound = map?.getBounds()
+    const sw = bound?.getSouthWest()
+    const ne = bound?.getNorthEast()
+
+    setBound({
+      latMax: rounded(ne?.lat),
+      lonMax: rounded(ne?.lng),
+      latMin: rounded(sw?.lat),
+      lonMin: rounded(sw?.lng),
+    })
+  }, [map])
+
+  useEffect(() => {
+    onMove()
+    map?.on('moveend', onMove)
+    return () => {
+      map?.off('moveend', onMove)
+    }
+  }, [map, onMove])
+
   const positions = useMemo(() => {
-    const pos = locations.map<Point>((location) => ({
+    return locations.map<Point>((location) => ({
       loc: [location.lat!, location.lon!],
       color: location.velocity!,
       operator: location.siriRouteOperatorRef,
@@ -67,27 +101,24 @@ export default function TimeBasedMapPage() {
       recorded_at_time: location.recordedAtTime?.getTime(),
       point: location,
     }))
-    return pos
   }, [locations])
 
-  const paths = useMemo(
-    () =>
-      locations.reduce((arr: Path[], loc) => {
-        const line = arr.find((line) => line.vehicleRef === loc.siriRideVehicleRef)
-        if (!line) {
-          arr.push({
-            locations: [loc],
-            lineRef: loc.siriRouteLineRef!,
-            operator: loc.siriRouteOperatorRef!,
-            vehicleRef: loc.siriRideVehicleRef!,
-          })
-        } else {
-          line.locations.push(loc)
-        }
-        return arr
-      }, []),
-    [locations],
-  )
+  const paths = useMemo(() => {
+    return locations.reduce((arr: Path[], loc) => {
+      const line = arr.find((line) => line.vehicleRef === loc.siriRideVehicleRef)
+      if (!line) {
+        arr.push({
+          locations: [loc],
+          lineRef: loc.siriRouteLineRef!,
+          operator: loc.siriRouteOperatorRef!,
+          vehicleRef: loc.siriRideVehicleRef!,
+        })
+      } else {
+        line.locations.push(loc)
+      }
+      return arr
+    }, [])
+  }, [locations])
 
   return (
     <PageContainer className="map-container">
@@ -148,7 +179,7 @@ export default function TimeBasedMapPage() {
         {/* loaded info */}
         <Grid size={{ xs: 11 }}>
           <p>
-            {`${loaded}- ${t('show_x_bus_locations')} ${t('from_time_x_to_time_y')
+            {`${locations.length}- ${t('show_x_bus_locations')} ${t('from_time_x_to_time_y')
               .replace('XXX', dayjs(from).format('LT'))
               .replace('YYY', dayjs(to).format('LT'))}`}
           </p>
@@ -159,7 +190,7 @@ export default function TimeBasedMapPage() {
         <IconButton color="primary" className="expand-button" onClick={toggleExpanded}>
           <OpenInFullRounded fontSize="large" />
         </IconButton>
-        <MapContainer center={position.loc} zoom={8} scrollWheelZoom={true}>
+        <MapContainer ref={setMap} center={position.loc} zoom={13} minZoom={11} scrollWheelZoom>
           <TileLayer
             attribution='&copy <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
@@ -181,36 +212,22 @@ export default function TimeBasedMapPage() {
 }
 
 function Markers({ positions }: { positions: Point[] }) {
-  const map = useMap()
-  const [agencyList, setAgencyList] = useState<Agency[]>([])
-
-  useEffect(() => {
-    getAgencyList().then(setAgencyList).catch(console.log)
-  }, [])
-
-  useEffect(() => {
-    navigator.geolocation.getCurrentPosition((position) =>
-      map.flyTo([position.coords.latitude, position.coords.longitude], 13),
-    )
-  }, [map])
-
+  const agencyList = useAgencyList()
   return (
-    <>
-      <MarkerClusterGroup chunkedLoading iconCreateFunction={createClusterCustomIcon}>
-        {positions.map((pos) => {
-          const icon = busIcon({
-            operator_id: pos.operator?.toString() || 'default',
-            name: agencyList.find((agency) => agency.operator_ref === pos.operator)?.agency_name,
-          })
-          return (
-            <Marker position={pos.loc} icon={icon} key={pos.point?.id}>
-              <Popup minWidth={300} maxWidth={700}>
-                <BusToolTip position={pos} icon={busIconPath(String(pos.operator))} />
-              </Popup>
-            </Marker>
-          )
-        })}
-      </MarkerClusterGroup>
-    </>
+    <MarkerClusterGroup chunkedLoading iconCreateFunction={createClusterCustomIcon}>
+      {positions.map((pos) => {
+        const icon = busIcon({
+          operator_id: pos.operator?.toString() || 'default',
+          name: agencyList.find((agency) => agency.operator_ref === pos.operator)?.agency_name,
+        })
+        return (
+          <Marker position={pos.loc} icon={icon} key={pos.point?.id}>
+            <Popup minWidth={300} maxWidth={700}>
+              <BusToolTip position={pos} icon={busIconPath(String(pos.operator))} />
+            </Popup>
+          </Marker>
+        )
+      })}
+    </MarkerClusterGroup>
   )
 }

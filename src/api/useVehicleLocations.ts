@@ -219,9 +219,13 @@ export default function useVehicleLocations({
   const lastQueryKeyRef = useRef('')
 
   const queryKey = getQueryKey({ from, to, ...params })
-
+  const signal = useRef(new AbortController())
   useEffect(() => {
-    if (pause) return
+    if (pause) {
+      signal.current.abort()
+    } else if (signal.current.signal.aborted) {
+      signal.current = new AbortController()
+    }
 
     if (lastQueryKeyRef.current === queryKey) return
 
@@ -229,16 +233,13 @@ export default function useVehicleLocations({
 
     setIsLoading(range.map(() => true))
 
-    // let unsubscrubed = false
-    const unsubscribers: (() => void)[] = []
-
-    range.map(({ from, to }, i) =>
+    range.map(({ from, to }, i) => {
       getLocations({
         ...params,
         from,
         to,
+        signal: signal.current.signal,
         onUpdate: (data) => {
-          // if (unsubscrubed) return
           if ('finished' in data) {
             setIsLoading((prev) => {
               const newIsLoading = [...prev]
@@ -246,20 +247,15 @@ export default function useVehicleLocations({
               return newIsLoading
             })
           } else {
-            setLocations((prev) =>
-              uniqBy(
-                data.length === 0 ? prev : [...prev, ...data], //.sort((a, b) => a.id! - b.id!),
-                (loc) => loc.id,
-              ),
-            )
+            if (data.length > 0) {
+              setLocations((prev) => uniqBy([...prev, ...data], (loc) => loc.id))
+            }
           }
         },
-      }),
-    )
+      })
+    })
     return () => {
       setLocations([])
-      // unsubscrubed = true
-      unsubscribers.forEach((unmount) => unmount())
       setIsLoading([])
     }
   }, [queryKey, split, pause])
