@@ -29,8 +29,7 @@ const unique: (value: string, index: number, self: string[]) => boolean = (value
 export const DataResearch = () => {
   return (
     <PageContainer>
-      <Widget>
-        <h1>מחקרים</h1>
+      <Widget title="מחקרים">
         <p>אם יש לכם רעיון מעניין למה קורים פה דברים, דברו איתנו בסלאק!</p>
       </Widget>
       <StackedResearchSection />
@@ -50,8 +49,7 @@ function StackedResearchSection() {
   })
 
   return (
-    <Widget>
-      <h1>בעיות etl/gps/משהו גלובאלי אחר</h1>
+    <Widget title="בעיות etl/gps/משהו גלובאלי אחר" marginBottom>
       <StackedResearchInputs
         startDate={startDate}
         setStartDate={setStartDate}

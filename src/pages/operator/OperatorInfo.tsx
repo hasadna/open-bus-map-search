@@ -1,4 +1,4 @@
-import { Stack, Typography } from '@mui/material'
+import { Stack } from '@mui/material'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { InfoItem, InfoTable } from '../components/InfoTable'
@@ -11,12 +11,7 @@ export const OperatorInfo = ({ operatorId }: { operatorId?: string }) => {
   const operator = useMemo(() => operatorList.find((a) => a.ref === operatorId), [operatorId])
 
   return (
-    <Widget>
-      <Typography
-        sx={{ margin: '17.5px 0 0.5rem', fontWeight: 'bold', fontSize: 24, lineHeight: '35px' }}
-        variant="h2">
-        {i18n.language === 'en' ? operator?.eng_name : operator?.name}
-      </Typography>
+    <Widget title={i18n.language === 'en' ? operator?.eng_name : operator?.name}>
       <Stack justifyContent="space-between" flexDirection="row">
         <InfoTable>
           <InfoItem label={t('operator.ref')} value={operator?.ref} />
