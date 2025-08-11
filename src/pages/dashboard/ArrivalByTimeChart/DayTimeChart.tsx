@@ -9,7 +9,7 @@ import { Dayjs } from 'src/dayjs'
 interface DayTimeChartProps {
   startDate: Dayjs
   endDate: Dayjs
-  operatorId?: number
+  operatorId: string
   alertAllDayTimeChartHandling: (arg: boolean) => void
 }
 

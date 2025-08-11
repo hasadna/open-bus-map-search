@@ -37,11 +37,11 @@ export default function ArrivalByTimeChart({
   operatorId,
 }: {
   data: GroupByRes[]
-  operatorId?: number
+  operatorId: string
 }) {
   const filteredData = useMemo(() => {
     if (operatorId) {
-      return data.filter((item) => item.operatorRef?.operatorRef === operatorId)
+      return data.filter((item) => item.operatorRef?.operatorRef.toString() === operatorId)
     }
     return data
   }, [data, operatorId])

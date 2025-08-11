@@ -4,10 +4,10 @@ import { Autocomplete, TextField } from '@mui/material'
 import { Operator, getOperators } from 'src/model/operator'
 
 type OperatorSelectorProps = {
-  operatorId?: number
-  setOperatorId: (operatorId?: number) => void
+  operatorId?: string
+  setOperatorId: (operatorId: string) => void
   disabled?: boolean
-  filter?: number[]
+  filter?: string[]
 }
 
 export default function OperatorSelector({
@@ -23,7 +23,7 @@ export default function OperatorSelector({
     getOperators(filter).then(setOperators)
   }, [filter])
 
-  const value = operators.find((operator) => operator.id === operatorId) || null
+  const value = operators.find((operator) => operator.id.toString() === operatorId) || null
 
   return (
     <Autocomplete
@@ -31,7 +31,7 @@ export default function OperatorSelector({
       disabled={disabled}
       fullWidth
       value={value}
-      onChange={(_, value) => setOperatorId(value?.id)}
+      onChange={(_, value) => setOperatorId(value ? value.id.toString() : '')}
       id="operator-select"
       options={operators}
       renderInput={(params) => <TextField {...params} label={t('choose_operator')} />}

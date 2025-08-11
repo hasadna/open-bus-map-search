@@ -10,7 +10,7 @@ import { Dayjs } from 'src/dayjs'
 interface WorstLinesChartProps {
   startDate: Dayjs
   endDate: Dayjs
-  operatorId?: number
+  operatorId: string
   alertWorstLineHandling: (arg: boolean) => void
 }
 
@@ -45,9 +45,9 @@ export const WorstLinesChart = ({
       ) : (
         <LinesHbarChart
           lines={groupByLineData.filter((row) =>
-            operatorId
-              ? row.operatorRef?.operatorRef === operatorId
-              : MAJOR_OPERATORS.includes(row.operatorRef?.operatorRef || -1),
+            operatorId != ''
+              ? row.operatorRef?.operatorRef.toString() === operatorId
+              : MAJOR_OPERATORS.includes(row.operatorRef?.operatorRef.toString() || ''),
           )}
         />
       )}

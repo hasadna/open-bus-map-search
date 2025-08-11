@@ -24,7 +24,7 @@ const now = dayjs()
 const DashboardPage = () => {
   const [startDate, setStartDate] = useDate(now.subtract(7, 'day'))
   const [endDate, setEndDate] = useDate(now.subtract(1, 'day'))
-  const [operatorId, setOperatorId] = useState<number>()
+  const [operatorId, setOperatorId] = useState('')
   const { t } = useTranslation()
 
   const [AllChartsZeroLines, setAllChartsZeroLines] = useState(false)
