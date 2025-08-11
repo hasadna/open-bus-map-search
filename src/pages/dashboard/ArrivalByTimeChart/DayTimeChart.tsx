@@ -8,8 +8,8 @@ import { Dayjs } from 'src/dayjs'
 
 const convertToGraphCompatibleStruct = (arr: GroupByRes[]) => {
   return arr.map((item: GroupByRes) => ({
-    id: item.operator_ref?.agency_id || 'Unknown',
-    name: item.operator_ref?.agency_name || 'Unknown',
+    id: item.operator_ref?.operatorRef.toString() || 'Unknown',
+    name: item.operator_ref?.agencyName || 'Unknown',
     current: item.total_actual_rides,
     max: item.total_planned_rides,
     percent: (item.total_actual_rides / item.total_planned_rides) * 100,
@@ -56,10 +56,7 @@ const DayTimeChart: FC<DayTimeChartProps> = ({
   }, [data])
 
   return (
-    <Widget marginBottom>
-      <h2 className="title">
-        {groupByHour ? t('dashboard_page_graph_title_hour') : t('dashboard_page_graph_title_day')}
-      </h2>
+    <Widget title={t(`dashboard_page_graph_title_${groupByHour ? 'hour' : 'day'}`)} marginBottom>
       <Radio.Group
         style={{ marginBottom: '10px' }}
         onChange={(e: RadioChangeEvent) => setGroupByHour(e.target.value === 'byHour')}

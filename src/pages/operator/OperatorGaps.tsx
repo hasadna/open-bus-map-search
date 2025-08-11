@@ -1,4 +1,4 @@
-import { Stack, Typography } from '@mui/material'
+import { Stack } from '@mui/material'
 import { Skeleton } from 'antd'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -25,7 +25,9 @@ export const OperatorGaps = ({
   })
 
   const data = useMemo(() => {
-    const operator = groupByOperatorData?.find((d) => d.operator_ref?.agency_id === operatorId)
+    const operator = groupByOperatorData?.find(
+      (d) => d.operator_ref?.operatorRef.toString() === operatorId,
+    )
     if (!operator) return []
 
     const missing = operator?.total_planned_rides - operator?.total_actual_rides
@@ -42,17 +44,7 @@ export const OperatorGaps = ({
   }, [])
 
   return (
-    <Widget>
-      <Typography
-        sx={{
-          margin: '17.5px 0 0.5rem ',
-          fontWeight: 'bold',
-          fontSize: 24,
-          lineHeight: '35px',
-        }}
-        variant="h2">
-        {t('operator.statistics')} {t(`operator.time_range.${timeRange}`)}
-      </Typography>
+    <Widget title={`${t('operator.statistics')} ${t(`operator.time_range.${timeRange}`)}`}>
       {isLoading ? (
         <Skeleton active paragraph={{ rows: 2 }} />
       ) : (
