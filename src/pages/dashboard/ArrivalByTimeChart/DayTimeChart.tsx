@@ -39,10 +39,7 @@ const DayTimeChart: FC<DayTimeChartProps> = ({
   }, [data])
 
   return (
-    <Widget marginBottom>
-      <h2 className="title">
-        {groupByHour ? t('dashboard_page_graph_title_hour') : t('dashboard_page_graph_title_day')}
-      </h2>
+    <Widget title={t(`dashboard_page_graph_title_${groupByHour ? 'hour' : 'day'}`)} marginBottom>
       <Radio.Group
         style={{ marginBottom: '10px' }}
         onChange={(e: RadioChangeEvent) => setGroupByHour(e.target.value === 'byHour')}

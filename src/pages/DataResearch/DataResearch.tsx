@@ -28,8 +28,7 @@ const unique: (value: string, index: number, self: string[]) => boolean = (value
 export const DataResearch = () => {
   return (
     <PageContainer>
-      <Widget>
-        <h1>מחקרים</h1>
+      <Widget title="מחקרים">
         <p>אם יש לכם רעיון מעניין למה קורים פה דברים, דברו איתנו בסלאק!</p>
       </Widget>
       <StackedResearchSection />
@@ -49,8 +48,7 @@ function StackedResearchSection() {
   })
 
   return (
-    <Widget>
-      <h1>בעיות etl/gps/משהו גלובאלי אחר</h1>
+    <Widget title="בעיות etl/gps/משהו גלובאלי אחר" marginBottom>
       <StackedResearchInputs
         startDate={startDate}
         setStartDate={setStartDate}
@@ -105,8 +103,8 @@ function StackedResearchInputs({
   setEndDate: (date: dayjs.Dayjs) => void
   groupByHour: boolean
   setGroupByHour: (value: boolean) => void
-  operatorId: string
-  setOperatorId: (value: string) => void
+  operatorId?: number
+  setOperatorId: (value?: number) => void
 }) {
   const { t } = useTranslation()
   return (
@@ -146,7 +144,7 @@ const StackedResearchChart = ({
   title,
   description,
   field = 'totalActualRides',
-  agencyId = '',
+  agencyId,
 }: {
   graphData: GroupByRes[]
   isLoading?: boolean
@@ -157,7 +155,7 @@ const StackedResearchChart = ({
 }) => {
   const filteredGraphData = agencyId
     ? graphData
-    : graphData.filter((dataRecord) => dataRecord.operatorRef?.agencyName === agencyId)
+    : graphData.filter((dataRecord) => dataRecord.operatorRef?.agencyName === agencyId?.toString())
   const data = useMemo(
     () =>
       filteredGraphData

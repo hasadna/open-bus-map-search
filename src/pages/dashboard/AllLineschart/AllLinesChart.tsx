@@ -10,7 +10,7 @@ import { Dayjs } from 'src/dayjs'
 
 const convertToChartCompatibleStruct = (arr: GroupByRes[]) => {
   return arr.map((operator) => ({
-    id: operator.operatorRef?.operatorRef,
+    id: operator.operatorRef?.operatorRef || 'Unknown',
     name: operator.operatorRef?.agencyName || 'Unknown',
     total: operator.totalPlannedRides,
     actual: operator.totalActualRides,
@@ -46,16 +46,18 @@ export const AllLinesChart: FC<AllChartComponentProps> = ({
   }, [groupByOperatorData])
 
   return (
-    <Widget>
-      <h2 className="title">
-        {t('dashboard_page_title')}
-        <Tooltip
-          title={convertLineFeedToHtmlTags(t('dashboard_tooltip_content'))}
-          placement="left"
-          arrow>
-          <InfoCircleOutlined style={{ marginRight: '12px' }} />
-        </Tooltip>
-      </h2>
+    <Widget
+      title={
+        <>
+          {t('dashboard_page_title')}
+          <Tooltip
+            title={convertLineFeedToHtmlTags(t('dashboard_tooltip_content'))}
+            placement="left"
+            arrow>
+            <InfoCircleOutlined style={{ marginRight: '12px' }} />
+          </Tooltip>
+        </>
+      }>
       {groupByOperatorLoading ? (
         <Skeleton active />
       ) : (

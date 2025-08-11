@@ -1,7 +1,7 @@
 import {
   SiriApi,
-  SiriVehicleLocationWithRelatedPydanticModel,
   SiriRideWithRelatedPydanticModel,
+  SiriVehicleLocationWithRelatedPydanticModel,
 } from '@hasadna/open-bus-api-client'
 import dayjs from 'src/dayjs'
 import { API_CONFIG, MAX_HITS_COUNT } from 'src/api/apiConfig'
@@ -14,7 +14,7 @@ const SIRI_API = new SiriApi(API_CONFIG)
 const LOCATION_DELTA_METERS = 500
 
 async function getRidesAsync(route: BusRoute, stop: BusStop, timestamp: dayjs.Dayjs) {
-  return await SIRI_API.listSiriRidesListGet({
+  return await SIRI_API.siriRidesListGet({
     limit: 1,
     gtfsRouteDateFrom: timestamp.toDate(),
     gtfsRouteDateTo: timestamp.toDate(),
@@ -34,13 +34,12 @@ export async function getSiriRideWithRelated(
   vehicleRefs: string,
   siriRouteLineRefs: string,
 ) {
-  const gtfs_route_promise: SiriRideWithRelatedPydanticModel[] =
-    await SIRI_API.listSiriRidesListGet({
-      limit: 1,
-      siriRouteIds: siriRouteId.toString(),
-      siriRouteLineRefs,
-      vehicleRefs,
-    })
+  const gtfs_route_promise: SiriRideWithRelatedPydanticModel[] = await SIRI_API.siriRidesListGet({
+    limit: 1,
+    siriRouteIds: siriRouteId.toString(),
+    siriRouteLineRefs,
+    vehicleRefs,
+  })
 
   return gtfs_route_promise[0]
 }
@@ -59,7 +58,7 @@ export async function getSiriStopHitTimesAsync(
 
   const boundary = geoLocationBoundary(stop.location, LOCATION_DELTA_METERS)
 
-  const locations = await SIRI_API.listSiriVehicleLocationsListGet({
+  const locations = await SIRI_API.siriVehicleLocationsListGet({
     limit: 1024,
     siriRoutesIds: siriRouteId.toString(),
     recordedAtTimeFrom: dayjs(timestamp).subtract(2, 'hour').toDate(),
