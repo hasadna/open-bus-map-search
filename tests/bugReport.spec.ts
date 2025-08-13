@@ -33,7 +33,7 @@ test('bug missing field - request type', async ({ page }) => {
     await page.getByLabel('התנהגות צפויה').fill('אקה נודדת לארצות הקור')
     await page.getByLabel('התנהגות נוכחית').fill('לא קיימת')
     await page.getByRole('combobox', { name: '* באיזו תדירות זה קורה? :' }).click({ force: true })
-    await page.waitForSelector('div.ant-select-dropdown')
+    await page.waitForSelector('div.ant-select-dropdown', { timeout: 5000 })
     await page.getByTitle('לעיתים רחוקות').click()
   })
 
