@@ -1,16 +1,14 @@
 import {
-  SiriApi,
   SiriRideWithRelatedPydanticModel,
   SiriVehicleLocationWithRelatedPydanticModel,
 } from '@hasadna/open-bus-api-client'
 import dayjs from 'src/dayjs'
-import { API_CONFIG, MAX_HITS_COUNT } from 'src/api/apiConfig'
+import { SIRI_API, MAX_HITS_COUNT } from 'src/api/apiConfig'
 import { BusStop } from 'src/model/busStop'
 import { geoLocationBoundary, nearestLocation } from 'src/api/geoService'
 import { Coordinates } from 'src/model/location'
 import { BusRoute } from 'src/model/busRoute'
 
-const SIRI_API = new SiriApi(API_CONFIG)
 const LOCATION_DELTA_METERS = 500
 
 async function getRidesAsync(route: BusRoute, stop: BusStop, timestamp: dayjs.Dayjs) {

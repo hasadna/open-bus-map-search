@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { BASE_PATH } from './apiConfig'
+import { STRIDE_API_BASE_PATH } from './apiConfig'
 import dayjs from 'src/dayjs'
 
 export interface Agency {
@@ -25,7 +25,7 @@ export default async function getAgencyList(): Promise<Agency[]> {
     let data: Agency[] = []
     for (const date of tryDates) {
       try {
-        const response = await fetch(`${BASE_PATH}/gtfs_agencies/list?date_from=${date}`)
+        const response = await fetch(`${STRIDE_API_BASE_PATH}/gtfs_agencies/list?date_from=${date}`)
         if (!response.ok) continue
         data = (await response.json()) as Agency[]
         if (data.length > 0) break
