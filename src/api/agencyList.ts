@@ -1,7 +1,6 @@
 import { GtfsAgencyPydanticModel } from '@hasadna/open-bus-api-client'
 import { GTFS_API } from './apiConfig'
 
-
 let agencyList: GtfsAgencyPydanticModel[]
 
 const tryDates = [
