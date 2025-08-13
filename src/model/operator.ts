@@ -15,8 +15,8 @@ export const MAJOR_OPERATORS = ['3', '5', '15', '18', '25', '34'] // ['אלקט�
 export async function getOperators(filter?: string[]): Promise<Operator[]> {
   const agencyList = await getAgencyList()
   const allOperators: Operator[] = agencyList.map((agency) => ({
-    name: agency.agency_name,
-    id: agency.operator_ref.toString(),
+    name: agency.agencyName,
+    id: agency.operatorRef.toString(),
   }))
   const res = allOperators.filter((op, i, a) => a.findIndex((op2) => op2.id === op.id) === i) // Filter duplicates
 
