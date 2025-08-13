@@ -13,8 +13,6 @@ main:has(> div > .bug-report-form-container) {
 .bug-report-form-container {
   max-width: 800px;
   width: 100%;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
   padding: 24px;
   max-height: 100%;
   display: flex;
@@ -31,7 +29,7 @@ main:has(> div > .bug-report-form-container) {
   @media (width <= 600px) {
     padding: 15px;
 
-    h1.logo {
+    .logo {
       font-size: 24px;
       margin: 10px auto;
       border-top: 4px solid gray;
@@ -43,7 +41,7 @@ main:has(> div > .bug-report-form-container) {
     }
   }
 
-  h1.logo {
+  .logo {
     position: relative;
     margin: 20px auto;
     width: 119px;

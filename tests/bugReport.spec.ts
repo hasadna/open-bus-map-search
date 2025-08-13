@@ -25,14 +25,16 @@ test('bug missing field - request type', async ({ page }) => {
   })
 
   await test.step('Fill required fields', async () => {
-    await page.getByLabel('כותרת/סיכום').fill('Test')
+    await page.getByLabel('כותרת/סיכום').fill('Test!')
     await page.getByLabel('שם מלא').fill('Nils Holgerson')
     await page.getByLabel('אי-מייל').fill('Muli@gmail.com')
     await page.getByLabel('תיאור').fill('חסרות הנסיעות של המפקדת אקה')
     await page.getByLabel('סביבה (דפדפן, מערכת)').fill('כרום')
     await page.getByLabel('התנהגות צפויה').fill('אקה נודדת לארצות הקור')
     await page.getByLabel('התנהגות נוכחית').fill('לא קיימת')
-    await page.getByLabel('באיזו תדירות זה קורה?').fill('כל קיץ')
+    await page.getByRole('combobox', { name: '* באיזו תדירות זה קורה? :' }).click({ force: true })
+    await page.waitForSelector('div.ant-select-dropdown')
+    await page.getByTitle('לעיתים רחוקות').click()
   })
 
   await test.step('Submit the form', async () => {
@@ -42,6 +44,6 @@ test('bug missing field - request type', async ({ page }) => {
   await test.step('Verify missing field error', async () => {
     const errorMessage = page.locator('.ant-form-item-explain-error')
     await expect(errorMessage).toBeVisible()
-    await expect(errorMessage).toHaveText('אנא הזן סוג בקשה!')
+    await expect(errorMessage).toHaveText('בבקשה הזן סוג הבקשה')
   })
 })
