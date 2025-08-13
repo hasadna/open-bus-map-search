@@ -1,5 +1,5 @@
 import { CreateIssuePostRequest } from '@hasadna/open-bus-api-client'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Form, Input, Button, Upload, UploadFile, message, Select, FormProps } from 'antd'
 import { Card, CardContent } from '@mui/material'
@@ -13,7 +13,6 @@ const BugReportForm = () => {
   const { t } = useTranslation()
   const [form] = Form.useForm<CreateIssuePostRequest>()
   const [fileList, setFileList] = useState<UploadFile[]>([])
-  const [selectedType, setSelectedType] = useState<string | undefined>(undefined)
   const [submittedUrl, setSubmittedUrl] = useState<string | undefined>(undefined)
 
   //Not implemented yet
@@ -51,6 +50,16 @@ const BugReportForm = () => {
     setFileList(info.fileList)
   }
 
+  const options = useMemo(
+    () => [
+      { value: 'always', label: t('bug_frequency.always') },
+      { value: 'sometimes', label: t('bug_frequency.sometimes') },
+      { value: 'rarely', label: t('bug_frequency.rarely') },
+      { value: 'once', label: t('bug_frequency.once') },
+    ],
+    [t],
+  )
+
   return (
     <Card className="bug-report-form-container">
       <CardContent>
@@ -79,12 +88,8 @@ const BugReportForm = () => {
           onFinishFailed={onFinishFailed}
           labelCol={{ span: 6 }}
           wrapperCol={{ span: 18 }}>
-          <Form.Item
-            label={t('bug_type')}
-            name="type"
-            initialValue={selectedType}
-            rules={[{ required: true, message: t('bug_type_message') }]}>
-            <Select onChange={(value: string) => setSelectedType(value)}>
+          <Form.Item label={t('bug_type')} name="type" rules={[{ required: true }]}>
+            <Select>
               <Select.Option value="bug">{t('bug_type_bug')}</Select.Option>
               <Select.Option value="feature">{t('bug_type_feature')}</Select.Option>
             </Select>
@@ -93,66 +98,63 @@ const BugReportForm = () => {
           <Form.Item
             label={t('bug_title')}
             name="title"
-            rules={[{ required: true, message: t('bug_title_message'), min: 5, max: 200 }]}>
+            rules={[{ required: true, min: 5, max: 200 }]}>
             <Input />
           </Form.Item>
 
           <Form.Item
             label={t('bug_contact_name')}
             name="contactName"
-            rules={[{ required: true, message: t('bug_contact_name_message'), min: 1, max: 100 }]}>
+            rules={[{ required: true, min: 1, max: 100 }]}>
             <Input />
           </Form.Item>
 
           <Form.Item
             label={t('bug_contact_email')}
             name="contactEmail"
-            rules={[
-              { required: true, message: t('bug_contact_email_message'), type: 'email' },
-              // { type: 'email', message: t(TEXT_KEYS.bug_contact_email_valid_message) },
-            ]}>
+            rules={[{ required: true, type: 'email' }]}>
             <Input />
           </Form.Item>
 
           <Form.Item
             label={t('bug_description')}
             name="description"
-            rules={[{ required: true, message: t('bug_description_message'), min: 10, max: 5000 }]}>
+            rules={[{ required: true, min: 10, max: 5000 }]}>
             <Input.TextArea rows={4} />
           </Form.Item>
 
           <Form.Item
             label={t('bug_environment')}
             name="environment"
-            rules={[{ required: true, message: t('bug_environment_message'), min: 1, max: 200 }]}>
+            rules={[{ required: true, min: 1, max: 200 }]}>
             <Input />
           </Form.Item>
 
           <Form.Item
             label={t('bug_expected_behavior')}
             name="expectedBehavior"
-            rules={[
-              { required: true, message: t('bug_expected_behavior_message'), min: 5, max: 1000 },
-            ]}>
+            rules={[{ required: true, min: 5, max: 1000 }]}>
             <Input.TextArea rows={4} />
           </Form.Item>
 
           <Form.Item
             label={t('bug_actual_behavior')}
             name="actualBehavior"
-            rules={[
-              { required: true, message: t('bug_actual_behavior_message'), min: 5, max: 1000 },
-            ]}>
+            rules={[{ required: true, min: 5, max: 1000 }]}>
             <Input.TextArea rows={4} />
           </Form.Item>
 
           <Form.Item
             label={t('bug_reproducibility')}
             name="reproducibility"
-            rules={[
-              { required: true, message: t('bug_reproducibility_message'), min: 1, max: 100 },
-            ]}>
-            <Input />
+            rules={[{ required: true, min: 1, max: 100 }]}>
+            <Select>
+              {options.map((option) => (
+                <Select.Option key={option.value} value={option.value}>
+                  {option.label}
+                </Select.Option>
+              ))}
+            </Select>
           </Form.Item>
 
           <Form.Item label={t('bug_attachments')} name="attachments">
