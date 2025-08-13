@@ -1,49 +1,36 @@
+import { CreateIssuePostRequest } from '@hasadna/open-bus-api-client'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Form, Input, Button, Upload, message, Select, FormProps } from 'antd'
+import { Form, Input, Button, Upload, UploadFile, message, Select, FormProps } from 'antd'
 import { Card, CardContent } from '@mui/material'
 import { FileUploadOutlined } from '@mui/icons-material'
-import axios from 'axios'
 import './BugReportForm.scss'
-import { UploadChangeParam, UploadFile } from 'antd/lib/upload'
+import { UploadChangeParam } from 'antd/es/upload'
 import InfoYoutubeModal from './components/YoutubeModal'
-const { Option } = Select
-
-interface BugReportFormData {
-  title: string
-  description: string
-  environment: string
-  expectedBehavior: string
-  actualBehavior: string
-  reproducibility: string
-  attachments: UploadFile[]
-  contactName: string
-  contactEmail: string
-}
+import { ISSUES_API } from 'src/api/apiConfig'
 
 const BugReportForm = () => {
   const { t } = useTranslation()
-  const [form] = Form.useForm<BugReportFormData>()
+  const [form] = Form.useForm<CreateIssuePostRequest>()
   const [fileList, setFileList] = useState<UploadFile[]>([])
   const [selectedType, setSelectedType] = useState<string | undefined>(undefined)
   const [submittedUrl, setSubmittedUrl] = useState<string | undefined>(undefined)
 
   //Not implemented yet
-  const onFinish = async (values: BugReportFormData) => {
+  const onFinish = async (values: CreateIssuePostRequest) => {
     try {
       // Send the bug report data to the server
       // Include fileList in the values if needed
-
-      const response = await axios.post(
-        'https://open-bus-backend.k8s.hasadna.org.il/create-issue',
-        {
+      const response = await ISSUES_API.issuesCreatePost({
+        createIssuePostRequest: {
           ...values,
-          attachments: fileList,
+          attachments: fileList.map((a) => JSON.stringify(a)),
         },
-      )
-      const url: string = response.data.url
-      setSubmittedUrl(url)
-      if (response.data.state === 'open') {
+      })
+
+      // @ts-expect-error: <need fix schema server>
+      setSubmittedUrl(response?.data?.url as string)
+      if (response.data?.state === 'open') {
         message.success(t('reportBug.success'))
         form.resetFields()
         setFileList([])
@@ -98,22 +85,22 @@ const BugReportForm = () => {
             initialValue={selectedType}
             rules={[{ required: true, message: t('bug_type_message') }]}>
             <Select onChange={(value: string) => setSelectedType(value)}>
-              <Option value="bug">{t('bug_type_bug')}</Option>
-              <Option value="feature">{t('bug_type_feature')}</Option>
+              <Select.Option value="bug">{t('bug_type_bug')}</Select.Option>
+              <Select.Option value="feature">{t('bug_type_feature')}</Select.Option>
             </Select>
           </Form.Item>
 
           <Form.Item
             label={t('bug_title')}
             name="title"
-            rules={[{ required: true, message: t('bug_title_message') }]}>
+            rules={[{ required: true, message: t('bug_title_message'), min: 5, max: 200 }]}>
             <Input />
           </Form.Item>
 
           <Form.Item
             label={t('bug_contact_name')}
             name="contactName"
-            rules={[{ required: true, message: t('bug_contact_name_message') }]}>
+            rules={[{ required: true, message: t('bug_contact_name_message'), min: 1, max: 100 }]}>
             <Input />
           </Form.Item>
 
@@ -121,7 +108,7 @@ const BugReportForm = () => {
             label={t('bug_contact_email')}
             name="contactEmail"
             rules={[
-              { required: true, message: t('bug_contact_email_message') },
+              { required: true, message: t('bug_contact_email_message'), type: 'email' },
               // { type: 'email', message: t(TEXT_KEYS.bug_contact_email_valid_message) },
             ]}>
             <Input />
@@ -130,35 +117,41 @@ const BugReportForm = () => {
           <Form.Item
             label={t('bug_description')}
             name="description"
-            rules={[{ required: true, message: t('bug_description_message') }]}>
+            rules={[{ required: true, message: t('bug_description_message'), min: 10, max: 5000 }]}>
             <Input.TextArea rows={4} />
           </Form.Item>
 
           <Form.Item
             label={t('bug_environment')}
             name="environment"
-            rules={[{ required: true, message: t('bug_environment_message') }]}>
+            rules={[{ required: true, message: t('bug_environment_message'), min: 1, max: 200 }]}>
             <Input />
           </Form.Item>
 
           <Form.Item
             label={t('bug_expected_behavior')}
             name="expectedBehavior"
-            rules={[{ required: true, message: t('bug_expected_behavior_message') }]}>
+            rules={[
+              { required: true, message: t('bug_expected_behavior_message'), min: 5, max: 1000 },
+            ]}>
             <Input.TextArea rows={4} />
           </Form.Item>
 
           <Form.Item
             label={t('bug_actual_behavior')}
             name="actualBehavior"
-            rules={[{ required: true, message: t('bug_actual_behavior_message') }]}>
+            rules={[
+              { required: true, message: t('bug_actual_behavior_message'), min: 5, max: 1000 },
+            ]}>
             <Input.TextArea rows={4} />
           </Form.Item>
 
           <Form.Item
             label={t('bug_reproducibility')}
             name="reproducibility"
-            rules={[{ required: true, message: t('bug_reproducibility_message') }]}>
+            rules={[
+              { required: true, message: t('bug_reproducibility_message'), min: 1, max: 100 },
+            ]}>
             <Input />
           </Form.Item>
 
