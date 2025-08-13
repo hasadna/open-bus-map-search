@@ -129,7 +129,7 @@
   "bug_environment": "Environment",
   "bug_expected_behavior": "Expected Behavior",
   "bug_actual_behavior": "Actual Behavior",
-  "bug_reproducibility": "How often does it happen?",
+  "bug_reproducibility": "How often does it happen",
   "bug_attachments": "Attachments/Screenshots",
   "bug_attachments_upload_button": "Click to Upload",
   "bug_submit": "Submit Bug Report",

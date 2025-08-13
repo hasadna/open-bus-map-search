@@ -130,7 +130,7 @@
   "bug_environment": "סביבה (דפדפן, מערכת)",
   "bug_expected_behavior": "התנהגות צפויה",
   "bug_actual_behavior": "התנהגות נוכחית",
-  "bug_reproducibility": "באיזו תדירות זה קורה?",
+  "bug_reproducibility": "באיזו תדירות זה קורה",
   "bug_attachments": "קבצים מצורפים/ צילומי מסך",
   "bug_attachments_upload_button": "לחץ להעלאה",
   "bug_submit": "שלח את הדוח",

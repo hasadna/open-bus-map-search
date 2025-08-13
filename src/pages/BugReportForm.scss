@@ -26,6 +26,14 @@ main:has(> div > .bug-report-form-container) {
     overflow-y: auto !important;
   }
 
+  .ant-form-item-label > label {
+    display: block !important;
+    font-weight: bold;
+    text-align: start;
+    text-wrap: pretty;
+    min-height: fit-content;
+  }
+
   @media (width <= 600px) {
     padding: 15px;
 
@@ -65,13 +73,6 @@ main:has(> div > .bug-report-form-container) {
       & > div > div {
         max-width: 100%;
       }
-    }
-
-    &-label {
-      text-align: start;
-      font-weight: bold;
-      white-space: warp;
-      text-wrap: pretty;
     }
   }
 
