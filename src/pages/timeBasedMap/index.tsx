@@ -1,4 +1,3 @@
-import { GtfsAgencyPydanticModel } from '@hasadna/open-bus-api-client'
 import { OpenInFullRounded } from '@mui/icons-material'
 import { Alert, CircularProgress, Grid, IconButton, Typography } from '@mui/material'
 import { useCallback, useEffect, useMemo, useState } from 'react'
@@ -14,7 +13,7 @@ import { busIcon, busIconPath } from '../components/utils/BusIcon'
 import createClusterCustomIcon from '../components/utils/customCluster/customCluster'
 import InfoYoutubeModal from '../components/YoutubeModal'
 import { getColorByHashString } from '../dashboard/AllLineschart/OperatorHbarChart/utils'
-import getAgencyList from 'src/api/agencyList'
+import { useAgencyList } from 'src/hooks/useAgencyList'
 import useVehicleLocations from 'src/api/useVehicleLocations'
 import { VehicleLocation } from 'src/model/vehicleLocation'
 import { BusToolTip } from 'src/pages/components/map-related/MapLayers/BusToolTip'
@@ -180,11 +179,7 @@ export default function TimeBasedMapPage() {
 
 function Markers({ positions }: { positions: Point[] }) {
   const map = useMap()
-  const [agencyList, setAgencyList] = useState<GtfsAgencyPydanticModel[]>([])
-
-  useEffect(() => {
-    getAgencyList().then(setAgencyList).catch(console.log)
-  }, [])
+  const agencyList = useAgencyList()
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition((position) =>

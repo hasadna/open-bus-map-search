@@ -1,14 +1,11 @@
 import {
-  AggregationsApi,
   GtfsAgencyPydanticModel,
   GtfsRidesAggGroupByPydanticModel,
 } from '@hasadna/open-bus-api-client'
 import { useQuery } from '@tanstack/react-query'
-import getAgencyList from './agencyList'
-import { API_CONFIG } from './apiConfig'
+import { AGGREGATIONS_API } from './apiConfig'
+import { getAgencyList } from './agencyList'
 import { Dayjs } from 'src/dayjs'
-
-const AGGREGATIONS_API = new AggregationsApi(API_CONFIG)
 
 type groupByField =
   | 'gtfs_route_date'
@@ -45,12 +42,12 @@ async function fetchGroupBy({
     excludeHoursTo: 2,
   })
 
-  return data.map((data) => ({
-    ...data,
-    operatorRef: agencies.find((agency) => agency.operatorRef === data.operatorRef),
-  }))
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  return data.map((data) => {
+    const operatorRef = agencies.find((agency) => agency.operatorRef === data.operatorRef)
+    return { ...data, operatorRef } as GroupByRes
+  })
 }
-
 export function useGroupBy({
   dateTo,
   dateFrom,

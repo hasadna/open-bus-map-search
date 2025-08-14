@@ -10,7 +10,7 @@ import { MapProps } from './map-types'
 import { useRecenterOnDataChange } from './useRecenterOnDataChange'
 import { MapIndex } from './MapIndex'
 import MapFooterButtons from './MapFooterButtons/MapFooterButtons'
-import { useAgencyList } from 'src/api/agencyList'
+import { useAgencyList } from 'src/hooks/useAgencyList'
 
 // configs for planned & actual routes - line color & marker icon
 const getIcon = (path: string, width: number = 10, height: number = 10): Icon<IconOptions> => {
@@ -29,7 +29,6 @@ const plannedRouteStopMarker = getIcon(plannedRouteStopMarkerPath, 20, 25)
 export function MapContent({ positions, plannedRouteStops, showNavigationButtons }: MapProps) {
   const markerRef = useRef<{ [key: number]: LeafletMarker | null }>({})
   const [tileUrl, setTileUrl] = useState('https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png')
-
   const agencyList = useAgencyList()
   const map = useMap()
   const { i18n } = useTranslation()
