@@ -6,7 +6,7 @@ export async function getGtfsRidesList(
   lineNumber: string | undefined,
   routeKey: string | undefined,
 ) {
-  const gtfsRidesList = await GTFS_API.listGtfsRidesListGet({
+  const gtfsRidesList = await GTFS_API.gtfsRidesListGet({
     gtfsRouteDateFrom: date,
     gtfsRouteDateTo: date,
     gtfsRouteOperatorRefs: operator,

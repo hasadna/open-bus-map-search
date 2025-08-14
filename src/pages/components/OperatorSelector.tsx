@@ -23,7 +23,7 @@ export default function OperatorSelector({
     getOperators(filter).then(setOperators)
   }, [filter])
 
-  const value = operators.find((operator) => operator.id.toString() === operatorId) || null
+  const value = operators.find((operator) => operator.id === operatorId) || null
 
   return (
     <Autocomplete
@@ -31,7 +31,7 @@ export default function OperatorSelector({
       disabled={disabled}
       fullWidth
       value={value}
-      onChange={(_, value) => setOperatorId(value ? value.id.toString() : '')}
+      onChange={(_, value) => setOperatorId(value ? value.id : '')}
       id="operator-select"
       options={operators}
       renderInput={(params) => <TextField {...params} label={t('choose_operator')} />}

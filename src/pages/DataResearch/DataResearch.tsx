@@ -39,7 +39,7 @@ export const DataResearch = () => {
 function StackedResearchSection() {
   const [startDate, setStartDate] = useDate(now.clone().subtract(7, 'days'))
   const [endDate, setEndDate] = useDate(now.clone().subtract(1, 'day'))
-  const [operatorId, setOperatorId] = useState<number>()
+  const [operatorId, setOperatorId] = useState('')
   const [groupByHour, setGroupByHour] = useState<boolean>(false)
   const [graphData, loadingGraph] = useGroupBy({
     dateTo: endDate,
@@ -103,8 +103,8 @@ function StackedResearchInputs({
   setEndDate: (date: dayjs.Dayjs) => void
   groupByHour: boolean
   setGroupByHour: (value: boolean) => void
-  operatorId?: number
-  setOperatorId: (value?: number) => void
+  operatorId?: string
+  setOperatorId: (value: string) => void
 }) {
   const { t } = useTranslation()
   return (
@@ -144,18 +144,18 @@ const StackedResearchChart = ({
   title,
   description,
   field = 'totalActualRides',
-  agencyId,
+  agencyId = '',
 }: {
   graphData: GroupByRes[]
   isLoading?: boolean
   title?: string
   description?: string
   field?: 'totalActualRides' | 'totalPlannedRides' | 'totalMissedRides'
-  agencyId?: number
+  agencyId?: string
 }) => {
   const filteredGraphData = agencyId
     ? graphData
-    : graphData.filter((dataRecord) => dataRecord.operatorRef?.agencyName === agencyId?.toString())
+    : graphData.filter((dataRecord) => dataRecord.operatorRef?.agencyName === agencyId)
   const data = useMemo(
     () =>
       filteredGraphData

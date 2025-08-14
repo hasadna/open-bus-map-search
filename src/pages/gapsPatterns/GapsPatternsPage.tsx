@@ -226,7 +226,7 @@ const GapsPatternsPage = () => {
         </Grid>
         <Grid size={{ xs: 12, sm: 8 }}>
           <OperatorSelector
-            operatorId={operatorId ? Number(operatorId) : undefined}
+            operatorId={operatorId}
             setOperatorId={(id) =>
               setSearch((current) => ({ ...current, operatorId: id?.toString() }))
             }
