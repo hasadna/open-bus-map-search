@@ -1,38 +1,30 @@
 import { CreateIssuePostRequest } from '@hasadna/open-bus-api-client'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Form, Input, Button, Upload, UploadFile, message, Select, FormProps } from 'antd'
-import { FileUploadOutlined } from '@mui/icons-material'
+import { Form, Input, Button, message, Select, FormProps } from 'antd'
 import './BugReportForm.scss'
-import { UploadChangeParam } from 'antd/es/upload'
 import InfoYoutubeModal from './components/YoutubeModal'
 import { ISSUES_API } from 'src/api/apiConfig'
 import Widget from 'src/shared/Widget'
 
+// File upload is disabled until the server-side implementation is complete.
 const BugReportForm = () => {
   const { t } = useTranslation()
   const [form] = Form.useForm<CreateIssuePostRequest>()
-  const [fileList, setFileList] = useState<UploadFile[]>([])
+  // const [fileList, setFileList] = useState<UploadFile[]>([])
   const [submittedUrl, setSubmittedUrl] = useState<string | undefined>(undefined)
 
-  //Not implemented yet
   const onFinish = async (values: CreateIssuePostRequest) => {
     try {
-      // Send the bug report data to the server
-      // Include fileList in the values if needed
       const response = await ISSUES_API.issuesCreatePost({
-        createIssuePostRequest: {
-          ...values,
-          attachments: fileList.map((a) => JSON.stringify(a)),
-        },
+        createIssuePostRequest: values,
       })
 
-      // @ts-expect-error: <need fix schema server>
-      setSubmittedUrl(response?.data?.url as string)
+      setSubmittedUrl(response.data?.url)
       if (response.data?.state === 'open') {
         message.success(t('reportBug.success'))
         form.resetFields()
-        setFileList([])
+        // setFileList([])
       } else {
         message.error(t('reportBug.error'))
       }
@@ -46,9 +38,9 @@ const BugReportForm = () => {
     console.log('Failed:', errorInfo)
   }
 
-  const onFileChange = (info: UploadChangeParam) => {
-    setFileList(info.fileList)
-  }
+  // const onFileChange = (info: UploadChangeParam) => {
+  //   setFileList(info.fileList)
+  // }
 
   const options = useMemo(() => {
     return [
@@ -93,6 +85,7 @@ const BugReportForm = () => {
           <Select>
             <Select.Option value="bug">{t('bug_type_bug')}</Select.Option>
             <Select.Option value="feature">{t('bug_type_feature')}</Select.Option>
+            <Select.Option value="other">{t('bug_type_other')}</Select.Option>
           </Select>
         </Form.Item>
 
@@ -158,8 +151,10 @@ const BugReportForm = () => {
           </Select>
         </Form.Item>
 
-        <Form.Item label={t('bug_attachments')} name="attachments">
+        {/* <Form.Item label={t('bug_attachments')} name="attachments">
           <Upload
+            multiple
+            maxCount={10}
             beforeUpload={() => false}
             listType="picture"
             fileList={fileList}
@@ -168,7 +163,7 @@ const BugReportForm = () => {
               {t('bug_attachments_upload_button')}
             </Button>
           </Upload>
-        </Form.Item>
+        </Form.Item> */}
 
         <Form.Item>
           <Button type="primary" htmlType="submit">

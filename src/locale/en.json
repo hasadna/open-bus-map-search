@@ -138,6 +138,7 @@
   "bug_type": "Type of request",
   "bug_type_bug": "Bug",
   "bug_type_feature": "Feature Request",
+  "bug_type_other": "Other",
   "bug_frequency": {
     "always": "Always",
     "sometimes": "Sometimes",
