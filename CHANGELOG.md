@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.5.0](https://github.com/hasadna/open-bus-map-search/compare/v1.4.0...v1.5.0) (2025-08-14)
+
+
+### Features
+
+* **widget:** enhance Widget component ([#1211](https://github.com/hasadna/open-bus-map-search/issues/1211)) ([21a7fe5](https://github.com/hasadna/open-bus-map-search/commit/21a7fe5ed086b93566a1fcf342d3dfdc3f4218ad))
+
+
+### Bug Fixes
+
+* **rides:** filter out future rides from gap list ([#1192](https://github.com/hasadna/open-bus-map-search/issues/1192)) ([e692faf](https://github.com/hasadna/open-bus-map-search/commit/e692faf3debe89f3384009154b223b669f4fc16b))
+
 ## [1.4.0](https://github.com/hasadna/open-bus-map-search/compare/v1.3.0...v1.4.0) (2025-07-14)
 
 
