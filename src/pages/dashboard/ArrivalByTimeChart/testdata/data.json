@@ -5,8 +5,7 @@
     "current": 23874,
     "max": 24138,
     "percent": 98.90628883917475,
-    "gtfsRouteDate": "2024-01-22",
-    "gtfsRouteHour": ""
+    "gtfsRouteDate": "2024-01-22"
   },
   {
     "operatorId": "3",
@@ -14,8 +13,7 @@
     "current": 23908,
     "max": 24147,
     "percent": 99.01022901395619,
-    "gtfsRouteDate": "2024-01-23",
-    "gtfsRouteHour": ""
+    "gtfsRouteDate": "2024-01-23"
   },
   {
     "operatorId": "3",
@@ -23,8 +21,7 @@
     "current": 23901,
     "max": 24163,
     "percent": 98.91569755411166,
-    "gtfsRouteDate": "2024-01-24",
-    "gtfsRouteHour": ""
+    "gtfsRouteDate": "2024-01-24"
   },
   {
     "operatorId": "3",
@@ -32,8 +29,7 @@
     "current": 24058,
     "max": 24394,
     "percent": 98.62261211773387,
-    "gtfsRouteDate": "2024-01-25",
-    "gtfsRouteHour": ""
+    "gtfsRouteDate": "2024-01-25"
   },
   {
     "operatorId": "3",
@@ -41,8 +37,7 @@
     "current": 11654,
     "max": 11902,
     "percent": 97.91631658544783,
-    "gtfsRouteDate": "2024-01-26",
-    "gtfsRouteHour": ""
+    "gtfsRouteDate": "2024-01-26"
   },
   {
     "operatorId": "3",
@@ -50,8 +45,7 @@
     "current": 4460,
     "max": 4600,
     "percent": 96.95652173913044,
-    "gtfsRouteDate": "2024-01-27",
-    "gtfsRouteHour": ""
+    "gtfsRouteDate": "2024-01-27"
   },
   {
     "operatorId": "3",
@@ -59,8 +53,7 @@
     "current": 23451,
     "max": 24017,
     "percent": 97.64333597035433,
-    "gtfsRouteDate": "2024-01-28",
-    "gtfsRouteHour": ""
+    "gtfsRouteDate": "2024-01-28"
   },
   {
     "operatorId": "7",
@@ -68,8 +61,7 @@
     "current": 23451,
     "max": 24017,
     "percent": 97.64333597035433,
-    "gtfsRouteDate": "2024-01-28",
-    "gtfsRouteHour": ""
+    "gtfsRouteDate": "2024-01-28"
   },
   {
     "operatorId": "4",
@@ -77,7 +69,6 @@
     "current": 23451,
     "max": 24017,
     "percent": 97.64333597035433,
-    "gtfsRouteDate": "2024-01-28",
-    "gtfsRouteHour": ""
+    "gtfsRouteDate": "2024-01-28"
   }
 ]

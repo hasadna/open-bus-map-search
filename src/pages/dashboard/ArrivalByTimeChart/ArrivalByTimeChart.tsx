@@ -25,16 +25,15 @@ export function arrayGroup<T>(array: T[], callback: (item: T) => string): T[][] 
 }
 
 export const getRange = (startTime: Date, endTime: Date, interval: 'hour' | 'day') => {
-  const intervalMs = (interval === 'hour' ? 1 : 24) * 60 * 60 * 1000
-  const range: string[] = []
+  const interval_ms = (interval === 'hour' ? 1 : 24) * 60 * 60 * 1000
+  const result: string[] = []
   let current = startTime.getTime()
 
   while (current <= endTime.getTime()) {
-    // range.push(dayjs(current).format(interval ? 'HH:mm-DD/MM/YY' : 'DD/MM/YY'))
-    range.push(new Date(current).toISOString())
-    current += intervalMs
+    result.push(new Date(current).toISOString())
+    current += interval_ms
   }
-  return range
+  return result
 }
 
 export type ArrivalByTimeData = {
