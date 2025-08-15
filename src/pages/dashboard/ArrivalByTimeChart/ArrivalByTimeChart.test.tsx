@@ -1,7 +1,7 @@
 import { type RenderResult, render, screen } from '@testing-library/react'
 import type { ReactElement } from 'react'
 import ArrivalByTimeChart from './ArrivalByTimeChart'
-import testBusData from './testdata/data.json'
+import { data } from './testdata/data'
 
 jest.mock('recharts', () => {
   const original: typeof import('recharts') = jest.requireActual('recharts')
@@ -22,12 +22,12 @@ describe('ArrivalByTimeChart', () => {
   let renderedComponent: RenderResult
   beforeEach(() => {
     renderedComponent = render(
-      <ArrivalByTimeChart data={testBusData} operatorId={testBusData[0].id} />,
+      <ArrivalByTimeChart data={data} operatorId={data[0].operatorRef!.operatorRef.toString()} />,
     )
   })
 
   test('renders without crashing', () => {
-    expect(screen.getByText(testBusData[0].name)).toBeInTheDocument()
+    expect(screen.getByText(data[0].operatorRef!.agencyName)).toBeInTheDocument()
   })
 
   test('tooltip wrapper exists', () => {

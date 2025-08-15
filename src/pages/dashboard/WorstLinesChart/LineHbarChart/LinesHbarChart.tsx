@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { getColorName } from '../../AllLineschart/OperatorHbarChart/OperatorHbarChart'
 import { HbarChart } from './HbarChart/HbarChart'
 import { GroupByRes } from 'src/api/groupByService'
@@ -11,18 +12,20 @@ function LinesHbarChart({
   operators_whitelist?: string[]
   defaultOperators?: string[]
 }) {
-  const percents = lines
-    .map((o) => (o.totalActualRides / o.totalRoutes) * 100)
-    .map((p) => (complement ? Math.max(100 - p, 0) : p))
-  const width = percents.map((p) => Math.max(Math.min(p, 100), 0))
+  const rows = useMemo(() => {
+    const percents = lines
+      .map((o) => (o.totalActualRides / o.totalRoutes) * 100)
+      .map((p) => (complement ? Math.max(100 - p, 0) : p))
 
-  const rows = lines.map((o, i) => ({
-    width: width[i],
-    percent: percents[i],
-    name: `${JSON.parse(o.routeShortName || "['']")[0]} | ${o.operatorRef?.agencyName} | ${o.routeLongName}`,
-    color: getColorName(o.operatorRef?.agencyName || ''),
-    ...o,
-  }))
+    const width = percents.map((p) => Math.max(Math.min(p, 100), 0))
+    return lines.map((o, i) => ({
+      width: width[i],
+      percent: percents[i],
+      name: `${JSON.parse(o.routeShortName || "['']")[0]} | ${o.operatorRef?.agencyName} | ${o.routeLongName}`,
+      color: getColorName(o.operatorRef?.agencyName || ''),
+      ...o,
+    }))
+  }, [lines, complement])
 
   return (
     <HbarChart

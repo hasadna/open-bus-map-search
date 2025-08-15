@@ -1,17 +1,6 @@
-import { Meta, StoryObj } from '@storybook/react-vite'
-import LinesHbarChart from './LinesHbarChart'
 import { GroupByRes } from 'src/api/groupByService'
 
-const meta = {
-  title: 'Pages/Dashboard/Bar/LinesHbarChart',
-  component: LinesHbarChart,
-} satisfies Meta<typeof LinesHbarChart>
-
-export default meta
-
-type Story = StoryObj<typeof LinesHbarChart>
-
-const mockLines: GroupByRes[] = [
+export const data: GroupByRes[] = [
   {
     operatorRef: {
       agencyName: 'אגד',
@@ -52,10 +41,3 @@ const mockLines: GroupByRes[] = [
     totalActualRides: 297,
   },
 ]
-
-export const Default: Story = {
-  args: {
-    lines: mockLines,
-    complement: false,
-  },
-}

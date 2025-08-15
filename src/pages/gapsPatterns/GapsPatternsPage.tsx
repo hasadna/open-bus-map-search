@@ -154,8 +154,8 @@ const GapsPatternsPage = () => {
     const routes = await getRoutesAsync(
       dayjs(startDate),
       dayjs(endDate),
-      operatorId,
-      lineNumber,
+      operatorId as string,
+      lineNumber as string,
       signal,
     )
     setSearch((current) => (search.lineNumber === lineNumber ? { ...current, routes } : current))
@@ -227,9 +227,7 @@ const GapsPatternsPage = () => {
         <Grid size={{ xs: 12, sm: 8 }}>
           <OperatorSelector
             operatorId={operatorId}
-            setOperatorId={(id) =>
-              setSearch((current) => ({ ...current, operatorId: id?.toString() }))
-            }
+            setOperatorId={(id) => setSearch((current) => ({ ...current, operatorId: id }))}
           />
         </Grid>
         <Grid size={{ xs: 12, sm: 4 }} className="hideOnMobile">
