@@ -42,11 +42,12 @@ async function fetchGroupBy({
     excludeHoursTo: 2,
   })
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-  return data.map((data) => {
-    const operatorRef = agencies.find((agency) => agency.operatorRef === data.operatorRef)
-    return { ...data, operatorRef } as GroupByRes
-  })
+  return data
+    .map((data) => {
+      const operatorRef = agencies.find((agency) => agency.operatorRef === data.operatorRef)
+      return { ...data, operatorRef } as GroupByRes
+    })
+    .filter((data) => data.operatorRef !== undefined)
 }
 export function useGroupBy({
   dateTo,

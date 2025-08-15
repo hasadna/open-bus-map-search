@@ -22,8 +22,6 @@ import dayjs from 'src/dayjs'
 import './DataResearch.scss'
 
 const now = dayjs()
-const unique: (value: string, index: number, self: string[]) => boolean = (value, index, self) =>
-  self.indexOf(value) === index
 
 export const DataResearch = () => {
   return (
@@ -103,7 +101,7 @@ function StackedResearchInputs({
   setEndDate: (date: dayjs.Dayjs) => void
   groupByHour: boolean
   setGroupByHour: (value: boolean) => void
-  operatorId?: string
+  operatorId: string
   setOperatorId: (value: string) => void
 }) {
   const { t } = useTranslation()
@@ -153,46 +151,41 @@ const StackedResearchChart = ({
   field?: 'totalActualRides' | 'totalPlannedRides' | 'totalMissedRides'
   agencyId?: string
 }) => {
-  const filteredGraphData = agencyId
-    ? graphData
-    : graphData.filter((dataRecord) => dataRecord.operatorRef?.agencyName === agencyId)
-  const data = useMemo(
-    () =>
-      filteredGraphData
-        .reduce(
-          (acc, curr) => {
-            const val =
-              field === 'totalMissedRides'
-                ? curr.totalPlannedRides - curr.totalActualRides
-                : curr[field]
-            const date = (curr.gtfsRouteDate ?? curr.gtfsRouteHour)?.valueOf() ?? 0
-            const agencyName = curr.operatorRef?.agencyName || 'Unknown'
-            const entry = acc.find((item) => item.date === date)
+  const filteredGraphData = useMemo(() => {
+    if (!agencyId) return graphData
+    return graphData.filter((record) => record.operatorRef?.operatorRef?.toString() === agencyId)
+  }, [graphData, agencyId])
 
-            if (entry) {
-              entry[agencyName] = val
-            } else {
-              const newEntry: Record<string, number> = {
-                date,
-                agencyName: val,
-              }
-              acc.push(newEntry)
-            }
-            return acc
-          },
-          [] as Record<string, number>[],
-        )
-        .sort((a, b) => {
-          if (a.date > b.date) return 1
-          if (a.date < b.date) return -1
-          return 0
-        }),
-    [filteredGraphData],
-  )
+  const { data, operators } = useMemo(() => {
+    const result: { date: string; ts: number; [key: string]: number | string }[] = []
+    const dateIndex = new Map<string, number>()
+    const operatorSet = new Set<string>()
 
-  const operators = filteredGraphData
-    .map((operator) => operator.operatorRef?.agencyName || 'Unknown')
-    .filter(unique)
+    for (const record of filteredGraphData) {
+      const date = dayjs(record.gtfsRouteDate ?? record.gtfsRouteHour)
+      const formatDate = date.format('hh:mm-DD/MM/YYYY')
+      const agencyName = record.operatorRef?.agencyName || 'Unknown'
+
+      operatorSet.add(agencyName)
+
+      let rowIndex = dateIndex.get(formatDate)
+      if (rowIndex === undefined) {
+        rowIndex = result.length
+        dateIndex.set(formatDate, rowIndex)
+        result.push({ date: formatDate, ts: date.valueOf() })
+      }
+
+      result[rowIndex][agencyName] =
+        field === 'totalMissedRides'
+          ? record.totalPlannedRides - record.totalActualRides
+          : record[field]
+    }
+
+    return {
+      data: result.sort((a, b) => a.ts - b.ts),
+      operators: Array.from(operatorSet),
+    }
+  }, [filteredGraphData, field])
 
   return (
     <>
