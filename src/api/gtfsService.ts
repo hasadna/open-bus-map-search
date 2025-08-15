@@ -1,16 +1,14 @@
 import axios from 'axios'
 import {
-  GtfsApi,
   GtfsRideStopPydanticModel,
   GtfsRideWithRelatedPydanticModel,
   GtfsRoutePydanticModel,
 } from '@hasadna/open-bus-api-client'
 import dayjs from 'src/dayjs'
-import { API_CONFIG, BASE_PATH, MAX_HITS_COUNT } from 'src/api/apiConfig'
-import { BusStop, fromGtfsStop } from 'src/model/busStop'
+import { GTFS_API, MAX_HITS_COUNT, STRIDE_API_BASE_PATH } from 'src/api/apiConfig'
 import { BusRoute, fromGtfsRoute } from 'src/model/busRoute'
+import { BusStop, fromGtfsStop } from 'src/model/busStop'
 
-const GTFS_API = new GtfsApi(API_CONFIG)
 const JOIN_SEPARATOR = ','
 const SEARCH_MARGIN_HOURS = 4
 
@@ -146,7 +144,7 @@ export async function getGtfsStopHitTimesAsync(stop: BusStop, timestamp: dayjs.D
       arrival_time_to: maxEndTime,
     }
 
-    const stopHitsRes = await axios.get(`${BASE_PATH}/gtfs_ride_stops/list`, {
+    const stopHitsRes = await axios.get(`${STRIDE_API_BASE_PATH}/gtfs_ride_stops/list`, {
       params: stopHitsRequestPayLoad,
     })
 

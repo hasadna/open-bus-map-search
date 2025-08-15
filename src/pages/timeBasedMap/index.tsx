@@ -15,7 +15,7 @@ import { busIcon, busIconPath } from '../components/utils/BusIcon'
 import createClusterCustomIcon from '../components/utils/customCluster/customCluster'
 import InfoYoutubeModal from '../components/YoutubeModal'
 import { getColorByHashString } from '../dashboard/AllLineschart/OperatorHbarChart/utils'
-import { useAgencyList } from 'src/api/agencyList'
+import { useAgencyList } from 'src/hooks/useAgencyList'
 import useVehicleLocations from 'src/api/useVehicleLocations'
 import dayjs from 'src/dayjs'
 import { BusToolTip } from 'src/pages/components/map-related/MapLayers/BusToolTip'
@@ -218,7 +218,7 @@ function Markers({ positions }: { positions: Point[] }) {
       {positions.map((pos) => {
         const icon = busIcon({
           operator_id: pos.operator?.toString() || 'default',
-          name: agencyList.find((agency) => agency.operator_ref === pos.operator)?.agency_name,
+          name: agencyList.find((agency) => agency.operatorRef === pos.operator)?.agencyName,
         })
         return (
           <Marker position={pos.loc} icon={icon} key={pos.point?.id}>

@@ -140,8 +140,7 @@ const LineProfileError = ({ title, message }: { title?: string; message?: string
   return (
     <PageContainer>
       <NotFound>
-        <Widget>
-          <h1>{title}</h1>
+        <Widget title={title}>
           <pre>{message}</pre>
         </Widget>
       </NotFound>

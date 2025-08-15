@@ -1,6 +1,6 @@
 import axios, { CancelTokenSource } from 'axios'
 import { GapsList } from '../model/gaps'
-import { BASE_PATH } from './apiConfig'
+import { STRIDE_API_BASE_PATH } from './apiConfig'
 import dayjs from 'src/dayjs'
 
 type RawGapsList = {
@@ -36,7 +36,7 @@ export const getGapsAsync = async (
   // const startOfDay = dayjs(fromTimestamp).startOf('day')
   const data = USE_API
     ? (
-        await axios.get<RawGapsList>(`${BASE_PATH}/rides_execution/list`, {
+        await axios.get<RawGapsList>(`${STRIDE_API_BASE_PATH}/rides_execution/list`, {
           params: {
             limit: LIMIT,
             date_from: fromDay.format('YYYY-MM-DD'),
