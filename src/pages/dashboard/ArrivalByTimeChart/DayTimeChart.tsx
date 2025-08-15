@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import ArrivalByTimeChart, { ArrivalByTimeData } from './ArrivalByTimeChart'
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
 import Widget from 'src/shared/Widget'
-import dayjs, { Dayjs } from 'src/dayjs'
+import { Dayjs } from 'src/dayjs'
 
 const convertToGraphCompatibleStruct = (arr: GroupByRes[]) => {
   return arr.map((item: GroupByRes) => {
@@ -14,12 +14,8 @@ const convertToGraphCompatibleStruct = (arr: GroupByRes[]) => {
       current: item.totalActualRides,
       max: item.totalPlannedRides,
       percent: (item.totalActualRides / item.totalPlannedRides) * 100,
-      gtfsRouteDate: item.gtfsRouteDate
-        ? dayjs(item.gtfsRouteDate).format('YYYY-MM-DD')
-        : undefined,
-      gtfsRouteHour: item.gtfsRouteHour
-        ? dayjs(item.gtfsRouteHour).format('YYYY-MM-DD')
-        : undefined,
+      gtfsRouteDate: item.gtfsRouteDate ? new Date(item.gtfsRouteDate) : undefined,
+      gtfsRouteHour: item.gtfsRouteHour ? new Date(item.gtfsRouteHour) : undefined,
     } as ArrivalByTimeData
   })
 }
@@ -41,8 +37,8 @@ const DayTimeChart: FC<DayTimeChartProps> = ({
   const [groupByHour, setGroupByHour] = useState<boolean>(false)
 
   const [data, loadingGraph] = useGroupBy({
-    dateTo: endDate,
-    dateFrom: startDate,
+    dateFrom: startDate.valueOf(),
+    dateTo: endDate.valueOf(),
     groupBy: groupByHour ? 'operator_ref,gtfs_route_hour' : 'operator_ref,gtfs_route_date',
   })
 

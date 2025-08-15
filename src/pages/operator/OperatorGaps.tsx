@@ -19,8 +19,8 @@ export const OperatorGaps = ({
 }) => {
   const { t, i18n } = useTranslation()
   const [groupByOperatorData, isLoading] = useGroupBy({
-    dateFrom: dayjs(timestamp).add(-1, timeRange),
-    dateTo: dayjs(timestamp),
+    dateFrom: dayjs(timestamp).add(-1, timeRange).valueOf(),
+    dateTo: timestamp || dayjs().valueOf(),
     groupBy: 'operator_ref',
   })
 

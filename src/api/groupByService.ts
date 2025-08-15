@@ -5,7 +5,6 @@ import {
 import { useQuery } from '@tanstack/react-query'
 import { AGGREGATIONS_API } from './apiConfig'
 import { getAgencyList } from './agencyList'
-import { Dayjs } from 'src/dayjs'
 
 type groupByField =
   | 'gtfs_route_date'
@@ -28,15 +27,16 @@ async function fetchGroupBy({
   dateFrom,
   groupBy,
 }: {
-  dateTo: Date
-  dateFrom: Date
+  dateTo: number
+  dateFrom: number
   groupBy: groupByFields
 }): Promise<GroupByRes[]> {
   const agencies = await getAgencyList()
+
   // example: https://open-bus-stride-api.hasadna.org.il/gtfs_rides_agg/group_by?date_from=2023-01-27&date_to=2023-01-29&group_by=operator_ref
   const data = await AGGREGATIONS_API.byGtfsRidesAggGroupByGet({
-    dateFrom: dateFrom,
-    dateTo: dateTo,
+    dateFrom: new Date(dateFrom),
+    dateTo: new Date(dateTo),
     groupBy,
     excludeHoursFrom: 23,
     excludeHoursTo: 2,
@@ -50,24 +50,17 @@ async function fetchGroupBy({
     .filter((data) => data.operatorRef !== undefined)
 }
 export function useGroupBy({
-  dateTo,
   dateFrom,
+  dateTo,
   groupBy,
 }: {
-  dateTo: Dayjs
-  dateFrom: Dayjs
+  dateTo: number
+  dateFrom: number
   groupBy: groupByFields
 }) {
-  const dateFromStr = dateFrom.startOf('day').toDate()
-  const dateToStr = dateTo.startOf('day').toDate()
   const { isLoading, isError, data, error } = useQuery({
-    queryKey: ['groupBy', dateToStr.valueOf(), dateFromStr.valueOf(), groupBy],
-    queryFn: () =>
-      fetchGroupBy({
-        dateFrom: dateToStr,
-        dateTo: dateToStr,
-        groupBy,
-      }),
+    queryKey: ['groupBy', dateFrom, dateTo, groupBy],
+    queryFn: () => fetchGroupBy({ dateFrom, dateTo, groupBy }),
   })
 
   return [data ? data : [], isLoading, isError ? error : null] as const
