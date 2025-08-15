@@ -124,6 +124,7 @@ function StackedResearchInputs({
         </Grid>
         <OperatorSelector operatorId={operatorId} setOperatorId={setOperatorId} />
       </Grid>
+      <br />
       <label>
         <input
           type="checkbox"
@@ -163,7 +164,7 @@ const StackedResearchChart = ({
 
     for (const record of filteredGraphData) {
       const date = dayjs(record.gtfsRouteDate ?? record.gtfsRouteHour)
-      const formatDate = date.format('hh:mm-DD/MM/YYYY')
+      const formatDate = date.format('hh:mm-DD/MM/YY')
       const agencyName = record.operatorRef?.agencyName || 'Unknown'
 
       operatorSet.add(agencyName)
