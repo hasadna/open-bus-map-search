@@ -10,85 +10,99 @@ import {
 } from 'recharts'
 import dayjs from 'src/dayjs'
 import './ArrivalByTimeChats.scss'
-import { GroupByRes } from 'src/api/groupByService'
 
-export function arrayGroup<T>(array: T[], callback: (item: T) => string): T[][] {
-  return Object.values(
-    array.reduce<Record<string, T[]>>((acc, item) => {
-      const key = callback(item)
-      if (!acc[key]) acc[key] = []
-      acc[key].push(item)
-      return acc
-    }, {}),
-  )
+/**
+ * Group array items by a common property value returned from the callback (ie. group by value of id).
+ * @param array Data array
+ * @param callback A callback that returns a group name
+ * @returns New grouped array
+ */
+export const arrayGroup = function <T>(array: T[], callback: (item: T) => string) {
+  const groups: Record<string, T[]> = {}
+  array.forEach(function (item) {
+    const groupName = callback(item)
+    groups[groupName] = groups[groupName] || []
+    groups[groupName].push(item)
+  })
+  return Object.keys(groups).map(function (group) {
+    return groups[group]
+  })
 }
 
-export const getRange = (startTime: Date, endTime: Date, interval: 'hour' | 'day') => {
-  const intervalMs = (interval === 'hour' ? 1 : 24) * 60 * 60 * 1000
-  const result = []
-  for (let t = startTime.getTime(); t <= endTime.getTime(); t += intervalMs) {
-    result.push(new Date(t).toISOString())
-  }
+/**
+ * Creates an ISO string array between 2 points guided by an interval.
+ * @param start ISO string (included)
+ * @param end ISO string (excluded)
+ * @param interval hour | day
+ * @returns an array filled with dates from start to end (excluded)
+ */
+export const getRange = (start: string, end: string, interval: 'hour' | 'day') => {
+  const startTime = new Date(start),
+    endTime = new Date(end)
+  const interval_ms = (interval == 'hour' ? 1 : 24) * 60 * 60 * 1000
+  const result = new Array((endTime.getTime() - startTime.getTime()) / interval_ms)
+    .fill(null)
+    .map((_, i) => new Date(startTime.getTime() + i * interval_ms).toISOString())
   return result
+}
+
+export type ArrivalByTimeData = {
+  operatorId: string
+  name: string
+  current: number
+  max: number
+  percent: number
+  gtfsRouteDate: string
+  gtfsRouteHour: string
 }
 
 export default function ArrivalByTimeChart({
   data,
   operatorId,
 }: {
-  data: GroupByRes[]
+  data: ArrivalByTimeData[]
   operatorId: string
 }) {
   const filteredData = useMemo(() => {
-    if (operatorId) {
-      return data.filter((item) => item.operatorRef?.operatorRef.toString() === operatorId)
-    }
-    return data
+    if (!operatorId) return data
+    return data.filter((item) => item.operatorId === operatorId)
   }, [data, operatorId])
 
   const dataByOperator = useMemo(() => {
-    if (!filteredData.length) return []
-    const isByHour = !!filteredData[0]?.gtfsRouteHour
     const allTimes = filteredData
-      .map((item) => new Date(isByHour ? item.gtfsRouteHour! : item.gtfsRouteDate!))
-      .filter((time) => time !== undefined)
+      .map((item) => item.gtfsRouteDate ?? item.gtfsRouteHour)
+      .filter(Boolean)
 
-    if (!allTimes.length) return []
-    const minTime = allTimes.reduce((a, b) => (a.valueOf() < b.valueOf() ? a : b))
-    const maxTime = allTimes.reduce((a, b) => (a.valueOf() > b.valueOf() ? a : b))
+    if (allTimes.length === 0) return []
 
-    const allRange = getRange(minTime, maxTime, isByHour ? 'hour' : 'day')
+    const minTime = allTimes.reduce((a, b) => (a < b ? a : b))
+    const maxTime = allTimes.reduce((a, b) => (a > b ? a : b))
+    const allRange = getRange(minTime, maxTime, data[0].gtfsRouteDate ? 'hour' : 'day')
 
-    const grouped = arrayGroup(
-      filteredData,
-      (item) => item.operatorRef?.operatorRef?.toString() || '',
-    )
-    const pointsPerOperator = grouped.map((operatorData) => {
-      return allRange
-        .map((time) => {
-          const current = operatorData.find((item) => {
-            const dateStr = item.gtfsRouteDate?.toString()
-            const hourStr = item.gtfsRouteHour?.toString()
-            return time === dateStr || time === hourStr
+    const pointsPerOperator = arrayGroup(filteredData, (item) => item.operatorId).map(
+      (operatorData) => {
+        return allRange
+          .map((time) => {
+            const current = operatorData.find((item) =>
+              item.gtfsRouteDate
+                ? time.includes(item.gtfsRouteDate)
+                : time.includes(item.gtfsRouteHour || ''),
+            )
+            if (!current) return undefined
+            return {
+              id: operatorData[0].operatorId,
+              name: operatorData[0].name,
+              current: current.current,
+              max: current.max,
+              percent: current.percent,
+            }
           })
-
-          const planned = current?.totalPlannedRides
-          const actual = current?.totalActualRides
-
-          return {
-            id: operatorData[0]?.operatorRef?.operatorRef,
-            name: operatorData[0]?.operatorRef?.agencyName,
-            current: actual,
-            max: planned,
-            percent: planned && actual ? (actual / planned) * 100 : null,
-            ...(isByHour ? { gtfsRouteHour: time } : { gtfsRouteDate: time }),
-          }
-        })
-        .filter((d) => d.percent)
-    })
+          .filter((c) => c !== undefined)
+      },
+    )
 
     return pointsPerOperator.filter(
-      (operator) => operator.reduce((sum, point) => sum + (point.current || 0), 0) > 0,
+      (operator) => operator.reduce((sum, point) => sum + point.current, 0) > 0,
     )
   }, [filteredData])
 

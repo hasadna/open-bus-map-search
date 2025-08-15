@@ -1,6 +1,5 @@
 import { Meta, StoryObj } from '@storybook/react-vite'
 import LinesHbarChart from './LinesHbarChart'
-import { GroupByRes } from 'src/api/groupByService'
 
 const meta = {
   title: 'Pages/Dashboard/Bar/LinesHbarChart',
@@ -11,45 +10,30 @@ export default meta
 
 type Story = StoryObj<typeof LinesHbarChart>
 
-const mockLines: GroupByRes[] = [
+const mockLines = [
   {
-    operatorRef: {
-      agencyName: 'אגד',
-      operatorRef: 3,
-      date: new Date(),
-    },
-    routeShortName: '["1"]',
-    routeLongName: 'שדרות מנחם בגין/כביש 7-גדרה<->שדרות מנחם בגין/כביש 7-גדרה-3#',
-    lineRef: 2974,
-    totalRoutes: 104,
-    totalPlannedRides: 317,
-    totalActualRides: 303,
+    id: '1',
+    short_name: '5',
+    long_name: 'Long Name 1',
+    operator_name: 'אגד',
+    total: 10000,
+    actual: 6000,
   },
   {
-    operatorRef: {
-      agencyName: 'אגד',
-      operatorRef: 3,
-      date: new Date(),
-    },
-    routeShortName: '["12"]',
-    routeLongName: 'הרצל/רוטשילד-ראשון לציון<->קבוץ פלמחים מרכז-פלמחים-12',
-    lineRef: 3017,
-    totalRoutes: 100,
-    totalPlannedRides: 239,
-    totalActualRides: 233,
+    id: '2',
+    short_name: '8',
+    long_name: 'Long Name 2',
+    operator_name: 'אלקטרה אפיקים',
+    total: 10000,
+    actual: 7000,
   },
   {
-    operatorRef: {
-      agencyName: 'אגד',
-      operatorRef: 3,
-      date: new Date(),
-    },
-    routeShortName: '["12"]',
-    routeLongName: 'הרצל/רוטשילד-ראשון לציון<->קבוץ פלמחים מרכז-פלמחים-1ם',
-    lineRef: 3019,
-    totalRoutes: 110,
-    totalPlannedRides: 312,
-    totalActualRides: 297,
+    id: '3',
+    short_name: '10',
+    long_name: 'Long Name 3',
+    operator_name: 'סופרבוס',
+    total: 10000,
+    actual: 8000,
   },
 ]
 

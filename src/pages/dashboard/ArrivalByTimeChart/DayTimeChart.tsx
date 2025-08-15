@@ -1,10 +1,28 @@
 import { Radio, RadioChangeEvent, Skeleton } from 'antd'
-import { FC, useEffect, useState } from 'react'
+import { FC, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import ArrivalByTimeChart from './ArrivalByTimeChart'
-import { useGroupBy } from 'src/api/groupByService'
+import ArrivalByTimeChart, { ArrivalByTimeData } from './ArrivalByTimeChart'
+import { GroupByRes, useGroupBy } from 'src/api/groupByService'
 import Widget from 'src/shared/Widget'
-import { Dayjs } from 'src/dayjs'
+import dayjs, { Dayjs } from 'src/dayjs'
+
+const convertToGraphCompatibleStruct = (arr: GroupByRes[]) => {
+  return arr.map((item: GroupByRes) => {
+    return {
+      operatorId: item.operatorRef?.operatorRef.toString() || 'Unknown',
+      name: item.operatorRef?.agencyName || 'Unknown',
+      current: item.totalActualRides,
+      max: item.totalPlannedRides,
+      percent: (item.totalActualRides / item.totalPlannedRides) * 100,
+      gtfsRouteDate: item.gtfsRouteDate
+        ? dayjs(item.gtfsRouteDate).format('YYYY-MM-DD')
+        : undefined,
+      gtfsRouteHour: item.gtfsRouteHour
+        ? dayjs(item.gtfsRouteHour).format('YYYY-MM-DD')
+        : undefined,
+    } as ArrivalByTimeData
+  })
+}
 
 interface DayTimeChartProps {
   startDate: Dayjs
@@ -28,6 +46,11 @@ const DayTimeChart: FC<DayTimeChartProps> = ({
     groupBy: groupByHour ? 'operator_ref,gtfs_route_hour' : 'operator_ref,gtfs_route_date',
   })
 
+  const graphData = useMemo(
+    () => convertToGraphCompatibleStruct(data),
+    [endDate, groupByHour, startDate, data.length],
+  )
+
   useEffect(() => {
     const totalElements = data.length
     const totalZeroElements = data.filter((el) => el.totalActualRides === 0).length
@@ -50,7 +73,7 @@ const DayTimeChart: FC<DayTimeChartProps> = ({
       {loadingGraph ? (
         <Skeleton active />
       ) : (
-        <ArrivalByTimeChart data={data} operatorId={operatorId} />
+        <ArrivalByTimeChart data={graphData} operatorId={operatorId} />
       )}
     </Widget>
   )

@@ -24,19 +24,19 @@ export type GroupByRes = Omit<GtfsRidesAggGroupByPydanticModel, 'operatorRef'> &
 }
 
 async function fetchGroupBy({
-  dateToStr,
-  dateFromStr,
+  dateTo,
+  dateFrom,
   groupBy,
 }: {
-  dateToStr: string
-  dateFromStr: string
+  dateTo: Date
+  dateFrom: Date
   groupBy: groupByFields
 }): Promise<GroupByRes[]> {
   const agencies = await getAgencyList()
   // example: https://open-bus-stride-api.hasadna.org.il/gtfs_rides_agg/group_by?date_from=2023-01-27&date_to=2023-01-29&group_by=operator_ref
   const data = await AGGREGATIONS_API.byGtfsRidesAggGroupByGet({
-    dateFrom: new Date(dateFromStr),
-    dateTo: new Date(dateToStr),
+    dateFrom: dateFrom,
+    dateTo: dateTo,
     groupBy,
     excludeHoursFrom: 23,
     excludeHoursTo: 2,
@@ -58,11 +58,16 @@ export function useGroupBy({
   dateFrom: Dayjs
   groupBy: groupByFields
 }) {
-  const dateToStr = dateTo.toISOString().split('T')[0]
-  const dateFromStr = dateFrom.toISOString().split('T')[0]
+  const dateFromStr = dateFrom.startOf('day').toDate()
+  const dateToStr = dateTo.startOf('day').toDate()
   const { isLoading, isError, data, error } = useQuery({
-    queryKey: ['groupBy', dateToStr, dateFromStr, groupBy],
-    queryFn: () => fetchGroupBy({ dateToStr, dateFromStr, groupBy }),
+    queryKey: ['groupBy', dateToStr.valueOf(), dateFromStr.valueOf(), groupBy],
+    queryFn: () =>
+      fetchGroupBy({
+        dateFrom: dateToStr,
+        dateTo: dateToStr,
+        groupBy,
+      }),
   })
 
   return [data ? data : [], isLoading, isError ? error : null] as const

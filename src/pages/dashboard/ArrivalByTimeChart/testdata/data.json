@@ -1,0 +1,83 @@
+[
+  {
+    "operatorId": "3",
+    "name": "אגד",
+    "current": 23874,
+    "max": 24138,
+    "percent": 98.90628883917475,
+    "gtfsRouteDate": "2024-01-22",
+    "gtfsRouteHour": ""
+  },
+  {
+    "operatorId": "3",
+    "name": "אגד",
+    "current": 23908,
+    "max": 24147,
+    "percent": 99.01022901395619,
+    "gtfsRouteDate": "2024-01-23",
+    "gtfsRouteHour": ""
+  },
+  {
+    "operatorId": "3",
+    "name": "אגד",
+    "current": 23901,
+    "max": 24163,
+    "percent": 98.91569755411166,
+    "gtfsRouteDate": "2024-01-24",
+    "gtfsRouteHour": ""
+  },
+  {
+    "operatorId": "3",
+    "name": "אגד",
+    "current": 24058,
+    "max": 24394,
+    "percent": 98.62261211773387,
+    "gtfsRouteDate": "2024-01-25",
+    "gtfsRouteHour": ""
+  },
+  {
+    "operatorId": "3",
+    "name": "אגד",
+    "current": 11654,
+    "max": 11902,
+    "percent": 97.91631658544783,
+    "gtfsRouteDate": "2024-01-26",
+    "gtfsRouteHour": ""
+  },
+  {
+    "operatorId": "3",
+    "name": "אגד",
+    "current": 4460,
+    "max": 4600,
+    "percent": 96.95652173913044,
+    "gtfsRouteDate": "2024-01-27",
+    "gtfsRouteHour": ""
+  },
+  {
+    "operatorId": "3",
+    "name": "אגד",
+    "current": 23451,
+    "max": 24017,
+    "percent": 97.64333597035433,
+    "gtfsRouteDate": "2024-01-28",
+    "gtfsRouteHour": ""
+  },
+  {
+    "operatorId": "7",
+    "name": "Unknown",
+    "current": 23451,
+    "max": 24017,
+    "percent": 97.64333597035433,
+    "gtfsRouteDate": "2024-01-28",
+    "gtfsRouteHour": ""
+  },
+  {
+    "operatorId": "4",
+    "name": "notegged",
+    "current": 23451,
+    "max": 24017,
+    "percent": 97.64333597035433,
+    "gtfsRouteDate": "2024-01-28",
+    "gtfsRouteHour": ""
+  }
+]
