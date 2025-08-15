@@ -6,12 +6,11 @@
 
 import uniqBy from 'lodash.uniqby'
 import {
-  SiriApi,
   SiriVehicleLocationsListGetRequest,
   SiriVehicleLocationWithRelatedPydanticModel,
 } from '@hasadna/open-bus-api-client'
 import { useEffect, useRef, useState } from 'react'
-import { API_CONFIG } from './apiConfig'
+import { SIRI_API } from './apiConfig'
 import dayjs from 'src/dayjs'
 
 type SiriVehicleRequest = {
@@ -26,7 +25,6 @@ type SiriVehicleRequest = {
   lonMax?: number
 }
 
-const SIRI_API = new SiriApi(API_CONFIG)
 const LIMIT = 1000
 const CONCURRENCY = 10
 const RETRY = 3
