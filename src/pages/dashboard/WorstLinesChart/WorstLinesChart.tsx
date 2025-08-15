@@ -1,7 +1,7 @@
 import { Skeleton } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { useEffect } from 'react'
-import LinesHbarChart from './LineHbarChart/LinesHbarChart'
+import LinesHbarChart, { LineBar } from './LineHbarChart/LinesHbarChart'
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
 import { MAJOR_OPERATORS } from 'src/model/operator'
 import Widget from 'src/shared/Widget'
@@ -23,14 +23,17 @@ const convertToWorstLineChartCompatibleStruct = (arr: GroupByRes[], operatorId: 
         (row.operatorRef && MAJOR_OPERATORS.includes(row.operatorRef.operatorRef.toString())),
     )
     .filter((row) => row.operatorRef?.operatorRef.toString() === operatorId || !Number(operatorId))
-    .map((item) => ({
-      id: `${item.lineRef}|${item.operatorRef?.operatorRef}` || 'Unknown',
-      operator_name: item.operatorRef?.agencyName || 'Unknown',
-      short_name: JSON.parse(item.routeShortName || "['']")[0],
-      long_name: item.routeLongName,
-      total: item.totalPlannedRides,
-      actual: item.totalActualRides,
-    }))
+    .map(
+      (item) =>
+        ({
+          id: `${item.lineRef}|${item.operatorRef?.operatorRef}` || 'Unknown',
+          operator_name: item.operatorRef?.agencyName || 'Unknown',
+          short_name: JSON.parse(item.routeShortName || "['']")[0],
+          long_name: item.routeLongName,
+          total: item.totalPlannedRides,
+          actual: item.totalActualRides,
+        }) as LineBar,
+    )
 }
 
 export const WorstLinesChart = ({

@@ -27,6 +27,7 @@ describe('ArrivalByTimeChart', () => {
   })
 
   test('renders without crashing', () => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     expect(screen.getByText(testBusData[0].name)).toBeInTheDocument()
   })
 
