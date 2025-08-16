@@ -5,7 +5,7 @@ import {
   TableBody,
   TableCell,
   TableContainer,
-  TableHead,
+  TableFooter,
   TableRow,
 } from '@mui/material'
 import { Skeleton } from 'antd'
@@ -62,11 +62,19 @@ function formatStatus(gap: Gap, gaps: GapsList | undefined, t: TFunction): strin
   return t('ride_extra')
 }
 
-function formatTime(
-  time: dayjs.Dayjs | null,
-  t: TFunction<'translation', undefined>,
-): string | undefined {
-  return time?.format(t('time_format'))
+function formatTime(time: dayjs.Dayjs | null): string | undefined {
+  return time?.format('HH:mm')
+}
+
+const groupByHours = (gaps: Gap[]) => {
+  const hours: Record<string, typeof gaps> = {}
+  for (const gap of gaps) {
+    const hour = (gap.gtfsTime?.get('hour') || gap.siriTime?.get('hour'))?.toString()
+    if (!hour) continue
+    if (!hours[hour]) hours[hour] = []
+    hours[hour].push(gap)
+  }
+  return hours
 }
 
 const GapsTable: React.FC<GapsTableProps> = ({ gaps, loading, initOnlyGapped = false }) => {
@@ -110,22 +118,90 @@ const GapsTable: React.FC<GapsTableProps> = ({ gaps, loading, initOnlyGapped = f
         <Skeleton active paragraph={{ rows: 8 }} title={false} style={{ minWidth: '100%' }} />
       ) : (
         <Table size="small">
-          <TableHead>
-            <TableRow>
-              <TableCell>{t('planned_time')}</TableCell>
-              <TableCell>{t('planned_status')}</TableCell>
-            </TableRow>
-          </TableHead>
           <TableBody>
-            {filteredGaps.map((gap, i) => (
+            {Object.values(groupByHours(filteredGaps)).map((gaps, i) => (
               <TableRow key={i}>
-                <TableCell>{formatTime(gap.gtfsTime || gap.siriTime, t)}</TableCell>
-                <TableCell>{formatStatus(gap, gaps, t)}</TableCell>
+                {gaps.map((gap, j) => {
+                  const time = formatTime(gap.gtfsTime || gap.siriTime)
+                  const status = formatStatus(gap, gaps, t)
+                  return (
+                    <TableCell
+                      sx={{
+                        padding: '6px',
+                        textAlign: 'center',
+                        background:
+                          status === t('ride_as_planned')
+                            ? 'rgba(0, 255, 0, 0.2)'
+                            : status === t('ride_missing')
+                              ? 'rgba(255, 0, 0, 0.2)'
+                              : status === t('ride_duped')
+                                ? 'rgba(255, 0, 255, 0.2)'
+                                : status === t('ride_extra')
+                                  ? 'rgba(255, 255, 0, 0.2)'
+                                  : status === t('ride_in_future')
+                                    ? 'rgba(0, 0, 255, 0.2)'
+                                    : undefined,
+                        border: '1px solid rgba(128, 128, 128, 0.22) !important',
+                      }}
+                      key={`${i}-${j}-${time}`}>
+                      {time}
+                    </TableCell>
+                  )
+                })}
               </TableRow>
             ))}
           </TableBody>
         </Table>
       )}
+      <Table>
+        <TableRow>
+          <TableCell
+            sx={{
+              padding: '6px',
+              textAlign: 'center',
+              background: 'rgba(0, 255, 0, 0.2)',
+              border: '1px solid rgba(128, 128, 128, 0.22) !important',
+            }}>
+            {t('ride_as_planned')}
+          </TableCell>
+          <TableCell
+            sx={{
+              padding: '6px',
+              textAlign: 'center',
+              background: 'rgba(255, 0, 0, 0.2)',
+              border: '1px solid rgba(128, 128, 128, 0.22) !important',
+            }}>
+            {t('ride_missing')}
+          </TableCell>
+          <TableCell
+            sx={{
+              padding: '6px',
+              textAlign: 'center',
+              background: 'rgba(255, 255, 0, 0.2)',
+              border: '1px solid rgba(128, 128, 128, 0.22) !important',
+            }}>
+            {t('ride_extra')}
+          </TableCell>
+          <TableCell
+            sx={{
+              padding: '6px',
+              textAlign: 'center',
+              background: 'rgba(255, 0, 255, 0.2)',
+              border: '1px solid rgba(128, 128, 128, 0.22) !important',
+            }}>
+            {t('ride_duped')}
+          </TableCell>
+          <TableCell
+            sx={{
+              padding: '6px',
+              textAlign: 'center',
+              background: 'rgba(0, 0, 255, 0.2)',
+              border: '1px solid rgba(128, 128, 128, 0.22) !important',
+            }}>
+            {t('ride_in_future')}
+          </TableCell>
+        </TableRow>
+      </Table>
     </TableContainer>
   )
 }
