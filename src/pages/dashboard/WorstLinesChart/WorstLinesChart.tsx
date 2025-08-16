@@ -10,19 +10,18 @@ import { Dayjs } from 'src/dayjs'
 interface WorstLinesChartProps {
   startDate: Dayjs
   endDate: Dayjs
-  operatorId: string
+  operatorId?: string
   alertWorstLineHandling: (arg: boolean) => void
 }
 
-const convertToWorstLineChartCompatibleStruct = (arr: GroupByRes[], operatorId: string) => {
+const convertToWorstLineChartCompatibleStruct = (arr: GroupByRes[], operatorId?: string) => {
   if (!arr || !arr.length) return []
   return arr
     .filter(
       (row) =>
-        operatorId ||
+        (operatorId && row.operatorRef?.operatorRef.toString() === operatorId) ||
         (row.operatorRef && MAJOR_OPERATORS.includes(row.operatorRef.operatorRef.toString())),
     )
-    .filter((row) => row.operatorRef?.operatorRef.toString() === operatorId || !Number(operatorId))
     .map(
       (item) =>
         ({

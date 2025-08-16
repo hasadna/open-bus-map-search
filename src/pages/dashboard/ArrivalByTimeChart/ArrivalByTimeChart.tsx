@@ -13,7 +13,17 @@ import './ArrivalByTimeChats.scss'
 import Widget from 'src/shared/Widget'
 import { InfoItem, InfoTable } from 'src/pages/components/InfoTable'
 
-export function arrayGroup<T>(array: T[], callback: (item: T) => string): T[][] {
+export type ArrivalByTimeData = {
+  operatorId: string
+  name: string
+  current: number
+  max: number
+  percent: number
+  gtfsRouteDate?: Date
+  gtfsRouteHour?: Date
+}
+
+function arrayGroup<T>(array: T[], callback: (item: T) => string): T[][] {
   return Object.values(
     array.reduce<Record<string, T[]>>((acc, item) => {
       const key = callback(item)
@@ -24,7 +34,7 @@ export function arrayGroup<T>(array: T[], callback: (item: T) => string): T[][] 
   )
 }
 
-export const getRange = (startTime: Date, endTime: Date, interval: 'hour' | 'day') => {
+const getRange = (startTime: Date, endTime: Date, interval: 'hour' | 'day') => {
   const interval_ms = (interval === 'hour' ? 1 : 24) * 60 * 60 * 1000
   const result: string[] = []
   let current = startTime.getTime()
@@ -36,14 +46,58 @@ export const getRange = (startTime: Date, endTime: Date, interval: 'hour' | 'day
   return result
 }
 
-export type ArrivalByTimeData = {
-  operatorId: string
-  name: string
-  current: number
-  max: number
-  percent: number
-  gtfsRouteDate?: Date
-  gtfsRouteHour?: Date
+const filterDataByOperator = (
+  data: ArrivalByTimeData[],
+  operatorId: string,
+): ArrivalByTimeData[] => {
+  if (!operatorId) return data
+  return data.filter((item) => item.operatorId === operatorId)
+}
+
+const groupDataByHourOrDay = (data: ArrivalByTimeData[]): Record<string, ArrivalByTimeData[]> => {
+  const groupedByHour = !!data[0]?.gtfsRouteHour
+
+  const allTimes = data
+    .map((item) => (groupedByHour ? item.gtfsRouteHour : item.gtfsRouteDate))
+    .filter((date) => date !== undefined)
+
+  if (allTimes.length === 0) return {}
+
+  let minTime = allTimes[0]
+  let maxTime = allTimes[0]
+
+  for (const date of allTimes) {
+    if (date < minTime) minTime = date
+    if (date > maxTime) maxTime = date
+  }
+
+  const allRange = getRange(minTime, maxTime, groupedByHour ? 'hour' : 'day')
+
+  return arrayGroup(data, (item) => item.operatorId)
+    .map((operatorData) => {
+      return allRange
+        .map((time) => {
+          const current = operatorData.find((item) => {
+            const date = groupedByHour ? item.gtfsRouteHour! : item.gtfsRouteDate!
+            return time.includes(date?.toISOString())
+          })
+
+          if (!current) return undefined
+          return {
+            id: current.operatorId,
+            name: current.name,
+            current: current.current,
+            max: current.max,
+            percent: current.percent,
+            [groupedByHour ? 'gtfsRouteHour' : 'gtfsRouteDate']: time,
+          }
+        })
+        .filter((c) => c !== undefined)
+    })
+    .reduce<Record<string, ArrivalByTimeData[]>>((acc, operatorData, index) => {
+      acc[`operator${index}`] = operatorData.map((item) => ({ ...item, operatorId: item.id }))
+      return acc
+    }, {})
 }
 
 export default function ArrivalByTimeChart({
@@ -53,62 +107,12 @@ export default function ArrivalByTimeChart({
   data: ArrivalByTimeData[]
   operatorId: string
 }) {
-  const filteredData = useMemo(() => {
-    if (!operatorId) return data
-    return data.filter((item) => item.operatorId === operatorId)
-  }, [data, operatorId])
-
-  const dataByOperator = useMemo(() => {
-    const groupedByHour = !!data[0].gtfsRouteHour
-
-    const allTimes = filteredData
-      .map((item) => (groupedByHour ? item.gtfsRouteHour : item.gtfsRouteDate))
-      .filter((date) => date !== undefined)
-
-    if (allTimes.length === 0) return []
-
-    let minTime = allTimes[0]
-    let maxTime = allTimes[0]
-
-    for (const date of allTimes) {
-      if (date < minTime) minTime = date
-      if (date > maxTime) maxTime = date
-    }
-
-    const allRange = getRange(minTime, maxTime, groupedByHour ? 'hour' : 'day')
-
-    const pointsPerOperator = arrayGroup(filteredData, (item) => item.operatorId).map(
-      (operatorData) => {
-        return allRange
-          .map((time) => {
-            const current = operatorData.find((item) => {
-              const date = groupedByHour ? item.gtfsRouteHour! : item.gtfsRouteDate!
-
-              return time.includes(date?.toISOString())
-            })
-
-            if (!current) return undefined
-            return {
-              id: current.operatorId,
-              name: current.name,
-              current: current.current,
-              max: current.max,
-              percent: current.percent,
-              [groupedByHour ? 'gtfsRouteHour' : 'gtfsRouteDate']: time,
-            }
-          })
-          .filter((c) => c !== undefined)
-      },
-    )
-
-    return pointsPerOperator.filter(
-      (operator) => operator.reduce((sum, point) => sum + point.current, 0) > 0,
-    )
-  }, [filteredData])
+  const filteredData = useMemo(() => filterDataByOperator(data, operatorId), [data, operatorId])
+  const groupedData = useMemo(() => groupDataByHourOrDay(filteredData), [filteredData])
 
   return (
     <div className="chart">
-      {dataByOperator.map((operatorData) => (
+      {Object.values(groupedData).map((operatorData) => (
         <div key={operatorData[0].name}>
           <h3 className="title">{operatorData[0].name}</h3>
           <ResponsiveContainer debounce={1000} height={300}>

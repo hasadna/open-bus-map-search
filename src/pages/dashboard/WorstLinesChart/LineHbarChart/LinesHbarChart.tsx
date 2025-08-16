@@ -19,26 +19,28 @@ function LinesHbarChart({
   operators_whitelist?: string[]
   defaultOperators?: string[]
 }) {
-  const percents = lines
-    .map((o) => (o.actual / o.total) * 100)
-    .map((p) => (complement ? Math.max(100 - p, 0) : p))
+  const percents = lines.map((line) =>
+    complement
+      ? Math.max(100 - (line.actual / line.total) * 100, 0)
+      : (line.actual / line.total) * 100,
+  )
 
-  const width = percents.map((p) => Math.max(Math.min(p, 100), 0))
+  const width = percents.map((percent) => Math.max(Math.min(percent, 100), 0))
 
-  const rows = lines.map((o, i) => ({
-    width: width[i],
-    percent: percents[i],
-    name: `${o.short_name} | ${o.operator_name} | ${o.long_name}`,
-    color: getColorName(o.operator_name),
-    ...o,
+  const rows = lines.map((line, index) => ({
+    width: width[index],
+    percent: percents[index],
+    name: `${line.short_name} | ${line.operator_name} | ${line.long_name}`,
+    color: getColorName(line.operator_name),
+    ...line,
   }))
 
   return (
     <HbarChart
       entries={rows
-        .sort((a, b) => a.actual / a.total - b.actual / b.total)
+        .sort((a, b) => a.percent - b.percent)
         .filter((line) => line.total > 10)
-        .filter((line) => line.actual / line.total > 0.4)
+        .filter((line) => line.percent > 40)
         .slice(0, 200)}
       complement={complement}
     />

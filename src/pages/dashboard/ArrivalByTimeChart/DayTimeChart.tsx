@@ -7,7 +7,7 @@ import Widget from 'src/shared/Widget'
 import { Dayjs } from 'src/dayjs'
 
 const convertToGraphCompatibleStruct = (arr: GroupByRes[]) => {
-  return arr.map((item: GroupByRes) => {
+  return arr.map((item) => {
     return {
       operatorId: item.operatorRef?.operatorRef.toString() || 'Unknown',
       name: item.operatorRef?.agencyName || 'Unknown',
