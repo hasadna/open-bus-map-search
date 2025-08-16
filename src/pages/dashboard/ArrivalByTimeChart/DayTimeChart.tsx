@@ -37,8 +37,8 @@ const DayTimeChart: FC<DayTimeChartProps> = ({
   const [groupByHour, setGroupByHour] = useState<boolean>(false)
 
   const [data, loadingGraph] = useGroupBy({
-    dateFrom: startDate.valueOf(),
-    dateTo: endDate.valueOf(),
+    dateFrom: startDate.startOf('day').valueOf(),
+    dateTo: endDate.endOf('day').valueOf(),
     groupBy: groupByHour ? 'operator_ref,gtfs_route_hour' : 'operator_ref,gtfs_route_date',
   })
 
