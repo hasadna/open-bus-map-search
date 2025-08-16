@@ -5,7 +5,6 @@ import {
   TableBody,
   TableCell,
   TableContainer,
-  TableFooter,
   TableRow,
 } from '@mui/material'
 import { Skeleton } from 'antd'
@@ -22,6 +21,12 @@ interface GapsTableProps {
   gaps?: GapsList
   loading?: boolean
   initOnlyGapped?: boolean
+}
+
+const cellStyle = {
+  padding: '6px',
+  textAlign: 'center',
+  border: '1px solid rgba(128, 128, 128, 0.2) !important',
 }
 
 function getGapsPercentage(gaps: GapsList | undefined, t: TFunction): number | undefined {
@@ -117,7 +122,7 @@ const GapsTable: React.FC<GapsTableProps> = ({ gaps, loading, initOnlyGapped = f
       {loading ? (
         <Skeleton active paragraph={{ rows: 8 }} title={false} style={{ minWidth: '100%' }} />
       ) : (
-        <Table size="small">
+        <Table sx={{ width: 'fit-content' }}>
           <TableBody>
             {Object.values(groupByHours(filteredGaps)).map((gaps, i) => (
               <TableRow key={i}>
@@ -127,21 +132,17 @@ const GapsTable: React.FC<GapsTableProps> = ({ gaps, loading, initOnlyGapped = f
                   return (
                     <TableCell
                       sx={{
-                        padding: '6px',
-                        textAlign: 'center',
+                        ...cellStyle,
                         background:
                           status === t('ride_as_planned')
-                            ? 'rgba(0, 255, 0, 0.2)'
+                            ? 'rgba(0, 255, 0, 0.15)'
                             : status === t('ride_missing')
-                              ? 'rgba(255, 0, 0, 0.2)'
+                              ? 'rgba(255, 0, 0, 0.15)'
                               : status === t('ride_duped')
-                                ? 'rgba(255, 0, 255, 0.2)'
+                                ? 'rgba(255, 0, 255, 0.15)'
                                 : status === t('ride_extra')
-                                  ? 'rgba(255, 255, 0, 0.2)'
-                                  : status === t('ride_in_future')
-                                    ? 'rgba(0, 0, 255, 0.2)'
-                                    : undefined,
-                        border: '1px solid rgba(128, 128, 128, 0.22) !important',
+                                  ? 'rgba(255, 255, 0, 0.15)'
+                                  : 'rgba(0, 0, 255, 0.15)',
                       }}
                       key={`${i}-${j}-${time}`}>
                       {time}
@@ -150,57 +151,32 @@ const GapsTable: React.FC<GapsTableProps> = ({ gaps, loading, initOnlyGapped = f
                 })}
               </TableRow>
             ))}
+            <TableRow>
+              <TableCell />
+            </TableRow>
           </TableBody>
         </Table>
       )}
-      <Table>
-        <TableRow>
-          <TableCell
-            sx={{
-              padding: '6px',
-              textAlign: 'center',
-              background: 'rgba(0, 255, 0, 0.2)',
-              border: '1px solid rgba(128, 128, 128, 0.22) !important',
-            }}>
-            {t('ride_as_planned')}
-          </TableCell>
-          <TableCell
-            sx={{
-              padding: '6px',
-              textAlign: 'center',
-              background: 'rgba(255, 0, 0, 0.2)',
-              border: '1px solid rgba(128, 128, 128, 0.22) !important',
-            }}>
-            {t('ride_missing')}
-          </TableCell>
-          <TableCell
-            sx={{
-              padding: '6px',
-              textAlign: 'center',
-              background: 'rgba(255, 255, 0, 0.2)',
-              border: '1px solid rgba(128, 128, 128, 0.22) !important',
-            }}>
-            {t('ride_extra')}
-          </TableCell>
-          <TableCell
-            sx={{
-              padding: '6px',
-              textAlign: 'center',
-              background: 'rgba(255, 0, 255, 0.2)',
-              border: '1px solid rgba(128, 128, 128, 0.22) !important',
-            }}>
-            {t('ride_duped')}
-          </TableCell>
-          <TableCell
-            sx={{
-              padding: '6px',
-              textAlign: 'center',
-              background: 'rgba(0, 0, 255, 0.2)',
-              border: '1px solid rgba(128, 128, 128, 0.22) !important',
-            }}>
-            {t('ride_in_future')}
-          </TableCell>
-        </TableRow>
+      <Table sx={{ marginTop: '0px' }}>
+        <TableBody>
+          <TableRow>
+            <TableCell sx={{ ...cellStyle, background: 'rgba(0, 255, 0, 0.15)' }}>
+              {t('ride_as_planned')}
+            </TableCell>
+            <TableCell sx={{ ...cellStyle, background: 'rgba(255, 0, 0, 0.15)' }}>
+              {t('ride_missing')}
+            </TableCell>
+            <TableCell sx={{ ...cellStyle, background: 'rgba(255, 255, 0, 0.15)' }}>
+              {t('ride_extra')}
+            </TableCell>
+            <TableCell sx={{ ...cellStyle, background: 'rgba(255, 0, 255, 0.15)' }}>
+              {t('ride_duped')}
+            </TableCell>
+            <TableCell sx={{ ...cellStyle, background: 'rgba(0, 0, 255, 0.15)' }}>
+              {t('ride_in_future')}
+            </TableCell>
+          </TableRow>
+        </TableBody>
       </Table>
     </TableContainer>
   )
