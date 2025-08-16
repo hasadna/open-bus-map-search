@@ -65,7 +65,7 @@ test.describe('clearButton functionality', () => {
     })
   })
   test.describe('clearButton functionality at GapsPage', () => {
-    test('after clear LineNumber input value - stop and route inputs should be hidden', async ({
+    test('after clear LineNumber input value - route inputs should be disable', async ({
       page,
     }) => {
       await visitPage(page, i18next.t('gaps_page_title'), /gaps/)
@@ -79,7 +79,7 @@ test.describe('clearButton functionality', () => {
       await page.getByLabel('רק פערים').uncheck()
       await lineNumber.click()
       await page.getByLabel('close').locator('svg').click()
-      await expect(route).not.toBeVisible()
+      await expect(route).toBeDisabled()
       await expect(stop).not.toBeVisible()
     })
     test('after clear route input value - stop input should be hidden', async ({ page }) => {
