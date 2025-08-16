@@ -17,11 +17,10 @@ interface WorstLinesChartProps {
 const convertToWorstLineChartCompatibleStruct = (arr: GroupByRes[], operatorId?: string) => {
   if (!arr || !arr.length) return []
   return arr
-    .filter(
-      (row) =>
-        (operatorId && row.operatorRef?.operatorRef.toString() === operatorId) ||
-        (row.operatorRef && MAJOR_OPERATORS.includes(row.operatorRef.operatorRef.toString())),
-    )
+    .filter((row) => {
+      if (operatorId) return row.operatorRef?.operatorRef.toString() === operatorId
+      return row.operatorRef && MAJOR_OPERATORS.includes(row.operatorRef.operatorRef.toString())
+    })
     .map(
       (item) =>
         ({
