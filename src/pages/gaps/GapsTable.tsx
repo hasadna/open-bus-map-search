@@ -140,10 +140,7 @@ const GapsTable: React.FC<GapsTableProps> = ({ gaps, loading, initOnlyGapped = f
   }, [gaps, onlyGapped])
 
   return (
-    <TableContainer
-      component={Widget}
-      marginBottom
-      sx={{ minWidth: '600px', width: 'fit-content' }}>
+    <Widget marginBottom sx={{ overflowY: 'none', maxWidth: '600px' }}>
       <Row style={{ justifyContent: 'space-between', fontWeight: 500 }}>
         <FormControlLabel
           control={
@@ -157,66 +154,75 @@ const GapsTable: React.FC<GapsTableProps> = ({ gaps, loading, initOnlyGapped = f
           terriblePercentage={20}
         />
       </Row>
-      {loading ? (
-        <Skeleton active paragraph={{ rows: 8 }} title={false} style={{ minWidth: '100%' }} />
-      ) : (
-        <Table sx={{ width: 'fit-content' }}>
-          <TableBody>
-            {Object.values(groupByHours(filteredGaps)).map((gaps, i) => (
-              <TableRow key={i}>
-                {gaps.map((gap, j) => {
-                  const time = formatTime(gap.plannedStartTime || gap.actualStartTime)
-                  const status = formatStatus(gap, gaps)
-                  return (
-                    <TableCell
-                      sx={{
-                        ...cellStyle,
-                        background:
-                          status === t('ride_as_planned')
-                            ? colors.ride_as_planned
-                            : status === t('ride_missing')
-                              ? colors.ride_missing
-                              : status === t('ride_duped')
-                                ? colors.ride_duped
-                                : status === t('ride_extra')
-                                  ? colors.ride_extra
-                                  : colors.ride_in_future,
-                      }}
-                      key={`${i}-${j}-${time}`}>
-                      {time}
-                    </TableCell>
-                  )
-                })}
+
+      <TableContainer>
+        {loading ? (
+          <Skeleton active paragraph={{ rows: 8 }} title={false} style={{ minWidth: '100%' }} />
+        ) : (
+          <Table sx={{ maxWidth: 'fit-content' }}>
+            <TableBody>
+              <TableRow>
+                <TableCell />
               </TableRow>
-            ))}
+
+              {Object.values(groupByHours(filteredGaps)).map((gaps, i) => (
+                <TableRow key={i}>
+                  {gaps.map((gap, j) => {
+                    const time = formatTime(gap.plannedStartTime || gap.actualStartTime)
+                    const status = formatStatus(gap, gaps)
+                    return (
+                      <TableCell
+                        sx={{
+                          ...cellStyle,
+                          background:
+                            status === t('ride_as_planned')
+                              ? colors.ride_as_planned
+                              : status === t('ride_missing')
+                                ? colors.ride_missing
+                                : status === t('ride_duped')
+                                  ? colors.ride_duped
+                                  : status === t('ride_extra')
+                                    ? colors.ride_extra
+                                    : colors.ride_in_future,
+                        }}
+                        key={`${i}-${j}-${time}`}>
+                        {time}
+                      </TableCell>
+                    )
+                  })}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+      </TableContainer>
+      <TableContainer>
+        <Table>
+          <TableBody>
             <TableRow>
               <TableCell />
             </TableRow>
+            <TableRow>
+              <TableCell sx={{ ...cellStyle, background: colors.ride_as_planned }}>
+                {t('ride_as_planned')}
+              </TableCell>
+              <TableCell sx={{ ...cellStyle, background: colors.ride_missing }}>
+                {t('ride_missing')}
+              </TableCell>
+              <TableCell sx={{ ...cellStyle, background: colors.ride_extra }}>
+                {t('ride_extra')}
+              </TableCell>
+              <TableCell sx={{ ...cellStyle, background: colors.ride_duped }}>
+                {t('ride_duped')}
+              </TableCell>
+              <TableCell sx={{ ...cellStyle, background: colors.ride_in_future }}>
+                {t('ride_in_future')}
+              </TableCell>
+            </TableRow>
           </TableBody>
         </Table>
-      )}
-      <Table sx={{ marginTop: '0px' }}>
-        <TableBody>
-          <TableRow>
-            <TableCell sx={{ ...cellStyle, background: colors.ride_as_planned }}>
-              {t('ride_as_planned')}
-            </TableCell>
-            <TableCell sx={{ ...cellStyle, background: colors.ride_missing }}>
-              {t('ride_missing')}
-            </TableCell>
-            <TableCell sx={{ ...cellStyle, background: colors.ride_extra }}>
-              {t('ride_extra')}
-            </TableCell>
-            <TableCell sx={{ ...cellStyle, background: colors.ride_duped }}>
-              {t('ride_duped')}
-            </TableCell>
-            <TableCell sx={{ ...cellStyle, background: colors.ride_in_future }}>
-              {t('ride_in_future')}
-            </TableCell>
-          </TableRow>
-        </TableBody>
-      </Table>
-    </TableContainer>
+      </TableContainer>
+    </Widget>
   )
 }
 
