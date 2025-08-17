@@ -38,30 +38,26 @@ const meta = {
 export default meta
 
 type Story = StoryObj<typeof meta>
-
-const makeTime = (hours: number, minutes: number = 0) => {
-  return dayjs().subtract(7, 'day').set('hour', hours).set('minutes', minutes)
-}
-
+const yesteday = dayjs().startOf('day').subtract(1, 'day')
 const mockGaps: Gap[] = [
   {
-    plannedStartTime: makeTime(13),
-    actualStartTime: makeTime(13),
+    plannedStartTime: yesteday.set('hour', 13),
+    actualStartTime: yesteday.set('hour', 13),
   },
   {
     plannedStartTime: undefined,
-    actualStartTime: makeTime(13),
+    actualStartTime: yesteday.set('hour', 13),
   },
   {
-    plannedStartTime: makeTime(14),
+    plannedStartTime: yesteday.set('hour', 14),
     actualStartTime: undefined,
   },
   {
     plannedStartTime: undefined,
-    actualStartTime: makeTime(14, 30),
+    actualStartTime: yesteday.set('hour', 14).set('minute', 30),
   },
   {
-    plannedStartTime: dayjs().add(1, 'day').set('hour', 15).set('minutes', 0),
+    plannedStartTime: yesteday.add(2, 'day').set('hour', 15),
     actualStartTime: undefined,
   },
 ]

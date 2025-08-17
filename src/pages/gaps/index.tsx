@@ -1,8 +1,7 @@
-import { RideExecutionPydanticModel } from '@hasadna/open-bus-api-client'
 import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
 import { useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { getGapsAsync } from '../../api/gapsService'
+import { Gap, getGapsAsync } from '../../api/gapsService'
 import { getRoutesAsync } from '../../api/gtfsService'
 import { SearchContext } from '../../model/pageState'
 import { DateSelector } from '../components/DateSelector'
@@ -21,7 +20,7 @@ const GapsPage = () => {
   const { t } = useTranslation()
   const { search, setSearch } = useContext(SearchContext)
   const { operatorId, lineNumber, timestamp, routes, routeKey } = search
-  const [gaps, setGaps] = useState<RideExecutionPydanticModel[]>()
+  const [gaps, setGaps] = useState<Gap[]>()
   const [gapsIsLoading, setGapsIsLoading] = useState(false)
 
   useEffect(() => {
