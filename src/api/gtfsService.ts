@@ -4,6 +4,7 @@ import {
   GtfsRideWithRelatedPydanticModel,
   GtfsRoutePydanticModel,
 } from '@hasadna/open-bus-api-client'
+import uniqBy from 'lodash.uniqby'
 import dayjs from 'src/dayjs'
 import { GTFS_API, MAX_HITS_COUNT, STRIDE_API_BASE_PATH } from 'src/api/apiConfig'
 import { BusRoute, fromGtfsRoute } from 'src/model/busRoute'
@@ -59,7 +60,7 @@ export async function getGtfsRoutes({
     },
     { signal },
   )
-  if (toBusRoute) return routes.map(fromGtfsRoute)
+  if (toBusRoute) return uniqBy(routes, 'routeLongName').map(fromGtfsRoute)
   return routes
 }
 
