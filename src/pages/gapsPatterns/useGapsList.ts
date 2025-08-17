@@ -1,13 +1,10 @@
-import { RideExecutionPydanticModel } from '@hasadna/open-bus-api-client'
 import { useEffect, useState } from 'react'
-import { getGapsAsync } from '../../api/gapsService'
+import { Gap, getGapsAsync } from '../../api/gapsService'
 import { HourlyData, sortByMode } from '../components/utils'
 
 type HourlyDataList = HourlyData[]
 // Convert gapsList into HourlyDataList structure
-export const convertGapsToHourlyStruct = (
-  gapsList: RideExecutionPydanticModel[],
-): HourlyDataList => {
+export const convertGapsToHourlyStruct = (gapsList: Gap[]): HourlyDataList => {
   // Convert gapsList data to hourly mapping structure, where hour is a key
   const hourlyMapping: Record<string, { planned_rides: number; actual_rides: number }> = {}
 
@@ -15,10 +12,7 @@ export const convertGapsToHourlyStruct = (
     if (ride.plannedStartTime === undefined) {
       continue
     }
-    const plannedHour = ride.plannedStartTime.toLocaleString('he', {
-      hour: '2-digit',
-      minute: '2-digit',
-    })
+    const plannedHour = ride.plannedStartTime.format('HH:mm')
 
     if (!hourlyMapping[plannedHour]) {
       hourlyMapping[plannedHour] = { planned_rides: 0, actual_rides: 0 }

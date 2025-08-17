@@ -1,9 +1,17 @@
 import { USER_CASE_API } from './apiConfig'
 import dayjs from 'src/dayjs'
 
-export function parseTime(time?: dayjs.ConfigType): Date | undefined {
+export type Gap = {
+  plannedStartTime?: dayjs.Dayjs
+  actualStartTime?: dayjs.Dayjs
+  gtfsRideId?: number
+}
+
+export function parseTime(time?: dayjs.ConfigType) {
   if (!time) return undefined
-  return dayjs(time).utcOffset(0, true).tz('Asia/Jerusalem').toDate()
+  const utcDayjs = dayjs.utc(time).utcOffset(0, true).tz('Asia/Jerusalem')
+  if (!utcDayjs.isValid()) return undefined
+  return utcDayjs
 }
 
 export const getGapsAsync = (
@@ -21,13 +29,11 @@ export const getGapsAsync = (
     operatorRef: operatorId ? parseInt(operatorId) : undefined,
   }).then((gaps) =>
     gaps.map((gap) => {
-      if (gap.actualStartTime) {
-        gap.actualStartTime = parseTime(gap.actualStartTime)
-      }
-      if (gap.plannedStartTime) {
-        gap.plannedStartTime = parseTime(gap.plannedStartTime)
-      }
-      return gap
+      return {
+        actualStartTime: parseTime(gap.actualStartTime),
+        plannedStartTime: parseTime(gap.plannedStartTime),
+        gtfsRideId: gap.gtfsRideId,
+      } as Gap
     }),
   )
 }

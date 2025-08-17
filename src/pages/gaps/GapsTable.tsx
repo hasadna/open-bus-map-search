@@ -1,4 +1,3 @@
-import { RideExecutionPydanticModel } from '@hasadna/open-bus-api-client'
 import {
   FormControlLabel,
   Switch,
@@ -14,9 +13,11 @@ import { useTranslation } from 'react-i18next'
 import DisplayGapsPercentage from '../components/DisplayGapsPercentage'
 import { Row } from '../components/Row'
 import Widget from 'src/shared/Widget'
+import { Gap } from 'src/api/gapsService'
+import dayjs from 'src/dayjs'
 
 interface GapsTableProps {
-  gaps?: RideExecutionPydanticModel[]
+  gaps?: Gap[]
   loading?: boolean
   initOnlyGapped?: boolean
 }
@@ -35,36 +36,10 @@ const colors = {
   ride_in_future: 'rgba(0, 0, 255, 0.15)',
 } as const
 
-// ---- Helpers using native Date ----
-function formatTime(time?: Date) {
-  if (!time) return
-  return time.toLocaleTimeString('he', {
-    hour: '2-digit',
-    minute: '2-digit',
-  })
-}
-
-function isAfter(d1?: Date, d2: Date = new Date()) {
-  return !!d1 && d1.getTime() > d2.getTime()
-}
-
-function isBefore(d1?: Date, d2: Date = new Date()) {
-  return !!d1 && d1.getTime() < d2.getTime()
-}
-
-function isSame(d1?: Date, d2?: Date) {
-  return !!d1 && !!d2 && d1.getTime() === d2.getTime()
-}
-
-function diff(d1?: Date, d2?: Date) {
-  if (!d1 || !d2) return 0
-  return d1.getTime() - d2.getTime()
-}
-
-function groupByHours(gaps: RideExecutionPydanticModel[]) {
+function groupByHours(gaps: Gap[]) {
   const hours: Record<string, typeof gaps> = {}
   for (const gap of gaps) {
-    const hour = gap.plannedStartTime?.getHours() ?? gap.actualStartTime?.getHours()
+    const hour = gap.plannedStartTime?.get('hour') ?? gap.actualStartTime?.get('hour')
     if (hour == null) continue
     if (!hours[hour]) hours[hour] = []
     hours[hour].push(gap)
@@ -77,26 +52,27 @@ const GapsTable: React.FC<GapsTableProps> = ({ gaps, loading, initOnlyGapped = f
   const [onlyGapped, setOnlyGapped] = useState(initOnlyGapped)
 
   const formatStatus = useCallback(
-    (gap: RideExecutionPydanticModel, all: RideExecutionPydanticModel[] | undefined): string => {
+    (gap: Gap, gaps: Gap[] | undefined): string => {
+      const currentTime = dayjs()
       // case: planned in future and no actual
-      if (isAfter(gap.plannedStartTime) && !gap.actualStartTime) {
+      if (gap.plannedStartTime?.isAfter(currentTime) && !gap.actualStartTime) {
         return t('ride_in_future')
       }
       // case: missing
-      if (!gap.actualStartTime && isBefore(gap.plannedStartTime)) {
+      if (!gap.actualStartTime && gap.plannedStartTime?.isBefore(currentTime)) {
         return t('ride_missing')
       }
       // case: both exist = planned
-      if (isSame(gap.plannedStartTime, gap.actualStartTime)) {
+      if (gap.plannedStartTime?.isSame(gap.actualStartTime)) {
         return t('ride_as_planned')
       }
       // case: extra / duped
-      const hasTwinRide = all?.some(
+      const hasTwinRide = gaps?.some(
         (g) =>
-          g !== gap &&
+          g.plannedStartTime &&
           g.actualStartTime &&
           gap.actualStartTime &&
-          isSame(g.actualStartTime, gap.actualStartTime),
+          g.actualStartTime.isSame(gap.actualStartTime),
       )
 
       return hasTwinRide ? t('ride_duped') : t('ride_extra')
@@ -105,7 +81,7 @@ const GapsTable: React.FC<GapsTableProps> = ({ gaps, loading, initOnlyGapped = f
   )
 
   const getGapsPercentage = useCallback(
-    (gaps: RideExecutionPydanticModel[] | undefined): number | undefined => {
+    (gaps: Gap[] | undefined): number | undefined => {
       if (!gaps || gaps.length === 0) return
       const statusAsPlanned = t('ride_as_planned')
       const statusMissing = t('ride_missing')
@@ -131,11 +107,15 @@ const GapsTable: React.FC<GapsTableProps> = ({ gaps, loading, initOnlyGapped = f
     return gaps
       .filter((gap) => {
         return onlyGapped
-          ? !gap.actualStartTime && isBefore(gap.plannedStartTime)
+          ? !gap.actualStartTime && gap.plannedStartTime?.isBefore(dayjs())
           : gap.plannedStartTime || gap.actualStartTime
       })
       .sort((a, b) =>
-        diff(a?.actualStartTime || a?.plannedStartTime, b?.actualStartTime || b?.plannedStartTime),
+        Number(
+          (a?.actualStartTime || a?.plannedStartTime)?.diff(
+            b?.actualStartTime || b?.plannedStartTime,
+          ),
+        ),
       )
   }, [gaps, onlyGapped])
 
@@ -168,7 +148,7 @@ const GapsTable: React.FC<GapsTableProps> = ({ gaps, loading, initOnlyGapped = f
               {Object.values(groupByHours(filteredGaps)).map((gaps, i) => (
                 <TableRow key={i}>
                   {gaps.map((gap, j) => {
-                    const time = formatTime(gap.plannedStartTime || gap.actualStartTime)
+                    const time = (gap.plannedStartTime || gap.actualStartTime)?.format('HH:mm')
                     const status = formatStatus(gap, gaps)
                     return (
                       <TableCell
