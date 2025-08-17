@@ -33,7 +33,7 @@ const meta = {
       description: 'List of gap objects to display in the table',
       control: { type: 'object' },
       table: {
-        type: { summary: 'GapsList' },
+        type: { summary: 'RideExecutionPydanticModel[]' },
       },
     },
     loading: {

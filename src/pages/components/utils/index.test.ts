@@ -1,6 +1,5 @@
+import { RideExecutionPydanticModel } from '@hasadna/open-bus-api-client'
 import { HourlyData, sortByMode } from '.'
-import { parseTime } from 'src/api/gapsService'
-import { GapsList } from 'src/model/gaps'
 import { convertGapsToHourlyStruct as processData } from 'src/pages/gapsPatterns/useGapsList'
 
 describe('sortByMode', () => {
@@ -41,10 +40,10 @@ describe('sortByMode', () => {
   })
 
   it('should convert gapList to HourlyData structure', () => {
-    const list: GapsList = [
+    const list: RideExecutionPydanticModel[] = [
       {
-        gtfsTime: parseTime('2023-10-04T02:00:00'),
-        siriTime: parseTime('2023-10-04T02:00:00'),
+        plannedStartTime: new Date('2023-10-04T02:00:00.000Z'),
+        actualStartTime: new Date('2023-10-04T02:00:00.000Z'),
       },
     ]
     const [results] = processData(list)
@@ -56,10 +55,10 @@ describe('sortByMode', () => {
   })
 
   it('should convert gapList time entry with null value to - 0', () => {
-    const list: GapsList = [
+    const list: RideExecutionPydanticModel[] = [
       {
-        gtfsTime: parseTime('2023-10-04T02:20:00'),
-        siriTime: parseTime('null'),
+        plannedStartTime: new Date('2023-10-04T02:20:00.000Z'),
+        actualStartTime: undefined,
       },
     ]
     const [results] = processData(list)
@@ -72,14 +71,14 @@ describe('sortByMode', () => {
   })
 
   it('should convert entries at same time to single entry with sum  of actual and planned rides', () => {
-    const list: GapsList = [
+    const list: RideExecutionPydanticModel[] = [
       {
-        gtfsTime: parseTime('2023-10-04T02:00:00'),
-        siriTime: parseTime('2023-10-04T02:00:00'),
+        plannedStartTime: new Date('2023-10-04T02:00:00.000Z'),
+        actualStartTime: new Date('2023-10-04T02:00:00.000Z'),
       },
       {
-        gtfsTime: parseTime('2023-10-04T02:00:00'),
-        siriTime: parseTime('2023-10-04T02:00:00'),
+        plannedStartTime: new Date('2023-10-04T02:00:00.000Z'),
+        actualStartTime: new Date('2023-10-04T02:00:00.000Z'),
       },
     ]
     const [results] = processData(list)
