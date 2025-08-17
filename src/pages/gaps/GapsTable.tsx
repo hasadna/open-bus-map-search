@@ -38,7 +38,10 @@ const colors = {
 // ---- Helpers using native Date ----
 function formatTime(time?: Date) {
   if (!time) return
-  return time.toLocaleTimeString('he', { hour: '2-digit', minute: '2-digit' })
+  return time.toLocaleTimeString('he', {
+    hour: '2-digit',
+    minute: '2-digit',
+  })
 }
 
 function isAfter(d1?: Date, d2: Date = new Date()) {

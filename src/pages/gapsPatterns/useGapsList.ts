@@ -15,7 +15,7 @@ export const convertGapsToHourlyStruct = (
     if (ride.plannedStartTime === undefined) {
       continue
     }
-    const plannedHour = ride.plannedStartTime.toLocaleTimeString('he', {
+    const plannedHour = ride.plannedStartTime.toLocaleString('he', {
       hour: '2-digit',
       minute: '2-digit',
     })
