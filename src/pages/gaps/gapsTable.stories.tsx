@@ -1,7 +1,7 @@
-import { RideExecutionPydanticModel } from '@hasadna/open-bus-api-client'
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { getPastDate } from '../../../.storybook/main'
 import GapsTable from './GapsTable'
+import dayjs from 'src/dayjs'
+import { Gap } from 'src/api/gapsService'
 
 const meta = {
   title: 'Components/GapsTable',
@@ -9,25 +9,7 @@ const meta = {
   parameters: {
     layout: 'centered',
   },
-  decorators: [
-    (Story) => {
-      const fixedDate = getPastDate()
 
-      const RealDate = Date
-
-      // @ts-expect-error: we're overriding global Date
-      Date = class extends RealDate {
-        constructor() {
-          super()
-          return new RealDate(fixedDate)
-        }
-        static now() {
-          return new RealDate(fixedDate).getTime()
-        }
-      }
-      return <Story />
-    },
-  ],
   argTypes: {
     gaps: {
       description: 'List of gap objects to display in the table',
@@ -57,14 +39,11 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-const makeTime = (hours: number = 15, minutes: number = 0) => {
-  const time = new Date(getPastDate())
-  time.setHours(hours)
-  time.setMinutes(minutes)
-  return time
+const makeTime = (hours: number, minutes: number = 0) => {
+  return dayjs().subtract(7, 'day').set('hour', hours).set('minutes', minutes)
 }
 
-const mockGaps: RideExecutionPydanticModel[] = [
+const mockGaps: Gap[] = [
   {
     plannedStartTime: makeTime(13),
     actualStartTime: makeTime(13),
@@ -82,7 +61,7 @@ const mockGaps: RideExecutionPydanticModel[] = [
     actualStartTime: makeTime(14, 30),
   },
   {
-    plannedStartTime: makeTime(15, 30),
+    plannedStartTime: dayjs().add(1, 'day').set('hour', 15).set('minutes', 0),
     actualStartTime: undefined,
   },
 ]
