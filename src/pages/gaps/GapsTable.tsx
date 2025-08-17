@@ -1,3 +1,4 @@
+import { RideExecutionPydanticModel } from '@hasadna/open-bus-api-client'
 import {
   FormControlLabel,
   Switch,
@@ -8,17 +9,14 @@ import {
   TableRow,
 } from '@mui/material'
 import { Skeleton } from 'antd'
-import { TFunction } from 'i18next'
-import React, { memo, useMemo, useState } from 'react'
+import React, { memo, useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Gap, GapsList } from '../../model/gaps'
 import DisplayGapsPercentage from '../components/DisplayGapsPercentage'
 import { Row } from '../components/Row'
-import dayjs from 'src/dayjs'
 import Widget from 'src/shared/Widget'
 
 interface GapsTableProps {
-  gaps?: GapsList
+  gaps?: RideExecutionPydanticModel[]
   loading?: boolean
   initOnlyGapped?: boolean
 }
@@ -27,55 +25,44 @@ const cellStyle = {
   padding: '6px',
   textAlign: 'center',
   border: '1px solid rgba(128, 128, 128, 0.2) !important',
+} as const
+
+const colors = {
+  ride_as_planned: 'rgba(0, 255, 0, 0.15)',
+  ride_missing: 'rgba(255, 0, 0, 0.15)',
+  ride_duped: 'rgba(0, 255, 255, 0.15)',
+  ride_extra: 'rgba(255, 255, 0, 0.15)',
+  ride_in_future: 'rgba(0, 0, 255, 0.15)',
+} as const
+
+// ---- Helpers using native Date ----
+function formatTime(time?: Date) {
+  if (!time) return
+  return time.toLocaleTimeString('he', { hour: '2-digit', minute: '2-digit' })
 }
 
-function getGapsPercentage(gaps: GapsList | undefined, t: TFunction): number | undefined {
-  if (!gaps || gaps.length === 0) return undefined
-  const statusAsPlanned = t('ride_as_planned')
-  const statusMissing = t('ride_missing')
-  let relevantCount = 0
-  let missingCount = 0
-  for (const gap of gaps) {
-    const status = formatStatus(gap, gaps, t)
-    if (status === statusAsPlanned || status === statusMissing) {
-      relevantCount++
-      if (status === statusMissing) {
-        missingCount++
-      }
-    }
-  }
-  if (relevantCount === 0) return undefined
-  return (missingCount / relevantCount) * 100
+function isAfter(d1?: Date, d2: Date = new Date()) {
+  return !!d1 && d1.getTime() > d2.getTime()
 }
 
-function formatStatus(gap: Gap, gaps: GapsList | undefined, t: TFunction): string {
-  if (gap.gtfsTime?.isAfter(dayjs()) && !gap.siriTime) {
-    return t('ride_in_future')
-  }
-  if (!gap.siriTime) {
-    return t('ride_missing')
-  }
-  if (gap.gtfsTime && gap.siriTime) {
-    return t('ride_as_planned')
-  }
-  const hasTwinRide = gaps?.some(
-    (g) => g.gtfsTime && g.siriTime && gap.siriTime && g.siriTime.isSame(gap.siriTime),
-  )
-  if (hasTwinRide) {
-    return t('ride_duped')
-  }
-  return t('ride_extra')
+function isBefore(d1?: Date, d2: Date = new Date()) {
+  return !!d1 && d1.getTime() < d2.getTime()
 }
 
-function formatTime(time: dayjs.Dayjs | null): string | undefined {
-  return time?.format('HH:mm')
+function isSame(d1?: Date, d2?: Date) {
+  return !!d1 && !!d2 && d1.getTime() === d2.getTime()
 }
 
-const groupByHours = (gaps: Gap[]) => {
+function diff(d1?: Date, d2?: Date) {
+  if (!d1 || !d2) return 0
+  return d1.getTime() - d2.getTime()
+}
+
+function groupByHours(gaps: RideExecutionPydanticModel[]) {
   const hours: Record<string, typeof gaps> = {}
   for (const gap of gaps) {
-    const hour = (gap.gtfsTime?.get('hour') || gap.siriTime?.get('hour'))?.toString()
-    if (!hour) continue
+    const hour = gap.plannedStartTime?.getHours() ?? gap.actualStartTime?.getHours()
+    if (hour == null) continue
     if (!hours[hour]) hours[hour] = []
     hours[hour].push(gap)
   }
@@ -83,22 +70,70 @@ const groupByHours = (gaps: Gap[]) => {
 }
 
 const GapsTable: React.FC<GapsTableProps> = ({ gaps, loading, initOnlyGapped = false }) => {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [onlyGapped, setOnlyGapped] = useState(initOnlyGapped)
 
-  const gapsPercentage = useMemo(() => getGapsPercentage(gaps, t), [gaps, t])
+  const formatStatus = useCallback(
+    (gap: RideExecutionPydanticModel, all: RideExecutionPydanticModel[] | undefined): string => {
+      // case: planned in future and no actual
+      if (isAfter(gap.plannedStartTime) && !gap.actualStartTime) {
+        return t('ride_in_future')
+      }
+      // case: missing
+      if (!gap.actualStartTime && isBefore(gap.plannedStartTime)) {
+        return t('ride_missing')
+      }
+      // case: both exist = planned
+      if (isSame(gap.plannedStartTime, gap.actualStartTime)) {
+        return t('ride_as_planned')
+      }
+      // case: extra / duped
+      const hasTwinRide = all?.some(
+        (g) =>
+          g !== gap &&
+          g.actualStartTime &&
+          gap.actualStartTime &&
+          isSame(g.actualStartTime, gap.actualStartTime),
+      )
+
+      return hasTwinRide ? t('ride_duped') : t('ride_extra')
+    },
+    [t, i18n.language],
+  )
+
+  const getGapsPercentage = useCallback(
+    (gaps: RideExecutionPydanticModel[] | undefined): number | undefined => {
+      if (!gaps || gaps.length === 0) return
+      const statusAsPlanned = t('ride_as_planned')
+      const statusMissing = t('ride_missing')
+      let relevant = 0
+      let missing = 0
+      for (const gap of gaps) {
+        const status = formatStatus(gap, gaps)
+        if (status === statusAsPlanned || status === statusMissing) {
+          relevant++
+          if (status === statusMissing) missing++
+        }
+      }
+      if (relevant === 0) return
+      return (missing / relevant) * 100
+    },
+    [formatStatus],
+  )
+
+  const gapsPercentage = useMemo(() => getGapsPercentage(gaps), [gaps, t])
 
   const filteredGaps = useMemo(() => {
     if (!gaps) return []
     return gaps
-      ?.filter((gap) => {
+      .filter((gap) => {
         return onlyGapped
-          ? !gap.siriTime && gap.gtfsTime?.isBefore(dayjs())
-          : gap.gtfsTime || gap.siriTime
+          ? !gap.actualStartTime && isBefore(gap.plannedStartTime)
+          : gap.plannedStartTime || gap.actualStartTime
       })
-      .sort((t1, t2) => {
-        return Number((t1?.siriTime || t1?.gtfsTime)?.diff(t2?.siriTime || t2?.gtfsTime))
-      })
+      .sort((a, b) =>
+        diff(a?.actualStartTime || a?.plannedStartTime, b?.actualStartTime || b?.plannedStartTime),
+      )
   }, [gaps, onlyGapped])
 
   return (
@@ -127,22 +162,22 @@ const GapsTable: React.FC<GapsTableProps> = ({ gaps, loading, initOnlyGapped = f
             {Object.values(groupByHours(filteredGaps)).map((gaps, i) => (
               <TableRow key={i}>
                 {gaps.map((gap, j) => {
-                  const time = formatTime(gap.gtfsTime || gap.siriTime)
-                  const status = formatStatus(gap, gaps, t)
+                  const time = formatTime(gap.plannedStartTime || gap.actualStartTime)
+                  const status = formatStatus(gap, gaps)
                   return (
                     <TableCell
                       sx={{
                         ...cellStyle,
                         background:
                           status === t('ride_as_planned')
-                            ? 'rgba(0, 255, 0, 0.15)'
+                            ? colors.ride_as_planned
                             : status === t('ride_missing')
-                              ? 'rgba(255, 0, 0, 0.15)'
+                              ? colors.ride_missing
                               : status === t('ride_duped')
-                                ? 'rgba(255, 0, 255, 0.15)'
+                                ? colors.ride_duped
                                 : status === t('ride_extra')
-                                  ? 'rgba(255, 255, 0, 0.15)'
-                                  : 'rgba(0, 0, 255, 0.15)',
+                                  ? colors.ride_extra
+                                  : colors.ride_in_future,
                       }}
                       key={`${i}-${j}-${time}`}>
                       {time}
@@ -160,19 +195,19 @@ const GapsTable: React.FC<GapsTableProps> = ({ gaps, loading, initOnlyGapped = f
       <Table sx={{ marginTop: '0px' }}>
         <TableBody>
           <TableRow>
-            <TableCell sx={{ ...cellStyle, background: 'rgba(0, 255, 0, 0.15)' }}>
+            <TableCell sx={{ ...cellStyle, background: colors.ride_as_planned }}>
               {t('ride_as_planned')}
             </TableCell>
-            <TableCell sx={{ ...cellStyle, background: 'rgba(255, 0, 0, 0.15)' }}>
+            <TableCell sx={{ ...cellStyle, background: colors.ride_missing }}>
               {t('ride_missing')}
             </TableCell>
-            <TableCell sx={{ ...cellStyle, background: 'rgba(255, 255, 0, 0.15)' }}>
+            <TableCell sx={{ ...cellStyle, background: colors.ride_extra }}>
               {t('ride_extra')}
             </TableCell>
-            <TableCell sx={{ ...cellStyle, background: 'rgba(255, 0, 255, 0.15)' }}>
+            <TableCell sx={{ ...cellStyle, background: colors.ride_duped }}>
               {t('ride_duped')}
             </TableCell>
-            <TableCell sx={{ ...cellStyle, background: 'rgba(0, 0, 255, 0.15)' }}>
+            <TableCell sx={{ ...cellStyle, background: colors.ride_in_future }}>
               {t('ride_in_future')}
             </TableCell>
           </TableRow>

@@ -1,10 +1,9 @@
+import { RideExecutionPydanticModel } from '@hasadna/open-bus-api-client'
 import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
-import axios from 'axios'
 import { useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { getGapsAsync } from '../../api/gapsService'
 import { getRoutesAsync } from '../../api/gtfsService'
-import { GapsList } from '../../model/gaps'
 import { SearchContext } from '../../model/pageState'
 import { DateSelector } from '../components/DateSelector'
 import { Label } from '../components/Label'
@@ -22,36 +21,22 @@ const GapsPage = () => {
   const { t } = useTranslation()
   const { search, setSearch } = useContext(SearchContext)
   const { operatorId, lineNumber, timestamp, routes, routeKey } = search
-  const [gaps, setGaps] = useState<GapsList>()
+  const [gaps, setGaps] = useState<RideExecutionPydanticModel[]>()
   const [gapsIsLoading, setGapsIsLoading] = useState(false)
 
   useEffect(() => {
     if (!(operatorId && routes && routeKey && timestamp)) return
-
-    const source = axios.CancelToken.source()
     const selectedRoute = routes.find((route) => route.key === routeKey)
-
     if (!selectedRoute) return
 
     setGapsIsLoading(true)
-
-    getGapsAsync(
-      dayjs(timestamp),
-      dayjs(timestamp),
-      operatorId,
-      selectedRoute.lineRef,
-      source.token,
-    )
+    getGapsAsync(timestamp, timestamp, operatorId, selectedRoute.lineRef)
       .then(setGaps)
       .catch((err) => {
         console.error('Failed to fetch gaps:', err.message)
         setGaps(undefined)
       })
       .finally(() => setGapsIsLoading(false))
-
-    return () => {
-      source.cancel('Gaps request cancelled')
-    }
   }, [operatorId, routes, routeKey, timestamp])
 
   useEffect(() => {
