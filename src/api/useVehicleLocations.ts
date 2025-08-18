@@ -12,6 +12,7 @@ import {
 import { useEffect, useRef, useState } from 'react'
 import { SIRI_API } from './apiConfig'
 import dayjs from 'src/dayjs'
+import { useThrottledState } from '@tanstack/react-pacer'
 
 type SiriVehicleRequestWithoutLocation = {
   from: number
@@ -236,7 +237,8 @@ export default function useVehicleLocations({
   splitMinutes?: false | number
   pause?: boolean
 }) {
-  const [locations, setLocations] = useState<SiriVehicleLocationWithRelatedPydanticModel[]>([])
+  const [locations, setLocations] = useThrottledState<SiriVehicleLocationWithRelatedPydanticModel[]>([], 1000)
+  console.log({locations})
   const [isLoading, setIsLoading] = useState<boolean[]>([])
   const lastQueryKeyRef = useRef('')
 
