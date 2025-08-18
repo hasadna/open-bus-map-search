@@ -27,7 +27,7 @@ const preview: Preview = {
   beforeAll: () => {
     initialize({
       serviceWorker: {
-        url: './serviceWorkerUrl.js',
+        url: './mockServiceWorker.js',
       },
     })
   },
