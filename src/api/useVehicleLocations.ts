@@ -164,18 +164,11 @@ async function fetchWithQueue(
   })
 }
 
-function getQueryKey({
-  from,
-  to,
-  operatorRef,
-  lineRef,
-  vehicleRef,
-  latMax,
-  latMin,
-  lonMax,
-  lonMin,
-}: SiriVehicleRequest) {
-  return [from, to, operatorRef, lineRef, vehicleRef, latMax, latMin, lonMax, lonMin].join('-')
+function getQueryKey(params: SiriVehicleRequest) {
+  if('lonMax' in params)
+    return [params.from, params.to, params.operatorRef, params.lineRef, params.vehicleRef, params.latMax, params.latMin, params.lonMax, params.lonMin].join('-')
+  else
+    return [params.from, params.to, params.operatorRef, params.lineRef, params.vehicleRef].join('-')
 }
 
 // this function checks the cache for the data, and if it's not there, it loads it
