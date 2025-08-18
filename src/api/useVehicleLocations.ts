@@ -13,17 +13,21 @@ import { useEffect, useRef, useState } from 'react'
 import { SIRI_API } from './apiConfig'
 import dayjs from 'src/dayjs'
 
-type SiriVehicleRequest = {
+type SiriVehicleRequestWithoutLocation = {
   from: number
   to: number
   lineRef?: string
   vehicleRef?: string
   operatorRef?: string
-  latMin?: number
-  latMax?: number
-  lonMin?: number
-  lonMax?: number
 }
+
+type SiriVehicleRequest = SiriVehicleRequestWithoutLocation | {
+  latMin: number
+  latMax: number
+  lonMin: number
+  lonMax: number
+} & SiriVehicleRequestWithoutLocation
+
 
 const LIMIT = 1000
 const CONCURRENCY = 10
@@ -202,6 +206,33 @@ function getMinutesInRange(from: number, to: number, gap = 1) {
   return minutes
 }
 
+function getLocationTiles(latMin: number, latMax: number, lonMin: number, lonMax: number): {
+  minLat: number
+  maxLat: number
+  minLon: number
+  maxLon: number
+}[] {
+  const tiles: ReturnType<typeof getLocationTiles> = []
+  const angle = 0.25
+  const minLonTile = Math.floor(lonMin / angle) * angle
+  const maxLonTile = Math.ceil(lonMax / angle) * angle
+  const minLatTile = Math.floor(latMin / angle) * angle
+  const maxLatTile = Math.ceil(latMax / angle) * angle
+
+  for (let lon = minLonTile; lon <= maxLonTile; lon+= angle) {
+    for (let lat = minLatTile; lat <= maxLatTile; lat+= angle) {
+      tiles.push({
+        minLat: lat,
+        maxLat: lat + angle,
+        minLon: lon,
+        maxLon: lon + (2 * angle),
+      })
+    }
+  }
+
+  return tiles
+}
+
 export default function useVehicleLocations({
   splitMinutes: split = 1,
   pause = false,
@@ -227,15 +258,30 @@ export default function useVehicleLocations({
 
     if (lastQueryKeyRef.current === queryKey) return
 
-    const range = split ? getMinutesInRange(from, to, split) : [{ from, to }]
+    const timeRange = split ? getMinutesInRange(from, to, split) : [{ from, to }]
+    let timeAndLocationTiles: ({ from: number; to: number } | { from: number; to: number; latMin: number; latMax: number; lonMin: number; lonMax: number })[]
+    if ('latMax' in params) {
+      const locationTiles = getLocationTiles(params.latMin, params.latMax, params.lonMin, params.lonMax)
+      timeAndLocationTiles = timeRange.flatMap(({ from, to }) =>
+        locationTiles.map(({ maxLat, minLat, maxLon, minLon }) => ({
+          from,
+          to,
+          latMin: minLat,
+          latMax: maxLat,
+          lonMin: minLon,
+          lonMax: maxLon,
+        }))
+      )
+    } else {
+      timeAndLocationTiles = timeRange
+    }
 
-    setIsLoading(range.map(() => true))
+    setIsLoading(timeAndLocationTiles.map(() => true))
 
-    range.map(({ from, to }, i) => {
+    timeAndLocationTiles.forEach((tile, i) => {
       getLocations({
         ...params,
-        from,
-        to,
+        ...tile,
         signal: signal.current.signal,
         onUpdate: (data) => {
           if ('finished' in data) {
