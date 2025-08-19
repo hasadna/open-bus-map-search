@@ -63,10 +63,11 @@ const GapsTable: React.FC<GapsTableProps> = ({ gaps, loading, initOnlyGapped = f
           ? !gap.actualStartTime && gap.plannedStartTime?.isBefore(dayjs())
           : gap.plannedStartTime || gap.actualStartTime,
       )
-      .sort((a, b) =>
-        (a?.actualStartTime || a?.plannedStartTime)?.diff(
-          b?.actualStartTime || b?.plannedStartTime,
-        ),
+      .sort(
+        (a, b) =>
+          (a?.actualStartTime || a?.plannedStartTime)?.diff(
+            b?.actualStartTime || b?.plannedStartTime,
+          ) ?? 0,
       )
   }, [gaps, onlyGapped])
 
