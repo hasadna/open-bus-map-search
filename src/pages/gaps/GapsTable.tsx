@@ -8,7 +8,7 @@ import {
   TableRow,
 } from '@mui/material'
 import { Skeleton } from 'antd'
-import React, { memo, useCallback, useMemo, useState } from 'react'
+import React, { memo, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import DisplayGapsPercentage from '../components/DisplayGapsPercentage'
 import { Row } from '../components/Row'
@@ -36,88 +36,60 @@ const colors = {
   ride_in_future: 'rgba(0, 0, 255, 0.15)',
 } as const
 
-function groupByHours(gaps: Gap[]) {
-  const hours: Record<string, typeof gaps> = {}
-  for (const gap of gaps) {
-    const hour = gap.plannedStartTime?.get('hour') ?? gap.actualStartTime?.get('hour')
-    if (hour == null) continue
-    if (!hours[hour]) hours[hour] = []
-    hours[hour].push(gap)
-  }
-  return hours
+const formatStatus = (gap: Gap, gaps: Gap[] | undefined): keyof typeof colors => {
+  const currentTime = dayjs()
+  if (gap.plannedStartTime?.isAfter(currentTime) && !gap.actualStartTime) return 'ride_in_future'
+  if (!gap.actualStartTime && gap.plannedStartTime?.isBefore(currentTime)) return 'ride_missing'
+  if (gap.plannedStartTime?.isSame(gap.actualStartTime)) return 'ride_as_planned'
+  const hasTwinRide = gaps?.some(
+    (g) =>
+      g.plannedStartTime &&
+      g.actualStartTime &&
+      gap.actualStartTime &&
+      g.actualStartTime.isSame(gap.actualStartTime),
+  )
+  return hasTwinRide ? 'ride_duped' : 'ride_extra'
 }
 
 const GapsTable: React.FC<GapsTableProps> = ({ gaps, loading, initOnlyGapped = false }) => {
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
   const [onlyGapped, setOnlyGapped] = useState(initOnlyGapped)
 
-  const formatStatus = useCallback(
-    (gap: Gap, gaps: Gap[] | undefined): string => {
-      const currentTime = dayjs()
-      // case: planned in future and no actual
-      if (gap.plannedStartTime?.isAfter(currentTime) && !gap.actualStartTime) {
-        return t('ride_in_future')
-      }
-      // case: missing
-      if (!gap.actualStartTime && gap.plannedStartTime?.isBefore(currentTime)) {
-        return t('ride_missing')
-      }
-      // case: both exist = planned
-      if (gap.plannedStartTime?.isSame(gap.actualStartTime)) {
-        return t('ride_as_planned')
-      }
-      // case: extra / duped
-      const hasTwinRide = gaps?.some(
-        (g) =>
-          g.plannedStartTime &&
-          g.actualStartTime &&
-          gap.actualStartTime &&
-          g.actualStartTime.isSame(gap.actualStartTime),
-      )
-
-      return hasTwinRide ? t('ride_duped') : t('ride_extra')
-    },
-    [t, i18n.language],
-  )
-
-  const getGapsPercentage = useCallback(
-    (gaps: Gap[] | undefined): number | undefined => {
-      if (!gaps || gaps.length === 0) return
-      const statusAsPlanned = t('ride_as_planned')
-      const statusMissing = t('ride_missing')
-      let relevant = 0
-      let missing = 0
-      for (const gap of gaps) {
-        const status = formatStatus(gap, gaps)
-        if (status === statusAsPlanned || status === statusMissing) {
-          relevant++
-          if (status === statusMissing) missing++
-        }
-      }
-      if (relevant === 0) return
-      return (missing / relevant) * 100
-    },
-    [formatStatus],
-  )
-
-  const gapsPercentage = useMemo(() => getGapsPercentage(gaps), [gaps, t])
-
-  const filteredGaps = useMemo(() => {
+  const filteredGaps: Gap[] = useMemo(() => {
     if (!gaps) return []
     return gaps
-      .filter((gap) => {
-        return onlyGapped
+      .filter((gap) =>
+        onlyGapped
           ? !gap.actualStartTime && gap.plannedStartTime?.isBefore(dayjs())
-          : gap.plannedStartTime || gap.actualStartTime
-      })
+          : gap.plannedStartTime || gap.actualStartTime,
+      )
       .sort((a, b) =>
-        Number(
-          (a?.actualStartTime || a?.plannedStartTime)?.diff(
-            b?.actualStartTime || b?.plannedStartTime,
-          ),
+        (a?.actualStartTime || a?.plannedStartTime)?.diff(
+          b?.actualStartTime || b?.plannedStartTime,
         ),
       )
   }, [gaps, onlyGapped])
+
+  const groupedGaps = useMemo(() => {
+    const map: Record<string, { gap: Gap; status: keyof typeof colors }[]> = {}
+    for (const gap of filteredGaps) {
+      const hour = gap.plannedStartTime?.get('hour') ?? gap.actualStartTime?.get('hour')
+      if (hour === undefined) continue
+      const status = formatStatus(gap, filteredGaps)
+      if (!map[hour]) map[hour] = []
+      map[hour].push({ gap, status })
+    }
+    return map
+  }, [filteredGaps])
+
+  const gapsPercentage = useMemo(() => {
+    const relevant = Object.values(groupedGaps)
+      .flat()
+      .filter(({ status }) => status === 'ride_as_planned' || status === 'ride_missing')
+    if (!relevant.length) return
+    const missing = relevant.filter(({ status }) => status === 'ride_missing')
+    return (missing.length / relevant.length) * 100
+  }, [groupedGaps])
 
   return (
     <Widget marginBottom sx={{ overflowY: 'none', maxWidth: '600px' }}>
@@ -141,41 +113,28 @@ const GapsTable: React.FC<GapsTableProps> = ({ gaps, loading, initOnlyGapped = f
         ) : (
           <Table sx={{ maxWidth: 'fit-content' }}>
             <TableBody>
-              <TableRow>
-                <TableCell />
-              </TableRow>
-
-              {Object.values(groupByHours(filteredGaps)).map((gaps, i) => (
-                <TableRow key={i}>
-                  {gaps.map((gap, j) => {
-                    const time = (gap.plannedStartTime || gap.actualStartTime)?.format('HH:mm')
-                    const status = formatStatus(gap, gaps)
-                    return (
-                      <TableCell
-                        sx={{
-                          ...cellStyle,
-                          background:
-                            status === t('ride_as_planned')
-                              ? colors.ride_as_planned
-                              : status === t('ride_missing')
-                                ? colors.ride_missing
-                                : status === t('ride_duped')
-                                  ? colors.ride_duped
-                                  : status === t('ride_extra')
-                                    ? colors.ride_extra
-                                    : colors.ride_in_future,
-                        }}
-                        key={`${i}-${j}-${time}`}>
-                        {time}
-                      </TableCell>
-                    )
-                  })}
-                </TableRow>
-              ))}
+              {Object.keys(groupedGaps)
+                .sort((a, b) => (a === '0' ? 1 : b === '0' ? -1 : Number(a) - Number(b)))
+                .map((hour) => (
+                  <TableRow key={hour}>
+                    {groupedGaps[hour].map(({ gap, status }, j) => {
+                      const time = (gap.plannedStartTime || gap.actualStartTime)?.format('HH:mm')
+                      return (
+                        <TableCell
+                          key={`${hour}-${j}-${time}`}
+                          sx={{ ...cellStyle, background: colors[status] }}>
+                          {time}
+                        </TableCell>
+                      )
+                    })}
+                  </TableRow>
+                ))}
             </TableBody>
           </Table>
         )}
       </TableContainer>
+
+      {/* Legend */}
       <TableContainer>
         <Table>
           <TableBody>
