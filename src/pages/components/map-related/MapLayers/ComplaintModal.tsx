@@ -1,18 +1,18 @@
-import { useState, ChangeEvent, useEffect } from 'react'
 import {
   Button,
-  MenuItem,
-  TextField,
   CircularProgress,
-  DialogTitle,
-  DialogContent,
   Dialog,
   DialogActions,
+  DialogContent,
+  DialogTitle,
+  MenuItem,
+  TextField,
 } from '@mui/material'
-import { useTranslation } from 'react-i18next'
 import { SiriRideWithRelatedPydanticModel } from '@hasadna/open-bus-api-client'
-import { Point } from 'src/pages/timeBasedMap'
+import { ChangeEvent, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { getSiriRideWithRelated } from 'src/api/siriService'
+import { Point } from 'src/pages/timeBasedMap'
 
 interface ComplaintModalProps {
   modalOpen?: boolean
@@ -69,11 +69,12 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
   })
 
   useEffect(() => {
+    if (!position.point) return
     setIsLoading(true)
     getSiriRideWithRelated(
-      position.point!.siri_route__id.toString(),
-      position.point!.siri_ride__vehicle_ref.toString(),
-      position.point!.siri_route__line_ref.toString(),
+      position.point.siriRouteId?.toString(),
+      position.point.siriRideVehicleRef,
+      position.point.siriRouteLineRef?.toString(),
     )
       .then((siriRideRes: SiriRideWithRelatedPydanticModel) => setSiriRide(siriRideRes))
       .finally(() => setIsLoading(false))

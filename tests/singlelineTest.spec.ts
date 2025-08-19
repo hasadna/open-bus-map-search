@@ -28,7 +28,7 @@ test.describe('Single line page tests', () => {
     advancedRouteFromHAR('tests/HAR/singleline.har', {
       updateContent: 'embed',
       update: false,
-      notFound: 'fallback',
+      notFound: 'abort',
       url: /stride-api/,
       matcher: urlMatcher,
     })
@@ -143,6 +143,7 @@ test.describe('Single line page tests', () => {
   test('should show error or no options for invalid line number', async ({ page }) => {
     await selectOperator(page)
     await fillLineNumber(page, '9999')
+    await page.waitForTimeout(5000)
     await expect(page.getByText('הקו לא נמצא')).toBeAttached()
   })
 })
