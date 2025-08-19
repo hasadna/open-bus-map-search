@@ -9,26 +9,26 @@ import {
   SiriVehicleLocationsListGetRequest,
   SiriVehicleLocationWithRelatedPydanticModel,
 } from '@hasadna/open-bus-api-client'
+import { useThrottledState } from '@tanstack/react-pacer'
 import { useEffect, useRef, useState } from 'react'
 import { SIRI_API } from './apiConfig'
 import dayjs from 'src/dayjs'
-import { useThrottledState } from '@tanstack/react-pacer'
 
-type SiriVehicleRequestWithoutLocation = {
+export type MapBoundary = {
+  latMin: number
+  latMax: number
+  lonMin: number
+  lonMax: number
+}
+
+type SiriVehicleRequest = {
   from: number
   to: number
   lineRef?: string
   vehicleRef?: string
   operatorRef?: string
+  boundary?: MapBoundary
 }
-
-type SiriVehicleRequest = SiriVehicleRequestWithoutLocation | {
-  latMin: number
-  latMax: number
-  lonMin: number
-  lonMax: number
-} & SiriVehicleRequestWithoutLocation
-
 
 const LIMIT = 1000
 const CONCURRENCY = 10
@@ -62,10 +62,10 @@ class LocationObservable {
           siriRoutesLineRef: params.lineRef,
           siriRoutesOperatorRef: params.operatorRef,
           siriVehicleLocationIds: params.vehicleRef,
-          latGreaterOrEqual: params.latMin,
-          latLowerOrEqual: params.latMax,
-          lonGreaterOrEqual: params.lonMin,
-          lonLowerOrEqual: params.lonMax,
+          latGreaterOrEqual: params.boundary?.latMin,
+          latLowerOrEqual: params.boundary?.latMax,
+          lonGreaterOrEqual: params.boundary?.lonMin,
+          lonLowerOrEqual: params.boundary?.lonMax,
           limit: LIMIT,
           offset: LIMIT * i++,
         },
@@ -200,26 +200,21 @@ function getMinutesInRange(from: number, to: number, gap = 1) {
   return minutes
 }
 
-function getLocationTiles(latMin: number, latMax: number, lonMin: number, lonMax: number): {
-  minLat: number
-  maxLat: number
-  minLon: number
-  maxLon: number
-}[] {
+function getLocationTiles(boundary: MapBoundary): MapBoundary[] {
   const tiles: ReturnType<typeof getLocationTiles> = []
   const angle = 0.25
-  const minLonTile = Math.floor(lonMin / angle) * angle
-  const maxLonTile = Math.ceil(lonMax / angle) * angle
-  const minLatTile = Math.floor(latMin / angle) * angle
-  const maxLatTile = Math.ceil(latMax / angle) * angle
+  const minLonTile = Math.floor(boundary.lonMin / angle) * angle
+  const maxLonTile = Math.ceil(boundary.lonMax / angle) * angle
+  const minLatTile = Math.floor(boundary.latMin / angle) * angle
+  const maxLatTile = Math.ceil(boundary.latMax / angle) * angle
 
-  for (let lon = minLonTile; lon <= maxLonTile; lon+= angle) {
-    for (let lat = minLatTile; lat <= maxLatTile; lat+= angle) {
+  for (let lon = minLonTile; lon <= maxLonTile; lon += angle) {
+    for (let lat = minLatTile; lat <= maxLatTile; lat += angle) {
       tiles.push({
-        minLat: lat,
-        maxLat: lat + angle,
-        minLon: lon,
-        maxLon: lon + (2 * angle),
+        latMin: lat,
+        latMax: lat + angle,
+        lonMin: lon,
+        lonMax: lon + 2 * angle,
       })
     }
   }
@@ -237,8 +232,10 @@ export default function useVehicleLocations({
   splitMinutes?: false | number
   pause?: boolean
 }) {
-  const [locations, setLocations] = useThrottledState<SiriVehicleLocationWithRelatedPydanticModel[]>([], 1000)
-  console.log({locations})
+  const [locations, setLocations] = useThrottledState<
+    SiriVehicleLocationWithRelatedPydanticModel[]
+  >([], 1000)
+  console.log({ locations })
   const [isLoading, setIsLoading] = useState<boolean[]>([])
   const lastQueryKeyRef = useRef('')
 
@@ -254,18 +251,14 @@ export default function useVehicleLocations({
     if (lastQueryKeyRef.current === queryKey) return
 
     const timeRange = split ? getMinutesInRange(from, to, split) : [{ from, to }]
-    let timeAndLocationTiles: ({ from: number; to: number } | { from: number; to: number; latMin: number; latMax: number; lonMin: number; lonMax: number })[]
-    if ('latMax' in params) {
-      const locationTiles = getLocationTiles(params.latMin, params.latMax, params.lonMin, params.lonMax)
+    let timeAndLocationTiles: (
+      | { from: number; to: number }
+      | { from: number; to: number; boundary: MapBoundary }
+    )[]
+    if (params.boundary) {
+      const locationTiles = getLocationTiles(params.boundary)
       timeAndLocationTiles = timeRange.flatMap(({ from, to }) =>
-        locationTiles.map(({ maxLat, minLat, maxLon, minLon }) => ({
-          from,
-          to,
-          latMin: minLat,
-          latMax: maxLat,
-          lonMin: minLon,
-          lonMax: maxLon,
-        }))
+        locationTiles.map((boundary) => ({ from, to, boundary })),
       )
     } else {
       timeAndLocationTiles = timeRange

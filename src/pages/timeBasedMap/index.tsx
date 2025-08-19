@@ -16,7 +16,7 @@ import createClusterCustomIcon from '../components/utils/customCluster/customClu
 import InfoYoutubeModal from '../components/YoutubeModal'
 import { getColorByHashString } from '../dashboard/AllLineschart/OperatorHbarChart/utils'
 import { useAgencyList } from 'src/hooks/useAgencyList'
-import useVehicleLocations from 'src/api/useVehicleLocations'
+import useVehicleLocations, { MapBoundary } from 'src/api/useVehicleLocations'
 import dayjs from 'src/dayjs'
 import { BusToolTip } from 'src/pages/components/map-related/MapLayers/BusToolTip'
 import { INPUT_SIZE } from 'src/resources/sizes'
@@ -43,18 +43,9 @@ const position: Point = {
   color: 0,
 }
 
-const rounded = (num?: number) => {
-  return num ? Math.trunc(num * 1000) / 1000 : undefined
-}
-
 export default function TimeBasedMapPage() {
   const [map, setMap] = useState<Map | null>(null)
-  const [bound, setBound] = useState<Record<string, number | undefined>>({
-    latMax: undefined,
-    latMin: undefined,
-    lonMax: undefined,
-    lonMin: undefined,
-  })
+  const [boundary, setBoundary] = useState<MapBoundary | undefined>()
 
   const [isExpanded, setIsExpanded] = useState<boolean>(false)
   const toggleExpanded = useCallback(() => setIsExpanded((expanded) => !expanded), [])
@@ -65,22 +56,23 @@ export default function TimeBasedMapPage() {
   const { locations, isLoading } = useVehicleLocations({
     from: from.valueOf(),
     to: to.valueOf(),
-    ...bound,
-    pause: !bound.latMax,
+    boundary,
+    pause: !boundary,
   })
 
   const { t } = useTranslation()
 
   const onMove = useCallback(() => {
-    const bound = map?.getBounds()
-    const sw = bound?.getSouthWest()
-    const ne = bound?.getNorthEast()
+    if (!map) return
+    const bound = map.getBounds()
+    const sw = bound.getSouthWest()
+    const ne = bound.getNorthEast()
 
-    setBound({
-      latMax: rounded(ne?.lat),
-      lonMax: rounded(ne?.lng),
-      latMin: rounded(sw?.lat),
-      lonMin: rounded(sw?.lng),
+    setBoundary({
+      latMax: ne.lat,
+      lonMax: ne.lng,
+      latMin: sw.lat,
+      lonMin: sw.lng,
     })
   }, [map])
 
