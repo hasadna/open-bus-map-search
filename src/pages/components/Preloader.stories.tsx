@@ -30,6 +30,11 @@ export const Default: Story = {
 }
 
 export const WithSlowComponent: Story = {
+  parameters: {
+    eyes: {
+      waitBeforeCapture: '#slow',
+    },
+  },
   decorators: [
     (Story) => {
       return (
@@ -63,6 +68,7 @@ const SlowComponent = () => {
 
   return (
     <div
+      id="slow"
       dir="ltr"
       style={{
         padding: '1rem',
