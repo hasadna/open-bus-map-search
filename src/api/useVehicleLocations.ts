@@ -165,11 +165,11 @@ async function fetchWithQueue(
   })
 }
 
-function getQueryKey(params: Partial<SiriVehicleRequest>) {
-  return [...Object.entries(params)]
-    .sort(([keyA], [keyB]) => keyA.localeCompare(keyB))
-    .map(([, value]) => value)
-    .join('-')
+function getQueryKey({ from, to, lineRef, vehicleRef, operatorRef, boundary }: SiriVehicleRequest) {
+  const boundaryStr = boundary
+    ? `${boundary.latMin},${boundary.latMax},${boundary.lonMin},${boundary.lonMax}`
+    : ''
+  return [from, to, lineRef ?? '', vehicleRef ?? '', operatorRef ?? '', boundaryStr].join('|')
 }
 
 // this function checks the cache for the data, and if it's not there, it loads it
@@ -202,7 +202,7 @@ function getMinutesInRange(from: number, to: number, gap = 1) {
 
 function getLocationTiles(boundary: MapBoundary): MapBoundary[] {
   const tiles: ReturnType<typeof getLocationTiles> = []
-  const angle = 0.25
+  const angle = 0.075
   const minLonTile = Math.floor(boundary.lonMin / angle) * angle
   const maxLonTile = Math.ceil(boundary.lonMax / angle) * angle
   const minLatTile = Math.floor(boundary.latMin / angle) * angle
@@ -235,7 +235,6 @@ export default function useVehicleLocations({
   const [locations, setLocations] = useThrottledState<
     SiriVehicleLocationWithRelatedPydanticModel[]
   >([], 1000)
-  console.log({ locations })
   const [isLoading, setIsLoading] = useState<boolean[]>([])
   const lastQueryKeyRef = useRef('')
 
