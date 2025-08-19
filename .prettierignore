@@ -2,3 +2,5 @@
 .all-contributorsrc
 CHANGELOG.md
 *.har
+*mockData.ts
+*mockServiceWorker.js

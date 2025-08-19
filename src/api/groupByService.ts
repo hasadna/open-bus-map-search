@@ -1,9 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
-import { GtfsAgencyPydanticModel, GtfsApi } from '@hasadna/open-bus-api-client'
-import { API_CONFIG, BASE_PATH } from './apiConfig'
+import { GtfsAgencyPydanticModel } from '@hasadna/open-bus-api-client'
+import { GTFS_API, STRIDE_API_BASE_PATH } from './apiConfig'
 import { Dayjs } from 'src/dayjs'
-
-const GTFS_API = new GtfsApi(API_CONFIG)
 
 type groupByField =
   | 'gtfs_route_date'
@@ -70,7 +68,7 @@ async function fetchGroupBy({
   const agencyList = await GTFS_API.gtfsAgenciesListGet()
 
   const response = await fetch(
-    `${BASE_PATH}/gtfs_rides_agg/group_by?date_from=${dateFromStr}&date_to=${dateToStr}&group_by=${groupBy}&${excludes}`,
+    `${STRIDE_API_BASE_PATH}/gtfs_rides_agg/group_by?date_from=${dateFromStr}&date_to=${dateToStr}&group_by=${groupBy}&${excludes}`,
   ).then((res) => res.json())
 
   return response
