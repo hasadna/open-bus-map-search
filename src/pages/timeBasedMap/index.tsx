@@ -182,12 +182,20 @@ export default function TimeBasedMapPage() {
         <IconButton color="primary" className="expand-button" onClick={toggleExpanded}>
           <OpenInFullRounded fontSize="large" />
         </IconButton>
-        <MapContainer ref={setMap} center={position.loc} zoom={13} minZoom={11} scrollWheelZoom>
+        <MapContainer
+          ref={setMap}
+          center={position.loc}
+          zoom={13}
+          minZoom={11}
+          scrollWheelZoom
+          preferCanvas>
           <TileLayer
             attribution='&copy <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
           />
-          <Markers positions={positions} />
+          <MarkerClusterGroup chunkedLoading iconCreateFunction={createClusterCustomIcon}>
+            <Markers positions={positions} />
+          </MarkerClusterGroup>
           {paths.map((path) => (
             <Polyline
               key={path.vehicleRef}
@@ -205,21 +213,17 @@ export default function TimeBasedMapPage() {
 
 function Markers({ positions }: { positions: Point[] }) {
   const agencyList = useAgencyList()
-  return (
-    <MarkerClusterGroup chunkedLoading iconCreateFunction={createClusterCustomIcon}>
-      {positions.map((pos) => {
-        const icon = busIcon({
-          operator_id: pos.operator?.toString() || 'default',
-          name: agencyList.find((agency) => agency.operatorRef === pos.operator)?.agencyName,
-        })
-        return (
-          <Marker position={pos.loc} icon={icon} key={pos.point?.id}>
-            <Popup minWidth={300} maxWidth={700}>
-              <BusToolTip position={pos} icon={busIconPath(String(pos.operator))} />
-            </Popup>
-          </Marker>
-        )
-      })}
-    </MarkerClusterGroup>
-  )
+  return positions.map((pos) => {
+    const icon = busIcon({
+      operator_id: pos.operator?.toString() || 'default',
+      name: agencyList.find((agency) => agency.operatorRef === pos.operator)?.agencyName,
+    })
+    return (
+      <Marker position={pos.loc} icon={icon} key={pos.point?.id}>
+        <Popup minWidth={300} maxWidth={700}>
+          <BusToolTip position={pos} icon={busIconPath(String(pos.operator))} />
+        </Popup>
+      </Marker>
+    )
+  })
 }
