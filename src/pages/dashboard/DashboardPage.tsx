@@ -2,7 +2,6 @@ import { useState } from 'react'
 
 // Styling
 import './DashboardPage.scss'
-import 'src/App.scss'
 import { useTranslation } from 'react-i18next'
 import { Typography, Alert, Grid } from '@mui/material'
 import { useDate } from '../components/DateTimePicker'
@@ -32,18 +31,8 @@ const DashboardPage = () => {
   const [WorstLineZeroLines, setWorstLineZeroLines] = useState(false)
   const [AllDayTimeChartZeroLines, setAllDayTimeChartZeroLines] = useState(false)
 
-  const alertAllChartsZeroLinesHandling = (arg: boolean) => {
-    setAllChartsZeroLines(arg)
-  }
-  const alertWorstLineHandling = (arg: boolean) => {
-    setWorstLineZeroLines(arg)
-  }
-  const alertAllDayTimeChartHandling = (arg: boolean) => {
-    setAllDayTimeChartZeroLines(arg)
-  }
-
   return (
-    <PageContainer>
+    <PageContainer className="dashboard">
       <Typography className="page-title" variant="h4">
         {t('dashboard_page_title')}
         <InfoYoutubeModal
@@ -93,27 +82,27 @@ const DashboardPage = () => {
         </Grid>
       </Grid>
       <Grid container spacing={2} alignItems="flex-start">
-        <Grid size={{ xs: 12, lg: 6 }} className="widget">
+        <Grid size={{ xs: 12, lg: 6 }}>
           <AllLinesChart
             startDate={startDate}
             endDate={endDate}
-            alertAllChartsZeroLinesHandling={(arg: boolean) => alertAllDayTimeChartHandling(arg)}
+            alertAllChartsZeroLinesHandling={setAllChartsZeroLines}
           />
         </Grid>
-        <Grid size={{ xs: 12, lg: 6 }} className="widget">
+        <Grid size={{ xs: 12, lg: 6 }}>
           <WorstLinesChart
             startDate={startDate}
             endDate={endDate}
             operatorId={operatorId}
-            alertWorstLineHandling={(arg: boolean) => alertWorstLineHandling(arg)}
+            alertWorstLineHandling={setWorstLineZeroLines}
           />
         </Grid>
-        <Grid size={{ xs: 12 }} className="widget">
+        <Grid size={{ xs: 12 }}>
           <DayTimeChart
             startDate={startDate}
             endDate={endDate}
             operatorId={operatorId}
-            alertAllDayTimeChartHandling={(arg: boolean) => alertAllChartsZeroLinesHandling(arg)}
+            alertAllDayTimeChartHandling={setAllDayTimeChartZeroLines}
           />
         </Grid>
       </Grid>

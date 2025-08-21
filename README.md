@@ -114,6 +114,10 @@ https://github.com/hasadna/open-bus-map-search/blob/main/src/model/busStop.ts#L4
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/AvivAbachi"><img src="https://avatars.githubusercontent.com/u/15000215?v=4?s=100" width="100px;" alt="Aviv"/><br /><sub><b>Aviv</b></sub></a><br /><a href="#code-AvivAbachi" title="Code">💻</a> <a href="#test-AvivAbachi" title="Tests">⚠️</a> <a href="#mentoring-AvivAbachi" title="Mentoring">🧑‍🏫</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/RGvirer"><img src="https://avatars.githubusercontent.com/u/150089166?v=4?s=100" width="100px;" alt="Rivka Gvirer"/><br /><sub><b>Rivka Gvirer</b></sub></a><br /><a href="#code-RGvirer" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/krasnoff"><img src="https://avatars.githubusercontent.com/u/3822883?v=4?s=100" width="100px;" alt="krasnoff"/><br /><sub><b>krasnoff</b></sub></a><br /><a href="#code-krasnoff" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/TzivyaFireman"><img src="https://avatars.githubusercontent.com/u/152266660?v=4?s=100" width="100px;" alt="Tzivya Fireman"/><br /><sub><b>Tzivya Fireman</b></sub></a><br /><a href="#code-TzivyaFireman" title="Code">💻</a></td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/MoranGoz"><img src="https://avatars.githubusercontent.com/u/38177429?v=4?s=100" width="100px;" alt="MoranGoz"/><br /><sub><b>MoranGoz</b></sub></a><br /><a href="#code-MoranGoz" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>

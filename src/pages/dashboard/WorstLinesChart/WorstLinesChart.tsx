@@ -32,12 +32,15 @@ export const WorstLinesChart = ({
     return arr
       .filter(
         (row) =>
-          operatorId || (row.operator_ref && MAJOR_OPERATORS.includes(row.operator_ref.agency_id)),
+          operatorId ||
+          (row.operator_ref && MAJOR_OPERATORS.includes(row.operator_ref.operatorRef.toString())),
       )
-      .filter((row) => row.operator_ref?.agency_id === operatorId || !Number(operatorId))
+      .filter(
+        (row) => row.operator_ref?.operatorRef.toString() === operatorId || !Number(operatorId),
+      )
       .map((item) => ({
-        id: `${item.line_ref}|${item.operator_ref?.agency_id}` || 'Unknown',
-        operator_name: item.operator_ref?.agency_name || 'Unknown',
+        id: `${item.line_ref}|${item.operator_ref?.operatorRef}` || 'Unknown',
+        operator_name: item.operator_ref?.agencyName || 'Unknown',
         short_name: JSON.parse(item.route_short_name)[0],
         long_name: item.route_long_name,
         total: item.total_planned_rides,
@@ -56,8 +59,7 @@ export const WorstLinesChart = ({
   }, [groupByLineData])
 
   return (
-    <Widget>
-      <h2 className="title">{t('worst_lines_page_title')}</h2>
+    <Widget title={t('worst_lines_page_title')}>
       {lineDataLoading ? (
         <Skeleton active />
       ) : (

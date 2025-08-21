@@ -1,8 +1,4 @@
-import { GtfsApi /*, GtfsRideWithRelatedPydanticModel*/ } from 'open-bus-stride-client'
-import { API_CONFIG } from 'src/api/apiConfig'
-// import { BASE_PATH } from './apiConfig'
-
-const GTFS_API = new GtfsApi(API_CONFIG)
+import { GTFS_API } from 'src/api/apiConfig'
 
 export async function getGtfsRidesList(
   date: Date | undefined,
@@ -50,7 +46,7 @@ export async function getGtfsRidesList(
 //   // const startOfDay = dayjs(fromTimestamp).startOf('day')
 //   const data = USE_API
 //     ? (0
-//         await axios.get<RawRidesList>(`${BASE_PATH}/rides_rides/list`, {
+//         await axios.get<RawRidesList>(`${STRIDE_API_BASE_PATH}/rides_rides/list`, {
 //           params: {
 //             limit: LIMIT,
 //             gtfs_route__date_from: route_date_from,

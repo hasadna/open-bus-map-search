@@ -4,6 +4,10 @@ on: pull_request
 permissions:
   contents: read
   pull-requests: write
+  issues: write
+
+env:
+  VITE_MSW_S3_URL: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.run_number }}/storybook/mockServiceWorker.js
 
 jobs:
   build:
