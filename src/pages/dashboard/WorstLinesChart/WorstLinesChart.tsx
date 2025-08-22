@@ -59,7 +59,6 @@ export const WorstLinesChart = ({ startDate, endDate, operatorId }: WorstLinesCh
       } else {
         setWorstLineIsEmpty(false)
       }
-      setWorstLineIsLoading(false)
     }
   }, [groupByLineData, isLineDataLoading])
 
