@@ -17,6 +17,7 @@ import { Navigate, Route, createBrowserRouter, createRoutesFromElements } from '
 import { MainRoute } from './MainRoute'
 import { getRouteById } from 'src/api/gtfsService'
 import { ErrorPage } from 'src/pages/ErrorPage'
+import { DashboardContext } from 'src/pages/dashboard/DashboardContext'
 
 const HomePage = lazy(() => import('../pages/homepage/HomePage'))
 const DashboardPage = lazy(() => import('../pages/dashboard/DashboardPage'))
@@ -47,7 +48,11 @@ export const PAGES = [
     label: 'dashboard_page_title',
     path: '/dashboard',
     icon: <LaptopOutlined />,
-    element: <DashboardPage />,
+    element: (
+      <DashboardContext>
+        <DashboardPage />
+      </DashboardContext>
+    ),
   },
   {
     label: 'timeline_page_title',

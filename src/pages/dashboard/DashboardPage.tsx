@@ -1,22 +1,24 @@
-import { useState } from 'react'
+// Services and libraries
+import { Dayjs } from 'dayjs'
+import { useState, useContext } from 'react'
+import { useTranslation } from 'react-i18next'
+import { Typography, Alert, Grid } from '@mui/material'
+import InfoYoutubeModal from '../components/YoutubeModal'
 
 // Styling
 import './DashboardPage.scss'
-import { useTranslation } from 'react-i18next'
-import { Typography, Alert, Grid } from '@mui/material'
 import { useDate } from '../components/DateTimePicker'
 import { DateSelector } from '../components/DateSelector'
 import { PageContainer } from '../components/PageContainer'
 
 // Components
-import InfoYoutubeModal from '../components/YoutubeModal'
+// import { DashboardContextType, DashboardCtx } from '../DashboardContext'
+import { DashboardContextType, DashboardCtx } from './DashboardContext'
 import DayTimeChart from './ArrivalByTimeChart/DayTimeChart'
 import AllLinesChart from './AllLineschart/AllLinesChart'
 import WorstLinesChart from './WorstLinesChart/WorstLinesChart'
-import OperatorSelector from 'src/pages/components/OperatorSelector'
-
-// Services and libraries
 import dayjs from 'src/dayjs'
+import OperatorSelector from 'src/pages/components/OperatorSelector'
 
 // Declarations
 const now = dayjs()
@@ -26,10 +28,15 @@ const DashboardPage = () => {
   const [endDate, setEndDate] = useDate(now.subtract(1, 'day'))
   const [operatorId, setOperatorId] = useState('')
   const { t } = useTranslation()
+  const { isDataLoading, isDataEmpty } = useContext<DashboardContextType>(DashboardCtx)
 
-  const [AllChartsZeroLines, setAllChartsZeroLines] = useState(false)
-  const [WorstLineZeroLines, setWorstLineZeroLines] = useState(false)
-  const [AllDayTimeChartZeroLines, setAllDayTimeChartZeroLines] = useState(false)
+  const startDateWasUpdated = (date: Dayjs | null) => {
+    setStartDate(date)
+  }
+
+  const endDateWasUpdated = (date: Dayjs | null) => {
+    setEndDate(date)
+  }
 
   return (
     <PageContainer className="dashboard">
@@ -41,7 +48,7 @@ const DashboardPage = () => {
           videoUrl="https://www.youtube.com/embed/bXg50_j_hTA?si=4rpSZwMRbMomE4g1"
         />
       </Typography>
-      {AllChartsZeroLines && WorstLineZeroLines && AllDayTimeChartZeroLines ? (
+      {isDataEmpty && !isDataLoading ? (
         <Alert severity="warning" variant="outlined">
           {t('no_data_from_ETL')}
         </Alert>
@@ -64,14 +71,14 @@ const DashboardPage = () => {
           <Grid size={{ xs: 6 }}>
             <DateSelector
               time={startDate}
-              onChange={(data) => setStartDate(data)}
+              onChange={(data) => startDateWasUpdated(data)}
               customLabel={t('start')}
             />
           </Grid>
           <Grid size={{ xs: 6 }}>
             <DateSelector
               time={endDate}
-              onChange={(data) => setEndDate(data)}
+              onChange={(data) => endDateWasUpdated(data)}
               minDate={startDate}
               customLabel={t('end')}
             />
@@ -83,27 +90,13 @@ const DashboardPage = () => {
       </Grid>
       <Grid container spacing={2} alignItems="flex-start">
         <Grid size={{ xs: 12, lg: 6 }}>
-          <AllLinesChart
-            startDate={startDate}
-            endDate={endDate}
-            alertAllChartsZeroLinesHandling={setAllChartsZeroLines}
-          />
+          <AllLinesChart startDate={startDate} endDate={endDate} />
         </Grid>
         <Grid size={{ xs: 12, lg: 6 }}>
-          <WorstLinesChart
-            startDate={startDate}
-            endDate={endDate}
-            operatorId={operatorId}
-            alertWorstLineHandling={setWorstLineZeroLines}
-          />
+          <WorstLinesChart startDate={startDate} endDate={endDate} operatorId={operatorId} />
         </Grid>
         <Grid size={{ xs: 12 }}>
-          <DayTimeChart
-            startDate={startDate}
-            endDate={endDate}
-            operatorId={operatorId}
-            alertAllDayTimeChartHandling={setAllDayTimeChartZeroLines}
-          />
+          <DayTimeChart startDate={startDate} endDate={endDate} operatorId={operatorId} />
         </Grid>
       </Grid>
     </PageContainer>

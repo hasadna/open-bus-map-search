@@ -1,6 +1,7 @@
 import { Radio, RadioChangeEvent, Skeleton } from 'antd'
-import { FC, useEffect, useMemo, useState } from 'react'
+import { FC, useEffect, useMemo, useState, useContext } from 'react'
 import { useTranslation } from 'react-i18next'
+import { DashboardContextType, DashboardCtx } from '../DashboardContext'
 import ArrivalByTimeChart from './ArrivalByTimeChart'
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
 import Widget from 'src/shared/Widget'
@@ -22,19 +23,15 @@ interface DayTimeChartProps {
   startDate: Dayjs
   endDate: Dayjs
   operatorId: string
-  alertAllDayTimeChartHandling: (arg: boolean) => void
 }
 
-const DayTimeChart: FC<DayTimeChartProps> = ({
-  startDate,
-  endDate,
-  operatorId,
-  alertAllDayTimeChartHandling,
-}) => {
+const DayTimeChart: FC<DayTimeChartProps> = ({ startDate, endDate, operatorId }) => {
   const { t } = useTranslation()
+  const { setDayTimeChartIsLoading, setDayTimeChartIsEmpty } =
+    useContext<DashboardContextType>(DashboardCtx)
   const [groupByHour, setGroupByHour] = useState<boolean>(false)
 
-  const [data, loadingGraph] = useGroupBy({
+  const [data, isLoadingGraph] = useGroupBy({
     dateTo: endDate,
     dateFrom: startDate,
     groupBy: groupByHour ? 'operator_ref,gtfs_route_hour' : 'operator_ref,gtfs_route_date',
@@ -46,14 +43,20 @@ const DayTimeChart: FC<DayTimeChartProps> = ({
   )
 
   useEffect(() => {
-    const totalElements = data.length
-    const totalZeroElements = data.filter((el) => el.total_actual_rides === 0).length
-    if (totalElements === 0 || totalZeroElements === totalElements) {
-      alertAllDayTimeChartHandling(true)
-    } else {
-      alertAllDayTimeChartHandling(false)
+    setDayTimeChartIsLoading(isLoadingGraph)
+  }, [isLoadingGraph, setDayTimeChartIsLoading])
+
+  useEffect(() => {
+    if (!isLoadingGraph) {
+      const totalElements = data.length
+      const totalZeroElements = data.filter((el) => el.total_actual_rides === 0).length
+      if (totalElements === 0 || totalZeroElements === totalElements) {
+        setDayTimeChartIsEmpty(true)
+      } else {
+        setDayTimeChartIsEmpty(false)
+      }
     }
-  }, [data])
+  }, [data, isLoadingGraph])
 
   return (
     <Widget title={t(`dashboard_page_graph_title_${groupByHour ? 'hour' : 'day'}`)} marginBottom>
@@ -64,7 +67,7 @@ const DayTimeChart: FC<DayTimeChartProps> = ({
         <Radio.Button value="byDay">{t('group_by_day_tooltip_content')}</Radio.Button>
         <Radio.Button value="byHour">{t('group_by_hour_tooltip_content')}</Radio.Button>
       </Radio.Group>
-      {loadingGraph ? (
+      {isLoadingGraph ? (
         <Skeleton active />
       ) : (
         <ArrivalByTimeChart data={graphData} operatorId={operatorId} />

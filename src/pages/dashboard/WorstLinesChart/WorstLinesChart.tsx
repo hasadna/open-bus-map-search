@@ -1,6 +1,7 @@
 import { Skeleton } from 'antd'
 import { useTranslation } from 'react-i18next'
-import { useEffect } from 'react'
+import { useEffect, useContext } from 'react'
+import { DashboardContextType, DashboardCtx } from '../DashboardContext'
 import LinesHbarChart from './LineHbarChart/LinesHbarChart'
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
 import { MAJOR_OPERATORS } from 'src/model/operator'
@@ -11,22 +12,19 @@ interface WorstLinesChartProps {
   startDate: Dayjs
   endDate: Dayjs
   operatorId: string
-  alertWorstLineHandling: (arg: boolean) => void
 }
 
-export const WorstLinesChart = ({
-  startDate,
-  endDate,
-  operatorId,
-  alertWorstLineHandling,
-}: WorstLinesChartProps) => {
-  const [groupByLineData, lineDataLoading] = useGroupBy({
+export const WorstLinesChart = ({ startDate, endDate, operatorId }: WorstLinesChartProps) => {
+  const [groupByLineData, isLineDataLoading] = useGroupBy({
     dateTo: endDate,
     dateFrom: startDate,
     groupBy: 'operator_ref,line_ref',
   })
 
   const { t } = useTranslation()
+  const { setWorstLineIsLoading, setWorstLineIsEmpty } =
+    useContext<DashboardContextType>(DashboardCtx)
+
   const convertToWorstLineChartCompatibleStruct = (arr: GroupByRes[], operatorId: string) => {
     if (!arr || !arr.length) return []
     return arr
@@ -49,18 +47,25 @@ export const WorstLinesChart = ({
   }
 
   useEffect(() => {
-    const totalElements = groupByLineData.length
-    const totalZeroElements = groupByLineData.filter((el) => el.total_actual_rides === 0).length
-    if (totalElements === 0 || totalZeroElements === totalElements) {
-      alertWorstLineHandling(true)
-    } else {
-      alertWorstLineHandling(false)
+    setWorstLineIsLoading(isLineDataLoading)
+  }, [isLineDataLoading, setWorstLineIsLoading])
+
+  useEffect(() => {
+    if (!isLineDataLoading) {
+      const totalElements = groupByLineData.length
+      const totalZeroElements = groupByLineData.filter((el) => el.total_actual_rides === 0).length
+      if (totalElements === 0 || totalZeroElements === totalElements) {
+        setWorstLineIsEmpty(true)
+      } else {
+        setWorstLineIsEmpty(false)
+      }
+      setWorstLineIsLoading(false)
     }
-  }, [groupByLineData])
+  }, [groupByLineData, isLineDataLoading])
 
   return (
     <Widget title={t('worst_lines_page_title')}>
-      {lineDataLoading ? (
+      {isLineDataLoading ? (
         <Skeleton active />
       ) : (
         <LinesHbarChart
