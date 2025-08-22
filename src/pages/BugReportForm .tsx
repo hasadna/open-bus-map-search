@@ -1,52 +1,30 @@
-import { useState } from 'react'
+import { CreateIssuePostRequest } from '@hasadna/open-bus-api-client'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Form, Input, Button, Upload, message, Select, FormProps } from 'antd'
-import { Card, CardContent } from '@mui/material'
-import { FileUploadOutlined } from '@mui/icons-material'
-import axios from 'axios'
+import { Form, Input, Button, message, Select, FormProps } from 'antd'
 import './BugReportForm.scss'
-import { UploadChangeParam, UploadFile } from 'antd/lib/upload'
 import InfoYoutubeModal from './components/YoutubeModal'
-const { Option } = Select
+import { ISSUES_API } from 'src/api/apiConfig'
+import Widget from 'src/shared/Widget'
 
-interface BugReportFormData {
-  title: string
-  description: string
-  environment: string
-  expectedBehavior: string
-  actualBehavior: string
-  reproducibility: string
-  attachments: UploadFile[]
-  contactName: string
-  contactEmail: string
-}
-
+// File upload is disabled until the server-side implementation is complete.
 const BugReportForm = () => {
   const { t } = useTranslation()
-  const [form] = Form.useForm<BugReportFormData>()
-  const [fileList, setFileList] = useState<UploadFile[]>([])
-  const [selectedType, setSelectedType] = useState<string | undefined>(undefined)
+  const [form] = Form.useForm<CreateIssuePostRequest>()
+  // const [fileList, setFileList] = useState<UploadFile[]>([])
   const [submittedUrl, setSubmittedUrl] = useState<string | undefined>(undefined)
 
-  //Not implemented yet
-  const onFinish = async (values: BugReportFormData) => {
+  const onFinish = async (values: CreateIssuePostRequest) => {
     try {
-      // Send the bug report data to the server
-      // Include fileList in the values if needed
+      const response = await ISSUES_API.issuesCreatePost({
+        createIssuePostRequest: values,
+      })
 
-      const response = await axios.post(
-        'https://open-bus-backend.k8s.hasadna.org.il/create-issue',
-        {
-          ...values,
-          attachments: fileList,
-        },
-      )
-      const url: string = response.data.url
-      setSubmittedUrl(url)
-      if (response.data.state === 'open') {
+      setSubmittedUrl(response.data?.url)
+      if (response.data?.state === 'open') {
         message.success(t('reportBug.success'))
         form.resetFields()
-        setFileList([])
+        // setFileList([])
       } else {
         message.error(t('reportBug.error'))
       }
@@ -60,128 +38,140 @@ const BugReportForm = () => {
     console.log('Failed:', errorInfo)
   }
 
-  const onFileChange = (info: UploadChangeParam) => {
-    setFileList(info.fileList)
-  }
+  // const onFileChange = (info: UploadChangeParam) => {
+  //   setFileList(info.fileList)
+  // }
+
+  const options = useMemo(() => {
+    return [
+      { value: 'always', label: t('bug_frequency.always') },
+      { value: 'sometimes', label: t('bug_frequency.sometimes') },
+      { value: 'rarely', label: t('bug_frequency.rarely') },
+      { value: 'once', label: t('bug_frequency.once') },
+    ]
+  }, [t])
 
   return (
-    <Card className="bug-report-form-container">
-      <CardContent>
-        <h1 className="logo">
-          דאטאבוס
+    <Widget
+      className="bug-report-form-container"
+      title={
+        <p className="logo">
+          {t('website_name')}
           <InfoYoutubeModal
             label={t('open_video_about_this_page')}
             title={t('youtube_modal_info_title')}
             videoUrl="https://www.youtube-nocookie.com/embed?v=F6sD9Bz4Xj0&list=PL6Rh06rT7uiX1AQE-lm55hy-seL3idx3T&index=11"
           />
-        </h1>
-        <span> {t('reportBug.description')}</span>
-        <p>
-          {submittedUrl && (
-            <a href={submittedUrl} target="_blank" rel="noopener noreferrer">
-              {t('reportBug.viewIssue')} (Github)
-            </a>
-          )}
         </p>
-        <Form
-          form={form}
-          name="bug-report"
-          onFinish={(values) => {
-            onFinish(values)
-          }}
-          onFinishFailed={onFinishFailed}
-          labelCol={{ span: 6 }}
-          wrapperCol={{ span: 18 }}>
-          <Form.Item
-            label={t('bug_type')}
-            name="type"
-            initialValue={selectedType}
-            rules={[{ required: true, message: t('bug_type_message') }]}>
-            <Select onChange={(value: string) => setSelectedType(value)}>
-              <Option value="bug">{t('bug_type_bug')}</Option>
-              <Option value="feature">{t('bug_type_feature')}</Option>
-            </Select>
-          </Form.Item>
+      }>
+      <span> {t('reportBug.description')}</span>
+      <p>
+        {submittedUrl && (
+          <a href={submittedUrl} target="_blank" rel="noopener noreferrer">
+            {t('reportBug.viewIssue')} (Github)
+          </a>
+        )}
+      </p>
+      <Form
+        form={form}
+        name="bug-report"
+        onFinish={(values) => {
+          onFinish(values)
+        }}
+        onFinishFailed={onFinishFailed}
+        labelCol={{ span: 6 }}
+        wrapperCol={{ span: 18 }}>
+        <Form.Item label={t('bug_type')} name="type" rules={[{ required: true }]}>
+          <Select>
+            <Select.Option value="bug">{t('bug_type_bug')}</Select.Option>
+            <Select.Option value="feature">{t('bug_type_feature')}</Select.Option>
+            <Select.Option value="other">{t('bug_type_other')}</Select.Option>
+          </Select>
+        </Form.Item>
 
-          <Form.Item
-            label={t('bug_title')}
-            name="title"
-            rules={[{ required: true, message: t('bug_title_message') }]}>
-            <Input />
-          </Form.Item>
+        <Form.Item
+          label={t('bug_title')}
+          name="title"
+          rules={[{ required: true, min: 5, max: 200 }]}>
+          <Input />
+        </Form.Item>
 
-          <Form.Item
-            label={t('bug_contact_name')}
-            name="contactName"
-            rules={[{ required: true, message: t('bug_contact_name_message') }]}>
-            <Input />
-          </Form.Item>
+        <Form.Item
+          label={t('bug_contact_name')}
+          name="contactName"
+          rules={[{ required: true, min: 1, max: 100 }]}>
+          <Input />
+        </Form.Item>
 
-          <Form.Item
-            label={t('bug_contact_email')}
-            name="contactEmail"
-            rules={[
-              { required: true, message: t('bug_contact_email_message') },
-              // { type: 'email', message: t(TEXT_KEYS.bug_contact_email_valid_message) },
-            ]}>
-            <Input />
-          </Form.Item>
+        <Form.Item
+          label={t('bug_contact_email')}
+          name="contactEmail"
+          rules={[{ required: true, type: 'email' }]}>
+          <Input />
+        </Form.Item>
 
-          <Form.Item
-            label={t('bug_description')}
-            name="description"
-            rules={[{ required: true, message: t('bug_description_message') }]}>
-            <Input.TextArea rows={4} />
-          </Form.Item>
+        <Form.Item
+          label={t('bug_description')}
+          name="description"
+          rules={[{ required: true, min: 10, max: 5000 }]}>
+          <Input.TextArea rows={4} />
+        </Form.Item>
 
-          <Form.Item
-            label={t('bug_environment')}
-            name="environment"
-            rules={[{ required: true, message: t('bug_environment_message') }]}>
-            <Input />
-          </Form.Item>
+        <Form.Item
+          label={t('bug_environment')}
+          name="environment"
+          rules={[{ required: true, min: 1, max: 200 }]}>
+          <Input />
+        </Form.Item>
 
-          <Form.Item
-            label={t('bug_expected_behavior')}
-            name="expectedBehavior"
-            rules={[{ required: true, message: t('bug_expected_behavior_message') }]}>
-            <Input.TextArea rows={4} />
-          </Form.Item>
+        <Form.Item
+          label={t('bug_expected_behavior')}
+          name="expectedBehavior"
+          rules={[{ required: true, min: 5, max: 1000 }]}>
+          <Input.TextArea rows={4} />
+        </Form.Item>
 
-          <Form.Item
-            label={t('bug_actual_behavior')}
-            name="actualBehavior"
-            rules={[{ required: true, message: t('bug_actual_behavior_message') }]}>
-            <Input.TextArea rows={4} />
-          </Form.Item>
+        <Form.Item
+          label={t('bug_actual_behavior')}
+          name="actualBehavior"
+          rules={[{ required: true, min: 5, max: 1000 }]}>
+          <Input.TextArea rows={4} />
+        </Form.Item>
 
-          <Form.Item
-            label={t('bug_reproducibility')}
-            name="reproducibility"
-            rules={[{ required: true, message: t('bug_reproducibility_message') }]}>
-            <Input />
-          </Form.Item>
+        <Form.Item
+          label={t('bug_reproducibility')}
+          name="reproducibility"
+          rules={[{ required: true, min: 1, max: 100 }]}>
+          <Select>
+            {options.map((option) => (
+              <Select.Option key={option.value} value={option.value}>
+                {option.label}
+              </Select.Option>
+            ))}
+          </Select>
+        </Form.Item>
 
-          <Form.Item label={t('bug_attachments')} name="attachments">
-            <Upload
-              beforeUpload={() => false}
-              listType="picture"
-              fileList={fileList}
-              onChange={onFileChange}>
-              <Button icon={<FileUploadOutlined fontSize="small" />}>
-                {t('bug_attachments_upload_button')}
-              </Button>
-            </Upload>
-          </Form.Item>
-
-          <Form.Item>
-            <Button type="primary" htmlType="submit">
-              {t('bug_submit')}
+        {/* <Form.Item label={t('bug_attachments')} name="attachments">
+          <Upload
+            multiple
+            maxCount={10}
+            beforeUpload={() => false}
+            listType="picture"
+            fileList={fileList}
+            onChange={onFileChange}>
+            <Button icon={<FileUploadOutlined fontSize="small" />}>
+              {t('bug_attachments_upload_button')}
             </Button>
-          </Form.Item>
-        </Form>
-      </CardContent>
-    </Card>
+          </Upload>
+        </Form.Item> */}
+
+        <Form.Item>
+          <Button type="primary" htmlType="submit">
+            {t('bug_submit')}
+          </Button>
+        </Form.Item>
+      </Form>
+    </Widget>
   )
 }
 
