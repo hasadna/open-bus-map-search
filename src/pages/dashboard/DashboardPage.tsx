@@ -1,5 +1,4 @@
 // Services and libraries
-import { Dayjs } from 'dayjs'
 import { useState, useContext } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Typography, Alert, Grid } from '@mui/material'
@@ -28,14 +27,6 @@ const DashboardPage = () => {
   const [operatorId, setOperatorId] = useState('')
   const { t } = useTranslation()
   const { isDataLoading, isDataEmpty } = useContext<DashboardContextType>(DashboardCtx)
-
-  const startDateWasUpdated = (date: Dayjs | null) => {
-    setStartDate(date)
-  }
-
-  const endDateWasUpdated = (date: Dayjs | null) => {
-    setEndDate(date)
-  }
 
   return (
     <PageContainer className="dashboard">
@@ -70,14 +61,14 @@ const DashboardPage = () => {
           <Grid size={{ xs: 6 }}>
             <DateSelector
               time={startDate}
-              onChange={(data) => startDateWasUpdated(data)}
+              onChange={(data) => setStartDate(data)}
               customLabel={t('start')}
             />
           </Grid>
           <Grid size={{ xs: 6 }}>
             <DateSelector
               time={endDate}
-              onChange={(data) => endDateWasUpdated(data)}
+              onChange={(data) => setEndDate(data)}
               minDate={startDate}
               customLabel={t('end')}
             />
