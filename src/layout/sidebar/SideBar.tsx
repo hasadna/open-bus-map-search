@@ -3,6 +3,7 @@ import { Drawer, Layout } from 'antd'
 import { useContext, useState } from 'react'
 import { Link } from 'react-router'
 import { useTranslation } from 'react-i18next'
+import cn from 'classnames'
 import { LayoutContextInterface, LayoutCtx } from '../LayoutContext'
 import { useTheme } from '../ThemeContext'
 import Menu from './menu/Menu'
@@ -26,7 +27,7 @@ export default function SideBar() {
         width={280}
         onClose={() => setDrawerOpen(false)}
         open={drawerOpen}
-        rootClassName="hideOnDesktop"
+        rootClassName={cn('hideOnDesktop', { dark: isDarkTheme })}
         styles={{ body: { padding: '0' } }}>
         <Logo title={t('website_name')} dark={isDarkTheme} />
         <div className="sidebar-divider" />
@@ -43,7 +44,7 @@ export default function SideBar() {
           boxShadow: isDarkTheme ? '0 0 12px 4px rgba(0,0,0,0.7)' : '0 0 12px 4px rgba(0,0,0,0.12)',
         }}
         onCollapse={setCollapsed}
-        className="hideOnMobile">
+        className={cn('hideOnMobile', { dark: isDarkTheme })}>
         <Link to={PAGES[0].path} replace>
           {collapsed ? <CollapsedLogo /> : <Logo title={t('website_name')} dark={isDarkTheme} />}
         </Link>

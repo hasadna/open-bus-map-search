@@ -98,18 +98,21 @@
   .ant-layout-sider-trigger {
     border-top: 1px #ccc solid;
   }
+}
 
-  .ant-drawer .ant-drawer-header {
-    border: none;
+.ant-drawer .ant-drawer-header {
+  border-bottom: 1px #ccc solid;
 
-    .ant-drawer-header-title {
-      justify-content: end;
-    }
+  .ant-drawer-header-title {
+    justify-content: end;
   }
 }
 
-// .ant-layout-sider .dark {
-//   .ant-menu-item-selected {
-//     color: red;
-//   }
-// }
+.dark .ant-menu {
+  background-color: transparent;
+
+  .ant-menu-item-selected {
+    color: white !important;
+    background-color: #1668dc !important;
+  }
+}
