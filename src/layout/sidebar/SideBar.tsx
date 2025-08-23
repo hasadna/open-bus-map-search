@@ -26,12 +26,11 @@ export default function SideBar() {
         width={280}
         onClose={() => setDrawerOpen(false)}
         open={drawerOpen}
-        className="hideOnDesktop"
+        rootClassName="hideOnDesktop"
         styles={{ body: { padding: '0' } }}>
         <Logo title={t('website_name')} dark={isDarkTheme} />
         <div className="sidebar-divider" />
         <Menu />
-        <div className="sidebar-divider" />
       </Drawer>
       <Sider
         theme="light"
@@ -40,15 +39,16 @@ export default function SideBar() {
         width={250}
         collapsible
         collapsed={collapsed}
-        style={{ overflowY: 'auto', marginBottom: '48px' }}
-        onCollapse={(value: boolean) => setCollapsed(value)}
+        style={{
+          boxShadow: isDarkTheme ? '0 0 12px 4px rgba(0,0,0,0.7)' : '0 0 12px 4px rgba(0,0,0,0.12)',
+        }}
+        onCollapse={setCollapsed}
         className="hideOnMobile">
         <Link to={PAGES[0].path} replace>
           {collapsed ? <CollapsedLogo /> : <Logo title={t('website_name')} dark={isDarkTheme} />}
         </Link>
         <div className="sidebar-divider" />
         <Menu />
-        <div className="sidebar-divider" />
       </Sider>
     </>
   )
