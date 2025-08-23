@@ -94,16 +94,20 @@
   position: relative;
   z-index: 1;
   overflow-y: auto;
+
   .ant-layout-sider-trigger {
     border-top: 1px #ccc solid;
   }
+
   .ant-drawer .ant-drawer-header {
     border: none;
+
     .ant-drawer-header-title {
       justify-content: end;
     }
   }
 }
+
 // .ant-layout-sider .dark {
 //   .ant-menu-item-selected {
 //     color: red;

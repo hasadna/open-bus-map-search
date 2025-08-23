@@ -3,16 +3,16 @@
   justify-content: flex-end;
   align-items: center;
   background: #fff;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12) !important;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 12%) !important;
 }
 
 .main-header.dark {
   background: #303230;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.7) !important;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 70%) !important;
 }
 
 .main-header:dir(ltr) {
-  border-radius: 0 0 32px 0;
+  border-radius: 0 0 32px;
 }
 
 .main-header:dir(rtl) {
