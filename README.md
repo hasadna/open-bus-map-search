@@ -31,8 +31,6 @@ We’ve hidden a few fun surprises in the [web app](https://open-bus-map-search.
 
 ## 👥 Contributors
 
-## Contributors
-
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
