@@ -41,6 +41,7 @@ export default function SideBar() {
         collapsible
         collapsed={collapsed}
         style={{
+          marginBottom: '48px',
           boxShadow: isDarkTheme ? '0 0 12px 4px rgba(0,0,0,0.7)' : '0 0 12px 4px rgba(0,0,0,0.12)',
         }}
         onCollapse={setCollapsed}
