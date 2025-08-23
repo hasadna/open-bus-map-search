@@ -1,68 +1,35 @@
-# Open bus ranking app
+# 🚌 Open Bus Map Search
 
-## Welcome!
+A **TypeScript client library** for interacting with the Open-Bus API.  
+Built with ❤️ by volunteers of the [Public Knowledge Workshop](https://www.hasadna.org.il/).
 
-This is the official repository of the open bus (תחב"צ פתוחה / דאטאבוס) project - also known as "ShameBus".
-[link to the project](https://open-bus-map-search.hasadna.org.il/dashboard)
+## 📢 Get Involved
 
-Please feel free to submit pull requests and contribute to the project.
-For more details about contributing, see the [CONTRIBUTING.md](CONTRIBUTING.md) file.
+- 💬 Join the [Hasadna Slack](https://join.slack.com/t/hasadna/shared_invite/zt-167h764cg-J18ZcY1odoitq978IyMMig) – `#open-bus` channel
+- 🐞 Found a bug? [Open an issue](https://github.com/hasadna/open-bus-map-search/issues/new)
+- 🤝 Want to contribute? Check our [Contributing Guide](CONTRIBUTING.md)
 
-# Running the project locally
+## 🔗 Related Projects
 
-An explanation how to run the project locally you can [read here](CONTRIBUTING.md#running-the-project-on-a-local-environment).
+- [🗺️ Open Bus Map Search](https://github.com/hasadna/open-bus-map-search) – [Live Website](https://open-bus-map-search.hasadna.org.il/dashboard)
+- [🌐 Open Bus Stride API](https://github.com/hasadna/open-bus-stride-api) – [API Docs](https://open-bus-stride-api.hasadna.org.il/docs)
+- [🌐 Open Bus Backend](https://github.com/hasadna/open-bus-backend) – [API Docs](https://open-bus-backend.k8s.hasadna.org.il/docs)
+- [📦 Open Bus API Client](https://github.com/hasadna/open-bus-api-client) – [NPM Package](https://www.npmjs.com/package/@hasadna/open-bus-api-client)
 
-## View video (Hebrew language):
+🎨 [Figma Design](https://www.figma.com/file/Plw8Uuu6U96CcX5tJyRMoW/Public-Transportation-visual-informaiton?node-id=0%3A1)
 
-### The video will explain you how to contribute to the project:
+## 🚀 Quick Start
 
-[![video (hebrew) about the project](https://img.youtube.com/vi/6H6jkJCVhgk/0.jpg)](https://www.youtube.com/watch?v=6H6jkJCVhgk)
+See detailed setup in [CONTRIBUTING.md](CONTRIBUTING.md#running-the-project-on-a-local-environment).
 
-# Easter eggs
+## 🐣 Easter Eggs
 
-We've hidden a couple of fun surprises in our web app, just for you. Discovering them is as easy as typing a few magic words on your keyboard.
+We’ve hidden a few fun surprises in the [web app](https://open-bus-map-search.hasadna.org.il/dashboard):
 
-## How to Find the Easter Eggs
+- ⌨️ Type **`storybook`** → unlock our UI component showcase
+- ⌨️ Type **`geek`** → see experimental charts & extra data
 
-1. Open our [web app](https://open-bus-map-search.hasadna.org.il/dashboard)
-2. **Unleash the Magic Words:**
-   To reveal the hidden gems, use your keyboard to type the following commands:
-   - **Type "storybook":**
-     Watch the magic unfold as you type "storybook" on your keyboard. You might just stumble upon our Storybook, a treasure trove of UI components showcasing the beauty and functionality of our app.
-   - **Type "geek":**
-     To get some experimental charts with some additional data and aggregation
-
-## deployments
-
-This app is created by the volunteers of [Public Knowledge Workshop](https://www.hasadna.org.il/)
-
-### submitting pull requests
-
-Thanks for your willingness to invest time and help us improve!
-
-1. If you're new to GitHub, here is a [tutorial describing Pull Requests](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request). if you're familiarized with Merge Requests - it's the same concept.
-2. Please make sure that the project works on your computer
-3. Please tag one of the maintainers as reviewers
-   we're here to help! feel free to join our [Slack channel](https://join.slack.com/t/hasadna/shared_invite/zt-21qipktl1-7yF4FYJVxAqXl0wE4DlMKQ)
-
-## Links for developers
-
-- [figma file](https://www.figma.com/file/Plw8Uuu6U96CcX5tJyRMoW/Public-Transportation-visual-informaiton?node-id=0%3A1&t=EJCQpeg5zSbVXLUx-0)
-- [data model schema](https://github.com/hasadna/open-bus-stride-db/blob/main/DATA_MODEL.md)
-- [Slack channel](https://join.slack.com/t/hasadna/shared_invite/zt-21qipktl1-7yF4FYJVxAqXl0wE4DlMKQ)
-- [Swagger](https://open-bus-stride-api.hasadna.org.il/docs)
-- [Production](https://open-bus-map-search.hasadna.org.il/dashboard)
-
-## Related Repositories
-
-- the API client
-- the data API
-
-### API client
-
-The client is a JS library that provides methods and data models. for example:  
-https://github.com/hasadna/open-bus-map-search/blob/main/src/model/busStop.ts#L4  
-[link to repo](https://github.com/iliakap/open-bus-stride-client).
+## 👥 Contributors
 
 ## Contributors
 
@@ -126,10 +93,3 @@ https://github.com/hasadna/open-bus-map-search/blob/main/src/model/busStop.ts#L4
 <!-- prettier-ignore-end -->
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
-
-### data API
-
-The API is backend code that provides us with data and aggregations from the DB
-You can see it's endpoints here:  
-https://open-bus-stride-api.hasadna.org.il/docs  
-[link to repo](https://github.com/hasadna/open-bus-stride-api).

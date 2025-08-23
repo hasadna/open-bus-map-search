@@ -1,150 +1,121 @@
-# Contribution Guidelines
+# 🤝 Contributing to דאטאבוס
 
-Hello :wave: and welcome to **דאטאבוס**, a project of [hasadna](https://open-bus-map-search.hasadna.org.il)!
+Welcome 👋 and thank you for considering contributing to **דאטאבוס**, a project by [Hasadna](https://open-bus-map-search.hasadna.org.il)!  
+We’re excited to have you on board.
 
-We glad to see you decided to contribute to our project!
+💬 Join our [Discord](https://discord.gg/deBdkmufS4) to chat with the dev team.
 
-[Join our discord](https://discord.gg/deBdkmufS4) to get connected with the project's development team.
+---
 
-# Where to start
+## 🧭 Where to Start
 
-You welcome to explore the [list of project's issues](https://github.com/hasadna/open-bus-map-search/issues).
+- Browse [open issues](https://github.com/hasadna/open-bus-map-search/issues)
+- Start easy: look for the [“Good First Issue” label](https://github.com/hasadna/open-bus-map-search/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
+- Want impact? Choose from our [milestones](https://github.com/hasadna/open-bus-map-search/milestones)
 
-## Want to start easy?
+🙋 Have feedback or spotted something unclear? [Open an issue](https://github.com/hasadna/open-bus-map-search/issues).
 
-See the ["Good first issue"](https://github.com/hasadna/open-bus-map-search/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) label!
+---
 
-## Want to make a real impact?
+## ⚡ Running the Project
 
-Pick an issue from our [milestones](https://github.com/hasadna/open-bus-map-search/milestones)!
+You can run the project:
 
-## Also, you should tell us what should we do better
+- 🖥️ **Locally** (recommended for repeat contributors)
+- 🌐 **In Gitpod** (ready-to-code environment in your browser) → [Open in Gitpod](https://gitpod.io/#https://github.com/hasadna/open-bus-map-search)
 
-Look at the project and if you see some points which can be improved (it can be unclear documentation as well as UI or backend problem) - you welcome to add an issue to the [project issues](https://github.com/hasadna/open-bus-map-search/issues) (which considers a contribution too)
+### Local Setup
 
-# Running the Project
+1. **Do NOT fork** – instead, request write access (so previews & CI run correctly).
+2. Clone:
 
-For start working on the project you can use any of options from the below:
+```bash
+git clone https://github.com/hasadna/open-bus-map-search.git
+cd open-bus-map-search
+```
 
-- You can set up project locally. This is **highly recommended** for regular/repeat contributions. This setup allows you to work and test your changes.
-- Use Gitpod, a free online dev environment. Clicking the link below will start a ready-to-code dev environment in your browser. It only takes a few minutes.
+3. Install dependencies:
 
-Click [here](https://gitpod.io/#https://github.com/hasadna/open-bus-map-search) to
-open project in Gitpod
+```bash
+npm install
+```
 
-# Running the project on a local environment
+4. Run locally:
 
-Follow these steps to run the project on your local machine:
+```bash
+npm start
+```
 
-1. **DONT Fork the Repository!**
-   While you can create a fork and submit your pull requests from it, it's really not recommended. Creating your branch and pull request directly from within the repository will allow our automation pipeline to make a live preview of your contribution and run visual tests against your branch using repository secrets. Just ask, and we will happily grant you write permissions to this repo.
+Open [http://localhost:3000](http://localhost:3000).
 
-2. **Clone the Repository:**
-   Clone the repository to your local machine. You can do this by running the following command in your terminal:
+---
 
-   ```bash
-   git clone https://github.com/hasadna/open-bus-map-search.git
-   ```
+## 📌 Pull Requests
 
-3. **Navigate to the Project Directory:**
-   Once the repository is cloned, navigate to the project directory by running:
+1. Create a branch (name it after the issue/feature, e.g., `feat/add-close-button`)
+2. Commit with a [conventional message](#-commit-message-conventions)
+3. Push & open a PR → tag a maintainer as reviewer
+4. Ensure it runs locally before submitting
 
-   ```bash
-   cd open-bus-map-search
-   ```
+🔗 [PR tutorial for beginners](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request)
 
-4. **Install Dependencies:**
-   The project uses npm to manage dependencies. Once Node is installed, you can install the project dependencies by running:
-   ```bash
-   npm install
-   ```
-5. **Run the Project:**
-   After all dependencies are installed, you can start the project by running:
-   ```bash
-   npm start
-   ```
-   The project should now be running on your local machine. Open your web browser and navigate to http://localhost:3000 to view the project.
+---
 
-# How to open the PR
+## 📝 Commit Message Conventions
 
-- If you're new to GitHub, here is a [tutorial describing Pull Requests](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request).
-- create a branch
-- branch better to be named after issue (or feature) it tries so solve, e.g. `feat/add-close-button-to-modal`
-- Please make sure that the project works on your computer
-- do changes and then - do commit (`git commit -m "feat: add some feature"`)
-- push the branch to remote repo (`git push`)
-- go to the repo and create a pr (by pressing `create a pr` button)
-- tag one of the maintainers as reviewers
+| Type       | Usage Example                              |
+| ---------- | ------------------------------------------ |
+| `feat`     | `feat: add modal component`                |
+| `fix`      | `fix: make close button visible on mobile` |
+| `docs`     | `docs: update README with new info`        |
+| `refactor` | `refactor: split App into subcomponents`   |
+| `chore`    | `chore: upgrade React to v18`              |
+| `test`     | `test: add integration tests`              |
+| `style`    | `style: remove empty line`                 |
 
-# Commit message convention
+---
 
-- commit messages better to be short and explain clearly what the change is about
-- `fix` change that tries to fix some bug, e.g. `fix: make close button visible at mobile`
-- `feat` change that add some new functionality, e.g. `feat: add a modal component`
-- `docs` change that adds some documentation, e.g. `docs: add project description at readme`
-- `refactor` change that makes the code better, e.g. `refactor: split App component to subcomponents`
-- `chore` all the other things `chore: upgrade react package to new 18 version`
+## 🧪 Testing
 
-## testing the project:
+| Command                   | Description                                                 |
+| ------------------------- | ----------------------------------------------------------- |
+| `npm run test`            | Run Jest + Playwright tests (excluding visual tests)        |
+| `npm run test:unit`       | Run Jest unit tests                                         |
+| `npm run test:unit:ci`    | Run Jest with coverage                                      |
+| `npm run test:e2e`        | Run Playwright end-to-end tests                             |
+| `npm run test:e2e:ui`     | Run Playwright tests with interactive UI                    |
+| `npm run test:e2e:visual` | Run visual regression tests with (Playwright + Applitools ) |
+| `npm run test:storybook`  | Run Storybook visual tests with (Applitools)                |
 
-### tests better to be run locally
+More: [Playwright CLI](https://playwright.dev/docs/test-cli)
 
-| command                | description                                                     |
-| ---------------------- | --------------------------------------------------------------- |
-| `npm run test:unit`    | Run the unit tests using `watch` option (good for development). |
-| `npm run test:unit:ci` | Run the unit tests (good for ci).                               |
-| `npm run test:e2e`     | Run the e2e (playwright) tests (good for ci).                   |
-| `npm run test:e2e:ui`  | Run the e2e (playwright) tests with user interface.             |
-| `npm run test`         | Run all the kind of tests.                                      |
+---
 
-- additional helpful flags - https://playwright.dev/docs/test-cli
+## 📚 Resources
 
-## useful resources:
+- 🎨 [Figma design file](https://www.figma.com/file/Plw8Uuu6U96CcX5tJyRMoW/Public-Transportation-visual-informaiton)
+- 🗄️ [Data model schema](https://github.com/hasadna/open-bus-stride-db/blob/main/DATA_MODEL.md)
+- 📖 [API docs (Swagger)](https://open-bus-stride-api.hasadna.org.il/docs)
+- 🌍 [Deployed website](https://open-bus-map-search.hasadna.org.il/dashboard)
 
-- [the design file](https://www.figma.com/file/Plw8Uuu6U96CcX5tJyRMoW/Public-Transportation-visual-informaiton?type=design&node-id=0-1&mode=design&t=Dh8lI3EJ37unxvoe-0)
-- [data model schema](https://github.com/hasadna/open-bus-stride-db/blob/main/DATA_MODEL.md)
-- [API documentation and examples (swagger)](https://open-bus-stride-api.hasadna.org.il/docs)
-- [the deployed website](https://open-bus-map-search.hasadna.org.il/dashboard)
+📺 Tutorials:
 
-## Page Video Descriptions
+- [Dashboard & Maps walkthrough](https://www.youtube.com/watch?v=MJZrIxjQEH8&list=PL6Rh06rT7uiX1AQE-lm55hy-seL3idx3T&t=17s)
+- [Bug reporting guide](https://www.youtube.com/watch?v=F6sD9Bz4Xj0&list=PL6Rh06rT7uiX1AQE-lm55hy-seL3idx3T)
 
-This section provides video tutorials for some of the key pages in this project.
+---
 
-**Dashboard & Maps Pages**
+## 🆘 Troubleshooting
 
-- **Video:** [How to Use the Dashboard & Maps Pages](https://www.youtube.com/watch?v=MJZrIxjQEH8&list=PL6Rh06rT7uiX1AQE-lm55hy-seL3idx3T&t=17s)
+We’re here to help! Join our [Slack](https://join.slack.com/t/hasadna/shared_invite/zt-21qipktl1-7yF4FYJVxAqXl0wE4DlMKQ).
 
-**Bug Reporting**
+---
 
-- **Video:** [How to Report Bugs](https://www.youtube.com/watch?v=F6sD9Bz4Xj0&list=PL6Rh06rT7uiX1AQE-lm55hy-seL3idx3T)
+## ❓ FAQ
 
-## Troubleshooting
+**Why is my commit marked ❌ red?**
 
-we're here to help! feel free to join our [Slack channel](https://join.slack.com/t/hasadna/shared_invite/zt-21qipktl1-7yF4FYJVxAqXl0wE4DlMKQ)
-
-# Related Repositories
-
-- the API client
-- the data API
-
-## API client
-
-The client is a JS library that provides methods and data models. for example:  
-https://github.com/hasadna/open-bus-map-search/blob/main/src/model/busStop.ts#L4  
-[link to repo](https://github.com/iliakap/open-bus-stride-client).
-
-## data API
-
-The API is backend code that provides us with data and aggregations from the DB
-You can see it's endpoints here:  
-https://open-bus-stride-api.hasadna.org.il/docs  
-[link to repo](https://github.com/hasadna/open-bus-stride-api).
-
-## FAQ
-
-### Why do I get a red `x` commit status?
-
-- lint - you have lint errors. fix them by running `npm run lint:fix`
-- tests - you have test errors. see them by running `npm run test:unit:ci`
-- build - you have build errors. see them by running `npm run build`
-- pr title validation - you have an invalid pr title. please edit the title of your PR with conventional commit formatting. examples: `feat: add new feature`, `fix: fix a bug` or `docs: update README.md`
+- 🧹 Lint error → run `npm run lint:fix`
+- 🧪 Test error → run `npm run test:unit:ci`
+- 🏗️ Build error → run `npm run build`
+- 📝 Invalid PR title → use conventional commit style (`feat: …`, `fix: …`)
