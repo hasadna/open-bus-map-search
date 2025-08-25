@@ -5,7 +5,6 @@ import { GtfsRoutePydanticModel } from '@hasadna/open-bus-api-client'
 import { ReactNode, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
-import { EasterEgg } from '../../../EasterEgg/EasterEgg'
 import CustomTreeView from '../../CustomTreeView'
 import ComplaintModal from './ComplaintModal'
 import { getRoutesByLineRef } from 'src/api/gtfsService'
@@ -138,6 +137,14 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
               </li>
             </ul>
             <Button
+              variant="contained"
+              color="success"
+              onClick={() => setModalOpen((prev) => !prev)}
+              style={{ borderRadius: '50px' }}>
+              {t('open_complaint')}
+            </Button>
+            <br />
+            <Button
               href="https://www.gov.il/BlobFolder/generalpage/gtfs_general_transit_feed_specifications/he/GTFS_Developer_Information_2024.11.21b.pdf"
               target="_blank"
               rel="noopener noreferrer"
@@ -148,20 +155,6 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
             <Button sx={{ margin: '2px 0' }} onClick={() => setShowJson((showJson) => !showJson)}>
               {showJson ? t('hide_document') : t('show_document')}
             </Button>
-            {/* Open Complaint Button */}
-            <EasterEgg code="complaint">
-              <Button
-                variant="contained"
-                color="success"
-                onClick={() => setModalOpen((prev) => !prev)}
-                style={{ borderRadius: '50px' }}>
-                {t('open_complaint')}
-              </Button>
-            </EasterEgg>
-
-            {/* Complaint Modal */}
-            <ComplaintModal modalOpen={modalOpen} setModalOpen={setModalOpen} position={position} />
-
             {showJson && (
               <div dir={i18n.language === 'en' ? 'rtl' : 'ltr'}>
                 <CustomTreeView<Point>
@@ -178,6 +171,8 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
                 )}
               </div>
             )}
+
+            <ComplaintModal modalOpen={modalOpen} setModalOpen={setModalOpen} position={position} />
           </div>
           {children}
         </>

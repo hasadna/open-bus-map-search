@@ -1,4 +1,6 @@
-import { useState, ChangeEvent, useEffect } from 'react'
+import { TimeField } from '@mui/x-date-pickers'
+import dayjs from 'dayjs'
+import { useState, ChangeEvent, useEffect, useMemo } from 'react'
 import {
   Button,
   MenuItem,
@@ -8,9 +10,17 @@ import {
   DialogContent,
   Dialog,
   DialogActions,
+  // MobileStepper,
+  IconButton,
+  Typography,
 } from '@mui/material'
+import {
+  Close,
+  //  KeyboardArrowLeft, KeyboardArrowRight
+} from '@mui/icons-material'
 import { useTranslation } from 'react-i18next'
 import { SiriRideWithRelatedPydanticModel } from '@hasadna/open-bus-api-client'
+import { Row } from '../../Row'
 import { Point } from 'src/pages/timeBasedMap'
 import { getSiriRideWithRelated } from 'src/api/siriService'
 
@@ -54,6 +64,17 @@ const complaintTypes: complaintType[] = [
   { value: 'station_signs', label: 'station_signs' },
 ]
 
+function IDValidator(id?: string) {
+  if (id === undefined || id === '') return true
+  if (!id || !Number(id) || id.length !== 9 || isNaN(Number(id))) return false
+  let sum = 0
+  for (let i = 0; i < id.length; i++) {
+    const incNum = Number(id[i]) * ((i % 2) + 1)
+    sum += incNum > 9 ? incNum - 9 : incNum
+  }
+  return sum % 10 === 0
+}
+
 const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: ComplaintModalProps) => {
   const { t, i18n } = useTranslation()
   const [siriRide, setSiriRide] = useState<SiriRideWithRelatedPydanticModel | undefined>()
@@ -66,6 +87,9 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
     phone: '',
     complaintType: '',
     description: '',
+    eventTime: dayjs().startOf('day'),
+    waitFrom: dayjs().startOf('day'),
+    waitUntil: dayjs().startOf('day'),
   })
 
   useEffect(() => {
@@ -80,17 +104,16 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
   }, [position])
 
   const textDirection = i18n.language === 'he' ? 'rtl' : 'ltr'
+
   const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setComplaintData((prevData) => ({ ...prevData, [name]: value }))
   }
 
-  // const handleSelectChange = (e: SelectChangeEvent<typeof complaintTypes>) => {
-  const handleSelectChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    console.log(e)
+  const handelTimeChange = (name: string, value: dayjs.Dayjs | null) => {
     setComplaintData((prevData) => ({ ...prevData, [name]: value }) as const)
   }
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     console.log(`lalalala`)
     e.preventDefault()
@@ -106,6 +129,18 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
     setModalOpen?.(false)
   }
 
+  // const [activeStep, setActiveStep] = useState(0)
+
+  // const handleNext = () => {
+  //   setActiveStep((prevActiveStep) => prevActiveStep + 1)
+  // }
+
+  // const handleBack = () => {
+  //   setActiveStep((prevActiveStep) => prevActiveStep - 1)
+  // }
+
+  const isVaildId = useMemo(() => IDValidator(complaintData.id), [complaintData.id])
+
   return (
     <div>
       {isLoading || !siriRide ? (
@@ -118,11 +153,20 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
           dir={textDirection}
           open={modalOpen}
           onClose={() => setModalOpen?.(false)}
-          PaperProps={{
-            component: 'form',
-            onSubmit: handleSubmit,
+          slotProps={{
+            paper: {
+              component: 'form',
+              onSubmit: handleSubmit,
+            },
           }}>
-          <DialogTitle>{t('complaint')}</DialogTitle>
+          <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between' }}>
+            <Typography fontSize="28px" fontWeight="bold" marginBottom="8px">
+              {t('complaint')}
+            </Typography>
+            <IconButton onClick={() => setModalOpen?.(false)}>
+              <Close />
+            </IconButton>
+          </DialogTitle>
           <DialogContent>
             <TextField
               label={t('first_name')}
@@ -145,6 +189,7 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
               name="id"
               value={complaintData.id}
               onChange={handleInputChange}
+              error={!isVaildId}
               fullWidth
               margin="normal"
             />
@@ -174,13 +219,49 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
               fullWidth
               name="complaintType"
               value={complaintData.complaintType}
-              onChange={handleSelectChange}>
+              onChange={handleInputChange}>
               {complaintTypes.map((option) => (
                 <MenuItem key={option.value} value={option.value}>
                   {t(option.label)}
                 </MenuItem>
               ))}
             </TextField>
+
+            <Row>
+              <TimeField
+                id="event_time"
+                margin="normal"
+                label="event_time"
+                fullWidth
+                name="eventTime"
+                value={complaintData.eventTime}
+                shouldDisableTime={(time) =>
+                  time < complaintData.waitFrom || time > complaintData.waitUntil
+                }
+                onChange={(time) => handelTimeChange('eventTime', time)}
+              />
+              <TimeField
+                id="wait_from"
+                margin="normal"
+                label="wait_from"
+                shouldDisableTime={(time) => time > complaintData.waitUntil}
+                fullWidth
+                name="waitFrom"
+                value={complaintData.waitFrom}
+                onChange={(time) => handelTimeChange('waitFrom', time)}
+              />
+              <TimeField
+                id="wait_until"
+                margin="normal"
+                label="wait_until"
+                shouldDisableTime={(time) => time < complaintData.waitFrom}
+                fullWidth
+                name="waitUntil"
+                value={complaintData.waitUntil}
+                onChange={(time) => handelTimeChange('waitUntil', time)}
+              />
+            </Row>
+
             <TextField
               label={t('description')}
               name="description"
@@ -192,14 +273,36 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
               fullWidth
               margin="normal"
             />
+
             <DialogActions sx={{ gap: '5px', justifyContent: 'flex-end' }}>
-              <Button variant="contained" color="warning" onClick={() => setModalOpen?.(false)}>
-                {t('close_complaint')}
-              </Button>
               <Button type="submit" variant="contained" color="primary">
                 {t('submit_complaint')}
               </Button>
             </DialogActions>
+
+            {/* <MobileStepper
+              variant="dots"
+              steps={6}
+              position="static"
+              activeStep={activeStep}
+              sx={{ flexGrow: 1 }}
+              nextButton={
+                activeStep === 5 ? (
+                  <Button>Send</Button>
+                ) : (
+                  <Button size="small" onClick={handleNext} disabled={activeStep === 5}>
+                    Next
+                    {textDirection === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
+                  </Button>
+                )
+              }
+              backButton={
+                <Button size="small" onClick={handleBack} disabled={activeStep === 0}>
+                  {textDirection === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
+                  Back
+                </Button>
+              }
+            /> */}
           </DialogContent>
         </Dialog>
       )}
