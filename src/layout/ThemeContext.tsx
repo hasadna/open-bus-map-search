@@ -17,6 +17,7 @@ import {
 import { useTranslation } from 'react-i18next'
 import { useLocalStorage } from 'usehooks-ts'
 import dayjs from 'src/dayjs'
+import { DashboardContext } from 'src/pages/dashboard/DashboardContext'
 
 export interface ThemeContextInterface {
   toggleTheme: () => void
@@ -103,7 +104,9 @@ export const ThemeProvider = ({ children }: PropsWithChildren) => {
       <ConfigProvider {...antdTheme}>
         <MuiThemeProvider theme={muiTheme}>
           <ScopedCssBaseline enableColorScheme>
-            <ThemeContext.Provider value={contextValue}>{children}</ThemeContext.Provider>
+            <DashboardContext>
+              <ThemeContext.Provider value={contextValue}>{children}</ThemeContext.Provider>
+            </DashboardContext>
           </ScopedCssBaseline>
         </MuiThemeProvider>
       </ConfigProvider>
