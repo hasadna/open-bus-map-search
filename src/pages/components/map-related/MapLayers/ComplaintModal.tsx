@@ -1,6 +1,6 @@
 import { TimeField } from '@mui/x-date-pickers'
 import dayjs from 'dayjs'
-import { useState, ChangeEvent, useEffect, useMemo } from 'react'
+import { useState, ChangeEvent, useMemo } from 'react'
 import {
   Button,
   MenuItem,
@@ -19,10 +19,15 @@ import {
   //  KeyboardArrowLeft, KeyboardArrowRight
 } from '@mui/icons-material'
 import { useTranslation } from 'react-i18next'
-import { SiriRideWithRelatedPydanticModel } from '@hasadna/open-bus-api-client'
+import { useMutation, useQuery } from '@tanstack/react-query'
+import {
+  ComplaintsSendPostRequest,
+  ComplaintsSendPostRequestUserData,
+} from '@hasadna/open-bus-api-client'
 import { Row } from '../../Row'
 import { Point } from 'src/pages/timeBasedMap'
 import { getSiriRideWithRelated } from 'src/api/siriService'
+import { COMPLAINTS_API } from 'src/api/apiConfig'
 
 interface ComplaintModalProps {
   modalOpen?: boolean
@@ -77,9 +82,7 @@ function IDValidator(id?: string) {
 
 const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: ComplaintModalProps) => {
   const { t, i18n } = useTranslation()
-  const [siriRide, setSiriRide] = useState<SiriRideWithRelatedPydanticModel | undefined>()
-  const [isLoading, setIsLoading] = useState(false)
-  const [complaintData, setComplaintData] = useState({
+  const [complaintData, setComplaintData] = useState<ComplaintsSendPostRequestUserData>({
     firstName: '',
     lastName: '',
     id: '',
@@ -87,23 +90,31 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
     phone: '',
     complaintType: '',
     description: '',
-    eventTime: dayjs().startOf('day'),
-    waitFrom: dayjs().startOf('day'),
-    waitUntil: dayjs().startOf('day'),
+  })
+  const [times, setTimes] = useState({
+    timeEvent: dayjs().startOf('day'),
+    timeWaitFrom: dayjs().startOf('day'),
+    timeWaitUntil: dayjs().startOf('day'),
   })
 
-  useEffect(() => {
-    setIsLoading(true)
-    getSiriRideWithRelated(
+  const ride = useMemo(() => {
+    return [
       position.point!.siri_route__id.toString(),
       position.point!.siri_ride__vehicle_ref.toString(),
       position.point!.siri_route__line_ref.toString(),
-    )
-      .then((siriRideRes: SiriRideWithRelatedPydanticModel) => setSiriRide(siriRideRes))
-      .finally(() => setIsLoading(false))
-  }, [position])
+    ] as [siriRouteId: string, vehicleRefs: string, siriRouteLineRefs: string]
+  }, [position.point])
 
-  const textDirection = i18n.language === 'he' ? 'rtl' : 'ltr'
+  const siriRide = useQuery({
+    queryKey: ['todos', ...ride],
+    queryFn: () => getSiriRideWithRelated(...ride),
+  })
+
+  const submitMutation = useMutation({
+    mutationFn: (complaintsSendPostRequest: ComplaintsSendPostRequest) => {
+      return COMPLAINTS_API.complaintsSendPost({ complaintsSendPostRequest })
+    },
+  })
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -111,22 +122,21 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
   }
 
   const handelTimeChange = (name: string, value: dayjs.Dayjs | null) => {
-    setComplaintData((prevData) => ({ ...prevData, [name]: value }) as const)
+    setTimes((prevData) => ({ ...prevData, [name]: value }) as const)
   }
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    console.log(`lalalala`)
     e.preventDefault()
-    const complaintPayload = {
+    submitMutation.mutate({
+      debug: true,
       userData: complaintData,
       databusData: {
-        operator: siriRide?.gtfsRideGtfsRouteId,
-        ...position,
+        ...siriRide.data,
+        timeEvent: times.timeEvent.format('HH:mm'),
+        timeWaitFrom: times.timeWaitFrom.format('HH:mm'),
+        timeWaitUntil: times.timeWaitUntil.format('HH:mm'),
       },
-    }
-    console.log(complaintPayload)
-    // Handle the form submission, e.g., send it to an API
-    setModalOpen?.(false)
+    })
   }
 
   // const [activeStep, setActiveStep] = useState(0)
@@ -143,14 +153,14 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
 
   return (
     <div>
-      {isLoading || !siriRide ? (
+      {siriRide.isLoading || submitMutation.isPending ? (
         <div className="loading">
           <span>{t('loading_routes')}</span>
           <CircularProgress />
         </div>
       ) : (
         <Dialog
-          dir={textDirection}
+          dir={i18n.dir()}
           open={modalOpen}
           onClose={() => setModalOpen?.(false)}
           slotProps={{
@@ -174,6 +184,7 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
               value={complaintData.firstName}
               onChange={handleInputChange}
               fullWidth
+              required
               margin="normal"
             />
             <TextField
@@ -182,15 +193,22 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
               value={complaintData.lastName}
               onChange={handleInputChange}
               fullWidth
+              required
               margin="normal"
             />
             <TextField
               label={t('id')}
               name="id"
+              slotProps={{
+                htmlInput: {
+                  maxLength: 9,
+                },
+              }}
               value={complaintData.id}
               onChange={handleInputChange}
               error={!isVaildId}
               fullWidth
+              required
               margin="normal"
             />
             <TextField
@@ -200,6 +218,7 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
               value={complaintData.email}
               onChange={handleInputChange}
               fullWidth
+              required
               margin="normal"
             />
             <TextField
@@ -209,11 +228,13 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
               value={complaintData.phone}
               onChange={handleInputChange}
               fullWidth
+              required
               margin="normal"
             />
             <TextField
               id="complaint_type"
               select
+              required
               margin="normal"
               label={t('complaint_type')}
               fullWidth
@@ -230,35 +251,38 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
             <Row>
               <TimeField
                 id="event_time"
+                required
                 margin="normal"
                 label="event_time"
                 fullWidth
-                name="eventTime"
-                value={complaintData.eventTime}
+                name="timeEvent"
+                value={times.timeEvent}
                 shouldDisableTime={(time) =>
-                  time < complaintData.waitFrom || time > complaintData.waitUntil
+                  time < times.timeWaitFrom || time > times.timeWaitUntil
                 }
-                onChange={(time) => handelTimeChange('eventTime', time)}
+                onChange={(time) => handelTimeChange('timeEvent', time)}
               />
               <TimeField
                 id="wait_from"
+                required
                 margin="normal"
                 label="wait_from"
-                shouldDisableTime={(time) => time > complaintData.waitUntil}
+                shouldDisableTime={(time) => time > times.timeWaitUntil}
                 fullWidth
-                name="waitFrom"
-                value={complaintData.waitFrom}
-                onChange={(time) => handelTimeChange('waitFrom', time)}
+                name="timeWaitFrom"
+                value={times.timeWaitFrom}
+                onChange={(time) => handelTimeChange('timeWaitFrom', time)}
               />
               <TimeField
                 id="wait_until"
+                required
                 margin="normal"
                 label="wait_until"
-                shouldDisableTime={(time) => time < complaintData.waitFrom}
+                shouldDisableTime={(time) => time < times.timeWaitFrom}
                 fullWidth
-                name="waitUntil"
-                value={complaintData.waitUntil}
-                onChange={(time) => handelTimeChange('waitUntil', time)}
+                name="timeWaitUntil"
+                value={times.timeWaitUntil}
+                onChange={(time) => handelTimeChange('timeWaitUntil', time)}
               />
             </Row>
 
@@ -271,6 +295,7 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
               multiline
               rows={4}
               fullWidth
+              required
               margin="normal"
             />
 
