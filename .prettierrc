@@ -1,4 +1,5 @@
 {
+  "plugins": ["@trivago/prettier-plugin-sort-imports"],
   "semi": false,
   "tabWidth": 2,
   "printWidth": 100,
@@ -6,5 +7,8 @@
   "trailingComma": "all",
   "bracketSameLine": true,
   "jsxSingleQuote": false,
-  "endOfLine": "auto"
+  "endOfLine": "auto",
+  "importOrder": ["^@core/(.*)$", "^@server/(.*)$", "^@ui/(.*)$", "^[./]"],
+  "importOrderCaseInsensitive": true,
+  "importOrderSortSpecifiers": true
 }
