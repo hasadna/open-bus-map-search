@@ -1,9 +1,9 @@
-import styled from 'styled-components'
-import { useTranslation } from 'react-i18next'
 import { Space, Typography } from 'antd'
+import { useTranslation } from 'react-i18next'
+import styled from 'styled-components'
+import './PublicAppeal.scss'
 import Widget from 'src/shared/Widget'
 
-import './PublicAppeal.scss'
 const { Title } = Typography
 const pageName = 'publicAppealPage'
 const PublicAppeal = () => {

@@ -1,12 +1,12 @@
+import { GtfsRoutePydanticModel } from '@hasadna/open-bus-api-client'
 import { MultipleStopOutlined } from '@mui/icons-material'
 import { Grid, Typography } from '@mui/material'
-import { GtfsRoutePydanticModel } from '@hasadna/open-bus-api-client'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
 import { InfoItem, InfoTable } from '../components/InfoTable'
 import { routeStartEnd } from '../components/utils/rotueUtils'
-import Widget from 'src/shared/Widget'
 import dayjs from 'src/dayjs'
+import Widget from 'src/shared/Widget'
 
 export const LineProfileDetails = ({
   id,

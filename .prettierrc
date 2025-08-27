@@ -8,7 +8,7 @@
   "bracketSameLine": true,
   "jsxSingleQuote": false,
   "endOfLine": "auto",
-  "importOrder": ["^@core/(.*)$", "^@server/(.*)$", "^@ui/(.*)$", "^[./]"],
+  "importOrder": ["^@core/(.*)$", "^@server/(.*)$", "^@ui/(.*)$", "^[./]", "^src"],
   "importOrderCaseInsensitive": true,
   "importOrderSortSpecifiers": true
 }

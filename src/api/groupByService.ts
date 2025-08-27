@@ -1,5 +1,5 @@
-import { useQuery } from '@tanstack/react-query'
 import { GtfsAgencyPydanticModel } from '@hasadna/open-bus-api-client'
+import { useQuery } from '@tanstack/react-query'
 import { GTFS_API, STRIDE_API_BASE_PATH } from './apiConfig'
 import { Dayjs } from 'src/dayjs'
 

@@ -1,7 +1,7 @@
 import { CreateIssuePostRequest } from '@hasadna/open-bus-api-client'
+import { Button, Form, FormProps, Input, message, Select } from 'antd'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Form, Input, Button, message, Select, FormProps } from 'antd'
 import './BugReportForm.scss'
 import InfoYoutubeModal from './components/YoutubeModal'
 import { ISSUES_API } from 'src/api/apiConfig'

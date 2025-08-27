@@ -1,5 +1,5 @@
-import './operatorsHbarChart.scss'
 import { HbarChart } from '../../WorstLinesChart/LineHbarChart/HbarChart/HbarChart'
+import './operatorsHbarChart.scss'
 import { getColorByHashString } from './utils'
 
 const colorsByCompannies: { [index: string]: string } = {

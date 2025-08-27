@@ -13,13 +13,13 @@ import { busIcon, busIconPath } from '../components/utils/BusIcon'
 import createClusterCustomIcon from '../components/utils/customCluster/customCluster'
 import InfoYoutubeModal from '../components/YoutubeModal'
 import { getColorByHashString } from '../dashboard/AllLineschart/OperatorHbarChart/utils'
-import { useAgencyList } from 'src/hooks/useAgencyList'
+import '../Map.scss'
 import useVehicleLocations from 'src/api/useVehicleLocations'
+import dayjs from 'src/dayjs'
+import { useAgencyList } from 'src/hooks/useAgencyList'
 import { VehicleLocation } from 'src/model/vehicleLocation'
 import { BusToolTip } from 'src/pages/components/map-related/MapLayers/BusToolTip'
 import { INPUT_SIZE } from 'src/resources/sizes'
-import dayjs from 'src/dayjs'
-import '../Map.scss'
 
 export interface Point {
   loc: [number, number]

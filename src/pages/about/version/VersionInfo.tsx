@@ -1,8 +1,7 @@
-import { useTranslation } from 'react-i18next'
 import { useQuery } from '@tanstack/react-query'
-import Widget from 'src/shared/Widget'
-
+import { useTranslation } from 'react-i18next'
 import './VersionInfo.scss'
+import Widget from 'src/shared/Widget'
 
 const versionUrl = 'https://open-bus-map-search.hasadna.org.il/hash.txt'
 

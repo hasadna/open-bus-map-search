@@ -1,4 +1,4 @@
-import { Locator, Page, expect } from '@playwright/test'
+import { expect, Locator, Page } from '@playwright/test'
 import { BasePage } from './BasePage'
 
 export default class TimelinePage extends BasePage {

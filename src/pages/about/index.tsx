@@ -1,9 +1,9 @@
-import styled from 'styled-components'
-import { Trans, useTranslation } from 'react-i18next'
-import { Typography, Stack } from '@mui/material'
-import './About.scss'
+import { Stack, Typography } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
+import { Trans, useTranslation } from 'react-i18next'
+import styled from 'styled-components'
 import SlackIcon from '../../resources/slack-icon.svg'
+import './About.scss'
 import { VersionInfo } from './version/VersionInfo'
 import Widget from 'src/shared/Widget'
 

@@ -8,8 +8,8 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
-import dayjs from 'src/dayjs'
 import './ArrivalByTimeChats.scss'
+import dayjs from 'src/dayjs'
 
 /**
  * Group array items by a common property value returned from the callback (ie. group by value of id).

@@ -1,9 +1,9 @@
-import { MapContainer } from 'react-leaflet'
-import { useCallback, useState } from 'react'
-import { IconButton } from '@mui/material'
 import { OpenInFullRounded } from '@mui/icons-material'
-import { MapProps } from './map-types'
+import { IconButton } from '@mui/material'
+import { useCallback, useState } from 'react'
+import { MapContainer } from 'react-leaflet'
 import '../../Map.scss'
+import { MapProps } from './map-types'
 import { MapContent } from './MapContent'
 import { Point } from 'src/pages/timeBasedMap'
 

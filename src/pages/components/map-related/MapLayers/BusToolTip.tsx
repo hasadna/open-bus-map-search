@@ -1,18 +1,18 @@
+import { GtfsRoutePydanticModel } from '@hasadna/open-bus-api-client'
 import { Button, CircularProgress } from '@mui/material'
 import { Skeleton } from 'antd'
 import cn from 'classnames'
-import { GtfsRoutePydanticModel } from '@hasadna/open-bus-api-client'
 import { ReactNode, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
 import { EasterEgg } from '../../../EasterEgg/EasterEgg'
 import CustomTreeView from '../../CustomTreeView'
+import './BusToolTip.scss'
 import ComplaintModal from './ComplaintModal'
 import { getRoutesByLineRef } from 'src/api/gtfsService'
+import dayjs from 'src/dayjs'
 import { routeStartEnd, vehicleIDFormat } from 'src/pages/components/utils/rotueUtils'
 import type { Point } from 'src/pages/timeBasedMap'
-import dayjs from 'src/dayjs'
-import './BusToolTip.scss'
 
 export type BusToolTipProps = { position: Point; icon: string; children?: ReactNode }
 

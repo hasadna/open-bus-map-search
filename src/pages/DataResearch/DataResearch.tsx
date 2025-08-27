@@ -1,5 +1,5 @@
-import { Grid } from '@mui/material'
 import { GtfsAgencyPydanticModel } from '@hasadna/open-bus-api-client'
+import { Grid } from '@mui/material'
 import { Skeleton } from 'antd'
 import React, { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -17,10 +17,10 @@ import { useDate } from '../components/DateTimePicker'
 import OperatorSelector from '../components/OperatorSelector'
 import { PageContainer } from '../components/PageContainer'
 import { getColorName } from '../dashboard/AllLineschart/OperatorHbarChart/OperatorHbarChart'
-import { useGroupBy } from 'src/api/groupByService'
-import Widget from 'src/shared/Widget'
-import dayjs from 'src/dayjs'
 import './DataResearch.scss'
+import { useGroupBy } from 'src/api/groupByService'
+import dayjs from 'src/dayjs'
+import Widget from 'src/shared/Widget'
 
 const now = dayjs()
 const unique: (value: string, index: number, self: string[]) => boolean = (value, index, self) =>

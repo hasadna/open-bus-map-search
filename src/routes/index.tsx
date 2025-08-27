@@ -13,7 +13,7 @@ import {
 } from '@ant-design/icons'
 import { AirportShuttle, Psychology } from '@mui/icons-material'
 import { lazy } from 'react'
-import { Navigate, Route, createBrowserRouter, createRoutesFromElements } from 'react-router'
+import { createBrowserRouter, createRoutesFromElements, Navigate, Route } from 'react-router'
 import { MainRoute } from './MainRoute'
 import { getRouteById } from 'src/api/gtfsService'
 import { ErrorPage } from 'src/pages/ErrorPage'

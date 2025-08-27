@@ -1,9 +1,9 @@
 import { Autocomplete, TextField } from '@mui/material'
+import { TFunction } from 'i18next'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { TFunction } from 'i18next'
-import { BusRoute } from 'src/model/busRoute'
 import { formatted } from 'src/locale/utils'
+import { BusRoute } from 'src/model/busRoute'
 
 type RouteSelectorProps = {
   routes: BusRoute[]

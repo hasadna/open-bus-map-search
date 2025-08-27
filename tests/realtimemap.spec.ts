@@ -1,4 +1,4 @@
-import { test, expect, urlMatcher } from './utils'
+import { expect, test, urlMatcher } from './utils'
 
 test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
   await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())

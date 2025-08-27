@@ -29,9 +29,9 @@ import { mapColorByExecution } from '../components/utils'
 import InfoYoutubeModal from '../components/YoutubeModal'
 import './GapsPatternsPage.scss'
 import { useGapsList } from './useGapsList'
+import dayjs from 'src/dayjs'
 import { INPUT_SIZE } from 'src/resources/sizes'
 import Widget from 'src/shared/Widget'
-import dayjs from 'src/dayjs'
 
 interface BusLineStatisticsProps {
   lineRef: number

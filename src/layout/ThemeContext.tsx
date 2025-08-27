@@ -1,14 +1,14 @@
-import { ThemeProvider as MuiThemeProvider, ScopedCssBaseline, createTheme } from '@mui/material'
+import { createTheme, ThemeProvider as MuiThemeProvider, ScopedCssBaseline } from '@mui/material'
 import { enUS, heIL } from '@mui/material/locale'
 import { LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { enUS as dateEnUS, heIL as dateHeIL } from '@mui/x-date-pickers/locales'
-import { ConfigProvider, ConfigProviderProps, theme as antdlgorithm } from 'antd'
+import { theme as antdlgorithm, ConfigProvider, ConfigProviderProps } from 'antd'
 import antdEnUS from 'antd/es/locale/en_US'
 import antdHeIL from 'antd/es/locale/he_IL'
 import {
-  PropsWithChildren,
   createContext,
+  PropsWithChildren,
   useCallback,
   useContext,
   useEffect,

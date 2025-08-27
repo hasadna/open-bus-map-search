@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState } from 'react'
-import ComplaintModal from './ComplaintModal'
 import type { BusToolTipProps } from './BusToolTip'
+import ComplaintModal from './ComplaintModal'
 import type { VehicleLocation } from 'src/model/vehicleLocation'
 
 const meta = {

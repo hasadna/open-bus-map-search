@@ -1,18 +1,18 @@
-import { useState, ChangeEvent, useEffect } from 'react'
+import { SiriRideWithRelatedPydanticModel } from '@hasadna/open-bus-api-client'
 import {
   Button,
-  MenuItem,
-  TextField,
   CircularProgress,
-  DialogTitle,
-  DialogContent,
   Dialog,
   DialogActions,
+  DialogContent,
+  DialogTitle,
+  MenuItem,
+  TextField,
 } from '@mui/material'
+import { ChangeEvent, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { SiriRideWithRelatedPydanticModel } from '@hasadna/open-bus-api-client'
-import { Point } from 'src/pages/timeBasedMap'
 import { getSiriRideWithRelated } from 'src/api/siriService'
+import { Point } from 'src/pages/timeBasedMap'
 
 interface ComplaintModalProps {
   modalOpen?: boolean

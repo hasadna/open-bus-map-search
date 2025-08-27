@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import GapsTable from './GapsTable'
-import dayjs from 'src/dayjs'
 import { Gap } from 'src/api/gapsService'
+import dayjs from 'src/dayjs'
 
 const meta = {
   title: 'Components/GapsTable',

@@ -15,13 +15,13 @@ import { MapWithLocationsAndPath } from '../components/map-related/MapWithLocati
 import { NotFound } from '../components/NotFound'
 import { PageContainer } from '../components/PageContainer'
 import InfoYoutubeModal from '../components/YoutubeModal'
+import '../Map.scss'
+import dayjs from 'src/dayjs'
 import { useSingleLineData } from 'src/hooks/useSingleLineData'
 import LineNumberSelector from 'src/pages/components/LineSelector'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
 import RouteSelector from 'src/pages/components/RouteSelector'
-import dayjs from 'src/dayjs'
 import VehicleNumberSelector from 'src/pages/components/VehicleSelector'
-import '../Map.scss'
 
 const SingleLineMapPage = () => {
   const { search, setSearch } = useContext(SearchContext)

@@ -1,7 +1,7 @@
 import i18next from 'i18next'
 import { expect, getPastDate, loadTranslate, test, urlMatcher } from './utils'
-import TimelinePage from 'src/test_pages/TimelinePage'
 import dayjs from 'src/dayjs'
+import TimelinePage from 'src/test_pages/TimelinePage'
 
 test.describe('Timeline Page Tests', () => {
   let timelinePage: TimelinePage
