@@ -1,30 +1,24 @@
-import { TimeField } from '@mui/x-date-pickers'
+import { Button, TimePicker, Form, Input, Select } from 'antd'
 import dayjs from 'dayjs'
-import { useState, ChangeEvent, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import {
-  Button,
-  MenuItem,
-  TextField,
   CircularProgress,
   DialogTitle,
   DialogContent,
   Dialog,
   DialogActions,
-  // MobileStepper,
   IconButton,
   Typography,
+  Grid,
 } from '@mui/material'
-import {
-  Close,
-  //  KeyboardArrowLeft, KeyboardArrowRight
-} from '@mui/icons-material'
+import { Close } from '@mui/icons-material'
 import { useTranslation } from 'react-i18next'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import {
   ComplaintsSendPostRequest,
   ComplaintsSendPostRequestUserData,
 } from '@hasadna/open-bus-api-client'
-import { Row } from '../../Row'
+
 import { Point } from 'src/pages/timeBasedMap'
 import { getSiriRideWithRelated } from 'src/api/siriService'
 import { COMPLAINTS_API } from 'src/api/apiConfig'
@@ -49,12 +43,7 @@ type complaintTypeStrings =
   | 'line_switch'
   | 'station_signs'
 
-type complaintType = {
-  value: complaintTypeStrings
-  label: complaintTypeStrings
-}
-
-const complaintTypes: complaintType[] = [
+const complaintTypes: { value: complaintTypeStrings; label: complaintTypeStrings }[] = [
   { value: 'other', label: 'other' },
   { value: 'no_stop', label: 'no_stop' },
   { value: 'no_ride', label: 'no_ride' },
@@ -70,43 +59,36 @@ const complaintTypes: complaintType[] = [
 ]
 
 function IDValidator(id?: string) {
-  if (id === undefined || id === '') return true
-  if (!id || !Number(id) || id.length !== 9 || isNaN(Number(id))) return false
+  if (id === undefined || id === '' || id.length !== 9) return true
+  const num = Number(id)
+  if (!num || isNaN(num) || num <= 0) return false
   let sum = 0
   for (let i = 0; i < id.length; i++) {
-    const incNum = Number(id[i]) * ((i % 2) + 1)
-    sum += incNum > 9 ? incNum - 9 : incNum
+    const n = Number(id[i]) * ((i % 2) + 1)
+    sum += Math.floor(n / 10) + (n % 10)
   }
   return sum % 10 === 0
 }
 
 const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: ComplaintModalProps) => {
   const { t, i18n } = useTranslation()
-  const [complaintData, setComplaintData] = useState<ComplaintsSendPostRequestUserData>({
-    firstName: '',
-    lastName: '',
-    id: '',
-    email: '',
-    phone: '',
-    complaintType: '',
-    description: '',
-  })
-  const [times, setTimes] = useState({
-    timeEvent: dayjs().startOf('day'),
-    timeWaitFrom: dayjs().startOf('day'),
-    timeWaitUntil: dayjs().startOf('day'),
+  const [form] = Form.useForm()
+  const [times, setTimes] = useState<Record<string, dayjs.Dayjs | null>>({
+    timeEvent: null,
+    waitFrom: null,
+    waitTo: null,
   })
 
   const ride = useMemo(() => {
     return [
-      position.point!.siri_route__id.toString(),
-      position.point!.siri_ride__vehicle_ref.toString(),
-      position.point!.siri_route__line_ref.toString(),
+      position.point?.siri_route__id.toString(),
+      position.point?.siri_ride__vehicle_ref.toString(),
+      position.point?.siri_route__line_ref.toString(),
     ] as [siriRouteId: string, vehicleRefs: string, siriRouteLineRefs: string]
   }, [position.point])
 
   const siriRide = useQuery({
-    queryKey: ['todos', ...ride],
+    queryKey: ['ride', ...ride],
     queryFn: () => getSiriRideWithRelated(...ride),
   })
 
@@ -116,43 +98,21 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
     },
   })
 
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setComplaintData((prevData) => ({ ...prevData, [name]: value }))
-  }
-
-  const handelTimeChange = (name: string, value: dayjs.Dayjs | null) => {
-    setTimes((prevData) => ({ ...prevData, [name]: value }) as const)
-  }
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+  const handleSubmit = (values: ComplaintsSendPostRequestUserData) => {
     submitMutation.mutate({
       debug: true,
-      userData: complaintData,
+      userData: values,
       databusData: {
         ...siriRide.data,
-        timeEvent: times.timeEvent.format('HH:mm'),
-        timeWaitFrom: times.timeWaitFrom.format('HH:mm'),
-        timeWaitUntil: times.timeWaitUntil.format('HH:mm'),
+        timeEvent: times.timeEvent?.format('HH:mm'),
+        waitFrom: times.waitFrom?.format('HH:mm'),
+        waitTo: times.waitTo?.format('HH:mm'),
       },
     })
   }
 
-  // const [activeStep, setActiveStep] = useState(0)
-
-  // const handleNext = () => {
-  //   setActiveStep((prevActiveStep) => prevActiveStep + 1)
-  // }
-
-  // const handleBack = () => {
-  //   setActiveStep((prevActiveStep) => prevActiveStep - 1)
-  // }
-
-  const isVaildId = useMemo(() => IDValidator(complaintData.id), [complaintData.id])
-
   return (
-    <div>
+    <>
       {siriRide.isLoading || submitMutation.isPending ? (
         <div className="loading">
           <span>{t('loading_routes')}</span>
@@ -165,8 +125,7 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
           onClose={() => setModalOpen?.(false)}
           slotProps={{
             paper: {
-              component: 'form',
-              onSubmit: handleSubmit,
+              sx: { maxWidth: '648px', width: '90%', position: 'relative' },
             },
           }}>
           <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -177,161 +136,122 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
               <Close />
             </IconButton>
           </DialogTitle>
+
           <DialogContent>
-            <TextField
-              label={t('first_name')}
-              name="firstName"
-              value={complaintData.firstName}
-              onChange={handleInputChange}
-              fullWidth
-              required
-              margin="normal"
-            />
-            <TextField
-              label={t('last_name')}
-              name="lastName"
-              value={complaintData.lastName}
-              onChange={handleInputChange}
-              fullWidth
-              required
-              margin="normal"
-            />
-            <TextField
-              label={t('id')}
-              name="id"
-              slotProps={{
-                htmlInput: {
-                  maxLength: 9,
-                },
-              }}
-              value={complaintData.id}
-              onChange={handleInputChange}
-              error={!isVaildId}
-              fullWidth
-              required
-              margin="normal"
-            />
-            <TextField
-              label={t('email')}
-              name="email"
-              type="email"
-              value={complaintData.email}
-              onChange={handleInputChange}
-              fullWidth
-              required
-              margin="normal"
-            />
-            <TextField
-              label={t('phone')}
-              name="phone"
-              type="tel"
-              value={complaintData.phone}
-              onChange={handleInputChange}
-              fullWidth
-              required
-              margin="normal"
-            />
-            <TextField
-              id="complaint_type"
-              select
-              required
-              margin="normal"
-              label={t('complaint_type')}
-              fullWidth
-              name="complaintType"
-              value={complaintData.complaintType}
-              onChange={handleInputChange}>
-              {complaintTypes.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {t(option.label)}
-                </MenuItem>
-              ))}
-            </TextField>
+            <Form form={form} layout="vertical" onFinish={handleSubmit}>
+              <Form.Item
+                name="firstName"
+                label={t('first_name')}
+                rules={[{ required: true, pattern: /[א-ת]+/u }]}>
+                <Input maxLength={25} />
+              </Form.Item>
 
-            <Row>
-              <TimeField
-                id="event_time"
-                required
-                margin="normal"
-                label="event_time"
-                fullWidth
-                name="timeEvent"
-                value={times.timeEvent}
-                shouldDisableTime={(time) =>
-                  time < times.timeWaitFrom || time > times.timeWaitUntil
-                }
-                onChange={(time) => handelTimeChange('timeEvent', time)}
-              />
-              <TimeField
-                id="wait_from"
-                required
-                margin="normal"
-                label="wait_from"
-                shouldDisableTime={(time) => time > times.timeWaitUntil}
-                fullWidth
-                name="timeWaitFrom"
-                value={times.timeWaitFrom}
-                onChange={(time) => handelTimeChange('timeWaitFrom', time)}
-              />
-              <TimeField
-                id="wait_until"
-                required
-                margin="normal"
-                label="wait_until"
-                shouldDisableTime={(time) => time < times.timeWaitFrom}
-                fullWidth
-                name="timeWaitUntil"
-                value={times.timeWaitUntil}
-                onChange={(time) => handelTimeChange('timeWaitUntil', time)}
-              />
-            </Row>
+              <Form.Item
+                name="lastName"
+                label={t('last_name')}
+                rules={[{ required: true, pattern: /[א-ת]+/u }]}>
+                <Input maxLength={25} />
+              </Form.Item>
 
-            <TextField
-              label={t('description')}
-              name="description"
-              type="text"
-              value={complaintData.description}
-              onChange={handleInputChange}
-              multiline
-              rows={4}
-              fullWidth
-              required
-              margin="normal"
-            />
+              <Form.Item
+                name="id"
+                label={t('id')}
+                rules={[
+                  { required: true, len: 9 },
+                  {
+                    validator: (_, value) => {
+                      return IDValidator(value as string)
+                        ? Promise.resolve()
+                        : Promise.reject(new Error('Invalid ID'))
+                    },
+                  },
+                ]}>
+                <Input maxLength={9} />
+              </Form.Item>
 
-            <DialogActions sx={{ gap: '5px', justifyContent: 'flex-end' }}>
-              <Button type="submit" variant="contained" color="primary">
-                {t('submit_complaint')}
-              </Button>
-            </DialogActions>
+              <Form.Item
+                name="email"
+                label={t('email')}
+                rules={[{ type: 'email', required: true }]}>
+                <Input />
+              </Form.Item>
 
-            {/* <MobileStepper
-              variant="dots"
-              steps={6}
-              position="static"
-              activeStep={activeStep}
-              sx={{ flexGrow: 1 }}
-              nextButton={
-                activeStep === 5 ? (
-                  <Button>Send</Button>
-                ) : (
-                  <Button size="small" onClick={handleNext} disabled={activeStep === 5}>
-                    Next
-                    {textDirection === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
+              <Form.Item name="phone" label={t('phone')} rules={[{ required: true }]}>
+                <Input maxLength={11} />
+              </Form.Item>
+
+              <Form.Item
+                name="complaintType"
+                label={t('complaint_type')}
+                rules={[{ required: true }]}>
+                <Select
+                  options={complaintTypes.map((c) => ({ value: c.value, label: t(c.label) }))}
+                />
+              </Form.Item>
+
+              <Grid container spacing={{ md: 3, xs: 0 }}>
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Form.Item name="from" label={t('from')}>
+                    <Input maxLength={90} />
+                  </Form.Item>
+                </Grid>
+
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Form.Item name="to" label={t('destination')}>
+                    <Input maxLength={90} />
+                  </Form.Item>
+                </Grid>
+              </Grid>
+
+              <Grid container spacing={{ md: 3, xs: 0 }}>
+                <Grid size={{ xs: 12, md: 4 }}>
+                  <Form.Item name="eventTime" label="Event Time" rules={[{ required: true }]}>
+                    <TimePicker
+                      style={{ width: '100%' }}
+                      value={times.timeEvent}
+                      onChange={(time) => setTimes((times) => ({ ...times, timeEvent: time }))}
+                      format="HH:mm"
+                    />
+                  </Form.Item>
+                </Grid>
+
+                <Grid size={{ xs: 12, md: 8 }}>
+                  <Form.Item name="wait" label="Wait" rules={[{ required: true }]}>
+                    <TimePicker.RangePicker
+                      style={{ width: '100%' }}
+                      value={[times.waitFrom, times.waitTo]}
+                      onChange={(changeTimes) =>
+                        setTimes((times) => ({
+                          ...times,
+                          waitFrom: changeTimes?.[0] || null,
+                          waitTo: changeTimes?.[1] || null,
+                        }))
+                      }
+                      format="HH:mm"
+                    />
+                  </Form.Item>
+                </Grid>
+              </Grid>
+
+              <Form.Item
+                name="description"
+                label={t('description')}
+                rules={[{ required: true, min: 2 }]}>
+                <Input.TextArea rows={4} maxLength={1500} />
+              </Form.Item>
+
+              <DialogActions sx={{ justifyContent: 'flex-end', padding: 0 }}>
+                <Form.Item>
+                  <Button type="primary" htmlType="submit" onClick={() => form.submit()}>
+                    {t('submit_complaint')}
                   </Button>
-                )
-              }
-              backButton={
-                <Button size="small" onClick={handleBack} disabled={activeStep === 0}>
-                  {textDirection === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
-                  Back
-                </Button>
-              }
-            /> */}
+                </Form.Item>
+              </DialogActions>
+            </Form>
           </DialogContent>
         </Dialog>
       )}
-    </div>
+    </>
   )
 }
 

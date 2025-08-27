@@ -9,3 +9,8 @@
 .page-title {
   margin-top: 0;
 }
+
+.ant-select-dropdown,
+.ant-picker-dropdown {
+  z-index: 10000;
+}
