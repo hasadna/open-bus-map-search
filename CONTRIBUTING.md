@@ -3,10 +3,6 @@
 Welcome 👋 and thank you for considering contributing to **דאטאבוס**, a project by [Hasadna](https://open-bus-map-search.hasadna.org.il)!  
 We’re excited to have you on board.
 
-💬 Join our [Discord](https://discord.gg/deBdkmufS4) to chat with the dev team.
-
----
-
 ## 🧭 Where to Start
 
 - Browse [open issues](https://github.com/hasadna/open-bus-map-search/issues)
@@ -14,8 +10,6 @@ We’re excited to have you on board.
 - Want impact? Choose from our [milestones](https://github.com/hasadna/open-bus-map-search/milestones)
 
 🙋 Have feedback or spotted something unclear? [Open an issue](https://github.com/hasadna/open-bus-map-search/issues).
-
----
 
 ## ⚡ Running the Project
 
@@ -48,8 +42,6 @@ npm start
 
 Open [http://localhost:3000](http://localhost:3000).
 
----
-
 ## 📌 Pull Requests
 
 1. Create a branch (name it after the issue/feature, e.g., `feat/add-close-button`)
@@ -58,8 +50,6 @@ Open [http://localhost:3000](http://localhost:3000).
 4. Ensure it runs locally before submitting
 
 🔗 [PR tutorial for beginners](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request)
-
----
 
 ## 📝 Commit Message Conventions
 
@@ -72,8 +62,6 @@ Open [http://localhost:3000](http://localhost:3000).
 | `chore`    | `chore: upgrade React to v18`              |
 | `test`     | `test: add integration tests`              |
 | `style`    | `style: remove empty line`                 |
-
----
 
 ## 🧪 Testing
 
@@ -89,8 +77,6 @@ Open [http://localhost:3000](http://localhost:3000).
 
 More: [Playwright CLI](https://playwright.dev/docs/test-cli)
 
----
-
 ## 📚 Resources
 
 - 🎨 [Figma design file](https://www.figma.com/file/Plw8Uuu6U96CcX5tJyRMoW/Public-Transportation-visual-informaiton)
@@ -103,13 +89,9 @@ More: [Playwright CLI](https://playwright.dev/docs/test-cli)
 - [Dashboard & Maps walkthrough](https://www.youtube.com/watch?v=MJZrIxjQEH8&list=PL6Rh06rT7uiX1AQE-lm55hy-seL3idx3T&t=17s)
 - [Bug reporting guide](https://www.youtube.com/watch?v=F6sD9Bz4Xj0&list=PL6Rh06rT7uiX1AQE-lm55hy-seL3idx3T)
 
----
-
 ## 🆘 Troubleshooting
 
 We’re here to help! Join our [Slack](https://join.slack.com/t/hasadna/shared_invite/zt-21qipktl1-7yF4FYJVxAqXl0wE4DlMKQ).
-
----
 
 ## ❓ FAQ
 

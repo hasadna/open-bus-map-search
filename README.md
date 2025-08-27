@@ -16,11 +16,18 @@ Built with ❤️ by volunteers of the [Public Knowledge Workshop](https://www.h
 - [🌐 Open Bus Backend](https://github.com/hasadna/open-bus-backend) – [API Docs](https://open-bus-backend.k8s.hasadna.org.il/docs)
 - [📦 Open Bus API Client](https://github.com/hasadna/open-bus-api-client) – [NPM Package](https://www.npmjs.com/package/@hasadna/open-bus-api-client)
 
-🎨 [Figma Design](https://www.figma.com/file/Plw8Uuu6U96CcX5tJyRMoW/Public-Transportation-visual-informaiton?node-id=0%3A1)
+- [🎨 Figma Design](https://www.figma.com/file/Plw8Uuu6U96CcX5tJyRMoW/Public-Transportation-visual-informaiton?node-id=0%3A1)
 
 ## 🚀 Quick Start
 
 See detailed setup in [CONTRIBUTING.md](CONTRIBUTING.md#running-the-project-on-a-local-environment).
+
+## 🎥 Video Guide (Hebrew)
+
+Want to get involved but not sure where to start?  
+Check out this short video walkthrough (in Hebrew) that explains how to contribute to the project:
+
+[![Watch the video (Hebrew)](https://img.youtube.com/vi/6H6jkJCVhgk/0.jpg)](https://www.youtube.com/watch?v=6H6jkJCVhgk)
 
 ## 🐣 Easter Eggs
 
