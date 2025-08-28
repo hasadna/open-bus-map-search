@@ -11,6 +11,15 @@ We’re excited to have you on board.
 
 🙋 Have feedback or spotted something unclear? [Open an issue](https://github.com/hasadna/open-bus-map-search/issues).
 
+## 🛠️ IDE Configuration
+
+- **Enable** - "Format on Save"
+- **Set Default Formatter** - "Prettier"
+- **Install Plugins**
+  - [ESLint](https://eslint.org/) – Linting for JavaScript/TypeScript
+  - [Prettier](https://prettier.io/) – Code formatting
+  - [Stylelint](https://stylelint.io/) – Linting for CSS/SCSS
+
 ## ⚡ Running the Project
 
 You can run the project:
