@@ -3,13 +3,23 @@
   justify-content: flex-end;
   align-items: center;
   background: #fff;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 12%) !important;
 }
 
 .main-header.dark {
   background: #303230;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 70%) !important;
 }
 
-@media (width < 768px) {
+.main-header:dir(ltr) {
+  border-radius: 0 0 32px;
+}
+
+.main-header:dir(rtl) {
+  border-radius: 0 0 0 32px;
+}
+
+@media only screen and (width < 768px) {
   .main-header {
     justify-content: space-between;
   }
