@@ -2,16 +2,13 @@ import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
-import { SearchContext, TimelinePageState } from '../../model/pageState'
-import { DateSelector } from '../components/DateSelector'
-import { NotFound } from '../components/NotFound'
-import { PageContainer } from '../components/PageContainer'
 import {
   getGtfsStopHitTimesAsync,
   getRoutesAsync,
   getStopsForRouteAsync,
 } from 'src/api/gtfsService'
 import { getSiriStopHitTimesAsync } from 'src/api/siriService'
+import dayjs from 'src/dayjs'
 import { Label } from 'src/pages/components/Label'
 import LineNumberSelector from 'src/pages/components/LineSelector'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
@@ -20,7 +17,10 @@ import { Row } from 'src/pages/components/Row'
 import StopSelector from 'src/pages/components/StopSelector'
 import { TimelineBoard } from 'src/pages/components/timeline/TimelineBoard'
 import { INPUT_SIZE, MARGIN_MEDIUM } from 'src/resources/sizes'
-import dayjs from 'src/dayjs'
+import { SearchContext, TimelinePageState } from '../../model/pageState'
+import { DateSelector } from '../components/DateSelector'
+import { NotFound } from '../components/NotFound'
+import { PageContainer } from '../components/PageContainer'
 
 const StyledTimelineBoard = styled(TimelineBoard)`
   margin-top: ${MARGIN_MEDIUM * 3}px;

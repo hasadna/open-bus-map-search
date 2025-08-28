@@ -1,9 +1,9 @@
 import { useTranslation } from 'react-i18next'
-import { InfoItem, InfoTable } from '../components/InfoTable'
-import { vehicleIDFormat } from '../components/utils/rotueUtils'
+import dayjs from 'src/dayjs'
 import { VehicleLocation } from 'src/model/vehicleLocation'
 import Widget from 'src/shared/Widget'
-import dayjs from 'src/dayjs'
+import { InfoItem, InfoTable } from '../components/InfoTable'
+import { vehicleIDFormat } from '../components/utils/rotueUtils'
 
 export const LineProfileRide = ({ point }: { point?: VehicleLocation }) => {
   const { t } = useTranslation()

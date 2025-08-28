@@ -1,7 +1,7 @@
-import { useQuery } from '@tanstack/react-query'
 import { GtfsAgencyPydanticModel } from '@hasadna/open-bus-api-client'
-import { GTFS_API, STRIDE_API_BASE_PATH } from './apiConfig'
+import { useQuery } from '@tanstack/react-query'
 import { Dayjs } from 'src/dayjs'
+import { GTFS_API, STRIDE_API_BASE_PATH } from './apiConfig'
 
 type groupByField =
   | 'gtfs_route_date'

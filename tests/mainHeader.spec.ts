@@ -1,4 +1,4 @@
-import { test, expect } from './utils'
+import { expect, test } from './utils'
 
 test.beforeEach(async ({ page }) => {
   await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())

@@ -4,6 +4,7 @@ import {
 } from '@hasadna/open-bus-api-client'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
+import dayjs from 'src/dayjs'
 import { Coordinates } from 'src/model/location'
 import { PADDING } from 'src/pages/components/timeline/TimelineBoard'
 import {
@@ -15,7 +16,6 @@ import {
   pointTypeToColor,
   pointTypeToDescription,
 } from 'src/pages/components/timeline/TimelinePoint'
-import dayjs from 'src/dayjs'
 
 const Line = styled.div<{ totalHeight: number }>`
   height: ${({ totalHeight }) => totalHeight + PADDING * 3}px;

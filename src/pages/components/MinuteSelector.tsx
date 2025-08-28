@@ -1,6 +1,6 @@
-import { useTranslation } from 'react-i18next'
 import { TextField } from '@mui/material'
 import classNames from 'classnames'
+import { useTranslation } from 'react-i18next'
 import ClearButton from './ClearButton'
 import './Selector.scss'
 
