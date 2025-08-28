@@ -1,12 +1,12 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import './index.css'
-import ReactGA from 'react-ga4'
-import './locale/allTranslations'
+import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister'
 import { QueryClient } from '@tanstack/react-query'
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client'
-import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister'
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import ReactGA from 'react-ga4'
 import App from './App'
+import './locale/allTranslations'
+import './index.css'
 
 const persister = createAsyncStoragePersister({
   storage: window.localStorage,

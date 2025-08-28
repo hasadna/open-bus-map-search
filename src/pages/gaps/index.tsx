@@ -1,6 +1,8 @@
 import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
 import { useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import dayjs from 'src/dayjs'
+import { INPUT_SIZE } from 'src/resources/sizes'
 import { Gap, getGapsAsync } from '../../api/gapsService'
 import { getGtfsRoutes } from '../../api/gtfsService'
 import { SearchContext } from '../../model/pageState'
@@ -13,8 +15,6 @@ import { PageContainer } from '../components/PageContainer'
 import RouteSelector from '../components/RouteSelector'
 import { Row } from '../components/Row'
 import GapsTable from './GapsTable'
-import dayjs from 'src/dayjs'
-import { INPUT_SIZE } from 'src/resources/sizes'
 
 const GapsPage = () => {
   const { t } = useTranslation()

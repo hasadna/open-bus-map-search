@@ -1,6 +1,6 @@
 import type { Page } from '@playwright/test'
-import { expect, getPastDate, test, urlMatcher, waitForSkeletonsToHide } from './utils'
 import dayjs from 'src/dayjs'
+import { expect, getPastDate, test, urlMatcher, waitForSkeletonsToHide } from './utils'
 
 async function selectOperator(page: Page, operatorName = 'דן') {
   await page.getByLabel('חברה מפעילה').click()

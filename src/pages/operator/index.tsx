@@ -2,6 +2,8 @@ import { Grid, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material
 import { useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
+import dayjs from 'src/dayjs'
+import { SearchContext } from 'src/model/pageState'
 import { DateSelector } from '../components/DateSelector'
 import OperatorSelector from '../components/OperatorSelector'
 import { PageContainer } from '../components/PageContainer'
@@ -9,8 +11,6 @@ import WorstLinesChart from '../dashboard/WorstLinesChart/WorstLinesChart'
 import { OperatorGaps } from './OperatorGaps'
 import { OperatorInfo } from './OperatorInfo'
 import { OperatorRoutes } from './OperatorRoutes'
-import { SearchContext } from 'src/model/pageState'
-import dayjs from 'src/dayjs'
 
 const TIME_RANGES = ['day', 'week', 'month'] as const //  'year'
 

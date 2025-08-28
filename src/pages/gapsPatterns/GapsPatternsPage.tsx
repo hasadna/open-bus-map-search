@@ -14,7 +14,10 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
-import { getGtfsRoutes } from '../../api/gtfsService'
+import { getGtfsRoutes } from 'src/api/gtfsService'
+import dayjs from 'src/dayjs'
+import { INPUT_SIZE } from 'src/resources/sizes'
+import Widget from 'src/shared/Widget'
 import { SearchContext } from '../../model/pageState'
 import { DateSelector } from '../components/DateSelector'
 import { useDate } from '../components/DateTimePicker'
@@ -27,11 +30,8 @@ import RouteSelector from '../components/RouteSelector'
 import { Row } from '../components/Row'
 import { mapColorByExecution } from '../components/utils'
 import InfoYoutubeModal from '../components/YoutubeModal'
-import './GapsPatternsPage.scss'
 import { useGapsList } from './useGapsList'
-import { INPUT_SIZE } from 'src/resources/sizes'
-import Widget from 'src/shared/Widget'
-import dayjs from 'src/dayjs'
+import './GapsPatternsPage.scss'
 
 interface BusLineStatisticsProps {
   lineRef: number

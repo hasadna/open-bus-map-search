@@ -1,9 +1,9 @@
 import { SiriVehicleLocationWithRelatedPydanticModel } from '@hasadna/open-bus-api-client'
 import { useTranslation } from 'react-i18next'
-import { InfoItem, InfoTable } from '../components/InfoTable'
-import { vehicleIDFormat } from '../components/utils/rotueUtils'
 import dayjs from 'src/dayjs'
 import Widget from 'src/shared/Widget'
+import { InfoItem, InfoTable } from '../components/InfoTable'
+import { vehicleIDFormat } from '../components/utils/rotueUtils'
 
 export const LineProfileRide = ({
   point,

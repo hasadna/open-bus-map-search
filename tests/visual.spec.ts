@@ -1,7 +1,7 @@
 import { Eyes, Target, VisualGridRunner } from '@applitools/eyes-playwright'
-import i18next from 'i18next'
 import username from 'git-username'
-import { getBranch, getPastDate, test, waitForSkeletonsToHide, loadTranslate } from './utils'
+import i18next from 'i18next'
+import { getBranch, getPastDate, loadTranslate, test, waitForSkeletonsToHide } from './utils'
 
 const eyes = await setEyesSettings()
 

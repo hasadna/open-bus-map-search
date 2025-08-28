@@ -1,18 +1,12 @@
-/**
- * this is a custom hook that fetches the vehicle locations from the API.
- * it recieves an interval of two dates, and loads locations of all vehicles in that interval.
- * if some of the interval has already been loaded,
- */
-
-import uniqBy from 'lodash.uniqby'
 import {
   SiriVehicleLocationsListGetRequest,
   SiriVehicleLocationWithRelatedPydanticModel,
 } from '@hasadna/open-bus-api-client'
 import { useThrottledState } from '@tanstack/react-pacer'
+import uniqBy from 'lodash.uniqby'
 import { useEffect, useRef, useState } from 'react'
-import { SIRI_API } from './apiConfig'
 import dayjs from 'src/dayjs'
+import { SIRI_API } from './apiConfig'
 
 export type MapBoundary = {
   latMin: number

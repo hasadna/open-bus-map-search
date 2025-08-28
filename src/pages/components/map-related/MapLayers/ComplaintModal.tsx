@@ -1,3 +1,4 @@
+import { SiriRideWithRelatedPydanticModel } from '@hasadna/open-bus-api-client'
 import {
   Button,
   CircularProgress,
@@ -8,7 +9,6 @@ import {
   MenuItem,
   TextField,
 } from '@mui/material'
-import { SiriRideWithRelatedPydanticModel } from '@hasadna/open-bus-api-client'
 import { ChangeEvent, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { getSiriRideWithRelated } from 'src/api/siriService'
