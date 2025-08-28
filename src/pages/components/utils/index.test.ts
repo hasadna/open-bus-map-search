@@ -1,7 +1,6 @@
-import { HourlyData, sortByMode } from '.'
-import { parseTime } from 'src/api/gapsService'
-import { GapsList } from 'src/model/gaps'
+import { Gap, parseTime } from 'src/api/gapsService'
 import { convertGapsToHourlyStruct as processData } from 'src/pages/gapsPatterns/useGapsList'
+import { HourlyData, sortByMode } from '.'
 
 describe('sortByMode', () => {
   it('when mode param is "hour" - should be sorted properly', () => {
@@ -41,10 +40,10 @@ describe('sortByMode', () => {
   })
 
   it('should convert gapList to HourlyData structure', () => {
-    const list: GapsList = [
+    const list: Gap[] = [
       {
-        gtfsTime: parseTime('2023-10-04T02:00:00'),
-        siriTime: parseTime('2023-10-04T02:00:00'),
+        plannedStartTime: parseTime(new Date('2023-10-04T02:00')),
+        actualStartTime: parseTime(new Date('2023-10-04T02:00')),
       },
     ]
     const [results] = processData(list)
@@ -56,10 +55,10 @@ describe('sortByMode', () => {
   })
 
   it('should convert gapList time entry with null value to - 0', () => {
-    const list: GapsList = [
+    const list: Gap[] = [
       {
-        gtfsTime: parseTime('2023-10-04T02:20:00'),
-        siriTime: parseTime('null'),
+        plannedStartTime: parseTime(new Date('2023-10-04T02:20')),
+        actualStartTime: undefined,
       },
     ]
     const [results] = processData(list)
@@ -72,14 +71,14 @@ describe('sortByMode', () => {
   })
 
   it('should convert entries at same time to single entry with sum  of actual and planned rides', () => {
-    const list: GapsList = [
+    const list: Gap[] = [
       {
-        gtfsTime: parseTime('2023-10-04T02:00:00'),
-        siriTime: parseTime('2023-10-04T02:00:00'),
+        plannedStartTime: parseTime(new Date('2023-10-04T02:00')),
+        actualStartTime: parseTime(new Date('2023-10-04T02:00')),
       },
       {
-        gtfsTime: parseTime('2023-10-04T02:00:00'),
-        siriTime: parseTime('2023-10-04T02:00:00'),
+        plannedStartTime: parseTime(new Date('2023-10-04T02:00')),
+        actualStartTime: parseTime(new Date('2023-10-04T02:00')),
       },
     ]
     const [results] = processData(list)

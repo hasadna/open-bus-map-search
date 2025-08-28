@@ -1,5 +1,5 @@
-import styled, { css } from 'styled-components'
 import { useRef } from 'react'
+import styled, { css } from 'styled-components'
 import { useHover } from 'usehooks-ts'
 import { NEUTRAL_COLOR } from 'src/pages/components/timeline/TimelinePoint'
 

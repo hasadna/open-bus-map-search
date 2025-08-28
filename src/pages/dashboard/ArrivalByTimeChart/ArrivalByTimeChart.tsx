@@ -9,9 +9,9 @@ import {
   YAxis,
 } from 'recharts'
 import dayjs from 'src/dayjs'
-import './ArrivalByTimeChats.scss'
-import Widget from 'src/shared/Widget'
 import { InfoItem, InfoTable } from 'src/pages/components/InfoTable'
+import Widget from 'src/shared/Widget'
+import './ArrivalByTimeChats.scss'
 
 export type ArrivalByTimeData = {
   operatorId: string

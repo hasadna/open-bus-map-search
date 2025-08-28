@@ -11,14 +11,14 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
+import { GroupByRes, useGroupBy } from 'src/api/groupByService'
+import dayjs from 'src/dayjs'
+import Widget from 'src/shared/Widget'
 import { DateSelector } from '../components/DateSelector'
 import { useDate } from '../components/DateTimePicker'
 import OperatorSelector from '../components/OperatorSelector'
 import { PageContainer } from '../components/PageContainer'
 import { getColorName } from '../dashboard/AllLineschart/OperatorHbarChart/OperatorHbarChart'
-import { GroupByRes, useGroupBy } from 'src/api/groupByService'
-import Widget from 'src/shared/Widget'
-import dayjs from 'src/dayjs'
 import './DataResearch.scss'
 
 const now = dayjs()

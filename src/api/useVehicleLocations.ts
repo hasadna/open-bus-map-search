@@ -3,11 +3,10 @@
  * it recieves an interval of two dates, and loads locations of all vehicles in that interval.
  * if some of the interval has already been loaded,
  */
-
 import uniqBy from 'lodash.uniqby'
 import { useEffect, useState } from 'react'
-import { VehicleLocation } from 'src/model/vehicleLocation'
 import dayjs from 'src/dayjs'
+import { VehicleLocation } from 'src/model/vehicleLocation'
 
 const config = {
   apiUrl: 'https://open-bus-stride-api.hasadna.org.il/siri_vehicle_locations/list?get_count=false',

@@ -1,4 +1,4 @@
-import { type RenderResult, render, screen } from '@testing-library/react'
+import { render, type RenderResult, screen } from '@testing-library/react'
 import type { ReactElement } from 'react'
 import ArrivalByTimeChart, { ArrivalByTimeData } from './ArrivalByTimeChart'
 import testBusData from './testdata/data.json'

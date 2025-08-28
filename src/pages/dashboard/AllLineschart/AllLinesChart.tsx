@@ -3,10 +3,10 @@ import { Tooltip } from '@mui/material'
 import { Skeleton } from 'antd'
 import { FC, Fragment, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import OperatorHbarChart from './OperatorHbarChart/OperatorHbarChart'
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
-import Widget from 'src/shared/Widget'
 import { Dayjs } from 'src/dayjs'
+import Widget from 'src/shared/Widget'
+import OperatorHbarChart from './OperatorHbarChart/OperatorHbarChart'
 
 const convertToChartCompatibleStruct = (arr: GroupByRes[]) => {
   return arr.map((operator) => ({

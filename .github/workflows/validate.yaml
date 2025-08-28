@@ -176,13 +176,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.sha }}
-      - uses: actions/setup-node@v4
-        with:
-          node-version: latest
-          cache: 'npm'
-      - name: Install Dependencies and Playwright
-        run: npm ci
-      - run: npx playwright install
+      - run: npm i -g @applitools/eyes-storybook
       - name: Run Storybook visual tests
         if: env.APPLITOOLS_API_KEY
         env:

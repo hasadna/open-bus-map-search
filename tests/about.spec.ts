@@ -1,4 +1,5 @@
-import { test, expect } from './utils'
+import { expect, test } from './utils'
+
 test.describe('About Page Tests', () => {
   test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
     await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())

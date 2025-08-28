@@ -1,10 +1,10 @@
-import axios from 'axios'
 import {
   GtfsRideStopPydanticModel,
   GtfsRideWithRelatedPydanticModel,
 } from '@hasadna/open-bus-api-client'
-import dayjs from 'src/dayjs'
+import axios from 'axios'
 import { GTFS_API, MAX_HITS_COUNT, STRIDE_API_BASE_PATH } from 'src/api/apiConfig'
+import dayjs from 'src/dayjs'
 import { BusRoute, fromGtfsRoute } from 'src/model/busRoute'
 import { BusStop, fromGtfsStop } from 'src/model/busStop'
 

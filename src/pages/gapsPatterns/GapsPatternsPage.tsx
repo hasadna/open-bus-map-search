@@ -14,6 +14,9 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
+import dayjs from 'src/dayjs'
+import { INPUT_SIZE } from 'src/resources/sizes'
+import Widget from 'src/shared/Widget'
 import { getRoutesAsync } from '../../api/gtfsService'
 import { SearchContext } from '../../model/pageState'
 import { DateSelector } from '../components/DateSelector'
@@ -27,11 +30,8 @@ import RouteSelector from '../components/RouteSelector'
 import { Row } from '../components/Row'
 import { mapColorByExecution } from '../components/utils'
 import InfoYoutubeModal from '../components/YoutubeModal'
-import './GapsPatternsPage.scss'
 import { useGapsList } from './useGapsList'
-import { INPUT_SIZE } from 'src/resources/sizes'
-import Widget from 'src/shared/Widget'
-import dayjs from 'src/dayjs'
+import './GapsPatternsPage.scss'
 
 interface BusLineStatisticsProps {
   lineRef: number
@@ -62,7 +62,13 @@ const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
 
 function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatisticsProps) {
   const [sortingMode, setSortingMode] = useState<'hour' | 'severity'>('hour')
-  const hourlyData = useGapsList(fromDate, toDate, operatorRef, lineRef, sortingMode)
+  const hourlyData = useGapsList(
+    fromDate.valueOf(),
+    toDate.valueOf(),
+    operatorRef,
+    lineRef,
+    sortingMode,
+  )
   const isLoading = !hourlyData.length
   const { t } = useTranslation()
   const maxHourlyRides = Math.max(

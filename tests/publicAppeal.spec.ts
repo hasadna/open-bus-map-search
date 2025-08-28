@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 
 test('"קול קורא" menu item should redirect to the public appeal page', async ({ page }) => {
   await page.goto('/')

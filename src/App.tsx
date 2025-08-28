@@ -3,8 +3,8 @@ import { useTranslation } from 'react-i18next'
 import { RouterProvider } from 'react-router'
 import router from './routes'
 import Preloader from './shared/Preloader'
-import './App.scss'
 import 'leaflet/dist/leaflet.css'
+import './App.scss'
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker

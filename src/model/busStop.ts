@@ -1,7 +1,7 @@
 import {
   GtfsRideStopPydanticModel,
-  GtfsStopPydanticModel,
   GtfsRideWithRelatedPydanticModel,
+  GtfsStopPydanticModel,
 } from '@hasadna/open-bus-api-client'
 import dayjs from 'src/dayjs'
 import { Coordinates } from 'src/model/location'

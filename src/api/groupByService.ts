@@ -3,8 +3,8 @@ import {
   GtfsRidesAggGroupByPydanticModel,
 } from '@hasadna/open-bus-api-client'
 import { useQuery } from '@tanstack/react-query'
-import { AGGREGATIONS_API } from './apiConfig'
 import { getAgencyList } from './agencyList'
+import { AGGREGATIONS_API } from './apiConfig'
 
 type groupByField =
   | 'gtfs_route_date'
