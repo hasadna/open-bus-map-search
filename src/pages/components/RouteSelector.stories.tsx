@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import RouteSelector from './RouteSelector'
 import { fromGtfsRoute } from 'src/model/busRoute'
+import RouteSelector from './RouteSelector'
 
 const d = [
   {

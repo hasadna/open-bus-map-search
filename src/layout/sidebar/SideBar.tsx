@@ -1,14 +1,15 @@
-import './sidebar.scss'
 import { Drawer, Layout } from 'antd'
-import { useContext, useState } from 'react'
-import { Link } from 'react-router'
-import { useTranslation } from 'react-i18next'
 import cn from 'classnames'
+import { useContext, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router'
+import { PAGES } from 'src/routes'
 import { LayoutContextInterface, LayoutCtx } from '../LayoutContext'
 import { useTheme } from '../ThemeContext'
-import Menu from './menu/Menu'
 import { Logo } from './logo'
-import { PAGES } from 'src/routes'
+import Menu from './menu/Menu'
+import './sidebar.scss'
+
 const { Sider } = Layout
 
 const CollapsedLogo = () => <h1 className={'sidebar-logo-collapsed'}>🚌</h1>

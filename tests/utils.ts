@@ -1,11 +1,11 @@
+import { exec } from 'child_process'
+import * as crypto from 'crypto'
 import * as fs from 'fs'
 import * as path from 'path'
-import * as crypto from 'crypto'
-import { exec } from 'child_process'
-import { Matcher, test as baseTest, customMatcher } from 'playwright-advanced-har'
 import { BrowserContext, Page } from '@playwright/test'
 import { i18n } from 'i18next'
 import Backend from 'i18next-fs-backend'
+import { test as baseTest, customMatcher, Matcher } from 'playwright-advanced-har'
 
 type CollectIstanbulCoverageWindow = Window &
   typeof globalThis & {

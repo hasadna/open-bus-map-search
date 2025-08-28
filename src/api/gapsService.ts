@@ -1,5 +1,5 @@
-import { USER_CASE_API } from './apiConfig'
 import dayjs from 'src/dayjs'
+import { USER_CASE_API } from './apiConfig'
 
 export type Gap = {
   plannedStartTime?: dayjs.Dayjs
