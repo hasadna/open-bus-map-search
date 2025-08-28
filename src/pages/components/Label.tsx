@@ -1,5 +1,5 @@
-import styled from 'styled-components'
 import { Typography } from '@mui/material'
+import styled from 'styled-components'
 
 const StyledDiv = styled.div`
   display: inline-flex;

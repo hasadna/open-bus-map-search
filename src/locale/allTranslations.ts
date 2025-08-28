@@ -1,7 +1,7 @@
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
-import translationsHE from './he.json'
 import translationsEN from './en.json'
+import translationsHE from './he.json'
 
 // Get saved language from localStorage or default to 'he'
 const savedLang =

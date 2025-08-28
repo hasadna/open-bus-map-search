@@ -1,9 +1,9 @@
 import { Stack } from '@mui/material'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
+import Widget from 'src/shared/Widget'
 import { InfoItem, InfoTable } from '../components/InfoTable'
 import { operatorList } from './data'
-import Widget from 'src/shared/Widget'
 
 export const OperatorInfo = ({ operatorId }: { operatorId?: string }) => {
   const { t, i18n } = useTranslation()

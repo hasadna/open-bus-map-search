@@ -10,11 +10,11 @@ import {
 import { Skeleton } from 'antd'
 import React, { memo, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import DisplayGapsPercentage from '../components/DisplayGapsPercentage'
-import { Row } from '../components/Row'
-import Widget from 'src/shared/Widget'
 import { Gap } from 'src/api/gapsService'
 import dayjs from 'src/dayjs'
+import Widget from 'src/shared/Widget'
+import DisplayGapsPercentage from '../components/DisplayGapsPercentage'
+import { Row } from '../components/Row'
 
 interface GapsTableProps {
   gaps?: Gap[]

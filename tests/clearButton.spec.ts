@@ -1,7 +1,7 @@
 import type { Locator, Page } from '@playwright/test'
 import i18next from 'i18next'
-import { test, expect, urlMatcher, getPastDate, loadTranslate } from './utils'
 import Selectors from './SelectorsModel'
+import { expect, getPastDate, loadTranslate, test, urlMatcher } from './utils'
 
 async function visitPage(page: Page, pageName: string, url: RegExp) {
   await page.goto('/')

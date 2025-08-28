@@ -1,6 +1,3 @@
-import { NavLink, To } from 'react-router'
-import './HomePage.scss'
-import { useTranslation } from 'react-i18next'
 import {
   DirectionsBusOutlined,
   HistoryOutlined,
@@ -10,8 +7,11 @@ import {
 } from '@mui/icons-material'
 import { SvgIconProps, Tooltip } from '@mui/material'
 import { useContext } from 'react'
-import busImage from '../../img/busImg.png'
+import { useTranslation } from 'react-i18next'
+import { NavLink, To } from 'react-router'
 import { LayoutContextInterface, LayoutCtx } from 'src/layout/LayoutContext'
+import busImage from '../../img/busImg.png'
+import './HomePage.scss'
 
 const PageLink = ({
   icon,

@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 import dayjs from 'src/dayjs'
 
 test('verify API call to gtfs_agencies/list - "Patterns"', async ({ page }) => {

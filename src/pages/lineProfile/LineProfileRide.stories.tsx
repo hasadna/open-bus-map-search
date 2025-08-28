@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-
 import { LineProfileRide } from './LineProfileRide'
 
 const meta = {
