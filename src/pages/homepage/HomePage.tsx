@@ -9,9 +9,9 @@ import { SvgIconProps, Tooltip } from '@mui/material'
 import { useContext } from 'react'
 import { useTranslation } from 'react-i18next'
 import { NavLink, To } from 'react-router'
+import { LayoutContextInterface, LayoutCtx } from 'src/layout/LayoutContext'
 import busImage from '../../img/busImg.png'
 import './HomePage.scss'
-import { LayoutContextInterface, LayoutCtx } from 'src/layout/LayoutContext'
 
 const PageLink = ({
   icon,

@@ -1,6 +1,9 @@
 import { Alert, Grid, Typography } from '@mui/material'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+// Services and libraries
+import dayjs from 'src/dayjs'
+import OperatorSelector from 'src/pages/components/OperatorSelector'
 import { DateSelector } from '../components/DateSelector'
 import { useDate } from '../components/DateTimePicker'
 import { PageContainer } from '../components/PageContainer'
@@ -8,12 +11,9 @@ import { PageContainer } from '../components/PageContainer'
 import InfoYoutubeModal from '../components/YoutubeModal'
 import AllLinesChart from './AllLineschart/AllLinesChart'
 import DayTimeChart from './ArrivalByTimeChart/DayTimeChart'
+import WorstLinesChart from './WorstLinesChart/WorstLinesChart'
 // Styling
 import './DashboardPage.scss'
-import WorstLinesChart from './WorstLinesChart/WorstLinesChart'
-// Services and libraries
-import dayjs from 'src/dayjs'
-import OperatorSelector from 'src/pages/components/OperatorSelector'
 
 // Declarations
 const now = dayjs()

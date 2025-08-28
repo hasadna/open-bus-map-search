@@ -2,12 +2,12 @@ import { Layout } from 'antd'
 import { Suspense } from 'react'
 import { Link, Outlet } from 'react-router'
 import styled from 'styled-components'
-import MainHeader from './header/Header'
-import LayoutContext from './LayoutContext'
-import SideBar from './sidebar/SideBar'
 import { EasterEgg } from 'src/pages/EasterEgg/EasterEgg'
 import { Envelope } from 'src/pages/EasterEgg/Envelope'
 import Preloader from 'src/shared/Preloader'
+import MainHeader from './header/Header'
+import LayoutContext from './LayoutContext'
+import SideBar from './sidebar/SideBar'
 
 const { Content } = Layout
 

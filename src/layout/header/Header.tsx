@@ -5,10 +5,10 @@ import { useContext } from 'react'
 import { LayoutContextInterface, LayoutCtx } from '../LayoutContext'
 import { useTheme } from '../ThemeContext'
 import { DonationButton } from './DonationButton'
-import './Header.css'
 import HeaderLinks from './HeaderLinks/HeaderLinks'
 import { LanguageToggleButton } from './LanguageToggleButton'
 import ToggleThemeButton from './ToggleThemeButton'
+import './Header.css'
 
 const { Header } = Layout
 

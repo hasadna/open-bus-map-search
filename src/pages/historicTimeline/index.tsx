@@ -2,10 +2,6 @@ import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
-import { SearchContext, TimelinePageState } from '../../model/pageState'
-import { DateSelector } from '../components/DateSelector'
-import { NotFound } from '../components/NotFound'
-import { PageContainer } from '../components/PageContainer'
 import {
   getGtfsStopHitTimesAsync,
   getRoutesAsync,
@@ -21,6 +17,10 @@ import { Row } from 'src/pages/components/Row'
 import StopSelector from 'src/pages/components/StopSelector'
 import { TimelineBoard } from 'src/pages/components/timeline/TimelineBoard'
 import { INPUT_SIZE, MARGIN_MEDIUM } from 'src/resources/sizes'
+import { SearchContext, TimelinePageState } from '../../model/pageState'
+import { DateSelector } from '../components/DateSelector'
+import { NotFound } from '../components/NotFound'
+import { PageContainer } from '../components/PageContainer'
 
 const StyledTimelineBoard = styled(TimelineBoard)`
   margin-top: ${MARGIN_MEDIUM * 3}px;

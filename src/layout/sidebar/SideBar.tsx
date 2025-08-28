@@ -3,12 +3,12 @@ import cn from 'classnames'
 import { useContext, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
+import { PAGES } from 'src/routes'
 import { LayoutContextInterface, LayoutCtx } from '../LayoutContext'
 import { useTheme } from '../ThemeContext'
 import { Logo } from './logo'
 import Menu from './menu/Menu'
 import './sidebar.scss'
-import { PAGES } from 'src/routes'
 
 const { Sider } = Layout
 

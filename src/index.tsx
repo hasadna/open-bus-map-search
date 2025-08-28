@@ -5,8 +5,8 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import ReactGA from 'react-ga4'
 import App from './App'
-import './index.css'
 import './locale/allTranslations'
+import './index.css'
 
 const persister = createAsyncStoragePersister({
   storage: window.localStorage,

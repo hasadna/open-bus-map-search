@@ -3,10 +3,10 @@ import { MultipleStopOutlined } from '@mui/icons-material'
 import { Grid, Typography } from '@mui/material'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
-import { InfoItem, InfoTable } from '../components/InfoTable'
-import { routeStartEnd } from '../components/utils/rotueUtils'
 import dayjs from 'src/dayjs'
 import Widget from 'src/shared/Widget'
+import { InfoItem, InfoTable } from '../components/InfoTable'
+import { routeStartEnd } from '../components/utils/rotueUtils'
 
 export const LineProfileDetails = ({
   id,

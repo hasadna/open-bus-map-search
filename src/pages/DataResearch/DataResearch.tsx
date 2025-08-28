@@ -12,15 +12,15 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
+import { useGroupBy } from 'src/api/groupByService'
+import dayjs from 'src/dayjs'
+import Widget from 'src/shared/Widget'
 import { DateSelector } from '../components/DateSelector'
 import { useDate } from '../components/DateTimePicker'
 import OperatorSelector from '../components/OperatorSelector'
 import { PageContainer } from '../components/PageContainer'
 import { getColorName } from '../dashboard/AllLineschart/OperatorHbarChart/OperatorHbarChart'
 import './DataResearch.scss'
-import { useGroupBy } from 'src/api/groupByService'
-import dayjs from 'src/dayjs'
-import Widget from 'src/shared/Widget'
 
 const now = dayjs()
 const unique: (value: string, index: number, self: string[]) => boolean = (value, index, self) =>

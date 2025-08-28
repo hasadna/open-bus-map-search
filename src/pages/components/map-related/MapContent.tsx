@@ -3,14 +3,14 @@ import { Icon, IconOptions, Marker as LeafletMarker } from 'leaflet'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Marker, Polyline, Popup, TileLayer, useMap } from 'react-leaflet'
-import '../../Map.scss'
+import { useAgencyList } from 'src/hooks/useAgencyList'
 import { busIcon, busIconPath } from '../utils/BusIcon'
 import { MapProps } from './map-types'
 import MapFooterButtons from './MapFooterButtons/MapFooterButtons'
 import { MapIndex } from './MapIndex'
 import { BusToolTip } from './MapLayers/BusToolTip'
 import { useRecenterOnDataChange } from './useRecenterOnDataChange'
-import { useAgencyList } from 'src/hooks/useAgencyList'
+import '../../Map.scss'
 
 // configs for planned & actual routes - line color & marker icon
 const getIcon = (path: string, width: number = 10, height: number = 10): Icon<IconOptions> => {

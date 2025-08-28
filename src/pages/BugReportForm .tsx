@@ -2,10 +2,10 @@ import { CreateIssuePostRequest } from '@hasadna/open-bus-api-client'
 import { Button, Form, FormProps, Input, message, Select } from 'antd'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import './BugReportForm.scss'
-import InfoYoutubeModal from './components/YoutubeModal'
 import { ISSUES_API } from 'src/api/apiConfig'
 import Widget from 'src/shared/Widget'
+import InfoYoutubeModal from './components/YoutubeModal'
+import './BugReportForm.scss'
 
 // File upload is disabled until the server-side implementation is complete.
 const BugReportForm = () => {

@@ -1,13 +1,13 @@
 import type { Preview } from '@storybook/react-vite'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import 'leaflet/dist/leaflet.css'
 import { initialize, mswLoader } from 'msw-storybook-addon'
 import { Suspense, useEffect } from 'react'
 import { BrowserRouter } from 'react-router'
-import 'src/App.scss'
-import 'src/index.css'
 import { ThemeProvider, useTheme } from 'src/layout/ThemeContext'
 import i18n from 'src/locale/allTranslations'
+import 'leaflet/dist/leaflet.css'
+import 'src/App.scss'
+import 'src/index.css'
 
 const queryClient = new QueryClient({
   defaultOptions: {

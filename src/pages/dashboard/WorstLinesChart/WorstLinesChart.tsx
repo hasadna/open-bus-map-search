@@ -1,11 +1,11 @@
 import { Skeleton } from 'antd'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import LinesHbarChart from './LineHbarChart/LinesHbarChart'
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
 import { Dayjs } from 'src/dayjs'
 import { MAJOR_OPERATORS } from 'src/model/operator'
 import Widget from 'src/shared/Widget'
+import LinesHbarChart from './LineHbarChart/LinesHbarChart'
 
 interface WorstLinesChartProps {
   startDate: Dayjs

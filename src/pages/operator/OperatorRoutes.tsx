@@ -4,9 +4,9 @@ import { useContext } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useNavigate } from 'react-router'
 import styled from 'styled-components'
-import { useAllRoutes } from '../../hooks/useAllRoutes'
 import { SearchContext } from 'src/model/pageState'
 import Widget from 'src/shared/Widget'
+import { useAllRoutes } from '../../hooks/useAllRoutes'
 
 export const OperatorRoutes = ({
   operatorId,

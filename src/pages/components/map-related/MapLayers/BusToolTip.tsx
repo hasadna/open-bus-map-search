@@ -5,14 +5,14 @@ import cn from 'classnames'
 import { ReactNode, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
-import { EasterEgg } from '../../../EasterEgg/EasterEgg'
-import CustomTreeView from '../../CustomTreeView'
-import './BusToolTip.scss'
-import ComplaintModal from './ComplaintModal'
 import { getRoutesByLineRef } from 'src/api/gtfsService'
 import dayjs from 'src/dayjs'
 import { routeStartEnd, vehicleIDFormat } from 'src/pages/components/utils/rotueUtils'
 import type { Point } from 'src/pages/timeBasedMap'
+import { EasterEgg } from '../../../EasterEgg/EasterEgg'
+import CustomTreeView from '../../CustomTreeView'
+import ComplaintModal from './ComplaintModal'
+import './BusToolTip.scss'
 
 export type BusToolTipProps = { position: Point; icon: string; children?: ReactNode }
 

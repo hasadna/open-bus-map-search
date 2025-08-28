@@ -1,8 +1,8 @@
 import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
-import './HeaderLinks.scss'
 import { HEADER_LINKS } from 'src/routes'
+import './HeaderLinks.scss'
 
 type LinkType = Omit<(typeof HEADER_LINKS)[number], 'element'>
 

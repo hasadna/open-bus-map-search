@@ -3,10 +3,10 @@ import { Skeleton } from 'antd'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Cell, Pie, PieChart } from 'recharts'
-import { InfoItem, InfoTable } from '../components/InfoTable'
 import { useGroupBy } from 'src/api/groupByService'
 import dayjs from 'src/dayjs'
 import Widget from 'src/shared/Widget'
+import { InfoItem, InfoTable } from '../components/InfoTable'
 
 export const OperatorGaps = ({
   operatorId,

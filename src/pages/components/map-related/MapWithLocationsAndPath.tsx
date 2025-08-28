@@ -2,10 +2,10 @@ import { OpenInFullRounded } from '@mui/icons-material'
 import { IconButton } from '@mui/material'
 import { useCallback, useState } from 'react'
 import { MapContainer } from 'react-leaflet'
-import '../../Map.scss'
+import { Point } from 'src/pages/timeBasedMap'
 import { MapProps } from './map-types'
 import { MapContent } from './MapContent'
-import { Point } from 'src/pages/timeBasedMap'
+import '../../Map.scss'
 
 const position: Point = {
   loc: [32.3057988, 34.85478613], // arbitrary default value... Netanya - best city to live & die in

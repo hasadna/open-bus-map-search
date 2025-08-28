@@ -3,10 +3,10 @@ import { Menu } from 'antd'
 import React, { useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useLocation } from 'react-router'
-import './menu.scss'
 import { LayoutContextInterface, LayoutCtx } from 'src/layout/LayoutContext'
 import DonateModal from 'src/pages/DonateModal/DonateModal'
 import { PAGES } from 'src/routes'
+import './menu.scss'
 
 type MenuItem = Required<MenuProps>['items'][number]
 function getItem(
