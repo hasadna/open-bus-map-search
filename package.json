@@ -98,7 +98,7 @@
     "@types/lodash.debounce": "^4.0.9",
     "@types/lodash.uniqby": "^4.7.9",
     "@types/node": "^24.2.0",
-    "@types/react": "^19.1.8",
+    "@types/react": "^19.1.13",
     "@types/react-dom": "^19.1.7",
     "@types/styled-components": "^5.1.34",
     "@types/underscore.string": "^0.0.41",
