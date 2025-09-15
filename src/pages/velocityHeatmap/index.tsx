@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet'
-import { Rectangle } from 'react-leaflet'
+import { MapContainer, Popup, Rectangle, TileLayer } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 
 const API_URL =
@@ -74,24 +73,39 @@ const VelocityHeatmapPage: React.FC = () => {
               [point.rounded_lat - half, point.rounded_lon - half],
               [point.rounded_lat + half, point.rounded_lon + half],
             ]
-            // Color scale: blue (low) to red (high)
-            const minV = 0, maxV = 120 // adjust as needed
-            const norm = Math.max(0, Math.min(1, (point.average_rolling_avg - minV) / (maxV - minV)))
-            const r = Math.round(255 * norm)
-            const g = Math.round(64 * (1 - norm))
-            const b = Math.round(255 * (1 - norm))
+            // Improved color scale: blue (low) -> green (mid) -> red (high)
+            const minV = 0,
+              maxV = 120 // adjust as needed
+            const norm = Math.max(
+              0,
+              Math.min(1, (point.average_rolling_avg - minV) / (maxV - minV)),
+            )
+            let r, g, b
+            if (norm < 0.5) {
+              // blue to green
+              r = 0
+              g = Math.round(2 * 255 * norm)
+              b = Math.round(255 * (1 - 2 * norm))
+            } else {
+              // green to red
+              r = Math.round(2 * 255 * (norm - 0.5))
+              g = Math.round(255 * (1 - 2 * (norm - 0.5)))
+              b = 0
+            }
             const color = `rgba(${r},${g},${b},0.5)`
             return (
               <Rectangle
                 key={idx}
                 bounds={bounds}
-                pathOptions={{ color: color, weight: 1, fillColor: color, fillOpacity: 0.6 }}
-              >
+                pathOptions={{ color: color, weight: 1, fillColor: color, fillOpacity: 0.6 }}>
                 <Popup>
                   <div>
-                    <b>Avg velocity:</b> {point.average_rolling_avg.toFixed(1)} km/h<br />
-                    <b>Stddev:</b> {point.stddev_rolling_avg}<br />
-                    <b>Samples:</b> {point.total_sample_count}<br />
+                    <b>Avg velocity:</b> {point.average_rolling_avg.toFixed(1)} km/h
+                    <br />
+                    <b>Stddev:</b> {point.stddev_rolling_avg}
+                    <br />
+                    <b>Samples:</b> {point.total_sample_count}
+                    <br />
                     <b>Lat:</b> {point.rounded_lat}, <b>Lon:</b> {point.rounded_lon}
                   </div>
                 </Popup>
@@ -99,6 +113,21 @@ const VelocityHeatmapPage: React.FC = () => {
             )
           })}
         </MapContainer>
+      </div>
+      {/* Color legend */}
+      <div style={{ margin: '16px 0', maxWidth: 400, position: 'relative', zIndex: 1000 }}>
+        <h3>Velocity Color Legend (km/h)</h3>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span style={{ fontSize: 12 }}>0</span>
+          <div
+            style={{
+              flex: 1,
+              height: 16,
+              background: 'linear-gradient(to right, blue, green, red)',
+            }}
+          />
+          <span style={{ fontSize: 12 }}>120+</span>
+        </div>
       </div>
       {data.length > 0 && (
         <div>
