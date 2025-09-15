@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet'
+import { Rectangle } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 
 const API_URL =
@@ -66,23 +67,37 @@ const VelocityHeatmapPage: React.FC = () => {
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
           />
-          {data.map((point, idx) => (
-            <Marker key={idx} position={[point.rounded_lat, point.rounded_lon]}>
-              <Popup>
-                <div>
-                  <b>Avg velocity:</b> {point.average_rolling_avg.toFixed(1)} km/h<br />
-                  <br />
-                  <b>Stddev:</b> {point.stddev_rolling_avg.toFixed(1)}
-
-                  <b>Samples:</b> {point.total_sample_count}
-                  <br />
-                  <br />
-                  <br />
-                  <b>Lat:</b> {point.rounded_lat}, <b>Lon:</b> {point.rounded_lon}
-                </div>
-              </Popup>
-            </Marker>
-          ))}
+          {data.map((point, idx) => {
+            // Each square is 0.01 x 0.01 degrees for rounding_precision=2
+            const half = 0.005
+            const bounds: [[number, number], [number, number]] = [
+              [point.rounded_lat - half, point.rounded_lon - half],
+              [point.rounded_lat + half, point.rounded_lon + half],
+            ]
+            // Color scale: blue (low) to red (high)
+            const minV = 0, maxV = 120 // adjust as needed
+            const norm = Math.max(0, Math.min(1, (point.average_rolling_avg - minV) / (maxV - minV)))
+            const r = Math.round(255 * norm)
+            const g = Math.round(64 * (1 - norm))
+            const b = Math.round(255 * (1 - norm))
+            const color = `rgba(${r},${g},${b},0.5)`
+            return (
+              <Rectangle
+                key={idx}
+                bounds={bounds}
+                pathOptions={{ color: color, weight: 1, fillColor: color, fillOpacity: 0.6 }}
+              >
+                <Popup>
+                  <div>
+                    <b>Avg velocity:</b> {point.average_rolling_avg.toFixed(1)} km/h<br />
+                    <b>Stddev:</b> {point.stddev_rolling_avg}<br />
+                    <b>Samples:</b> {point.total_sample_count}<br />
+                    <b>Lat:</b> {point.rounded_lat}, <b>Lon:</b> {point.rounded_lon}
+                  </div>
+                </Popup>
+              </Rectangle>
+            )
+          })}
         </MapContainer>
       </div>
       {data.length > 0 && (
