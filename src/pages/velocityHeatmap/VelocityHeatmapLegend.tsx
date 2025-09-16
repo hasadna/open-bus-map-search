@@ -1,4 +1,3 @@
-
 type VisMode = 'avg' | 'std' | 'cv'
 
 const LEGEND_LABELS: Record<VisMode, string> = {
@@ -28,4 +27,3 @@ export const VelocityHeatmapLegend: React.FC<VelocityHeatmapLegendProps> = ({ vi
     <div style={{ fontSize: 12, marginTop: 4 }}>{LEGEND_LABELS[visMode]}</div>
   </div>
 )
-// This file has been moved to ./components/VelocityHeatmapLegend.tsx

@@ -6,11 +6,13 @@ import { VelocityAggregation } from './useVelocityAggregationData'
 const VelocityHeatmapPopup: React.FC<{ point: VelocityAggregation }> = ({ point }) => (
   <div>
     <br />
-    <b>Avg velocity:</b> {point.average_rolling_avg.toFixed(1)} km/h<br />
+    <b>Avg velocity:</b> {point.average_rolling_avg.toFixed(1)} km/h
+    <br />
     <br />
     <b>Stddev:</b> {point.stddev_rolling_avg.toFixed(1)}
     <br />
-    <b>Samples:</b> {point.total_sample_count}<br />
+    <b>Samples:</b> {point.total_sample_count}
+    <br />
     <br />
     <br />
     <b>Lat:</b> {point.rounded_lat}, <b>Lon:</b> {point.rounded_lon}
@@ -77,8 +79,7 @@ export const VelocityHeatmapRectangles: React.FC<VelocityHeatmapRectanglesProps>
           <Rectangle
             key={idx}
             bounds={bounds}
-            pathOptions={{ color: color, weight: 1, fillColor: color, fillOpacity: 1 }}
-          >
+            pathOptions={{ color: color, weight: 1, fillColor: color, fillOpacity: 1 }}>
             <Popup>
               <VelocityHeatmapPopup point={point} />
             </Popup>
@@ -88,4 +89,3 @@ export const VelocityHeatmapRectangles: React.FC<VelocityHeatmapRectanglesProps>
     </>
   )
 }
-// This file has been moved to ./components/VelocityHeatmapRectangles.tsx

@@ -16,7 +16,10 @@ function getValue(point: VelocityAggregation, visMode: VisMode): number {
 
 function getRedOpacityColor(value: number, minV = 0, maxV = 1): string {
   // Clamp and normalize value to [0,1]
-  const norm = Math.max(0, Math.min(1, (value - minV) / (maxV - minV)))
+  // 0 = fully transparent, 1 = solid red
+  if (maxV === minV) return 'rgba(255,0,0,0)'
+  const maxOpacity = 0.4
+  const norm = (1 - Math.max(0, Math.min(1, (value - minV) / (maxV - minV)))) * maxOpacity
   return `rgba(255,0,0,${norm})`
 }
 
@@ -25,10 +28,11 @@ interface VelocityHeatmapRectanglesProps {
   visMode: VisMode
 }
 
-export const VelocityHeatmapRectangles: React.FC<VelocityHeatmapRectanglesProps> = ({
-  data,
-  visMode,
-}) => {
+export const VelocityHeatmapRectangles: React.FC<
+  VelocityHeatmapRectanglesProps & {
+    setMinMax?: (min: number, max: number) => void
+  }
+> = ({ data, visMode, setMinMax }) => {
   const half = 0.005 // for rounding_precision=2
 
   // Compute min/max for normalization
@@ -48,6 +52,10 @@ export const VelocityHeatmapRectangles: React.FC<VelocityHeatmapRectanglesProps>
       }
     }
   }
+  // Pass min/max to parent for legend
+  React.useEffect(() => {
+    if (setMinMax) setMinMax(minV, maxV)
+  }, [minV, maxV, setMinMax])
 
   return (
     <>
@@ -58,12 +66,12 @@ export const VelocityHeatmapRectangles: React.FC<VelocityHeatmapRectanglesProps>
         ]
         const value = getValue(point, visMode)
         const color = getRedOpacityColor(value, minV, maxV)
+        // fillOpacity is always 1, alpha is controlled by color's 4th channel
         return (
           <Rectangle
             key={idx}
             bounds={bounds}
-            pathOptions={{ color: color, weight: 1, fillColor: color, fillOpacity: 1 }}
-          >
+            pathOptions={{ color: color, weight: 1, fillColor: color, fillOpacity: 1 }}>
             <Popup>
               <VelocityHeatmapPopup point={point} />
             </Popup>
