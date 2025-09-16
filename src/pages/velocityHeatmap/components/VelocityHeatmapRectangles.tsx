@@ -1,22 +1,7 @@
 import React from 'react'
 import { Popup, Rectangle } from 'react-leaflet'
-import { VelocityAggregation } from './useVelocityAggregationData'
-
-// Popup component for a single velocity aggregation point
-const VelocityHeatmapPopup: React.FC<{ point: VelocityAggregation }> = ({ point }) => (
-  <div>
-    <br />
-    <b>Avg velocity:</b> {point.average_rolling_avg.toFixed(1)} km/h<br />
-    <br />
-    <b>Stddev:</b> {point.stddev_rolling_avg.toFixed(1)}
-    <br />
-    <b>Samples:</b> {point.total_sample_count}<br />
-    <br />
-    <br />
-    <b>Lat:</b> {point.rounded_lat}, <b>Lon:</b> {point.rounded_lon}
-    <br />
-  </div>
-)
+import { VelocityAggregation } from '../useVelocityAggregationData'
+import { VelocityHeatmapPopup } from './VelocityHeatmapPopup'
 
 type VisMode = 'avg' | 'std' | 'cv'
 
@@ -88,4 +73,3 @@ export const VelocityHeatmapRectangles: React.FC<VelocityHeatmapRectanglesProps>
     </>
   )
 }
-// This file has been moved to ./components/VelocityHeatmapRectangles.tsx

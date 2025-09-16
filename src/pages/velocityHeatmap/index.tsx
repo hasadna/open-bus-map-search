@@ -1,8 +1,8 @@
 
 import { MapContainer, TileLayer } from 'react-leaflet'
 import { useVelocityAggregationData } from './useVelocityAggregationData'
-import { VelocityHeatmapLegend } from './VelocityHeatmapLegend'
-import { VelocityHeatmapRectangles } from './VelocityHeatmapRectangles'
+import { VelocityHeatmapLegend } from './components/VelocityHeatmapLegend'
+import { VelocityHeatmapRectangles } from './components/VelocityHeatmapRectangles'
 import 'leaflet/dist/leaflet.css'
 
 const API_URL =
