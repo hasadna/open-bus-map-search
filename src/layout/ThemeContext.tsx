@@ -47,13 +47,22 @@ export const ThemeProvider = ({ children }: PropsWithChildren) => {
     i18n.changeLanguage(newLanguage)
   }, [language, i18n, setLanguage])
 
-  const changeLanguage = useCallback((newLanguage: string) => {
-    setLanguage(newLanguage)
-    i18n.changeLanguage(newLanguage)
-  }, [i18n, setLanguage])
+  const changeLanguage = useCallback(
+    (newLanguage: string) => {
+      setLanguage(newLanguage)
+      i18n.changeLanguage(newLanguage)
+    },
+    [i18n, setLanguage],
+  )
 
   const contextValue = useMemo(
-    () => ({ isDarkTheme, toggleLanguage, toggleTheme, setLanguage: changeLanguage, currentLanguage: language }),
+    () => ({
+      isDarkTheme,
+      toggleLanguage,
+      toggleTheme,
+      setLanguage: changeLanguage,
+      currentLanguage: language,
+    }),
     [isDarkTheme, toggleLanguage, toggleTheme, changeLanguage, language],
   )
 
@@ -71,7 +80,6 @@ export const ThemeProvider = ({ children }: PropsWithChildren) => {
     const direction = isRTL ? 'rtl' : 'ltr'
     const muiLocale = language === 'en' ? enUS : language === 'ru' ? ruRU : heIL
     const dateLocale = language === 'en' ? dateEnUS : language === 'ru' ? dateRuRU : dateHeIL
-    
     return createTheme(
       {
         components: {
@@ -100,7 +108,6 @@ export const ThemeProvider = ({ children }: PropsWithChildren) => {
   const antdTheme = useMemo<ConfigProviderProps>(() => {
     const isRTL = language === 'he'
     const antdLocale = language === 'en' ? antdEnUS : language === 'ru' ? antdRuRU : antdHeIL
-    
     return {
       direction: isRTL ? 'rtl' : 'ltr',
       locale: antdLocale,

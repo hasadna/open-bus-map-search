@@ -43,25 +43,31 @@ export const LanguageToggleButton = () => {
 
   const getCurrentLanguageFlag = () => {
     switch (currentLanguage) {
-      case 'he': return '🇮🇱'
-      case 'en': return '🇺🇸'
-      case 'ru': return '🇷🇺'
-      default: return '🌐'
+      case 'he':
+        return '🇮🇱'
+      case 'en':
+        return '🇺🇸'
+      case 'ru':
+        return '🇷🇺'
+      default:
+        return '🌐'
     }
   }
 
   return (
     <Dropdown
-      menu={{ items: languageOptions, onClick: handleLanguageChange, selectedKeys: [currentLanguage] }}
+      menu={{
+        items: languageOptions,
+        onClick: handleLanguageChange,
+        selectedKeys: [currentLanguage],
+      }}
       trigger={['click']}
-      placement="bottomRight"
-    >
+      placement="bottomRight">
       <button
         className="header-link"
         aria-label={t('Change Language')}
         title={t('Change Language')}
-        style={{ display: 'flex', alignItems: 'center', gap: '4px' }}
-      >
+        style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
         <span>{getCurrentLanguageFlag()}</span>
         <GlobalOutlined />
       </button>
