@@ -11,7 +11,7 @@ export const LanguageToggleButton = () => {
     {
       key: 'he',
       label: (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }} aria-label="עברית">
           <span>🇮🇱</span>
           <span>עברית</span>
         </div>
@@ -20,7 +20,7 @@ export const LanguageToggleButton = () => {
     {
       key: 'en',
       label: (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }} aria-label="English">
           <span>🇺🇸</span>
           <span>English</span>
         </div>
@@ -29,7 +29,7 @@ export const LanguageToggleButton = () => {
     {
       key: 'ru',
       label: (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }} aria-label="Русский">
           <span>🇷🇺</span>
           <span>Русский</span>
         </div>
