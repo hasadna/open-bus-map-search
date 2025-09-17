@@ -1,11 +1,12 @@
 import { createTheme, ThemeProvider as MuiThemeProvider, ScopedCssBaseline } from '@mui/material'
-import { enUS, heIL } from '@mui/material/locale'
+import { enUS, heIL, ruRU } from '@mui/material/locale'
 import { LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
-import { enUS as dateEnUS, heIL as dateHeIL } from '@mui/x-date-pickers/locales'
+import { enUS as dateEnUS, heIL as dateHeIL, ruRU as dateRuRU } from '@mui/x-date-pickers/locales'
 import { theme as antdlgorithm, ConfigProvider, ConfigProviderProps } from 'antd'
 import antdEnUS from 'antd/es/locale/en_US'
 import antdHeIL from 'antd/es/locale/he_IL'
+import antdRuRU from 'antd/es/locale/ru_RU'
 import {
   createContext,
   PropsWithChildren,
@@ -21,6 +22,8 @@ import dayjs from 'src/dayjs'
 export interface ThemeContextInterface {
   toggleTheme: () => void
   toggleLanguage: () => void
+  setLanguage: (language: string) => void
+  currentLanguage: string
   isDarkTheme?: boolean
 }
 
@@ -37,14 +40,21 @@ export const ThemeProvider = ({ children }: PropsWithChildren) => {
   const toggleTheme = useCallback(() => setIsDarkTheme((prev) => !prev), [setIsDarkTheme])
 
   const toggleLanguage = useCallback(() => {
-    const newLanguage = language === 'en' ? 'he' : 'en'
+    const languages = ['he', 'en', 'ru']
+    const currentIndex = languages.indexOf(language)
+    const newLanguage = languages[(currentIndex + 1) % languages.length]
     setLanguage(newLanguage)
     i18n.changeLanguage(newLanguage)
   }, [language, i18n, setLanguage])
 
+  const changeLanguage = useCallback((newLanguage: string) => {
+    setLanguage(newLanguage)
+    i18n.changeLanguage(newLanguage)
+  }, [i18n, setLanguage])
+
   const contextValue = useMemo(
-    () => ({ isDarkTheme, toggleLanguage, toggleTheme }),
-    [isDarkTheme, toggleLanguage, toggleTheme],
+    () => ({ isDarkTheme, toggleLanguage, toggleTheme, setLanguage: changeLanguage, currentLanguage: language }),
+    [isDarkTheme, toggleLanguage, toggleTheme, changeLanguage, language],
   )
 
   useEffect(() => {
@@ -57,8 +67,11 @@ export const ThemeProvider = ({ children }: PropsWithChildren) => {
   }, [language, i18n])
 
   const muiTheme = useMemo(() => {
-    const isEnglish = language === 'en'
-    const direction = isEnglish ? 'ltr' : 'rtl'
+    const isRTL = language === 'he'
+    const direction = isRTL ? 'rtl' : 'ltr'
+    const muiLocale = language === 'en' ? enUS : language === 'ru' ? ruRU : heIL
+    const dateLocale = language === 'en' ? dateEnUS : language === 'ru' ? dateRuRU : dateHeIL
+    
     return createTheme(
       {
         components: {
@@ -79,15 +92,18 @@ export const ThemeProvider = ({ children }: PropsWithChildren) => {
         direction,
         palette: { mode: isDarkTheme ? 'dark' : 'light' },
       },
-      isEnglish ? enUS : heIL,
-      isEnglish ? dateEnUS : dateHeIL,
+      muiLocale,
+      dateLocale,
     )
   }, [isDarkTheme, language])
 
   const antdTheme = useMemo<ConfigProviderProps>(() => {
+    const isRTL = language === 'he'
+    const antdLocale = language === 'en' ? antdEnUS : language === 'ru' ? antdRuRU : antdHeIL
+    
     return {
-      direction: language === 'en' ? 'ltr' : 'rtl',
-      locale: language === 'en' ? antdEnUS : antdHeIL,
+      direction: isRTL ? 'rtl' : 'ltr',
+      locale: antdLocale,
       theme: {
         algorithm: isDarkTheme ? antdlgorithm.darkAlgorithm : antdlgorithm.defaultAlgorithm,
         token: {
