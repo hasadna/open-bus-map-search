@@ -25,11 +25,7 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
       await page.emulateMedia({ reducedMotion: 'reduce' })
       await page.goto('/')
       if (mode === 'Dark') await page.getByLabel('עבור למצב כהה').first().click()
-      if (mode === 'LTR') {
-        await page.getByLabel('Change Language').click()
-        await page.getByText('English').click()
-        await page.waitForTimeout(500) // Wait for language change
-      }
+      if (mode === 'LTR') await page.getByLabel('English').first().click()
       await loadTranslate(i18next, mode === 'LTR' ? 'en' : 'he')
       if (process.env.APPLITOOLS_API_KEY) {
         await eyes.open(page, 'OpenBus', testinfo.title)
