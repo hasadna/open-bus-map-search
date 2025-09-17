@@ -100,9 +100,10 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
         .click()
       await page.getByRole('option', { name: 'אגד', exact: true }).first().click()
       await waitForSkeletonsToHide(page)
-      // Wait for charts and data to load completely
-      await page.waitForLoadState('networkidle')
-      await page.waitForSelector('.recharts-wrapper', { state: 'visible' })
+      // Wait for charts data to be fully loaded (deterministic wait)
+      await page.locator('.ant-spin').last().waitFor({ state: 'hidden' })
+      await page.locator('.recharts-wrapper svg').waitFor({ state: 'visible' })
+      await page.locator('.recharts-cartesian-grid').waitFor({ state: 'visible' })
       await eyes.check({
         ...Target.window().layoutRegions('.chart', '.recharts-wrapper'),
         name: 'operator page',
@@ -112,9 +113,10 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
     test(`Donation modal Should Look Good [${mode}]`, async ({ page }) => {
       await page.getByLabel(i18next.t('donate_title')).first().click()
       await page.locator('.MuiTypography-root').first().waitFor()
-      // Wait for modal content to fully load
-      await page.waitForLoadState('networkidle')
+      // Wait for modal content to be fully rendered (deterministic wait)
       await page.getByRole('dialog').waitFor({ state: 'visible' })
+      await page.locator('.MuiDialog-paper').waitFor({ state: 'visible' })
+      await page.locator('.MuiDialogTitle-root').waitFor({ state: 'visible' })
       await eyes.check({ ...Target.region(page.getByRole('dialog')), name: 'donation modal' })
     })
 
