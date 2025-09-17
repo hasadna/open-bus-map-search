@@ -25,10 +25,7 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
       await page.emulateMedia({ reducedMotion: 'reduce' })
       await page.goto('/')
       if (mode === 'Dark') await page.getByLabel('עבור למצב כהה').first().click()
-      if (mode === 'LTR') {
-        await page.locator('button[aria-label*="Change Language"]').click()
-        await page.locator('[aria-label="English"]').click()
-      }
+      if (mode === 'LTR') await page.getByLabel('English').first().click()
       await loadTranslate(i18next, mode === 'LTR' ? 'en' : 'he')
       if (process.env.APPLITOOLS_API_KEY) {
         await eyes.open(page, 'OpenBus', testinfo.title)
@@ -103,6 +100,9 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
         .click()
       await page.getByRole('option', { name: 'אגד', exact: true }).first().click()
       await waitForSkeletonsToHide(page)
+      // Wait for charts and data to load completely
+      await page.waitForLoadState('networkidle')
+      await page.waitForSelector('.recharts-wrapper', { state: 'visible' })
       await eyes.check({
         ...Target.window().layoutRegions('.chart', '.recharts-wrapper'),
         name: 'operator page',
@@ -112,6 +112,9 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
     test(`Donation modal Should Look Good [${mode}]`, async ({ page }) => {
       await page.getByLabel(i18next.t('donate_title')).first().click()
       await page.locator('.MuiTypography-root').first().waitFor()
+      // Wait for modal content to fully load
+      await page.waitForLoadState('networkidle')
+      await page.getByRole('dialog').waitFor({ state: 'visible' })
       await eyes.check({ ...Target.region(page.getByRole('dialog')), name: 'donation modal' })
     })
 
