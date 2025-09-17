@@ -27,7 +27,10 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
       if (mode === 'Dark') await page.getByLabel('עבור למצב כהה').first().click()
       if (mode === 'LTR') {
         // Click the language dropdown button (should have "English" text in Hebrew mode)
-        await page.getByRole('button', { name: /English|Change Language/ }).first().click()
+        await page
+          .getByRole('button', { name: /English|Change Language/ })
+          .first()
+          .click()
         // Click the English option from the dropdown menu (the div, not the button)
         await page.getByText('🇺🇸English').click()
       }
