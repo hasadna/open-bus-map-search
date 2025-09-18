@@ -32,7 +32,7 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
           .first()
           .click()
         // Click the English option from the dropdown menu (the div, not the button)
-        await page.getByText('🇺🇸English').click()
+        await page.getByRole('menuitem').filter({ hasText: 'English' }).click()
       }
       await loadTranslate(i18next, mode === 'LTR' ? 'en' : 'he')
       if (process.env.APPLITOOLS_API_KEY) {
