@@ -82,7 +82,8 @@ export const ThemeProvider = ({ children }: PropsWithChildren) => {
       ru: { direction: 'ltr', muiLocale: ruRU, dateLocale: dateRuRU },
     } as const
 
-    const { direction, muiLocale, dateLocale } = langConfig[language as keyof typeof langConfig] || langConfig.he
+    const { direction, muiLocale, dateLocale } =
+      langConfig[language as keyof typeof langConfig] || langConfig.he
     return createTheme(
       {
         components: {
@@ -116,7 +117,7 @@ export const ThemeProvider = ({ children }: PropsWithChildren) => {
     } as const
 
     const { direction, locale } = langConfig[language as keyof typeof langConfig] || langConfig.he
-    
+
     return {
       direction,
       locale,
