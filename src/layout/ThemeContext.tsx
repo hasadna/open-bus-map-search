@@ -76,10 +76,13 @@ export const ThemeProvider = ({ children }: PropsWithChildren) => {
   }, [language, i18n])
 
   const muiTheme = useMemo(() => {
-    const isRTL = language === 'he'
-    const direction = isRTL ? 'rtl' : 'ltr'
-    const muiLocale = language === 'en' ? enUS : language === 'ru' ? ruRU : heIL
-    const dateLocale = language === 'en' ? dateEnUS : language === 'ru' ? dateRuRU : dateHeIL
+    const langConfig = {
+      he: { direction: 'rtl', muiLocale: heIL, dateLocale: dateHeIL },
+      en: { direction: 'ltr', muiLocale: enUS, dateLocale: dateEnUS },
+      ru: { direction: 'ltr', muiLocale: ruRU, dateLocale: dateRuRU },
+    } as const
+
+    const { direction, muiLocale, dateLocale } = langConfig[language as keyof typeof langConfig] || langConfig.he
     return createTheme(
       {
         components: {
@@ -106,11 +109,17 @@ export const ThemeProvider = ({ children }: PropsWithChildren) => {
   }, [isDarkTheme, language])
 
   const antdTheme = useMemo<ConfigProviderProps>(() => {
-    const isRTL = language === 'he'
-    const antdLocale = language === 'en' ? antdEnUS : language === 'ru' ? antdRuRU : antdHeIL
+    const langConfig = {
+      he: { direction: 'rtl', locale: antdHeIL },
+      en: { direction: 'ltr', locale: antdEnUS },
+      ru: { direction: 'ltr', locale: antdRuRU },
+    } as const
+
+    const { direction, locale } = langConfig[language as keyof typeof langConfig] || langConfig.he
+    
     return {
-      direction: isRTL ? 'rtl' : 'ltr',
-      locale: antdLocale,
+      direction,
+      locale,
       theme: {
         algorithm: isDarkTheme ? antdlgorithm.darkAlgorithm : antdlgorithm.defaultAlgorithm,
         token: {

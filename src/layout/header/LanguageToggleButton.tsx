@@ -7,52 +7,27 @@ export const LanguageToggleButton = () => {
   const { setLanguage, currentLanguage } = useTheme()
   const { t } = useTranslation()
 
-  const languageOptions: MenuProps['items'] = [
-    {
-      key: 'he',
-      label: (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }} aria-label="עברית">
-          <span>🇮🇱</span>
-          <span>עברית</span>
-        </div>
-      ),
-    },
-    {
-      key: 'en',
-      label: (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }} aria-label="English">
-          <span>🇺🇸</span>
-          <span>English</span>
-        </div>
-      ),
-    },
-    {
-      key: 'ru',
-      label: (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }} aria-label="Русский">
-          <span>🇷🇺</span>
-          <span>Русский</span>
-        </div>
-      ),
-    },
+  const languages = [
+    { key: 'he', label: 'עברית' },
+    { key: 'en', label: 'English' },
+    { key: 'ru', label: 'Русский' },
   ]
+
+  const LangLabel = ({ label }: { label: string }) => (
+    <div aria-label={label}>
+      <span>{label}</span>
+    </div>
+  )
+
+  const languageOptions: MenuProps['items'] = languages.map(({ key, label }) => ({
+    key,
+    label: <LangLabel label={label} />,
+  }))
 
   const handleLanguageChange: MenuProps['onClick'] = ({ key }) => {
     setLanguage(key)
   }
 
-  const getCurrentLanguageFlag = () => {
-    switch (currentLanguage) {
-      case 'he':
-        return '🇮🇱'
-      case 'en':
-        return '🇺🇸'
-      case 'ru':
-        return '🇷🇺'
-      default:
-        return '🌐'
-    }
-  }
 
   return (
     <Dropdown
@@ -68,7 +43,6 @@ export const LanguageToggleButton = () => {
         aria-label={t('Change Language')}
         title={t('Change Language')}
         style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-        <span>{getCurrentLanguageFlag()}</span>
         <GlobalOutlined />
       </button>
     </Dropdown>
