@@ -25,7 +25,15 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
       await page.emulateMedia({ reducedMotion: 'reduce' })
       await page.goto('/')
       if (mode === 'Dark') await page.getByLabel('עבור למצב כהה').first().click()
-      if (mode === 'LTR') await page.getByLabel('English').first().click()
+      if (mode === 'LTR') {
+        // Click the language dropdown button (should have "English" text in Hebrew mode)
+        await page
+          .getByRole('button', { name: /English|Change Language/ })
+          .first()
+          .click()
+        // Click the English option from the dropdown menu (the div, not the button)
+        await page.getByRole('menuitem').filter({ hasText: 'English' }).click()
+      }
       await loadTranslate(i18next, mode === 'LTR' ? 'en' : 'he')
       if (process.env.APPLITOOLS_API_KEY) {
         await eyes.open(page, 'OpenBus', testinfo.title)
