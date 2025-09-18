@@ -14,3 +14,17 @@
 .ant-picker-dropdown {
   z-index: 10000;
 }
+
+.hideOnDesktop {
+  display: none !important;
+}
+
+@media only screen and (width < 768px) {
+  .hideOnMobile {
+    display: none !important;
+  }
+
+  .hideOnDesktop {
+    display: block !important;
+  }
+}

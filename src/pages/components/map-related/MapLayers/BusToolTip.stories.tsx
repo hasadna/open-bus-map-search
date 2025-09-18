@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { BusToolTip, BusToolTipProps } from './BusToolTip'
 import Widget from 'src/shared/Widget'
+import { BusToolTip, BusToolTipProps } from './BusToolTip'
 
 const meta = {
   title: 'Map/Layers/BusToolTip',

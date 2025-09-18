@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 
 test('make sure the corner GitHub icon leads to DataBus GitHub project', async ({ page }) => {
   await page.goto('/')

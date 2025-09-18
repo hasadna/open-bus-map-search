@@ -1,7 +1,7 @@
 import { expect, type Page } from '@playwright/test'
 import i18next from 'i18next'
-import { getPastDate, loadTranslate, test, urlMatcher, waitForSkeletonsToHide } from './utils'
 import { operatorList } from 'src/pages/operator/data'
+import { getPastDate, loadTranslate, test, urlMatcher, waitForSkeletonsToHide } from './utils'
 
 const getLabelValue = async (label: string, page: Page) => {
   const row = page.locator('table tr', { hasText: label })

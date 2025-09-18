@@ -1,12 +1,12 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { getRoutesAsync, getRoutesByLineRef, getStopsForRouteAsync } from 'src/api/gtfsService'
 import useVehicleLocations from 'src/api/useVehicleLocations'
-import { BusStop } from 'src/model/busStop'
-import { BusRoute } from 'src/model/busRoute'
-import { SearchContext } from 'src/model/pageState'
-import { Point } from 'src/pages/timeBasedMap'
 import dayjs from 'src/dayjs'
-import { vehicleIDFormat, routeStartEnd } from 'src/pages/components/utils/rotueUtils'
+import { BusRoute } from 'src/model/busRoute'
+import { BusStop } from 'src/model/busStop'
+import { SearchContext } from 'src/model/pageState'
+import { routeStartEnd, vehicleIDFormat } from 'src/pages/components/utils/rotueUtils'
+import { Point } from 'src/pages/timeBasedMap'
 
 const formatTime = (time: dayjs.Dayjs) => time.format('HH:mm')
 

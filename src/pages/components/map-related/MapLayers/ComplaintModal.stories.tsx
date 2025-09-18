@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState } from 'react'
-import ComplaintModal from './ComplaintModal'
-import type { BusToolTipProps } from './BusToolTip'
 import type { VehicleLocation } from 'src/model/vehicleLocation'
+import type { BusToolTipProps } from './BusToolTip'
+import ComplaintModal from './ComplaintModal'
 
 const meta = {
   title: 'Map/Layers/ComplaintModal',
