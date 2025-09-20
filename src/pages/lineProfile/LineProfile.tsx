@@ -4,7 +4,7 @@ import { Tooltip } from 'antd'
 import { useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLoaderData, useNavigate } from 'react-router'
-import { getRoutesAsync } from 'src/api/gtfsService'
+import { getGtfsRoutes } from 'src/api/gtfsService'
 import dayjs from 'src/dayjs'
 import { useSingleLineData } from 'src/hooks/useSingleLineData'
 import { SearchContext } from 'src/model/pageState'
@@ -63,13 +63,13 @@ const LineProfile = () => {
     if (!time || !route) return
 
     const abortController = new AbortController()
-    getRoutesAsync(
-      time,
-      time,
-      route?.operatorRef.toString(),
-      route?.routeShortName,
-      abortController.signal,
-    )
+    getGtfsRoutes({
+      from: time.valueOf(),
+      operatorId: route?.operatorRef.toString(),
+      routeShortName: route?.routeShortName,
+      signal: abortController.signal,
+      toBusRoute: true,
+    })
       .then((routes) => {
         const newRoute = routes?.find((r) => r.key === route.routeLongName)
         if (newRoute?.routeIds?.[0]) {
