@@ -2,7 +2,7 @@ import { CreateIssuePostRequest } from '@hasadna/open-bus-api-client'
 import { Alert } from '@mui/material'
 import { useMutation } from '@tanstack/react-query'
 import { Button, Form, FormProps, Input, message, Select } from 'antd'
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ISSUES_API } from 'src/api/apiConfig'
 import Widget from 'src/shared/Widget'
@@ -11,16 +11,15 @@ import './BugReportForm.scss'
 
 // File upload is disabled until the server-side implementation is complete.
 const BugReportForm = () => {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [form] = Form.useForm<CreateIssuePostRequest>()
   // const [fileList, setFileList] = useState<UploadFile[]>([])
-  const [submittedUrl, setSubmittedUrl] = useState<string | undefined>(undefined)
 
   const createIssueMutation = useMutation({
-    mutationFn: (values: CreateIssuePostRequest) =>
-      ISSUES_API.issuesCreatePost({ createIssuePostRequest: values }),
+    mutationFn: (values: CreateIssuePostRequest) => {
+      return ISSUES_API.issuesCreatePost({ createIssuePostRequest: values })
+    },
     onSuccess: (response) => {
-      setSubmittedUrl(response.data?.url)
       if (response.data?.state === 'open') {
         message.success(t('reportBug.success'))
         form.resetFields()
@@ -49,12 +48,12 @@ const BugReportForm = () => {
 
   const options = useMemo(() => {
     return [
-      { value: 'always', label: t('bug_frequency.always') },
-      { value: 'sometimes', label: t('bug_frequency.sometimes') },
-      { value: 'rarely', label: t('bug_frequency.rarely') },
-      { value: 'once', label: t('bug_frequency.once') },
+      { value: 'always', label: i18n.t('bug_frequency.always') },
+      { value: 'sometimes', label: i18n.t('bug_frequency.sometimes') },
+      { value: 'rarely', label: i18n.t('bug_frequency.rarely') },
+      { value: 'once', label: i18n.t('bug_frequency.once') },
     ]
-  }, [t])
+  }, [i18n.language])
 
   return (
     <Widget
@@ -69,10 +68,10 @@ const BugReportForm = () => {
           />
         </p>
       }>
-      <span> {t('reportBug.description')}</span>
+      <span>{t('reportBug.description')}</span>
       <p>
-        {submittedUrl && (
-          <a href={submittedUrl} target="_blank" rel="noopener noreferrer">
+        {createIssueMutation.isSuccess && (
+          <a href={createIssueMutation.data.data?.url} target="_blank" rel="noopener noreferrer">
             {t('reportBug.viewIssue')} (Github)
           </a>
         )}
@@ -177,11 +176,7 @@ const BugReportForm = () => {
               <br />
             </>
           )}
-          <Button
-            type="primary"
-            htmlType="submit"
-            disabled={createIssueMutation.isSuccess}
-            loading={createIssueMutation.isPending}>
+          <Button type="primary" htmlType="submit" loading={createIssueMutation.isPending}>
             {t('bug_submit')}
           </Button>
         </Form.Item>
