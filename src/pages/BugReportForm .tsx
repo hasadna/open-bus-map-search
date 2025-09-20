@@ -170,7 +170,7 @@ const BugReportForm = () => {
         </Form.Item> */}
 
         <Form.Item>
-          {createIssueMutation.error && (
+          {createIssueMutation.isError && (
             <>
               <Alert color="error">{t('reportBug.error')}</Alert>
               <br />
