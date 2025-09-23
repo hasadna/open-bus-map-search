@@ -1,6 +1,6 @@
 import React from 'react'
-import { VelocityHeatmapRectangles } from './VelocityHeatmapRectangles'
 import { VelocityAggregation } from '../useVelocityAggregationData'
+import { VelocityHeatmapRectangles } from './VelocityHeatmapRectangles'
 
 export default {
   title: 'VelocityHeatmap/Rectangles',
