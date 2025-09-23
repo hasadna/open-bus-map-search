@@ -10,7 +10,9 @@ interface VelocityHeatmapLegendProps {
   visMode: 'avg' | 'std' | 'cv'
 }
 
-export const VelocityHeatmapLegend: React.FC<VelocityHeatmapLegendProps> = ({ visMode }) => (
+export const VelocityHeatmapLegend: React.FC<VelocityHeatmapLegendProps> = ({
+  visMode,
+}: VelocityHeatmapLegendProps) => (
   <div style={{ margin: '16px 0', maxWidth: 400, position: 'relative', zIndex: 1000 }}>
     <h3>Red Opacity Legend</h3>
     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
