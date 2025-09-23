@@ -5,8 +5,12 @@ import { VelocityHeatmapRectangles } from './components/VelocityHeatmapRectangle
 import { useVelocityAggregationData } from './useVelocityAggregationData'
 import 'leaflet/dist/leaflet.css'
 
-const API_URL =
-  'https://open-bus-stride-api.hasadna.org.il/siri_velocity_aggregation/siri_velocity_aggregation?recorded_from=2025-01-01T00%3A00%3A00&lon_min=34.25&lon_max=35.0&lat_min=29.5&lat_max=29.8&rounding_precision=2'
+const DEFAULT_BOUNDS = {
+  minLat: 29.5,
+  maxLat: 33.33,
+  minLon: 34.25,
+  maxLon: 35.7,
+}
 
 const VIS_MODES = [
   { key: 'avg', label: 'Visualize Avg Speed' },
@@ -15,7 +19,12 @@ const VIS_MODES = [
 ]
 
 const VelocityHeatmapPage: React.FC = () => {
-  const { data, loading, error } = useVelocityAggregationData(API_URL)
+  const { data, loading, error } = useVelocityAggregationData({
+    minLat: DEFAULT_BOUNDS.minLat,
+    maxLat: DEFAULT_BOUNDS.maxLat,
+    minLon: DEFAULT_BOUNDS.minLon,
+    maxLon: DEFAULT_BOUNDS.maxLon,
+  })
   const [visMode, setVisMode] = useState<'avg' | 'std' | 'cv'>('avg')
   const [min, setMin] = useState(0)
   const [max, setMax] = useState(1)
