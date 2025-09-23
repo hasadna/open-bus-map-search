@@ -91,7 +91,7 @@ jobs:
   test:
     name: Application & Playwright Tests
     runs-on: ubuntu-latest
-    needs: [local-tests, build, build-outside-docker]
+    needs: [build, build-outside-docker]
     steps:
       - name: Download Docker image artifact
         uses: actions/download-artifact@v4
@@ -157,7 +157,7 @@ jobs:
   storybook-test:
     name: Storybook Visual Tests
     runs-on: ubuntu-22.04 # not working whit ubuntu 23+
-    needs: [local-tests, build, build-outside-docker]
+    needs: [build, build-outside-docker]
     steps:
       - name: Prepare for Testing
         run: |
@@ -186,7 +186,7 @@ jobs:
   visual-test:
     name: Playwright Visual Tests
     runs-on: ubuntu-latest
-    needs: [local-tests, build, build-outside-docker]
+    needs: [build, build-outside-docker]
     steps:
       - name: Prepare for Testing
         run: |
