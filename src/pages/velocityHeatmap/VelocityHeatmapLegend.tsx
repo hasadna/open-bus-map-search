@@ -7,7 +7,7 @@ const LEGEND_LABELS: Record<VisMode, string> = {
 }
 
 interface VelocityHeatmapLegendProps {
-  visMode: 'avg' | 'std' | 'cv';
+  visMode: 'avg' | 'std' | 'cv'
 }
 
 export const VelocityHeatmapLegend: React.FC<VelocityHeatmapLegendProps> = ({ visMode }) => (
