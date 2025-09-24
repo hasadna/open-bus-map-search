@@ -23,10 +23,11 @@ const VelocityHeatmapPopup: React.FC<{ point: VelocityAggregation }> = ({ point 
 type VisMode = 'avg' | 'std' | 'cv'
 
 function getValue(point: VelocityAggregation, visMode: VisMode): number {
-  if (visMode === 'avg') return point.average_rolling_avg
-  if (visMode === 'std') return point.stddev_rolling_avg
+  const { average_rolling_avg: avg, stddev_rolling_avg: stdev } = point
+  if (visMode === 'avg') return avg
+  if (visMode === 'std') return stdev
   if (visMode === 'cv') {
-    return point.stddev_rolling_avg > 0 ? point.average_rolling_avg / point.stddev_rolling_avg : 0
+    return stdev > 0 ? stdev / avg : 0
   }
   return 0
 }

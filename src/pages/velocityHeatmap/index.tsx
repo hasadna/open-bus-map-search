@@ -15,7 +15,7 @@ const DEFAULT_BOUNDS = {
 const VIS_MODES = [
   { key: 'avg', label: 'Visualize Avg Speed' },
   { key: 'std', label: 'Visualize Std' },
-  { key: 'cv', label: 'Visualize Avg Speed / Std (Coeff of Var)' },
+  { key: 'cv', label: 'Visualize Std / Avg Speed (Coeff of Var)' },
 ]
 
 const VelocityHeatmapPage: React.FC = () => {
