@@ -21,7 +21,6 @@ import dayjs from 'src/dayjs'
 
 export interface ThemeContextInterface {
   toggleTheme: () => void
-  toggleLanguage: () => void
   setLanguage: (language: string) => void
   currentLanguage: string
   isDarkTheme?: boolean
@@ -39,14 +38,6 @@ export const ThemeProvider = ({ children }: PropsWithChildren) => {
 
   const toggleTheme = useCallback(() => setIsDarkTheme((prev) => !prev), [setIsDarkTheme])
 
-  const toggleLanguage = useCallback(() => {
-    const languages = ['he', 'en', 'ru']
-    const currentIndex = languages.indexOf(language)
-    const newLanguage = languages[(currentIndex + 1) % languages.length]
-    setLanguage(newLanguage)
-    i18n.changeLanguage(newLanguage)
-  }, [language, i18n, setLanguage])
-
   const changeLanguage = useCallback(
     (newLanguage: string) => {
       setLanguage(newLanguage)
@@ -58,12 +49,11 @@ export const ThemeProvider = ({ children }: PropsWithChildren) => {
   const contextValue = useMemo(
     () => ({
       isDarkTheme,
-      toggleLanguage,
       toggleTheme,
       setLanguage: changeLanguage,
       currentLanguage: language,
     }),
-    [isDarkTheme, toggleLanguage, toggleTheme, changeLanguage, language],
+    [isDarkTheme, toggleTheme, changeLanguage, language],
   )
 
   useEffect(() => {
