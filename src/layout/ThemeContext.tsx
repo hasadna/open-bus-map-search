@@ -70,6 +70,7 @@ export const ThemeProvider = ({ children }: PropsWithChildren) => {
       he: { direction: 'rtl', muiLocale: heIL, dateLocale: dateHeIL },
       en: { direction: 'ltr', muiLocale: enUS, dateLocale: dateEnUS },
       ru: { direction: 'ltr', muiLocale: ruRU, dateLocale: dateRuRU },
+      am: { direction: 'ltr', muiLocale: enUS, dateLocale: dateEnUS },
     } as const
 
     const { direction, muiLocale, dateLocale } =
@@ -104,6 +105,7 @@ export const ThemeProvider = ({ children }: PropsWithChildren) => {
       he: { direction: 'rtl', locale: antdHeIL },
       en: { direction: 'ltr', locale: antdEnUS },
       ru: { direction: 'ltr', locale: antdRuRU },
+      am: { direction: 'ltr', locale: antdEnUS },
     } as const
 
     const { direction, locale } = langConfig[language as keyof typeof langConfig] || langConfig.he
