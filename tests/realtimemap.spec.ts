@@ -23,13 +23,15 @@ test('tooltip appears after clicking on map point', async ({ page }) => {
   await page.goto('/map')
 
   await test.step('Click on a bus button', async () => {
-    const button = page.getByRole('button', { name: 'אגד אגד' })
-    await button.click()
-    await button.click({ force: true })
+    await page.locator('.leaflet-container').click()
+    await page.waitForTimeout(1000)
+    await page.getByRole('button', { name: 'אגד אגד' }).click({ force: true })
+    await page.waitForTimeout(500)
   })
 
   await test.step('Click inside the tooltip', async () => {
     await page.getByRole('button', { name: 'הצג מידע לגיקים' }).click()
+    await page.waitForTimeout(500)
     await page.getByRole('button', { name: 'הסתר מידע לגיקים' }).click()
   })
 

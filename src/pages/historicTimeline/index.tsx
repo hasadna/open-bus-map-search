@@ -2,11 +2,7 @@ import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
-import {
-  getGtfsStopHitTimesAsync,
-  getRoutesAsync,
-  getStopsForRouteAsync,
-} from 'src/api/gtfsService'
+import { getGtfsRoutes, getGtfsStopHitTimesAsync, getStopsForRouteAsync } from 'src/api/gtfsService'
 import { getSiriStopHitTimesAsync } from 'src/api/siriService'
 import dayjs from 'src/dayjs'
 import { Label } from 'src/pages/components/Label'
@@ -68,7 +64,13 @@ const TimelinePage = () => {
       return
     }
     setRoutesIsLoading(true)
-    getRoutesAsync(dayjs(timestamp), dayjs(timestamp), operatorId, lineNumber, signal)
+    getGtfsRoutes({
+      from: timestamp,
+      operatorId,
+      routeShortName: lineNumber,
+      signal,
+      toBusRoute: true,
+    })
       .then((routes) =>
         setSearch((current) =>
           search.lineNumber === lineNumber ? { ...current, routes: routes } : current,
