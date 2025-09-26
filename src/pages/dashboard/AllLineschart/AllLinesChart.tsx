@@ -9,11 +9,11 @@ import Widget from 'src/shared/Widget'
 import OperatorHbarChart from './OperatorHbarChart/OperatorHbarChart'
 
 const convertToChartCompatibleStruct = (arr: GroupByRes[]) => {
-  return arr.map((item: GroupByRes) => ({
-    id: item.operator_ref?.operatorRef || 'Unknown',
-    name: item.operator_ref?.agencyName || 'Unknown',
-    total: item.total_planned_rides,
-    actual: item.total_actual_rides,
+  return arr.map((operator) => ({
+    id: operator.operatorRef?.operatorRef || 'Unknown',
+    name: operator.operatorRef?.agencyName || 'Unknown',
+    total: operator.totalPlannedRides,
+    actual: operator.totalActualRides,
   }))
 }
 
@@ -29,15 +29,15 @@ export const AllLinesChart: FC<AllChartComponentProps> = ({
   alertAllChartsZeroLinesHandling,
 }) => {
   const [groupByOperatorData, groupByOperatorLoading] = useGroupBy({
-    dateTo: endDate,
-    dateFrom: startDate,
+    dateFrom: startDate.valueOf(),
+    dateTo: endDate.valueOf(),
     groupBy: 'operator_ref',
   })
   const { t } = useTranslation()
 
   useEffect(() => {
     const totalElements = groupByOperatorData.length
-    const totalZeroElements = groupByOperatorData.filter((el) => el.total_actual_rides === 0).length
+    const totalZeroElements = groupByOperatorData.filter((el) => el.totalActualRides === 0).length
     if (totalElements === 0 || totalZeroElements === totalElements) {
       alertAllChartsZeroLinesHandling(true)
     } else {
