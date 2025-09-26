@@ -167,7 +167,10 @@ const BugReportForm = () => {
 
       {createIssueMutation.isSuccess && (
         <Alert severity="success" sx={{ marginTop: 2 }}>
-          <a href={createIssueMutation.data.data?.url} target="_blank" rel="noopener noreferrer">
+          <a
+            href={createIssueMutation.data.data?.htmlUrl}
+            target="_blank"
+            rel="noopener noreferrer">
             {t('reportBug.viewIssue')} (Github)
           </a>
           {', '}
