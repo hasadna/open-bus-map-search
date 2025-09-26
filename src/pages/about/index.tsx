@@ -158,8 +158,8 @@ const Attributions = () => {
     <Widget title="Attributions" sx={{ textAlign: 'right', direction: 'ltr' }}>
       <ul dir="ltr">
         <li>
-          Thanks <a href="http://www.applitools.com/">Applitools</a> for the free open-source
-          license for their visual testing tool
+          Thanks <a href="https://applitools.com/">Applitools</a> for the free open-source license
+          for their visual testing tool
         </li>
         <li>
           Bus ifmage by{' '}
