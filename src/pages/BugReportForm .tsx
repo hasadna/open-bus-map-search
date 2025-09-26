@@ -1,7 +1,7 @@
 import { CreateIssuePostRequest } from '@hasadna/open-bus-api-client'
 import { Alert } from '@mui/material'
 import { useMutation } from '@tanstack/react-query'
-import { Button, Form, FormProps, Input, message, Select } from 'antd'
+import { Button, Form, FormProps, Input, Select } from 'antd'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ISSUES_API } from 'src/api/apiConfig'
@@ -21,16 +21,12 @@ const BugReportForm = () => {
     },
     onSuccess: (response) => {
       if (response.data?.state === 'open') {
-        message.success(t('reportBug.success'))
         form.resetFields()
         // setFileList([])
-      } else {
-        message.error(t('reportBug.error'))
       }
     },
     onError: (error) => {
       console.error('Error submitting bug report:', error)
-      message.error(t('reportBug.error'))
     },
   })
 
@@ -69,13 +65,6 @@ const BugReportForm = () => {
         </p>
       }>
       <span>{t('reportBug.description')}</span>
-      <p>
-        {createIssueMutation.isSuccess && (
-          <a href={createIssueMutation.data.data?.url} target="_blank" rel="noopener noreferrer">
-            {t('reportBug.viewIssue')} (Github)
-          </a>
-        )}
-      </p>
       <Form
         form={form}
         name="bug-report"
@@ -170,17 +159,27 @@ const BugReportForm = () => {
         </Form.Item> */}
 
         <Form.Item>
-          {createIssueMutation.isError && (
-            <>
-              <Alert color="error">{t('reportBug.error')}</Alert>
-              <br />
-            </>
-          )}
           <Button type="primary" htmlType="submit" loading={createIssueMutation.isPending}>
             {t('bug_submit')}
           </Button>
         </Form.Item>
       </Form>
+
+      {createIssueMutation.isSuccess && (
+        <Alert severity="success" sx={{ marginTop: 2 }}>
+          <a href={createIssueMutation.data.data?.url} target="_blank" rel="noopener noreferrer">
+            {t('reportBug.viewIssue')} (Github)
+          </a>
+          {', '}
+          {t('reportBug.success')}
+        </Alert>
+      )}
+
+      {createIssueMutation.isError && (
+        <Alert severity="error" sx={{ marginTop: 2 }}>
+          {t('reportBug.error')}
+        </Alert>
+      )}
     </Widget>
   )
 }
