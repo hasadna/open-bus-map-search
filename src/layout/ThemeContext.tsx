@@ -1,9 +1,10 @@
 import { createTheme, ThemeProvider as MuiThemeProvider, ScopedCssBaseline } from '@mui/material'
-import { enUS, heIL, ruRU } from '@mui/material/locale'
+import { arEG, enUS, heIL, ruRU } from '@mui/material/locale'
 import { LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { enUS as dateEnUS, heIL as dateHeIL, ruRU as dateRuRU } from '@mui/x-date-pickers/locales'
 import { theme as antdlgorithm, ConfigProvider, ConfigProviderProps } from 'antd'
+import antdArEG from 'antd/es/locale/ar_EG'
 import antdEnUS from 'antd/es/locale/en_US'
 import antdHeIL from 'antd/es/locale/he_IL'
 import antdRuRU from 'antd/es/locale/ru_RU'
@@ -70,6 +71,7 @@ export const ThemeProvider = ({ children }: PropsWithChildren) => {
       he: { direction: 'rtl', muiLocale: heIL, dateLocale: dateHeIL },
       en: { direction: 'ltr', muiLocale: enUS, dateLocale: dateEnUS },
       ru: { direction: 'ltr', muiLocale: ruRU, dateLocale: dateRuRU },
+      ar: { direction: 'rtl', muiLocale: arEG, dateLocale: dateEnUS },
     } as const
 
     const { direction, muiLocale, dateLocale } =
@@ -104,6 +106,7 @@ export const ThemeProvider = ({ children }: PropsWithChildren) => {
       he: { direction: 'rtl', locale: antdHeIL },
       en: { direction: 'ltr', locale: antdEnUS },
       ru: { direction: 'ltr', locale: antdRuRU },
+      ar: { direction: 'rtl', locale: antdArEG },
     } as const
 
     const { direction, locale } = langConfig[language as keyof typeof langConfig] || langConfig.he
