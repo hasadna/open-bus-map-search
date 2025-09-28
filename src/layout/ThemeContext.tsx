@@ -1,5 +1,5 @@
 import { createTheme, ThemeProvider as MuiThemeProvider, ScopedCssBaseline } from '@mui/material'
-import { enUS, heIL, ruRU } from '@mui/material/locale'
+import { amET, enUS, heIL, ruRU } from '@mui/material/locale'
 import { LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { enUS as dateEnUS, heIL as dateHeIL, ruRU as dateRuRU } from '@mui/x-date-pickers/locales'
@@ -70,7 +70,7 @@ export const ThemeProvider = ({ children }: PropsWithChildren) => {
       he: { direction: 'rtl', muiLocale: heIL, dateLocale: dateHeIL },
       en: { direction: 'ltr', muiLocale: enUS, dateLocale: dateEnUS },
       ru: { direction: 'ltr', muiLocale: ruRU, dateLocale: dateRuRU },
-      am: { direction: 'ltr', muiLocale: enUS, dateLocale: dateEnUS },
+      am: { direction: 'ltr', muiLocale: amET, dateLocale: dateEnUS },
     } as const
 
     const { direction, muiLocale, dateLocale } =
