@@ -18,6 +18,7 @@ import {
 import { useTranslation } from 'react-i18next'
 import { useLocalStorage } from 'usehooks-ts'
 import dayjs from 'src/dayjs'
+import antdAmharic from 'src/locale/antdAmharic'
 
 export interface ThemeContextInterface {
   toggleTheme: () => void
@@ -105,7 +106,7 @@ export const ThemeProvider = ({ children }: PropsWithChildren) => {
       he: { direction: 'rtl', locale: antdHeIL },
       en: { direction: 'ltr', locale: antdEnUS },
       ru: { direction: 'ltr', locale: antdRuRU },
-      am: { direction: 'ltr', locale: antdEnUS },
+      am: { direction: 'ltr', locale: antdAmharic },
     } as const
 
     const { direction, locale } = langConfig[language as keyof typeof langConfig] || langConfig.he
