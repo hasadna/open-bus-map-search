@@ -60,3 +60,12 @@ const defaultArgs: BusToolTipProps = {
 export const Default: Story = {
   args: defaultArgs,
 }
+
+export const WithComplaint: Story = {
+  args: defaultArgs,
+  play: async ({ canvasElement, userEvent }) => {
+    // Simulate typing 'complaint' to trigger the EasterEgg
+    await new Promise((resolve) => setTimeout(resolve, 1000)) // wait for 1 second
+    userEvent.type(canvasElement, 'complaint')
+  },
+}
