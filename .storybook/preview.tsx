@@ -78,6 +78,7 @@ export const globalTypes = {
         { value: 'he', title: 'עברית' },
         { value: 'en', title: 'English' },
         { value: 'ru', title: 'Русский' },
+        { value: 'am', title: 'አማርኛ' },
       ],
       showName: true,
     },
