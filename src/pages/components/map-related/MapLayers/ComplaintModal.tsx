@@ -1,6 +1,6 @@
 import {
   ComplaintsSendPostRequest,
-  // ComplaintsSendPostRequestUserData,
+  SiriRideWithRelatedPydanticModel,
 } from '@hasadna/open-bus-api-client'
 import { Close } from '@mui/icons-material'
 import {
@@ -14,12 +14,13 @@ import {
 } from '@mui/material'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { Button, Form, Select } from 'antd'
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { COMPLAINTS_API } from 'src/api/apiConfig'
 import { getSiriRideWithRelated } from 'src/api/siriService'
 import dayjs from 'src/dayjs'
-import { Point } from 'src/pages/timeBasedMap'
+import type { Point } from 'src/pages/timeBasedMap'
 import {
   allComplaintFields,
   complaintList,
@@ -35,88 +36,89 @@ interface ComplaintModalProps {
   position: Point
 }
 
+const getRideIdentifiers = (position: Point) => {
+  return [
+    position.point?.siri_route__id?.toString() ?? '',
+    position.point?.siri_ride__vehicle_ref?.toString() ?? '',
+    position.point?.siri_route__line_ref?.toString() ?? '',
+  ] as [string, string, string]
+}
+
+const useSiriRideQuery = (position: Point) => {
+  const ride = useMemo(() => getRideIdentifiers(position), [position])
+  return useQuery({ queryKey: ['ride', ...ride], queryFn: () => getSiriRideWithRelated(...ride) })
+}
+
+const formatValuesForSubmit = (values: Record<string, any>) => {
+  const res: Record<string, any> = { ...values }
+  Object.keys(res).forEach((k) => {
+    const v = res[k]
+    if (dayjs.isDayjs(v)) res[k] = v.format('HH:mm')
+  })
+  return res
+}
+
+const getAutoDefaults = (fieldName: string, siriData?: SiriRideWithRelatedPydanticModel) => {
+  if (!siriData) return ''
+  switch (fieldName) {
+    case 'trainNumber':
+    case 'licensePlate':
+      return siriData.vehicleRef ?? ''
+    case 'lineNumber':
+      return siriData.gtfsRouteRouteShortName ?? ''
+    case 'route':
+      return siriData.gtfsRouteLineRef?.toString() ?? ''
+    default:
+      return ''
+  }
+}
+
 const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: ComplaintModalProps) => {
   const { t, i18n } = useTranslation()
   const [form] = Form.useForm()
   const [selectedComplaintType, setSelectedComplaintType] = useState<ComplaintTypes | null>(null)
 
-  const ride = useMemo(() => {
-    return [
-      position.point?.siri_route__id.toString(),
-      position.point?.siri_ride__vehicle_ref.toString(),
-      position.point?.siri_route__line_ref.toString(),
-    ] as [siriRouteId: string, vehicleRefs: string, siriRouteLineRefs: string]
-  }, [position.point])
-
-  const siriRide = useQuery({
-    queryKey: ['ride', ...ride],
-    queryFn: () => getSiriRideWithRelated(...ride),
-  })
+  const siriRide = useSiriRideQuery(position)
 
   const submitMutation = useMutation({
-    mutationFn: (complaintsSendPostRequest: ComplaintsSendPostRequest) => {
-      return COMPLAINTS_API.complaintsSendPost({ complaintsSendPostRequest })
-    },
+    mutationFn: (complaintsSendPostRequest: ComplaintsSendPostRequest) =>
+      COMPLAINTS_API.complaintsSendPost({ complaintsSendPostRequest }),
   })
 
-  const handleSubmit = (values: Record<string, any>) => {
-    const formattedValues = { ...values }
-    for (const key in formattedValues) {
-      if (dayjs.isDayjs(formattedValues[key])) {
-        formattedValues[key] = formattedValues[key].format('HH:mm')
-      }
-    }
-    console.log(formattedValues)
-    //submitMutation.mutate({ debug: true, userData: formattedValues, databusData: siriRide.data })
-  }
+  const handleSubmit = useCallback(
+    (values: Record<string, any>) => {
+      const payload = formatValuesForSubmit(values)
+      console.log(payload)
+
+      // submitMutation.mutate({ debug: true, userData: payload, databusData: siriRide.data })
+    },
+    [submitMutation, siriRide.data],
+  )
 
   const dynamicFields = useMemo(() => {
     if (!selectedComplaintType) return null
     const mapping = complaintTypeMappings[selectedComplaintType]
     if (!mapping) return null
-
-    const regularFields = mapping.fields.map((fieldName) => {
-      const fieldConfig = allComplaintFields[fieldName] as FormFieldSetting
-      return fieldConfig ? renderField(fieldConfig) : null
+    const regular = mapping.fields.map((name) => renderField(allComplaintFields[name]))
+    const auto = mapping.auto_fields.map((name) => {
+      const field = allComplaintFields[name]
+      if (!field) return null
+      const defaultValue = getAutoDefaults(field.name, siriRide.data)
+      const props = { ...(field.props || {}), disabled: true }
+      return renderField({ ...field, props } as FormFieldSetting, defaultValue)
     })
 
-    const autoFields = mapping.auto_fields.map((fieldName) => {
-      const fieldConfig = allComplaintFields[fieldName] as FormFieldSetting
-      if (!fieldConfig) return null
-      // Auto Fill
-      let defaultValue = ''
-      if (siriRide.isSuccess && fieldConfig) {
-        switch (fieldConfig.name) {
-          case 'trainNumber':
-          case 'licensePlate':
-            defaultValue = siriRide.data?.vehicleRef || ''
-            break
-          case 'lineNumber':
-            defaultValue = siriRide.data?.gtfsRouteRouteShortName || ''
-            break
-          case 'route':
-            defaultValue = siriRide.data?.gtfsRouteLineRef?.toString() || ''
-            break
-          default:
-            defaultValue = ''
-        }
-      }
+    return [...regular, ...auto]
+  }, [selectedComplaintType, siriRide.data])
 
-      if (fieldConfig.props) {
-        fieldConfig.props.disabled = true
-      } else {
-        fieldConfig.props = { disabled: true }
-      }
-
-      return renderField(fieldConfig, defaultValue)
-    })
-
-    return [...regularFields, ...autoFields]
-  }, [selectedComplaintType, t, siriRide.data?.id])
+  const isBusy =
+    siriRide.isLoading ||
+    submitMutation.isPending ||
+    (submitMutation.isIdle === false && submitMutation.isPending)
 
   return (
     <>
-      {siriRide.isLoading || submitMutation.isPending ? (
+      {isBusy ? (
         <div className="loading">
           <span>{t('loading_routes')}</span>
           <CircularProgress />
@@ -135,6 +137,7 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
               <Close />
             </IconButton>
           </DialogTitle>
+
           <DialogContent>
             {submitMutation.isSuccess ? (
               <div>
@@ -147,9 +150,8 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
                 layout="vertical"
                 onFinish={handleSubmit}
                 onValuesChange={(changedValues) => {
-                  if ('complaintType' in changedValues) {
+                  if ('complaintType' in changedValues)
                     setSelectedComplaintType(changedValues.complaintType as ComplaintTypes)
-                  }
                 }}>
                 {renderField(allComplaintFields.firstName)}
                 {renderField(allComplaintFields.lastName)}
