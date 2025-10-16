@@ -13,16 +13,21 @@ import {
   Typography,
 } from '@mui/material'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { Button, Checkbox, DatePicker, Form, Input, Select, TimePicker } from 'antd'
+import { Button, Form, Select } from 'antd'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { COMPLAINTS_API } from 'src/api/apiConfig'
 import { getSiriRideWithRelated } from 'src/api/siriService'
 import dayjs from 'src/dayjs'
 import { Point } from 'src/pages/timeBasedMap'
-import { allComplaintFields, complaintTypeMappings, FormFieldSetting } from './complaintFormConfig'
-
-// Import the new config
+import {
+  allComplaintFields,
+  complaintList,
+  complaintTypeMappings,
+  type ComplaintTypes,
+  type FormFieldSetting,
+  renderField,
+} from './ComplaintModalConfig'
 
 interface ComplaintModalProps {
   modalOpen?: boolean
@@ -30,42 +35,10 @@ interface ComplaintModalProps {
   position: Point
 }
 
-type complaintTypeStrings = (typeof complaintTypes)[number]
-
-const complaintTypes = [
-  'other',
-  'no_stop',
-  'no_ride',
-  'delay',
-  'overcrowded',
-  'driver_behavior',
-  'early',
-  'cleanliness',
-  'fine_appeal',
-  'route_change',
-  'line_switch',
-  'station_signs',
-  'add_or_remove_station',
-  'add_new_line',
-  'add_frequency',
-  'ticketing_fares_discounts',
-  // Train types
-  'train_delay',
-  'train_no_ride',
-  'train_early',
-  'train_driver_behavior',
-]
-
-const complaintList = complaintTypes.map((c) => ({ value: c, label: c }))
-
-if (import.meta.env.DEV) complaintList.push({ value: 'debug', label: 'debug' })
-
 const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: ComplaintModalProps) => {
   const { t, i18n } = useTranslation()
   const [form] = Form.useForm()
-  const [selectedComplaintType, setSelectedComplaintType] = useState<complaintTypeStrings | null>(
-    null,
-  )
+  const [selectedComplaintType, setSelectedComplaintType] = useState<ComplaintTypes | null>(null)
 
   const ride = useMemo(() => {
     return [
@@ -97,86 +70,20 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
     //submitMutation.mutate({ debug: true, userData: formattedValues, databusData: siriRide.data })
   }
 
-  const renderField = (
-    fieldConfig: FormFieldSetting,
-    isReadOnly = false,
-    defaultValue?: string,
-  ) => {
-    const commonProps = { ...fieldConfig.props }
-    let component
-
-    switch (fieldConfig.component) {
-      case 'TextArea':
-        component = (
-          <Input.TextArea {...commonProps} readOnly={isReadOnly} defaultValue={defaultValue} />
-        )
-        break
-      case 'DatePicker':
-        component = (
-          <DatePicker
-            {...commonProps}
-            disabled={isReadOnly}
-            style={{ width: '100%' }}
-            maxDate={dayjs()}
-          />
-        )
-        break
-      case 'TimePicker':
-        component = (
-          <TimePicker
-            {...commonProps}
-            disabled={isReadOnly}
-            format="HH:mm"
-            style={{ width: '100%' }}
-          />
-        )
-        break
-      case 'Checkbox':
-        return (
-          <Form.Item
-            key={fieldConfig.name}
-            name={fieldConfig.name}
-            valuePropName="checked"
-            rules={fieldConfig.rules}>
-            <Checkbox {...commonProps} disabled={isReadOnly}>
-              {fieldConfig.labelKey}
-            </Checkbox>
-          </Form.Item>
-        )
-      default:
-        component = <Input {...commonProps} readOnly={isReadOnly} defaultValue={defaultValue} />
-    }
-
-    return (
-      <Form.Item
-        key={fieldConfig.name}
-        name={fieldConfig.name}
-        label={fieldConfig.labelKey}
-        rules={fieldConfig.rules}>
-        {component}
-      </Form.Item>
-    )
-  }
-
   const dynamicFields = useMemo(() => {
     if (!selectedComplaintType) return null
     const mapping = complaintTypeMappings[selectedComplaintType]
     if (!mapping) return null
 
     const regularFields = mapping.fields.map((fieldName) => {
-      const fieldConfig = allComplaintFields[fieldName]
-      return fieldConfig ? renderField(fieldConfig, false) : null
+      const fieldConfig = allComplaintFields[fieldName] as FormFieldSetting
+      return fieldConfig ? renderField(fieldConfig) : null
     })
 
     const autoFields = mapping.auto_fields.map((fieldName) => {
-      const fieldConfig = allComplaintFields[fieldName]
-      const readOnlyConfig = fieldConfig
-        ? {
-            ...fieldConfig,
-            labelKey: `${fieldConfig.labelKey} (${'auto_filled'})`,
-          }
-        : null
-
+      const fieldConfig = allComplaintFields[fieldName] as FormFieldSetting
+      if (!fieldConfig) return null
+      // Auto Fill
       let defaultValue = ''
       if (siriRide.isSuccess && fieldConfig) {
         switch (fieldConfig.name) {
@@ -193,11 +100,15 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
           default:
             defaultValue = ''
         }
-
-        return readOnlyConfig ? renderField(readOnlyConfig, true, defaultValue) : null
       }
 
-      return readOnlyConfig ? renderField(readOnlyConfig, true) : null
+      if (fieldConfig.props) {
+        fieldConfig.props.disabled = true
+      } else {
+        fieldConfig.props = { disabled: true }
+      }
+
+      return renderField(fieldConfig, defaultValue)
     })
 
     return [...regularFields, ...autoFields]
@@ -237,7 +148,7 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
                 onFinish={handleSubmit}
                 onValuesChange={(changedValues) => {
                   if ('complaintType' in changedValues) {
-                    setSelectedComplaintType(changedValues.complaintType as complaintTypeStrings)
+                    setSelectedComplaintType(changedValues.complaintType as ComplaintTypes)
                   }
                 }}>
                 {renderField(allComplaintFields.firstName)}
