@@ -189,7 +189,7 @@ export const allComplaintFields = {
   }),
 
   // Dynamic
-  busCompany: input('busCompany', 'bus_company_operator', { rules: [{ required: true }] }),
+  busCompany: select('busCompany', 'bus_company_operator', { rules: [{ required: true }] }),
   licensePlate: input('licensePlate', 'license_plate', { rules: [{ required: true }] }),
   eventDate: datePicker('eventDate', 'event_date', {
     rules: [{ required: true }],
@@ -200,11 +200,11 @@ export const allComplaintFields = {
   route: input('route', 'origin_destination_route', { rules: [{ required: true }] }),
   waitFrom: timePicker('waitFrom', 'wait_from_time', { rules: [{ required: true }] }),
   waitTo: timePicker('waitTo', 'wait_to_time', { rules: [{ required: true }] }),
-  boardingStation: input('boardingStation', 'boarding_station_optional', { rules: [] }),
+  boardingStation: select('boardingStation', 'boarding_station_optional', { rules: [] }),
   traveledFromOptional: input('traveledFromOptional', 'traveled_from_optional', { rules: [] }),
   traveledToOptional: input('traveledToOptional', 'traveled_to_optional', { rules: [] }),
-  traveledFrom: input('traveledFrom', 'traveled_from', { rules: [{ required: true }] }),
-  traveledTo: input('traveledTo', 'traveled_to', { rules: [{ required: true }] }),
+  traveledFrom: select('traveledFrom', 'traveled_from', { rules: [{ required: true }] }),
+  traveledTo: select('traveledTo', 'traveled_to', { rules: [{ required: true }] }),
   lineActiveDate: input('lineActiveDate', 'line_active_date', { rules: [{ required: true }] }),
   addRemoveStationReason: input('addRemoveStationReason', 'add_remove_station', {
     rules: [{ required: true }],
@@ -227,10 +227,10 @@ export const allComplaintFields = {
   }),
   stationCatNum: input('stationCatNum', 'station_catalog_number', { rules: [{ required: true }] }),
   // Train
-  trainType: input('trainType', 'train_type', { rules: [{ required: true }] }),
+  trainType: select('trainType', 'train_type', { rules: [{ required: true }] }),
   trainNumber: input('trainNumber', 'train_number', { rules: [{ required: true }] }),
-  originStation: input('originStation', 'origin_station', { rules: [{ required: true }] }),
-  destinationStation: input('destinationStation', 'destination_station', {
+  originStation: select('originStation', 'origin_station', { rules: [{ required: true }] }),
+  destinationStation: select('destinationStation', 'destination_station', {
     rules: [{ required: true }],
   }),
 } as const
@@ -257,10 +257,10 @@ export const complaintTypes = [
   'line_switch',
   'station_signs',
   'ticketing_fares_discounts',
-  'train_delay',
-  'train_no_ride',
-  'train_early',
-  'train_driver_behavior',
+  // 'train_delay',
+  // 'train_no_ride',
+  // 'train_early',
+  // 'train_driver_behavior',
   'debug',
 ] as const
 
@@ -352,13 +352,10 @@ export const complaintTypeMappings: Record<(typeof complaintTypes)[number], Comp
     auto_fields: [],
   },
   ticketing_fares_discounts: { fields: ['ravKavNumber'], auto_fields: [] },
-  train_delay: { fields: ['trainType'], auto_fields: ['trainNumber'] },
-  train_no_ride: { fields: ['eventDate'], auto_fields: [] },
-  train_early: { fields: ['eventTime'], auto_fields: [] },
-  train_driver_behavior: {
-    fields: ['originStation', 'destinationStation', 'description'],
-    auto_fields: [],
-  },
+  // train_delay: { fields: ['trainType'], auto_fields: ['trainNumber'] },
+  // train_no_ride: { fields: ['eventDate'], auto_fields: [] },
+  // train_early: { fields: ['eventTime'], auto_fields: [] },
+  // train_driver_behavior: { fields: ['originStation', 'destinationStation', 'description'] auto_fields: [] },
   debug: {
     fields: (Object.keys(allComplaintFields) as (keyof typeof allComplaintFields)[]).filter(
       (key) =>

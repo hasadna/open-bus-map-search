@@ -13,7 +13,7 @@ import {
   Typography,
 } from '@mui/material'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { Button, Form, Select } from 'antd'
+import { Button, Collapse, Form, Select } from 'antd'
 import { useCallback, useMemo } from 'react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -104,11 +104,11 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
       const field = allComplaintFields[name]
       if (!field) return null
       const defaultValue = getAutoDefaults(field.name, siriRide.data)
-      const props = { ...(field.props || {}), disabled: true }
+      const props = { ...(field.props || {}), value: defaultValue, disabled: true }
       return renderField({ ...field, props } as FormFieldSetting, defaultValue)
     })
 
-    return [...regular, ...auto]
+    return { regular, auto }
   }, [selectedComplaintType, siriRide.data])
 
   const isBusy =
@@ -166,7 +166,7 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
                   <Select options={complaintList} />
                 </Form.Item>
 
-                {dynamicFields}
+                {dynamicFields?.regular}
 
                 {renderField(allComplaintFields.description)}
 
@@ -177,6 +177,8 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
                     </Button>
                   </Form.Item>
                 </DialogActions>
+
+                <Collapse items={[{ label: 'more detelis', children: dynamicFields?.auto }]} />
               </Form>
             )}
           </DialogContent>
