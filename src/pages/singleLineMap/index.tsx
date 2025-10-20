@@ -14,6 +14,7 @@ import LineNumberSelector from 'src/pages/components/LineSelector'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
 import RouteSelector from 'src/pages/components/RouteSelector'
 import VehicleNumberSelector from 'src/pages/components/VehicleSelector'
+import { getHebrewDate } from 'src/utils/getHebrewDate'
 import { SearchContext } from '../../model/pageState'
 import { DateSelector } from '../components/DateSelector'
 import { FilterPositionsByStartTimeSelector } from '../components/FilterPositionsByStartTimeSelector'
@@ -91,6 +92,7 @@ const SingleLineMapPage = () => {
           {/* choose date*/}
           <Grid size={{ sm: 4, xs: 12 }}>
             <DateSelector time={dayjs(timestamp)} onChange={handleTimestampChange} />
+            {`תאריך עברי: ${getHebrewDate(dayjs(timestamp).toDate())}`}
           </Grid>
           {/* choose operator */}
           <Grid size={{ sm: 4, xs: 12 }}>
