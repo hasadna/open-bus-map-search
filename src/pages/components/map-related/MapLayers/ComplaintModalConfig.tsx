@@ -189,7 +189,7 @@ export const allComplaintFields = {
   }),
 
   // Dynamic
-  busCompany: select('busCompany', 'bus_company_operator', { rules: [{ required: true }] }),
+  operator: select('operator', 'operator', { rules: [{ required: true }] }),
   licensePlate: input('licensePlate', 'license_plate', { rules: [{ required: true }] }),
   eventDate: datePicker('eventDate', 'event_date', {
     rules: [{ required: true }],
@@ -203,8 +203,8 @@ export const allComplaintFields = {
   boardingStation: select('boardingStation', 'boarding_station_optional', { rules: [] }),
   traveledFromOptional: input('traveledFromOptional', 'traveled_from_optional', { rules: [] }),
   traveledToOptional: input('traveledToOptional', 'traveled_to_optional', { rules: [] }),
-  traveledFrom: select('traveledFrom', 'traveled_from', { rules: [{ required: true }] }),
-  traveledTo: select('traveledTo', 'traveled_to', { rules: [{ required: true }] }),
+  traveledFrom: input('traveledFrom', 'traveled_from', { rules: [{ required: true }] }),
+  traveledTo: input('traveledTo', 'traveled_to', { rules: [{ required: true }] }),
   lineActiveDate: input('lineActiveDate', 'line_active_date', { rules: [{ required: true }] }),
   addRemoveStationReason: input('addRemoveStationReason', 'add_remove_station', {
     rules: [{ required: true }],
@@ -227,12 +227,10 @@ export const allComplaintFields = {
   }),
   stationCatNum: input('stationCatNum', 'station_catalog_number', { rules: [{ required: true }] }),
   // Train
-  trainType: select('trainType', 'train_type', { rules: [{ required: true }] }),
-  trainNumber: input('trainNumber', 'train_number', { rules: [{ required: true }] }),
-  originStation: select('originStation', 'origin_station', { rules: [{ required: true }] }),
-  destinationStation: select('destinationStation', 'destination_station', {
-    rules: [{ required: true }],
-  }),
+  // trainType: select('trainType', 'train_type', { rules: [{ required: true }] }),
+  // trainNumber: input('trainNumber', 'train_number', { rules: [{ required: true }] }),
+  // originStation: select('originStation', 'origin_station', { rules: [{ required: true }] }),
+  // destinationStation: select('destinationStation', 'destination_station', { rules: [{ required: true }] }),
 } as const
 
 export interface ComplaintTypeFields {
@@ -266,27 +264,79 @@ export const complaintTypes = [
 
 export const complaintTypeMappings: Record<(typeof complaintTypes)[number], ComplaintTypeFields> = {
   other: { fields: [], auto_fields: [] },
-  no_ride: { fields: ['busCompany'], auto_fields: ['licensePlate'] },
-  no_stop: { fields: ['eventDate'], auto_fields: ['lineNumber'] },
-  delay: { fields: ['eventTime'], auto_fields: ['route'] },
-  overcrowded: { fields: ['waitFrom'], auto_fields: [] },
-  early: { fields: ['waitTo'], auto_fields: [] },
-  add_or_remove_station: {
+  no_ride: {
     fields: [
-      'busCompany',
-      'lineActiveDate',
-      'addRemoveStationReason',
-      'requestedStationAddress',
+      'eventTime',
+      'waitFrom',
+      'waitTo',
+      'boardingStation',
       'traveledFromOptional',
       'traveledToOptional',
     ],
-    auto_fields: ['lineNumber', 'route'],
+    auto_fields: ['operator', 'route', 'lineNumber', 'licensePlate', 'eventDate'],
   },
-  add_new_line: { fields: ['boardingLocality', 'destinationLocality'], auto_fields: [] },
+  no_stop: {
+    fields: [
+      'eventTime',
+      'waitFrom',
+      'waitTo',
+      'boardingStation',
+      'traveledFromOptional',
+      'traveledToOptional',
+    ],
+    auto_fields: ['operator', 'route', 'lineNumber', 'licensePlate', 'eventDate'],
+  },
+  delay: {
+    fields: [
+      'eventTime',
+      'waitFrom',
+      'waitTo',
+      'boardingStation',
+      'traveledFromOptional',
+      'traveledToOptional',
+    ],
+    auto_fields: ['operator', 'route', 'lineNumber', 'licensePlate', 'eventDate'],
+  },
+  overcrowded: {
+    fields: [
+      'eventTime',
+      'waitFrom',
+      'waitTo',
+      'boardingStation',
+      'traveledFromOptional',
+      'traveledToOptional',
+    ],
+    auto_fields: ['operator', 'route', 'lineNumber', 'licensePlate', 'eventDate'],
+  },
+  early: {
+    fields: [
+      'eventTime',
+      'waitFrom',
+      'waitTo',
+      'boardingStation',
+      'traveledFromOptional',
+      'traveledToOptional',
+    ],
+    auto_fields: ['operator', 'route', 'lineNumber', 'licensePlate', 'eventDate'],
+  },
+  add_or_remove_station: {
+    fields: [
+      'addRemoveStationReason',
+      'boardingStation',
+      'requestedStationAddress',
+      'traveledFrom',
+      'traveledTo',
+    ],
+    auto_fields: ['operator', 'lineActiveDate', 'lineNumber'],
+  },
+  add_new_line: {
+    fields: ['route'],
+    auto_fields: [],
+  },
   add_frequency: {
     fields: [
       'addFrequencyReason',
-      'busCompany',
+      'operator',
       'eventDate',
       'eventTime',
       'waitFrom',
@@ -299,7 +349,7 @@ export const complaintTypeMappings: Record<(typeof complaintTypes)[number], Comp
   },
   driver_behavior: {
     fields: [
-      'busCompany',
+      'operator',
       'eventDate',
       'eventTime',
       'waitFrom',
@@ -314,7 +364,7 @@ export const complaintTypeMappings: Record<(typeof complaintTypes)[number], Comp
   },
   cleanliness: {
     fields: [
-      'busCompany',
+      'operator',
       'eventDate',
       'eventTime',
       'traveledFromOptional',
@@ -326,7 +376,7 @@ export const complaintTypeMappings: Record<(typeof complaintTypes)[number], Comp
   fine_appeal: {
     fields: [
       'ravKavNumber',
-      'busCompany',
+      'operator',
       'eventDate',
       'eventTime',
       'boardingStation',
@@ -336,13 +386,13 @@ export const complaintTypeMappings: Record<(typeof complaintTypes)[number], Comp
     auto_fields: ['lineNumber', 'route'],
   },
   route_change: {
-    fields: ['busCompany', 'eventDate', 'traveledFrom', 'traveledTo'],
+    fields: ['operator', 'eventDate', 'traveledFrom', 'traveledTo'],
     auto_fields: ['lineNumber', 'route'],
   },
   line_switch: { fields: ['traveledFromOptional', 'traveledToOptional'], auto_fields: [] },
   station_signs: {
     fields: [
-      'busCompany',
+      'operator',
       'eventDate',
       'eventTime',
       'boardingLocality',
@@ -369,10 +419,9 @@ export const complaintTypeMappings: Record<(typeof complaintTypes)[number], Comp
           'lineNumber',
           'route',
           'licensePlate',
-          'trainNumber',
         ].includes(key),
     ),
-    auto_fields: ['lineNumber', 'route', 'licensePlate', 'trainNumber'],
+    auto_fields: ['operator', 'lineNumber', 'route', 'licensePlate'],
   },
 } as const
 
