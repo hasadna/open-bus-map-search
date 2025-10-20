@@ -111,7 +111,7 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.3",
     "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-hooks": "^7.0.0",
     "eslint-plugin-storybook": "^9.1.10",
     "globals": "^16.3.0",
     "identity-obj-proxy": "^3.0.0",
