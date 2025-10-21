@@ -20,13 +20,8 @@ import { COMPLAINTS_API, GOVERNMENT_TRANSPORTATION_API } from 'src/api/apiConfig
 import { getSiriRideWithRelated } from 'src/api/siriService'
 import dayjs from 'src/dayjs'
 import type { Point } from 'src/pages/timeBasedMap'
-import {
-  allComplaintFields,
-  complaintList,
-  complaintTypeMappings,
-  type ComplaintTypes,
-  renderField,
-} from './ComplaintModalConfig'
+import { allComplaintFields, renderField } from './ComplaintModalFields'
+import { complaintList, complaintTypeMappings, type ComplaintTypes } from './ComplaintModalForms'
 
 interface ComplaintModalProps {
   modalOpen?: boolean
