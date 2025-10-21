@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query'
 import {
   Checkbox,
   type CheckboxProps,
@@ -14,6 +15,8 @@ import {
 import type { Rule } from 'antd/es/form'
 import type { TextAreaProps } from 'antd/es/input'
 import dayjs from 'dayjs'
+import { useMemo } from 'react'
+import { GOVERNMENT_TRANSPORTATION_API } from 'src/api/apiConfig'
 
 // --- Validators ---
 const hebOnly = /^[א-ת,\s,',"]+$/u
@@ -44,7 +47,26 @@ const commonStyle = { width: '100%' }
 const fieldComponents = {
   Input: (props: InputProps) => <Input {...props} style={commonStyle} />,
   TextArea: (props: TextAreaProps) => <Input.TextArea {...props} style={commonStyle} />,
-  DatePicker: (props: DatePickerProps) => <DatePicker {...props} style={commonStyle} />,
+  DatePicker: (props: DatePickerProps) => {
+    const useGovTime = useQuery({
+      queryKey: ['gov_time'],
+      queryFn: () => GOVERNMENT_TRANSPORTATION_API.govTimeGet(),
+    })
+
+    const govTime = useMemo(
+      () => dayjs(useGovTime.data?.data?.serverTime),
+      [useGovTime.data?.data?.serverTime],
+    )
+
+    return (
+      <DatePicker
+        {...props}
+        value={dayjs(props.value)}
+        style={commonStyle}
+        disabledDate={(d) => !(d.isAfter(govTime.subtract(60, 'day')) && d.isBefore(govTime))}
+      />
+    )
+  },
   TimePicker: (props: TimePickerProps) => (
     <TimePicker {...props} style={commonStyle} format="HH:mm" />
   ),
@@ -52,6 +74,23 @@ const fieldComponents = {
     <Checkbox {...props}>{props.title}</Checkbox>
   ),
   Select: (props: SelectProps) => <Select {...props} style={commonStyle} />,
+  BusOpreatorSelect: (props: SelectProps) => {
+    const useBusOpratorQueary = useQuery({
+      queryKey: ['busOpreator'],
+      queryFn: async () => {
+        const res = await GOVERNMENT_TRANSPORTATION_API.govOperatorsGet()
+        return res.data?.map(({ dataText, dataCode }) => ({ label: dataText, value: dataCode }))
+      },
+    })
+    return (
+      <Select
+        {...props}
+        options={props.options || useBusOpratorQueary.data}
+        disabled={props.disabled || useBusOpratorQueary.isLoading}
+        style={commonStyle}
+      />
+    )
+  },
 } as const
 
 type FieldType = keyof typeof fieldComponents
@@ -60,13 +99,14 @@ type FormFieldProps<T extends FieldType = FieldType> = {
   name: string
   type: T
   rules?: Rule[]
+  initialValue?: any
   props?: React.ComponentProps<(typeof fieldComponents)[T]>
 }
 
-export function renderField({ name, props, rules, type }: FormFieldProps) {
+export function renderField({ name, initialValue, props, rules, type }: FormFieldProps) {
   const Component = fieldComponents[type]
   return (
-    <Form.Item name={name} rules={rules}>
+    <Form.Item key={name} name={name} label={name} rules={rules} initialValue={initialValue}>
       {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
       <Component {...(props as any)} />
     </Form.Item>
@@ -98,11 +138,9 @@ export const allComplaintFields = {
     rows: 4,
     maxLength: 2000,
   }),
-  operator: createField('operator', 'Select', [{ required: true }]),
+  operator: createField('operator', 'BusOpreatorSelect', [{ required: true }]),
   licensePlate: createField('licensePlate', 'Input', [{ required: true }]),
-  eventDate: createField('eventDate', 'DatePicker', [{ required: true }], {
-    disabledDate: (d: dayjs.Dayjs) => d && d > dayjs(),
-  }),
+  eventDate: createField('eventDate', 'DatePicker', [{ required: true }]),
   lineNumber: createField('lineNumber', 'Input', [{ required: true }]),
   eventTime: createField('eventTime', 'TimePicker', [{ required: true }]),
   route: createField('route', 'Input', [{ required: true }]),

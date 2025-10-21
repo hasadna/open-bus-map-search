@@ -103,8 +103,6 @@ export const complaintTypeMappings: Record<(typeof complaintTypes)[number], Comp
   add_frequency: {
     fields: [
       'addFrequencyReason',
-      'operator',
-      'eventDate',
       'eventTime',
       'waitFrom',
       'waitTo',
@@ -112,12 +110,10 @@ export const complaintTypeMappings: Record<(typeof complaintTypes)[number], Comp
       'traveledFromOptional',
       'traveledToOptional',
     ],
-    auto_fields: ['lineNumber', 'route'],
+    auto_fields: ['eventDate', 'operator', 'lineNumber', 'route'],
   },
   driver_behavior: {
     fields: [
-      'operator',
-      'eventDate',
       'eventTime',
       'waitFrom',
       'waitTo',
@@ -127,18 +123,11 @@ export const complaintTypeMappings: Record<(typeof complaintTypes)[number], Comp
       'willingToTestifyMOT',
       'willingToTestifyCourt',
     ],
-    auto_fields: ['licensePlate', 'lineNumber', 'route'],
+    auto_fields: ['operator', 'eventDate', 'licensePlate', 'lineNumber', 'route'],
   },
   cleanliness: {
-    fields: [
-      'operator',
-      'eventDate',
-      'eventTime',
-      'traveledFromOptional',
-      'traveledToOptional',
-      'boardingStation',
-    ],
-    auto_fields: ['licensePlate', 'lineNumber', 'route'],
+    fields: ['eventTime', 'traveledFromOptional', 'traveledToOptional', 'boardingStation'],
+    auto_fields: ['operator', 'eventDate', 'licensePlate', 'lineNumber', 'route'],
   },
   fine_appeal: {
     fields: [

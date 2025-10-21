@@ -40,73 +40,21 @@ const useSiriRideQuery = (position: Point) => {
   return useQuery({ queryKey: ['ride', ...ride], queryFn: () => getSiriRideWithRelated(...ride) })
 }
 
-const useStationBus = (position: Point) => {
-  const ride = useMemo(
-    () => ({
-      directions: position.point?.siri_route__id ?? -1,
-      eventDate: position.recorded_at_time ?? -1,
-      officelineId: position.point?.siri_route__line_ref ?? -1,
-      operatorId: position?.operator ?? -1,
-    }),
-    [position.point],
-  )
-
-  return useQuery({
-    queryKey: ['ride', ride],
-    queryFn: () =>
-      GOVERNMENT_TRANSPORTATION_API.govStationsByLinePost({ govStationsByLinePostRequest: ride }),
-  })
-}
-
-// const useTimeQueary = () => {
-//   return useQuery({
-//     queryKey: ['time'],
-//     queryFn: () => GOVERNMENT_TRANSPORTATION_API.govTimeGet(),
-//   })
-// }
-
-const useOpratorQueary = () => {
-  return useQuery({
-    queryKey: ['oprator'],
-    queryFn: () => GOVERNMENT_TRANSPORTATION_API.govOperatorsGet(),
-  })
-}
-
-// const formatValuesForSubmit = (values: Record<string, any>) => {
-//   const res: Record<string, any> = { ...values }
-//   Object.keys(res).forEach((k) => {
-//     const v = res[k]
-//     if (dayjs.isDayjs(v)) res[k] = v.format('HH:mm')
-//   })
-//   return res
-// }
-
-const getAutoDefaults = (name: string, siriData?: SiriRideWithRelatedPydanticModel) => {
-  if (!siriData) return ''
-  switch (name) {
-    case 'operator':
-      return siriData.gtfsRouteOperatorRef?.toString() ?? ''
-    case 'trainNumber':
-    case 'licensePlate':
-      return siriData.vehicleRef ?? ''
-    case 'lineNumber':
-      return siriData.gtfsRouteRouteShortName ?? ''
-    case 'route':
-      return siriData.gtfsRouteLineRef?.toString() ?? ''
-    default:
-      return ''
-  }
-}
+const fieldSiriIndex = {
+  operator: 'gtfsRouteOperatorRef',
+  licensePlate: 'vehicleRef',
+  // trainNumber: 'vehicleRef',
+  lineNumber: 'gtfsRouteRouteShortName',
+  route: 'gtfsRouteLineRef',
+  eventDate: 'gtfsRouteDate',
+} as Record<keyof typeof allComplaintFields, keyof SiriRideWithRelatedPydanticModel>
 
 const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: ComplaintModalProps) => {
   const { t, i18n } = useTranslation()
   const [form] = Form.useForm()
   const [selectedComplaintType, setSelectedComplaintType] = useState<ComplaintTypes | null>(null)
 
-  // const govTime = useTimeQueary()
   const siriRide = useSiriRideQuery(position)
-  const stationBus = useStationBus(position)
-  const oprator = useOpratorQueary()
 
   const submitMutation = useMutation({
     mutationFn: (complaintsSendPostRequest: ComplaintsSendPostRequest) =>
@@ -114,7 +62,7 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
   })
 
   const handleSubmit = useCallback(
-    (values: Record<string, any>) => {
+    (values: any) => {
       // const payload = formatValuesForSubmit(values)
       console.log(values)
 
@@ -123,56 +71,30 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
     [submitMutation, siriRide.data],
   )
 
-  const fillSelectOptions = (name: string) => {
-    switch (name) {
-      case 'operator':
-        return oprator.data?.data?.map(({ dataText, dataCode }) => ({
-          label: dataText,
-          value: dataCode,
-        }))
-      case 'boardingStation':
-        return stationBus.data?.data?.map(({ stationFullName, stationId }) => ({
-          label: stationFullName,
-          value: stationId,
-        }))
-      // case 'trainType':
-      //   return []
-      // case 'originStation':
-      //   return []
-      // case 'destinationStation':
-      // return []
-    }
-  }
-
   const dynamicFields = useMemo(() => {
     if (!selectedComplaintType) return null
 
     const mapping = complaintTypeMappings[selectedComplaintType]
     if (!mapping) return null
 
-    const regular = mapping.fields.map((name) => {
-      const field = allComplaintFields[name]
-      field.props = {
-        ...(field.props || {}),
-        ...(field.type === 'Select' ? { options: fillSelectOptions(name) } : {}),
-      }
-      return renderField(field)
-    })
+    const regular = mapping.fields.map((name) => renderField(allComplaintFields[name]))
 
-    const auto = mapping.auto_fields.map((name) => {
-      const field = allComplaintFields[name]
-      if (!field) return null
-      // const value = getAutoDefaults(name, siriRide.data)
+    const auto = mapping.auto_fields
+      .map((name) => {
+        const field = allComplaintFields[name]
+        if (!field) return null
 
-      field.props = {
-        ...(field.props || {}),
-        // ...(['Checkbox', 'TimePicker', 'DatePicker'].includes(field.type) ? {} : { value }),
-        ...(field.type === 'Select' ? { options: fillSelectOptions(name) } : {}),
-        disabled: true,
-      }
+        if (!field.props) field.props = {}
+        field.props.disabled = true
 
-      return renderField(field)
-    })
+        const siriIndex = fieldSiriIndex[name]
+        const value = siriRide.data && siriIndex ? siriRide.data[siriIndex] : undefined
+
+        field.initialValue = typeof value === 'number' ? value.toString() : value
+
+        return renderField(field)
+      })
+      .filter((v) => v != null)
 
     return { regular, auto }
   }, [selectedComplaintType, siriRide.data])
@@ -244,7 +166,9 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
                   </Form.Item>
                 </DialogActions>
 
-                <Collapse items={[{ label: 'more detelis', children: dynamicFields?.auto }]} />
+                {(dynamicFields?.auto ?? []).length !== 0 && (
+                  <Collapse items={[{ label: 'more detelis', children: dynamicFields?.auto }]} />
+                )}
               </Form>
             )}
           </DialogContent>
