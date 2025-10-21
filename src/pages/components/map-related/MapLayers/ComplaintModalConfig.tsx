@@ -1,238 +1,136 @@
-import { Checkbox, DatePicker, Form, Input, Select, TimePicker } from 'antd'
-import type { InputProps, SelectProps } from 'antd'
-import type { CheckboxProps } from 'antd/es/checkbox'
-import type { DatePickerProps } from 'antd/es/date-picker'
-import { Rule } from 'antd/es/form'
+import {
+  Checkbox,
+  type CheckboxProps,
+  DatePicker,
+  type DatePickerProps,
+  Form,
+  Input,
+  type InputProps,
+  Select,
+  type SelectProps,
+  TimePicker,
+  type TimePickerProps,
+} from 'antd'
+import type { Rule } from 'antd/es/form'
 import type { TextAreaProps } from 'antd/es/input'
-import type { TimePickerProps } from 'antd/es/time-picker'
-import dayjs from 'src/dayjs'
+import dayjs from 'dayjs'
 
-// --- Utilities & validators ---
+// --- Validators ---
 const hebOnly = /^[א-ת,\s,',"]+$/u
 const numberOnly = /^\d+$/
 
-const idValidator: Rule = {
-  validator: async (_: any, value: string) => {
+const createIdValidator = (): Rule => ({
+  validator: async (_, value: string) => {
     if (!value || value.length !== 9 || !numberOnly.test(value)) throw new Error('Invalid ID')
-    let sum = 0
-    for (let i = 0; i < value.length; i++) {
-      const n = Number(value[i]) * ((i % 2) + 1)
-      sum += Math.floor(n / 10) + (n % 10)
-    }
+    const sum = value
+      .split('')
+      .map((digit, i) => Number(digit) * ((i % 2) + 1))
+      .reduce((acc, n) => acc + Math.floor(n / 10) + (n % 10), 0)
     if (sum % 10 !== 0) throw new Error('Invalid ID number')
     return Promise.resolve()
   },
-}
+})
 
-const ravKavValidator: Rule = {
-  validator: async (_: any, value: string) => {
+const createRavKavValidator = (): Rule => ({
+  validator: async (_, value: string) => {
     if (!numberOnly.test(value)) throw new Error('Invalid Rav Kav number')
     return Promise.resolve()
   },
-}
+})
 
-// --- Types ---
-export type FormFieldSetting = {
-  name: string
-  labelKey: string
-  rules?: Rule[]
-} & (
-  | { component: 'Input'; props?: InputProps }
-  | { component: 'TextArea'; props?: TextAreaProps }
-  | { component: 'DatePicker'; props?: DatePickerProps }
-  | { component: 'TimePicker'; props?: TimePickerProps }
-  | { component: 'Checkbox'; props?: CheckboxProps }
-  | { component: 'Select'; props?: SelectProps<string> }
-)
+// ---   Field Components ---
+const commonStyle = { width: '100%' }
 
-// --- Field factory helpers ---
-const input = (name: string, labelKey: string, opts?: Partial<FormFieldSetting>) =>
-  ({
-    name,
-    labelKey,
-    component: 'Input',
-    ...opts,
-  }) as FormFieldSetting
-
-const textArea = (name: string, labelKey: string, opts?: Partial<FormFieldSetting>) =>
-  ({
-    name,
-    labelKey,
-    component: 'TextArea',
-    ...opts,
-  }) as FormFieldSetting
-
-const datePicker = (name: string, labelKey: string, opts?: Partial<FormFieldSetting>) =>
-  ({
-    name,
-    labelKey,
-    component: 'DatePicker',
-    ...opts,
-  }) as FormFieldSetting
-
-const timePicker = (name: string, labelKey: string, opts?: Partial<FormFieldSetting>) =>
-  ({
-    name,
-    labelKey,
-    component: 'TimePicker',
-    ...opts,
-  }) as FormFieldSetting
-
-const checkbox = (name: string, labelKey: string, opts?: Partial<FormFieldSetting>) =>
-  ({
-    name,
-    labelKey,
-    component: 'Checkbox',
-    ...opts,
-  }) as FormFieldSetting
-
-const select = (name: string, labelKey: string, opts?: Partial<FormFieldSetting>) =>
-  ({
-    name,
-    labelKey,
-    component: 'Select',
-    ...opts,
-  }) as FormFieldSetting
-
-// --- Renderer ---
-export const renderField = (fieldConfig: FormFieldSetting, defaultValue?: string) => {
-  const commonStyle = { width: '100%' }
-  switch (fieldConfig.component) {
-    case 'Select':
-      return (
-        <Form.Item
-          key={fieldConfig.name}
-          name={fieldConfig.name}
-          label={fieldConfig.labelKey}
-          rules={fieldConfig.rules}>
-          <Select {...fieldConfig.props} style={commonStyle} defaultValue={defaultValue} />
-        </Form.Item>
-      )
-    case 'TextArea':
-      return (
-        <Form.Item
-          key={fieldConfig.name}
-          name={fieldConfig.name}
-          label={fieldConfig.labelKey}
-          rules={fieldConfig.rules}>
-          <Input.TextArea {...(fieldConfig.props as TextAreaProps)} defaultValue={defaultValue} />
-        </Form.Item>
-      )
-    case 'DatePicker':
-      return (
-        <Form.Item
-          key={fieldConfig.name}
-          name={fieldConfig.name}
-          label={fieldConfig.labelKey}
-          rules={fieldConfig.rules}>
-          <DatePicker {...(fieldConfig.props as DatePickerProps)} style={commonStyle} />
-        </Form.Item>
-      )
-    case 'TimePicker':
-      return (
-        <Form.Item
-          key={fieldConfig.name}
-          name={fieldConfig.name}
-          label={fieldConfig.labelKey}
-          rules={fieldConfig.rules}>
-          <TimePicker
-            {...(fieldConfig.props as TimePickerProps)}
-            format="HH:mm"
-            style={commonStyle}
-          />
-        </Form.Item>
-      )
-    case 'Checkbox':
-      // Checkbox uses valuePropName
-      return (
-        <Form.Item
-          key={fieldConfig.name}
-          name={fieldConfig.name}
-          valuePropName="checked"
-          rules={fieldConfig.rules}>
-          <Checkbox {...(fieldConfig.props as CheckboxProps)}>{fieldConfig.labelKey}</Checkbox>
-        </Form.Item>
-      )
-    default:
-      return (
-        <Form.Item
-          key={fieldConfig.name}
-          name={fieldConfig.name}
-          label={fieldConfig.labelKey}
-          rules={fieldConfig.rules}>
-          <Input {...(fieldConfig.props as InputProps)} defaultValue={defaultValue} />
-        </Form.Item>
-      )
-  }
-}
-
-// --- Field definitions ---
-export const allComplaintFields = {
-  // Personal
-  firstName: input('firstName', 'first_name', {
-    rules: [{ required: true, pattern: hebOnly }],
-    props: { maxLength: 25 },
-  }),
-  lastName: input('lastName', 'last_name', {
-    rules: [{ required: true, pattern: hebOnly }],
-    props: { maxLength: 25 },
-  }),
-  id: input('id', 'id', {
-    rules: [{ required: true, len: 9 }, idValidator],
-    props: { maxLength: 9 },
-  }),
-  email: input('email', 'email', { rules: [{ type: 'email', required: true }] }),
-  phone: input('phone', 'phone', { rules: [{ required: true }], props: { maxLength: 11 } }),
-  description: textArea('description', 'description', {
-    rules: [{ required: true, min: 2 }],
-    props: { rows: 4, maxLength: 2000 },
-  }),
-
-  // Dynamic
-  operator: select('operator', 'operator', { rules: [{ required: true }] }),
-  licensePlate: input('licensePlate', 'license_plate', { rules: [{ required: true }] }),
-  eventDate: datePicker('eventDate', 'event_date', {
-    rules: [{ required: true }],
-    props: { style: { width: '100%' }, maxDate: dayjs() },
-  }),
-  lineNumber: input('lineNumber', 'line_number', { rules: [{ required: true }] }),
-  eventTime: timePicker('eventTime', 'event_time', { rules: [{ required: true }] }),
-  route: input('route', 'origin_destination_route', { rules: [{ required: true }] }),
-  waitFrom: timePicker('waitFrom', 'wait_from_time', { rules: [{ required: true }] }),
-  waitTo: timePicker('waitTo', 'wait_to_time', { rules: [{ required: true }] }),
-  boardingStation: select('boardingStation', 'boarding_station_optional', { rules: [] }),
-  traveledFromOptional: input('traveledFromOptional', 'traveled_from_optional', { rules: [] }),
-  traveledToOptional: input('traveledToOptional', 'traveled_to_optional', { rules: [] }),
-  traveledFrom: input('traveledFrom', 'traveled_from', { rules: [{ required: true }] }),
-  traveledTo: input('traveledTo', 'traveled_to', { rules: [{ required: true }] }),
-  lineActiveDate: input('lineActiveDate', 'line_active_date', { rules: [{ required: true }] }),
-  addRemoveStationReason: input('addRemoveStationReason', 'add_remove_station', {
-    rules: [{ required: true }],
-  }),
-  requestedStationAddress: input('requestedStationAddress', 'requested_station_address', {
-    rules: [{ required: true }],
-  }),
-  boardingLocality: input('boardingLocality', 'boarding_locality', { rules: [{ required: true }] }),
-  destinationLocality: input('destinationLocality', 'destination_locality', {
-    rules: [{ required: true }],
-  }),
-  addFrequencyReason: input('addFrequencyReason', 'add_frequency_reason', {
-    rules: [{ required: true }],
-  }),
-  willingToTestifyMOT: checkbox('willingToTestifyMOT', 'willing_to_testify_mot'),
-  willingToTestifyCourt: checkbox('willingToTestifyCourt', 'willing_to_testify_court'),
-  ravKavNumber: input('ravKavNumber', 'rav_kav_number', {
-    rules: [{ required: true, min: 11 }, ravKavValidator],
-    props: { maxLength: 11 },
-  }),
-  stationCatNum: input('stationCatNum', 'station_catalog_number', { rules: [{ required: true }] }),
-  // Train
-  // trainType: select('trainType', 'train_type', { rules: [{ required: true }] }),
-  // trainNumber: input('trainNumber', 'train_number', { rules: [{ required: true }] }),
-  // originStation: select('originStation', 'origin_station', { rules: [{ required: true }] }),
-  // destinationStation: select('destinationStation', 'destination_station', { rules: [{ required: true }] }),
+const fieldComponents = {
+  Input: (props: InputProps) => <Input {...props} style={commonStyle} />,
+  TextArea: (props: TextAreaProps) => <Input.TextArea {...props} style={commonStyle} />,
+  DatePicker: (props: DatePickerProps) => <DatePicker {...props} style={commonStyle} />,
+  TimePicker: (props: TimePickerProps) => (
+    <TimePicker {...props} style={commonStyle} format="HH:mm" />
+  ),
+  Checkbox: (props: CheckboxProps & { title?: string }) => (
+    <Checkbox {...props}>{props.title}</Checkbox>
+  ),
+  Select: (props: SelectProps) => <Select {...props} style={commonStyle} />,
 } as const
 
+type FieldType = keyof typeof fieldComponents
+
+type FormFieldProps<T extends FieldType = FieldType> = {
+  name: string
+  type: T
+  rules?: Rule[]
+  props?: React.ComponentProps<(typeof fieldComponents)[T]>
+}
+
+export function renderField({ name, props, rules, type }: FormFieldProps) {
+  const Component = fieldComponents[type]
+  return (
+    <Form.Item name={name} rules={rules}>
+      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+      <Component {...(props as any)} />
+    </Form.Item>
+  )
+}
+
+function createField<T extends FieldType>(
+  name: string,
+  type: T,
+  rules?: Rule[],
+  props?: React.ComponentProps<(typeof fieldComponents)[T]>,
+): FormFieldProps<T> {
+  return { name, type, rules, props }
+}
+
+export const allComplaintFields = {
+  firstName: createField('firstName', 'Input', [{ required: true, pattern: hebOnly }], {
+    maxLength: 25,
+  }),
+  lastName: createField('lastName', 'Input', [{ required: true, pattern: hebOnly }], {
+    maxLength: 25,
+  }),
+  id: createField('id', 'Input', [{ required: true, len: 9 }, createIdValidator()], {
+    maxLength: 9,
+  }),
+  email: createField('email', 'Input', [{ type: 'email', required: true }]),
+  phone: createField('phone', 'Input', [{ required: true }], { maxLength: 11 }),
+  description: createField('description', 'TextArea', [{ required: true, min: 2 }], {
+    rows: 4,
+    maxLength: 2000,
+  }),
+  operator: createField('operator', 'Select', [{ required: true }]),
+  licensePlate: createField('licensePlate', 'Input', [{ required: true }]),
+  eventDate: createField('eventDate', 'DatePicker', [{ required: true }], {
+    disabledDate: (d: dayjs.Dayjs) => d && d > dayjs(),
+  }),
+  lineNumber: createField('lineNumber', 'Input', [{ required: true }]),
+  eventTime: createField('eventTime', 'TimePicker', [{ required: true }]),
+  route: createField('route', 'Input', [{ required: true }]),
+  waitFrom: createField('waitFrom', 'TimePicker', [{ required: true }]),
+  waitTo: createField('waitTo', 'TimePicker', [{ required: true }]),
+  boardingStation: createField('boardingStation', 'Select'),
+  traveledFromOptional: createField('traveledFromOptional', 'Input'),
+  traveledToOptional: createField('traveledToOptional', 'Input'),
+  traveledFrom: createField('traveledFrom', 'Input', [{ required: true }]),
+  traveledTo: createField('traveledTo', 'Input', [{ required: true }]),
+  lineActiveDate: createField('lineActiveDate', 'Input', [{ required: true }]),
+  addRemoveStationReason: createField('addRemoveStationReason', 'Input', [{ required: true }]),
+  requestedStationAddress: createField('requestedStationAddress', 'Input', [{ required: true }]),
+  boardingLocality: createField('boardingLocality', 'Input', [{ required: true }]),
+  destinationLocality: createField('destinationLocality', 'Input', [{ required: true }]),
+  addFrequencyReason: createField('addFrequencyReason', 'Input', [{ required: true }]),
+  willingToTestifyMOT: createField('willingToTestifyMOT', 'Checkbox'),
+  willingToTestifyCourt: createField('willingToTestifyCourt', 'Checkbox'),
+  ravKavNumber: createField(
+    'ravKavNumber',
+    'Input',
+    [{ required: true, min: 11 }, createRavKavValidator()],
+    { maxLength: 11 },
+  ),
+  stationCatNum: createField('stationCatNum', 'Input', [{ required: true }]),
+} as const
+
+// --- Complaint Types ---
 export interface ComplaintTypeFields {
   fields: (keyof typeof allComplaintFields)[]
   auto_fields: (keyof typeof allComplaintFields)[]
@@ -407,7 +305,7 @@ export const complaintTypeMappings: Record<(typeof complaintTypes)[number], Comp
   // train_early: { fields: ['eventTime'], auto_fields: [] },
   // train_driver_behavior: { fields: ['originStation', 'destinationStation', 'description'] auto_fields: [] },
   debug: {
-    fields: (Object.keys(allComplaintFields) as (keyof typeof allComplaintFields)[]).filter(
+    fields: Object.keys(allComplaintFields).filter(
       (key) =>
         ![
           'firstName',
@@ -420,7 +318,7 @@ export const complaintTypeMappings: Record<(typeof complaintTypes)[number], Comp
           'route',
           'licensePlate',
         ].includes(key),
-    ),
+    ) as (keyof typeof allComplaintFields)[],
     auto_fields: ['operator', 'lineNumber', 'route', 'licensePlate'],
   },
 } as const

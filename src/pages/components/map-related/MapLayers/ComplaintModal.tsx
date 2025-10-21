@@ -159,7 +159,7 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
       const field = allComplaintFields[name]
       field.props = {
         ...(field.props || {}),
-        ...(field.component === 'Select' ? { options: fillSelectOptions(name) } : {}),
+        ...(field.type === 'Select' ? { options: fillSelectOptions(name) } : {}),
       }
       return renderField(field)
     })
@@ -167,16 +167,16 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
     const auto = mapping.auto_fields.map((name) => {
       const field = allComplaintFields[name]
       if (!field) return null
-      const value = getAutoDefaults(name, siriRide.data)
+      // const value = getAutoDefaults(name, siriRide.data)
 
       field.props = {
         ...(field.props || {}),
-        ...(['Checkbox', 'TimePicker', 'DatePicker'].includes(field.component) ? {} : { value }),
-        ...(field.component === 'Select' ? { options: fillSelectOptions(name) } : {}),
+        // ...(['Checkbox', 'TimePicker', 'DatePicker'].includes(field.type) ? {} : { value }),
+        ...(field.type === 'Select' ? { options: fillSelectOptions(name) } : {}),
         disabled: true,
       }
 
-      return renderField(field, value)
+      return renderField(field)
     })
 
     return { regular, auto }
