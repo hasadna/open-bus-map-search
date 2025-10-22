@@ -1,3 +1,4 @@
+import { GovStationsByLinePostRequest } from '@hasadna/open-bus-api-client'
 import { useQuery } from '@tanstack/react-query'
 import {
   Checkbox,
@@ -11,6 +12,7 @@ import {
   type SelectProps,
   TimePicker,
   type TimePickerProps,
+  type TimeRangePickerProps,
 } from 'antd'
 import type { Rule } from 'antd/es/form'
 import type { TextAreaProps } from 'antd/es/input'
@@ -52,12 +54,10 @@ const fieldComponents = {
       queryKey: ['gov_time'],
       queryFn: () => GOVERNMENT_TRANSPORTATION_API.govTimeGet(),
     })
-
     const govTime = useMemo(
       () => dayjs(useGovTime.data?.data?.serverTime),
       [useGovTime.data?.data?.serverTime],
     )
-
     return (
       <DatePicker
         {...props}
@@ -70,6 +70,9 @@ const fieldComponents = {
   TimePicker: (props: TimePickerProps) => (
     <TimePicker {...props} style={commonStyle} format="HH:mm" />
   ),
+  TimeRangePicker: (props: TimeRangePickerProps) => {
+    return <TimePicker.RangePicker {...props} style={commonStyle} format="HH:mm" />
+  },
   Checkbox: (props: CheckboxProps & { title?: string }) => (
     <Checkbox {...props}>{props.title}</Checkbox>
   ),
@@ -87,6 +90,45 @@ const fieldComponents = {
         {...props}
         options={props.options || useBusOpratorQueary.data}
         disabled={props.disabled || useBusOpratorQueary.isLoading}
+        style={commonStyle}
+      />
+    )
+  },
+  BordingStationSelector: ({
+    queary,
+    ...props
+  }: SelectProps & { queary?: Partial<GovStationsByLinePostRequest> }) => {
+    const keys = Object.values(queary || {})
+    console.log(keys)
+
+    const useBordingStationQueary = useQuery({
+      queryKey: ['Bording_station', ...keys],
+      queryFn: async () => {
+        console.log(queary)
+
+        if (
+          !queary?.officelineId ||
+          !queary?.directions ||
+          !queary?.eventDate ||
+          !queary?.operatorId
+        ) {
+          return []
+        }
+        const res = await GOVERNMENT_TRANSPORTATION_API.govStationsByLinePost({
+          govStationsByLinePostRequest: queary as GovStationsByLinePostRequest,
+        })
+        return res.data?.map(({ stationFullName, stationId }) => ({
+          label: stationFullName,
+          value: stationId,
+        }))
+      },
+    })
+
+    return (
+      <Select
+        {...props}
+        options={props.options || useBordingStationQueary.data}
+        disabled={props.disabled || useBordingStationQueary.isLoading}
         style={commonStyle}
       />
     )
@@ -142,11 +184,10 @@ export const allComplaintFields = {
   licensePlate: createField('licensePlate', 'Input', [{ required: true }]),
   eventDate: createField('eventDate', 'DatePicker', [{ required: true }]),
   lineNumber: createField('lineNumber', 'Input', [{ required: true }]),
-  eventTime: createField('eventTime', 'TimePicker', [{ required: true }]),
+  eventTime: createField('time', 'TimePicker', [{ required: true }]),
   route: createField('route', 'Input', [{ required: true }]),
-  waitFrom: createField('waitFrom', 'TimePicker', [{ required: true }]),
-  waitTo: createField('waitTo', 'TimePicker', [{ required: true }]),
-  boardingStation: createField('boardingStation', 'Select'),
+  wait: createField('wait', 'TimeRangePicker', [{ required: true }]),
+  boardingStation: createField('boardingStation', 'BordingStationSelector'),
   traveledFromOptional: createField('traveledFromOptional', 'Input'),
   traveledToOptional: createField('traveledToOptional', 'Input'),
   traveledFrom: createField('traveledFrom', 'Input', [{ required: true }]),

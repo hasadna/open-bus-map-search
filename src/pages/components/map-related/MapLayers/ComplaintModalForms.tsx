@@ -32,58 +32,23 @@ export const complaintTypes = [
 export const complaintTypeMappings: Record<(typeof complaintTypes)[number], ComplaintTypeFields> = {
   other: { fields: [], auto_fields: [] },
   no_ride: {
-    fields: [
-      'eventTime',
-      'waitFrom',
-      'waitTo',
-      'boardingStation',
-      'traveledFromOptional',
-      'traveledToOptional',
-    ],
+    fields: ['eventTime', 'wait', 'boardingStation', 'traveledFromOptional', 'traveledToOptional'],
     auto_fields: ['operator', 'route', 'lineNumber', 'licensePlate', 'eventDate'],
   },
   no_stop: {
-    fields: [
-      'eventTime',
-      'waitFrom',
-      'waitTo',
-      'boardingStation',
-      'traveledFromOptional',
-      'traveledToOptional',
-    ],
+    fields: ['eventTime', 'wait', 'boardingStation', 'traveledFromOptional', 'traveledToOptional'],
     auto_fields: ['operator', 'route', 'lineNumber', 'licensePlate', 'eventDate'],
   },
   delay: {
-    fields: [
-      'eventTime',
-      'waitFrom',
-      'waitTo',
-      'boardingStation',
-      'traveledFromOptional',
-      'traveledToOptional',
-    ],
+    fields: ['eventTime', 'wait', 'boardingStation', 'traveledFromOptional', 'traveledToOptional'],
     auto_fields: ['operator', 'route', 'lineNumber', 'licensePlate', 'eventDate'],
   },
   overcrowded: {
-    fields: [
-      'eventTime',
-      'waitFrom',
-      'waitTo',
-      'boardingStation',
-      'traveledFromOptional',
-      'traveledToOptional',
-    ],
+    fields: ['eventTime', 'wait', 'boardingStation', 'traveledFromOptional', 'traveledToOptional'],
     auto_fields: ['operator', 'route', 'lineNumber', 'licensePlate', 'eventDate'],
   },
   early: {
-    fields: [
-      'eventTime',
-      'waitFrom',
-      'waitTo',
-      'boardingStation',
-      'traveledFromOptional',
-      'traveledToOptional',
-    ],
+    fields: ['eventTime', 'wait', 'boardingStation', 'traveledFromOptional', 'traveledToOptional'],
     auto_fields: ['operator', 'route', 'lineNumber', 'licensePlate', 'eventDate'],
   },
   add_or_remove_station: {
@@ -104,8 +69,7 @@ export const complaintTypeMappings: Record<(typeof complaintTypes)[number], Comp
     fields: [
       'addFrequencyReason',
       'eventTime',
-      'waitFrom',
-      'waitTo',
+      'wait',
       'boardingStation',
       'traveledFromOptional',
       'traveledToOptional',
@@ -115,8 +79,7 @@ export const complaintTypeMappings: Record<(typeof complaintTypes)[number], Comp
   driver_behavior: {
     fields: [
       'eventTime',
-      'waitFrom',
-      'waitTo',
+      'wait',
       'boardingStation',
       'traveledFromOptional',
       'traveledToOptional',

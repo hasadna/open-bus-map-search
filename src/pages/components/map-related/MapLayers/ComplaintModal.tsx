@@ -30,14 +30,32 @@ interface ComplaintModalProps {
 }
 
 const useSiriRideQuery = (position: Point) => {
-  const ride = useMemo(() => {
-    return [
-      position.point?.siri_route__id?.toString() ?? '',
-      position.point?.siri_ride__vehicle_ref?.toString() ?? '',
-      position.point?.siri_route__line_ref?.toString() ?? '',
-    ] as [string, string, string]
-  }, [position.point])
-  return useQuery({ queryKey: ['ride', ...ride], queryFn: () => getSiriRideWithRelated(...ride) })
+  return useQuery({
+    queryKey: [
+      'ride',
+      position.point?.siri_route__id,
+      position.point?.siri_ride__vehicle_ref,
+      position.point?.siri_route__line_ref,
+    ],
+    queryFn: async () => {
+      const siri = await getSiriRideWithRelated(
+        position.point?.siri_route__id?.toString() ?? '',
+        position.point?.siri_ride__vehicle_ref?.toString() ?? '',
+        position.point?.siri_route__line_ref?.toString() ?? '',
+      )
+
+      const gov = await GOVERNMENT_TRANSPORTATION_API.govLinesByLinePost({
+        govLinesByLinePostRequest: {
+          eventDate: siri.gtfsRouteDate?.valueOf() || -1,
+          operatorId: siri.gtfsRouteOperatorRef || -1,
+          operatorLineId: Number(siri.gtfsRouteRouteShortName) || -1,
+        },
+      }).then((lines) =>
+        lines.data?.find((l) => l.directionCode?.toString() === siri.gtfsRouteRouteDirection),
+      )
+      return { siri, gov }
+    },
+  })
 }
 
 const fieldSiriIndex = {
@@ -87,17 +105,32 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
         if (!field.props) field.props = {}
         field.props.disabled = true
 
+        if (!siriRide.data) return renderField(field)
+
         const siriIndex = fieldSiriIndex[name]
-        const value = siriRide.data && siriIndex ? siriRide.data[siriIndex] : undefined
+        const value = siriIndex ? siriRide.data.siri[siriIndex] : undefined
 
         field.initialValue = typeof value === 'number' ? value.toString() : value
+
+        if (field.type === 'BordingStationSelector') {
+          field.props.queary = {
+            directions: siriRide.data.gov?.directionCode
+              ? Number(siriRide.data.gov?.directionCode)
+              : undefined,
+            eventDate: siriRide.data.gov?.eventDate
+              ? dayjs(siriRide.data.gov?.eventDate).valueOf()
+              : undefined,
+            officelineId: siriRide.data.gov?.lineCode,
+            operatorId: siriRide.data.gov?.operatorId,
+          }
+        }
 
         return renderField(field)
       })
       .filter((v) => v != null)
 
     return { regular, auto }
-  }, [selectedComplaintType, siriRide.data])
+  }, [selectedComplaintType, siriRide.dataUpdatedAt])
 
   const isBusy =
     siriRide.isLoading ||
