@@ -14,7 +14,7 @@ import {
 } from '@mui/material'
 import { useMutation } from '@tanstack/react-query'
 import { Button, Collapse, Form, Select } from 'antd'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { COMPLAINTS_API } from 'src/api/apiConfig'
 import dayjs from 'src/dayjs'
@@ -42,23 +42,27 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
   const { t, i18n } = useTranslation()
   const [form] = Form.useForm()
   const [selectedComplaintType, setSelectedComplaintType] = useState<ComplaintTypes | null>(null)
-
+  const [selectedRoute, setSelectedRoute] = useState<number | null>(null)
   const siriRide = useSiriRideQuery(position)
   const routes = useRoutesQueary({
     eventDate: siriRide.data?.siri.gtfsRouteDate?.valueOf() || -1,
     operatorId: siriRide.data?.siri.gtfsRouteOperatorRef || -1,
     operatorLineId: Number(siriRide.data?.siri.gtfsRouteRouteShortName) || -1,
   })
-  const boardingStation = useBoardingStationQuery({
-    directions: siriRide.data?.gov?.[0].directionCode
-      ? Number(siriRide.data?.gov?.[0].directionCode)
-      : undefined,
-    eventDate: siriRide.data?.gov?.[0].eventDate
-      ? dayjs(siriRide.data?.gov?.[0].eventDate).valueOf()
-      : undefined,
-    officelineId: siriRide.data?.gov?.[0].lineCode,
-    operatorId: siriRide.data?.gov?.[0].operatorId,
-  })
+  const boardingStation = useBoardingStationQuery(
+    selectedRoute
+      ? {
+          directions: siriRide.data?.gov?.[selectedRoute].directionCode
+            ? Number(siriRide.data?.gov?.[selectedRoute].directionCode)
+            : undefined,
+          eventDate: siriRide.data?.gov?.[selectedRoute].eventDate
+            ? dayjs(siriRide.data?.gov?.[selectedRoute].eventDate).valueOf()
+            : undefined,
+          officelineId: siriRide.data?.gov?.[selectedRoute].lineCode,
+          operatorId: siriRide.data?.gov?.[selectedRoute].operatorId,
+        }
+      : {},
+  )
 
   const submitMutation = useMutation({
     mutationFn: (complaintsSendPostRequest: ComplaintsSendPostRequest) =>
@@ -90,6 +94,9 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
         switch (field.name) {
           case 'route':
             field.props.options = routes.data
+            field.props.onSelect = (val) => {
+              setSelectedRoute(routes.data?.findIndex((r) => r.value === val) || null)
+            }
             break
           case 'boardingStation':
             field.props.options = boardingStation.data
@@ -138,77 +145,78 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
     submitMutation.isPending ||
     (submitMutation.isIdle === false && submitMutation.isPending)
 
+  useEffect(() => {
+    // reset selected route when routes list update
+    setSelectedRoute(routes.data?.length ? 0 : null)
+  }, [routes.dataUpdatedAt])
+
   return (
-    <>
-      {isBusy ? (
-        <div className="loading">
-          <span>{t('loading_routes')}</span>
-          <CircularProgress />
-        </div>
-      ) : (
-        <Dialog
-          dir={i18n.dir()}
-          open={modalOpen}
-          onClose={() => setModalOpen?.(false)}
-          slotProps={{ paper: { sx: { maxWidth: '648px', width: '90%', position: 'relative' } } }}>
-          <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between' }}>
-            <Typography fontSize="28px" fontWeight="bold" marginBottom="8px">
-              {t('complaint')}
-            </Typography>
-            <IconButton onClick={() => setModalOpen?.(false)}>
-              <Close />
-            </IconButton>
-          </DialogTitle>
+    <Dialog
+      dir={i18n.dir()}
+      open={modalOpen}
+      onClose={() => setModalOpen?.(false)}
+      slotProps={{ paper: { sx: { maxWidth: '648px', width: '90%', position: 'relative' } } }}>
+      <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between' }}>
+        <Typography fontSize="28px" fontWeight="bold" marginBottom="8px">
+          {t('complaint')}
+        </Typography>
+        <IconButton onClick={() => setModalOpen?.(false)}>
+          <Close />
+        </IconButton>
+      </DialogTitle>
 
-          <DialogContent>
-            {submitMutation.isSuccess ? (
-              <div>
-                <Typography variant="h2">{`Your Complaint Number: ${submitMutation.data.referenceNumber}`}</Typography>
-                <Button onClick={() => setModalOpen?.(false)}>Close</Button>
-              </div>
-            ) : (
-              <Form
-                form={form}
-                layout="vertical"
-                onFinish={handleSubmit}
-                onValuesChange={(changedValues) => {
-                  if ('complaintType' in changedValues)
-                    setSelectedComplaintType(changedValues.complaintType as ComplaintTypes)
-                }}>
-                {renderField(allComplaintFields.firstName)}
-                {renderField(allComplaintFields.lastName)}
-                {renderField(allComplaintFields.id)}
-                {renderField(allComplaintFields.email)}
-                {renderField(allComplaintFields.phone)}
+      <DialogContent>
+        {submitMutation.isSuccess ? (
+          <div>
+            <Typography variant="h2">{`Your Complaint Number: ${submitMutation.data.referenceNumber}`}</Typography>
+            <Button onClick={() => setModalOpen?.(false)}>Close</Button>
+          </div>
+        ) : isBusy ? (
+          <div className="loading">
+            <span>{t('loading_routes')}</span>
+            <CircularProgress />
+          </div>
+        ) : (
+          <Form
+            form={form}
+            layout="vertical"
+            onFinish={handleSubmit}
+            onValuesChange={(changedValues) => {
+              if ('complaintType' in changedValues)
+                setSelectedComplaintType(changedValues.complaintType as ComplaintTypes)
+            }}>
+            {renderField(allComplaintFields.firstName)}
+            {renderField(allComplaintFields.lastName)}
+            {renderField(allComplaintFields.id)}
+            {renderField(allComplaintFields.email)}
+            {renderField(allComplaintFields.phone)}
 
-                <Form.Item
-                  name="complaintType"
-                  label={t('complaint_type')}
-                  rules={[{ required: true }]}>
-                  <Select options={complaintList} />
-                </Form.Item>
+            <Form.Item
+              name="complaintType"
+              label={t('complaint_type')}
+              rules={[{ required: true }]}>
+              <Select options={complaintList} />
+            </Form.Item>
 
-                {dynamicFields?.regular}
+            {dynamicFields?.regular}
 
-                {renderField(allComplaintFields.description)}
+            {renderField(allComplaintFields.description)}
 
-                <DialogActions sx={{ justifyContent: 'flex-end', padding: 0 }}>
-                  <Form.Item>
-                    <Button type="primary" htmlType="submit" onClick={() => form.submit()}>
-                      {t('submit_complaint')}
-                    </Button>
-                  </Form.Item>
-                </DialogActions>
+            <DialogActions sx={{ justifyContent: 'flex-end', padding: 0 }}>
+              <Form.Item>
+                <Button type="primary" htmlType="submit" onClick={() => form.submit()}>
+                  {t('submit_complaint')}
+                </Button>
+              </Form.Item>
+            </DialogActions>
 
-                {(dynamicFields?.auto ?? []).length !== 0 && (
-                  <Collapse items={[{ label: 'more detelis', children: dynamicFields?.auto }]} />
-                )}
-              </Form>
+            {(dynamicFields?.auto ?? []).length !== 0 && (
+              <Collapse items={[{ label: 'more detelis', children: dynamicFields?.auto }]} />
             )}
-          </DialogContent>
-        </Dialog>
-      )}
-    </>
+          </Form>
+        )}
+      </DialogContent>
+    </Dialog>
   )
 }
 
