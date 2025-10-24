@@ -12,14 +12,14 @@ import {
   IconButton,
   Typography,
 } from '@mui/material'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation } from '@tanstack/react-query'
 import { Button, Collapse, Form, Select } from 'antd'
 import { useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { COMPLAINTS_API, GOVERNMENT_TRANSPORTATION_API } from 'src/api/apiConfig'
-import { getSiriRideWithRelated } from 'src/api/siriService'
+import { COMPLAINTS_API } from 'src/api/apiConfig'
 import dayjs from 'src/dayjs'
-import type { Point } from 'src/pages/timeBasedMap'
+import { useBoardingStationQuery, useRoutesQueary, useSiriRideQuery } from 'src/hooks/useFormQuerys'
+import { Point } from 'src/pages/timeBasedMap'
 import { allComplaintFields, renderField } from './ComplaintModalFields'
 import { complaintList, complaintTypeMappings, type ComplaintTypes } from './ComplaintModalForms'
 
@@ -27,35 +27,6 @@ interface ComplaintModalProps {
   modalOpen?: boolean
   setModalOpen?: (open: boolean) => void
   position: Point
-}
-
-const useSiriRideQuery = (position: Point) => {
-  return useQuery({
-    queryKey: [
-      'ride',
-      position.point?.siri_route__id,
-      position.point?.siri_ride__vehicle_ref,
-      position.point?.siri_route__line_ref,
-    ],
-    queryFn: async () => {
-      const siri = await getSiriRideWithRelated(
-        position.point?.siri_route__id?.toString() ?? '',
-        position.point?.siri_ride__vehicle_ref?.toString() ?? '',
-        position.point?.siri_route__line_ref?.toString() ?? '',
-      )
-
-      const gov = await GOVERNMENT_TRANSPORTATION_API.govLinesByLinePost({
-        govLinesByLinePostRequest: {
-          eventDate: siri.gtfsRouteDate?.valueOf() || -1,
-          operatorId: siri.gtfsRouteOperatorRef || -1,
-          operatorLineId: Number(siri.gtfsRouteRouteShortName) || -1,
-        },
-      }).then((lines) =>
-        lines.data?.find((l) => l.directionCode?.toString() === siri.gtfsRouteRouteDirection),
-      )
-      return { siri, gov }
-    },
-  })
 }
 
 const fieldSiriIndex = {
@@ -73,6 +44,21 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
   const [selectedComplaintType, setSelectedComplaintType] = useState<ComplaintTypes | null>(null)
 
   const siriRide = useSiriRideQuery(position)
+  const routes = useRoutesQueary({
+    eventDate: siriRide.data?.siri.gtfsRouteDate?.valueOf() || -1,
+    operatorId: siriRide.data?.siri.gtfsRouteOperatorRef || -1,
+    operatorLineId: Number(siriRide.data?.siri.gtfsRouteRouteShortName) || -1,
+  })
+  const boardingStation = useBoardingStationQuery({
+    directions: siriRide.data?.gov?.[0].directionCode
+      ? Number(siriRide.data?.gov?.[0].directionCode)
+      : undefined,
+    eventDate: siriRide.data?.gov?.[0].eventDate
+      ? dayjs(siriRide.data?.gov?.[0].eventDate).valueOf()
+      : undefined,
+    officelineId: siriRide.data?.gov?.[0].lineCode,
+    operatorId: siriRide.data?.gov?.[0].operatorId,
+  })
 
   const submitMutation = useMutation({
     mutationFn: (complaintsSendPostRequest: ComplaintsSendPostRequest) =>
@@ -93,9 +79,26 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
     if (!selectedComplaintType) return null
 
     const mapping = complaintTypeMappings[selectedComplaintType]
-    if (!mapping) return null
 
-    const regular = mapping.fields.map((name) => renderField(allComplaintFields[name]))
+    const regular = mapping.fields.map((name) => {
+      const field = allComplaintFields[name]
+      if (!field) return null
+
+      if (!field.props) field.props = {}
+
+      if (field.type === 'Select') {
+        switch (field.name) {
+          case 'route':
+            field.props.options = routes.data
+            break
+          case 'boardingStation':
+            field.props.options = boardingStation.data
+            break
+        }
+      }
+
+      return renderField(field)
+    })
 
     const auto = mapping.auto_fields
       .map((name) => {
@@ -112,16 +115,14 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
 
         field.initialValue = typeof value === 'number' ? value.toString() : value
 
-        if (field.type === 'BordingStationSelector') {
-          field.props.queary = {
-            directions: siriRide.data.gov?.directionCode
-              ? Number(siriRide.data.gov?.directionCode)
-              : undefined,
-            eventDate: siriRide.data.gov?.eventDate
-              ? dayjs(siriRide.data.gov?.eventDate).valueOf()
-              : undefined,
-            officelineId: siriRide.data.gov?.lineCode,
-            operatorId: siriRide.data.gov?.operatorId,
+        if (field.type === 'Select') {
+          switch (field.name) {
+            case 'route':
+              field.props.options = routes.data
+              break
+            case 'boardingStation':
+              field.props.options = boardingStation.data
+              break
           }
         }
 
@@ -130,7 +131,7 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
       .filter((v) => v != null)
 
     return { regular, auto }
-  }, [selectedComplaintType, siriRide.dataUpdatedAt])
+  }, [selectedComplaintType])
 
   const isBusy =
     siriRide.isLoading ||

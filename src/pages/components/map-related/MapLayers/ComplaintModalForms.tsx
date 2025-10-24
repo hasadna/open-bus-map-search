@@ -32,24 +32,59 @@ export const complaintTypes = [
 export const complaintTypeMappings: Record<(typeof complaintTypes)[number], ComplaintTypeFields> = {
   other: { fields: [], auto_fields: [] },
   no_ride: {
-    fields: ['eventTime', 'wait', 'boardingStation', 'traveledFromOptional', 'traveledToOptional'],
-    auto_fields: ['operator', 'route', 'lineNumber', 'licensePlate', 'eventDate'],
+    fields: [
+      'eventTime',
+      'wait',
+      'route',
+      'boardingStation',
+      'traveledFromOptional',
+      'traveledToOptional',
+    ],
+    auto_fields: ['operator', 'lineNumber', 'licensePlate', 'eventDate'],
   },
   no_stop: {
-    fields: ['eventTime', 'wait', 'boardingStation', 'traveledFromOptional', 'traveledToOptional'],
-    auto_fields: ['operator', 'route', 'lineNumber', 'licensePlate', 'eventDate'],
+    fields: [
+      'eventTime',
+      'wait',
+      'route',
+      'boardingStation',
+      'traveledFromOptional',
+      'traveledToOptional',
+    ],
+    auto_fields: ['operator', 'lineNumber', 'licensePlate', 'eventDate'],
   },
   delay: {
-    fields: ['eventTime', 'wait', 'boardingStation', 'traveledFromOptional', 'traveledToOptional'],
-    auto_fields: ['operator', 'route', 'lineNumber', 'licensePlate', 'eventDate'],
+    fields: [
+      'eventTime',
+      'wait',
+      'route',
+      'boardingStation',
+      'traveledFromOptional',
+      'traveledToOptional',
+    ],
+    auto_fields: ['operator', 'lineNumber', 'licensePlate', 'eventDate'],
   },
   overcrowded: {
-    fields: ['eventTime', 'wait', 'boardingStation', 'traveledFromOptional', 'traveledToOptional'],
-    auto_fields: ['operator', 'route', 'lineNumber', 'licensePlate', 'eventDate'],
+    fields: [
+      'eventTime',
+      'wait',
+      'route',
+      'boardingStation',
+      'traveledFromOptional',
+      'traveledToOptional',
+    ],
+    auto_fields: ['operator', 'lineNumber', 'licensePlate', 'eventDate'],
   },
   early: {
-    fields: ['eventTime', 'wait', 'boardingStation', 'traveledFromOptional', 'traveledToOptional'],
-    auto_fields: ['operator', 'route', 'lineNumber', 'licensePlate', 'eventDate'],
+    fields: [
+      'eventTime',
+      'wait',
+      'route',
+      'boardingStation',
+      'traveledFromOptional',
+      'traveledToOptional',
+    ],
+    auto_fields: ['operator', 'lineNumber', 'licensePlate', 'eventDate'],
   },
   add_or_remove_station: {
     fields: [
