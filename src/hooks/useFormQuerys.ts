@@ -1,7 +1,4 @@
-import {
-  GovLinesByLinePostRequest,
-  GovStationsByLinePostRequest,
-} from '@hasadna/open-bus-api-client'
+import { GovStationsByLinePostRequest } from '@hasadna/open-bus-api-client'
 import { useQuery } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 import { GOVERNMENT_TRANSPORTATION_API } from 'src/api/apiConfig'
@@ -27,27 +24,8 @@ export const useBusOperatorQuery = () => {
   })
 }
 
-export const useRoutesQueary = (queary?: Partial<GovLinesByLinePostRequest>) => {
-  const keys = Object.values(queary || {})
-  return useQuery({
-    queryKey: ['routes', ...keys],
-    queryFn: async () => {
-      if (keys.some((v) => v === -1)) return undefined
-
-      const res = await GOVERNMENT_TRANSPORTATION_API.govLinesByLinePost({
-        govLinesByLinePostRequest: queary as GovLinesByLinePostRequest,
-      })
-
-      return res.data?.map(({ directionText, directionCode }) => ({
-        label: directionText,
-        value: directionCode,
-      }))
-    },
-  })
-}
-
-export const useBoardingStationQuery = (queary?: Partial<GovStationsByLinePostRequest>) => {
-  const keys = Object.values(queary || {})
+export const useBoardingStationQuery = (queary: Partial<GovStationsByLinePostRequest>) => {
+  const keys = Object.values(queary)
   return useQuery({
     queryKey: ['Bording_station', ...keys],
     queryFn: async () => {
@@ -81,14 +59,17 @@ export const useSiriRideQuery = (position: Point) => {
         position.point?.siri_route__line_ref?.toString() ?? '',
       )
 
-      const gov = await GOVERNMENT_TRANSPORTATION_API.govLinesByLinePost({
+      const lines = await GOVERNMENT_TRANSPORTATION_API.govLinesByLinePost({
         govLinesByLinePostRequest: {
           eventDate: siri.gtfsRouteDate?.valueOf() || -1,
           operatorId: siri.gtfsRouteOperatorRef || -1,
           operatorLineId: Number(siri.gtfsRouteRouteShortName) || -1,
         },
       })
-      return { siri, gov: gov.data }
+
+      const unique = [...new Map(lines?.data?.map((line) => [line.directionText, line])).values()]
+
+      return { siri, lines: unique }
     },
   })
 }

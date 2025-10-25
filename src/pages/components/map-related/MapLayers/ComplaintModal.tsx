@@ -18,7 +18,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { COMPLAINTS_API } from 'src/api/apiConfig'
 import dayjs from 'src/dayjs'
-import { useBoardingStationQuery, useRoutesQueary, useSiriRideQuery } from 'src/hooks/useFormQuerys'
+import { useBoardingStationQuery, useSiriRideQuery } from 'src/hooks/useFormQuerys'
 import { Point } from 'src/pages/timeBasedMap'
 import { allComplaintFields, renderField } from './ComplaintModalFields'
 import { complaintList, complaintTypeMappings, type ComplaintTypes } from './ComplaintModalForms'
@@ -44,25 +44,25 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
   const [selectedComplaintType, setSelectedComplaintType] = useState<ComplaintTypes | null>(null)
   const [selectedRoute, setSelectedRoute] = useState<number | null>(null)
   const siriRide = useSiriRideQuery(position)
-  const routes = useRoutesQueary({
-    eventDate: siriRide.data?.siri.gtfsRouteDate?.valueOf() || -1,
-    operatorId: siriRide.data?.siri.gtfsRouteOperatorRef || -1,
-    operatorLineId: Number(siriRide.data?.siri.gtfsRouteRouteShortName) || -1,
-  })
-  const boardingStation = useBoardingStationQuery(
-    selectedRoute
-      ? {
-          directions: siriRide.data?.gov?.[selectedRoute].directionCode
-            ? Number(siriRide.data?.gov?.[selectedRoute].directionCode)
-            : undefined,
-          eventDate: siriRide.data?.gov?.[selectedRoute].eventDate
-            ? dayjs(siriRide.data?.gov?.[selectedRoute].eventDate).valueOf()
-            : undefined,
-          officelineId: siriRide.data?.gov?.[selectedRoute].lineCode,
-          operatorId: siriRide.data?.gov?.[selectedRoute].operatorId,
-        }
-      : {},
+
+  const boardingQueary = useMemo(
+    () =>
+      selectedRoute && siriRide.data?.lines
+        ? {
+            directions: siriRide.data.lines[selectedRoute].directionCode
+              ? Number(siriRide.data.lines[selectedRoute].directionCode)
+              : undefined,
+            eventDate: siriRide.data.lines[selectedRoute].eventDate
+              ? dayjs(siriRide.data.lines[selectedRoute].eventDate).valueOf()
+              : undefined,
+            officelineId: siriRide.data.lines[selectedRoute].lineCode,
+            operatorId: siriRide.data.lines[selectedRoute].operatorId,
+          }
+        : {},
+    [selectedRoute, siriRide.data?.lines],
   )
+
+  const boardingStation = useBoardingStationQuery(boardingQueary)
 
   const submitMutation = useMutation({
     mutationFn: (complaintsSendPostRequest: ComplaintsSendPostRequest) =>
@@ -93,9 +93,15 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
       if (field.type === 'Select') {
         switch (field.name) {
           case 'route':
-            field.props.options = routes.data
+            field.props.options = siriRide.data?.lines.map(({ directionText }) => ({
+              label: directionText,
+              value: directionText,
+            }))
+
             field.props.onSelect = (val) => {
-              setSelectedRoute(routes.data?.findIndex((r) => r.value === val) || null)
+              setSelectedRoute(
+                siriRide.data?.lines?.findIndex((r) => r.directionText === val) || null,
+              )
             }
             break
           case 'boardingStation':
@@ -125,7 +131,10 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
         if (field.type === 'Select') {
           switch (field.name) {
             case 'route':
-              field.props.options = routes.data
+              field.props.options = siriRide.data?.lines.map(({ directionText }) => ({
+                label: directionText,
+                value: directionText,
+              }))
               break
             case 'boardingStation':
               field.props.options = boardingStation.data
@@ -138,7 +147,7 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
       .filter((v) => v != null)
 
     return { regular, auto }
-  }, [selectedComplaintType])
+  }, [selectedComplaintType, siriRide.dataUpdatedAt, boardingStation.dataUpdatedAt])
 
   const isBusy =
     siriRide.isLoading ||
@@ -147,8 +156,8 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
 
   useEffect(() => {
     // reset selected route when routes list update
-    setSelectedRoute(routes.data?.length ? 0 : null)
-  }, [routes.dataUpdatedAt])
+    setSelectedRoute(siriRide.data?.lines ? 0 : null)
+  }, [siriRide.dataUpdatedAt])
 
   return (
     <Dialog
