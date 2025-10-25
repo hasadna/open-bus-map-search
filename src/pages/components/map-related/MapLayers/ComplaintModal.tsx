@@ -30,11 +30,11 @@ interface ComplaintModalProps {
 }
 
 const fieldSiriIndex = {
-  operator: 'gtfsRouteOperatorRef',
+  operator: 'siriRouteOperatorRef',
   licensePlate: 'vehicleRef',
   // trainNumber: 'vehicleRef',
   lineNumber: 'gtfsRouteRouteShortName',
-  route: 'gtfsRouteLineRef',
+  route: 'siriRouteLineRef',
   eventDate: 'gtfsRouteDate',
 } as Record<keyof typeof allComplaintFields, keyof SiriRideWithRelatedPydanticModel>
 
@@ -47,16 +47,16 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
 
   const boardingQueary = useMemo(
     () =>
-      selectedRoute && siriRide.data?.lines
+      selectedRoute && siriRide.data?.lines.length
         ? {
-            directions: siriRide.data.lines[selectedRoute].directionCode
-              ? Number(siriRide.data.lines[selectedRoute].directionCode)
+            directions: siriRide.data.lines[selectedRoute]?.directionCode
+              ? Number(siriRide.data.lines[selectedRoute]?.directionCode)
               : undefined,
-            eventDate: siriRide.data.lines[selectedRoute].eventDate
-              ? dayjs(siriRide.data.lines[selectedRoute].eventDate).valueOf()
+            eventDate: siriRide.data.lines[selectedRoute]?.eventDate
+              ? dayjs(siriRide.data.lines[selectedRoute]?.eventDate).valueOf()
               : undefined,
-            officelineId: siriRide.data.lines[selectedRoute].lineCode,
-            operatorId: siriRide.data.lines[selectedRoute].operatorId,
+            officelineId: siriRide.data.lines[selectedRoute]?.lineCode,
+            operatorId: siriRide.data.lines[selectedRoute]?.operatorId,
           }
         : {},
     [selectedRoute, siriRide.data?.lines],
@@ -81,13 +81,11 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
 
   const dynamicFields = useMemo(() => {
     if (!selectedComplaintType) return null
-
     const mapping = complaintTypeMappings[selectedComplaintType]
 
     const regular = mapping.fields.map((name) => {
       const field = allComplaintFields[name]
       if (!field) return null
-
       if (!field.props) field.props = {}
 
       if (field.type === 'Select') {
@@ -98,6 +96,9 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
               value: directionText,
             }))
 
+            // if (selectedRoute && siriRide.data?.lines[selectedRoute]) {
+            //   field.props.value = siriRide.data.lines[selectedRoute].directionText
+            // }
             field.props.onSelect = (val) => {
               setSelectedRoute(
                 siriRide.data?.lines?.findIndex((r) => r.directionText === val) || null,
@@ -117,17 +118,17 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
       .map((name) => {
         const field = allComplaintFields[name]
         if (!field) return null
-
         if (!field.props) field.props = {}
         field.props.disabled = true
 
         if (!siriRide.data) return renderField(field)
 
-        const siriIndex = fieldSiriIndex[name]
-        const value = siriIndex ? siriRide.data.siri[siriIndex] : undefined
-
-        field.initialValue = typeof value === 'number' ? value.toString() : value
-
+        const siriKey = fieldSiriIndex[name]
+        const value = siriKey ? siriRide.data.siri[siriKey]?.toString() : undefined
+        console.log(siriRide.data.siri)
+        field.initialValue = typeof value === 'number' ? value : value
+        if (field.name === '') {
+        }
         if (field.type === 'Select') {
           switch (field.name) {
             case 'route':
@@ -141,7 +142,6 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
               break
           }
         }
-
         return renderField(field)
       })
       .filter((v) => v != null)
@@ -155,8 +155,15 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
     (submitMutation.isIdle === false && submitMutation.isPending)
 
   useEffect(() => {
-    // reset selected route when routes list update
-    setSelectedRoute(siriRide.data?.lines ? 0 : null)
+    const name = siriRide.data?.siri.gtfsRouteRouteLongName
+      ?.split(/[<->,-]/u)
+      .filter((v) => v !== '')
+
+    const index = siriRide.data?.lines?.findIndex(({ originCity, destinationCity }) => {
+      return name?.[1] === originCity?.dataText && name?.[3] === destinationCity?.dataText
+    })
+
+    setSelectedRoute(index || null)
   }, [siriRide.dataUpdatedAt])
 
   return (

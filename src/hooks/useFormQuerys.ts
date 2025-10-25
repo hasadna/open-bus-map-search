@@ -2,6 +2,7 @@ import { GovStationsByLinePostRequest } from '@hasadna/open-bus-api-client'
 import { useQuery } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 import { GOVERNMENT_TRANSPORTATION_API } from 'src/api/apiConfig'
+import { getSiriRideWithRelated } from 'src/api/siriService'
 import { Point } from 'src/pages/timeBasedMap'
 
 export const useGovTimeQuery = () => {
@@ -9,7 +10,7 @@ export const useGovTimeQuery = () => {
     queryKey: ['gov_time', dayjs().startOf('day').valueOf()],
     queryFn: async () => {
       const res = await GOVERNMENT_TRANSPORTATION_API.govTimeGet()
-      return dayjs(res.data?.serverTime)
+      return res.data?.serverTime
     },
   })
 }
@@ -52,7 +53,6 @@ export const useSiriRideQuery = (position: Point) => {
       position.point?.siri_route__line_ref,
     ],
     queryFn: async () => {
-      const { getSiriRideWithRelated } = await import('src/api/siriService')
       const siri = await getSiriRideWithRelated(
         position.point?.siri_route__id?.toString() ?? '',
         position.point?.siri_ride__vehicle_ref?.toString() ?? '',
@@ -61,8 +61,8 @@ export const useSiriRideQuery = (position: Point) => {
 
       const lines = await GOVERNMENT_TRANSPORTATION_API.govLinesByLinePost({
         govLinesByLinePostRequest: {
-          eventDate: siri.gtfsRouteDate?.valueOf() || -1,
-          operatorId: siri.gtfsRouteOperatorRef || -1,
+          eventDate: position.recorded_at_time || -1,
+          operatorId: position.operator || -1,
           operatorLineId: Number(siri.gtfsRouteRouteShortName) || -1,
         },
       })

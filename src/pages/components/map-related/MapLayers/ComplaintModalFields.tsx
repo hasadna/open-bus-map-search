@@ -18,7 +18,7 @@ import dayjs from 'dayjs'
 import { useBusOperatorQuery, useGovTimeQuery } from 'src/hooks/useFormQuerys'
 
 // --- Validators ---
-const hebOnly = /^[א-ת,\s,',"]+$/u
+const hebOnly = /^(?![-'"\s()]*$)([א-ת-'"\s()]*)\s*$/u
 const numberOnly = /^\d+$/
 
 const createIdValidator = (): Rule => ({
@@ -41,35 +41,33 @@ const createRavKavValidator = (): Rule => ({
 })
 
 // ---   Field Components ---
-const commonStyle = { width: '100%' }
+const fullWidth = { width: '100%' }
 
 const fieldComponents = {
-  Input: (props: InputProps) => <Input {...props} style={commonStyle} />,
-  TextArea: (props: TextAreaProps) => <Input.TextArea {...props} style={commonStyle} />,
+  Input: (props: InputProps) => <Input {...props} style={fullWidth} />,
+  TextArea: (props: TextAreaProps) => <Input.TextArea {...props} style={fullWidth} />,
   DatePicker: (props: DatePickerProps) => {
-    const govTime = useGovTimeQuery()
+    const { data } = useGovTimeQuery()
 
     return (
       <DatePicker
         {...props}
         value={dayjs(props.value)}
-        style={commonStyle}
-        disabledDate={(d) => {
-          return !(d.isAfter(govTime.data?.subtract(60, 'day')) && d.isBefore(govTime.data))
-        }}
+        style={fullWidth}
+        disabledDate={(d) => d.isAfter(dayjs(data))}
       />
     )
   },
   TimePicker: (props: TimePickerProps) => (
-    <TimePicker {...props} style={commonStyle} format="HH:mm" />
+    <TimePicker {...props} style={fullWidth} format="HH:mm" />
   ),
   TimeRangePicker: (props: TimeRangePickerProps) => {
-    return <TimePicker.RangePicker {...props} style={commonStyle} format="HH:mm" />
+    return <TimePicker.RangePicker {...props} style={fullWidth} format="HH:mm" />
   },
   Checkbox: (props: CheckboxProps & { title?: string }) => (
     <Checkbox {...props}>{props.title}</Checkbox>
   ),
-  Select: (props: SelectProps) => <Select {...props} style={commonStyle} />,
+  Select: (props: SelectProps) => <Select {...props} style={fullWidth} />,
   BusOpreatorSelector: (props: SelectProps) => {
     const { data, isLoading } = useBusOperatorQuery()
     return (
@@ -77,7 +75,7 @@ const fieldComponents = {
         {...props}
         options={props.options || data}
         disabled={props.disabled || isLoading}
-        style={commonStyle}
+        style={fullWidth}
       />
     )
   },
@@ -126,12 +124,12 @@ export const allComplaintFields = {
   phone: createField('phone', 'Input', [{ required: true }], { maxLength: 11 }),
   description: createField('description', 'TextArea', [{ required: true, min: 2 }], {
     rows: 4,
-    maxLength: 2000,
+    maxLength: 1500,
   }),
   operator: createField('operator', 'BusOpreatorSelector', [{ required: true }]),
   licensePlate: createField('licensePlate', 'Input', [{ required: true }]),
   eventDate: createField('eventDate', 'DatePicker', [{ required: true }]),
-  lineNumber: createField('lineNumber', 'Input', [{ required: true }]),
+  lineNumber: createField('lineNumber', 'Input', [{ required: true }], { maxLength: 5 }),
   eventTime: createField('time', 'TimePicker', [{ required: true }]),
   route: createField('route', 'Select', [{ required: true }]),
   wait: createField('wait', 'TimeRangePicker', [{ required: true }]),
