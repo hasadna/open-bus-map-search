@@ -31,8 +31,6 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
       new Date(position.point?.siri_ride__scheduled_start_time),
     )
       .then((routes) => {
-        console.log(routes)
-
         setRoute(routes[0])
         setIsLoading(false)
       })
@@ -178,7 +176,7 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
               modalOpen={modalOpen}
               setModalOpen={setModalOpen}
               position={position}
-              // route={route}
+              route={route}
             />
           </div>
           {children}
