@@ -38,7 +38,6 @@ export async function getSiriRideWithRelated(
     siriRouteLineRefs,
     vehicleRefs,
   })
-  console.log(gtfs_route_promise)
 
   return gtfs_route_promise[0]
 }

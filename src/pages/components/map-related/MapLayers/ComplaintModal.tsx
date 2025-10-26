@@ -1,5 +1,6 @@
 import {
   ComplaintsSendPostRequest,
+  // GtfsRoutePydanticModel,
   SiriRideWithRelatedPydanticModel,
 } from '@hasadna/open-bus-api-client'
 import { Close } from '@mui/icons-material'
@@ -13,7 +14,7 @@ import {
   Typography,
 } from '@mui/material'
 import { useMutation } from '@tanstack/react-query'
-import { Button, Collapse, Form, Select } from 'antd'
+import { Button, Form, Select } from 'antd'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { COMPLAINTS_API } from 'src/api/apiConfig'
@@ -27,6 +28,7 @@ interface ComplaintModalProps {
   modalOpen?: boolean
   setModalOpen?: (open: boolean) => void
   position: Point
+  // route: GtfsRoutePydanticModel
 }
 
 const fieldSiriIndex = {
@@ -38,31 +40,33 @@ const fieldSiriIndex = {
   eventDate: 'gtfsRouteDate',
 } as Record<keyof typeof allComplaintFields, keyof SiriRideWithRelatedPydanticModel>
 
-const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: ComplaintModalProps) => {
+const ComplaintModal = ({
+  modalOpen = false,
+  setModalOpen,
+  position,
+  //route,
+}: ComplaintModalProps) => {
   const { t, i18n } = useTranslation()
   const [form] = Form.useForm()
   const [selectedComplaintType, setSelectedComplaintType] = useState<ComplaintTypes | null>(null)
   const [selectedRoute, setSelectedRoute] = useState<number | null>(null)
   const siriRide = useSiriRideQuery(position)
 
-  const boardingQueary = useMemo(
-    () =>
-      selectedRoute && siriRide.data?.lines.length
-        ? {
-            directions: siriRide.data.lines[selectedRoute]?.directionCode
-              ? Number(siriRide.data.lines[selectedRoute]?.directionCode)
-              : undefined,
-            eventDate: siriRide.data.lines[selectedRoute]?.eventDate
-              ? dayjs(siriRide.data.lines[selectedRoute]?.eventDate).valueOf()
-              : undefined,
-            officelineId: siriRide.data.lines[selectedRoute]?.lineCode,
-            operatorId: siriRide.data.lines[selectedRoute]?.operatorId,
-          }
-        : {},
-    [selectedRoute, siriRide.data?.lines],
-  )
+  const boardingQuery = useMemo(() => {
+    if (!selectedRoute || !siriRide.data?.lines.length) return {}
 
-  const boardingStation = useBoardingStationQuery(boardingQueary)
+    const selectedLine = siriRide.data.lines[selectedRoute]
+    if (!selectedLine) return {}
+
+    return {
+      directions: selectedLine.directionCode ? Number(selectedLine.directionCode) : undefined,
+      eventDate: selectedLine.eventDate ? dayjs(selectedLine.eventDate).valueOf() : undefined,
+      officelineId: selectedLine.lineCode,
+      operatorId: selectedLine.operatorId,
+    }
+  }, [selectedRoute, siriRide.data?.lines])
+
+  const boardingStation = useBoardingStationQuery(boardingQuery)
 
   const submitMutation = useMutation({
     mutationFn: (complaintsSendPostRequest: ComplaintsSendPostRequest) =>
@@ -70,7 +74,7 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
   })
 
   const handleSubmit = useCallback(
-    (values: any) => {
+    (values: Record<string, unknown>) => {
       // const payload = formatValuesForSubmit(values)
       console.log(values)
 
@@ -83,52 +87,35 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
     if (!selectedComplaintType) return null
     const mapping = complaintTypeMappings[selectedComplaintType]
 
-    const regular = mapping.fields.map((name) => {
-      const field = allComplaintFields[name]
-      if (!field) return null
-      if (!field.props) field.props = {}
-
-      if (field.type === 'Select') {
-        switch (field.name) {
-          case 'route':
-            field.props.options = siriRide.data?.lines.map(({ directionText }) => ({
-              label: directionText,
-              value: directionText,
-            }))
-
-            // if (selectedRoute && siriRide.data?.lines[selectedRoute]) {
-            //   field.props.value = siriRide.data.lines[selectedRoute].directionText
-            // }
-            field.props.onSelect = (val) => {
-              setSelectedRoute(
-                siriRide.data?.lines?.findIndex((r) => r.directionText === val) || null,
-              )
-            }
-            break
-          case 'boardingStation':
-            field.props.options = boardingStation.data
-            break
-        }
-      }
-
-      return renderField(field)
-    })
-
-    const auto = mapping.auto_fields
-      .map((name) => {
-        const field = allComplaintFields[name]
-        if (!field) return null
-        if (!field.props) field.props = {}
-        field.props.disabled = true
-
-        if (!siriRide.data) return renderField(field)
-
+    // Create a set of fields that should be disabled because they're provided by Siri data
+    const siriDisabledFields = new Set<string>()
+    if (siriRide.data) {
+      mapping.allFields.forEach((name) => {
         const siriKey = fieldSiriIndex[name]
-        const value = siriKey ? siriRide.data.siri[siriKey]?.toString() : undefined
-        console.log(siriRide.data.siri)
-        field.initialValue = typeof value === 'number' ? value : value
-        if (field.name === '') {
+        if (siriKey && siriRide.data.siri[siriKey] !== undefined) {
+          siriDisabledFields.add(name)
         }
+      })
+    }
+
+    return mapping.allFields
+      .map((name) => {
+        const field = { ...allComplaintFields[name] }
+        if (!field) return null
+
+        // Initialize props if not present
+        if (!field.props) field.props = {}
+
+        // Handle fields with Siri data
+        const isSiriDisabled = siriDisabledFields.has(name)
+        if (isSiriDisabled) {
+          const siriKey = fieldSiriIndex[name]
+          const siriValue = siriKey ? siriRide.data?.siri[siriKey] : undefined
+          field.initialValue = siriValue !== undefined ? siriValue.toString() : undefined
+          // field.props.disabled = true
+        }
+
+        // Handle special Select fields
         if (field.type === 'Select') {
           switch (field.name) {
             case 'route':
@@ -136,18 +123,29 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
                 label: directionText,
                 value: directionText,
               }))
+
+              // Set initial value for route field based on selected route
+              if (selectedRoute !== null && siriRide.data?.lines[selectedRoute]?.directionText) {
+                field.initialValue = siriRide.data.lines[selectedRoute].directionText
+              }
+
+              field.props.onSelect = (val) => {
+                const routeIndex =
+                  siriRide.data?.lines?.findIndex((r) => r.directionText === val) ?? -1
+                setSelectedRoute(routeIndex >= 0 ? routeIndex : null)
+              }
               break
+
             case 'boardingStation':
-              field.props.options = boardingStation.data
+              field.props.options = boardingStation.data || []
               break
           }
         }
+
         return renderField(field)
       })
       .filter((v) => v != null)
-
-    return { regular, auto }
-  }, [selectedComplaintType, siriRide.dataUpdatedAt, boardingStation.dataUpdatedAt])
+  }, [selectedComplaintType, siriRide.data, boardingStation.data, selectedRoute])
 
   const isBusy =
     siriRide.isLoading ||
@@ -155,15 +153,15 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
     (submitMutation.isIdle === false && submitMutation.isPending)
 
   useEffect(() => {
-    const name = siriRide.data?.siri.gtfsRouteRouteLongName
-      ?.split(/[<->,-]/u)
-      .filter((v) => v !== '')
+    // const name = siriRide.data?.siri.gtfsRouteRouteLongName
+    //   ?.split(/[<->,-]/u)
+    //   .filter((v) => v !== '')
 
-    const index = siriRide.data?.lines?.findIndex(({ originCity, destinationCity }) => {
-      return name?.[1] === originCity?.dataText && name?.[3] === destinationCity?.dataText
-    })
+    // const index = siriRide.data?.lines?.findIndex(({ originCity, destinationCity }) => {
+    //   return name?.[1] === originCity?.dataText && name?.[3] === destinationCity?.dataText
+    // })
 
-    setSelectedRoute(index || null)
+    setSelectedRoute(null)
   }, [siriRide.dataUpdatedAt])
 
   return (
@@ -200,6 +198,11 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
             onValuesChange={(changedValues) => {
               if ('complaintType' in changedValues)
                 setSelectedComplaintType(changedValues.complaintType as ComplaintTypes)
+
+              // Requirement 1: If operator or lineNumber changes, reset selectedRoute to null to re-evaluate dependent fields (route/boardingStation)
+              if ('operator' in changedValues || 'lineNumber' in changedValues) {
+                setSelectedRoute(null)
+              }
             }}>
             {renderField(allComplaintFields.firstName)}
             {renderField(allComplaintFields.lastName)}
@@ -214,7 +217,7 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
               <Select options={complaintList} />
             </Form.Item>
 
-            {dynamicFields?.regular}
+            {dynamicFields}
 
             {renderField(allComplaintFields.description)}
 
@@ -225,10 +228,6 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
                 </Button>
               </Form.Item>
             </DialogActions>
-
-            {(dynamicFields?.auto ?? []).length !== 0 && (
-              <Collapse items={[{ label: 'more detelis', children: dynamicFields?.auto }]} />
-            )}
           </Form>
         )}
       </DialogContent>

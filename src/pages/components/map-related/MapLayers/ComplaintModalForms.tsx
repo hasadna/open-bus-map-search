@@ -1,8 +1,7 @@
 import { allComplaintFields } from './ComplaintModalFields'
 
 export interface ComplaintTypeFields {
-  fields: (keyof typeof allComplaintFields)[]
-  auto_fields: (keyof typeof allComplaintFields)[]
+  allFields: (keyof typeof allComplaintFields)[]
 }
 
 export const complaintTypes = [
@@ -30,54 +29,106 @@ export const complaintTypes = [
 ] as const
 
 export const complaintTypeMappings: Record<(typeof complaintTypes)[number], ComplaintTypeFields> = {
-  other: { fields: [], auto_fields: [] },
+  other: { allFields: [] },
   no_ride: {
-    fields: ['eventTime', 'wait', 'route', 'boardingStation', 'busDirectionFrom', 'busDirectionTo'],
-    auto_fields: ['operator', 'lineNumber', 'licensePlate', 'eventDate'],
+    allFields: [
+      'eventTime',
+      'wait',
+      'route',
+      'boardingStation',
+      'busDirectionFrom',
+      'busDirectionTo',
+      'operator',
+      'lineNumber',
+      'licensePlate',
+      'eventDate',
+    ],
   },
   no_stop: {
-    fields: ['eventTime', 'wait', 'route', 'boardingStation', 'busDirectionFrom', 'busDirectionTo'],
-    auto_fields: ['operator', 'lineNumber', 'licensePlate', 'eventDate'],
+    allFields: [
+      'eventTime',
+      'wait',
+      'route',
+      'boardingStation',
+      'busDirectionFrom',
+      'busDirectionTo',
+      'operator',
+      'lineNumber',
+      'licensePlate',
+      'eventDate',
+    ],
   },
   delay: {
-    fields: ['eventTime', 'wait', 'route', 'boardingStation', 'busDirectionFrom', 'busDirectionTo'],
-    auto_fields: ['operator', 'lineNumber', 'licensePlate', 'eventDate'],
+    allFields: [
+      'eventTime',
+      'wait',
+      'route',
+      'boardingStation',
+      'busDirectionFrom',
+      'busDirectionTo',
+      'operator',
+      'lineNumber',
+      'licensePlate',
+      'eventDate',
+    ],
   },
   overcrowded: {
-    fields: ['eventTime', 'wait', 'route', 'boardingStation', 'busDirectionFrom', 'busDirectionTo'],
-    auto_fields: ['operator', 'lineNumber', 'licensePlate', 'eventDate'],
+    allFields: [
+      'eventTime',
+      'wait',
+      'route',
+      'boardingStation',
+      'busDirectionFrom',
+      'busDirectionTo',
+      'operator',
+      'lineNumber',
+      'licensePlate',
+      'eventDate',
+    ],
   },
   early: {
-    fields: ['eventTime', 'wait', 'route', 'boardingStation', 'busDirectionFrom', 'busDirectionTo'],
-    auto_fields: ['operator', 'lineNumber', 'licensePlate', 'eventDate'],
+    allFields: [
+      'eventTime',
+      'wait',
+      'route',
+      'boardingStation',
+      'busDirectionFrom',
+      'busDirectionTo',
+      'operator',
+      'lineNumber',
+      'licensePlate',
+      'eventDate',
+    ],
   },
   add_or_remove_station: {
-    fields: [
+    allFields: [
       'addRemoveStationReason',
       'boardingStation',
       'requestedStationAddress',
       'busDirectionFrom',
       'busDirectionTo',
+      'operator',
+      'lineActiveDate',
+      'lineNumber',
     ],
-    auto_fields: ['operator', 'lineActiveDate', 'lineNumber'],
   },
-  add_new_line: {
-    fields: ['route'],
-    auto_fields: [],
-  },
+  add_new_line: { allFields: ['route'] },
   add_frequency: {
-    fields: [
+    allFields: [
       'addFrequencyReason',
       'eventTime',
       'wait',
       'boardingStation',
       'busDirectionFrom',
       'busDirectionTo',
+      'eventDate',
+      'operator',
+      'lineNumber',
+      'route',
     ],
-    auto_fields: ['eventDate', 'operator', 'lineNumber', 'route'],
   },
   driver_behavior: {
-    fields: [
+    allFields: [
       'eventTime',
       'wait',
       'boardingStation',
@@ -85,15 +136,28 @@ export const complaintTypeMappings: Record<(typeof complaintTypes)[number], Comp
       'busDirectionTo',
       'willingToTestifyMOT',
       'willingToTestifyCourt',
+      'operator',
+      'eventDate',
+      'licensePlate',
+      'lineNumber',
+      'route',
     ],
-    auto_fields: ['operator', 'eventDate', 'licensePlate', 'lineNumber', 'route'],
   },
   cleanliness: {
-    fields: ['eventTime', 'busDirectionFrom', 'busDirectionTo', 'boardingStation'],
-    auto_fields: ['operator', 'eventDate', 'licensePlate', 'lineNumber', 'route'],
+    allFields: [
+      'eventTime',
+      'busDirectionFrom',
+      'busDirectionTo',
+      'boardingStation',
+      'operator',
+      'eventDate',
+      'licensePlate',
+      'lineNumber',
+      'route',
+    ],
   },
   fine_appeal: {
-    fields: [
+    allFields: [
       'ravKavNumber',
       'operator',
       'eventDate',
@@ -101,16 +165,23 @@ export const complaintTypeMappings: Record<(typeof complaintTypes)[number], Comp
       'boardingStation',
       'busDirectionFrom',
       'busDirectionTo',
+      'lineNumber',
+      'route',
     ],
-    auto_fields: ['lineNumber', 'route'],
   },
   route_change: {
-    fields: ['operator', 'eventDate', 'busDirectionFrom', 'busDirectionTo'],
-    auto_fields: ['lineNumber', 'route'],
+    allFields: [
+      'operator',
+      'eventDate',
+      'busDirectionFrom',
+      'busDirectionTo',
+      'lineNumber',
+      'route',
+    ],
   },
-  line_switch: { fields: ['busDirectionFrom', 'busDirectionTo'], auto_fields: [] },
+  line_switch: { allFields: ['busDirectionFrom', 'busDirectionTo'] },
   station_signs: {
-    fields: [
+    allFields: [
       'operator',
       'eventDate',
       'eventTime',
@@ -118,15 +189,10 @@ export const complaintTypeMappings: Record<(typeof complaintTypes)[number], Comp
       'stationCatNum',
       'lineNumber',
     ],
-    auto_fields: [],
   },
-  ticketing_fares_discounts: { fields: ['ravKavNumber'], auto_fields: [] },
-  // train_delay: { fields: ['trainType'], auto_fields: ['trainNumber'] },
-  // train_no_ride: { fields: ['eventDate'], auto_fields: [] },
-  // train_early: { fields: ['eventTime'], auto_fields: [] },
-  // train_driver_behavior: { fields: ['originStation', 'destinationStation', 'description'] auto_fields: [] },
+  ticketing_fares_discounts: { allFields: ['ravKavNumber'] },
   debug: {
-    fields: Object.keys(allComplaintFields).filter(
+    allFields: Object.keys(allComplaintFields).filter(
       (key) =>
         ![
           'firstName',
@@ -138,9 +204,8 @@ export const complaintTypeMappings: Record<(typeof complaintTypes)[number], Comp
           'lineNumber',
           'route',
           'licensePlate',
-        ].includes(key),
+        ].includes(key) || ['operator'].includes(key),
     ) as (keyof typeof allComplaintFields)[],
-    auto_fields: ['operator', 'lineNumber', 'route', 'licensePlate'],
   },
 } as const
 
