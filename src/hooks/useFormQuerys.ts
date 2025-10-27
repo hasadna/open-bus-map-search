@@ -29,8 +29,8 @@ export const useBusOperatorQuery = () => {
   })
 }
 
-export const useBoardingStationQuery = (line: LineModel) => {
-  const { directionCode, eventDate, lineCode, operatorId } = line
+export const useBoardingStationQuery = (line?: LineModel) => {
+  const { directionCode, eventDate, lineCode, operatorId } = line || {}
 
   const boardingQuery = useMemo(() => {
     if (!directionCode || !eventDate || !lineCode || !operatorId) return null
@@ -74,7 +74,7 @@ export const useLinesQuery = (eventDate?: string, operator?: string, lineNumber?
     }
   }, [eventDate, operator, lineNumber])
 
-  return useQuery({
+  return useQuery<LineModel[], Error, LineModel[], (string | number | undefined)[]>({
     queryKey: [
       'ride',
       linesQuery?.govLinesByLinePostRequest.eventDate,

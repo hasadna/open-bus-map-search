@@ -11,7 +11,7 @@ import {
 } from '@mui/material'
 import { useMutation } from '@tanstack/react-query'
 import { Button, Form, Select } from 'antd'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { COMPLAINTS_API } from 'src/api/apiConfig'
 import dayjs from 'src/dayjs'
@@ -36,7 +36,7 @@ interface ComplaintFormValues {
   eventDate?: string
   lineNumber?: string
   eventTime?: string
-  route?: string
+  route?: number
   wait?: [string, string]
   boardingStation?: string
   busDirectionFrom?: string
@@ -78,8 +78,21 @@ const ComplaintModal = ({
   const busOperator = useBusOperatorQuery()
   const useLines = useLinesQuery(eventDate, operator, lineNumber)
   const boardingStation = useBoardingStationQuery(
-    useLines.data?.[Number(selectedRoute || '')] || {},
+    selectedRoute !== undefined ? useLines.data?.[selectedRoute] : undefined,
   )
+
+  useEffect(() => {
+    const name = route.routeLongName?.split(/[<->,-]/u).filter((v) => v !== '')
+    if (route.routeShortName === form.getFieldValue('lineNumber') && useLines.data?.length !== 0) {
+      const index = useLines.data?.findIndex(
+        ({ originCity, destinationCity }) =>
+          name?.[1] === originCity?.dataText && name?.[3] === destinationCity?.dataText,
+      )
+      if (index !== -1) {
+        form.setFieldValue('route', index)
+      }
+    }
+  }, [useLines.data, route, form])
 
   const submitMutation = useMutation({
     mutationFn: (complaintsSendPostRequest: ComplaintsSendPostRequest) =>
@@ -109,7 +122,7 @@ const ComplaintModal = ({
         form.setFieldValue('boardingStation', undefined)
       }
     },
-    [form],
+    [form, route],
   )
 
   const routeOptions = useMemo(() => {
@@ -162,17 +175,6 @@ const ComplaintModal = ({
   const date = useMemo(() => {
     return position.recorded_at_time ? dayjs(position.recorded_at_time) : undefined
   }, [position.recorded_at_time])
-
-  // const onUpdate = (lines) => {
-  //   const name = route.routeLongName?.split(/[<->,-]/u).filter((v) => v !== '')
-  //   if (route.routeShortName !== form.getFieldValue('lineNumber') || lines.length === 0) return
-  //   const index = lines?.findIndex(({ originCity, destinationCity }) => {
-  //     return name?.[1] === originCity?.dataText && name?.[3] === destinationCity?.dataText
-  //   })
-  //   console.log(index)
-
-  //   // setSelectedRoute(index || null)
-  // }
 
   return (
     <Dialog
