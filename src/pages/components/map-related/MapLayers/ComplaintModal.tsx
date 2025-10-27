@@ -208,7 +208,7 @@ const ComplaintModal = ({
   const dynamicFields = useMemo(() => {
     if (!selectedComplaintType) return null
 
-    return complaintTypeMappings[selectedComplaintType]
+    return complaintTypeMappings[selectedComplaintType].fields
       .map((name) => {
         const field = { ...allComplaintFields[name] }
         if (field.type === 'Select') {
