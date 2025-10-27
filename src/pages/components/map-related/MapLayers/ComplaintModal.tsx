@@ -69,16 +69,16 @@ const ComplaintModal = ({
   const { t, i18n } = useTranslation()
   const [form] = Form.useForm<ComplaintFormValues>()
   const [selectedComplaintType, setSelectedComplaintType] = useState<ComplaintType | null>(null)
-  const [selectedRoute, setSelectedRoute] = useState<number>()
 
   const eventDate = Form.useWatch('eventDate', form)
   const operator = Form.useWatch('operator', form)
   const lineNumber = Form.useWatch('lineNumber', form)
+  const selectedRoute = Form.useWatch('route', form)
 
   const busOperator = useBusOperatorQuery()
-  const useLines = useLinesQuery(eventDate, lineNumber, operator)
+  const useLines = useLinesQuery(eventDate, operator, lineNumber)
   const boardingStation = useBoardingStationQuery(
-    selectedRoute && useLines.data ? useLines.data[selectedRoute] : undefined,
+    useLines.data?.[Number(selectedRoute || '')] || {},
   )
 
   const submitMutation = useMutation({
@@ -92,10 +92,30 @@ const ComplaintModal = ({
     // submitMutation.mutate({ debug: true, userData: payload, databusData: siriRide.data })
   }, [])
 
+  const onValuesChange = useCallback(
+    (changedValues: Partial<ComplaintFormValues>) => {
+      if ('complaintType' in changedValues) {
+        setSelectedComplaintType(changedValues.complaintType as ComplaintType)
+      }
+      if (
+        'eventDate' in changedValues ||
+        'operator' in changedValues ||
+        'lineNumber' in changedValues
+      ) {
+        form.setFieldValue('route', undefined)
+        form.setFieldValue('boardingStation', undefined)
+      }
+      if ('route' in changedValues) {
+        form.setFieldValue('boardingStation', undefined)
+      }
+    },
+    [form],
+  )
+
   const routeOptions = useMemo(() => {
-    return useLines.data?.map(({ directionText }) => ({
+    return useLines.data?.map(({ directionText }, value) => ({
       label: directionText,
-      value: directionText,
+      value,
     }))
   }, [useLines.data])
 
@@ -112,14 +132,6 @@ const ComplaintModal = ({
       value: dataCode,
     }))
   }, [busOperator.data])
-
-  const handleRouteSelect = useCallback(
-    (val: string) => {
-      const routeIndex = useLines.data?.findIndex((r) => r.directionText === val) ?? -1
-      setSelectedRoute(routeIndex >= 0 ? routeIndex : undefined)
-    },
-    [useLines.data],
-  )
 
   const dynamicFields = useMemo(() => {
     if (!selectedComplaintType) return null
@@ -138,7 +150,6 @@ const ComplaintModal = ({
               break
             case 'route':
               field.props.options = routeOptions
-              field.props.onSelect = handleRouteSelect
               break
           }
         }
@@ -146,20 +157,11 @@ const ComplaintModal = ({
         return renderField(field)
       })
       .filter((v) => v != null)
-  }, [
-    selectedComplaintType,
-    busOperatorOptions,
-    boardingStationOptions,
-    routeOptions,
-    handleRouteSelect,
-  ])
+  }, [selectedComplaintType, busOperatorOptions, boardingStationOptions, routeOptions])
 
-  const isBusy = busOperator.isLoading || submitMutation.isPending
-
-  const date = useMemo(
-    () => (position.recorded_at_time ? dayjs(position.recorded_at_time) : undefined),
-    [position.recorded_at_time],
-  )
+  const date = useMemo(() => {
+    return position.recorded_at_time ? dayjs(position.recorded_at_time) : undefined
+  }, [position.recorded_at_time])
 
   // const onUpdate = (lines) => {
   //   const name = route.routeLongName?.split(/[<->,-]/u).filter((v) => v !== '')
@@ -201,17 +203,13 @@ const ComplaintModal = ({
             } as Partial<ComplaintFormValues>
           }
           onFinish={handleSubmit}
-          onValuesChange={(changedValues) => {
-            if ('complaintType' in changedValues) {
-              setSelectedComplaintType(changedValues.complaintType as ComplaintType)
-            }
-          }}>
+          onValuesChange={onValuesChange}>
           {submitMutation.isSuccess ? (
             <div>
               <Typography variant="h2">{`Your Complaint Number: ${submitMutation.data.referenceNumber}`}</Typography>
               <Button onClick={() => setModalOpen?.(false)}>Close</Button>
             </div>
-          ) : isBusy ? (
+          ) : busOperator.isLoading || submitMutation.isPending ? (
             <div className="loading">
               <span>{t('loading_routes')}</span>
               <CircularProgress />

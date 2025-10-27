@@ -29,7 +29,7 @@ export const useBusOperatorQuery = () => {
   })
 }
 
-export const useBoardingStationQuery = (line: LineModel = {}) => {
+export const useBoardingStationQuery = (line: LineModel) => {
   const { directionCode, eventDate, lineCode, operatorId } = line
 
   const boardingQuery = useMemo(() => {
@@ -45,7 +45,13 @@ export const useBoardingStationQuery = (line: LineModel = {}) => {
   }, [line])
 
   return useQuery({
-    queryKey: ['boarding_station', directionCode, eventDate, lineCode, operatorId],
+    queryKey: [
+      'boarding_station',
+      boardingQuery?.govStationsByLinePostRequest.directions,
+      boardingQuery?.govStationsByLinePostRequest.eventDate,
+      boardingQuery?.govStationsByLinePostRequest.officelineId,
+      boardingQuery?.govStationsByLinePostRequest.operatorId,
+    ],
     queryFn: async () => {
       if (!boardingQuery) return []
       return (await GOVERNMENT_TRANSPORTATION_API.govStationsByLinePost(boardingQuery)).data
@@ -69,7 +75,12 @@ export const useLinesQuery = (eventDate?: string, operator?: string, lineNumber?
   }, [eventDate, operator, lineNumber])
 
   return useQuery({
-    queryKey: ['ride', eventDate, operator, lineNumber],
+    queryKey: [
+      'ride',
+      linesQuery?.govLinesByLinePostRequest.eventDate,
+      linesQuery?.govLinesByLinePostRequest.operatorId,
+      linesQuery?.govLinesByLinePostRequest.operatorLineId,
+    ],
     queryFn: async () => {
       if (!linesQuery) return []
       const res = await GOVERNMENT_TRANSPORTATION_API.govLinesByLinePost(linesQuery)
