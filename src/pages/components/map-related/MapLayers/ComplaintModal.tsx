@@ -11,14 +11,18 @@ import {
 } from '@mui/material'
 import { useMutation } from '@tanstack/react-query'
 import { Button, Form, Select } from 'antd'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { COMPLAINTS_API } from 'src/api/apiConfig'
 import dayjs from 'src/dayjs'
-import { useBoardingStationQuery, useLinesQuery } from 'src/hooks/useFormQuerys'
+import {
+  useBoardingStationQuery,
+  useBusOperatorQuery,
+  useLinesQuery,
+} from 'src/hooks/useFormQuerys'
 import { Point } from 'src/pages/timeBasedMap'
 import { allComplaintFields, renderField } from './ComplaintModalFields'
-import { complaintList, complaintTypeMappings, type ComplaintTypes } from './ComplaintModalForms'
+import { complaintList, type ComplaintType, complaintTypeMappings } from './ComplaintModalForms'
 
 interface ComplaintFormValues {
   firstName: string
@@ -46,7 +50,7 @@ interface ComplaintFormValues {
   willingToTestifyMOT?: boolean
   willingToTestifyCourt?: boolean
   ravKavNumber?: string
-  complaintType: ComplaintTypes
+  complaintType: ComplaintType
 }
 
 interface ComplaintModalProps {
@@ -64,33 +68,18 @@ const ComplaintModal = ({
 }: ComplaintModalProps) => {
   const { t, i18n } = useTranslation()
   const [form] = Form.useForm<ComplaintFormValues>()
-  const [selectedComplaintType, setSelectedComplaintType] = useState<ComplaintTypes | null>(null)
-  const [selectedRoute, setSelectedRoute] = useState<number | null>(null)
+  const [selectedComplaintType, setSelectedComplaintType] = useState<ComplaintType | null>(null)
+  const [selectedRoute, setSelectedRoute] = useState<number>()
 
   const eventDate = Form.useWatch('eventDate', form)
   const operator = Form.useWatch('operator', form)
   const lineNumber = Form.useWatch('lineNumber', form)
 
-  const useLines = useLinesQuery({
-    eventDate: eventDate ? dayjs(eventDate).valueOf() : undefined,
-    operatorId: operator ? Number(operator) : undefined,
-    operatorLineId: lineNumber ? Number(lineNumber) : undefined,
-  })
-
-  const boardingQuery = useMemo(() => {
-    if (!selectedRoute || !useLines.data?.length) return {}
-    const selectedLine = useLines.data[selectedRoute]
-    if (!selectedLine) return {}
-
-    return {
-      directions: selectedLine.directionCode ? Number(selectedLine.directionCode) : undefined,
-      eventDate: selectedLine.eventDate ? dayjs(selectedLine.eventDate).valueOf() : undefined,
-      officelineId: selectedLine.lineCode,
-      operatorId: selectedLine.operatorId,
-    }
-  }, [selectedRoute, useLines.data])
-
-  const boardingStation = useBoardingStationQuery(boardingQuery)
+  const busOperator = useBusOperatorQuery()
+  const useLines = useLinesQuery(eventDate, lineNumber, operator)
+  const boardingStation = useBoardingStationQuery(
+    selectedRoute && useLines.data ? useLines.data[selectedRoute] : undefined,
+  )
 
   const submitMutation = useMutation({
     mutationFn: (complaintsSendPostRequest: ComplaintsSendPostRequest) =>
@@ -108,34 +97,29 @@ const ComplaintModal = ({
 
   const dynamicFields = useMemo(() => {
     if (!selectedComplaintType) return null
-    const mapping = complaintTypeMappings[selectedComplaintType]
 
-    return mapping.allFields
+    return complaintTypeMappings[selectedComplaintType]
       .map((name) => {
-        const field = { ...allComplaintFields[name] }
-        if (!field) return null
-        if (!field.props) field.props = {}
-
+        const field = allComplaintFields[name]
         if (field.type === 'Select') {
+          debugger
+          if (!field.props) field.props = {}
           switch (field.name) {
+            case 'boardingStation':
+              field.props.options = boardingStation.data
+              break
+            case 'operator':
+              field.props.options = busOperator.data
+              break
             case 'route':
               field.props.options = useLines.data?.map(({ directionText }) => ({
                 label: directionText,
                 value: directionText,
               }))
-
-              if (selectedRoute !== null && useLines.data?.[selectedRoute]?.directionText) {
-                field.initialValue = useLines.data?.[selectedRoute].directionText
-              }
-
               field.props.onSelect = (val) => {
                 const routeIndex = useLines.data?.findIndex((r) => r.directionText === val) ?? -1
-                setSelectedRoute(routeIndex >= 0 ? routeIndex : null)
+                setSelectedRoute(routeIndex >= 0 ? routeIndex : undefined)
               }
-              break
-
-            case 'boardingStation':
-              field.props.options = boardingStation.data || []
               break
           }
         }
@@ -143,27 +127,28 @@ const ComplaintModal = ({
         return renderField(field)
       })
       .filter((v) => v != null)
-  }, [selectedComplaintType, useLines.data, boardingStation.data, selectedRoute])
+  }, [selectedComplaintType, busOperator.data, boardingStation.data, useLines.data])
 
   const isBusy =
-    useLines.isLoading ||
+    busOperator.isLoading ||
     submitMutation.isPending ||
     (submitMutation.isIdle === false && submitMutation.isPending)
-
-  useEffect(() => {
-    //   const name = route.routeLongName?.split(/[<->,-]/u).filter((v) => v !== '')
-    //   console.log(route.routeShortName !== form.getFieldValue('lineNumber'))
-    //   if (route.routeShortName !== form.getFieldValue('lineNumber')) return
-    //   const index = useLines.data?.findIndex(({ originCity, destinationCity }) => {
-    //     return name?.[1] === originCity?.dataText && name?.[3] === destinationCity?.dataText
-    //   })
-    //   setSelectedRoute(index || null)
-  }, [route.routeLongName, useLines.data, route.routeShortName])
 
   const date = useMemo(
     () => (position.recorded_at_time ? dayjs(position.recorded_at_time) : undefined),
     [position.recorded_at_time],
   )
+
+  // const onUpdate = (lines) => {
+  //   const name = route.routeLongName?.split(/[<->,-]/u).filter((v) => v !== '')
+  //   if (route.routeShortName !== form.getFieldValue('lineNumber') || lines.length === 0) return
+  //   const index = lines?.findIndex(({ originCity, destinationCity }) => {
+  //     return name?.[1] === originCity?.dataText && name?.[3] === destinationCity?.dataText
+  //   })
+  //   console.log(index)
+
+  //   // setSelectedRoute(index || null)
+  // }
 
   return (
     <Dialog
@@ -187,8 +172,8 @@ const ComplaintModal = ({
           initialValues={
             {
               operator: position.operator,
-              eventDate: date?.format('YYYY-MM-DD'),
-              eventTime: date?.format('HH-mm'),
+              eventDate: date,
+              eventTime: date,
               licensePlate: position.point?.siri_ride__vehicle_ref,
               lineNumber: route.routeShortName,
             } as Partial<ComplaintFormValues>
@@ -196,7 +181,7 @@ const ComplaintModal = ({
           onFinish={handleSubmit}
           onValuesChange={(changedValues) => {
             if ('complaintType' in changedValues) {
-              setSelectedComplaintType(changedValues.complaintType as ComplaintTypes)
+              setSelectedComplaintType(changedValues.complaintType as ComplaintType)
             }
           }}>
           {submitMutation.isSuccess ? (

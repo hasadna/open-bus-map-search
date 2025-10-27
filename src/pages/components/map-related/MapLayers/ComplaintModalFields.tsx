@@ -15,7 +15,7 @@ import {
 import type { Rule } from 'antd/es/form'
 import type { TextAreaProps } from 'antd/es/input'
 import dayjs from 'dayjs'
-import { useBusOperatorQuery, useGovTimeQuery } from 'src/hooks/useFormQuerys'
+import { useGovTimeQuery } from 'src/hooks/useFormQuerys'
 
 // --- Validators ---
 const hebOnly = /^(?![-'"\s()]*$)([א-ת-'"\s()]*)\s*$/u
@@ -49,14 +49,7 @@ const fieldComponents = {
   DatePicker: (props: DatePickerProps) => {
     const { data } = useGovTimeQuery()
 
-    return (
-      <DatePicker
-        {...props}
-        value={dayjs(props.value)}
-        style={fullWidth}
-        disabledDate={(d) => d.isAfter(dayjs(data))}
-      />
-    )
+    return <DatePicker {...props} style={fullWidth} disabledDate={(d) => d.isAfter(dayjs(data))} />
   },
   TimePicker: (props: TimePickerProps) => (
     <TimePicker {...props} style={fullWidth} format="HH:mm" />
@@ -68,17 +61,6 @@ const fieldComponents = {
     <Checkbox {...props}>{props.title}</Checkbox>
   ),
   Select: (props: SelectProps) => <Select {...props} style={fullWidth} />,
-  BusOpreatorSelector: (props: SelectProps) => {
-    const { data, isLoading } = useBusOperatorQuery()
-    return (
-      <Select
-        {...props}
-        options={props.options || data}
-        disabled={props.disabled || isLoading}
-        style={fullWidth}
-      />
-    )
-  },
 } as const
 
 type FieldType = keyof typeof fieldComponents
@@ -87,14 +69,13 @@ export type FormFieldProps<T extends FieldType = FieldType> = {
   name: string
   type: T
   rules?: Rule[]
-  initialValue?: any
   props?: React.ComponentProps<(typeof fieldComponents)[T]>
 }
 
-export function renderField({ name, initialValue, props, rules, type }: FormFieldProps) {
+export function renderField({ name, props, rules, type }: FormFieldProps) {
   const Component = fieldComponents[type]
   return (
-    <Form.Item key={name} name={name} label={name} rules={rules} initialValue={initialValue}>
+    <Form.Item key={name} name={name} label={name} rules={rules}>
       {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
       <Component {...(props as any)} />
     </Form.Item>
@@ -126,11 +107,11 @@ export const allComplaintFields = {
     rows: 4,
     maxLength: 1500,
   }),
-  operator: createField('operator', 'BusOpreatorSelector', [{ required: true }]),
+  operator: createField('operator', 'Select', [{ required: true }]),
   licensePlate: createField('licensePlate', 'Input', [{ required: true }]),
   eventDate: createField('eventDate', 'DatePicker', [{ required: true }]),
   lineNumber: createField('lineNumber', 'Input', [{ required: true }], { maxLength: 5 }),
-  eventTime: createField('time', 'TimePicker', [{ required: true }]),
+  eventTime: createField('eventTime', 'TimePicker', [{ required: true }], { needConfirm: true }),
   route: createField('route', 'Select', [{ required: true }]),
   wait: createField('wait', 'TimeRangePicker', [{ required: true }]),
   boardingStation: createField('boardingStation', 'Select'),
@@ -154,3 +135,5 @@ export const allComplaintFields = {
   ),
   stationCatNum: createField('stationCatNum', 'Input', [{ required: true }]),
 } as const
+
+export type ComplainteField = (keyof typeof allComplaintFields)[]

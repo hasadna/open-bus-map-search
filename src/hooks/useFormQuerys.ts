@@ -1,9 +1,11 @@
 import {
   GovLinesByLinePostRequest,
   GovStationsByLinePostRequest,
+  LineModel,
 } from '@hasadna/open-bus-api-client'
 import { useQuery } from '@tanstack/react-query'
 import dayjs from 'dayjs'
+import { useMemo } from 'react'
 import { GOVERNMENT_TRANSPORTATION_API } from 'src/api/apiConfig'
 
 export const useGovTimeQuery = () => {
@@ -26,16 +28,27 @@ export const useBusOperatorQuery = () => {
   })
 }
 
-export const useBoardingStationQuery = (query: Partial<GovStationsByLinePostRequest>) => {
-  const keys = Object.values(query)
-  return useQuery({
-    queryKey: ['Bording_station', ...keys],
-    queryFn: async () => {
-      if (keys.some((v) => v == null)) return undefined
+export const useBoardingStationQuery = (line: LineModel = {}) => {
+  const { directionCode, eventDate, lineCode, operatorId } = line
 
-      const res = await GOVERNMENT_TRANSPORTATION_API.govStationsByLinePost({
-        govStationsByLinePostRequest: query as GovStationsByLinePostRequest,
-      })
+  const boardingQuery = useMemo(() => {
+    if (!directionCode || !eventDate || !lineCode || !operatorId) return null
+    return {
+      govStationsByLinePostRequest: {
+        directions: directionCode,
+        eventDate: dayjs(eventDate).valueOf(),
+        officelineId: lineCode,
+        operatorId: operatorId,
+      } as GovStationsByLinePostRequest,
+    }
+  }, [line])
+
+  return useQuery({
+    queryKey: ['Bording_station', directionCode, eventDate, lineCode, operatorId],
+    queryFn: async () => {
+      if (!boardingQuery) return []
+
+      const res = await GOVERNMENT_TRANSPORTATION_API.govStationsByLinePost(boardingQuery)
 
       return res.data?.map(({ stationFullName, stationId }) => ({
         label: stationFullName,
@@ -45,16 +58,23 @@ export const useBoardingStationQuery = (query: Partial<GovStationsByLinePostRequ
   })
 }
 
-export const useLinesQuery = (query: Partial<GovLinesByLinePostRequest>) => {
-  const keys = Object.values(query)
+export const useLinesQuery = (eventDate?: string, operator?: string, lineNumber?: string) => {
+  const linesQuery = useMemo(() => {
+    if (!eventDate || !operator || !lineNumber) return null
+    return {
+      govLinesByLinePostRequest: {
+        eventDate: dayjs(eventDate).valueOf(),
+        operatorId: Number(operator),
+        operatorLineId: Number(lineNumber),
+      } as GovLinesByLinePostRequest,
+    }
+  }, [eventDate, operator, lineNumber])
 
   return useQuery({
-    queryKey: ['ride', ...keys],
+    queryKey: ['ride', eventDate, operator, lineNumber],
     queryFn: async () => {
-      if (keys.some((v) => v == null)) return []
-      const res = await GOVERNMENT_TRANSPORTATION_API.govLinesByLinePost({
-        govLinesByLinePostRequest: query as GovLinesByLinePostRequest,
-      })
+      if (!linesQuery) return []
+      const res = await GOVERNMENT_TRANSPORTATION_API.govLinesByLinePost(linesQuery)
       return [...new Map(res.data?.map((line) => [line.directionText, line])).values()]
     },
   })
