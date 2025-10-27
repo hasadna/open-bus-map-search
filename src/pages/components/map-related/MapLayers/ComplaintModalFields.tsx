@@ -12,33 +12,66 @@ import {
   type TimePickerProps,
   type TimeRangePickerProps,
 } from 'antd'
+import type { FormInstance } from 'antd'
 import type { Rule } from 'antd/es/form'
 import type { TextAreaProps } from 'antd/es/input'
 import dayjs from 'dayjs'
+import { TFunction } from 'i18next'
 import { useTranslation } from 'react-i18next'
 import { useGovTimeQuery } from 'src/hooks/useFormQuerys'
 
 // --- Validators ---
-const hebOnly = /^(?![-'"\s()]*$)([א-ת-'"\s()]*)\s*$/u
 const numberOnly = /^\d+$/
+const hebOnly = /^(?![-'"\s()]*$)([א-ת-'"\s()]*)\s*$/u
 
-const createIdValidator = (): Rule => ({
-  validator: async (_, value: string) => {
-    if (!value || value.length !== 9 || !numberOnly.test(value)) throw new Error('Invalid ID')
-    const sum = value
-      .split('')
-      .map((digit, i) => Number(digit) * ((i % 2) + 1))
-      .reduce((acc, n) => acc + Math.floor(n / 10) + (n % 10), 0)
-    if (sum % 10 !== 0) throw new Error('Invalid ID number')
-    return Promise.resolve()
-  },
-})
-
-const createRavKavValidator = (): Rule => ({
-  validator: async (_, value: string) => {
-    if (!numberOnly.test(value)) throw new Error('Invalid Rav Kav number')
-    return Promise.resolve()
-  },
+export const createAllRules = (form: FormInstance, t: TFunction) => ({
+  waitRules: [
+    { required: true },
+    {
+      validator: async (_, value) => {
+        const eventTime = form.getFieldValue('eventTime')
+        if (!value || !eventTime) return
+        const wait = value as [string, string]
+        const eventTimeDayjs = dayjs(eventTime as dayjs.Dayjs)
+        const start = dayjs(wait[0])
+        const end = dayjs(wait[1])
+        if (eventTimeDayjs.isBefore(start) || eventTimeDayjs.isAfter(end)) {
+          throw new Error(t('event_time_between_wait'))
+        }
+        return Promise.resolve()
+      },
+    },
+  ] as Rule[],
+  idRules: [
+    { required: true, len: 9 },
+    {
+      validator: async (_, value: string) => {
+        if (!value || value.length !== 9 || !numberOnly.test(value))
+          throw new Error(t('invalid_id'))
+        const sum = value
+          .split('')
+          .map((digit, i) => Number(digit) * ((i % 2) + 1))
+          .reduce((acc, n) => acc + Math.floor(n / 10) + (n % 10), 0)
+        if (sum % 10 !== 0) throw new Error(t('invalid_id'))
+        return Promise.resolve()
+      },
+    },
+  ] as Rule[],
+  ravKavRules: [
+    { required: true, min: 11 },
+    {
+      validator: async (_, value: string) => {
+        if (!numberOnly.test(value)) throw new Error(t('invalid_rav_kav_number'))
+        return Promise.resolve()
+      },
+    },
+  ] as Rule[],
+  firstNameRules: [
+    { required: true, pattern: hebOnly, message: t('only_hebrew_allowed') },
+  ] as Rule[],
+  lastNameRules: [
+    { required: true, pattern: hebOnly, message: t('only_hebrew_allowed') },
+  ] as Rule[],
 })
 
 // ---   Field Components ---
@@ -52,11 +85,9 @@ const fieldComponents = {
 
     return <DatePicker {...props} style={fullWidth} disabledDate={(d) => d.isAfter(dayjs(data))} />
   },
-  TimePicker: (props: TimePickerProps) => (
-    <TimePicker {...props} style={fullWidth} format="HH:mm" />
-  ),
+  TimePicker: (props: TimePickerProps) => <TimePicker {...props} style={fullWidth} format="H:mm" />,
   TimeRangePicker: (props: TimeRangePickerProps) => {
-    return <TimePicker.RangePicker {...props} style={fullWidth} format="HH:mm" />
+    return <TimePicker.RangePicker {...props} style={fullWidth} format="H:mm" />
   },
   Checkbox: (props: CheckboxProps & { title?: string }) => (
     <Checkbox {...props}>{props.title}</Checkbox>
@@ -100,15 +131,13 @@ function createField<T extends FieldType>(
 }
 
 export const allComplaintFields = {
-  firstName: createField('firstName', 'Input', [{ required: true, pattern: hebOnly }], {
+  firstName: createField('firstName', 'Input', [{ required: true }], {
     maxLength: 25,
   }),
-  lastName: createField('lastName', 'Input', [{ required: true, pattern: hebOnly }], {
+  lastName: createField('lastName', 'Input', [{ required: true }], {
     maxLength: 25,
   }),
-  id: createField('id', 'Input', [{ required: true, len: 9 }, createIdValidator()], {
-    maxLength: 9,
-  }),
+  id: createField('id', 'Input', [{ required: true, len: 9 }], { maxLength: 9 }),
   email: createField('email', 'Input', [{ type: 'email', required: true }]),
   phone: createField('phone', 'Input', [{ required: true }], { maxLength: 11 }),
   complaintType: createField('complaintType', 'Select', [{ required: true }]),
@@ -136,12 +165,9 @@ export const allComplaintFields = {
   addFrequencyReason: createField('addFrequencyReason', 'Input', [{ required: true }]),
   willingToTestifyMot: createField('willingToTestifyMot', 'Checkbox'),
   willingToTestifyCourt: createField('willingToTestifyCourt', 'Checkbox'),
-  ravKavNumber: createField(
-    'ravKavNumber',
-    'Input',
-    [{ required: true, min: 11 }, createRavKavValidator()],
-    { maxLength: 11 },
-  ),
+  ravKavNumber: createField('ravKavNumber', 'Input', [{ required: true, min: 11 }], {
+    maxLength: 11,
+  }),
   stationCatNum: createField('stationCatNum', 'Input', [{ required: true }]),
 } as const
 

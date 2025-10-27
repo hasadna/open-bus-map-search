@@ -22,7 +22,12 @@ import {
   useLinesQuery,
 } from 'src/hooks/useFormQuerys'
 import { Point } from 'src/pages/timeBasedMap'
-import { allComplaintFields, ComplainteField, RenderField } from './ComplaintModalFields'
+import {
+  allComplaintFields,
+  ComplainteField,
+  createAllRules,
+  RenderField,
+} from './ComplaintModalFields'
 import { type ComplaintType, complaintTypeMappings, complaintTypes } from './ComplaintModalForms'
 
 interface User {
@@ -128,6 +133,10 @@ const ComplaintModal = ({
         form.setFieldValue('boardingStation', undefined)
       }
 
+      if ('eventTime' in changedValues) {
+        form.validateFields(['wait'])
+      }
+
       if (Object.keys(changedValues).some((key) => userKeys.has(key))) {
         SetUserStorge({ ...userStorge, ...changedValues })
       }
@@ -160,6 +169,11 @@ const ComplaintModal = ({
     return complaintTypes.map((value: ComplaintType) => ({ value, label: t(value) }))
   }, [t])
 
+  const { waitRules, idRules, ravKavRules, firstNameRules, lastNameRules } = useMemo(
+    () => createAllRules(form, t),
+    [form, t],
+  )
+
   const handleSelectOptions = useCallback(
     (name: ComplainteField) => {
       switch (name) {
@@ -186,10 +200,13 @@ const ComplaintModal = ({
             options: handleSelectOptions(name),
           }
         }
+        if (name === 'wait') field.rules = waitRules
+        if (name === 'ravKavNumber') field.rules = ravKavRules
+
         return <RenderField key={name} {...field} />
       })
       .filter(Boolean)
-  }, [selectedComplaintType, handleSelectOptions])
+  }, [selectedComplaintType, handleSelectOptions, waitRules, ravKavRules])
 
   const date = useMemo(() => {
     return position.recorded_at_time ? dayjs(position.recorded_at_time) : undefined
@@ -240,9 +257,9 @@ const ComplaintModal = ({
             </div>
           ) : (
             <>
-              <RenderField {...allComplaintFields.firstName} />
-              <RenderField {...allComplaintFields.lastName} />
-              <RenderField {...allComplaintFields.id} />
+              <RenderField {...allComplaintFields.firstName} rules={firstNameRules} />
+              <RenderField {...allComplaintFields.lastName} rules={lastNameRules} />
+              <RenderField {...allComplaintFields.id} rules={idRules} />
               <RenderField {...allComplaintFields.email} />
               <RenderField {...allComplaintFields.phone} />
               <RenderField
