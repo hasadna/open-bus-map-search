@@ -35,7 +35,7 @@ interface User {
 
 interface ComplaintFormValues extends User {
   description: string
-  operator?: string
+  busOperator?: string
   licensePlate?: string
   eventDate?: string
   lineNumber?: string
@@ -79,20 +79,20 @@ const ComplaintModal = ({
   const [userStorge, SetUserStorge] = useLocalStorage<Partial<User>>('complaint', {})
 
   const eventDate = Form.useWatch('eventDate', form)
-  const operator = Form.useWatch('operator', form)
+  const busOperator = Form.useWatch('busOperator', form)
   const lineNumber = Form.useWatch('lineNumber', form)
   const selectedRoute = Form.useWatch('route', form)
 
-  const busOperator = useBusOperatorQuery()
-  const lines = useLinesQuery(eventDate, operator, lineNumber)
-  const boardingStation = useBoardingStationQuery(
-    selectedRoute !== undefined ? lines.data?.[selectedRoute] : undefined,
+  const busOperatorQuery = useBusOperatorQuery()
+  const linesQuery = useLinesQuery(eventDate, busOperator, lineNumber)
+  const boardingStationQuery = useBoardingStationQuery(
+    selectedRoute !== undefined ? linesQuery.data?.[selectedRoute] : undefined,
   )
 
   useEffect(() => {
     const routeParts = route.routeLongName?.split(/[<->,-]/u).filter((part) => part.trim() !== '')
-    if (route.routeShortName === form.getFieldValue('lineNumber') && lines.data?.length) {
-      const matchingIndex = lines.data.findIndex(
+    if (route.routeShortName === form.getFieldValue('lineNumber') && linesQuery.data?.length) {
+      const matchingIndex = linesQuery.data.findIndex(
         ({ originCity, destinationCity }) =>
           routeParts?.[1] === originCity?.dataText && routeParts?.[3] === destinationCity?.dataText,
       )
@@ -100,7 +100,7 @@ const ComplaintModal = ({
         form.setFieldValue('route', matchingIndex)
       }
     }
-  }, [lines.data, route, form])
+  }, [linesQuery.data, route, form])
 
   const submitMutation = useMutation({
     mutationFn: (complaintsSendPostRequest: ComplaintsSendPostRequest) =>
@@ -136,28 +136,28 @@ const ComplaintModal = ({
   )
 
   const routeOptions = useMemo(() => {
-    return lines.data?.map(({ directionText }, value) => ({
+    return linesQuery.data?.map(({ directionText }, value) => ({
       label: directionText,
       value,
     }))
-  }, [lines.data])
+  }, [linesQuery.data])
 
   const boardingStationOptions = useMemo(() => {
-    return boardingStation.data?.map(({ stationFullName, stationId }) => ({
+    return boardingStationQuery.data?.map(({ stationFullName, stationId }) => ({
       label: stationFullName,
       value: stationId,
     }))
-  }, [boardingStation.data])
+  }, [boardingStationQuery.data])
 
   const busOperatorOptions = useMemo(() => {
-    return busOperator.data?.map(({ dataText, dataCode }) => ({
+    return busOperatorQuery.data?.map(({ dataText, dataCode }) => ({
       label: dataText,
       value: dataCode,
     }))
-  }, [busOperator.data])
+  }, [busOperatorQuery.data])
 
   const complaintOptins = useMemo(() => {
-    return complaintTypes.map((value: string) => ({ value, label: t(value) as string | undefined }))
+    return complaintTypes.map((value: ComplaintType) => ({ value, label: t(value) }))
   }, [t])
 
   const handleSelectOptions = useCallback(
@@ -233,7 +233,7 @@ const ComplaintModal = ({
               </Typography>
               <Button onClick={() => setModalOpen?.(false)}>{t('close')}</Button>
             </div>
-          ) : busOperator.isLoading || submitMutation.isPending ? (
+          ) : busOperatorQuery.isLoading || submitMutation.isPending ? (
             <div className="loading">
               <span>{t('loading_routes')}</span>
               <CircularProgress />

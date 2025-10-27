@@ -78,7 +78,12 @@ export const RenderField = ({ name, props, rules, type }: FormFieldProps) => {
   const Component = fieldComponents[type]
   const labelKey = name.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)
   return (
-    <Form.Item key={name} name={name} label={t(labelKey)} rules={rules}>
+    <Form.Item
+      key={name}
+      name={name}
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
+      label={t(labelKey as any)}
+      rules={rules}>
       {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
       <Component {...(props as any)} />
     </Form.Item>
