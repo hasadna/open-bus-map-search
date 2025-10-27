@@ -76,7 +76,7 @@ export const useLinesQuery = (eventDate?: string, operator?: string, lineNumber?
 
   return useQuery<LineModel[], Error, LineModel[], (string | number | undefined)[]>({
     queryKey: [
-      'ride',
+      'lines',
       linesQuery?.govLinesByLinePostRequest.eventDate,
       linesQuery?.govLinesByLinePostRequest.operatorId,
       linesQuery?.govLinesByLinePostRequest.operatorLineId,

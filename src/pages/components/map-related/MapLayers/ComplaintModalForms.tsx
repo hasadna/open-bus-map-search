@@ -26,7 +26,7 @@ export const complaintTypes = [
 
 export type ComplaintType = (typeof complaintTypes)[number]
 
-export const complaintTypeMappings: Record<ComplaintType, ComplainteField> = {
+export const complaintTypeMappings: Record<ComplaintType, ComplainteField[]> = {
   other: [],
   no_ride: [
     'eventTime',
@@ -166,19 +166,8 @@ export const complaintTypeMappings: Record<ComplaintType, ComplainteField> = {
   ],
   ticketing_fares_discounts: ['ravKavNumber'],
   debug: Object.keys(allComplaintFields).filter(
-    (key) =>
-      ![
-        'firstName',
-        'lastName',
-        'id',
-        'email',
-        'phone',
-        'description',
-        'lineNumber',
-        'route',
-        'licensePlate',
-      ].includes(key) || ['operator'].includes(key),
-  ) as ComplainteField,
+    (key) => !['firstName', 'lastName', 'id', 'email', 'phone', 'description'].includes(key),
+  ) as ComplainteField[],
 } as const
 
 export const complaintList = complaintTypes.map((c) => ({ value: c, label: c }))

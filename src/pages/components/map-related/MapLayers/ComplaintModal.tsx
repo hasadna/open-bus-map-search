@@ -22,7 +22,7 @@ import {
   useLinesQuery,
 } from 'src/hooks/useFormQuerys'
 import { Point } from 'src/pages/timeBasedMap'
-import { allComplaintFields, renderField } from './ComplaintModalFields'
+import { allComplaintFields, ComplainteField, renderField } from './ComplaintModalFields'
 import { complaintList, type ComplaintType, complaintTypeMappings } from './ComplaintModalForms'
 
 interface User {
@@ -64,6 +64,9 @@ interface ComplaintModalProps {
   route: GtfsRoutePydanticModel
 }
 
+const resetRouteKeys = new Set(['eventDate', 'operator', 'lineNumber'])
+const userKeys = new Set(['firstName', 'lastName', 'id', 'email', 'phone'])
+
 const ComplaintModal = ({
   modalOpen = false,
   setModalOpen,
@@ -81,23 +84,23 @@ const ComplaintModal = ({
   const selectedRoute = Form.useWatch('route', form)
 
   const busOperator = useBusOperatorQuery()
-  const useLines = useLinesQuery(eventDate, operator, lineNumber)
+  const lines = useLinesQuery(eventDate, operator, lineNumber)
   const boardingStation = useBoardingStationQuery(
-    selectedRoute !== undefined ? useLines.data?.[selectedRoute] : undefined,
+    selectedRoute !== undefined ? lines.data?.[selectedRoute] : undefined,
   )
 
   useEffect(() => {
-    const name = route.routeLongName?.split(/[<->,-]/u).filter((v) => v !== '')
-    if (route.routeShortName === form.getFieldValue('lineNumber') && useLines.data?.length !== 0) {
-      const index = useLines.data?.findIndex(
+    const routeParts = route.routeLongName?.split(/[<->,-]/u).filter((part) => part.trim() !== '')
+    if (route.routeShortName === form.getFieldValue('lineNumber') && lines.data?.length) {
+      const matchingIndex = lines.data.findIndex(
         ({ originCity, destinationCity }) =>
-          name?.[1] === originCity?.dataText && name?.[3] === destinationCity?.dataText,
+          routeParts?.[1] === originCity?.dataText && routeParts?.[3] === destinationCity?.dataText,
       )
-      if (index !== -1) {
-        form.setFieldValue('route', index)
+      if (matchingIndex !== -1) {
+        form.setFieldValue('route', matchingIndex)
       }
     }
-  }, [useLines.data, route, form])
+  }, [lines.data, route, form])
 
   const submitMutation = useMutation({
     mutationFn: (complaintsSendPostRequest: ComplaintsSendPostRequest) =>
@@ -115,37 +118,29 @@ const ComplaintModal = ({
       if ('complaintType' in changedValues) {
         setSelectedComplaintType(changedValues.complaintType as ComplaintType)
       }
-      if (
-        'eventDate' in changedValues ||
-        'operator' in changedValues ||
-        'lineNumber' in changedValues
-      ) {
+
+      if (Object.keys(changedValues).some((key) => resetRouteKeys.has(key))) {
         form.setFieldValue('route', undefined)
         form.setFieldValue('boardingStation', undefined)
       }
+
       if ('route' in changedValues) {
         form.setFieldValue('boardingStation', undefined)
       }
 
-      if (
-        'firstName' in changedValues ||
-        'lastName' in changedValues ||
-        'id' in changedValues ||
-        'email' in changedValues ||
-        'phone' in changedValues
-      ) {
+      if (Object.keys(changedValues).some((key) => userKeys.has(key))) {
         SetUserStorge({ ...userStorge, ...changedValues })
       }
     },
-    [form, route],
+    [form, userStorge],
   )
 
   const routeOptions = useMemo(() => {
-    return useLines.data?.map(({ directionText }, value) => ({
+    return lines.data?.map(({ directionText }, value) => ({
       label: directionText,
       value,
     }))
-  }, [useLines.data])
+  }, [lines.data])
 
   const boardingStationOptions = useMemo(() => {
     return boardingStation.data?.map(({ stationFullName, stationId }) => ({
@@ -161,6 +156,20 @@ const ComplaintModal = ({
     }))
   }, [busOperator.data])
 
+  const handleSelectOptions = useCallback(
+    (name: ComplainteField) => {
+      switch (name) {
+        case 'boardingStation':
+          return boardingStationOptions
+        case 'operator':
+          return busOperatorOptions
+        case 'route':
+          return routeOptions
+      }
+    },
+    [busOperatorOptions, boardingStationOptions, routeOptions],
+  )
+
   const dynamicFields = useMemo(() => {
     if (!selectedComplaintType) return null
 
@@ -168,24 +177,15 @@ const ComplaintModal = ({
       .map((name) => {
         const field = { ...allComplaintFields[name] }
         if (field.type === 'Select') {
-          field.props = { ...field.props }
-          switch (field.name) {
-            case 'boardingStation':
-              field.props.options = boardingStationOptions
-              break
-            case 'operator':
-              field.props.options = busOperatorOptions
-              break
-            case 'route':
-              field.props.options = routeOptions
-              break
+          field.props = {
+            ...field.props,
+            options: handleSelectOptions(name),
           }
         }
-
         return renderField(field)
       })
-      .filter((v) => v != null)
-  }, [selectedComplaintType, busOperatorOptions, boardingStationOptions, routeOptions])
+      .filter(Boolean)
+  }, [selectedComplaintType, handleSelectOptions])
 
   const date = useMemo(() => {
     return position.recorded_at_time ? dayjs(position.recorded_at_time) : undefined

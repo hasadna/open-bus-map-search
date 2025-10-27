@@ -136,4 +136,4 @@ export const allComplaintFields = {
   stationCatNum: createField('stationCatNum', 'Input', [{ required: true }]),
 } as const
 
-export type ComplainteField = (keyof typeof allComplaintFields)[]
+export type ComplainteField = keyof typeof allComplaintFields
