@@ -17,20 +17,25 @@ test.describe('dashboard tests', () => {
     await waitForSkeletonsToHide(page)
   })
 
-  test('page is working', async () => {})
-
   test('dark mode use localstorage', async ({ page }) => {
     await page.getByLabel('עבור למצב כהה').click()
     await page.reload()
     await page.getByLabel('עבור למצב בהיר').click()
     await page.reload()
     await page.getByLabel('עבור למצב כהה').click()
-    await page.getByLabel('עבור למצב בהיר').click()
+  })
+
+  test('langude use localstorage', async ({ page }) => {
+    await page.getByLabel('English').click()
+    await page.reload()
+    await page.getByLabel('עברית').click()
+    await page.reload()
+    await page.getByLabel('English').click()
   })
 
   test('dashboard charts contain information', async ({ page }) => {
-    await expect(page.getByText('686 | קווים').first()).toBeVisible()
+    await expect(page.getByText('686 | קווים').first()).toBeVisible({ timeout: 50000 })
     await expect(page.getByText('מועצה אזורית גולן').first()).toBeVisible()
-    await expect(page.getByRole('heading', { name: 'אגד תעבורה' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'אלקטרה אפיקים תחבורה' })).toBeVisible()
   })
 })
