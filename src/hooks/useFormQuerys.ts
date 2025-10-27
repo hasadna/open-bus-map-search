@@ -8,23 +8,24 @@ import dayjs from 'dayjs'
 import { useMemo } from 'react'
 import { GOVERNMENT_TRANSPORTATION_API } from 'src/api/apiConfig'
 
+const STALE_TIME = 5 * 60 * 1000 // 5 minutes
+const GC_TIME = 10 * 60 * 1000 // 10 minutes
+
 export const useGovTimeQuery = () => {
   return useQuery({
-    queryKey: ['gov_time', dayjs().startOf('day').valueOf()],
-    queryFn: async () => {
-      const res = await GOVERNMENT_TRANSPORTATION_API.govTimeGet()
-      return res.data?.serverTime
-    },
+    queryKey: ['gov_time'],
+    queryFn: async () => (await GOVERNMENT_TRANSPORTATION_API.govTimeGet()).data?.serverTime,
+    staleTime: STALE_TIME,
+    gcTime: GC_TIME,
   })
 }
 
 export const useBusOperatorQuery = () => {
   return useQuery({
-    queryKey: ['busOpreator', dayjs().startOf('day').valueOf()],
-    queryFn: async () => {
-      const res = await GOVERNMENT_TRANSPORTATION_API.govOperatorsGet()
-      return res.data?.map(({ dataText, dataCode }) => ({ label: dataText, value: dataCode }))
-    },
+    queryKey: ['bus_operator'],
+    queryFn: async () => (await GOVERNMENT_TRANSPORTATION_API.govOperatorsGet()).data,
+    staleTime: STALE_TIME,
+    gcTime: GC_TIME,
   })
 }
 
@@ -44,17 +45,14 @@ export const useBoardingStationQuery = (line: LineModel = {}) => {
   }, [line])
 
   return useQuery({
-    queryKey: ['Bording_station', directionCode, eventDate, lineCode, operatorId],
+    queryKey: ['boarding_station', directionCode, eventDate, lineCode, operatorId],
     queryFn: async () => {
       if (!boardingQuery) return []
-
-      const res = await GOVERNMENT_TRANSPORTATION_API.govStationsByLinePost(boardingQuery)
-
-      return res.data?.map(({ stationFullName, stationId }) => ({
-        label: stationFullName,
-        value: stationId,
-      }))
+      return (await GOVERNMENT_TRANSPORTATION_API.govStationsByLinePost(boardingQuery)).data
     },
+    enabled: !!boardingQuery,
+    staleTime: STALE_TIME,
+    gcTime: GC_TIME,
   })
 }
 
@@ -77,5 +75,8 @@ export const useLinesQuery = (eventDate?: string, operator?: string, lineNumber?
       const res = await GOVERNMENT_TRANSPORTATION_API.govLinesByLinePost(linesQuery)
       return [...new Map(res.data?.map((line) => [line.directionText, line])).values()]
     },
+    enabled: !!linesQuery,
+    staleTime: STALE_TIME,
+    gcTime: GC_TIME,
   })
 }

@@ -86,13 +86,39 @@ const ComplaintModal = ({
       COMPLAINTS_API.complaintsSendPost({ complaintsSendPostRequest }),
   })
 
-  const handleSubmit = useCallback(
-    (values: ComplaintFormValues) => {
-      // const payload = formatValuesForSubmit(values)
-      console.log(values)
-      // submitMutation.mutate({ debug: true, userData: payload, databusData: siriRide.data })
+  const handleSubmit = useCallback((values: ComplaintFormValues) => {
+    console.log(values)
+    // TODO: Implement actual submission logic
+    // submitMutation.mutate({ debug: true, userData: payload, databusData: siriRide.data })
+  }, [])
+
+  const routeOptions = useMemo(() => {
+    return useLines.data?.map(({ directionText }) => ({
+      label: directionText,
+      value: directionText,
+    }))
+  }, [useLines.data])
+
+  const boardingStationOptions = useMemo(() => {
+    return boardingStation.data?.map(({ stationFullName, stationId }) => ({
+      label: stationFullName,
+      value: stationId,
+    }))
+  }, [boardingStation.data])
+
+  const busOperatorOptions = useMemo(() => {
+    return busOperator.data?.map(({ dataText, dataCode }) => ({
+      label: dataText,
+      value: dataCode,
+    }))
+  }, [busOperator.data])
+
+  const handleRouteSelect = useCallback(
+    (val: string) => {
+      const routeIndex = useLines.data?.findIndex((r) => r.directionText === val) ?? -1
+      setSelectedRoute(routeIndex >= 0 ? routeIndex : undefined)
     },
-    [submitMutation],
+    [useLines.data],
   )
 
   const dynamicFields = useMemo(() => {
@@ -100,26 +126,19 @@ const ComplaintModal = ({
 
     return complaintTypeMappings[selectedComplaintType]
       .map((name) => {
-        const field = allComplaintFields[name]
+        const field = { ...allComplaintFields[name] }
         if (field.type === 'Select') {
-          debugger
-          if (!field.props) field.props = {}
+          field.props = { ...field.props }
           switch (field.name) {
             case 'boardingStation':
-              field.props.options = boardingStation.data
+              field.props.options = boardingStationOptions
               break
             case 'operator':
-              field.props.options = busOperator.data
+              field.props.options = busOperatorOptions
               break
             case 'route':
-              field.props.options = useLines.data?.map(({ directionText }) => ({
-                label: directionText,
-                value: directionText,
-              }))
-              field.props.onSelect = (val) => {
-                const routeIndex = useLines.data?.findIndex((r) => r.directionText === val) ?? -1
-                setSelectedRoute(routeIndex >= 0 ? routeIndex : undefined)
-              }
+              field.props.options = routeOptions
+              field.props.onSelect = handleRouteSelect
               break
           }
         }
@@ -127,12 +146,15 @@ const ComplaintModal = ({
         return renderField(field)
       })
       .filter((v) => v != null)
-  }, [selectedComplaintType, busOperator.data, boardingStation.data, useLines.data])
+  }, [
+    selectedComplaintType,
+    busOperatorOptions,
+    boardingStationOptions,
+    routeOptions,
+    handleRouteSelect,
+  ])
 
-  const isBusy =
-    busOperator.isLoading ||
-    submitMutation.isPending ||
-    (submitMutation.isIdle === false && submitMutation.isPending)
+  const isBusy = busOperator.isLoading || submitMutation.isPending
 
   const date = useMemo(
     () => (position.recorded_at_time ? dayjs(position.recorded_at_time) : undefined),
