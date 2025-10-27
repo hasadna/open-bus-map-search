@@ -15,6 +15,7 @@ import {
 import type { Rule } from 'antd/es/form'
 import type { TextAreaProps } from 'antd/es/input'
 import dayjs from 'dayjs'
+import { useTranslation } from 'react-i18next'
 import { useGovTimeQuery } from 'src/hooks/useFormQuerys'
 
 // --- Validators ---
@@ -72,10 +73,12 @@ export type FormFieldProps<T extends FieldType = FieldType> = {
   props?: React.ComponentProps<(typeof fieldComponents)[T]>
 }
 
-export function renderField({ name, props, rules, type }: FormFieldProps) {
+export const RenderField = ({ name, props, rules, type }: FormFieldProps) => {
+  const { t } = useTranslation()
   const Component = fieldComponents[type]
+  const labelKey = name.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)
   return (
-    <Form.Item key={name} name={name} label={name} rules={rules}>
+    <Form.Item key={name} name={name} label={t(labelKey)} rules={rules}>
       {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
       <Component {...(props as any)} />
     </Form.Item>
@@ -103,11 +106,12 @@ export const allComplaintFields = {
   }),
   email: createField('email', 'Input', [{ type: 'email', required: true }]),
   phone: createField('phone', 'Input', [{ required: true }], { maxLength: 11 }),
+  complaintType: createField('complaintType', 'Select', [{ required: true }]),
   description: createField('description', 'TextArea', [{ required: true, min: 2 }], {
     rows: 4,
     maxLength: 1500,
   }),
-  operator: createField('operator', 'Select', [{ required: true }]),
+  busOperator: createField('busOperator', 'Select', [{ required: true }]),
   licensePlate: createField('licensePlate', 'Input', [{ required: true }]),
   eventDate: createField('eventDate', 'DatePicker', [{ required: true }]),
   lineNumber: createField('lineNumber', 'Input', [{ required: true }], { maxLength: 5 }),
@@ -125,7 +129,7 @@ export const allComplaintFields = {
   boardingLocality: createField('boardingLocality', 'Input', [{ required: true }]),
   destinationLocality: createField('destinationLocality', 'Input', [{ required: true }]),
   addFrequencyReason: createField('addFrequencyReason', 'Input', [{ required: true }]),
-  willingToTestifyMOT: createField('willingToTestifyMOT', 'Checkbox'),
+  willingToTestifyMot: createField('willingToTestifyMot', 'Checkbox'),
   willingToTestifyCourt: createField('willingToTestifyCourt', 'Checkbox'),
   ravKavNumber: createField(
     'ravKavNumber',

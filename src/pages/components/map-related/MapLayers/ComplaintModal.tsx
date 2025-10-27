@@ -10,7 +10,7 @@ import {
   Typography,
 } from '@mui/material'
 import { useMutation } from '@tanstack/react-query'
-import { Button, Form, Select } from 'antd'
+import { Button, Form } from 'antd'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLocalStorage } from 'usehooks-ts'
@@ -22,8 +22,8 @@ import {
   useLinesQuery,
 } from 'src/hooks/useFormQuerys'
 import { Point } from 'src/pages/timeBasedMap'
-import { allComplaintFields, ComplainteField, renderField } from './ComplaintModalFields'
-import { complaintList, type ComplaintType, complaintTypeMappings } from './ComplaintModalForms'
+import { allComplaintFields, ComplainteField, RenderField } from './ComplaintModalFields'
+import { type ComplaintType, complaintTypeMappings, complaintTypes } from './ComplaintModalForms'
 
 interface User {
   firstName: string
@@ -156,12 +156,16 @@ const ComplaintModal = ({
     }))
   }, [busOperator.data])
 
+  const complaintOptins = useMemo(() => {
+    return complaintTypes.map((value: string) => ({ value, label: t(value) as string | undefined }))
+  }, [t])
+
   const handleSelectOptions = useCallback(
     (name: ComplainteField) => {
       switch (name) {
         case 'boardingStation':
           return boardingStationOptions
-        case 'operator':
+        case 'busOperator':
           return busOperatorOptions
         case 'route':
           return routeOptions
@@ -182,7 +186,7 @@ const ComplaintModal = ({
             options: handleSelectOptions(name),
           }
         }
-        return renderField(field)
+        return <RenderField key={name} {...field} />
       })
       .filter(Boolean)
   }, [selectedComplaintType, handleSelectOptions])
@@ -213,7 +217,7 @@ const ComplaintModal = ({
           initialValues={
             {
               ...userStorge,
-              operator: position.operator,
+              busOperator: position.operator,
               eventDate: date,
               eventTime: date,
               licensePlate: position.point?.siri_ride__vehicle_ref,
@@ -224,8 +228,10 @@ const ComplaintModal = ({
           onValuesChange={onValuesChange}>
           {submitMutation.isSuccess ? (
             <div>
-              <Typography variant="h2">{`Your Complaint Number: ${submitMutation.data.referenceNumber}`}</Typography>
-              <Button onClick={() => setModalOpen?.(false)}>Close</Button>
+              <Typography variant="h2">
+                {t('complaint_number', { number: submitMutation.data.referenceNumber })}
+              </Typography>
+              <Button onClick={() => setModalOpen?.(false)}>{t('close')}</Button>
             </div>
           ) : busOperator.isLoading || submitMutation.isPending ? (
             <div className="loading">
@@ -234,22 +240,17 @@ const ComplaintModal = ({
             </div>
           ) : (
             <>
-              {renderField(allComplaintFields.firstName)}
-              {renderField(allComplaintFields.lastName)}
-              {renderField(allComplaintFields.id)}
-              {renderField(allComplaintFields.email)}
-              {renderField(allComplaintFields.phone)}
-
-              <Form.Item
-                name="complaintType"
-                label={t('complaint_type')}
-                rules={[{ required: true }]}>
-                <Select options={complaintList} />
-              </Form.Item>
-
+              <RenderField {...allComplaintFields.firstName} />
+              <RenderField {...allComplaintFields.lastName} />
+              <RenderField {...allComplaintFields.id} />
+              <RenderField {...allComplaintFields.email} />
+              <RenderField {...allComplaintFields.phone} />
+              <RenderField
+                {...allComplaintFields.complaintType}
+                props={{ options: complaintOptins }}
+              />
               {dynamicFields}
-
-              {renderField(allComplaintFields.description)}
+              <RenderField {...allComplaintFields.description} />
 
               <DialogActions sx={{ justifyContent: 'flex-end', padding: 0 }}>
                 <Form.Item>
