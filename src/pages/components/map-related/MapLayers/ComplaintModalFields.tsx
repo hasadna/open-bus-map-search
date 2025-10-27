@@ -6,6 +6,8 @@ import {
   Form,
   Input,
   type InputProps,
+  Radio,
+  type RadioProps,
   Select,
   type SelectProps,
   TimePicker,
@@ -91,6 +93,7 @@ const fieldComponents = {
   Checkbox: (props: CheckboxProps & { title?: string }) => (
     <Checkbox {...props}>{props.title}</Checkbox>
   ),
+  Radio: (props: RadioProps) => <Radio.Group {...props} style={fullWidth} />,
   Select: (props: SelectProps) => <Select {...props} style={fullWidth} />,
 } as const
 
@@ -161,7 +164,15 @@ export const allComplaintFields = {
   travelFrom: createField('travelFrom', 'Input', [{ required: true }]),
   travelTo: createField('travelTo', 'Input', [{ required: true }]),
   activeDate: createField('activeDate', 'DatePicker', [{ required: true }]),
-  addRemoveStationReason: createField('addRemoveStationReason', 'Input', [{ required: true }]),
+  // addRemoveStation: createField('addRemoveStation', 'Radio', [{ required: true }], {
+  //   optionType: 'button',
+  //   options: [
+  //     { label: 'Add', value: 'add' },
+  //     { label: 'Remove', value: 'remove' },
+  //   ],
+  // }),
+  // Need To Fix
+  removeStation: createField('removeStation', 'Select', [{ required: true }]),
   requestedStationAddress: createField('requestedStationAddress', 'Input', [{ required: true }]),
   boardingAddress: createField('boardingAddress', 'Input', [{ required: true }]),
   addFrequencyOverCrowd: createField('addFrequencyOverCrowd', 'Checkbox', [{ required: true }]),
