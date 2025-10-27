@@ -29,6 +29,15 @@ export const useBusOperatorQuery = () => {
   })
 }
 
+export const useCitiesQuery = () => {
+  return useQuery({
+    queryKey: ['cities'],
+    queryFn: async () => (await GOVERNMENT_TRANSPORTATION_API.govCitiesGet()).data,
+    staleTime: STALE_TIME,
+    gcTime: GC_TIME,
+  })
+}
+
 export const useBoardingStationQuery = (line?: LineModel) => {
   const { directionCode, eventDate, lineCode, operatorId } = line || {}
 

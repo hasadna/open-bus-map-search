@@ -82,7 +82,6 @@ const fieldComponents = {
   TextArea: (props: TextAreaProps) => <Input.TextArea {...props} style={fullWidth} />,
   DatePicker: (props: DatePickerProps) => {
     const { data } = useGovTimeQuery()
-
     return <DatePicker {...props} style={fullWidth} disabledDate={(d) => d.isAfter(dayjs(data))} />
   },
   TimePicker: (props: TimePickerProps) => <TimePicker {...props} style={fullWidth} format="H:mm" />,
@@ -146,29 +145,32 @@ export const allComplaintFields = {
     maxLength: 1500,
   }),
   busOperator: createField('busOperator', 'Select', [{ required: true }]),
-  licensePlate: createField('licensePlate', 'Input', [{ required: true }]),
+  licensePlate: createField('licensePlate', 'Input'),
   eventDate: createField('eventDate', 'DatePicker', [{ required: true }]),
   lineNumber: createField('lineNumber', 'Input', [{ required: true }], { maxLength: 5 }),
   eventTime: createField('eventTime', 'TimePicker', [{ required: true }], { needConfirm: true }),
   route: createField('route', 'Select', [{ required: true }]),
   wait: createField('wait', 'TimeRangePicker', [{ required: true }]),
   boardingStation: createField('boardingStation', 'Select'),
-  // busDirectionFromOptional: createField('busDirectionFromOptional', 'Input'),
-  // busDirectionToOptional: createField('busDirectionToOptional', 'Input'),
-  busDirectionFrom: createField('busDirectionFrom', 'Input', [{ required: true }]),
-  busDirectionTo: createField('busDirectionTo', 'Input', [{ required: true }]),
-  lineActiveDate: createField('lineActiveDate', 'Input', [{ required: true }]),
+  cityFrom: createField('cityFrom', 'Select', [{ required: true }], { showSearch: true }),
+  cityTo: createField('cityTo', 'Select', [{ required: true }], { showSearch: true }),
+  ticketDate: createField('ticketDate', 'DatePicker', [{ required: true }]),
+  ticketTime: createField('ticketTime', 'TimePicker', [{ required: true }], { needConfirm: true }),
+  // travelFromOptional: createField('travelFromOptional', 'Input'),
+  // travelToOptional: createField('travelToOptional', 'Input'),
+  travelFrom: createField('travelFrom', 'Input', [{ required: true }]),
+  travelTo: createField('travelTo', 'Input', [{ required: true }]),
+  activeDate: createField('activeDate', 'DatePicker', [{ required: true }]),
   addRemoveStationReason: createField('addRemoveStationReason', 'Input', [{ required: true }]),
   requestedStationAddress: createField('requestedStationAddress', 'Input', [{ required: true }]),
-  boardingLocality: createField('boardingLocality', 'Input', [{ required: true }]),
-  destinationLocality: createField('destinationLocality', 'Input', [{ required: true }]),
+  boardingAddress: createField('boardingAddress', 'Input', [{ required: true }]),
   addFrequencyReason: createField('addFrequencyReason', 'Input', [{ required: true }]),
   willingToTestifyMot: createField('willingToTestifyMot', 'Checkbox'),
   willingToTestifyCourt: createField('willingToTestifyCourt', 'Checkbox'),
   ravKavNumber: createField('ravKavNumber', 'Input', [{ required: true, min: 11 }], {
     maxLength: 11,
   }),
-  stationCatNum: createField('stationCatNum', 'Input', [{ required: true }]),
+  // stationCatNum: createField('stationCatNum', 'Input', [{ required: true }]),
 } as const
 
 export type ComplainteField = keyof typeof allComplaintFields

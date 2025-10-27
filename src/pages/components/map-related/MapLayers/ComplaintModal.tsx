@@ -19,6 +19,7 @@ import dayjs from 'src/dayjs'
 import {
   useBoardingStationQuery,
   useBusOperatorQuery,
+  useCitiesQuery,
   useLinesQuery,
 } from 'src/hooks/useFormQuerys'
 import { Point } from 'src/pages/timeBasedMap'
@@ -39,6 +40,7 @@ interface User {
 }
 
 interface ComplaintFormValues extends User {
+  complaintType: ComplaintType
   description: string
   busOperator?: string
   licensePlate?: string
@@ -48,18 +50,19 @@ interface ComplaintFormValues extends User {
   route?: number
   wait?: [string, string]
   boardingStation?: string
-  busDirectionFrom?: string
-  busDirectionTo?: string
-  lineActiveDate?: string
+  travelFrom?: string
+  travelTo?: string
+  activeDate?: string
   addRemoveStationReason?: string
   requestedStationAddress?: string
-  boardingLocality?: string
+  boardingAddress?: string
+  cityFrom?: string
+  cityTo?: string
   destinationLocality?: string
   addFrequencyReason?: string
   willingToTestifyMOT?: boolean
   willingToTestifyCourt?: boolean
   ravKavNumber?: string
-  complaintType: ComplaintType
 }
 
 interface ComplaintModalProps {
@@ -89,13 +92,17 @@ const ComplaintModal = ({
   const selectedRoute = Form.useWatch('route', form)
 
   const busOperatorQuery = useBusOperatorQuery()
+  const citiesQuery = useCitiesQuery()
   const linesQuery = useLinesQuery(eventDate, busOperator, lineNumber)
   const boardingStationQuery = useBoardingStationQuery(
     selectedRoute !== undefined ? linesQuery.data?.[selectedRoute] : undefined,
   )
 
+  const routeParts = useMemo(
+    () => route.routeLongName?.split(/[<->,-]/u).filter((part) => part.trim() !== ''),
+    [route],
+  )
   useEffect(() => {
-    const routeParts = route.routeLongName?.split(/[<->,-]/u).filter((part) => part.trim() !== '')
     if (route.routeShortName === form.getFieldValue('lineNumber') && linesQuery.data?.length) {
       const matchingIndex = linesQuery.data.findIndex(
         ({ originCity, destinationCity }) =>
@@ -165,6 +172,13 @@ const ComplaintModal = ({
     }))
   }, [busOperatorQuery.data])
 
+  const citiesOptions = useMemo(() => {
+    return citiesQuery.data?.map(({ dataText }) => ({
+      label: dataText,
+      value: dataText,
+    }))
+  }, [busOperatorQuery.data])
+
   const complaintOptins = useMemo(() => {
     return complaintTypes.map((value: ComplaintType) => ({ value, label: t(value) }))
   }, [t])
@@ -181,6 +195,9 @@ const ComplaintModal = ({
           return boardingStationOptions
         case 'busOperator':
           return busOperatorOptions
+        case 'cityFrom':
+        case 'cityTo':
+          return citiesOptions
         case 'route':
           return routeOptions
       }
@@ -237,6 +254,9 @@ const ComplaintModal = ({
               busOperator: position.operator,
               eventDate: date,
               eventTime: date,
+              activeDate: date,
+              cityFrom: routeParts?.[1],
+              cityTo: routeParts?.[3],
               licensePlate: position.point?.siri_ride__vehicle_ref,
               lineNumber: route.routeShortName,
             } as Partial<ComplaintFormValues>
