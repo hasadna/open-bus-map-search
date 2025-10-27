@@ -13,6 +13,7 @@ import { useMutation } from '@tanstack/react-query'
 import { Button, Form, Select } from 'antd'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useLocalStorage } from 'usehooks-ts'
 import { COMPLAINTS_API } from 'src/api/apiConfig'
 import dayjs from 'src/dayjs'
 import {
@@ -24,12 +25,15 @@ import { Point } from 'src/pages/timeBasedMap'
 import { allComplaintFields, renderField } from './ComplaintModalFields'
 import { complaintList, type ComplaintType, complaintTypeMappings } from './ComplaintModalForms'
 
-interface ComplaintFormValues {
+interface User {
   firstName: string
   lastName: string
   id: string
   email: string
   phone: string
+}
+
+interface ComplaintFormValues extends User {
   description: string
   operator?: string
   licensePlate?: string
@@ -69,6 +73,7 @@ const ComplaintModal = ({
   const { t, i18n } = useTranslation()
   const [form] = Form.useForm<ComplaintFormValues>()
   const [selectedComplaintType, setSelectedComplaintType] = useState<ComplaintType | null>(null)
+  const [userStorge, SetUserStorge] = useLocalStorage<Partial<User>>('complaint', {})
 
   const eventDate = Form.useWatch('eventDate', form)
   const operator = Form.useWatch('operator', form)
@@ -120,6 +125,16 @@ const ComplaintModal = ({
       }
       if ('route' in changedValues) {
         form.setFieldValue('boardingStation', undefined)
+      }
+
+      if (
+        'firstName' in changedValues ||
+        'lastName' in changedValues ||
+        'id' in changedValues ||
+        'email' in changedValues ||
+        'phone' in changedValues
+      ) {
+        SetUserStorge({ ...userStorge, ...changedValues })
       }
     },
     [form, route],
@@ -197,6 +212,7 @@ const ComplaintModal = ({
           layout="vertical"
           initialValues={
             {
+              ...userStorge,
               operator: position.operator,
               eventDate: date,
               eventTime: date,
