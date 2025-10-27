@@ -158,7 +158,9 @@ export const complaintTypeMappings: Record<ComplaintType, ComplaintTypeData> = {
   },
   add_frequency: {
     fields: [
-      'addFrequencyReason',
+      'addFrequencyOverCrowd',
+      'addFrequencyLongWait',
+      'addFrequencyExtendTime',
       'busOperator',
       'eventDate',
       'eventTime',
