@@ -27,7 +27,7 @@ test.describe('clearButton functionality', () => {
     await loadTranslate(i18next)
     advancedRouteFromHAR('tests/HAR/clearbutton.har', {
       updateContent: 'embed',
-      update: true,
+      update: false,
       notFound: 'abort',
       url: /stride-api/,
       matcher: urlMatcher,
@@ -47,6 +47,8 @@ test.describe('clearButton functionality', () => {
 
       await selectLineNumberAndRoute(page, lineNumber, route)
       await lineNumber.click()
+
+      await stop.waitFor()
       await page.getByLabel('close').locator('svg').click()
       await expect(route).not.toBeVisible()
       await expect(stop).not.toBeVisible()
@@ -133,7 +135,6 @@ test.describe('clearButton functionality', () => {
       await page.getByLabel('תאריך').fill(getPastDate().toLocaleDateString('en-GB'))
       const { operator, lineNumber, route, stop } = new Selectors(page)
 
-      //clear LineNumber value test
       await operator.click()
       await page.getByRole('option', { name: 'אלקטרה אפיקים', exact: true }).click()
       await selectLineNumberAndRoute(page, lineNumber, route)
