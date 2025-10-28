@@ -205,7 +205,6 @@
   "travel_from": "Bus Direction From",
   "travel_to": "Bus Direction To",
   "active_date": "Line Active Date",
-  "add_remove_station_reason": "Add/Remove Station Reason",
   "requested_station_address": "Requested Station Address",
   "boarding_address": "Boarding Address",
   "add_frequency_reason": "Add Frequency Reason",

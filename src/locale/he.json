@@ -177,7 +177,6 @@
   "show_document": "הצג מידע לגיקים",
   "open_complaint": "פתח תלונה",
   "close_complaint": "סגור תלונה",
-
   "complaint": "תלונה",
   "first_name": "שם פרטי",
   "last_name": "שם משפחה",
@@ -218,7 +217,6 @@
   "travel_from": "נסעתי מ",
   "travel_to": "נסעתי ל",
   "active_date": "תאריך הפעלת הקו",
-  "add_remove_station_reason": "סיבה להוספה/הסרה של תחנה",
   "requested_station_address": "כתובת התחנה המבוקשת",
   "boarding_address": "יישוב עלייה",
   "add_frequency_reason": "סיבה להוספת תדירות",

@@ -84,7 +84,13 @@ const fieldComponents = {
   TextArea: (props: TextAreaProps) => <Input.TextArea {...props} style={fullWidth} />,
   DatePicker: (props: DatePickerProps) => {
     const { data } = useGovTimeQuery()
-    return <DatePicker {...props} style={fullWidth} disabledDate={(d) => d.isAfter(dayjs(data))} />
+    return (
+      <DatePicker
+        {...props}
+        style={fullWidth}
+        disabledDate={(d) => d.isAfter(dayjs(data).startOf('day').add(1, 'day'))}
+      />
+    )
   },
   TimePicker: (props: TimePickerProps) => <TimePicker {...props} style={fullWidth} format="H:mm" />,
   TimeRangePicker: (props: TimeRangePickerProps) => {
@@ -164,10 +170,9 @@ export const allComplaintFields = {
   travelFrom: createField('travelFrom', 'Input', [{ required: true }]),
   travelTo: createField('travelTo', 'Input', [{ required: true }]),
   activeDate: createField('activeDate', 'DatePicker', [{ required: true }]),
-  addRemoveStation: createField('addRemoveStation', 'Radio', [{ required: true }]),
-  // Need To Fix
-  removeStation: createField('removeStation', 'Select', [{ required: true }]),
-  requestedStationAddress: createField('requestedStationAddress', 'Input', [{ required: true }]),
+  addOrRemoveStation: createField('addOrRemoveStation', 'Radio', [{ required: true }]),
+  removeStation: createField('removeStation', 'Select'),
+  requestedStationAddress: createField('requestedStationAddress', 'Input'),
   boardingAddress: createField('boardingAddress', 'Input', [{ required: true }]),
   addFrequencyOverCrowd: createField('addFrequencyOverCrowd', 'Checkbox', [{ required: true }]),
   addFrequencyLongWait: createField('addFrequencyLongWait', 'Checkbox', [{ required: true }]),
