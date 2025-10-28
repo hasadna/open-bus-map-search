@@ -224,6 +224,7 @@
   "city_to": "City To",
   "ticket_date": "Ticket Date",
   "ticket_time": "Ticket Time",
+  "complaint_details_required": "In order for us to check your request, please specify in the request which modes of transportation you wish to match, line numbers, operator names, station SKU, and relevant times.",
 
   "lineProfile": {
     "title": "Profile for Line",

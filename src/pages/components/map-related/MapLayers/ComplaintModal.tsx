@@ -240,8 +240,12 @@ const ComplaintModal = ({
           field.props = { ...field.props, disabled: isAddStation }
           field.rules = [{ required: !isAddStation }]
         }
-        if (name === 'wait') field.rules = waitRules
-        if (name === 'ravKavNumber') field.rules = ravKavRules
+        if (name === 'wait') {
+          field.rules = waitRules
+        }
+        if (name === 'ravKavNumber') {
+          field.rules = ravKavRules
+        }
 
         return <RenderField key={name} {...field} />
       })
@@ -313,7 +317,12 @@ const ComplaintModal = ({
                 props={{ options: complaintOptins }}
               />
               {dynamicFields}
-              <RenderField {...allComplaintFields.description} />
+              <RenderField
+                {...allComplaintFields.description}
+                extra={
+                  selectedComplaintType === 'line_switch' ? 'complaint_details_required' : undefined
+                }
+              />
 
               <DialogActions sx={{ justifyContent: 'flex-end', padding: 0 }}>
                 <Form.Item>

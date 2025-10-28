@@ -110,9 +110,10 @@ export type FormFieldProps<T extends FieldType = FieldType> = {
   type: T
   rules?: Rule[]
   props?: React.ComponentProps<(typeof fieldComponents)[T]>
+  extra?: string
 }
 
-export const RenderField = ({ name, props, rules, type }: FormFieldProps) => {
+export const RenderField = ({ name, props, rules, type, extra }: FormFieldProps) => {
   const { t } = useTranslation()
   const Component = fieldComponents[type]
   const labelKey = name.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)
@@ -122,67 +123,185 @@ export const RenderField = ({ name, props, rules, type }: FormFieldProps) => {
       name={name}
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
       label={t(labelKey as any)}
-      rules={rules}>
+      rules={rules}
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
+      extra={t(extra as any)}>
       {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-      <Component {...(props as any)} />
+      <Component {...(props as any)} name={name} />
     </Form.Item>
   )
 }
 
-function createField<T extends FieldType>(
-  name: string,
-  type: T,
-  rules?: Rule[],
-  props?: React.ComponentProps<(typeof fieldComponents)[T]>,
-): FormFieldProps<T> {
-  return { name, type, rules, props }
-}
+const createField = (params: FormFieldProps) => params
 
 export const allComplaintFields = {
-  firstName: createField('firstName', 'Input', [{ required: true }], {
-    maxLength: 25,
+  firstName: createField({
+    name: 'firstName',
+    type: 'Input',
+    rules: [{ required: true }],
+    props: { maxLength: 25 },
   }),
-  lastName: createField('lastName', 'Input', [{ required: true }], {
-    maxLength: 25,
+  lastName: createField({
+    name: 'lastName',
+    type: 'Input',
+    rules: [{ required: true }],
+    props: { maxLength: 25 },
   }),
-  id: createField('id', 'Input', [{ required: true, len: 9 }], { maxLength: 9 }),
-  email: createField('email', 'Input', [{ type: 'email', required: true }]),
-  phone: createField('phone', 'Input', [{ required: true }], { maxLength: 11 }),
-  complaintType: createField('complaintType', 'Select', [{ required: true }]),
-  description: createField('description', 'TextArea', [{ required: true, min: 2 }], {
-    rows: 4,
-    maxLength: 1500,
+  id: createField({
+    name: 'id',
+    type: 'Input',
+    rules: [{ required: true, len: 9 }],
+    props: { maxLength: 9 },
   }),
-  busOperator: createField('busOperator', 'Select', [{ required: true }]),
-  licensePlate: createField('licensePlate', 'Input'),
-  eventDate: createField('eventDate', 'DatePicker', [{ required: true }]),
-  lineNumber: createField('lineNumber', 'Input', [{ required: true }], { maxLength: 5 }),
-  eventTime: createField('eventTime', 'TimePicker', [{ required: true }], { needConfirm: true }),
-  route: createField('route', 'Select', [{ required: true }]),
-  wait: createField('wait', 'TimeRangePicker', [{ required: true }]),
-  boardingStation: createField('boardingStation', 'Select'),
-  cityFrom: createField('cityFrom', 'Select', [{ required: true }], { showSearch: true }),
-  cityTo: createField('cityTo', 'Select', [{ required: true }], { showSearch: true }),
-  ticketDate: createField('ticketDate', 'DatePicker', [{ required: true }]),
-  ticketTime: createField('ticketTime', 'TimePicker', [{ required: true }], { needConfirm: true }),
-  // travelFromOptional: createField('travelFromOptional', 'Input'),
-  // travelToOptional: createField('travelToOptional', 'Input'),
-  travelFrom: createField('travelFrom', 'Input', [{ required: true }]),
-  travelTo: createField('travelTo', 'Input', [{ required: true }]),
-  activeDate: createField('activeDate', 'DatePicker', [{ required: true }]),
-  addOrRemoveStation: createField('addOrRemoveStation', 'Radio', [{ required: true }]),
-  removeStation: createField('removeStation', 'Select'),
-  requestedStationAddress: createField('requestedStationAddress', 'Input'),
-  boardingAddress: createField('boardingAddress', 'Input', [{ required: true }]),
-  addFrequencyOverCrowd: createField('addFrequencyOverCrowd', 'Checkbox', [{ required: true }]),
-  addFrequencyLongWait: createField('addFrequencyLongWait', 'Checkbox', [{ required: true }]),
-  addFrequencyExtendTime: createField('addFrequencyExtendTime', 'Checkbox', [{ required: true }]),
-  willingToTestifyMot: createField('willingToTestifyMot', 'Checkbox', [{ required: true }]),
-  willingToTestifyCourt: createField('willingToTestifyCourt', 'Checkbox', [{ required: true }]),
-  ravKavNumber: createField('ravKavNumber', 'Input', [{ required: true, min: 11 }], {
-    maxLength: 11,
+  email: createField({
+    name: 'email',
+    type: 'Input',
+    rules: [{ type: 'email', required: true }],
   }),
-  // stationCatNum: createField('stationCatNum', 'Input', [{ required: true }]),
+  phone: createField({
+    name: 'phone',
+    type: 'Input',
+    rules: [{ required: true }],
+    props: { maxLength: 11 },
+  }),
+  complaintType: createField({
+    name: 'complaintType',
+    type: 'Select',
+    rules: [{ required: true }],
+  }),
+  description: createField({
+    name: 'description',
+    type: 'TextArea',
+    rules: [{ required: true, min: 2 }],
+    props: { rows: 4, maxLength: 1500 },
+  }),
+  busOperator: createField({
+    name: 'busOperator',
+    type: 'Select',
+    rules: [{ required: true }],
+  }),
+  licensePlate: createField({
+    name: 'licensePlate',
+    type: 'Input',
+  }),
+  eventDate: createField({
+    name: 'eventDate',
+    type: 'DatePicker',
+    rules: [{ required: true }],
+  }),
+  lineNumber: createField({
+    name: 'lineNumber',
+    type: 'Input',
+    rules: [{ required: true }],
+    props: { maxLength: 5 },
+  }),
+  eventTime: createField({
+    name: 'eventTime',
+    type: 'TimePicker',
+    rules: [{ required: true }],
+    props: { needConfirm: true },
+  }),
+  route: createField({
+    name: 'route',
+    type: 'Select',
+    rules: [{ required: true }],
+  }),
+  wait: createField({
+    name: 'wait',
+    type: 'TimeRangePicker',
+    rules: [{ required: true }],
+  }),
+  boardingStation: createField({
+    name: 'boardingStation',
+    type: 'Select',
+  }),
+  cityFrom: createField({
+    name: 'cityFrom',
+    type: 'Select',
+    rules: [{ required: true }],
+    props: { showSearch: true },
+  }),
+  cityTo: createField({
+    name: 'cityTo',
+    type: 'Select',
+    rules: [{ required: true }],
+    props: { showSearch: true },
+  }),
+  ticketDate: createField({
+    name: 'ticketDate',
+    type: 'DatePicker',
+    rules: [{ required: true }],
+  }),
+  ticketTime: createField({
+    name: 'ticketTime',
+    type: 'TimePicker',
+    rules: [{ required: true }],
+    props: { needConfirm: true },
+  }),
+  travelFrom: createField({
+    name: 'travelFrom',
+    type: 'Input',
+    rules: [{ required: true }],
+  }),
+  travelTo: createField({
+    name: 'travelTo',
+    type: 'Input',
+    rules: [{ required: true }],
+  }),
+  activeDate: createField({
+    name: 'activeDate',
+    type: 'DatePicker',
+    rules: [{ required: true }],
+  }),
+  addOrRemoveStation: createField({
+    name: 'addOrRemoveStation',
+    type: 'Radio',
+    rules: [{ required: true }],
+  }),
+  removeStation: createField({
+    name: 'removeStation',
+    type: 'Select',
+  }),
+  requestedStationAddress: createField({
+    name: 'requestedStationAddress',
+    type: 'Input',
+  }),
+  boardingAddress: createField({
+    name: 'boardingAddress',
+    type: 'Input',
+    rules: [{ required: true }],
+  }),
+  addFrequencyOverCrowd: createField({
+    name: 'addFrequencyOverCrowd',
+    type: 'Checkbox',
+    rules: [{ required: true }],
+  }),
+  addFrequencyLongWait: createField({
+    name: 'addFrequencyLongWait',
+    type: 'Checkbox',
+    rules: [{ required: true }],
+  }),
+  addFrequencyExtendTime: createField({
+    name: 'addFrequencyExtendTime',
+    type: 'Checkbox',
+    rules: [{ required: true }],
+  }),
+  willingToTestifyMot: createField({
+    name: 'willingToTestifyMot',
+    type: 'Checkbox',
+    rules: [{ required: true }],
+  }),
+  willingToTestifyCourt: createField({
+    name: 'willingToTestifyCourt',
+    type: 'Checkbox',
+    rules: [{ required: true }],
+  }),
+  ravKavNumber: createField({
+    name: 'ravKavNumber',
+    type: 'Input',
+    rules: [{ required: true, min: 11 }],
+    props: { maxLength: 11 },
+  }),
 } as const
 
 export type ComplainteField = keyof typeof allComplaintFields

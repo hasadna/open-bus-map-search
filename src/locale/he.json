@@ -219,7 +219,7 @@
   "travel_to": "נסעתי ל",
   "active_date": "תאריך הפעלת הקו",
   "requested_station_address": "כתובת התחנה המבוקשת",
-  "boarding_address": "יישוב עלייה",
+  "boarding_address": "כתובת תחנת עלייה",
   "add_frequency_reason": "סיבה להוספת תדירות",
   "add_frequency_over_crowd": "עומס נוסעים",
   "add_frequency_long_wait": "זמני המתנה ארוכים",
@@ -236,6 +236,7 @@
   "city_to": "יישוב יעד",
   "ticket_date": "תאריך מתן הדוח",
   "ticket_time": "שעת מתן הדוח",
+  "complaint_details_required": "על מנת שנוכל לבדוק בקשתך, יש לפרט במסגרת הבקשה בין אילו אמצעי תחבורה ברצונך להתאים, מספרי קווים, שמות מפעילים, מק\"ט תחנה ושעות רלוונטיות.",
 
   "lineProfile": {
     "title": "פרופיל קו",
