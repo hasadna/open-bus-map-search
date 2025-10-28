@@ -175,6 +175,7 @@
   "coords": "נ.צ.",
   "hide_document": "הסתר מידע לגיקים",
   "show_document": "הצג מידע לגיקים",
+
   "open_complaint": "פתח תלונה",
   "close_complaint": "סגור תלונה",
   "complaint": "תלונה",
@@ -182,7 +183,7 @@
   "last_name": "שם משפחה",
   "only_hebrew_allowed": "מותר להשתמש רק באותיות עבריות",
   "id": "מספר תעודת זהות",
-  "invalid_id": "מספר תעודת זהות לא תקין",
+  "invalid_id": "מספר תעודת זהות לא תקינה",
   "email": "דואר אלקטרוני",
   "phone": "מספר טלפון",
   "complaint_type": "סוג התלונה",
