@@ -2,6 +2,7 @@ import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
 import translationsEN from './en.json'
 import translationsHE from './he.json'
+import translationsRU from './ru.json'
 
 // Get saved language from localStorage or default to 'he'
 const savedLang =
@@ -13,6 +14,7 @@ i18n.use(initReactI18next).init({
   resources: {
     he: { translation: translationsHE },
     en: { translation: translationsEN },
+    ru: { translation: translationsRU },
   },
   lng: savedLang, // Use saved language or default to Hebrew
   fallbackLng: 'he',
