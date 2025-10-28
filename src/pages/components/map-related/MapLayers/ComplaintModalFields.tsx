@@ -27,7 +27,7 @@ const numberOnly = /^\d+$/
 const hebOnly = /^(?![-'"\s()]*$)([א-ת-'"\s()]*)\s*$/u
 
 export const createAllRules = (form: FormInstance, t: TFunction) => ({
-  waitRules: [
+  wait: [
     { required: true },
     {
       validator: async (_, value) => {
@@ -44,7 +44,7 @@ export const createAllRules = (form: FormInstance, t: TFunction) => ({
       },
     },
   ] as Rule[],
-  idRules: [
+  id: [
     { required: true, len: 9 },
     {
       validator: async (_, value: string) => {
@@ -59,7 +59,7 @@ export const createAllRules = (form: FormInstance, t: TFunction) => ({
       },
     },
   ] as Rule[],
-  ravKavRules: [
+  ravKavNumber: [
     { required: true, min: 11 },
     {
       validator: async (_, value: string) => {
@@ -68,12 +68,8 @@ export const createAllRules = (form: FormInstance, t: TFunction) => ({
       },
     },
   ] as Rule[],
-  firstNameRules: [
-    { required: true, pattern: hebOnly, message: t('only_hebrew_allowed') },
-  ] as Rule[],
-  lastNameRules: [
-    { required: true, pattern: hebOnly, message: t('only_hebrew_allowed') },
-  ] as Rule[],
+  firstName: [{ required: true, pattern: hebOnly, message: t('only_hebrew_allowed') }] as Rule[],
+  lastName: [{ required: true, pattern: hebOnly, message: t('only_hebrew_allowed') }] as Rule[],
 })
 
 // ---   Field Components ---

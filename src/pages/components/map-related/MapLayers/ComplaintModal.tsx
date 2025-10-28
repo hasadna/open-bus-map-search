@@ -198,10 +198,7 @@ const ComplaintModal = ({
     ]
   }, [t])
 
-  const { waitRules, idRules, ravKavRules, firstNameRules, lastNameRules } = useMemo(
-    () => createAllRules(form, t),
-    [form, t],
-  )
+  const allRules = useMemo(() => createAllRules(form, t), [form, t])
 
   const handleSelectOptions = useCallback(
     (name: ComplainteField) => {
@@ -220,7 +217,13 @@ const ComplaintModal = ({
           return routeOptions
       }
     },
-    [addOrRemoveStationOptins, busOperatorOptions, boardingStationOptions, routeOptions],
+    [
+      addOrRemoveStationOptins,
+      busOperatorOptions,
+      boardingStationOptions,
+      routeOptions,
+      citiesOptions,
+    ],
   )
 
   const dynamicFields = useMemo(() => {
@@ -229,28 +232,31 @@ const ComplaintModal = ({
     return complaintTypeMappings[selectedComplaintType].fields
       .map((name) => {
         const field = { ...allComplaintFields[name] }
+
         if (field.type === 'Select' || field.type === 'Radio') {
           field.props = { ...field.props, options: handleSelectOptions(name) }
         }
+
         if (name === 'requestedStationAddress') {
           field.props = { ...field.props, disabled: !isAddStation }
           field.rules = [{ required: isAddStation }]
+          if (!isAddStation) form.setFieldValue('requestedStationAddress', undefined)
         }
+
         if (name === 'removeStation') {
           field.props = { ...field.props, disabled: isAddStation }
           field.rules = [{ required: !isAddStation }]
+          if (isAddStation) form.setFieldValue('removeStation', undefined)
         }
-        if (name === 'wait') {
-          field.rules = waitRules
-        }
-        if (name === 'ravKavNumber') {
-          field.rules = ravKavRules
+
+        if (name === 'ravKavNumber' || name === 'wait') {
+          field.rules = allRules[name]
         }
 
         return <RenderField key={name} {...field} />
       })
       .filter(Boolean)
-  }, [selectedComplaintType, handleSelectOptions, waitRules, ravKavRules, addOrRemoveStation])
+  }, [selectedComplaintType, handleSelectOptions, allRules, addOrRemoveStation])
 
   const date = useMemo(() => {
     return position.recorded_at_time ? dayjs(position.recorded_at_time) : undefined
@@ -307,9 +313,9 @@ const ComplaintModal = ({
             </div>
           ) : (
             <>
-              <RenderField {...allComplaintFields.firstName} rules={firstNameRules} />
-              <RenderField {...allComplaintFields.lastName} rules={lastNameRules} />
-              <RenderField {...allComplaintFields.id} rules={idRules} />
+              <RenderField {...allComplaintFields.firstName} rules={allRules.firstName} />
+              <RenderField {...allComplaintFields.lastName} rules={allRules.lastName} />
+              <RenderField {...allComplaintFields.id} rules={allRules.id} />
               <RenderField {...allComplaintFields.email} />
               <RenderField {...allComplaintFields.phone} />
               <RenderField
