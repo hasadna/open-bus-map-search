@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { useState } from 'react'
 import { MapContainer, TileLayer } from 'react-leaflet'
 import { VelocityAggregation } from '../useVelocityAggregationData'
 import { VelocityHeatmapLegend } from './VelocityHeatmapLegend'
@@ -60,7 +61,7 @@ const meta = {
   },
   decorators: [
     (Story, ctx) => {
-      const minMax = [0, 1]
+      const [minMax, setMinMax] = useState([0, 1])
 
       return (
         <div style={{ height: '500px', width: '100%', margin: '16px 0' }}>
@@ -73,7 +74,13 @@ const meta = {
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
               url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
             />
-            <Story args={{ data: ctx.args.data, visMode: ctx.args.visMode }} />
+            <Story
+              args={{
+                data: ctx.args.data,
+                visMode: ctx.args.visMode,
+                setMinMax: (min, max) => setMinMax([min, max]),
+              }}
+            />
             <VelocityHeatmapLegend visMode={ctx.args.visMode} min={minMax[0]} max={minMax[1]} />
           </MapContainer>
         </div>
