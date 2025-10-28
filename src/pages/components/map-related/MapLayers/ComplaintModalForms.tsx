@@ -136,7 +136,7 @@ export const complaintTypeMappings: Record<ComplaintType, ComplaintTypeData> = {
       'activeDate',
       'lineNumber',
       'route',
-      // 'addRemoveStation',// Need To Fix
+      'addRemoveStation',
       'boardingStation',
       'requestedStationAddress',
       'travelFrom',

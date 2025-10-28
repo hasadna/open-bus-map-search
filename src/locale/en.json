@@ -212,6 +212,8 @@
   "add_frequency_over_crowd": "Overcrowded",
   "add_frequency_long_wait": "Long Wait",
   "add_frequency_extend_time": "Extend Time",
+  "add_station": "Add Station",
+  "remove_station": "Remove Station",
   "willing_to_testify_mot": "I hereby confirm that I will be ready to testify at the Ministry of Transportation",
   "willing_to_testify_court": "I hereby confirm that I will be ready to testify in court",
   "rav_kav_number": "Rav Kav Number",

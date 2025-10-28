@@ -50,19 +50,26 @@ interface ComplaintFormValues extends User {
   route?: number
   wait?: [string, string]
   boardingStation?: string
+  cityFrom?: string
+  cityTo?: string
+  ticketDate?: string
+  ticketTime?: string
   travelFrom?: string
   travelTo?: string
   activeDate?: string
-  addRemoveStationReason?: string
+  addRemoveStation?: string
+  removeStation?: string
   requestedStationAddress?: string
   boardingAddress?: string
-  cityFrom?: string
-  cityTo?: string
-  destinationLocality?: string
-  addFrequencyReason?: string
-  willingToTestifyMOT?: boolean
+  addFrequencyOverCrowd?: boolean
+  addFrequencyLongWait?: boolean
+  addFrequencyExtendTime?: boolean
+  willingToTestifyMot?: boolean
   willingToTestifyCourt?: boolean
   ravKavNumber?: string
+  addRemoveStationReason?: string
+  destinationLocality?: string
+  addFrequencyReason?: string
 }
 
 interface ComplaintModalProps {
@@ -90,6 +97,7 @@ const ComplaintModal = ({
   const busOperator = Form.useWatch('busOperator', form)
   const lineNumber = Form.useWatch('lineNumber', form)
   const selectedRoute = Form.useWatch('route', form)
+  const addRemoveStation = Form.useWatch('addRemoveStation', form)
 
   const busOperatorQuery = useBusOperatorQuery()
   const citiesQuery = useCitiesQuery()
@@ -183,6 +191,13 @@ const ComplaintModal = ({
     return complaintTypes.map((value: ComplaintType) => ({ value, label: t(value) }))
   }, [t])
 
+  const addRemoveStationOptins = useMemo(() => {
+    return [
+      { label: t('add_station'), value: 'add' },
+      { label: t('remove_station'), value: 'remove' },
+    ]
+  }, [t])
+
   const { waitRules, idRules, ravKavRules, firstNameRules, lastNameRules } = useMemo(
     () => createAllRules(form, t),
     [form, t],
@@ -191,6 +206,8 @@ const ComplaintModal = ({
   const handleSelectOptions = useCallback(
     (name: ComplainteField) => {
       switch (name) {
+        case 'addRemoveStation':
+          return addRemoveStationOptins
         case 'boardingStation':
           return boardingStationOptions
         case 'busOperator':
@@ -202,7 +219,7 @@ const ComplaintModal = ({
           return routeOptions
       }
     },
-    [busOperatorOptions, boardingStationOptions, routeOptions],
+    [addRemoveStationOptins, busOperatorOptions, boardingStationOptions, routeOptions],
   )
 
   const dynamicFields = useMemo(() => {
@@ -211,19 +228,23 @@ const ComplaintModal = ({
     return complaintTypeMappings[selectedComplaintType].fields
       .map((name) => {
         const field = { ...allComplaintFields[name] }
-        if (field.type === 'Select') {
-          field.props = {
-            ...field.props,
-            options: handleSelectOptions(name),
-          }
+        if (field.type === 'Select' || field.type === 'Radio') {
+          field.props = { ...field.props, options: handleSelectOptions(name) }
         }
+        if (
+          (name === 'requestedStationAddress' && addRemoveStation === 'remove') ||
+          (name === 'boardingStation' && addRemoveStation === 'add')
+        ) {
+          field.props = { ...field.props, disabled: true }
+        }
+
         if (name === 'wait') field.rules = waitRules
         if (name === 'ravKavNumber') field.rules = ravKavRules
 
         return <RenderField key={name} {...field} />
       })
       .filter(Boolean)
-  }, [selectedComplaintType, handleSelectOptions, waitRules, ravKavRules])
+  }, [selectedComplaintType, handleSelectOptions, waitRules, ravKavRules, addRemoveStation, t])
 
   const date = useMemo(() => {
     return position.recorded_at_time ? dayjs(position.recorded_at_time) : undefined

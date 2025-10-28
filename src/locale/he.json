@@ -225,6 +225,8 @@
   "add_frequency_over_crowd": "עומס נוסעים",
   "add_frequency_long_wait": "זמני המתנה ארוכים",
   "add_frequency_extend_time": "הארכת שעות פעילות הקו",
+  "add_station": "הוסף תחנה",
+  "remove_station": "הסר תחנה",
   "willing_to_testify_mot": " הנני מאשר/ת כי אהיה מוכן/ה למסור עדות במשרד התחבורה",
   "willing_to_testify_court": "הנני מאשר/ת כי אהיה מוכן/ה למסור עדות בבית המשפט",
   "rav_kav_number": "מספר רב קו",

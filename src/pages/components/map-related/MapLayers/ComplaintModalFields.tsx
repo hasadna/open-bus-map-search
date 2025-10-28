@@ -4,17 +4,17 @@ import {
   DatePicker,
   type DatePickerProps,
   Form,
+  type FormInstance,
   Input,
   type InputProps,
   Radio,
-  type RadioProps,
+  type RadioGroupProps,
   Select,
   type SelectProps,
   TimePicker,
   type TimePickerProps,
   type TimeRangePickerProps,
 } from 'antd'
-import type { FormInstance } from 'antd'
 import type { Rule } from 'antd/es/form'
 import type { TextAreaProps } from 'antd/es/input'
 import dayjs from 'dayjs'
@@ -93,7 +93,7 @@ const fieldComponents = {
   Checkbox: (props: CheckboxProps & { title?: string }) => (
     <Checkbox {...props}>{props.title}</Checkbox>
   ),
-  Radio: (props: RadioProps) => <Radio.Group {...props} style={fullWidth} />,
+  Radio: (props: RadioGroupProps) => <Radio.Group {...props} style={fullWidth} />,
   Select: (props: SelectProps) => <Select {...props} style={fullWidth} />,
 } as const
 
@@ -164,13 +164,7 @@ export const allComplaintFields = {
   travelFrom: createField('travelFrom', 'Input', [{ required: true }]),
   travelTo: createField('travelTo', 'Input', [{ required: true }]),
   activeDate: createField('activeDate', 'DatePicker', [{ required: true }]),
-  // addRemoveStation: createField('addRemoveStation', 'Radio', [{ required: true }], {
-  //   optionType: 'button',
-  //   options: [
-  //     { label: 'Add', value: 'add' },
-  //     { label: 'Remove', value: 'remove' },
-  //   ],
-  // }),
+  addRemoveStation: createField('addRemoveStation', 'Radio', [{ required: true }]),
   // Need To Fix
   removeStation: createField('removeStation', 'Select', [{ required: true }]),
   requestedStationAddress: createField('requestedStationAddress', 'Input', [{ required: true }]),
