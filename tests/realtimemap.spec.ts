@@ -5,7 +5,7 @@ test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
   advancedRouteFromHAR('tests/HAR/realtimemap.har', {
     updateContent: 'embed',
     update: false,
-    notFound: 'abort',
+    notFound: 'fallback',
     url: /stride-api/,
     matcher: urlMatcher,
   })

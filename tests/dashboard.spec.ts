@@ -7,7 +7,7 @@ test.describe('dashboard tests', () => {
     advancedRouteFromHAR('tests/HAR/dashboard.har', {
       updateContent: 'embed',
       update: false,
-      notFound: 'abort',
+      notFound: 'fallback',
       url: /stride-api/,
       matcher: urlMatcher,
     })
@@ -31,6 +31,6 @@ test.describe('dashboard tests', () => {
   test('dashboard charts contain information', async ({ page }) => {
     await expect(page.getByText('686 | קווים').first()).toBeVisible()
     await expect(page.getByText('מועצה אזורית גולן').first()).toBeVisible()
-    await expect(page.getByRole('heading', { name: 'אגד תעבורה' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'אגד', exact: true })).toBeVisible()
   })
 })

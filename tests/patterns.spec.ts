@@ -1,5 +1,15 @@
-import { expect, test } from '@playwright/test'
 import dayjs from 'src/dayjs'
+import { expect, test, urlMatcher } from './utils'
+
+test.beforeEach(({ advancedRouteFromHAR }) => {
+  advancedRouteFromHAR('tests/HAR/patterns.har', {
+    updateContent: 'embed',
+    update: false,
+    notFound: 'fallback',
+    url: /stride-api/,
+    matcher: urlMatcher,
+  })
+})
 
 test('verify API call to gtfs_agencies/list - "Patterns"', async ({ page }) => {
   let apiCallMade = false

@@ -1,14 +1,9 @@
-import { expect, test } from './utils'
+import { expect, test } from '@playwright/test'
 
 test.describe('About Page Tests', () => {
-  test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
+  test.beforeEach(async ({ page }) => {
     await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
-    advancedRouteFromHAR('tests/HAR/clearbutton.har', {
-      updateContent: 'embed',
-      update: false,
-      notFound: 'fallback',
-      url: /stride-api/,
-    })
+    await page.route(/api.github.com/, (route) => route.abort())
   })
 
   test('after clicking "about" menu item, user should redirect to "about" page', async ({

@@ -6,7 +6,7 @@ test.describe('Trip Existence Page Tests', () => {
     advancedRouteFromHAR('tests/HAR/tripExistence.har', {
       updateContent: 'embed',
       update: false,
-      notFound: 'abort',
+      notFound: 'fallback',
       url: /stride-api/,
       matcher: urlMatcher,
     })

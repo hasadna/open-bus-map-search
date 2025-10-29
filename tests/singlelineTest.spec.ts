@@ -89,17 +89,14 @@ test.describe('Single line page tests', () => {
       await selectOperator(page)
       await fillLineNumber(page)
       await selectRoute(page)
-      await selectStartTime(page)
       await page.waitForTimeout(5000)
+      await selectStartTime(page)
     })
 
     await test.step('Click on bus button', async () => {
-      await page.locator('.leaflet-container').click()
-      await page.waitForTimeout(5000)
-      await page
-        .locator('.leaflet-marker-pane > img[src$="marker-dot.png"]')
-        .nth(6)
-        .click({ force: true })
+      const btns = page.locator('.leaflet-marker-pane > img[src$="marker-dot.png"]')
+      await btns.nth(6).click()
+      await btns.nth(6).click({ force: true })
       await page.waitForTimeout(500)
       await expect(page.locator('.leaflet-popup-content-wrapper')).toBeAttached()
       await waitForSkeletonsToHide(page)

@@ -1,4 +1,14 @@
-import { expect, test } from '@playwright/test'
+import { expect, test, urlMatcher } from './utils'
+
+test.beforeEach(({ advancedRouteFromHAR }) => {
+  advancedRouteFromHAR('tests/HAR/research.har', {
+    updateContent: 'embed',
+    update: false,
+    notFound: 'fallback',
+    url: /stride-api/,
+    matcher: urlMatcher,
+  })
+})
 
 test('research page opens with an easter egg', async ({ page }) => {
   await page.goto('http://localhost:3000/')

@@ -1,7 +1,14 @@
 import type { Locator, Page } from '@playwright/test'
 import i18next from 'i18next'
 import Selectors from './SelectorsModel'
-import { expect, getPastDate, loadTranslate, test, urlMatcher } from './utils'
+import {
+  expect,
+  getPastDate,
+  loadTranslate,
+  test,
+  urlMatcher,
+  waitForSkeletonsToHide,
+} from './utils'
 
 async function visitPage(page: Page, pageName: string, url: RegExp) {
   await page.goto('/')
@@ -28,7 +35,7 @@ test.describe('clearButton functionality', () => {
     advancedRouteFromHAR('tests/HAR/clearbutton.har', {
       updateContent: 'embed',
       update: false,
-      notFound: 'abort',
+      notFound: 'fallback',
       url: /stride-api/,
       matcher: urlMatcher,
     })
@@ -43,10 +50,12 @@ test.describe('clearButton functionality', () => {
       const { operator, lineNumber, route, stop } = new Selectors(page)
 
       await operator.click()
-      await page.getByRole('option', { name: 'אלקטרה אפיקים' }).click()
+      await page.getByRole('option', { name: 'אלקטרה אפיקים', exact: true }).click()
 
       await selectLineNumberAndRoute(page, lineNumber, route)
       await lineNumber.click()
+
+      await stop.waitFor()
       await page.getByLabel('close').locator('svg').click()
       await expect(route).not.toBeVisible()
       await expect(stop).not.toBeVisible()
@@ -57,10 +66,10 @@ test.describe('clearButton functionality', () => {
       await page.getByLabel('תאריך').fill(getPastDate().toLocaleDateString('en-GB'))
 
       await operator.click()
-      await page.getByRole('option', { name: 'אלקטרה אפיקים' }).click()
+      await page.getByRole('option', { name: 'אלקטרה אפיקים', exact: true }).click()
       await selectLineNumberAndRoute(page, lineNumber, route)
+      await stop.waitFor()
       await page.getByRole('button', { name: 'נקה' }).click()
-
       await expect(stop).not.toBeVisible()
     })
   })
@@ -73,8 +82,9 @@ test.describe('clearButton functionality', () => {
       const { operator, lineNumber, route, stop } = new Selectors(page)
 
       await operator.click()
-      await page.getByRole('option', { name: 'אלקטרה אפיקים' }).click()
+      await page.getByRole('option', { name: 'אלקטרה אפיקים', exact: true }).click()
       await selectLineNumberAndRoute(page, lineNumber, route)
+      await waitForSkeletonsToHide(page)
       await page.getByLabel('רק פערים').check()
       await page.getByLabel('רק פערים').uncheck()
       await lineNumber.click()
@@ -88,7 +98,7 @@ test.describe('clearButton functionality', () => {
       await page.getByLabel('תאריך').fill(getPastDate().toLocaleDateString('en-GB'))
 
       await operator.click()
-      await page.getByRole('option', { name: 'אלקטרה אפיקים' }).click()
+      await page.getByRole('option', { name: 'אלקטרה אפיקים', exact: true }).click()
       await selectLineNumberAndRoute(page, lineNumber, route)
       await page.getByRole('button', { name: 'נקה' }).click()
 
@@ -105,7 +115,7 @@ test.describe('clearButton functionality', () => {
       const { operator, lineNumber, route, stop } = new Selectors(page)
 
       await operator.click()
-      await page.getByRole('option', { name: 'אלקטרה אפיקים' }).click()
+      await page.getByRole('option', { name: 'אלקטרה אפיקים', exact: true }).click()
       await selectLineNumberAndRoute(page, lineNumber, route)
       await lineNumber.click()
       await page.getByLabel('close').locator('svg').click()
@@ -119,7 +129,7 @@ test.describe('clearButton functionality', () => {
       const { operator, lineNumber, route, stop } = new Selectors(page)
 
       await operator.click()
-      await page.getByRole('option', { name: 'אלקטרה אפיקים' }).click()
+      await page.getByRole('option', { name: 'אלקטרה אפיקים', exact: true }).click()
       await selectLineNumberAndRoute(page, lineNumber, route)
       await page.getByRole('button', { name: 'נקה' }).click()
       await expect(stop).not.toBeVisible()
@@ -133,9 +143,8 @@ test.describe('clearButton functionality', () => {
       await page.getByLabel('תאריך').fill(getPastDate().toLocaleDateString('en-GB'))
       const { operator, lineNumber, route, stop } = new Selectors(page)
 
-      //clear LineNumber value test
       await operator.click()
-      await page.getByRole('option', { name: 'אלקטרה אפיקים' }).click()
+      await page.getByRole('option', { name: 'אלקטרה אפיקים', exact: true }).click()
       await selectLineNumberAndRoute(page, lineNumber, route)
       await lineNumber.click()
       await page.getByLabel('close').locator('svg').click()
@@ -148,7 +157,7 @@ test.describe('clearButton functionality', () => {
       await page.getByLabel('תאריך').fill(getPastDate().toLocaleDateString('en-GB'))
 
       await operator.click()
-      await page.getByRole('option', { name: 'אלקטרה אפיקים' }).click()
+      await page.getByRole('option', { name: 'אלקטרה אפיקים', exact: true }).click()
       await selectLineNumberAndRoute(page, lineNumber, route)
       await page.getByRole('button', { name: 'נקה' }).click()
 

@@ -14,7 +14,7 @@ test.describe('Operator Page Tests', () => {
     advancedRouteFromHAR('tests/HAR/operator.har', {
       updateContent: 'embed',
       update: false,
-      notFound: 'abort',
+      notFound: 'fallback',
       url: /stride-api/,
       matcher: urlMatcher,
     })

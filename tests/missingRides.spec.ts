@@ -1,5 +1,17 @@
-import { expect, test } from '@playwright/test'
 import dayjs from 'src/dayjs'
+import { expect, test, urlMatcher } from './utils'
+
+test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
+  await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
+  advancedRouteFromHAR('tests/HAR/missing.har', {
+    updateContent: 'embed',
+    update: false,
+    notFound: 'fallback',
+    url: /stride-api/,
+    matcher: urlMatcher,
+  })
+  await page.goto('/')
+})
 
 test('verify API call to gtfs_agencies/list - "missing rides"', async ({ page }) => {
   let apiCallMade = false
