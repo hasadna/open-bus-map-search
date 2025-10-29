@@ -2,6 +2,7 @@ import dayjs from 'src/dayjs'
 import { expect, getPastDate, test, urlMatcher } from './utils'
 
 test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
+  await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
   await page.clock.setSystemTime(getPastDate())
   advancedRouteFromHAR('tests/HAR/patterns.har', {
     updateContent: 'embed',
@@ -36,7 +37,7 @@ test('Verify date_from parameter from "Patterns"', async ({ page }) => {
   const url = new URL(request.url())
   const dateFromParam = url.searchParams.get('date_from')
   const dateFrom = dayjs(dateFromParam)
-  const daysAgo = dayjs().diff(dateFrom, 'days')
+  const daysAgo = dayjs(getPastDate()).diff(dateFrom, 'days')
 
   expect(daysAgo).toBeGreaterThanOrEqual(0)
   expect(daysAgo).toBeLessThanOrEqual(3)

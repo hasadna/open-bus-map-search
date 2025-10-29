@@ -131,36 +131,38 @@ test.describe('Timeline Page Tests', () => {
     )
     await timelinePage.verifyRouteSelectionVisible(timelinePage.timelineGraph, true, 100000)
   })
-})
 
-test('verify API call to gtfs_agencies/list - "Trips history"', async ({ page }) => {
-  let apiCallMade = false
-  page.on('request', (request) => {
-    if (request.url().includes('gtfs_agencies/list')) {
-      apiCallMade = true
-    }
+  test('verify API call to gtfs_agencies/list - "Trips history"', async ({ page }) => {
+    let apiCallMade = false
+    page.on('request', (request) => {
+      if (request.url().includes('gtfs_agencies/list')) {
+        apiCallMade = true
+      }
+    })
+
+    await page.goto('/')
+    await page.getByRole('link', { name: 'היסטוריית נסיעות' }).click()
+    await page.getByLabel('חברה מפעילה').click()
+    expect(apiCallMade).toBeTruthy()
   })
 
-  await page.goto('/')
-  await page.getByRole('link', { name: 'היסטוריית נסיעות' }).click()
-  await page.getByLabel('חברה מפעילה').click()
-  expect(apiCallMade).toBeTruthy()
-})
+  test('the dateFrom parameter should be recent when visiting the "Trips history"', async ({
+    page,
+  }) => {
+    const apiRequest = page.waitForRequest((request) =>
+      request.url().includes('gtfs_agencies/list'),
+    )
 
-test('the dateFrom parameter should be recent when visiting the "Trips history"', async ({
-  page,
-}) => {
-  const apiRequest = page.waitForRequest((request) => request.url().includes('gtfs_agencies/list'))
+    await page.goto('/')
+    await page.getByRole('link', { name: 'היסטוריית נסיעות' }).click()
 
-  await page.goto('/')
-  await page.getByRole('link', { name: 'היסטוריית נסיעות' }).click()
+    const request = await apiRequest
+    const url = new URL(request.url())
+    const dateFromParam = url.searchParams.get('date_from')
+    const dateFrom = dayjs(dateFromParam)
+    const daysAgo = dayjs(getPastDate()).diff(dateFrom, 'days')
 
-  const request = await apiRequest
-  const url = new URL(request.url())
-  const dateFromParam = url.searchParams.get('date_from')
-  const dateFrom = dayjs(dateFromParam)
-  const daysAgo = dayjs().diff(dateFrom, 'days')
-
-  expect(daysAgo).toBeGreaterThanOrEqual(0)
-  expect(daysAgo).toBeLessThanOrEqual(3)
+    expect(daysAgo).toBeGreaterThanOrEqual(0)
+    expect(daysAgo).toBeLessThanOrEqual(3)
+  })
 })

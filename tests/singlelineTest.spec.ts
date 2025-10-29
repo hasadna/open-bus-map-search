@@ -2,21 +2,24 @@ import type { Page } from '@playwright/test'
 import dayjs from 'src/dayjs'
 import { expect, getPastDate, test, urlMatcher, waitForSkeletonsToHide } from './utils'
 
-async function selectOperator(page: Page, operatorName = 'דן') {
+async function selectOperator(page: Page, operatorName = 'אודליה מוניות בעמ') {
   await page.getByLabel('חברה מפעילה').click()
   await page.getByRole('option', { name: operatorName, exact: true }).click()
 }
 
-async function fillLineNumber(page: Page, lineNumber = '67') {
+async function fillLineNumber(page: Page, lineNumber = '16') {
   await page.getByRole('textbox', { name: 'מספר קו' }).fill(lineNumber)
 }
 
-async function selectRoute(page: Page, routeName = 'קניון איילון-רמת גן ⟵ איצטדיון וינטר-רמת גן') {
+async function selectRoute(
+  page: Page,
+  routeName = 'תחנת מוניות רמת גן דרך הטייסים-תל אביב יפו ⟵ תחנת מוניות תל אביב הכובשים-תל אביב יפו',
+) {
   await page.getByLabel(/בחירת מסלול נסיעה/).click()
   await page.getByRole('option', { name: routeName }).click()
 }
 
-async function selectStartTime(page: Page, time = '05:45') {
+async function selectStartTime(page: Page, time = '05:00') {
   await page.getByLabel('בחירת שעת התחלה').click()
   await page.getByRole('option', { name: time }).click()
 }
@@ -39,7 +42,7 @@ test.describe('Single line page tests', () => {
   test('should allow selecting operator company options', async ({ page }) => {
     await expect(page.getByRole('textbox', { name: 'מספר קו' })).not.toBeEditable()
     await selectOperator(page)
-    await expect(page.getByLabel('חברה מפעילה')).toHaveValue('דן')
+    await expect(page.getByLabel('חברה מפעילה')).toHaveValue('אודליה מוניות בעמ')
     await expect(page.getByRole('textbox', { name: 'מספר קו' })).toBeEditable()
   })
 
@@ -64,7 +67,7 @@ test.describe('Single line page tests', () => {
     await fillLineNumber(page)
     await expect(page.locator('#route-select')).toBeEditable()
     await selectRoute(page)
-    await expect(page.getByLabel(/בחירת מסלול נסיעה/)).toHaveValue(/קניון איילון/)
+    await expect(page.getByLabel(/בחירת מסלול נסיעה/)).toHaveValue(/תחנת מוניות תל אביב הכובשים/)
   })
 
   test('should display route after selecting route', async ({ page }) => {
@@ -91,12 +94,16 @@ test.describe('Single line page tests', () => {
       await selectRoute(page)
       await page.waitForTimeout(5000)
       await selectStartTime(page)
+      await page.waitForTimeout(5000)
     })
 
     await test.step('Click on bus button', async () => {
-      const btns = page.locator('.leaflet-marker-pane > img[src$="marker-dot.png"]')
-      await btns.nth(6).click()
-      await btns.nth(6).click({ force: true })
+      await page.locator('.leaflet-marker-pane > img[src$="marker-dot.png"]:nth-child(6)').click()
+      await page.waitForTimeout(500)
+      await page
+        .locator('.leaflet-marker-pane > img[src$="marker-dot.png"]:nth-child(6)')
+        .click({ force: true })
+
       await page.waitForTimeout(500)
       await expect(page.locator('.leaflet-popup-content-wrapper')).toBeAttached()
       await waitForSkeletonsToHide(page)
@@ -142,38 +149,40 @@ test.describe('Single line page tests', () => {
     await fillLineNumber(page, '9999')
     await expect(page.getByText('הקו לא נמצא')).toBeAttached()
   })
-})
 
-test('verify API call to gtfs_agencies/list - "Map by line"', async ({ page }) => {
-  await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
+  test('verify API call to gtfs_agencies/list - "Map by line"', async ({ page }) => {
+    await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
 
-  let apiCallMade = false
-  page.on('request', (request) => {
-    if (request.url().includes('gtfs_agencies/list')) {
-      apiCallMade = true
-    }
+    let apiCallMade = false
+    page.on('request', (request) => {
+      if (request.url().includes('gtfs_agencies/list')) {
+        apiCallMade = true
+      }
+    })
+
+    await page.goto('/')
+    await page.getByRole('link', { name: 'מפה לפי קו' }).click()
+    await page.getByLabel('חברה מפעילה').click()
+    expect(apiCallMade).toBeTruthy()
   })
 
-  await page.goto('/')
-  await page.getByRole('link', { name: 'מפה לפי קו' }).click()
-  await page.getByLabel('חברה מפעילה').click()
-  expect(apiCallMade).toBeTruthy()
-})
+  test('Verify date_from parameter from "Map by line"', async ({ page }) => {
+    await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
 
-test('Verify date_from parameter from "Map by line"', async ({ page }) => {
-  await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
+    const apiRequest = page.waitForRequest((request) =>
+      request.url().includes('gtfs_agencies/list'),
+    )
 
-  const apiRequest = page.waitForRequest((request) => request.url().includes('gtfs_agencies/list'))
+    await page.goto('/')
+    await page.getByRole('link', { name: 'מפה לפי קו' }).click()
 
-  await page.goto('/')
-  await page.getByRole('link', { name: 'מפה לפי קו' }).click()
+    const request = await apiRequest
+    const url = new URL(request.url())
+    const dateFromParam = url.searchParams.get('date_from')
+    const dateFrom = dayjs(dateFromParam)
+    const daysAgo = dayjs(getPastDate()).diff(dateFrom, 'days')
 
-  const request = await apiRequest
-  const url = new URL(request.url())
-  const dateFromParam = url.searchParams.get('date_from')
-  const dateFrom = dayjs(dateFromParam)
-  const daysAgo = dayjs().diff(dateFrom, 'days')
-
-  expect(daysAgo).toBeGreaterThanOrEqual(0)
-  expect(daysAgo).toBeLessThanOrEqual(3)
+    expect(daysAgo).toBeGreaterThanOrEqual(0)
+    expect(daysAgo).toBeLessThanOrEqual(3)
+  })
 })
