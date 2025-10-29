@@ -19,7 +19,7 @@ async function selectRoute(
   await page.getByRole('option', { name: routeName }).click()
 }
 
-async function selectStartTime(page: Page, time = '05:00') {
+async function selectStartTime(page: Page, time = '05:00:00 (74-893-26') {
   await page.getByLabel('בחירת שעת התחלה').click()
   await page.getByRole('option', { name: time }).click()
 }
