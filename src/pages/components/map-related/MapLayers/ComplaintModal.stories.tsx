@@ -11,7 +11,7 @@ const meta = {
   parameters: {
     layout: 'centered',
     eyes: {
-      waitBeforeCapture: 'form', // Wait for the modal to open before capturing
+      waitBeforeCapture: 'button[type="submit"]',
     },
   },
   argTypes: {
