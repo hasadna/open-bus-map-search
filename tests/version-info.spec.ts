@@ -5,7 +5,7 @@ const versionUrl = 'https://open-bus-map-search.hasadna.org.il/hash.txt'
 test.describe('Version info tests', () => {
   test.beforeEach(async ({ page }) => {
     await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
-    await page.route(/api.github.com/, (route) => route.abort())
+    await page.route(/api\.github\.com/, (route) => route.abort())
     await page.goto('/about')
   })
 

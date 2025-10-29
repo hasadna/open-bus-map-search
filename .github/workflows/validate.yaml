@@ -130,7 +130,7 @@ jobs:
           echo "hash.txt is valid with MIME type $mime_type and length $content_length characters."
       - name: Install Dependencies and Playwright
         run: npm ci
-      - run: npx playwright install
+      - run: npx playwright install chromium
       - name: Run Playwright tests
         run: npm test
       - name: Prepare Playwright artifact directory
@@ -202,7 +202,7 @@ jobs:
           cache: 'npm'
       - name: Install Dependencies and Playwright
         run: npm ci
-      - run: npx playwright install
+      - run: npx playwright install chromium
       - name: Run Playwright Visual Tests
         env:
           APPLITOOLS_BATCH_NAME: open-bus-map-search/${{ github.ref }}/${{ env.SHORT_SHA }}/

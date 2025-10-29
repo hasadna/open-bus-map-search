@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test'
 test.describe('About Page Tests', () => {
   test.beforeEach(async ({ page }) => {
     await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
-    await page.route(/api.github.com/, (route) => route.abort())
+    await page.route(/api\.github\.com/, (route) => route.abort())
   })
 
   test('after clicking "about" menu item, user should redirect to "about" page', async ({

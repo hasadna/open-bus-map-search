@@ -26,7 +26,7 @@ jobs:
           node-version: latest
       - name: Run install
         run: npm ci
-      - run: npx playwright install
+      - run: npx playwright install chromium
       - name: Run test
         run: npm test
       - run: npx nyc report --reporter=lcovonly
