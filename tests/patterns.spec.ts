@@ -1,7 +1,8 @@
 import dayjs from 'src/dayjs'
-import { expect, test, urlMatcher } from './utils'
+import { expect, getPastDate, test, urlMatcher } from './utils'
 
-test.beforeEach(({ advancedRouteFromHAR }) => {
+test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
+  await page.clock.setSystemTime(getPastDate())
   advancedRouteFromHAR('tests/HAR/patterns.har', {
     updateContent: 'embed',
     update: false,

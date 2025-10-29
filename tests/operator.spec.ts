@@ -11,6 +11,7 @@ const getLabelValue = async (label: string, page: Page) => {
 test.describe('Operator Page Tests', () => {
   test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
     await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
+    await page.clock.setSystemTime(getPastDate())
     advancedRouteFromHAR('tests/HAR/operator.har', {
       updateContent: 'embed',
       update: false,
@@ -19,7 +20,6 @@ test.describe('Operator Page Tests', () => {
       matcher: urlMatcher,
     })
     await loadTranslate(i18next)
-    await page.clock.setSystemTime(getPastDate())
     await page.goto('/')
     await page
       .getByText(i18next.t('operator_title'), { exact: true })

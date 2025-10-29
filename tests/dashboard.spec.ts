@@ -4,6 +4,7 @@ import { getPastDate, test, urlMatcher, waitForSkeletonsToHide } from './utils'
 test.describe('dashboard tests', () => {
   test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
     await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
+    await page.clock.setSystemTime(getPastDate())
     advancedRouteFromHAR('tests/HAR/dashboard.har', {
       updateContent: 'embed',
       update: false,
@@ -11,7 +12,6 @@ test.describe('dashboard tests', () => {
       url: /stride-api/,
       matcher: urlMatcher,
     })
-    await page.clock.setSystemTime(getPastDate())
     await page.goto('/dashboard')
     await page.getByText('הקווים הגרועים ביותר').waitFor()
     await waitForSkeletonsToHide(page)

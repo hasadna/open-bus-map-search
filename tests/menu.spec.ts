@@ -2,7 +2,6 @@ import { expect, test } from '@playwright/test'
 
 test.beforeEach(async ({ page }) => {
   await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
-
   await page.goto('/')
 })
 

@@ -1,7 +1,8 @@
-import { expect, test, urlMatcher } from './utils'
+import { expect, getPastDate, test, urlMatcher } from './utils'
 
 test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
   await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
+  await page.clock.setSystemTime(getPastDate())
   advancedRouteFromHAR('tests/HAR/realtimemap.har', {
     updateContent: 'embed',
     update: false,
