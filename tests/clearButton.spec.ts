@@ -43,12 +43,10 @@ test.describe('clearButton functionality', () => {
       const { operator, lineNumber, route, stop } = new Selectors(page)
 
       await operator.click()
-      await page.getByRole('option', { name: 'אלקטרה אפיקים', exact: true }).click()
+      await page.getByRole('option', { name: 'אלקטרה אפיקים' }).click()
 
       await selectLineNumberAndRoute(page, lineNumber, route)
       await lineNumber.click()
-
-      await stop.waitFor()
       await page.getByLabel('close').locator('svg').click()
       await expect(route).not.toBeVisible()
       await expect(stop).not.toBeVisible()
@@ -59,10 +57,10 @@ test.describe('clearButton functionality', () => {
       await page.getByLabel('תאריך').fill(getPastDate().toLocaleDateString('en-GB'))
 
       await operator.click()
-      await page.getByRole('option', { name: 'אלקטרה אפיקים', exact: true }).click()
+      await page.getByRole('option', { name: 'אלקטרה אפיקים' }).click()
       await selectLineNumberAndRoute(page, lineNumber, route)
-      await stop.waitFor()
       await page.getByRole('button', { name: 'נקה' }).click()
+
       await expect(stop).not.toBeVisible()
     })
   })
@@ -75,7 +73,7 @@ test.describe('clearButton functionality', () => {
       const { operator, lineNumber, route, stop } = new Selectors(page)
 
       await operator.click()
-      await page.getByRole('option', { name: 'אלקטרה אפיקים', exact: true }).click()
+      await page.getByRole('option', { name: 'אלקטרה אפיקים' }).click()
       await selectLineNumberAndRoute(page, lineNumber, route)
       await page.getByLabel('רק פערים').check()
       await page.getByLabel('רק פערים').uncheck()
@@ -90,7 +88,7 @@ test.describe('clearButton functionality', () => {
       await page.getByLabel('תאריך').fill(getPastDate().toLocaleDateString('en-GB'))
 
       await operator.click()
-      await page.getByRole('option', { name: 'אלקטרה אפיקים', exact: true }).click()
+      await page.getByRole('option', { name: 'אלקטרה אפיקים' }).click()
       await selectLineNumberAndRoute(page, lineNumber, route)
       await page.getByRole('button', { name: 'נקה' }).click()
 
@@ -107,7 +105,7 @@ test.describe('clearButton functionality', () => {
       const { operator, lineNumber, route, stop } = new Selectors(page)
 
       await operator.click()
-      await page.getByRole('option', { name: 'אלקטרה אפיקים', exact: true }).click()
+      await page.getByRole('option', { name: 'אלקטרה אפיקים' }).click()
       await selectLineNumberAndRoute(page, lineNumber, route)
       await lineNumber.click()
       await page.getByLabel('close').locator('svg').click()
@@ -121,7 +119,7 @@ test.describe('clearButton functionality', () => {
       const { operator, lineNumber, route, stop } = new Selectors(page)
 
       await operator.click()
-      await page.getByRole('option', { name: 'אלקטרה אפיקים', exact: true }).click()
+      await page.getByRole('option', { name: 'אלקטרה אפיקים' }).click()
       await selectLineNumberAndRoute(page, lineNumber, route)
       await page.getByRole('button', { name: 'נקה' }).click()
       await expect(stop).not.toBeVisible()
@@ -135,8 +133,9 @@ test.describe('clearButton functionality', () => {
       await page.getByLabel('תאריך').fill(getPastDate().toLocaleDateString('en-GB'))
       const { operator, lineNumber, route, stop } = new Selectors(page)
 
+      //clear LineNumber value test
       await operator.click()
-      await page.getByRole('option', { name: 'אלקטרה אפיקים', exact: true }).click()
+      await page.getByRole('option', { name: 'אלקטרה אפיקים' }).click()
       await selectLineNumberAndRoute(page, lineNumber, route)
       await lineNumber.click()
       await page.getByLabel('close').locator('svg').click()
@@ -149,7 +148,7 @@ test.describe('clearButton functionality', () => {
       await page.getByLabel('תאריך').fill(getPastDate().toLocaleDateString('en-GB'))
 
       await operator.click()
-      await page.getByRole('option', { name: 'אלקטרה אפיקים', exact: true }).click()
+      await page.getByRole('option', { name: 'אלקטרה אפיקים' }).click()
       await selectLineNumberAndRoute(page, lineNumber, route)
       await page.getByRole('button', { name: 'נקה' }).click()
 
