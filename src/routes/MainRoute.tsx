@@ -2,7 +2,6 @@ import createCache from '@emotion/cache'
 import { CacheProvider } from '@emotion/react'
 import { useCallback, useEffect } from 'react'
 import ReactGA from 'react-ga4'
-import { GA4 } from 'react-ga4/types/ga4'
 import { useLocation, useSearchParams } from 'react-router'
 import rtlPlugin from 'stylis-plugin-rtl'
 import { useSessionStorage } from 'usehooks-ts'
@@ -29,11 +28,7 @@ export const MainRoute = () => {
   const timestamp = searchParams.get('timestamp')
 
   useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ;((ReactGA as any).default as GA4).send({
-      hitType: 'pageview',
-      page: location.pathname + location.search,
-    })
+    ReactGA.send({ hitType: 'pageview', page: location.pathname + location.search })
   }, [location])
 
   const [search, setSearch] = useSessionStorage<PageSearchState>('search', {

@@ -4,7 +4,6 @@ import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import ReactGA from 'react-ga4'
-import { GA4 } from 'react-ga4/types/ga4'
 import App from './App'
 import './locale/allTranslations'
 import './index.css'
@@ -25,8 +24,7 @@ const queryClient = new QueryClient({
   },
 })
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-;((ReactGA as any).default as GA4).initialize('G-0YRQT80GG1')
+ReactGA.initialize('G-0YRQT80GG1')
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
