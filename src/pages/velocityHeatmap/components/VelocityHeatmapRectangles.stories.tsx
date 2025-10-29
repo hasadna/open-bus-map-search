@@ -1,11 +1,9 @@
-import React from 'react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
+import { useState } from 'react'
+import { MapContainer, TileLayer } from 'react-leaflet'
 import { VelocityAggregation } from '../useVelocityAggregationData'
+import { VelocityHeatmapLegend } from './VelocityHeatmapLegend'
 import { VelocityHeatmapRectangles } from './VelocityHeatmapRectangles'
-
-export default {
-  title: 'VelocityHeatmap/Rectangles',
-  component: VelocityHeatmapRectangles,
-}
 
 const sampleData: VelocityAggregation[] = [
   {
@@ -31,21 +29,76 @@ const sampleData: VelocityAggregation[] = [
   },
 ]
 
-export const Default = () => (
-  <div style={{ height: 400, width: 600 }}>
-    <svg width="600" height="400" style={{ position: 'absolute', zIndex: 0 }} />
-    <VelocityHeatmapRectangles data={sampleData} visMode="avg" />
-  </div>
-)
+const meta = {
+  title: 'VelocityHeatmap/Rectangles',
+  component: VelocityHeatmapRectangles,
+  argTypes: {
+    visMode: {
+      control: { type: 'select' },
+      options: ['avg', 'std', 'cv'],
+      description:
+        'Visualization mode: avg for average velocity, std for standard deviation, cv for coefficient of variation',
+    },
+    data: {
+      control: { type: 'object' },
+      description:
+        'Array of velocity aggregation data points with lat, lon, sample count, average, and stddev',
+      table: {
+        type: { summary: 'VelocityAggregation[]' },
+      },
+    },
+    setMinMax: {
+      control: false,
+      description: 'Optional callback function to set min and max values for the legend',
+      table: {
+        type: { summary: '(min: number, max: number) => void) | undefined' },
+      },
+    },
+  },
+  args: {
+    visMode: 'avg',
+    data: sampleData,
+  },
+  decorators: [
+    (Story, ctx) => {
+      const [minMax, setMinMax] = useState([0, 1])
 
-export const StdDev = () => (
-  <div style={{ height: 400, width: 600 }}>
-    <VelocityHeatmapRectangles data={sampleData} visMode="std" />
-  </div>
-)
+      return (
+        <div style={{ height: '500px', width: '100%', margin: '16px 0' }}>
+          <MapContainer
+            center={[29.57, 34.93]}
+            zoom={13}
+            scrollWheelZoom={true}
+            style={{ height: '100%', width: '100%' }}>
+            <TileLayer
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
+            />
+            <Story
+              args={{
+                data: ctx.args.data,
+                visMode: ctx.args.visMode,
+                setMinMax: (min, max) => setMinMax([min, max]),
+              }}
+            />
+            <VelocityHeatmapLegend visMode={ctx.args.visMode} min={minMax[0]} max={minMax[1]} />
+          </MapContainer>
+        </div>
+      )
+    },
+  ],
+} satisfies Meta<typeof VelocityHeatmapRectangles>
 
-export const CoeffOfVar = () => (
-  <div style={{ height: 400, width: 600 }}>
-    <VelocityHeatmapRectangles data={sampleData} visMode="cv" />
-  </div>
-)
+export default meta
+
+type Story = StoryObj<typeof meta>
+
+export const Default: Story = {}
+
+export const StdDev: Story = {
+  args: { visMode: 'std' },
+}
+
+export const CoeffOfVar: Story = {
+  args: { visMode: 'cv' },
+}
