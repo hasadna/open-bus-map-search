@@ -1,16 +1,15 @@
-import React, { useState } from 'react'
+import { Grid } from '@mui/material'
+import React, { useContext, useState } from 'react'
 import { MapContainer, TileLayer } from 'react-leaflet'
+import dayjs from 'src/dayjs'
+import { SearchContext } from '../../model/pageState'
+import { DateSelector } from '../components/DateSelector'
 import { VelocityHeatmapLegend } from './components/VelocityHeatmapLegend'
 import { VelocityHeatmapRectangles } from './components/VelocityHeatmapRectangles'
 import { useVelocityAggregationData } from './useVelocityAggregationData'
 import 'leaflet/dist/leaflet.css'
 
-const DEFAULT_BOUNDS = {
-  minLat: 29.5,
-  maxLat: 33.33,
-  minLon: 34.25,
-  maxLon: 35.7,
-}
+const DEFAULT_BOUNDS = { minLat: 29.5, maxLat: 33.33, minLon: 34.25, maxLon: 35.7 }
 
 const VIS_MODES = [
   { key: 'avg', label: 'Visualize Avg Speed' },
@@ -19,20 +18,33 @@ const VIS_MODES = [
 ]
 
 const VelocityHeatmapPage: React.FC = () => {
-  const { data, loading, error } = useVelocityAggregationData({
-    minLat: DEFAULT_BOUNDS.minLat,
-    maxLat: DEFAULT_BOUNDS.maxLat,
-    minLon: DEFAULT_BOUNDS.minLon,
-    maxLon: DEFAULT_BOUNDS.maxLon,
-  })
+  const { search, setSearch } = useContext(SearchContext)
+  const { data, loading, error } = useVelocityAggregationData(
+    {
+      minLat: DEFAULT_BOUNDS.minLat,
+      maxLat: DEFAULT_BOUNDS.maxLat,
+      minLon: DEFAULT_BOUNDS.minLon,
+      maxLon: DEFAULT_BOUNDS.maxLon,
+    },
+    search.timestamp,
+  )
   const [visMode, setVisMode] = useState<'avg' | 'std' | 'cv'>('avg')
   const [min, setMin] = useState(0)
   const [max, setMax] = useState(1)
+
+  const handleTimestampChange = (time: dayjs.Dayjs | null) => {
+    setSearch((current) => ({ ...current, timestamp: time?.valueOf() ?? Date.now() }))
+  }
 
   return (
     <div>
       <h1>Velocity Aggregation Heatmap</h1>
       <p>This page will display a heatmap of velocity aggregation data.</p>
+
+      {/* choose date*/}
+      <Grid>
+        <DateSelector time={dayjs(search.timestamp)} onChange={handleTimestampChange} />
+      </Grid>
       <div style={{ margin: '12px 0' }}>
         <b>Visualization:</b>{' '}
         {VIS_MODES.map((mode) => (

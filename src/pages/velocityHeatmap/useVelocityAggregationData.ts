@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import dayjs from 'src/dayjs'
 
 export interface VelocityAggregation {
   rounded_lon: number
@@ -15,14 +16,18 @@ export interface VelocityAggregationBounds {
   maxLon: number
 }
 
-export function useVelocityAggregationData(bounds: VelocityAggregationBounds) {
+export function useVelocityAggregationData(
+  bounds: VelocityAggregationBounds,
+  timestamp: dayjs.Dayjs,
+) {
   const [data, setData] = useState<VelocityAggregation[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     setLoading(true)
-    const apiUrl = `https://open-bus-stride-api.hasadna.org.il/siri_velocity_aggregation/siri_velocity_aggregation?recorded_from=2025-01-01T00%3A00%3A00&lon_min=${bounds.minLon}&lon_max=${bounds.maxLon}&lat_min=${bounds.minLat}&lat_max=${bounds.maxLat}&rounding_precision=2`
+    const date = dayjs(timestamp).format('YYYY-MM-DD')
+    const apiUrl = `https://open-bus-stride-api.hasadna.org.il/siri_velocity_aggregation/siri_velocity_aggregation?recorded_from=${date}T00%3A00%3A00&lon_min=${bounds.minLon}&lon_max=${bounds.maxLon}&lat_min=${bounds.minLat}&lat_max=${bounds.maxLat}&rounding_precision=2`
     fetch(apiUrl)
       .then((res) => {
         if (!res.ok) throw new Error('Failed to fetch data')
@@ -53,7 +58,7 @@ export function useVelocityAggregationData(bounds: VelocityAggregationBounds) {
       })
       .catch((err) => setError(String((err && (err as Error).message) || err)))
       .finally(() => setLoading(false))
-  }, [JSON.stringify(bounds)])
+  }, [JSON.stringify(bounds), timestamp])
 
   return { data, loading, error }
 }
