@@ -3,10 +3,10 @@ import * as crypto from 'crypto'
 import * as fs from 'fs'
 import * as path from 'path'
 import { BrowserContext, Page } from '@playwright/test'
-import dayjs from 'dayjs'
 import i18next from 'i18next'
 import Backend from 'i18next-fs-backend'
 import { test as baseTest, customMatcher, Matcher } from 'playwright-advanced-har'
+import dayjs from 'src/dayjs'
 
 type CollectIstanbulCoverageWindow = Window &
   typeof globalThis & {
@@ -48,8 +48,8 @@ export const test = baseTest.extend<{ context: BrowserContext }>({
   },
 })
 
-export function getPastDate(): Date {
-  return new Date('2024-02-12 15:00:00')
+export function getPastDate() {
+  return dayjs('2024-02-12T15:00:00+00:00').tz('Asia/Jerusalem').toDate()
 }
 
 export const urlMatcher: Matcher = customMatcher({

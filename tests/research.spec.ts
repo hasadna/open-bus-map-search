@@ -12,7 +12,10 @@ test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
 })
 
 test('research page opens with an easter egg', async ({ page }) => {
-  await page.keyboard.type('geek')
+  await page.keyboard.type('g')
+  await page.keyboard.type('e')
+  await page.keyboard.type('e')
+  await page.keyboard.type('k')
   await page.locator('.body').waitFor({ state: 'visible' })
   await page.locator('.body').click({ force: true })
   await expect(page).toHaveURL(/data-research/)
