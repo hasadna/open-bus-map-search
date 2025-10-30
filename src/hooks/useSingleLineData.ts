@@ -43,7 +43,7 @@ export const useSingleLineData = (
     }
 
     const controller = new AbortController()
-    const time = dayjs(search.timestamp)
+    const time = dayjs(search.timestamp).tz('Asia/Jerusalem')
 
     getRoutesAsync(time, time, operatorId, lineNumber, controller.signal)
       .then((routes) => {
