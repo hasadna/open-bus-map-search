@@ -26,7 +26,7 @@ export function useVelocityAggregationData(
 
   useEffect(() => {
     setLoading(true)
-    const date = dayjs(timestamp).format('YYYY-MM-DD')
+    const date = timestamp.format('YYYY-MM-DD')
     const apiUrl = `https://open-bus-stride-api.hasadna.org.il/siri_velocity_aggregation/siri_velocity_aggregation?recorded_from=${date}T00%3A00%3A00&lon_min=${bounds.minLon}&lon_max=${bounds.maxLon}&lat_min=${bounds.minLat}&lat_max=${bounds.maxLat}&rounding_precision=2`
     fetch(apiUrl)
       .then((res) => {
@@ -58,7 +58,7 @@ export function useVelocityAggregationData(
       })
       .catch((err) => setError(String((err && (err as Error).message) || err)))
       .finally(() => setLoading(false))
-  }, [JSON.stringify(bounds), timestamp])
+  }, [JSON.stringify(bounds), JSON.stringify(timestamp)])
 
   return { data, loading, error }
 }

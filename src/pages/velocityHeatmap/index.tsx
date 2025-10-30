@@ -26,7 +26,7 @@ const VelocityHeatmapPage: React.FC = () => {
       minLon: DEFAULT_BOUNDS.minLon,
       maxLon: DEFAULT_BOUNDS.maxLon,
     },
-    search.timestamp,
+    dayjs(search.timestamp),
   )
   const [visMode, setVisMode] = useState<'avg' | 'std' | 'cv'>('avg')
   const [min, setMin] = useState(0)
