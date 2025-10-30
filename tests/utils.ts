@@ -105,8 +105,8 @@ export const setupTest = async (page: Page, lng: string = 'he') => {
   })
 
   await page.goto('/')
-  await page.locator('preloader').waitFor({ state: 'detached' })
-  await page.getByRole('progressbar').waitFor({ state: 'detached' })
+  await page.locator('preloader').waitFor({ state: 'hidden' })
+  await page.getByRole('progressbar').waitFor({ state: 'hidden' })
 }
 
 export const visitPage = async (page: Page, pageName: string, url: RegExp) => {

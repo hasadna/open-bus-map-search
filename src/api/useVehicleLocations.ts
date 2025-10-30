@@ -21,12 +21,7 @@ const config = {
 type Dateable = Date | number | string | dayjs.Dayjs
 
 function formatTime(time: Dateable) {
-  if (dayjs.isDayjs(time)) {
-    return time.toISOString()
-  } else {
-    const date = new Date(time).toISOString()
-    return date
-  }
+  return dayjs(time).tz('Asia/Jerusalem').toISOString()
 }
 
 const loadedLocations = new Map<
