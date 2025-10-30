@@ -1,44 +1,29 @@
-import dayjs from 'src/dayjs'
-import { expect, getPastDate, test, urlMatcher } from './utils'
+import {
+  setupTest,
+  test,
+  urlMatcher,
+  verifyAgenciesApiCall,
+  verifyDateFromParameter,
+  visitPage,
+} from './utils'
 
 test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
-  await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
-  await page.clock.setSystemTime(getPastDate())
-  advancedRouteFromHAR('tests/HAR/patterns.har', {
+  await setupTest(page)
+  await advancedRouteFromHAR('tests/HAR/patterns.har', {
     updateContent: 'embed',
     update: false,
     notFound: 'fallback',
     url: /stride-api/,
     matcher: urlMatcher,
   })
+
+  await visitPage(page, 'דפוסי נסיעות שלא בוצעו', /gaps_patterns/)
 })
 
 test('verify API call to gtfs_agencies/list - "Patterns"', async ({ page }) => {
-  let apiCallMade = false
-  page.on('request', (request) => {
-    if (request.url().includes('gtfs_agencies/list')) {
-      apiCallMade = true
-    }
-  })
-
-  await page.goto('/')
-  await page.getByRole('link', { name: 'דפוסי נסיעות שלא בוצעו' }).click()
-  await page.getByLabel('חברה מפעילה').click()
-  expect(apiCallMade).toBeTruthy()
+  await verifyAgenciesApiCall(page)
 })
 
 test('Verify date_from parameter from "Patterns"', async ({ page }) => {
-  const apiRequest = page.waitForRequest((request) => request.url().includes('gtfs_agencies/list'))
-
-  await page.goto('/')
-  await page.getByRole('link', { name: 'דפוסי נסיעות שלא בוצעו' }).click()
-
-  const request = await apiRequest
-  const url = new URL(request.url())
-  const dateFromParam = url.searchParams.get('date_from')
-  const dateFrom = dayjs(dateFromParam)
-  const daysAgo = dayjs(getPastDate()).diff(dateFrom, 'days')
-
-  expect(daysAgo).toBeGreaterThanOrEqual(0)
-  expect(daysAgo).toBeLessThanOrEqual(3)
+  await verifyDateFromParameter(page)
 })

@@ -1,23 +1,25 @@
-import { expect } from '@playwright/test'
-import { getPastDate, test, urlMatcher, waitForSkeletonsToHide } from './utils'
+import { expect, setupTest, test, urlMatcher, visitPage, waitForSkeletonsToHide } from './utils'
+
+const TRIP_EXISTENCE_ITEMS = [
+  'קיום נסיעות',
+  'הקווים הגרועים ביותר',
+  'אחוזי יציאה מסך הנסיעות לפי יום',
+]
 
 test.describe('dashboard tests', () => {
   test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
-    await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
-    await page.clock.setSystemTime(getPastDate())
-    advancedRouteFromHAR('tests/HAR/dashboard.har', {
+    await setupTest(page)
+    await advancedRouteFromHAR('tests/HAR/dashboard.har', {
       updateContent: 'embed',
       update: false,
       notFound: 'fallback',
       url: /stride-api/,
       matcher: urlMatcher,
     })
-    await page.goto('/dashboard')
+    await visitPage(page, 'קיום נסיעות', /dashboard/)
     await page.getByText('הקווים הגרועים ביותר').waitFor()
     await waitForSkeletonsToHide(page)
   })
-
-  test('page is working', async () => {})
 
   test('dark mode use localstorage', async ({ page }) => {
     await page.getByLabel('עבור למצב כהה').click()
@@ -32,5 +34,20 @@ test.describe('dashboard tests', () => {
     await expect(page.getByText('686 | קווים').first()).toBeVisible()
     await expect(page.getByText('מועצה אזורית גולן').first()).toBeVisible()
     await expect(page.getByRole('heading', { name: 'אגד', exact: true })).toBeVisible()
+  })
+
+  test('Trip Existence page items', async ({ page }) => {
+    await expect(page.locator('h2')).toContainText(TRIP_EXISTENCE_ITEMS)
+  })
+
+  test('choosing params in "קיום נסיעות" and organize by date/hour ', async ({ page }) => {
+    await page.getByLabel('התחלה').click()
+    await page.getByLabel('התחלה').fill('02/6/2024')
+    await page.getByLabel('סיום').click()
+    await page.getByLabel('סיום').fill('02/6/2024')
+    await page.getByLabel('חברה מפעילה').click()
+    await page.getByRole('option', { name: 'דן', exact: true }).click()
+    await page.getByText('קיבוץ לפי שעה').click()
+    await page.getByText('קיבוץ לפי יום').click()
   })
 })

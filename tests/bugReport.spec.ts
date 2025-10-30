@@ -1,8 +1,10 @@
-import { expect, test } from '@playwright/test'
+import { expect, setupTest, test } from './utils'
+
+const VIDEO_SRC =
+  'https://www.youtube-nocookie.com/embed?v=F6sD9Bz4Xj0&list=PL6Rh06rT7uiX1AQE-lm55hy-seL3idx3T&index=11'
 
 test.beforeEach(async ({ page }) => {
-  await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
-  await page.goto('/')
+  await setupTest(page)
 })
 
 test('An instruction video for Report a bug', async ({ page }) => {
@@ -11,10 +13,7 @@ test('An instruction video for Report a bug', async ({ page }) => {
   const iframeElement = await page.waitForSelector('iframe')
   expect(iframeElement.isVisible())
   const videoSrc = page.locator('iframe')
-  await expect(videoSrc).toHaveAttribute(
-    'src',
-    'https://www.youtube-nocookie.com/embed?v=F6sD9Bz4Xj0&list=PL6Rh06rT7uiX1AQE-lm55hy-seL3idx3T&index=11',
-  )
+  await expect(videoSrc).toHaveAttribute('src', VIDEO_SRC)
   await page.locator('iframe').contentFrame().getByLabel('Play', { exact: true }).click()
   await page.getByLabel('Close', { exact: true }).click()
   await page.getByLabel('לפתוח סרטון על העמוד הזה').press('ControlOrMeta+c')
@@ -37,6 +36,7 @@ test('bug missing field - request type', async ({ page }) => {
 
   await test.step('Submit the form', async () => {
     await page.getByRole('button', { name: 'שלח את הדוח' }).click()
+    await page.waitForSelector('.ant-form-item-explain-error')
   })
 
   await test.step('Verify missing field error', async () => {

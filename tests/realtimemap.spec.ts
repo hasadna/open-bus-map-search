@@ -1,28 +1,34 @@
-import { expect, getPastDate, test, urlMatcher } from './utils'
+import { expect, getPastDate, setupTest, test, urlMatcher, visitPage } from './utils'
+
+const TOOLTIP_CONTENT_ITEMS = [
+  'שם חברה מפעילה:',
+  'מוצא:',
+  'יעד:',
+  'מהירות:',
+  'זמן דגימה:',
+  'לוחית רישוי:',
+  'כיוון נסיעה:',
+  'נ.צ.:',
+]
 
 test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
-  await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
+  await setupTest(page)
   await page.clock.setSystemTime(getPastDate())
-  advancedRouteFromHAR('tests/HAR/realtimemap.har', {
+  await advancedRouteFromHAR('tests/HAR/realtimemap.har', {
     updateContent: 'embed',
     update: false,
     notFound: 'fallback',
     url: /stride-api/,
     matcher: urlMatcher,
   })
-  await page.goto('/')
+  await visitPage(page, 'מפה לפי זמן', /map/)
 })
 test('time-based-map page', async ({ page }) => {
-  await page.getByText('מפה לפי זמן', { exact: true }).and(page.getByRole('link')).click()
-  await page.waitForURL(/map/)
-  await page.getByRole('progressbar').waitFor({ state: 'hidden' })
   await page.getByLabel('תאריך').fill(new Date().toLocaleDateString('en-GB'))
   await page.getByLabel('דקות').fill('6')
 })
 
 test('tooltip appears after clicking on map point', async ({ page }) => {
-  await page.goto('/map')
-
   await test.step('Click on a bus button', async () => {
     const button = page.getByRole('button', { name: 'אגד אגד' })
     await button.click()
@@ -35,16 +41,6 @@ test('tooltip appears after clicking on map point', async ({ page }) => {
   })
 
   await test.step('Expecting the tooltip to have the correct content', async () => {
-    const contentItemsInOrder = [
-      'שם חברה מפעילה:',
-      'מוצא:',
-      'יעד:',
-      'מהירות:',
-      'זמן דגימה:',
-      'לוחית רישוי:',
-      'כיוון נסיעה:',
-      'נ.צ.:',
-    ]
     const textList = await page.evaluate(() => {
       return Array.from(document.querySelectorAll('div.content ul li'))
         .map((li) =>
@@ -55,6 +51,6 @@ test('tooltip appears after clicking on map point', async ({ page }) => {
         .flat()
         .filter((value) => value !== '')
     })
-    expect(textList).toEqual(contentItemsInOrder)
+    expect(textList).toEqual(TOOLTIP_CONTENT_ITEMS)
   })
 })

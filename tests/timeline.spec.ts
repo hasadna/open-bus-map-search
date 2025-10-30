@@ -1,15 +1,19 @@
 import i18next from 'i18next'
-import dayjs from 'src/dayjs'
 import TimelinePage from 'src/test_pages/TimelinePage'
-import { expect, getPastDate, loadTranslate, test, urlMatcher } from './utils'
+import {
+  setupTest,
+  test,
+  urlMatcher,
+  verifyAgenciesApiCall,
+  verifyDateFromParameter,
+  visitPage,
+} from './utils'
 
 test.describe('Timeline Page Tests', () => {
   let timelinePage: TimelinePage
 
   test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
-    await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
-    await page.clock.setSystemTime(getPastDate())
-    await loadTranslate(i18next)
+    await setupTest(page)
     await advancedRouteFromHAR('tests/HAR/timeline.har', {
       updateContent: 'embed',
       update: false,
@@ -18,13 +22,7 @@ test.describe('Timeline Page Tests', () => {
       matcher: urlMatcher,
     })
     timelinePage = new TimelinePage(page) // Initialize timelinePage before each test
-    await page.goto('/')
-    await page
-      .getByText(i18next.t('timeline_page_title'), { exact: true })
-      .and(page.getByRole('link'))
-      .click()
-    await page.getByRole('progressbar').waitFor({ state: 'hidden' })
-    await timelinePage.validatePageUrl(/timeline/)
+    await visitPage(page, i18next.t('timeline_page_title'), /timeline/)
   })
 
   test('Test route selection disappears after line number is closed', async () => {
@@ -133,36 +131,12 @@ test.describe('Timeline Page Tests', () => {
   })
 
   test('verify API call to gtfs_agencies/list - "Trips history"', async ({ page }) => {
-    let apiCallMade = false
-    page.on('request', (request) => {
-      if (request.url().includes('gtfs_agencies/list')) {
-        apiCallMade = true
-      }
-    })
-
-    await page.goto('/')
-    await page.getByRole('link', { name: 'היסטוריית נסיעות' }).click()
-    await page.getByLabel('חברה מפעילה').click()
-    expect(apiCallMade).toBeTruthy()
+    await verifyAgenciesApiCall(page)
   })
 
   test('the dateFrom parameter should be recent when visiting the "Trips history"', async ({
     page,
   }) => {
-    const apiRequest = page.waitForRequest((request) =>
-      request.url().includes('gtfs_agencies/list'),
-    )
-
-    await page.goto('/')
-    await page.getByRole('link', { name: 'היסטוריית נסיעות' }).click()
-
-    const request = await apiRequest
-    const url = new URL(request.url())
-    const dateFromParam = url.searchParams.get('date_from')
-    const dateFrom = dayjs(dateFromParam)
-    const daysAgo = dayjs(getPastDate()).diff(dateFrom, 'days')
-
-    expect(daysAgo).toBeGreaterThanOrEqual(0)
-    expect(daysAgo).toBeLessThanOrEqual(3)
+    await verifyDateFromParameter(page)
   })
 })

@@ -1,7 +1,7 @@
 import { Eyes, Target, VisualGridRunner } from '@applitools/eyes-playwright'
 import username from 'git-username'
 import i18next from 'i18next'
-import { getBranch, getPastDate, loadTranslate, test, waitForSkeletonsToHide } from './utils'
+import { getBranch, setupTest, test, visitPage, waitForSkeletonsToHide } from './utils'
 
 const eyes = await setEyesSettings()
 
@@ -18,13 +18,9 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
   test.describe('Visual Tests', () => {
     test.describe.configure({ retries: 0 })
     test.beforeEach(async ({ page }, testinfo) => {
-      await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
+      await setupTest(page, mode === 'LTR' ? 'en' : 'he')
       await page.route(/.*openstreetmap*/, (route) => route.abort())
       await page.route(/.*youtube*/, (route) => route.abort())
-      await page.route(/api\.github\.com/, (route) => route.abort())
-      await page.clock.setSystemTime(getPastDate())
-      await page.emulateMedia({ reducedMotion: 'reduce' })
-      await page.goto('/')
       if (mode === 'Dark') await page.getByLabel('עבור למצב כהה').first().click()
       if (mode === 'LTR') {
         // Click the language dropdown button (should have "English" text in Hebrew mode)
@@ -35,7 +31,6 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
         // Click the English option from the dropdown menu (the div, not the button)
         await page.getByRole('menuitem').filter({ hasText: 'English' }).click()
       }
-      await loadTranslate(i18next, mode === 'LTR' ? 'en' : 'he')
       if (process.env.APPLITOOLS_API_KEY) {
         await eyes.open(page, 'OpenBus', testinfo.title)
       }
@@ -57,7 +52,7 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
     })
 
     test(`Dashboard Page Should Look Good [${mode}]`, async ({ page }) => {
-      await page.goto('/dashboard')
+      await visitPage(page, i18next.t('dashboard_page_title'), /dashboard/)
       await page.getByText('אגד').first().waitFor()
       await waitForSkeletonsToHide(page)
       await eyes.check({
@@ -75,34 +70,34 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
     })
 
     test(`About Page Should Look Good [${mode}]`, async ({ page }) => {
-      await page.goto('/about')
+      await visitPage(page, i18next.t('about_title'), /about/)
       await eyes.check({ ...Target.window(), name: 'about page' })
     })
 
     test(`Timeline Page Should Look Good [${mode}]`, async ({ page }) => {
-      await page.goto('/timeline')
+      await visitPage(page, i18next.t('timeline_page_title'), /timeline/)
       await eyes.check({ ...Target.window(), name: 'timeline page' })
     })
 
     test(`Gaps Page Should Look Good [${mode}]`, async ({ page }) => {
-      await page.goto('/gaps')
+      await visitPage(page, i18next.t('gaps_page_title'), /gaps/)
       await eyes.check({ ...Target.window(), name: 'gaps page' })
     })
 
     test(`Gaps Patterns Page Should Look Good [${mode}]`, async ({ page }) => {
-      await page.goto('/gaps_patterns')
+      await visitPage(page, i18next.t('gaps_patterns_page_title'), /gaps_patterns/)
       await eyes.check({ ...Target.window(), name: 'gaps_patterns page' })
     })
 
     test(`Map Page Should Look Good [${mode}]`, async ({ page }) => {
-      await page.goto('/map')
+      await visitPage(page, i18next.t('time_based_map_page_title'), /map/)
       await page.locator('.leaflet-marker-icon').first().waitFor({ state: 'visible' })
       await page.locator('.ant-spin-dot').first().waitFor({ state: 'hidden' })
       await eyes.check({ ...Target.window(), name: 'map page' })
     })
 
     test(`Operator Page Should Look Good [${mode}]`, async ({ page }) => {
-      await page.goto('/operator')
+      await visitPage(page, i18next.t('operator_title'), /operator/)
       await page
         .getByRole('combobox', { name: i18next.t('choose_operator') })
         .first()
@@ -122,7 +117,7 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
     })
 
     test(`Public Appeal Page Should Look Good [${mode}]`, async ({ page }) => {
-      await page.goto('/public-appeal')
+      await visitPage(page, i18next.t('public_appeal_title'), /public-appeal/)
       await eyes.check({ ...Target.window(), name: 'public appeal page' })
     })
 

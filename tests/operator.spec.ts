@@ -1,7 +1,16 @@
-import { expect, type Page } from '@playwright/test'
+import type { Page } from '@playwright/test'
 import i18next from 'i18next'
 import { operatorList } from 'src/pages/operator/data'
-import { getPastDate, loadTranslate, test, urlMatcher, waitForSkeletonsToHide } from './utils'
+import {
+  expect,
+  setupTest,
+  test,
+  urlMatcher,
+  verifyAgenciesApiCall,
+  verifyDateFromParameter,
+  visitPage,
+  waitForSkeletonsToHide,
+} from './utils'
 
 const getLabelValue = async (label: string, page: Page) => {
   const row = page.locator('table tr', { hasText: label })
@@ -10,29 +19,19 @@ const getLabelValue = async (label: string, page: Page) => {
 
 test.describe('Operator Page Tests', () => {
   test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
-    await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
-    await page.clock.setSystemTime(getPastDate())
-    advancedRouteFromHAR('tests/HAR/operator.har', {
+    await setupTest(page)
+    await advancedRouteFromHAR('tests/HAR/operator.har', {
       updateContent: 'embed',
       update: false,
       notFound: 'fallback',
       url: /stride-api/,
       matcher: urlMatcher,
     })
-    await loadTranslate(i18next)
-    await page.goto('/')
-    await page
-      .getByText(i18next.t('operator_title'), { exact: true })
-      .and(page.getByRole('link'))
-      .click()
-    await page.getByRole('progressbar').waitFor({ state: 'hidden' })
-    await test.step('Validate that the test is on the correct page', async () => {
-      await expect(page).toHaveURL(/operator/)
-      await expect(page.locator('h4')).toHaveText(i18next.t('operator_title'))
-    })
+    await visitPage(page, i18next.t('operator_title'), /operator/)
   })
 
   test('all inputs should be intractable', async ({ page }) => {
+    await expect(page.locator('h4')).toHaveText(i18next.t('operator_title'))
     await page.getByRole('button', { name: 'פתח' }).click()
     await page.getByRole('option', { name: 'אגד', exact: true }).click()
     await page.getByRole('textbox', { name: 'תאריך' }).click()
@@ -156,5 +155,13 @@ test.describe('Operator Page Tests', () => {
         throw new Error('Operator routes not loaded')
       }
     })
+  })
+
+  test('verify API call to gtfs_agencies/list - "Operator"', async ({ page }) => {
+    await verifyAgenciesApiCall(page)
+  })
+
+  test('Verify date_from parameter from "Operator"', async ({ page }) => {
+    await verifyDateFromParameter(page)
   })
 })

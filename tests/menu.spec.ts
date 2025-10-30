@@ -1,27 +1,27 @@
-import { expect, test } from '@playwright/test'
+import { expect, setupTest, test } from './utils'
+
+const MENU_ITEMS = [
+  'ראשי',
+  'קיום נסיעות',
+  'היסטוריית נסיעות',
+  'נסיעות שלא בוצעו',
+  'דפוסי נסיעות שלא בוצעו',
+  'מפה לפי זמן',
+  'מפת מהירות',
+  'מפה לפי קו',
+  'חברה מפעילה',
+  'אודות',
+  'לתרומות',
+  'קול קורא',
+]
 
 test.beforeEach(async ({ page }) => {
-  await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
-  await page.goto('/')
+  await setupTest(page)
 })
 
 test('should display logo and menu items correctly', async ({ page }) => {
   await expect(page.locator('h1.sidebar-logo')).toContainText('דאטאבוס')
-  const menuItemsInOrder = [
-    'ראשי',
-    'קיום נסיעות',
-    'היסטוריית נסיעות',
-    'נסיעות שלא בוצעו',
-    'דפוסי נסיעות שלא בוצעו',
-    'מפה לפי זמן',
-    'מפת מהירות',
-    'מפה לפי קו',
-    'חברה מפעילה',
-    'אודות',
-    'לתרומות',
-    'קול קורא',
-  ]
-  await expect(page.locator('ul > li a')).toContainText(menuItemsInOrder)
+  await expect(page.locator('ul > li a')).toContainText(MENU_ITEMS)
 })
 
 test("the main header doesn't show duplicate icons", async ({ page }) => {
@@ -38,7 +38,6 @@ test("the main header doesn't show duplicate icons", async ({ page }) => {
 })
 
 test('make sure the corner GitHub icon leads to DataBus GitHub project', async ({ page }) => {
-  await page.goto('/')
   const page1Promise = page.waitForEvent('popup')
   await page.getByLabel('למעבר אל GitHub').locator('svg').click()
   const page1 = await page1Promise

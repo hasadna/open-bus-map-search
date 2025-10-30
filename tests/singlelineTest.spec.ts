@@ -1,6 +1,17 @@
 import type { Page } from '@playwright/test'
-import dayjs from 'src/dayjs'
-import { expect, getPastDate, test, urlMatcher, waitForSkeletonsToHide } from './utils'
+import {
+  expect,
+  setupTest,
+  test,
+  urlMatcher,
+  verifyAgenciesApiCall,
+  verifyDateFromParameter,
+  visitPage,
+  waitForSkeletonsToHide,
+} from './utils'
+
+const BUS_MARKER_SELECTOR = '.leaflet-marker-pane > img[src$="marker-dot.png"]'
+const STATION_MARKER_SELECTOR = '.leaflet-marker-pane > img[src$="marker-bus-stop.png"]'
 
 async function selectOperator(page: Page, operatorName = 'אודליה מוניות בעמ') {
   await page.getByLabel('חברה מפעילה').click()
@@ -19,24 +30,22 @@ async function selectRoute(
   await page.getByRole('option', { name: routeName }).click()
 }
 
-async function selectStartTime(page: Page, time = '05:00:00 (74-893-26') {
+async function selectStartTime(page: Page, time = '04:30') {
   await page.getByLabel('בחירת שעת התחלה').click()
   await page.getByRole('option', { name: time }).click()
 }
 
 test.describe('Single line page tests', () => {
   test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
-    await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
-    await page.clock.setSystemTime(getPastDate())
-    advancedRouteFromHAR('tests/HAR/singleline.har', {
+    await setupTest(page)
+    await advancedRouteFromHAR('tests/HAR/singleline.har', {
       updateContent: 'embed',
       update: false,
       notFound: 'fallback',
       url: /stride-api/,
       matcher: urlMatcher,
     })
-    await page.goto('/')
-    await page.getByText('מפה לפי קו').click()
+    await visitPage(page, 'מפה לפי קו', /single-line-map/)
   })
 
   test('should allow selecting operator company options', async ({ page }) => {
@@ -68,44 +77,26 @@ test.describe('Single line page tests', () => {
     await expect(page.locator('#route-select')).toBeEditable()
     await selectRoute(page)
     await expect(page.getByLabel(/בחירת מסלול נסיעה/)).toHaveValue(/תחנת מוניות תל אביב הכובשים/)
-  })
-
-  test('should display route after selecting route', async ({ page }) => {
-    await test.step('Fill line info', async () => {
-      await selectOperator(page)
-      await fillLineNumber(page)
-      await selectRoute(page)
-    })
 
     await test.step('Verify bus stop marker is in the page', async () => {
-      const stopMarkers = page.locator('.leaflet-marker-pane > img[src$="marker-bus-stop.png"]')
-      await page.waitForTimeout(5000)
-      const count = await stopMarkers.count()
-      expect(count).toBeGreaterThan(0)
+      await expect(page.locator(STATION_MARKER_SELECTOR)).toHaveCount(2, { timeout: 10000 })
     })
   })
 
   test('should show tooltip after clicking on map point in single line map', async ({ page }) => {
-    await page.emulateMedia({ reducedMotion: 'reduce' })
-
     await test.step('Fill line info', async () => {
       await selectOperator(page)
       await fillLineNumber(page)
       await selectRoute(page)
-      await page.waitForTimeout(5000)
+      await expect(page.locator(STATION_MARKER_SELECTOR)).toHaveCount(2, { timeout: 10000 })
       await selectStartTime(page)
-      await page.waitForTimeout(5000)
+      await expect(page.locator(BUS_MARKER_SELECTOR)).toHaveCount(70, { timeout: 10000 })
     })
 
     await test.step('Click on bus button', async () => {
-      await page.locator('.leaflet-marker-pane > img[src$="marker-dot.png"]:nth-child(6)').click()
-      await page.waitForTimeout(500)
-      await page
-        .locator('.leaflet-marker-pane > img[src$="marker-dot.png"]:nth-child(6)')
-        .click({ force: true })
-
-      await page.waitForTimeout(500)
-      await expect(page.locator('.leaflet-popup-content-wrapper')).toBeAttached()
+      await page.getByText('מסלול בפועלמסלול מתוכנן').click()
+      await page.locator(BUS_MARKER_SELECTOR).nth(2).click({ force: true })
+      await expect(page.locator('.leaflet-popup-content-wrapper')).toBeAttached({ timeout: 10000 })
       await waitForSkeletonsToHide(page)
     })
 
@@ -151,38 +142,10 @@ test.describe('Single line page tests', () => {
   })
 
   test('verify API call to gtfs_agencies/list - "Map by line"', async ({ page }) => {
-    await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
-
-    let apiCallMade = false
-    page.on('request', (request) => {
-      if (request.url().includes('gtfs_agencies/list')) {
-        apiCallMade = true
-      }
-    })
-
-    await page.goto('/')
-    await page.getByRole('link', { name: 'מפה לפי קו' }).click()
-    await page.getByLabel('חברה מפעילה').click()
-    expect(apiCallMade).toBeTruthy()
+    await verifyAgenciesApiCall(page)
   })
 
   test('Verify date_from parameter from "Map by line"', async ({ page }) => {
-    await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
-
-    const apiRequest = page.waitForRequest((request) =>
-      request.url().includes('gtfs_agencies/list'),
-    )
-
-    await page.goto('/')
-    await page.getByRole('link', { name: 'מפה לפי קו' }).click()
-
-    const request = await apiRequest
-    const url = new URL(request.url())
-    const dateFromParam = url.searchParams.get('date_from')
-    const dateFrom = dayjs(dateFromParam)
-    const daysAgo = dayjs(getPastDate()).diff(dateFrom, 'days')
-
-    expect(daysAgo).toBeGreaterThanOrEqual(0)
-    expect(daysAgo).toBeLessThanOrEqual(3)
+    await verifyDateFromParameter(page)
   })
 })
