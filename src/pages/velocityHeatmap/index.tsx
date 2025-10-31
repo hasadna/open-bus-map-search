@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { MapContainer, TileLayer } from 'react-leaflet'
 import { VelocityHeatmapLegend } from './components/VelocityHeatmapLegend'
 import { VelocityHeatmapRectangles } from './components/VelocityHeatmapRectangles'
+import { ZoomComponent } from './components/ZoomComponent'
 import { useVelocityAggregationData } from './useVelocityAggregationData'
 import 'leaflet/dist/leaflet.css'
 
@@ -18,13 +19,22 @@ const VIS_MODES = [
   { key: 'cv', label: 'Visualize Std / Avg Speed (Coeff of Var)' },
 ]
 
+const DEFAULT_ZOOM_LEVEL = 10
+const DEFAULT_ROUNDING_PRECISION = 2
+
 const VelocityHeatmapPage: React.FC = () => {
-  const { data, loading, error } = useVelocityAggregationData({
-    minLat: DEFAULT_BOUNDS.minLat,
-    maxLat: DEFAULT_BOUNDS.maxLat,
-    minLon: DEFAULT_BOUNDS.minLon,
-    maxLon: DEFAULT_BOUNDS.maxLon,
-  })
+  const [zoomLevel, setZoomLevel] = useState(DEFAULT_ZOOM_LEVEL)
+  const [roundingPrecision, setRoundingPrecision] = useState(DEFAULT_ROUNDING_PRECISION)
+
+  const { data, loading, error } = useVelocityAggregationData(
+    {
+      minLat: DEFAULT_BOUNDS.minLat,
+      maxLat: DEFAULT_BOUNDS.maxLat,
+      minLon: DEFAULT_BOUNDS.minLon,
+      maxLon: DEFAULT_BOUNDS.maxLon,
+    },
+    roundingPrecision,
+  )
   const [visMode, setVisMode] = useState<'avg' | 'std' | 'cv'>('avg')
   const [min, setMin] = useState(0)
   const [max, setMax] = useState(1)
@@ -53,7 +63,7 @@ const VelocityHeatmapPage: React.FC = () => {
       <div style={{ height: '500px', width: '100%', margin: '16px 0' }}>
         <MapContainer
           center={[29.65, 34.6]}
-          zoom={10}
+          zoom={DEFAULT_ZOOM_LEVEL}
           scrollWheelZoom={true}
           style={{ height: '100%', width: '100%' }}>
           <TileLayer
@@ -69,6 +79,12 @@ const VelocityHeatmapPage: React.FC = () => {
             }}
           />
           <VelocityHeatmapLegend visMode={visMode} min={min} max={max} />
+          <ZoomComponent
+            zoom={zoomLevel}
+            onZoomChange={setZoomLevel}
+            roundingPrecision={roundingPrecision}
+            onRoundingPrecisionChange={setRoundingPrecision}
+          />
         </MapContainer>
       </div>
       {data.length > 0 && (

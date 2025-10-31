@@ -15,14 +15,17 @@ export interface VelocityAggregationBounds {
   maxLon: number
 }
 
-export function useVelocityAggregationData(bounds: VelocityAggregationBounds) {
+export function useVelocityAggregationData(
+  bounds: VelocityAggregationBounds,
+  roundingPrecision: number,
+) {
   const [data, setData] = useState<VelocityAggregation[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     setLoading(true)
-    const apiUrl = `https://open-bus-stride-api.hasadna.org.il/siri_velocity_aggregation/siri_velocity_aggregation?recorded_from=2025-01-01T00%3A00%3A00&lon_min=${bounds.minLon}&lon_max=${bounds.maxLon}&lat_min=${bounds.minLat}&lat_max=${bounds.maxLat}&rounding_precision=2`
+    const apiUrl = `https://open-bus-stride-api.hasadna.org.il/siri_velocity_aggregation/siri_velocity_aggregation?recorded_from=2025-01-01T00%3A00%3A00&lon_min=${bounds.minLon}&lon_max=${bounds.maxLon}&lat_min=${bounds.minLat}&lat_max=${bounds.maxLat}&rounding_precision=${roundingPrecision}`
     fetch(apiUrl)
       .then((res) => {
         if (!res.ok) throw new Error('Failed to fetch data')
@@ -53,7 +56,7 @@ export function useVelocityAggregationData(bounds: VelocityAggregationBounds) {
       })
       .catch((err) => setError(String((err && (err as Error).message) || err)))
       .finally(() => setLoading(false))
-  }, [JSON.stringify(bounds)])
+  }, [JSON.stringify(bounds), JSON.stringify(roundingPrecision)])
 
   return { data, loading, error }
 }
