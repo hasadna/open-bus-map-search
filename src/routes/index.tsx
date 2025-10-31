@@ -79,6 +79,7 @@ export const PAGES = [
   {
     label: 'velocity_heatmap_page_title',
     path: '/velocity-heatmap',
+    searchParamsRequired: true,
     icon: <HeatMapOutlined />,
     element: <VelocityHeatmapPage />,
   },
