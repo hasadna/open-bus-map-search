@@ -49,7 +49,7 @@ export const test = baseTest.extend<{ context: BrowserContext }>({
 })
 
 export function getPastDate() {
-  return dayjs('2024-02-12T15:00:00+00:00').tz('Asia/Jerusalem').toDate()
+  return new Date('2024-02-12T15:00:00+00:00')
 }
 
 export const urlMatcher: Matcher = customMatcher({
