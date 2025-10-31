@@ -3,6 +3,7 @@ import React, { useContext, useState } from 'react'
 import { MapContainer, TileLayer } from 'react-leaflet'
 import dayjs from 'src/dayjs'
 import { SearchContext } from '../../model/pageState'
+import { DateNavigator } from '../components/DateNavigator'
 import { DateSelector } from '../components/DateSelector'
 import { VelocityHeatmapLegend } from './components/VelocityHeatmapLegend'
 import { VelocityHeatmapRectangles } from './components/VelocityHeatmapRectangles'
@@ -45,6 +46,7 @@ const VelocityHeatmapPage: React.FC = () => {
       <Grid>
         <DateSelector time={dayjs(search.timestamp)} onChange={handleTimestampChange} />
       </Grid>
+      <DateNavigator currentTime={dayjs(search.timestamp)} onChange={handleTimestampChange} />
       <div style={{ margin: '12px 0' }}>
         <b>Visualization:</b>{' '}
         {VIS_MODES.map((mode) => (
