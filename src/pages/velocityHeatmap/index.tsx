@@ -2,15 +2,8 @@ import React, { useState } from 'react'
 import { MapContainer, TileLayer } from 'react-leaflet'
 import { VelocityHeatmapLegend } from './components/VelocityHeatmapLegend'
 import { VelocityHeatmapRectangles } from './components/VelocityHeatmapRectangles'
-import { useVelocityAggregationData } from './useVelocityAggregationData'
+import { useTiledVelocityData } from './useTiledVelocityData'
 import 'leaflet/dist/leaflet.css'
-
-const DEFAULT_BOUNDS = {
-  minLat: 29.5,
-  maxLat: 33.33,
-  minLon: 34.25,
-  maxLon: 35.7,
-}
 
 const VIS_MODES = [
   { key: 'avg', label: 'Visualize Avg Speed' },
@@ -19,12 +12,12 @@ const VIS_MODES = [
 ]
 
 const VelocityHeatmapPage: React.FC = () => {
-  const { data, loading, error } = useVelocityAggregationData({
-    minLat: DEFAULT_BOUNDS.minLat,
-    maxLat: DEFAULT_BOUNDS.maxLat,
-    minLon: DEFAULT_BOUNDS.minLon,
-    maxLon: DEFAULT_BOUNDS.maxLon,
+  const { data, loading, error } = useTiledVelocityData({
+    zoom: 10,
+    center: [29.65, 34.6],
+    mapBounds: { north: 33.33, south: 29.5, east: 35.7, west: 34.25 },
   })
+
   const [visMode, setVisMode] = useState<'avg' | 'std' | 'cv'>('avg')
   const [min, setMin] = useState(0)
   const [max, setMax] = useState(1)
