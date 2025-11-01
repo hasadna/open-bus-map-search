@@ -1,16 +1,15 @@
-import { expect } from '@playwright/test'
-import { test } from './utils'
+import { expect, setupTest, test, visitPage } from './utils'
 
-const versionUrl = 'https://open-bus-map-search.hasadna.org.il/hash.txt'
+const VERSION_URL = 'https://open-bus-map-search.hasadna.org.il/hash.txt'
 
 test.describe('Version info tests', () => {
   test.beforeEach(async ({ page }) => {
-    await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
-    await page.route(/github.com/, (route) => route.abort())
-    await page.goto('/about')
+    await setupTest(page)
+    await visitPage(page, 'אודות', /about/)
   })
+
   test('should see loading state', async ({ page }) => {
-    await page.route(versionUrl, () => void 0)
+    await page.route(VERSION_URL, () => void 0)
     await expect(page.getByRole('heading', { name: 'גרסה' })).toBeVisible()
     await expect(page.getByText('טוען...')).toBeVisible()
     await page.getByLabel('English').first().click()
@@ -19,12 +18,14 @@ test.describe('Version info tests', () => {
     await expect(page.getByRole('heading', { name: 'Current version identifier' })).toBeVisible()
     await expect(page.getByText('loading...')).toBeVisible()
   })
+
   test('should see version', async ({ page }) => {
-    await page.route(versionUrl, (route) => route.fulfill({ body: 'my version' }))
+    await page.route(VERSION_URL, (route) => route.fulfill({ body: 'my version' }))
     await expect(page.getByText('my version')).toBeVisible()
   })
+
   test('should see error message', async ({ page }) => {
-    await page.route(versionUrl, (route) => route.abort())
+    await page.route(VERSION_URL, (route) => route.abort())
     await expect(page.getByText('נכשל בטעינת מידע')).toBeVisible({ timeout: 15_000 })
     await page.getByLabel('English').first().click()
     await page.getByText('English').click()

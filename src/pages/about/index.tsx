@@ -221,7 +221,7 @@ const AboutStyle = styled.div`
     }
   }
 `
-function useContributions(start: Date = new Date('2023-01-01'), end: Date = new Date()) {
+function useContributions() {
   const owner = 'hasadna'
   const repos = [
     'open-bus-map-search',
@@ -234,8 +234,7 @@ function useContributions(start: Date = new Date('2023-01-01'), end: Date = new 
   ]
 
   const apis = repos.map(
-    (repo) =>
-      `https://api.github.com/repos/${owner}/${repo}/contributors?order=desc&until=${end.toISOString()}&since=${start.toISOString()}`,
+    (repo) => `https://api.github.com/repos/${owner}/${repo}/contributors?order=desc`,
   )
 
   const { data, isLoading, isError } = useQuery({
