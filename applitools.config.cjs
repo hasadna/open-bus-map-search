@@ -5,6 +5,8 @@
  */
 const config = {
   testConcurrency: 20,
+
+  // @ts-expect-error remove this comment after upgrading eyes-storybook
   waitBeforeCapture: async () => {
     const startTime = Date.now()
     const timeout = 60 * 1000

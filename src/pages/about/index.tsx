@@ -12,7 +12,7 @@ const About = () => {
   const { t } = useTranslation()
   return (
     <AboutStyle>
-      <Stack spacing={4} sx={{ marginBottom: 3 }}>
+      <Stack spacing={4}>
         <Typography variant="h4" gutterBottom className="page-title">
           {t(`${pageName}.title`)}
         </Typography>
@@ -181,7 +181,7 @@ const Contributors = () => {
   const { contributors, isLoading, isError } = useContributions()
 
   return (
-    <Widget title={t('aboutPage.contributors')}>
+    <Widget title={t('aboutPage.contributors')} marginBottom>
       <p>
         {t('aboutPage.contributorsText')}
         <br />
