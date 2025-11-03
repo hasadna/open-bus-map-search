@@ -34,38 +34,35 @@ import { type ComplaintType, complaintTypeMappings, complaintTypes } from './Com
 interface User {
   firstName: string
   lastName: string
-  id: string
+  iDNum: string
   email: string
-  phone: string
+  mobile: string
 }
 
 interface ComplaintFormValues extends User {
   complaintType: ComplaintType
-  description: string
+  applyContent: string
   busOperator?: string
-  licensePlate?: string
+  licenseNum?: string
   eventDate?: string
-  lineNumber?: string
+  lineNumberText?: string
   eventTime?: string
-  route?: number
+  direction?: number
   wait?: [string, string]
-  boardingStation?: string
-  cityFrom?: string
-  cityTo?: string
-  ticketDate?: string
-  ticketTime?: string
-  travelFrom?: string
-  travelTo?: string
-  activeDate?: string
+  raisingStation?: string
+  raisingStationCity?: string
+  destinationStationCity?: string
+  reportdate?: string
+  reportTime?: string
+  busDirectionFrom?: string
+  busDirectionTo?: string
   addOrRemoveStation?: string
-  removeStation?: string
-  requestedStationAddress?: string
-  boardingAddress?: string
+  raisingStationAddress?: string
   addFrequencyOverCrowd?: boolean
   addFrequencyLongWait?: boolean
   addFrequencyExtendTime?: boolean
-  willingToTestifyMot?: boolean
-  willingToTestifyCourt?: boolean
+  firstDeclaration?: boolean
+  secondDeclaration?: boolean
   ravKavNumber?: string
   addFrequencyReason?: string
 }
@@ -77,8 +74,8 @@ interface ComplaintModalProps {
   route: GtfsRoutePydanticModel
 }
 
-const resetRouteKeys = new Set(['eventDate', 'operator', 'lineNumber'])
-const userKeys = new Set(['firstName', 'lastName', 'id', 'email', 'phone'])
+const resetRouteKeys = new Set(['eventDate', 'busOperator', 'lineNumberText'])
+const userKeys = new Set(['firstName', 'lastName', 'iDNum', 'email', 'mobile'])
 
 const ComplaintModal = ({
   modalOpen = false,
@@ -91,17 +88,16 @@ const ComplaintModal = ({
   const [selectedComplaintType, setSelectedComplaintType] = useState<ComplaintType | null>(null)
   const [userStorge, SetUserStorge] = useLocalStorage<Partial<User>>('complaint', {})
 
-  const activeDate = Form.useWatch('activeDate', form)
   const eventDate = Form.useWatch('eventDate', form)
-  const ticketDate = Form.useWatch('ticketDate', form)
+  const reportdate = Form.useWatch('reportdate', form)
   const busOperator = Form.useWatch('busOperator', form)
-  const lineNumber = Form.useWatch('lineNumber', form)
-  const selectedRoute = Form.useWatch('route', form)
+  const lineNumberText = Form.useWatch('lineNumberText', form)
+  const selectedRoute = Form.useWatch('direction', form)
   const addOrRemoveStation = Form.useWatch('addOrRemoveStation', form)
 
   const busOperatorQuery = useBusOperatorQuery()
   const citiesQuery = useCitiesQuery()
-  const linesQuery = useLinesQuery(eventDate || activeDate || ticketDate, busOperator, lineNumber)
+  const linesQuery = useLinesQuery(eventDate || reportdate, busOperator, lineNumberText)
   const boardingStationQuery = useBoardingStationQuery(
     selectedRoute !== undefined ? linesQuery.data?.[selectedRoute] : undefined,
   )
@@ -111,13 +107,13 @@ const ComplaintModal = ({
     [route],
   )
   useEffect(() => {
-    if (route.routeShortName === form.getFieldValue('lineNumber') && linesQuery.data?.length) {
+    if (route.routeShortName === form.getFieldValue('lineNumberText') && linesQuery.data?.length) {
       const matchingIndex = linesQuery.data.findIndex(
         ({ originCity, destinationCity }) =>
           routeParts?.[1] === originCity?.dataText && routeParts?.[3] === destinationCity?.dataText,
       )
       if (matchingIndex !== -1) {
-        form.setFieldValue('route', matchingIndex)
+        form.setFieldValue('direction', matchingIndex)
       }
     }
   }, [linesQuery.data, route, form])
@@ -140,12 +136,12 @@ const ComplaintModal = ({
       }
 
       if (Object.keys(changedValues).some((key) => resetRouteKeys.has(key))) {
-        form.setFieldValue('route', undefined)
-        form.setFieldValue('boardingStation', undefined)
+        form.setFieldValue('direction', undefined)
+        form.setFieldValue('raisingStation', undefined)
       }
 
-      if ('route' in changedValues) {
-        form.setFieldValue('boardingStation', undefined)
+      if ('direction' in changedValues) {
+        form.setFieldValue('raisingStation', undefined)
       }
 
       if ('eventTime' in changedValues) {
@@ -193,8 +189,16 @@ const ComplaintModal = ({
 
   const addOrRemoveStationOptins = useMemo(() => {
     return [
-      { label: t('add_station'), value: 'add' },
-      { label: t('remove_station'), value: 'remove' },
+      { label: t('add_station'), value: '2' },
+      { label: t('remove_station'), value: '1' },
+    ]
+  }, [t])
+
+  const addingFrequencyReasonOptins = useMemo(() => {
+    return [
+      { label: t('add_frequency_load_topics'), value: 'LoadTopics' },
+      { label: t('add_frequency_long_waiting'), value: 'LongWaiting' },
+      { label: t('add_frequency_extension_time'), value: 'ExtensionHours' },
     ]
   }, [t])
 
@@ -203,50 +207,53 @@ const ComplaintModal = ({
   const handleSelectOptions = useCallback(
     (name: ComplainteField) => {
       switch (name) {
+        case 'addingFrequencyReason':
+          return addingFrequencyReasonOptins
         case 'addOrRemoveStation':
           return addOrRemoveStationOptins
-        case 'boardingStation':
-        case 'removeStation':
+        case 'raisingStation':
           return boardingStationOptions
         case 'busOperator':
           return busOperatorOptions
-        case 'cityFrom':
-        case 'cityTo':
+        case 'city':
+        case 'raisingStationCity':
+        case 'destinationStationCity':
           return citiesOptions
-        case 'route':
+        case 'direction':
           return routeOptions
       }
     },
     [
+      addingFrequencyReasonOptins,
       addOrRemoveStationOptins,
       busOperatorOptions,
       boardingStationOptions,
-      routeOptions,
       citiesOptions,
+      routeOptions,
     ],
   )
 
   const dynamicFields = useMemo(() => {
     if (!selectedComplaintType) return null
-    const isAddStation = addOrRemoveStation === 'add'
+    const isAddStation = addOrRemoveStation === '2'
     return complaintTypeMappings[selectedComplaintType].fields
       .map((name) => {
         const field = { ...allComplaintFields[name] }
 
-        if (field.type === 'Select' || field.type === 'Radio') {
+        if (['Select', 'Radio', 'CheckboxGroup'].includes(field.type)) {
           field.props = { ...field.props, options: handleSelectOptions(name) }
         }
 
-        if (name === 'requestedStationAddress') {
+        if (name === 'raisingStationAddress') {
           field.props = { ...field.props, disabled: !isAddStation }
-          field.rules = [{ required: isAddStation }]
-          if (!isAddStation) form.setFieldValue('requestedStationAddress', undefined)
+          field.rules = [{ required: isAddStation || selectedComplaintType === 'station_signs' }]
+          if (!isAddStation) form.setFieldValue('raisingStationAddress', undefined)
         }
 
-        if (name === 'removeStation') {
+        if (name === 'raisingStation') {
           field.props = { ...field.props, disabled: isAddStation }
           field.rules = [{ required: !isAddStation }]
-          if (isAddStation) form.setFieldValue('removeStation', undefined)
+          if (isAddStation) form.setFieldValue('raisingStation', undefined)
         }
 
         if (name === 'ravKavNumber' || name === 'wait') {
@@ -284,17 +291,16 @@ const ComplaintModal = ({
           initialValues={
             {
               ...userStorge,
-              addOrRemoveStation: 'add',
+              addOrRemoveStation: '2',
               busOperator: position.operator,
               eventDate: date,
-              activeDate: date,
-              ticketDate: date,
+              reportdate: date,
               eventTime: date,
-              ticketTime: date,
-              cityFrom: routeParts?.[1],
-              cityTo: routeParts?.[3],
-              licensePlate: position.point?.siri_ride__vehicle_ref,
-              lineNumber: route.routeShortName,
+              reportTime: date,
+              raisingStationCity: routeParts?.[1],
+              destinationStationCity: routeParts?.[3],
+              licenseNum: position.point?.siri_ride__vehicle_ref,
+              lineNumberText: route.routeShortName,
             } as Partial<ComplaintFormValues>
           }
           onFinish={handleSubmit}
@@ -315,16 +321,16 @@ const ComplaintModal = ({
             <>
               <RenderField {...allComplaintFields.firstName} rules={allRules.firstName} />
               <RenderField {...allComplaintFields.lastName} rules={allRules.lastName} />
-              <RenderField {...allComplaintFields.id} rules={allRules.id} />
+              <RenderField {...allComplaintFields.iDNum} rules={allRules.iDNum} />
               <RenderField {...allComplaintFields.email} />
-              <RenderField {...allComplaintFields.phone} />
+              <RenderField {...allComplaintFields.mobile} />
               <RenderField
                 {...allComplaintFields.complaintType}
                 props={{ options: complaintOptins }}
               />
               {dynamicFields}
               <RenderField
-                {...allComplaintFields.description}
+                {...allComplaintFields.applyContent}
                 extra={
                   selectedComplaintType === 'line_switch' ? 'complaint_details_required' : undefined
                 }

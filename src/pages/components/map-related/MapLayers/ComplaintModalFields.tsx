@@ -15,6 +15,7 @@ import {
   type TimePickerProps,
   type TimeRangePickerProps,
 } from 'antd'
+import { CheckboxGroupProps } from 'antd/es/checkbox'
 import type { Rule } from 'antd/es/form'
 import type { TextAreaProps } from 'antd/es/input'
 import dayjs from 'dayjs'
@@ -44,7 +45,7 @@ export const createAllRules = (form: FormInstance, t: TFunction) => ({
       },
     },
   ] as Rule[],
-  id: [
+  iDNum: [
     { required: true, len: 9 },
     {
       validator: async (_, value: string) => {
@@ -95,6 +96,7 @@ const fieldComponents = {
   Checkbox: (props: CheckboxProps & { title?: string }) => (
     <Checkbox {...props}>{props.title}</Checkbox>
   ),
+  CheckboxGroup: (props: CheckboxGroupProps) => <Checkbox.Group {...props} style={fullWidth} />,
   Radio: (props: RadioGroupProps) => <Radio.Group {...props} style={fullWidth} />,
   Select: (props: SelectProps) => <Select {...props} style={fullWidth} />,
 } as const
@@ -143,8 +145,8 @@ export const allComplaintFields = {
     rules: [{ required: true }],
     props: { maxLength: 25 },
   }),
-  id: createField({
-    name: 'id',
+  iDNum: createField({
+    name: 'iDNum',
     type: 'Input',
     rules: [{ required: true, len: 9 }],
     props: { maxLength: 9 },
@@ -154,8 +156,8 @@ export const allComplaintFields = {
     type: 'Input',
     rules: [{ type: 'email', required: true }],
   }),
-  phone: createField({
-    name: 'phone',
+  mobile: createField({
+    name: 'mobile',
     type: 'Input',
     rules: [{ required: true }],
     props: { maxLength: 11 },
@@ -165,8 +167,8 @@ export const allComplaintFields = {
     type: 'Select',
     rules: [{ required: true }],
   }),
-  description: createField({
-    name: 'description',
+  applyContent: createField({
+    name: 'applyContent',
     type: 'TextArea',
     rules: [{ required: true, min: 2 }],
     props: { rows: 4, maxLength: 1500 },
@@ -176,8 +178,8 @@ export const allComplaintFields = {
     type: 'Select',
     rules: [{ required: true }],
   }),
-  licensePlate: createField({
-    name: 'licensePlate',
+  licenseNum: createField({
+    name: 'licenseNum',
     type: 'Input',
   }),
   eventDate: createField({
@@ -185,8 +187,8 @@ export const allComplaintFields = {
     type: 'DatePicker',
     rules: [{ required: true }],
   }),
-  lineNumber: createField({
-    name: 'lineNumber',
+  lineNumberText: createField({
+    name: 'lineNumberText',
     type: 'Input',
     rules: [{ required: true }],
     props: { maxLength: 5 },
@@ -197,56 +199,57 @@ export const allComplaintFields = {
     rules: [{ required: true }],
     props: { needConfirm: true },
   }),
-  route: createField({
-    name: 'route',
+  direction: createField({
+    name: 'direction',
     type: 'Select',
     rules: [{ required: true }],
   }),
   wait: createField({
-    name: 'wait',
+    name: 'wait', // fromHour + toHour
     type: 'TimeRangePicker',
     rules: [{ required: true }],
   }),
-  boardingStation: createField({
-    name: 'boardingStation',
+  raisingStation: createField({
+    name: 'raisingStation',
     type: 'Select',
   }),
-  cityFrom: createField({
-    name: 'cityFrom',
-    type: 'Select',
-    rules: [{ required: true }],
-    props: { showSearch: true },
-  }),
-  cityTo: createField({
-    name: 'cityTo',
+  city: createField({
+    name: 'city',
     type: 'Select',
     rules: [{ required: true }],
     props: { showSearch: true },
   }),
-  ticketDate: createField({
-    name: 'ticketDate',
+  raisingStationCity: createField({
+    name: 'raisingStationCity',
+    type: 'Select',
+    rules: [{ required: true }],
+    props: { showSearch: true },
+  }),
+  destinationStationCity: createField({
+    name: 'destinationStationCity',
+    type: 'Select',
+    rules: [{ required: true }],
+    props: { showSearch: true },
+  }),
+  reportdate: createField({
+    name: 'reportdate',
     type: 'DatePicker',
     rules: [{ required: true }],
   }),
-  ticketTime: createField({
-    name: 'ticketTime',
+  reportTime: createField({
+    name: 'reportTime',
     type: 'TimePicker',
     rules: [{ required: true }],
     props: { needConfirm: true },
   }),
-  travelFrom: createField({
-    name: 'travelFrom',
+  busDirectionFrom: createField({
+    name: 'busDirectionFrom',
     type: 'Input',
     rules: [{ required: true }],
   }),
-  travelTo: createField({
-    name: 'travelTo',
+  busDirectionTo: createField({
+    name: 'busDirectionTo',
     type: 'Input',
-    rules: [{ required: true }],
-  }),
-  activeDate: createField({
-    name: 'activeDate',
-    type: 'DatePicker',
     rules: [{ required: true }],
   }),
   addOrRemoveStation: createField({
@@ -254,41 +257,22 @@ export const allComplaintFields = {
     type: 'Radio',
     rules: [{ required: true }],
   }),
-  removeStation: createField({
-    name: 'removeStation',
-    type: 'Select',
-  }),
-  requestedStationAddress: createField({
-    name: 'requestedStationAddress',
+  raisingStationAddress: createField({
+    name: 'raisingStationAddress',
     type: 'Input',
   }),
-  boardingAddress: createField({
-    name: 'boardingAddress',
-    type: 'Input',
+  addingFrequencyReason: createField({
+    name: 'addingFrequencyReason',
+    type: 'CheckboxGroup',
     rules: [{ required: true }],
   }),
-  addFrequencyOverCrowd: createField({
-    name: 'addFrequencyOverCrowd',
+  firstDeclaration: createField({
+    name: 'firstDeclaration', //  Testify Mot
     type: 'Checkbox',
     rules: [{ required: true }],
   }),
-  addFrequencyLongWait: createField({
-    name: 'addFrequencyLongWait',
-    type: 'Checkbox',
-    rules: [{ required: true }],
-  }),
-  addFrequencyExtendTime: createField({
-    name: 'addFrequencyExtendTime',
-    type: 'Checkbox',
-    rules: [{ required: true }],
-  }),
-  willingToTestifyMot: createField({
-    name: 'willingToTestifyMot',
-    type: 'Checkbox',
-    rules: [{ required: true }],
-  }),
-  willingToTestifyCourt: createField({
-    name: 'willingToTestifyCourt',
+  secondDeclaration: createField({
+    name: 'secondDeclaration', //  Testify Court
     type: 'Checkbox',
     rules: [{ required: true }],
   }),
