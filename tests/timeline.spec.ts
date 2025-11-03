@@ -14,7 +14,7 @@ test.describe('Timeline Page Tests', () => {
       updateContent: 'embed',
       update: false,
       notFound: 'abort',
-      url: /stride-api\/list\?/,
+      url: /(stride-api|gtfs_routes)\/list\?/,
       matcher: urlMatcher,
     })
     timelinePage = new TimelinePage(page) // Initialize timelinePage before each test
