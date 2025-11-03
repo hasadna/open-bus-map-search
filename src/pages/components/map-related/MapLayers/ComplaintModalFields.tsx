@@ -174,7 +174,7 @@ export const allComplaintFields = {
     props: { rows: 4, maxLength: 1500 },
   }),
   busOperator: createField({
-    name: 'busOperator',
+    name: 'busOperator', // operator
     type: 'Select',
     rules: [{ required: true }],
   }),
