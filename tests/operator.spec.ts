@@ -21,7 +21,7 @@ test.describe('Operator Page Tests', () => {
   test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
     await setupTest(page)
     await advancedRouteFromHAR('tests/HAR/operator.har', harOptions)
-    await visitPage(page, i18next.t('operator_title'), /operator/)
+    await visitPage(page, 'operator_title')
   })
 
   test('all inputs should be intractable', async ({ page }) => {

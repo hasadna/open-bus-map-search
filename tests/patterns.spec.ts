@@ -10,7 +10,7 @@ import {
 test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
   await setupTest(page)
   await advancedRouteFromHAR('tests/HAR/patterns.har', harOptions)
-  await visitPage(page, 'דפוסי נסיעות שלא בוצעו', /gaps_patterns/)
+  await visitPage(page, 'gaps_patterns_page_title')
 })
 
 test('Verify API call to gtfs_agencies/list - "Patterns"', async ({ page }) => {
