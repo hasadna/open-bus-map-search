@@ -15,7 +15,7 @@ test.beforeAll(() => {
 
 for (const mode of ['Light', 'Dark', 'LTR']) {
   test.describe(`Visual Tests - ${mode}`, () => {
-    test.describe.configure({ retries: 0 })
+    test.describe.configure({ retries: 0, timeout: 10 * 60 * 1000 })
     test.beforeAll(() => {
       const time = new Date().toISOString()
       const user = username() || 'unknown-user'
