@@ -98,7 +98,6 @@ export const setupTest = async (page: Page, lng: string = 'he') => {
   await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
   await page.route(/api\.github\.com/, (route) => route.abort())
   await page.route(/.*openstreetmap*/, (route) => route.abort())
-  await page.route(/.*youtube*/, (route) => route.abort())
   await page.clock.setSystemTime(getPastDate())
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await i18next.use(Backend).init({ lng, backend: { loadPath: 'src/locale/{{lng}}.json' } })
@@ -115,17 +114,15 @@ export const visitPage = async (page: Page, pageName: (typeof PAGES)[number]['la
 }
 
 export const verifyAgenciesApiCall = async (page: Page) => {
-  let apiCallMade = false
-  page.on('request', (request) => {
-    if (request.url().includes('gtfs_agencies/list')) {
-      apiCallMade = true
-    }
-  })
+  const requestPromise = page.waitForRequest((request) =>
+    request.url().includes('gtfs_agencies/list'),
+  )
 
   await page.reload()
   await page.getByLabel('חברה מפעילה').click()
-  await page.waitForLoadState('networkidle')
-  expect(apiCallMade).toBeTruthy()
+  const request = await requestPromise
+
+  expect((await request.response())?.ok()).toBeTruthy()
 }
 
 export const verifyDateFromParameter = async (page: Page) => {
