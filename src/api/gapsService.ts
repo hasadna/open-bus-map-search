@@ -9,7 +9,10 @@ export type Gap = {
 
 export function parseTime(time?: dayjs.ConfigType) {
   if (!time) return undefined
-  const utcDayjs = dayjs.utc(time).utcOffset(0, true).tz('Asia/Jerusalem')
+  // Add 'Z' to indicate GMT/UTC if the time string doesn't already have a timezone indicator
+  const timeString =
+    typeof time === 'string' && !time.endsWith('Z') && !time.includes('+') ? `${time}Z` : time
+  const utcDayjs = dayjs.utc(timeString).utcOffset(0, true).tz('Asia/Jerusalem')
   if (!utcDayjs.isValid()) return undefined
   return utcDayjs
 }
