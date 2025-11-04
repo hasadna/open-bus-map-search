@@ -67,13 +67,12 @@ const linkTests = [
 test.describe('About Page Tests', () => {
   test.beforeEach(async ({ page }) => {
     await setupTest(page)
-    await visitPage(page, 'אודות', /about/)
+    await visitPage(page, 'about_title')
   })
 
   test('after clicking "about" menu item, user should redirect to "about" page', async ({
     page,
   }) => {
-    await expect(page).toHaveURL(/about/)
     const locator = page.locator('li').filter({ hasText: 'אודות' })
     await expect(locator).toHaveClass(/menu-item-selected/)
   })

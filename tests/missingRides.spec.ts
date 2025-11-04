@@ -13,10 +13,10 @@ test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
   visitPage(page, 'נסיעות שלא בוצעו', /gaps/)
 })
 
-test('verify API call to gtfs_agencies/list - "missing rides"', async ({ page }) => {
+test('Verify API call to gtfs_agencies/list - "missing rides"', async ({ page }) => {
   await verifyAgenciesApiCall(page)
 })
 
-test('Verify date_from parameter from "missing rides"', async ({ page }) => {
+test('Verify date_from parameter from - "missing rides"', async ({ page }) => {
   await verifyDateFromParameter(page)
 })

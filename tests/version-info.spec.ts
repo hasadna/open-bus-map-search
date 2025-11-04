@@ -5,7 +5,7 @@ const VERSION_URL = 'https://open-bus-map-search.hasadna.org.il/hash.txt'
 test.describe('Version info tests', () => {
   test.beforeEach(async ({ page }) => {
     await setupTest(page)
-    await visitPage(page, 'אודות', /about/)
+    await visitPage(page, 'about_title')
   })
 
   test('should see loading state', async ({ page }) => {

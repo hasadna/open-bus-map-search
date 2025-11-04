@@ -9,7 +9,7 @@ const PUBLIC_APPEAL_ITEMS = [
 
 test.beforeEach(async ({ page }) => {
   await setupTest(page)
-  await visitPage(page, 'קול קורא', /public-appeal/)
+  await visitPage(page, 'public_appeal_title')
 })
 
 test('Public Appeal page items', async ({ page }) => {

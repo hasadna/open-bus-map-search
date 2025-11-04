@@ -151,11 +151,11 @@ test.describe('Operator Page Tests', () => {
     })
   })
 
-  test('verify API call to gtfs_agencies/list - "Operator"', async ({ page }) => {
+  test('Verify API call to gtfs_agencies/list - "Operator"', async ({ page }) => {
     await verifyAgenciesApiCall(page)
   })
 
-  test('Verify date_from parameter from "Operator"', async ({ page }) => {
+  test('Verify date_from parameter from - "Operator"', async ({ page }) => {
     await verifyDateFromParameter(page)
   })
 })
