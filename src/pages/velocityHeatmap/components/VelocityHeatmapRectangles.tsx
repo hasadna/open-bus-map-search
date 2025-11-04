@@ -9,11 +9,7 @@ function getValue(point: VelocityAggregation, visMode: VisMode): number {
   if (visMode === 'avg') return point.average_rolling_avg
   if (visMode === 'std') return point.stddev_rolling_avg
   if (visMode === 'cv') {
-    const MAX_CV = 19.99
-    return Math.min(
-      point.stddev_rolling_avg > 0 ? point.average_rolling_avg / point.stddev_rolling_avg : 0,
-      MAX_CV,
-    )
+    return point.stddev_rolling_avg > 0 ? point.stddev_rolling_avg / point.average_rolling_avg : 0
   }
   return 0
 }
