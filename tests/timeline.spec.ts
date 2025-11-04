@@ -1,9 +1,9 @@
 import i18next from 'i18next'
 import TimelinePage from 'src/test_pages/TimelinePage'
 import {
+  harOptions,
   setupTest,
   test,
-  urlMatcher,
   verifyAgenciesApiCall,
   verifyDateFromParameter,
   visitPage,
@@ -14,13 +14,7 @@ test.describe('Timeline Page Tests', () => {
 
   test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
     await setupTest(page)
-    await advancedRouteFromHAR('tests/HAR/timeline.har', {
-      updateContent: 'embed',
-      update: false,
-      notFound: 'fallback',
-      url: /stride-api/,
-      matcher: urlMatcher,
-    })
+    await advancedRouteFromHAR('tests/HAR/timeline.har', harOptions)
     timelinePage = new TimelinePage(page) // Initialize timelinePage before each test
     await visitPage(page, i18next.t('timeline_page_title'), /timeline/)
   })

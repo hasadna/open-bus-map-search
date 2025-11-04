@@ -1,7 +1,7 @@
 import {
+  harOptions,
   setupTest,
   test,
-  urlMatcher,
   verifyAgenciesApiCall,
   verifyDateFromParameter,
   visitPage,
@@ -9,14 +9,7 @@ import {
 
 test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
   await setupTest(page)
-  await advancedRouteFromHAR('tests/HAR/patterns.har', {
-    updateContent: 'embed',
-    update: false,
-    notFound: 'fallback',
-    url: /stride-api/,
-    matcher: urlMatcher,
-  })
-
+  await advancedRouteFromHAR('tests/HAR/patterns.har', harOptions)
   await visitPage(page, 'דפוסי נסיעות שלא בוצעו', /gaps_patterns/)
 })
 

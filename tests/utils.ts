@@ -6,6 +6,7 @@ import { BrowserContext, Page } from '@playwright/test'
 import i18next from 'i18next'
 import Backend from 'i18next-fs-backend'
 import { test as baseTest, customMatcher, Matcher } from 'playwright-advanced-har'
+import { RouteFromHAROptions } from 'playwright-advanced-har/lib/utils/types'
 import dayjs from 'src/dayjs'
 
 type CollectIstanbulCoverageWindow = Window &
@@ -52,7 +53,7 @@ export function getPastDate() {
   return new Date('2024-02-12T15:00:00+00:00')
 }
 
-export const urlMatcher: Matcher = customMatcher({
+const urlMatcher: Matcher = customMatcher({
   urlComparator(a, b) {
     const paramsToIgnore = new Set(['t', 'limit', 'date_from', 'date_to'])
     function normalize(url: string) {
@@ -92,18 +93,12 @@ export const waitForSkeletonsToHide = async (page: Page) => {
   }
 }
 
-export const expect = test.expect
-
 export const setupTest = async (page: Page, lng: string = 'he') => {
   await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
   await page.route(/api\.github\.com/, (route) => route.abort())
   await page.clock.setSystemTime(getPastDate())
   await page.emulateMedia({ reducedMotion: 'reduce' })
-  await i18next.use(Backend).init({
-    lng,
-    backend: { loadPath: 'src/locale/{{lng}}.json' },
-  })
-
+  await i18next.use(Backend).init({ lng, backend: { loadPath: 'src/locale/{{lng}}.json' } })
   await page.goto('/')
   await page.locator('preloader').waitFor({ state: 'hidden' })
   await page.getByRole('progressbar').waitFor({ state: 'hidden' })
@@ -140,3 +135,13 @@ export const verifyDateFromParameter = async (page: Page) => {
   expect(daysAgo).toBeGreaterThanOrEqual(0)
   expect(daysAgo).toBeLessThanOrEqual(3)
 }
+
+export const harOptions: RouteFromHAROptions = {
+  updateContent: 'embed',
+  update: false,
+  notFound: 'fallback',
+  url: /stride-api/,
+  matcher: urlMatcher,
+}
+
+export const expect = test.expect

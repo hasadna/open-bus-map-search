@@ -32,7 +32,7 @@ export const MainRoute = () => {
   }, [location])
 
   const [search, setSearch] = useSessionStorage<PageSearchState>('search', {
-    timestamp: +timestamp! || dayjs().tz('Asia/Jerusalem', false).valueOf(),
+    timestamp: +timestamp! || dayjs().valueOf(),
     operatorId: operatorId || '',
     lineNumber: lineNumber || '',
     vehicleNumber: vehicleNumber ? Number(vehicleNumber) : undefined,

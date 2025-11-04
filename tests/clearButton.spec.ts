@@ -1,7 +1,7 @@
 import type { Locator, Page } from '@playwright/test'
 import i18next from 'i18next'
 import Selectors from './SelectorsModel'
-import { expect, getPastDate, setupTest, test, urlMatcher, visitPage } from './utils'
+import { expect, getPastDate, harOptions, setupTest, test, visitPage } from './utils'
 
 async function selectLineNumberAndRoute(page: Page, lineNumber: Locator, route: Locator) {
   await lineNumber.fill('64')
@@ -24,13 +24,7 @@ async function clickClearButton(page: Page) {
 test.describe('clearButton functionality', () => {
   test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
     await setupTest(page)
-    await advancedRouteFromHAR('tests/HAR/clearbutton.har', {
-      updateContent: 'embed',
-      update: false,
-      notFound: 'fallback',
-      url: /stride-api/,
-      matcher: urlMatcher,
-    })
+    await advancedRouteFromHAR('tests/HAR/clearbutton.har', harOptions)
   })
 
   test.describe('clearButton functionality at TimeLinePage', () => {

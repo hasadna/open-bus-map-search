@@ -1,4 +1,4 @@
-import { expect, setupTest, test, urlMatcher, visitPage, waitForSkeletonsToHide } from './utils'
+import { expect, harOptions, setupTest, test, visitPage, waitForSkeletonsToHide } from './utils'
 
 const TRIP_EXISTENCE_ITEMS = [
   'קיום נסיעות',
@@ -9,13 +9,7 @@ const TRIP_EXISTENCE_ITEMS = [
 test.describe('dashboard tests', () => {
   test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
     await setupTest(page)
-    await advancedRouteFromHAR('tests/HAR/dashboard.har', {
-      updateContent: 'embed',
-      update: false,
-      notFound: 'fallback',
-      url: /stride-api/,
-      matcher: urlMatcher,
-    })
+    await advancedRouteFromHAR('tests/HAR/dashboard.har', harOptions)
     await visitPage(page, 'קיום נסיעות', /dashboard/)
     await page.getByText('הקווים הגרועים ביותר').waitFor()
     await waitForSkeletonsToHide(page)

@@ -40,7 +40,6 @@ export function DateSelector({
       value={time}
       onChange={onChange}
       format="DD/MM/YYYY"
-      timezone="Asia/Jerusalem"
       label={customLabel || t('choose_date')}
       disableFuture
       minDate={minDate || startOfTime}

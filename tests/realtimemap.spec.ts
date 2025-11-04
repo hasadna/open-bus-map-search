@@ -1,4 +1,4 @@
-import { expect, getPastDate, setupTest, test, urlMatcher, visitPage } from './utils'
+import { expect, getPastDate, harOptions, setupTest, test, visitPage } from './utils'
 
 const TOOLTIP_CONTENT_ITEMS = [
   'שם חברה מפעילה:',
@@ -14,13 +14,7 @@ const TOOLTIP_CONTENT_ITEMS = [
 test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
   await setupTest(page)
   await page.clock.setSystemTime(getPastDate())
-  await advancedRouteFromHAR('tests/HAR/realtimemap.har', {
-    updateContent: 'embed',
-    update: false,
-    notFound: 'fallback',
-    url: /stride-api/,
-    matcher: urlMatcher,
-  })
+  await advancedRouteFromHAR('tests/HAR/realtimemap.har', harOptions)
   await visitPage(page, 'מפה לפי זמן', /map/)
 })
 test('time-based-map page', async ({ page }) => {

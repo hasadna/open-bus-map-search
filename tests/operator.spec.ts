@@ -3,9 +3,9 @@ import i18next from 'i18next'
 import { operatorList } from 'src/pages/operator/data'
 import {
   expect,
+  harOptions,
   setupTest,
   test,
-  urlMatcher,
   verifyAgenciesApiCall,
   verifyDateFromParameter,
   visitPage,
@@ -20,13 +20,7 @@ const getLabelValue = async (label: string, page: Page) => {
 test.describe('Operator Page Tests', () => {
   test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
     await setupTest(page)
-    await advancedRouteFromHAR('tests/HAR/operator.har', {
-      updateContent: 'embed',
-      update: false,
-      notFound: 'fallback',
-      url: /stride-api/,
-      matcher: urlMatcher,
-    })
+    await advancedRouteFromHAR('tests/HAR/operator.har', harOptions)
     await visitPage(page, i18next.t('operator_title'), /operator/)
   })
 

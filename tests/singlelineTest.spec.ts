@@ -1,9 +1,9 @@
 import type { Page } from '@playwright/test'
 import {
   expect,
+  harOptions,
   setupTest,
   test,
-  urlMatcher,
   verifyAgenciesApiCall,
   verifyDateFromParameter,
   visitPage,
@@ -38,13 +38,7 @@ async function selectStartTime(page: Page, time = '04:30') {
 test.describe('Single line page tests', () => {
   test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
     await setupTest(page)
-    await advancedRouteFromHAR('tests/HAR/singleline.har', {
-      updateContent: 'embed',
-      update: false,
-      notFound: 'fallback',
-      url: /stride-api/,
-      matcher: urlMatcher,
-    })
+    await advancedRouteFromHAR('tests/HAR/singleline.har', harOptions)
     await visitPage(page, 'מפה לפי קו', /single-line-map/)
   })
 
