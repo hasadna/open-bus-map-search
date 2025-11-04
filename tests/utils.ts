@@ -3,9 +3,11 @@ import * as crypto from 'crypto'
 import * as fs from 'fs'
 import * as path from 'path'
 import { BrowserContext, Page } from '@playwright/test'
-import { i18n } from 'i18next'
+import i18next from 'i18next'
 import Backend from 'i18next-fs-backend'
 import { test as baseTest, customMatcher, Matcher } from 'playwright-advanced-har'
+import { RouteFromHAROptions } from 'playwright-advanced-har/lib/utils/types'
+import dayjs from 'src/dayjs'
 
 type CollectIstanbulCoverageWindow = Window &
   typeof globalThis & {
@@ -47,11 +49,11 @@ export const test = baseTest.extend<{ context: BrowserContext }>({
   },
 })
 
-export function getPastDate(): Date {
-  return new Date('2024-02-12 15:00:00')
+export function getPastDate() {
+  return new Date('2024-02-12T15:00:00+00:00')
 }
 
-export const urlMatcher: Matcher = customMatcher({
+const urlMatcher: Matcher = customMatcher({
   urlComparator(a, b) {
     const paramsToIgnore = new Set(['t', 'limit', 'date_from', 'date_to'])
     function normalize(url: string) {
@@ -91,11 +93,55 @@ export const waitForSkeletonsToHide = async (page: Page) => {
   }
 }
 
-export const loadTranslate = async (i18next: i18n, lng: string = 'he') => {
-  await i18next.use(Backend).init({
-    lng,
-    backend: { loadPath: 'src/locale/{{lng}}.json' },
+export const setupTest = async (page: Page, lng: string = 'he') => {
+  await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
+  await page.route(/api\.github\.com/, (route) => route.abort())
+  await page.clock.setSystemTime(getPastDate())
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await i18next.use(Backend).init({ lng, backend: { loadPath: 'src/locale/{{lng}}.json' } })
+  await page.goto('/')
+  await page.locator('preloader').waitFor({ state: 'hidden' })
+  await page.getByRole('progressbar').waitFor({ state: 'hidden' })
+}
+
+export const visitPage = async (page: Page, pageName: string, url: RegExp) => {
+  await page.getByText(pageName, { exact: true }).and(page.getByRole('link')).click()
+  await page.waitForURL(url)
+  await page.locator('preloader').waitFor({ state: 'hidden' })
+  await page.getByRole('progressbar').waitFor({ state: 'hidden' })
+}
+
+export const verifyAgenciesApiCall = async (page: Page) => {
+  let apiCallMade = false
+  page.on('request', (request) => {
+    if (request.url().includes('gtfs_agencies/list')) {
+      apiCallMade = true
+    }
   })
+
+  await page.getByLabel('חברה מפעילה').click()
+  expect(apiCallMade).toBeTruthy()
+}
+
+export const verifyDateFromParameter = async (page: Page) => {
+  const apiRequest = page.waitForRequest((request) => request.url().includes('gtfs_agencies/list'))
+
+  const request = await apiRequest
+  const url = new URL(request.url())
+  const dateFromParam = url.searchParams.get('date_from')
+  const dateFrom = dayjs(dateFromParam)
+  const daysAgo = dayjs(getPastDate()).diff(dateFrom, 'days')
+
+  expect(daysAgo).toBeGreaterThanOrEqual(0)
+  expect(daysAgo).toBeLessThanOrEqual(3)
+}
+
+export const harOptions: RouteFromHAROptions = {
+  updateContent: 'embed',
+  update: false,
+  notFound: 'fallback',
+  url: /stride-api/,
+  matcher: urlMatcher,
 }
 
 export const expect = test.expect

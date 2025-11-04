@@ -21,6 +21,8 @@ export default defineConfig({
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: process.env.CI ? 'on' : 'on-all-retries',
+
+    timezoneId: 'Asia/Jerusalem',
   },
   expect: {
     timeout: 5000,
