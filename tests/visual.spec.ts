@@ -14,8 +14,18 @@ test.beforeAll(() => {
 })
 
 for (const mode of ['Light', 'Dark', 'LTR']) {
-  test.describe('Visual Tests', () => {
+  test.describe(`Visual Tests - ${mode}`, () => {
     test.describe.configure({ retries: 0 })
+    test.beforeAll(() => {
+      const time = new Date().toISOString()
+      const user = username() || 'unknown-user'
+      const batchName = process.env.APPLITOOLS_BATCH_NAME
+        ? `${process.env.APPLITOOLS_BATCH_NAME}visual-tests-${mode.toLowerCase()}`
+        : `${user}-visual-tests-${mode.toLowerCase()}-${time}`
+      const batchId = process.env.SHA || `${user}-${mode.toLowerCase()}-${time}`
+
+      eyes.setBatch({ name: batchName, id: batchId })
+    })
     test.beforeEach(async ({ page }, testinfo) => {
       await page.route(/.*youtube*/, (route) => route.abort())
       await setupTest(page, mode === 'LTR' ? 'en' : 'he')
@@ -132,15 +142,6 @@ async function setEyesSettings() {
       { iosDeviceInfo: { deviceName: 'iPhone 16' } },
     ],
   })
-
-  const time = new Date().toISOString()
-  const user = username() || 'unknown-user'
-  const batchName = process.env.APPLITOOLS_BATCH_NAME
-    ? `${process.env.APPLITOOLS_BATCH_NAME}visual-tests`
-    : `${user}-visual-tests-${time}`
-  const batchId = process.env.SHA || `${user}-${time}`
-
-  eyes.setBatch({ name: batchName, id: batchId })
 
   const config = eyes.getConfiguration()
   config.setUseDom(true)
