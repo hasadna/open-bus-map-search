@@ -49,7 +49,7 @@ describe('sortByMode', () => {
     const [results] = processData(list)
     expect(results).toEqual({
       actual_rides: 1,
-      planned_hour: '05:00',
+      planned_hour: '02:00',
       planned_rides: 1,
     })
   })
@@ -64,7 +64,7 @@ describe('sortByMode', () => {
     const [results] = processData(list)
 
     expect(results).toEqual({
-      planned_hour: '05:20',
+      planned_hour: '02:20',
       planned_rides: 1,
       actual_rides: 0,
     })
@@ -84,7 +84,7 @@ describe('sortByMode', () => {
     const [results] = processData(list)
     expect(results).toEqual({
       actual_rides: 2,
-      planned_hour: '05:00',
+      planned_hour: '02:00',
       planned_rides: 2,
     })
   })
