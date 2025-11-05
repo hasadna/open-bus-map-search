@@ -106,8 +106,12 @@ export const setupTest = async (page: Page, lng: string = 'he') => {
   await page.getByRole('progressbar').waitFor({ state: 'hidden' })
 }
 
-export const visitPage = async (page: Page, pageName: (typeof PAGES)[number]['label']) => {
-  await page.getByText(i18next.t(pageName), { exact: true }).and(page.getByRole('link')).click()
+export const visitPage = async (page: Page, label: (typeof PAGES)[number]['label']) => {
+  const link = page.getByText(i18next.t(label), { exact: true }).and(page.getByRole('link'))
+  const href = await link.getAttribute('href')
+  await link.click()
+  if (href) await page.waitForURL(`**${href}`)
+  await page.waitForTimeout(1000)
   await page.locator('preloader').waitFor({ state: 'hidden' })
   await page.getByRole('progressbar').waitFor({ state: 'hidden' })
   await page.waitForLoadState('networkidle')

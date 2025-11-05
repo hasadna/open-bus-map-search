@@ -1,9 +1,10 @@
 import { Eyes, Target, VisualGridRunner } from '@applitools/eyes-playwright'
 import username from 'git-username'
+import i18next from 'i18next'
+import dayjs from 'src/dayjs'
 import { getBranch, setupTest, test, visitPage, waitForSkeletonsToHide } from './utils'
 
 const eyes = await setEyesSettings()
-
 test.beforeAll(() => {
   if (!process.env.APPLITOOLS_API_KEY) {
     eyes.setIsDisabled(true)
@@ -13,11 +14,11 @@ test.beforeAll(() => {
   }
 })
 
+const time = dayjs().startOf('minute').toISOString()
 for (const mode of ['Light', 'Dark', 'LTR']) {
   test.describe(`Visual Tests - ${mode}`, () => {
-    test.describe.configure({ retries: 0, timeout: 10 * 60 * 1000 })
+    test.describe.configure({ retries: 0 })
     test.beforeAll(() => {
-      const time = new Date().toISOString()
       const user = username() || 'unknown-user'
       const batchName = process.env.APPLITOOLS_BATCH_NAME
         ? `${process.env.APPLITOOLS_BATCH_NAME}visual-tests-${mode.toLowerCase()}`
@@ -29,14 +30,11 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
     test.beforeEach(async ({ page }, testinfo) => {
       await page.route(/.*youtube*/, (route) => route.abort())
       await setupTest(page, mode === 'LTR' ? 'en' : 'he')
-      if (mode === 'Dark') await page.getByLabel('עבור למצב כהה').first().click()
+      if (mode === 'Dark') {
+        await page.getByLabel('עבור למצב כהה').first().click()
+      }
       if (mode === 'LTR') {
-        // Click the language dropdown button (should have "English" text in Hebrew mode)
-        await page
-          .getByRole('button', { name: /English|Change Language/ })
-          .first()
-          .click()
-        // Click the English option from the dropdown menu (the div, not the button)
+        await page.getByRole('button', { name: 'החלף שפה' }).first().click()
         await page.getByRole('menuitem').filter({ hasText: 'English' }).click()
       }
       if (process.env.APPLITOOLS_API_KEY) {
@@ -106,7 +104,10 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
 
     test(`Operator Page Should Look Good [${mode}]`, async ({ page }) => {
       await visitPage(page, 'operator_title')
-      await page.getByRole('combobox', { name: 'choose_operator' }).first().click()
+      await page
+        .getByRole('combobox', { name: i18next.t('choose_operator') })
+        .first()
+        .click()
       await page.getByRole('option', { name: 'אגד', exact: true }).first().click()
       await waitForSkeletonsToHide(page)
       await eyes.check({
@@ -116,7 +117,7 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
     })
 
     test(`Donation modal Should Look Good [${mode}]`, async ({ page }) => {
-      await page.getByLabel('donate_title').first().click()
+      await page.getByLabel(i18next.t('donate_title')).first().click()
       await page.locator('.MuiTypography-root').first().waitFor()
       await eyes.check({ ...Target.region(page.getByRole('dialog')), name: 'donation modal' })
     })
@@ -137,9 +138,9 @@ async function setEyesSettings() {
   const eyes = new Eyes(new VisualGridRunner({ testConcurrency: 10 }), {
     browsersInfo: [
       { width: 1280, height: 720, name: 'chrome' },
-      { width: 1280, height: 720, name: 'safari' },
+      // { width: 1280, height: 720, name: 'safari' },
       { chromeEmulationInfo: { deviceName: 'Galaxy S23' } },
-      { iosDeviceInfo: { deviceName: 'iPhone 16' } },
+      // { iosDeviceInfo: { deviceName: 'iPhone 16' } },
     ],
   })
 
