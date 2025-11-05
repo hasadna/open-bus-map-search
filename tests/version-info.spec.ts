@@ -12,7 +12,7 @@ test.describe('Version info tests', () => {
     await page.route(VERSION_URL, () => void 0)
     await expect(page.getByRole('heading', { name: 'גרסה' })).toBeVisible()
     await expect(page.getByText('טוען...')).toBeVisible()
-    await page.getByLabel('English').first().click()
+    await page.getByLabel('החלף שפה').first().click()
     await page.getByText('English').click()
     await page.waitForTimeout(500)
     await expect(page.getByRole('heading', { name: 'Current version identifier' })).toBeVisible()
@@ -27,7 +27,7 @@ test.describe('Version info tests', () => {
   test('should see error message', async ({ page }) => {
     await page.route(VERSION_URL, (route) => route.abort())
     await expect(page.getByText('נכשל בטעינת מידע')).toBeVisible({ timeout: 15_000 })
-    await page.getByLabel('English').first().click()
+    await page.getByLabel('החלף שפה').first().click()
     await page.getByText('English').click()
     await page.waitForTimeout(500)
     await expect(page.getByText('Failed to fetch current version identifier')).toBeVisible()
