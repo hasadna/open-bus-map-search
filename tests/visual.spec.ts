@@ -138,9 +138,9 @@ async function setEyesSettings() {
   const eyes = new Eyes(new VisualGridRunner({ testConcurrency: 10 }), {
     browsersInfo: [
       { width: 1280, height: 720, name: 'chrome' },
-      // { width: 1280, height: 720, name: 'safari' },
+      { width: 1280, height: 720, name: 'safari' },
       { chromeEmulationInfo: { deviceName: 'Galaxy S23' } },
-      // { iosDeviceInfo: { deviceName: 'iPhone 16' } },
+      { iosDeviceInfo: { deviceName: 'iPhone 16' } },
     ],
   })
 
