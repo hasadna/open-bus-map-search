@@ -1,9 +1,14 @@
-import { expect, test } from '@playwright/test'
+import { expect, setupTest, test } from './utils'
+
+test.beforeEach(async ({ page }) => {
+  await setupTest(page)
+})
 
 test('research page opens with an easter egg', async ({ page }) => {
-  await page.goto('http://localhost:3000/')
   await page.waitForLoadState('networkidle')
   await page.keyboard.type('geek')
   await page.locator('.body').click()
-  await expect(page).toHaveURL('http://localhost:3000/data-research')
+  await expect(page).toHaveURL(/data-research/)
+  const title = page.locator('h2', { hasText: 'מחקרים' })
+  await expect(title).toBeVisible()
 })

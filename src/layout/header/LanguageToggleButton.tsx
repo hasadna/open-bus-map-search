@@ -40,8 +40,8 @@ export const LanguageToggleButton = () => {
       placement="bottomRight">
       <button
         className="header-link"
-        aria-label={t('Change Language')}
-        title={t('Change Language')}
+        aria-label={t('change_language')}
+        title={t('change_language')}
         style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
         <GlobalOutlined />
       </button>
