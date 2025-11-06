@@ -39,7 +39,7 @@ test.describe('Single line page tests', () => {
   test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
     await setupTest(page)
     await advancedRouteFromHAR('tests/HAR/singleline.har', harOptions)
-    await visitPage(page, 'מפה לפי קו', /single-line-map/)
+    await visitPage(page, 'singleline_map_page_title')
   })
 
   test('should allow selecting operator company options', async ({ page }) => {
@@ -135,11 +135,11 @@ test.describe('Single line page tests', () => {
     await expect(page.getByText('הקו לא נמצא')).toBeAttached()
   })
 
-  test('verify API call to gtfs_agencies/list - "Map by line"', async ({ page }) => {
+  test('Verify API call to gtfs_agencies/list - "Map by line"', async ({ page }) => {
     await verifyAgenciesApiCall(page)
   })
 
-  test('Verify date_from parameter from "Map by line"', async ({ page }) => {
+  test('Verify date_from parameter from - "Map by line"', async ({ page }) => {
     await verifyDateFromParameter(page)
   })
 })

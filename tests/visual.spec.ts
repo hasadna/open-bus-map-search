@@ -1,10 +1,10 @@
-import { Eyes, Target, VisualGridRunner } from '@applitools/eyes-playwright'
+import { BatchInfoPlain, Eyes, Target, VisualGridRunner } from '@applitools/eyes-playwright'
 import username from 'git-username'
 import i18next from 'i18next'
+import dayjs from 'src/dayjs'
 import { getBranch, setupTest, test, visitPage, waitForSkeletonsToHide } from './utils'
 
 const eyes = await setEyesSettings()
-
 test.beforeAll(() => {
   if (!process.env.APPLITOOLS_API_KEY) {
     eyes.setIsDisabled(true)
@@ -15,20 +15,20 @@ test.beforeAll(() => {
 })
 
 for (const mode of ['Light', 'Dark', 'LTR']) {
-  test.describe('Visual Tests', () => {
+  test.describe(`Visual Tests - ${mode}`, () => {
     test.describe.configure({ retries: 0 })
+    test.beforeAll(() => {
+      eyes.setBatch(setBatchSettings(mode.toLocaleLowerCase()))
+    })
+
     test.beforeEach(async ({ page }, testinfo) => {
-      await setupTest(page, mode === 'LTR' ? 'en' : 'he')
-      await page.route(/.*openstreetmap*/, (route) => route.abort())
       await page.route(/.*youtube*/, (route) => route.abort())
-      if (mode === 'Dark') await page.getByLabel('עבור למצב כהה').first().click()
+      await setupTest(page, mode === 'LTR' ? 'en' : 'he')
+      if (mode === 'Dark') {
+        await page.getByLabel('עבור למצב כהה').first().click()
+      }
       if (mode === 'LTR') {
-        // Click the language dropdown button (should have "English" text in Hebrew mode)
-        await page
-          .getByRole('button', { name: /English|Change Language/ })
-          .first()
-          .click()
-        // Click the English option from the dropdown menu (the div, not the button)
+        await page.getByRole('button', { name: 'החלף שפה' }).first().click()
         await page.getByRole('menuitem').filter({ hasText: 'English' }).click()
       }
       if (process.env.APPLITOOLS_API_KEY) {
@@ -52,7 +52,7 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
     })
 
     test(`Dashboard Page Should Look Good [${mode}]`, async ({ page }) => {
-      await visitPage(page, i18next.t('dashboard_page_title'), /dashboard/)
+      await visitPage(page, 'dashboard_page_title')
       await page.getByText('אגד').first().waitFor()
       await waitForSkeletonsToHide(page)
       await eyes.check({
@@ -70,34 +70,34 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
     })
 
     test(`About Page Should Look Good [${mode}]`, async ({ page }) => {
-      await visitPage(page, i18next.t('about_title'), /about/)
+      await visitPage(page, 'about_title')
       await eyes.check({ ...Target.window(), name: 'about page' })
     })
 
     test(`Timeline Page Should Look Good [${mode}]`, async ({ page }) => {
-      await visitPage(page, i18next.t('timeline_page_title'), /timeline/)
+      await visitPage(page, 'timeline_page_title')
       await eyes.check({ ...Target.window(), name: 'timeline page' })
     })
 
     test(`Gaps Page Should Look Good [${mode}]`, async ({ page }) => {
-      await visitPage(page, i18next.t('gaps_page_title'), /gaps/)
+      await visitPage(page, 'gaps_page_title')
       await eyes.check({ ...Target.window(), name: 'gaps page' })
     })
 
     test(`Gaps Patterns Page Should Look Good [${mode}]`, async ({ page }) => {
-      await visitPage(page, i18next.t('gaps_patterns_page_title'), /gaps_patterns/)
+      await visitPage(page, 'gaps_patterns_page_title')
       await eyes.check({ ...Target.window(), name: 'gaps_patterns page' })
     })
 
     test(`Map Page Should Look Good [${mode}]`, async ({ page }) => {
-      await visitPage(page, i18next.t('time_based_map_page_title'), /map/)
+      await visitPage(page, 'time_based_map_page_title')
       await page.locator('.leaflet-marker-icon').first().waitFor({ state: 'visible' })
       await page.locator('.ant-spin-dot').first().waitFor({ state: 'hidden' })
       await eyes.check({ ...Target.window(), name: 'map page' })
     })
 
     test(`Operator Page Should Look Good [${mode}]`, async ({ page }) => {
-      await visitPage(page, i18next.t('operator_title'), /operator/)
+      await visitPage(page, 'operator_title')
       await page
         .getByRole('combobox', { name: i18next.t('choose_operator') })
         .first()
@@ -117,7 +117,7 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
     })
 
     test(`Public Appeal Page Should Look Good [${mode}]`, async ({ page }) => {
-      await visitPage(page, i18next.t('public_appeal_title'), /public-appeal/)
+      await visitPage(page, 'public_appeal_title')
       await eyes.check({ ...Target.window(), name: 'public appeal page' })
     })
 
@@ -126,6 +126,18 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
       await eyes.check({ ...Target.window(), name: 'data research page' })
     })
   })
+}
+
+const time = dayjs().startOf('minute').toISOString()
+const user = username() || 'unknown-user'
+
+function setBatchSettings(mode: string): BatchInfoPlain {
+  return {
+    name: process.env.APPLITOOLS_BATCH_NAME
+      ? `${process.env.APPLITOOLS_BATCH_NAME}visual-tests-${mode.toLowerCase()}`
+      : `${user}-visual-tests-${mode.toLowerCase()}-${time}`,
+    id: process.env.SHA || `${user}-${mode.toLowerCase()}-${time}`,
+  }
 }
 
 async function setEyesSettings() {
@@ -138,21 +150,12 @@ async function setEyesSettings() {
     ],
   })
 
-  const time = new Date().toISOString()
-  const user = username() || 'unknown-user'
-  const batchName = process.env.APPLITOOLS_BATCH_NAME
-    ? `${process.env.APPLITOOLS_BATCH_NAME}visual-tests`
-    : `${user}-visual-tests-${time}`
-  const batchId = process.env.SHA || `${user}-${time}`
-
-  eyes.setBatch({ name: batchName, id: batchId })
-
   const config = eyes.getConfiguration()
   config.setUseDom(true)
   config.setEnablePatterns(true)
   eyes.setConfiguration(config)
-
   eyes.setParentBranchName('main')
+
   try {
     const branch = (await getBranch()) || 'main'
     eyes.setBranchName(branch)

@@ -21,7 +21,7 @@ test.describe('Operator Page Tests', () => {
   test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
     await setupTest(page)
     await advancedRouteFromHAR('tests/HAR/operator.har', harOptions)
-    await visitPage(page, i18next.t('operator_title'), /operator/)
+    await visitPage(page, 'operator_title')
   })
 
   test('all inputs should be intractable', async ({ page }) => {
@@ -151,11 +151,11 @@ test.describe('Operator Page Tests', () => {
     })
   })
 
-  test('verify API call to gtfs_agencies/list - "Operator"', async ({ page }) => {
+  test('Verify API call to gtfs_agencies/list - "Operator"', async ({ page }) => {
     await verifyAgenciesApiCall(page)
   })
 
-  test('Verify date_from parameter from "Operator"', async ({ page }) => {
+  test('Verify date_from parameter from - "Operator"', async ({ page }) => {
     await verifyDateFromParameter(page)
   })
 })
