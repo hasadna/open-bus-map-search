@@ -15,7 +15,7 @@ test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
   await setupTest(page)
   await page.clock.setSystemTime(getPastDate())
   await advancedRouteFromHAR('tests/HAR/realtimemap.har', harOptions)
-  await visitPage(page, 'מפה לפי זמן', /map/)
+  await visitPage(page, 'time_based_map_page_title')
 })
 test('time-based-map page', async ({ page }) => {
   await page.getByLabel('תאריך').fill(new Date().toLocaleDateString('en-GB'))
