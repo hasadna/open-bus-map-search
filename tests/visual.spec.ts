@@ -1,4 +1,4 @@
-import { Eyes, Target, VisualGridRunner } from '@applitools/eyes-playwright'
+import { BatchInfoPlain, Eyes, Target, VisualGridRunner } from '@applitools/eyes-playwright'
 import username from 'git-username'
 import i18next from 'i18next'
 import dayjs from 'src/dayjs'
@@ -14,19 +14,13 @@ test.beforeAll(() => {
   }
 })
 
-const time = dayjs().startOf('minute').toISOString()
 for (const mode of ['Light', 'Dark', 'LTR']) {
   test.describe(`Visual Tests - ${mode}`, () => {
     test.describe.configure({ retries: 0 })
     test.beforeAll(() => {
-      const user = username() || 'unknown-user'
-      const batchName = process.env.APPLITOOLS_BATCH_NAME
-        ? `${process.env.APPLITOOLS_BATCH_NAME}visual-tests-${mode.toLowerCase()}`
-        : `${user}-visual-tests-${mode.toLowerCase()}-${time}`
-      const batchId = process.env.SHA || `${user}-${mode.toLowerCase()}-${time}`
-
-      eyes.setBatch({ name: batchName, id: batchId })
+      eyes.setBatch(setBatchSettings(mode.toLocaleLowerCase()))
     })
+
     test.beforeEach(async ({ page }, testinfo) => {
       await page.route(/.*youtube*/, (route) => route.abort())
       await setupTest(page, mode === 'LTR' ? 'en' : 'he')
@@ -132,6 +126,18 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
       await eyes.check({ ...Target.window(), name: 'data research page' })
     })
   })
+}
+
+const time = dayjs().startOf('minute').toISOString()
+const user = username() || 'unknown-user'
+
+function setBatchSettings(mode: string): BatchInfoPlain {
+  return {
+    name: process.env.APPLITOOLS_BATCH_NAME
+      ? `${process.env.APPLITOOLS_BATCH_NAME}visual-tests-${mode.toLowerCase()}`
+      : `${user}-visual-tests-${mode.toLowerCase()}-${time}`,
+    id: process.env.SHA || `${user}-${mode.toLowerCase()}-${time}`,
+  }
 }
 
 async function setEyesSettings() {
