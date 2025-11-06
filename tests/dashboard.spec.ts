@@ -21,6 +21,7 @@ test.describe('dashboard tests', () => {
     await page.getByLabel('עבור למצב בהיר').click()
     await page.reload()
     await page.getByLabel('עבור למצב כהה').click()
+    await page.getByLabel('עבור למצב בהיר').click()
   })
 
   test('dashboard charts contain information', async ({ page }) => {
