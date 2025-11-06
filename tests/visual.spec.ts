@@ -154,8 +154,8 @@ async function setEyesSettings() {
   config.setUseDom(true)
   config.setEnablePatterns(true)
   eyes.setConfiguration(config)
-
   eyes.setParentBranchName('main')
+
   try {
     const branch = (await getBranch()) || 'main'
     eyes.setBranchName(branch)
