@@ -16,6 +16,7 @@ import { lazy } from 'react'
 import { createBrowserRouter, createRoutesFromElements, Navigate, Route } from 'react-router'
 import { getRouteById } from 'src/api/gtfsService'
 import { ErrorPage } from 'src/pages/ErrorPage'
+import VelocityHeatmapPage from 'src/pages/velocityHeatmap'
 import { MainRoute } from './MainRoute'
 
 const HomePage = lazy(() => import('../pages/homepage/HomePage'))
@@ -74,6 +75,12 @@ export const PAGES = [
     path: '/map',
     icon: <HeatMapOutlined />,
     element: <TimeBasedMapPage />,
+  },
+  {
+    label: 'velocity_heatmap_page_title',
+    path: '/velocity-heatmap',
+    icon: <HeatMapOutlined />,
+    element: <VelocityHeatmapPage />,
   },
   {
     label: 'singleline_map_page_title',
