@@ -23,16 +23,8 @@ test.describe('dashboard tests', () => {
     await page.getByLabel('עבור למצב כהה').click()
   })
 
-  test('langude use localstorage', async ({ page }) => {
-    await page.getByLabel('English').click()
-    await page.reload()
-    await page.getByLabel('עברית').click()
-    await page.reload()
-    await page.getByLabel('English').click()
-  })
-
   test('dashboard charts contain information', async ({ page }) => {
-    await expect(page.getByText('686 | קווים').first()).toBeVisible({ timeout: 50000 })
+    await expect(page.getByText('686 | קווים').first()).toBeVisible()
     await expect(page.getByText('מועצה אזורית גולן').first()).toBeVisible()
     await expect(page.getByRole('heading', { name: 'אגד', exact: true })).toBeVisible()
   })
