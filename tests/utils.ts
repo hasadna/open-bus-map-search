@@ -110,7 +110,7 @@ export const visitPage = async (page: Page, label: (typeof PAGES)[number]['label
   const href = await link.getAttribute('href')
   await link.click()
   if (href) await page.waitForURL(`**${href}`)
-  await page.waitForTimeout(100)
+  await page.waitForTimeout(500)
   await page.locator('preloader').waitFor({ state: 'hidden' })
   await page.waitForLoadState('networkidle')
 }
@@ -119,11 +119,11 @@ export const verifyAgenciesApiCall = async (page: Page) => {
   const requestPromise = page.waitForRequest((request) =>
     request.url().includes('gtfs_agencies/list'),
   )
-
   await page.reload()
+  await page.locator('preloader').waitFor({ state: 'hidden' })
+
   await page.getByLabel('חברה מפעילה').click()
   const request = await requestPromise
-
   expect((await request.response())?.ok()).toBeTruthy()
 }
 
@@ -133,6 +133,8 @@ export const verifyDateFromParameter = async (page: Page) => {
   )
 
   await page.reload()
+  await page.locator('preloader').waitFor({ state: 'hidden' })
+
   await page.getByLabel('חברה מפעילה').click()
   const request = await requestPromise
 
