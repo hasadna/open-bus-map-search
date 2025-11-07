@@ -120,6 +120,7 @@ export const verifyAgenciesApiCall = async (page: Page) => {
     request.url().includes('gtfs_agencies/list'),
   )
   await page.reload()
+  await page.waitForTimeout(500)
   await page.locator('preloader').waitFor({ state: 'hidden' })
 
   await page.getByLabel('חברה מפעילה').click()
@@ -136,6 +137,7 @@ export const verifyDateFromParameter = async (page: Page) => {
   await page.locator('preloader').waitFor({ state: 'hidden' })
 
   await page.getByLabel('חברה מפעילה').click()
+  await page.waitForTimeout(500)
   const request = await requestPromise
 
   const dateFrom = dayjs(new URL(request.url()).searchParams.get('date_from'))
