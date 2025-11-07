@@ -4,6 +4,9 @@ import { VelocityHeatmapLegend } from './components/VelocityHeatmapLegend'
 import { VelocityHeatmapRectangles } from './components/VelocityHeatmapRectangles'
 import { useVelocityAggregationData } from './useVelocityAggregationData'
 import 'leaflet/dist/leaflet.css'
+import { PageContainer } from '../components/PageContainer'
+import { ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
+import { t } from 'i18next'
 
 const DEFAULT_BOUNDS = {
   minLat: 29.5,
@@ -30,9 +33,26 @@ const VelocityHeatmapPage: React.FC = () => {
   const [max, setMax] = useState(1)
 
   return (
-    <div>
-      <h1>Velocity Aggregation Heatmap</h1>
-      <p>This page will display a heatmap of velocity aggregation data.</p>
+    <PageContainer className="velocity-heatmap-page-container">
+      <Typography variant="h4">{t('velocity_heatmap_page_title')}</Typography>
+      <p>{t('velocity_heatmap_page_description')}</p>
+      <ToggleButtonGroup
+        color={visMode ? 'standard' : 'primary'}
+        value={visMode}
+        disabled={!visMode}
+        sx={{ height: 56 }}
+        exclusive
+        fullWidth
+        dir="rtl"
+        onChange={(_, value: (typeof VIS_MODES)[number]) =>
+          value ? setVisMode(value.key as 'avg' | 'std' | 'cv') : undefined
+        }>
+        {VIS_MODES.toReversed().map((visMode) => (
+          <ToggleButton key={visMode.key} value={visMode.label}>
+            {visMode.label}
+          </ToggleButton>
+        ))}
+      </ToggleButtonGroup>
       <div style={{ margin: '12px 0' }}>
         <b>Visualization:</b>{' '}
         {VIS_MODES.map((mode) => (
@@ -79,7 +99,7 @@ const VelocityHeatmapPage: React.FC = () => {
           </pre>
         </div>
       )}
-    </div>
+    </PageContainer>
   )
 }
 
