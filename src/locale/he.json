@@ -22,6 +22,7 @@
   "velocity_heatmap_visualization_options_avg": "מהירות ממוצעת",
   "velocity_heatmap_visualization_options_std": "סטיית תקן",
   "velocity_heatmap_visualization_options_cv": "מקדם השונות: std/avg speed",
+  "sample_data": "נתוני דוגמה",
   "gaps_page_title": "נסיעות שלא בוצעו",
   "gaps_page_description": "תצוגה של כל הנסיעות שלא יצאו כמתוכנן לפי חברה מפעילה, קו, מסלול ותאריך",
   "gaps_patterns_page_title": "דפוסי נסיעות שלא בוצעו",

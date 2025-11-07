@@ -22,6 +22,7 @@
   "velocity_heatmap_visualization_options_avg": "ru Average Speed",
   "velocity_heatmap_visualization_options_std": "ru  Standard Deviation",
   "velocity_heatmap_visualization_options_cv": "ru Coefficient of Variation: std/avg speed",
+  "sample_data": "ru Sample Data",
   "gaps_page_title": "Поездки, которые не состоялись",
   "gaps_page_description": "Отображает маршруты, которые не состоялись согласно расписанию по заданному автобусному оператору, номеру маршрута, маршруту и дате",
   "gaps_patterns_page_title": "паттерны",
