@@ -22,7 +22,6 @@ export function useVelocityAggregationData(bounds: VelocityAggregationBounds) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const { minLat, maxLat, minLon, maxLon, date } = bounds
-
   const encodedDate = encodeURIComponent(`${date?.format('YYYY-MM-DD')}T00:00:00`)
 
   useEffect(() => {

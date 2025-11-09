@@ -26,7 +26,6 @@ const VelocityHeatmapPage: React.FC = () => {
   const [visMode, setVisMode] = useState<'avg' | 'std' | 'cv'>('avg')
   const [min, setMin] = useState(0)
   const [max, setMax] = useState(1)
-
   const [value, setValue] = React.useState<Dayjs | null>(dayjs(new Date()))
 
   const { data, loading, error } = useVelocityAggregationData({
