@@ -1,3 +1,7 @@
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import { DatePicker } from '@mui/x-date-pickers/DatePicker'
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
+import dayjs, { Dayjs } from 'dayjs'
 import React, { useState } from 'react'
 import { MapContainer, TileLayer } from 'react-leaflet'
 import { VelocityHeatmapLegend } from './components/VelocityHeatmapLegend'
@@ -19,21 +23,25 @@ const VIS_MODES = [
 ]
 
 const VelocityHeatmapPage: React.FC = () => {
+  const [visMode, setVisMode] = useState<'avg' | 'std' | 'cv'>('avg')
+  const [min, setMin] = useState(0)
+  const [max, setMax] = useState(1)
+
+  const [value, setValue] = React.useState<Dayjs | null>(dayjs(new Date()))
+
   const { data, loading, error } = useVelocityAggregationData({
     minLat: DEFAULT_BOUNDS.minLat,
     maxLat: DEFAULT_BOUNDS.maxLat,
     minLon: DEFAULT_BOUNDS.minLon,
     maxLon: DEFAULT_BOUNDS.maxLon,
+    date: value,
   })
-  const [visMode, setVisMode] = useState<'avg' | 'std' | 'cv'>('avg')
-  const [min, setMin] = useState(0)
-  const [max, setMax] = useState(1)
 
   return (
     <div>
       <h1>Velocity Aggregation Heatmap</h1>
       <p>This page will display a heatmap of velocity aggregation data.</p>
-      <div style={{ margin: '12px 0' }}>
+      <div style={{ margin: '12px 0', display: 'flex', alignItems: 'center', gap: '2rem' }}>
         <b>Visualization:</b>{' '}
         {VIS_MODES.map((mode) => (
           <label key={mode.key} style={{ marginRight: 12 }}>
@@ -47,6 +55,15 @@ const VelocityHeatmapPage: React.FC = () => {
             {mode.label}
           </label>
         ))}
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <DatePicker
+            defaultValue={dayjs(new Date())}
+            value={value}
+            onChange={(newValue) => setValue(newValue)}
+            label="בחר תאריך"
+            sx={{ marginRight: 12 }}
+          />
+        </LocalizationProvider>
       </div>
       {loading && <p>Loading data...</p>}
       {error && <p style={{ color: 'red' }}>Error: {error}</p>}

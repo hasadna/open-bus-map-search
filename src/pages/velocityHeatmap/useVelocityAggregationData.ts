@@ -1,3 +1,4 @@
+import { Dayjs } from 'dayjs'
 import { useEffect, useState } from 'react'
 
 export interface VelocityAggregation {
@@ -13,16 +14,20 @@ export interface VelocityAggregationBounds {
   maxLat: number
   minLon: number
   maxLon: number
+  date: Dayjs | null
 }
 
 export function useVelocityAggregationData(bounds: VelocityAggregationBounds) {
   const [data, setData] = useState<VelocityAggregation[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const { minLat, maxLat, minLon, maxLon, date } = bounds
+
+  const encodedDate = encodeURIComponent(`${date?.format('YYYY-MM-DD')}T00:00:00`)
 
   useEffect(() => {
     setLoading(true)
-    const apiUrl = `https://open-bus-stride-api.hasadna.org.il/siri_velocity_aggregation/siri_velocity_aggregation?recorded_from=2025-01-01T00%3A00%3A00&lon_min=${bounds.minLon}&lon_max=${bounds.maxLon}&lat_min=${bounds.minLat}&lat_max=${bounds.maxLat}&rounding_precision=2`
+    const apiUrl = `https://open-bus-stride-api.hasadna.org.il/siri_velocity_aggregation/siri_velocity_aggregation?recorded_from=${encodedDate}&lon_min=${minLon}&lon_max=${maxLon}&lat_min=${minLat}&lat_max=${maxLat}&rounding_precision=2`
     fetch(apiUrl)
       .then((res) => {
         if (!res.ok) throw new Error('Failed to fetch data')
