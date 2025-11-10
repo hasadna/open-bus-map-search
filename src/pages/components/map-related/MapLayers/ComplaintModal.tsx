@@ -50,6 +50,7 @@ interface ComplaintFormValues extends User {
   direction?: number
   wait?: [string, string]
   raisingStation?: string
+  city?: string
   raisingStationCity?: string
   destinationStationCity?: string
   reportdate?: string
