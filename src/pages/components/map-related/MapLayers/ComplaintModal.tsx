@@ -108,11 +108,9 @@ const ComplaintModal = ({
   )
   useEffect(() => {
     if (route.routeShortName === form.getFieldValue('lineNumberText') && linesQuery.data?.length) {
-      const matchingIndex = linesQuery.data.findIndex(
-        ({ lineCode, directionCode }) =>
-          Number(route.routeMkt) === lineCode && Number(directionCode) === directionCode,
-      )
-      console.log(route, linesQuery.data)
+      const matchingIndex = linesQuery.data.findIndex(({ lineCode, directionCode }) => {
+        return Number(route.routeMkt) === lineCode && Number(directionCode) === directionCode
+      })
 
       if (matchingIndex !== -1) {
         form.setFieldValue('direction', matchingIndex)
