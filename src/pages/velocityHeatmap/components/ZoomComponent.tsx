@@ -1,11 +1,16 @@
 import React from 'react'
-import { useMapEvents } from 'react-leaflet'
+import { useMap, useMapEvents } from 'react-leaflet'
 
 interface ZoomComponentProps {
   zoom: number
   onZoomChange: (zoom: number) => void
   roundingPrecision: number
   onRoundingPrecisionChange: (roundingPrecision: number) => void
+}
+
+export function useZoomLevel() {
+  const map = useMap()
+  return map.getZoom()
 }
 
 export const ZoomComponent: React.FC<ZoomComponentProps> = ({
