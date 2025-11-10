@@ -68,8 +68,6 @@ test.describe('clearButton functionality', () => {
       await operator.click()
       await page.getByRole('option', { name: 'אלקטרה אפיקים', exact: true }).click()
       await selectLineNumberAndRoute(page, lineNumber, route)
-      await page.getByLabel('רק פערים').check()
-      await page.getByLabel('רק פערים').uncheck()
       await lineNumber.click()
       await route.waitFor({ state: 'visible' })
       await clearInput(page)
