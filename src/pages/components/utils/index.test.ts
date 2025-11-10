@@ -42,8 +42,8 @@ describe('sortByMode', () => {
   it('should convert gapList to HourlyData structure', () => {
     const list: Gap[] = [
       {
-        plannedStartTime: parseTime(new Date('2023-10-04T02:00')),
-        actualStartTime: parseTime(new Date('2023-10-04T02:00')),
+        plannedStartTime: parseTime(new Date('2023-10-04T02:00:00+00:00')),
+        actualStartTime: parseTime(new Date('2023-10-04T02:00:00+00:00')),
       },
     ]
     const [results] = processData(list)
@@ -57,7 +57,7 @@ describe('sortByMode', () => {
   it('should convert gapList time entry with null value to - 0', () => {
     const list: Gap[] = [
       {
-        plannedStartTime: parseTime(new Date('2023-10-04T02:20')),
+        plannedStartTime: parseTime(new Date('2023-10-04T02:20:00+00:00')),
         actualStartTime: undefined,
       },
     ]
@@ -73,12 +73,12 @@ describe('sortByMode', () => {
   it('should convert entries at same time to single entry with sum  of actual and planned rides', () => {
     const list: Gap[] = [
       {
-        plannedStartTime: parseTime(new Date('2023-10-04T02:00')),
-        actualStartTime: parseTime(new Date('2023-10-04T02:00')),
+        plannedStartTime: parseTime(new Date('2023-10-04T02:00:00+00:00')),
+        actualStartTime: parseTime(new Date('2023-10-04T02:00:00+00:00')),
       },
       {
-        plannedStartTime: parseTime(new Date('2023-10-04T02:00')),
-        actualStartTime: parseTime(new Date('2023-10-04T02:00')),
+        plannedStartTime: parseTime(new Date('2023-10-04T02:00:00+00:00')),
+        actualStartTime: parseTime(new Date('2023-10-04T02:00:00+00:00')),
       },
     ]
     const [results] = processData(list)

@@ -130,7 +130,7 @@
   "github_link": "Go to GitHub",
   "dark_mode_tooltip": "Move to Dark mode",
   "light_mode_tooltip": "Move to Light mode",
-  "Change Language": "עברית",
+  "change_language": "Change Language",
   "bug_title": "Title/Summary",
   "bug_description": "Description",
   "bug_environment": "Environment",
