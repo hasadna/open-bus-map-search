@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import { MapContainer, TileLayer } from 'react-leaflet'
 import { VelocityHeatmapLegend } from './components/VelocityHeatmapLegend'
 import { VelocityHeatmapRectangles } from './components/VelocityHeatmapRectangles'
-import { ZoomComponent } from './components/ZoomComponent'
 import 'leaflet/dist/leaflet.css'
 
 const VIS_MODES = [
@@ -12,12 +11,8 @@ const VIS_MODES = [
 ]
 
 const DEFAULT_ZOOM_LEVEL = 10
-const DEFAULT_ROUNDING_PRECISION = 2
 
 const VelocityHeatmapPage: React.FC = () => {
-  const [zoomLevel, setZoomLevel] = useState(DEFAULT_ZOOM_LEVEL)
-  const [roundingPrecision, setRoundingPrecision] = useState(DEFAULT_ROUNDING_PRECISION)
-
   const [visMode, setVisMode] = useState<'avg' | 'std' | 'cv'>('avg')
   const [min, setMin] = useState(0)
   const [max, setMax] = useState(1)
@@ -59,12 +54,6 @@ const VelocityHeatmapPage: React.FC = () => {
             }}
           />
           <VelocityHeatmapLegend visMode={visMode} min={min} max={max} />
-          <ZoomComponent
-            zoom={zoomLevel}
-            onZoomChange={setZoomLevel}
-            roundingPrecision={roundingPrecision}
-            onRoundingPrecisionChange={setRoundingPrecision}
-          />
         </MapContainer>
       </div>
     </div>
