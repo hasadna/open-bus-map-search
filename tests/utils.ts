@@ -115,17 +115,6 @@ export const visitPage = async (page: Page, label: (typeof PAGES)[number]['label
   await page.waitForLoadState('networkidle')
 }
 
-export const verifyAgenciesApiCall = async (page: Page) => {
-  let requestMade = false
-  page.on('request', (request) => {
-    if (request.url().includes('gtfs_agencies/list')) requestMade = true
-  })
-
-  await page.reload()
-  await page.getByLabel('חברה מפעילה').click()
-  expect(requestMade).toBe(true)
-}
-
 export const verifyDateFromParameter = async (page: Page) => {
   const requestPromise = page.waitForRequest((request) =>
     request.url().includes('gtfs_agencies/list'),
