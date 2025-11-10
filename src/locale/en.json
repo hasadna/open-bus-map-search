@@ -219,6 +219,7 @@
   "invalid_rav_kav_number": "Invalid Rav Kav number",
   "station_cat_num": "Station Catalog Number",
   "bus_operator": "Bus Operator",
+  "city": "City",
   "raising_station_city": "City From",
   "destination_station_city": "City To",
   "reportdate": "Ticket Date",

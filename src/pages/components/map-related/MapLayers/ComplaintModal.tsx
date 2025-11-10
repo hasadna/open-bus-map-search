@@ -109,9 +109,11 @@ const ComplaintModal = ({
   useEffect(() => {
     if (route.routeShortName === form.getFieldValue('lineNumberText') && linesQuery.data?.length) {
       const matchingIndex = linesQuery.data.findIndex(
-        ({ originCity, destinationCity }) =>
-          routeParts?.[1] === originCity?.dataText && routeParts?.[3] === destinationCity?.dataText,
+        ({ lineCode, directionCode }) =>
+          Number(route.routeMkt) === lineCode && Number(directionCode) === directionCode,
       )
+      console.log(route, linesQuery.data)
+
       if (matchingIndex !== -1) {
         form.setFieldValue('direction', matchingIndex)
       }
@@ -244,16 +246,22 @@ const ComplaintModal = ({
           field.props = { ...field.props, options: handleSelectOptions(name) }
         }
 
-        if (name === 'raisingStationAddress') {
-          field.props = { ...field.props, disabled: !isAddStation }
-          field.rules = [{ required: isAddStation || selectedComplaintType === 'station_signs' }]
-          if (!isAddStation) form.setFieldValue('raisingStationAddress', undefined)
+        if (name === 'raisingStationAddress' && selectedComplaintType === 'station_signs') {
+          field.rules = [{ required: true }]
         }
 
-        if (name === 'raisingStation') {
-          field.props = { ...field.props, disabled: isAddStation }
-          field.rules = [{ required: !isAddStation }]
-          if (isAddStation) form.setFieldValue('raisingStation', undefined)
+        if (selectedComplaintType === 'add_or_remove_station') {
+          if (name === 'raisingStationAddress') {
+            field.props = { ...field.props, disabled: !isAddStation }
+            field.rules = [{ required: isAddStation }]
+            if (!isAddStation) form.setFieldValue('raisingStationAddress', undefined)
+          }
+
+          if (name === 'raisingStation') {
+            field.props = { ...field.props, disabled: isAddStation }
+            field.rules = [{ required: !isAddStation }]
+            if (isAddStation) form.setFieldValue('raisingStation', undefined)
+          }
         }
 
         if (name === 'ravKavNumber' || name === 'wait') {

@@ -231,6 +231,7 @@
   "invalid_rav_kav_number": "מספר רב קו לא תקין",
   "station_cat_num": "מספר קטלוגי של התחנה",
   "bus_operator": "חברת אוטובוסים",
+  "city": "יישוב",
   "raising_station_city": "יישוב מוצא",
   "destination_station_city": "יישוב יעד",
   "reportdate": "תאריך מתן הדוח",
