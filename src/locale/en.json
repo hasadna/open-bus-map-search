@@ -175,6 +175,7 @@
   "invalid_id": "Invalid ID",
   "email": "Email",
   "mobile": "Mobile Number",
+  "invalid_mobile": "Invalid mobile number",
   "complaint_type": "Complaint Type",
   "other": "Other",
   "no_stop": "No Stop at Station",

@@ -27,6 +27,7 @@ import {
   allComplaintFields,
   ComplainteField,
   createAllRules,
+  mobileOnly,
   RenderField,
 } from './ComplaintModalFields'
 import { type ComplaintType, complaintTypeMappings, complaintTypes } from './ComplaintModalForms'
@@ -150,6 +151,14 @@ const ComplaintModal = ({
       }
 
       if (Object.keys(changedValues).some((key) => userKeys.has(key))) {
+        if (
+          changedValues?.mobile &&
+          mobileOnly.test(changedValues.mobile) &&
+          changedValues.mobile.length === 10
+        ) {
+          changedValues.mobile = `${changedValues.mobile.slice(0, 3)}-${changedValues.mobile.slice(3)}`
+          form.setFieldValue('mobile', changedValues.mobile)
+        }
         SetUserStorge({ ...userStorge, ...changedValues })
       }
     },
@@ -330,7 +339,7 @@ const ComplaintModal = ({
               <RenderField {...allComplaintFields.lastName} rules={allRules.lastName} />
               <RenderField {...allComplaintFields.iDNum} rules={allRules.iDNum} />
               <RenderField {...allComplaintFields.email} />
-              <RenderField {...allComplaintFields.mobile} />
+              <RenderField {...allComplaintFields.mobile} rules={allRules.mobile} />
               <RenderField
                 {...allComplaintFields.complaintType}
                 props={{ options: complaintOptins }}

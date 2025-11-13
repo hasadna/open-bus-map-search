@@ -26,6 +26,7 @@ import { useGovTimeQuery } from 'src/hooks/useFormQuerys'
 // --- Validators ---
 const numberOnly = /^\d+$/
 const hebOnly = /^(?![-'"\s()]*$)([א-ת-'"\s()]*)\s*$/u
+export const mobileOnly = /^05\d(\-)?[2-9]\d{6}$/
 
 export const createAllRules = (form: FormInstance, t: TFunction) => ({
   wait: [
@@ -46,7 +47,8 @@ export const createAllRules = (form: FormInstance, t: TFunction) => ({
     },
   ] as Rule[],
   iDNum: [
-    { required: true, len: 9 },
+    { required: true },
+    { len: 9 },
     {
       validator: async (_, value: string) => {
         if (!value || value.length !== 9 || !numberOnly.test(value))
@@ -61,16 +63,16 @@ export const createAllRules = (form: FormInstance, t: TFunction) => ({
     },
   ] as Rule[],
   ravKavNumber: [
-    { required: true, min: 11 },
-    {
-      validator: async (_, value: string) => {
-        if (!numberOnly.test(value)) throw new Error(t('invalid_rav_kav_number'))
-        return Promise.resolve()
-      },
-    },
+    { required: true },
+    { len: 11 },
+    { pattern: numberOnly, message: t('invalid_rav_kav_number') },
   ] as Rule[],
-  firstName: [{ required: true, pattern: hebOnly, message: t('only_hebrew_allowed') }] as Rule[],
-  lastName: [{ required: true, pattern: hebOnly, message: t('only_hebrew_allowed') }] as Rule[],
+  firstName: [
+    { required: true },
+    { pattern: hebOnly, message: t('only_hebrew_allowed') },
+  ] as Rule[],
+  lastName: [{ required: true }, { pattern: hebOnly, message: t('only_hebrew_allowed') }] as Rule[],
+  mobile: [{ required: true }, { pattern: mobileOnly, message: t('invalid_mobile') }] as Rule[],
 })
 
 // ---   Field Components ---
@@ -159,7 +161,6 @@ export const allComplaintFields = {
   mobile: createField({
     name: 'mobile',
     type: 'Input',
-    rules: [{ required: true }],
     props: { maxLength: 11 },
   }),
   complaintType: createField({
