@@ -136,13 +136,23 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
                 <span>{position.loc.join(' ,')}</span>
               </li>
             </ul>
-            <Button
-              variant="contained"
-              color="success"
-              onClick={() => setModalOpen((prev) => !prev)}
-              style={{ borderRadius: '50px' }}>
-              {t('open_complaint')}
-            </Button>
+            {route.routeType === '3' && ( // Bus Only
+              <>
+                <Button
+                  variant="contained"
+                  color="success"
+                  onClick={() => setModalOpen((prev) => !prev)}
+                  style={{ borderRadius: '50px' }}>
+                  {t('open_complaint')}
+                </Button>
+                <ComplaintModal
+                  modalOpen={modalOpen}
+                  setModalOpen={setModalOpen}
+                  position={position}
+                  route={route}
+                />
+              </>
+            )}
             <br />
             <Button
               href="https://www.gov.il/BlobFolder/generalpage/gtfs_general_transit_feed_specifications/he/GTFS_Developer_Information_2024.11.21b.pdf"
@@ -171,13 +181,6 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
                 )}
               </div>
             )}
-
-            <ComplaintModal
-              modalOpen={modalOpen}
-              setModalOpen={setModalOpen}
-              position={position}
-              route={route}
-            />
           </div>
           {children}
         </>
