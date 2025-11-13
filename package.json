@@ -104,7 +104,7 @@
     "@types/underscore.string": "^0.0.41",
     "@typescript-eslint/eslint-plugin": "^8.37.0",
     "@typescript-eslint/parser": "^8.37.0",
-    "@vitejs/plugin-react-oxc": "^0.3.0",
+    "@vitejs/plugin-react-oxc": "^0.4.3",
     "babel-plugin-transform-import-meta": "^2.3.3",
     "cross-env": "^10.1.0",
     "eslint": "^9.35.0",
