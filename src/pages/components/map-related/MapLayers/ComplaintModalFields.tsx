@@ -26,7 +26,7 @@ import { useGovTimeQuery } from 'src/hooks/useFormQuerys'
 // --- Validators ---
 const numberOnly = /^\d+$/
 const hebOnly = /^(?![-'"\s()]*$)([א-ת-'"\s()]*)\s*$/u
-export const mobileOnly = /^05\d(\-)?[2-9]\d{6}$/
+export const mobileOnly = /^05\d-?[2-9]\d{6}$/u
 
 export const createAllRules = (form: FormInstance, t: TFunction) => ({
   wait: [
