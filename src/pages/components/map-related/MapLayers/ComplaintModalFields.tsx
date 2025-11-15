@@ -91,16 +91,18 @@ const fieldComponents = {
       />
     )
   },
-  TimePicker: (props: TimePickerProps) => <TimePicker {...props} style={fullWidth} format="H:mm" />,
-  TimeRangePicker: (props: TimeRangePickerProps) => {
-    return <TimePicker.RangePicker {...props} style={fullWidth} format="H:mm" />
-  },
+  TimePicker: (props: TimePickerProps) => (
+    <TimePicker {...props} style={fullWidth} format="H:mm" minuteStep={5} />
+  ),
+  TimeRangePicker: (props: TimeRangePickerProps) => (
+    <TimePicker.RangePicker {...props} style={fullWidth} format="H:mm" minuteStep={5} />
+  ),
   Checkbox: (props: CheckboxProps & { title?: string }) => (
     <Checkbox {...props}>{props.title}</Checkbox>
   ),
   CheckboxGroup: (props: CheckboxGroupProps) => <Checkbox.Group {...props} style={fullWidth} />,
   Radio: (props: RadioGroupProps) => <Radio.Group {...props} style={fullWidth} />,
-  Select: (props: SelectProps) => <Select {...props} style={fullWidth} />,
+  Select: (props: SelectProps) => <Select {...props} style={fullWidth} showSearch allowClear />,
 } as const
 
 type FieldType = keyof typeof fieldComponents

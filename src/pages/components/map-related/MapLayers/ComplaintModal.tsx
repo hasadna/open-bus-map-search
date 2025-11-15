@@ -106,7 +106,7 @@ const ComplaintModal = ({
 
   const routeParts = useMemo(
     () => route.routeLongName?.split(/[<->,-]/u).filter((part) => part.trim() !== ''),
-    [route],
+    [route.routeLongName],
   )
   useEffect(() => {
     if (route.routeShortName === form.getFieldValue('lineNumberText') && linesQuery.data?.length) {
@@ -313,6 +313,7 @@ const ComplaintModal = ({
               reportdate: date,
               eventTime: date,
               reportTime: date,
+              wait: [date?.add(-30, 'm'), date?.add(30, 'm')] as unknown as [string, string],
               raisingStationCity: routeParts?.[1],
               destinationStationCity: routeParts?.[3],
               licenseNum: position.point?.siri_ride__vehicle_ref,
