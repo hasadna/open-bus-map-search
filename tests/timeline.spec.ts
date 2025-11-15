@@ -1,13 +1,5 @@
-import i18next from 'i18next'
 import TimelinePage from 'src/test_pages/TimelinePage'
-import {
-  harOptions,
-  setupTest,
-  test,
-  verifyAgenciesApiCall,
-  verifyDateFromParameter,
-  visitPage,
-} from './utils'
+import { harOptions, setupTest, test, verifyDateFromParameter, visitPage } from './utils'
 
 test.describe('Timeline Page Tests', () => {
   let timelinePage: TimelinePage
@@ -16,7 +8,7 @@ test.describe('Timeline Page Tests', () => {
     await setupTest(page)
     await advancedRouteFromHAR('tests/HAR/timeline.har', harOptions)
     timelinePage = new TimelinePage(page) // Initialize timelinePage before each test
-    await visitPage(page, i18next.t('timeline_page_title'), /timeline/)
+    await visitPage(page, 'timeline_page_title')
   })
 
   test('Test route selection disappears after line number is closed', async () => {
@@ -124,13 +116,7 @@ test.describe('Timeline Page Tests', () => {
     await timelinePage.verifyRouteSelectionVisible(timelinePage.timelineGraph, true, 100000)
   })
 
-  test('verify API call to gtfs_agencies/list - "Trips history"', async ({ page }) => {
-    await verifyAgenciesApiCall(page)
-  })
-
-  test('the dateFrom parameter should be recent when visiting the "Trips history"', async ({
-    page,
-  }) => {
+  test('Verify date_from parameter from - "Trips history"', async ({ page }) => {
     await verifyDateFromParameter(page)
   })
 })

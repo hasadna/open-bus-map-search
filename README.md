@@ -90,6 +90,7 @@ We’ve hidden a few fun surprises in the [web app](https://open-bus-map-search.
     </tr>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/MoranGoz"><img src="https://avatars.githubusercontent.com/u/38177429?v=4?s=100" width="100px;" alt="MoranGoz"/><br /><sub><b>MoranGoz</b></sub></a><br /><a href="#code-MoranGoz" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Tamir-K"><img src="https://avatars.githubusercontent.com/u/121674805?v=4?s=100" width="100px;" alt="Tamir K."/><br /><sub><b>Tamir K.</b></sub></a><br /><a href="#code-tamir-k" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>

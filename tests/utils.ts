@@ -8,6 +8,7 @@ import Backend from 'i18next-fs-backend'
 import { test as baseTest, customMatcher, Matcher } from 'playwright-advanced-har'
 import { RouteFromHAROptions } from 'playwright-advanced-har/lib/utils/types'
 import dayjs from 'src/dayjs'
+import { PAGES } from 'src/routes'
 
 type CollectIstanbulCoverageWindow = Window &
   typeof globalThis & {
@@ -96,40 +97,34 @@ export const waitForSkeletonsToHide = async (page: Page) => {
 export const setupTest = async (page: Page, lng: string = 'he') => {
   await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
   await page.route(/api\.github\.com/, (route) => route.abort())
+  await page.route(/.*openstreetmap*/, (route) => route.abort())
   await page.clock.setSystemTime(getPastDate())
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await i18next.use(Backend).init({ lng, backend: { loadPath: 'src/locale/{{lng}}.json' } })
   await page.goto('/')
   await page.locator('preloader').waitFor({ state: 'hidden' })
-  await page.getByRole('progressbar').waitFor({ state: 'hidden' })
 }
 
-export const visitPage = async (page: Page, pageName: string, url: RegExp) => {
-  await page.getByText(pageName, { exact: true }).and(page.getByRole('link')).click()
-  await page.waitForURL(url)
+export const visitPage = async (page: Page, label: (typeof PAGES)[number]['label']) => {
+  const link = page.getByText(i18next.t(label), { exact: true }).and(page.getByRole('link'))
+  const href = await link.getAttribute('href')
+  await link.click()
+  if (href) await page.waitForURL(`**${href}`)
+  await page.waitForTimeout(500)
   await page.locator('preloader').waitFor({ state: 'hidden' })
-  await page.getByRole('progressbar').waitFor({ state: 'hidden' })
-}
-
-export const verifyAgenciesApiCall = async (page: Page) => {
-  let apiCallMade = false
-  page.on('request', (request) => {
-    if (request.url().includes('gtfs_agencies/list')) {
-      apiCallMade = true
-    }
-  })
-
-  await page.getByLabel('חברה מפעילה').click()
-  expect(apiCallMade).toBeTruthy()
+  await page.waitForLoadState('networkidle')
 }
 
 export const verifyDateFromParameter = async (page: Page) => {
-  const apiRequest = page.waitForRequest((request) => request.url().includes('gtfs_agencies/list'))
+  const requestPromise = page.waitForRequest((request) =>
+    request.url().includes('gtfs_agencies/list'),
+  )
 
-  const request = await apiRequest
-  const url = new URL(request.url())
-  const dateFromParam = url.searchParams.get('date_from')
-  const dateFrom = dayjs(dateFromParam)
+  await page.reload()
+  await page.getByLabel('חברה מפעילה').click()
+  const request = await requestPromise
+
+  const dateFrom = dayjs(new URL(request.url()).searchParams.get('date_from'))
   const daysAgo = dayjs(getPastDate()).diff(dateFrom, 'days')
 
   expect(daysAgo).toBeGreaterThanOrEqual(0)

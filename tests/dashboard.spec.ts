@@ -10,7 +10,7 @@ test.describe('dashboard tests', () => {
   test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
     await setupTest(page)
     await advancedRouteFromHAR('tests/HAR/dashboard.har', harOptions)
-    await visitPage(page, 'קיום נסיעות', /dashboard/)
+    await visitPage(page, 'dashboard_page_title')
     await page.getByText('הקווים הגרועים ביותר').waitFor()
     await waitForSkeletonsToHide(page)
   })

@@ -123,7 +123,7 @@
   "github_link": "Перейти на GitHub",
   "dark_mode_tooltip": "Перейти в темный режим",
   "light_mode_tooltip": "Перейти в светлый режим",
-  "Change Language": "Русский",
+  "change_language": "изменить язык",
   "bug_title": "Заголовок/Резюме",
   "bug_description": "Описание",
   "bug_environment": "Среда",
