@@ -1,209 +1,370 @@
-import { SiriRideWithRelatedPydanticModel } from '@hasadna/open-bus-api-client'
+import { ComplaintsSendPostRequest, GtfsRoutePydanticModel } from '@hasadna/open-bus-api-client'
+import { Close } from '@mui/icons-material'
 import {
-  Button,
   CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
-  MenuItem,
-  TextField,
+  IconButton,
+  Typography,
 } from '@mui/material'
-import { ChangeEvent, useEffect, useState } from 'react'
+import { useMutation } from '@tanstack/react-query'
+import { Button, Form } from 'antd'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { getSiriRideWithRelated } from 'src/api/siriService'
+import { useLocalStorage } from 'usehooks-ts'
+import { COMPLAINTS_API } from 'src/api/apiConfig'
+import dayjs from 'src/dayjs'
+import {
+  useBoardingStationQuery,
+  useBusOperatorQuery,
+  useCitiesQuery,
+  useLinesQuery,
+} from 'src/hooks/useFormQuerys'
 import { Point } from 'src/pages/timeBasedMap'
+import {
+  allComplaintFields,
+  ComplainteField,
+  createAllRules,
+  mobileOnly,
+  RenderField,
+} from './ComplaintModalFields'
+import { type ComplaintType, complaintTypeMappings, complaintTypes } from './ComplaintModalForms'
+
+interface User {
+  firstName: string
+  lastName: string
+  iDNum: string
+  email: string
+  mobile: string
+}
+
+interface ComplaintFormValues extends User {
+  complaintType: ComplaintType
+  applyContent: string
+  busOperator?: string
+  licenseNum?: string
+  eventDate?: string
+  lineNumberText?: string
+  eventTime?: string
+  direction?: number
+  wait?: [string, string]
+  raisingStation?: string
+  city?: string
+  raisingStationCity?: string
+  destinationStationCity?: string
+  reportdate?: string
+  reportTime?: string
+  busDirectionFrom?: string
+  busDirectionTo?: string
+  addOrRemoveStation?: string
+  raisingStationAddress?: string
+  addFrequencyOverCrowd?: boolean
+  addFrequencyLongWait?: boolean
+  addFrequencyExtendTime?: boolean
+  firstDeclaration?: boolean
+  secondDeclaration?: boolean
+  ravKavNumber?: string
+  addFrequencyReason?: string
+}
 
 interface ComplaintModalProps {
   modalOpen?: boolean
   setModalOpen?: (open: boolean) => void
   position: Point
+  route: GtfsRoutePydanticModel
 }
 
-type complaintTypeStrings =
-  | 'other'
-  | 'no_stop'
-  | 'no_ride'
-  | 'delay'
-  | 'overcrowded'
-  | 'driver_behavior'
-  | 'early'
-  | 'cleanliness'
-  | 'fine_appeal'
-  | 'route_change'
-  | 'line_switch'
-  | 'station_signs'
+const resetRouteKeys = new Set(['eventDate', 'busOperator', 'lineNumberText'])
+const userKeys = new Set(['firstName', 'lastName', 'iDNum', 'email', 'mobile'])
 
-type complaintType = {
-  value: complaintTypeStrings
-  label: complaintTypeStrings
-}
-
-const complaintTypes: complaintType[] = [
-  { value: 'other', label: 'other' },
-  { value: 'no_stop', label: 'no_stop' },
-  { value: 'no_ride', label: 'no_ride' },
-  { value: 'delay', label: 'delay' },
-  { value: 'overcrowded', label: 'overcrowded' },
-  { value: 'driver_behavior', label: 'driver_behavior' },
-  { value: 'early', label: 'early' },
-  { value: 'cleanliness', label: 'cleanliness' },
-  { value: 'fine_appeal', label: 'fine_appeal' },
-  { value: 'route_change', label: 'route_change' },
-  { value: 'line_switch', label: 'line_switch' },
-  { value: 'station_signs', label: 'station_signs' },
-]
-
-const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: ComplaintModalProps) => {
+const ComplaintModal = ({
+  modalOpen = false,
+  setModalOpen,
+  position,
+  route,
+}: ComplaintModalProps) => {
   const { t, i18n } = useTranslation()
-  const [siriRide, setSiriRide] = useState<SiriRideWithRelatedPydanticModel | undefined>()
-  const [isLoading, setIsLoading] = useState(false)
-  const [complaintData, setComplaintData] = useState({
-    firstName: '',
-    lastName: '',
-    id: '',
-    email: '',
-    phone: '',
-    complaintType: '',
-    description: '',
+  const [form] = Form.useForm<ComplaintFormValues>()
+  const [selectedComplaintType, setSelectedComplaintType] = useState<ComplaintType | null>(null)
+  const [userStorge, SetUserStorge] = useLocalStorage<Partial<User>>('complaint', {})
+
+  const eventDate = Form.useWatch('eventDate', form)
+  const reportdate = Form.useWatch('reportdate', form)
+  const busOperator = Form.useWatch('busOperator', form)
+  const lineNumberText = Form.useWatch('lineNumberText', form)
+  const selectedRoute = Form.useWatch('direction', form)
+  const addOrRemoveStation = Form.useWatch('addOrRemoveStation', form)
+
+  const busOperatorQuery = useBusOperatorQuery()
+  const citiesQuery = useCitiesQuery()
+  const linesQuery = useLinesQuery(eventDate || reportdate, busOperator, lineNumberText)
+  const boardingStationQuery = useBoardingStationQuery(
+    selectedRoute !== undefined ? linesQuery.data?.[selectedRoute] : undefined,
+  )
+
+  const routeParts = useMemo(
+    () => route.routeLongName?.split(/[<->,-]/u).filter((part) => part.trim() !== ''),
+    [route.routeLongName],
+  )
+  useEffect(() => {
+    if (route.routeShortName === form.getFieldValue('lineNumberText') && linesQuery.data?.length) {
+      const matchingIndex = linesQuery.data.findIndex(({ lineCode, directionCode }) => {
+        return Number(route.routeMkt) === lineCode && Number(directionCode) === directionCode
+      })
+
+      if (matchingIndex !== -1) {
+        form.setFieldValue('direction', matchingIndex)
+      }
+    }
+  }, [linesQuery.data, route, form])
+
+  const submitMutation = useMutation({
+    mutationFn: (complaintsSendPostRequest: ComplaintsSendPostRequest) =>
+      COMPLAINTS_API.complaintsSendPost({ complaintsSendPostRequest }),
   })
 
-  useEffect(() => {
-    setIsLoading(true)
-    getSiriRideWithRelated(
-      position.point!.siri_route__id.toString(),
-      position.point!.siri_ride__vehicle_ref.toString(),
-      position.point!.siri_route__line_ref.toString(),
-    )
-      .then((siriRideRes: SiriRideWithRelatedPydanticModel) => setSiriRide(siriRideRes))
-      .finally(() => setIsLoading(false))
-  }, [position])
+  const handleSubmit = useCallback((values: ComplaintFormValues) => {
+    console.log(values)
+    // TODO: Implement actual submission logic
+    // submitMutation.mutate({ debug: true, userData: payload, databusData: siriRide.data })
+  }, [])
 
-  const textDirection = i18n.language === 'he' ? 'rtl' : 'ltr'
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setComplaintData((prevData) => ({ ...prevData, [name]: value }))
-  }
+  const onValuesChange = useCallback(
+    (changedValues: Partial<ComplaintFormValues>) => {
+      if ('complaintType' in changedValues) {
+        setSelectedComplaintType(changedValues.complaintType as ComplaintType)
+      }
 
-  // const handleSelectChange = (e: SelectChangeEvent<typeof complaintTypes>) => {
-  const handleSelectChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    console.log(e)
-    setComplaintData((prevData) => ({ ...prevData, [name]: value }) as const)
-  }
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    console.log(`lalalala`)
-    e.preventDefault()
-    const complaintPayload = {
-      userData: complaintData,
-      databusData: {
-        operator: siriRide?.gtfsRideGtfsRouteId,
-        ...position,
-      },
-    }
-    console.log(complaintPayload)
-    // Handle the form submission, e.g., send it to an API
-    setModalOpen?.(false)
-  }
+      if (Object.keys(changedValues).some((key) => resetRouteKeys.has(key))) {
+        form.setFieldValue('direction', undefined)
+        form.setFieldValue('raisingStation', undefined)
+      }
+
+      if ('direction' in changedValues) {
+        form.setFieldValue('raisingStation', undefined)
+      }
+
+      if ('eventTime' in changedValues) {
+        form.validateFields(['wait'])
+      }
+
+      if (Object.keys(changedValues).some((key) => userKeys.has(key))) {
+        if (
+          changedValues?.mobile &&
+          mobileOnly.test(changedValues.mobile) &&
+          changedValues.mobile.length === 10
+        ) {
+          changedValues.mobile = `${changedValues.mobile.slice(0, 3)}-${changedValues.mobile.slice(3)}`
+          form.setFieldValue('mobile', changedValues.mobile)
+        }
+        SetUserStorge({ ...userStorge, ...changedValues })
+      }
+    },
+    [form, userStorge],
+  )
+
+  const routeOptions = useMemo(() => {
+    return linesQuery.data?.map(({ directionText }, value) => ({
+      label: directionText,
+      value,
+    }))
+  }, [linesQuery.data])
+
+  const boardingStationOptions = useMemo(() => {
+    return boardingStationQuery.data?.map(({ stationFullName, stationId }) => ({
+      label: stationFullName,
+      value: stationId,
+    }))
+  }, [boardingStationQuery.data])
+
+  const busOperatorOptions = useMemo(() => {
+    return busOperatorQuery.data?.map(({ dataText, dataCode }) => ({
+      label: dataText,
+      value: dataCode,
+    }))
+  }, [busOperatorQuery.data])
+
+  const citiesOptions = useMemo(() => {
+    return citiesQuery.data?.map(({ dataText }) => ({
+      label: dataText,
+      value: dataText,
+    }))
+  }, [busOperatorQuery.data])
+
+  const complaintOptins = useMemo(() => {
+    return complaintTypes.map((value: ComplaintType) => ({ value, label: t(value) }))
+  }, [t])
+
+  const addOrRemoveStationOptins = useMemo(() => {
+    return [
+      { label: t('add_station'), value: '2' },
+      { label: t('remove_station'), value: '1' },
+    ]
+  }, [t])
+
+  const addingFrequencyReasonOptins = useMemo(() => {
+    return [
+      { label: t('add_frequency_load_topics'), value: 'LoadTopics' },
+      { label: t('add_frequency_long_waiting'), value: 'LongWaiting' },
+      { label: t('add_frequency_extension_time'), value: 'ExtensionHours' },
+    ]
+  }, [t])
+
+  const allRules = useMemo(() => createAllRules(form, t), [form, t])
+
+  const handleSelectOptions = useCallback(
+    (name: ComplainteField) => {
+      switch (name) {
+        case 'addingFrequencyReason':
+          return addingFrequencyReasonOptins
+        case 'addOrRemoveStation':
+          return addOrRemoveStationOptins
+        case 'raisingStation':
+          return boardingStationOptions
+        case 'busOperator':
+          return busOperatorOptions
+        case 'city':
+        case 'raisingStationCity':
+        case 'destinationStationCity':
+          return citiesOptions
+        case 'direction':
+          return routeOptions
+      }
+    },
+    [
+      addingFrequencyReasonOptins,
+      addOrRemoveStationOptins,
+      busOperatorOptions,
+      boardingStationOptions,
+      citiesOptions,
+      routeOptions,
+    ],
+  )
+
+  const dynamicFields = useMemo(() => {
+    if (!selectedComplaintType) return null
+    const isAddStation = addOrRemoveStation === '2'
+    return complaintTypeMappings[selectedComplaintType].fields
+      .map((name) => {
+        const field = { ...allComplaintFields[name] }
+
+        if (['Select', 'Radio', 'CheckboxGroup'].includes(field.type)) {
+          field.props = { ...field.props, options: handleSelectOptions(name) }
+        }
+
+        if (name === 'raisingStationAddress' && selectedComplaintType === 'station_signs') {
+          field.rules = [{ required: true }]
+        }
+
+        if (selectedComplaintType === 'add_or_remove_station') {
+          if (name === 'raisingStationAddress') {
+            field.props = { ...field.props, disabled: !isAddStation }
+            field.rules = [{ required: isAddStation }]
+            if (!isAddStation) form.setFieldValue('raisingStationAddress', undefined)
+          }
+
+          if (name === 'raisingStation') {
+            field.props = { ...field.props, disabled: isAddStation }
+            field.rules = [{ required: !isAddStation }]
+            if (isAddStation) form.setFieldValue('raisingStation', undefined)
+          }
+        }
+
+        if (name === 'ravKavNumber' || name === 'wait') {
+          field.rules = allRules[name]
+        }
+
+        return <RenderField key={name} {...field} />
+      })
+      .filter(Boolean)
+  }, [selectedComplaintType, handleSelectOptions, allRules, addOrRemoveStation])
+
+  const date = useMemo(() => {
+    return position.recorded_at_time ? dayjs(position.recorded_at_time) : undefined
+  }, [position.recorded_at_time])
 
   return (
-    <div>
-      {isLoading || !siriRide ? (
-        <div className="loading">
-          <span>{t('loading_routes')}</span>
-          <CircularProgress />
-        </div>
-      ) : (
-        <Dialog
-          dir={textDirection}
-          open={modalOpen}
-          onClose={() => setModalOpen?.(false)}
-          PaperProps={{
-            component: 'form',
-            onSubmit: handleSubmit,
-          }}>
-          <DialogTitle>{t('complaint')}</DialogTitle>
-          <DialogContent>
-            <TextField
-              label={t('first_name')}
-              name="firstName"
-              value={complaintData.firstName}
-              onChange={handleInputChange}
-              fullWidth
-              margin="normal"
-            />
-            <TextField
-              label={t('last_name')}
-              name="lastName"
-              value={complaintData.lastName}
-              onChange={handleInputChange}
-              fullWidth
-              margin="normal"
-            />
-            <TextField
-              label={t('id')}
-              name="id"
-              value={complaintData.id}
-              onChange={handleInputChange}
-              fullWidth
-              margin="normal"
-            />
-            <TextField
-              label={t('email')}
-              name="email"
-              type="email"
-              value={complaintData.email}
-              onChange={handleInputChange}
-              fullWidth
-              margin="normal"
-            />
-            <TextField
-              label={t('phone')}
-              name="phone"
-              type="tel"
-              value={complaintData.phone}
-              onChange={handleInputChange}
-              fullWidth
-              margin="normal"
-            />
-            <TextField
-              id="complaint_type"
-              select
-              margin="normal"
-              label={t('complaint_type')}
-              fullWidth
-              name="complaintType"
-              value={complaintData.complaintType}
-              onChange={handleSelectChange}>
-              {complaintTypes.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {t(option.label)}
-                </MenuItem>
-              ))}
-            </TextField>
-            <TextField
-              label={t('description')}
-              name="description"
-              type="text"
-              value={complaintData.description}
-              onChange={handleInputChange}
-              multiline
-              rows={4}
-              fullWidth
-              margin="normal"
-            />
-            <DialogActions sx={{ gap: '5px', justifyContent: 'flex-end' }}>
-              <Button variant="contained" color="warning" onClick={() => setModalOpen?.(false)}>
-                {t('close_complaint')}
-              </Button>
-              <Button type="submit" variant="contained" color="primary">
-                {t('submit_complaint')}
-              </Button>
-            </DialogActions>
-          </DialogContent>
-        </Dialog>
-      )}
-    </div>
+    <Dialog
+      dir={i18n.dir()}
+      open={modalOpen}
+      onClose={() => setModalOpen?.(false)}
+      slotProps={{ paper: { sx: { maxWidth: '648px', width: '90%', position: 'relative' } } }}>
+      <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between' }}>
+        <Typography fontSize="28px" fontWeight="bold" marginBottom="8px">
+          {t('complaint')}
+        </Typography>
+        <IconButton onClick={() => setModalOpen?.(false)}>
+          <Close />
+        </IconButton>
+      </DialogTitle>
+
+      <DialogContent>
+        <Form
+          form={form}
+          layout="vertical"
+          initialValues={
+            {
+              ...userStorge,
+              addOrRemoveStation: '2',
+              busOperator: position.operator,
+              eventDate: date,
+              reportdate: date,
+              eventTime: date,
+              reportTime: date,
+              wait: [date?.add(-30, 'm'), date?.add(30, 'm')] as unknown as [string, string],
+              raisingStationCity: routeParts?.[1],
+              destinationStationCity: routeParts?.[3],
+              licenseNum: position.point?.siri_ride__vehicle_ref,
+              lineNumberText: route.routeShortName,
+            } as Partial<ComplaintFormValues>
+          }
+          onFinish={handleSubmit}
+          onValuesChange={onValuesChange}>
+          {submitMutation.isSuccess ? (
+            <div>
+              <Typography variant="h2">
+                {t('complaint_number', { number: submitMutation.data.referenceNumber })}
+              </Typography>
+              <Button onClick={() => setModalOpen?.(false)}>{t('close')}</Button>
+            </div>
+          ) : busOperatorQuery.isLoading || submitMutation.isPending ? (
+            <div className="loading">
+              <span>{t('loading_routes')}</span>
+              <CircularProgress />
+            </div>
+          ) : (
+            <>
+              <RenderField {...allComplaintFields.firstName} rules={allRules.firstName} />
+              <RenderField {...allComplaintFields.lastName} rules={allRules.lastName} />
+              <RenderField {...allComplaintFields.iDNum} rules={allRules.iDNum} />
+              <RenderField {...allComplaintFields.email} />
+              <RenderField {...allComplaintFields.mobile} rules={allRules.mobile} />
+              <RenderField
+                {...allComplaintFields.complaintType}
+                props={{ options: complaintOptins }}
+              />
+              {dynamicFields}
+              <RenderField
+                {...allComplaintFields.applyContent}
+                extra={
+                  selectedComplaintType === 'line_switch' ? 'complaint_details_required' : undefined
+                }
+              />
+
+              <DialogActions sx={{ justifyContent: 'flex-end', padding: 0 }}>
+                <Form.Item>
+                  <Button type="primary" htmlType="submit" onClick={() => form.submit()}>
+                    {t('submit_complaint')}
+                  </Button>
+                </Form.Item>
+              </DialogActions>
+            </>
+          )}
+        </Form>
+      </DialogContent>
+    </Dialog>
   )
 }
 
