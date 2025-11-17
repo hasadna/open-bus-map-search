@@ -1,4 +1,5 @@
-import { ComplaintsSendPostRequest, GtfsRoutePydanticModel } from '@hasadna/open-bus-api-client'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { GtfsRoutePydanticModel } from '@hasadna/open-bus-api-client'
 import { Close } from '@mui/icons-material'
 import {
   CircularProgress,
@@ -11,10 +12,11 @@ import {
 } from '@mui/material'
 import { useMutation } from '@tanstack/react-query'
 import { Button, Form } from 'antd'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import axios from 'axios'
+import { ComplaintFormSchemaOneOf } from 'd:\\web\\open-bus-api-client\\open-bus-api-client\\client\\src\\models\\index'
+import { useCallback, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLocalStorage } from 'usehooks-ts'
-import { COMPLAINTS_API } from 'src/api/apiConfig'
 import dayjs from 'src/dayjs'
 import {
   useBoardingStationQuery,
@@ -43,14 +45,14 @@ interface User {
 interface ComplaintData {
   complaintType: ComplaintType
   applyContent: string
-  busOperator?: string
+  busOperator?: number
   licenseNum?: string
   eventDate?: string
   lineNumberText?: string
   eventHour?: string
   direction?: number
   wait?: [string, string]
-  raisingStation?: string
+  raisingStation?: number
   raisingStationCity?: string
   destinationStationCity?: string
   reportdate?: string
@@ -85,7 +87,6 @@ const ComplaintModal = ({
 }: ComplaintModalProps) => {
   const { t, i18n } = useTranslation()
   const [form] = Form.useForm<ComplaintFormValues>()
-  const [selectedComplaintType, setSelectedComplaintType] = useState<ComplaintType | null>(null)
   const [userStorge, SetUserStorge] = useLocalStorage<Partial<User>>('complaint', {})
 
   const eventDate = Form.useWatch('eventDate', form)
@@ -120,22 +121,146 @@ const ComplaintModal = ({
   }, [linesQuery.data, route, form])
 
   const submitMutation = useMutation({
-    mutationFn: (complaintsSendPostRequest: ComplaintsSendPostRequest) =>
-      COMPLAINTS_API.complaintsSendPost({ complaintsSendPostRequest }),
+    mutationFn: (post: { debug: boolean; data: ComplaintFormSchemaOneOf }) =>
+      axios.post<{ referenceNumber: string }>('http://127.0.0.1:3001/complaints/send', post),
+
+    //    COMPLAINTS_API.complaintsSendPost({ complaintsSendPostRequest }),
   })
 
-  const handleSubmit = useCallback((values: ComplaintFormValues) => {
-    console.log(values)
-    // TODO: Implement actual submission logic
-    // submitMutation.mutate({ debug: true, userData: payload, databusData: siriRide.data })
-  }, [])
+  const buildComplaintData = useCallback(
+    ({
+      complaintType,
+      wait,
+      busOperator,
+      eventDate,
+      reportdate,
+      destinationStationCity,
+      raisingStationCity,
+      direction,
+      raisingStation,
+      applyContent,
+      addingFrequencyReason,
+      addOrRemoveStation,
+      busDirectionFrom,
+      busDirectionTo,
+      eventHour,
+      firstDeclaration,
+      licenseNum,
+      lineNumberText,
+      raisingStationAddress,
+      ravKavNumber,
+      reportTime,
+      secondDeclaration,
+    }: ComplaintData): ComplaintFormSchemaOneOf => {
+      console.log({
+        complaintType,
+        wait,
+        busOperator,
+        eventDate,
+        reportdate,
+        destinationStationCity,
+        raisingStationCity,
+        direction,
+        raisingStation,
+        applyContent,
+        addingFrequencyReason,
+        addOrRemoveStation,
+        busDirectionFrom,
+        busDirectionTo,
+        eventHour,
+        firstDeclaration,
+        licenseNum,
+        lineNumberText,
+        raisingStationAddress,
+        ravKavNumber,
+        reportTime,
+        secondDeclaration,
+      })
+
+      const selectOperator = busOperatorQuery.data?.find((b) => b.dataCode === busOperator)
+      const selectedDirection = direction !== undefined ? linesQuery.data?.[direction] : undefined
+      const selectedStation =
+        raisingStation !== undefined ? stationQuery.data?.[raisingStation] : undefined
+      const selectedRaisingCity = raisingStationCity
+        ? citiesQuery.data?.find((c) => c.dataText === raisingStationCity)
+        : undefined
+      const selectedDestCity = destinationStationCity
+        ? citiesQuery.data?.find((c) => c.dataText === destinationStationCity)
+        : undefined
+
+      return {
+        personalDetails: userStorge,
+        requestSubject: {
+          applySubject: complaintTypeMappings[complaintType].applySubject,
+          applyType: complaintTypeMappings[complaintType].applyType,
+        },
+        busAndOther: {
+          applyContent,
+          raisingStationAddress,
+          ravKavNumber,
+          addingFrequencyReason,
+          addOrRemoveStation,
+          busDirectionFrom,
+          busDirectionTo,
+          fillByMakatOrAddress: '2',
+          ravKav: true,
+          licenseNum,
+          reportTime,
+          lineNumberText,
+          singleTrip: false,
+          eventHour: eventHour ? dayjs(eventHour).format('HH:mm') : undefined,
+          fromHour: wait?.[0] ? dayjs(wait[0]).format('HH:mm') : undefined,
+          toHour: wait?.[1] ? dayjs(wait[1]).format('HH:mm') : undefined,
+          eventDate: eventDate ? new Date(eventDate) : undefined,
+          reportdate: reportdate ? new Date(reportdate) : undefined,
+          operator: selectOperator
+            ? {
+                dataText: selectOperator.dataText!,
+                dataCode: selectOperator.dataCode!,
+              }
+            : undefined,
+          direction: selectedDirection
+            ? {
+                dataText: selectedDirection.directionText!,
+                dataCode: selectedDirection.directionCode!,
+              }
+            : undefined,
+          raisingStation: selectedStation
+            ? {
+                dataText: selectedStation.stationName!,
+                dataCode: selectedStation.stationId!,
+              }
+            : undefined,
+          raisingStationCity: selectedRaisingCity
+            ? {
+                dataText: selectedRaisingCity.dataText!,
+                dataCode: selectedRaisingCity.dataCode!,
+              }
+            : undefined,
+          destinationStationCity: selectedDestCity
+            ? {
+                dataText: selectedDestCity.dataText!,
+                dataCode: selectedDestCity.dataCode!,
+              }
+            : undefined,
+          firstDeclaration,
+          secondDeclaration,
+        },
+      }
+    },
+    [userStorge, busOperatorQuery.data, citiesQuery.data, linesQuery.data, stationQuery.data],
+  )
+
+  const handleSubmit = useCallback(
+    (complaintData: ComplaintData) => {
+      const data = buildComplaintData(complaintData)
+      submitMutation.mutate({ debug: true, data })
+    },
+    [buildComplaintData, submitMutation],
+  )
 
   const onValuesChange = useCallback(
     (changedValues: Partial<ComplaintFormValues>) => {
-      if ('complaintType' in changedValues) {
-        setSelectedComplaintType(changedValues.complaintType as ComplaintType)
-      }
-
       if (Object.keys(changedValues).some((key) => resetRouteKeys.has(key))) {
         form.setFieldValue('direction', undefined)
         form.setFieldValue('raisingStation', undefined)
@@ -165,16 +290,16 @@ const ComplaintModal = ({
   )
 
   const routeOptions = useMemo(() => {
-    return linesQuery.data?.map(({ directionText }, value) => ({
+    return linesQuery.data?.map(({ directionText }, index) => ({
       label: directionText,
-      value,
+      value: index,
     }))
   }, [linesQuery.data])
 
   const stationOptions = useMemo(() => {
-    return stationQuery.data?.map(({ stationFullName, stationId }) => ({
-      label: stationFullName,
-      value: stationId,
+    return stationQuery.data?.map(({ stationName }, index) => ({
+      label: stationName,
+      value: index,
     }))
   }, [stationQuery.data])
 
@@ -351,7 +476,7 @@ const ComplaintModal = ({
 
               <DialogActions sx={{ justifyContent: 'flex-end', padding: 0 }}>
                 <Form.Item>
-                  <Button type="primary" htmlType="submit" onClick={() => form.submit()}>
+                  <Button type="primary" htmlType="submit">
                     {t('submit_complaint')}
                   </Button>
                 </Form.Item>

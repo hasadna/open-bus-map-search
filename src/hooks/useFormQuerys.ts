@@ -71,7 +71,7 @@ export const useBoardingStationQuery = (line?: LineModel) => {
   })
 }
 
-export const useLinesQuery = (eventDate?: string, operator?: string, lineNumber?: string) => {
+export const useLinesQuery = (eventDate?: string, operator?: number, lineNumber?: string) => {
   const linesQuery = useMemo(() => {
     if (!eventDate || !operator || !lineNumber) return null
     return {
