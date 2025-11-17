@@ -198,8 +198,8 @@
   "license_num": "Номерной знак",
   "event_date": "Дата события",
   "line_number_text": "Номер линии",
-  "event_time": "Время события",
-  "event_time_between_wait": "Время события должно быть в пределах времени ожидания",
+  "event_hour": "Время события",
+  "event_hour_between_wait": "Время события должно быть в пределах времени ожидания",
   "direction": "Маршрут",
   "wait": "Время ожидания",
   "raising_station": "Станция посадки",
@@ -222,7 +222,7 @@
   "raising_station_city": "Город отправления",
   "destination_station_city": "Город назначения",
   "reportdate": "Дата билета",
-  "reportd_time": "Время билета",
+  "report_time": "Время билета",
 
   "lineProfile": {
     "title": "Профиль для линии",

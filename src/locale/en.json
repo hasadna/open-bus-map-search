@@ -200,8 +200,8 @@
   "license_num": "License Plate",
   "event_date": "Event Date",
   "line_number_text": "Line Number",
-  "event_time": "Event Time",
-  "event_time_between_wait": "Event time must be between wait times",
+  "event_hour": "Event Time",
+  "event_hour_between_wait": "Event time must be between wait times",
   "direction": "Route",
   "wait": "Wait Time",
   "raising_station": "Boarding Station",
@@ -224,7 +224,7 @@
   "raising_station_city": "City From",
   "destination_station_city": "City To",
   "reportdate": "Ticket Date",
-  "reportd_time": "Ticket Time",
+  "report_time": "Ticket Time",
   "complaint_details_required": "In order for us to check your request, please specify in the request which modes of transportation you wish to match, line numbers, operator names, station SKU, and relevant times.",
 
   "lineProfile": {

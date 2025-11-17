@@ -211,9 +211,9 @@
   "close": "סגור",
   "license_num": "מספר רישוי",
   "event_date": "תאריך האירוע",
-  "event_time": "שעת האירוע",
   "line_number_text": "מספר קו",
-  "event_time_between_wait": "שעת האירוע חייבת להיות בין זמני ההמתנה",
+  "event_hour": "שעת האירוע",
+  "event_hour_between_wait": "שעת האירוע חייבת להיות בין זמני ההמתנה",
   "direction": "מסלול",
   "wait": "זמן המתנה",
   "raising_station": "תחנת עליה",
@@ -236,7 +236,7 @@
   "raising_station_city": "יישוב מוצא",
   "destination_station_city": "יישוב יעד",
   "reportdate": "תאריך מתן הדוח",
-  "reportd_time": "שעת מתן הדוח",
+  "report_time": "שעת מתן הדוח",
   "complaint_details_required": "על מנת שנוכל לבדוק בקשתך, יש לפרט במסגרת הבקשה בין אילו אמצעי תחבורה ברצונך להתאים, מספרי קווים, שמות מפעילים, מק\"ט תחנה ושעות רלוונטיות.",
 
   "lineProfile": {

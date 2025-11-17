@@ -24,23 +24,23 @@ import { useTranslation } from 'react-i18next'
 import { useGovTimeQuery } from 'src/hooks/useFormQuerys'
 
 // --- Validators ---
-const numberOnly = /^\d+$/
-const hebOnly = /^(?![-'"\s()]*$)([א-ת-'"\s()]*)\s*$/u
-export const mobileOnly = /^05\d-?[2-9]\d{6}$/u
+const numberOnly = /^[0-9]+$/u
+const hebOnly = /^[א-ת-\s'"()]+/u
+export const mobileOnly = /^05[0-689]-?[2-9][0-9]{6}$/u
 
 export const createAllRules = (form: FormInstance, t: TFunction) => ({
   wait: [
     { required: true },
     {
       validator: async (_, value) => {
-        const eventTime = form.getFieldValue('eventTime')
-        if (!value || !eventTime) return
+        const eventHour = form.getFieldValue('eventHour')
+        if (!value || !eventHour) return
         const wait = value as [string, string]
-        const eventTimeDayjs = dayjs(eventTime as dayjs.Dayjs)
+        const eventHourDayjs = dayjs(eventHour as dayjs.Dayjs)
         const start = dayjs(wait[0])
         const end = dayjs(wait[1])
-        if (eventTimeDayjs.isBefore(start) || eventTimeDayjs.isAfter(end)) {
-          throw new Error(t('event_time_between_wait'))
+        if (eventHourDayjs.isBefore(start) || eventHourDayjs.isAfter(end)) {
+          throw new Error(t('event_hour_between_wait'))
         }
         return Promise.resolve()
       },
@@ -196,8 +196,8 @@ export const allComplaintFields = {
     rules: [{ required: true }],
     props: { maxLength: 5 },
   }),
-  eventTime: createField({
-    name: 'eventTime',
+  eventHour: createField({
+    name: 'eventHour',
     type: 'TimePicker',
     rules: [{ required: true }],
     props: { needConfirm: true },
@@ -215,12 +215,6 @@ export const allComplaintFields = {
   raisingStation: createField({
     name: 'raisingStation',
     type: 'Select',
-  }),
-  city: createField({
-    name: 'city',
-    type: 'Select',
-    rules: [{ required: true }],
-    props: { showSearch: true },
   }),
   raisingStationCity: createField({
     name: 'raisingStationCity',

@@ -40,34 +40,32 @@ interface User {
   mobile: string
 }
 
-interface ComplaintFormValues extends User {
+interface ComplaintData {
   complaintType: ComplaintType
   applyContent: string
   busOperator?: string
   licenseNum?: string
   eventDate?: string
   lineNumberText?: string
-  eventTime?: string
+  eventHour?: string
   direction?: number
   wait?: [string, string]
   raisingStation?: string
-  city?: string
   raisingStationCity?: string
   destinationStationCity?: string
   reportdate?: string
   reportTime?: string
   busDirectionFrom?: string
   busDirectionTo?: string
-  addOrRemoveStation?: string
+  addOrRemoveStation?: '1' | '2'
   raisingStationAddress?: string
-  addFrequencyOverCrowd?: boolean
-  addFrequencyLongWait?: boolean
-  addFrequencyExtendTime?: boolean
   firstDeclaration?: boolean
   secondDeclaration?: boolean
   ravKavNumber?: string
-  addFrequencyReason?: string
+  addingFrequencyReason?: ('LoadTopics' | 'LongWaiting' | 'ExtensionHours')[]
 }
+
+type ComplaintFormValues = User & ComplaintData
 
 interface ComplaintModalProps {
   modalOpen?: boolean
@@ -96,11 +94,12 @@ const ComplaintModal = ({
   const lineNumberText = Form.useWatch('lineNumberText', form)
   const selectedRoute = Form.useWatch('direction', form)
   const addOrRemoveStation = Form.useWatch('addOrRemoveStation', form)
+  const complaintType = Form.useWatch('complaintType', form)
 
   const busOperatorQuery = useBusOperatorQuery()
   const citiesQuery = useCitiesQuery()
   const linesQuery = useLinesQuery(eventDate || reportdate, busOperator, lineNumberText)
-  const boardingStationQuery = useBoardingStationQuery(
+  const stationQuery = useBoardingStationQuery(
     selectedRoute !== undefined ? linesQuery.data?.[selectedRoute] : undefined,
   )
 
@@ -146,7 +145,7 @@ const ComplaintModal = ({
         form.setFieldValue('raisingStation', undefined)
       }
 
-      if ('eventTime' in changedValues) {
+      if ('eventHour' in changedValues) {
         form.validateFields(['wait'])
       }
 
@@ -172,12 +171,12 @@ const ComplaintModal = ({
     }))
   }, [linesQuery.data])
 
-  const boardingStationOptions = useMemo(() => {
-    return boardingStationQuery.data?.map(({ stationFullName, stationId }) => ({
+  const stationOptions = useMemo(() => {
+    return stationQuery.data?.map(({ stationFullName, stationId }) => ({
       label: stationFullName,
       value: stationId,
     }))
-  }, [boardingStationQuery.data])
+  }, [stationQuery.data])
 
   const busOperatorOptions = useMemo(() => {
     return busOperatorQuery.data?.map(({ dataText, dataCode }) => ({
@@ -222,10 +221,9 @@ const ComplaintModal = ({
         case 'addOrRemoveStation':
           return addOrRemoveStationOptins
         case 'raisingStation':
-          return boardingStationOptions
+          return stationOptions
         case 'busOperator':
           return busOperatorOptions
-        case 'city':
         case 'raisingStationCity':
         case 'destinationStationCity':
           return citiesOptions
@@ -237,16 +235,16 @@ const ComplaintModal = ({
       addingFrequencyReasonOptins,
       addOrRemoveStationOptins,
       busOperatorOptions,
-      boardingStationOptions,
+      stationOptions,
       citiesOptions,
       routeOptions,
     ],
   )
 
   const dynamicFields = useMemo(() => {
-    if (!selectedComplaintType) return null
+    if (!complaintType) return null
     const isAddStation = addOrRemoveStation === '2'
-    return complaintTypeMappings[selectedComplaintType].fields
+    return complaintTypeMappings[complaintType].fields
       .map((name) => {
         const field = { ...allComplaintFields[name] }
 
@@ -254,11 +252,11 @@ const ComplaintModal = ({
           field.props = { ...field.props, options: handleSelectOptions(name) }
         }
 
-        if (name === 'raisingStationAddress' && selectedComplaintType === 'station_signs') {
+        if (name === 'raisingStationAddress' && complaintType === 'station_signs') {
           field.rules = [{ required: true }]
         }
 
-        if (selectedComplaintType === 'add_or_remove_station') {
+        if (complaintType === 'add_or_remove_station') {
           if (name === 'raisingStationAddress') {
             field.props = { ...field.props, disabled: !isAddStation }
             field.rules = [{ required: isAddStation }]
@@ -279,7 +277,7 @@ const ComplaintModal = ({
         return <RenderField key={name} {...field} />
       })
       .filter(Boolean)
-  }, [selectedComplaintType, handleSelectOptions, allRules, addOrRemoveStation])
+  }, [complaintType, handleSelectOptions, allRules, addOrRemoveStation])
 
   const date = useMemo(() => {
     return position.recorded_at_time ? dayjs(position.recorded_at_time) : undefined
@@ -311,7 +309,7 @@ const ComplaintModal = ({
               busOperator: position.operator,
               eventDate: date,
               reportdate: date,
-              eventTime: date,
+              eventHour: date,
               reportTime: date,
               wait: [date?.add(-30, 'm'), date?.add(30, 'm')] as unknown as [string, string],
               raisingStationCity: routeParts?.[1],
@@ -325,7 +323,7 @@ const ComplaintModal = ({
           {submitMutation.isSuccess ? (
             <div>
               <Typography variant="h2">
-                {t('complaint_number', { number: submitMutation.data.referenceNumber })}
+                {t('complaint_number', { number: submitMutation.data.data.referenceNumber })}
               </Typography>
               <Button onClick={() => setModalOpen?.(false)}>{t('close')}</Button>
             </div>
@@ -348,9 +346,7 @@ const ComplaintModal = ({
               {dynamicFields}
               <RenderField
                 {...allComplaintFields.applyContent}
-                extra={
-                  selectedComplaintType === 'line_switch' ? 'complaint_details_required' : undefined
-                }
+                extra={complaintType === 'line_switch' ? 'complaint_details_required' : undefined}
               />
 
               <DialogActions sx={{ justifyContent: 'flex-end', padding: 0 }}>
