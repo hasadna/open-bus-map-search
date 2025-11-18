@@ -279,6 +279,10 @@ export const allComplaintFields = {
     rules: [{ required: true, min: 11 }],
     props: { maxLength: 11 },
   }),
+  debug: createField({
+    name: 'debug',
+    type: 'Checkbox',
+  }),
 } as const
 
 export type ComplainteField = keyof typeof allComplaintFields

@@ -23,6 +23,7 @@ import {
   useLinesQuery,
 } from 'src/hooks/useFormQuerys'
 import { Point } from 'src/pages/timeBasedMap'
+import { EasterEgg } from '../../../EasterEgg/EasterEgg'
 import { Row } from '../../Row'
 import {
   allComplaintFields,
@@ -64,6 +65,7 @@ interface ComplaintData {
   secondDeclaration?: boolean
   ravKavNumber?: string
   addingFrequencyReason?: ('LoadTopics' | 'LongWaiting' | 'ExtensionHours')[]
+  debug?: boolean
 }
 
 type ComplaintFormValues = User & ComplaintData
@@ -225,7 +227,7 @@ const ComplaintModal = ({
   const handleSubmit = useCallback(
     (complaintData: ComplaintData) => {
       const data = buildComplaintData(complaintData)
-      submitMutation.mutate({ debug: true, data })
+      submitMutation.mutate({ debug: !!complaintData.debug, data })
     },
     [buildComplaintData, submitMutation],
   )
@@ -470,6 +472,9 @@ const ComplaintModal = ({
                 {...allComplaintFields.applyContent}
                 extra={complaintType === 'line_switch' ? 'complaint_details_required' : undefined}
               />
+              <EasterEgg code="debug">
+                <RenderField {...allComplaintFields.debug} />
+              </EasterEgg>
 
               <DialogActions sx={{ justifyContent: 'flex-end', padding: 0 }}>
                 <Form.Item>
