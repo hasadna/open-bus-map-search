@@ -195,7 +195,7 @@
   "ticketing_fares_discounts": "Ticketing, Fares & Discounts",
   "apply_content": "Description",
   "submit_complaint": "Submit Complaint",
-  "complaint_number": "Your Complaint Number: {{number}}",
+  "complaint_number": "Your Complaint Number",
   "close": "Close",
   "license_num": "License Plate",
   "event_date": "Event Date",
@@ -226,6 +226,7 @@
   "reportdate": "Ticket Date",
   "report_time": "Ticket Time",
   "complaint_details_required": "In order for us to check your request, please specify in the request which modes of transportation you wish to match, line numbers, operator names, station SKU, and relevant times.",
+  "new_complaint": "New Complaint",
 
   "lineProfile": {
     "title": "Profile for Line",

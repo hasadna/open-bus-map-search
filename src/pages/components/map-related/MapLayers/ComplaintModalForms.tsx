@@ -1,3 +1,4 @@
+import { RequestSubjectSchema } from 'd:\\web\\open-bus-api-client\\open-bus-api-client\\client\\src\\index'
 import { ComplainteField } from './ComplaintModalFields'
 
 export const complaintTypes = [
@@ -27,8 +28,7 @@ export type ComplaintType = (typeof complaintTypes)[number]
 
 export interface ComplaintTypeData {
   fields: ComplainteField[]
-  applySubject: { dataText: string; dataCode: number }
-  applyType: { dataText: string; dataCode: number }
+  subject: RequestSubjectSchema
   subject_code: number
 }
 
@@ -46,8 +46,10 @@ export const complaintTypeMappings: Record<ComplaintType, ComplaintTypeData> = {
       'busDirectionFrom',
       'busDirectionTo',
     ],
-    applySubject: { dataText: 'אוטובוס', dataCode: 0 },
-    applyType: { dataText: 'אי ביצוע נסיעה', dataCode: 2 },
+    subject: {
+      applySubject: { dataText: 'אוטובוס', dataCode: 0 },
+      applyType: { dataText: 'אי ביצוע נסיעה', dataCode: 2 },
+    },
     subject_code: 3,
   },
   no_stop: {
@@ -63,8 +65,11 @@ export const complaintTypeMappings: Record<ComplaintType, ComplaintTypeData> = {
       'busDirectionFrom',
       'busDirectionTo',
     ],
-    applySubject: { dataText: 'אוטובוס', dataCode: 0 },
-    applyType: { dataText: 'אי עצירה בתחנה', dataCode: 3 },
+
+    subject: {
+      applySubject: { dataText: 'אוטובוס', dataCode: 0 },
+      applyType: { dataText: 'אי עצירה בתחנה', dataCode: 3 },
+    },
     subject_code: 0,
   },
   delay: {
@@ -80,8 +85,11 @@ export const complaintTypeMappings: Record<ComplaintType, ComplaintTypeData> = {
       'busDirectionFrom',
       'busDirectionTo',
     ],
-    applySubject: { dataText: 'אוטובוס', dataCode: 0 },
-    applyType: { dataText: 'איחור', dataCode: 4 },
+
+    subject: {
+      applySubject: { dataText: 'אוטובוס', dataCode: 0 },
+      applyType: { dataText: 'איחור', dataCode: 4 },
+    },
     subject_code: 0,
   },
   early: {
@@ -97,8 +105,11 @@ export const complaintTypeMappings: Record<ComplaintType, ComplaintTypeData> = {
       'busDirectionFrom',
       'busDirectionTo',
     ],
-    applySubject: { dataText: 'אוטובוס', dataCode: 0 },
-    applyType: { dataText: 'הקדמה', dataCode: 11 },
+
+    subject: {
+      applySubject: { dataText: 'אוטובוס', dataCode: 0 },
+      applyType: { dataText: 'הקדמה', dataCode: 11 },
+    },
     subject_code: 215,
   },
   overcrowded: {
@@ -114,8 +125,11 @@ export const complaintTypeMappings: Record<ComplaintType, ComplaintTypeData> = {
       'busDirectionFrom',
       'busDirectionTo',
     ],
-    applySubject: { dataText: 'אוטובוס', dataCode: 0 },
-    applyType: { dataText: 'דיווח על עומס נוסעים', dataCode: 7 },
+
+    subject: {
+      applySubject: { dataText: 'אוטובוס', dataCode: 0 },
+      applyType: { dataText: 'דיווח על עומס נוסעים', dataCode: 7 },
+    },
     subject_code: 64,
   },
   add_or_remove_station: {
@@ -130,14 +144,20 @@ export const complaintTypeMappings: Record<ComplaintType, ComplaintTypeData> = {
       'busDirectionFrom',
       'busDirectionTo',
     ],
-    applySubject: { dataText: 'אוטובוס', dataCode: 0 },
-    applyType: { dataText: 'הסרת/ הוספת תחנה', dataCode: 6 },
+
+    subject: {
+      applySubject: { dataText: 'אוטובוס', dataCode: 0 },
+      applyType: { dataText: 'הסרת/ הוספת תחנה', dataCode: 6 },
+    },
     subject_code: 186,
   },
   add_new_line: {
     fields: ['raisingStationCity', 'destinationStationCity'],
-    applySubject: { dataText: 'אוטובוס', dataCode: 0 },
-    applyType: { dataText: 'הוספת קו חדש', dataCode: 8 },
+
+    subject: {
+      applySubject: { dataText: 'אוטובוס', dataCode: 0 },
+      applyType: { dataText: 'הוספת קו חדש', dataCode: 8 },
+    },
     subject_code: 10,
   },
   add_frequency: {
@@ -153,8 +173,11 @@ export const complaintTypeMappings: Record<ComplaintType, ComplaintTypeData> = {
       'busDirectionFrom',
       'busDirectionTo',
     ],
-    applySubject: { dataText: 'אוטובוס', dataCode: 0 },
-    applyType: { dataText: 'הוספת תדירות', dataCode: 9 },
+
+    subject: {
+      applySubject: { dataText: 'אוטובוס', dataCode: 0 },
+      applyType: { dataText: 'הוספת תדירות', dataCode: 9 },
+    },
     subject_code: 28,
   },
   // driver_behavior: {
@@ -188,8 +211,11 @@ export const complaintTypeMappings: Record<ComplaintType, ComplaintTypeData> = {
       'busDirectionTo',
       'raisingStation',
     ],
-    applySubject: { dataText: 'אוטובוס', dataCode: 0 },
-    applyType: { dataText: 'ניקיון ותקינות אוטובוס', dataCode: 13 },
+
+    subject: {
+      applySubject: { dataText: 'אוטובוס', dataCode: 0 },
+      applyType: { dataText: 'ניקיון ותקינות אוטובוס', dataCode: 13 },
+    },
     subject_code: 0,
   },
   fine_appeal: {
@@ -204,8 +230,11 @@ export const complaintTypeMappings: Record<ComplaintType, ComplaintTypeData> = {
       'busDirectionFrom',
       'busDirectionTo',
     ],
-    applySubject: { dataText: 'אוטובוס', dataCode: 0 },
-    applyType: { dataText: 'ערעורים על השתת תעריף מוגדל (קנס)', dataCode: 14 },
+
+    subject: {
+      applySubject: { dataText: 'אוטובוס', dataCode: 0 },
+      applyType: { dataText: 'ערעורים על השתת תעריף מוגדל (קנס)', dataCode: 14 },
+    },
     subject_code: 201,
   },
   route_change: {
@@ -217,14 +246,20 @@ export const complaintTypeMappings: Record<ComplaintType, ComplaintTypeData> = {
       'busDirectionFrom',
       'busDirectionTo',
     ],
-    applySubject: { dataText: 'אוטובוס', dataCode: 0 },
-    applyType: { dataText: 'שינוי מסלול', dataCode: 16 },
+
+    subject: {
+      applySubject: { dataText: 'אוטובוס', dataCode: 0 },
+      applyType: { dataText: 'שינוי מסלול', dataCode: 16 },
+    },
     subject_code: 8,
   },
   line_switch: {
     fields: ['busDirectionFrom', 'busDirectionTo'],
-    applySubject: { dataText: 'אוטובוס', dataCode: 0 },
-    applyType: { dataText: 'מעבר בין קווים', dataCode: 17 },
+
+    subject: {
+      applySubject: { dataText: 'אוטובוס', dataCode: 0 },
+      applyType: { dataText: 'מעבר בין קווים', dataCode: 17 },
+    },
     subject_code: 218,
   },
   station_signs: {
@@ -237,20 +272,29 @@ export const complaintTypeMappings: Record<ComplaintType, ComplaintTypeData> = {
       // 'stationCatNum',
       // 'lineNumberText',
     ],
-    applySubject: { dataText: 'אוטובוס', dataCode: 0 },
-    applyType: { dataText: 'תקינות שלטי המידע בתחנה', dataCode: 18 },
+
+    subject: {
+      applySubject: { dataText: 'אוטובוס', dataCode: 0 },
+      applyType: { dataText: 'תקינות שלטי המידע בתחנה', dataCode: 18 },
+    },
     subject_code: 0,
   },
   ticketing_fares_discounts: {
     fields: ['ravKavNumber'],
-    applySubject: { dataText: 'אוטובוס', dataCode: 0 },
-    applyType: { dataText: 'אמצעי כרטוס (רב-קו), תעריפים, הנחות', dataCode: 35 },
+
+    subject: {
+      applySubject: { dataText: 'אוטובוס', dataCode: 0 },
+      applyType: { dataText: 'אמצעי כרטוס (רב-קו), תעריפים, הנחות', dataCode: 35 },
+    },
     subject_code: 6,
   },
   other: {
     fields: [],
-    applySubject: { dataText: 'אוטובוס', dataCode: 0 },
-    applyType: { dataText: 'אחר', dataCode: 1 },
+
+    subject: {
+      applySubject: { dataText: 'אוטובוס', dataCode: 0 },
+      applyType: { dataText: 'אחר', dataCode: 1 },
+    },
     subject_code: 0,
   },
 }

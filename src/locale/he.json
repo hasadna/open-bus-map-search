@@ -207,7 +207,7 @@
   "ticketing_fares_discounts": "אמצעי כרטוס (רב-קו), תעריפים, הנחות",
   "apply_content": "תיאור",
   "submit_complaint": "שלח תלונה",
-  "complaint_number": "מספר התלונה שלך: {{number}}",
+  "complaint_number": "מספר התלונה שלך",
   "close": "סגור",
   "license_num": "מספר רישוי",
   "event_date": "תאריך האירוע",
@@ -238,6 +238,7 @@
   "reportdate": "תאריך מתן הדוח",
   "report_time": "שעת מתן הדוח",
   "complaint_details_required": "על מנת שנוכל לבדוק בקשתך, יש לפרט במסגרת הבקשה בין אילו אמצעי תחבורה ברצונך להתאים, מספרי קווים, שמות מפעילים, מק\"ט תחנה ושעות רלוונטיות.",
+  "new_complaint": "תלונה חדשה",
 
   "lineProfile": {
     "title": "פרופיל קו",

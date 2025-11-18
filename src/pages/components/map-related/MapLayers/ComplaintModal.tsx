@@ -12,19 +12,20 @@ import {
 } from '@mui/material'
 import { useMutation } from '@tanstack/react-query'
 import { Button, Form } from 'antd'
-import axios from 'axios'
-import { ComplaintFormSchemaOneOf } from 'd:\\web\\open-bus-api-client\\open-bus-api-client\\client\\src\\models\\index'
+import { ComplaintFormSchemaAnyOf } from 'd:\\web\\open-bus-api-client\\open-bus-api-client\\client\\src\\index'
 import { useCallback, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useLocalStorage } from 'usehooks-ts'
+import { useCopyToClipboard, useLocalStorage } from 'usehooks-ts'
 import dayjs from 'src/dayjs'
 import {
+  COMPLAINTS_API,
   useBoardingStationQuery,
   useBusOperatorQuery,
   useCitiesQuery,
   useLinesQuery,
 } from 'src/hooks/useFormQuerys'
 import { Point } from 'src/pages/timeBasedMap'
+import { Row } from '../../Row'
 import {
   allComplaintFields,
   ComplainteField,
@@ -47,16 +48,16 @@ interface ComplaintData {
   applyContent: string
   busOperator?: number
   licenseNum?: string
-  eventDate?: string
+  eventDate?: dayjs.Dayjs
   lineNumberText?: string
-  eventHour?: string
+  eventHour?: dayjs.Dayjs
   direction?: number
-  wait?: [string, string]
+  wait?: [dayjs.Dayjs, dayjs.Dayjs]
   raisingStation?: number
   raisingStationCity?: string
   destinationStationCity?: string
-  reportdate?: string
-  reportTime?: string
+  reportdate?: dayjs.Dayjs
+  reportTime?: dayjs.Dayjs
   busDirectionFrom?: string
   busDirectionTo?: string
   addOrRemoveStation?: '1' | '2'
@@ -88,6 +89,7 @@ const ComplaintModal = ({
   const { t, i18n } = useTranslation()
   const [form] = Form.useForm<ComplaintFormValues>()
   const [userStorge, SetUserStorge] = useLocalStorage<Partial<User>>('complaint', {})
+  const [, copy] = useCopyToClipboard()
 
   const eventDate = Form.useWatch('eventDate', form)
   const reportdate = Form.useWatch('reportdate', form)
@@ -121,8 +123,8 @@ const ComplaintModal = ({
   }, [linesQuery.data, route, form])
 
   const submitMutation = useMutation({
-    mutationFn: (post: { debug: boolean; data: ComplaintFormSchemaOneOf }) =>
-      axios.post<{ referenceNumber: string }>('http://127.0.0.1:3001/complaints/send', post),
+    mutationFn: (post: { debug: boolean; data: ComplaintFormSchemaAnyOf }) =>
+      COMPLAINTS_API.complaintsSendPost({ complaintsSendPostRequest: post }),
 
     //    COMPLAINTS_API.complaintsSendPost({ complaintsSendPostRequest }),
   })
@@ -151,32 +153,7 @@ const ComplaintModal = ({
       ravKavNumber,
       reportTime,
       secondDeclaration,
-    }: ComplaintData): ComplaintFormSchemaOneOf => {
-      console.log({
-        complaintType,
-        wait,
-        busOperator,
-        eventDate,
-        reportdate,
-        destinationStationCity,
-        raisingStationCity,
-        direction,
-        raisingStation,
-        applyContent,
-        addingFrequencyReason,
-        addOrRemoveStation,
-        busDirectionFrom,
-        busDirectionTo,
-        eventHour,
-        firstDeclaration,
-        licenseNum,
-        lineNumberText,
-        raisingStationAddress,
-        ravKavNumber,
-        reportTime,
-        secondDeclaration,
-      })
-
+    }: ComplaintData): ComplaintFormSchemaAnyOf => {
       const selectOperator = busOperatorQuery.data?.find((b) => b.dataCode === busOperator)
       const selectedDirection = direction !== undefined ? linesQuery.data?.[direction] : undefined
       const selectedStation =
@@ -190,10 +167,7 @@ const ComplaintModal = ({
 
       return {
         personalDetails: userStorge,
-        requestSubject: {
-          applySubject: complaintTypeMappings[complaintType].applySubject,
-          applyType: complaintTypeMappings[complaintType].applyType,
-        },
+        requestSubject: complaintTypeMappings[complaintType].subject,
         busAndOther: {
           applyContent,
           raisingStationAddress,
@@ -205,18 +179,19 @@ const ComplaintModal = ({
           fillByMakatOrAddress: '2',
           ravKav: true,
           licenseNum,
-          reportTime,
           lineNumberText,
-          singleTrip: false,
-          eventHour: eventHour ? dayjs(eventHour).format('HH:mm') : undefined,
-          fromHour: wait?.[0] ? dayjs(wait[0]).format('HH:mm') : undefined,
-          toHour: wait?.[1] ? dayjs(wait[1]).format('HH:mm') : undefined,
-          eventDate: eventDate ? new Date(eventDate) : undefined,
-          reportdate: reportdate ? new Date(reportdate) : undefined,
+          eventHour: eventHour ? eventHour.format('HH:mm') : undefined,
+          fromHour: wait?.[0] ? wait[0].format('HH:mm') : undefined,
+          toHour: wait?.[1] ? wait[1].format('HH:mm') : undefined,
+          eventDate: eventDate ? eventDate.toDate() : undefined,
+          reportdate: reportdate ? reportdate.toDate() : undefined,
+          reportTime: reportTime ? reportTime.format('HH:mm') : undefined,
+          firstDeclaration,
+          secondDeclaration,
           operator: selectOperator
             ? {
-                dataText: selectOperator.dataText!,
-                dataCode: selectOperator.dataCode!,
+                dataText: selectOperator.dataText,
+                dataCode: selectOperator.dataCode,
               }
             : undefined,
           direction: selectedDirection
@@ -233,18 +208,16 @@ const ComplaintModal = ({
             : undefined,
           raisingStationCity: selectedRaisingCity
             ? {
-                dataText: selectedRaisingCity.dataText!,
-                dataCode: selectedRaisingCity.dataCode!,
+                dataText: selectedRaisingCity.dataText,
+                dataCode: selectedRaisingCity.dataCode,
               }
             : undefined,
           destinationStationCity: selectedDestCity
             ? {
-                dataText: selectedDestCity.dataText!,
-                dataCode: selectedDestCity.dataCode!,
+                dataText: selectedDestCity.dataText,
+                dataCode: selectedDestCity.dataCode,
               }
             : undefined,
-          firstDeclaration,
-          secondDeclaration,
         },
       }
     },
@@ -436,7 +409,7 @@ const ComplaintModal = ({
               reportdate: date,
               eventHour: date,
               reportTime: date,
-              wait: [date?.add(-30, 'm'), date?.add(30, 'm')] as unknown as [string, string],
+              wait: [date?.add(-30, 'm'), date?.add(30, 'm')],
               raisingStationCity: routeParts?.[1],
               destinationStationCity: routeParts?.[3],
               licenseNum: position.point?.siri_ride__vehicle_ref,
@@ -447,10 +420,36 @@ const ComplaintModal = ({
           onValuesChange={onValuesChange}>
           {submitMutation.isSuccess ? (
             <div>
-              <Typography variant="h2">
-                {t('complaint_number', { number: submitMutation.data.data.referenceNumber })}
+              <Typography
+                variant="h5"
+                sx={{
+                  mx: 'auto',
+                  borderRadius: `12px`,
+                  border: '1px solid rgba(128, 128, 128, 0.5)',
+                  p: 3,
+                  maxWidth: 'fit-content',
+                  textAlign: 'center',
+                  cursor: 'pointer',
+                }}
+                onClick={() => {
+                  copy(submitMutation?.data?.referenceNumber || '')
+                }}>
+                {t('complaint_number')}
+                <br />
+                <strong>{submitMutation?.data?.referenceNumber}</strong>
               </Typography>
-              <Button onClick={() => setModalOpen?.(false)}>{t('close')}</Button>
+              <Row style={{ justifyContent: 'space-between' }}>
+                <Button type="primary" onClick={() => setModalOpen?.(false)}>
+                  {t('close')}
+                </Button>
+                <Button
+                  onClick={() => {
+                    submitMutation.reset()
+                    form.resetFields()
+                  }}>
+                  {t('new_complaint')}
+                </Button>
+              </Row>
             </div>
           ) : busOperatorQuery.isLoading || submitMutation.isPending ? (
             <div className="loading">

@@ -18,9 +18,9 @@ import {
 import { CheckboxGroupProps } from 'antd/es/checkbox'
 import type { Rule } from 'antd/es/form'
 import type { TextAreaProps } from 'antd/es/input'
-import dayjs from 'dayjs'
 import { TFunction } from 'i18next'
 import { useTranslation } from 'react-i18next'
+import dayjs from 'src/dayjs'
 import { useGovTimeQuery } from 'src/hooks/useFormQuerys'
 
 // --- Validators ---

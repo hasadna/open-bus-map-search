@@ -1,12 +1,22 @@
+import { useQuery } from '@tanstack/react-query'
+// import { GOVERNMENT_TRANSPORTATION_API } from 'src/api/apiConfig'
+
 import {
+  ComplaintsApi,
+  Configuration,
+  GovernmentTransportationApi,
   GovLinesByLinePostRequest,
   GovStationsByLinePostRequest,
   LineModel,
-} from '@hasadna/open-bus-api-client'
-import { useQuery } from '@tanstack/react-query'
-import dayjs from 'dayjs'
+} from 'd:\\web\\open-bus-api-client\\open-bus-api-client\\client\\src\\index'
 import { useMemo } from 'react'
-import { GOVERNMENT_TRANSPORTATION_API } from 'src/api/apiConfig'
+import dayjs from 'src/dayjs'
+
+const BACKEND_API_BASE_PATH = process.env.VITE_BACKEND_API //'http://127.0.0.1:3001'
+const BACKEND_API_CONFIG = new Configuration({ basePath: BACKEND_API_BASE_PATH })
+
+export const COMPLAINTS_API = new ComplaintsApi(BACKEND_API_CONFIG)
+export const GOVERNMENT_TRANSPORTATION_API = new GovernmentTransportationApi(BACKEND_API_CONFIG)
 
 const STALE_TIME = 5 * 60 * 1000 // 5 minutes
 const GC_TIME = 10 * 60 * 1000 // 10 minutes
@@ -71,12 +81,12 @@ export const useBoardingStationQuery = (line?: LineModel) => {
   })
 }
 
-export const useLinesQuery = (eventDate?: string, operator?: number, lineNumber?: string) => {
+export const useLinesQuery = (eventDate?: dayjs.Dayjs, operator?: number, lineNumber?: string) => {
   const linesQuery = useMemo(() => {
     if (!eventDate || !operator || !lineNumber) return null
     return {
       govLinesByLinePostRequest: {
-        eventDate: dayjs(eventDate).valueOf(),
+        eventDate: eventDate.valueOf(),
         operatorId: Number(operator),
         operatorLineId: Number(lineNumber),
       } as GovLinesByLinePostRequest,
