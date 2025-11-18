@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { GtfsRoutePydanticModel } from '@hasadna/open-bus-api-client'
+import { ComplaintFormSchemaAnyOf, GtfsRoutePydanticModel } from '@hasadna/open-bus-api-client'
 import { Close } from '@mui/icons-material'
 import {
   CircularProgress,
@@ -12,13 +11,12 @@ import {
 } from '@mui/material'
 import { useMutation } from '@tanstack/react-query'
 import { Button, Form } from 'antd'
-import { ComplaintFormSchemaAnyOf } from 'd:\\web\\open-bus-api-client\\open-bus-api-client\\client\\src\\index'
 import { useCallback, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useCopyToClipboard, useLocalStorage } from 'usehooks-ts'
+import { COMPLAINTS_API } from 'src/api/apiConfig'
 import dayjs from 'src/dayjs'
 import {
-  COMPLAINTS_API,
   useBoardingStationQuery,
   useBusOperatorQuery,
   useCitiesQuery,

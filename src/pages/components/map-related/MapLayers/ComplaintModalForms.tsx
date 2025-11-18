@@ -1,4 +1,4 @@
-import { RequestSubjectSchema } from 'd:\\web\\open-bus-api-client\\open-bus-api-client\\client\\src\\index'
+import { RequestSubjectSchema } from '@hasadna/open-bus-api-client'
 import { ComplainteField } from './ComplaintModalFields'
 
 export const complaintTypes = [
