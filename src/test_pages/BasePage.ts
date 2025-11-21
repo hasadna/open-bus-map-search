@@ -22,19 +22,11 @@ export abstract class BasePage {
     })
   }
 
-  protected async verifySelectionVisible(locator: Locator, isVisible: boolean, timeout?: number) {
+  protected async verifySelectionVisible(locator: Locator, isVisible: boolean) {
     if (isVisible) {
       await expect(locator).toBeVisible()
     } else {
       await expect(locator).toBeHidden()
-    }
-  }
-
-  protected async verifySelectionEnable(locator: Locator, isEnable = true, timeout = 5000) {
-    if (isEnable) {
-      await expect(locator).toBeEnabled()
-    } else {
-      await expect(locator).toBeDisabled()
     }
   }
 

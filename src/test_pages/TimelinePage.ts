@@ -1,5 +1,5 @@
 import type { Locator, Page } from '@playwright/test'
-import { test as base, expect } from 'tests/utils'
+import { test as base, expect as baseExpect } from 'tests/utils'
 import { BasePage } from './BasePage'
 
 class TimelinePage extends BasePage {
@@ -28,9 +28,9 @@ class TimelinePage extends BasePage {
     await selectBox.click({ timeout: timeout || 3000 })
   }
 
-  public async verifyRouteSelectionVisible(locator: Locator, isVisible: boolean, timeout?: number) {
+  public async verifyRouteSelectionVisible(locator: Locator, isVisible: boolean) {
     await base.step(`Route selection should ${isVisible ? '' : 'not '}be visible`, async () => {
-      await this.verifySelectionVisible(locator, isVisible, timeout)
+      await this.verifySelectionVisible(locator, isVisible)
     })
   }
 
@@ -38,11 +38,7 @@ class TimelinePage extends BasePage {
     const list = new Set()
     const selectOption = await this.getAllOptions_Dropbox()
     for (const row of selectOption) list.add(await row.textContent())
-    expect(list.size).toBe(selectOption.length)
-  }
-
-  public async verifyLineNumberNotFound() {
-    await expect(this.page.getByText('הקו לא נמצא')).toBeVisible()
+    baseExpect(list.size).toBe(selectOption.length)
   }
 
   public get routeSelect() {
@@ -77,3 +73,5 @@ export const test = base.extend<{ timelinePage: TimelinePage }>({
     await use(new TimelinePage(page))
   },
 })
+
+export const expect = baseExpect
