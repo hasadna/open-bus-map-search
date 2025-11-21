@@ -1,24 +1,43 @@
-import type { Locator, Page } from '@playwright/test'
+import type { Page } from '@playwright/test'
 import { test as base, expect as baseExpect } from 'tests/utils'
 import { BasePage } from './BasePage'
+
+export const expect = baseExpect.extend({
+  toHaveDuplications(received: string[]) {
+    const dups = received.toSorted().filter((item, index, arr) => item === arr[index - 1])
+    const uniqueDups = [...new Set(dups)]
+    const pass = (uniqueDups.length === 0) === this.isNot
+    const expectation = this.isNot ? 'Expected no duplications' : 'Expected duplications'
+    const reality = this.isNot
+      ? `but found duplications: ${uniqueDups.join(', ')}`
+      : 'but none were found.'
+    const message = () => `${expectation}, ${pass ? 'and' : 'but'} ${reality}`
+    return { pass, message, expected: [], actual: uniqueDups }
+  },
+})
 
 class TimelinePage extends BasePage {
   constructor(page: Page) {
     super(page)
   }
 
-  public async selectOperatorFromDropbox(locator: Locator, list: Locator, operatorName: string) {
-    await this.selectFrom_UL_LI_Dropbox(locator, list, operatorName)
+  public async selectOperator(operatorName: string) {
+    await this.selectFromDropdown(this.operatorsDropDown, this.operatorsList, operatorName)
+  }
+  public async selectStation(operatorName: string) {
+    await this.selectFromDropdown(this.stationSelect, this.stationList, operatorName)
+  }
+  public async selectRoute(operatorName: string) {
+    await this.selectFromDropdown(this.routeSelect, this.routeList, operatorName)
   }
 
   public async fillLineNumber(lineNumber: string) {
     await this.lineNumberField.fill(lineNumber)
   }
   public async verifyNoDuplications() {
-    const list = new Set()
-    const selectOption = await this.getAllOptions_Dropbox()
-    for (const row of selectOption) list.add(await row.textContent())
-    baseExpect(list.size).toBe(selectOption.length)
+    const selectOption = await this.getDropdownOptions()
+    const uniqueOptions = selectOption.filter((item, index) => selectOption.indexOf(item) === index)
+    expect(selectOption).toEqual(uniqueOptions)
   }
 
   public get routeSelect() {
@@ -60,5 +79,3 @@ export const test = base.extend<{ timelinePage: TimelinePage }>({
     await use(new TimelinePage(page))
   },
 })
-
-export const expect = baseExpect
