@@ -14,8 +14,8 @@ test.describe('Timeline Page Tests', () => {
       timelinePage.operatorsList,
       'אגד',
     )
-    await timelinePage.fillLineNumber('1')
-    await timelinePage.closeLineNumber()
+    await timelinePage.lineNumberField.fill('1')
+    await timelinePage.closeButton.click()
     await expect(timelinePage.routeSelect).toBeHidden()
   })
 
@@ -25,7 +25,7 @@ test.describe('Timeline Page Tests', () => {
       timelinePage.operatorsList,
       'אגד',
     )
-    await timelinePage.fillLineNumber('1')
+    await timelinePage.lineNumberField.fill('1')
     await expect(timelinePage.routeSelect).toBeVisible()
   })
 
@@ -40,7 +40,7 @@ test.describe('Timeline Page Tests', () => {
       timelinePage.operatorsList,
       'אגד',
     )
-    await timelinePage.fillLineNumber('1')
+    await timelinePage.lineNumberField.fill('1')
     await expect(timelinePage.routeSelect).toBeVisible()
     await timelinePage.routeSelect.click()
     await timelinePage.verifyNoDuplications()
@@ -52,7 +52,7 @@ test.describe('Timeline Page Tests', () => {
       timelinePage.operatorsList,
       'דן בדרום',
     )
-    await timelinePage.fillLineNumber('9999')
+    await timelinePage.lineNumberField.fill('9999')
     await expect(page.getByText('הקו לא נמצא')).toBeVisible()
   })
 
@@ -62,7 +62,7 @@ test.describe('Timeline Page Tests', () => {
       timelinePage.operatorsList,
       'אגד',
     )
-    await timelinePage.fillLineNumber('1')
+    await timelinePage.lineNumberField.fill('1')
     await expect(timelinePage.routeSelect).toBeVisible()
     await timelinePage.selectOperatorFromDropbox(
       timelinePage.routeSelect,
@@ -78,7 +78,7 @@ test.describe('Timeline Page Tests', () => {
       timelinePage.operatorsList,
       'אגד',
     )
-    await timelinePage.fillLineNumber('1')
+    await timelinePage.lineNumberField.fill('1')
     await expect(timelinePage.routeSelect).toBeVisible()
     await timelinePage.selectOperatorFromDropbox(
       timelinePage.routeSelect,
@@ -99,7 +99,7 @@ test.describe('Timeline Page Tests', () => {
       timelinePage.operatorsList,
       'אגד',
     )
-    await timelinePage.fillLineNumber('1')
+    await timelinePage.lineNumberField.fill('1')
     await expect(timelinePage.routeSelect).toBeVisible()
     await timelinePage.selectOperatorFromDropbox(
       timelinePage.routeSelect,

@@ -3,13 +3,8 @@ import { test as base, expect as baseExpect } from 'tests/utils'
 import { BasePage } from './BasePage'
 
 class TimelinePage extends BasePage {
-  private line_number: Locator
-  private close_line_number: Locator
-
   constructor(page: Page) {
     super(page)
-    this.line_number = this.page.locator("//input[@placeholder='לדוגמה: 17א']")
-    this.close_line_number = this.page.locator("span[aria-label='close']")
   }
 
   public async selectOperatorFromDropbox(locator: Locator, list: Locator, operatorName: string) {
@@ -17,13 +12,8 @@ class TimelinePage extends BasePage {
   }
 
   public async fillLineNumber(lineNumber: string) {
-    await this.line_number.fill(lineNumber)
+    await this.lineNumberField.fill(lineNumber)
   }
-
-  public async closeLineNumber() {
-    await this.close_line_number.click()
-  }
-
   public async verifyNoDuplications() {
     const list = new Set()
     const selectOption = await this.getAllOptions_Dropbox()
@@ -55,6 +45,13 @@ class TimelinePage extends BasePage {
 
   public get stationList() {
     return this.page.locator('ul#stop-select-listbox')
+  }
+  get closeButton() {
+    return this.page.locator("span[aria-label='close']")
+  }
+
+  get lineNumberField() {
+    return this.page.locator("//input[@placeholder='לדוגמה: 17א']")
   }
 }
 
