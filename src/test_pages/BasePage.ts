@@ -3,25 +3,6 @@ import { expect, Locator, Page, test } from '@playwright/test'
 export abstract class BasePage {
   constructor(protected page: Page) {}
 
-  protected async clickOnElement(element: Locator, timeout?: number) {
-    // TODO: make sure that element.toString() doesn't make [object Object]
-    await test.step(`Click on ${element.toString()}`, async () => {
-      await element.click({ timeout })
-    })
-  }
-
-  protected async fillTextToElement(element: Locator, textToFill: string) {
-    await test.step(`Filling the '${textToFill}' into the input element`, async () => {
-      await element.fill(textToFill)
-    })
-  }
-
-  protected async clearTextFromElement(element: Locator) {
-    await test.step(`Clearing text from input element`, async () => {
-      await element.clear()
-    })
-  }
-
   protected async verifySelectionVisible(locator: Locator, isVisible: boolean) {
     if (isVisible) {
       await expect(locator).toBeVisible()

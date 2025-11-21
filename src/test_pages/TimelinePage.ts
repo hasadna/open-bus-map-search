@@ -17,21 +17,11 @@ class TimelinePage extends BasePage {
   }
 
   public async fillLineNumber(lineNumber: string) {
-    await this.fillTextToElement(this.line_number, lineNumber)
+    await this.line_number.fill(lineNumber)
   }
 
   public async closeLineNumber() {
     await this.close_line_number.click()
-  }
-
-  public async openSelectBox(selectBox: Locator, timeout?: number) {
-    await selectBox.click({ timeout: timeout || 3000 })
-  }
-
-  public async verifyRouteSelectionVisible(locator: Locator, isVisible: boolean) {
-    await base.step(`Route selection should ${isVisible ? '' : 'not '}be visible`, async () => {
-      await this.verifySelectionVisible(locator, isVisible)
-    })
   }
 
   public async verifyNoDuplications() {
