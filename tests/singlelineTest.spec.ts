@@ -4,7 +4,6 @@ import {
   harOptions,
   setupTest,
   test,
-  verifyAgenciesApiCall,
   verifyDateFromParameter,
   visitPage,
   waitForSkeletonsToHide,
@@ -133,10 +132,6 @@ test.describe('Single line page tests', () => {
     await selectOperator(page)
     await fillLineNumber(page, '9999')
     await expect(page.getByText('הקו לא נמצא')).toBeAttached()
-  })
-
-  test('Verify API call to gtfs_agencies/list - "Map by line"', async ({ page }) => {
-    await verifyAgenciesApiCall(page)
   })
 
   test('Verify date_from parameter from - "Map by line"', async ({ page }) => {

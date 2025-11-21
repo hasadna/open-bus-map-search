@@ -353,6 +353,24 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "tamir-k",
+      "name": "Tamir K.",
+      "avatar_url": "https://avatars.githubusercontent.com/u/121674805?v=4",
+      "profile": "https://github.com/Tamir-K",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "oribro",
+      "name": "Ori Broda",
+      "avatar_url": "https://avatars.githubusercontent.com/u/22520147?v=4",
+      "profile": "https://github.com/oribro",
+      "contributions": [
+        "code"
+      ]
     }
   ]
 }

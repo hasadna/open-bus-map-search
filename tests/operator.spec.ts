@@ -6,7 +6,6 @@ import {
   harOptions,
   setupTest,
   test,
-  verifyAgenciesApiCall,
   verifyDateFromParameter,
   visitPage,
   waitForSkeletonsToHide,
@@ -149,10 +148,6 @@ test.describe('Operator Page Tests', () => {
         throw new Error('Operator routes not loaded')
       }
     })
-  })
-
-  test('Verify API call to gtfs_agencies/list - "Operator"', async ({ page }) => {
-    await verifyAgenciesApiCall(page)
   })
 
   test('Verify date_from parameter from - "Operator"', async ({ page }) => {

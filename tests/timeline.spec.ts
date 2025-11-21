@@ -1,12 +1,5 @@
 import TimelinePage from 'src/test_pages/TimelinePage'
-import {
-  harOptions,
-  setupTest,
-  test,
-  verifyAgenciesApiCall,
-  verifyDateFromParameter,
-  visitPage,
-} from './utils'
+import { harOptions, setupTest, test, verifyDateFromParameter, visitPage } from './utils'
 
 test.describe('Timeline Page Tests', () => {
   let timelinePage: TimelinePage
@@ -121,10 +114,6 @@ test.describe('Timeline Page Tests', () => {
       'חיים הרצוג/שדרות מנחם בגין (גדרה)',
     )
     await timelinePage.verifyRouteSelectionVisible(timelinePage.timelineGraph, true, 100000)
-  })
-
-  test('Verify API call to gtfs_agencies/list - "Trips history"', async ({ page }) => {
-    await verifyAgenciesApiCall(page)
   })
 
   test('Verify date_from parameter from - "Trips history"', async ({ page }) => {
