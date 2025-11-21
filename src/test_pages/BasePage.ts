@@ -3,12 +3,6 @@ import { expect, Locator, Page, test } from '@playwright/test'
 export abstract class BasePage {
   constructor(protected page: Page) {}
 
-  async validatePageUrl(url: RegExp | string) {
-    await test.step(`Validating that a correct value of URL is ${url}`, async () => {
-      await expect(this.page).toHaveURL(url)
-    })
-  }
-
   protected async clickOnElement(element: Locator, timeout?: number) {
     // TODO: make sure that element.toString() doesn't make [object Object]
     await test.step(`Click on ${element.toString()}`, async () => {
@@ -30,17 +24,17 @@ export abstract class BasePage {
 
   protected async verifySelectionVisible(locator: Locator, isVisible: boolean, timeout?: number) {
     if (isVisible) {
-      await expect(locator).toBeVisible({ timeout: timeout || 5000 })
+      await expect(locator).toBeVisible()
     } else {
-      await expect(locator).toBeHidden({ timeout: timeout || 5000 })
+      await expect(locator).toBeHidden()
     }
   }
 
   protected async verifySelectionEnable(locator: Locator, isEnable = true, timeout = 5000) {
     if (isEnable) {
-      await expect(locator).toBeEnabled({ timeout: timeout || 5000 })
+      await expect(locator).toBeEnabled()
     } else {
-      await expect(locator).toBeDisabled({ timeout: timeout || 5000 })
+      await expect(locator).toBeDisabled()
     }
   }
 
@@ -50,8 +44,8 @@ export abstract class BasePage {
     optionToSelect: string,
   ) {
     await test.step(`Click on UL LI dropbox element and select '${optionToSelect}'`, async () => {
-      await this.clickOnElement(dropElement)
-      await this.clickOnElement(optionsListElement.locator(`//li[text()='${optionToSelect}']`))
+      await dropElement.click()
+      await optionsListElement.locator(`//li[text()='${optionToSelect}']`).click()
     })
   }
 

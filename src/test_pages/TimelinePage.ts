@@ -6,7 +6,7 @@ class TimelinePage extends BasePage {
   private line_number: Locator
   private close_line_number: Locator
 
-  constructor(protected page: Page) {
+  constructor(page: Page) {
     super(page)
     this.line_number = this.page.locator("//input[@placeholder='לדוגמה: 17א']")
     this.close_line_number = this.page.locator("span[aria-label='close']")
@@ -21,11 +21,11 @@ class TimelinePage extends BasePage {
   }
 
   public async closeLineNumber() {
-    await this.clickOnElement(this.close_line_number, 3000)
+    await this.close_line_number.click()
   }
 
   public async openSelectBox(selectBox: Locator, timeout?: number) {
-    await this.clickOnElement(selectBox, timeout || 3000)
+    await selectBox.click({ timeout: timeout || 3000 })
   }
 
   public async verifyRouteSelectionVisible(locator: Locator, isVisible: boolean, timeout?: number) {
