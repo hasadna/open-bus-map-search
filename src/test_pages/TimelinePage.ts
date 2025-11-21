@@ -36,8 +36,7 @@ class TimelinePage extends BasePage {
   }
   public async verifyNoDuplications() {
     const selectOption = await this.getDropdownOptions()
-    const uniqueOptions = selectOption.filter((item, index) => selectOption.indexOf(item) === index)
-    expect(selectOption).toEqual(uniqueOptions)
+    expect(selectOption).not.toHaveDuplications()
   }
 
   public get routeSelect() {

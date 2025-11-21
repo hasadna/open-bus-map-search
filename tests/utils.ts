@@ -10,6 +10,8 @@ import { RouteFromHAROptions } from 'playwright-advanced-har/lib/utils/types'
 import dayjs from 'src/dayjs'
 import { PAGES } from 'src/routes'
 
+export { expect } from 'playwright-assertions'
+
 type CollectIstanbulCoverageWindow = Window &
   typeof globalThis & {
     collectIstanbulCoverage: (coverage: string) => void
@@ -138,4 +140,3 @@ export const harOptions: RouteFromHAROptions = {
   matcher: urlMatcher,
 }
 
-export const expect = test.expect
