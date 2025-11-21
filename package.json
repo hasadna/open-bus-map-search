@@ -57,7 +57,7 @@
     "test:e2e:visual": "playwright test tests/visual.spec.ts",
     "test:unit": "jest",
     "test:unit:ci": "jest --coverage",
-    "lint": "eslint --max-warnings 0 && stylelint '**/*.{css,scss}' --max-warnings 0 && prettier . -c -u",
+    "lint": "tsc --noEmit && eslint --max-warnings 0 && stylelint '**/*.{css,scss}' --max-warnings 0 && prettier . -c -u",
     "lint:fix": "eslint --fix && stylelint '**/*.{css,scss}' --fix && prettier . -w -u",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "nx exec -- storybook build",
