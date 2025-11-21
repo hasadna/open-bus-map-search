@@ -29,12 +29,12 @@ test.describe('Timeline Page Tests', () => {
     await expect(timelinePage.routeSelect).toBeVisible()
   })
 
-  test('Test Verify no duplications in Operators list', async ({ timelinePage }) => {
+  test('should have no duplications in Operators list', async ({ timelinePage }) => {
     await timelinePage.operatorsDropDown.click()
     await timelinePage.verifyNoDuplications()
   })
 
-  test('Test Verify no duplications in Route Selection list', async ({ timelinePage }) => {
+  test('should have no duplications in Route Selection list', async ({ timelinePage }) => {
     await timelinePage.selectOperatorFromDropbox(
       timelinePage.operatorsDropDown,
       timelinePage.operatorsList,
@@ -46,7 +46,7 @@ test.describe('Timeline Page Tests', () => {
     await timelinePage.verifyNoDuplications()
   })
 
-  test('Test Verify the line Number is not found', async ({ timelinePage, page }) => {
+  test('should indicate when the line Number is not found', async ({ timelinePage, page }) => {
     await timelinePage.selectOperatorFromDropbox(
       timelinePage.operatorsDropDown,
       timelinePage.operatorsList,
@@ -56,7 +56,7 @@ test.describe('Timeline Page Tests', () => {
     await expect(page.getByText('הקו לא נמצא')).toBeVisible()
   })
 
-  test('Test Verify station selection drop box appears', async ({ timelinePage }) => {
+  test('The station selection drop box should appear', async ({ timelinePage }) => {
     await timelinePage.selectOperatorFromDropbox(
       timelinePage.operatorsDropDown,
       timelinePage.operatorsList,

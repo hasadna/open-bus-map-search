@@ -12,7 +12,7 @@ export default defineConfig({
   /* Retry twice on CI. */
   retries: process.env.CI ? 2 : 1,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: [['./tests/testReport.ts'], ['html']],
+  reporter: [['list'], ['html']],
   timeout: 3 * 60 * 1000,
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
