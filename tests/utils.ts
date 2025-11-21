@@ -39,7 +39,6 @@ export const test = baseTest.extend<{ context: BrowserContext }>({
         )
       }
     })
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     await use(context)
     for (const page of context.pages()) {
       await page.evaluate(() => {

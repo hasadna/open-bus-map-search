@@ -1,20 +1,15 @@
-import { expect, Locator, Page } from '@playwright/test'
+import type { Locator, Page } from '@playwright/test'
+import { test as base, expect } from 'tests/utils'
 import { BasePage } from './BasePage'
 
-export default class TimelinePage extends BasePage {
-  private date: Locator
-  private operator: Locator
+class TimelinePage extends BasePage {
   private line_number: Locator
   private close_line_number: Locator
-  private eged_taavura: Locator
 
   constructor(protected page: Page) {
     super(page)
-    this.date = this.page.locator("//input[@placeholder='DD/MM/YYYY']")
-    this.operator = this.page.locator('#operator-select')
     this.line_number = this.page.locator("//input[@placeholder='לדוגמה: 17א']")
     this.close_line_number = this.page.locator("span[aria-label='close']")
-    this.eged_taavura = this.page.locator("//li[text()='אגד תעבורה']")
   }
 
   public async selectOperatorFromDropbox(locator: Locator, list: Locator, operatorName: string) {
@@ -34,7 +29,9 @@ export default class TimelinePage extends BasePage {
   }
 
   public async verifyRouteSelectionVisible(locator: Locator, isVisible: boolean, timeout?: number) {
-    await this.verifySelectionVisible(locator, isVisible, timeout)
+    await base.step(`Route selection should ${isVisible ? '' : 'not '}be visible`, async () => {
+      await this.verifySelectionVisible(locator, isVisible, timeout)
+    })
   }
 
   public async verifyNoDuplications() {
@@ -74,3 +71,9 @@ export default class TimelinePage extends BasePage {
     return this.page.locator('ul#stop-select-listbox')
   }
 }
+
+export const test = base.extend<{ timelinePage: TimelinePage }>({
+  timelinePage: async ({ page }, use) => {
+    await use(new TimelinePage(page))
+  },
+})
