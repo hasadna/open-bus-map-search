@@ -30,7 +30,7 @@ test.describe('Timeline Page Tests', () => {
   })
 
   test('Test Verify no duplications in Operators list', async ({ timelinePage }) => {
-    await timelinePage.openSelectBox(timelinePage.operatorsDropDown)
+    await timelinePage.operatorsDropDown.click()
     await timelinePage.verifyNoDuplications()
   })
 
@@ -42,7 +42,7 @@ test.describe('Timeline Page Tests', () => {
     )
     await timelinePage.fillLineNumber('1')
     await expect(timelinePage.routeSelect).toBeVisible()
-    await timelinePage.openSelectBox(timelinePage.routeSelect)
+    await timelinePage.routeSelect.click()
     await timelinePage.verifyNoDuplications()
   })
 
