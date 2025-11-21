@@ -139,4 +139,3 @@ export const harOptions: RouteFromHAROptions = {
   url: /stride-api/,
   matcher: urlMatcher,
 }
-
