@@ -43,7 +43,7 @@ interface BusLineStatisticsProps {
 const now = dayjs()
 
 type CustomTooltipProps = TooltipProps<number, string> & {
-  payload?: readonly { name: string; value?: number }[]
+  payload?: { name: string; value?: number }[]
 }
 
 const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
