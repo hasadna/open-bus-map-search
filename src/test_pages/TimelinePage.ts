@@ -19,14 +19,6 @@ class TimelinePage extends BasePage {
     await this.selectFromDropdown(this.routeSelect, this.routeList, operatorName)
   }
 
-  public async fillLineNumber(lineNumber: string) {
-    await this.lineNumberField.fill(lineNumber)
-  }
-  public async verifyNoDuplications() {
-    const selectOption = await this.getDropdownOptions()
-    expect(selectOption).not.toHaveDuplications()
-  }
-
   public get routeSelect() {
     return this.page.locator('#route-select')
   }

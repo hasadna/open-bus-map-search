@@ -27,7 +27,8 @@ test.describe('Timeline Page Tests', () => {
 
   test('should have no duplications in Operators list', async ({ timelinePage }) => {
     await timelinePage.operatorsDropDown.click()
-    await timelinePage.verifyNoDuplications()
+    const options = await timelinePage.getDropdownOptions()
+    expect(options).not.toHaveDuplications()
   })
 
   test('should have no duplications in Route Selection list', async ({ timelinePage }) => {
@@ -35,7 +36,8 @@ test.describe('Timeline Page Tests', () => {
     await timelinePage.lineNumberField.fill('1')
     await expect(timelinePage.routeSelect).toBeVisible()
     await timelinePage.routeSelect.click()
-    await timelinePage.verifyNoDuplications()
+    const options = await timelinePage.getDropdownOptions()
+    expect(options).not.toHaveDuplications()
   })
 
   test('should indicate when the line Number is not found', async ({ timelinePage, page }) => {
@@ -64,7 +66,8 @@ test.describe('Timeline Page Tests', () => {
     await expect(timelinePage.stationSelect).toBeVisible()
     //have duplications in stations list.
     // await timelinePage.openSelectBox(timelinePage.stationSelect)
-    // await timelinePage.verifyNoDuplications()
+    // const options = await timelinePage.getDropdownOptions()
+    // expect(options).not.toHaveDuplications()
   })
 
   test('Test choosing [Operator -> Line # -> Route -> Stop station] opens the timestamp graph', async ({

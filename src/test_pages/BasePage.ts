@@ -3,7 +3,7 @@ import { Locator, Page, test } from '@playwright/test'
 export abstract class BasePage {
   constructor(protected page: Page) {}
 
-  protected async selectFromDropdown(
+  async selectFromDropdown(
     dropElement: Locator,
     optionsListElement: Locator,
     optionToSelect: string,
@@ -14,7 +14,7 @@ export abstract class BasePage {
     })
   }
 
-  protected async getDropdownOptions(scope: Locator | Page = this.page) {
+  async getDropdownOptions(scope: Locator | Page = this.page) {
     let options: string[] = []
     await test.step(`select all Options from dropBox`, async () => {
       options = await scope.getByRole('option').allInnerTexts()
