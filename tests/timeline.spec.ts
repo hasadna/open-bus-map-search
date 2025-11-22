@@ -56,7 +56,7 @@ test.describe('Timeline Page Tests', () => {
     await expect(timelinePage.stationSelect).toBeVisible()
   })
 
-  test('Test Verify no duplications in stations list', async ({ timelinePage }) => {
+  test('Should load stations list', async ({ timelinePage }) => {
     await timelinePage.selectOperator('אגד')
     await timelinePage.lineNumberField.fill('1')
     await expect(timelinePage.routeSelect).toBeVisible()
@@ -64,10 +64,9 @@ test.describe('Timeline Page Tests', () => {
       'בית ספר אלונים/הבנים-פרדס חנה כרכור ⟵ יד לבנים/דרך הבנים-פרדס חנה כרכור  ',
     )
     await expect(timelinePage.stationSelect).toBeVisible()
-    //have duplications in stations list.
-    // await timelinePage.openSelectBox(timelinePage.stationSelect)
-    // const options = await timelinePage.getDropdownOptions()
-    // expect(options).not.toHaveDuplications()
+    await timelinePage.stationSelect.click()
+    const options = await timelinePage.getDropdownOptions()
+    expect(options.length).toBeGreaterThan(0) // at least one station
   })
 
   test('Test choosing [Operator -> Line # -> Route -> Stop station] opens the timestamp graph', async ({
