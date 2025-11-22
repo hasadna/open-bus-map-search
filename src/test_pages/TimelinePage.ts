@@ -2,6 +2,8 @@ import type { Page } from '@playwright/test'
 import { test as base, expect } from 'tests/utils'
 import { BasePage } from './BasePage'
 
+export { expect } from 'tests/utils'
+
 class TimelinePage extends BasePage {
   constructor(page: Page) {
     super(page)
