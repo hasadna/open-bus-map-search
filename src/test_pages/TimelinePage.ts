@@ -1,5 +1,5 @@
 import type { Page } from '@playwright/test'
-import { test as base, expect } from 'tests/utils'
+import { test as base } from 'tests/utils'
 import { BasePage } from './BasePage'
 
 export { expect } from 'tests/utils'
