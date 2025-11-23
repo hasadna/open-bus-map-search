@@ -7,7 +7,6 @@ import i18next from 'i18next'
 import Backend from 'i18next-fs-backend'
 import { test as baseTest, customMatcher, Matcher } from 'playwright-advanced-har'
 import { RouteFromHAROptions } from 'playwright-advanced-har/lib/utils/types'
-import { expect } from 'playwright-assertions'
 import dayjs from 'src/dayjs'
 import { PAGES } from 'src/routes'
 
