@@ -47,6 +47,9 @@
   "resolutions": {
     "autoprefixer": "10.4.5"
   },
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "scripts": {
     "start": "vite",
     "build": "nx exec -- npm run _build && node sitemap.js",
