@@ -7,8 +7,11 @@ import i18next from 'i18next'
 import Backend from 'i18next-fs-backend'
 import { test as baseTest, customMatcher, Matcher } from 'playwright-advanced-har'
 import { RouteFromHAROptions } from 'playwright-advanced-har/lib/utils/types'
+import { expect } from 'playwright-assertions'
 import dayjs from 'src/dayjs'
 import { PAGES } from 'src/routes'
+
+export { expect } from 'playwright-assertions'
 
 type CollectIstanbulCoverageWindow = Window &
   typeof globalThis & {
@@ -39,7 +42,6 @@ export const test = baseTest.extend<{ context: BrowserContext }>({
         )
       }
     })
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     await use(context)
     for (const page of context.pages()) {
       await page.evaluate(() => {
@@ -102,7 +104,7 @@ export const setupTest = async (page: Page, lng: string = 'he') => {
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await i18next.use(Backend).init({ lng, backend: { loadPath: 'src/locale/{{lng}}.json' } })
   await page.goto('/')
-  await page.locator('preloader').waitFor({ state: 'hidden' })
+  await page.locator('.preloader').waitFor({ state: 'hidden' })
 }
 
 export const visitPage = async (page: Page, label: (typeof PAGES)[number]['label']) => {
@@ -111,7 +113,7 @@ export const visitPage = async (page: Page, label: (typeof PAGES)[number]['label
   await link.click()
   if (href) await page.waitForURL(`**${href}`)
   await page.waitForTimeout(500)
-  await page.locator('preloader').waitFor({ state: 'hidden' })
+  await page.locator('.preloader').waitFor({ state: 'hidden' })
   await page.waitForLoadState('networkidle')
 }
 
@@ -138,5 +140,3 @@ export const harOptions: RouteFromHAROptions = {
   url: /stride-api/,
   matcher: urlMatcher,
 }
-
-export const expect = test.expect
