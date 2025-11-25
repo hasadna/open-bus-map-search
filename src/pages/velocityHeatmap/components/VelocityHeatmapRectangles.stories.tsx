@@ -1,33 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState } from 'react'
 import { MapContainer, TileLayer } from 'react-leaflet'
-import { VelocityAggregation } from '../useVelocityAggregationData'
 import { VelocityHeatmapLegend } from './VelocityHeatmapLegend'
 import { VelocityHeatmapRectangles } from './VelocityHeatmapRectangles'
-
-const sampleData: VelocityAggregation[] = [
-  {
-    rounded_lon: 34.92,
-    rounded_lat: 29.56,
-    total_sample_count: 8,
-    average_rolling_avg: 60.4,
-    stddev_rolling_avg: 3.7,
-  },
-  {
-    rounded_lon: 34.93,
-    rounded_lat: 29.57,
-    total_sample_count: 12,
-    average_rolling_avg: 45.2,
-    stddev_rolling_avg: 5.1,
-  },
-  {
-    rounded_lon: 34.94,
-    rounded_lat: 29.58,
-    total_sample_count: 20,
-    average_rolling_avg: 10.0,
-    stddev_rolling_avg: 1.2,
-  },
-]
 
 const meta = {
   title: 'VelocityHeatmap/Rectangles',
@@ -39,14 +14,6 @@ const meta = {
       description:
         'Visualization mode: avg for average velocity, std for standard deviation, cv for coefficient of variation',
     },
-    data: {
-      control: { type: 'object' },
-      description:
-        'Array of velocity aggregation data points with lat, lon, sample count, average, and stddev',
-      table: {
-        type: { summary: 'VelocityAggregation[]' },
-      },
-    },
     setMinMax: {
       control: false,
       description: 'Optional callback function to set min and max values for the legend',
@@ -57,7 +24,6 @@ const meta = {
   },
   args: {
     visMode: 'avg',
-    data: sampleData,
   },
   decorators: [
     (Story, ctx) => {
@@ -76,7 +42,6 @@ const meta = {
             />
             <Story
               args={{
-                data: ctx.args.data,
                 visMode: ctx.args.visMode,
                 setMinMax: (min, max) => setMinMax([min, max]),
               }}
