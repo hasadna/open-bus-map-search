@@ -1,12 +1,12 @@
+import { ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
 import React, { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { MapContainer, TileLayer } from 'react-leaflet'
+import { PageContainer } from '../components/PageContainer'
 import { VelocityHeatmapLegend } from './components/VelocityHeatmapLegend'
 import { VelocityHeatmapRectangles } from './components/VelocityHeatmapRectangles'
 import { useVelocityAggregationData } from './useVelocityAggregationData'
 import 'leaflet/dist/leaflet.css'
-import { PageContainer } from '../components/PageContainer'
-import { ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
-import { useTranslation } from 'react-i18next'
 
 const DEFAULT_BOUNDS = {
   minLat: 29.5,
