@@ -103,7 +103,7 @@
     "@types/node": "^24.2.0",
     "@types/react": "^19.1.15",
     "@types/react-dom": "^19.1.7",
-    "@types/styled-components": "^5.1.35",
+    "@types/styled-components": "^5.1.36",
     "@types/underscore.string": "^0.0.41",
     "@typescript-eslint/eslint-plugin": "^8.37.0",
     "@typescript-eslint/parser": "^8.37.0",
