@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { http, HttpResponse } from 'msw'
-import { useState } from 'react'
 import { MapContainer, TileLayer } from 'react-leaflet'
 import type { VelocityAggregation } from '../useVelocityAggregationData'
 import { VelocityHeatmapLegend } from './VelocityHeatmapLegend'
