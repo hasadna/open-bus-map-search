@@ -5,26 +5,13 @@ import { MapContainer, TileLayer } from 'react-leaflet'
 import { PageContainer } from '../components/PageContainer'
 import { VelocityHeatmapLegend } from './components/VelocityHeatmapLegend'
 import { VelocityHeatmapRectangles } from './components/VelocityHeatmapRectangles'
-import { useVelocityAggregationData } from './useVelocityAggregationData'
 import 'leaflet/dist/leaflet.css'
 
-const DEFAULT_BOUNDS = {
-  minLat: 29.5,
-  maxLat: 33.33,
-  minLon: 34.25,
-  maxLon: 35.7,
-}
-
 const VIS_MODES = ['avg', 'std', 'cv'] as const
+const DEFAULT_ZOOM_LEVEL = 10
 
 const VelocityHeatmapPage: React.FC = () => {
   const { t, i18n } = useTranslation()
-  const { data, loading, error } = useVelocityAggregationData({
-    minLat: DEFAULT_BOUNDS.minLat,
-    maxLat: DEFAULT_BOUNDS.maxLat,
-    minLon: DEFAULT_BOUNDS.minLon,
-    maxLon: DEFAULT_BOUNDS.maxLon,
-  })
   const [visMode, setVisMode] = useState<(typeof VIS_MODES)[number]>('avg')
   const [min, setMin] = useState(0)
   const [max, setMax] = useState(1)
@@ -55,7 +42,7 @@ const VelocityHeatmapPage: React.FC = () => {
       <div style={{ height: '500px', width: '100%', margin: '16px 0' }}>
         <MapContainer
           center={[29.65, 34.6]}
-          zoom={10}
+          zoom={DEFAULT_ZOOM_LEVEL}
           scrollWheelZoom={true}
           style={{ height: '100%', width: '100%', color: 'black' }}>
           <TileLayer
@@ -63,7 +50,6 @@ const VelocityHeatmapPage: React.FC = () => {
             url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
           />
           <VelocityHeatmapRectangles
-            data={data}
             visMode={visMode}
             setMinMax={(min, max) => {
               setMin(min)
@@ -73,15 +59,7 @@ const VelocityHeatmapPage: React.FC = () => {
           <VelocityHeatmapLegend visMode={visMode} min={min} max={max} />
         </MapContainer>
       </div>
-      {data.length > 0 && (
-        <div>
-          <h2>{t(`sample_data`)}</h2>
-          <pre style={{ maxHeight: 200, overflow: 'auto', padding: 8, direction: 'ltr' }}>
-            {JSON.stringify(data.slice(0, 5), null, 2)}
-          </pre>
-        </div>
-      )}
-    </PageContainer>
+    </div>
   )
 }
 
