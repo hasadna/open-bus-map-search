@@ -18,6 +18,8 @@ const VIS_MODES = [
 const DEFAULT_ZOOM_LEVEL = 10
 
 const VelocityHeatmapPage: React.FC = () => {
+  const { search, setSearch } = useContext(SearchContext)
+
   const [visMode, setVisMode] = useState<'avg' | 'std' | 'cv'>('avg')
   const [min, setMin] = useState(0)
   const [max, setMax] = useState(1)

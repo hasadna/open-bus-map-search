@@ -1,5 +1,7 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { Popup, Rectangle } from 'react-leaflet'
+import dayjs from 'src/dayjs'
+import { SearchContext } from '../../../model/pageState'
 import { useVelocityAggregationData, VelocityAggregation } from '../useVelocityAggregationData'
 import { VelocityHeatmapPopup } from './VelocityHeatmapPopup'
 import { useZoomLevel } from './ZoomComponent'
@@ -42,6 +44,7 @@ export const VelocityHeatmapRectangles: React.FC<
     setMinMax?: (min: number, max: number) => void
   }
 > = ({ visMode, setMinMax }) => {
+  const { search } = useContext(SearchContext)
   const zoom = useZoomLevel()
   const { data, loading, error, currZoom } = useVelocityAggregationData(
     {
@@ -50,6 +53,7 @@ export const VelocityHeatmapRectangles: React.FC<
       minLon: DEFAULT_BOUNDS.minLon,
       maxLon: DEFAULT_BOUNDS.maxLon,
     },
+    dayjs(search.timestamp),
     zoom - 6,
   )
   const half = 0.5 / Math.pow(2, currZoom)

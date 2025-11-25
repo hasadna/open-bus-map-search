@@ -16,7 +16,11 @@ export interface VelocityAggregationBounds {
   maxLon: number
 }
 
-export function useVelocityAggregationData(bounds: VelocityAggregationBounds, zoom: number) {
+export function useVelocityAggregationData(
+  bounds: VelocityAggregationBounds,
+  timestamp: dayjs.Dayjs,
+  zoom: number,
+) {
   const [data, setData] = useState<VelocityAggregation[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -24,7 +28,8 @@ export function useVelocityAggregationData(bounds: VelocityAggregationBounds, zo
 
   useEffect(() => {
     setLoading(true)
-    const apiUrl = `https://open-bus-stride-api.hasadna.org.il/siri_velocity_aggregation/siri_velocity_aggregation?recorded_from=2025-01-01T00%3A00%3A00&lon_min=${bounds.minLon}&lon_max=${bounds.maxLon}&lat_min=${bounds.minLat}&lat_max=${bounds.maxLat}&rounding_precision=${zoom}`
+    const date = timestamp.format('YYYY-MM-DD')
+    const apiUrl = `https://open-bus-stride-api.hasadna.org.il/siri_velocity_aggregation/siri_velocity_aggregation?recorded_from=${date}T00%3A00%3A00&lon_min=${bounds.minLon}&lon_max=${bounds.maxLon}&lat_min=${bounds.minLat}&lat_max=${bounds.maxLat}&rounding_precision=${zoom}`
     fetch(apiUrl)
       .then((res) => {
         if (!res.ok) throw new Error('Failed to fetch data')
@@ -56,7 +61,7 @@ export function useVelocityAggregationData(bounds: VelocityAggregationBounds, zo
       })
       .catch((err) => setError(String((err && (err as Error).message) || err)))
       .finally(() => setLoading(false))
-  }, [JSON.stringify(bounds), zoom])
+  }, [JSON.stringify(bounds), JSON.stringify(timestamp), zoom])
 
   return { data, loading, error, currZoom }
 }
