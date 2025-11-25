@@ -1,51 +1,22 @@
-import { expect, Locator, Page } from '@playwright/test'
+import type { Page } from '@playwright/test'
+import { test as base } from 'tests/utils'
 import { BasePage } from './BasePage'
 
-export default class TimelinePage extends BasePage {
-  private date: Locator
-  private operator: Locator
-  private line_number: Locator
-  private close_line_number: Locator
-  private eged_taavura: Locator
+export { expect } from 'tests/utils'
 
-  constructor(protected page: Page) {
+class TimelinePage extends BasePage {
+  constructor(page: Page) {
     super(page)
-    this.date = this.page.locator("//input[@placeholder='DD/MM/YYYY']")
-    this.operator = this.page.locator('#operator-select')
-    this.line_number = this.page.locator("//input[@placeholder='לדוגמה: 17א']")
-    this.close_line_number = this.page.locator("span[aria-label='close']")
-    this.eged_taavura = this.page.locator("//li[text()='אגד תעבורה']")
   }
 
-  public async selectOperatorFromDropbox(locator: Locator, list: Locator, operatorName: string) {
-    await this.selectFrom_UL_LI_Dropbox(locator, list, operatorName)
+  public async selectOperator(operatorName: string) {
+    await this.selectFromDropdown(this.operatorsDropDown, this.operatorsList, operatorName)
   }
-
-  public async fillLineNumber(lineNumber: string) {
-    await this.fillTextToElement(this.line_number, lineNumber)
+  public async selectStation(operatorName: string) {
+    await this.selectFromDropdown(this.stationSelect, this.stationList, operatorName)
   }
-
-  public async closeLineNumber() {
-    await this.clickOnElement(this.close_line_number, 3000)
-  }
-
-  public async openSelectBox(selectBox: Locator, timeout?: number) {
-    await this.clickOnElement(selectBox, timeout || 3000)
-  }
-
-  public async verifyRouteSelectionVisible(locator: Locator, isVisible: boolean, timeout?: number) {
-    await this.verifySelectionVisible(locator, isVisible, timeout)
-  }
-
-  public async verifyNoDuplications() {
-    const list = new Set()
-    const selectOption = await this.getAllOptions_Dropbox()
-    for (const row of selectOption) list.add(await row.textContent())
-    expect(list.size).toBe(selectOption.length)
-  }
-
-  public async verifyLineNumberNotFound() {
-    await expect(this.page.getByText('הקו לא נמצא')).toBeVisible()
+  public async selectRoute(operatorName: string) {
+    await this.selectFromDropdown(this.routeSelect, this.routeList, operatorName)
   }
 
   public get routeSelect() {
@@ -73,4 +44,17 @@ export default class TimelinePage extends BasePage {
   public get stationList() {
     return this.page.locator('ul#stop-select-listbox')
   }
+  get closeButton() {
+    return this.page.locator("span[aria-label='close']")
+  }
+
+  get lineNumberField() {
+    return this.page.locator("//input[@placeholder='לדוגמה: 17א']")
+  }
 }
+
+export const test = base.extend<{ timelinePage: TimelinePage }>({
+  timelinePage: async ({ page }, use) => {
+    await use(new TimelinePage(page))
+  },
+})

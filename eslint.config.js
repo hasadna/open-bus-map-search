@@ -74,4 +74,13 @@ export default [
       'prettier/prettier': 'error',
     },
   },
+  // Disable React rules in tests and test_pages folders
+  {
+    files: ['tests/**/*.{ts,tsx}', 'src/test_pages/**/*.{ts,tsx}'],
+    rules: {
+      'react-hooks/rules-of-hooks': 'off',
+      'react/jsx-filename-extension': 'off',
+      'react/react-in-jsx-scope': 'off',
+    },
+  },
 ]
