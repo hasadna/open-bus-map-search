@@ -39,7 +39,7 @@ export function DateSelector({
     <DatePicker
       value={time}
       onChange={onChange}
-      format="dddd DD/MM/YYYY"
+      format="DD/MM/YYYY"
       label={customLabel || t('choose_date')}
       disableFuture
       minDate={minDate || startOfTime}
