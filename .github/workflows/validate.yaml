@@ -273,6 +273,17 @@ jobs:
           context: 'Test results (click to see!)'
           targetUrl: 'https://s3.amazonaws.com/noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.event.pull_request.head.sha }}/test-results/index.html'
 
+  close-visual-batches:
+    name: Close Applitools Visual Test Batches
+    runs-on: ubuntu-latest
+    needs: [visual-test, storybook-test]
+    if: always() && github.event.repository.fork == false && github.actor != 'dependabot[bot]'
+    steps:
+      - name: Close Applitools batches
+        run: |
+          export APPLITOOLS_SERVER_URL=https://eyesapi.applitools.com
+          curl -v -X DELETE "$APPLITOOLS_SERVER_URL/api/sessions/batches/$APPLITOOLS_BATCH_ID/close/bypointerid?apiKey=$APPLITOOLS_API_KEY"
+
   all-passed:
     name: All Jobs Passed
     runs-on: ubuntu-latest
