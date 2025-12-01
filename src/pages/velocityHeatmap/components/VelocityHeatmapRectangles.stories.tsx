@@ -97,7 +97,7 @@ const parameters = {
   },
   eyes: {
     waitBeforeCapture: async () => {
-      await limitWait(10_000, waitForElementToDisappear('.leaflet-interactive'))
+      await limitWait(10_000, waitForElementToDisappear('.err'))
     },
   },
 }
