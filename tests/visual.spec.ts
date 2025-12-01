@@ -148,6 +148,7 @@ async function setEyesSettings() {
       { chromeEmulationInfo: { deviceName: 'Galaxy S23' } },
       { iosDeviceInfo: { deviceName: 'iPhone 16' } },
     ],
+    dontCloseBatches: !!process.env.CI,
   })
 
   const config = eyes.getConfiguration()
