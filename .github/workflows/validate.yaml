@@ -178,12 +178,20 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.sha }}
+      - run: export APPLITOOLS_SHOW_LOGS=true && export APPLITOOLS_LOG_DIR=./logs
       - run: npm i -g @applitools/eyes-storybook
       - name: Run Storybook visual tests
         if: env.APPLITOOLS_API_KEY
         env:
           APPLITOOLS_BATCH_NAME: open-bus-map-search/${{ github.ref }}/${{ env.SHORT_SHA }}/storybook
         run: npm run test:storybook -- --storybook-url http://localhost:3000/storybook/index.html
+      - name: Upload logs if exists
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: logs-storybook-test
+          path: logs
+          if-no-files-found: warn
 
   visual-test:
     name: Playwright Visual Tests
