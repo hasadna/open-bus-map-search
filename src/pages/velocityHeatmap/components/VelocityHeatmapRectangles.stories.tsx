@@ -95,6 +95,9 @@ const parameters = {
       ),
     ],
   },
+  eyes: {
+    waitBeforeCapture: 2500,
+  },
 }
 
 export const Default: Story = { parameters }
@@ -107,4 +110,16 @@ export const StdDev: Story = {
 export const CoeffOfVar: Story = {
   args: { visMode: 'cv' },
   parameters,
+}
+
+function sleep(ms: number) {
+  return new Promise<void>((resolve) => setTimeout(resolve, ms))
+}
+
+function limitWait<T>(minMs: number, promise: Promise<T>) {
+  return Promise.race([sleep(minMs), promise])
+}
+
+async function waitForElementToDisappear(selector: string) {
+  while (document.querySelector(selector)) await sleep(100)
 }
