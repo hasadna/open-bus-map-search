@@ -96,10 +96,7 @@ const parameters = {
     ],
   },
   eyes: {
-    waitBeforeCapture: async () => {
-      await limitWait(2_000, waitForElementToDisappear('.err'))
-      return true
-    },
+    waitBeforeCapture: 2500,
   },
 }
 
