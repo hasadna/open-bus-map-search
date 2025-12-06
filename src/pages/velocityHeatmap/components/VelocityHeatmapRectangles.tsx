@@ -1,7 +1,11 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { Popup, Rectangle } from 'react-leaflet'
-import { VelocityAggregation } from '../useVelocityAggregationData'
+import dayjs from 'src/dayjs'
+import { SearchContext } from '../../../model/pageState'
+import { useVelocityAggregationData, VelocityAggregation } from '../useVelocityAggregationData'
 import { VelocityHeatmapPopup } from './VelocityHeatmapPopup'
+import { useZoomLevel } from './ZoomComponent'
+import './VelocityHeatmapRectangles.scss'
 
 type VisMode = 'avg' | 'std' | 'cv'
 
@@ -25,16 +29,34 @@ function getRedOpacityColor(value: number, minV = 0, maxV = 1): string {
 }
 
 interface VelocityHeatmapRectanglesProps {
-  data: VelocityAggregation[]
   visMode: VisMode
+}
+
+const DEFAULT_BOUNDS = {
+  minLat: 29.5,
+  maxLat: 33.33,
+  minLon: 34.25,
+  maxLon: 35.7,
 }
 
 export const VelocityHeatmapRectangles: React.FC<
   VelocityHeatmapRectanglesProps & {
     setMinMax?: (min: number, max: number) => void
   }
-> = ({ data, visMode, setMinMax }) => {
-  const half = 0.005 // for rounding_precision=2
+> = ({ visMode, setMinMax }) => {
+  const { search } = useContext(SearchContext)
+  const zoom = useZoomLevel()
+  const { data, loading, error, currZoom } = useVelocityAggregationData(
+    {
+      minLat: DEFAULT_BOUNDS.minLat,
+      maxLat: DEFAULT_BOUNDS.maxLat,
+      minLon: DEFAULT_BOUNDS.minLon,
+      maxLon: DEFAULT_BOUNDS.maxLon,
+    },
+    dayjs(search.timestamp),
+    zoom - 6,
+  )
+  const half = 0.5 / Math.pow(2, currZoom)
 
   // Compute min/max for normalization
   let minV = 0,
@@ -60,6 +82,12 @@ export const VelocityHeatmapRectangles: React.FC<
 
   return (
     <>
+      {error || loading ? (
+        <div className="err">
+          {error ? 'error' : null}
+          {loading ? 'loading! ' : null}
+        </div>
+      ) : null}
       {data.map((point, idx) => {
         const bounds: [[number, number], [number, number]] = [
           [point.rounded_lat - half, point.rounded_lon - half],
