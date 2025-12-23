@@ -27,14 +27,9 @@ test('should display logo and menu items correctly', async ({ page }) => {
 test("the main header doesn't show duplicate icons", async ({ page }) => {
   const headerLocator = page.locator('div.header-links')
   const svgLocators = headerLocator.locator('svg')
-  const svgCount = await svgLocators.count()
-  const svgInnerHTML = []
-  for (let i = 0; i < svgCount; i++) {
-    const innerHTML = await svgLocators.nth(i).innerHTML()
-    svgInnerHTML.push(innerHTML)
-  }
-  const svgCountWithoutDuplicates = new Set(svgInnerHTML).size
-  expect(svgCountWithoutDuplicates).toBe(svgCount)
+  const innerHTMLs = await svgLocators.evaluateAll((svgs) => svgs.map((svg) => svg.innerHTML))
+  expect(innerHTMLs).not.toHaveDuplications()
+  expect(innerHTMLs.length).toBeGreaterThan(0)
 })
 
 test('make sure the corner GitHub icon leads to DataBus GitHub project', async ({ page }) => {

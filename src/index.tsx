@@ -23,8 +23,11 @@ const queryClient = new QueryClient({
     },
   },
 })
-
-ReactGA.initialize('G-0YRQT80GG1')
+try {
+  ReactGA.initialize('G-0YRQT80GG1')
+} catch (e) {
+  console.error('Failed to initialize Google Analytics', e)
+}
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(

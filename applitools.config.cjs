@@ -5,6 +5,7 @@
  */
 const config = {
   testConcurrency: 20,
+  dontCloseBatches: true,
   waitBeforeCapture: async () => {
     const startTime = Date.now()
     const timeout = 60 * 1000

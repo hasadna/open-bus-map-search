@@ -1,16 +1,13 @@
-import React, { useState } from 'react'
+import { Grid } from '@mui/material'
+import React, { useContext, useState } from 'react'
 import { MapContainer, TileLayer } from 'react-leaflet'
+import dayjs from 'src/dayjs'
+import { SearchContext } from '../../model/pageState'
+import { DateNavigator } from '../components/DateNavigator'
+import { DateSelector } from '../components/DateSelector'
 import { VelocityHeatmapLegend } from './components/VelocityHeatmapLegend'
 import { VelocityHeatmapRectangles } from './components/VelocityHeatmapRectangles'
-import { useVelocityAggregationData } from './useVelocityAggregationData'
 import 'leaflet/dist/leaflet.css'
-
-const DEFAULT_BOUNDS = {
-  minLat: 29.5,
-  maxLat: 33.33,
-  minLon: 34.25,
-  maxLon: 35.7,
-}
 
 const VIS_MODES = [
   { key: 'avg', label: 'Visualize Avg Speed' },
@@ -18,21 +15,29 @@ const VIS_MODES = [
   { key: 'cv', label: 'Visualize Std / Avg Speed (Coeff of Var)' },
 ]
 
+const DEFAULT_ZOOM_LEVEL = 10
+
 const VelocityHeatmapPage: React.FC = () => {
-  const { data, loading, error } = useVelocityAggregationData({
-    minLat: DEFAULT_BOUNDS.minLat,
-    maxLat: DEFAULT_BOUNDS.maxLat,
-    minLon: DEFAULT_BOUNDS.minLon,
-    maxLon: DEFAULT_BOUNDS.maxLon,
-  })
+  const { search, setSearch } = useContext(SearchContext)
+
   const [visMode, setVisMode] = useState<'avg' | 'std' | 'cv'>('avg')
   const [min, setMin] = useState(0)
   const [max, setMax] = useState(1)
+
+  const handleTimestampChange = (time: dayjs.Dayjs | null) => {
+    setSearch((current) => ({ ...current, timestamp: time?.valueOf() ?? Date.now() }))
+  }
 
   return (
     <div>
       <h1>Velocity Aggregation Heatmap</h1>
       <p>This page will display a heatmap of velocity aggregation data.</p>
+
+      {/* choose date*/}
+      <Grid>
+        <DateSelector time={dayjs(search.timestamp)} onChange={handleTimestampChange} />
+      </Grid>
+      <DateNavigator currentTime={dayjs(search.timestamp)} onChange={handleTimestampChange} />
       <div style={{ margin: '12px 0' }}>
         <b>Visualization:</b>{' '}
         {VIS_MODES.map((mode) => (
@@ -48,12 +53,10 @@ const VelocityHeatmapPage: React.FC = () => {
           </label>
         ))}
       </div>
-      {loading && <p>Loading data...</p>}
-      {error && <p style={{ color: 'red' }}>Error: {error}</p>}
       <div style={{ height: '500px', width: '100%', margin: '16px 0' }}>
         <MapContainer
           center={[29.65, 34.6]}
-          zoom={10}
+          zoom={DEFAULT_ZOOM_LEVEL}
           scrollWheelZoom={true}
           style={{ height: '100%', width: '100%' }}>
           <TileLayer
@@ -61,7 +64,6 @@ const VelocityHeatmapPage: React.FC = () => {
             url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
           />
           <VelocityHeatmapRectangles
-            data={data}
             visMode={visMode}
             setMinMax={(min, max) => {
               setMin(min)
@@ -71,14 +73,6 @@ const VelocityHeatmapPage: React.FC = () => {
           <VelocityHeatmapLegend visMode={visMode} min={min} max={max} />
         </MapContainer>
       </div>
-      {data.length > 0 && (
-        <div>
-          <h2>Sample Data</h2>
-          <pre style={{ maxHeight: 200, overflow: 'auto', background: '#eee', padding: 8 }}>
-            {JSON.stringify(data.slice(0, 5), null, 2)}
-          </pre>
-        </div>
-      )}
     </div>
   )
 }

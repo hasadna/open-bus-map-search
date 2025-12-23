@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { useState } from 'react'
+import { http, HttpResponse } from 'msw'
 import { MapContainer, TileLayer } from 'react-leaflet'
-import { VelocityAggregation } from '../useVelocityAggregationData'
+import type { VelocityAggregation } from '../useVelocityAggregationData'
 import { VelocityHeatmapLegend } from './VelocityHeatmapLegend'
 import { VelocityHeatmapRectangles } from './VelocityHeatmapRectangles'
 
@@ -29,6 +29,8 @@ const sampleData: VelocityAggregation[] = [
   },
 ]
 
+const noop = () => {}
+
 const meta = {
   title: 'VelocityHeatmap/Rectangles',
   component: VelocityHeatmapRectangles,
@@ -38,14 +40,6 @@ const meta = {
       options: ['avg', 'std', 'cv'],
       description:
         'Visualization mode: avg for average velocity, std for standard deviation, cv for coefficient of variation',
-    },
-    data: {
-      control: { type: 'object' },
-      description:
-        'Array of velocity aggregation data points with lat, lon, sample count, average, and stddev',
-      table: {
-        type: { summary: 'VelocityAggregation[]' },
-      },
     },
     setMinMax: {
       control: false,
@@ -57,12 +51,9 @@ const meta = {
   },
   args: {
     visMode: 'avg',
-    data: sampleData,
   },
   decorators: [
     (Story, ctx) => {
-      const [minMax, setMinMax] = useState([0, 1])
-
       return (
         <div style={{ height: '500px', width: '100%', margin: '16px 0' }}>
           <MapContainer
@@ -76,12 +67,11 @@ const meta = {
             />
             <Story
               args={{
-                data: ctx.args.data,
                 visMode: ctx.args.visMode,
-                setMinMax: (min, max) => setMinMax([min, max]),
+                setMinMax: noop,
               }}
             />
-            <VelocityHeatmapLegend visMode={ctx.args.visMode} min={minMax[0]} max={minMax[1]} />
+            <VelocityHeatmapLegend visMode={ctx.args.visMode} min={0} max={1} />
           </MapContainer>
         </div>
       )
@@ -93,12 +83,28 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-export const Default: Story = {}
+const parameters = {
+  msw: {
+    handlers: [
+      http.get(
+        'https://open-bus-stride-api.hasadna.org.il/siri_velocity_aggregation/siri_velocity_aggregation',
+        async () => {
+          await new Promise((r) => setTimeout(r, 500)) // Simulate network delay
+          return HttpResponse.json(sampleData)
+        },
+      ),
+    ],
+  },
+}
+
+export const Default: Story = { parameters }
 
 export const StdDev: Story = {
   args: { visMode: 'std' },
+  parameters,
 }
 
 export const CoeffOfVar: Story = {
   args: { visMode: 'cv' },
+  parameters,
 }
