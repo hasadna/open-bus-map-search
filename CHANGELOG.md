@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.5.0](https://github.com/hasadna/open-bus-map-search/compare/v1.4.0...v1.5.0) (2025-12-23)
+
+
+### Features
+
+* Add date picker, so when a new date is selected the map will be updated ([#1332](https://github.com/hasadna/open-bus-map-search/issues/1332)) ([d215e65](https://github.com/hasadna/open-bus-map-search/commit/d215e65d2d190c0bbac2f841f8289061b7d1c428))
+* add Russian translation and improve language selection UX ([#1278](https://github.com/hasadna/open-bus-map-search/issues/1278)) ([ce4ffdf](https://github.com/hasadna/open-bus-map-search/commit/ce4ffdf084da5003f0af5ef05491eb246b30534f))
+* introduce velocity aggregation heatmap page ([#1293](https://github.com/hasadna/open-bus-map-search/issues/1293)) ([18c0eb5](https://github.com/hasadna/open-bus-map-search/commit/18c0eb58b0e20f4fbab558c0ce281641c5c490c2))
+* Schedule View - Gaps Page ([#1225](https://github.com/hasadna/open-bus-map-search/issues/1225)) ([517d11b](https://github.com/hasadna/open-bus-map-search/commit/517d11b5d1cd73fd6dd6f45f50dea4ad0c0850c4))
+* **service-worker:** enhance caching and activation logic ([#1329](https://github.com/hasadna/open-bus-map-search/issues/1329)) ([762e9f8](https://github.com/hasadna/open-bus-map-search/commit/762e9f8c7d3140c62946365201af70b9fd38e2f3))
+* Velocity page zoom levels ([#1334](https://github.com/hasadna/open-bus-map-search/issues/1334)) ([17aaee5](https://github.com/hasadna/open-bus-map-search/commit/17aaee5b3779c586d382e06e2f0b7f985121166c))
+* **widget:** enhance Widget component ([#1211](https://github.com/hasadna/open-bus-map-search/issues/1211)) ([21a7fe5](https://github.com/hasadna/open-bus-map-search/commit/21a7fe5ed086b93566a1fcf342d3dfdc3f4218ad))
+
+
+### Bug Fixes
+
+* COF formula ([#1342](https://github.com/hasadna/open-bus-map-search/issues/1342)) ([4c26c06](https://github.com/hasadna/open-bus-map-search/commit/4c26c06439d4fb774c47de50c0ba409375314bb0))
+* **rides:** filter out future rides from gap list ([#1192](https://github.com/hasadna/open-bus-map-search/issues/1192)) ([e692faf](https://github.com/hasadna/open-bus-map-search/commit/e692faf3debe89f3384009154b223b669f4fc16b))
+
 ## [1.4.0](https://github.com/hasadna/open-bus-map-search/compare/v1.3.0...v1.4.0) (2025-07-14)
 
 
