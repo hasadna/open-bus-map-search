@@ -40,7 +40,7 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
       try {
         test.setTimeout(0)
         if (process.env.APPLITOOLS_API_KEY) {
-          await eyes.close()
+          await eyes.abort()
         }
       } catch (e) {
         console.error(e)
