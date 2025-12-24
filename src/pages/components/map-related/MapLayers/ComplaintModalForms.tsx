@@ -30,6 +30,7 @@ export interface ComplaintTypeData {
   fields: ComplainteField[]
   subject: RequestSubjectSchema
   subject_code: number
+  title_order: ComplainteField[]
 }
 
 export const complaintTypeMappings: Record<ComplaintType, ComplaintTypeData> = {
@@ -51,6 +52,7 @@ export const complaintTypeMappings: Record<ComplaintType, ComplaintTypeData> = {
       applyType: { dataText: 'אי ביצוע נסיעה', dataCode: 2 },
     },
     subject_code: 3,
+    title_order: ['lineNumberText', 'eventDate', 'eventHour'],
   },
   no_stop: {
     fields: [
@@ -71,6 +73,7 @@ export const complaintTypeMappings: Record<ComplaintType, ComplaintTypeData> = {
       applyType: { dataText: 'אי עצירה בתחנה', dataCode: 3 },
     },
     subject_code: 0,
+    title_order: ['lineNumberText', 'eventDate', 'eventHour'],
   },
   delay: {
     fields: [
@@ -91,6 +94,7 @@ export const complaintTypeMappings: Record<ComplaintType, ComplaintTypeData> = {
       applyType: { dataText: 'איחור', dataCode: 4 },
     },
     subject_code: 0,
+    title_order: ['lineNumberText', 'eventDate', 'eventHour'],
   },
   early: {
     fields: [
@@ -111,6 +115,7 @@ export const complaintTypeMappings: Record<ComplaintType, ComplaintTypeData> = {
       applyType: { dataText: 'הקדמה', dataCode: 11 },
     },
     subject_code: 215,
+    title_order: ['lineNumberText', 'eventDate', 'eventHour'],
   },
   overcrowded: {
     fields: [
@@ -131,6 +136,7 @@ export const complaintTypeMappings: Record<ComplaintType, ComplaintTypeData> = {
       applyType: { dataText: 'דיווח על עומס נוסעים', dataCode: 7 },
     },
     subject_code: 64,
+    title_order: ['lineNumberText', 'eventDate', 'eventHour'],
   },
   add_or_remove_station: {
     fields: [
@@ -150,6 +156,7 @@ export const complaintTypeMappings: Record<ComplaintType, ComplaintTypeData> = {
       applyType: { dataText: 'הסרת/ הוספת תחנה', dataCode: 6 },
     },
     subject_code: 186,
+    title_order: ['lineNumberText', 'eventDate'],
   },
   add_new_line: {
     fields: ['raisingStationCity', 'destinationStationCity'],
@@ -159,6 +166,7 @@ export const complaintTypeMappings: Record<ComplaintType, ComplaintTypeData> = {
       applyType: { dataText: 'הוספת קו חדש', dataCode: 8 },
     },
     subject_code: 10,
+    title_order: [],
   },
   add_frequency: {
     fields: [
@@ -179,6 +187,7 @@ export const complaintTypeMappings: Record<ComplaintType, ComplaintTypeData> = {
       applyType: { dataText: 'הוספת תדירות', dataCode: 9 },
     },
     subject_code: 28,
+    title_order: ['lineNumberText', 'eventDate', 'eventHour'],
   },
   // driver_behavior: {
   //   fields: [
@@ -217,6 +226,7 @@ export const complaintTypeMappings: Record<ComplaintType, ComplaintTypeData> = {
       applyType: { dataText: 'ניקיון ותקינות אוטובוס', dataCode: 13 },
     },
     subject_code: 0,
+    title_order: ['lineNumberText', 'eventDate', 'eventHour'],
   },
   fine_appeal: {
     fields: [
@@ -236,6 +246,7 @@ export const complaintTypeMappings: Record<ComplaintType, ComplaintTypeData> = {
       applyType: { dataText: 'ערעורים על השתת תעריף מוגדל (קנס)', dataCode: 14 },
     },
     subject_code: 201,
+    title_order: ['lineNumberText', 'reportdate', 'reportTime'],
   },
   route_change: {
     fields: [
@@ -252,6 +263,7 @@ export const complaintTypeMappings: Record<ComplaintType, ComplaintTypeData> = {
       applyType: { dataText: 'שינוי מסלול', dataCode: 16 },
     },
     subject_code: 8,
+    title_order: ['lineNumberText', 'eventDate'],
   },
   line_switch: {
     fields: ['busDirectionFrom', 'busDirectionTo'],
@@ -261,6 +273,7 @@ export const complaintTypeMappings: Record<ComplaintType, ComplaintTypeData> = {
       applyType: { dataText: 'מעבר בין קווים', dataCode: 17 },
     },
     subject_code: 218,
+    title_order: [],
   },
   station_signs: {
     fields: [
@@ -278,6 +291,7 @@ export const complaintTypeMappings: Record<ComplaintType, ComplaintTypeData> = {
       applyType: { dataText: 'תקינות שלטי המידע בתחנה', dataCode: 18 },
     },
     subject_code: 0,
+    title_order: ['eventDate', 'eventHour'],
   },
   ticketing_fares_discounts: {
     fields: ['ravKavNumber'],
@@ -287,6 +301,7 @@ export const complaintTypeMappings: Record<ComplaintType, ComplaintTypeData> = {
       applyType: { dataText: 'אמצעי כרטוס (רב-קו), תעריפים, הנחות', dataCode: 35 },
     },
     subject_code: 6,
+    title_order: [],
   },
   other: {
     fields: [],
@@ -296,5 +311,6 @@ export const complaintTypeMappings: Record<ComplaintType, ComplaintTypeData> = {
       applyType: { dataText: 'אחר', dataCode: 1 },
     },
     subject_code: 0,
+    title_order: [],
   },
 }

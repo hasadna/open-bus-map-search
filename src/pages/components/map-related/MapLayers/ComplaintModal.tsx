@@ -27,6 +27,7 @@ import { EasterEgg } from '../../../EasterEgg/EasterEgg'
 import { Row } from '../../Row'
 import {
   allComplaintFields,
+  buildComplaintTitle,
   ComplainteField,
   createAllRules,
   mobileOnly,
@@ -125,8 +126,6 @@ const ComplaintModal = ({
   const submitMutation = useMutation({
     mutationFn: (post: { debug: boolean; data: ComplaintFormSchemaAnyOf }) =>
       COMPLAINTS_API.complaintsSendPost({ complaintsSendPostRequest: post }),
-
-    //    COMPLAINTS_API.complaintsSendPost({ complaintsSendPostRequest }),
   })
 
   const buildComplaintData = useCallback(
@@ -165,9 +164,20 @@ const ComplaintModal = ({
         ? citiesQuery.data?.find((c) => c.dataText === destinationStationCity)
         : undefined
 
+      const title = buildComplaintTitle({
+        complaintType,
+        eventDate,
+        eventHour,
+        reportdate,
+        reportTime,
+        lineNumberText,
+        licenseNum,
+      })
+
       return {
         personalDetails: userStorge,
         requestSubject: complaintTypeMappings[complaintType].subject,
+        title,
         busAndOther: {
           applyContent,
           raisingStationAddress,
