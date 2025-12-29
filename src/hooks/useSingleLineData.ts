@@ -21,8 +21,16 @@ export const useSingleLineData = (
   const [filteredPositions, setFilteredPositions] = useState<Point[]>([])
   const [plannedRouteStops, setPlannedRouteStops] = useState<BusStop[]>([])
   const [options, setOptions] = useState<{ value: string; label: string }[]>([])
-  const [startTime, setStartTime] = useState<string>()
+  // const [startTime, setStartTime] = useState<string>()
+  const { startTime } = search
   const [error, setError] = useState<string>()
+
+  const setStartTime = useCallback(
+    (startTime?: string) => {
+      setSearch((prev) => ({ ...prev, startTime }))
+    },
+    [setSearch],
+  )
 
   const setRouteKey = useCallback(
     (routeKey?: string) => {
@@ -38,7 +46,8 @@ export const useSingleLineData = (
       setRouteKey(undefined)
       setStartTime(undefined)
       setError(undefined)
-      setSearch((prev) => ({ ...prev, routes: undefined, routeKey: undefined }))
+      // setSearch((prev) => ({ ...prev, routes: undefined, routeKey: undefined }))
+      setSearch((prev) => ({ ...prev, routes: undefined, routeKey: undefined, startTime: undefined }))
       return
     }
 
@@ -50,7 +59,7 @@ export const useSingleLineData = (
         setRoutes(routes)
         setSearch((prev) => ({ ...prev, routes }))
         setError(undefined)
-        setStartTime(undefined)
+        // setStartTime(undefined)
       })
       .catch((err) => {
         if (err?.cause?.name !== 'AbortError') {
