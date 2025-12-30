@@ -47,7 +47,12 @@ export const useSingleLineData = (
       setStartTime(undefined)
       setError(undefined)
       // setSearch((prev) => ({ ...prev, routes: undefined, routeKey: undefined }))
-      setSearch((prev) => ({ ...prev, routes: undefined, routeKey: undefined, startTime: undefined }))
+      setSearch((prev) => ({
+        ...prev,
+        routes: undefined,
+        routeKey: undefined,
+        startTime: undefined,
+      }))
       return
     }
 
