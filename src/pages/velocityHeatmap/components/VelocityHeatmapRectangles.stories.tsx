@@ -95,6 +95,9 @@ const parameters = {
       ),
     ],
   },
+  eyes: {
+    waitBeforeCapture: 2500,
+  },
 }
 
 export const Default: Story = { parameters }
