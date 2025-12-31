@@ -14,6 +14,7 @@ export type PageSearchState = {
   lineNumber?: string
   vehicleNumber?: number
   routeKey?: string
+  startTime?: string
   routes?: BusRoute[]
 }
 

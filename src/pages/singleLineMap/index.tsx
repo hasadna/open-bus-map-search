@@ -42,23 +42,28 @@ const SingleLineMapPage = () => {
   } = useSingleLineData(operatorId, lineNumber, vehicleNumber)
 
   const handleTimestampChange = (time: dayjs.Dayjs | null) => {
-    setSearch((current) => ({ ...current, timestamp: time?.valueOf() ?? Date.now() }))
+    setSearch((current) => ({
+      ...current,
+      timestamp: time?.valueOf() ?? Date.now(),
+      startTime: undefined,
+    }))
   }
 
   const handleOperatorChange = (operatorId: string) => {
-    setSearch((current) => ({ ...current, operatorId }))
+    setSearch((current) => ({ ...current, operatorId, startTime: undefined }))
   }
 
   const handleLineNumberChange = (lineNumber: string) => {
-    setSearch((current) => ({ ...current, lineNumber }))
+    setSearch((current) => ({ ...current, lineNumber, startTime: undefined }))
   }
 
   const handleRouteKeyChange = (routeKey?: string) => {
+    setSearch((current) => ({ ...current, routeKey, startTime: undefined }))
     setRouteKey(routeKey)
   }
 
   const handleVehicleNumberChange = (vehicleNumber?: number) => {
-    setSearch((current) => ({ ...current, vehicleNumber }))
+    setSearch((current) => ({ ...current, vehicleNumber, startTime: undefined }))
   }
 
   const handleTypeChange = (
