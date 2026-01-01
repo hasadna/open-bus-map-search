@@ -1,0 +1,36 @@
+.nav-btn {
+  padding-left: 4px;
+  padding-right: 4px;
+  font-size: 0.75rem !important;
+  white-space: nowrap;
+  min-width: 0;
+  flex: 1;
+  height: 44px;
+  text-transform: none;
+  border-color: rgba(0, 0, 0, 0.12);
+
+  @media (min-width: 600px) {
+    padding-left: 16px;
+    padding-right: 16px;
+    font-size: 0.9rem !important;
+  }
+
+  @media (min-width: 900px) {
+    font-size: 1rem !important;
+  }
+
+  &.today {
+    background-color: #1976d2 !important;
+    color: #ffffff !important;
+    border-color: #1976d2 !important;
+
+    &:hover {
+      background-color: #1565c0 !important;
+      border-color: #1565c0 !important;
+    }
+
+    .MuiButton-startIcon {
+      color: #ffffff;
+    }
+  }
+}

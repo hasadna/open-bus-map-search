@@ -21,7 +21,6 @@ export const useSingleLineData = (
   const [filteredPositions, setFilteredPositions] = useState<Point[]>([])
   const [plannedRouteStops, setPlannedRouteStops] = useState<BusStop[]>([])
   const [options, setOptions] = useState<{ value: string; label: string }[]>([])
-  // const [startTime, setStartTime] = useState<string>()
   const { startTime } = search
   const [error, setError] = useState<string>()
 
@@ -46,7 +45,6 @@ export const useSingleLineData = (
       setRouteKey(undefined)
       setStartTime(undefined)
       setError(undefined)
-      // setSearch((prev) => ({ ...prev, routes: undefined, routeKey: undefined }))
       setSearch((prev) => ({
         ...prev,
         routes: undefined,
@@ -64,7 +62,6 @@ export const useSingleLineData = (
         setRoutes(routes)
         setSearch((prev) => ({ ...prev, routes }))
         setError(undefined)
-        // setStartTime(undefined)
       })
       .catch((err) => {
         if (err?.cause?.name !== 'AbortError') {
