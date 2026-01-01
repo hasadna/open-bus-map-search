@@ -7,21 +7,21 @@
   flex: 1;
   height: 44px;
   text-transform: none;
-  border-color: rgba(0, 0, 0, 0.12);
+  border-color: rgb(0 0 0 / 12%);
 
-  @media (min-width: 600px) {
+  @media (width >= 600px) {
     padding-left: 16px;
     padding-right: 16px;
     font-size: 0.9rem !important;
   }
 
-  @media (min-width: 900px) {
+  @media (width >= 900px) {
     font-size: 1rem !important;
   }
 
   &.today {
     background-color: #1976d2 !important;
-    color: #ffffff !important;
+    color: #fff !important;
     border-color: #1976d2 !important;
 
     &:hover {
@@ -30,7 +30,7 @@
     }
 
     .MuiButton-startIcon {
-      color: #ffffff;
+      color: #fff;
     }
   }
 }
