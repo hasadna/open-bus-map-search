@@ -87,7 +87,10 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
       await eyes.check({ ...Target.window(), name: 'gaps page' })
     })
 
-    test(`Gaps Patterns Page Should Look Good [${mode}]`, async ({ page, advancedRouteFromHAR }) => {
+    test(`Gaps Patterns Page Should Look Good [${mode}]`, async ({
+      page,
+      advancedRouteFromHAR,
+    }) => {
       await advancedRouteFromHAR('tests/HAR/patterns.har', harOptions)
       await visitPage(page, 'gaps_patterns_page_title')
       await eyes.check({ ...Target.window(), name: 'gaps_patterns page' })
