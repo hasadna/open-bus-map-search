@@ -111,6 +111,8 @@ jobs:
         with:
           node-version: latest
           cache: 'npm'
+      - name: Block API network access
+        run: echo "127.0.0.1 open-bus-stride-api.hasadna.org.il" | sudo tee -a /etc/hosts
       - name: Validate hash.txt endpoint
         run: |
           response=$(curl -s -w "%{http_code}" -o /tmp/hash.txt http://localhost:3000/hash.txt)
@@ -165,6 +167,7 @@ jobs:
         run: |
           echo "127.0.0.1 openstreetmap.org" | sudo tee -a /etc/hosts
           echo "127.0.0.1 tile-a.openstreetmap.fr" | sudo tee -a /etc/hosts
+          echo "127.0.0.1 open-bus-stride-api.hasadna.org.il" | sudo tee -a /etc/hosts
           echo "SHORT_SHA=$(echo ${{ github.event.pull_request.head.sha }} | cut -c1-7)" >> $GITHUB_ENV
       - name: Download Docker image artifact
         uses: actions/download-artifact@v4
@@ -202,6 +205,7 @@ jobs:
         run: |
           echo "127.0.0.1 openstreetmap.org" | sudo tee -a /etc/hosts
           echo "127.0.0.1 tile-a.openstreetmap.fr" | sudo tee -a /etc/hosts
+          echo "127.0.0.1 open-bus-stride-api.hasadna.org.il" | sudo tee -a /etc/hosts
           echo "SHORT_SHA=$(echo ${{ github.event.pull_request.head.sha }} | cut -c1-7)" >> $GITHUB_ENV
       - uses: actions/checkout@v4
         with:
