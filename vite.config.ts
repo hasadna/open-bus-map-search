@@ -1,7 +1,7 @@
 import react from '@vitejs/plugin-react-oxc'
 import { loadEnv } from 'vite'
+import { defineConfig } from 'vite'
 import IstanbulPlugin from 'vite-plugin-istanbul'
-import { defineConfig } from 'vitest/config'
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {

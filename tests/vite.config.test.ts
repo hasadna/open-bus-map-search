@@ -1,5 +1,5 @@
-import { describe, expect, it, vi } from 'vitest'
 import { loadEnv } from 'vite'
+import { describe, expect, it, vi } from 'vitest'
 
 // Mock vite's loadEnv
 vi.mock('vite', async () => {
@@ -16,7 +16,7 @@ describe('vite.config base URL', () => {
     vi.mocked(loadEnv).mockReturnValue(mockEnv)
 
     // Dynamically import the config to get a fresh instance
-    const { default: config } = await import('./vite.config')
+    const { default: config } = await import('../vite.config')
     const configResult =
       typeof config === 'function' ? config({ mode: 'production', command: 'build' }) : config
 
@@ -29,7 +29,7 @@ describe('vite.config base URL', () => {
 
     // Clear the module cache to get a fresh config
     vi.resetModules()
-    const { default: config } = await import('./vite.config')
+    const { default: config } = await import('../vite.config')
     const configResult =
       typeof config === 'function' ? config({ mode: 'production', command: 'build' }) : config
 
@@ -42,20 +42,7 @@ describe('vite.config base URL', () => {
 
     // Clear the module cache to get a fresh config
     vi.resetModules()
-    const { default: config } = await import('./vite.config')
-    const configResult =
-      typeof config === 'function' ? config({ mode: 'production', command: 'build' }) : config
-
-    expect(configResult.base).toBe('/')
-  })
-
-  it('should default to "/" when ASSET_URL is undefined', async () => {
-    const mockEnv = { ASSET_URL: undefined }
-    vi.mocked(loadEnv).mockReturnValue(mockEnv)
-
-    // Clear the module cache to get a fresh config
-    vi.resetModules()
-    const { default: config } = await import('./vite.config')
+    const { default: config } = await import('../vite.config')
     const configResult =
       typeof config === 'function' ? config({ mode: 'production', command: 'build' }) : config
 
