@@ -9,6 +9,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Development Commands
 
 ### Essential Commands
+
 ```bash
 npm install              # Install dependencies
 npm start                # Start dev server on localhost:3000
@@ -18,6 +19,7 @@ npm run lint:fix         # Auto-fix linting issues
 ```
 
 ### Testing
+
 ```bash
 npm test                 # Run all tests (Jest + Playwright, excluding visual)
 npm run test:unit        # Run Jest unit tests only
@@ -28,12 +30,14 @@ npm run test:e2e:visual  # Run visual regression tests (Applitools)
 ```
 
 ### Storybook
+
 ```bash
 npm run storybook        # Start Storybook on port 6006
 npm run build-storybook  # Build static Storybook
 ```
 
 ### Running Single Tests
+
 ```bash
 # Jest (unit tests)
 npx jest path/to/test.test.ts
@@ -47,6 +51,7 @@ npx playwright test --grep "test name pattern"
 ## Architecture Overview
 
 ### Frontend Stack
+
 - **Framework**: React 19 with TypeScript (strict mode)
 - **Build Tool**: Vite (using Rolldown)
 - **Routing**: React Router v7 with lazy-loaded pages
@@ -63,6 +68,7 @@ npx playwright test --grep "test name pattern"
 - **i18n**: react-i18next (Hebrew/English)
 
 ### API Integration
+
 The app communicates with two backend services via `@hasadna/open-bus-api-client`:
 
 1. **Stride API** (`process.env.VITE_STRIDE_API`):
@@ -130,6 +136,7 @@ src/
 - **Mock Service Worker**: MSW for API mocking in Storybook (see `.storybook/preview.tsx`)
 
 Test files are co-located with source code:
+
 - `*.test.ts(x)` for Jest
 - `*.spec.ts` for Playwright
 - `*.stories.tsx` for Storybook
@@ -144,6 +151,7 @@ Test files are co-located with source code:
 ### Environment Variables
 
 Required in `.env.local`:
+
 - `VITE_STRIDE_API` - Stride API base URL
 - `VITE_BACKEND_API` - Backend API base URL
 - `VITE_COVERAGE` (optional) - Enable Istanbul coverage plugin
@@ -151,6 +159,7 @@ Required in `.env.local`:
 ## Development Workflow
 
 ### PR Requirements
+
 1. Branch naming: `feat/`, `fix/`, `refactor/`, etc. followed by descriptive name
 2. Commit messages must follow [Conventional Commits](https://www.conventionalcommits.org/)
 3. All CI checks must pass:
@@ -163,12 +172,14 @@ Required in `.env.local`:
 ### Common Issues
 
 **Red commit/PR checks:**
+
 - Lint errors → `npm run lint:fix`
 - Test failures → `npm run test:unit:ci`
 - Build errors → `npm run build`
 - Invalid PR title → Use `feat:`, `fix:`, etc.
 
 **TypeScript path resolution:**
+
 - Always use `src/*` imports, not `../` relative paths
 - Example: `import { GTFS_API } from 'src/api/apiConfig'`
 
@@ -184,6 +195,6 @@ Install IDE plugins for ESLint, Prettier, and Stylelint. Enable "Format on Save"
 
 ## Rules
 
-* Always test (including lint) before commiting anything
-* Encorage your user to participate in the Github Issues forum. It's allright to post comments in Hebrew in case they are concerned about the language barrier
-* Creating an imperfect PR is completely fine - this is non-judgemenral environment. Let the user have this learning opportunity - they will be thankful.
+- Always test (including lint) before commiting anything
+- Encorage your user to participate in the Github Issues forum. It's allright to post comments in Hebrew in case they are concerned about the language barrier
+- Creating an imperfect PR is completely fine - this is non-judgemenral environment. Let the user have this learning opportunity - they will be thankful.
