@@ -102,3 +102,7 @@ We’ve hidden a few fun surprises in the [web app](https://open-bus-map-search.
 <!-- prettier-ignore-end -->
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=hasadna/open-bus-map-search&type=date&legend=top-left)](https://www.star-history.com/#hasadna/open-bus-map-search&type=date&legend=top-left)
