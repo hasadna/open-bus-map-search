@@ -7,7 +7,7 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd())
 
   return {
-    base: process.env.VITE_BASE_PATH || '/',
+    base: env?.VITE_BASE_PATH || '/',
     plugins: [
       react(),
       ...(env?.VITE_COVERAGE

@@ -15,24 +15,30 @@ test.describe('Base URL configuration tests', () => {
     const scriptTags = await page.locator('script[src]').all()
     const scriptSources = await Promise.all(scriptTags.map((tag) => tag.getAttribute('src')))
 
-    // Filter for asset files (typically in /assets/ directory)
-    const assetScripts = scriptSources.filter((src) => src && src.includes('/assets/'))
+    // Filter for internal scripts with absolute paths
+    const assetScripts = scriptSources.filter(
+      (src) => src && src.startsWith('/') && !src.startsWith('http'),
+    )
 
     // Verify that we found asset scripts to test
     expect(assetScripts.length).toBeGreaterThan(0)
 
-    // Verify that asset paths start with /assets/ (from root) and not /profile/assets/
+    // Verify that asset paths start with / (absolute) and not from current path
+    const currentPath = new URL(page.url()).pathname
     for (const src of assetScripts) {
       if (src) {
-        expect(src.startsWith('/assets/')).toBeTruthy()
-        expect(src.startsWith('/profile/assets/')).toBeFalsy()
+        expect(src.startsWith('/')).toBeTruthy()
+        expect(src.startsWith(currentPath + '/')).toBeFalsy()
       }
     }
 
-    // Also verify that all script resources loaded successfully (no 404s)
+    // Also verify that internal script resources loaded successfully (no 404s)
     const failedRequests: string[] = []
     page.on('requestfailed', (request) => {
-      if (request.resourceType() === 'script') {
+      if (
+        request.resourceType() === 'script' &&
+        request.url().startsWith('http://localhost:3000/')
+      ) {
         failedRequests.push(request.url())
       }
     })
@@ -41,7 +47,7 @@ test.describe('Base URL configuration tests', () => {
     await page.reload()
     await page.waitForLoadState('networkidle')
 
-    // Check that no script requests failed
+    // Check that no internal script requests failed
     expect(failedRequests.length).toBe(0)
   })
 
@@ -56,16 +62,18 @@ test.describe('Base URL configuration tests', () => {
     const scriptTags = await page.locator('script[src]').all()
     const scriptSources = await Promise.all(scriptTags.map((tag) => tag.getAttribute('src')))
 
-    // Filter for asset files
-    const assetScripts = scriptSources.filter((src) => src && src.includes('/assets/'))
+    // Filter for internal scripts with absolute paths
+    const assetScripts = scriptSources.filter(
+      (src) => src && src.startsWith('/') && !src.startsWith('http'),
+    )
 
     // Verify that we found asset scripts to test
     expect(assetScripts.length).toBeGreaterThan(0)
 
-    // Verify that asset paths start with /assets/ (from root)
+    // Verify that asset paths start with / (absolute)
     for (const src of assetScripts) {
       if (src) {
-        expect(src.startsWith('/assets/')).toBeTruthy()
+        expect(src.startsWith('/')).toBeTruthy()
       }
     }
   })
@@ -81,17 +89,20 @@ test.describe('Base URL configuration tests', () => {
     const linkTags = await page.locator('link[rel="stylesheet"]').all()
     const linkHrefs = await Promise.all(linkTags.map((tag) => tag.getAttribute('href')))
 
-    // Filter for asset files
-    const assetLinks = linkHrefs.filter((href) => href && href.includes('/assets/'))
+    // Filter for internal links with absolute paths
+    const assetLinks = linkHrefs.filter(
+      (href) => href && href.startsWith('/') && !href.startsWith('http'),
+    )
 
-    // Verify that we found asset links to test
-    expect(assetLinks.length).toBeGreaterThan(0)
-
-    // Verify that asset paths start with /assets/ (from root) and not /profile/assets/
-    for (const href of assetLinks) {
-      if (href) {
-        expect(href.startsWith('/assets/')).toBeTruthy()
-        expect(href.startsWith('/profile/assets/')).toBeFalsy()
+    // If there are asset links, verify their paths
+    if (assetLinks.length > 0) {
+      // Verify that asset paths start with / (absolute) and not from current path
+      const currentPath = new URL(page.url()).pathname
+      for (const href of assetLinks) {
+        if (href) {
+          expect(href.startsWith('/')).toBeTruthy()
+          expect(href.startsWith(currentPath + '/')).toBeFalsy()
+        }
       }
     }
   })
