@@ -7,7 +7,7 @@ permissions:
   issues: write
 
 env:
-  ASSET_URL: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.run_number }}/
+  PREVIEW_URL: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.run_number }}/
 
 jobs:
   build:
@@ -24,6 +24,8 @@ jobs:
       - name: Run install
         run: npm ci
       - name: Build
+        env:
+          PREVIEW_URL: ${{ env.PREVIEW_URL }}
         run: npm run build
       - name: Upload artifact (build)
         uses: actions/upload-artifact@v4
