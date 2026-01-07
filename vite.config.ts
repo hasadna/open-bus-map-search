@@ -7,7 +7,7 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd())
 
   return {
-    base: env?.PREVIEW_URL || '/',
+    base: env?.VITE_PREVIEW_URL || '/',
     plugins: [
       react(),
       ...(env?.VITE_COVERAGE
