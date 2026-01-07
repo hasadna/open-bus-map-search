@@ -18,6 +18,9 @@ test.describe('Base URL configuration tests', () => {
     // Filter for asset files (typically in /assets/ directory)
     const assetScripts = scriptSources.filter((src) => src && src.includes('/assets/'))
 
+    // Verify that we found asset scripts to test
+    expect(assetScripts.length).toBeGreaterThan(0)
+
     // Verify that asset paths start with /assets/ (from root) and not /profile/assets/
     for (const src of assetScripts) {
       if (src) {
@@ -56,6 +59,9 @@ test.describe('Base URL configuration tests', () => {
     // Filter for asset files
     const assetScripts = scriptSources.filter((src) => src && src.includes('/assets/'))
 
+    // Verify that we found asset scripts to test
+    expect(assetScripts.length).toBeGreaterThan(0)
+
     // Verify that asset paths start with /assets/ (from root)
     for (const src of assetScripts) {
       if (src) {
@@ -77,6 +83,9 @@ test.describe('Base URL configuration tests', () => {
 
     // Filter for asset files
     const assetLinks = linkHrefs.filter((href) => href && href.includes('/assets/'))
+
+    // Verify that we found asset links to test
+    expect(assetLinks.length).toBeGreaterThan(0)
 
     // Verify that asset paths start with /assets/ (from root) and not /profile/assets/
     for (const href of assetLinks) {
