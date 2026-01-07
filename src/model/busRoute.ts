@@ -12,6 +12,7 @@ export type BusRoute = {
   routeIds: number[]
   lineRef: number
   routeAlternative: string
+  mkt: string
 }
 
 export function fromGtfsRoute(gtfsRoute: GtfsRoutePydanticModel): BusRoute {
@@ -21,12 +22,13 @@ export function fromGtfsRoute(gtfsRoute: GtfsRoutePydanticModel): BusRoute {
     date: gtfsRoute.date,
     operatorId: gtfsRoute.operatorRef.toString(),
     lineNumber: gtfsRoute.routeShortName!,
-    key: gtfsRoute.routeLongName!,
+    key: `${gtfsRoute.routeMkt}-${gtfsRoute.routeDirection}`,
     fromName: parts[0] || '',
     toName: parts[1] || '',
     direction: gtfsRoute.routeDirection!,
     routeIds: [gtfsRoute.id],
     lineRef: gtfsRoute.lineRef,
     routeAlternative: gtfsRoute.routeAlternative!,
+    mkt: gtfsRoute.routeMkt!,
   }
 }
