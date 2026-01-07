@@ -177,6 +177,6 @@ window.addEventListener('vite:preloadError', () => {
 
 const routes = createRoutesFromElements(getRoutesList())
 
-const router = createBrowserRouter(routes, { basename: import.meta.env.VITE_PREVIEW_URL })
+const router = createBrowserRouter(routes, { basename: import.meta.env.VITE_BASE_PATH })
 
 export default router

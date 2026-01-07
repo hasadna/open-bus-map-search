@@ -7,7 +7,7 @@ permissions:
   issues: write
 
 env:
-  VITE_PREVIEW_URL: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.run_number }}/
+  VITE_BASE_PATH: /${{ github.run_id }}/open-bus/${{ github.run_number }}/
 
 jobs:
   build:
@@ -25,7 +25,7 @@ jobs:
         run: npm ci
       - name: Build
         env:
-          VITE_PREVIEW_URL: ${{ env.VITE_PREVIEW_URL }}
+          VITE_BASE_PATH: ${{ env.VITE_BASE_PATH }}
         run: npm run build
       - name: Upload artifact (build)
         uses: actions/upload-artifact@v4
@@ -45,6 +45,8 @@ jobs:
       - name: Run install
         run: npm ci
       - name: Build Storybook
+        env:
+          VITE_BASE_PATH: ${{ env.VITE_BASE_PATH }}
         run: npm run build-storybook -- -o dist/storybook
       - name: Upload artifact (storybook)
         uses: actions/upload-artifact@v4
