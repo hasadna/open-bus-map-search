@@ -7,7 +7,7 @@ permissions:
   issues: write
 
 env:
-  VITE_BASE_PATH: /noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.run_number }}/
+  VITE_BASE_PATH: /${{ github.run_id }}/open-bus/${{ github.run_number }}/
 
 jobs:
   build:
