@@ -129,7 +129,7 @@ export const Default: Story = {}
 
 export const RoutesSelected: Story = {
   args: {
-    routeKey: 'הנדיב/המייסדים-זכרון יעקב<->הנדיב/המייסדים-זכרון יעקב-3#',
+    routeKey: '16001-3',
   },
 }
 

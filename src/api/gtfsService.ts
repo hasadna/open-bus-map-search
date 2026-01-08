@@ -83,7 +83,12 @@ export async function getStopsForRouteAsync(
     })
     await Promise.all(
       rideStops.map(async (rideStop) => {
-        if (!rideStop.gtfsStopId) return
+        if (
+          !rideStop.gtfsStopId ||
+          stops.find((b) => b.code === rideStop.gtfsStopCode?.toString())
+        ) {
+          return
+        }
         const stop = await GTFS_API.gtfsStopsGetGet({ id: rideStop.gtfsStopId })
         stops.push(fromGtfsStop(rideStop as GtfsRideStopPydanticModel, stop, rideRepresentative))
       }),
