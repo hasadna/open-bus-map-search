@@ -83,7 +83,7 @@
     "@applitools/eyes-playwright": "^1.40.7",
     "@applitools/eyes-storybook": "^3.62.0",
     "@babel/preset-env": "^7.28.0",
-    "@eslint/eslintrc": "^3.3.1",
+    "@eslint/eslintrc": "^3.3.3",
     "@eslint/js": "^9.39.2",
     "@jest/globals": "^30.0.4",
     "@nx/eslint": "^22.3.3",
