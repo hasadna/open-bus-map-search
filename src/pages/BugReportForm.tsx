@@ -1,41 +1,38 @@
 import { CreateIssuePostRequest } from '@hasadna/open-bus-api-client'
-import { Button, Form, FormProps, Input, message, Select } from 'antd'
-import { useMemo, useState } from 'react'
+import { Alert } from '@mui/material'
+import { useMutation } from '@tanstack/react-query'
+import { Button, Checkbox, Form, Input, Select } from 'antd'
+import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ISSUES_API } from 'src/api/apiConfig'
 import Widget from 'src/shared/Widget'
 import InfoYoutubeModal from './components/YoutubeModal'
+import { EasterEgg } from './EasterEgg/EasterEgg'
 import './BugReportForm.scss'
 
 // File upload is disabled until the server-side implementation is complete.
 const BugReportForm = () => {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [form] = Form.useForm<CreateIssuePostRequest>()
   // const [fileList, setFileList] = useState<UploadFile[]>([])
-  const [submittedUrl, setSubmittedUrl] = useState<string | undefined>(undefined)
 
-  const onFinish = async (values: CreateIssuePostRequest) => {
-    try {
-      const response = await ISSUES_API.issuesCreatePost({
-        createIssuePostRequest: values,
-      })
-
-      setSubmittedUrl(response.data?.url)
+  const mutation = useMutation({
+    mutationFn: (values: CreateIssuePostRequest) =>
+      ISSUES_API.issuesCreatePost({ createIssuePostRequest: values }),
+    onSuccess: (response) => {
       if (response.data?.state === 'open') {
-        message.success(t('reportBug.success'))
         form.resetFields()
         // setFileList([])
-      } else {
-        message.error(t('reportBug.error'))
       }
-    } catch (error) {
+    },
+    onError: (error) => {
       console.error('Error submitting bug report:', error)
-      message.error(t('reportBug.error'))
-    }
-  }
+    },
+  })
 
-  const onFinishFailed: FormProps['onFinishFailed'] = (errorInfo) => {
-    console.log('Failed:', errorInfo)
+  const onFinish = (values: CreateIssuePostRequest) => {
+    mutation.reset()
+    mutation.mutate(values)
   }
 
   // const onFileChange = (info: UploadChangeParam) => {
@@ -64,21 +61,28 @@ const BugReportForm = () => {
           />
         </p>
       }>
-      <span> {t('reportBug.description')}</span>
-      <p>
-        {submittedUrl && (
-          <a href={submittedUrl} target="_blank" rel="noopener noreferrer">
+      <span>{t('reportBug.description')}</span>
+      {mutation.isSuccess && mutation.data?.data && (
+        <Alert severity="success" sx={{ marginBottom: 2 }}>
+          <a href={mutation.data.data.url} target="_blank" rel="noopener noreferrer">
             {t('reportBug.viewIssue')} (Github)
           </a>
-        )}
-      </p>
+        </Alert>
+      )}
+
+      {mutation.isError && (
+        <Alert severity="error" onClose={mutation.reset} sx={{ marginBottom: 2 }}>
+          {t('reportBug.error')}
+        </Alert>
+      )}
+
       <Form
         form={form}
         name="bug-report"
         onFinish={(values) => {
           onFinish(values)
         }}
-        onFinishFailed={onFinishFailed}
+        // onFinishFailed={onFinishFailed}
         labelCol={{ span: 6 }}
         wrapperCol={{ span: 18 }}>
         <Form.Item label={t('bug_type')} name="type" rules={[{ required: true }]}>
@@ -151,6 +155,12 @@ const BugReportForm = () => {
           </Select>
         </Form.Item>
 
+        <EasterEgg code="debug" autohide={false} onShow={() => form.setFieldValue('debug', true)}>
+          <Form.Item label="debug" name="debug" valuePropName="checked">
+            <Checkbox />
+          </Form.Item>
+        </EasterEgg>
+
         {/* <Form.Item label={t('bug_attachments')} name="attachments">
           <Upload
             multiple
@@ -166,7 +176,7 @@ const BugReportForm = () => {
         </Form.Item> */}
 
         <Form.Item>
-          <Button type="primary" htmlType="submit">
+          <Button type="primary" htmlType="submit" loading={mutation.isPending} dir={i18n.dir()}>
             {t('bug_submit')}
           </Button>
         </Form.Item>
