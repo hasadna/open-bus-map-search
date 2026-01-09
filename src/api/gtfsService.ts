@@ -7,13 +7,6 @@ import { BusStop, fromGtfsStop } from 'src/model/busStop'
 const JOIN_SEPARATOR = ','
 const SEARCH_MARGIN_HOURS = 4
 
-type StopHitsPayLoadType = {
-  gtfsRideIds: string
-  gtfsStopIds: string
-  arrival_time_to: number
-  arrival_time_from: number
-}
-
 export async function getRoutesAsync(
   fromTimestamp: dayjs.Dayjs,
   toTimestamp: dayjs.Dayjs,
@@ -135,14 +128,12 @@ export async function getGtfsStopHitTimesAsync(stop: BusStop, timestamp: dayjs.D
   */
 
   try {
-    const stopHitsRequestPayLoad: StopHitsPayLoadType = {
+    const stopHits = await GTFS_API.gtfsRideStopsListGet({
       gtfsRideIds: rideIds,
       gtfsStopIds: stop.stopId.toString(),
-      arrival_time_from: minStartTime,
-      arrival_time_to: maxEndTime,
-    }
-
-    const stopHits = await GTFS_API.gtfsRideStopsListGet(stopHitsRequestPayLoad)
+      arrivalTimeFrom: new Date(minStartTime),
+      arrivalTimeTo: new Date(maxEndTime),
+    })
 
     if (stopHits.length === 0) {
       throw new Error(`No stop hits found`)
