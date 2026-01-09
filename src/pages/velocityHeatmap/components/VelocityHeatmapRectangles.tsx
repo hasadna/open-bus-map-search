@@ -28,7 +28,7 @@ function getRedOpacityColor(value: number, minV = 0, maxV = 1): string {
   const maxOpacity = 0.9
   const norm = Math.max(0, Math.min(1, (value - minV) / (maxV - minV))) * maxOpacity
   // norm = norm ** 2 / maxOpacity ** 2
-  return `rgba(255,0,0,${norm})`
+  return `rgba(255,0,0,${norm.toFixed(3)})`
 }
 
 interface VelocityHeatmapRectanglesProps {
@@ -105,13 +105,7 @@ export const VelocityHeatmapRectangles: React.FC<
             bounds={bounds}
             pathOptions={{ weight: 1, fillColor: color, fillOpacity: 1, stroke: false }}>
             <Popup>
-              <VelocityHeatmapPopup
-                point={point}
-                color={color}
-                value={value}
-                minV={minV}
-                maxV={maxV}
-              />
+              <VelocityHeatmapPopup point={point} color={color} minV={minV} maxV={maxV} />
             </Popup>
           </Rectangle>
         )

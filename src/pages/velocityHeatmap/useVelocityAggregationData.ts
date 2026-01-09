@@ -27,7 +27,7 @@ export function useVelocityAggregationData(
         }).then((data) => data.filter((p) => p.totalSampleCount > 4))
 
       if (data.length === 0) {
-        throw Error(
+        throw new Error(
           'No data points with more than 4 samples found in the specified area. Try expanding the area.',
         )
       }
