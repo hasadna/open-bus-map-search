@@ -60,7 +60,7 @@ const successBody = {
   },
 }
 
-test('bug submission succese', async ({ page }) => {
+test('bug submission success', async ({ page }) => {
   await test.step('Mock API to return success', async () => {
     await page.route(
       (url) => url.href.includes('/issues'),

@@ -32,10 +32,7 @@ const BugReportForm = () => {
 
   const onFinish = (values: CreateIssuePostRequest) => {
     mutation.reset()
-    const debug = form.getFieldValue('debug') || false
-    const finalValues = { ...values, debug }
-    console.log(finalValues)
-    mutation.mutate(finalValues as CreateIssuePostRequest)
+    mutation.mutate(values)
   }
 
   // const onFinishFailed: FormProps['onFinishFailed'] = (errorInfo) => {
