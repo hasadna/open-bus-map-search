@@ -1,19 +1,24 @@
+import type { SiriVelocityAggregationPydanticModel } from '@hasadna/open-bus-api-client'
 import React from 'react'
-import { VelocityAggregation } from '../useVelocityAggregationData'
+import { InfoItem, InfoTable } from 'src/pages/components/InfoTable'
 
-export const VelocityHeatmapPopup: React.FC<{ point: VelocityAggregation }> = ({ point }) => (
-  <div>
-    <b>Avg velocity:</b> {point.average_rolling_avg.toFixed(1)} km/h
-    <br />
-    <br />
-    <br />
-    <b>Stddev:</b> {point.stddev_rolling_avg.toFixed(1)}
-    <br />
-    <b>Samples:</b> {point.total_sample_count}
-    <br />
-    <br />
-    <br />
-    <br />
-    <b>Lat:</b> {point.rounded_lat}, <b>Lon:</b> {point.rounded_lon}
+export const VelocityHeatmapPopup: React.FC<{
+  point: SiriVelocityAggregationPydanticModel
+  color: string
+  value: number
+  minV: number
+  maxV: number
+}> = ({ point, color, value, minV, maxV }) => (
+  <div dir="ltr">
+    <InfoTable>
+      <InfoItem label="AvgV" value={`${point.averageRollingAvg?.toFixed(1)}km/h`} />
+      <InfoItem label="Minv" value={minV} />
+      <InfoItem label="MaxV" value={maxV} />
+      <InfoItem label="Stddev" value={point.stddevRollingAvg?.toFixed(1)} />
+      <InfoItem label="Samples" value={point.totalSampleCount} />
+      <InfoItem label="Postion" value={`[${point.roundedLat}, ${point.roundedLon}]`} />
+      <InfoItem label="Color" value={color} />
+      <InfoItem label="Value" value={value} />
+    </InfoTable>
   </div>
 )
