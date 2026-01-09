@@ -1,5 +1,5 @@
 import {
-  GtfsRideStopPydanticModel,
+  GtfsRideStopWithRelatedPydanticModel,
   SiriVehicleLocationWithRelatedPydanticModel,
 } from '@hasadna/open-bus-api-client'
 import { useCallback } from 'react'
@@ -38,7 +38,7 @@ const StyledTimeline = styled(Timeline)`
 type TimelineBoardProps = {
   className?: string
   target: dayjs.Dayjs
-  gtfsTimes: GtfsRideStopPydanticModel[]
+  gtfsTimes: GtfsRideStopWithRelatedPydanticModel[]
   siriTimes: (SiriVehicleLocationWithRelatedPydanticModel & Coordinates)[]
 }
 

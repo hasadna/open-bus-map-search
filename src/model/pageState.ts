@@ -1,5 +1,5 @@
 import {
-  GtfsRideStopPydanticModel,
+  GtfsRideStopWithRelatedPydanticModel,
   SiriVehicleLocationWithRelatedPydanticModel,
 } from '@hasadna/open-bus-api-client'
 import { createContext, Dispatch } from 'react'
@@ -29,6 +29,6 @@ export type TimelinePageState = {
   stops?: BusStop[]
   stopKey?: string
   stopName?: string
-  gtfsHitTimes?: GtfsRideStopPydanticModel[]
+  gtfsHitTimes?: GtfsRideStopWithRelatedPydanticModel[]
   siriHitTimes?: SiriVehicleLocationWithRelatedPydanticModel & Coordinates[]
 }

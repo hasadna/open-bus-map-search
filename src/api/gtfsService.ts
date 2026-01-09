@@ -1,9 +1,5 @@
-import {
-  GtfsRideStopPydanticModel,
-  GtfsRideWithRelatedPydanticModel,
-} from '@hasadna/open-bus-api-client'
-import axios from 'axios'
-import { GTFS_API, MAX_HITS_COUNT, STRIDE_API_BASE_PATH } from 'src/api/apiConfig'
+import { GtfsRideWithRelatedPydanticModel } from '@hasadna/open-bus-api-client'
+import { GTFS_API, MAX_HITS_COUNT } from 'src/api/apiConfig'
 import dayjs from 'src/dayjs'
 import { BusRoute, fromGtfsRoute } from 'src/model/busRoute'
 import { BusStop, fromGtfsStop } from 'src/model/busStop'
@@ -90,7 +86,7 @@ export async function getStopsForRouteAsync(
           return
         }
         const stop = await GTFS_API.gtfsStopsGetGet({ id: rideStop.gtfsStopId })
-        stops.push(fromGtfsStop(rideStop as GtfsRideStopPydanticModel, stop, rideRepresentative))
+        stops.push(fromGtfsStop(rideStop, stop, rideRepresentative))
       }),
     )
   }
@@ -146,19 +142,11 @@ export async function getGtfsStopHitTimesAsync(stop: BusStop, timestamp: dayjs.D
       arrival_time_to: maxEndTime,
     }
 
-    const stopHitsRes = await axios.get(`${STRIDE_API_BASE_PATH}/gtfs_ride_stops/list`, {
-      params: stopHitsRequestPayLoad,
-    })
+    const stopHits = await GTFS_API.gtfsRideStopsListGet(stopHitsRequestPayLoad)
 
-    if (stopHitsRes.status !== 200) {
-      throw new Error(`Error fetching stop hits: ${stopHitsRes.statusText}`)
-    }
-
-    if (stopHitsRes.data.length === 0) {
+    if (stopHits.length === 0) {
       throw new Error(`No stop hits found`)
     }
-
-    const stopHits: GtfsRideStopPydanticModel[] = stopHitsRes.data
 
     return stopHits.sort((hit1, hit2) => +hit1.arrivalTime! - +hit2.arrivalTime!)
   } catch (error) {
