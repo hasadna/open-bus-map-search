@@ -12,7 +12,7 @@ const PublicAppeal = () => {
 
   return (
     <PublicAppealStyle>
-      <Space direction="vertical" size="middle">
+      <Space orientation="vertical" size="middle">
         <Title className="page-title" level={3}>
           {t(`${pageName}.title`)}
         </Title>

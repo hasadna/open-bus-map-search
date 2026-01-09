@@ -29,7 +29,11 @@ export const MainRoute = () => {
   const timestamp = searchParams.get('timestamp')
 
   useEffect(() => {
-    ReactGA.send({ hitType: 'pageview', page: location.pathname + location.search })
+    try {
+      ReactGA.send({ hitType: 'pageview', page: location.pathname + location.search })
+    } catch (e) {
+      console.error('Failed to send Google Analytics', e)
+    }
   }, [location])
 
   const [search, setSearch] = useSessionStorage<PageSearchState>('search', {

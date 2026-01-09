@@ -189,7 +189,7 @@ const GapsPatternsPage = () => {
           videoUrl="https://www.youtube-nocookie.com/embed?v=-C_rZlbHBmk&list=PL6Rh06rT7uiX1AQE-lm55hy-seL3idx3T&index=4"
         />
       </Typography>
-      <Space direction="vertical" size="middle" style={{ marginBottom: '22px' }}>
+      <Space orientation="vertical" size="middle" style={{ marginBottom: '22px' }}>
         <Alert severity="info" variant="outlined" icon={false}>
           {t('gaps_patterns_page_description')}
         </Alert>

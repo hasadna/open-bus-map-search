@@ -118,9 +118,11 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
           dir={textDirection}
           open={modalOpen}
           onClose={() => setModalOpen?.(false)}
-          PaperProps={{
-            component: 'form',
-            onSubmit: handleSubmit,
+          slotProps={{
+            paper: {
+              component: 'form',
+              onSubmit: handleSubmit,
+            },
           }}>
           <DialogTitle>{t('complaint')}</DialogTitle>
           <DialogContent>
