@@ -90,8 +90,8 @@
     "@nx/eslint": "^22.3.3",
     "@nx/eslint-plugin": "^22.3.3",
     "@playwright/test": "^1.57.0",
-    "@storybook/addon-docs": "next",
-    "@storybook/react-vite": "next",
+    "@storybook/addon-docs": "10.1.11",
+    "@storybook/react-vite": "10.1.11",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.1",
     "@testing-library/user-event": "^14.6.1",
@@ -115,7 +115,7 @@
     "eslint-plugin-prettier": "^5.5.4",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
-    "eslint-plugin-storybook": "next",
+    "eslint-plugin-storybook": "10.1.11",
     "globals": "^17.0.0",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^30.2.0",
@@ -129,7 +129,7 @@
     "playwright-assertions": "^1.0.1",
     "prettier": "^3.7.4",
     "sass": "^1.97.2",
-    "storybook": "next",
+    "storybook": "10.1.11",
     "stylelint": "^16.26.1",
     "stylelint-config-standard-scss": "^16.0.0",
     "stylelint-prettier": "^5.0.3",
@@ -141,9 +141,6 @@
     "vite-plugin-svgr": "^4.5.0",
     "vite-tsconfig-paths": "^6.0.3",
     "vitest": "^4.0.16"
-  },
-  "peerDependencies": {
-    "storybook": "^9.1.17"
   },
   "nx": {
     "targets": {
