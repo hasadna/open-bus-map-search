@@ -4,6 +4,7 @@
  * @type {import('@applitools/eyes-storybook').ApplitoolsConfig}
  */
 const config = {
+  apiKey: process.env.APPLITOOLS_API_KEY,
   testConcurrency: 20,
   dontCloseBatches: true,
   exitcode: false, // if visual differences are found, the github integration will create another commit status so we don't need to fail the job
@@ -25,7 +26,7 @@ const config = {
     return true
   },
   // puppeteerOptions: {headless: false, devtools: true},
-  showBrowserLogs: true,
+  // showBrowserLogs: true,
   // showLogs: true,// uncomment to see Applitools logs
 }
 
