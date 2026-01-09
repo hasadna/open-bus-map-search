@@ -46,25 +46,25 @@ test('bug missing field - request type', async ({ page }) => {
   })
 })
 
+const successBody = {
+  data: {
+    id: 123456,
+    number: 1347,
+    title: 'בדיקה',
+    body: 'Fake issue body for debugging',
+    labels: ['REPORTED-BY-USER'],
+    state: 'open',
+    created_at: '2026-01-09T11:14:11.743Z',
+    url: 'https://api.github.com/repos/octocat/Hello-World/issues/1347',
+    html_url: 'https://github.com/octocat/Hello-World/issues/1347',
+  },
+}
+
 test('bug submission succese', async ({ page }) => {
-  await test.step('Mock API to return error', async () => {
-    await page.route('**/issues', (route) =>
-      route.fulfill({
-        status: 200,
-        body: JSON.stringify({
-          data: {
-            id: 123456,
-            number: 1347,
-            title: 'בדיקה',
-            body: 'Fake issue body for debugging',
-            labels: ['REPORTED-BY-USER'],
-            state: 'open',
-            created_at: '2026-01-09T11:14:11.743Z',
-            url: 'https://api.github.com/repos/octocat/Hello-World/issues/1347',
-            html_url: 'https://github.com/octocat/Hello-World/issues/1347',
-          },
-        }),
-      }),
+  await test.step('Mock API to return success', async () => {
+    await page.route(
+      (url) => url.href.includes('/issues'),
+      (route) => route.fulfill({ status: 200, body: JSON.stringify(successBody) }),
     )
   })
 
@@ -97,8 +97,9 @@ test('bug submission succese', async ({ page }) => {
 
 test('bug submission server error', async ({ page }) => {
   await test.step('Mock API to return error', async () => {
-    await page.route('**/issues', (route) =>
-      route.fulfill({ status: 500, body: 'Internal Server Error' }),
+    await page.route(
+      (url) => url.href.includes('/issues'),
+      (route) => route.fulfill({ status: 500, body: 'Internal Server Error' }),
     )
   })
 
