@@ -35,10 +35,6 @@ const BugReportForm = () => {
     mutation.mutate(values)
   }
 
-  // const onFinishFailed: FormProps['onFinishFailed'] = (errorInfo) => {
-  //   console.log('Failed:', errorInfo)
-  // }
-
   // const onFileChange = (info: UploadChangeParam) => {
   //   setFileList(info.fileList)
   // }
