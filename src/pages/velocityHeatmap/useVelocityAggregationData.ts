@@ -56,8 +56,8 @@ async function loadFromCache(
     if (!res.ok) {
       throw new Error('No cached data found')
     }
-    const rawResult = (await res.json()) as SiriVelocityAggregationPydanticModel[]
-    return rawResult.map(snakeToCamel)
+    const rawResult = await res.json()
+    return rawResult.map(snakeToCamel) as SiriVelocityAggregationPydanticModel[]
   })
 
   return dataFromCache
