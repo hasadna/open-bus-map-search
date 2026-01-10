@@ -145,7 +145,8 @@ function setBatchSettings(mode: string): BatchInfoPlain {
     name: process.env.APPLITOOLS_BATCH_NAME
       ? `${process.env.APPLITOOLS_BATCH_NAME}visual-tests-${mode.toLowerCase()}`
       : `${user}-visual-tests-${mode.toLowerCase()}-${time}`,
-    id: process.env.SHA || `${user}-${mode.toLowerCase()}-${time}`,
+    id:
+      process.env.APPLITOOLS_BATCH_ID || process.env.SHA || `${user}-${mode.toLowerCase()}-${time}`,
   }
 }
 
