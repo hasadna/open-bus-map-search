@@ -52,15 +52,13 @@ async function loadFromCache(
     `${cacheDomain}siri_velocity_aggregation/siri_velocity_aggregation?recorded_from=${encodeURIComponent(
       timestamp.toISOString(),
     )}&lon_min=${bounds.minLon}&lon_max=${bounds.maxLon}&lat_min=${bounds.minLat}&lat_max=${bounds.maxLat}&rounding_precision=${zoom}`,
-  )
-    .then(async (res) => {
-      if (!res.ok) {
-        throw new Error('No cached data found')
-      }
-      const rawResult = (await res.json()) as SiriVelocityAggregationPydanticModel[]
-      return rawResult.map(snakeToCamel)
-    })
-    .catch(() => null)
+  ).then(async (res) => {
+    if (!res.ok) {
+      throw new Error('No cached data found')
+    }
+    const rawResult = (await res.json()) as SiriVelocityAggregationPydanticModel[]
+    return rawResult.map(snakeToCamel)
+  })
 
   return dataFromCache
 }
@@ -68,9 +66,13 @@ async function loadFromCache(
 async function queryFn(bounds: VelocityAggregationBounds, timestamp: dayjs.Dayjs, zoom: number) {
   // only try cached data if date is in the past
   if (timestamp.isBefore(dayjs('yesterday'))) {
-    const cachedData = await loadFromCache(bounds, timestamp, zoom)
-    if (cachedData) {
-      return cachedData
+    try {
+      const cachedData = await loadFromCache(bounds, timestamp, zoom)
+      if (cachedData) {
+        return cachedData
+      }
+    } catch (e) {
+      console.warn('Failed to load cached velocity aggregation data', e)
     }
   }
   const data = await SIRI_API.velocityAggregationSiriVelocityAggregationSiriVelocityAggregationGet({
