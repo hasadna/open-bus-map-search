@@ -110,7 +110,7 @@ const TimelinePage = () => {
         )}
       <Grid container spacing={2}>
         {/* choose date */}
-        <Grid size={{ lg: 4, md: 6, sm: 12 }}>
+        <Grid size={{ lg: 4, md: 6, xs: 12 }}>
           <DateSelector
             time={dayjs(timestamp)}
             onChange={(ts) => {
@@ -126,7 +126,7 @@ const TimelinePage = () => {
           />
         </Grid>
         {/* choose time */}
-        <Grid size={{ lg: 4, md: 6, sm: 12 }}>
+        <Grid size={{ lg: 4, md: 6, xs: 12 }}>
           <TimeSelector
             time={dayjs(timestamp)}
             onChange={(ts) => {
@@ -142,21 +142,21 @@ const TimelinePage = () => {
           />
         </Grid>
         {/* choose operator */}
-        <Grid size={{ lg: 4, md: 6, sm: 12 }}>
+        <Grid size={{ lg: 4, md: 6, xs: 12 }}>
           <OperatorSelector
             operatorId={operatorId}
             setOperatorId={(id) => setSearch((current) => ({ ...current, operatorId: id }))}
           />
         </Grid>
         {/* choose line */}
-        <Grid size={{ lg: 4, md: 6, sm: 12 }}>
+        <Grid size={{ lg: 4, md: 6, xs: 12 }}>
           <LineNumberSelector
             lineNumber={lineNumber}
             setLineNumber={(number) => setSearch((current) => ({ ...current, lineNumber: number }))}
           />
         </Grid>
         {/* routes */}
-        <Grid container size={{ lg: 4, md: 6, sm: 12 }}>
+        <Grid container size={{ lg: 4, md: 6, xs: 12 }}>
           <Row style={{ width: '100%' }}>
             <div style={{ width: '100%' }}>
               {routesQueary.data?.length === 0 ? (
@@ -174,7 +174,7 @@ const TimelinePage = () => {
           </Row>
         </Grid>
         {/* stops */}
-        <Grid container size={{ lg: 4, md: 6, sm: 12 }}>
+        <Grid container size={{ lg: 4, md: 6, xs: 12 }}>
           <Row style={{ width: '100%' }}>
             <div style={{ width: '100%' }}>
               <StopSelector
