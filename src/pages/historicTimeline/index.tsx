@@ -17,7 +17,8 @@ import RouteSelector from 'src/pages/components/RouteSelector'
 import { Row } from 'src/pages/components/Row'
 import StopSelector from 'src/pages/components/StopSelector'
 import { TimelineBoard } from 'src/pages/components/timeline/TimelineBoard'
-import { INPUT_SIZE, MARGIN_MEDIUM } from 'src/resources/sizes'
+import { MARGIN_MEDIUM } from 'src/resources/sizes'
+import Widget from 'src/shared/Widget'
 import { SearchContext } from '../../model/pageState'
 import { DateSelector } from '../components/DateSelector'
 import { NotFound } from '../components/NotFound'
@@ -46,9 +47,11 @@ const TimelinePage = () => {
           return routes
         } catch (error) {
           console.error(error)
+          setSearch((current) => ({ ...current, routes: undefined, routeKey: undefined }))
+          setStopKey(undefined)
         }
-        setSearch((current) => ({ ...current, routes: undefined, routeKey: undefined }))
       }
+      return null
     },
     queryKey: ['routes', operatorId, lineNumber, time],
   })
@@ -64,11 +67,12 @@ const TimelinePage = () => {
           return await getStopsForRouteAsync(selectedRoute.routeIds, time)
         } catch (error) {
           console.error(error)
+          setStopKey(undefined)
         }
-        setSearch((current) => ({ ...current, routes: undefined, routeKey: undefined }))
       }
+      return null
     },
-    queryKey: ['stops', selectedRoute, time],
+    queryKey: ['stops', selectedRoute?.lineRef, time],
   })
 
   const selectedStop = useMemo(() => {
@@ -78,14 +82,15 @@ const TimelinePage = () => {
   const hitsQueary = useQuery({
     queryFn: async () => {
       if (selectedStop && selectedRoute) {
-        const gtfsTime = await getGtfsStopHitTimesAsync(selectedStop, time)
-        const siriTime = await getSiriStopHitTimesAsync(selectedRoute, selectedStop, time)
+        const [gtfsTime, siriTime] = await Promise.all([
+          getGtfsStopHitTimesAsync(selectedStop, time),
+          getSiriStopHitTimesAsync(selectedRoute, selectedStop, time),
+        ])
         return { gtfsTime, siriTime }
       }
-      return undefined
+      return null
     },
-
-    queryKey: ['hits', selectedStop || '', time],
+    queryKey: ['hits', selectedRoute?.lineRef, selectedStop?.stopId, time],
   })
 
   return (
@@ -93,17 +98,19 @@ const TimelinePage = () => {
       <Typography variant="h4" gutterBottom>
         {t('timeline_page_title')}
       </Typography>
-
       <Alert severity="info" variant="outlined" icon={false}>
         {t('timeline_page_description')}
       </Alert>
-
-      <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
+      {hitsQueary.data &&
+        hitsQueary.data.gtfsTime.length > 0 &&
+        hitsQueary.data.siriTime.length === 0 && (
+          <Alert severity="warning" variant="outlined">
+            {t('no_data_from_ETL')}
+          </Alert>
+        )}
+      <Grid container spacing={2}>
         {/* choose date */}
-        <Grid size={{ xs: 4 }} className="hideOnMobile">
-          <Label text={t('choose_date')} />
-        </Grid>
-        <Grid size={{ sm: 8, xs: 12 }}>
+        <Grid size={{ lg: 4, md: 6, sm: 12 }}>
           <DateSelector
             time={dayjs(timestamp)}
             onChange={(ts) => {
@@ -119,10 +126,7 @@ const TimelinePage = () => {
           />
         </Grid>
         {/* choose time */}
-        <Grid size={{ xs: 4 }} className="hideOnMobile">
-          <Label text={t('choose_time')} />
-        </Grid>
-        <Grid size={{ sm: 8, xs: 12 }}>
+        <Grid size={{ lg: 4, md: 6, sm: 12 }}>
           <TimeSelector
             time={dayjs(timestamp)}
             onChange={(ts) => {
@@ -138,27 +142,21 @@ const TimelinePage = () => {
           />
         </Grid>
         {/* choose operator */}
-        <Grid size={{ xs: 4 }} className="hideOnMobile">
-          <Label text={t('choose_operator')} />
-        </Grid>
-        <Grid size={{ sm: 8, xs: 12 }}>
+        <Grid size={{ lg: 4, md: 6, sm: 12 }}>
           <OperatorSelector
             operatorId={operatorId}
             setOperatorId={(id) => setSearch((current) => ({ ...current, operatorId: id }))}
           />
         </Grid>
         {/* choose line */}
-        <Grid size={{ xs: 4 }} className="hideOnMobile">
-          <Label text={t('choose_line')} />
-        </Grid>
-        <Grid size={{ sm: 8, xs: 12 }}>
+        <Grid size={{ lg: 4, md: 6, sm: 12 }}>
           <LineNumberSelector
             lineNumber={lineNumber}
             setLineNumber={(number) => setSearch((current) => ({ ...current, lineNumber: number }))}
           />
         </Grid>
         {/* routes */}
-        <Grid size={{ xs: 12 }}>
+        <Grid size={{ lg: 4, md: 6, sm: 12 }}>
           {routesQueary.isLoading && (
             <Row>
               <Label text={t('loading_routes')} />
@@ -177,7 +175,7 @@ const TimelinePage = () => {
           )}
         </Grid>
         {/* stops */}
-        <Grid size={{ xs: 12 }}>
+        <Grid size={{ lg: 4, md: 6, sm: 12 }}>
           {stopsQueary.isLoading && (
             <Row>
               <Label text={t('loading_stops')} />
@@ -191,26 +189,28 @@ const TimelinePage = () => {
             setStopKey={(key) => setStopKey(key)}
           />
         </Grid>
-        {/* its hits */}
-        <Grid size={{ xs: 12 }}>
-          {hitsQueary.isLoading && (
-            <Row>
-              <Label text={t('loading_hits')} />
-              <CircularProgress />
-            </Row>
-          )}
-          {!hitsQueary.isLoading &&
-            ((hitsQueary.data?.gtfsTime && hitsQueary.data.gtfsTime.length > 0) ||
-            (hitsQueary.data?.siriTime && hitsQueary.data.siriTime.length > 0) ? (
-              <StyledTimelineBoard
-                target={dayjs(timestamp)}
-                gtfsTimes={hitsQueary.data?.gtfsTime}
-                siriTimes={hitsQueary.data?.siriTime}
-              />
-            ) : (
-              <NotFound>{t('hits_not_found')}</NotFound>
-            ))}
-        </Grid>
+        {/* hits timeline */}
+        {selectedRoute && selectedStop && (
+          <Widget marginBottom>
+            {hitsQueary.isLoading && (
+              <Row>
+                <Label text={t('loading_hits')} />
+                <CircularProgress />
+              </Row>
+            )}
+            {!hitsQueary.isLoading &&
+              ((hitsQueary.data?.gtfsTime && hitsQueary.data.gtfsTime.length > 0) ||
+              (hitsQueary.data?.siriTime && hitsQueary.data.siriTime.length > 0) ? (
+                <StyledTimelineBoard
+                  target={dayjs(timestamp)}
+                  gtfsTimes={hitsQueary.data.gtfsTime}
+                  siriTimes={hitsQueary.data.siriTime}
+                />
+              ) : (
+                <NotFound>{t('hits_not_found')}</NotFound>
+              ))}
+          </Widget>
+        )}
       </Grid>
     </PageContainer>
   )
