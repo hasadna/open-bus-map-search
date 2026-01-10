@@ -25,7 +25,7 @@ const VelocityHeatmapPage: React.FC = () => {
   const [max, setMax] = useState(1)
 
   const handleTimestampChange = (time: dayjs.Dayjs | null) => {
-    setSearch((current) => ({ ...current, timestamp: time?.valueOf() ?? Date.now() }))
+    setSearch((current) => ({ ...current, timestamp: time?.valueOf() ?? +new Date('2026-01-01') }))
   }
 
   return (
