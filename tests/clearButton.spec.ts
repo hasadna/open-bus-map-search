@@ -23,7 +23,7 @@ async function clickClearButton(page: Page) {
 test.describe('clearButton functionality', () => {
   test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
     await setupTest(page)
-    // await advancedRouteFromHAR('tests/HAR/clearbutton.har', harOptions)
+    await advancedRouteFromHAR('tests/HAR/clearbutton.har', harOptions)
   })
 
   test.describe('clearButton functionality at TimeLinePage', () => {
@@ -39,10 +39,9 @@ test.describe('clearButton functionality', () => {
 
       await selectLineNumberAndRoute(page, lineNumber, route)
       await lineNumber.click()
-      await stop.waitFor({ state: 'visible' })
       await clearInput(page)
-      await expect(route).not.toBeVisible()
-      await expect(stop).not.toBeVisible()
+      await expect(route).toBeDisabled()
+      await expect(stop).toBeDisabled()
     })
 
     test('after clear `route` input value - should hide `stop` input', async ({ page }) => {
@@ -52,9 +51,8 @@ test.describe('clearButton functionality', () => {
       await operator.click()
       await page.getByRole('option', { name: 'אלקטרה אפיקים', exact: true }).click()
       await selectLineNumberAndRoute(page, lineNumber, route)
-      await stop.waitFor({ state: 'visible' })
       await clickClearButton(page)
-      await expect(stop).not.toBeVisible()
+      await expect(stop).toBeDisabled()
     })
   })
 
