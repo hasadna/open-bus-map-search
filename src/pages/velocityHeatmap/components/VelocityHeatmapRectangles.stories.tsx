@@ -1,3 +1,4 @@
+import type { SiriVelocityAggregationPydanticModel } from '@hasadna/open-bus-api-client'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { MapContainer, TileLayer } from 'react-leaflet'
 import { fn } from '@storybook/test'
@@ -6,27 +7,27 @@ import type { VelocityAggregation } from '../useVelocityAggregationData'
 import { VelocityHeatmapLegend } from './VelocityHeatmapLegend'
 import { VelocityHeatmapRectangles } from './VelocityHeatmapRectangles'
 
-const sampleData: VelocityAggregation[] = [
+const sampleData: SiriVelocityAggregationPydanticModel[] = [
   {
-    rounded_lon: 34.92,
-    rounded_lat: 29.56,
-    total_sample_count: 8,
-    average_rolling_avg: 60.4,
-    stddev_rolling_avg: 3.7,
+    roundedLon: 34.92,
+    roundedLat: 29.56,
+    totalSampleCount: 8,
+    averageRollingAvg: 60.4,
+    stddevRollingAvg: 3.7,
   },
   {
-    rounded_lon: 34.93,
-    rounded_lat: 29.57,
-    total_sample_count: 12,
-    average_rolling_avg: 45.2,
-    stddev_rolling_avg: 5.1,
+    roundedLon: 34.93,
+    roundedLat: 29.57,
+    totalSampleCount: 12,
+    averageRollingAvg: 45.2,
+    stddevRollingAvg: 5.1,
   },
   {
-    rounded_lon: 34.94,
-    rounded_lat: 29.58,
-    total_sample_count: 20,
-    average_rolling_avg: 10.0,
-    stddev_rolling_avg: 1.2,
+    roundedLon: 34.94,
+    roundedLat: 29.58,
+    totalSampleCount: 20,
+    averageRollingAvg: 10.0,
+    stddevRollingAvg: 1.2,
   },
 ]
 
