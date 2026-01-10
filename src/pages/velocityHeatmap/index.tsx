@@ -1,9 +1,9 @@
-import { Grid } from '@mui/material'
+import { Stack } from '@mui/material'
 import React, { useContext, useState } from 'react'
 import { MapContainer, TileLayer } from 'react-leaflet'
 import dayjs from 'src/dayjs'
 import { SearchContext } from '../../model/pageState'
-import { DateNavigator } from '../components/DateNavigator'
+import { DateNavigator } from '../components/dateNavigator/DateNavigator'
 import { DateSelector } from '../components/DateSelector'
 import { VelocityHeatmapLegend } from './components/VelocityHeatmapLegend'
 import { VelocityHeatmapRectangles } from './components/VelocityHeatmapRectangles'
@@ -34,10 +34,10 @@ const VelocityHeatmapPage: React.FC = () => {
       <p>This page will display a heatmap of velocity aggregation data.</p>
 
       {/* choose date*/}
-      <Grid>
+      <Stack direction="column" spacing={2} sx={{ mb: 2, width: { xs: '100%', md: '70%' } }}>
         <DateSelector time={dayjs(search.timestamp)} onChange={handleTimestampChange} />
-      </Grid>
-      <DateNavigator currentTime={dayjs(search.timestamp)} onChange={handleTimestampChange} />
+        <DateNavigator currentTime={dayjs(search.timestamp)} onChange={handleTimestampChange} />
+      </Stack>
       <div style={{ margin: '12px 0' }}>
         <b>Visualization:</b>{' '}
         {VIS_MODES.map((mode) => (
