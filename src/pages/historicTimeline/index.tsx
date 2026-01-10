@@ -156,38 +156,36 @@ const TimelinePage = () => {
           />
         </Grid>
         {/* routes */}
-        <Grid size={{ lg: 4, md: 6, sm: 12 }}>
-          {routesQueary.isLoading && (
-            <Row>
-              <Label text={t('loading_routes')} />
-              <CircularProgress />
-            </Row>
-          )}
-          {routesQueary.data?.length === 0 ? (
-            <NotFound>{t('line_not_found')}</NotFound>
-          ) : (
-            <RouteSelector
-              disabled={!routesQueary.data}
-              routes={routesQueary.data || []}
-              routeKey={routeKey}
-              setRouteKey={(key) => setSearch((current) => ({ ...current, routeKey: key }))}
-            />
-          )}
+        <Grid container size={{ lg: 4, md: 6, sm: 12 }}>
+          <Row style={{ width: '100%' }}>
+            <div style={{ width: '100%' }}>
+              {routesQueary.data?.length === 0 ? (
+                <NotFound>{t('line_not_found')}</NotFound>
+              ) : (
+                <RouteSelector
+                  disabled={!routesQueary.data}
+                  routes={routesQueary.data || []}
+                  routeKey={routeKey}
+                  setRouteKey={(key) => setSearch((current) => ({ ...current, routeKey: key }))}
+                />
+              )}
+            </div>
+            {routesQueary.isLoading && <CircularProgress />}
+          </Row>
         </Grid>
         {/* stops */}
-        <Grid size={{ lg: 4, md: 6, sm: 12 }}>
-          {stopsQueary.isLoading && (
-            <Row>
-              <Label text={t('loading_stops')} />
-              <CircularProgress />
-            </Row>
-          )}
-          <StopSelector
-            disabled={!stopsQueary.data}
-            stops={stopsQueary.data || []}
-            stopKey={stopKey}
-            setStopKey={(key) => setStopKey(key)}
-          />
+        <Grid container size={{ lg: 4, md: 6, sm: 12 }}>
+          <Row style={{ width: '100%' }}>
+            <div style={{ width: '100%' }}>
+              <StopSelector
+                disabled={!stopsQueary.data}
+                stops={stopsQueary.data || []}
+                stopKey={stopKey}
+                setStopKey={(key) => setStopKey(key)}
+              />
+            </div>
+            {stopsQueary.isLoading && <CircularProgress />}
+          </Row>
         </Grid>
         {/* hits timeline */}
         {selectedRoute && selectedStop && (

@@ -1,10 +1,10 @@
 import { expect, test } from 'src/test_pages/TimelinePage'
-import { harOptions, setupTest, verifyDateFromParameter, visitPage } from './utils'
+import { setupTest, verifyDateFromParameter, visitPage } from './utils'
 
 test.describe('Timeline Page Tests', () => {
-  test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
+  test.beforeEach(async ({ page }) => {
     await setupTest(page)
-    await advancedRouteFromHAR('tests/HAR/timeline.har', harOptions)
+    // await advancedRouteFromHAR('tests/HAR/timeline.har', harOptions)
     await visitPage(page, 'timeline_page_title')
   })
 

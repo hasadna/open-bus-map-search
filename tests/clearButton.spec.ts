@@ -23,7 +23,7 @@ async function clickClearButton(page: Page) {
 test.describe('clearButton functionality', () => {
   test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
     await setupTest(page)
-    await advancedRouteFromHAR('tests/HAR/clearbutton.har', harOptions)
+    // await advancedRouteFromHAR('tests/HAR/clearbutton.har', harOptions)
   })
 
   test.describe('clearButton functionality at TimeLinePage', () => {
