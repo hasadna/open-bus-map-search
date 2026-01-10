@@ -1,5 +1,6 @@
 import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { useContext, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import {
@@ -17,10 +18,11 @@ import { Row } from 'src/pages/components/Row'
 import StopSelector from 'src/pages/components/StopSelector'
 import { TimelineBoard } from 'src/pages/components/timeline/TimelineBoard'
 import { INPUT_SIZE, MARGIN_MEDIUM } from 'src/resources/sizes'
-import { SearchContext, TimelinePageState } from '../../model/pageState'
+import { SearchContext } from '../../model/pageState'
 import { DateSelector } from '../components/DateSelector'
 import { NotFound } from '../components/NotFound'
 import { PageContainer } from '../components/PageContainer'
+import { TimeSelector } from '../components/TimeSelector'
 
 const StyledTimelineBoard = styled(TimelineBoard)`
   margin-top: ${MARGIN_MEDIUM * 3}px;
@@ -30,108 +32,61 @@ const StyledTimelineBoard = styled(TimelineBoard)`
 const TimelinePage = () => {
   const { t } = useTranslation()
   const { search, setSearch } = useContext(SearchContext)
-  const { operatorId, lineNumber, timestamp, routes, routeKey } = search
-  const [state, setState] = useState<TimelinePageState>({})
-  const { stopKey, stopName, gtfsHitTimes, siriHitTimes, stops } = state
+  const { operatorId, lineNumber, timestamp, routeKey } = search
+  const [stopKey, setStopKey] = useState<string | undefined>()
 
-  const [routesIsLoading, setRoutesIsLoading] = useState(false)
-  const [stopsIsLoading, setStopsIsLoading] = useState(false)
-  const [hitsIsLoading, setHitsIsLoading] = useState(false)
+  const time = useMemo(() => dayjs(search.timestamp), [timestamp])
 
-  const clearRoutes = useCallback(() => {
-    setSearch((current) => ({ ...current, routes: undefined, routeKey: undefined }))
-    setRoutesIsLoading(false)
-  }, [setSearch])
+  const routesQueary = useQuery({
+    queryFn: async () => {
+      if (operatorId && lineNumber) {
+        try {
+          const routes = await getRoutesAsync(time, time, operatorId, lineNumber)
+          setSearch((prev) => ({ ...prev, routes }))
+          return routes
+        } catch (error) {
+          console.error(error)
+        }
+        setSearch((current) => ({ ...current, routes: undefined, routeKey: undefined }))
+      }
+    },
+    queryKey: ['routes', operatorId, lineNumber, time],
+  })
 
-  const clearStops = useCallback(() => {
-    setState((current) => ({
-      ...current,
-      stops: undefined,
-      stopName: undefined,
-      stopKey: undefined,
-      gtfsHitTimes: undefined,
-      siriHitTimes: undefined,
-    }))
-    setStopsIsLoading(false)
-    setHitsIsLoading(false)
-  }, [setState])
+  const selectedRoute = useMemo(() => {
+    return routesQueary.data?.find((route) => route.key === routeKey)
+  }, [routesQueary.data, routeKey])
 
-  useEffect(() => {
-    clearRoutes()
-  }, [clearRoutes, operatorId, lineNumber])
+  const stopsQueary = useQuery({
+    queryFn: async () => {
+      if (selectedRoute) {
+        try {
+          return await getStopsForRouteAsync(selectedRoute.routeIds, time)
+        } catch (error) {
+          console.error(error)
+        }
+        setSearch((current) => ({ ...current, routes: undefined, routeKey: undefined }))
+      }
+    },
+    queryKey: ['stops', selectedRoute, time],
+  })
 
-  useEffect(() => {
-    const controller = new AbortController()
-    const signal = controller.signal
-    clearStops()
-    if (!operatorId || operatorId === '0' || !lineNumber) {
-      return
-    }
-    setRoutesIsLoading(true)
-    getRoutesAsync(dayjs(timestamp), dayjs(timestamp), operatorId, lineNumber, signal)
-      .then((routes) =>
-        setSearch((current) =>
-          search.lineNumber === lineNumber ? { ...current, routes: routes } : current,
-        ),
-      )
-      .catch((err) => console.error(err?.message ?? err))
-      .finally(() => setRoutesIsLoading(false))
-    return () => controller.abort()
-  }, [operatorId, lineNumber, clearRoutes, clearStops, timestamp, setState])
+  const selectedStop = useMemo(() => {
+    return stopsQueary.data?.find((stop) => stop.key === stopKey)
+  }, [stopsQueary.data, stopKey])
 
-  const selectedRoute = useMemo(
-    () => routes?.find((route) => route.key === routeKey),
-    [routes, routeKey],
-  )
-  const selectedRouteIds = selectedRoute?.routeIds
+  const hitsQueary = useQuery({
+    queryFn: async () => {
+      if (selectedStop && selectedRoute) {
+        const gtfsTime = await getGtfsStopHitTimesAsync(selectedStop, time)
+        const siriTime = await getSiriStopHitTimesAsync(selectedRoute, selectedStop, time)
+        return { gtfsTime, siriTime }
+      }
+      return undefined
+    },
 
-  useEffect(() => {
-    clearStops()
-    if (!operatorId || operatorId === '0' || !lineNumber) {
-      return
-    }
-    if (!routeKey || !selectedRouteIds) {
-      return
-    }
-    setStopsIsLoading(true)
-    getStopsForRouteAsync(selectedRouteIds, dayjs(timestamp))
-      .then((stops) => setState((current) => ({ ...current, stops: stops })))
-      .finally(() => setStopsIsLoading(false))
-  }, [selectedRouteIds, routeKey, clearStops])
-
-  useEffect(() => {
-    if (!operatorId || operatorId === '0' || !lineNumber) {
-      return
-    }
-    if (!stopKey || !stops || !selectedRoute) {
-      return
-    }
-    const stop = stops?.find((stop) => stop.key === stopKey)
-    if (stop) {
-      setHitsIsLoading(true)
-      Promise.all([
-        getGtfsStopHitTimesAsync(stop, dayjs(timestamp)),
-        getSiriStopHitTimesAsync(selectedRoute, stop, dayjs(timestamp)),
-      ])
-        .then(([gtfsTimes, siriTimes]) =>
-          setState((current) => ({ ...current, gtfsHitTimes: gtfsTimes, siriHitTimes: siriTimes })),
-        )
-        .finally(() => setHitsIsLoading(false))
-    }
-  }, [stopKey, stops, timestamp, selectedRoute])
-
-  useEffect(() => {
-    if (!operatorId || operatorId === '0' || !lineNumber) {
-      return
-    }
-    if (!stopName || !stops || stopKey) {
-      return
-    }
-    const newStopKey = stops.find((stop) => stop.name === stopName)?.key
-    if (newStopKey) {
-      setState((current) => ({ ...current, stopKey: newStopKey }))
-    }
-  }, [timestamp, stops])
+    queryKey: ['hits', selectedStop || '', time],
+  })
 
   return (
     <PageContainer>
@@ -151,9 +106,35 @@ const TimelinePage = () => {
         <Grid size={{ sm: 8, xs: 12 }}>
           <DateSelector
             time={dayjs(timestamp)}
-            onChange={(ts) =>
-              setSearch((current) => ({ ...current, timestamp: ts ? ts.valueOf() : 0 }))
-            }
+            onChange={(ts) => {
+              if (!ts) return
+              const currentTime = dayjs(timestamp)
+              const newTimestamp = ts
+                .hour(currentTime.hour())
+                .minute(currentTime.minute())
+                .second(currentTime.second())
+                .valueOf()
+              setSearch((current) => ({ ...current, timestamp: newTimestamp }))
+            }}
+          />
+        </Grid>
+        {/* choose time */}
+        <Grid size={{ xs: 4 }} className="hideOnMobile">
+          <Label text={t('choose_time')} />
+        </Grid>
+        <Grid size={{ sm: 8, xs: 12 }}>
+          <TimeSelector
+            time={dayjs(timestamp)}
+            onChange={(ts) => {
+              if (!ts) return
+              const currentDate = dayjs(timestamp)
+              const newTimestamp = currentDate
+                .hour(ts.hour())
+                .minute(ts.minute())
+                .second(ts.second())
+                .valueOf()
+              setSearch((current) => ({ ...current, timestamp: newTimestamp }))
+            }}
           />
         </Grid>
         {/* choose operator */}
@@ -178,67 +159,59 @@ const TimelinePage = () => {
         </Grid>
         {/* routes */}
         <Grid size={{ xs: 12 }}>
-          {routesIsLoading && (
+          {routesQueary.isLoading && (
             <Row>
               <Label text={t('loading_routes')} />
               <CircularProgress />
             </Row>
           )}
-          {!routesIsLoading &&
-            routes &&
-            (routes.length === 0 ? (
-              <NotFound>{t('line_not_found')}</NotFound>
-            ) : (
-              <RouteSelector
-                routes={routes}
-                routeKey={routeKey}
-                setRouteKey={(key) => setSearch((current) => ({ ...current, routeKey: key }))}
-              />
-            ))}
+          {routesQueary.data?.length === 0 ? (
+            <NotFound>{t('line_not_found')}</NotFound>
+          ) : (
+            <RouteSelector
+              disabled={!routesQueary.data}
+              routes={routesQueary.data || []}
+              routeKey={routeKey}
+              setRouteKey={(key) => setSearch((current) => ({ ...current, routeKey: key }))}
+            />
+          )}
         </Grid>
         {/* stops */}
         <Grid size={{ xs: 12 }}>
-          {stopsIsLoading && (
+          {stopsQueary.isLoading && (
             <Row>
               <Label text={t('loading_stops')} />
               <CircularProgress />
             </Row>
           )}
-          {!stopsIsLoading && stops && (
-            <StopSelector
-              stops={stops}
-              stopKey={stopKey}
-              setStopKey={(key) =>
-                setState((current) => {
-                  const stop = current.stops?.find((stop) => stop.key === key)
-                  return { ...current, stopKey: key, stopName: stop?.name }
-                })
-              }
-            />
-          )}
+          <StopSelector
+            disabled={!stopsQueary.data}
+            stops={stopsQueary.data || []}
+            stopKey={stopKey}
+            setStopKey={(key) => setStopKey(key)}
+          />
         </Grid>
-        {/* its Loading */}
+        {/* its hits */}
         <Grid size={{ xs: 12 }}>
-          {hitsIsLoading && (
+          {hitsQueary.isLoading && (
             <Row>
               <Label text={t('loading_hits')} />
               <CircularProgress />
             </Row>
           )}
+          {!hitsQueary.isLoading &&
+            ((hitsQueary.data?.gtfsTime && hitsQueary.data.gtfsTime.length > 0) ||
+            (hitsQueary.data?.siriTime && hitsQueary.data.siriTime.length > 0) ? (
+              <StyledTimelineBoard
+                target={dayjs(timestamp)}
+                gtfsTimes={hitsQueary.data?.gtfsTime}
+                siriTimes={hitsQueary.data?.siriTime}
+              />
+            ) : (
+              <NotFound>{t('hits_not_found')}</NotFound>
+            ))}
         </Grid>
       </Grid>
-      {!hitsIsLoading &&
-        gtfsHitTimes !== undefined &&
-        siriHitTimes !== undefined &&
-        (gtfsHitTimes.length > 0 || siriHitTimes.length > 0 ? (
-          <StyledTimelineBoard
-            target={dayjs(timestamp)}
-            gtfsTimes={gtfsHitTimes}
-            siriTimes={siriHitTimes}
-          />
-        ) : (
-          <NotFound>{t('hits_not_found')}</NotFound>
-        ))}
     </PageContainer>
   )
 }
