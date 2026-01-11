@@ -1,19 +1,22 @@
+import type { SiriVelocityAggregationPydanticModel } from '@hasadna/open-bus-api-client'
 import React, { useContext } from 'react'
 import { Popup, Rectangle } from 'react-leaflet'
 import dayjs from 'src/dayjs'
 import { SearchContext } from '../../../model/pageState'
-import { useVelocityAggregationData, VelocityAggregation } from '../useVelocityAggregationData'
+import { useVelocityAggregationData } from '../useVelocityAggregationData'
 import { VelocityHeatmapPopup } from './VelocityHeatmapPopup'
 import { useZoomLevel } from './ZoomComponent'
 import './VelocityHeatmapRectangles.scss'
 
 type VisMode = 'avg' | 'std' | 'cv'
 
-function getValue(point: VelocityAggregation, visMode: VisMode): number {
-  if (visMode === 'avg') return point.average_rolling_avg
-  if (visMode === 'std') return point.stddev_rolling_avg
+function getValue(point: SiriVelocityAggregationPydanticModel, visMode: VisMode): number {
+  const avg = point.averageRollingAvg ?? 0
+  const stdev = point.stddevRollingAvg ?? 0
+  if (visMode === 'avg') return avg
+  if (visMode === 'std') return stdev
   if (visMode === 'cv') {
-    return point.stddev_rolling_avg > 0 ? point.stddev_rolling_avg / point.average_rolling_avg : 0
+    return stdev > 0 ? stdev / avg : 0
   }
   return 0
 }
@@ -25,7 +28,7 @@ function getRedOpacityColor(value: number, minV = 0, maxV = 1): string {
   const maxOpacity = 0.9
   const norm = Math.max(0, Math.min(1, (value - minV) / (maxV - minV))) * maxOpacity
   // norm = norm ** 2 / maxOpacity ** 2
-  return `rgba(255,0,0,${norm})`
+  return `rgba(255,0,0,${norm.toFixed(3)})`
 }
 
 interface VelocityHeatmapRectanglesProps {
@@ -61,7 +64,7 @@ export const VelocityHeatmapRectangles: React.FC<
   // Compute min/max for normalization
   let minV = 0,
     maxV = 1
-  if (data.length > 0) {
+  if (data && data.length > 0) {
     const values = data
       .map((p) => getValue(p, visMode))
       .filter((v): v is number => typeof v === 'number' && !isNaN(v))
@@ -88,10 +91,10 @@ export const VelocityHeatmapRectangles: React.FC<
           {loading ? 'loading! ' : null}
         </div>
       ) : null}
-      {data.map((point, idx) => {
+      {data?.map((point, idx) => {
         const bounds: [[number, number], [number, number]] = [
-          [point.rounded_lat - half, point.rounded_lon - half],
-          [point.rounded_lat + half, point.rounded_lon + half],
+          [point.roundedLat - half, point.roundedLon - half],
+          [point.roundedLat + half, point.roundedLon + half],
         ]
         const value = getValue(point, visMode)
         const color = getRedOpacityColor(value, minV, maxV)
@@ -102,11 +105,7 @@ export const VelocityHeatmapRectangles: React.FC<
             bounds={bounds}
             pathOptions={{ weight: 1, fillColor: color, fillOpacity: 1, stroke: false }}>
             <Popup>
-              <VelocityHeatmapPopup point={point} />
-              {color} <br />
-              value {value} <br />
-              minv {minV} <br />
-              maxv {maxV} <br />
+              <VelocityHeatmapPopup point={point} color={color} minV={minV} maxV={maxV} />
             </Popup>
           </Rectangle>
         )
