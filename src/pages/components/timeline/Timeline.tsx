@@ -1,5 +1,5 @@
 import {
-  GtfsRideStopPydanticModel,
+  GtfsRideStopWithRelatedPydanticModel,
   SiriVehicleLocationWithRelatedPydanticModel,
 } from '@hasadna/open-bus-api-client'
 import { useTranslation } from 'react-i18next'
@@ -41,7 +41,7 @@ type TimelineProps = {
   className?: string
   // timestamps can be both siri and gtfs timestamps
   timestamps:
-    | GtfsRideStopPydanticModel[]
+    | GtfsRideStopWithRelatedPydanticModel[]
     | (SiriVehicleLocationWithRelatedPydanticModel & Coordinates)[]
     | Date[]
   totalHeight: number
@@ -65,7 +65,7 @@ export const Timeline = ({
       <Point top={2 * PADDING + totalHeight + POINT_SIZE} />
       {timestamps.map((timestamp) => {
         const t =
-          (timestamp as GtfsRideStopPydanticModel).arrivalTime ??
+          (timestamp as GtfsRideStopWithRelatedPydanticModel).arrivalTime ??
           (timestamp as SiriVehicleLocationWithRelatedPydanticModel & Coordinates)
             .recordedAtTime! ??
           (timestamp as Date)

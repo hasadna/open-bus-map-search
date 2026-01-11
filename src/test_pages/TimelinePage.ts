@@ -10,7 +10,7 @@ class TimelinePage extends BasePage {
   }
 
   public async selectOperator(operatorName: string) {
-    await this.selectFromDropdown(this.operatorsDropDown, this.operatorsList, operatorName)
+    await this.selectFromDropdown(this.operatorsSelect, this.operatorsList, operatorName)
   }
   public async selectStation(operatorName: string) {
     await this.selectFromDropdown(this.stationSelect, this.stationList, operatorName)
@@ -25,8 +25,8 @@ class TimelinePage extends BasePage {
   public get stationSelect() {
     return this.page.locator('#stop-select')
   }
-  public get operatorsDropDown() {
-    return this.page.locator("button[aria-label='פתח']")
+  public get operatorsSelect() {
+    return this.page.locator('#operator-select')
   }
 
   public get timelineGraph() {
