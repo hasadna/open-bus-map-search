@@ -13,6 +13,14 @@ const LIMIT = 10000 // the maximum number of vehicles to load in one request
 
 type Dateable = Date | number | string | dayjs.Dayjs
 
+type VehicleLocationQuery = {
+  from: Dateable
+  to: Dateable
+  lineRef?: number
+  vehicleRef?: number
+  operatorRef?: number
+}
+
 function formatTime(time: Dateable) {
   if (dayjs.isDayjs(time)) {
     return time.toISOString()
@@ -33,56 +41,20 @@ const loadedLocations = new Map<
  * it also caches the data, so if the same interval is requested again, it will not load it again.
  */
 class LocationObservable {
-  constructor({
-    from,
-    to,
-    lineRef,
-    vehicleRef,
-    operatorRef,
-  }: {
-    from: Dateable
-    to: Dateable
-    lineRef?: number
-    vehicleRef?: number
-    operatorRef?: number
-  }) {
-    this.#loadData({ from, to, lineRef, vehicleRef, operatorRef })
+  constructor(query: VehicleLocationQuery) {
+    this.#loadData(query)
   }
 
   data: SiriVehicleLocationWithRelatedPydanticModel[] = []
   loading = true
 
-  async #loadData({
-    from,
-    to,
-    lineRef,
-    vehicleRef,
-    operatorRef,
-  }: {
-    from: Dateable
-    to: Dateable
-    lineRef?: number
-    vehicleRef?: number
-    operatorRef?: number
-  }) {
+  async #loadData(querys: VehicleLocationQuery) {
     let offset = 0
     for (let i = 1; this.loading; i++) {
-      const response = await SIRI_API.siriVehicleLocationsListGet({
-        recordedAtTimeFrom: dayjs(from).toDate(),
-        recordedAtTimeTo: dayjs(to).toDate(),
-        limit: LIMIT * i,
-        offset,
-        siriRoutesOperatorRef: operatorRef?.toString(),
-        siriRoutesLineRef: lineRef?.toString(),
-        siriRideVehicleRef: vehicleRef?.toString(),
-        getCount: false,
-      })
-      const data = response
-      if (data.length === 0) {
+      const data = await fetchWithQueue(querys, i, offset)
+      if (!data || data.length === 0) {
         this.loading = false
-        this.#notifyObservers({
-          finished: true,
-        })
+        this.#notifyObservers({ finished: true })
       } else {
         this.data = [...this.data, ...data]
         this.#notifyObservers(data)
@@ -117,22 +89,55 @@ class LocationObservable {
   }
 }
 
+const pool = new Array(10)
+  .fill(0)
+  .map(() => Promise.resolve<void | SiriVehicleLocationWithRelatedPydanticModel[]>(void 0))
+async function fetchWithQueue(
+  { from, to, lineRef, operatorRef, vehicleRef }: VehicleLocationQuery,
+  index: number,
+  offset: number,
+) {
+  const task = async () => {
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        return await SIRI_API.siriVehicleLocationsListGet({
+          recordedAtTimeFrom: dayjs(from).toDate(),
+          recordedAtTimeTo: dayjs(to).toDate(),
+          limit: LIMIT * index,
+          offset,
+          siriRoutesOperatorRef: operatorRef?.toString(),
+          siriRoutesLineRef: lineRef?.toString(),
+          siriRideVehicleRef: vehicleRef?.toString(),
+          getCount: false,
+        })
+      } catch {
+        if (attempt === 2) throw new Error(`Failed after 3 attempts`)
+        await new Promise((resolve) => setTimeout(resolve, 1000 * 2 ** attempt))
+      }
+    }
+  }
+
+  const queue = pool.shift()!
+  const result = queue.then(task).finally(() => pool.push(Promise.resolve()))
+  pool.push(result)
+  return result
+}
+
 // this function checks the cache for the data, and if it's not there, it loads it
-function getLocations({
-  from,
-  to,
-  lineRef,
-  vehicleRef,
-  onUpdate,
-  operatorRef,
-}: {
-  from: Dateable
-  to: Dateable
-  lineRef?: number
-  vehicleRef?: number
-  operatorRef?: number
-  onUpdate: (locations: SiriVehicleLocationWithRelatedPydanticModel[] | { finished: true }) => void // the observer will be called every time with all the locations that were loaded
-}) {
+function getLocations(
+  {
+    from,
+    to,
+    lineRef,
+    vehicleRef,
+    operatorRef,
+    onUpdate,
+  }: VehicleLocationQuery & {
+    onUpdate: (
+      locations: SiriVehicleLocationWithRelatedPydanticModel[] | { finished: true },
+    ) => void
+  }, // the observer will be called every time with all the locations that were loaded
+) {
   const key = `${formatTime(from)}-${formatTime(to)}-${operatorRef}-${lineRef}-${vehicleRef}`
   if (!loadedLocations.has(key)) {
     loadedLocations.set(key, new LocationObservable({ from, to, lineRef, vehicleRef, operatorRef }))
@@ -161,12 +166,7 @@ export default function useVehicleLocations({
   operatorRef,
   splitMinutes: split = 1,
   pause = false,
-}: {
-  from: Dateable
-  to: Dateable
-  lineRef?: number
-  vehicleRef?: number
-  operatorRef?: number
+}: VehicleLocationQuery & {
   splitMinutes?: false | number
   pause?: boolean
 }) {
