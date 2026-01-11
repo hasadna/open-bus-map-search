@@ -17,6 +17,7 @@ export function useVelocityAggregationData(
   timestamp: dayjs.Dayjs,
   zoom: number,
 ) {
+  timestamp = timestamp.startOf('day').add(12, 'hour') // use midday to avoid timezone issues
   const { data, isLoading, error } = useQuery({
     queryFn: queryFn.bind(null, bounds, timestamp, zoom),
     queryKey: [
