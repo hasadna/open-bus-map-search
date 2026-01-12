@@ -6,6 +6,7 @@
 const config = {
   testConcurrency: 20,
   dontCloseBatches: true,
+  exitcode: false, // if visual differences are found, the github integration will create another commit status so we don't need to fail the job
   waitBeforeCapture: async () => {
     const startTime = Date.now()
     const timeout = 60 * 1000

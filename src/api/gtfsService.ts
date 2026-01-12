@@ -1,22 +1,7 @@
-import {
-  GtfsRideStopPydanticModel,
-  GtfsRideWithRelatedPydanticModel,
-} from '@hasadna/open-bus-api-client'
-import axios from 'axios'
-import { GTFS_API, MAX_HITS_COUNT, STRIDE_API_BASE_PATH } from 'src/api/apiConfig'
+import { GTFS_API } from 'src/api/apiConfig'
 import dayjs from 'src/dayjs'
 import { BusRoute, fromGtfsRoute } from 'src/model/busRoute'
 import { BusStop, fromGtfsStop } from 'src/model/busStop'
-
-const JOIN_SEPARATOR = ','
-const SEARCH_MARGIN_HOURS = 4
-
-type StopHitsPayLoadType = {
-  gtfsRideIds: string
-  gtfsStopIds: string
-  arrival_time_to: number
-  arrival_time_from: number
-}
 
 export async function getRoutesAsync(
   fromTimestamp: dayjs.Dayjs,
@@ -83,9 +68,14 @@ export async function getStopsForRouteAsync(
     })
     await Promise.all(
       rideStops.map(async (rideStop) => {
-        if (!rideStop.gtfsStopId) return
+        if (
+          !rideStop.gtfsStopId ||
+          stops.find((b) => b.code === rideStop.gtfsStopCode?.toString())
+        ) {
+          return
+        }
         const stop = await GTFS_API.gtfsStopsGetGet({ id: rideStop.gtfsStopId })
-        stops.push(fromGtfsStop(rideStop as GtfsRideStopPydanticModel, stop, rideRepresentative))
+        stops.push(fromGtfsStop(rideStop, stop, rideRepresentative))
       }),
     )
   }
@@ -97,67 +87,30 @@ export async function getStopsForRouteAsync(
 }
 
 export async function getGtfsStopHitTimesAsync(stop: BusStop, timestamp: dayjs.Dayjs) {
-  const targetStartTime = timestamp.subtract(stop.minutesFromRouteStartTime, 'minute')
-
-  const rides = await GTFS_API.gtfsRidesListGet({
-    gtfsRouteId: stop.routeId,
-    startTimeFrom: targetStartTime
-      .subtract(SEARCH_MARGIN_HOURS, 'hour')
-      .second(0)
-      .millisecond(0)
-      .toDate(),
-    startTimeTo: targetStartTime.add(SEARCH_MARGIN_HOURS, 'hour').second(0).millisecond(0).toDate(),
-    limit: 1024,
-    orderBy: 'start_time asc',
-  })
-
-  if (rides.length === 0) {
-    return []
-  }
-
-  const diffFromTargetStart = (ride: GtfsRideWithRelatedPydanticModel): number =>
-    Math.abs(timestamp.diff(ride.startTime, 'second'))
-
-  const closestInTimeRides = rides
-    .sort((a, b) => diffFromTargetStart(a) - diffFromTargetStart(b))
-    .slice(0, MAX_HITS_COUNT)
-
-  const rideIds = closestInTimeRides.map((ride) => ride.id).join(JOIN_SEPARATOR)
-
-  const minStartTime = Math.min(...rides.map((ride) => Number(ride.startTime)))
-  const maxEndTime = Math.max(...rides.map((ride) => Number(ride.endTime)))
-
-  /* Fix StopHits bugs next steps TODO:
-  1. Add a test to ensure this feature is working correctly.
-  2. Optimize the axios request to minimize latency. - Currently takes forever.
-  3. Fix any on this- define the hit type
-  */
-
   try {
-    const stopHitsRequestPayLoad: StopHitsPayLoadType = {
-      gtfsRideIds: rideIds,
-      gtfsStopIds: stop.stopId.toString(),
-      arrival_time_from: minStartTime,
-      arrival_time_to: maxEndTime,
-    }
+    const start = timestamp.subtract(4, 'hour').toDate()
+    const end = timestamp.add(4, 'hour').toDate()
 
-    const stopHitsRes = await axios.get(`${STRIDE_API_BASE_PATH}/gtfs_ride_stops/list`, {
-      params: stopHitsRequestPayLoad,
+    const rides = await GTFS_API.gtfsRidesListGet({
+      gtfsRouteId: stop.routeId,
+      startTimeFrom: start,
+      startTimeTo: end,
+      orderBy: 'start_time asc',
     })
 
-    if (stopHitsRes.status !== 200) {
-      throw new Error(`Error fetching stop hits: ${stopHitsRes.statusText}`)
-    }
+    if (rides.length === 0) return []
 
-    if (stopHitsRes.data.length === 0) {
-      throw new Error(`No stop hits found`)
-    }
+    const rideIds = rides.map((ride) => ride.id).join(',')
 
-    const stopHits: GtfsRideStopPydanticModel[] = stopHitsRes.data
-
-    return stopHits.sort((hit1, hit2) => +hit1.arrivalTime! - +hit2.arrivalTime!)
+    return await GTFS_API.gtfsRideStopsListGet({
+      gtfsRideIds: rideIds,
+      gtfsStopIds: stop.stopId.toString(),
+      arrivalTimeFrom: start,
+      arrivalTimeTo: end,
+      orderBy: 'arrival_time asc',
+    })
   } catch (error) {
-    console.error(`Error fetching stop hits:`, error)
+    console.error(`Error fetching stop hits for stop ${stop.stopId}:`, error)
     return []
   }
 }

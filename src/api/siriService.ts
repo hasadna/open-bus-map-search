@@ -11,7 +11,7 @@ import { Coordinates } from 'src/model/location'
 
 const LOCATION_DELTA_METERS = 500
 
-async function getRidesAsync(route: BusRoute, stop: BusStop, timestamp: dayjs.Dayjs) {
+async function getRidesAsync(route: BusRoute, timestamp: dayjs.Dayjs) {
   return await SIRI_API.siriRidesListGet({
     limit: 1,
     gtfsRouteDateFrom: timestamp.toDate(),
@@ -20,9 +20,8 @@ async function getRidesAsync(route: BusRoute, stop: BusStop, timestamp: dayjs.Da
     gtfsRideStartTimeTo: dayjs(timestamp).add(1, 'day').toDate(),
     scheduledStartTimeFrom: dayjs(timestamp).subtract(1, 'day').toDate(),
     scheduledStartTimeTo: dayjs(timestamp).add(1, 'day').toDate(),
-    gtfsRideGtfsRouteId: stop.routeId,
     gtfsRouteOperatorRefs: route.operatorId,
-    gtfsRouteRouteShortName: route.lineNumber,
+    gtfsRouteRouteMkt: route.mkt,
     gtfsRouteRouteDirection: route.direction,
   })
 }
@@ -47,7 +46,7 @@ export async function getSiriStopHitTimesAsync(
   stop: BusStop,
   timestamp: dayjs.Dayjs,
 ) {
-  const rides = await getRidesAsync(route, stop, timestamp)
+  const rides = await getRidesAsync(route, timestamp)
   if (rides.length === 0) {
     return []
   }
