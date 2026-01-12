@@ -105,7 +105,7 @@
     "@types/react-dom": "^19.2.3",
     "@types/styled-components": "^5.1.35",
     "@types/underscore.string": "^0.0.41",
-    "@typescript-eslint/eslint-plugin": "^8.37.0",
+    "@typescript-eslint/eslint-plugin": "^8.52.0",
     "@typescript-eslint/parser": "^8.37.0",
     "@vitejs/plugin-react-oxc": "^0.3.0",
     "babel-plugin-transform-import-meta": "^2.3.3",
