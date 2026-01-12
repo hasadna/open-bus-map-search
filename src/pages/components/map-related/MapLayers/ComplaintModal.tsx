@@ -388,8 +388,8 @@ const ComplaintModal = ({
   }, [complaintType, handleSelectOptions, allRules, addOrRemoveStation])
 
   const date = useMemo(() => {
-    return position.recorded_at_time ? dayjs(position.recorded_at_time) : undefined
-  }, [position.recorded_at_time])
+    return position.recordedAtTime ? dayjs(position.recordedAtTime) : undefined
+  }, [position.recordedAtTime])
 
   return (
     <Dialog
@@ -422,7 +422,7 @@ const ComplaintModal = ({
               wait: [date?.add(-30, 'm'), date?.add(30, 'm')],
               raisingStationCity: routeParts?.[1],
               destinationStationCity: routeParts?.[3],
-              licenseNum: position.point?.siri_ride__vehicle_ref,
+              licenseNum: position.point?.siriRideVehicleRef,
               lineNumberText: route.routeShortName,
             } as Partial<ComplaintFormValues>
           }
