@@ -45,7 +45,6 @@ export function DateSelector({
       minDate={minDate || startOfTime}
       disabled={disabled}
       onError={(err) => setError(err)}
-      sx={{ width: { xs: '100%', sm: '70%' } }}
       slotProps={{
         calendarHeader: {
           sx: {
@@ -57,7 +56,6 @@ export function DateSelector({
         textField: {
           fullWidth: true,
           helperText: errorMessageKey && t(errorMessageKey),
-          sx: { bgcolor: '#ffffff', borderRadius: 1 },
         },
       }}
     />
