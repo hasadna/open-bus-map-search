@@ -1,5 +1,5 @@
 import { createTheme, ThemeProvider as MuiThemeProvider, ScopedCssBaseline } from '@mui/material'
-import { enUS, heIL, ruRU } from '@mui/material/locale'
+import { amET, enUS, heIL, ruRU } from '@mui/material/locale'
 import { LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { enUS as dateEnUS, heIL as dateHeIL, ruRU as dateRuRU } from '@mui/x-date-pickers/locales'
@@ -18,6 +18,7 @@ import {
 import { useTranslation } from 'react-i18next'
 import { useLocalStorage } from 'usehooks-ts'
 import dayjs from 'src/dayjs'
+import antdAmharic from 'src/locale/antdAmharic'
 
 export interface ThemeContextInterface {
   toggleTheme: () => void
@@ -70,6 +71,7 @@ export const ThemeProvider = ({ children }: PropsWithChildren) => {
       he: { direction: 'rtl', muiLocale: heIL, dateLocale: dateHeIL },
       en: { direction: 'ltr', muiLocale: enUS, dateLocale: dateEnUS },
       ru: { direction: 'ltr', muiLocale: ruRU, dateLocale: dateRuRU },
+      am: { direction: 'ltr', muiLocale: amET, dateLocale: dateEnUS },
     } as const
 
     const { direction, muiLocale, dateLocale } =
@@ -104,6 +106,7 @@ export const ThemeProvider = ({ children }: PropsWithChildren) => {
       he: { direction: 'rtl', locale: antdHeIL },
       en: { direction: 'ltr', locale: antdEnUS },
       ru: { direction: 'ltr', locale: antdRuRU },
+      am: { direction: 'ltr', locale: antdAmharic },
     } as const
 
     const { direction, locale } = langConfig[language as keyof typeof langConfig] || langConfig.he

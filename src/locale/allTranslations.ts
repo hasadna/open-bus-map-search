@@ -1,5 +1,6 @@
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
+import translationsAM from './am.json'
 import translationsEN from './en.json'
 import translationsHE from './he.json'
 import translationsRU from './ru.json'
@@ -15,6 +16,7 @@ i18n.use(initReactI18next).init({
     he: { translation: translationsHE },
     en: { translation: translationsEN },
     ru: { translation: translationsRU },
+    am: { translation: translationsAM },
   },
   lng: savedLang, // Use saved language or default to Hebrew
   fallbackLng: 'he',
