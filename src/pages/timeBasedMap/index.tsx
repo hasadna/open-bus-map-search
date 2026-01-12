@@ -1,3 +1,4 @@
+import type { SiriVehicleLocationWithRelatedPydanticModel } from '@hasadna/open-bus-api-client'
 import { OpenInFullRounded } from '@mui/icons-material'
 import { Alert, CircularProgress, Grid, IconButton, Typography } from '@mui/material'
 import { useCallback, useEffect, useMemo, useState } from 'react'
@@ -7,7 +8,6 @@ import MarkerClusterGroup from 'react-leaflet-markercluster'
 import useVehicleLocations from 'src/api/useVehicleLocations'
 import dayjs from 'src/dayjs'
 import { useAgencyList } from 'src/hooks/useAgencyList'
-import { VehicleLocation } from 'src/model/vehicleLocation'
 import { BusToolTip } from 'src/pages/components/map-related/MapLayers/BusToolTip'
 import { INPUT_SIZE } from 'src/resources/sizes'
 import { DateSelector } from '../components/DateSelector'
@@ -26,15 +26,15 @@ export interface Point {
   color: number
   operator?: number
   bearing?: number
-  point?: VehicleLocation
-  recorded_at_time?: number
+  point?: SiriVehicleLocationWithRelatedPydanticModel
+  recordedAtTime?: number
 }
 
 interface Path {
-  locations: VehicleLocation[]
+  locations: SiriVehicleLocationWithRelatedPydanticModel[]
   lineRef: number
   operator: number
-  vehicleRef: number
+  vehicleRef: string
 }
 
 export default function TimeBasedMapPage() {
@@ -57,11 +57,11 @@ export default function TimeBasedMapPage() {
 
   const positions = useMemo(() => {
     const pos = locations.map<Point>((location) => ({
-      loc: [location.lat, location.lon],
-      color: location.velocity,
-      operator: location.siri_route__operator_ref,
-      bearing: location.bearing,
-      recorded_at_time: new Date(location.recorded_at_time).getTime(),
+      loc: [location.lat!, location.lon!],
+      color: location.velocity ?? 0,
+      operator: location.siriRouteOperatorRef ?? 0,
+      bearing: location.bearing ?? 0,
+      recordedAtTime: location.recordedAtTime ? new Date(location.recordedAtTime).getTime() : 0,
       point: location,
     }))
     return pos
@@ -70,13 +70,13 @@ export default function TimeBasedMapPage() {
   const paths = useMemo(
     () =>
       locations.reduce((arr: Path[], loc) => {
-        const line = arr.find((line) => line.vehicleRef === loc.siri_ride__vehicle_ref)
+        const line = arr.find((line) => line.vehicleRef === loc.siriRideVehicleRef)
         if (!line) {
           arr.push({
             locations: [loc],
-            lineRef: loc.siri_route__line_ref,
-            operator: loc.siri_route__operator_ref,
-            vehicleRef: loc.siri_ride__vehicle_ref,
+            lineRef: loc.siriRouteLineRef || 0,
+            operator: loc.siriRouteOperatorRef || 0,
+            vehicleRef: loc.siriRideVehicleRef || '',
           })
         } else {
           line.locations.push(loc)
@@ -168,7 +168,7 @@ export default function TimeBasedMapPage() {
               pathOptions={{
                 color: getColorByHashString(path.vehicleRef.toString()),
               }}
-              positions={path.locations.map(({ lat, lon }) => [lat, lon])}
+              positions={path.locations.map(({ lat, lon }) => [lat || 0, lon || 0])}
             />
           ))}
         </MapContainer>

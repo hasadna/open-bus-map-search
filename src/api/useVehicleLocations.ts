@@ -3,22 +3,23 @@
  * it recieves an interval of two dates, and loads locations of all vehicles in that interval.
  * if some of the interval has already been loaded,
  */
+import type { SiriVehicleLocationWithRelatedPydanticModel } from '@hasadna/open-bus-api-client'
 import uniqBy from 'lodash.uniqby'
 import { useEffect, useState } from 'react'
 import dayjs from 'src/dayjs'
-import { VehicleLocation } from 'src/model/vehicleLocation'
+import { SIRI_API } from './apiConfig'
 
-const config = {
-  apiUrl: 'https://open-bus-stride-api.hasadna.org.il/siri_vehicle_locations/list?get_count=false',
-  limit: 10000, // the maximum number of vehicles to load in one request
-  fromField: 'recorded_at_time_from',
-  toField: 'recorded_at_time_to',
-  lineRefField: 'siri_routes__line_ref',
-  vehicleRefField: 'siri_ride__vehicle_ref',
-  operatorRefField: 'siri_routes__operator_ref',
-} as const
+const LIMIT = 10000 // the maximum number of vehicles to load in one request
 
 type Dateable = Date | number | string | dayjs.Dayjs
+
+type VehicleLocationQuery = {
+  from: Dateable
+  to: Dateable
+  lineRef?: number
+  vehicleRef?: number
+  operatorRef?: number
+}
 
 function formatTime(time: Dateable) {
   if (dayjs.isDayjs(time)) {
@@ -40,73 +41,44 @@ const loadedLocations = new Map<
  * it also caches the data, so if the same interval is requested again, it will not load it again.
  */
 class LocationObservable {
-  constructor({
-    from,
-    to,
-    lineRef,
-    vehicleRef,
-    operatorRef,
-  }: {
-    from: Dateable
-    to: Dateable
-    lineRef?: number
-    vehicleRef?: number
-    operatorRef?: number
-  }) {
-    this.#loadData({ from, to, lineRef, vehicleRef, operatorRef })
+  constructor(query: VehicleLocationQuery) {
+    this.#loadData(query)
   }
 
-  data: VehicleLocation[] = []
+  data: SiriVehicleLocationWithRelatedPydanticModel[] = []
   loading = true
 
-  async #loadData({
-    from,
-    to,
-    lineRef,
-    vehicleRef,
-    operatorRef,
-  }: {
-    from: Dateable
-    to: Dateable
-    lineRef?: number
-    vehicleRef?: number
-    operatorRef?: number
-  }) {
+  async #loadData(querys: VehicleLocationQuery) {
     let offset = 0
     for (let i = 1; this.loading; i++) {
-      let url = config.apiUrl
-      url += `&${config.fromField}=${formatTime(from)}&${config.toField}=${formatTime(to)}&limit=${
-        config.limit * i
-      }&offset=${offset}`
-      if (operatorRef) url += `&${config.operatorRefField}=${operatorRef}`
-      if (lineRef) url += `&${config.lineRefField}=${lineRef}`
-      if (vehicleRef) url += `&${config.vehicleRefField}=${vehicleRef}`
-
-      const response = await fetchWithQueue(url)
-      const data: VehicleLocation[] = await response!.json()
-      if (data.length === 0) {
+      const data = await fetchWithQueue(querys, i, offset)
+      if (!data || data.length === 0) {
         this.loading = false
-        this.#notifyObservers({
-          finished: true,
-        })
+        this.#notifyObservers({ finished: true })
       } else {
         this.data = [...this.data, ...data]
         this.#notifyObservers(data)
-        offset += config.limit * i
+        offset += LIMIT * i
       }
     }
     this.#observers = []
   }
 
-  #notifyObservers(data: VehicleLocation[] | { finished: true }) {
+  #notifyObservers(data: SiriVehicleLocationWithRelatedPydanticModel[] | { finished: true }) {
     const observers = this.#observers
     // console.log('notifying observers', observers.length)
     observers.forEach((observer) => observer(data))
   }
 
-  #observers: ((locations: VehicleLocation[] | { finished: true }) => void)[] = []
+  #observers: ((
+    locations: SiriVehicleLocationWithRelatedPydanticModel[] | { finished: true },
+  ) => void)[] = []
 
-  observe(observer: (locations: VehicleLocation[] | { finished: true }) => void) {
+  observe(
+    observer: (
+      locations: SiriVehicleLocationWithRelatedPydanticModel[] | { finished: true },
+    ) => void,
+  ) {
     if (this.loading) {
       this.#observers.push(observer)
     }
@@ -117,12 +89,27 @@ class LocationObservable {
   }
 }
 
-const pool = new Array(10).fill(0).map(() => Promise.resolve<void | Response>(void 0))
-async function fetchWithQueue(url: string) {
+const pool = new Array(10)
+  .fill(0)
+  .map(() => Promise.resolve<void | SiriVehicleLocationWithRelatedPydanticModel[]>(void 0))
+async function fetchWithQueue(
+  { from, to, lineRef, operatorRef, vehicleRef }: VehicleLocationQuery,
+  index: number,
+  offset: number,
+) {
   const task = async () => {
     for (let attempt = 0; attempt < 3; attempt++) {
       try {
-        return await fetch(url)
+        return await SIRI_API.siriVehicleLocationsListGet({
+          recordedAtTimeFrom: dayjs(from).toDate(),
+          recordedAtTimeTo: dayjs(to).toDate(),
+          limit: LIMIT * index,
+          offset,
+          siriRoutesOperatorRef: operatorRef?.toString(),
+          siriRoutesLineRef: lineRef?.toString(),
+          siriRideVehicleRef: vehicleRef?.toString(),
+          getCount: false,
+        })
       } catch {
         if (attempt === 2) throw new Error(`Failed after 3 attempts`)
         await new Promise((resolve) => setTimeout(resolve, 1000 * 2 ** attempt))
@@ -137,21 +124,20 @@ async function fetchWithQueue(url: string) {
 }
 
 // this function checks the cache for the data, and if it's not there, it loads it
-function getLocations({
-  from,
-  to,
-  lineRef,
-  vehicleRef,
-  onUpdate,
-  operatorRef,
-}: {
-  from: Dateable
-  to: Dateable
-  lineRef?: number
-  vehicleRef?: number
-  operatorRef?: number
-  onUpdate: (locations: VehicleLocation[] | { finished: true }) => void // the observer will be called every time with all the locations that were loaded
-}) {
+function getLocations(
+  {
+    from,
+    to,
+    lineRef,
+    vehicleRef,
+    operatorRef,
+    onUpdate,
+  }: VehicleLocationQuery & {
+    onUpdate: (
+      locations: SiriVehicleLocationWithRelatedPydanticModel[] | { finished: true },
+    ) => void
+  }, // the observer will be called every time with all the locations that were loaded
+) {
   const key = `${formatTime(from)}-${formatTime(to)}-${operatorRef}-${lineRef}-${vehicleRef}`
   if (!loadedLocations.has(key)) {
     loadedLocations.set(key, new LocationObservable({ from, to, lineRef, vehicleRef, operatorRef }))
@@ -180,16 +166,11 @@ export default function useVehicleLocations({
   operatorRef,
   splitMinutes: split = 1,
   pause = false,
-}: {
-  from: Dateable
-  to: Dateable
-  lineRef?: number
-  vehicleRef?: number
-  operatorRef?: number
+}: VehicleLocationQuery & {
   splitMinutes?: false | number
   pause?: boolean
 }) {
-  const [locations, setLocations] = useState<VehicleLocation[]>([])
+  const [locations, setLocations] = useState<SiriVehicleLocationWithRelatedPydanticModel[]>([])
   const [isLoading, setIsLoading] = useState<boolean[]>([])
   useEffect(() => {
     if (pause) return
@@ -211,9 +192,9 @@ export default function useVehicleLocations({
             })
           } else {
             setLocations((prev) =>
-              uniqBy<VehicleLocation>(
-                [...prev, ...data].sort((a, b) => a.id - b.id),
-                (loc: VehicleLocation) => loc.id,
+              uniqBy<SiriVehicleLocationWithRelatedPydanticModel>(
+                [...prev, ...data].sort((a, b) => (a.id || 0) - (b.id || 0)),
+                (loc) => loc.id,
               ),
             )
           }

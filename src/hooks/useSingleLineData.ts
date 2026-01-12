@@ -105,14 +105,14 @@ export const useSingleLineData = (
   const positions = useMemo(() => {
     return locations
       .filter((l) =>
-        validVehicleNumber ? Number(l.siri_ride__vehicle_ref) === validVehicleNumber : true,
+        validVehicleNumber ? Number(l.siriRideVehicleRef) === validVehicleNumber : true,
       )
       .map<Point>((location) => ({
-        loc: [location.lat, location.lon],
-        color: location.velocity,
-        operator: location.siri_route__operator_ref,
-        bearing: location.bearing,
-        recorded_at_time: new Date(location.recorded_at_time).getTime(),
+        loc: [location.lat || 0, location.lon || 0],
+        color: location.velocity || 0,
+        operator: location.siriRouteOperatorRef || 0,
+        bearing: location.bearing || 0,
+        recorded_at_time: location.recordedAtTime ? new Date(location.recordedAtTime).getTime() : 0,
         point: location,
       }))
   }, [locations, validVehicleNumber])
@@ -121,12 +121,12 @@ export const useSingleLineData = (
     const fetchOptions = async () => {
       const uniqueTimes = new Map<string, { scheduledTime: string; position: Point }>()
       for (const position of positions) {
-        const startTime = position.point?.siri_ride__scheduled_start_time
+        const startTime = position.point?.siriRideScheduledStartTime
         if (!startTime) continue
         const dayjsTime = dayjs(startTime)
         if (dayjsTime.isAfter(today) && dayjsTime.isBefore(tomorrow)) {
           const formattedTime = formatTime(dayjsTime)
-          const key = `${formattedTime}|${position.point?.siri_ride__vehicle_ref}`
+          const key = `${formattedTime}|${position.point?.siriRideVehicleRef}`
           if (!uniqueTimes.has(key)) {
             uniqueTimes.set(key, { scheduledTime: formattedTime, position })
           }
@@ -141,16 +141,18 @@ export const useSingleLineData = (
         const optionsArray2 = await Promise.all(
           optionsArray.map(async (option) => {
             const routes = await getRoutesByLineRef(
-              option.position.point!.siri_route__operator_ref.toString(),
-              option.position.point!.siri_route__line_ref.toString(),
-              new Date(option.position.point!.recorded_at_time),
+              (option.position.point!.siriRouteOperatorRef || 0).toString(),
+              (option.position.point!.siriRouteLineRef || 0).toString(),
+              option.position.point!.recordedAtTime
+                ? new Date(option.position.point!.recordedAtTime)
+                : new Date(),
             )
             const [start, end] = routeStartEnd(routes[0]?.routeLongName)
             return {
-              value: `${option.scheduledTime}|${option.position.point!.siri_ride__vehicle_ref}|${option.position.point!.siri_route__line_ref}`,
+              value: `${option.scheduledTime}|${option.position.point!.siriRideVehicleRef}|${option.position.point!.siriRouteLineRef}`,
               label: routes[0]?.routeLongName
                 ? `${option.scheduledTime} (${routes[0]?.routeShortName} - ${start} ⇄ ${end})`
-                : `${option.scheduledTime} (${vehicleIDFormat(option.position.point!.siri_ride__vehicle_ref)})`,
+                : `${option.scheduledTime} (${vehicleIDFormat(option.position.point!.siriRideVehicleRef)})`,
             }
           }),
         )
@@ -159,8 +161,8 @@ export const useSingleLineData = (
         setOptions(
           optionsArray.map((option) => {
             return {
-              value: `${option.scheduledTime}|${option.position.point!.siri_ride__vehicle_ref}`,
-              label: `${option.scheduledTime} (${vehicleIDFormat(option.position.point!.siri_ride__vehicle_ref)})`,
+              value: `${option.scheduledTime}|${option.position.point!.siriRideVehicleRef}`,
+              label: `${option.scheduledTime} (${vehicleIDFormat(option.position.point!.siriRideVehicleRef)})`,
             }
           }),
         )
@@ -179,13 +181,13 @@ export const useSingleLineData = (
 
     setFilteredPositions(
       positions.filter((position) => {
-        const scheduledStart = position.point?.siri_ride__scheduled_start_time
-        const vehicleRef = position.point?.siri_ride__vehicle_ref.toString()
+        const scheduledStart = position.point?.siriRideScheduledStartTime
+        const vehicleRef = position.point?.siriRideVehicleRef?.toString()
         if (!scheduledStart || !vehicleRef || !scheduledTime || !scheduledVehicle) return false
         return (
           formatTime(dayjs(scheduledStart)) === scheduledTime &&
           scheduledVehicle === vehicleRef &&
-          (scheduledLine ? scheduledLine === position.point?.siri_route__line_ref.toString() : true)
+          (scheduledLine ? scheduledLine === position.point?.siriRouteLineRef?.toString() : true)
         )
       }),
     )
