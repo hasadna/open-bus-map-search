@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { fn } from '@storybook/test'
-import * as groupByService from 'src/api/groupByService'
+import { http, HttpResponse } from 'msw'
 import dayjs from 'src/dayjs'
 import { getPastDate } from '../../../../.storybook/main'
 import AllLinesChart from './AllLinesChart'
@@ -39,33 +38,41 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-const mockAllLinesData: groupByService.GroupByRes[] = [
-  {
-    operatorRef: { operatorRef: 3, agencyName: 'אגד' },
-    totalPlannedRides: 159443,
-    totalActualRides: 147990,
-    totalRoutes: 68489,
-  },
-  {
-    operatorRef: { operatorRef: 5, agencyName: 'דן' },
-    totalPlannedRides: 81715,
-    totalActualRides: 76082,
-    totalRoutes: 22557,
-  },
-]
-
 export const Default: Story = {
+  parameters: {
+    msw: {
+      handlers: [
+        http.get(
+          (info) => {
+            const url = new URL(info.request.url)
+            return url.pathname === '/gtfs_agencies/list'
+          },
+          async () => {
+            const { agencies } = await import('../../../../.storybook/mockData')
+            return HttpResponse.json(agencies)
+          },
+        ),
+        http.get(
+          (info) => {
+            const url = new URL(info.request.url)
+            return (
+              url.pathname === '/gtfs_rides_agg/group_by' &&
+              url.searchParams.get('group_by') === 'operator_ref'
+            )
+          },
+          async () => {
+            const { allLineMock } = await import('../../../../.storybook/mockData')
+            return HttpResponse.json(allLineMock)
+          },
+        ),
+      ],
+    },
+  },
   args: {
     startDate: dayjs(getPastDate()).subtract(7, 'day'),
     endDate: dayjs(getPastDate()),
     alertAllChartsZeroLinesHandling: (arg: boolean) => {
       console.log('alertAllChartsZeroLinesHandling', arg)
     },
-  },
-  beforeEach: () => {
-    vi.spyOn(groupByService, 'useGroupBy').mockReturnValue([mockAllLinesData, false])
-    return () => {
-      vi.restoreAllMocks()
-    }
   },
 }

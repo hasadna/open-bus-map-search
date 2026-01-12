@@ -1,9 +1,7 @@
 import type { SiriVelocityAggregationPydanticModel } from '@hasadna/open-bus-api-client'
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { http, HttpResponse } from 'msw'
 import { MapContainer, TileLayer } from 'react-leaflet'
-import { fn } from '@storybook/test'
-import * as velocityHook from '../useVelocityAggregationData'
-import type { VelocityAggregation } from '../useVelocityAggregationData'
 import { VelocityHeatmapLegend } from './VelocityHeatmapLegend'
 import { VelocityHeatmapRectangles } from './VelocityHeatmapRectangles'
 
@@ -85,53 +83,31 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-const mockVelocityData = {
-  data: sampleData,
-  loading: false,
-  error: undefined,
-  currZoom: 13,
+const parameters = {
+  msw: {
+    handlers: [
+      http.get(
+        'https://open-bus-stride-api.hasadna.org.il/siri_velocity_aggregation/siri_velocity_aggregation',
+        async () => {
+          await new Promise((r) => setTimeout(r, 500)) // Simulate network delay
+          return HttpResponse.json(sampleData)
+        },
+      ),
+    ],
+  },
+  eyes: {
+    waitBeforeCapture: 2500,
+  },
 }
 
-export const Default: Story = {
-  parameters: {
-    eyes: {
-      waitBeforeCapture: 2500,
-    },
-  },
-  beforeEach: () => {
-    vi.spyOn(velocityHook, 'useVelocityAggregationData').mockReturnValue(mockVelocityData)
-    return () => {
-      vi.restoreAllMocks()
-    }
-  },
-}
+export const Default: Story = { parameters }
 
 export const StdDev: Story = {
   args: { visMode: 'std' },
-  parameters: {
-    eyes: {
-      waitBeforeCapture: 2500,
-    },
-  },
-  beforeEach: () => {
-    vi.spyOn(velocityHook, 'useVelocityAggregationData').mockReturnValue(mockVelocityData)
-    return () => {
-      vi.restoreAllMocks()
-    }
-  },
+  parameters,
 }
 
 export const CoeffOfVar: Story = {
   args: { visMode: 'cv' },
-  parameters: {
-    eyes: {
-      waitBeforeCapture: 2500,
-    },
-  },
-  beforeEach: () => {
-    vi.spyOn(velocityHook, 'useVelocityAggregationData').mockReturnValue(mockVelocityData)
-    return () => {
-      vi.restoreAllMocks()
-    }
-  },
+  parameters,
 }

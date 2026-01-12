@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { fn } from '@storybook/test'
-import * as groupByService from 'src/api/groupByService'
+import { http, HttpResponse } from 'msw'
 import dayjs from 'src/dayjs'
 import { getPastDate } from '../../../../.storybook/main'
 import DayTimeChart from './DayTimeChart'
@@ -46,24 +45,36 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-const mockArrivalByTimeData: groupByService.GroupByRes[] = [
-  {
-    operatorRef: { operatorRef: 3, agencyName: 'אגד' },
-    gtfsRouteDate: '2024-02-11',
-    totalPlannedRides: 24064,
-    totalActualRides: 23386,
-    totalRoutes: 10172,
-  },
-  {
-    operatorRef: { operatorRef: 3, agencyName: 'אגד' },
-    gtfsRouteDate: '2024-02-12',
-    totalPlannedRides: 23760,
-    totalActualRides: 23553,
-    totalRoutes: 10063,
-  },
-]
-
 export const Default: Story = {
+  parameters: {
+    msw: {
+      handlers: [
+        http.get(
+          (info) => {
+            const url = new URL(info.request.url)
+            return url.pathname === '/gtfs_agencies/list'
+          },
+          async () => {
+            const { agencies } = await import('../../../../.storybook/mockData')
+            return HttpResponse.json(agencies)
+          },
+        ),
+        http.get(
+          (info) => {
+            const url = new URL(info.request.url)
+            return (
+              url.pathname === '/gtfs_rides_agg/group_by' &&
+              url.searchParams.get('group_by') === 'operator_ref,gtfs_route_date'
+            )
+          },
+          async () => {
+            const { arrivalByTimeChart } = await import('../../../../.storybook/mockData')
+            return HttpResponse.json(arrivalByTimeChart)
+          },
+        ),
+      ],
+    },
+  },
   args: {
     startDate: dayjs(getPastDate()).subtract(7, 'day'),
     endDate: dayjs(getPastDate()),
@@ -71,11 +82,5 @@ export const Default: Story = {
     alertAllDayTimeChartHandling: (arg: boolean) => {
       console.log('alertAllDayTimeChartHandling', arg)
     },
-  },
-  beforeEach: () => {
-    vi.spyOn(groupByService, 'useGroupBy').mockReturnValue([mockArrivalByTimeData, false])
-    return () => {
-      vi.restoreAllMocks()
-    }
   },
 }
