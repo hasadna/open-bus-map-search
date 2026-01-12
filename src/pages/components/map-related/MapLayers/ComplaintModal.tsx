@@ -1,6 +1,7 @@
 import { ComplaintFormSchemaAnyOf, GtfsRoutePydanticModel } from '@hasadna/open-bus-api-client'
 import { Close } from '@mui/icons-material'
 import {
+  Alert,
   CircularProgress,
   Dialog,
   DialogActions,
@@ -468,6 +469,12 @@ const ComplaintModal = ({
             </div>
           ) : (
             <>
+              {submitMutation.isError && (
+                <Alert severity="error" sx={{ marginBottom: 2 }}>
+                  {t('reportBug.error')}
+                </Alert>
+              )}
+
               <RenderField {...allComplaintFields.firstName} rules={allRules.firstName} />
               <RenderField {...allComplaintFields.lastName} rules={allRules.lastName} />
               <RenderField {...allComplaintFields.iDNum} rules={allRules.iDNum} />
@@ -478,10 +485,12 @@ const ComplaintModal = ({
                 props={{ options: complaintOptins }}
               />
               {dynamicFields}
-              <RenderField
-                {...allComplaintFields.applyContent}
-                extra={complaintType === 'line_switch' ? 'complaint_details_required' : undefined}
-              />
+              {complaintType && (
+                <RenderField
+                  {...allComplaintFields.applyContent}
+                  extra={complaintType === 'line_switch' ? 'complaint_details_required' : undefined}
+                />
+              )}
               <EasterEgg code="debug">
                 <RenderField {...allComplaintFields.debug} />
               </EasterEgg>
