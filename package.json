@@ -10,7 +10,7 @@
     "@emotion/styled": "^11.14.1",
     "@hasadna/open-bus-api-client": "^1.2.3",
     "@mui/icons-material": "^7.3.5",
-    "@mui/material": "^7.3.6",
+    "@mui/material": "^7.3.7",
     "@mui/x-date-pickers": "~7.29.4",
     "@mui/x-tree-view": "^8.14.1",
     "@tanstack/query-async-storage-persister": "^5.85.3",
