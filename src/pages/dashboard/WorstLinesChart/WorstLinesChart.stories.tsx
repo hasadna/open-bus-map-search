@@ -42,17 +42,33 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-const URL =
-  'https://open-bus-stride-api.hasadna.org.il/gtfs_rides_agg/group_by?date_from=2024-02-05&date_to=2024-02-12&group_by=operator_ref,line_ref&exclude_hour_from=23&exclude_hour_to=2'
-
 export const Default: Story = {
   parameters: {
     msw: {
       handlers: [
-        http.get(URL, async () => {
-          const { worstLinesChart } = await import('../../../../.storybook/mockData')
-          return HttpResponse.json(worstLinesChart)
-        }),
+        http.get(
+          (info) => {
+            const url = new URL(info.request.url)
+            return url.pathname === '/gtfs_agencies/list'
+          },
+          async () => {
+            const { agencies } = await import('../../../../.storybook/mockData')
+            return HttpResponse.json(agencies)
+          },
+        ),
+        http.get(
+          (info) => {
+            const url = new URL(info.request.url)
+            return (
+              url.pathname === '/gtfs_rides_agg/group_by' &&
+              url.searchParams.get('group_by') === 'operator_ref,line_ref'
+            )
+          },
+          async () => {
+            const { worstLinesChart } = await import('../../../../.storybook/mockData')
+            return HttpResponse.json(worstLinesChart)
+          },
+        ),
       ],
     },
   },
