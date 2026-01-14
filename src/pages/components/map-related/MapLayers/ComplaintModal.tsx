@@ -492,7 +492,10 @@ const ComplaintModal = ({
                   // extra={complaintType === 'line_switch' ? 'complaint_details_required' : undefined}
                 />
               )}
-              <EasterEgg code="debug">
+              <EasterEgg
+                code="debug"
+                autohide={false}
+                onShow={() => form.setFieldValue('debug', true)}>
                 <RenderField {...allComplaintFields.debug} />
               </EasterEgg>
 
