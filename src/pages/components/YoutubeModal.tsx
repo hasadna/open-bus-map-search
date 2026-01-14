@@ -25,7 +25,7 @@ const InfoYoutubeModal = ({ videoUrl, label, title }: InfoYoutubeModalProps) => 
         width={'1000px'}
         footer={null}
         styles={{
-          content: { borderRadius: '12px' },
+          container: { borderRadius: '12px' },
         }}
         open={visible}
         destroyOnHidden={true}

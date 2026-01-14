@@ -1,22 +1,24 @@
 import { render, type RenderResult, screen } from '@testing-library/react'
-import type { ReactElement } from 'react'
 import ArrivalByTimeChart, { ArrivalByTimeData } from './ArrivalByTimeChart'
 import testBusData from './testdata/data.json'
 
-jest.mock('recharts', () => {
-  const original: typeof import('recharts') = jest.requireActual('recharts')
-  return {
-    __esModule: true,
-    ...original,
-    ResponsiveContainer: jest
-      .fn()
-      .mockImplementation(({ children }: { children: ReactElement }) => (
-        <original.ResponsiveContainer height={300} aspect={1}>
-          {children}
-        </original.ResponsiveContainer>
-      )),
-  }
-})
+jest.mock('recharts', () => ({
+  CartesianGrid: jest.fn().mockImplementation(() => <div data-testid="cartesian-grid" />),
+  Line: jest.fn().mockImplementation(() => <div data-testid="line" />),
+  LineChart: jest
+    .fn()
+    .mockImplementation(({ children }) => <div data-testid="line-chart">{children}</div>),
+  ResponsiveContainer: jest
+    .fn()
+    .mockImplementation(({ children }) => <div data-testid="responsive-container">{children}</div>),
+  Tooltip: jest
+    .fn()
+    .mockImplementation(() => (
+      <div className="recharts-tooltip-wrapper" data-testid="tooltip" style={{ display: 'none' }} />
+    )),
+  XAxis: jest.fn().mockImplementation(() => <div data-testid="x-axis" />),
+  YAxis: jest.fn().mockImplementation(() => <div data-testid="y-axis" />),
+}))
 const data = testBusData.map(
   (d) => ({ ...d, gtfsRouteDate: new Date(d.gtfsRouteDate) }) as ArrivalByTimeData,
 )

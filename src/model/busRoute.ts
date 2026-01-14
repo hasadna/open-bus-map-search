@@ -1,5 +1,5 @@
 import { GtfsRoutePydanticModel } from '@hasadna/open-bus-api-client'
-import { strLeftBack } from 'underscore.string'
+import s from 'underscore.string'
 
 export type BusRoute = {
   date: Date
@@ -16,7 +16,7 @@ export type BusRoute = {
 }
 
 export function fromGtfsRoute(gtfsRoute: GtfsRoutePydanticModel): BusRoute {
-  const cleanedName = strLeftBack(gtfsRoute.routeLongName!, '-')
+  const cleanedName = s.strLeftBack(gtfsRoute.routeLongName!, '-')
   const parts = cleanedName.split('<->')
   return {
     date: gtfsRoute.date,

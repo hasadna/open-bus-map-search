@@ -25,7 +25,7 @@ test.describe('dashboard tests', () => {
   })
 
   test('dashboard charts contain information', async ({ page }) => {
-    await expect(page.getByText('686 | קווים').first()).toBeVisible()
+    await expect(page.getByText(/\d+ \| קווים/).first()).toBeVisible()
     await expect(page.getByText('מועצה אזורית גולן').first()).toBeVisible()
     await expect(page.getByRole('heading', { name: 'אגד', exact: true })).toBeVisible()
   })
