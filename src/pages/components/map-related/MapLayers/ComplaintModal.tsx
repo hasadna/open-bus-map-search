@@ -20,7 +20,7 @@ import dayjs from 'src/dayjs'
 import {
   useBoardingStationQuery,
   useBusOperatorQuery,
-  useCitiesQuery,
+  // useCitiesQuery,
   useLinesQuery,
 } from 'src/hooks/useFormQuerys'
 import { Point } from 'src/pages/timeBasedMap'
@@ -55,18 +55,18 @@ interface ComplaintData {
   direction?: number
   wait?: [dayjs.Dayjs, dayjs.Dayjs]
   raisingStation?: number
-  raisingStationCity?: string
-  destinationStationCity?: string
-  reportdate?: dayjs.Dayjs
-  reportTime?: dayjs.Dayjs
+  // raisingStationCity?: string
+  // destinationStationCity?: string
+  // reportdate?: dayjs.Dayjs
+  // reportTime?: dayjs.Dayjs
   busDirectionFrom?: string
   busDirectionTo?: string
-  addOrRemoveStation?: '1' | '2'
-  raisingStationAddress?: string
-  firstDeclaration?: boolean
-  secondDeclaration?: boolean
-  ravKavNumber?: string
-  addingFrequencyReason?: ('LoadTopics' | 'LongWaiting' | 'ExtensionHours')[]
+  // addOrRemoveStation?: '1' | '2'
+  // raisingStationAddress?: string
+  // firstDeclaration?: boolean
+  // secondDeclaration?: boolean
+  // ravKavNumber?: string
+  // addingFrequencyReason?: ('LoadTopics' | 'LongWaiting' | 'ExtensionHours')[]
   debug?: boolean
 }
 
@@ -94,7 +94,7 @@ const ComplaintModal = ({
   const [, copy] = useCopyToClipboard()
 
   const eventDate = Form.useWatch('eventDate', form)
-  const reportdate = Form.useWatch('reportdate', form)
+  // const reportdate = Form.useWatch('reportdate', form)
   const busOperator = Form.useWatch('busOperator', form)
   const lineNumberText = Form.useWatch('lineNumberText', form)
   const selectedRoute = Form.useWatch('direction', form)
@@ -102,8 +102,8 @@ const ComplaintModal = ({
   const complaintType = Form.useWatch('complaintType', form)
 
   const busOperatorQuery = useBusOperatorQuery()
-  const citiesQuery = useCitiesQuery()
-  const linesQuery = useLinesQuery(eventDate || reportdate, busOperator, lineNumberText)
+  // const citiesQuery = useCitiesQuery()
+  const linesQuery = useLinesQuery(eventDate, busOperator, lineNumberText) // || reportdate
   const stationQuery = useBoardingStationQuery(
     selectedRoute !== undefined ? linesQuery.data?.[selectedRoute] : undefined,
   )
@@ -135,42 +135,42 @@ const ComplaintModal = ({
       wait,
       busOperator,
       eventDate,
-      reportdate,
-      destinationStationCity,
-      raisingStationCity,
+      // reportdate,
+      // destinationStationCity,
+      // raisingStationCity,
       direction,
       raisingStation,
       applyContent,
-      addingFrequencyReason,
-      addOrRemoveStation,
+      // addingFrequencyReason,
+      // addOrRemoveStation,
       busDirectionFrom,
       busDirectionTo,
       eventHour,
-      firstDeclaration,
       licenseNum,
       lineNumberText,
-      raisingStationAddress,
-      ravKavNumber,
-      reportTime,
-      secondDeclaration,
+      // raisingStationAddress,
+      // ravKavNumber,
+      // reportTime,
+      // firstDeclaration,
+      // secondDeclaration,
     }: ComplaintData): ComplaintFormSchemaAnyOf => {
       const selectOperator = busOperatorQuery.data?.find((b) => b.dataCode === busOperator)
       const selectedDirection = direction !== undefined ? linesQuery.data?.[direction] : undefined
       const selectedStation =
         raisingStation !== undefined ? stationQuery.data?.[raisingStation] : undefined
-      const selectedRaisingCity = raisingStationCity
-        ? citiesQuery.data?.find((c) => c.dataText === raisingStationCity)
-        : undefined
-      const selectedDestCity = destinationStationCity
-        ? citiesQuery.data?.find((c) => c.dataText === destinationStationCity)
-        : undefined
+      // const selectedRaisingCity = raisingStationCity
+      //   ? citiesQuery.data?.find((c) => c.dataText === raisingStationCity)
+      //   : undefined
+      // const selectedDestCity = destinationStationCity
+      //   ? citiesQuery.data?.find((c) => c.dataText === destinationStationCity)
+      //   : undefined
 
       const title = buildComplaintTitle({
         complaintType,
         eventDate,
         eventHour,
-        reportdate,
-        reportTime,
+        // reportdate,
+        // reportTime,
         lineNumberText,
         licenseNum,
       })
@@ -181,24 +181,24 @@ const ComplaintModal = ({
         title,
         busAndOther: {
           applyContent,
-          raisingStationAddress,
-          ravKavNumber,
-          addingFrequencyReason,
-          addOrRemoveStation,
+          // raisingStationAddress,
+          // ravKavNumber,
+          // addingFrequencyReason,
+          // addOrRemoveStation,
           busDirectionFrom,
           busDirectionTo,
           fillByMakatOrAddress: '2',
-          ravKav: true,
+          // ravKav: ravKavNumber ? true : undefined,
           licenseNum,
           lineNumberText,
           eventHour: eventHour ? eventHour.format('HH:mm') : undefined,
           fromHour: wait?.[0] ? wait[0].format('HH:mm') : undefined,
           toHour: wait?.[1] ? wait[1].format('HH:mm') : undefined,
           eventDate: eventDate ? eventDate.toDate() : undefined,
-          reportdate: reportdate ? reportdate.toDate() : undefined,
-          reportTime: reportTime ? reportTime.format('HH:mm') : undefined,
-          firstDeclaration,
-          secondDeclaration,
+          // reportdate: reportdate ? reportdate.toDate() : undefined,
+          // reportTime: reportTime ? reportTime.format('HH:mm') : undefined,
+          // firstDeclaration,
+          // secondDeclaration,
           operator: selectOperator
             ? {
                 dataText: selectOperator.dataText,
@@ -217,22 +217,22 @@ const ComplaintModal = ({
                 dataCode: selectedStation.stationId!,
               }
             : undefined,
-          raisingStationCity: selectedRaisingCity
-            ? {
-                dataText: selectedRaisingCity.dataText,
-                dataCode: selectedRaisingCity.dataCode,
-              }
-            : undefined,
-          destinationStationCity: selectedDestCity
-            ? {
-                dataText: selectedDestCity.dataText,
-                dataCode: selectedDestCity.dataCode,
-              }
-            : undefined,
+          // raisingStationCity: selectedRaisingCity
+          //   ? {
+          //       dataText: selectedRaisingCity.dataText,
+          //       dataCode: selectedRaisingCity.dataCode,
+          //     }
+          //   : undefined,
+          // destinationStationCity: selectedDestCity
+          //   ? {
+          //       dataText: selectedDestCity.dataText,
+          //       dataCode: selectedDestCity.dataCode,
+          //     }
+          //   : undefined,
         },
       }
     },
-    [userStorge, busOperatorQuery.data, citiesQuery.data, linesQuery.data, stationQuery.data],
+    [userStorge, busOperatorQuery.data, linesQuery.data, stationQuery.data], // citiesQuery.data,
   )
 
   const handleSubmit = useCallback(
@@ -294,65 +294,65 @@ const ComplaintModal = ({
     }))
   }, [busOperatorQuery.data])
 
-  const citiesOptions = useMemo(() => {
-    return citiesQuery.data?.map(({ dataText }) => ({
-      label: dataText,
-      value: dataText,
-    }))
-  }, [busOperatorQuery.data])
+  // const citiesOptions = useMemo(() => {
+  //   return citiesQuery.data?.map(({ dataText }) => ({
+  //     label: dataText,
+  //     value: dataText,
+  //   }))
+  // }, [citiesQuery.data])
 
   const complaintOptins = useMemo(() => {
     return complaintTypes.map((value: ComplaintType) => ({ value, label: t(value) }))
   }, [t])
 
-  const addOrRemoveStationOptins = useMemo(() => {
-    return [
-      { label: t('add_station'), value: '2' },
-      { label: t('remove_station'), value: '1' },
-    ]
-  }, [t])
+  // const addOrRemoveStationOptins = useMemo(() => {
+  //   return [
+  //     { label: t('add_station'), value: '2' },
+  //     { label: t('remove_station'), value: '1' },
+  //   ]
+  // }, [t])
 
-  const addingFrequencyReasonOptins = useMemo(() => {
-    return [
-      { label: t('add_frequency_load_topics'), value: 'LoadTopics' },
-      { label: t('add_frequency_long_waiting'), value: 'LongWaiting' },
-      { label: t('add_frequency_extension_time'), value: 'ExtensionHours' },
-    ]
-  }, [t])
+  // const addingFrequencyReasonOptins = useMemo(() => {
+  //   return [
+  //     { label: t('add_frequency_load_topics'), value: 'LoadTopics' },
+  //     { label: t('add_frequency_long_waiting'), value: 'LongWaiting' },
+  //     { label: t('add_frequency_extension_time'), value: 'ExtensionHours' },
+  //   ]
+  // }, [t])
 
   const allRules = useMemo(() => createAllRules(form, t), [form, t])
 
   const handleSelectOptions = useCallback(
     (name: ComplainteField) => {
       switch (name) {
-        case 'addingFrequencyReason':
-          return addingFrequencyReasonOptins
-        case 'addOrRemoveStation':
-          return addOrRemoveStationOptins
+        // case 'addingFrequencyReason':
+        //   return addingFrequencyReasonOptins
+        // case 'addOrRemoveStation':
+        //   return addOrRemoveStationOptins
         case 'raisingStation':
           return stationOptions
         case 'busOperator':
           return busOperatorOptions
-        case 'raisingStationCity':
-        case 'destinationStationCity':
-          return citiesOptions
+        // case 'raisingStationCity':
+        // case 'destinationStationCity':
+        //   return citiesOptions
         case 'direction':
           return routeOptions
       }
     },
     [
-      addingFrequencyReasonOptins,
-      addOrRemoveStationOptins,
+      // addingFrequencyReasonOptins,
+      // addOrRemoveStationOptins,
       busOperatorOptions,
       stationOptions,
-      citiesOptions,
+      // citiesOptions,
       routeOptions,
     ],
   )
 
   const dynamicFields = useMemo(() => {
     if (!complaintType) return null
-    const isAddStation = addOrRemoveStation === '2'
+    // const isAddStation = addOrRemoveStation === '2'
     return complaintTypeMappings[complaintType].fields
       .map((name) => {
         const field = { ...allComplaintFields[name] }
@@ -361,27 +361,27 @@ const ComplaintModal = ({
           field.props = { ...field.props, options: handleSelectOptions(name) }
         }
 
-        if (name === 'raisingStationAddress' && complaintType === 'station_signs') {
-          field.rules = [{ required: true }]
-        }
+        // if (name === 'raisingStationAddress' && complaintType === 'station_signs') {
+        //   field.rules = [{ required: true }]
+        // }
 
-        if (complaintType === 'add_or_remove_station') {
-          if (name === 'raisingStationAddress') {
-            field.props = { ...field.props, disabled: !isAddStation }
-            field.rules = [{ required: isAddStation }]
-            if (!isAddStation) form.setFieldValue('raisingStationAddress', undefined)
-          }
+        // if (complaintType === 'add_or_remove_station') {
+        //   if (name === 'raisingStationAddress') {
+        //     field.props = { ...field.props, disabled: !isAddStation }
+        //     field.rules = [{ required: isAddStation }]
+        //     if (!isAddStation) form.setFieldValue('raisingStationAddress', undefined)
+        //   }
 
-          if (name === 'raisingStation') {
-            field.props = { ...field.props, disabled: isAddStation }
-            field.rules = [{ required: !isAddStation }]
-            if (isAddStation) form.setFieldValue('raisingStation', undefined)
-          }
-        }
+        //   if (name === 'raisingStation') {
+        //     field.props = { ...field.props, disabled: isAddStation }
+        //     field.rules = [{ required: !isAddStation }]
+        //     if (isAddStation) form.setFieldValue('raisingStation', undefined)
+        //   }
+        // }
 
-        if (name === 'ravKavNumber' || name === 'wait') {
-          field.rules = allRules[name]
-        }
+        // if (name === 'ravKavNumber' || name === 'wait') {
+        //   field.rules = allRules[name]
+        // }
 
         return <RenderField key={name} {...field} />
       })
@@ -418,9 +418,9 @@ const ComplaintModal = ({
               addOrRemoveStation: '2',
               busOperator: position.operator,
               eventDate: date,
-              reportdate: date,
+              // reportdate: date,
               eventHour: date,
-              reportTime: date,
+              // reportTime: date,
               wait: [date?.add(-30, 'm'), date?.add(30, 'm')],
               raisingStationCity: routeParts?.[1],
               destinationStationCity: routeParts?.[3],
@@ -489,7 +489,7 @@ const ComplaintModal = ({
               {complaintType && (
                 <RenderField
                   {...allComplaintFields.applyContent}
-                  extra={complaintType === 'line_switch' ? 'complaint_details_required' : undefined}
+                  // extra={complaintType === 'line_switch' ? 'complaint_details_required' : undefined}
                 />
               )}
               <EasterEgg code="debug">

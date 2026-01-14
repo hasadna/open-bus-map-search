@@ -221,31 +221,31 @@ export const allComplaintFields = {
     name: 'raisingStation',
     type: 'Select',
   }),
-  raisingStationCity: createField({
-    name: 'raisingStationCity',
-    type: 'Select',
-    rules: [{ required: true }],
-    props: { showSearch: true },
-  }),
-  destinationStationCity: createField({
-    name: 'destinationStationCity',
-    type: 'Select',
-    rules: [{ required: true }],
-    props: { showSearch: true },
-  }),
-  reportdate: createField({
-    name: 'reportdate',
-    type: 'DatePicker',
-    rules: [{ required: true }],
-    pre_title: 'ביום',
-  }),
-  reportTime: createField({
-    name: 'reportTime',
-    type: 'TimePicker',
-    rules: [{ required: true }],
-    props: { needConfirm: true },
-    pre_title: 'בשעה',
-  }),
+  // raisingStationCity: createField({
+  //   name: 'raisingStationCity',
+  //   type: 'Select',
+  //   rules: [{ required: true }],
+  //   props: { showSearch: true },
+  // }),
+  // destinationStationCity: createField({
+  //   name: 'destinationStationCity',
+  //   type: 'Select',
+  //   rules: [{ required: true }],
+  //   props: { showSearch: true },
+  // }),
+  // reportdate: createField({
+  //   name: 'reportdate',
+  //   type: 'DatePicker',
+  //   rules: [{ required: true }],
+  //   pre_title: 'ביום',
+  // }),
+  // reportTime: createField({
+  //   name: 'reportTime',
+  //   type: 'TimePicker',
+  //   rules: [{ required: true }],
+  //   props: { needConfirm: true },
+  //   pre_title: 'בשעה',
+  // }),
   busDirectionFrom: createField({
     name: 'busDirectionFrom',
     type: 'Input',
@@ -256,36 +256,36 @@ export const allComplaintFields = {
     type: 'Input',
     rules: [{ required: true }],
   }),
-  addOrRemoveStation: createField({
-    name: 'addOrRemoveStation',
-    type: 'Radio',
-    rules: [{ required: true }],
-  }),
-  raisingStationAddress: createField({
-    name: 'raisingStationAddress',
-    type: 'Input',
-  }),
-  addingFrequencyReason: createField({
-    name: 'addingFrequencyReason',
-    type: 'CheckboxGroup',
-    rules: [{ required: true }],
-  }),
-  firstDeclaration: createField({
-    name: 'firstDeclaration', //  Testify Mot
-    type: 'Checkbox',
-    rules: [{ required: true }],
-  }),
-  secondDeclaration: createField({
-    name: 'secondDeclaration', //  Testify Court
-    type: 'Checkbox',
-    rules: [{ required: true }],
-  }),
-  ravKavNumber: createField({
-    name: 'ravKavNumber',
-    type: 'Input',
-    rules: [{ required: true, min: 11 }],
-    props: { maxLength: 11 },
-  }),
+  // addOrRemoveStation: createField({
+  //   name: 'addOrRemoveStation',
+  //   type: 'Radio',
+  //   rules: [{ required: true }],
+  // }),
+  // raisingStationAddress: createField({
+  //   name: 'raisingStationAddress',
+  //   type: 'Input',
+  // }),
+  // addingFrequencyReason: createField({
+  //   name: 'addingFrequencyReason',
+  //   type: 'CheckboxGroup',
+  //   rules: [{ required: true }],
+  // }),
+  // firstDeclaration: createField({
+  //   name: 'firstDeclaration', //  Testify Mot
+  //   type: 'Checkbox',
+  //   rules: [{ required: true }],
+  // }),
+  // secondDeclaration: createField({
+  //   name: 'secondDeclaration', //  Testify Court
+  //   type: 'Checkbox',
+  //   rules: [{ required: true }],
+  // }),
+  // ravKavNumber: createField({
+  //   name: 'ravKavNumber',
+  //   type: 'Input',
+  //   rules: [{ required: true, min: 11 }],
+  //   props: { maxLength: 11 },
+  // }),
   debug: createField({
     name: 'debug',
     type: 'Checkbox',
@@ -318,8 +318,8 @@ export const buildComplaintTitle = (data: ComplaintTitleData): string => {
     complaintType,
     eventDate,
     eventHour,
-    reportdate,
-    reportTime,
+    // reportdate,
+    // reportTime,
     lineNumberText,
     licenseNum,
   } = data
@@ -342,12 +342,12 @@ export const buildComplaintTitle = (data: ComplaintTitleData): string => {
       case 'eventHour':
         value = eventHour ? eventHour.format('HH:mm') : undefined
         break
-      case 'reportdate':
-        value = reportdate ? reportdate.format('DD/MM/YYYY') : undefined
-        break
-      case 'reportTime':
-        value = reportTime ? reportTime.format('HH:mm') : undefined
-        break
+      // case 'reportdate':
+      //   value = reportdate ? reportdate.format('DD/MM/YYYY') : undefined
+      //   break
+      // case 'reportTime':
+      //   value = reportTime ? reportTime.format('HH:mm') : undefined
+      //   break
       case 'lineNumberText':
         value = lineNumberText
         break
