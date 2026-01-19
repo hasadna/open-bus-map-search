@@ -388,7 +388,6 @@ const ComplaintModal = ({
       .filter(Boolean)
   }, [complaintType, handleSelectOptions, allRules, addOrRemoveStation])
 
-  console.log(position)
   const date = useMemo(() => {
     return position.point?.recordedAtTime ? dayjs(position.point?.recordedAtTime) : undefined
   }, [position.point?.recordedAtTime])
