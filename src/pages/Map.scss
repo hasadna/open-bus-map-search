@@ -16,6 +16,20 @@ main > div,
 .map-info {
   position: relative;
   margin-bottom: 1em;
+  min-height: min(60vh, 600px);
+
+  button {
+    width: 2.6rem;
+    height: 2.6rem;
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(0px);
+    border: 1px solid black;
+    border-radius: 50%;
+    box-shadow:
+      0 1px 3px rgba(0, 0, 0, 0.08),
+      0 6px 16px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+  }
 
   .map-index {
     position: absolute;
