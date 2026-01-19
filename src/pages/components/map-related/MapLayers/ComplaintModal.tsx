@@ -20,7 +20,7 @@ import dayjs from 'src/dayjs'
 import {
   useBoardingStationQuery,
   useBusOperatorQuery,
-  // useCitiesQuery,
+  useCitiesQuery,
   useLinesQuery,
 } from 'src/hooks/useFormQuerys'
 import { Point } from 'src/pages/timeBasedMap'
@@ -55,18 +55,18 @@ interface ComplaintData {
   direction?: number
   wait?: [dayjs.Dayjs, dayjs.Dayjs]
   raisingStation?: number
-  // raisingStationCity?: string
-  // destinationStationCity?: string
-  // reportdate?: dayjs.Dayjs
-  // reportTime?: dayjs.Dayjs
+  raisingStationCity?: string
+  destinationStationCity?: string
+  reportdate?: dayjs.Dayjs
+  reportTime?: dayjs.Dayjs
   busDirectionFrom?: string
   busDirectionTo?: string
-  // addOrRemoveStation?: '1' | '2'
-  // raisingStationAddress?: string
-  // firstDeclaration?: boolean
-  // secondDeclaration?: boolean
-  // ravKavNumber?: string
-  // addingFrequencyReason?: ('LoadTopics' | 'LongWaiting' | 'ExtensionHours')[]
+  addOrRemoveStation?: '1' | '2'
+  raisingStationAddress?: string
+  firstDeclaration?: boolean
+  secondDeclaration?: boolean
+  ravKavNumber?: string
+  addingFrequencyReason?: ('LoadTopics' | 'LongWaiting' | 'ExtensionHours')[]
   debug?: boolean
 }
 
@@ -79,8 +79,22 @@ interface ComplaintModalProps {
   route: GtfsRoutePydanticModel
 }
 
-const resetRouteKeys = new Set(['eventDate', 'busOperator', 'lineNumberText'])
-const userKeys = new Set(['firstName', 'lastName', 'iDNum', 'email', 'mobile'])
+const RESET_ROUTE_KEYS = new Set(['eventDate', 'busOperator', 'lineNumberText'])
+const USER_KEYS = new Set(['firstName', 'lastName', 'iDNum', 'email', 'mobile'])
+const DEBUG_COMPLAINT_TYPES: ComplaintType[] = [
+  'overcrowded',
+  'add_or_remove_station',
+  'add_new_line',
+  'add_frequency',
+  'driver_behavior',
+  'cleanliness',
+  'fine_appeal',
+  'route_change',
+  'line_switch',
+  'station_signs',
+  'ticketing_fares_discounts',
+  'other',
+]
 
 const ComplaintModal = ({
   modalOpen = false,
@@ -93,8 +107,9 @@ const ComplaintModal = ({
   const [userStorge, SetUserStorge] = useLocalStorage<Partial<User>>('complaint', {})
   const [, copy] = useCopyToClipboard()
 
+  const debug = Form.useWatch('debug', form)
   const eventDate = Form.useWatch('eventDate', form)
-  // const reportdate = Form.useWatch('reportdate', form)
+  const reportdate = Form.useWatch('reportdate', form)
   const busOperator = Form.useWatch('busOperator', form)
   const lineNumberText = Form.useWatch('lineNumberText', form)
   const selectedRoute = Form.useWatch('direction', form)
@@ -102,8 +117,8 @@ const ComplaintModal = ({
   const complaintType = Form.useWatch('complaintType', form)
 
   const busOperatorQuery = useBusOperatorQuery()
-  // const citiesQuery = useCitiesQuery()
-  const linesQuery = useLinesQuery(eventDate, busOperator, lineNumberText) // || reportdate
+  const citiesQuery = useCitiesQuery()
+  const linesQuery = useLinesQuery(eventDate || reportdate, busOperator, lineNumberText)
   const stationQuery = useBoardingStationQuery(
     selectedRoute !== undefined ? linesQuery.data?.[selectedRoute] : undefined,
   )
@@ -135,42 +150,24 @@ const ComplaintModal = ({
       wait,
       busOperator,
       eventDate,
-      // reportdate,
-      // destinationStationCity,
-      // raisingStationCity,
       direction,
       raisingStation,
       applyContent,
-      // addingFrequencyReason,
-      // addOrRemoveStation,
       busDirectionFrom,
       busDirectionTo,
       eventHour,
       licenseNum,
       lineNumberText,
-      // raisingStationAddress,
-      // ravKavNumber,
-      // reportTime,
-      // firstDeclaration,
-      // secondDeclaration,
     }: ComplaintData): ComplaintFormSchemaAnyOf => {
       const selectOperator = busOperatorQuery.data?.find((b) => b.dataCode === busOperator)
       const selectedDirection = direction !== undefined ? linesQuery.data?.[direction] : undefined
       const selectedStation =
         raisingStation !== undefined ? stationQuery.data?.[raisingStation] : undefined
-      // const selectedRaisingCity = raisingStationCity
-      //   ? citiesQuery.data?.find((c) => c.dataText === raisingStationCity)
-      //   : undefined
-      // const selectedDestCity = destinationStationCity
-      //   ? citiesQuery.data?.find((c) => c.dataText === destinationStationCity)
-      //   : undefined
 
       const title = buildComplaintTitle({
         complaintType,
         eventDate,
         eventHour,
-        // reportdate,
-        // reportTime,
         lineNumberText,
         licenseNum,
       })
@@ -181,24 +178,15 @@ const ComplaintModal = ({
         title,
         busAndOther: {
           applyContent,
-          // raisingStationAddress,
-          // ravKavNumber,
-          // addingFrequencyReason,
-          // addOrRemoveStation,
           busDirectionFrom,
           busDirectionTo,
           fillByMakatOrAddress: '2',
-          // ravKav: ravKavNumber ? true : undefined,
           licenseNum,
           lineNumberText,
           eventHour: eventHour ? eventHour.format('HH:mm') : undefined,
           fromHour: wait?.[0] ? wait[0].format('HH:mm') : undefined,
           toHour: wait?.[1] ? wait[1].format('HH:mm') : undefined,
           eventDate: eventDate ? eventDate.toDate() : undefined,
-          // reportdate: reportdate ? reportdate.toDate() : undefined,
-          // reportTime: reportTime ? reportTime.format('HH:mm') : undefined,
-          // firstDeclaration,
-          // secondDeclaration,
           operator: selectOperator
             ? {
                 dataText: selectOperator.dataText,
@@ -217,22 +205,10 @@ const ComplaintModal = ({
                 dataCode: selectedStation.stationId!,
               }
             : undefined,
-          // raisingStationCity: selectedRaisingCity
-          //   ? {
-          //       dataText: selectedRaisingCity.dataText,
-          //       dataCode: selectedRaisingCity.dataCode,
-          //     }
-          //   : undefined,
-          // destinationStationCity: selectedDestCity
-          //   ? {
-          //       dataText: selectedDestCity.dataText,
-          //       dataCode: selectedDestCity.dataCode,
-          //     }
-          //   : undefined,
         },
       }
     },
-    [userStorge, busOperatorQuery.data, linesQuery.data, stationQuery.data], // citiesQuery.data,
+    [userStorge, busOperatorQuery.data, linesQuery.data, citiesQuery.data, stationQuery.data],
   )
 
   const handleSubmit = useCallback(
@@ -245,7 +221,7 @@ const ComplaintModal = ({
 
   const onValuesChange = useCallback(
     (changedValues: Partial<ComplaintFormValues>) => {
-      if (Object.keys(changedValues).some((key) => resetRouteKeys.has(key))) {
+      if (Object.keys(changedValues).some((key) => RESET_ROUTE_KEYS.has(key))) {
         form.setFieldValue('direction', undefined)
         form.setFieldValue('raisingStation', undefined)
       }
@@ -258,7 +234,7 @@ const ComplaintModal = ({
         form.validateFields(['wait'])
       }
 
-      if (Object.keys(changedValues).some((key) => userKeys.has(key))) {
+      if (Object.keys(changedValues).some((key) => USER_KEYS.has(key))) {
         if (
           changedValues?.mobile &&
           mobileOnly.test(changedValues.mobile) &&
@@ -294,65 +270,72 @@ const ComplaintModal = ({
     }))
   }, [busOperatorQuery.data])
 
-  // const citiesOptions = useMemo(() => {
-  //   return citiesQuery.data?.map(({ dataText }) => ({
-  //     label: dataText,
-  //     value: dataText,
-  //   }))
-  // }, [citiesQuery.data])
+  const citiesOptions = useMemo(() => {
+    return citiesQuery.data?.map(({ dataText }) => ({
+      label: dataText,
+      value: dataText,
+    }))
+  }, [citiesQuery.data])
 
-  const complaintOptins = useMemo(() => {
-    return complaintTypes.map((value: ComplaintType) => ({ value, label: t(value) }))
+  const complaintOptions = useMemo(() => {
+    const filteredTypes = debug
+      ? complaintTypes
+      : complaintTypes.filter((type) => !DEBUG_COMPLAINT_TYPES.includes(type))
+
+    return filteredTypes.map((type) => ({
+      value: type,
+      label: t(type),
+    }))
+  }, [debug, t])
+
+  const addOrRemoveStationOptins = useMemo(() => {
+    return [
+      { label: t('add_station'), value: '2' },
+      { label: t('remove_station'), value: '1' },
+    ]
   }, [t])
 
-  // const addOrRemoveStationOptins = useMemo(() => {
-  //   return [
-  //     { label: t('add_station'), value: '2' },
-  //     { label: t('remove_station'), value: '1' },
-  //   ]
-  // }, [t])
-
-  // const addingFrequencyReasonOptins = useMemo(() => {
-  //   return [
-  //     { label: t('add_frequency_load_topics'), value: 'LoadTopics' },
-  //     { label: t('add_frequency_long_waiting'), value: 'LongWaiting' },
-  //     { label: t('add_frequency_extension_time'), value: 'ExtensionHours' },
-  //   ]
-  // }, [t])
+  const addingFrequencyReasonOptins = useMemo(() => {
+    return [
+      { label: t('add_frequency_load_topics'), value: 'LoadTopics' },
+      { label: t('add_frequency_long_waiting'), value: 'LongWaiting' },
+      { label: t('add_frequency_extension_time'), value: 'ExtensionHours' },
+    ]
+  }, [t])
 
   const allRules = useMemo(() => createAllRules(form, t), [form, t])
 
   const handleSelectOptions = useCallback(
     (name: ComplainteField) => {
       switch (name) {
-        // case 'addingFrequencyReason':
-        //   return addingFrequencyReasonOptins
-        // case 'addOrRemoveStation':
-        //   return addOrRemoveStationOptins
+        case 'addingFrequencyReason':
+          return addingFrequencyReasonOptins
+        case 'addOrRemoveStation':
+          return addOrRemoveStationOptins
         case 'raisingStation':
           return stationOptions
         case 'busOperator':
           return busOperatorOptions
-        // case 'raisingStationCity':
-        // case 'destinationStationCity':
-        //   return citiesOptions
+        case 'raisingStationCity':
+        case 'destinationStationCity':
+          return citiesOptions
         case 'direction':
           return routeOptions
       }
     },
     [
-      // addingFrequencyReasonOptins,
-      // addOrRemoveStationOptins,
+      addingFrequencyReasonOptins,
+      addOrRemoveStationOptins,
       busOperatorOptions,
       stationOptions,
-      // citiesOptions,
+      citiesOptions,
       routeOptions,
     ],
   )
 
   const dynamicFields = useMemo(() => {
     if (!complaintType) return null
-    // const isAddStation = addOrRemoveStation === '2'
+    const isAddStation = addOrRemoveStation === '2'
     return complaintTypeMappings[complaintType].fields
       .map((name) => {
         const field = { ...allComplaintFields[name] }
@@ -361,27 +344,27 @@ const ComplaintModal = ({
           field.props = { ...field.props, options: handleSelectOptions(name) }
         }
 
-        // if (name === 'raisingStationAddress' && complaintType === 'station_signs') {
-        //   field.rules = [{ required: true }]
-        // }
+        if (name === 'raisingStationAddress' && complaintType === 'station_signs') {
+          field.rules = [{ required: true }]
+        }
 
-        // if (complaintType === 'add_or_remove_station') {
-        //   if (name === 'raisingStationAddress') {
-        //     field.props = { ...field.props, disabled: !isAddStation }
-        //     field.rules = [{ required: isAddStation }]
-        //     if (!isAddStation) form.setFieldValue('raisingStationAddress', undefined)
-        //   }
+        if (complaintType === 'add_or_remove_station') {
+          if (name === 'raisingStationAddress') {
+            field.props = { ...field.props, disabled: !isAddStation }
+            field.rules = [{ required: isAddStation }]
+            if (!isAddStation) form.setFieldValue('raisingStationAddress', undefined)
+          }
 
-        //   if (name === 'raisingStation') {
-        //     field.props = { ...field.props, disabled: isAddStation }
-        //     field.rules = [{ required: !isAddStation }]
-        //     if (isAddStation) form.setFieldValue('raisingStation', undefined)
-        //   }
-        // }
+          if (name === 'raisingStation') {
+            field.props = { ...field.props, disabled: isAddStation }
+            field.rules = [{ required: !isAddStation }]
+            if (isAddStation) form.setFieldValue('raisingStation', undefined)
+          }
+        }
 
-        // if (name === 'ravKavNumber' || name === 'wait') {
-        //   field.rules = allRules[name]
-        // }
+        if (name === 'ravKavNumber' || name === 'wait') {
+          field.rules = allRules[name]
+        }
 
         return <RenderField key={name} {...field} />
       })
@@ -482,7 +465,7 @@ const ComplaintModal = ({
               <RenderField {...allComplaintFields.mobile} rules={allRules.mobile} />
               <RenderField
                 {...allComplaintFields.complaintType}
-                props={{ options: complaintOptins }}
+                props={{ options: complaintOptions }}
               />
               {dynamicFields}
               {complaintType && (
@@ -495,7 +478,17 @@ const ComplaintModal = ({
                 code="debug"
                 autohide={false}
                 onShow={() => form.setFieldValue('debug', true)}>
-                <RenderField {...allComplaintFields.debug} />
+                <RenderField
+                  {...allComplaintFields.debug}
+                  props={{
+                    ...allComplaintFields.debug.props,
+                    checked: debug,
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    onChange(e: any) {
+                      form.setFieldValue('debug', e?.target?.checked || false)
+                    },
+                  }}
+                />
               </EasterEgg>
 
               <DialogActions sx={{ justifyContent: 'flex-end', padding: 0 }}>
