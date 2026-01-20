@@ -141,12 +141,9 @@ test.describe('Operator Page Tests', () => {
       const rows = table.locator('tbody tr')
       const totalText = await page.getByText(i18next.t('operator.total')).textContent()
       const total = Number(totalText?.split(' ')[i18next.language === 'en' ? 2 : 3] || 0)
-      if (total !== 0) {
-        const rowsCount = await rows.count()
-        expect(rowsCount).toEqual(total)
-      } else {
-        throw new Error('Operator routes not loaded')
-      }
+      expect(total).toBeGreaterThan(0)
+      const rowsCount = await rows.count()
+      expect(rowsCount).toEqual(total)
     })
   })
 
