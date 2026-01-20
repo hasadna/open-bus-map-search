@@ -19,16 +19,27 @@ main > div,
   min-height: min(60vh, 600px);
 
   button {
+    position: fixed;
+    bottom: 1.25rem;
+    left: 4.25rem;
+    z-index: 1000;
     width: 2.6rem;
     height: 2.6rem;
     background: rgb(255 255 255 / 50%);
-    backdrop-filter: blur(0); /* no unit on zero */
     border: 1px solid black;
     border-radius: 50%;
     box-shadow:
       0 1px 3px rgb(0 0 0 / 8%),
       0 6px 16px rgb(0 0 0 / 10%);
     cursor: pointer;
+  }
+
+  button:hover {
+    background: rgb(255 255 255 / 65%);
+  }
+
+  button:active {
+    background: rgb(255 255 255 / 75%);
   }
 
   .map-index {
