@@ -1,5 +1,6 @@
-import { Stack } from '@mui/material'
-import React, { useContext, useState } from 'react'
+import { OpenInFullRounded } from '@mui/icons-material'
+import { IconButton, Stack } from '@mui/material'
+import React, { useCallback, useContext, useState } from 'react'
 import { MapContainer, TileLayer } from 'react-leaflet'
 import dayjs from 'src/dayjs'
 import { SearchContext } from '../../model/pageState'
@@ -19,6 +20,8 @@ const DEFAULT_ZOOM_LEVEL = 10
 
 const VelocityHeatmapPage: React.FC = () => {
   const { search, setSearch } = useContext(SearchContext)
+  const [isExpanded, setIsExpanded] = useState<boolean>(false)
+  const toggleExpanded = useCallback(() => setIsExpanded((expanded) => !expanded), [])
 
   const [visMode, setVisMode] = useState<'avg' | 'std' | 'cv'>('avg')
   const [min, setMin] = useState(0)
@@ -54,24 +57,29 @@ const VelocityHeatmapPage: React.FC = () => {
         ))}
       </div>
       <div style={{ height: '500px', width: '100%', margin: '16px 0' }}>
-        <MapContainer
-          center={[29.65, 34.6]}
-          zoom={DEFAULT_ZOOM_LEVEL}
-          scrollWheelZoom={true}
-          style={{ height: '100%', width: '100%' }}>
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
-          />
-          <VelocityHeatmapRectangles
-            visMode={visMode}
-            setMinMax={(min, max) => {
-              setMin(min)
-              setMax(max)
-            }}
-          />
-          <VelocityHeatmapLegend visMode={visMode} min={min} max={max} />
-        </MapContainer>
+        <div className={`map-info ${isExpanded ? 'expanded' : 'collapsed'}`}>
+          <IconButton color="primary" className="expand-button" onClick={toggleExpanded}>
+            <OpenInFullRounded fontSize="large" />
+          </IconButton>
+          <MapContainer
+            center={[29.65, 34.6]}
+            zoom={DEFAULT_ZOOM_LEVEL}
+            scrollWheelZoom={true}
+            style={{ height: '100%', width: '100%' }}>
+            <TileLayer
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
+            />
+            <VelocityHeatmapRectangles
+              visMode={visMode}
+              setMinMax={(min, max) => {
+                setMin(min)
+                setMax(max)
+              }}
+            />
+            <VelocityHeatmapLegend visMode={visMode} min={min} max={max} />
+          </MapContainer>
+        </div>
       </div>
     </div>
   )
