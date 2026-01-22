@@ -1,13 +1,16 @@
-import { Stack } from '@mui/material'
-import React, { useContext, useState } from 'react'
+import { OpenInFullRounded } from '@mui/icons-material'
+import { Grid, IconButton } from '@mui/material'
+import React, { useCallback, useContext, useState } from 'react'
 import { MapContainer, TileLayer } from 'react-leaflet'
 import dayjs from 'src/dayjs'
 import { SearchContext } from '../../model/pageState'
 import { DateNavigator } from '../components/dateNavigator/DateNavigator'
 import { DateSelector } from '../components/DateSelector'
+import { PageContainer } from '../components/PageContainer'
 import { VelocityHeatmapLegend } from './components/VelocityHeatmapLegend'
 import { VelocityHeatmapRectangles } from './components/VelocityHeatmapRectangles'
 import 'leaflet/dist/leaflet.css'
+import '../Map.scss'
 
 const VIS_MODES = [
   { key: 'avg', label: 'Visualize Avg Speed' },
@@ -18,6 +21,9 @@ const VIS_MODES = [
 const DEFAULT_ZOOM_LEVEL = 10
 
 const VelocityHeatmapPage: React.FC = () => {
+  const [isExpanded, setIsExpanded] = useState<boolean>(false)
+  const toggleExpanded = useCallback(() => setIsExpanded((expanded) => !expanded), [])
+
   const { search, setSearch } = useContext(SearchContext)
 
   const [visMode, setVisMode] = useState<'avg' | 'std' | 'cv'>('avg')
@@ -29,15 +35,25 @@ const VelocityHeatmapPage: React.FC = () => {
   }
 
   return (
-    <div>
+    <PageContainer className="map-container">
       <h1>Velocity Aggregation Heatmap</h1>
       <p>This page will display a heatmap of velocity aggregation data.</p>
 
       {/* choose date*/}
-      <Stack direction="column" spacing={2} sx={{ mb: 2, width: { xs: '100%', md: '70%' } }}>
-        <DateSelector time={dayjs(search.timestamp)} onChange={handleTimestampChange} />
-        <DateNavigator currentTime={dayjs(search.timestamp)} onChange={handleTimestampChange} />
-      </Stack>
+      <Grid
+        container
+        direction="column"
+        spacing={1}
+        sx={{ mb: 2, width: { xs: '100%', md: '70%' } }}
+        style={{ margin: '0' }}>
+        <Grid>
+          <DateSelector time={dayjs(search.timestamp)} onChange={handleTimestampChange} />
+        </Grid>
+        <Grid>
+          <DateNavigator currentTime={dayjs(search.timestamp)} onChange={handleTimestampChange} />
+        </Grid>
+      </Grid>
+
       <div style={{ margin: '12px 0' }}>
         <b>Visualization:</b>{' '}
         {VIS_MODES.map((mode) => (
@@ -53,14 +69,18 @@ const VelocityHeatmapPage: React.FC = () => {
           </label>
         ))}
       </div>
-      <div style={{ height: '500px', width: '100%', margin: '16px 0' }}>
+
+      <div className={`map-info ${isExpanded ? 'expanded' : 'collapsed'}`}>
+        <IconButton color="primary" className="expand-button" onClick={toggleExpanded}>
+          <OpenInFullRounded fontSize="large" />
+        </IconButton>
         <MapContainer
           center={[29.65, 34.6]}
           zoom={DEFAULT_ZOOM_LEVEL}
           scrollWheelZoom={true}
           style={{ height: '100%', width: '100%' }}>
           <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            attribution='&copy <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
           />
           <VelocityHeatmapRectangles
@@ -73,7 +93,7 @@ const VelocityHeatmapPage: React.FC = () => {
           <VelocityHeatmapLegend visMode={visMode} min={min} max={max} />
         </MapContainer>
       </div>
-    </div>
+    </PageContainer>
   )
 }
 
