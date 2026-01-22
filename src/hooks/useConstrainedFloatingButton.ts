@@ -18,11 +18,9 @@ export function useConstrainedFloatingButton(
 
       if (isExpanded) {
         if (buttonElement) {
-          buttonElement.style.position = 'fixed'
           buttonElement.style.left = `${offset}px`
-          buttonElement.style.bottom = `${offset}px`
+          buttonElement.style.bottom = `${3 * offset + offset}px`
           buttonElement.style.top = ''
-          buttonElement.style.zIndex = '2000'
           buttonElement.style.display = ''
         }
         return
@@ -71,9 +69,7 @@ export function useConstrainedFloatingButton(
       }
 
       if (buttonElement) {
-        buttonElement.style.position = 'fixed'
         buttonElement.style.left = `${mapRect.left + offset}px`
-        buttonElement.style.zIndex = '2000'
         if (finalTop !== undefined) {
           buttonElement.style.top = `${finalTop}px`
           buttonElement.style.bottom = ''
@@ -100,17 +96,20 @@ export function useConstrainedFloatingButton(
       intersectionObserver.observe(mapContainerRef.current)
     }
 
-    window.addEventListener('scroll', updateButtonPosition, { passive: true })
+    window.document
+      .getElementsByClassName('ant-layout-content')
+      .item(0)
+      ?.addEventListener('scroll', updateButtonPosition)
     window.addEventListener('resize', updateButtonPosition)
 
-    const intervalId = setInterval(updateButtonPosition, 200)
-
     return () => {
-      clearInterval(intervalId)
       if (intersectionObserver) {
         intersectionObserver.disconnect()
       }
-      window.removeEventListener('scroll', updateButtonPosition)
+      window.document
+        .getElementsByClassName('ant-layout-content')
+        .item(0)
+        ?.removeEventListener('scroll', updateButtonPosition)
       window.removeEventListener('resize', updateButtonPosition)
     }
   }, [mapContainerRef, buttonRef, isExpanded])

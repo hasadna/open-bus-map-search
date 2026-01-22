@@ -19,18 +19,14 @@ main > div,
 
   button {
     position: fixed;
-    bottom: 1.25rem;
-    left: 4.25rem;
-    z-index: 9999;
+    z-index: 2000;
     width: 2.6rem;
     height: 2.6rem;
     background: rgb(255 255 255 / 50%);
     border: 1px solid black;
-    border-radius: 50%;
     box-shadow:
       0 1px 3px rgb(0 0 0 / 8%),
       0 6px 16px rgb(0 0 0 / 10%);
-    cursor: pointer;
   }
 
   button:hover {
