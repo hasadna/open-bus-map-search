@@ -1,13 +1,16 @@
-import { Stack } from '@mui/material'
-import React, { useContext, useState } from 'react'
+import { OpenInFullRounded } from '@mui/icons-material'
+import { IconButton, Stack } from '@mui/material'
+import React, { useCallback, useContext, useRef, useState } from 'react'
 import { MapContainer, TileLayer } from 'react-leaflet'
 import dayjs from 'src/dayjs'
+import { useConstrainedFloatingButton } from 'src/hooks/useConstrainedFloatingButton'
 import { SearchContext } from '../../model/pageState'
 import { DateNavigator } from '../components/dateNavigator/DateNavigator'
 import { DateSelector } from '../components/DateSelector'
 import { VelocityHeatmapLegend } from './components/VelocityHeatmapLegend'
 import { VelocityHeatmapRectangles } from './components/VelocityHeatmapRectangles'
 import 'leaflet/dist/leaflet.css'
+import '../Map.scss'
 
 const VIS_MODES = [
   { key: 'avg', label: 'Visualize Avg Speed' },
@@ -18,15 +21,23 @@ const VIS_MODES = [
 const DEFAULT_ZOOM_LEVEL = 10
 
 const VelocityHeatmapPage: React.FC = () => {
+  const [isExpanded, setIsExpanded] = useState<boolean>(false)
+  const toggleExpanded = useCallback(() => setIsExpanded((expanded) => !expanded), [])
+
   const { search, setSearch } = useContext(SearchContext)
 
   const [visMode, setVisMode] = useState<'avg' | 'std' | 'cv'>('avg')
   const [min, setMin] = useState(0)
   const [max, setMax] = useState(1)
 
+  const mapContainerRef = useRef<HTMLDivElement>(null)
+  const buttonRef = useRef<HTMLButtonElement>(null)
+
   const handleTimestampChange = (time: dayjs.Dayjs | null) => {
     setSearch((current) => ({ ...current, timestamp: time?.valueOf() ?? +new Date('2026-01-01') }))
   }
+
+  useConstrainedFloatingButton(mapContainerRef, buttonRef, isExpanded)
 
   return (
     <div>
@@ -53,7 +64,15 @@ const VelocityHeatmapPage: React.FC = () => {
           </label>
         ))}
       </div>
-      <div style={{ height: '500px', width: '100%', margin: '16px 0' }}>
+
+      <div ref={mapContainerRef} className={`map-info ${isExpanded ? 'expanded' : 'collapsed'}`}>
+        <IconButton
+          ref={buttonRef}
+          color="primary"
+          className="expand-button"
+          onClick={toggleExpanded}>
+          <OpenInFullRounded fontSize="large" />
+        </IconButton>
         <MapContainer
           center={[29.65, 34.6]}
           zoom={DEFAULT_ZOOM_LEVEL}
