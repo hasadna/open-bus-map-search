@@ -1,13 +1,14 @@
 import type { SiriVehicleLocationWithRelatedPydanticModel } from '@hasadna/open-bus-api-client'
 import { OpenInFullRounded } from '@mui/icons-material'
 import { Alert, CircularProgress, Grid, IconButton, Typography } from '@mui/material'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { MapContainer, Marker, Polyline, Popup, TileLayer, useMap } from 'react-leaflet'
 import MarkerClusterGroup from 'react-leaflet-markercluster'
 import useVehicleLocations from 'src/api/useVehicleLocations'
 import dayjs from 'src/dayjs'
 import { useAgencyList } from 'src/hooks/useAgencyList'
+import { useConstrainedFloatingButton } from 'src/hooks/useConstrainedFloatingButton'
 import { BusToolTip } from 'src/pages/components/map-related/MapLayers/BusToolTip'
 import { INPUT_SIZE } from 'src/resources/sizes'
 import { DateSelector } from '../components/DateSelector'
@@ -40,6 +41,9 @@ interface Path {
 export default function TimeBasedMapPage() {
   const [isExpanded, setIsExpanded] = useState<boolean>(false)
   const toggleExpanded = useCallback(() => setIsExpanded((expanded) => !expanded), [])
+
+  const mapContainerRef = useRef<HTMLDivElement>(null)
+  const buttonRef = useRef<HTMLButtonElement>(null)
 
   const position: Point = {
     loc: [32.3057988, 34.85478613], // arbitrary default value... Netanya - best city to live & die in
@@ -85,6 +89,8 @@ export default function TimeBasedMapPage() {
       }, []),
     [locations],
   )
+
+  useConstrainedFloatingButton(mapContainerRef, buttonRef, isExpanded)
 
   return (
     <PageContainer className="map-container">
@@ -152,8 +158,12 @@ export default function TimeBasedMapPage() {
         </Grid>
         <Grid size={{ xs: 1 }}>{isLoading && <CircularProgress size="20px" />}</Grid>
       </Grid>
-      <div className={`map-info ${isExpanded ? 'expanded' : 'collapsed'}`}>
-        <IconButton color="primary" className="expand-button" onClick={toggleExpanded}>
+      <div ref={mapContainerRef} className={`map-info ${isExpanded ? 'expanded' : 'collapsed'}`}>
+        <IconButton
+          ref={buttonRef}
+          color="primary"
+          className="expand-button"
+          onClick={toggleExpanded}>
           <OpenInFullRounded fontSize="large" />
         </IconButton>
         <MapContainer center={position.loc} zoom={8} scrollWheelZoom={true}>
