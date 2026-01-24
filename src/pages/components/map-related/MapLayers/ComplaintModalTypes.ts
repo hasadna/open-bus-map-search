@@ -1,7 +1,6 @@
 import { GtfsRoutePydanticModel, RequestSubjectSchema } from '@hasadna/open-bus-api-client'
 import dayjs from 'dayjs'
 import { Point } from 'src/pages/timeBasedMap'
-import { ComplaintField } from './ComplaintModalFields'
 
 // --- Core Types ---
 export interface ComplaintUser {
@@ -76,6 +75,51 @@ export interface ComplaintTypeData {
   subject: RequestSubjectSchema
   subject_code: number
   title_order: ComplaintField[]
+}
+
+// --- Field Types ---
+export type ComplaintField =
+  | 'firstName'
+  | 'lastName'
+  | 'iDNum'
+  | 'email'
+  | 'mobile'
+  | 'complaintType'
+  | 'applyContent'
+  | 'busOperator'
+  | 'licenseNum'
+  | 'eventDate'
+  | 'lineNumberText'
+  | 'eventHour'
+  | 'direction'
+  | 'wait'
+  | 'raisingStation'
+  | 'raisingStationCity'
+  | 'destinationStationCity'
+  | 'reportdate'
+  | 'reportTime'
+  | 'busDirectionFrom'
+  | 'busDirectionTo'
+  | 'addOrRemoveStation'
+  | 'raisingStationAddress'
+  | 'firstDeclaration'
+  | 'secondDeclaration'
+  | 'ravKavNumber'
+  | 'addingFrequencyReason'
+  | 'debug'
+
+export interface FieldConfig {
+  pre_title?: string
+}
+
+export interface ComplaintTitleData {
+  complaintType: ComplaintType
+  eventDate?: dayjs.Dayjs
+  eventHour?: dayjs.Dayjs
+  reportdate?: dayjs.Dayjs
+  reportTime?: dayjs.Dayjs
+  lineNumberText?: string
+  licenseNum?: string
 }
 
 export interface ComplaintTypeMapping {

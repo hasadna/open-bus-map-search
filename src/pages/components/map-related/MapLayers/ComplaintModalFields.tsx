@@ -23,6 +23,7 @@ import { useTranslation } from 'react-i18next'
 import dayjs from 'src/dayjs'
 import { useGovTimeQuery } from 'src/hooks/useFormQuerys'
 import { complaintTypeMappings } from './ComplaintModalForms'
+import type { ComplaintTitleData } from './ComplaintModalTypes'
 
 // --- Validators ---
 const numberOnly = /^[0-9]+$/u
@@ -93,27 +94,6 @@ export type FormFieldProps<T extends FieldType = FieldType> = {
   rules?: Rule[]
   props?: React.ComponentProps<(typeof fieldComponents)[T]>
   extra?: string
-  pre_title?: string
-}
-
-export type ComplaintField = keyof typeof allComplaintFields
-
-export interface ComplaintTitleData {
-  complaintType: keyof typeof complaintTypeMappings
-  eventDate?: dayjs.Dayjs
-  eventHour?: dayjs.Dayjs
-  reportdate?: dayjs.Dayjs
-  reportTime?: dayjs.Dayjs
-  lineNumberText?: string
-  licenseNum?: string
-}
-
-export interface ComplaintTypeMapping {
-  subject: { applyType?: { dataText?: string | null } }
-  title_order: ComplaintField[]
-}
-
-export interface FieldConfig {
   pre_title?: string
 }
 

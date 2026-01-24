@@ -28,12 +28,12 @@ import { Row } from '../../Row'
 import {
   allComplaintFields,
   buildComplaintTitle,
-  ComplaintField,
   createAllRules,
   mobileOnly,
   RenderField,
 } from './ComplaintModalFields'
 import { complaintTypeMappings } from './ComplaintModalForms'
+import type { ComplaintField } from './ComplaintModalTypes'
 import {
   ComplaintData,
   ComplaintFormValues,
