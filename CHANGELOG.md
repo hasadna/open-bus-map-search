@@ -1,5 +1,38 @@
 # Changelog
 
+## [1.5.0](https://github.com/hasadna/open-bus-map-search/compare/v1.4.0...v1.5.0) (2026-01-24)
+
+
+### Features
+
+* Add date picker, so when a new date is selected the map will be updated ([#1332](https://github.com/hasadna/open-bus-map-search/issues/1332)) ([d215e65](https://github.com/hasadna/open-bus-map-search/commit/d215e65d2d190c0bbac2f841f8289061b7d1c428))
+* add funding to github ([#1416](https://github.com/hasadna/open-bus-map-search/issues/1416)) ([b30d47f](https://github.com/hasadna/open-bus-map-search/commit/b30d47fb8e1c27d2d207fdb20459f0d4f557f396))
+* add Russian translation and improve language selection UX ([#1278](https://github.com/hasadna/open-bus-map-search/issues/1278)) ([ce4ffdf](https://github.com/hasadna/open-bus-map-search/commit/ce4ffdf084da5003f0af5ef05491eb246b30534f))
+* add start time to shared link via query parameters ([#1385](https://github.com/hasadna/open-bus-map-search/issues/1385)) ([7ac9a5f](https://github.com/hasadna/open-bus-map-search/commit/7ac9a5f90c0e976304b38fbb1f1352c9c82be7ba))
+* enhance bug report alert messages ([#1398](https://github.com/hasadna/open-bus-map-search/issues/1398)) ([8a88826](https://github.com/hasadna/open-bus-map-search/commit/8a888268e86b95176dfb998ae69d6b4a622f8def))
+* introduce velocity aggregation heatmap page ([#1293](https://github.com/hasadna/open-bus-map-search/issues/1293)) ([18c0eb5](https://github.com/hasadna/open-bus-map-search/commit/18c0eb58b0e20f4fbab558c0ce281641c5c490c2))
+* Schedule View - Gaps Page ([#1225](https://github.com/hasadna/open-bus-map-search/issues/1225)) ([517d11b](https://github.com/hasadna/open-bus-map-search/commit/517d11b5d1cd73fd6dd6f45f50dea4ad0c0850c4))
+* **service-worker:** enhance caching and activation logic ([#1329](https://github.com/hasadna/open-bus-map-search/issues/1329)) ([762e9f8](https://github.com/hasadna/open-bus-map-search/commit/762e9f8c7d3140c62946365201af70b9fd38e2f3))
+* Velocity page zoom levels ([#1334](https://github.com/hasadna/open-bus-map-search/issues/1334)) ([17aaee5](https://github.com/hasadna/open-bus-map-search/commit/17aaee5b3779c586d382e06e2f0b7f985121166c))
+* **widget:** enhance Widget component ([#1211](https://github.com/hasadna/open-bus-map-search/issues/1211)) ([21a7fe5](https://github.com/hasadna/open-bus-map-search/commit/21a7fe5ed086b93566a1fcf342d3dfdc3f4218ad))
+
+
+### Bug Fixes
+
+* COF formula ([#1342](https://github.com/hasadna/open-bus-map-search/issues/1342)) ([4c26c06](https://github.com/hasadna/open-bus-map-search/commit/4c26c06439d4fb774c47de50c0ba409375314bb0))
+* date selector styles in dark mode ([#1417](https://github.com/hasadna/open-bus-map-search/issues/1417)) ([cd6bc62](https://github.com/hasadna/open-bus-map-search/commit/cd6bc62326c4179bb0b6cd820a2069d71fc4f7dc))
+* re-style the expend-collapse button ([#1424](https://github.com/hasadna/open-bus-map-search/issues/1424)) ([f24971a](https://github.com/hasadna/open-bus-map-search/commit/f24971a759ebe2dcfb6342bb4ffe60446416ea2f))
+* **rides:** filter out future rides from gap list ([#1192](https://github.com/hasadna/open-bus-map-search/issues/1192)) ([e692faf](https://github.com/hasadna/open-bus-map-search/commit/e692faf3debe89f3384009154b223b669f4fc16b))
+* search params  use `routeMkt-routeDirection` for routeKey instead of `routeLongName` ([#1396](https://github.com/hasadna/open-bus-map-search/issues/1396)) ([87dc607](https://github.com/hasadna/open-bus-map-search/commit/87dc6077470ad62b2534b467c9dcf793ade18647))
+* set base URL to '/' and add comprehensive tests ([#1393](https://github.com/hasadna/open-bus-map-search/issues/1393)) ([4ddeef6](https://github.com/hasadna/open-bus-map-search/commit/4ddeef61685539e3e09755ea4317ef3dc2ccb12b))
+* trips history page not show timeline ([#1410](https://github.com/hasadna/open-bus-map-search/issues/1410)) ([bf4a4a6](https://github.com/hasadna/open-bus-map-search/commit/bf4a4a6c9cca26b90099671eeb03d6d5c6c70fe6))
+
+
+### Performance Improvements
+
+* improve cache by using midday for velocity things ([#1415](https://github.com/hasadna/open-bus-map-search/issues/1415)) ([005a883](https://github.com/hasadna/open-bus-map-search/commit/005a883bc1a7588e0696bf5c672dde462f078419))
+* use cache to fetch historical velocity aggregation data ([#1411](https://github.com/hasadna/open-bus-map-search/issues/1411)) ([e1a1e12](https://github.com/hasadna/open-bus-map-search/commit/e1a1e1283f3c03b27f59ab3e840ad0fae295b059))
+
 ## [1.4.0](https://github.com/hasadna/open-bus-map-search/compare/v1.3.0...v1.4.0) (2025-07-14)
 
 
