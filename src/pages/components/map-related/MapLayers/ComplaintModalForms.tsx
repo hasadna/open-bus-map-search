@@ -1,5 +1,5 @@
 import { RequestSubjectSchema } from '@hasadna/open-bus-api-client'
-import { ComplainteField } from './ComplaintModalFields'
+import { ComplaintField } from './ComplaintModalFields'
 
 export const complaintTypes = [
   'no_ride',
@@ -24,10 +24,10 @@ export const complaintTypes = [
 export type ComplaintType = (typeof complaintTypes)[number]
 
 export interface ComplaintTypeData {
-  fields: ComplainteField[]
+  fields: ComplaintField[]
   subject: RequestSubjectSchema
   subject_code: number
-  title_order: ComplainteField[]
+  title_order: ComplaintField[]
 }
 
 export const complaintTypeMappings: Record<ComplaintType, ComplaintTypeData> = {

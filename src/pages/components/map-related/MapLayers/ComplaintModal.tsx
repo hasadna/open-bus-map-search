@@ -29,7 +29,7 @@ import { Row } from '../../Row'
 import {
   allComplaintFields,
   buildComplaintTitle,
-  ComplainteField,
+  ComplaintField,
   createAllRules,
   mobileOnly,
   RenderField,
@@ -104,7 +104,7 @@ const ComplaintModal = ({
 }: ComplaintModalProps) => {
   const { t, i18n } = useTranslation()
   const [form] = Form.useForm<ComplaintFormValues>()
-  const [userStorge, SetUserStorge] = useLocalStorage<Partial<User>>('complaint', {})
+  const [userStorage, SetUserStorage] = useLocalStorage<Partial<User>>('complaint', {})
   const [, copy] = useCopyToClipboard()
 
   const debug = Form.useWatch('debug', form)
@@ -173,7 +173,7 @@ const ComplaintModal = ({
       })
 
       return {
-        personalDetails: userStorge,
+        personalDetails: userStorage,
         requestSubject: complaintTypeMappings[complaintType].subject,
         title,
         busAndOther: {
@@ -208,7 +208,7 @@ const ComplaintModal = ({
         },
       }
     },
-    [userStorge, busOperatorQuery.data, linesQuery.data, citiesQuery.data, stationQuery.data],
+    [userStorage, busOperatorQuery.data, linesQuery.data, citiesQuery.data, stationQuery.data],
   )
 
   const handleSubmit = useCallback(
@@ -243,10 +243,10 @@ const ComplaintModal = ({
           changedValues.mobile = `${changedValues.mobile.slice(0, 3)}-${changedValues.mobile.slice(3)}`
           form.setFieldValue('mobile', changedValues.mobile)
         }
-        SetUserStorge({ ...userStorge, ...changedValues })
+        SetUserStorage({ ...userStorage, ...changedValues })
       }
     },
-    [form, userStorge],
+    [form, userStorage],
   )
 
   const routeOptions = useMemo(() => {
@@ -288,14 +288,14 @@ const ComplaintModal = ({
     }))
   }, [debug, t])
 
-  const addOrRemoveStationOptins = useMemo(() => {
+  const addOrRemoveStationOptions = useMemo(() => {
     return [
       { label: t('add_station'), value: '2' },
       { label: t('remove_station'), value: '1' },
     ]
   }, [t])
 
-  const addingFrequencyReasonOptins = useMemo(() => {
+  const addingFrequencyReasonOptions = useMemo(() => {
     return [
       { label: t('add_frequency_load_topics'), value: 'LoadTopics' },
       { label: t('add_frequency_long_waiting'), value: 'LongWaiting' },
@@ -306,12 +306,12 @@ const ComplaintModal = ({
   const allRules = useMemo(() => createAllRules(form, t), [form, t])
 
   const handleSelectOptions = useCallback(
-    (name: ComplainteField) => {
+    (name: ComplaintField) => {
       switch (name) {
         case 'addingFrequencyReason':
-          return addingFrequencyReasonOptins
+          return addingFrequencyReasonOptions
         case 'addOrRemoveStation':
-          return addOrRemoveStationOptins
+          return addOrRemoveStationOptions
         case 'raisingStation':
           return stationOptions
         case 'busOperator':
@@ -324,8 +324,8 @@ const ComplaintModal = ({
       }
     },
     [
-      addingFrequencyReasonOptins,
-      addOrRemoveStationOptins,
+      addingFrequencyReasonOptions,
+      addOrRemoveStationOptions,
       busOperatorOptions,
       stationOptions,
       citiesOptions,
@@ -396,7 +396,7 @@ const ComplaintModal = ({
           layout="vertical"
           initialValues={
             {
-              ...userStorge,
+              ...userStorage,
               addOrRemoveStation: '2',
               busOperator: position.operator,
               eventDate: date,

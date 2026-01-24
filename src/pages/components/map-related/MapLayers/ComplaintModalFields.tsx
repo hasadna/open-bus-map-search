@@ -292,7 +292,7 @@ export const allComplaintFields = {
   }),
 } as const
 
-export type ComplainteField = keyof typeof allComplaintFields
+export type ComplaintField = keyof typeof allComplaintFields
 
 export interface ComplaintTitleData {
   complaintType: keyof typeof complaintTypeMappings
@@ -306,7 +306,7 @@ export interface ComplaintTitleData {
 
 export interface ComplaintTypeMapping {
   subject: { applyType?: { dataText?: string | null } }
-  title_order: ComplainteField[]
+  title_order: ComplaintField[]
 }
 
 export interface FieldConfig {
