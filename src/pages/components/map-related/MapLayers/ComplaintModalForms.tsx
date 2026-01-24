@@ -1,34 +1,4 @@
-import { RequestSubjectSchema } from '@hasadna/open-bus-api-client'
-import { ComplaintField } from './ComplaintModalFields'
-
-export const complaintTypes = [
-  'no_ride',
-  'no_stop',
-  'delay',
-  'early',
-  // only in debug
-  'overcrowded',
-  'add_or_remove_station',
-  'add_new_line',
-  'add_frequency',
-  'driver_behavior', // request file upload
-  'cleanliness',
-  'fine_appeal',
-  'route_change',
-  'line_switch',
-  'station_signs',
-  'ticketing_fares_discounts',
-  'other',
-] as const
-
-export type ComplaintType = (typeof complaintTypes)[number]
-
-export interface ComplaintTypeData {
-  fields: ComplaintField[]
-  subject: RequestSubjectSchema
-  subject_code: number
-  title_order: ComplaintField[]
-}
+import { ComplaintType, ComplaintTypeData } from './ComplaintTypes'
 
 export const complaintTypeMappings: Record<ComplaintType, ComplaintTypeData> = {
   no_ride: {

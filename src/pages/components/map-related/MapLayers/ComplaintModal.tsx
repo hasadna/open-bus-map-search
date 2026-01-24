@@ -1,4 +1,4 @@
-import { ComplaintFormSchemaAnyOf, GtfsRoutePydanticModel } from '@hasadna/open-bus-api-client'
+import { ComplaintFormSchemaAnyOf } from '@hasadna/open-bus-api-client'
 import { Close } from '@mui/icons-material'
 import {
   Alert,
@@ -23,61 +23,25 @@ import {
   useCitiesQuery,
   useLinesQuery,
 } from 'src/hooks/useFormQuerys'
-import { Point } from 'src/pages/timeBasedMap'
 import { EasterEgg } from '../../../EasterEgg/EasterEgg'
 import { Row } from '../../Row'
 import {
   allComplaintFields,
   buildComplaintTitle,
-  ComplaintField,
   createAllRules,
   mobileOnly,
   RenderField,
 } from './ComplaintModalFields'
-import { type ComplaintType, complaintTypeMappings, complaintTypes } from './ComplaintModalForms'
-
-interface User {
-  firstName: string
-  lastName: string
-  iDNum: string
-  email: string
-  mobile: string
-}
-
-interface ComplaintData {
-  complaintType: ComplaintType
-  applyContent: string
-  busOperator?: number
-  licenseNum?: string
-  eventDate?: dayjs.Dayjs
-  lineNumberText?: string
-  eventHour?: dayjs.Dayjs
-  direction?: number
-  wait?: [dayjs.Dayjs, dayjs.Dayjs]
-  raisingStation?: number
-  raisingStationCity?: string
-  destinationStationCity?: string
-  reportdate?: dayjs.Dayjs
-  reportTime?: dayjs.Dayjs
-  busDirectionFrom?: string
-  busDirectionTo?: string
-  addOrRemoveStation?: '1' | '2'
-  raisingStationAddress?: string
-  firstDeclaration?: boolean
-  secondDeclaration?: boolean
-  ravKavNumber?: string
-  addingFrequencyReason?: ('LoadTopics' | 'LongWaiting' | 'ExtensionHours')[]
-  debug?: boolean
-}
-
-type ComplaintFormValues = User & ComplaintData
-
-interface ComplaintModalProps {
-  modalOpen?: boolean
-  setModalOpen?: (open: boolean) => void
-  position: Point
-  route: GtfsRoutePydanticModel
-}
+import { complaintTypeMappings } from './ComplaintModalForms'
+import {
+  ComplaintData,
+  ComplaintField,
+  ComplaintFormValues,
+  ComplaintModalProps,
+  ComplaintType,
+  complaintTypes,
+  ComplaintUser,
+} from './ComplaintTypes'
 
 const RESET_ROUTE_KEYS = new Set(['eventDate', 'busOperator', 'lineNumberText'])
 const USER_KEYS = new Set(['firstName', 'lastName', 'iDNum', 'email', 'mobile'])
@@ -104,7 +68,7 @@ const ComplaintModal = ({
 }: ComplaintModalProps) => {
   const { t, i18n } = useTranslation()
   const [form] = Form.useForm<ComplaintFormValues>()
-  const [userStorage, SetUserStorage] = useLocalStorage<Partial<User>>('complaint', {})
+  const [userStorage, SetUserStorage] = useLocalStorage<Partial<ComplaintUser>>('complaint', {})
   const [, copy] = useCopyToClipboard()
 
   const debug = Form.useWatch('debug', form)

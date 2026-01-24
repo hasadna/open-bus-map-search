@@ -23,6 +23,7 @@ import { useTranslation } from 'react-i18next'
 import dayjs from 'src/dayjs'
 import { useGovTimeQuery } from 'src/hooks/useFormQuerys'
 import { complaintTypeMappings } from './ComplaintModalForms'
+import { ComplaintTitleData, FormFieldProps } from './ComplaintTypes'
 
 // --- Validators ---
 const numberOnly = /^[0-9]+$/u
@@ -79,7 +80,7 @@ export const createAllRules = (form: FormInstance, t: TFunction) => ({
 // ---   Field Components ---
 const fullWidth = { width: '100%' }
 
-const fieldComponents = {
+export const fieldComponents = {
   Input: (props: InputProps) => <Input {...props} style={fullWidth} />,
   TextArea: (props: TextAreaProps) => <Input.TextArea {...props} style={fullWidth} />,
   DatePicker: (props: DatePickerProps) => {
@@ -105,17 +106,6 @@ const fieldComponents = {
   Radio: (props: RadioGroupProps) => <Radio.Group {...props} style={fullWidth} />,
   Select: (props: SelectProps) => <Select {...props} style={fullWidth} showSearch allowClear />,
 } as const
-
-type FieldType = keyof typeof fieldComponents
-
-export type FormFieldProps<T extends FieldType = FieldType> = {
-  name: string
-  type: T
-  rules?: Rule[]
-  props?: React.ComponentProps<(typeof fieldComponents)[T]>
-  extra?: string
-  pre_title?: string
-}
 
 export const RenderField = ({ name, props, rules, type, extra }: FormFieldProps) => {
   const { t } = useTranslation()
@@ -291,27 +281,6 @@ export const allComplaintFields = {
     type: 'Checkbox',
   }),
 } as const
-
-export type ComplaintField = keyof typeof allComplaintFields
-
-export interface ComplaintTitleData {
-  complaintType: keyof typeof complaintTypeMappings
-  eventDate?: dayjs.Dayjs
-  eventHour?: dayjs.Dayjs
-  reportdate?: dayjs.Dayjs
-  reportTime?: dayjs.Dayjs
-  lineNumberText?: string
-  licenseNum?: string
-}
-
-export interface ComplaintTypeMapping {
-  subject: { applyType?: { dataText?: string | null } }
-  title_order: ComplaintField[]
-}
-
-export interface FieldConfig {
-  pre_title?: string
-}
 
 export const buildComplaintTitle = (data: ComplaintTitleData): string => {
   const {
