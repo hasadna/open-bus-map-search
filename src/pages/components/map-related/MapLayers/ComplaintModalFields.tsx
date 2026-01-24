@@ -23,7 +23,6 @@ import { useTranslation } from 'react-i18next'
 import dayjs from 'src/dayjs'
 import { useGovTimeQuery } from 'src/hooks/useFormQuerys'
 import { complaintTypeMappings } from './ComplaintModalForms'
-import { ComplaintTitleData, FormFieldProps } from './ComplaintTypes'
 
 // --- Validators ---
 const numberOnly = /^[0-9]+$/u
@@ -86,7 +85,39 @@ export const createAllRules = (form: FormInstance, t: TFunction) => ({
 // ---   Field Components ---
 const fullWidth = { width: '100%' }
 
-export const fieldComponents = {
+type FieldType = keyof typeof fieldComponents
+
+export type FormFieldProps<T extends FieldType = FieldType> = {
+  name: string
+  type: T
+  rules?: Rule[]
+  props?: React.ComponentProps<(typeof fieldComponents)[T]>
+  extra?: string
+  pre_title?: string
+}
+
+export type ComplaintField = keyof typeof allComplaintFields
+
+export interface ComplaintTitleData {
+  complaintType: keyof typeof complaintTypeMappings
+  eventDate?: dayjs.Dayjs
+  eventHour?: dayjs.Dayjs
+  reportdate?: dayjs.Dayjs
+  reportTime?: dayjs.Dayjs
+  lineNumberText?: string
+  licenseNum?: string
+}
+
+export interface ComplaintTypeMapping {
+  subject: { applyType?: { dataText?: string | null } }
+  title_order: ComplaintField[]
+}
+
+export interface FieldConfig {
+  pre_title?: string
+}
+
+const fieldComponents = {
   Input: (props: InputProps) => <Input {...props} style={fullWidth} />,
   TextArea: (props: TextAreaProps) => <Input.TextArea {...props} style={fullWidth} />,
   DatePicker: (props: DatePickerProps) => {
@@ -116,17 +147,17 @@ export const fieldComponents = {
 export const RenderField = ({ name, props, rules, type, extra }: FormFieldProps) => {
   const { t } = useTranslation()
   const Component = fieldComponents[type]
-  const labelKey = 'complaints.' + name.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)
+  const labelKey = name.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)
   return (
     <Form.Item
       key={name}
       name={name}
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
-      label={t(labelKey as any)}
+      label={t(`complaints.${labelKey}` as any)}
       rules={rules}
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
       extra={t(extra as any)}>
-      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any*/}
       <Component {...(props as any)} name={name} />
     </Form.Item>
   )

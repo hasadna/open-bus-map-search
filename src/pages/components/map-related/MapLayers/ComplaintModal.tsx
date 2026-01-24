@@ -28,6 +28,7 @@ import { Row } from '../../Row'
 import {
   allComplaintFields,
   buildComplaintTitle,
+  ComplaintField,
   createAllRules,
   mobileOnly,
   RenderField,
@@ -35,13 +36,12 @@ import {
 import { complaintTypeMappings } from './ComplaintModalForms'
 import {
   ComplaintData,
-  ComplaintField,
   ComplaintFormValues,
   ComplaintModalProps,
   ComplaintType,
   complaintTypes,
   ComplaintUser,
-} from './ComplaintTypes'
+} from './ComplaintModalTypes'
 
 const RESET_ROUTE_KEYS = new Set(['eventDate', 'busOperator', 'lineNumberText'])
 const USER_KEYS = new Set(['firstName', 'lastName', 'iDNum', 'email', 'mobile'])

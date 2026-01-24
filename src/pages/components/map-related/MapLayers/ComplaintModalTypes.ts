@@ -1,10 +1,9 @@
 import { GtfsRoutePydanticModel, RequestSubjectSchema } from '@hasadna/open-bus-api-client'
-import { Rule } from 'antd/es/form'
 import dayjs from 'dayjs'
 import { Point } from 'src/pages/timeBasedMap'
-import { allComplaintFields, fieldComponents } from './ComplaintModalFields'
-import { complaintTypeMappings } from './ComplaintModalForms'
+import { ComplaintField } from './ComplaintModalFields'
 
+// --- Core Types ---
 export interface ComplaintUser {
   firstName: string
   lastName: string
@@ -41,6 +40,7 @@ export interface ComplaintData {
 
 export type ComplaintFormValues = ComplaintUser & ComplaintData
 
+// --- UI Types ---
 export interface ComplaintModalProps {
   modalOpen?: boolean
   setModalOpen?: (open: boolean) => void
@@ -48,6 +48,7 @@ export interface ComplaintModalProps {
   route: GtfsRoutePydanticModel
 }
 
+// --- Complaint Type System ---
 export const complaintTypes = [
   'no_ride',
   'no_stop',
@@ -77,34 +78,7 @@ export interface ComplaintTypeData {
   title_order: ComplaintField[]
 }
 
-export type ComplaintField = keyof typeof allComplaintFields
-
-export interface ComplaintTitleData {
-  complaintType: keyof typeof complaintTypeMappings
-  eventDate?: dayjs.Dayjs
-  eventHour?: dayjs.Dayjs
-  reportdate?: dayjs.Dayjs
-  reportTime?: dayjs.Dayjs
-  lineNumberText?: string
-  licenseNum?: string
-}
-
 export interface ComplaintTypeMapping {
   subject: { applyType?: { dataText?: string | null } }
   title_order: ComplaintField[]
-}
-
-export interface FieldConfig {
-  pre_title?: string
-}
-
-export type FieldType = keyof typeof fieldComponents
-
-export type FormFieldProps<T extends FieldType = FieldType> = {
-  name: string
-  type: T
-  rules?: Rule[]
-  props?: React.ComponentProps<(typeof fieldComponents)[T]>
-  extra?: string
-  pre_title?: string
 }

@@ -1,4 +1,4 @@
-import { ComplaintType, ComplaintTypeData } from './ComplaintTypes'
+import type { ComplaintType, ComplaintTypeData } from './ComplaintModalTypes'
 
 export const complaintTypeMappings: Record<ComplaintType, ComplaintTypeData> = {
   no_ride: {
