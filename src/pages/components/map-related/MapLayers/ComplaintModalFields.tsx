@@ -42,7 +42,7 @@ export const createAllRules = (form: FormInstance, t: TFunction) => ({
         const start = dayjs(wait[0])
         const end = dayjs(wait[1])
         if (eventHourDayjs.isBefore(start) || eventHourDayjs.isAfter(end)) {
-          throw new Error(t('event_hour_between_wait'))
+          throw new Error(t('complaints.event_hour_between_wait'))
         }
         return Promise.resolve()
       },
@@ -54,12 +54,12 @@ export const createAllRules = (form: FormInstance, t: TFunction) => ({
     {
       validator: async (_, value: string) => {
         if (!value || value.length !== 9 || !numberOnly.test(value))
-          throw new Error(t('invalid_id'))
+          throw new Error(t('complaints.invalid_id'))
         const sum = value
           .split('')
           .map((digit, i) => Number(digit) * ((i % 2) + 1))
           .reduce((acc, n) => acc + Math.floor(n / 10) + (n % 10), 0)
-        if (sum % 10 !== 0) throw new Error(t('invalid_id'))
+        if (sum % 10 !== 0) throw new Error(t('complaints.invalid_id'))
         return Promise.resolve()
       },
     },
@@ -67,14 +67,20 @@ export const createAllRules = (form: FormInstance, t: TFunction) => ({
   ravKavNumber: [
     { required: true },
     { len: 11 },
-    { pattern: numberOnly, message: t('invalid_rav_kav_number') },
+    { pattern: numberOnly, message: t('complaints.invalid_rav_kav_number') },
   ] as Rule[],
   firstName: [
     { required: true },
-    { pattern: hebOnly, message: t('only_hebrew_allowed') },
+    { pattern: hebOnly, message: t('complaints.only_hebrew_allowed') },
   ] as Rule[],
-  lastName: [{ required: true }, { pattern: hebOnly, message: t('only_hebrew_allowed') }] as Rule[],
-  mobile: [{ required: true }, { pattern: mobileOnly, message: t('invalid_mobile') }] as Rule[],
+  lastName: [
+    { required: true },
+    { pattern: hebOnly, message: t('complaints.only_hebrew_allowed') },
+  ] as Rule[],
+  mobile: [
+    { required: true },
+    { pattern: mobileOnly, message: t('complaints.invalid_mobile') },
+  ] as Rule[],
 })
 
 // ---   Field Components ---
@@ -110,7 +116,7 @@ export const fieldComponents = {
 export const RenderField = ({ name, props, rules, type, extra }: FormFieldProps) => {
   const { t } = useTranslation()
   const Component = fieldComponents[type]
-  const labelKey = name.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)
+  const labelKey = 'complaints.' + name.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)
   return (
     <Form.Item
       key={name}

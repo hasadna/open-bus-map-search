@@ -146,7 +146,7 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
                   color="success"
                   onClick={() => setModalOpen((prev) => !prev)}
                   style={{ borderRadius: '50px' }}>
-                  {t('open_complaint')}
+                  {t('complaints.open_complaint')}
                 </Button>
                 <ComplaintModal
                   modalOpen={modalOpen}

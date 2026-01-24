@@ -248,22 +248,22 @@ const ComplaintModal = ({
 
     return filteredTypes.map((type) => ({
       value: type,
-      label: t(type),
+      label: t(`complaints.${type}`),
     }))
   }, [debug, t])
 
   const addOrRemoveStationOptions = useMemo(() => {
     return [
-      { label: t('add_station'), value: '2' },
-      { label: t('remove_station'), value: '1' },
+      { label: t('complaints.add_station'), value: '2' },
+      { label: t('complaints.remove_station'), value: '1' },
     ]
   }, [t])
 
   const addingFrequencyReasonOptions = useMemo(() => {
     return [
-      { label: t('add_frequency_load_topics'), value: 'LoadTopics' },
-      { label: t('add_frequency_long_waiting'), value: 'LongWaiting' },
-      { label: t('add_frequency_extension_time'), value: 'ExtensionHours' },
+      { label: t('complaints.add_frequency_load_topics'), value: 'LoadTopics' },
+      { label: t('complaints.add_frequency_long_waiting'), value: 'LongWaiting' },
+      { label: t('complaints.add_frequency_extension_time'), value: 'ExtensionHours' },
     ]
   }, [t])
 
@@ -347,7 +347,7 @@ const ComplaintModal = ({
       slotProps={{ paper: { sx: { maxWidth: '648px', width: '90%', position: 'relative' } } }}>
       <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between' }}>
         <Typography fontSize="28px" fontWeight="bold" marginBottom="8px">
-          {t('complaint')}
+          {t('complaints.complaint')}
         </Typography>
         <IconButton onClick={() => setModalOpen?.(false)}>
           <Close />
@@ -392,20 +392,20 @@ const ComplaintModal = ({
                 onClick={() => {
                   copy(submitMutation?.data?.referenceNumber || '')
                 }}>
-                {t('complaint_number')}
+                {t('complaints.complaint_number')}
                 <br />
                 <strong>{submitMutation?.data?.referenceNumber}</strong>
               </Typography>
               <Row style={{ justifyContent: 'space-between' }}>
                 <Button type="primary" onClick={() => setModalOpen?.(false)}>
-                  {t('close')}
+                  {t('complaints.close')}
                 </Button>
                 <Button
                   onClick={() => {
                     submitMutation.reset()
                     form.resetFields()
                   }}>
-                  {t('new_complaint')}
+                  {t('complaints.new_complaint')}
                 </Button>
               </Row>
             </div>
@@ -458,7 +458,7 @@ const ComplaintModal = ({
               <DialogActions sx={{ justifyContent: 'flex-end', padding: 0 }}>
                 <Form.Item>
                   <Button type="primary" htmlType="submit">
-                    {t('submit_complaint')}
+                    {t('complaints.submit_complaint')}
                   </Button>
                 </Form.Item>
               </DialogActions>
