@@ -8,6 +8,7 @@ import { Link } from 'react-router'
 import { getRoutesByLineRef } from 'src/api/gtfsService'
 import dayjs from 'src/dayjs'
 import { routeStartEnd, vehicleIDFormat } from 'src/pages/components/utils/rotueUtils'
+import { EasterEgg } from 'src/pages/EasterEgg/EasterEgg'
 import type { Point } from 'src/pages/timeBasedMap'
 import CustomTreeView from '../../CustomTreeView'
 import ComplaintModal from './ComplaintModal'
@@ -139,7 +140,7 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
               </li>
             </ul>
             {route.routeType === '3' && ( // Bus Only
-              <>
+              <EasterEgg code="complaint" autohide={false}>
                 <Button
                   variant="contained"
                   color="success"
@@ -153,7 +154,7 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
                   position={position}
                   route={route}
                 />
-              </>
+              </EasterEgg>
             )}
             <br />
             <Button

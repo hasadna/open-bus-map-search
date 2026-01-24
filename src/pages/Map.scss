@@ -17,7 +17,8 @@ main > div,
   position: relative;
   margin-bottom: 1em;
 
-  button {
+  .expand-button {
+    color: #1976d2 !important;
     position: fixed;
     z-index: 2000;
     width: 2.6rem;
@@ -29,11 +30,11 @@ main > div,
       0 6px 16px rgb(0 0 0 / 10%);
   }
 
-  button:hover {
+  .expand-button:hover {
     background: rgb(255 255 255 / 65%);
   }
 
-  button:active {
+  .expand-button:active {
     background: rgb(255 255 255 / 75%);
   }
 
