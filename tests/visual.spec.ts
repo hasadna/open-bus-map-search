@@ -2,7 +2,7 @@ import { BatchInfoPlain, Eyes, Target, VisualGridRunner } from '@applitools/eyes
 import username from 'git-username'
 import i18next from 'i18next'
 import dayjs from 'src/dayjs'
-import { getBranch, setupTest, test, visitPage, waitForSkeletonsToHide } from './utils'
+import { getBranch, harOptions, setupTest, test, visitPage, waitForSkeletonsToHide } from './utils'
 
 const eyes = await setEyesSettings()
 test.beforeAll(() => {
@@ -51,7 +51,8 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
       await eyes.check({ ...Target.window(), name: 'home page' })
     })
 
-    test(`Dashboard Page Should Look Good [${mode}]`, async ({ page }) => {
+    test(`Dashboard Page Should Look Good [${mode}]`, async ({ page, advancedRouteFromHAR }) => {
+      await advancedRouteFromHAR('tests/HAR/dashboard.har', harOptions)
       await visitPage(page, 'dashboard_page_title')
       await page.getByText('אגד').first().waitFor()
       await waitForSkeletonsToHide(page)
@@ -74,29 +75,37 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
       await eyes.check({ ...Target.window(), name: 'about page' })
     })
 
-    test(`Timeline Page Should Look Good [${mode}]`, async ({ page }) => {
+    test(`Timeline Page Should Look Good [${mode}]`, async ({ page, advancedRouteFromHAR }) => {
+      await advancedRouteFromHAR('tests/HAR/timeline.har', harOptions)
       await visitPage(page, 'timeline_page_title')
       await eyes.check({ ...Target.window(), name: 'timeline page' })
     })
 
-    test(`Gaps Page Should Look Good [${mode}]`, async ({ page }) => {
+    test(`Gaps Page Should Look Good [${mode}]`, async ({ page, advancedRouteFromHAR }) => {
+      await advancedRouteFromHAR('tests/HAR/missing.har', harOptions)
       await visitPage(page, 'gaps_page_title')
       await eyes.check({ ...Target.window(), name: 'gaps page' })
     })
 
-    test(`Gaps Patterns Page Should Look Good [${mode}]`, async ({ page }) => {
+    test(`Gaps Patterns Page Should Look Good [${mode}]`, async ({
+      page,
+      advancedRouteFromHAR,
+    }) => {
+      await advancedRouteFromHAR('tests/HAR/patterns.har', harOptions)
       await visitPage(page, 'gaps_patterns_page_title')
       await eyes.check({ ...Target.window(), name: 'gaps_patterns page' })
     })
 
-    test(`Map Page Should Look Good [${mode}]`, async ({ page }) => {
+    test(`Map Page Should Look Good [${mode}]`, async ({ page, advancedRouteFromHAR }) => {
+      await advancedRouteFromHAR('tests/HAR/realtimemap.har', harOptions)
       await visitPage(page, 'time_based_map_page_title')
       await page.locator('.leaflet-marker-icon').first().waitFor({ state: 'visible' })
       await page.locator('.ant-spin-dot').first().waitFor({ state: 'hidden' })
       await eyes.check({ ...Target.window(), name: 'map page' })
     })
 
-    test(`Operator Page Should Look Good [${mode}]`, async ({ page }) => {
+    test(`Operator Page Should Look Good [${mode}]`, async ({ page, advancedRouteFromHAR }) => {
+      await advancedRouteFromHAR('tests/HAR/operator.har', harOptions)
       await visitPage(page, 'operator_title')
       await page
         .getByRole('combobox', { name: i18next.t('choose_operator') })
