@@ -11,20 +11,6 @@ import { Coordinates } from 'src/model/location'
 
 const LOCATION_DELTA_METERS = 500
 
-async function getRidesAsync(route: BusRoute, timestamp: dayjs.Dayjs) {
-  return await SIRI_API.siriRidesListGet({
-    limit: 1,
-    gtfsRouteDateFrom: timestamp.toDate(),
-    gtfsRouteDateTo: timestamp.toDate(),
-    gtfsRideStartTimeFrom: dayjs(timestamp).subtract(1, 'day').toDate(),
-    gtfsRideStartTimeTo: dayjs(timestamp).add(1, 'day').toDate(),
-    scheduledStartTimeFrom: dayjs(timestamp).subtract(1, 'day').toDate(),
-    scheduledStartTimeTo: dayjs(timestamp).add(1, 'day').toDate(),
-    gtfsRouteOperatorRefs: route.operatorId,
-    gtfsRouteRouteMkt: route.mkt,
-    gtfsRouteRouteDirection: route.direction,
-  })
-}
 
 export async function getSiriRideWithRelated(
   siriRouteId: string,
@@ -46,20 +32,14 @@ export async function getSiriStopHitTimesAsync(
   stop: BusStop,
   timestamp: dayjs.Dayjs,
 ) {
-  const rides = await getRidesAsync(route, timestamp)
-  if (rides.length === 0) {
-    return []
-  }
-
-  const siriRouteId = rides[0].siriRouteId!
 
   const boundary = geoLocationBoundary(stop.location, LOCATION_DELTA_METERS)
 
   const locations = await SIRI_API.siriVehicleLocationsListGet({
     limit: 1024,
-    siriRoutesIds: siriRouteId.toString(),
-    recordedAtTimeFrom: dayjs(timestamp).subtract(2, 'hour').toDate(),
-    recordedAtTimeTo: dayjs(timestamp).add(2, 'hour').toDate(),
+    siriRoutesLineRef: route.lineRef.toString(),
+    recordedAtTimeFrom: dayjs(timestamp).subtract(4, 'hour').toDate(),
+    recordedAtTimeTo: dayjs(timestamp).add(4, 'hour').toDate(),
     latGreaterOrEqual: boundary.lowerBound.latitude,
     latLowerOrEqual: boundary.upperBound.latitude,
     lonGreaterOrEqual: boundary.lowerBound.longitude,
@@ -91,6 +71,5 @@ export async function getSiriStopHitTimesAsync(
 
   const closestInTimeHits = stopHits
     .sort((a, b) => diffFromTargetStart(a) - diffFromTargetStart(b))
-    .slice(0, MAX_HITS_COUNT)
   return closestInTimeHits.sort((a, b) => a.recordedAtTime!.getTime() - b.recordedAtTime!.getTime())
 }
