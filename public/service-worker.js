@@ -1,34 +1,52 @@
-const CACHE_NAME = 'get-requests-cache-v1'
-const CACHE_URLS = []
-
-const urlsToFetch = ['open-bus-stride-api', 'fonts.googleapis.com']
+const CACHE_NAME = 'get-requests-cache-v2'
+const CACHE_URLS = ['open-bus-stride-api', 'fonts.googleapis.com']
 
 // Install event: cache basic URLs (optional)
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(CACHE_URLS)))
+  self.skipWaiting()
 })
 
-// Fetch event: cache GET requests
+// Activate event: clear old caches
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys().then((cacheNames) =>
+      Promise.all(
+        cacheNames.map((cacheName) => {
+          if (cacheName !== CACHE_NAME) {
+            return caches.delete(cacheName)
+          }
+        }),
+      ),
+    ),
+  )
+  self.clients.claim()
+})
+
+// Fetch event: cache GET requests except when query includes today's date
 self.addEventListener('fetch', (event) => {
+  const today = new Date().toISOString().slice(0, 10) // e.g. "2025-10-28"
+
   if (
     event.request.method === 'GET' &&
-    urlsToFetch.some((url) => event.request.url.includes(url))
+    !event.request.url.includes(today) &&
+    CACHE_URLS.some((url) => event.request.url.includes(url))
   ) {
     event.respondWith(
       caches.match(event.request).then((cachedResponse) => {
-        // Return cached response if available, else fetch from network
-        return (
-          cachedResponse ||
-          fetch(event.request).then((response) => {
-            // Clone the response to save it in the cache
+        // Return cached response if available
+        if (cachedResponse) return cachedResponse
+
+        // Otherwise, fetch from network and cache the response
+        return fetch(event.request).then((response) => {
+          if (response.ok) {
             const responseClone = response.clone()
             caches.open(CACHE_NAME).then((cache) => {
               cache.put(event.request, responseClone)
             })
-            console.log('cached ', event.request)
-            return response
-          })
-        )
+          }
+          return response
+        })
       }),
     )
   }

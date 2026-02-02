@@ -1,8 +1,8 @@
 import {
-  GtfsRideStopPydanticModel,
+  GtfsRideStopWithRelatedPydanticModel,
+  GtfsRideWithRelatedPydanticModel,
   GtfsStopPydanticModel,
-} from 'open-bus-stride-client/openapi/models'
-import { GtfsRideWithRelatedPydanticModel } from 'open-bus-stride-client'
+} from '@hasadna/open-bus-api-client'
 import dayjs from 'src/dayjs'
 import { Coordinates } from 'src/model/location'
 
@@ -19,7 +19,7 @@ export type BusStop = {
 }
 
 export function fromGtfsStop(
-  gtfsRideStop: GtfsRideStopPydanticModel,
+  gtfsRideStop: GtfsRideStopWithRelatedPydanticModel,
   gtfsStop: GtfsStopPydanticModel,
   ride: GtfsRideWithRelatedPydanticModel,
 ): BusStop {
@@ -29,8 +29,8 @@ export function fromGtfsStop(
     : 0
   return {
     date: gtfsStop.date,
-    key: gtfsRideStop.id.toString(),
-    stopId: gtfsRideStop.gtfsStopId,
+    key: gtfsRideStop.id!.toString(),
+    stopId: gtfsRideStop.gtfsStopId!,
     routeId: ride.gtfsRouteId || 0,
     stopSequence: gtfsRideStop.stopSequence || 0,
     name: `${gtfsStop.name} (${gtfsStop.city})`,

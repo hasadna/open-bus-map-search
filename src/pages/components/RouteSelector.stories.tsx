@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import RouteSelector from './RouteSelector'
 import { fromGtfsRoute } from 'src/model/busRoute'
+import RouteSelector from './RouteSelector'
 
 const d = [
   {
@@ -129,7 +129,7 @@ export const Default: Story = {}
 
 export const RoutesSelected: Story = {
   args: {
-    routeKey: 'הנדיב/המייסדים-זכרון יעקב<->הנדיב/המייסדים-זכרון יעקב-3#',
+    routeKey: '16001-3',
   },
 }
 

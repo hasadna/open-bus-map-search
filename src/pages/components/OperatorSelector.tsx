@@ -1,7 +1,7 @@
+import { Autocomplete, TextField } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Autocomplete, TextField } from '@mui/material'
-import { Operator, getOperators } from 'src/model/operator'
+import { getOperators, Operator } from 'src/model/operator'
 
 type OperatorSelectorProps = {
   operatorId?: string

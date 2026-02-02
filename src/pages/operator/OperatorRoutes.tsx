@@ -1,20 +1,12 @@
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Typography,
-} from '@mui/material'
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
 import { Skeleton } from 'antd'
 import { useContext } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useNavigate } from 'react-router'
 import styled from 'styled-components'
-import { useAllRoutes } from '../../hooks/useAllRoutes'
 import { SearchContext } from 'src/model/pageState'
 import Widget from 'src/shared/Widget'
+import { useAllRoutes } from '../../hooks/useAllRoutes'
 
 export const OperatorRoutes = ({
   operatorId,
@@ -30,12 +22,7 @@ export const OperatorRoutes = ({
   const navigate = useNavigate()
 
   return (
-    <Widget marginBottom>
-      <Typography
-        sx={{ margin: '17.5px 0.5rem', fontWeight: 'bold', fontSize: 24, lineHeight: '35px' }}
-        variant="h2">
-        {t('operator.all_lines')}
-      </Typography>
+    <Widget title={t('operator.all_lines')} marginBottom>
       <TableContainer sx={{ height: 345 }}>
         {isLoading ? (
           <Skeleton active paragraph={{ rows: 8 }} />

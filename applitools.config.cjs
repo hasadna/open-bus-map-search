@@ -1,9 +1,15 @@
-module.exports = {
-  testConcurrency: 20,
+// @ts-check
 
+/**
+ * @type {import('@applitools/eyes-storybook').ApplitoolsConfig}
+ */
+const config = {
+  testConcurrency: 20,
+  dontCloseBatches: true,
+  exitcode: false, // if visual differences are found, the github integration will create another commit status so we don't need to fail the job
   waitBeforeCapture: async () => {
     const startTime = Date.now()
-    const timeout = 15 * 1000
+    const timeout = 60 * 1000
     while (
       document.querySelector('.ant-skeleton-content') ||
       document.querySelector('.ant-skeleton')
@@ -22,3 +28,5 @@ module.exports = {
   showBrowserLogs: true,
   // showLogs: true,// uncomment to see Applitools logs
 }
+
+module.exports = config

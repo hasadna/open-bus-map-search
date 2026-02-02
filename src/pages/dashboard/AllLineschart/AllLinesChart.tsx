@@ -4,17 +4,17 @@ import { Skeleton } from 'antd'
 import { FC, Fragment, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useWarningContext } from '../context/WarningContextProvider'
-import OperatorHbarChart from './OperatorHbarChart/OperatorHbarChart'
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
-import Widget from 'src/shared/Widget'
 import { Dayjs } from 'src/dayjs'
+import Widget from 'src/shared/Widget'
+import OperatorHbarChart from './OperatorHbarChart/OperatorHbarChart'
 
 const convertToChartCompatibleStruct = (arr: GroupByRes[]) => {
-  return arr.map((item: GroupByRes) => ({
-    id: item.operator_ref?.agency_id || 'Unknown',
-    name: item.operator_ref?.agency_name || 'Unknown',
-    total: item.total_planned_rides,
-    actual: item.total_actual_rides,
+  return arr.map((operator) => ({
+    id: operator.operatorRef?.operatorRef || 'Unknown',
+    name: operator.operatorRef?.agencyName || 'Unknown',
+    total: operator.totalPlannedRides,
+    actual: operator.totalActualRides,
   }))
 }
 
@@ -25,8 +25,8 @@ interface AllChartComponentProps {
 
 export const AllLinesChart: FC<AllChartComponentProps> = ({ startDate, endDate }) => {
   const [groupByOperatorData, groupByOperatorLoading] = useGroupBy({
-    dateTo: endDate,
-    dateFrom: startDate,
+    dateFrom: startDate.valueOf(),
+    dateTo: endDate.valueOf(),
     groupBy: 'operator_ref',
   })
   const { t } = useTranslation()
@@ -35,7 +35,7 @@ export const AllLinesChart: FC<AllChartComponentProps> = ({ startDate, endDate }
 
   useEffect(() => {
     const totalElements = groupByOperatorData.length
-    const totalZeroElements = groupByOperatorData.filter((el) => el.total_actual_rides === 0).length
+    const totalZeroElements = groupByOperatorData.filter((el) => el.totalActualRides === 0).length
     if (totalElements === 0 || totalZeroElements === totalElements) {
       setValue(true)
     } else {
@@ -44,16 +44,18 @@ export const AllLinesChart: FC<AllChartComponentProps> = ({ startDate, endDate }
   }, [groupByOperatorData])
 
   return (
-    <Widget>
-      <h2 className="title">
-        {t('dashboard_page_title')}
-        <Tooltip
-          title={convertLineFeedToHtmlTags(t('dashboard_tooltip_content'))}
-          placement="left"
-          arrow>
-          <InfoCircleOutlined style={{ marginRight: '12px' }} />
-        </Tooltip>
-      </h2>
+    <Widget
+      title={
+        <>
+          {t('dashboard_page_title')}
+          <Tooltip
+            title={convertLineFeedToHtmlTags(t('dashboard_tooltip_content'))}
+            placement="left"
+            arrow>
+            <InfoCircleOutlined style={{ marginRight: '12px' }} />
+          </Tooltip>
+        </>
+      }>
       {groupByOperatorLoading ? (
         <Skeleton active />
       ) : (

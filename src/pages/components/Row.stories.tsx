@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Row } from './Row'
 import Widget from 'src/shared/Widget'
+import { Row } from './Row'
 
 const meta: Meta<{ items: number }> = {
   title: 'Components/Row',

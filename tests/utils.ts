@@ -1,11 +1,17 @@
+import { exec } from 'child_process'
+import * as crypto from 'crypto'
 import * as fs from 'fs'
 import * as path from 'path'
-import * as crypto from 'crypto'
-import { exec } from 'child_process'
-import { Matcher, test as baseTest, customMatcher } from 'playwright-advanced-har'
 import { BrowserContext, Page } from '@playwright/test'
-import { i18n } from 'i18next'
+import i18next from 'i18next'
 import Backend from 'i18next-fs-backend'
+import { test as baseTest, customMatcher, Matcher } from 'playwright-advanced-har'
+import { RouteFromHAROptions } from 'playwright-advanced-har/lib/utils/types'
+import { expect } from 'playwright-assertions'
+import dayjs from 'src/dayjs'
+import { PAGES } from 'src/routes'
+
+export { expect } from 'playwright-assertions'
 
 type CollectIstanbulCoverageWindow = Window &
   typeof globalThis & {
@@ -36,7 +42,6 @@ export const test = baseTest.extend<{ context: BrowserContext }>({
         )
       }
     })
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     await use(context)
     for (const page of context.pages()) {
       await page.evaluate(() => {
@@ -47,11 +52,11 @@ export const test = baseTest.extend<{ context: BrowserContext }>({
   },
 })
 
-export function getPastDate(): Date {
-  return new Date('2024-02-12 15:00:00')
+export function getPastDate() {
+  return new Date('2024-02-12T15:00:00+00:00')
 }
 
-export const urlMatcher: Matcher = customMatcher({
+const urlMatcher: Matcher = customMatcher({
   urlComparator(a, b) {
     const paramsToIgnore = new Set(['t', 'limit', 'date_from', 'date_to'])
     function normalize(url: string) {
@@ -91,11 +96,48 @@ export const waitForSkeletonsToHide = async (page: Page) => {
   }
 }
 
-export const loadTranslate = async (i18next: i18n, lng: string = 'he') => {
-  await i18next.use(Backend).init({
-    lng,
-    backend: { loadPath: 'src/locale/{{lng}}.json' },
-  })
+export const setupTest = async (page: Page, lng: string = 'he') => {
+  await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
+  await page.route(/api\.github\.com/, (route) => route.abort())
+  await page.route(/open-bus-backend\.k8s\.hasadna\.org\.il/, (route) => route.abort())
+  await page.route(/.*openstreetmap*/, (route) => route.abort())
+  await page.clock.setSystemTime(getPastDate())
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await i18next.use(Backend).init({ lng, backend: { loadPath: 'src/locale/{{lng}}.json' } })
+  await page.goto('/')
+  await page.locator('.preloader').waitFor({ state: 'hidden' })
 }
 
-export const expect = test.expect
+export const visitPage = async (page: Page, label: (typeof PAGES)[number]['label']) => {
+  const link = page.getByText(i18next.t(label), { exact: true }).and(page.getByRole('link'))
+  const href = await link.getAttribute('href')
+  await link.click()
+  if (href) await page.waitForURL(`**${href}`)
+  await page.waitForTimeout(500)
+  await page.locator('.preloader').waitFor({ state: 'hidden' })
+  await page.waitForLoadState('networkidle')
+}
+
+export const verifyDateFromParameter = async (page: Page) => {
+  const requestPromise = page.waitForRequest((request) =>
+    request.url().includes('gtfs_agencies/list'),
+  )
+
+  await page.reload()
+  await page.getByLabel('חברה מפעילה').click()
+  const request = await requestPromise
+
+  const dateFrom = dayjs(new URL(request.url()).searchParams.get('date_from'))
+  const daysAgo = dayjs(getPastDate()).diff(dateFrom, 'days')
+
+  expect(daysAgo).toBeGreaterThanOrEqual(0)
+  expect(daysAgo).toBeLessThanOrEqual(3)
+}
+
+export const harOptions: RouteFromHAROptions = {
+  updateContent: 'embed',
+  update: false,
+  notFound: 'fallback',
+  url: /stride-api/,
+  matcher: urlMatcher,
+}

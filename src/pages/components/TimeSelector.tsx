@@ -1,5 +1,5 @@
+import { renderTimeViewClock, TimePicker } from '@mui/x-date-pickers'
 import { useTranslation } from 'react-i18next'
-import { TimePicker, renderTimeViewClock } from '@mui/x-date-pickers'
 import { DataAndTimeSelectorProps } from './utils/dateAndTime'
 
 export function TimeSelector({ time, onChange }: DataAndTimeSelectorProps) {

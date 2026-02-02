@@ -1,9 +1,10 @@
 import {
-  GtfsRideStopPydanticModel,
+  GtfsRideStopWithRelatedPydanticModel,
   SiriVehicleLocationWithRelatedPydanticModel,
-} from 'open-bus-stride-client'
+} from '@hasadna/open-bus-api-client'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
+import dayjs from 'src/dayjs'
 import { Coordinates } from 'src/model/location'
 import { PADDING } from 'src/pages/components/timeline/TimelineBoard'
 import {
@@ -15,7 +16,6 @@ import {
   pointTypeToColor,
   pointTypeToDescription,
 } from 'src/pages/components/timeline/TimelinePoint'
-import dayjs from 'src/dayjs'
 
 const Line = styled.div<{ totalHeight: number }>`
   height: ${({ totalHeight }) => totalHeight + PADDING * 3}px;
@@ -41,7 +41,7 @@ type TimelineProps = {
   className?: string
   // timestamps can be both siri and gtfs timestamps
   timestamps:
-    | GtfsRideStopPydanticModel[]
+    | GtfsRideStopWithRelatedPydanticModel[]
     | (SiriVehicleLocationWithRelatedPydanticModel & Coordinates)[]
     | Date[]
   totalHeight: number
@@ -65,7 +65,7 @@ export const Timeline = ({
       <Point top={2 * PADDING + totalHeight + POINT_SIZE} />
       {timestamps.map((timestamp) => {
         const t =
-          (timestamp as GtfsRideStopPydanticModel).arrivalTime ??
+          (timestamp as GtfsRideStopWithRelatedPydanticModel).arrivalTime ??
           (timestamp as SiriVehicleLocationWithRelatedPydanticModel & Coordinates)
             .recordedAtTime! ??
           (timestamp as Date)

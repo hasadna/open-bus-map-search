@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
-import { InfoItem, InfoTable } from '../components/InfoTable'
 import { BusStop } from 'src/model/busStop'
 import Widget from 'src/shared/Widget'
+import { InfoItem, InfoTable } from '../components/InfoTable'
 
 export const LineProfileStop = ({ stop, total }: { stop?: BusStop; total: number }) => {
   const { t } = useTranslation()

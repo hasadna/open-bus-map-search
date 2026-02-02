@@ -1,24 +1,20 @@
+import { Alert, Grid, Typography } from '@mui/material'
 import { useState } from 'react'
-
-// Styling
-import './DashboardPage.scss'
-import 'src/App.scss'
 import { useTranslation } from 'react-i18next'
-import { Typography, Alert, Grid } from '@mui/material'
-import { useDate } from '../components/DateTimePicker'
-import { DateSelector } from '../components/DateSelector'
-import { PageContainer } from '../components/PageContainer'
-
-// Components
-import InfoYoutubeModal from '../components/YoutubeModal'
-import DayTimeChart from './ArrivalByTimeChart/DayTimeChart'
-import AllLinesChart from './AllLineschart/AllLinesChart'
-import WorstLinesChart from './WorstLinesChart/WorstLinesChart'
-import { WarningContextProvider, useWarningContext } from './context/WarningContextProvider'
-import OperatorSelector from 'src/pages/components/OperatorSelector'
-
 // Services and libraries
 import dayjs from 'src/dayjs'
+import OperatorSelector from 'src/pages/components/OperatorSelector'
+import { DateSelector } from '../components/DateSelector'
+import { useDate } from '../components/DateTimePicker'
+import { PageContainer } from '../components/PageContainer'
+// Components
+import InfoYoutubeModal from '../components/YoutubeModal'
+import AllLinesChart from './AllLineschart/AllLinesChart'
+import DayTimeChart from './ArrivalByTimeChart/DayTimeChart'
+import WorstLinesChart from './WorstLinesChart/WorstLinesChart'
+import { WarningContextProvider, useWarningContext } from './context/WarningContextProvider'
+// Styling
+import './DashboardPage.scss'
 
 // Declarations
 const now = dayjs()
@@ -40,6 +36,10 @@ const DashboardPage = () => {
   const [endDate, setEndDate] = useDate(now.subtract(1, 'day'))
   const [operatorId, setOperatorId] = useState('')
   const { t } = useTranslation()
+
+  const [AllChartsZeroLines, setAllChartsZeroLines] = useState(false)
+  const [WorstLineZeroLines, setWorstLineZeroLines] = useState(false)
+  const [AllDayTimeChartZeroLines, setAllDayTimeChartZeroLines] = useState(false)
 
   return (
     <PageContainer>

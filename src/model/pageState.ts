@@ -1,12 +1,6 @@
-import {
-  GtfsRideStopPydanticModel,
-  SiriVehicleLocationWithRelatedPydanticModel,
-} from 'open-bus-stride-client'
 import { createContext, Dispatch } from 'react'
-import { BusRoute } from './busRoute'
-import { BusStop } from './busStop'
-import { Coordinates } from './location'
 import dayjs from 'src/dayjs'
+import { BusRoute } from './busRoute'
 
 export type PageSearchState = {
   timestamp: number
@@ -14,6 +8,7 @@ export type PageSearchState = {
   lineNumber?: string
   vehicleNumber?: number
   routeKey?: string
+  startTime?: string
   routes?: BusRoute[]
 }
 
@@ -23,11 +18,3 @@ export const SearchContext = createContext<{
   search: PageSearchState
   setSearch: Dispatch<MutateStateAction<PageSearchState>>
 }>({ search: { timestamp: dayjs().valueOf() }, setSearch: (search) => search })
-
-export type TimelinePageState = {
-  stops?: BusStop[]
-  stopKey?: string
-  stopName?: string
-  gtfsHitTimes?: GtfsRideStopPydanticModel[]
-  siriHitTimes?: SiriVehicleLocationWithRelatedPydanticModel & Coordinates[]
-}

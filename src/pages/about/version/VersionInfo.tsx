@@ -1,7 +1,6 @@
-import { useTranslation } from 'react-i18next'
 import { useQuery } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import Widget from 'src/shared/Widget'
-
 import './VersionInfo.scss'
 
 const versionUrl = 'https://open-bus-map-search.hasadna.org.il/hash.txt'
@@ -17,8 +16,7 @@ export const VersionInfo = () => {
     queryFn: () => fetch(versionUrl).then((response) => response.text()),
   })
   return (
-    <Widget>
-      <h2>{t('version')}</h2>
+    <Widget title={t('version')}>
       {isLoading && <p>{t('loading')}</p>}
       {isError && <p>{t('failedToFetchVersion')}</p>}
       {version && <p className="version">{version}</p>}

@@ -13,10 +13,11 @@ import {
 } from '@ant-design/icons'
 import { AirportShuttle, Psychology } from '@mui/icons-material'
 import { lazy } from 'react'
-import { Navigate, Route, createBrowserRouter, createRoutesFromElements } from 'react-router'
-import { MainRoute } from './MainRoute'
+import { createBrowserRouter, createRoutesFromElements, Navigate, Route } from 'react-router'
 import { getRouteById } from 'src/api/gtfsService'
 import { ErrorPage } from 'src/pages/ErrorPage'
+import VelocityHeatmapPage from 'src/pages/velocityHeatmap'
+import { MainRoute } from './MainRoute'
 
 const HomePage = lazy(() => import('../pages/homepage/HomePage'))
 const DashboardPage = lazy(() => import('../pages/dashboard/DashboardPage'))
@@ -28,7 +29,7 @@ const SingleLineMapPage = lazy(() => import('../pages/singleLineMap'))
 const About = lazy(() => import('../pages/about'))
 const Operator = lazy(() => import('../pages/operator'))
 const Profile = lazy(() => import('../pages/lineProfile/LineProfile'))
-const BugReportForm = lazy(() => import('../pages/BugReportForm '))
+const BugReportForm = lazy(() => import('../pages/BugReportForm'))
 const DataResearch = lazy(() =>
   import('../pages/DataResearch/DataResearch').then((m) => ({
     default: m.DataResearch,
@@ -74,6 +75,13 @@ export const PAGES = [
     path: '/map',
     icon: <HeatMapOutlined />,
     element: <TimeBasedMapPage />,
+  },
+  {
+    label: 'velocity_heatmap_page_title',
+    path: '/velocity-heatmap',
+    searchParamsRequired: true,
+    icon: <HeatMapOutlined />,
+    element: <VelocityHeatmapPage />,
   },
   {
     label: 'singleline_map_page_title',
@@ -169,6 +177,6 @@ window.addEventListener('vite:preloadError', () => {
 
 const routes = createRoutesFromElements(getRoutesList())
 
-const router = createBrowserRouter(routes)
+const router = createBrowserRouter(routes, { basename: import.meta.env.VITE_BASE_PATH })
 
 export default router

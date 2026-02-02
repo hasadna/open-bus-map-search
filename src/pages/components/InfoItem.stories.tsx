@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { InfoItem, InfoTable } from './InfoTable'
 import Widget from 'src/shared/Widget'
+import { InfoItem, InfoTable } from './InfoTable'
 
 const meta = {
   component: InfoItem,

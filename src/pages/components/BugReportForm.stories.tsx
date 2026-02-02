@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import BugReportForm from '../BugReportForm '
+import BugReportForm from '../BugReportForm'
 
 const meta = {
   title: 'Components/BugReportForm',

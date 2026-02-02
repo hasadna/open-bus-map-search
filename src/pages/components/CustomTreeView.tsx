@@ -1,5 +1,5 @@
+import { ChevronRight, ExpandMore } from '@mui/icons-material'
 import { SimpleTreeView, TreeItem } from '@mui/x-tree-view'
-import { ExpandMore, ChevronRight } from '@mui/icons-material'
 
 interface BaseTreeNode {
   id: string

@@ -1,12 +1,12 @@
-import { Stack, Typography } from '@mui/material'
+import { Stack } from '@mui/material'
 import { Skeleton } from 'antd'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Cell, Pie, PieChart } from 'recharts'
-import { InfoItem, InfoTable } from '../components/InfoTable'
 import { useGroupBy } from 'src/api/groupByService'
-import Widget from 'src/shared/Widget'
 import dayjs from 'src/dayjs'
+import Widget from 'src/shared/Widget'
+import { InfoItem, InfoTable } from '../components/InfoTable'
 
 export const OperatorGaps = ({
   operatorId,
@@ -19,19 +19,21 @@ export const OperatorGaps = ({
 }) => {
   const { t, i18n } = useTranslation()
   const [groupByOperatorData, isLoading] = useGroupBy({
-    dateFrom: dayjs(timestamp).add(-1, timeRange),
-    dateTo: dayjs(timestamp),
+    dateFrom: dayjs(timestamp).add(-1, timeRange).valueOf(),
+    dateTo: timestamp || dayjs().valueOf(),
     groupBy: 'operator_ref',
   })
 
   const data = useMemo(() => {
-    const operator = groupByOperatorData?.find((d) => d.operator_ref?.agency_id === operatorId)
+    const operator = groupByOperatorData?.find(
+      (d) => d.operatorRef?.operatorRef.toString() === operatorId,
+    )
     if (!operator) return []
 
-    const missing = operator?.total_planned_rides - operator?.total_actual_rides
+    const missing = operator?.totalPlannedRides - operator?.totalActualRides
     return [
-      { name: t('rides_planned'), value: operator?.total_planned_rides },
-      { name: t('rides_actual'), value: operator?.total_actual_rides, color: '#00C49F' },
+      { name: t('rides_planned'), value: operator?.totalPlannedRides },
+      { name: t('rides_actual'), value: operator?.totalActualRides, color: '#00C49F' },
       { name: t('rides_missing'), value: missing, color: '#FF4040' },
       // { name: t('ride_extra'), value: 0, color: '#FFBB28' },
     ]
@@ -42,17 +44,7 @@ export const OperatorGaps = ({
   }, [])
 
   return (
-    <Widget>
-      <Typography
-        sx={{
-          margin: '17.5px 0 0.5rem ',
-          fontWeight: 'bold',
-          fontSize: 24,
-          lineHeight: '35px',
-        }}
-        variant="h2">
-        {t('operator.statistics')} {t(`operator.time_range.${timeRange}`)}
-      </Typography>
+    <Widget title={`${t('operator.statistics')} ${t(`operator.time_range.${timeRange}`)}`}>
       {isLoading ? (
         <Skeleton active paragraph={{ rows: 2 }} />
       ) : (

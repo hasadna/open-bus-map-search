@@ -1,24 +1,24 @@
+import { GtfsRoutePydanticModel } from '@hasadna/open-bus-api-client'
 import { CircularProgress, Grid } from '@mui/material'
 import { Tooltip } from 'antd'
-import { GtfsRoutePydanticModel } from 'open-bus-stride-client'
 import { useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLoaderData, useNavigate } from 'react-router'
-import { DateSelector } from '../components/DateSelector'
-import { FilterPositionsByStartTimeSelector } from '../components/FilterPositionsByStartTimeSelector'
-import { NotFound } from '../components/NotFound'
-import { PageContainer } from '../components/PageContainer'
-import RouteSelector from '../components/RouteSelector'
-import { MapWithLocationsAndPath } from '../components/map-related/MapWithLocationsAndPath'
-import { LineProfileDetails } from './LineProfileDetails'
-import { LineProfileRide } from './LineProfileRide'
-import { LineProfileStop } from './LineProfileStop'
 import { getRoutesAsync } from 'src/api/gtfsService'
+import dayjs from 'src/dayjs'
 import { useSingleLineData } from 'src/hooks/useSingleLineData'
 import { SearchContext } from 'src/model/pageState'
 import StopSelector from 'src/pages/components/StopSelector'
 import Widget from 'src/shared/Widget'
-import dayjs from 'src/dayjs'
+import { DateSelector } from '../components/DateSelector'
+import { FilterPositionsByStartTimeSelector } from '../components/FilterPositionsByStartTimeSelector'
+import { MapWithLocationsAndPath } from '../components/map-related/MapWithLocationsAndPath'
+import { NotFound } from '../components/NotFound'
+import { PageContainer } from '../components/PageContainer'
+import RouteSelector from '../components/RouteSelector'
+import { LineProfileDetails } from './LineProfileDetails'
+import { LineProfileRide } from './LineProfileRide'
+import { LineProfileStop } from './LineProfileStop'
 import './LineProfile.scss'
 
 const LineProfile = () => {
@@ -42,9 +42,9 @@ const LineProfile = () => {
       operatorId: route.operatorRef.toString(),
       lineNumber: route.routeShortName,
       routes,
-      routeKey: route.routeLongName,
+      routeKey: `${route.routeMkt}-${route.routeDirection}`,
     }))
-    setRouteKey(route.routeLongName)
+    setRouteKey(`${route.routeMkt}-${route.routeDirection}`)
   }, [route?.id])
 
   const {
@@ -71,7 +71,7 @@ const LineProfile = () => {
       abortController.signal,
     )
       .then((routes) => {
-        const newRoute = routes?.find((r) => r.key === route.routeLongName)
+        const newRoute = routes?.find((r) => r.key === `${route.routeMkt}-${route.routeDirection}`)
         if (newRoute?.routeIds?.[0]) {
           navigate(`/profile/${newRoute.routeIds[0]}`)
         }
@@ -140,8 +140,7 @@ const LineProfileError = ({ title, message }: { title?: string; message?: string
   return (
     <PageContainer>
       <NotFound>
-        <Widget>
-          <h1>{title}</h1>
+        <Widget title={title}>
           <pre>{message}</pre>
         </Widget>
       </NotFound>

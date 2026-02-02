@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState } from 'react'
-import OperatorSelector from './OperatorSelector'
 import { MAJOR_OPERATORS } from 'src/model/operator'
+import OperatorSelector from './OperatorSelector'
 
 const meta = {
   title: 'Components/OperatorSelector',

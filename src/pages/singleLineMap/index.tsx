@@ -8,6 +8,12 @@ import {
 } from '@mui/material'
 import { useContext, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import dayjs from 'src/dayjs'
+import { useSingleLineData } from 'src/hooks/useSingleLineData'
+import LineNumberSelector from 'src/pages/components/LineSelector'
+import OperatorSelector from 'src/pages/components/OperatorSelector'
+import RouteSelector from 'src/pages/components/RouteSelector'
+import VehicleNumberSelector from 'src/pages/components/VehicleSelector'
 import { SearchContext } from '../../model/pageState'
 import { DateSelector } from '../components/DateSelector'
 import { FilterPositionsByStartTimeSelector } from '../components/FilterPositionsByStartTimeSelector'
@@ -15,12 +21,6 @@ import { MapWithLocationsAndPath } from '../components/map-related/MapWithLocati
 import { NotFound } from '../components/NotFound'
 import { PageContainer } from '../components/PageContainer'
 import InfoYoutubeModal from '../components/YoutubeModal'
-import { useSingleLineData } from 'src/hooks/useSingleLineData'
-import LineNumberSelector from 'src/pages/components/LineSelector'
-import OperatorSelector from 'src/pages/components/OperatorSelector'
-import RouteSelector from 'src/pages/components/RouteSelector'
-import dayjs from 'src/dayjs'
-import VehicleNumberSelector from 'src/pages/components/VehicleSelector'
 import '../Map.scss'
 
 const SingleLineMapPage = () => {
@@ -42,23 +42,28 @@ const SingleLineMapPage = () => {
   } = useSingleLineData(operatorId, lineNumber, vehicleNumber)
 
   const handleTimestampChange = (time: dayjs.Dayjs | null) => {
-    setSearch((current) => ({ ...current, timestamp: time?.valueOf() ?? Date.now() }))
+    setSearch((current) => ({
+      ...current,
+      timestamp: time?.valueOf() ?? Date.now(),
+      startTime: undefined,
+    }))
   }
 
   const handleOperatorChange = (operatorId: string) => {
-    setSearch((current) => ({ ...current, operatorId }))
+    setSearch((current) => ({ ...current, operatorId, startTime: undefined }))
   }
 
   const handleLineNumberChange = (lineNumber: string) => {
-    setSearch((current) => ({ ...current, lineNumber }))
+    setSearch((current) => ({ ...current, lineNumber, startTime: undefined }))
   }
 
   const handleRouteKeyChange = (routeKey?: string) => {
+    setSearch((current) => ({ ...current, routeKey, startTime: undefined }))
     setRouteKey(routeKey)
   }
 
   const handleVehicleNumberChange = (vehicleNumber?: number) => {
-    setSearch((current) => ({ ...current, vehicleNumber }))
+    setSearch((current) => ({ ...current, vehicleNumber, startTime: undefined }))
   }
 
   const handleTypeChange = (

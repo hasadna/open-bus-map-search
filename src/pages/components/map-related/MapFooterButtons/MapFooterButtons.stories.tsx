@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import MapFooterButtons from './MapFooterButtons'
 import Widget from 'src/shared/Widget'
+import MapFooterButtons from './MapFooterButtons'
 
 const meta = {
   component: MapFooterButtons,

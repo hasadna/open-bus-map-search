@@ -1,16 +1,16 @@
 import {
-  GtfsRideStopPydanticModel,
+  GtfsRideStopWithRelatedPydanticModel,
   SiriVehicleLocationWithRelatedPydanticModel,
-} from 'open-bus-stride-client'
+} from '@hasadna/open-bus-api-client'
 import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import { MAX_HITS_COUNT } from 'src/api/apiConfig'
+import dayjs from 'src/dayjs'
 import { Coordinates } from 'src/model/location'
 import { HorizontalLine } from 'src/pages/components/timeline/HorizontalLine'
 import { Timeline } from 'src/pages/components/timeline/Timeline'
 import { PointType } from 'src/pages/components/timeline/TimelinePoint'
-import dayjs from 'src/dayjs'
 
 const COLUMN_WIDTH = 140
 export const PADDING = 10
@@ -38,7 +38,7 @@ const StyledTimeline = styled(Timeline)`
 type TimelineBoardProps = {
   className?: string
   target: dayjs.Dayjs
-  gtfsTimes: GtfsRideStopPydanticModel[]
+  gtfsTimes: GtfsRideStopWithRelatedPydanticModel[]
   siriTimes: (SiriVehicleLocationWithRelatedPydanticModel & Coordinates)[]
 }
 

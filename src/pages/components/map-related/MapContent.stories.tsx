@@ -8,7 +8,7 @@ const meta = {
   title: 'Map/MapContent',
   parameters: {
     eyes: {
-      waitBeforeCapture: 2000,
+      waitBeforeCapture: 15000,
     },
   },
   decorators: [

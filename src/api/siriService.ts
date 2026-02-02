@@ -1,16 +1,17 @@
-import { SiriApi, SiriVehicleLocationWithRelatedPydanticModel } from 'open-bus-stride-client'
-import { SiriRideWithRelatedPydanticModel } from 'open-bus-stride-client/openapi/models/SiriRideWithRelatedPydanticModel'
-import dayjs from 'src/dayjs'
-import { API_CONFIG, MAX_HITS_COUNT } from 'src/api/apiConfig'
-import { BusStop } from 'src/model/busStop'
+import {
+  SiriRideWithRelatedPydanticModel,
+  SiriVehicleLocationWithRelatedPydanticModel,
+} from '@hasadna/open-bus-api-client'
+import { MAX_HITS_COUNT, SIRI_API } from 'src/api/apiConfig'
 import { geoLocationBoundary, nearestLocation } from 'src/api/geoService'
-import { Coordinates } from 'src/model/location'
+import dayjs from 'src/dayjs'
 import { BusRoute } from 'src/model/busRoute'
+import { BusStop } from 'src/model/busStop'
+import { Coordinates } from 'src/model/location'
 
-const SIRI_API = new SiriApi(API_CONFIG)
 const LOCATION_DELTA_METERS = 500
 
-async function getRidesAsync(route: BusRoute, stop: BusStop, timestamp: dayjs.Dayjs) {
+async function getRidesAsync(route: BusRoute, timestamp: dayjs.Dayjs) {
   return await SIRI_API.siriRidesListGet({
     limit: 1,
     gtfsRouteDateFrom: timestamp.toDate(),
@@ -19,9 +20,8 @@ async function getRidesAsync(route: BusRoute, stop: BusStop, timestamp: dayjs.Da
     gtfsRideStartTimeTo: dayjs(timestamp).add(1, 'day').toDate(),
     scheduledStartTimeFrom: dayjs(timestamp).subtract(1, 'day').toDate(),
     scheduledStartTimeTo: dayjs(timestamp).add(1, 'day').toDate(),
-    gtfsRideGtfsRouteId: stop.routeId,
     gtfsRouteOperatorRefs: route.operatorId,
-    gtfsRouteRouteShortName: route.lineNumber,
+    gtfsRouteRouteMkt: route.mkt,
     gtfsRouteRouteDirection: route.direction,
   })
 }
@@ -46,7 +46,7 @@ export async function getSiriStopHitTimesAsync(
   stop: BusStop,
   timestamp: dayjs.Dayjs,
 ) {
-  const rides = await getRidesAsync(route, stop, timestamp)
+  const rides = await getRidesAsync(route, timestamp)
   if (rides.length === 0) {
     return []
   }

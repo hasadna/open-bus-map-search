@@ -1,12 +1,12 @@
+import { GtfsRoutePydanticModel } from '@hasadna/open-bus-api-client'
 import { MultipleStopOutlined } from '@mui/icons-material'
 import { Grid, Typography } from '@mui/material'
-import { GtfsRoutePydanticModel } from 'open-bus-stride-client'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
+import dayjs from 'src/dayjs'
+import Widget from 'src/shared/Widget'
 import { InfoItem, InfoTable } from '../components/InfoTable'
 import { routeStartEnd } from '../components/utils/rotueUtils'
-import Widget from 'src/shared/Widget'
-import dayjs from 'src/dayjs'
 
 export const LineProfileDetails = ({
   id,
@@ -40,14 +40,22 @@ export const LineProfileDetails = ({
   }
 
   return (
-    <Widget>
-      <Grid container alignItems="center" flexDirection="column">
-        <img src={`../operators-logos/${operatorRef}.svg`} height={60} />
-        <Typography variant="h6">{agencyName}</Typography>
-        <Typography variant="h2" fontSize="28px" fontWeight="bold" margin="21.5px 0">
+    <Widget
+      title={
+        <Grid container alignItems="center" flexDirection="column">
+          <Link to={'/operator?operatorId=' + operatorRef} style={{ lineHeight: 0 }}>
+            <img src={`../operators-logos/${operatorRef}.svg`} height={60} />
+          </Link>
+          <Link to={'/operator?operatorId=' + operatorRef} style={{ lineHeight: 0 }}>
+            <Typography variant="h6" marginBottom="21.5px">
+              {agencyName}
+            </Typography>
+          </Link>
           {t('lineProfile.title')} {routeShortName}
-        </Typography>
-
+        </Grid>
+      }
+      titleSx={{ marginBottom: '21.5px' }}>
+      <Grid container alignItems="center" flexDirection="column">
         <Grid
           container
           flexDirection="column"

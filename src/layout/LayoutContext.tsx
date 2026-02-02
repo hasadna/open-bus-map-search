@@ -1,4 +1,4 @@
-import { FC, PropsWithChildren, createContext, useState } from 'react'
+import { createContext, FC, PropsWithChildren, useState } from 'react'
 
 export interface LayoutContextInterface {
   setDrawerOpen: (isOpen: boolean) => void

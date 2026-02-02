@@ -1,9 +1,16 @@
+import type { SiriVehicleLocationWithRelatedPydanticModel } from '@hasadna/open-bus-api-client'
 import { OpenInFullRounded } from '@mui/icons-material'
 import { Alert, CircularProgress, Grid, IconButton, Typography } from '@mui/material'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { MapContainer, Marker, Polyline, Popup, TileLayer, useMap } from 'react-leaflet'
 import MarkerClusterGroup from 'react-leaflet-markercluster'
+import useVehicleLocations from 'src/api/useVehicleLocations'
+import dayjs from 'src/dayjs'
+import { useAgencyList } from 'src/hooks/useAgencyList'
+import { useConstrainedFloatingButton } from 'src/hooks/useConstrainedFloatingButton'
+import { BusToolTip } from 'src/pages/components/map-related/MapLayers/BusToolTip'
+import { INPUT_SIZE } from 'src/resources/sizes'
 import { DateSelector } from '../components/DateSelector'
 import { Label } from '../components/Label'
 import MinuteSelector from '../components/MinuteSelector'
@@ -13,12 +20,6 @@ import { busIcon, busIconPath } from '../components/utils/BusIcon'
 import createClusterCustomIcon from '../components/utils/customCluster/customCluster'
 import InfoYoutubeModal from '../components/YoutubeModal'
 import { getColorByHashString } from '../dashboard/AllLineschart/OperatorHbarChart/utils'
-import getAgencyList, { Agency } from 'src/api/agencyList'
-import useVehicleLocations from 'src/api/useVehicleLocations'
-import { VehicleLocation } from 'src/model/vehicleLocation'
-import { BusToolTip } from 'src/pages/components/map-related/MapLayers/BusToolTip'
-import { INPUT_SIZE } from 'src/resources/sizes'
-import dayjs from 'src/dayjs'
 import '../Map.scss'
 
 export interface Point {
@@ -26,20 +27,23 @@ export interface Point {
   color: number
   operator?: number
   bearing?: number
-  point?: VehicleLocation
-  recorded_at_time?: number
+  point?: SiriVehicleLocationWithRelatedPydanticModel
+  recordedAtTime?: number
 }
 
 interface Path {
-  locations: VehicleLocation[]
+  locations: SiriVehicleLocationWithRelatedPydanticModel[]
   lineRef: number
   operator: number
-  vehicleRef: number
+  vehicleRef: string
 }
 
 export default function TimeBasedMapPage() {
   const [isExpanded, setIsExpanded] = useState<boolean>(false)
   const toggleExpanded = useCallback(() => setIsExpanded((expanded) => !expanded), [])
+
+  const mapContainerRef = useRef<HTMLDivElement>(null)
+  const buttonRef = useRef<HTMLButtonElement>(null)
 
   const position: Point = {
     loc: [32.3057988, 34.85478613], // arbitrary default value... Netanya - best city to live & die in
@@ -57,11 +61,11 @@ export default function TimeBasedMapPage() {
 
   const positions = useMemo(() => {
     const pos = locations.map<Point>((location) => ({
-      loc: [location.lat, location.lon],
-      color: location.velocity,
-      operator: location.siri_route__operator_ref,
-      bearing: location.bearing,
-      recorded_at_time: new Date(location.recorded_at_time).getTime(),
+      loc: [location.lat!, location.lon!],
+      color: location.velocity ?? 0,
+      operator: location.siriRouteOperatorRef ?? 0,
+      bearing: location.bearing ?? 0,
+      recordedAtTime: location.recordedAtTime ? new Date(location.recordedAtTime).getTime() : 0,
       point: location,
     }))
     return pos
@@ -70,13 +74,13 @@ export default function TimeBasedMapPage() {
   const paths = useMemo(
     () =>
       locations.reduce((arr: Path[], loc) => {
-        const line = arr.find((line) => line.vehicleRef === loc.siri_ride__vehicle_ref)
+        const line = arr.find((line) => line.vehicleRef === loc.siriRideVehicleRef)
         if (!line) {
           arr.push({
             locations: [loc],
-            lineRef: loc.siri_route__line_ref,
-            operator: loc.siri_route__operator_ref,
-            vehicleRef: loc.siri_ride__vehicle_ref,
+            lineRef: loc.siriRouteLineRef || 0,
+            operator: loc.siriRouteOperatorRef || 0,
+            vehicleRef: loc.siriRideVehicleRef || '',
           })
         } else {
           line.locations.push(loc)
@@ -85,6 +89,8 @@ export default function TimeBasedMapPage() {
       }, []),
     [locations],
   )
+
+  useConstrainedFloatingButton(mapContainerRef, buttonRef, isExpanded)
 
   return (
     <PageContainer className="map-container">
@@ -152,8 +158,12 @@ export default function TimeBasedMapPage() {
         </Grid>
         <Grid size={{ xs: 1 }}>{isLoading && <CircularProgress size="20px" />}</Grid>
       </Grid>
-      <div className={`map-info ${isExpanded ? 'expanded' : 'collapsed'}`}>
-        <IconButton color="primary" className="expand-button" onClick={toggleExpanded}>
+      <div ref={mapContainerRef} className={`map-info ${isExpanded ? 'expanded' : 'collapsed'}`}>
+        <IconButton
+          ref={buttonRef}
+          color="primary"
+          className="expand-button"
+          onClick={toggleExpanded}>
           <OpenInFullRounded fontSize="large" />
         </IconButton>
         <MapContainer center={position.loc} zoom={8} scrollWheelZoom={true}>
@@ -168,7 +178,7 @@ export default function TimeBasedMapPage() {
               pathOptions={{
                 color: getColorByHashString(path.vehicleRef.toString()),
               }}
-              positions={path.locations.map(({ lat, lon }) => [lat, lon])}
+              positions={path.locations.map(({ lat, lon }) => [lat || 0, lon || 0])}
             />
           ))}
         </MapContainer>
@@ -179,11 +189,7 @@ export default function TimeBasedMapPage() {
 
 function Markers({ positions }: { positions: Point[] }) {
   const map = useMap()
-  const [agencyList, setAgencyList] = useState<Agency[]>([])
-
-  useEffect(() => {
-    getAgencyList().then(setAgencyList).catch(console.log)
-  }, [])
+  const agencyList = useAgencyList()
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition((position) =>
@@ -197,7 +203,7 @@ function Markers({ positions }: { positions: Point[] }) {
         {positions.map((pos) => {
           const icon = busIcon({
             operator_id: pos.operator?.toString() || 'default',
-            name: agencyList.find((agency) => agency.operator_ref === pos.operator)?.agency_name,
+            name: agencyList.find((agency) => agency.operatorRef === pos.operator)?.agencyName,
           })
           return (
             <Marker position={pos.loc} icon={icon} key={pos.point?.id}>

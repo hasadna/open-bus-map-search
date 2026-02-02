@@ -1,13 +1,12 @@
-import nxPlugin from '@nx/eslint-plugin'
 import { FlatCompat } from '@eslint/eslintrc'
-import eslintPluginReact from 'eslint-plugin-react'
-import eslintPluginReactHooks from 'eslint-plugin-react-hooks'
-import eslintPluginImport from 'eslint-plugin-import'
+import eslintJs from '@eslint/js'
+import nxPlugin from '@nx/eslint-plugin'
 import typescriptEslintEslintPlugin from '@typescript-eslint/eslint-plugin'
 import typescriptEslintParser from '@typescript-eslint/parser'
-import globals from 'globals'
-import eslintJs from '@eslint/js'
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended'
+import eslintPluginReact from 'eslint-plugin-react'
+import eslintPluginReactHooks from 'eslint-plugin-react-hooks'
+import globals from 'globals'
 
 const compat = new FlatCompat({
   baseDirectory: import.meta.dirname,
@@ -42,12 +41,10 @@ export default [
       'react-hooks': eslintPluginReactHooks,
       '@typescript-eslint': typescriptEslintEslintPlugin,
       '@nx': nxPlugin,
-      import: eslintPluginImport,
     },
   },
   {
     settings: {
-      'import/resolver': { typescript: true },
       react: { version: 'detect' },
     },
     languageOptions: {
@@ -73,11 +70,17 @@ export default [
       '@typescript-eslint/no-floating-promises': 'off',
       '@typescript-eslint/no-base-to-string': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
-      // Import
-      'import/no-unused-modules': 'error',
-      'import/order': 'error',
       // Prettier
       'prettier/prettier': 'error',
+    },
+  },
+  // Disable React rules in tests and test_pages folders
+  {
+    files: ['tests/**/*.{ts,tsx}', 'src/test_pages/**/*.{ts,tsx}'],
+    rules: {
+      'react-hooks/rules-of-hooks': 'off',
+      'react/jsx-filename-extension': 'off',
+      'react/react-in-jsx-scope': 'off',
     },
   },
 ]

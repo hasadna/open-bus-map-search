@@ -1,16 +1,16 @@
 import createCache from '@emotion/cache'
 import { CacheProvider } from '@emotion/react'
-import 'leaflet/dist/leaflet.css'
 import { useCallback, useEffect } from 'react'
 import ReactGA from 'react-ga4'
 import { useLocation, useSearchParams } from 'react-router'
 import rtlPlugin from 'stylis-plugin-rtl'
 import { useSessionStorage } from 'usehooks-ts'
+import dayjs from 'src/dayjs'
 import { MainLayout } from '../layout'
 import { ThemeProvider } from '../layout/ThemeContext'
 import { PageSearchState, SearchContext } from '../model/pageState'
 import { PAGES } from '../routes'
-import dayjs from 'src/dayjs'
+import 'leaflet/dist/leaflet.css'
 
 // Create rtl cache
 const cacheRtl = createCache({
@@ -25,6 +25,7 @@ export const MainRoute = () => {
   const lineNumber = searchParams.get('lineNumber')
   const vehicleNumber = searchParams.get('vehicleNumber')
   const routeKey = searchParams.get('routeKey')
+  const startTime = searchParams.get('startTime')
   const timestamp = searchParams.get('timestamp')
 
   useEffect(() => {
@@ -37,6 +38,7 @@ export const MainRoute = () => {
     lineNumber: lineNumber || '',
     vehicleNumber: vehicleNumber ? Number(vehicleNumber) : undefined,
     routeKey: routeKey || '',
+    startTime: startTime || '', // startTime ?? undefined,
   })
 
   useEffect(() => {
@@ -58,6 +60,9 @@ export const MainRoute = () => {
       if (search.routeKey) {
         params.set('routeKey', search.routeKey)
       }
+      if (search.startTime) {
+        params.set('startTime', search.startTime)
+      }
       setSearchParams(params)
     }
   }, [
@@ -65,6 +70,7 @@ export const MainRoute = () => {
     search.vehicleNumber,
     search.operatorId,
     search.routeKey,
+    search.startTime,
     search.timestamp,
     location.pathname,
     setSearchParams,

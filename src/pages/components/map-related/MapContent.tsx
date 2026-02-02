@@ -1,16 +1,16 @@
 import { t } from 'i18next'
-import { useRef, useEffect, useState, useCallback } from 'react'
+import { Icon, IconOptions, Marker as LeafletMarker } from 'leaflet'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Marker, Polyline, Popup, TileLayer, useMap } from 'react-leaflet'
-import { Icon, IconOptions, Marker as LeafletMarker } from 'leaflet'
+import { useAgencyList } from 'src/hooks/useAgencyList'
 import { busIcon, busIconPath } from '../utils/BusIcon'
-import { BusToolTip } from './MapLayers/BusToolTip'
-import '../../Map.scss'
 import { MapProps } from './map-types'
-import { useRecenterOnDataChange } from './useRecenterOnDataChange'
-import { MapIndex } from './MapIndex'
 import MapFooterButtons from './MapFooterButtons/MapFooterButtons'
-import { useAgencyList } from 'src/api/agencyList'
+import { MapIndex } from './MapIndex'
+import { BusToolTip } from './MapLayers/BusToolTip'
+import { useRecenterOnDataChange } from './useRecenterOnDataChange'
+import '../../Map.scss'
 
 // configs for planned & actual routes - line color & marker icon
 const getIcon = (path: string, width: number = 10, height: number = 10): Icon<IconOptions> => {
@@ -29,7 +29,6 @@ const plannedRouteStopMarker = getIcon(plannedRouteStopMarkerPath, 20, 25)
 export function MapContent({ positions, plannedRouteStops, showNavigationButtons }: MapProps) {
   const markerRef = useRef<{ [key: number]: LeafletMarker | null }>({})
   const [tileUrl, setTileUrl] = useState('https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png')
-
   const agencyList = useAgencyList()
   const map = useMap()
   const { i18n } = useTranslation()
@@ -88,8 +87,7 @@ export function MapContent({ positions, plannedRouteStops, showNavigationButtons
           i === 0
             ? busIcon({
                 operator_id: pos.operator?.toString() || 'default',
-                name: agencyList.find((agency) => agency.operator_ref === pos.operator)
-                  ?.agency_name,
+                name: agencyList.find((agency) => agency.operatorRef === pos.operator)?.agencyName,
               })
             : actualRouteStopMarker
         return (

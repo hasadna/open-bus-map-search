@@ -1,5 +1,5 @@
-import { useEffect, useMemo } from 'react'
 import { LatLngTuple } from 'leaflet'
+import { useEffect, useMemo } from 'react'
 import { useMap } from 'react-leaflet'
 import { MapProps } from './map-types'
 

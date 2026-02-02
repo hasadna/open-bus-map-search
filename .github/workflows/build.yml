@@ -4,6 +4,10 @@ on: pull_request
 permissions:
   contents: read
   pull-requests: write
+  issues: write
+
+env:
+  VITE_BASE_PATH: /noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.run_number }}/
 
 jobs:
   build:
@@ -20,6 +24,8 @@ jobs:
       - name: Run install
         run: npm ci
       - name: Build
+        env:
+          VITE_BASE_PATH: ${{ env.VITE_BASE_PATH }}
         run: npm run build
       - name: Upload artifact (build)
         uses: actions/upload-artifact@v4
@@ -39,6 +45,8 @@ jobs:
       - name: Run install
         run: npm ci
       - name: Build Storybook
+        env:
+          VITE_BASE_PATH: ${{ env.VITE_BASE_PATH }}
         run: npm run build-storybook -- -o dist/storybook
       - name: Upload artifact (storybook)
         uses: actions/upload-artifact@v4

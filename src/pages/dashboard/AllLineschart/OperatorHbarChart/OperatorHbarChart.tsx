@@ -1,6 +1,6 @@
-import './operatorsHbarChart.scss'
 import { HbarChart } from '../../WorstLinesChart/LineHbarChart/HbarChart/HbarChart'
 import { getColorByHashString } from './utils'
+import './operatorsHbarChart.scss'
 
 const colorsByCompannies: { [index: string]: string } = {
   'אגד תעבורה': '#2f9250',
@@ -31,15 +31,16 @@ function OperatorHbarChart({
   return (
     <HbarChart
       entries={rows
-        .map((o) => ({
-          ...o,
-          color: getColorName(o.name),
+        .map((operator) => ({
+          ...operator,
+          color: getColorName(operator.name),
         }))
-        .filter((operator) => {
-          // Check if the string matches any of the patterns
-          return !excludeOperators.some((pattern) => pattern.test(operator.name))
-        })
-        .sort((a, b) => a.actual / a.total - b.actual / b.total)
+        .filter((operator) => !excludeOperators.some((pattern) => pattern.test(operator.name)))
+        .sort((a, b) =>
+          complement
+            ? b.actual / b.total - a.actual / a.total
+            : a.actual / a.total - b.actual / b.total,
+        )
         .slice(0, 100)}
       complement={complement}
     />
