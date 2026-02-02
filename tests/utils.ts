@@ -137,7 +137,7 @@ export const verifyDateFromParameter = async (page: Page) => {
 export const harOptions: RouteFromHAROptions = {
   updateContent: 'embed',
   update: false,
-  notFound: 'fallback',
+  notFound: 'abort',
   url: /stride-api/,
   matcher: urlMatcher,
 }
