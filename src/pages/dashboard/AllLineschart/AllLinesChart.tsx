@@ -23,23 +23,23 @@ interface AllChartComponentProps {
   endDate: Dayjs
 }
 
-export const AllLinesChart: FC<AllChartComponentProps> = ({ startDate, endDate }) => {
+export const AllLinesChart: FC<AllChartComponentProps> = ({ startDate: startDateValue, endDate: endDateValue }) => {
   const [groupByOperatorData, groupByOperatorLoading] = useGroupBy({
-    dateFrom: startDate.valueOf(),
-    dateTo: endDate.valueOf(),
+    dateFrom: startDateValue.valueOf(),
+    dateTo: endDateValue.valueOf(),
     groupBy: 'operator_ref',
   })
-  const { t } = useTranslation()
+  const { t: translate } = useTranslation()
 
-  const { setValue } = useWarningContext()
+  const { setValue: setWarningFlag } = useWarningContext()
 
   useEffect(() => {
     const totalElements = groupByOperatorData.length
     const totalZeroElements = groupByOperatorData.filter((el) => el.totalActualRides === 0).length
     if (totalElements === 0 || totalZeroElements === totalElements) {
-      setValue(true)
+      setWarningFlag(true)
     } else {
-      setValue(false)
+      setWarningFlag(false)
     }
   }, [groupByOperatorData])
 
@@ -47,9 +47,9 @@ export const AllLinesChart: FC<AllChartComponentProps> = ({ startDate, endDate }
     <Widget
       title={
         <>
-          {t('dashboard_page_title')}
+          {translate('dashboard_page_title')}
           <Tooltip
-            title={convertLineFeedToHtmlTags(t('dashboard_tooltip_content'))}
+            title={convertLineFeedToHtmlTags(translate('dashboard_tooltip_content'))}
             placement="left"
             arrow>
             <InfoCircleOutlined style={{ marginRight: '12px' }} />

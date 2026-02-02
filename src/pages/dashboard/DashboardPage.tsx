@@ -20,11 +20,11 @@ import './DashboardPage.scss'
 const now = dayjs()
 
 const DisplayValue = () => {
-  const { value } = useWarningContext()
-  const { t } = useTranslation()
-  return value ? (
+  const { value: warningValue } = useWarningContext()
+  const { t: translate } = useTranslation()
+  return warningValue ? (
     <Alert severity="warning" variant="outlined">
-      {t('no_data_from_ETL')}
+      {translate('no_data_from_ETL')}
     </Alert>
   ) : null
 }
@@ -35,7 +35,7 @@ const DashboardPage = () => {
   const [startDate, setStartDate] = useDate(now.subtract(7, 'day'))
   const [endDate, setEndDate] = useDate(now.subtract(1, 'day'))
   const [operatorId, setOperatorId] = useState('')
-  const { t } = useTranslation()
+  const { t: translate } = useTranslation()
 
   const [AllChartsZeroLines, setAllChartsZeroLines] = useState(false)
   const [WorstLineZeroLines, setWorstLineZeroLines] = useState(false)
@@ -45,20 +45,20 @@ const DashboardPage = () => {
     <PageContainer>
       <WarningContextProvider>
         <Typography className="page-title" variant="h4">
-          {t('dashboard_page_title')}
+          {translate('dashboard_page_title')}
           <InfoYoutubeModal
             label="Open video about this page"
-            title={t('youtube_modal_info_title')}
+            title={translate('youtube_modal_info_title')}
             videoUrl="https://www.youtube.com/embed/bXg50_j_hTA?si=4rpSZwMRbMomE4g1"
           />
         </Typography>
         <DisplayValue></DisplayValue>
         <Alert severity="info" variant="outlined" icon={false}>
-          {t('dashboard_page_description')}
+          {translate('dashboard_page_description')}
         </Alert>
         {startDate > endDate ? (
           <Alert severity="error" variant="outlined">
-            {t('bug_date_alert')}
+            {translate('bug_date_alert')}
           </Alert>
         ) : null}
         <Grid
@@ -72,7 +72,7 @@ const DashboardPage = () => {
               <DateSelector
                 time={startDate}
                 onChange={(data) => setStartDate(data)}
-                customLabel={t('start')}
+                customLabel={translate('start')}
               />
             </Grid>
             <Grid size={{ xs: 6 }}>
@@ -80,7 +80,7 @@ const DashboardPage = () => {
                 time={endDate}
                 onChange={(data) => setEndDate(data)}
                 minDate={startDate}
-                customLabel={t('end')}
+                customLabel={translate('end')}
               />
             </Grid>
           </Grid>
