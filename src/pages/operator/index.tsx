@@ -8,6 +8,7 @@ import { DateSelector } from '../components/DateSelector'
 import OperatorSelector from '../components/OperatorSelector'
 import { PageContainer } from '../components/PageContainer'
 import WorstLinesChart from '../dashboard/WorstLinesChart/WorstLinesChart'
+import { WarningContextProvider } from '../dashboard/context/WarningContextProvider'
 import { OperatorGaps } from './OperatorGaps'
 import { OperatorInfo } from './OperatorInfo'
 import { OperatorRoutes } from './OperatorRoutes'
@@ -36,64 +37,64 @@ const OperatorPage = () => {
 
   return (
     <PageContainer>
-      <Typography variant="h4">{t('operator_title')}</Typography>
-      <Grid container spacing={2}>
-        <Grid size={{ sm: 4, xs: 12 }}>
-          <OperatorSelector operatorId={operatorId} setOperatorId={handleOperatorChange} />
-        </Grid>
-
-        <Grid size={{ sm: 4, xs: 12 }}>
-          <DateSelector
-            time={dayjs(timestamp)}
-            disabled={!operatorId}
-            onChange={handleTimestampChange}
-          />
-        </Grid>
-
-        <Grid size={{ sm: 4, xs: 12 }}>
-          <ToggleButtonGroup
-            color={!operatorId ? 'standard' : 'primary'}
-            value={timeRange}
-            disabled={!operatorId}
-            sx={{ height: 56 }}
-            exclusive
-            fullWidth
-            dir="rtl"
-            onChange={(_, value: (typeof TIME_RANGES)[number]) =>
-              value ? setTimeRange(value) : undefined
-            }>
-            {(i18n.dir() === 'rtl' ? TIME_RANGES : TIME_RANGES.toReversed()).map((time) => (
-              <ToggleButton key={time} value={time}>
-                {t(`operator.time_range.${time}`)}
-              </ToggleButton>
-            ))}
-          </ToggleButtonGroup>
-        </Grid>
-      </Grid>
-      {operatorId && (
+      <WarningContextProvider>
+        <Typography variant="h4">{t('operator_title')}</Typography>
         <Grid container spacing={2}>
-          <Grid size={{ lg: 6, xs: 12 }}>
-            <OperatorInfo operatorId={operatorId} />
-            <Spacing />
-            <OperatorGaps operatorId={operatorId} timestamp={timestamp} timeRange={timeRange} />
+          <Grid size={{ sm: 4, xs: 12 }}>
+            <OperatorSelector operatorId={operatorId} setOperatorId={handleOperatorChange} />
           </Grid>
-          <Grid size={{ lg: 6, xs: 12 }}>
-            <ChartWrapper>
-              <WorstLinesChart
-                operatorId={operatorId}
-                startDate={dayjs(timestamp).add(-1, timeRange)}
-                endDate={dayjs(timestamp)}
-                alertWorstLineHandling={function (arg: boolean): void {
-                  console.log('alertWorstLineHandling', arg)
-                }}
-              />
-            </ChartWrapper>
+
+          <Grid size={{ sm: 4, xs: 12 }}>
+            <DateSelector
+              time={dayjs(timestamp)}
+              disabled={!operatorId}
+              onChange={handleTimestampChange}
+            />
           </Grid>
-          <Grid size={{ xs: 12 }}>
-            <OperatorRoutes operatorId={operatorId} timestamp={timestamp} />
+
+          <Grid size={{ sm: 4, xs: 12 }}>
+            <ToggleButtonGroup
+              color={!operatorId ? 'standard' : 'primary'}
+              value={timeRange}
+              disabled={!operatorId}
+              sx={{ height: 56 }}
+              exclusive
+              fullWidth
+              dir="rtl"
+              onChange={(_, value: (typeof TIME_RANGES)[number]) =>
+                value ? setTimeRange(value) : undefined
+              }>
+              {(i18n.dir() === 'rtl' ? TIME_RANGES : TIME_RANGES.toReversed()).map((time) => (
+                <ToggleButton key={time} value={time}>
+                  {t(`operator.time_range.${time}`)}
+                </ToggleButton>
+              ))}
+            </ToggleButtonGroup>
           </Grid>
         </Grid>
-      )}
+        {operatorId && (
+          <Grid container spacing={2}>
+            <Grid size={{ lg: 6, xs: 12 }}>
+              <OperatorInfo operatorId={operatorId} />
+              <Spacing />
+              <OperatorGaps operatorId={operatorId} timestamp={timestamp} timeRange={timeRange} />
+            </Grid>
+            <Grid size={{ lg: 6, xs: 12 }}>
+              <ChartWrapper>
+                <WorstLinesChart
+                  operatorId={operatorId}
+                  startDate={dayjs(timestamp).add(-1, timeRange)}
+                  endDate={dayjs(timestamp)}
+                  alertWorstLineHandling={() => {}}
+                />
+              </ChartWrapper>
+            </Grid>
+            <Grid size={{ xs: 12 }}>
+              <OperatorRoutes operatorId={operatorId} timestamp={timestamp} />
+            </Grid>
+          </Grid>
+        )}
+      </WarningContextProvider>
     </PageContainer>
   )
 }

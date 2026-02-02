@@ -12,97 +12,94 @@ import InfoYoutubeModal from '../components/YoutubeModal'
 import AllLinesChart from './AllLineschart/AllLinesChart'
 import DayTimeChart from './ArrivalByTimeChart/DayTimeChart'
 import WorstLinesChart from './WorstLinesChart/WorstLinesChart'
+import { WarningContextProvider, useWarningContext } from './context/WarningContextProvider'
 // Styling
 import './DashboardPage.scss'
 
 // Declarations
 const now = dayjs()
 
+const DisplayValue = () => {
+  const { value: warningValue } = useWarningContext()
+  const { t: translate } = useTranslation()
+  return warningValue ? (
+    <Alert severity="warning" variant="outlined">
+      {translate('no_data_from_ETL')}
+    </Alert>
+  ) : null
+}
+
 const DashboardPage = () => {
+  // const { value } = useWarningContext();
+
   const [startDate, setStartDate] = useDate(now.subtract(7, 'day'))
   const [endDate, setEndDate] = useDate(now.subtract(1, 'day'))
   const [operatorId, setOperatorId] = useState('')
-  const { t } = useTranslation()
+  const { t: translate } = useTranslation()
 
   const [AllChartsZeroLines, setAllChartsZeroLines] = useState(false)
   const [WorstLineZeroLines, setWorstLineZeroLines] = useState(false)
   const [AllDayTimeChartZeroLines, setAllDayTimeChartZeroLines] = useState(false)
 
   return (
-    <PageContainer className="dashboard">
-      <Typography className="page-title" variant="h4">
-        {t('dashboard_page_title')}
-        <InfoYoutubeModal
-          label="Open video about this page"
-          title={t('youtube_modal_info_title')}
-          videoUrl="https://www.youtube.com/embed/bXg50_j_hTA?si=4rpSZwMRbMomE4g1"
-        />
-      </Typography>
-      {AllChartsZeroLines && WorstLineZeroLines && AllDayTimeChartZeroLines ? (
-        <Alert severity="warning" variant="outlined">
-          {t('no_data_from_ETL')}
+    <PageContainer>
+      <WarningContextProvider>
+        <Typography className="page-title" variant="h4">
+          {translate('dashboard_page_title')}
+          <InfoYoutubeModal
+            label="Open video about this page"
+            title={translate('youtube_modal_info_title')}
+            videoUrl="https://www.youtube.com/embed/bXg50_j_hTA?si=4rpSZwMRbMomE4g1"
+          />
+        </Typography>
+        <DisplayValue></DisplayValue>
+        <Alert severity="info" variant="outlined" icon={false}>
+          {translate('dashboard_page_description')}
         </Alert>
-      ) : null}
-      <Alert severity="info" variant="outlined" icon={false}>
-        {t('dashboard_page_description')}
-      </Alert>
-      {startDate > endDate ? (
-        <Alert severity="error" variant="outlined">
-          {t('bug_date_alert')}
-        </Alert>
-      ) : null}
-      <Grid
-        container
-        spacing={2}
-        alignItems="center"
-        sx={{ marginTop: '0px' }}
-        justifyContent="space-between">
-        <Grid container size={{ xs: 12, lg: 6 }} spacing={2} alignItems="center">
-          <Grid size={{ xs: 6 }}>
-            <DateSelector
-              time={startDate}
-              onChange={(data) => setStartDate(data)}
-              customLabel={t('start')}
-            />
+        {startDate > endDate ? (
+          <Alert severity="error" variant="outlined">
+            {translate('bug_date_alert')}
+          </Alert>
+        ) : null}
+        <Grid
+          container
+          spacing={2}
+          alignItems="center"
+          sx={{ marginTop: '0px' }}
+          justifyContent="space-between">
+          <Grid container size={{ xs: 12, lg: 6 }} spacing={2} alignItems="center">
+            <Grid size={{ xs: 6 }}>
+              <DateSelector
+                time={startDate}
+                onChange={(data) => setStartDate(data)}
+                customLabel={translate('start')}
+              />
+            </Grid>
+            <Grid size={{ xs: 6 }}>
+              <DateSelector
+                time={endDate}
+                onChange={(data) => setEndDate(data)}
+                minDate={startDate}
+                customLabel={translate('end')}
+              />
+            </Grid>
           </Grid>
-          <Grid size={{ xs: 6 }}>
-            <DateSelector
-              time={endDate}
-              onChange={(data) => setEndDate(data)}
-              minDate={startDate}
-              customLabel={t('end')}
-            />
+          <Grid size={{ xs: 12, lg: 6 }}>
+            <OperatorSelector operatorId={operatorId} setOperatorId={setOperatorId} />
           </Grid>
         </Grid>
-        <Grid size={{ xs: 12, lg: 6 }}>
-          <OperatorSelector operatorId={operatorId} setOperatorId={setOperatorId} />
+        <Grid container spacing={2} alignItems="flex-start">
+          <Grid size={{ xs: 12, lg: 6 }} className="widget">
+            <AllLinesChart startDate={startDate} endDate={endDate} />
+          </Grid>
+          <Grid size={{ xs: 12, lg: 6 }} className="widget">
+            <WorstLinesChart startDate={startDate} endDate={endDate} operatorId={operatorId} alertWorstLineHandling={setWorstLineZeroLines} />
+          </Grid>
+          <Grid size={{ xs: 12 }} className="widget">
+            <DayTimeChart startDate={startDate} endDate={endDate} operatorId={operatorId} />
+          </Grid>
         </Grid>
-      </Grid>
-      <Grid container spacing={2} alignItems="flex-start">
-        <Grid size={{ xs: 12, lg: 6 }}>
-          <AllLinesChart
-            startDate={startDate}
-            endDate={endDate}
-            alertAllChartsZeroLinesHandling={setAllChartsZeroLines}
-          />
-        </Grid>
-        <Grid size={{ xs: 12, lg: 6 }}>
-          <WorstLinesChart
-            startDate={startDate}
-            endDate={endDate}
-            operatorId={operatorId}
-            alertWorstLineHandling={setWorstLineZeroLines}
-          />
-        </Grid>
-        <Grid size={{ xs: 12 }}>
-          <DayTimeChart
-            startDate={startDate}
-            endDate={endDate}
-            operatorId={operatorId}
-            alertAllDayTimeChartHandling={setAllDayTimeChartZeroLines}
-          />
-        </Grid>
-      </Grid>
+      </WarningContextProvider>
     </PageContainer>
   )
 }

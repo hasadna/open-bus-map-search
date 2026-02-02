@@ -3,6 +3,7 @@ import { Tooltip } from '@mui/material'
 import { Skeleton } from 'antd'
 import { FC, Fragment, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useWarningContext } from '../context/WarningContextProvider'
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
 import { Dayjs } from 'src/dayjs'
 import Widget from 'src/shared/Widget'
@@ -20,28 +21,25 @@ const convertToChartCompatibleStruct = (arr: GroupByRes[]) => {
 interface AllChartComponentProps {
   startDate: Dayjs
   endDate: Dayjs
-  alertAllChartsZeroLinesHandling: (arg: boolean) => void
 }
 
-export const AllLinesChart: FC<AllChartComponentProps> = ({
-  startDate,
-  endDate,
-  alertAllChartsZeroLinesHandling,
-}) => {
+export const AllLinesChart: FC<AllChartComponentProps> = ({ startDate: startDateValue, endDate: endDateValue }) => {
   const [groupByOperatorData, groupByOperatorLoading] = useGroupBy({
-    dateFrom: startDate.valueOf(),
-    dateTo: endDate.valueOf(),
+    dateFrom: startDateValue.valueOf(),
+    dateTo: endDateValue.valueOf(),
     groupBy: 'operator_ref',
   })
-  const { t } = useTranslation()
+  const { t: translate } = useTranslation()
+
+  const { setValue: setWarningFlag } = useWarningContext()
 
   useEffect(() => {
     const totalElements = groupByOperatorData.length
     const totalZeroElements = groupByOperatorData.filter((el) => el.totalActualRides === 0).length
     if (totalElements === 0 || totalZeroElements === totalElements) {
-      alertAllChartsZeroLinesHandling(true)
+      setWarningFlag(true)
     } else {
-      alertAllChartsZeroLinesHandling(false)
+      setWarningFlag(false)
     }
   }, [groupByOperatorData])
 
@@ -49,9 +47,9 @@ export const AllLinesChart: FC<AllChartComponentProps> = ({
     <Widget
       title={
         <>
-          {t('dashboard_page_title')}
+          {translate('dashboard_page_title')}
           <Tooltip
-            title={convertLineFeedToHtmlTags(t('dashboard_tooltip_content'))}
+            title={convertLineFeedToHtmlTags(translate('dashboard_tooltip_content'))}
             placement="left"
             arrow>
             <InfoCircleOutlined style={{ marginRight: '12px' }} />

@@ -1,11 +1,12 @@
 import { Skeleton } from 'antd'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useWarningContext } from '../context/WarningContextProvider'
+import LinesHbarChart, { LineBar } from './LineHbarChart/LinesHbarChart'
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
 import { Dayjs } from 'src/dayjs'
 import { MAJOR_OPERATORS } from 'src/model/operator'
 import Widget from 'src/shared/Widget'
-import LinesHbarChart, { LineBar } from './LineHbarChart/LinesHbarChart'
 
 interface WorstLinesChartProps {
   startDate: Dayjs
@@ -46,15 +47,17 @@ export const WorstLinesChart = ({
     groupBy: 'operator_ref,line_ref',
   })
 
+  const { setValue } = useWarningContext()
+
   const { t } = useTranslation()
 
   useEffect(() => {
     const totalElements = groupByLineData.length
     const totalZeroElements = groupByLineData.filter((el) => el.totalActualRides === 0).length
     if (totalElements === 0 || totalZeroElements === totalElements) {
-      alertWorstLineHandling(true)
+      setValue(true)
     } else {
-      alertWorstLineHandling(false)
+      setValue(false)
     }
   }, [groupByLineData])
 

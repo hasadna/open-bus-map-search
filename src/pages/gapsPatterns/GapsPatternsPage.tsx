@@ -14,6 +14,8 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
+// Extend TooltipProps to include a custom `payload` property
+import type { Payload } from 'recharts/types/component/DefaultTooltipContent'
 import dayjs from 'src/dayjs'
 import { INPUT_SIZE } from 'src/resources/sizes'
 import Widget from 'src/shared/Widget'
@@ -40,16 +42,24 @@ interface BusLineStatisticsProps {
   toDate: dayjs.Dayjs
 }
 
+
+
 const now = dayjs()
 
 type CustomTooltipProps = TooltipProps<number, string> & {
-  payload?: readonly { name: string; value?: number }[]
+  payload?: { name: string; value?: number }[]
 }
 
 const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
-  if (active && payload && payload.length > 1) {
-    const actualRides = payload[0].value || 0
-    const plannedRides = payload[1].value || 0
+  if (
+    active &&
+    payload &&
+    payload.length > 1 &&
+    typeof payload[0].value === 'number' &&
+    typeof payload[1].value === 'number'
+  ) {
+    const actualRides = payload[0].value
+    const plannedRides = payload[1].value
     const actualPercentage = ((actualRides / plannedRides) * 100).toFixed(0)
     return (
       <div className="custom-tooltip tooltip-style">
