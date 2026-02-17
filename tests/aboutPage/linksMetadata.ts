@@ -43,7 +43,7 @@ export default [
   {
     name: 'Open API link',
     linkName: 'Open API',
-    expectedHeading: 'Open Bus Stride API',
+    expectedHref: 'https://open-bus-stride-api.hasadna.org.il/docs',
   },
   {
     name: 'funding donations link',
