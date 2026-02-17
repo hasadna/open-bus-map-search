@@ -18,8 +18,15 @@ test.describe('About Page Tests', () => {
     await expect(page.getByRole('heading', { name: 'מהו אתר “דאטאבוס”?' })).toBeVisible()
   })
 
-  for (const { name, linkName, expectedURL, expectedHeading } of linkTests) {
+  for (const { name, linkName, expectedURL, expectedHeading, expectedHref } of linkTests) {
     test(`clicking ${name} leads to correct destination`, async ({ page }) => {
+      if (expectedHref) {
+        // For links to external domains that may be blocked (e.g. stride-api in CI),
+        // verify the href attribute instead of navigating
+        const link = page.getByRole('link', { name: linkName })
+        await expect(link).toHaveAttribute('href', expectedHref)
+        return
+      }
       await page.getByRole('link', { name: linkName }).click()
       if (expectedURL) {
         await expect(page).toHaveURL(expectedURL)
