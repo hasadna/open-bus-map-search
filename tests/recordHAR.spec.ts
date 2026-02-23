@@ -64,7 +64,8 @@ test.describe('Record HAR files', () => {
     await openDropdownAndWait(page, '#route-select')
 
     // Select route to trigger stops fetch
-    const routeWithStops = 'בית ספר אלונים/הבנים-פרדס חנה כרכור ⟵ יד לבנים/דרך הבנים-פרדס חנה כרכור  '
+    const routeWithStops =
+      'בית ספר אלונים/הבנים-פרדס חנה כרכור ⟵ יד לבנים/דרך הבנים-פרדס חנה כרכור  '
     const routeExists = await page.getByRole('option', { name: routeWithStops }).count()
     if (routeExists > 0) {
       await page.getByRole('option', { name: routeWithStops }).click()
