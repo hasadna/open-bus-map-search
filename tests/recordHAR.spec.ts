@@ -113,6 +113,79 @@ test.describe('Record HAR files', () => {
     }
   })
 
+  // ---- operator.har -------------------------------------------------------
+  // Single test records ALL needed entries in one browser context
+  test('record operator.har', async ({ page }) => {
+    await setupRecording(page, 'tests/HAR/operator.har')
+    await goToPage(page, '/')
+    await goToPage(page, '/operator')
+
+    // Open operator dropdown (triggers gtfs_agencies/list)
+    await page.getByRole('button', { name: 'פתח' }).click()
+    await page.waitForLoadState('networkidle')
+
+    // Select אגד (triggers group_by × 2 + gtfs_routes/list)
+    await page.getByRole('option', { name: 'אגד', exact: true }).click()
+    await page.waitForLoadState('networkidle')
+  })
+
+  // ---- singleline.har -----------------------------------------------------
+  // Single test records ALL needed entries in one browser context
+  test('record singleline.har', async ({ page }) => {
+    await setupRecording(page, 'tests/HAR/singleline.har')
+    await goToPage(page, '/')
+    await goToPage(page, '/single-line-map')
+
+    // Open operator dropdown (triggers gtfs_agencies/list)
+    await page.getByLabel('חברה מפעילה').click()
+    await page.waitForLoadState('networkidle')
+
+    // Select אודליה מוניות בעמ (operator_ref=97)
+    const operator = page.getByRole('option', { name: 'אודליה מוניות בעמ', exact: true })
+    if ((await operator.count()) > 0) {
+      await operator.click()
+    } else {
+      await page.keyboard.press('Escape')
+    }
+
+    // Fill line 16 (triggers gtfs_routes/list with route_short_name=16)
+    await page.getByRole('textbox', { name: 'מספר קו' }).fill('16')
+    await page.waitForLoadState('networkidle')
+
+    // Select a route (triggers gtfs_rides/list, gtfs_ride_stops/list, gtfs_stops/get, siri data)
+    const routeDropdown = page.getByLabel(/בחירת מסלול נסיעה/)
+    if ((await routeDropdown.count()) > 0) {
+      await routeDropdown.click()
+      await page.waitForLoadState('networkidle')
+      const firstRoute = page.getByRole('option').first()
+      if ((await firstRoute.count()) > 0) {
+        await firstRoute.click()
+        await page.waitForLoadState('networkidle')
+      } else {
+        await page.keyboard.press('Escape')
+      }
+    }
+
+    // Select start time to trigger siri data fetch
+    const startTimeDropdown = page.getByLabel('בחירת שעת התחלה')
+    if ((await startTimeDropdown.count()) > 0) {
+      await startTimeDropdown.click()
+      await page.waitForLoadState('networkidle')
+      const firstTime = page.getByRole('option').first()
+      if ((await firstTime.count()) > 0) {
+        await firstTime.click()
+        await page.waitForLoadState('networkidle')
+      } else {
+        await page.keyboard.press('Escape')
+      }
+    }
+
+    // Fill line 9999 to record the empty routes response
+    await page.getByRole('textbox', { name: 'מספר קו' }).fill('9999')
+    await page.waitForTimeout(3000)
+    await page.waitForLoadState('networkidle')
+  })
+
   // ---- clearbutton.har ----------------------------------------------------
   // Single test records ALL needed entries in one browser context
   test('record clearbutton.har', async ({ page }) => {
