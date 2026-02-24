@@ -147,7 +147,9 @@
     "once": "Once"
   },
   "bug_date_alert": "The end date can not be earlier than the start date",
+  "bug_date_invalid_format": "Please enter a date in the correct format",
   "funding_paragraph": "The Databus project is developed by the Hasadna for public knowledge, by the contributions of volunteers, and based upon",
+  "halufa_ride": "Alternative ride #",
   "all_rides_completed": "All/Almost the rides are completed",
   "missing_rides": "Of the rides are missing",
   "line": "Line",
@@ -159,6 +161,16 @@
   "at_time": "at",
   "vehicle_ref": "vehicle plate",
   "drive_direction": "drive direction",
+  "directions": {
+    "North": "North",
+    "Northeast": "Northeast",
+    "East": "East",
+    "Southeast": "Southeast",
+    "South": "South",
+    "Southwest": "Southwest",
+    "West": "West",
+    "Northwest": "Northwest"
+  },
   "bearing": "bearing",
   "coords": "coords",
   "hide_document": "Hide geeks data",
@@ -207,6 +219,7 @@
       "type": "Route Type"
     },
     "ride": {
+      "journey ": "Journey ID",
       "journey": "Journey ID",
       "id": "Ride ID",
       "duration": "Ride Duration",
@@ -220,11 +233,18 @@
       "location": "Stop Location"
     }
   },
+  "errorPage": {
+    "title": "Oops, something went wrong",
+    "text": "Please try again later",
+    "text2": "If the issue persists, please contact us at:",
+    "button": "Back to home page"
+  },
   "aboutPage": {
     "title": "About us",
     "privacyText": "<0>Google Analytics</0> service is embedded in the website to analyze the usage patterns and positioning of the website in search engines. This code reveals to the operators of the service information regarding the behavior of the users. <1>Learn more</1> about the privacy policy of the service.",
     "licenseInfo": {
-      "text": "All information displayed on the website is based on data published by government sources. Usage of the information is subject to the <0>CC BY-SA 4.0 license</0> of <1>Creative Commons</1>"
+      "text": "All information displayed on the website is based on data published by government sources. Usage of the information is subject to the <0>{{licenseName}}</0> license of <1>Creative Commons</1>",
+      "licenseName": "CC BY-SA 4.0 License"
     },
     "contactLinksText": {
       "sadna": "Contact us",
