@@ -8,6 +8,13 @@ test.beforeEach(async ({ page }) => {
 })
 
 test('An instruction video for Report a bug', async ({ page }) => {
+  await page.route(/youtube-nocookie\.com/, (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'text/html',
+      body: '<html><body><button aria-label="Play">Play</button></body></html>',
+    }),
+  )
   await page.getByLabel('bug').locator('svg').click()
   await page.getByLabel('לפתוח סרטון על העמוד הזה').locator('svg').click()
   const videoFrame = page.locator('iframe')

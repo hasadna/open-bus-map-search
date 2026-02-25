@@ -32,7 +32,17 @@ test("the main header doesn't show duplicate icons", async ({ page }) => {
   expect(innerHTMLs.length).toBeGreaterThan(0)
 })
 
-test('make sure the corner GitHub icon leads to DataBus GitHub project', async ({ page }) => {
+test('make sure the corner GitHub icon leads to DataBus GitHub project', async ({
+  page,
+  context,
+}) => {
+  await context.route(/github\.com/, (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'text/html',
+      body: '<html><body><h1>open-bus-map-search</h1></body></html>',
+    }),
+  )
   const page1Promise = page.waitForEvent('popup')
   await page.getByLabel('למעבר אל GitHub').locator('svg').click()
   const page1 = await page1Promise
