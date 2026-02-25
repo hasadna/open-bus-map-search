@@ -1,4 +1,12 @@
-export default [
+type LinkTest = {
+  name: string
+  linkName: string
+  expectedHref?: string
+  expectedURL?: string | RegExp
+  expectedHeading?: string
+}
+
+const linkTests: LinkTest[] = [
   {
     name: 'donations link leads to sadna site',
     linkName: 'תרומות קטנות נוספות',
@@ -61,3 +69,5 @@ export default [
     expectedHref: 'https://github.com/hasadna/open-bus-map-search/blob/main/CONTRIBUTING.md',
   },
 ]
+
+export default linkTests
