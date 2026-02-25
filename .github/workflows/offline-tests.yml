@@ -3,6 +3,9 @@ name: Offline Tests
 on:
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   offline-tests:
     name: Offline Tests
