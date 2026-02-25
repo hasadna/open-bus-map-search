@@ -1,0 +1,14 @@
+FROM mcr.microsoft.com/playwright:v1.56.1-noble
+
+WORKDIR /app
+
+# Upgrade npm to match the version used to generate the lock file
+RUN npm install -g npm@11
+
+# Install npm dependencies (playwright browsers already in base image)
+COPY package*.json ./
+RUN npm ci
+
+COPY . .
+
+CMD ["npm", "test"]
