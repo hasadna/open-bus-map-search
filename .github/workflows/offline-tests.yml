@@ -1,4 +1,6 @@
 name: Offline Tests
+permissions:
+  contents: read
 
 on:
   pull_request:
