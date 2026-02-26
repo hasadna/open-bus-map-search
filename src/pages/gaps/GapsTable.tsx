@@ -21,6 +21,7 @@ interface GapsTableProps {
   loading?: boolean
   initOnlyGapped?: boolean
   singleLineMapBaseHref: string
+  onStartTimeClick?: (startTime: string) => void
 }
 
 const cellStyle = {
@@ -62,6 +63,7 @@ const GapsTable: React.FC<GapsTableProps> = ({
   loading,
   initOnlyGapped = false,
   singleLineMapBaseHref,
+  onStartTimeClick,
 }) => {
   const { t } = useTranslation()
   const [onlyGapped, setOnlyGapped] = useState(initOnlyGapped)
@@ -141,8 +143,18 @@ const GapsTable: React.FC<GapsTableProps> = ({
                             ...cellStyle,
                             background: colors[status],
                             cursor: hasRide ? 'pointer' : 'default',
+                            '& a, & a:visited, & a:hover, & a:focus': {
+                              color: 'inherit',
+                              textDecoration: 'underline',
+                            },
                           }}>
-                          {hasRide ? <a href={cellHref}>{time}</a> : time}
+                          {hasRide ? (
+                            <a href={cellHref} onClick={() => onStartTimeClick?.(startTimeParam)}>
+                              {time}
+                            </a>
+                          ) : (
+                            time
+                          )}
                         </TableCell>
                       )
                     })}

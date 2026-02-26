@@ -1,5 +1,5 @@
 import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
-import { useContext, useEffect, useMemo, useState } from 'react'
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import dayjs from 'src/dayjs'
 import { INPUT_SIZE } from 'src/resources/sizes'
@@ -87,6 +87,13 @@ const GapsPage = () => {
     setSearch((current) => ({ ...current, routeKey }))
   }
 
+  const handleStartTimeClick = useCallback(
+    (startTime: string) => {
+      setSearch((current) => ({ ...current, startTime }))
+    },
+    [setSearch],
+  )
+
   return (
     <PageContainer>
       <Typography className="page-title" variant="h4">
@@ -144,6 +151,7 @@ const GapsPage = () => {
           loading={gapsIsLoading}
           gaps={gaps}
           singleLineMapBaseHref={singleLineMapBaseHref}
+          onStartTimeClick={handleStartTimeClick}
         />
       )}
     </PageContainer>
