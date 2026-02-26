@@ -10,7 +10,6 @@ import {
 import { Skeleton } from 'antd'
 import React, { memo, useContext, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router'
 import { Gap } from 'src/api/gapsService'
 import dayjs from 'src/dayjs'
 import { SearchContext } from 'src/model/pageState'
@@ -55,11 +54,10 @@ const formatStatus = (gap: Gap, gaps: Gap[] | undefined): keyof typeof colors =>
 
 const GapsTable: React.FC<GapsTableProps> = ({ gaps, loading, initOnlyGapped = false }) => {
   const { t } = useTranslation()
-  const navigate = useNavigate()
   const { search } = useContext(SearchContext)
   const [onlyGapped, setOnlyGapped] = useState(initOnlyGapped)
 
-  const singleLineMapQuery = useMemo(() => {
+  const singleLineMapHref = useMemo(() => {
     const params = new URLSearchParams({
       timestamp: search.timestamp.toString(),
       operatorId: search.operatorId || '',
@@ -67,7 +65,7 @@ const GapsTable: React.FC<GapsTableProps> = ({ gaps, loading, initOnlyGapped = f
       routeKey: search.routeKey || '',
       startTime: search.startTime || '',
     })
-    return params.toString()
+    return `/single-line-map?${params.toString()}`
   }, [search.lineNumber, search.operatorId, search.routeKey, search.startTime, search.timestamp])
 
   const filteredGaps: Gap[] = useMemo(() => {
@@ -143,13 +141,12 @@ const GapsTable: React.FC<GapsTableProps> = ({ gaps, loading, initOnlyGapped = f
                             ...cellStyle,
                             background: colors[status],
                             cursor: hasRide ? 'pointer' : 'default',
-                          }}
-                          onClick={
-                            hasRide
-                              ? () => navigate(`/single-line-map?${singleLineMapQuery}`)
-                              : undefined
-                          }>
-                          {time}
+                          }}>
+                          {hasRide ? (
+                            <a href={singleLineMapHref}>{time}</a>
+                          ) : (
+                            time
+                          )}
                         </TableCell>
                       )
                     })}
