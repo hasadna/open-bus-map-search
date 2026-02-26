@@ -111,8 +111,8 @@ jobs:
         with:
           node-version: latest
           cache: 'npm'
-      - name: Block API network access
-        run: echo "127.0.0.1 open-bus-stride-api.hasadna.org.il" | sudo tee -a /etc/hosts
+      - name: Configure blocked external hosts
+        uses: ./.github/actions/block-network
       - name: Validate hash.txt endpoint
         run: |
           response=$(curl -s -w "%{http_code}" -o /tmp/hash.txt http://localhost:3000/hash.txt)
@@ -163,11 +163,10 @@ jobs:
     runs-on: ubuntu-22.04 # not working whit ubuntu 23+
     needs: [build, build-outside-docker]
     steps:
+      - name: Configure blocked external hosts
+        uses: ./.github/actions/block-network
       - name: Prepare for Testing
         run: |
-          echo "127.0.0.1 openstreetmap.org" | sudo tee -a /etc/hosts
-          echo "127.0.0.1 tile-a.openstreetmap.fr" | sudo tee -a /etc/hosts
-          echo "127.0.0.1 open-bus-stride-api.hasadna.org.il" | sudo tee -a /etc/hosts
           echo "SHORT_SHA=$(echo ${{ github.event.pull_request.head.sha }} | cut -c1-7)" >> $GITHUB_ENV
       - name: Download Docker image artifact
         uses: actions/download-artifact@v4
@@ -201,11 +200,10 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build, build-outside-docker]
     steps:
+      - name: Configure blocked external hosts
+        uses: ./.github/actions/block-network
       - name: Prepare for Testing
         run: |
-          echo "127.0.0.1 openstreetmap.org" | sudo tee -a /etc/hosts
-          echo "127.0.0.1 tile-a.openstreetmap.fr" | sudo tee -a /etc/hosts
-          echo "127.0.0.1 open-bus-stride-api.hasadna.org.il" | sudo tee -a /etc/hosts
           echo "SHORT_SHA=$(echo ${{ github.event.pull_request.head.sha }} | cut -c1-7)" >> $GITHUB_ENV
       - uses: actions/checkout@v4
         with:
