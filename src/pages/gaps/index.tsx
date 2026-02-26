@@ -24,13 +24,12 @@ const GapsPage = () => {
   const [gapsIsLoading, setGapsIsLoading] = useState(false)
 
   const singleLineMapHref = useMemo(() => {
-    const params = new URLSearchParams({
-      timestamp: search.timestamp.toString(),
-      operatorId: search.operatorId || '',
-      lineNumber: search.lineNumber || '',
-      routeKey: search.routeKey || '',
-      startTime: search.startTime || '',
-    })
+    const params = new URLSearchParams()
+    params.set('timestamp', search.timestamp.toString())
+    params.set('operatorId', search.operatorId || '')
+    params.set('lineNumber', search.lineNumber || '')
+    params.set('routeKey', search.routeKey || '')
+    params.set('startTime', search.startTime || '')
     return `/single-line-map?${params.toString()}`
   }, [search.lineNumber, search.operatorId, search.routeKey, search.startTime, search.timestamp])
 
