@@ -20,7 +20,7 @@ interface GapsTableProps {
   gaps?: Gap[]
   loading?: boolean
   initOnlyGapped?: boolean
-  singleLineMapHref: string
+  singleLineMapBaseHref: string
 }
 
 const cellStyle = {
@@ -36,6 +36,11 @@ const colors = {
   ride_extra: 'rgba(255, 255, 0, 0.15)',
   ride_in_future: 'rgba(0, 0, 255, 0.15)',
 } as const
+
+const formatStartTimeForQuery = (time?: string) => {
+  if (!time) return ''
+  return time.replace(':', '-')
+}
 
 const formatStatus = (gap: Gap, gaps: Gap[] | undefined): keyof typeof colors => {
   const currentTime = dayjs()
@@ -56,7 +61,7 @@ const GapsTable: React.FC<GapsTableProps> = ({
   gaps,
   loading,
   initOnlyGapped = false,
-  singleLineMapHref,
+  singleLineMapBaseHref,
 }) => {
   const { t } = useTranslation()
   const [onlyGapped, setOnlyGapped] = useState(initOnlyGapped)
@@ -127,6 +132,8 @@ const GapsTable: React.FC<GapsTableProps> = ({
                     {groupedGaps[hour].map(({ gap, status }, j) => {
                       const time = (gap.plannedStartTime || gap.actualStartTime)?.format('HH:mm')
                       const hasRide = Boolean(gap.gtfsRideId)
+                      const startTimeParam = formatStartTimeForQuery(time)
+                      const cellHref = `${singleLineMapBaseHref}&startTime=${startTimeParam}`
                       return (
                         <TableCell
                           key={`${hour}-${j}-${time}`}
@@ -135,7 +142,7 @@ const GapsTable: React.FC<GapsTableProps> = ({
                             background: colors[status],
                             cursor: hasRide ? 'pointer' : 'default',
                           }}>
-                          {hasRide ? <a href={singleLineMapHref}>{time}</a> : time}
+                          {hasRide ? <a href={cellHref}>{time}</a> : time}
                         </TableCell>
                       )
                     })}

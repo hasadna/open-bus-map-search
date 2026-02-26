@@ -23,15 +23,14 @@ const GapsPage = () => {
   const [gaps, setGaps] = useState<Gap[]>()
   const [gapsIsLoading, setGapsIsLoading] = useState(false)
 
-  const singleLineMapHref = useMemo(() => {
+  const singleLineMapBaseHref = useMemo(() => {
     const params = new URLSearchParams()
     params.set('timestamp', search.timestamp.toString())
     params.set('operatorId', search.operatorId || '')
     params.set('lineNumber', search.lineNumber || '')
     params.set('routeKey', search.routeKey || '')
-    params.set('startTime', search.startTime || '')
     return `/single-line-map?${params.toString()}`
-  }, [search.lineNumber, search.operatorId, search.routeKey, search.startTime, search.timestamp])
+  }, [search.lineNumber, search.operatorId, search.routeKey, search.timestamp])
 
   useEffect(() => {
     if (!(operatorId && routes && routeKey && timestamp)) return
@@ -141,7 +140,11 @@ const GapsPage = () => {
         </Grid>
       </Grid>
       {routeKey && routeKey !== '' && (
-        <GapsTable loading={gapsIsLoading} gaps={gaps} singleLineMapHref={singleLineMapHref} />
+        <GapsTable
+          loading={gapsIsLoading}
+          gaps={gaps}
+          singleLineMapBaseHref={singleLineMapBaseHref}
+        />
       )}
     </PageContainer>
   )
