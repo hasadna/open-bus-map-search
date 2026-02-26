@@ -8,11 +8,10 @@ import {
   TableRow,
 } from '@mui/material'
 import { Skeleton } from 'antd'
-import React, { memo, useContext, useMemo, useState } from 'react'
+import React, { memo, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Gap } from 'src/api/gapsService'
 import dayjs from 'src/dayjs'
-import { SearchContext } from 'src/model/pageState'
 import Widget from 'src/shared/Widget'
 import DisplayGapsPercentage from '../components/DisplayGapsPercentage'
 import { Row } from '../components/Row'
@@ -21,6 +20,7 @@ interface GapsTableProps {
   gaps?: Gap[]
   loading?: boolean
   initOnlyGapped?: boolean
+  singleLineMapHref: string
 }
 
 const cellStyle = {
@@ -52,21 +52,14 @@ const formatStatus = (gap: Gap, gaps: Gap[] | undefined): keyof typeof colors =>
   return hasTwinRide ? 'ride_duped' : 'ride_extra'
 }
 
-const GapsTable: React.FC<GapsTableProps> = ({ gaps, loading, initOnlyGapped = false }) => {
+const GapsTable: React.FC<GapsTableProps> = ({
+  gaps,
+  loading,
+  initOnlyGapped = false,
+  singleLineMapHref,
+}) => {
   const { t } = useTranslation()
-  const { search } = useContext(SearchContext)
   const [onlyGapped, setOnlyGapped] = useState(initOnlyGapped)
-
-  const singleLineMapHref = useMemo(() => {
-    const params = new URLSearchParams({
-      timestamp: search.timestamp.toString(),
-      operatorId: search.operatorId || '',
-      lineNumber: search.lineNumber || '',
-      routeKey: search.routeKey || '',
-      startTime: search.startTime || '',
-    })
-    return `/single-line-map?${params.toString()}`
-  }, [search.lineNumber, search.operatorId, search.routeKey, search.startTime, search.timestamp])
 
   const filteredGaps: Gap[] = useMemo(() => {
     if (!gaps) return []
@@ -142,11 +135,7 @@ const GapsTable: React.FC<GapsTableProps> = ({ gaps, loading, initOnlyGapped = f
                             background: colors[status],
                             cursor: hasRide ? 'pointer' : 'default',
                           }}>
-                          {hasRide ? (
-                            <a href={singleLineMapHref}>{time}</a>
-                          ) : (
-                            time
-                          )}
+                          {hasRide ? <a href={singleLineMapHref}>{time}</a> : time}
                         </TableCell>
                       )
                     })}
