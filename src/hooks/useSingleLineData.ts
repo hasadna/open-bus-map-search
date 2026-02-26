@@ -10,6 +10,11 @@ import { Point } from 'src/pages/timeBasedMap'
 
 const formatTime = (time: dayjs.Dayjs) => time.format('HH:mm')
 
+const normalizeScheduledTime = (raw?: string) => {
+  if (!raw) return undefined
+  return raw.includes('-') ? raw.replace('-', ':') : raw
+}
+
 export const useSingleLineData = (
   operatorId?: string,
   lineNumber?: string,
@@ -177,16 +182,18 @@ export const useSingleLineData = (
       setFilteredPositions([])
       return
     }
-    const [scheduledTime, scheduledVehicle, scheduledLine] = startTime.split('|')
+    const [rawScheduledTime, scheduledVehicle, scheduledLine] = startTime.split('|')
+    const scheduledTime = normalizeScheduledTime(rawScheduledTime)
+    const hasVehicleConstraint = Boolean(scheduledVehicle)
 
     setFilteredPositions(
       positions.filter((position) => {
         const scheduledStart = position.point?.siriRideScheduledStartTime
         const vehicleRef = position.point?.siriRideVehicleRef?.toString()
-        if (!scheduledStart || !vehicleRef || !scheduledTime || !scheduledVehicle) return false
+        if (!scheduledStart || !vehicleRef || !scheduledTime) return false
         return (
           formatTime(dayjs(scheduledStart)) === scheduledTime &&
-          scheduledVehicle === vehicleRef &&
+          (hasVehicleConstraint ? scheduledVehicle === vehicleRef : true) &&
           (scheduledLine ? scheduledLine === position.point?.siriRouteLineRef?.toString() : true)
         )
       }),
@@ -196,11 +203,12 @@ export const useSingleLineData = (
   useEffect(() => {
     const fetchStops = async () => {
       try {
-        const [scheduledTime, , scheduledLine] = startTime?.split('|') || [
+        const [rawScheduledTime, , scheduledLine] = startTime?.split('|') || [
           undefined,
           undefined,
           undefined,
         ]
+        const scheduledTime = normalizeScheduledTime(rawScheduledTime)
         const [hour, minute] = scheduledTime ? scheduledTime.split(':').map(Number) : [0, 0]
         const startTimeTimestamp = today.hour(hour).minute(minute).second(0).millisecond(0)
         let routeIds: number[] | undefined

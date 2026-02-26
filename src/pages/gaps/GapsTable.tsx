@@ -131,7 +131,7 @@ const GapsTable: React.FC<GapsTableProps> = ({
                   <TableRow key={hour}>
                     {groupedGaps[hour].map(({ gap, status }, j) => {
                       const time = (gap.plannedStartTime || gap.actualStartTime)?.format('HH:mm')
-                      const hasRide = Boolean(gap.gtfsRideId)
+                      const hasRide = Boolean(gap.actualStartTime)
                       const startTimeParam = formatStartTimeForQuery(time)
                       const cellHref = `${singleLineMapBaseHref}&startTime=${startTimeParam}`
                       return (
