@@ -66,7 +66,6 @@
   "rides_missing": "נסיעות חסרות",
   "rides_history": "היסטוריית נסיעות",
   "dashboard_page_graph_title": "אחוזי יציאה מסך הנסיעות לפי זמן",
-
   "from_date": "מתאריך",
   "to_date": "עד תאריך",
   "watch_locations_in_range": "צפה במיקומי אוטובוסים בטווח של",
@@ -82,29 +81,23 @@
   "about_title": "אודות",
   "public_appeal_title": "קול קורא",
   "donate_title": "לתרומות",
-
   "how_to_donate_title": "כיצד לתרום?",
   "how_to_donate_text": "מאחורי הקלעים של הפרוייקטים פועל צוות קטן ומסור, שדואג לארגון מפגשי הפיתוח וההאקתונים ותחזוקת השרתים, שמכתת רגליו בין משרדי ממשלה כדי לשכנע, ללחוץ, ולנדנד לשחרר עוד ועוד מאגרים; מוודא שהתקשורת תכיר את העבודה שלנו וגם תדע לפנות אלינו בשביל נתונים וניתוחים, ועושה עוד המון עבודה שוטפת כדי שהפרוייקטים שלנו ייצרו שינוי בעולם. אנחנו זקוקים לתמיכה של הקהילה כדי להמשיך ולפעול למען ממשל פתוח יותר. היו אבירי שקיפות והצטרפו בתמיכה חודשית.",
-
   "donation_through_bank_title": "תרומה דרך העברה בנקאית",
   "donation_through_bank_reccomendation": "מומלץ לתרום דרך העברה בנקאית לחשבון הבנק של הסדנא לידע ציבורי, מכיוון שבאפיק זה העמלה נמוכה יותר",
   "donate_to_hasadna": "תרומה לסדנא",
   "donation_link": "קישור לתרומה",
-
   "bank": "בנק",
   "branch": "סניף",
   "account": "חשבון",
   "account_name": "שם חשבון",
-
   "donate": "לתרום לסדנא",
   "donation_through_bank_details_bank": "יו בנק (26)",
   "donation_through_bank_details_branch": "רחביה (262)",
   "donation_through_bank_details_account": "419931",
   "donation_through_bank_details_account_name": "הסדנא לידע ציבורי",
-
   "donation_through_bank_details_additional_message": "נא לציין שם מלא וליצור קשר במייל info@hasadna.org.il לאחר התרומה על מנת שנוכל לשלוח קבלה",
   "donate_through_jgive.com_title": "תרומה דרך אתר jgive.com",
-
   "report_a_bug_title": "דיווח על באג",
   "website_name": "דאטאבוס",
   "what_is_website": "מהו אתר “דאטאבוס”?",
@@ -121,7 +114,6 @@
   "innovation_authority": "רשות החדשנות",
   "migdal_company": "“מגדל בקהילה“",
   "and_smaller_donors": "ותרומות קטנות נוספות של ידידי ואוהדי הסדנא.",
-
   "github_link": "למעבר אל GitHub",
   "dark_mode_tooltip": "עבור למצב כהה",
   "light_mode_tooltip": "עבור למצב בהיר",
@@ -219,7 +211,7 @@
       "type": "סוג קו"
     },
     "ride": {
-      "journey ": "מזהה נסיעה",
+      "journey": "מזהה נסיעה",
       "id": "מזהה טכני",
       "duration": "זמן נסיעה",
       "scheduled": "זמן מתוכנן"
