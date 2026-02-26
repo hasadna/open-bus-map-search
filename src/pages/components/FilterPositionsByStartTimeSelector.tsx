@@ -17,8 +17,11 @@ export function FilterPositionsByStartTimeSelector({
   disabled,
   setStartTime,
 }: FilterPositionsByStartTimeSelectorProps) {
-  const foundValue = options.find((option) => option.value === startTime)
-  const value = foundValue || null
+  const normalizedStartTime = startTime?.replace(/-/g, ':')
+  const selectedIndex = normalizedStartTime
+    ? options.findIndex((option) => option.value.replace(/-/g, ':').startsWith(normalizedStartTime))
+    : -1
+  const value = selectedIndex >= 0 ? options[selectedIndex] : null
 
   const { t } = useTranslation()
 

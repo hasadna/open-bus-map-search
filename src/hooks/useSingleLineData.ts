@@ -12,7 +12,14 @@ const formatTime = (time: dayjs.Dayjs) => time.format('HH:mm')
 
 const normalizeScheduledTime = (raw?: string) => {
   if (!raw) return undefined
-  return raw.includes('-') ? raw.replace('-', ':') : raw
+  return raw.includes(':') ? raw.replace(':', '-') : raw
+}
+
+const normalizeStartTimeToken = (token?: string) => {
+  if (!token) return undefined
+  const rawScheduledTime = token.split('|')[0]
+  const normalizedTime = normalizeScheduledTime(rawScheduledTime)
+  return normalizedTime
 }
 
 export const useSingleLineData = (
@@ -31,7 +38,9 @@ export const useSingleLineData = (
 
   const setStartTime = useCallback(
     (startTime?: string) => {
-      setSearch((prev) => ({ ...prev, startTime }))
+      console.log(startTime)
+
+      setSearch((prev) => ({ ...prev, startTime: normalizeStartTimeToken(startTime) }))
     },
     [setSearch],
   )
@@ -178,11 +187,12 @@ export const useSingleLineData = (
   }, [positions, today, tomorrow, vehicleNumber])
 
   useEffect(() => {
-    if (!startTime) {
+    const normalizedStartTime = normalizeStartTimeToken(startTime)
+    if (!normalizedStartTime) {
       setFilteredPositions([])
       return
     }
-    const [rawScheduledTime, scheduledVehicle, scheduledLine] = startTime.split('|')
+    const [rawScheduledTime, scheduledVehicle, scheduledLine] = normalizedStartTime.split('|')
     const scheduledTime = normalizeScheduledTime(rawScheduledTime)
     const hasVehicleConstraint = Boolean(scheduledVehicle)
 
@@ -203,11 +213,9 @@ export const useSingleLineData = (
   useEffect(() => {
     const fetchStops = async () => {
       try {
-        const [rawScheduledTime, , scheduledLine] = startTime?.split('|') || [
-          undefined,
-          undefined,
-          undefined,
-        ]
+        const [rawScheduledTime, , scheduledLine] = normalizeStartTimeToken(startTime)?.split(
+          '|',
+        ) || [undefined, undefined, undefined]
         const scheduledTime = normalizeScheduledTime(rawScheduledTime)
         const [hour, minute] = scheduledTime ? scheduledTime.split(':').map(Number) : [0, 0]
         const startTimeTimestamp = today.hour(hour).minute(minute).second(0).millisecond(0)
@@ -237,7 +245,7 @@ export const useSingleLineData = (
     positions: filteredPositions,
     plannedRouteStops,
     options,
-    startTime,
+    startTime: normalizeStartTimeToken(startTime),
     locationsAreLoading,
     routes,
     routeKey,
