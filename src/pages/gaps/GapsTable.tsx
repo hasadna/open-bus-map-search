@@ -8,10 +8,12 @@ import {
   TableRow,
 } from '@mui/material'
 import { Skeleton } from 'antd'
-import React, { memo, useMemo, useState } from 'react'
+import React, { memo, useContext, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router'
 import { Gap } from 'src/api/gapsService'
 import dayjs from 'src/dayjs'
+import { SearchContext } from 'src/model/pageState'
 import Widget from 'src/shared/Widget'
 import DisplayGapsPercentage from '../components/DisplayGapsPercentage'
 import { Row } from '../components/Row'
@@ -53,7 +55,20 @@ const formatStatus = (gap: Gap, gaps: Gap[] | undefined): keyof typeof colors =>
 
 const GapsTable: React.FC<GapsTableProps> = ({ gaps, loading, initOnlyGapped = false }) => {
   const { t } = useTranslation()
+  const navigate = useNavigate()
+  const { search } = useContext(SearchContext)
   const [onlyGapped, setOnlyGapped] = useState(initOnlyGapped)
+
+  const singleLineMapQuery = useMemo(() => {
+    const params = new URLSearchParams({
+      timestamp: search.timestamp.toString(),
+      operatorId: search.operatorId || '',
+      lineNumber: search.lineNumber || '',
+      routeKey: search.routeKey || '',
+      startTime: search.startTime || '',
+    })
+    return params.toString()
+  }, [search.lineNumber, search.operatorId, search.routeKey, search.startTime, search.timestamp])
 
   const filteredGaps: Gap[] = useMemo(() => {
     if (!gaps) return []
@@ -120,10 +135,20 @@ const GapsTable: React.FC<GapsTableProps> = ({ gaps, loading, initOnlyGapped = f
                   <TableRow key={hour}>
                     {groupedGaps[hour].map(({ gap, status }, j) => {
                       const time = (gap.plannedStartTime || gap.actualStartTime)?.format('HH:mm')
+                      const hasRide = Boolean(gap.gtfsRideId)
                       return (
                         <TableCell
                           key={`${hour}-${j}-${time}`}
-                          sx={{ ...cellStyle, background: colors[status] }}>
+                          sx={{
+                            ...cellStyle,
+                            background: colors[status],
+                            cursor: hasRide ? 'pointer' : 'default',
+                          }}
+                          onClick={
+                            hasRide
+                              ? () => navigate(`/single-line-map?${singleLineMapQuery}`)
+                              : undefined
+                          }>
                           {time}
                         </TableCell>
                       )
