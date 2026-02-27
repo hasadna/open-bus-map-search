@@ -83,7 +83,7 @@ test.describe('Single line page tests', () => {
       await selectRoute(page)
       await expect(page.locator(STATION_MARKER_SELECTOR)).toHaveCount(2, { timeout: 10000 })
       await selectStartTime(page)
-      await expect(page.locator(BUS_MARKER_SELECTOR)).toHaveCount(70, { timeout: 10000 })
+      await expect(page.locator(BUS_MARKER_SELECTOR)).toHaveCount(71, { timeout: 10000 })
     })
 
     await test.step('Click on bus button', async () => {

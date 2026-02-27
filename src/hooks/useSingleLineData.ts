@@ -12,7 +12,7 @@ const formatTime = (time: dayjs.Dayjs) => time.format('HH:mm')
 
 const normalizeScheduledTime = (raw?: string) => {
   if (!raw) return undefined
-  return raw.includes(':') ? raw.replace(':', '-') : raw
+  return raw.includes(':') ? raw : raw.replace('-', ':')
 }
 
 const normalizeStartTimeToken = (token?: string) => {
