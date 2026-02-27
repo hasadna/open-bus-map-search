@@ -1,4 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { http, HttpResponse } from 'msw'
+import { waitFor, within } from 'storybook/test'
 import Widget from 'src/shared/Widget'
 import { BusToolTip, BusToolTipProps } from './BusToolTip'
 
@@ -56,15 +58,47 @@ const defaultArgs: BusToolTipProps = {
   icon: '/bus-logos/3.svg',
 }
 
+const mockRouteHandler = http.get(
+  (info) => new URL(info.request.url).pathname === '/gtfs_routes/list',
+  () =>
+    HttpResponse.json([
+      {
+        id: 12345,
+        date: '2023-11-01',
+        line_ref: 2974,
+        operator_ref: 3,
+        route_short_name: '39',
+        route_long_name: 'תל אביב-מרכז <> רמת גן',
+        agency_name: 'דן',
+      },
+    ]),
+)
+
 export const Default: Story = {
   args: defaultArgs,
+  parameters: {
+    msw: {
+      handlers: [mockRouteHandler],
+    },
+  },
 }
 
 export const WithComplaint: Story = {
   args: defaultArgs,
+  parameters: {
+    msw: {
+      handlers: [mockRouteHandler],
+    },
+  },
   play: async ({ canvasElement, userEvent }) => {
-    // Simulate typing 'complaint' to trigger the EasterEgg
-    await new Promise((resolve) => setTimeout(resolve, 1000)) // wait for 1 second
-    userEvent.type(canvasElement, 'complaint')
+    const canvas = within(canvasElement)
+    // Wait for the route to finish loading
+    await waitFor(() => canvas.getByText('דן'))
+    // Type the easter egg code to reveal the complaint button
+    await userEvent.type(canvasElement, 'complaint')
+    // Confirm the complaint button appeared
+    await waitFor(() =>
+      canvas.getByRole('button', { name: /פתח תלונה|Open complaint|Открыть жалобу/i }),
+    )
   },
 }
