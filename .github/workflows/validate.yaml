@@ -111,6 +111,8 @@ jobs:
         with:
           node-version: latest
           cache: 'npm'
+      - name: Configure blocked external hosts
+        uses: ./.github/actions/block-network
       - name: Validate hash.txt endpoint
         run: |
           response=$(curl -s -w "%{http_code}" -o /tmp/hash.txt http://localhost:3000/hash.txt)
@@ -161,10 +163,13 @@ jobs:
     runs-on: ubuntu-22.04 # not working whit ubuntu 23+
     needs: [build, build-outside-docker]
     steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Configure blocked external hosts
+        uses: ./.github/actions/block-network
       - name: Prepare for Testing
         run: |
-          echo "127.0.0.1 openstreetmap.org" | sudo tee -a /etc/hosts
-          echo "127.0.0.1 tile-a.openstreetmap.fr" | sudo tee -a /etc/hosts
           echo "SHORT_SHA=$(echo ${{ github.event.pull_request.head.sha }} | cut -c1-7)" >> $GITHUB_ENV
       - name: Download Docker image artifact
         uses: actions/download-artifact@v4
@@ -175,9 +180,6 @@ jobs:
         run: docker load -i /tmp/docker-image.tar
       - name: Start application container
         run: docker run -d -p 3000:80 ${{ env.DOCKER_APP_IMAGE_NAME }}:${{ env.DOCKER_APP_IMAGE_TAG }}
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
       - run: export APPLITOOLS_SHOW_LOGS=true && export APPLITOOLS_LOG_DIR=./logs
       - run: npm i -g @applitools/eyes-storybook
       - name: Run Storybook visual tests
@@ -198,14 +200,14 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build, build-outside-docker]
     steps:
-      - name: Prepare for Testing
-        run: |
-          echo "127.0.0.1 openstreetmap.org" | sudo tee -a /etc/hosts
-          echo "127.0.0.1 tile-a.openstreetmap.fr" | sudo tee -a /etc/hosts
-          echo "SHORT_SHA=$(echo ${{ github.event.pull_request.head.sha }} | cut -c1-7)" >> $GITHUB_ENV
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.sha }}
+      - name: Configure blocked external hosts
+        uses: ./.github/actions/block-network
+      - name: Prepare for Testing
+        run: |
+          echo "SHORT_SHA=$(echo ${{ github.event.pull_request.head.sha }} | cut -c1-7)" >> $GITHUB_ENV
       - uses: actions/setup-node@v4
         with:
           node-version: latest
