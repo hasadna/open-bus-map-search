@@ -71,9 +71,9 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
   useEffect(() => {
     setIsLoading(true)
     getSiriRideWithRelated(
-      position.point!.siri_route__id.toString(),
-      position.point!.siri_ride__vehicle_ref.toString(),
-      position.point!.siri_route__line_ref.toString(),
+      (position.point!.siriRouteId || 0).toString(),
+      (position.point!.siriRideVehicleRef || '').toString(),
+      (position.point!.siriRouteLineRef || 0).toString(),
     )
       .then((siriRideRes: SiriRideWithRelatedPydanticModel) => setSiriRide(siriRideRes))
       .finally(() => setIsLoading(false))
