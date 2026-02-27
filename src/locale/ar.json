@@ -117,7 +117,7 @@
   "github_link": "الانتقال إلى GitHub",
   "dark_mode_tooltip": "الانتقال للوضع المظلم",
   "light_mode_tooltip": "الانتقال للوضع الفاتح",
-  "Change Language": "English",
+  "change_language": "تغيير اللغة",
   "bug_title": "العنوان/الملخّص",
   "bug_description": "الوصف",
   "bug_environment": "البيئة (المتصفّح، النظام)",
