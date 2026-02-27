@@ -35,19 +35,19 @@
   "line_placeholder": "For example: 17a",
   "vehicle_placeholder": "For example: 12345",
   "choose_route": "Choosing a travel route (XXX options)",
-  "choose_stop": "Select a station (XXX options)",
+  "choose_stop": "Select a stop (XXX options)",
   "direction_arrow": "⟵",
   "date_format": "YYYY-MM-DD",
   "time_format": "HH:mm:ss",
   "datetime_format": "HH:mm:ss · YYYY-MM-DD",
-  "loading_routes": "Charging routes",
-  "loading_stops": "Charging stop stations",
-  "loading_gaps": "Charging trip gaps",
-  "timestamp_list": "A list of all stop times in the chosen station",
+  "loading_routes": "Loading routes",
+  "loading_stops": "Loading stops",
+  "loading_gaps": "Loading missing trips",
+  "timestamp_list": "A list of all stop times at the selected stop",
   "timestamp_target": "⌚ Search time",
   "timestamp_gtfs": "🕛 Planned stop time",
   "timestamp_siri": "🚌 Actual stop time",
-  "loading_hits": "Charging travel times",
+  "loading_hits": "Loading trip times",
   "line_not_found": "The line is not found",
   "hits_not_found": "No planned or actual trips found",
   "planned_time": "Scheduled time",
@@ -66,7 +66,7 @@
   "rides_actual": "Trips out",
   "rides_missing": "Trips missing",
   "dashboard_page_graph_title": "Exit percentages of total trips by time",
-  "from_date": "dated",
+  "from_date": "From date",
   "to_date": "Until",
   "watch_locations_in_range": "View bus locations within a range of",
   "minutes": "minutes",
@@ -81,31 +81,24 @@
   "about_title": "About",
   "public_appeal_title": "Public Appeal",
   "donate_title": "For Donations",
-
   "report_a_bug_title": "Report a bug",
-
   "how_to_donate_title": "How can I donate?",
   "how_to_donate_text": "Behind the scenes of the projects is a small, dedicated team that takes care of organizing development and hackathon meetings and server maintenance, which has its feet between government offices to persuade, press, and swing to release more and more repositories; Make sure the media knows our work and also knows how to contact us for data and analytics, and does a lot of ongoing work to make our projects change in the world. We need community support to continue to work for a more open government. There were knights of transparency and joined in monthly support.",
-
   "donate": "Donate",
   "donation_through_bank_title": "Donation through bank transfer",
   "donation_through_bank_reccomendation": "It is recommended to donate a bank transfer to the public knowledge workshop bank account, as this fee is lower",
   "donate_to_hasadna": "Donate to Hasadna",
   "donation_link": "Donation link",
-
   "bank": "Bank",
   "branch": "Branch",
   "account": "Account Number",
   "account_name": "Account Name",
-
   "donation_through_bank_details_bank": "יו בנק (26)",
   "donation_through_bank_details_branch": "רחביה (262)",
   "donation_through_bank_details_account": "419931",
   "donation_through_bank_details_account_name": "הסדנא לידע ציבורי",
-
   "donation_through_bank_details_additional_message": "Please specify a full name and contact info@hasadna.org.il after the donation so we can send a receipt",
   "donate_through_jgive.com_title": "Donate through Jgive.com",
-
   "website_name": "Databus",
   "what_is_website": "What is the \"Databus\" site?",
   "what_is_website_paragraph": "The database website of the workshop for public knowledge presents data on the quality of public transportation lines in Israel (reliability, accuracy, route). Databus actually connects several government information sources:",
@@ -119,7 +112,7 @@
   "funding": "Funding",
   "mr_meir": "Mr. Asher Meir",
   "innovation_authority": "Innovation Authority",
-  "migdal_company": "\"A tower in the community\"",
+  "migdal_company": "\"Migdal in the Community\"",
   "and_smaller_donors": "And other small contributions from my friends and fans of the workshop.",
   "github_link": "Go to GitHub",
   "dark_mode_tooltip": "Move to Dark mode",
@@ -147,7 +140,9 @@
     "once": "Once"
   },
   "bug_date_alert": "The end date can not be earlier than the start date",
+  "bug_date_invalid_format": "Please enter a date in the correct format",
   "funding_paragraph": "The Databus project is developed by the Hasadna for public knowledge, by the contributions of volunteers, and based upon",
+  "halufa_ride": "Alternative ride #",
   "all_rides_completed": "All/Almost the rides are completed",
   "missing_rides": "Of the rides are missing",
   "line": "Line",
@@ -159,6 +154,16 @@
   "at_time": "at",
   "vehicle_ref": "vehicle plate",
   "drive_direction": "drive direction",
+  "directions": {
+    "North": "North",
+    "Northeast": "Northeast",
+    "East": "East",
+    "Southeast": "Southeast",
+    "South": "South",
+    "Southwest": "Southwest",
+    "West": "West",
+    "Northwest": "Northwest"
+  },
   "bearing": "bearing",
   "coords": "coords",
   "hide_document": "Hide geeks data",
@@ -173,7 +178,7 @@
   "phone": "Phone Number",
   "complaint_type": "Complaint Type",
   "other": "Other",
-  "no_stop": "No Stop at Station",
+  "no_stop": "Did not stop at the stop",
   "no_ride": "No Ride",
   "delay": "Delay",
   "overcrowded": "Overcrowded",
@@ -186,7 +191,6 @@
   "station_signs": "Station Information Signs",
   "description": "Description",
   "submit_complaint": "Submit Complaint",
-
   "lineProfile": {
     "title": "Profile for Line",
     "notFound": "We couldn't find the line you were looking for :(",
@@ -207,6 +211,7 @@
       "type": "Route Type"
     },
     "ride": {
+      "journey ": "Journey ID",
       "journey": "Journey ID",
       "id": "Ride ID",
       "duration": "Ride Duration",
@@ -220,11 +225,18 @@
       "location": "Stop Location"
     }
   },
+  "errorPage": {
+    "title": "Oops, something went wrong",
+    "text": "Please try again later",
+    "text2": "If the issue persists, please contact us at:",
+    "button": "Back to home page"
+  },
   "aboutPage": {
     "title": "About us",
     "privacyText": "<0>Google Analytics</0> service is embedded in the website to analyze the usage patterns and positioning of the website in search engines. This code reveals to the operators of the service information regarding the behavior of the users. <1>Learn more</1> about the privacy policy of the service.",
     "licenseInfo": {
-      "text": "All information displayed on the website is based on data published by government sources. Usage of the information is subject to the <0>CC BY-SA 4.0 license</0> of <1>Creative Commons</1>"
+      "text": "All information displayed on the website is based on data published by government sources. Usage of the information is subject to the <0>{{licenseName}}</0> license of <1>Creative Commons</1>",
+      "licenseName": "CC BY-SA 4.0 License"
     },
     "contactLinksText": {
       "sadna": "Contact us",

@@ -15,7 +15,7 @@ export const LineProfileRide = ({
   return (
     <Widget>
       <InfoTable>
-        <InfoItem label={t('lineProfile.ride.journey ')} value={point?.siriRideJourneyRef} />
+        <InfoItem label={t('lineProfile.ride.journey')} value={point?.siriRideJourneyRef} />
         <InfoItem label={t('lineProfile.ride.id')} value={point?.siriRideId?.toString()} />
         <InfoItem label={t('vehicle_ref')} value={vehicleIDFormat(point?.siriRideVehicleRef)} />
         <InfoItem
