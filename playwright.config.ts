@@ -24,6 +24,10 @@ export default defineConfig({
     trace: process.env.CI ? 'on' : 'on-all-retries',
 
     timezoneId: 'Asia/Jerusalem',
+
+    /* Block service workers so they don't intercept stride-api fetch() calls,
+       bypassing page.route() handlers (which would break HAR-based mocking in CI). */
+    serviceWorkers: 'block',
   },
   expect: {
     timeout: 5000,

@@ -101,6 +101,10 @@ export const setupTest = async (page: Page, lng: string = 'he') => {
   await page.route(/api\.github\.com/, (route) => route.abort())
   await page.route(/open-bus-backend\.k8s\.hasadna\.org\.il/, (route) => route.abort())
   await page.route(/.*openstreetmap*/, (route) => route.abort())
+  // Abort stride-api requests during initial navigation. Tests that need stride-api data
+  // should call advancedRouteFromHAR AFTER setupTest - the HAR route handler takes precedence
+  // over this abort route (Playwright evaluates routes in reverse registration order).
+  await page.route(/stride-api/, (route) => route.abort())
   await page.clock.setSystemTime(getPastDate())
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await i18next.use(Backend).init({ lng, backend: { loadPath: 'src/locale/{{lng}}.json' } })
@@ -135,9 +139,7 @@ export const verifyDateFromParameter = async (page: Page) => {
 }
 
 export const harOptions: RouteFromHAROptions = {
-  updateContent: 'embed',
-  update: false,
-  notFound: 'fallback',
+  notFound: 'abort',
   url: /stride-api/,
   matcher: urlMatcher,
 }
