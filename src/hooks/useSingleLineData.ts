@@ -6,21 +6,13 @@ import { BusRoute } from 'src/model/busRoute'
 import { BusStop } from 'src/model/busStop'
 import { SearchContext } from 'src/model/pageState'
 import { routeStartEnd, vehicleIDFormat } from 'src/pages/components/utils/rotueUtils'
+import {
+  normalizeStartTimeToken,
+  parseStartTimeToken,
+} from 'src/pages/components/utils/startTimeUtils'
 import { Point } from 'src/pages/timeBasedMap'
 
 const formatTime = (time: dayjs.Dayjs) => time.format('HH:mm')
-
-const normalizeScheduledTime = (raw?: string) => {
-  if (!raw) return undefined
-  return raw.includes(':') ? raw : raw.replace('-', ':')
-}
-
-const normalizeStartTimeToken = (token?: string) => {
-  if (!token) return undefined
-  const rawScheduledTime = token.split('|')[0]
-  const normalizedTime = normalizeScheduledTime(rawScheduledTime)
-  return normalizedTime
-}
 
 export const useSingleLineData = (
   operatorId?: string,
@@ -38,8 +30,6 @@ export const useSingleLineData = (
 
   const setStartTime = useCallback(
     (startTime?: string) => {
-      console.log(startTime)
-
       setSearch((prev) => ({ ...prev, startTime: normalizeStartTimeToken(startTime) }))
     },
     [setSearch],
@@ -187,14 +177,12 @@ export const useSingleLineData = (
   }, [positions, today, tomorrow, vehicleNumber])
 
   useEffect(() => {
-    const normalizedStartTime = normalizeStartTimeToken(startTime)
-    if (!normalizedStartTime) {
+    const parsedStartTime = parseStartTimeToken(startTime)
+    if (!parsedStartTime) {
       setFilteredPositions([])
       return
     }
-    const [rawScheduledTime, scheduledVehicle, scheduledLine] = normalizedStartTime.split('|')
-    const scheduledTime = normalizeScheduledTime(rawScheduledTime)
-    const hasVehicleConstraint = Boolean(scheduledVehicle)
+    const { scheduledTime, vehicleRef: scheduledVehicle, lineRef: scheduledLine } = parsedStartTime
 
     setFilteredPositions(
       positions.filter((position) => {
@@ -203,7 +191,7 @@ export const useSingleLineData = (
         if (!scheduledStart || !vehicleRef || !scheduledTime) return false
         return (
           formatTime(dayjs(scheduledStart)) === scheduledTime &&
-          (hasVehicleConstraint ? scheduledVehicle === vehicleRef : true) &&
+          (scheduledVehicle ? scheduledVehicle === vehicleRef : true) &&
           (scheduledLine ? scheduledLine === position.point?.siriRouteLineRef?.toString() : true)
         )
       }),
@@ -213,10 +201,9 @@ export const useSingleLineData = (
   useEffect(() => {
     const fetchStops = async () => {
       try {
-        const [rawScheduledTime, , scheduledLine] = normalizeStartTimeToken(startTime)?.split(
-          '|',
-        ) || [undefined, undefined, undefined]
-        const scheduledTime = normalizeScheduledTime(rawScheduledTime)
+        const parsedStartTime = parseStartTimeToken(startTime)
+        const scheduledTime = parsedStartTime?.scheduledTime
+        const scheduledLine = parsedStartTime?.lineRef
         const [hour, minute] = scheduledTime ? scheduledTime.split(':').map(Number) : [0, 0]
         const startTimeTimestamp = today.hour(hour).minute(minute).second(0).millisecond(0)
         let routeIds: number[] | undefined

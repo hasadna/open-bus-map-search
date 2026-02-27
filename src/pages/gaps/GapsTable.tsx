@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
 import { Gap } from 'src/api/gapsService'
 import dayjs from 'src/dayjs'
+import { formatStartTimeForQuery } from 'src/pages/components/utils/startTimeUtils'
 import Widget from 'src/shared/Widget'
 import DisplayGapsPercentage from '../components/DisplayGapsPercentage'
 import { Row } from '../components/Row'
@@ -38,11 +39,6 @@ const colors = {
   ride_extra: 'rgba(255, 255, 0, 0.15)',
   ride_in_future: 'rgba(0, 0, 255, 0.15)',
 } as const
-
-const formatStartTimeForQuery = (time?: string) => {
-  if (!time) return ''
-  return time.replace(':', '-')
-}
 
 const formatStatus = (gap: Gap, gaps: Gap[] | undefined): keyof typeof colors => {
   const currentTime = dayjs()
