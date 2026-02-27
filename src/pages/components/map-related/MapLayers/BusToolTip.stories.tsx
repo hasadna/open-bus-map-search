@@ -65,6 +65,6 @@ export const WithComplaint: Story = {
   play: async ({ canvasElement, userEvent }) => {
     // Simulate typing 'complaint' to trigger the EasterEgg
     await new Promise((resolve) => setTimeout(resolve, 1000)) // wait for 1 second
-    userEvent.type(canvasElement, 'complaint')
+    await userEvent.type(canvasElement, 'complaint')
   },
 }
