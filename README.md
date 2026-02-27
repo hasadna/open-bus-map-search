@@ -97,6 +97,9 @@ We’ve hidden a few fun surprises in the [web app](https://open-bus-map-search.
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/QAdam1"><img src="https://avatars.githubusercontent.com/u/151572570?v=4?s=100" width="100px;" alt="QAdam1"/><br /><sub><b>QAdam1</b></sub></a><br /><a href="#code-QAdam1" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/chaniBenziman"><img src="https://avatars.githubusercontent.com/u/149331780?v=4?s=100" width="100px;" alt="Chani Benziman"/><br /><sub><b>Chani Benziman</b></sub></a><br /><a href="#code-chaniBenziman" title="Code">💻</a></td>
     </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/moshe742"><img src="https://avatars.githubusercontent.com/u/1392908?v=4?s=100" width="100px;" alt="Moshe Nahmias"/><br /><sub><b>Moshe Nahmias</b></sub></a><br /><a href="#code-moshe742" title="Code">💻</a></td>
+    </tr>
   </tbody>
 </table>
 
