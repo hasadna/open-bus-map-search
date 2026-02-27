@@ -16,7 +16,7 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
   test.describe(`Visual Tests - ${mode}`, () => {
     test.describe.configure({ retries: 0 })
 
-    test.beforeEach(async ({ page }, testinfo) => {
+    test.beforeEach(async ({ page }) => {
       await page.route(/.*youtube*/, (route) => route.abort())
       await setupTest(page, mode === 'LTR' ? 'en' : 'he')
       if (mode === 'Dark') {
