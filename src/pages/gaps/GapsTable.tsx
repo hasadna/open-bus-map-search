@@ -10,6 +10,7 @@ import {
 import { Skeleton } from 'antd'
 import React, { memo, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router'
 import { Gap } from 'src/api/gapsService'
 import dayjs from 'src/dayjs'
 import Widget from 'src/shared/Widget'
@@ -149,9 +150,9 @@ const GapsTable: React.FC<GapsTableProps> = ({
                             },
                           }}>
                           {hasRide ? (
-                            <a href={cellHref} onClick={() => onStartTimeClick?.(startTimeParam)}>
+                            <Link to={cellHref} onClick={() => onStartTimeClick?.(startTimeParam)}>
                               {time}
-                            </a>
+                            </Link>
                           ) : (
                             time
                           )}
