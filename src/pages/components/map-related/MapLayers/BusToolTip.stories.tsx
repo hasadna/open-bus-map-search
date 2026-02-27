@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { http, HttpResponse } from 'msw'
 import Widget from 'src/shared/Widget'
+import { busToolTipMockedRoute } from '../../../../../.storybook/mockData'
 import { BusToolTip, BusToolTipProps } from './BusToolTip'
 
 const meta = {
@@ -22,22 +23,6 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-const mockedRoute = [
-  {
-    id: 3753789,
-    date: '2023-11-01',
-    line_ref: 2974,
-    operator_ref: 3,
-    route_short_name: '1',
-    route_long_name: 'שדרות מנחם בגין/כביש 7-גדרה<->שדרות מנחם בגין/כביש 7-גדרה-3#',
-    route_mkt: '33001',
-    route_direction: '3',
-    route_alternative: '#',
-    agency_name: 'אגד',
-    route_type: '3',
-  },
-]
-
 const routeHandler = http.get(
   (info) => new URL(info.request.url).pathname === '/gtfs_routes/list',
   ({ request }) => {
@@ -49,7 +34,7 @@ const routeHandler = http.get(
       return HttpResponse.json()
     }
 
-    return HttpResponse.json(mockedRoute)
+    return HttpResponse.json(busToolTipMockedRoute)
   },
 )
 
