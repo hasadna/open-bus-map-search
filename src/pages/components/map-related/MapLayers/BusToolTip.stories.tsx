@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { http, HttpResponse } from 'msw'
 import Widget from 'src/shared/Widget'
-import { busToolTipMockedRoute } from '../../../../../.storybook/mockData'
+import { busToolTipMockedRides, busToolTipMockedRoute } from '../../../../../.storybook/mockData'
 import { BusToolTip, BusToolTipProps } from './BusToolTip'
 
 const meta = {
@@ -35,6 +35,23 @@ const routeHandler = http.get(
     }
 
     return HttpResponse.json(busToolTipMockedRoute)
+  },
+)
+
+const ridesHandler = http.get(
+  (info) => new URL(info.request.url).pathname === '/siri_rides/list',
+  ({ request }) => {
+    const { searchParams } = new URL(request.url)
+
+    const matchesLineRef = searchParams.get('siri_route__line_refs') === '2974'
+    const matchesRouteRef = searchParams.get('siri_route_ids') === '973'
+    const matchesVehicleRef = searchParams.get('vehicle_refs') === '23321002'
+
+    if (!matchesLineRef || !matchesRouteRef || !matchesVehicleRef) {
+      return HttpResponse.json()
+    }
+
+    return HttpResponse.json(busToolTipMockedRides)
   },
 )
 
@@ -85,7 +102,7 @@ export const Default: Story = {
 export const WithComplaint: Story = {
   parameters: {
     msw: {
-      handlers: [routeHandler],
+      handlers: [routeHandler, ridesHandler],
     },
   },
   args: defaultArgs,
