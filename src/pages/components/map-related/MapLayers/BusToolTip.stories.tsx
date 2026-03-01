@@ -96,7 +96,7 @@ const defaultArgs: BusToolTipProps = {
 export const Default: Story = {
   parameters: {
     msw: {
-      handlers: [routeHandler],
+      handlers: [routeHandler, ridesHandler],
     },
   },
   args: defaultArgs,
