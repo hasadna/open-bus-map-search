@@ -1,35 +1,9 @@
-import type { SiriVelocityAggregationPydanticModel } from '@hasadna/open-bus-api-client'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { http, HttpResponse } from 'msw'
 import { MapContainer, TileLayer } from 'react-leaflet'
+import { velocityAggregation } from '../../../../.storybook/mockData'
 import { VelocityHeatmapLegend } from './VelocityHeatmapLegend'
 import { VelocityHeatmapRectangles } from './VelocityHeatmapRectangles'
-
-const sampleData: SiriVelocityAggregationPydanticModel[] = [
-  {
-    roundedLon: 34.92,
-    roundedLat: 29.56,
-    totalSampleCount: 8,
-    averageRollingAvg: 60.4,
-    stddevRollingAvg: 3.7,
-  },
-  {
-    roundedLon: 34.93,
-    roundedLat: 29.57,
-    totalSampleCount: 12,
-    averageRollingAvg: 45.2,
-    stddevRollingAvg: 5.1,
-  },
-  {
-    roundedLon: 34.94,
-    roundedLat: 29.58,
-    totalSampleCount: 20,
-    averageRollingAvg: 10.0,
-    stddevRollingAvg: 1.2,
-  },
-]
-
-const noop = () => {}
 
 const meta = {
   title: 'VelocityHeatmap/Rectangles',
@@ -68,7 +42,7 @@ const meta = {
             <Story
               args={{
                 visMode: ctx.args.visMode,
-                setMinMax: noop,
+                setMinMax: () => {},
               }}
             />
             <VelocityHeatmapLegend visMode={ctx.args.visMode} min={0} max={1} />
@@ -90,7 +64,7 @@ const parameters = {
         'https://open-bus-stride-api.hasadna.org.il/siri_velocity_aggregation/siri_velocity_aggregation',
         async () => {
           await new Promise((r) => setTimeout(r, 500)) // Simulate network delay
-          return HttpResponse.json(sampleData)
+          return HttpResponse.json(velocityAggregation)
         },
       ),
     ],
