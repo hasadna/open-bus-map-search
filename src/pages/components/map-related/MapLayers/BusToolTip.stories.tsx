@@ -1,7 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { http, HttpResponse } from 'msw'
 import Widget from 'src/shared/Widget'
-import { busToolTipMockedRides, busToolTipMockedRoute } from '../../../../../.storybook/mockData'
+import {
+  busToolTipMockedRoute,
+  busToolTipMockedSiriRides,
+} from '../../../../../.storybook/mockData'
 import { BusToolTip, BusToolTipProps } from './BusToolTip'
 
 const meta = {
@@ -51,7 +54,7 @@ const ridesHandler = http.get(
       return HttpResponse.json()
     }
 
-    return HttpResponse.json(busToolTipMockedRides)
+    return HttpResponse.json(busToolTipMockedSiriRides)
   },
 )
 

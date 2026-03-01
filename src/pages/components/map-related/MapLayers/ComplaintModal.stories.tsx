@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { http, HttpResponse } from 'msw'
 import { useState } from 'react'
-import { complaintModalMockedSiriRideWithRelated } from '../../../../../.storybook/mockData'
+import { busToolTipMockedSiriRides } from '../../../../../.storybook/mockData'
 import type { BusToolTipProps } from './BusToolTip'
 import ComplaintModal from './ComplaintModal'
 
@@ -67,14 +67,14 @@ const siriRidesHandler = http.get(
   ({ request }) => {
     const { searchParams } = new URL(request.url)
     const matchesRouteId = searchParams.get('siri_route_ids') === '973'
-    const matchesLineRef = searchParams.get('siri_route_line_refs') === '2974'
+    const matchesLineRef = searchParams.get('siri_route__line_refs') === '2974'
     const matchesVehicleRef = searchParams.get('vehicle_refs') === '23321002'
 
     if (!matchesRouteId || !matchesLineRef || !matchesVehicleRef) {
       return HttpResponse.json([])
     }
 
-    return HttpResponse.json(complaintModalMockedSiriRideWithRelated)
+    return HttpResponse.json(busToolTipMockedSiriRides)
   },
 )
 
