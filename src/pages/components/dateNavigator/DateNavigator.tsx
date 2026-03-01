@@ -1,5 +1,6 @@
 import { Today } from '@mui/icons-material'
 import { Box, Button, ButtonGroup } from '@mui/material'
+import { useTranslation } from 'react-i18next'
 import dayjs from 'src/dayjs'
 import './DateNavigator.scss'
 
@@ -9,6 +10,8 @@ interface DateNavigatorProps {
 }
 
 export const DateNavigator = ({ currentTime, onChange }: DateNavigatorProps) => {
+  const { t } = useTranslation()
+
   const handleChange = (amount: number, unit: 'day' | 'week') => {
     const newTime =
       amount > 0 ? currentTime.add(amount, unit) : currentTime.subtract(Math.abs(amount), unit)
@@ -28,22 +31,22 @@ export const DateNavigator = ({ currentTime, onChange }: DateNavigatorProps) => 
           borderRadius: 2,
         }}>
         <Button onClick={() => handleChange(-1, 'week')} className="nav-btn">
-          שבוע קודם
+          {t('date_navigator_prev_week')}
         </Button>
         <Button onClick={() => handleChange(-1, 'day')} className="nav-btn">
-          יום קודם
+          {t('date_navigator_prev_day')}
         </Button>
         <Button
           onClick={handleToday}
           className="nav-btn today"
           startIcon={<Today fontSize="small" />}>
-          היום
+          {t('date_navigator_today')}
         </Button>
         <Button onClick={() => handleChange(1, 'day')} className="nav-btn">
-          יום הבא
+          {t('date_navigator_next_day')}
         </Button>
         <Button onClick={() => handleChange(1, 'week')} className="nav-btn">
-          שבוע הבא
+          {t('date_navigator_next_week')}
         </Button>
       </ButtonGroup>
     </Box>

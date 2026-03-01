@@ -47,13 +47,18 @@ type CustomTooltipProps = TooltipProps<number, string> & {
 }
 
 const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
+  const { t } = useTranslation()
   if (active && payload && payload.length > 1) {
     const actualRides = payload[0].value || 0
     const plannedRides = payload[1].value || 0
     const actualPercentage = ((actualRides / plannedRides) * 100).toFixed(0)
     return (
       <div className="custom-tooltip tooltip-style">
-        {` בוצעו ${actualPercentage}% מהנסיעות (${actualRides}/${plannedRides})`}
+        {t('gaps_tooltip_rides_executed', {
+          percentage: actualPercentage,
+          actual: actualRides,
+          planned: plannedRides,
+        })}
       </div>
     )
   }
