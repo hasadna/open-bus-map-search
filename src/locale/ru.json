@@ -253,6 +253,12 @@
   "order_by_hour": "по часам",
   "order_by_severity": "по серьезности",
   "choose_dates": "Даты",
+  "date_navigator_prev_week": "Предыдущая неделя",
+  "date_navigator_prev_day": "Предыдущий день",
+  "date_navigator_today": "Сегодня",
+  "date_navigator_next_day": "Следующий день",
+  "date_navigator_next_week": "Следующая неделя",
+  "gaps_tooltip_rides_executed": "Выполнено {{percentage}}% поездок ({{actual}}/{{planned}})",
   "single_line_map_title": "Местоположения выбранных линий",
   "operatorSelectorOptions": {
     "all": "все"
