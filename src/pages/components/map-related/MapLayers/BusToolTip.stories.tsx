@@ -1,5 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { http, HttpResponse } from 'msw'
 import Widget from 'src/shared/Widget'
+import {
+  busToolTipMockedRoute,
+  busToolTipMockedSiriRides,
+} from '../../../../../.storybook/mockData'
 import { BusToolTip, BusToolTipProps } from './BusToolTip'
 
 const meta = {
@@ -20,6 +25,38 @@ const meta = {
 export default meta
 
 type Story = StoryObj<typeof meta>
+
+const routeHandler = http.get(
+  (info) => new URL(info.request.url).pathname === '/gtfs_routes/list',
+  ({ request }) => {
+    const { searchParams } = new URL(request.url)
+    const matchesLineRef = searchParams.get('line_refs') === '2974'
+    const matchesOperatorRef = searchParams.get('operator_refs') === '3'
+
+    if (!matchesLineRef || !matchesOperatorRef) {
+      return HttpResponse.json()
+    }
+
+    return HttpResponse.json(busToolTipMockedRoute)
+  },
+)
+
+const ridesHandler = http.get(
+  (info) => new URL(info.request.url).pathname === '/siri_rides/list',
+  ({ request }) => {
+    const { searchParams } = new URL(request.url)
+
+    const matchesLineRef = searchParams.get('siri_route__line_refs') === '2974'
+    const matchesRouteRef = searchParams.get('siri_route_ids') === '973'
+    const matchesVehicleRef = searchParams.get('vehicle_refs') === '23321002'
+
+    if (!matchesLineRef || !matchesRouteRef || !matchesVehicleRef) {
+      return HttpResponse.json()
+    }
+
+    return HttpResponse.json(busToolTipMockedSiriRides)
+  },
+)
 
 const defaultArgs: BusToolTipProps = {
   position: {
@@ -57,14 +94,24 @@ const defaultArgs: BusToolTipProps = {
 }
 
 export const Default: Story = {
+  parameters: {
+    msw: {
+      handlers: [routeHandler, ridesHandler],
+    },
+  },
   args: defaultArgs,
 }
 
 export const WithComplaint: Story = {
+  parameters: {
+    msw: {
+      handlers: [routeHandler, ridesHandler],
+    },
+  },
   args: defaultArgs,
   play: async ({ canvasElement, userEvent }) => {
     // Simulate typing 'complaint' to trigger the EasterEgg
     await new Promise((resolve) => setTimeout(resolve, 1000)) // wait for 1 second
-    userEvent.type(canvasElement, 'complaint')
+    await userEvent.type(canvasElement, 'complaint')
   },
 }

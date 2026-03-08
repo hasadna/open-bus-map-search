@@ -65,6 +65,8 @@ const mockGaps: Gap[] = [
 export const Default: Story = {
   args: {
     gaps: mockGaps,
+    singleLineMapBaseHref:
+      '/single-line-map?timestamp=1735689600000&operatorId=3&lineNumber=5&routeKey=10018-2',
   },
 }
 
@@ -72,5 +74,7 @@ export const OnlyGappe: Story = {
   args: {
     gaps: mockGaps,
     initOnlyGapped: true,
+    singleLineMapBaseHref:
+      '/single-line-map?timestamp=1735689600000&operatorId=3&lineNumber=5&routeKey=10018-2',
   },
 }

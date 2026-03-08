@@ -1,5 +1,5 @@
 import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
-import { useContext, useEffect, useState } from 'react'
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import dayjs from 'src/dayjs'
 import { INPUT_SIZE } from 'src/resources/sizes'
@@ -22,6 +22,15 @@ const GapsPage = () => {
   const { operatorId, lineNumber, timestamp, routes, routeKey } = search
   const [gaps, setGaps] = useState<Gap[]>()
   const [gapsIsLoading, setGapsIsLoading] = useState(false)
+
+  const singleLineMapBaseHref = useMemo(() => {
+    const params = new URLSearchParams()
+    params.set('timestamp', search.timestamp.toString())
+    params.set('operatorId', search.operatorId || '')
+    params.set('lineNumber', search.lineNumber || '')
+    params.set('routeKey', search.routeKey || '')
+    return `/single-line-map?${params.toString()}`
+  }, [search.lineNumber, search.operatorId, search.routeKey, search.timestamp])
 
   useEffect(() => {
     if (!(operatorId && routes && routeKey && timestamp)) return
@@ -78,6 +87,13 @@ const GapsPage = () => {
     setSearch((current) => ({ ...current, routeKey }))
   }
 
+  const handleStartTimeClick = useCallback(
+    (startTime: string) => {
+      setSearch((current) => ({ ...current, startTime }))
+    },
+    [setSearch],
+  )
+
   return (
     <PageContainer>
       <Typography className="page-title" variant="h4">
@@ -130,7 +146,14 @@ const GapsPage = () => {
           )}
         </Grid>
       </Grid>
-      {routeKey && routeKey !== '' && <GapsTable loading={gapsIsLoading} gaps={gaps} />}
+      {routeKey && routeKey !== '' && (
+        <GapsTable
+          loading={gapsIsLoading}
+          gaps={gaps}
+          singleLineMapBaseHref={singleLineMapBaseHref}
+          onStartTimeClick={handleStartTimeClick}
+        />
+      )}
     </PageContainer>
   )
 }

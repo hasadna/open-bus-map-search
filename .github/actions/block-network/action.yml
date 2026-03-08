@@ -1,0 +1,15 @@
+name: Block External Hosts
+description: Block outbound network hosts used by tests
+
+runs:
+  using: composite
+  steps:
+    - name: Add blocked hosts to /etc/hosts
+      shell: bash
+      run: |
+        echo "127.0.0.1 openstreetmap.org" | sudo tee -a /etc/hosts
+        echo "127.0.0.1 tile-a.openstreetmap.fr" | sudo tee -a /etc/hosts
+        echo "127.0.0.1 open-bus-stride-api.hasadna.org.il" | sudo tee -a /etc/hosts
+        echo "127.0.0.1 google-analytics.com" | sudo tee -a /etc/hosts
+        echo "127.0.0.1 googletagmanager.com" | sudo tee -a /etc/hosts
+        echo "127.0.0.1 api.github.com" | sudo tee -a /etc/hosts

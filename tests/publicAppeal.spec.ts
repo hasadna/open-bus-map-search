@@ -16,10 +16,9 @@ test('Public Appeal page items', async ({ page }) => {
   await expect(page.locator('h2')).toContainText(PUBLIC_APPEAL_ITEMS)
 })
 
-test('clicking "Open Bus Stride API" link should lead to "https://open-bus-stride-api.hasadna.org.il/docs"', async ({
-  page,
-}) => {
-  await page.getByRole('link', { name: 'Open Bus Stride API' }).first().click()
-  await page.getByRole('heading', { name: 'Open Bus Stride API' }).waitFor()
-  await expect(page).toHaveURL(/open-bus-stride-api\.hasadna\.org\.il/)
+test('the "Open Bus Stride API" link should point to the correct URL', async ({ page }) => {
+  // Verify the href attribute instead of navigating to the stride-api domain,
+  // since that domain may be blocked in CI environments.
+  const link = page.getByRole('link', { name: 'Open Bus Stride API' }).first()
+  await expect(link).toHaveAttribute('href', 'https://open-bus-stride-api.hasadna.org.il/docs')
 })

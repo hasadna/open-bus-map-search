@@ -1,6 +1,8 @@
 import type { GtfsRoutePydanticModel } from '@hasadna/open-bus-api-client'
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { http, HttpResponse } from 'msw'
 import { useState } from 'react'
+import { busToolTipMockedSiriRides } from '../../../../../.storybook/mockData'
 import type { BusToolTipProps } from './BusToolTip'
 import ComplaintModal from './ComplaintModal'
 
@@ -61,6 +63,22 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
+const siriRidesHandler = http.get(
+  (info) => new URL(info.request.url).pathname === '/siri_rides/list',
+  ({ request }) => {
+    const { searchParams } = new URL(request.url)
+    const matchesRouteId = searchParams.get('siri_route_ids') === '973'
+    const matchesLineRef = searchParams.get('siri_route__line_refs') === '2974'
+    const matchesVehicleRef = searchParams.get('vehicle_refs') === '23321002'
+
+    if (!matchesRouteId || !matchesLineRef || !matchesVehicleRef) {
+      return HttpResponse.json([])
+    }
+
+    return HttpResponse.json(busToolTipMockedSiriRides)
+  },
+)
+
 const defaultArgs: BusToolTipProps & { route: GtfsRoutePydanticModel } = {
   position: {
     loc: [31.799982, 34.786926],
@@ -110,6 +128,11 @@ const defaultArgs: BusToolTipProps & { route: GtfsRoutePydanticModel } = {
 }
 
 export const Default: Story = {
+  parameters: {
+    msw: {
+      handlers: [siriRidesHandler],
+    },
+  },
   args: {
     position: defaultArgs.position,
     route: defaultArgs.route,
