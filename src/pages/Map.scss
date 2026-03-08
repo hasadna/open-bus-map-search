@@ -17,7 +17,10 @@ main > div,
   position: relative;
   margin-bottom: 1em;
 
-  button {
+  .expand-button {
+    left: 5px;
+    bottom: 5px;
+    color: #1976d2 !important;
     position: fixed;
     z-index: 2000;
     width: 2.6rem;
@@ -27,14 +30,14 @@ main > div,
     box-shadow:
       0 1px 3px rgb(0 0 0 / 8%),
       0 6px 16px rgb(0 0 0 / 10%);
-  }
 
-  button:hover {
-    background: rgb(255 255 255 / 65%);
-  }
+    &:hover {
+      background: rgb(255 255 255 / 65%);
+    }
 
-  button:active {
-    background: rgb(255 255 255 / 75%);
+    &:active {
+      background: rgb(255 255 255 / 75%);
+    }
   }
 
   .map-index {
@@ -125,14 +128,8 @@ pre {
   }
 }
 
-.expand-button {
-  position: absolute;
-  left: 5px;
-  bottom: 5px;
-  z-index: 999;
-}
-
 .expanded {
   position: absolute;
   inset: 0;
+  margin-bottom: 0;
 }
