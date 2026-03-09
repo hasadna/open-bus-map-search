@@ -111,7 +111,7 @@
     "@vitejs/plugin-react-oxc": "^0.4.3",
     "babel-plugin-transform-import-meta": "^2.3.3",
     "cross-env": "^10.1.0",
-    "eslint": "^9.35.0",
+    "eslint": "^10.0.3",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.3",
     "eslint-plugin-react": "^7.37.5",
