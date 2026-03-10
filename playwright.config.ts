@@ -1,9 +1,12 @@
+import { EyesFixture } from '@applitools/eyes-playwright/fixture'
 import { defineConfig, devices } from '@playwright/test'
+import username from 'git-username'
+import { getBranch } from 'tests/utils'
 
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
-export default defineConfig({
+export default defineConfig<EyesFixture>({
   testDir: './tests',
   /* Run tests in files in parallel */
   fullyParallel: true,
@@ -28,6 +31,24 @@ export default defineConfig({
     /* Block service workers so they don't intercept stride-api fetch() calls,
        bypassing page.route() handlers (which would break HAR-based mocking in CI). */
     serviceWorkers: 'block',
+
+    eyesConfig: {
+      type: 'ufg',
+      isDisabled: !process.env.APPLITOOLS_API_KEY,
+      failTestsOnDiff: false,
+      batch: {
+        name: process.env.APPLITOOLS_BATCH_NAME ?? `Visual Tests - ${username()}`,
+        id: process.env.APPLITOOLS_BATCH_ID,
+      },
+      browsersInfo: [
+        { width: 1280, height: 720, name: 'chrome' },
+        { width: 1280, height: 720, name: 'safari' },
+        { chromeEmulationInfo: { deviceName: 'Galaxy S23' } },
+        { iosDeviceInfo: { deviceName: 'iPhone 16' } },
+      ],
+      branchName: await getBranch(),
+      parentBranchName: 'main',
+    },
   },
   expect: {
     timeout: 5000,

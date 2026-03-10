@@ -10,8 +10,10 @@ import {
 import { Skeleton } from 'antd'
 import React, { memo, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router'
 import { Gap } from 'src/api/gapsService'
 import dayjs from 'src/dayjs'
+import { formatStartTimeForQuery } from 'src/pages/components/utils/startTimeUtils'
 import Widget from 'src/shared/Widget'
 import DisplayGapsPercentage from '../components/DisplayGapsPercentage'
 import { Row } from '../components/Row'
@@ -20,6 +22,8 @@ interface GapsTableProps {
   gaps?: Gap[]
   loading?: boolean
   initOnlyGapped?: boolean
+  singleLineMapBaseHref: string
+  onStartTimeClick?: (startTime: string) => void
 }
 
 const cellStyle = {
@@ -51,7 +55,13 @@ const formatStatus = (gap: Gap, gaps: Gap[] | undefined): keyof typeof colors =>
   return hasTwinRide ? 'ride_duped' : 'ride_extra'
 }
 
-const GapsTable: React.FC<GapsTableProps> = ({ gaps, loading, initOnlyGapped = false }) => {
+const GapsTable: React.FC<GapsTableProps> = ({
+  gaps,
+  loading,
+  initOnlyGapped = false,
+  singleLineMapBaseHref,
+  onStartTimeClick,
+}) => {
   const { t } = useTranslation()
   const [onlyGapped, setOnlyGapped] = useState(initOnlyGapped)
 
@@ -120,11 +130,28 @@ const GapsTable: React.FC<GapsTableProps> = ({ gaps, loading, initOnlyGapped = f
                   <TableRow key={hour}>
                     {groupedGaps[hour].map(({ gap, status }, j) => {
                       const time = (gap.plannedStartTime || gap.actualStartTime)?.format('HH:mm')
+                      const hasRide = Boolean(gap.actualStartTime)
+                      const startTimeParam = formatStartTimeForQuery(time)
+                      const cellHref = `${singleLineMapBaseHref}&startTime=${startTimeParam}`
                       return (
                         <TableCell
                           key={`${hour}-${j}-${time}`}
-                          sx={{ ...cellStyle, background: colors[status] }}>
-                          {time}
+                          sx={{
+                            ...cellStyle,
+                            background: colors[status],
+                            cursor: hasRide ? 'pointer' : 'default',
+                            '& a, & a:visited, & a:hover, & a:focus': {
+                              color: 'inherit',
+                              textDecoration: 'underline',
+                            },
+                          }}>
+                          {hasRide ? (
+                            <Link to={cellHref} onClick={() => onStartTimeClick?.(startTimeParam)}>
+                              {time}
+                            </Link>
+                          ) : (
+                            time
+                          )}
                         </TableCell>
                       )
                     })}
