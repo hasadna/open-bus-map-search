@@ -28,7 +28,6 @@
     "leaflet": "^1.9.4",
     "leaflet.markercluster": "^1.5.3",
     "lodash.debounce": "^4.0.8",
-    "lodash.uniqby": "^4.7.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-ga4": "^2.1.0",
