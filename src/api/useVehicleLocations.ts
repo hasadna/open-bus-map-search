@@ -47,10 +47,10 @@ class LocationObservable {
   data: SiriVehicleLocationWithRelatedPydanticModel[] = []
   loading = true
 
-  async #loadData(query: VehicleLocationQuery) {
+  async #loadData(querys: VehicleLocationQuery) {
     let offset = 0
     while (this.loading) {
-      const data = await fetchWithQueue(query, offset)
+      const data = await fetchWithQueue(querys, offset)
       if (!data || data.length === 0) {
         this.loading = false
         this.#notifyObservers({ finished: true })

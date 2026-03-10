@@ -107,7 +107,9 @@ export const setupTest = async (page: Page, lng: string = 'he') => {
   await page.route(/stride-api/, (route) => route.abort())
   await page.clock.setSystemTime(getPastDate())
   await page.emulateMedia({ reducedMotion: 'reduce' })
-  await i18next.use(Backend).init({ lng, backend: { loadPath: 'src/locale/{{lng}}.json' } })
+  await i18next
+    .use(Backend)
+    .init({ showSupportNotice: false, lng, backend: { loadPath: 'src/locale/{{lng}}.json' } })
   await page.goto('/')
   await page.locator('.preloader').waitFor({ state: 'hidden' })
 }
