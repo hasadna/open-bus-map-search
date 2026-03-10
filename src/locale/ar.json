@@ -55,7 +55,7 @@
   "ride_as_planned": "خرجت كما هو مخطّط ✔️",
   "ride_missing": "رحلة ناقصة ❌",
   "ride_extra": "رحلة غير مخطّطة 🧐",
-  "ride_duped": "رحلة مكرّرة ❇️",  
+  "ride_duped": "رحلة مكرّرة ❇️",
   "ride_in_future": "رحلة مستقبلية 🕛",
   "checkbox_only_gaps": "الفجوات فقط",
   "velocity_heatmap_page_title": "خريطة حرارية للسرعة",
