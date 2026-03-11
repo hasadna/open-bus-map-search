@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   CartesianGrid,
   Line,
@@ -107,6 +108,7 @@ export default function ArrivalByTimeChart({
   data: ArrivalByTimeData[]
   operatorId: string
 }) {
+  const { t } = useTranslation()
   const filteredData = useMemo(() => filterDataByOperator(data, operatorId), [data, operatorId])
   const groupedData = useMemo(() => groupDataByHourOrDay(filteredData), [filteredData])
 
@@ -134,7 +136,7 @@ export default function ArrivalByTimeChart({
                     <Widget>
                       <InfoTable>
                         <InfoItem
-                          label="זמן"
+                          label={t('sample_time')}
                           value={dayjs(
                             // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                             payload[0].payload.gtfsRouteHour
@@ -144,10 +146,10 @@ export default function ArrivalByTimeChart({
                             payload[0].payload.gtfsRouteHour ? 'HH:mm-DD/MM/YY' : 'DD/MM/YY',
                           )}
                         />
-                        <InfoItem label="ביצוע" value={payload[0].payload.current} />
-                        <InfoItem label="תכנון" value={payload[0].payload.max} />
+                        <InfoItem label={t('rides_actual')} value={payload[0].payload.current} />
+                        <InfoItem label={t('rides_planned')} value={payload[0].payload.max} />
                         <InfoItem
-                          label="דיוק"
+                          label={t('planned_status')}
                           value={`${payload[0].payload.percent.toFixed(2)}%`}
                         />
                       </InfoTable>

@@ -254,6 +254,12 @@
   "order_by_hour": "by hour",
   "order_by_severity": "by severity",
   "choose_dates": "Dates",
+  "date_navigator_prev_week": "Previous week",
+  "date_navigator_prev_day": "Previous day",
+  "date_navigator_today": "Today",
+  "date_navigator_next_day": "Next day",
+  "date_navigator_next_week": "Next week",
+  "gaps_tooltip_rides_executed": "{{percentage}}% of rides were executed ({{actual}}/{{planned}})",
   "single_line_map_title": "Locations of selected lines",
   "operatorSelectorOptions": {
     "all": "all"

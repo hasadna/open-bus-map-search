@@ -256,6 +256,12 @@
   "order_by_hour": "לפי שעה",
   "order_by_severity": "לפי חומרה",
   "choose_dates": "תאריכים",
+  "date_navigator_prev_week": "שבוע קודם",
+  "date_navigator_prev_day": "יום קודם",
+  "date_navigator_today": "היום",
+  "date_navigator_next_day": "יום הבא",
+  "date_navigator_next_week": "שבוע הבא",
+  "gaps_tooltip_rides_executed": "בוצעו {{percentage}}% מהנסיעות ({{actual}}/{{planned}})",
   "single_line_map_title": "מיקומים של קו שנבחר",
   "reportBug": {
     "description": "טופס זה נועד על מנת שנוכל לקבל פידבק ולשפר את האפליקציה. לתשומת לבך - הטופס נשלח לGitHub, והמידע שיצויין בו יהיה ציבורי.",
