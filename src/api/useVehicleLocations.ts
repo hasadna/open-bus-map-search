@@ -4,6 +4,7 @@
  * if some of the interval has already been loaded,
  */
 import type { SiriVehicleLocationWithRelatedPydanticModel } from '@hasadna/open-bus-api-client'
+import { uniqBy } from 'lodash'
 import { useEffect, useState } from 'react'
 import dayjs from 'src/dayjs'
 import { SIRI_API } from './apiConfig'
@@ -49,15 +50,15 @@ class LocationObservable {
 
   async #loadData(querys: VehicleLocationQuery) {
     let offset = 0
-    while (this.loading) {
-      const data = await fetchWithQueue(querys, offset)
+    for (let i = 1; this.loading; i++) {
+      const data = await fetchWithQueue(querys, i, offset)
       if (!data || data.length === 0) {
         this.loading = false
         this.#notifyObservers({ finished: true })
       } else {
         this.data = [...this.data, ...data]
         this.#notifyObservers(data)
-        offset += LIMIT
+        offset += LIMIT * i
       }
     }
     this.#observers = []
@@ -65,6 +66,7 @@ class LocationObservable {
 
   #notifyObservers(data: SiriVehicleLocationWithRelatedPydanticModel[] | { finished: true }) {
     const observers = this.#observers
+    console.log('notifying observers', observers.length)
     observers.forEach((observer) => observer(data))
   }
 
@@ -92,6 +94,7 @@ const pool = new Array(10)
   .map(() => Promise.resolve<void | SiriVehicleLocationWithRelatedPydanticModel[]>(void 0))
 async function fetchWithQueue(
   { from, to, lineRef, operatorRef, vehicleRef }: VehicleLocationQuery,
+  index: number,
   offset: number,
 ) {
   const task = async () => {
@@ -100,7 +103,7 @@ async function fetchWithQueue(
         return await SIRI_API.siriVehicleLocationsListGet({
           recordedAtTimeFrom: dayjs(from).toDate(),
           recordedAtTimeTo: dayjs(to).toDate(),
-          limit: LIMIT,
+          limit: LIMIT * index,
           offset,
           siriRoutesOperatorRef: operatorRef?.toString(),
           siriRoutesLineRef: lineRef?.toString(),
@@ -155,20 +158,6 @@ function getMinutesInRange(from: Dateable, to: Dateable, gap = 1) {
   return minutes
 }
 
-function mergeAndSortUniqueLocations(
-  previous: SiriVehicleLocationWithRelatedPydanticModel[],
-  next: SiriVehicleLocationWithRelatedPydanticModel[],
-) {
-  const mergedById = new Map<number | undefined, SiriVehicleLocationWithRelatedPydanticModel>()
-  for (const location of previous) {
-    mergedById.set(location.id, location)
-  }
-  for (const location of next) {
-    mergedById.set(location.id, location)
-  }
-  return [...mergedById.values()].sort((a, b) => (a.id || 0) - (b.id || 0))
-}
-
 export default function useVehicleLocations({
   from,
   to,
@@ -202,7 +191,12 @@ export default function useVehicleLocations({
               return newIsLoading
             })
           } else {
-            setLocations((prev) => mergeAndSortUniqueLocations(prev, data))
+            setLocations((prev) =>
+              uniqBy<SiriVehicleLocationWithRelatedPydanticModel>(
+                [...prev, ...data].sort((a, b) => (a.id || 0) - (b.id || 0)),
+                (loc) => loc.id,
+              ),
+            )
           }
         },
       }),
@@ -212,7 +206,7 @@ export default function useVehicleLocations({
       unmounts.forEach((unmount) => unmount())
       setIsLoading([])
     }
-  }, [from, to, lineRef, vehicleRef, operatorRef, split, pause])
+  }, [from, to, lineRef, vehicleRef, split])
   return {
     locations,
     isLoading: isLoading.some((loading) => loading),
