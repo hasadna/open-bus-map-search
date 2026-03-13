@@ -1,5 +1,6 @@
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
+import translationsAR from './ar.json'
 import translationsEN from './en.json'
 import translationsHE from './he.json'
 import translationsRU from './ru.json'
@@ -11,7 +12,9 @@ const savedLang =
     : 'he'
 
 i18n.use(initReactI18next).init({
+  showSupportNotice: false,
   resources: {
+    ar: { translation: translationsAR },
     he: { translation: translationsHE },
     en: { translation: translationsEN },
     ru: { translation: translationsRU },

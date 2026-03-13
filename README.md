@@ -99,6 +99,7 @@ We’ve hidden a few fun surprises in the [web app](https://open-bus-map-search.
     </tr>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/moshe742"><img src="https://avatars.githubusercontent.com/u/1392908?v=4?s=100" width="100px;" alt="Moshe Nahmias"/><br /><sub><b>Moshe Nahmias</b></sub></a><br /><a href="#code-moshe742" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Ron-Burg"><img src="https://avatars.githubusercontent.com/u/26197727?v=4?s=100" width="100px;" alt="Ron Burg"/><br /><sub><b>Ron Burg</b></sub></a><br /><a href="#code-Ron-Burg" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="http://berketok.com"><img src="https://avatars.githubusercontent.com/u/58489708?v=4?s=100" width="100px;" alt="Berke T."/><br /><sub><b>Berke T.</b></sub></a><br /><a href="#code-berketok-git" title="Code">💻</a></td>
     </tr>
   </tbody>

@@ -4,7 +4,7 @@
  * if some of the interval has already been loaded,
  */
 import type { SiriVehicleLocationWithRelatedPydanticModel } from '@hasadna/open-bus-api-client'
-import uniqBy from 'lodash.uniqby'
+import { uniqBy } from 'lodash'
 import { useEffect, useState } from 'react'
 import dayjs from 'src/dayjs'
 import { SIRI_API } from './apiConfig'

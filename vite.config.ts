@@ -1,4 +1,5 @@
-import react from '@vitejs/plugin-react-oxc'
+import babel from '@rolldown/plugin-babel'
+import react, { reactCompilerPreset } from '@vitejs/plugin-react'
 import { defineConfig, loadEnv } from 'vite'
 import IstanbulPlugin from 'vite-plugin-istanbul'
 
@@ -10,6 +11,9 @@ export default defineConfig(({ mode }) => {
     base: env?.VITE_BASE_PATH || '/',
     plugins: [
       react(),
+      babel({
+        presets: [reactCompilerPreset()],
+      }),
       ...(env?.VITE_COVERAGE
         ? [
             IstanbulPlugin({
