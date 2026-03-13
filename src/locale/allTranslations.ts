@@ -12,6 +12,7 @@ const savedLang =
     : 'he'
 
 i18n.use(initReactI18next).init({
+  showSupportNotice: false,
   resources: {
     ar: { translation: translationsAR },
     he: { translation: translationsHE },

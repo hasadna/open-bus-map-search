@@ -25,7 +25,7 @@ export default function SideBar() {
       <Drawer
         placement={i18n.dir() === 'rtl' ? 'right' : 'left'}
         mask
-        width={280}
+        size={280}
         onClose={() => setDrawerOpen(false)}
         open={drawerOpen}
         rootClassName={cn('hideOnDesktop', { dark: isDarkTheme })}

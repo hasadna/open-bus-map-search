@@ -1,6 +1,6 @@
 import { TextField } from '@mui/material'
 import classNames from 'classnames'
-import debounce from 'lodash.debounce'
+import { debounce } from 'lodash'
 import { useCallback, useLayoutEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import ClearButton from './ClearButton'
