@@ -116,7 +116,7 @@ export const visitPage = async (page: Page, label: (typeof PAGES)[number]['label
   const link = page.getByText(i18next.t(label), { exact: true }).and(page.getByRole('link'))
   const href = await link.getAttribute('href')
   await link.click()
-  if (href) await page.waitForURL(`**${href}`)
+  if (href) await page.waitForURL((url) => url.pathname === href)
   await page.waitForTimeout(500)
   await page.locator('.preloader').waitFor({ state: 'hidden' })
   await page.waitForLoadState('networkidle')
