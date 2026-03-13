@@ -10,7 +10,7 @@ import {
   Legend,
   ResponsiveContainer,
   Tooltip,
-  TooltipProps,
+  TooltipContentProps,
   XAxis,
   YAxis,
 } from 'recharts'
@@ -42,16 +42,14 @@ interface BusLineStatisticsProps {
 
 const now = dayjs()
 
-type CustomTooltipProps = TooltipProps<number, string> & {
-  payload?: readonly { name: string; value?: number }[]
-}
-
-const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
+const CustomTooltip = ({ active, payload }: TooltipContentProps) => {
   const { t } = useTranslation()
   if (active && payload && payload.length > 1) {
-    const actualRides = payload[0].value || 0
-    const plannedRides = payload[1].value || 0
-    const actualPercentage = ((actualRides / plannedRides) * 100).toFixed(0)
+    const actualRides = Number(payload[0].value)
+    const plannedRides = Number(payload[1].value)
+    const actualPercentage =
+      plannedRides > 0 ? ((actualRides / plannedRides) * 100).toFixed(0) : '0'
+
     return (
       <div className="custom-tooltip tooltip-style">
         {t('gaps_tooltip_rides_executed', {
