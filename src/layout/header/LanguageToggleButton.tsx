@@ -11,6 +11,7 @@ export const LanguageToggleButton = () => {
     { key: 'he', label: 'עברית' },
     { key: 'en', label: 'English' },
     { key: 'ru', label: 'Русский' },
+    { key: 'ar', label: 'العربية' },
   ]
 
   const LangLabel = ({ label }: { label: string }) => (
