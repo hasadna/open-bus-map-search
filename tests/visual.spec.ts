@@ -49,6 +49,7 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
 
     test(`About Page Should Look Good [${mode}]`, async ({ page, eyes }) => {
       await visitPage(page, 'about_title')
+      await page.locator('.page-title').waitFor()
       await eyes.check('about page')
     })
 
@@ -59,12 +60,14 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
     }) => {
       await advancedRouteFromHAR('tests/HAR/timeline.har', harOptions)
       await visitPage(page, 'timeline_page_title')
+      await page.locator('.page-title').waitFor()
       await eyes.check('timeline page')
     })
 
     test(`Gaps Page Should Look Good [${mode}]`, async ({ page, advancedRouteFromHAR, eyes }) => {
       await advancedRouteFromHAR('tests/HAR/missing.har', harOptions)
       await visitPage(page, 'gaps_page_title')
+      await page.locator('.page-title').waitFor()
       await eyes.check('gaps page')
     })
 
@@ -75,6 +78,7 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
     }) => {
       await advancedRouteFromHAR('tests/HAR/patterns.har', harOptions)
       await visitPage(page, 'gaps_patterns_page_title')
+      await page.getByRole('heading', { level: 4 }).waitFor()
       await eyes.check('gaps_patterns page')
     })
 
@@ -114,6 +118,7 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
 
     test(`Public Appeal Page Should Look Good [${mode}]`, async ({ page, eyes }) => {
       await visitPage(page, 'public_appeal_title')
+      await page.locator('.page-title').waitFor()
       await eyes.check('public appeal page')
     })
 
