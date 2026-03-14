@@ -2,6 +2,10 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { http, HttpResponse } from 'msw'
 import { waitFor, within } from 'storybook/test'
 import Widget from 'src/shared/Widget'
+import {
+  busToolTipMockedRoute,
+  busToolTipMockedSiriRides,
+} from '../../../../../.storybook/mockData'
 import { BusToolTip, BusToolTipProps } from './BusToolTip'
 
 const meta = {
@@ -22,6 +26,38 @@ const meta = {
 export default meta
 
 type Story = StoryObj<typeof meta>
+
+const routeHandler = http.get(
+  (info) => new URL(info.request.url).pathname === '/gtfs_routes/list',
+  ({ request }) => {
+    const { searchParams } = new URL(request.url)
+    const matchesLineRef = searchParams.get('line_refs') === '2974'
+    const matchesOperatorRef = searchParams.get('operator_refs') === '3'
+
+    if (!matchesLineRef || !matchesOperatorRef) {
+      return HttpResponse.json()
+    }
+
+    return HttpResponse.json(busToolTipMockedRoute)
+  },
+)
+
+const ridesHandler = http.get(
+  (info) => new URL(info.request.url).pathname === '/siri_rides/list',
+  ({ request }) => {
+    const { searchParams } = new URL(request.url)
+
+    const matchesLineRef = searchParams.get('siri_route__line_refs') === '2974'
+    const matchesRouteRef = searchParams.get('siri_route_ids') === '973'
+    const matchesVehicleRef = searchParams.get('vehicle_refs') === '23321002'
+
+    if (!matchesLineRef || !matchesRouteRef || !matchesVehicleRef) {
+      return HttpResponse.json()
+    }
+
+    return HttpResponse.json(busToolTipMockedSiriRides)
+  },
+)
 
 const defaultArgs: BusToolTipProps = {
   position: {
@@ -58,27 +94,11 @@ const defaultArgs: BusToolTipProps = {
   icon: '/bus-logos/3.svg',
 }
 
-const mockRouteHandler = http.get(
-  (info) => new URL(info.request.url).pathname === '/gtfs_routes/list',
-  () =>
-    HttpResponse.json([
-      {
-        id: 12345,
-        date: '2023-11-01',
-        line_ref: 2974,
-        operator_ref: 3,
-        route_short_name: '39',
-        route_long_name: 'תל אביב-מרכז <> רמת גן',
-        agency_name: 'דן',
-      },
-    ]),
-)
-
 export const Default: Story = {
   args: defaultArgs,
   parameters: {
     msw: {
-      handlers: [mockRouteHandler],
+      handlers: [routeHandler, ridesHandler],
     },
   },
 }
@@ -87,13 +107,13 @@ export const WithComplaint: Story = {
   args: defaultArgs,
   parameters: {
     msw: {
-      handlers: [mockRouteHandler],
+      handlers: [routeHandler, ridesHandler],
     },
   },
   play: async ({ canvasElement, userEvent }) => {
     const canvas = within(canvasElement)
     // Wait for the route to finish loading
-    await waitFor(() => canvas.getByText('דן'))
+    await waitFor(() => canvas.getByText('אגד'))
     // Type the easter egg code to reveal the complaint button
     await userEvent.type(canvasElement, 'complaint')
     // Confirm the complaint button appeared
