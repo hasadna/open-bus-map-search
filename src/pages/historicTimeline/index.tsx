@@ -95,7 +95,7 @@ const TimelinePage = () => {
 
   return (
     <PageContainer>
-      <Typography variant="h4" gutterBottom>
+      <Typography variant="h4" gutterBottom className="page-title">
         {t('timeline_page_title')}
       </Typography>
       <Alert severity="info" variant="outlined" icon={false}>

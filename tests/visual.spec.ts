@@ -124,6 +124,7 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
 
     test(`Data Research Page Should Look Good [${mode}]`, async ({ page, eyes }) => {
       await page.goto('/data-research')
+      await waitForSkeletonsToHide(page)
       await eyes.check('data research page')
     })
   })
