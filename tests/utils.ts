@@ -118,7 +118,9 @@ export const visitPage = async (page: Page, label: (typeof PAGES)[number]['label
   const link = page.getByText(i18next.t(label), { exact: true }).and(page.getByRole('link'))
   const href = await link.getAttribute('href')
   // Register waitForURL before clicking to avoid missing fast client-side navigations
-  const navigationPromise = href ? page.waitForURL((url) => url.pathname === href) : Promise.resolve()
+  const navigationPromise = href
+    ? page.waitForURL((url) => url.pathname === href)
+    : Promise.resolve()
   await link.click()
   await navigationPromise
   await page.waitForTimeout(500)
