@@ -14,13 +14,10 @@ export type BusRoute = {
   mkt: string
 }
 
-const strLeftBack = (str: string, dash: string) => {
-  const lastDashIndex = str.lastIndexOf(dash)
-  return lastDashIndex === -1 ? str : str.slice(0, lastDashIndex)
-}
-
 export function fromGtfsRoute(gtfsRoute: GtfsRoutePydanticModel): BusRoute {
-  const cleanedName = strLeftBack(gtfsRoute.routeLongName!, '-')
+  const route = gtfsRoute.routeLongName || ''
+  const lastDashIndex = route.lastIndexOf('-')
+  const cleanedName = lastDashIndex === -1 ? route : route.slice(0, lastDashIndex)
   const parts = cleanedName.split('<->')
   return {
     date: gtfsRoute.date,
