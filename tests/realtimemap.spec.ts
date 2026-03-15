@@ -18,7 +18,7 @@ test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
   await visitPage(page, 'time_based_map_page_title')
 })
 test('time-based-map page', async ({ page }) => {
-  await fillDateField(page, 'תאריך', new Date().toLocaleDateString('en-GB'))
+  await fillDateField(page, 'תאריך')
   await page.locator('input[type="number"]').first().fill('6')
 })
 

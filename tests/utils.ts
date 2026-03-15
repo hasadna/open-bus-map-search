@@ -124,7 +124,11 @@ export const waitForSkeletonsToHide = async (page: Page) => {
   }
 }
 
-export const fillDateField = async (page: Page, label: string, value: string) => {
+export const fillDateField = async (
+  page: Page,
+  label: string,
+  value: string = getPastDate().toLocaleDateString('en-GB'),
+) => {
   const field = page.getByRole('group', { name: label }).first()
   const [day, month, year] = value.split('/')
   const sections = field.getByRole('spinbutton')
@@ -136,7 +140,7 @@ export const fillDateField = async (page: Page, label: string, value: string) =>
   await sections.nth(2).press('Tab')
 }
 
-export const clickClearInput = async (input: Locator) => {
+export const clearInputField = async (input: Locator) => {
   const clearIndicator = input.locator('..').locator('.clear-indicator').first()
   await input.hover()
   await input.click()
