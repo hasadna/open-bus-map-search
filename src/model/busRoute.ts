@@ -1,5 +1,4 @@
 import { GtfsRoutePydanticModel } from '@hasadna/open-bus-api-client'
-import { strLeftBack } from 'underscore.string'
 
 export type BusRoute = {
   date: Date
@@ -13,6 +12,11 @@ export type BusRoute = {
   lineRef: number
   routeAlternative: string
   mkt: string
+}
+
+const strLeftBack = (str: string, dash: string) => {
+  const lastDashIndex = str.lastIndexOf(dash)
+  return lastDashIndex === -1 ? str : str.slice(0, lastDashIndex)
 }
 
 export function fromGtfsRoute(gtfsRoute: GtfsRoutePydanticModel): BusRoute {
