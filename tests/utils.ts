@@ -2,16 +2,13 @@ import { exec } from 'child_process'
 import * as crypto from 'crypto'
 import * as fs from 'fs'
 import * as path from 'path'
-import { BrowserContext, Page } from '@playwright/test'
+import { BrowserContext, expect, Page } from '@playwright/test'
 import i18next from 'i18next'
 import Backend from 'i18next-fs-backend'
 import { test as baseTest, customMatcher, Matcher } from 'playwright-advanced-har'
 import { RouteFromHAROptions } from 'playwright-advanced-har/lib/utils/types'
-import { expect } from 'playwright-assertions'
 import dayjs from 'src/dayjs'
 import { PAGES } from 'src/routes'
-
-export { expect } from 'playwright-assertions'
 
 type CollectIstanbulCoverageWindow = Window &
   typeof globalThis & {
