@@ -2,7 +2,7 @@ import { exec } from 'child_process'
 import * as crypto from 'crypto'
 import * as fs from 'fs'
 import * as path from 'path'
-import { BrowserContext, expect, Page } from '@playwright/test'
+import { expect as baseExpect, BrowserContext, Page } from '@playwright/test'
 import i18next from 'i18next'
 import Backend from 'i18next-fs-backend'
 import { test as baseTest, customMatcher, Matcher } from 'playwright-advanced-har'
@@ -17,6 +17,37 @@ type CollectIstanbulCoverageWindow = Window &
   }
 
 const istanbulCLIOutput = path.join(process.cwd(), '.nyc_output')
+
+export const expect = baseExpect.extend({
+  toHaveDuplications(received: unknown) {
+    if (!Array.isArray(received)) {
+      return {
+        pass: false,
+        message: () => `expected an array, but received ${typeof received}`,
+      }
+    }
+
+    const counts = new Map<string, number>()
+    for (const item of received) {
+      const key = String(item).trim()
+      counts.set(key, (counts.get(key) ?? 0) + 1)
+    }
+
+    const duplicates = Array.from(counts.entries())
+      .filter(([, count]) => count > 1)
+      .map(([value, count]) => `${JSON.stringify(value)} (${count})`)
+
+    const pass = duplicates.length > 0
+
+    return {
+      pass,
+      message: () =>
+        pass
+          ? `expected array not to contain duplicate values, but found ${duplicates.join(', ')}`
+          : 'expected array to contain duplicate values, but none were found',
+    }
+  },
+})
 
 export function generateUUID(): string {
   return crypto.randomBytes(16).toString('hex')
