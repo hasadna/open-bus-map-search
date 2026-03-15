@@ -79,6 +79,14 @@ export const ThemeProvider = ({ children }: PropsWithChildren) => {
     return createTheme(
       {
         components: {
+          MuiInputAdornment: {
+            styleOverrides: {
+              root: {
+                marginRight: 8,
+                marginLeft: 0,
+              },
+            },
+          },
           MuiCard: {
             styleOverrides: {
               root: {
