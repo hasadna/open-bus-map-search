@@ -2,7 +2,7 @@ import { exec } from 'child_process'
 import * as crypto from 'crypto'
 import * as fs from 'fs'
 import * as path from 'path'
-import { expect as baseExpect, BrowserContext, Page } from '@playwright/test'
+import { expect as baseExpect, BrowserContext, Locator, Page } from '@playwright/test'
 import i18next from 'i18next'
 import Backend from 'i18next-fs-backend'
 import { test as baseTest, customMatcher, Matcher } from 'playwright-advanced-har'
@@ -122,6 +122,33 @@ export const waitForSkeletonsToHide = async (page: Page) => {
   while ((await page.locator('.ant-skeleton-content').count()) > 0) {
     await page.locator('.ant-skeleton-content').last().waitFor({ state: 'hidden' })
   }
+}
+
+export const getMuiField = (page: Page, label: string) => {
+  return page.getByRole('group', { name: label }).first()
+}
+
+export const fillMuiDateField = async (page: Page, label: string, value: string) => {
+  const field = getMuiField(page, label)
+  const [day, month, year] = value.split('/')
+  const sections = field.getByRole('spinbutton')
+
+  await field.waitFor()
+  await sections.nth(0).fill(day.padStart(2, '0'))
+  await sections.nth(1).fill(month.padStart(2, '0'))
+  await sections.nth(2).fill(year)
+  await sections.nth(2).press('Tab')
+}
+
+export const clickClearIndicator = async (input: Locator) => {
+  const formControl = input.locator(
+    'xpath=ancestor::*[contains(@class,"MuiFormControl-root") or contains(@class,"MuiTextField-root")][1]',
+  )
+  const clearIndicator = formControl.locator('.clear-indicator').first()
+  await input.hover()
+  await input.click()
+  await clearIndicator.waitFor({ state: 'visible' })
+  await clearIndicator.click()
 }
 
 export const setupTest = async (page: Page, lng: string = 'he') => {

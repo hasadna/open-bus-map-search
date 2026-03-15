@@ -1,4 +1,12 @@
-import { expect, harOptions, setupTest, test, visitPage, waitForSkeletonsToHide } from './utils'
+import {
+  expect,
+  fillMuiDateField,
+  harOptions,
+  setupTest,
+  test,
+  visitPage,
+  waitForSkeletonsToHide,
+} from './utils'
 
 const TRIP_EXISTENCE_ITEMS = [
   'קיום נסיעות',
@@ -35,10 +43,8 @@ test.describe('dashboard tests', () => {
   })
 
   test('choosing params in "קיום נסיעות" and organize by date/hour ', async ({ page }) => {
-    await page.getByLabel('התחלה').click()
-    await page.getByLabel('התחלה').fill('02/6/2024')
-    await page.getByLabel('סיום').click()
-    await page.getByLabel('סיום').fill('02/6/2024')
+    await fillMuiDateField(page, 'התחלה', '02/6/2024')
+    await fillMuiDateField(page, 'סיום', '02/6/2024')
     await page.getByLabel('חברה מפעילה').click()
     await page.getByRole('option', { name: 'דן', exact: true }).click()
     await page.getByText('קיבוץ לפי שעה').click()
