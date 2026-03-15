@@ -3,8 +3,7 @@ import i18next from 'i18next'
 import { operatorList } from 'src/pages/operator/data'
 import {
   expect,
-  fillMuiDateField,
-  getMuiField,
+  fillDateField,
   harOptions,
   setupTest,
   test,
@@ -29,7 +28,7 @@ test.describe('Operator Page Tests', () => {
     await expect(page.locator('h4')).toHaveText(i18next.t('operator_title'))
     await page.getByRole('button', { name: 'פתח' }).click()
     await page.getByRole('option', { name: 'אגד', exact: true }).click()
-    await fillMuiDateField(page, 'תאריך', '06/05/2024')
+    await fillDateField(page, 'תאריך', '06/05/2024')
     await page.getByRole('button', { name: 'יומית' }).click()
     await page.getByRole('button', { name: 'שבועית' }).click()
     await page.getByRole('button', { name: 'חודשית' }).click()
@@ -43,7 +42,11 @@ test.describe('Operator Page Tests', () => {
   test('Test operator inputs', async ({ page }) => {
     await test.step('Validate inputs are disabled when no operator is selected', async () => {
       await expect(page.getByRole('combobox', { name: i18next.t('choose_operator') })).toBeEmpty()
-      const dateInput = getMuiField(page, i18next.t('choose_date')).getByRole('spinbutton').first()
+      const dateInput = page
+        .getByRole('group', { name: i18next.t('choose_date') })
+        .first()
+        .getByRole('spinbutton')
+        .first()
       await expect(dateInput).toBeDisabled()
       await expect(
         page.getByRole('button', { name: i18next.t('operator.time_range.day') }),
@@ -62,7 +65,11 @@ test.describe('Operator Page Tests', () => {
     })
 
     await test.step('Validate inputs are enabled after selecting an operator', async () => {
-      const dateInput = getMuiField(page, i18next.t('choose_date')).getByRole('spinbutton').first()
+      const dateInput = page
+        .getByRole('group', { name: i18next.t('choose_date') })
+        .first()
+        .getByRole('spinbutton')
+        .first()
       await expect(dateInput).toBeEnabled()
       await expect(
         page.getByRole('button', { name: i18next.t('operator.time_range.day') }),

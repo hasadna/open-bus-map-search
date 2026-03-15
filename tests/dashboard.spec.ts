@@ -1,6 +1,6 @@
 import {
   expect,
-  fillMuiDateField,
+  fillDateField,
   harOptions,
   setupTest,
   test,
@@ -43,8 +43,8 @@ test.describe('dashboard tests', () => {
   })
 
   test('choosing params in "קיום נסיעות" and organize by date/hour ', async ({ page }) => {
-    await fillMuiDateField(page, 'התחלה', '02/6/2024')
-    await fillMuiDateField(page, 'סיום', '02/6/2024')
+    await fillDateField(page, 'התחלה', '02/6/2024')
+    await fillDateField(page, 'סיום', '02/6/2024')
     await page.getByLabel('חברה מפעילה').click()
     await page.getByRole('option', { name: 'דן', exact: true }).click()
     await page.getByText('קיבוץ לפי שעה').click()

@@ -124,12 +124,8 @@ export const waitForSkeletonsToHide = async (page: Page) => {
   }
 }
 
-export const getMuiField = (page: Page, label: string) => {
-  return page.getByRole('group', { name: label }).first()
-}
-
-export const fillMuiDateField = async (page: Page, label: string, value: string) => {
-  const field = getMuiField(page, label)
+export const fillDateField = async (page: Page, label: string, value: string) => {
+  const field = page.getByRole('group', { name: label }).first()
   const [day, month, year] = value.split('/')
   const sections = field.getByRole('spinbutton')
 
@@ -140,11 +136,8 @@ export const fillMuiDateField = async (page: Page, label: string, value: string)
   await sections.nth(2).press('Tab')
 }
 
-export const clickClearIndicator = async (input: Locator) => {
-  const formControl = input.locator(
-    'xpath=ancestor::*[contains(@class,"MuiFormControl-root") or contains(@class,"MuiTextField-root")][1]',
-  )
-  const clearIndicator = formControl.locator('.clear-indicator').first()
+export const clickClearInput = async (input: Locator) => {
+  const clearIndicator = input.locator('..').locator('.clear-indicator').first()
   await input.hover()
   await input.click()
   await clearIndicator.waitFor({ state: 'visible' })
