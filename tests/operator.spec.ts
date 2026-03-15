@@ -42,12 +42,7 @@ test.describe('Operator Page Tests', () => {
   test('Test operator inputs', async ({ page }) => {
     await test.step('Validate inputs are disabled when no operator is selected', async () => {
       await expect(page.getByRole('combobox', { name: i18next.t('choose_operator') })).toBeEmpty()
-      const dateInput = page
-        .getByRole('group', { name: i18next.t('choose_date') })
-        .first()
-        .getByRole('spinbutton')
-        .first()
-      await expect(dateInput).toBeDisabled()
+      await expect(page.locator('input.MuiPickersInputBase-input')).toBeDisabled()
       await expect(
         page.getByRole('button', { name: i18next.t('operator.time_range.day') }),
       ).toBeDisabled()
@@ -65,12 +60,7 @@ test.describe('Operator Page Tests', () => {
     })
 
     await test.step('Validate inputs are enabled after selecting an operator', async () => {
-      const dateInput = page
-        .getByRole('group', { name: i18next.t('choose_date') })
-        .first()
-        .getByRole('spinbutton')
-        .first()
-      await expect(dateInput).toBeEnabled()
+      await expect(page.locator('input.MuiPickersInputBase-input')).toBeEnabled()
       await expect(
         page.getByRole('button', { name: i18next.t('operator.time_range.day') }),
       ).toBeEnabled()
