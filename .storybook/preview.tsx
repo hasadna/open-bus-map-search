@@ -7,7 +7,6 @@ import { ThemeProvider, useTheme } from 'src/layout/ThemeContext'
 import i18n from 'src/locale/allTranslations'
 import 'leaflet/dist/leaflet.css'
 import 'src/App.scss'
-import 'src/index.css'
 
 const queryClient = new QueryClient({
   defaultOptions: {
