@@ -121,7 +121,7 @@
     "identity-obj-proxy": "^3.0.0",
     "jest": "^30.3.0",
     "jest-environment-jsdom": "^30.3.0",
-    "jsdom": "^28.1.0",
+    "jsdom": "^29.0.0",
     "lightningcss": "^1.32.0",
     "msw": "^2.12.10",
     "msw-storybook-addon": "^2.0.6",
