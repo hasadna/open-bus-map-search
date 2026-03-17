@@ -2,16 +2,13 @@ import { exec } from 'child_process'
 import * as crypto from 'crypto'
 import * as fs from 'fs'
 import * as path from 'path'
-import { BrowserContext, Page } from '@playwright/test'
+import { expect as baseExpect, BrowserContext, Page } from '@playwright/test'
 import i18next from 'i18next'
 import Backend from 'i18next-fs-backend'
 import { test as baseTest, customMatcher, Matcher } from 'playwright-advanced-har'
 import { RouteFromHAROptions } from 'playwright-advanced-har/lib/utils/types'
-import { expect } from 'playwright-assertions'
 import dayjs from 'src/dayjs'
 import { PAGES } from 'src/routes'
-
-export { expect } from 'playwright-assertions'
 
 type CollectIstanbulCoverageWindow = Window &
   typeof globalThis & {
@@ -20,6 +17,27 @@ type CollectIstanbulCoverageWindow = Window &
   }
 
 const istanbulCLIOutput = path.join(process.cwd(), '.nyc_output')
+
+export const expect = baseExpect.extend({
+  toHaveDuplications(received: unknown) {
+    if (!Array.isArray(received)) {
+      return {
+        pass: false,
+        message: () => `expected an array, but received ${typeof received}`,
+      }
+    }
+
+    const pass = new Set(received.map((item) => String(item).trim())).size !== received.length
+
+    return {
+      pass,
+      message: () =>
+        pass
+          ? 'expected array not to contain duplicate values, but duplicates were found'
+          : 'expected array to contain duplicate values, but none were found',
+    }
+  },
+})
 
 export function generateUUID(): string {
   return crypto.randomBytes(16).toString('hex')
