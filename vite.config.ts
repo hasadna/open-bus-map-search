@@ -29,11 +29,12 @@ export default defineConfig(({ mode }) => {
         src: '/src',
       },
     },
-    build: {
-      cssMinify: 'lightningcss',
+    css: {
+      transformer: 'lightningcss',
     },
     define: {
-      'process.env': env,
+      'process.env.VITE_STRIDE_API': JSON.stringify(env.VITE_STRIDE_API ?? ''),
+      'process.env.VITE_BACKEND_API': JSON.stringify(env.VITE_BACKEND_API ?? ''),
     },
     server: {
       port: 3000,
