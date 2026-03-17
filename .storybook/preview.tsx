@@ -6,8 +6,7 @@ import { BrowserRouter } from 'react-router'
 import { ThemeProvider, useTheme } from 'src/layout/ThemeContext'
 import i18n from 'src/locale/allTranslations'
 import 'leaflet/dist/leaflet.css'
-import 'src/App.scss'
-import 'src/index.css'
+import 'src/index.scss'
 
 const queryClient = new QueryClient({
   defaultOptions: {
