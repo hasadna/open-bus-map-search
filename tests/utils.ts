@@ -27,23 +27,13 @@ export const expect = baseExpect.extend({
       }
     }
 
-    const counts = new Map<string, number>()
-    for (const item of received) {
-      const key = String(item).trim()
-      counts.set(key, (counts.get(key) ?? 0) + 1)
-    }
-
-    const duplicates = Array.from(counts.entries())
-      .filter(([, count]) => count > 1)
-      .map(([value, count]) => `${JSON.stringify(value)} (${count})`)
-
-    const pass = duplicates.length > 0
+    const pass = new Set(received.map((item) => String(item).trim())).size !== received.length
 
     return {
       pass,
       message: () =>
         pass
-          ? `expected array not to contain duplicate values, but found ${duplicates.join(', ')}`
+          ? 'expected array not to contain duplicate values, but duplicates were found'
           : 'expected array to contain duplicate values, but none were found',
     }
   },

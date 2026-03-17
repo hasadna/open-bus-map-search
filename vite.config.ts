@@ -9,10 +9,6 @@ export default defineConfig(({ mode }) => {
 
   return {
     base: env?.VITE_BASE_PATH || '/',
-    define: {
-      'process.env.VITE_STRIDE_API': JSON.stringify(env.VITE_STRIDE_API ?? ''),
-      'process.env.VITE_BACKEND_API': JSON.stringify(env.VITE_BACKEND_API ?? ''),
-    },
     plugins: [
       react(),
       babel({
@@ -35,6 +31,10 @@ export default defineConfig(({ mode }) => {
     },
     css: {
       transformer: 'lightningcss',
+    },
+    define: {
+      'process.env.VITE_STRIDE_API': JSON.stringify(env.VITE_STRIDE_API ?? ''),
+      'process.env.VITE_BACKEND_API': JSON.stringify(env.VITE_BACKEND_API ?? ''),
     },
     server: {
       port: 3000,
