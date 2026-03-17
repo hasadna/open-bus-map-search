@@ -1,12 +1,4 @@
-import {
-  expect,
-  fillDateField,
-  harOptions,
-  setupTest,
-  test,
-  visitPage,
-  waitForSkeletonsToHide,
-} from './utils'
+import { expect, fillDateField, harOptions, setupTest, test, waitForSkeletonsToHide } from './utils'
 
 const TRIP_EXISTENCE_ITEMS = [
   'קיום נסיעות',
@@ -18,7 +10,9 @@ test.describe('dashboard tests', () => {
   test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
     await setupTest(page)
     await advancedRouteFromHAR('tests/HAR/dashboard.har', harOptions)
-    await visitPage(page, 'dashboard_page_title')
+    await page.goto('/dashboard')
+    await page.locator('.preloader').waitFor({ state: 'hidden' })
+    await page.waitForLoadState('networkidle')
     await page.getByText('הקווים הגרועים ביותר').waitFor()
     await waitForSkeletonsToHide(page)
   })

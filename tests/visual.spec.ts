@@ -38,7 +38,10 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
       eyes,
     }) => {
       await advancedRouteFromHAR('tests/HAR/dashboard.har', harOptions)
-      await visitPage(page, 'dashboard_page_title')
+      await page.goto('/dashboard')
+      await page.locator('.preloader').waitFor({ state: 'hidden' })
+      await page.waitForLoadState('networkidle')
+      await waitForSkeletonsToHide(page)
       await page.getByText('אגד').first().waitFor()
       await waitForSkeletonsToHide(page)
       await eyes.check('dashboard page', {
@@ -124,6 +127,7 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
 
     test(`Data Research Page Should Look Good [${mode}]`, async ({ page, eyes }) => {
       await page.goto('/data-research')
+      await page.locator('.preloader').waitFor({ state: 'hidden' })
       await page.waitForLoadState('networkidle')
       await waitForSkeletonsToHide(page)
       await eyes.check('data research page')

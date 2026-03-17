@@ -45,6 +45,11 @@ export function MainLayout() {
                     <Envelope />
                   </Link>
                 </EasterEgg>
+                <EasterEgg code="dashboard">
+                  <Link to="/dashboard">
+                    <Envelope />
+                  </Link>
+                </EasterEgg>
               </Suspense>
             </StyledBody>
           </StyledContent>
