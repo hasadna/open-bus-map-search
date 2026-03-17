@@ -14,7 +14,7 @@
   "no_data_from_ETL": "We’re having trouble retrieving data from the server, We're working to resolve this issue",
   "timeline_page_title": "Trips History",
   "timeline_page_description": "Displays actual vs scheduled stop times by user-given bus operator, route number & stop name",
-  "time_based_map_page_title": "Transit Vehicle Map",
+  "time_based_map_page_title": "Transit Map",
   "time_based_map_page_description": "Displays all buses locations on map based on user-given date, time & minutes range",
   "gaps_page_title": "Trips that didn't take place",
   "gaps_page_description": "Displays routes that did not take place according to schedule by user-given bus operator, route number. route & date",
