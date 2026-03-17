@@ -1,9 +1,9 @@
+import { BarChartOutlined, FieldTimeOutlined, LineChartOutlined } from '@ant-design/icons'
 import {
   DirectionsBusOutlined,
-  HistoryOutlined,
   MapOutlined,
   MenuOutlined,
-  ViewKanbanOutlined,
+  RouteOutlined,
 } from '@mui/icons-material'
 import { SvgIconProps, Tooltip } from '@mui/material'
 import { useContext } from 'react'
@@ -61,19 +61,29 @@ export const HomePage = () => {
 
       <section className="links hideOnMobile">
         <PageLink
-          icon={wrapToolTip(<HistoryOutlined />, t('timeline_page_description'))}
+          icon={wrapToolTip(<RouteOutlined />, t('singleline_map_page_description'))}
+          label={t('singleline_map_page_title')}
+          to="/single-line-map"
+        />
+        <PageLink
+          icon={wrapToolTip(<FieldTimeOutlined />, t('timeline_page_description'))}
           label={t('timeline_page_title')}
           to="/timeline"
         />
         <PageLink
-          icon={wrapToolTip(<DirectionsBusOutlined />, t('gaps_page_description'))}
+          icon={wrapToolTip(<BarChartOutlined />, t('gaps_page_description'))}
           label={t('gaps_page_title')}
           to="/gaps"
         />
         <PageLink
-          icon={wrapToolTip(<ViewKanbanOutlined />, t('gaps_patterns_page_description'))}
+          icon={wrapToolTip(<LineChartOutlined />, t('gaps_patterns_page_description'))}
           label={t('gaps_patterns_page_title')}
           to="/gaps_patterns"
+        />
+        <PageLink
+          icon={wrapToolTip(<DirectionsBusOutlined />, t('operator_title'))}
+          label={t('operator_title')}
+          to="/operator"
         />
         <PageLink
           icon={wrapToolTip(<MapOutlined />, t('time_based_map_page_description'))}

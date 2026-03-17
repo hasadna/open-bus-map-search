@@ -1,31 +1,61 @@
 @use '../../../resources/variables' as *;
 
-.menu {
-  flex-direction: column;
-  list-style: none;
-  padding: 0;
+.sidebar-menu {
+  border-inline-end: 0 !important;
+  padding: 8px 10px 12px;
 
-  .menu-item {
-    display: flex;
+  .ant-menu-item-group {
+    margin-bottom: 10px;
+  }
+
+  .ant-menu-item-group-title {
+    padding: 8px 12px 6px !important;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgb(0 0 0 / 45%);
+  }
+
+  .sidebar-menu-group-title {
+    display: block;
+  }
+
+  .ant-menu-item-group-list {
+    margin: 0 !important;
+  }
+
+  .ant-menu-item {
+    height: 44px;
+    margin: 0 0 4px !important;
+    line-height: 44px;
+    border-radius: 10px;
+  }
+
+  .ant-menu-item-selected {
+    background-color: $color-active !important;
+    color: #1677ff !important;
+  }
+
+  .ant-menu-item a {
+    display: inline-flex;
     align-items: center;
-    width: 240px;
-    padding: 12px 23px;
-    font-size: 16px;
-    cursor: pointer;
-    border-radius: 9px;
-    margin-bottom: 4px;
-    line-height: 21px;
-    box-sizing: border-box;
-    transition: all 0.2s ease-in-out;
+    width: 100%;
+  }
 
-    &:hover {
-      background-color: #f2f2f2;
-    }
+  .ant-menu-item .ant-menu-title-content {
+    min-width: 0;
+  }
 
-    &.active {
-      background-color: $color-active;
-      color: #1677ff;
-      border: none;
-    }
+  .ant-menu-item .ant-menu-title-content a {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.dark .sidebar-menu {
+  .ant-menu-item-group-title {
+    color: rgb(255 255 255 / 65%);
   }
 }

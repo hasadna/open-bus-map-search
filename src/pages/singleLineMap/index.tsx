@@ -84,7 +84,7 @@ const SingleLineMapPage = () => {
   return (
     <PageContainer className="map-container">
       <Typography className="page-title" variant="h4">
-        {t('single_line_map_title')}
+        {t('singleline_map_page_title')}
         <InfoYoutubeModal
           label={t('open_video_about_this_page')}
           title={t('time_based_map_page_description')}
