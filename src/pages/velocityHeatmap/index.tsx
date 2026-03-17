@@ -9,7 +9,6 @@ import { DateNavigator } from '../components/dateNavigator/DateNavigator'
 import { DateSelector } from '../components/DateSelector'
 import { VelocityHeatmapLegend } from './components/VelocityHeatmapLegend'
 import { VelocityHeatmapRectangles } from './components/VelocityHeatmapRectangles'
-import 'leaflet/dist/leaflet.css'
 import '../Map.scss'
 
 const VIS_MODES = [
