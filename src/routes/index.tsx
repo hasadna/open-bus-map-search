@@ -11,7 +11,7 @@ import {
   LineChartOutlined,
   RadarChartOutlined,
 } from '@ant-design/icons'
-import { AirportShuttle, Psychology } from '@mui/icons-material'
+import { AirportShuttle, Psychology, Route as RouteIcon } from '@mui/icons-material'
 import { lazy } from 'react'
 import { createBrowserRouter, createRoutesFromElements, Navigate, Route } from 'react-router'
 import { getRouteById } from 'src/api/gtfsService'
@@ -74,14 +74,14 @@ export const PAGES = [
     label: 'velocity_heatmap_page_title',
     path: '/velocity-heatmap',
     searchParamsRequired: true,
-    icon: <HeatMapOutlined />,
+    icon: <RadarChartOutlined />,
     element: <VelocityHeatmapPage />,
   },
   {
     label: 'singleline_map_page_title',
     path: '/single-line-map',
     searchParamsRequired: true,
-    icon: <RadarChartOutlined />,
+    icon: <RouteIcon />,
     element: <SingleLineMapPage />,
   },
   {

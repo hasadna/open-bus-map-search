@@ -1,8 +1,10 @@
 import {
+  AirportShuttle,
   DirectionsBusOutlined,
   HistoryOutlined,
   MapOutlined,
   MenuOutlined,
+  RouteOutlined,
   ViewKanbanOutlined,
 } from '@mui/icons-material'
 import { SvgIconProps, Tooltip } from '@mui/material'
@@ -61,6 +63,11 @@ export const HomePage = () => {
 
       <section className="links hideOnMobile">
         <PageLink
+          icon={wrapToolTip(<RouteOutlined />, t('singleline_map_page_description'))}
+          label={t('singleline_map_page_title')}
+          to="/single-line-map"
+        />
+        <PageLink
           icon={wrapToolTip(<HistoryOutlined />, t('timeline_page_description'))}
           label={t('timeline_page_title')}
           to="/timeline"
@@ -74,6 +81,11 @@ export const HomePage = () => {
           icon={wrapToolTip(<ViewKanbanOutlined />, t('gaps_patterns_page_description'))}
           label={t('gaps_patterns_page_title')}
           to="/gaps_patterns"
+        />
+        <PageLink
+          icon={wrapToolTip(<AirportShuttle />, t('operator_title'))}
+          label={t('operator_title')}
+          to="/operator"
         />
         <PageLink
           icon={wrapToolTip(<MapOutlined />, t('time_based_map_page_description'))}
