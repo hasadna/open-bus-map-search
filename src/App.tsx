@@ -4,6 +4,7 @@ import { RouterProvider } from 'react-router'
 import router from './routes'
 import Preloader from './shared/Preloader'
 import 'leaflet/dist/leaflet.css'
+import './App.scss'
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker
