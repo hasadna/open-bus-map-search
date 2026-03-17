@@ -1,5 +1,6 @@
 import type { Page } from '@playwright/test'
 import {
+  clearInputField,
   expect,
   harOptions,
   setupTest,
@@ -60,7 +61,7 @@ test.describe('Single line page tests', () => {
     await expect(page.locator('#route-select')).not.toBeEditable()
     await fillLineNumber(page)
     await expect(page.locator('#route-select')).toBeEditable()
-    await page.locator("span[aria-label='close']").click()
+    await clearInputField(page.getByRole('textbox', { name: 'מספר קו' }))
     await expect(page.locator('#route-select')).not.toBeEditable()
   })
 

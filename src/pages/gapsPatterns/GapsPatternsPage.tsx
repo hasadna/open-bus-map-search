@@ -15,12 +15,12 @@ import {
   YAxis,
 } from 'recharts'
 import dayjs from 'src/dayjs'
+import { useDate } from 'src/hooks/useDate'
 import { INPUT_SIZE } from 'src/resources/sizes'
 import Widget from 'src/shared/Widget'
 import { getRoutesAsync } from '../../api/gtfsService'
 import { SearchContext } from '../../model/pageState'
 import { DateSelector } from '../components/DateSelector'
-import { useDate } from '../components/DateTimePicker'
 import { Label } from '../components/Label'
 import LineNumberSelector from '../components/LineSelector'
 import { NotFound } from '../components/NotFound'

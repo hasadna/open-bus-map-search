@@ -12,7 +12,7 @@
     "@juggle/resize-observer": "^3.4.0",
     "@mui/icons-material": "^7.3.9",
     "@mui/material": "^7.3.9",
-    "@mui/x-date-pickers": "~7.29.4",
+    "@mui/x-date-pickers": "^8.27.2",
     "@mui/x-tree-view": "^8.27.2",
     "@rolldown/plugin-babel": "^0.2.1",
     "@tanstack/query-async-storage-persister": "^5.90.24",
