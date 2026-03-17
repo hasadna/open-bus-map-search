@@ -51,7 +51,7 @@ export default function SideBar() {
           {collapsed ? <CollapsedLogo /> : <Logo title={t('website_name')} dark={isDarkTheme} />}
         </Link>
         <div className="sidebar-divider" />
-        <Menu />
+        <Menu collapsed={collapsed} />
       </Sider>
     </>
   )

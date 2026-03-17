@@ -9,6 +9,9 @@ import { PAGES } from 'src/routes'
 import './menu.scss'
 
 type MenuItem = Required<MenuProps>['items'][number]
+type MainMenuProps = {
+  collapsed?: boolean
+}
 
 const MENU_GROUPS = [
   {
@@ -48,7 +51,7 @@ function getGroup(label: React.ReactNode, key: React.Key, children: MenuItem[]):
   } as MenuItem
 }
 
-const MainMenu = () => {
+const MainMenu = ({ collapsed = false }: MainMenuProps) => {
   const { t } = useTranslation()
   const { setDrawerOpen } = useContext<LayoutContextInterface>(LayoutCtx)
   const [isDonateModalVisible, setDonateModalVisible] = useState(false)
@@ -79,7 +82,7 @@ const MainMenu = () => {
     return acc
   }, {})
 
-  const items: MenuItem[] = [
+  const groupedItems: MenuItem[] = [
     routeItems['/'],
     ...MENU_GROUPS.map(({ key, paths }) =>
       getGroup(
@@ -89,6 +92,13 @@ const MainMenu = () => {
       ),
     ),
   ].filter(Boolean)
+
+  const flatItems: MenuItem[] = [
+    routeItems['/'],
+    ...MENU_GROUPS.flatMap(({ paths }) => paths.map((path) => routeItems[path]).filter(Boolean)),
+  ].filter(Boolean)
+
+  const items = collapsed ? flatItems : groupedItems
 
   const location = useLocation()
   const [current, setCurrent] = useState(location.pathname || '/')
@@ -112,6 +122,7 @@ const MainMenu = () => {
         theme="light"
         selectedKeys={[current]}
         mode="inline"
+        inlineCollapsed={collapsed}
         items={items}
       />
       <DonateModal isVisible={isDonateModalVisible} onClose={() => setDonateModalVisible(false)} />
