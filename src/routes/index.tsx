@@ -4,14 +4,13 @@ import {
   DollarOutlined,
   FieldTimeOutlined,
   GithubOutlined,
-  HeatMapOutlined,
   HomeOutlined,
   InfoCircleOutlined,
   LaptopOutlined,
   LineChartOutlined,
   RadarChartOutlined,
 } from '@ant-design/icons'
-import { AirportShuttle, Psychology, Route as RouteIcon } from '@mui/icons-material'
+import { DirectionsBusOutlined, MapOutlined, Psychology, RouteOutlined } from '@mui/icons-material'
 import { lazy } from 'react'
 import { createBrowserRouter, createRoutesFromElements, Navigate, Route } from 'react-router'
 import { getRouteById } from 'src/api/gtfsService'
@@ -67,7 +66,7 @@ export const PAGES = [
   {
     label: 'time_based_map_page_title',
     path: '/map',
-    icon: <HeatMapOutlined />,
+    icon: <MapOutlined />,
     element: <TimeBasedMapPage />,
   },
   {
@@ -81,14 +80,14 @@ export const PAGES = [
     label: 'singleline_map_page_title',
     path: '/single-line-map',
     searchParamsRequired: true,
-    icon: <RouteIcon />,
+    icon: <RouteOutlined />,
     element: <SingleLineMapPage />,
   },
   {
     label: 'operator_title',
     path: '/operator',
     searchParamsRequired: true,
-    icon: <AirportShuttle />,
+    icon: <DirectionsBusOutlined />,
     element: <Operator />,
   },
   {

@@ -1,11 +1,9 @@
+import { BarChartOutlined, FieldTimeOutlined, LineChartOutlined } from '@ant-design/icons'
 import {
-  AirportShuttle,
   DirectionsBusOutlined,
-  HistoryOutlined,
   MapOutlined,
   MenuOutlined,
   RouteOutlined,
-  ViewKanbanOutlined,
 } from '@mui/icons-material'
 import { SvgIconProps, Tooltip } from '@mui/material'
 import { useContext } from 'react'
@@ -68,22 +66,22 @@ export const HomePage = () => {
           to="/single-line-map"
         />
         <PageLink
-          icon={wrapToolTip(<HistoryOutlined />, t('timeline_page_description'))}
+          icon={wrapToolTip(<FieldTimeOutlined />, t('timeline_page_description'))}
           label={t('timeline_page_title')}
           to="/timeline"
         />
         <PageLink
-          icon={wrapToolTip(<DirectionsBusOutlined />, t('gaps_page_description'))}
+          icon={wrapToolTip(<BarChartOutlined />, t('gaps_page_description'))}
           label={t('gaps_page_title')}
           to="/gaps"
         />
         <PageLink
-          icon={wrapToolTip(<ViewKanbanOutlined />, t('gaps_patterns_page_description'))}
+          icon={wrapToolTip(<LineChartOutlined />, t('gaps_patterns_page_description'))}
           label={t('gaps_patterns_page_title')}
           to="/gaps_patterns"
         />
         <PageLink
-          icon={wrapToolTip(<AirportShuttle />, t('operator_title'))}
+          icon={wrapToolTip(<DirectionsBusOutlined />, t('operator_title'))}
           label={t('operator_title')}
           to="/operator"
         />

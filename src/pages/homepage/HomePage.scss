@@ -43,9 +43,11 @@
   gap: 3rem;
   margin: 3rem auto;
 }
+
 .menu-link {
   margin: 1.5rem auto;
 }
+
 .page-link {
   display: flex;
   flex-direction: column;
@@ -55,6 +57,8 @@
 
   svg {
     margin-bottom: 0.3rem;
+    height: 24px;
+    width: 24px;
   }
 
   span {
