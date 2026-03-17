@@ -5,7 +5,6 @@ import { Suspense, useEffect } from 'react'
 import { BrowserRouter } from 'react-router'
 import { ThemeProvider, useTheme } from 'src/layout/ThemeContext'
 import i18n from 'src/locale/allTranslations'
-import 'leaflet/dist/leaflet.css'
 import 'src/index.scss'
 
 const queryClient = new QueryClient({

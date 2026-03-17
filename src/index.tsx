@@ -6,7 +6,6 @@ import ReactDOM from 'react-dom/client'
 import ReactGA from 'react-ga4'
 import App from './App'
 import './locale/allTranslations'
-import 'leaflet/dist/leaflet.css'
 import './index.scss'
 
 const persister = createAsyncStoragePersister({
