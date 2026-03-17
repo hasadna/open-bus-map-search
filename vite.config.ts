@@ -29,9 +29,6 @@ export default defineConfig(({ mode }) => {
         src: '/src',
       },
     },
-    css: {
-      transformer: 'lightningcss',
-    },
     server: {
       port: 3000,
     },
