@@ -29,6 +29,12 @@ export default defineConfig(({ mode }) => {
         src: '/src',
       },
     },
+    build: {
+      cssMinify: 'lightningcss',
+    },
+    define: {
+      'process.env': env,
+    },
     server: {
       port: 3000,
     },
