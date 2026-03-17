@@ -1,29 +1,22 @@
-@use './resources/variables';
+@use './resources/variables' as vars;
 @import 'leaflet/dist/leaflet.css';
 
-@font-face {
-  font-family: Heebo;
-  src: url('../fonts/Heebo-Regular.ttf') format('truetype');
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
+$font-family-base: 'Heebo', sans-serif;
+$font-family-code: source-code-pro, 'Menlo', 'Monaco', 'Consolas', 'Courier New', monospace;
+
+@mixin register-heebo-font($font-weight, $file-name) {
+  @font-face {
+    font-family: Heebo;
+    src: url('../fonts/#{$file-name}.ttf') format('truetype');
+    font-style: normal;
+    font-weight: $font-weight;
+    font-display: swap;
+  }
 }
 
-@font-face {
-  font-family: Heebo;
-  src: url('../fonts/Heebo-Medium.ttf') format('truetype');
-  font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: Heebo;
-  src: url('../fonts/Heebo-Bold.ttf') format('truetype');
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-}
+@include register-heebo-font(400, 'Heebo-Regular');
+@include register-heebo-font(500, 'Heebo-Medium');
+@include register-heebo-font(700, 'Heebo-Bold');
 
 html,
 body {
@@ -32,18 +25,18 @@ body {
 
 body {
   margin: 0;
-  font-family: Heebo, sans-serif;
+  font-family: $font-family-base;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+  font-family: $font-family-code;
 }
 
 .main {
   flex-direction: row;
-  font-family: Heebo, sans-serif;
+  font-family: $font-family-base;
 }
 
 .page-title {
@@ -54,7 +47,7 @@ code {
   display: none !important;
 }
 
-@media only screen and (width < 768px) {
+@media only screen and (width < vars.$mobile-max-width) {
   .hideOnMobile {
     display: none !important;
   }
