@@ -29,8 +29,8 @@ export default defineConfig(({ mode }) => {
         src: '/src',
       },
     },
-    build: {
-      cssMinify: 'lightningcss',
+    css: {
+      transformer: 'lightningcss',
     },
     define: {
       'process.env.VITE_STRIDE_API': JSON.stringify(env.VITE_STRIDE_API ?? ''),
