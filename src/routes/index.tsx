@@ -28,7 +28,7 @@ const SingleLineMapPage = lazy(() => import('../pages/singleLineMap'))
 const About = lazy(() => import('../pages/about'))
 const Operator = lazy(() => import('../pages/operator'))
 const Profile = lazy(() => import('../pages/lineProfile/LineProfile'))
-const BugReportForm = lazy(() => import('../pages/BugReportForm'))
+const BugReportForm = lazy(() => import('../pages/bugReport/BugReportForm'))
 const DataResearch = lazy(() =>
   import('../pages/DataResearch/DataResearch').then((m) => ({
     default: m.DataResearch,

@@ -6,8 +6,8 @@
 import type { SiriVehicleLocationWithRelatedPydanticModel } from '@hasadna/open-bus-api-client'
 import { uniqBy } from 'es-toolkit/compat'
 import { useEffect, useState } from 'react'
+import { SIRI_API } from 'src/api/apiConfig'
 import dayjs from 'src/dayjs'
-import { SIRI_API } from './apiConfig'
 
 const LIMIT = 10000 // the maximum number of vehicles to load in one request
 
