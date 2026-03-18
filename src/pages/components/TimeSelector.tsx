@@ -1,6 +1,13 @@
 import { renderTimeViewClock, TimePicker } from '@mui/x-date-pickers'
 import { useTranslation } from 'react-i18next'
-import { DataAndTimeSelectorProps } from './utils/dateAndTime'
+import dayjs from 'src/dayjs'
+
+type DataAndTimeSelectorProps = {
+  time: dayjs.Dayjs
+  onChange: (timeValid: dayjs.Dayjs | null) => void
+  customLabel?: string
+  minDate?: dayjs.Dayjs
+}
 
 export function TimeSelector({ time, onChange, customLabel, minDate }: DataAndTimeSelectorProps) {
   const { t } = useTranslation()

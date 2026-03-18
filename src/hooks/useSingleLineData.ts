@@ -1,7 +1,7 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { getRoutesAsync, getRoutesByLineRef, getStopsForRouteAsync } from 'src/api/gtfsService'
-import useVehicleLocations from 'src/api/useVehicleLocations'
 import dayjs from 'src/dayjs'
+import useVehicleLocations from 'src/hooks/useVehicleLocations'
 import { BusRoute } from 'src/model/busRoute'
 import { BusStop } from 'src/model/busStop'
 import { SearchContext } from 'src/model/pageState'

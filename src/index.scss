@@ -1,4 +1,5 @@
 @use './resources/variables' as vars;
+@use './resources/map.scss';
 @import 'leaflet/dist/leaflet.css';
 
 $font-family-base: 'Heebo', sans-serif;

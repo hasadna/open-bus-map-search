@@ -5,9 +5,9 @@ import { Button, Checkbox, Form, Input, Select } from 'antd'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ISSUES_API } from 'src/api/apiConfig'
+import { EasterEgg } from 'src/pages/components/EasterEgg/EasterEgg'
+import InfoYoutubeModal from 'src/pages/components/YoutubeModal'
 import Widget from 'src/shared/Widget'
-import InfoYoutubeModal from './components/YoutubeModal'
-import { EasterEgg } from './EasterEgg/EasterEgg'
 import './BugReportForm.scss'
 
 // File upload is disabled until the server-side implementation is complete.

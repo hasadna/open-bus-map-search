@@ -21,7 +21,6 @@ import { MapWithLocationsAndPath } from '../components/map-related/MapWithLocati
 import { NotFound } from '../components/NotFound'
 import { PageContainer } from '../components/PageContainer'
 import InfoYoutubeModal from '../components/YoutubeModal'
-import '../Map.scss'
 
 const SingleLineMapPage = () => {
   const { search, setSearch } = useContext(SearchContext)
