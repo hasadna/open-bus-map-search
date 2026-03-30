@@ -86,7 +86,7 @@
     "@eslint/eslintrc": "^3.3.5",
     "@eslint/js": "^9.39.4",
     "@nx/eslint": "22.5.4",
-    "@nx/eslint-plugin": "22.5.4",
+    "@nx/eslint-plugin": "22.6.3",
     "@playwright/test": "^1.58.2",
     "@storybook/addon-docs": "^10.3.2",
     "@storybook/react-vite": "^10.2.19",
