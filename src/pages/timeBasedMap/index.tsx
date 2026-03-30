@@ -10,9 +10,7 @@ import { useConstrainedFloatingButton } from 'src/hooks/useConstrainedFloatingBu
 import useVehicleLocations from 'src/hooks/useVehicleLocations'
 import { type Point, toPoint } from 'src/pages/components/map-related/map-types'
 import { BusToolTip } from 'src/pages/components/map-related/MapLayers/BusToolTip'
-import { INPUT_SIZE } from 'src/resources/sizes'
 import { DateSelector } from '../components/DateSelector'
-import { Label } from '../components/Label'
 import { PageContainer } from '../components/PageContainer'
 import { TimeSelector } from '../components/TimeSelector'
 import { busIcon, busIconPath } from '../components/utils/BusIcon'
@@ -59,7 +57,7 @@ export default function TimeBasedMapPage() {
           {t('time_based_map_page_description')}
         </Alert>
       </Grid>
-      <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
+      <Grid container spacing={2}>
         {/* from date */}
         <Grid size={{ sm: 6, xs: 12 }}>
           <DateSelector time={from} onChange={handleFromChange} />

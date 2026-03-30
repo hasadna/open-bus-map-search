@@ -58,7 +58,7 @@ class LocationObservable {
       } else {
         this.data = [...this.data, ...data]
         this.#notifyObservers(data)
-        offset += LIMIT * i
+        offset += LIMIT
       }
     }
     this.#observers = []
