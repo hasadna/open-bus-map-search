@@ -51,7 +51,7 @@ class LocationObservable {
   async #loadData(querys: VehicleLocationQuery) {
     let offset = 0
     for (let i = 1; this.loading; i++) {
-      const data = await fetchWithQueue(querys, i, offset)
+      const data = await fetchWithQueue(querys, offset)
       if (!data || data.length === 0) {
         this.loading = false
         this.#notifyObservers({ finished: true })
@@ -94,7 +94,6 @@ const pool = new Array(10)
   .map(() => Promise.resolve<void | SiriVehicleLocationWithRelatedPydanticModel[]>(void 0))
 async function fetchWithQueue(
   { from, to, lineRef, operatorRef, vehicleRef }: VehicleLocationQuery,
-  index: number,
   offset: number,
 ) {
   const task = async () => {
@@ -103,7 +102,7 @@ async function fetchWithQueue(
         return await SIRI_API.siriVehicleLocationsListGet({
           recordedAtTimeFrom: dayjs(from).toDate(),
           recordedAtTimeTo: dayjs(to).toDate(),
-          limit: LIMIT * index,
+          limit: LIMIT,
           offset,
           siriRoutesOperatorRef: operatorRef?.toString(),
           siriRoutesLineRef: lineRef?.toString(),

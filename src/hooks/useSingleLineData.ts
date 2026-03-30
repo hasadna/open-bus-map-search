@@ -5,12 +5,12 @@ import useVehicleLocations from 'src/hooks/useVehicleLocations'
 import { BusRoute } from 'src/model/busRoute'
 import { BusStop } from 'src/model/busStop'
 import { SearchContext } from 'src/model/pageState'
+import { type Point, toPoint } from 'src/pages/components/map-related/map-types'
 import { routeStartEnd, vehicleIDFormat } from 'src/pages/components/utils/rotueUtils'
 import {
   normalizeStartTimeToken,
   parseStartTimeToken,
 } from 'src/pages/components/utils/startTimeUtils'
-import { Point } from 'src/pages/timeBasedMap'
 
 const formatTime = (time: dayjs.Dayjs) => time.format('HH:mm')
 
@@ -111,14 +111,7 @@ export const useSingleLineData = (
       .filter((l) =>
         validVehicleNumber ? Number(l.siriRideVehicleRef) === validVehicleNumber : true,
       )
-      .map<Point>((location) => ({
-        loc: [location.lat || 0, location.lon || 0],
-        color: location.velocity || 0,
-        operator: location.siriRouteOperatorRef || 0,
-        bearing: location.bearing || 0,
-        recorded_at_time: location.recordedAtTime ? new Date(location.recordedAtTime).getTime() : 0,
-        point: location,
-      }))
+      .map(toPoint)
   }, [locations, validVehicleNumber])
 
   useEffect(() => {

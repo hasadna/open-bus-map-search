@@ -3,8 +3,8 @@ import { IconButton } from '@mui/material'
 import { useCallback, useRef, useState } from 'react'
 import { MapContainer } from 'react-leaflet'
 import { useConstrainedFloatingButton } from 'src/hooks/useConstrainedFloatingButton'
-import { Point } from 'src/pages/timeBasedMap'
 import { MapProps } from './map-types'
+import type { Point } from './map-types'
 import { MapContent } from './MapContent'
 
 const position: Point = {

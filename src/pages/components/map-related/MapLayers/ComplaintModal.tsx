@@ -12,7 +12,7 @@ import {
 import { ChangeEvent, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { getSiriRideWithRelated } from 'src/api/siriService'
-import { Point } from 'src/pages/timeBasedMap'
+import type { Point } from '../map-types'
 
 interface ComplaintModalProps {
   modalOpen?: boolean
