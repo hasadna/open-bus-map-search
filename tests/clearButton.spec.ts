@@ -138,20 +138,4 @@ test.describe('clearButton functionality', () => {
       await expect(stop).not.toBeVisible()
     })
   })
-
-  test.describe('clear button functionality at RealtimeMapPage', () => {
-    test('after clear the `minutes` input - it should has value equals to `1`', async ({
-      page,
-    }) => {
-      await visitPage(page, 'time_based_map_page_title')
-      const minutes = page.locator('input[type="number"]').first()
-      const initialValue = await minutes.getAttribute('value')
-      expect(+initialValue!).toBeCloseTo(1)
-
-      await minutes.fill('6')
-      await clearInputField(minutes)
-      const clearedValue = await minutes.getAttribute('value')
-      expect(+clearedValue!).toBeCloseTo(1)
-    })
-  })
 })

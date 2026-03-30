@@ -59,10 +59,10 @@ export default function TimeBasedMapPage() {
       </Grid>
       <Grid container spacing={2}>
         {/* from date */}
-        <Grid size={{ sm: 6, xs: 12 }}>
+        <Grid size={{ md: 4, sm: 6, xs: 12 }}>
           <DateSelector time={from} onChange={handleFromChange} />
         </Grid>
-        <Grid size={{ sm: 6, xs: 12 }}>
+        <Grid size={{ md: 4, sm: 6, xs: 12 }}>
           <TimeSelector time={from} onChange={handleFromChange} />
         </Grid>
         {/* loaded info */}
