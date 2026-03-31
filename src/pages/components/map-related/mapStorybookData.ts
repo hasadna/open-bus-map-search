@@ -1,5 +1,5 @@
 import { BusStop } from 'src/model/busStop'
-import { Point } from 'src/pages/timeBasedMap'
+import type { Point } from './map-types'
 
 export const filteredPositions: Point[] = [
   {
