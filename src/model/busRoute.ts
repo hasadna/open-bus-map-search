@@ -22,7 +22,7 @@ export function fromGtfsRoute(gtfsRoute: GtfsRoutePydanticModel): BusRoute {
     date: gtfsRoute.date,
     operatorId: gtfsRoute.operatorRef.toString(),
     lineNumber: gtfsRoute.routeShortName!,
-    key: `${gtfsRoute.routeMkt}-${gtfsRoute.routeDirection}`,
+    key: `${gtfsRoute.routeMkt}-${gtfsRoute.routeDirection}-${gtfsRoute.routeAlternative}`,
     fromName,
     toName,
     direction: gtfsRoute.routeDirection!,
