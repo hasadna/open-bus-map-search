@@ -56,9 +56,17 @@ const GapsPage = () => {
 
     getRoutesAsync(dayjs(timestamp), dayjs(timestamp), operatorId, lineNumber, controller.signal)
       .then((fetchedRoutes) => {
-        setSearch((current) =>
-          search.lineNumber === lineNumber ? { ...current, routes: fetchedRoutes } : current,
-        )
+        setSearch((current) => {
+          if (current.lineNumber !== lineNumber) return current
+          const routeKeyIsValid =
+            current.routeKey !== undefined &&
+            fetchedRoutes.some((r) => r.key === current.routeKey)
+          return {
+            ...current,
+            routes: fetchedRoutes,
+            routeKey: routeKeyIsValid ? current.routeKey : undefined,
+          }
+        })
       })
       .catch((err) => {
         console.error('Failed to fetch routes:', err.message)
@@ -68,7 +76,11 @@ const GapsPage = () => {
   }, [operatorId, lineNumber, timestamp, setSearch])
 
   const handleTimestampChange = (time: dayjs.Dayjs | null) => {
-    setSearch((current) => ({ ...current, timestamp: time?.valueOf() ?? Date.now() }))
+    setSearch((current) => ({
+      ...current,
+      timestamp: time?.valueOf() ?? Date.now(),
+      routes: undefined,
+    }))
   }
 
   const handleOperatorChange = (operatorId: string) => {
