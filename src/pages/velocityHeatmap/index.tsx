@@ -1,5 +1,5 @@
 import { OpenInFullRounded } from '@mui/icons-material'
-import { IconButton, Stack } from '@mui/material'
+import { Alert, CircularProgress, IconButton, Stack } from '@mui/material'
 import React, { useCallback, useContext, useRef, useState } from 'react'
 import { MapContainer, TileLayer } from 'react-leaflet'
 import dayjs from 'src/dayjs'
@@ -27,6 +27,8 @@ const VelocityHeatmapPage: React.FC = () => {
   const [visMode, setVisMode] = useState<'avg' | 'std' | 'cv'>('avg')
   const [min, setMin] = useState(0)
   const [max, setMax] = useState(1)
+  const [isLoading, setIsLoading] = useState(false)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   const mapContainerRef = useRef<HTMLDivElement>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
@@ -71,6 +73,38 @@ const VelocityHeatmapPage: React.FC = () => {
           onClick={toggleExpanded}>
           <OpenInFullRounded fontSize="large" />
         </IconButton>
+        {isLoading && (
+          <div
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+              backgroundColor: 'rgba(255, 255, 255, 0.7)',
+              zIndex: 1000,
+              gap: 12,
+            }}>
+            <CircularProgress size={48} />
+            <span style={{ fontSize: '1.1em', color: '#333' }}>Loading heatmap data...</span>
+          </div>
+        )}
+        {errorMessage && !isLoading && (
+          <div
+            style={{
+              position: 'absolute',
+              top: 12,
+              left: '50%',
+              transform: 'translateX(-50%)',
+              zIndex: 1000,
+            }}>
+            <Alert severity="error">{errorMessage}</Alert>
+          </div>
+        )}
         <MapContainer
           center={[29.65, 34.6]}
           zoom={DEFAULT_ZOOM_LEVEL}
@@ -86,6 +120,8 @@ const VelocityHeatmapPage: React.FC = () => {
               setMin(min)
               setMax(max)
             }}
+            onLoadingChange={setIsLoading}
+            onErrorChange={setErrorMessage}
           />
           <VelocityHeatmapLegend visMode={visMode} min={min} max={max} />
         </MapContainer>
