@@ -17,7 +17,7 @@ const PublicAppeal = () => {
           {t(`${pageName}.title`)}
         </Title>
         {tasks.map((task, i) => (
-          <Task {...task} marginBottom={tasks.length - 1 === i} key={i} />
+          <Task {...task} marginBottom={tasks.length - 1 === i} key={task.title} />
         ))}
       </Space>
     </PublicAppealStyle>

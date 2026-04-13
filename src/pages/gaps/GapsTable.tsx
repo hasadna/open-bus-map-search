@@ -125,7 +125,11 @@ const GapsTable: React.FC<GapsTableProps> = ({
           <Table sx={{ maxWidth: 'fit-content' }}>
             <TableBody>
               {Object.keys(groupedGaps)
-                .sort((a, b) => (a === '0' ? 1 : b === '0' ? -1 : Number(a) - Number(b)))
+                .sort((a, b) => {
+                  if (a === '0') return 1
+                  if (b === '0') return -1
+                  return Number(a) - Number(b)
+                })
                 .map((hour) => (
                   <TableRow key={hour}>
                     {groupedGaps[hour].map(({ gap, status }, j) => {

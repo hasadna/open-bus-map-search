@@ -133,9 +133,9 @@ function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatistic
                 <Tooltip content={CustomTooltip} />
                 <Legend />
                 <Bar dataKey="actual_rides" barSize={20} radius={9} xAxisId={1} opacity={30}>
-                  {hourlyData.map((entry, index) => (
+                  {hourlyData.map((entry) => (
                     <Cell
-                      key={`cell-${index}`}
+                      key={`cell-${entry.planned_hour}`}
                       fill={mapColorByExecution(entry.planned_rides, entry.actual_rides)}
                     />
                   ))}
@@ -260,13 +260,11 @@ const GapsPatternsPage = () => {
             (routes.length === 0 ? (
               <NotFound>{t('line_not_found')}</NotFound>
             ) : (
-              <>
-                <RouteSelector
-                  routes={routes}
-                  routeKey={routeKey}
-                  setRouteKey={(key) => setSearch((current) => ({ ...current, routeKey: key }))}
-                />
-              </>
+              <RouteSelector
+                routes={routes}
+                routeKey={routeKey}
+                setRouteKey={(key) => setSearch((current) => ({ ...current, routeKey: key }))}
+              />
             ))}
         </Grid>
       </Grid>

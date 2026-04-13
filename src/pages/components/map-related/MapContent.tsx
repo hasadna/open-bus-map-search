@@ -96,7 +96,7 @@ export function MapContent({ positions, plannedRouteStops, showNavigationButtons
             }}
             position={pos.loc}
             icon={icon}
-            key={i}>
+            key={pos.point?.id ?? `pos-${i}`}>
             <Popup minWidth={300} maxWidth={700}>
               <BusToolTip position={pos} icon={busIconPath(pos.operator!)}>
                 {showNavigationButtons && (
@@ -112,7 +112,7 @@ export function MapContent({ positions, plannedRouteStops, showNavigationButtons
         )
       })}
 
-      {plannedRouteStops?.length && (
+      {!!plannedRouteStops?.length && (
         <Polyline
           pathOptions={{ color: plannedRouteLineColor }}
           positions={plannedRouteStops.map((stop) => [
@@ -121,14 +121,14 @@ export function MapContent({ positions, plannedRouteStops, showNavigationButtons
           ])}
         />
       )}
-      {plannedRouteStops?.length &&
+      {!!plannedRouteStops?.length &&
         plannedRouteStops.map((stop) => {
           const { latitude, longitude } = stop.location
           return (
             <Marker key={stop.key} position={[latitude, longitude]} icon={plannedRouteStopMarker} />
           )
         })}
-      {positions.length && (
+      {positions.length > 0 && (
         <Polyline
           pathOptions={{ color: actualRouteLineColor }}
           positions={positions.map((position) => position.loc)}

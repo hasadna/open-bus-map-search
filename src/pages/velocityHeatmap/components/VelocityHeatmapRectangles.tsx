@@ -91,7 +91,7 @@ export const VelocityHeatmapRectangles: React.FC<
           {loading ? 'loading! ' : null}
         </div>
       ) : null}
-      {data?.map((point, idx) => {
+      {data?.map((point) => {
         const bounds: [[number, number], [number, number]] = [
           [point.roundedLat - half, point.roundedLon - half],
           [point.roundedLat + half, point.roundedLon + half],
@@ -101,7 +101,7 @@ export const VelocityHeatmapRectangles: React.FC<
         // fillOpacity is always 1, alpha is controlled by color's 4th channel
         return (
           <Rectangle
-            key={idx}
+            key={`${point.roundedLat}-${point.roundedLon}`}
             bounds={bounds}
             pathOptions={{ weight: 1, fillColor: color, fillOpacity: 1, stroke: false }}>
             <Popup>

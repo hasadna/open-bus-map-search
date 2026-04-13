@@ -46,8 +46,8 @@ export const useSingleLineData = (
   useEffect(() => {
     if (!operatorId || !lineNumber) {
       setRoutes(undefined)
-      setRouteKey(undefined)
-      setStartTime(undefined)
+      setRouteKey()
+      setStartTime()
       setError(undefined)
       setSearch((prev) => ({
         ...prev,
@@ -71,7 +71,7 @@ export const useSingleLineData = (
         if (err?.cause?.name !== 'AbortError') {
           setRoutes(undefined)
           setSearch((prev) => ({ ...prev, routes: undefined }))
-          setRouteKey(undefined)
+          setRouteKey()
           setError(err instanceof Error ? err.message : 'Failed to fetch routes')
         }
       })

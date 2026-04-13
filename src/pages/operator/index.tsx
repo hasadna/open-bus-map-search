@@ -52,7 +52,7 @@ const OperatorPage = () => {
 
         <Grid size={{ sm: 4, xs: 12 }}>
           <ToggleButtonGroup
-            color={!operatorId ? 'standard' : 'primary'}
+            color={operatorId ? 'primary' : 'standard'}
             value={timeRange}
             disabled={!operatorId}
             sx={{ height: 56 }}

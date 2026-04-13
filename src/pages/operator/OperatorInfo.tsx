@@ -35,7 +35,7 @@ export const OperatorInfo = ({ operatorId }: { operatorId?: string }) => {
             }
           />
         </InfoTable>
-        <img src={`../operators-logos/${operator?.ref}.svg`} height={96} />
+        <img src={`../operators-logos/${operator?.ref}.svg`} height={96} alt="Operator logo" />
       </Stack>
     </Widget>
   )

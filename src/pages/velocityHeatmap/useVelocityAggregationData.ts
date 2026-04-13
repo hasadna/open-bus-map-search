@@ -38,7 +38,7 @@ export function useVelocityAggregationData(
 function snakeToCamel(o: SiriVelocityAggregationPydanticModel) {
   return Object.fromEntries(
     Object.entries(o).map(([k, v]) => {
-      const newKey = k.replace(/(_\w)/g, (m) => m[1].toUpperCase())
+      const newKey = k.replaceAll(/(_\w)/g, (m) => m[1].toUpperCase())
       return [newKey, v]
     }),
   )

@@ -50,7 +50,9 @@ export async function getSiriStopHitTimesAsync(
   const locationsByRideId = locations.reduce(
     (acc, location) => {
       if (location.siriRideId) {
-        ;(acc[location.siriRideId.toString()] ||= []).push({
+        const key = location.siriRideId.toString()
+        acc[key] ??= []
+        acc[key].push({
           ...location,
           longitude: location.lon || 0,
           latitude: location.lat || 0,
@@ -67,6 +69,10 @@ export async function getSiriStopHitTimesAsync(
   const diffFromTargetStart = (location: EnrichedLocation): number =>
     Math.abs(timestamp.diff(dayjs(location.recordedAtTime), 'second'))
 
-  const closestInTimeHits = stopHits.sort((a, b) => diffFromTargetStart(a) - diffFromTargetStart(b))
-  return closestInTimeHits.sort((a, b) => a.recordedAtTime!.getTime() - b.recordedAtTime!.getTime())
+  const closestInTimeHits = stopHits.toSorted(
+    (a, b) => diffFromTargetStart(a) - diffFromTargetStart(b),
+  )
+  return closestInTimeHits.toSorted(
+    (a, b) => a.recordedAtTime!.getTime() - b.recordedAtTime!.getTime(),
+  )
 }

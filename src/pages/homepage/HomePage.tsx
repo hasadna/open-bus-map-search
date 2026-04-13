@@ -29,7 +29,9 @@ const PageLink = ({
       {icon}
       <span>{label}</span>
       {typeof to == 'function' ? (
-        <a onClick={to}>{t('homepage.show_button')}</a>
+        <button type="button" onClick={to}>
+          {t('homepage.show_button')}
+        </button>
       ) : (
         <NavLink to={to}>{t('homepage.show_button')}</NavLink>
       )}

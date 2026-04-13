@@ -21,7 +21,7 @@ const bySeverityHandler = (a: HourlyData, b: HourlyData) => {
   return b.planned_rides - a.planned_rides
 }
 
-export const sortByMode = (hourlyData: HourlyData[] = [], sortingMode: string) => {
+export const sortByMode = (sortingMode: string, hourlyData: HourlyData[] = []) => {
   return [...hourlyData].sort(sortingMode === 'hour' ? byHourHandler : bySeverityHandler)
 }
 

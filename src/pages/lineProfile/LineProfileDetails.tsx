@@ -44,7 +44,7 @@ export const LineProfileDetails = ({
       title={
         <Grid container alignItems="center" flexDirection="column">
           <Link to={'/operator?operatorId=' + operatorRef} style={{ lineHeight: 0 }}>
-            <img src={`../operators-logos/${operatorRef}.svg`} height={60} />
+            <img src={`../operators-logos/${operatorRef}.svg`} height={60} alt="Operator logo" />
           </Link>
           <Link to={'/operator?operatorId=' + operatorRef} style={{ lineHeight: 0 }}>
             <Typography variant="h6" marginBottom="21.5px">

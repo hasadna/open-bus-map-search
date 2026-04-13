@@ -1,6 +1,6 @@
 import { createProxyMiddleware, type RequestHandler } from 'http-proxy-middleware'
 
-export default function (app: { use: (base: string, handler: RequestHandler) => void }) {
+export default function setupProxy(app: { use: (base: string, handler: RequestHandler) => void }) {
   app.use(
     '/api',
     createProxyMiddleware({

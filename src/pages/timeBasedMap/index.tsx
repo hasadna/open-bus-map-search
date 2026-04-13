@@ -30,7 +30,6 @@ export default function TimeBasedMapPage() {
   const mapContainerRef = useRef<HTMLDivElement>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
 
-  //TODO (another PR and another issue) load from url like in another pages.
   const [from, setFrom] = useState(DEFAULT_TIME)
   const to = useMemo(() => dayjs(from).add(1, 'minutes'), [from])
   const { locations, isLoading } = useVehicleLocations({ from, to })

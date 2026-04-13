@@ -183,7 +183,7 @@ const StackedResearchChart = ({
     }
 
     return {
-      data: result.sort((a, b) => a.ts - b.ts),
+      data: result.toSorted((a, b) => a.ts - b.ts),
       operators: Array.from(operatorSet),
     }
   }, [filteredGraphData, field])

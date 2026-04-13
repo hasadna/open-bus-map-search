@@ -39,12 +39,14 @@ export const OperatorGaps = ({
     ]
   }, [operatorId, timestamp, groupByOperatorData, i18n.language])
 
+  const timeRangeKey = `operator.time_range.${timeRange}` as const
+
   const prefersReducedMotion = useMemo(() => {
     return window?.matchMedia('(prefers-reduced-motion: reduce)').matches
   }, [])
 
   return (
-    <Widget title={`${t('operator.statistics')} ${t(`operator.time_range.${timeRange}`)}`}>
+    <Widget title={`${t('operator.statistics')} ${t(timeRangeKey)}`}>
       {isLoading ? (
         <Skeleton active paragraph={{ rows: 2 }} />
       ) : (

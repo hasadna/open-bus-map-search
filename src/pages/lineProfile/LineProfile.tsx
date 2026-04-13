@@ -25,7 +25,7 @@ const LineProfile = () => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { route, message } = useLoaderData<{ route?: GtfsRoutePydanticModel; message?: string }>()
-  const [stopKey, setState] = useState<string>()
+  const [stopKey, setStopKey] = useState<string>()
   const { setSearch } = useContext(SearchContext)
 
   useEffect(() => {
@@ -33,7 +33,7 @@ const LineProfile = () => {
   }, [])
 
   useEffect(() => {
-    setState(undefined)
+    setStopKey(undefined)
     if (!route?.id) {
       return
     }
@@ -89,7 +89,7 @@ const LineProfile = () => {
 
   const handelStopChange = (key?: string) => {
     const stop = plannedRouteStops?.find((stop) => stop.key === key)
-    setState(stop?.key)
+    setStopKey(stop?.key)
   }
 
   if (message || !route) {

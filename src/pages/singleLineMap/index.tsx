@@ -71,13 +71,16 @@ const SingleLineMapPage = () => {
   ) => {
     if (!value) return
     setType(value)
-    setSearch((current) =>
-      value === 'routes'
-        ? { ...current, vehicleNumber: undefined }
-        : value === 'vehicle'
-          ? { ...current, lineNumber: undefined, routeKey: undefined, routes: undefined }
-          : current,
-    )
+    if (value === 'routes') {
+      setSearch((current) => ({ ...current, vehicleNumber: undefined }))
+    } else if (value === 'vehicle') {
+      setSearch((current) => ({
+        ...current,
+        lineNumber: undefined,
+        routeKey: undefined,
+        routes: undefined,
+      }))
+    }
   }
 
   return (
@@ -141,41 +144,36 @@ const SingleLineMapPage = () => {
               </Grid>
             </>
           ) : (
-            <>
-              <Grid size={{ sm: 4, xs: 12 }}>
-                {/* choose vehicle number */}
-                <VehicleNumberSelector
-                  disabled={!operatorId}
-                  vehicleNumber={vehicleNumber}
-                  setVehicleNumber={handleVehicleNumberChange}
-                />
-              </Grid>
-            </>
+            <Grid size={{ sm: 4, xs: 12 }}>
+              {/* choose vehicle number */}
+              <VehicleNumberSelector
+                disabled={!operatorId}
+                vehicleNumber={vehicleNumber}
+                setVehicleNumber={handleVehicleNumberChange}
+              />
+            </Grid>
           )}
           {positions && (
-            <>
-              {/* choose start time */}
-              <Grid
-                size={{ sm: type === 'routes' ? 4 : 8, xs: 12 }}
-                container
-                alignItems="center"
-                display="flex"
-                gap={2}
-                flexWrap="nowrap"
-                justifyContent="space-between">
-                <FilterPositionsByStartTimeSelector
-                  options={options}
-                  disabled={!routeKey && !vehicleNumber}
-                  startTime={startTime}
-                  setStartTime={setStartTime}
-                />
-                {locationsAreLoading && (
-                  <Tooltip title={t('loading_times_tooltip_content')}>
-                    <CircularProgress />
-                  </Tooltip>
-                )}
-              </Grid>
-            </>
+            <Grid
+              size={{ sm: type === 'routes' ? 4 : 8, xs: 12 }}
+              container
+              alignItems="center"
+              display="flex"
+              gap={2}
+              flexWrap="nowrap"
+              justifyContent="space-between">
+              <FilterPositionsByStartTimeSelector
+                options={options}
+                disabled={!routeKey && !vehicleNumber}
+                startTime={startTime}
+                setStartTime={setStartTime}
+              />
+              {locationsAreLoading && (
+                <Tooltip title={t('loading_times_tooltip_content')}>
+                  <CircularProgress />
+                </Tooltip>
+              )}
+            </Grid>
           )}
         </Grid>
       </Grid>

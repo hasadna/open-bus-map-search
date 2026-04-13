@@ -68,8 +68,8 @@ export const AllLinesChart: FC<AllChartComponentProps> = ({
 }
 
 function convertLineFeedToHtmlTags(srt: string): React.ReactNode {
-  return srt.split('\n').map((row, i) => (
-    <Fragment key={i}>
+  return srt.split('\n').map((row) => (
+    <Fragment key={row}>
       {row}
       <br />
     </Fragment>

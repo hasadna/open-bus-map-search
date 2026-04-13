@@ -14,15 +14,12 @@ import './BugReportForm.scss'
 const BugReportForm = () => {
   const { t, i18n } = useTranslation()
   const [form] = Form.useForm<CreateIssuePostRequest>()
-  // const [fileList, setFileList] = useState<UploadFile[]>([])
-
   const mutation = useMutation({
     mutationFn: (values: CreateIssuePostRequest) =>
       ISSUES_API.issuesCreatePost({ createIssuePostRequest: values }),
     onSuccess: (response) => {
       if (response.data?.state === 'open') {
         form.resetFields()
-        // setFileList([])
       }
     },
     onError: (error) => {
@@ -34,10 +31,6 @@ const BugReportForm = () => {
     mutation.reset()
     mutation.mutate(values)
   }
-
-  // const onFileChange = (info: UploadChangeParam) => {
-  //   setFileList(info.fileList)
-  // }
 
   const options = useMemo(() => {
     return [
@@ -82,15 +75,16 @@ const BugReportForm = () => {
         onFinish={(values) => {
           onFinish(values)
         }}
-        // onFinishFailed={onFinishFailed}
         labelCol={{ span: 6 }}
         wrapperCol={{ span: 18 }}>
         <Form.Item label={t('bug_type')} name="type" rules={[{ required: true }]}>
-          <Select>
-            <Select.Option value="bug">{t('bug_type_bug')}</Select.Option>
-            <Select.Option value="feature">{t('bug_type_feature')}</Select.Option>
-            <Select.Option value="other">{t('bug_type_other')}</Select.Option>
-          </Select>
+          <Select
+            options={[
+              { value: 'bug', label: t('bug_type_bug') },
+              { value: 'feature', label: t('bug_type_feature') },
+              { value: 'other', label: t('bug_type_other') },
+            ]}
+          />
         </Form.Item>
 
         <Form.Item
@@ -146,13 +140,7 @@ const BugReportForm = () => {
           label={t('bug_reproducibility')}
           name="reproducibility"
           rules={[{ required: true, min: 1, max: 100 }]}>
-          <Select>
-            {options.map((option) => (
-              <Select.Option key={option.value} value={option.value}>
-                {option.label}
-              </Select.Option>
-            ))}
-          </Select>
+          <Select options={options} />
         </Form.Item>
 
         <EasterEgg code="debug" autohide={false} onShow={() => form.setFieldValue('debug', true)}>
@@ -160,20 +148,6 @@ const BugReportForm = () => {
             <Checkbox />
           </Form.Item>
         </EasterEgg>
-
-        {/* <Form.Item label={t('bug_attachments')} name="attachments">
-          <Upload
-            multiple
-            maxCount={10}
-            beforeUpload={() => false}
-            listType="picture"
-            fileList={fileList}
-            onChange={onFileChange}>
-            <Button icon={<FileUploadOutlined fontSize="small" />}>
-              {t('bug_attachments_upload_button')}
-            </Button>
-          </Upload>
-        </Form.Item> */}
 
         <Form.Item>
           <Button type="primary" htmlType="submit" loading={mutation.isPending} dir={i18n.dir()}>

@@ -85,13 +85,12 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
     setComplaintData((prevData) => ({ ...prevData, [name]: value }))
   }
 
-  // const handleSelectChange = (e: SelectChangeEvent<typeof complaintTypes>) => {
   const handleSelectChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     console.log(e)
     setComplaintData((prevData) => ({ ...prevData, [name]: value }) as const)
   }
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.FormEvent) => {
     console.log(`lalalala`)
     e.preventDefault()
     const complaintPayload = {
@@ -118,9 +117,11 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
           dir={textDirection}
           open={modalOpen}
           onClose={() => setModalOpen?.(false)}
-          PaperProps={{
-            component: 'form',
-            onSubmit: handleSubmit,
+          slotProps={{
+            paper: {
+              component: 'form',
+              onSubmit: handleSubmit,
+            },
           }}>
           <DialogTitle>{t('complaint')}</DialogTitle>
           <DialogContent>

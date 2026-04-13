@@ -41,8 +41,10 @@ const loadedLocations = new Map<
  * it also caches the data, so if the same interval is requested again, it will not load it again.
  */
 class LocationObservable {
-  constructor(query: VehicleLocationQuery) {
-    this.#loadData(query)
+  static create(query: VehicleLocationQuery) {
+    const instance = new LocationObservable()
+    void instance.#loadData(query)
+    return instance
   }
 
   data: SiriVehicleLocationWithRelatedPydanticModel[] = []
@@ -50,7 +52,7 @@ class LocationObservable {
 
   async #loadData(querys: VehicleLocationQuery) {
     let offset = 0
-    for (let i = 1; this.loading; i++) {
+    while (this.loading) {
       const data = await fetchWithQueue(querys, offset)
       if (!data || data.length === 0) {
         this.loading = false
@@ -139,7 +141,10 @@ function getLocations(
 ) {
   const key = `${formatTime(from)}-${formatTime(to)}-${operatorRef}-${lineRef}-${vehicleRef}`
   if (!loadedLocations.has(key)) {
-    loadedLocations.set(key, new LocationObservable({ from, to, lineRef, vehicleRef, operatorRef }))
+    loadedLocations.set(
+      key,
+      LocationObservable.create({ from, to, lineRef, vehicleRef, operatorRef }),
+    )
   }
   const observable = loadedLocations.get(key)!
   return observable.observe(onUpdate)
@@ -171,6 +176,24 @@ export default function useVehicleLocations({
 }) {
   const [locations, setLocations] = useState<SiriVehicleLocationWithRelatedPydanticModel[]>([])
   const [isLoading, setIsLoading] = useState<boolean[]>([])
+
+  const handleFinished = (i: number) => {
+    setIsLoading((prev) => {
+      const newIsLoading = [...prev]
+      newIsLoading[i] = false
+      return newIsLoading
+    })
+  }
+
+  const handleData = (data: SiriVehicleLocationWithRelatedPydanticModel[]) => {
+    setLocations((prev) =>
+      uniqBy<SiriVehicleLocationWithRelatedPydanticModel>(
+        [...prev, ...data].sort((a, b) => (a.id || 0) - (b.id || 0)),
+        (loc) => loc.id,
+      ),
+    )
+  }
+
   useEffect(() => {
     if (pause) return
     const range = split ? getMinutesInRange(from, to, split) : [{ from, to }]
@@ -184,18 +207,9 @@ export default function useVehicleLocations({
         operatorRef,
         onUpdate: (data) => {
           if ('finished' in data) {
-            setIsLoading((prev) => {
-              const newIsLoading = [...prev]
-              newIsLoading[i] = false
-              return newIsLoading
-            })
+            handleFinished(i)
           } else {
-            setLocations((prev) =>
-              uniqBy<SiriVehicleLocationWithRelatedPydanticModel>(
-                [...prev, ...data].sort((a, b) => (a.id || 0) - (b.id || 0)),
-                (loc) => loc.id,
-              ),
-            )
+            handleData(data)
           }
         },
       }),
@@ -208,8 +222,6 @@ export default function useVehicleLocations({
   }, [from, to, lineRef, vehicleRef, split])
   return {
     locations,
-    isLoading: isLoading.some((loading) => loading),
+    isLoading: isLoading.some(Boolean),
   }
 }
-
-export {}

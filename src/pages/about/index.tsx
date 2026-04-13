@@ -75,8 +75,8 @@ const Privacy = () => {
     <Widget title={t('privacy')}>
       <p>
         <Trans i18nKey="aboutPage.privacyText">
-          <a href={googlAnalyticsUrl}></a>
-          <a href={googleAnaliticsPrivacyUrl}></a>
+          <a href={googlAnalyticsUrl} aria-label="Google Analytics"></a>
+          <a href={googleAnaliticsPrivacyUrl} aria-label="Google Analytics Privacy"></a>
         </Trans>
       </p>
     </Widget>
@@ -93,8 +93,8 @@ const License = () => {
         <Trans
           i18nKey="aboutPage.licenseInfo.text"
           values={{ licenseName: t('aboutPage.licenseInfo.licenseName') }}>
-          <a href={licenseLink}></a>
-          <a href={licenseOrgLink}></a>
+          <a href={licenseLink} aria-label="Creative Commons License"></a>
+          <a href={licenseOrgLink} aria-label="Creative Commons"></a>
         </Trans>
       </p>
     </Widget>
@@ -186,24 +186,25 @@ const Contributors = () => {
         {t('aboutPage.contributorsText')}
         <br />
         <Trans i18nKey="aboutPage.contributorsReadMore">
-          <a href="https://github.com/hasadna/open-bus-map-search/blob/main/CONTRIBUTING.md"></a>
+          <a
+            href="https://github.com/hasadna/open-bus-map-search/blob/main/CONTRIBUTING.md"
+            aria-label="Contributing guide"></a>
         </Trans>
       </p>
       <ol className="contributions">
         {isLoading && <p>Loading...</p>}
         {isError && <p>Error...</p>}
-        {contributors &&
-          contributors.map((author) => (
-            <li key={author.id}>
-              <a href={author.html_url}>
-                <h2>{author.login}</h2>
-                <img src={author.avatar_url} alt={author.login} />
-                <p>
-                  {author.contributions} {t('aboutPage.contributions')}
-                </p>
-              </a>
-            </li>
-          ))}
+        {contributors?.map((author) => (
+          <li key={author.id}>
+            <a href={author.html_url}>
+              <h2>{author.login}</h2>
+              <img src={author.avatar_url} alt={author.login} />
+              <p>
+                {author.contributions} {t('aboutPage.contributions')}
+              </p>
+            </a>
+          </li>
+        ))}
       </ol>
     </Widget>
   )
@@ -263,7 +264,7 @@ function useContributions() {
       .filter((a) => a.type === 'User')
       // sort by contributions
       .sort((a: Author, b: Author) => b.contributions - a.contributions)
-      .reduce(combineAuthor, [] as Author[])
+      .reduce((authors, author) => combineAuthor(authors, author), [] as Author[])
     return { contributors, isLoading, isError }
   } catch (error) {
     console.error(error)
@@ -274,10 +275,10 @@ function useContributions() {
 // sum contributions of the same user
 function combineAuthor(authors: Author[], author: Author) {
   const sameUser = authors.find((a) => a.login === author.login)
-  if (!sameUser) {
-    authors.push(author)
-  } else {
+  if (sameUser) {
     sameUser.contributions += author.contributions
+  } else {
+    authors.push(author)
   }
   return authors
 }

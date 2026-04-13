@@ -16,7 +16,7 @@ describe('sortByMode', () => {
         actual_rides: 1,
       },
     ] as HourlyData[]
-    const res = sortByMode(gapsResponse, 'hour')
+    const res = sortByMode('hour', gapsResponse)
     expect(res[0].planned_hour).toBe('01:00')
     expect(res[0].planned_rides).toBe(1)
   })
@@ -34,7 +34,7 @@ describe('sortByMode', () => {
         actual_rides: 0,
       },
     ] as HourlyData[]
-    const res = sortByMode(gapsResponse, 'severity')
+    const res = sortByMode('severity', gapsResponse)
     /* record with less actual rides should come first */
     expect(res[0].actual_rides).toBe(0)
   })

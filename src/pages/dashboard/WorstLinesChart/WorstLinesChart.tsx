@@ -15,7 +15,7 @@ interface WorstLinesChartProps {
 }
 
 const convertToWorstLineChartCompatibleStruct = (arr: GroupByRes[], operatorId?: string) => {
-  if (!arr || !arr.length) return []
+  if (!arr?.length) return []
   return arr
     .filter((row) => {
       if (operatorId) return row.operatorRef?.operatorRef.toString() === operatorId
@@ -24,7 +24,7 @@ const convertToWorstLineChartCompatibleStruct = (arr: GroupByRes[], operatorId?:
     .map(
       (item) =>
         ({
-          id: `${item.lineRef}|${item.operatorRef?.operatorRef}` || 'Unknown',
+          id: `${item.lineRef}|${item.operatorRef?.operatorRef}`,
           operator_name: item.operatorRef?.agencyName || 'Unknown',
           short_name: JSON.parse(item.routeShortName || "['']")[0],
           long_name: item.routeLongName,

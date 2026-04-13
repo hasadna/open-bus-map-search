@@ -13,12 +13,10 @@ export type LineBar = {
 function LinesHbarChart({
   lines,
   complement = false, // complement the chart (100% - actual) instead of actual
-}: {
+}: Readonly<{
   lines: LineBar[]
   complement?: boolean
-  operators_whitelist?: string[]
-  defaultOperators?: string[]
-}) {
+}>) {
   const percents = lines.map((line) =>
     complement
       ? Math.max(100 - (line.actual / line.total) * 100, 0)
@@ -38,7 +36,7 @@ function LinesHbarChart({
   return (
     <HbarChart
       entries={rows
-        .sort((a, b) => a.percent - b.percent)
+        .toSorted((a, b) => a.percent - b.percent)
         .filter((line) => line.total > 10)
         .filter((line) => line.percent > 40)
         .slice(0, 200)}

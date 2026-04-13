@@ -1,6 +1,6 @@
 import createCache from '@emotion/cache'
 import { CacheProvider } from '@emotion/react'
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import ReactGA from 'react-ga4'
 import { useLocation, useSearchParams } from 'react-router'
 import rtlPlugin from 'stylis-plugin-rtl'
@@ -86,8 +86,13 @@ export const MainRoute = () => {
     })
   }, [])
 
+  const contextValue = useMemo(
+    () => ({ search, setSearch: safeSetSearch }),
+    [search, safeSetSearch],
+  )
+
   return (
-    <SearchContext.Provider value={{ search, setSearch: safeSetSearch }}>
+    <SearchContext.Provider value={contextValue}>
       <CacheProvider value={cacheRtl}>
         <ThemeProvider>
           <MainLayout />

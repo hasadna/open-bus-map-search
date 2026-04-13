@@ -13,7 +13,7 @@ const Widget = ({ marginBottom, children, className, sx, title, titleSx }: Widge
   return (
     <Card
       sx={{
-        ...(sx || {}),
+        ...sx,
         marginBottom: marginBottom ? 2 : undefined,
       }}
       className={className}>
