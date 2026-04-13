@@ -178,7 +178,7 @@ const GapsPatternsPage = () => {
       setSearch((current) => ({ ...current, routeKey: undefined, routes: undefined }))
       return
     }
-    loadSearchData(signal)
+    void loadSearchData(signal)
     return () => controller.abort()
   }, [operatorId, lineNumber, endDate, startDate, setSearch])
 

@@ -11,7 +11,7 @@ const savedLang =
     ? localStorage.getItem('language') || 'he'
     : 'he'
 
-i18n.use(initReactI18next).init({
+void i18n.use(initReactI18next).init({
   showSupportNotice: false,
   resources: {
     ar: { translation: translationsAR },

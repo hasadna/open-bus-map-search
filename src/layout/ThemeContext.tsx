@@ -42,7 +42,7 @@ export const ThemeProvider = ({ children }: PropsWithChildren) => {
   const changeLanguage = useCallback(
     (newLanguage: string) => {
       setLanguage(newLanguage)
-      i18n.changeLanguage(newLanguage)
+      void i18n.changeLanguage(newLanguage)
     },
     [i18n, setLanguage],
   )
@@ -59,7 +59,7 @@ export const ThemeProvider = ({ children }: PropsWithChildren) => {
 
   useEffect(() => {
     if (!language) return
-    i18n.changeLanguage(language)
+    void i18n.changeLanguage(language)
     document.title = i18n.t('website_name')
     document.documentElement.dir = i18n.dir()
     document.documentElement.lang = language

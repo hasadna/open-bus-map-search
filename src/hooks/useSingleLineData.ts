@@ -166,7 +166,7 @@ export const useSingleLineData = (
       }
     }
 
-    fetchOptions()
+    void fetchOptions()
   }, [positions, today, tomorrow, vehicleNumber])
 
   useEffect(() => {
@@ -218,7 +218,7 @@ export const useSingleLineData = (
         setPlannedRouteStops([])
       }
     }
-    fetchStops()
+    void fetchStops()
   }, [selectedRoute?.routeIds, operatorId, startTime, today])
 
   return {

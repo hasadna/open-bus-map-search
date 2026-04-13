@@ -42,7 +42,7 @@ const loadedLocations = new Map<
  */
 class LocationObservable {
   constructor(query: VehicleLocationQuery) {
-    this.#loadData(query)
+    void this.#loadData(query)
   }
 
   data: SiriVehicleLocationWithRelatedPydanticModel[] = []

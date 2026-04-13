@@ -20,7 +20,7 @@ export default function OperatorSelector({
   const [operators, setOperators] = useState<Operator[]>([])
 
   useEffect(() => {
-    getOperators(filter).then(setOperators)
+    void getOperators(filter).then(setOperators)
   }, [filter])
 
   const value = operators.find((operator) => operator.id === operatorId) || null

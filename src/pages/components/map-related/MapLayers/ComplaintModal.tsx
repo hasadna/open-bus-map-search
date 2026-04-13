@@ -70,7 +70,7 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
 
   useEffect(() => {
     setIsLoading(true)
-    getSiriRideWithRelated(
+    void getSiriRideWithRelated(
       (position.point!.siriRouteId || 0).toString(),
       (position.point!.siriRideVehicleRef || '').toString(),
       (position.point!.siriRouteLineRef || 0).toString(),
