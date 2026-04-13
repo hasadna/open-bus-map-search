@@ -24,7 +24,10 @@ const convertToWorstLineChartCompatibleStruct = (arr: GroupByRes[], operatorId?:
     .map(
       (item) =>
         ({
-          id: `${item.lineRef}|${item.operatorRef?.operatorRef}` || 'Unknown',
+          id:
+            item.lineRef && item.operatorRef?.operatorRef
+              ? `${item.lineRef}|${item.operatorRef.operatorRef}`
+              : 'Unknown',
           operator_name: item.operatorRef?.agencyName || 'Unknown',
           short_name: JSON.parse(item.routeShortName || "['']")[0],
           long_name: item.routeLongName,

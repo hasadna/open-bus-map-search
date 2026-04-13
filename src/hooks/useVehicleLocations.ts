@@ -41,8 +41,10 @@ const loadedLocations = new Map<
  * it also caches the data, so if the same interval is requested again, it will not load it again.
  */
 class LocationObservable {
-  constructor(query: VehicleLocationQuery) {
-    this.#loadData(query)
+  static create(query: VehicleLocationQuery) {
+    const instance = new LocationObservable()
+    void instance.#loadData(query)
+    return instance
   }
 
   data: SiriVehicleLocationWithRelatedPydanticModel[] = []
@@ -139,7 +141,10 @@ function getLocations(
 ) {
   const key = `${formatTime(from)}-${formatTime(to)}-${operatorRef}-${lineRef}-${vehicleRef}`
   if (!loadedLocations.has(key)) {
-    loadedLocations.set(key, new LocationObservable({ from, to, lineRef, vehicleRef, operatorRef }))
+    loadedLocations.set(
+      key,
+      LocationObservable.create({ from, to, lineRef, vehicleRef, operatorRef }),
+    )
   }
   const observable = loadedLocations.get(key)!
   return observable.observe(onUpdate)

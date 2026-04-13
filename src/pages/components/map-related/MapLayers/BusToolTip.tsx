@@ -171,7 +171,7 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
                   data={position}
                   name={t('line')}
                 />
-                {route?.id && (
+                {route?.id != null && (
                   <CustomTreeView<GtfsRoutePydanticModel>
                     id={route?.id.toString()}
                     data={route}
