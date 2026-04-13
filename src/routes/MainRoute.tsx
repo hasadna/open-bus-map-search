@@ -17,6 +17,8 @@ const cacheRtl = createCache({
   stylisPlugins: [rtlPlugin],
 })
 
+const SUPPORTED_LANGUAGES = ['he', 'en', 'ru', 'ar']
+
 export const MainRoute = () => {
   const location = useLocation()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -26,6 +28,13 @@ export const MainRoute = () => {
   const routeKey = searchParams.get('routeKey')
   const startTime = searchParams.get('startTime')
   const timestamp = searchParams.get('timestamp')
+  const lang = searchParams.get('lang')
+
+  useEffect(() => {
+    if (lang && SUPPORTED_LANGUAGES.includes(lang)) {
+      localStorage.setItem('language', JSON.stringify(lang))
+    }
+  }, [lang])
 
   useEffect(() => {
     try {
