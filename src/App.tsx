@@ -5,10 +5,12 @@ import router from './routes'
 import Preloader from './shared/Preloader'
 
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker
-    .register('/service-worker.js')
-    .then((reg) => console.log('Service Worker Registered', reg))
-    .catch((err) => console.error('Service Worker Registration Failed', err))
+  try {
+    const reg = await navigator.serviceWorker.register('/service-worker.js')
+    console.log('Service Worker Registered', reg)
+  } catch (err) {
+    console.error('Service Worker Registration Failed', err)
+  }
 }
 
 export const RoutedApp = () => {

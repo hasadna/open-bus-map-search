@@ -9,10 +9,10 @@ const numberFormatter = new Intl.NumberFormat('he-IL')
 export function HbarChart({
   entries,
   complement = false, // complement the chart (100% - actual) instead of actual
-}: {
+}: Readonly<{
   entries: Entry[]
   complement?: boolean
-}) {
+}>) {
   const { t } = useTranslation()
   const percents = entries
     .map((o) => (o.actual / o.total) * 100)

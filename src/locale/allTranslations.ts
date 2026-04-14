@@ -7,7 +7,7 @@ import translationsRU from './ru.json'
 
 // Get saved language from localStorage or default to 'he'
 const savedLang =
-  typeof window !== 'undefined' && window.localStorage
+  typeof globalThis !== 'undefined' && globalThis.localStorage
     ? localStorage.getItem('language') || 'he'
     : 'he'
 

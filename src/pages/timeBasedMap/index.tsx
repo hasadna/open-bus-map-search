@@ -90,7 +90,7 @@ export default function TimeBasedMapPage() {
   )
 }
 
-function Markers({ positions }: { positions: Point[] }) {
+function Markers({ positions }: Readonly<{ positions: Point[] }>) {
   const map = useMap()
   const agencyList = useAgencyList()
   const operatorNames = useMemo(

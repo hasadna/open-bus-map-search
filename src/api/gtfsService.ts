@@ -70,7 +70,7 @@ export async function getStopsForRouteAsync(
       rideStops.map(async (rideStop) => {
         if (
           !rideStop.gtfsStopId ||
-          stops.find((b) => b.code === rideStop.gtfsStopCode?.toString())
+          stops.some((b) => b.code === rideStop.gtfsStopCode?.toString())
         ) {
           return
         }

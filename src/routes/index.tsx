@@ -170,8 +170,8 @@ export const getRoutesList = () => {
   )
 }
 
-window.addEventListener('vite:preloadError', () => {
-  window.location.reload() // in case new version is released, we will need to refresh the page. see https://vitejs.dev/guide/build#load-error-handling
+globalThis.addEventListener('vite:preloadError', () => {
+  globalThis.location.reload() // in case new version is released, we will need to refresh the page. see https://vitejs.dev/guide/build#load-error-handling
 })
 
 const routes = createRoutesFromElements(getRoutesList())

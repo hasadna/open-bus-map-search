@@ -94,7 +94,7 @@ function StackedResearchInputs({
   setGroupByHour,
   operatorId,
   setOperatorId,
-}: {
+}: Readonly<{
   startDate: dayjs.Dayjs
   setStartDate: (date: dayjs.Dayjs) => void
   endDate: dayjs.Dayjs
@@ -103,7 +103,7 @@ function StackedResearchInputs({
   setGroupByHour: (value: boolean) => void
   operatorId: string
   setOperatorId: (value: string) => void
-}) {
+}>) {
   const { t } = useTranslation()
   return (
     <>

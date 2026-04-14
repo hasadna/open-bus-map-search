@@ -15,7 +15,7 @@ export default function OperatorSelector({
   setOperatorId,
   disabled,
   filter,
-}: OperatorSelectorProps) {
+}: Readonly<OperatorSelectorProps>) {
   const { t } = useTranslation()
   const [operators, setOperators] = useState<Operator[]>([])
 

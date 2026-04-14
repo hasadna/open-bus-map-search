@@ -58,10 +58,10 @@ export function useGroupBy({
   dateFrom: number
   groupBy: groupByFields
 }) {
-  const { isLoading, isError, data, error } = useQuery({
+  const { isLoading, data, error } = useQuery({
     queryKey: ['groupBy', dateFrom, dateTo, groupBy],
     queryFn: () => fetchGroupBy({ dateFrom, dateTo, groupBy }),
   })
 
-  return [data ? data : [], isLoading, isError ? error : null] as const
+  return [data ?? [], isLoading, error ?? null] as const
 }

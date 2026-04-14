@@ -1,4 +1,4 @@
-import { createContext, FC, PropsWithChildren, useState } from 'react'
+import { createContext, FC, PropsWithChildren, useMemo, useState } from 'react'
 
 export interface LayoutContextInterface {
   setDrawerOpen: (isOpen: boolean) => void
@@ -7,6 +7,7 @@ export interface LayoutContextInterface {
 export const LayoutCtx = createContext({} as LayoutContextInterface)
 const LayoutContext: FC<PropsWithChildren> = ({ children }) => {
   const [drawerOpen, setDrawerOpen] = useState(false)
-  return <LayoutCtx.Provider value={{ drawerOpen, setDrawerOpen }}>{children}</LayoutCtx.Provider>
+  const value = useMemo(() => ({ drawerOpen, setDrawerOpen }), [drawerOpen])
+  return <LayoutCtx.Provider value={value}>{children}</LayoutCtx.Provider>
 }
 export default LayoutContext

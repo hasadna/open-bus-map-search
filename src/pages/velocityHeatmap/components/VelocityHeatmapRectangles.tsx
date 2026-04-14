@@ -67,7 +67,7 @@ export const VelocityHeatmapRectangles: React.FC<
   if (data && data.length > 0) {
     const values = data
       .map((p) => getValue(p, visMode))
-      .filter((v): v is number => typeof v === 'number' && !isNaN(v))
+      .filter((v): v is number => typeof v === 'number' && !Number.isNaN(v))
     if (values.length > 0) {
       minV = Math.min(...values)
       maxV = Math.max(...values)

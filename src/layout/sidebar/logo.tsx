@@ -1,6 +1,6 @@
 import cn from 'classnames'
 
-export function Logo({ title, dark }: { title?: string; dark?: boolean }) {
+export function Logo({ title, dark }: Readonly<{ title?: string; dark?: boolean }>) {
   return (
     <h1 className={cn('sidebar-logo', { dark })}>
       <svg viewBox="450 900 3200 1730" xmlSpace="preserve">

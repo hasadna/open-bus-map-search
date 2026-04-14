@@ -42,7 +42,7 @@ export const OperatorGaps = ({
   const timeRangeKey = `operator.time_range.${timeRange}` as const
 
   const prefersReducedMotion = useMemo(() => {
-    return window?.matchMedia('(prefers-reduced-motion: reduce)').matches
+    return globalThis?.matchMedia('(prefers-reduced-motion: reduce)').matches
   }, [])
 
   return (

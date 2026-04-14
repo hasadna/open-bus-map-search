@@ -16,7 +16,7 @@ export function MapWithLocationsAndPath({
   positions,
   plannedRouteStops,
   showNavigationButtons,
-}: MapProps) {
+}: Readonly<MapProps>) {
   const [isExpanded, setIsExpanded] = useState<boolean>(false)
   const toggleExpanded = useCallback(() => setIsExpanded((expanded) => !expanded), [])
 

@@ -96,21 +96,21 @@ export function useConstrainedFloatingButton(
       intersectionObserver.observe(mapContainerRef.current)
     }
 
-    window.document
+    globalThis.document
       .getElementsByClassName('ant-layout-content')
       .item(0)
       ?.addEventListener('scroll', updateButtonPosition)
-    window.addEventListener('resize', updateButtonPosition)
+    globalThis.addEventListener('resize', updateButtonPosition)
 
     return () => {
       if (intersectionObserver) {
         intersectionObserver.disconnect()
       }
-      window.document
+      globalThis.document
         .getElementsByClassName('ant-layout-content')
         .item(0)
         ?.removeEventListener('scroll', updateButtonPosition)
-      window.removeEventListener('resize', updateButtonPosition)
+      globalThis.removeEventListener('resize', updateButtonPosition)
     }
   }, [mapContainerRef, buttonRef, isExpanded])
 }

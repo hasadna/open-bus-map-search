@@ -29,7 +29,7 @@ export function DateSelector({
   customLabel,
   minDate,
   disabled,
-}: DataSelectorProps) {
+}: Readonly<DataSelectorProps>) {
   const [error, setError] = useState<DateValidationError>()
   const { t } = useTranslation()
 

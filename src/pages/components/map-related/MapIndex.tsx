@@ -2,11 +2,11 @@ export function MapIndex({
   lineColor,
   imgSrc,
   title,
-}: {
+}: Readonly<{
   lineColor: string
   imgSrc: string
   title: string
-}) {
+}>) {
   return (
     <div className="map-index-item">
       <div className="map-index-item-config">

@@ -1,3 +1,4 @@
+import { type TFunction } from 'i18next'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
@@ -101,13 +102,38 @@ const groupDataByHourOrDay = (data: ArrivalByTimeData[]): Record<string, Arrival
     }, {})
 }
 
+const ArrivalByTimeTooltipContent = ({
+  payload,
+  t,
+}: Readonly<{
+  payload?: readonly { payload: ArrivalByTimeData }[]
+  t: TFunction
+}>) =>
+  payload?.[0] ? (
+    <Widget>
+      <InfoTable>
+        <InfoItem
+          label={t('sample_time')}
+          value={dayjs(
+            payload[0].payload.gtfsRouteHour
+              ? payload[0].payload.gtfsRouteHour
+              : payload[0].payload.gtfsRouteDate,
+          ).format(payload[0].payload.gtfsRouteHour ? 'HH:mm-DD/MM/YY' : 'DD/MM/YY')}
+        />
+        <InfoItem label={t('rides_actual')} value={payload[0].payload.current} />
+        <InfoItem label={t('rides_planned')} value={payload[0].payload.max} />
+        <InfoItem label={t('planned_status')} value={`${payload[0].payload.percent.toFixed(2)}%`} />
+      </InfoTable>
+    </Widget>
+  ) : null
+
 export default function ArrivalByTimeChart({
   data,
   operatorId,
-}: {
+}: Readonly<{
   data: ArrivalByTimeData[]
   operatorId: string
-}) {
+}>) {
   const { t } = useTranslation()
   const filteredData = useMemo(() => filterDataByOperator(data, operatorId), [data, operatorId])
   const groupedData = useMemo(() => groupDataByHourOrDay(filteredData), [filteredData])
@@ -131,31 +157,12 @@ export default function ArrivalByTimeChart({
               />
               <YAxis domain={[0, 100]} tickMargin={35} unit={'%'} />
               <Tooltip
-                content={({ payload }) =>
-                  payload?.[0] ? (
-                    <Widget>
-                      <InfoTable>
-                        <InfoItem
-                          label={t('sample_time')}
-                          value={dayjs(
-                            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-                            payload[0].payload.gtfsRouteHour
-                              ? payload[0].payload.gtfsRouteHour
-                              : payload[0].payload.gtfsRouteDate,
-                          ).format(
-                            payload[0].payload.gtfsRouteHour ? 'HH:mm-DD/MM/YY' : 'DD/MM/YY',
-                          )}
-                        />
-                        <InfoItem label={t('rides_actual')} value={payload[0].payload.current} />
-                        <InfoItem label={t('rides_planned')} value={payload[0].payload.max} />
-                        <InfoItem
-                          label={t('planned_status')}
-                          value={`${payload[0].payload.percent.toFixed(2)}%`}
-                        />
-                      </InfoTable>
-                    </Widget>
-                  ) : null
-                }
+                content={({ payload }) => (
+                  <ArrivalByTimeTooltipContent
+                    payload={payload as unknown as readonly { payload: ArrivalByTimeData }[]}
+                    t={t}
+                  />
+                )}
               />
               <Line type="monotone" dataKey="percent" stroke="#8884d8" activeDot={{ r: 8 }} />
             </LineChart>

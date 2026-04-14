@@ -23,8 +23,6 @@ async function fetchAgencyList() {
 }
 
 export function getAgencyList() {
-  if (!agencyListPromise) {
-    agencyListPromise = fetchAgencyList()
-  }
+  agencyListPromise ??= fetchAgencyList()
   return agencyListPromise
 }

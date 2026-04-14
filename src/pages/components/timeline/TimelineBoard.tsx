@@ -16,7 +16,7 @@ const COLUMN_WIDTH = 140
 export const PADDING = 10
 
 const getRange = (timestamps: Date[]) =>
-  timestamps.length > 0 ? dayjs(timestamps[timestamps.length - 1]).diff(timestamps[0], 'second') : 0
+  timestamps.length > 0 ? dayjs(timestamps.at(-1)).diff(timestamps[0], 'second') : 0
 
 const minDate = (date1: Date, date2: Date) => (date1 <= date2 ? date1 : date2)
 

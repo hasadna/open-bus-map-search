@@ -40,7 +40,7 @@ export const OperatorRoutes = ({
             <TableBody>
               {routes.map((route) => (
                 <TableRow key={route.id}>
-                  <TableCell>{isNaN(route.line) ? '' : route.line + route.suffix}</TableCell>
+                  <TableCell>{Number.isNaN(route.line) ? '' : route.line + route.suffix}</TableCell>
                   <TableCell>{route.start}</TableCell>
                   <TableCell>{route.end}</TableCell>
                   <TableCell>

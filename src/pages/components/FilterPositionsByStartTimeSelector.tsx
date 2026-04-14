@@ -17,7 +17,7 @@ export function FilterPositionsByStartTimeSelector({
   startTime,
   disabled,
   setStartTime,
-}: FilterPositionsByStartTimeSelectorProps) {
+}: Readonly<FilterPositionsByStartTimeSelectorProps>) {
   const normalizedStartTime = normalizeScheduledTime(startTime?.split('|')[0])
   const selectedIndex = normalizedStartTime
     ? options.findIndex(

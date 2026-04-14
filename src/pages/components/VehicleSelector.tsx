@@ -41,7 +41,7 @@ const VehicleSelector = ({ vehicleNumber, disabled, setVehicleNumber }: VehicleS
       value={value && +value < 0 ? 0 : value}
       onChange={(e) => {
         const inputValue = e.target.value
-        const numericValue = inputValue === '' ? undefined : parseInt(inputValue, 10) || 0
+        const numericValue = inputValue === '' ? undefined : Number.parseInt(inputValue, 10) || 0
         setValue(numericValue)
         debouncedSetVehicleNumber(numericValue || 0)
       }}

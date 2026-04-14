@@ -9,7 +9,7 @@ import './locale/allTranslations'
 import './index.scss'
 
 const persister = createAsyncStoragePersister({
-  storage: window.localStorage,
+  storage: globalThis.localStorage,
 })
 
 const queryClient = new QueryClient({

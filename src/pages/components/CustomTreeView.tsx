@@ -19,6 +19,8 @@ interface CustomTreeViewProps<T> {
   id: string
 }
 
+const EndIcon = () => <div style={{ width: 24 }} />
+
 const isPrimitive = (value: unknown) => value !== Object(value) || value === null
 // A utility function to transform any object into a TreeNode structure
 const objectToTreeNode = <T extends Record<string, unknown>>(
@@ -79,7 +81,7 @@ const CustomTreeView = <T,>({ data, name, id }: CustomTreeViewProps<T>) => {
       slots={{
         collapseIcon: ExpandMore,
         expandIcon: ChevronRight,
-        endIcon: () => <div style={{ width: 24 }} />,
+        endIcon: EndIcon,
       }}>
       {renderTree(dataAsTreeNode)}
     </SimpleTreeView>

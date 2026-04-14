@@ -3,6 +3,12 @@ import { Dropdown, type MenuProps } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '../ThemeContext'
 
+const LangLabel = ({ label }: Readonly<{ label: string }>) => (
+  <div aria-label={label}>
+    <span>{label}</span>
+  </div>
+)
+
 export const LanguageToggleButton = () => {
   const { setLanguage, currentLanguage } = useTheme()
   const { t } = useTranslation()
@@ -13,12 +19,6 @@ export const LanguageToggleButton = () => {
     { key: 'ru', label: 'Русский' },
     { key: 'ar', label: 'العربية' },
   ]
-
-  const LangLabel = ({ label }: { label: string }) => (
-    <div aria-label={label}>
-      <span>{label}</span>
-    </div>
-  )
 
   const languageOptions: MenuProps['items'] = languages.map(({ key, label }) => ({
     key,

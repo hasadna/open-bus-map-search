@@ -22,10 +22,10 @@ export function getColorName(name: string) {
 function OperatorHbarChart({
   operators,
   complement = false, // complement the chart (100% - actual) instead of actual
-}: {
+}: Readonly<{
   operators: { name: string; total: number; actual: number }[]
   complement?: boolean
-}) {
+}>) {
   const rows = operators
 
   return (

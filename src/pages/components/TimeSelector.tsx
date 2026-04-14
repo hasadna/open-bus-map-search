@@ -9,7 +9,12 @@ type DataAndTimeSelectorProps = {
   minDate?: dayjs.Dayjs
 }
 
-export function TimeSelector({ time, onChange, customLabel, minDate }: DataAndTimeSelectorProps) {
+export function TimeSelector({
+  time,
+  onChange,
+  customLabel,
+  minDate,
+}: Readonly<DataAndTimeSelectorProps>) {
   const { t } = useTranslation()
   return (
     <TimePicker

@@ -26,7 +26,7 @@ export const getGapsAsync = (
     dateTo: new Date(toTimestamp),
     limit,
     lineRef,
-    operatorRef: parseInt(operatorId),
+    operatorRef: Number.parseInt(operatorId),
   }).then((gaps) =>
     gaps.map((gap) => {
       return {

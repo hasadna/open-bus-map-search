@@ -34,11 +34,11 @@ function DisplayGapsPercentage({
   gapsPercentage,
   decentPercentage,
   terriblePercentage,
-}: {
+}: Readonly<{
   gapsPercentage: number | undefined
   decentPercentage: number
   terriblePercentage: number
-}) {
+}>) {
   const { t } = useTranslation()
   if (!gapsPercentage && gapsPercentage != 0) return <></>
   const status = getStatus(gapsPercentage, decentPercentage, terriblePercentage)

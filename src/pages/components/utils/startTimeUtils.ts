@@ -7,8 +7,8 @@ export type StartTimeToken = {
 export function normalizeScheduledTime(raw?: string): string | undefined {
   if (!raw) return undefined
 
-  const normalized = raw.replace(/-/g, ':')
-  const match = normalized.match(/^(\d{1,2}):(\d{2})(?::\d{2})?$/)
+  const normalized = raw.replaceAll('-', ':')
+  const match = /^(\d{1,2}):(\d{2})(?::\d{2})?$/.exec(normalized)
   if (!match) return undefined
 
   const hour = Number(match[1])
@@ -52,5 +52,5 @@ export function normalizeStartTimeToken(token?: string): string | undefined {
 }
 
 export function formatStartTimeForQuery(time?: string): string {
-  return normalizeScheduledTime(time)?.replace(/:/g, '-') || ''
+  return normalizeScheduledTime(time)?.replaceAll(':', '-') || ''
 }

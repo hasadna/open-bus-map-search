@@ -32,7 +32,7 @@ const ThemeContext = createContext<ThemeContextInterface>({} as ThemeContextInte
 export const ThemeProvider = ({ children }: PropsWithChildren) => {
   const [isDarkTheme, setIsDarkTheme] = useLocalStorage<boolean>(
     'isDarkTheme',
-    window.matchMedia('(prefers-color-scheme: dark)').matches,
+    globalThis.matchMedia('(prefers-color-scheme: dark)').matches,
   )
   const [language, setLanguage] = useLocalStorage<string>('language', 'he')
   const { i18n } = useTranslation()

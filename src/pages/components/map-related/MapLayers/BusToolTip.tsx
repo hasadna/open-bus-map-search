@@ -16,7 +16,7 @@ import './BusToolTip.scss'
 
 export type BusToolTipProps = { position: Point; icon: string; children?: ReactNode }
 
-export function BusToolTip({ position, icon, children }: BusToolTipProps) {
+export function BusToolTip({ position, icon, children }: Readonly<BusToolTipProps>) {
   const [route, setRoute] = useState<GtfsRoutePydanticModel>()
   const [isLoading, setIsLoading] = useState(false)
   const [showJson, setShowJson] = useState(false)
@@ -128,9 +128,9 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
                 <span>
                   {/* ({position.point?.bearing} {t('bearing')}) */}
                   {position.point?.bearing} {t('bearing')} (
-                  {position.point?.bearing !== undefined
-                    ? getDirectionFromAngle(position.point.bearing)
-                    : t('unknown', { defaultValue: 'unknown' })}
+                  {position.point?.bearing === undefined
+                    ? t('unknown', { defaultValue: 'unknown' })
+                    : getDirectionFromAngle(position.point.bearing)}
                   )
                 </span>
               </li>

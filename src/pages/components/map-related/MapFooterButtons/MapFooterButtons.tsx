@@ -8,7 +8,7 @@ type TMapFooterButtons = {
   navigateMarkers: (id: number) => void
 }
 
-function MapFooterButtons({ index, positions, navigateMarkers }: TMapFooterButtons) {
+function MapFooterButtons({ index, positions, navigateMarkers }: Readonly<TMapFooterButtons>) {
   const rightStep = index + 1
   const leftStep = index - 1
 
