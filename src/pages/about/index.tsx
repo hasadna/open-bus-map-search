@@ -75,8 +75,8 @@ const Privacy = () => {
     <Widget title={t('privacy')}>
       <p>
         <Trans i18nKey="aboutPage.privacyText">
-          <a href={googlAnalyticsUrl} aria-label="Google Analytics"></a>
-          <a href={googleAnaliticsPrivacyUrl} aria-label="Google Analytics Privacy"></a>
+          <a href={googlAnalyticsUrl}>Google Analytics</a>
+          <a href={googleAnaliticsPrivacyUrl}>קראו כאן</a>
         </Trans>
       </p>
     </Widget>
@@ -93,8 +93,8 @@ const License = () => {
         <Trans
           i18nKey="aboutPage.licenseInfo.text"
           values={{ licenseName: t('aboutPage.licenseInfo.licenseName') }}>
-          <a href={licenseLink} aria-label="Creative Commons License"></a>
-          <a href={licenseOrgLink} aria-label="Creative Commons"></a>
+          <a href={licenseLink}>רישיון CC BY-SA</a>
+          <a href={licenseOrgLink}>Creative Commons</a>
         </Trans>
       </p>
     </Widget>
@@ -186,9 +186,9 @@ const Contributors = () => {
         {t('aboutPage.contributorsText')}
         <br />
         <Trans i18nKey="aboutPage.contributorsReadMore">
-          <a
-            href="https://github.com/hasadna/open-bus-map-search/blob/main/CONTRIBUTING.md"
-            aria-label="Contributing guide"></a>
+          <a href="https://github.com/hasadna/open-bus-map-search/blob/main/CONTRIBUTING.md">
+            קרא כאן
+          </a>
         </Trans>
       </p>
       <ol className="contributions">
