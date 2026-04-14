@@ -21,7 +21,7 @@ export const useSingleLineData = (
 ) => {
   const { search, setSearch } = useContext(SearchContext)
   const [routes, setRoutes] = useState<BusRoute[] | undefined>(search.routes)
-  const [routeKey, setRouteKeyState] = useState<string | undefined>(search.routeKey)
+  const [routeKey, _setRouteKey] = useState<string | undefined>(search.routeKey)
   const [filteredPositions, setFilteredPositions] = useState<Point[]>([])
   const [plannedRouteStops, setPlannedRouteStops] = useState<BusStop[]>([])
   const [options, setOptions] = useState<{ value: string; label: string }[]>([])
@@ -37,7 +37,7 @@ export const useSingleLineData = (
 
   const setRouteKey = useCallback(
     (routeKey?: string) => {
-      setRouteKeyState(routeKey)
+      _setRouteKey(routeKey)
       setSearch((prev) => ({ ...prev, routeKey }))
     },
     [setSearch],

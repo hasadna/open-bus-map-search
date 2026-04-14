@@ -66,9 +66,9 @@ const MainMenu = ({ collapsed = false }: MainMenuProps) => {
     acc[itm.path] =
       itm.label === 'donate_title'
         ? getItem(
-            <button type="button" onClick={handleDonateClick}>
+            <a href="#" onClick={handleDonateClick}>
               {t(itm.label)}
-            </button>,
+            </a>,
             itm.path,
             itm.icon,
           )

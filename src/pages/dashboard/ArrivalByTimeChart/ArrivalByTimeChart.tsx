@@ -114,11 +114,9 @@ const ArrivalByTimeTooltipContent = ({
       <InfoTable>
         <InfoItem
           label={t('sample_time')}
-          value={dayjs(
-            payload[0].payload.gtfsRouteHour
-              ? payload[0].payload.gtfsRouteHour
-              : payload[0].payload.gtfsRouteDate,
-          ).format(payload[0].payload.gtfsRouteHour ? 'HH:mm-DD/MM/YY' : 'DD/MM/YY')}
+          value={dayjs(payload[0].payload.gtfsRouteHour ?? payload[0].payload.gtfsRouteDate).format(
+            payload[0].payload.gtfsRouteHour ? 'HH:mm-DD/MM/YY' : 'DD/MM/YY',
+          )}
         />
         <InfoItem label={t('rides_actual')} value={payload[0].payload.current} />
         <InfoItem label={t('rides_planned')} value={payload[0].payload.max} />
@@ -137,7 +135,6 @@ export default function ArrivalByTimeChart({
   const { t } = useTranslation()
   const filteredData = useMemo(() => filterDataByOperator(data, operatorId), [data, operatorId])
   const groupedData = useMemo(() => groupDataByHourOrDay(filteredData), [filteredData])
-
   return (
     <div className="chart">
       {Object.values(groupedData).map((operatorData) => (

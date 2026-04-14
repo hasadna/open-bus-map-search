@@ -35,18 +35,14 @@ const ExternalLink = ({ label, path, icon }: LinkType) => {
     window.open(path, '_blank')
   }
   return (
-    <div
+    <button
+      type="button"
       className="header-link"
       aria-label={t(label)}
       title={t(label)}
-      role="button"
-      tabIndex={0}
-      onClick={handleClick}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') handleClick()
-      }}>
+      onClick={handleClick}>
       {icon}
-    </div>
+    </button>
   )
 }
 
@@ -57,18 +53,14 @@ const InternalLink = ({ label, path, icon }: LinkType) => {
     navigate(path)
   }
   return (
-    <div
+    <button
+      type="button"
       aria-label={t(label)}
       title={t(label)}
       className="header-link"
-      role="button"
-      tabIndex={0}
-      onClick={handleClick}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') handleClick()
-      }}>
+      onClick={handleClick}>
       {icon}
-    </div>
+    </button>
   )
 }
 
