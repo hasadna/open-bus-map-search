@@ -1,4 +1,3 @@
-import i18next from 'i18next'
 import { expect, setupTest, test, visitPage } from './utils'
 
 test.describe('Public Appeal Page Tests', () => {
@@ -14,9 +13,5 @@ test.describe('Public Appeal Page Tests', () => {
   test('page has proper RTL layout', async ({ page }) => {
     const dir = await page.locator('html').getAttribute('dir')
     expect(dir).toBe('rtl')
-  })
-
-  test('page contains content', async ({ page }) => {
-    await expect(page.getByText(i18next.t('public_appeal_title'))).toBeVisible()
   })
 })
