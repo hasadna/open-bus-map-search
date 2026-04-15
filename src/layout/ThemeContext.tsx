@@ -43,6 +43,9 @@ export const ThemeProvider = ({ children }: PropsWithChildren) => {
     (newLanguage: string) => {
       setLanguage(newLanguage)
       i18n.changeLanguage(newLanguage)
+      const url = new URL(window.location.href)
+      url.searchParams.set('lang', newLanguage)
+      window.history.replaceState({}, '', url)
     },
     [i18n, setLanguage],
   )
