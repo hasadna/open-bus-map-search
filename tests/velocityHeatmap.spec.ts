@@ -1,3 +1,4 @@
+import i18next from 'i18next'
 import { expect, setupTest, test, visitPage } from './utils'
 
 test.describe('Velocity Heatmap Page Tests', () => {
@@ -7,8 +8,7 @@ test.describe('Velocity Heatmap Page Tests', () => {
   })
 
   test('page displays heading and date controls', async ({ page }) => {
-    await expect(page.locator('h4').first()).toBeVisible()
-    await expect(page.getByRole('textbox').first()).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Velocity Aggregation Heatmap' })).toBeVisible()
   })
 
   test('page displays visualization mode radio buttons', async ({ page }) => {
@@ -35,9 +35,45 @@ test.describe('Velocity Heatmap Page Tests', () => {
   })
 
   test('date navigation buttons are present', async ({ page }) => {
-    const prevDay = page.getByRole('button', { name: /יום קודם|Previous day/i })
-    const nextDay = page.getByRole('button', { name: /יום הבא|Next day/i })
-    await expect(prevDay).toBeVisible()
-    await expect(nextDay).toBeVisible()
+    await expect(
+      page.getByRole('button', { name: i18next.t('date_navigator_prev_day') }),
+    ).toBeVisible()
+    await expect(
+      page.getByRole('button', { name: i18next.t('date_navigator_next_day') }),
+    ).toBeVisible()
+    await expect(
+      page.getByRole('button', { name: i18next.t('date_navigator_prev_week') }),
+    ).toBeVisible()
+    await expect(
+      page.getByRole('button', { name: i18next.t('date_navigator_next_week') }),
+    ).toBeVisible()
+    await expect(
+      page.getByRole('button', { name: i18next.t('date_navigator_today') }),
+    ).toBeVisible()
+  })
+
+  test('clicking prev/next day buttons changes the date', async ({ page }) => {
+    const dateInput = page.locator('input.MuiPickersInputBase-input').first()
+    const initialValue = await dateInput.inputValue()
+
+    await page.getByRole('button', { name: i18next.t('date_navigator_prev_day') }).click()
+    await page.waitForTimeout(300)
+    const afterPrevDay = await dateInput.inputValue()
+    expect(afterPrevDay).not.toEqual(initialValue)
+
+    await page.getByRole('button', { name: i18next.t('date_navigator_next_day') }).click()
+    await page.waitForTimeout(300)
+    const afterNextDay = await dateInput.inputValue()
+    expect(afterNextDay).toEqual(initialValue)
+  })
+
+  test('map container has leaflet tile layer', async ({ page }) => {
+    const tilePane = page.locator('.leaflet-tile-pane')
+    await expect(tilePane).toBeVisible()
+  })
+
+  test('legend is visible on the map', async ({ page }) => {
+    const legend = page.locator('.leaflet-control')
+    await expect(legend).toBeVisible()
   })
 })
