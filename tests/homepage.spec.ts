@@ -8,11 +8,13 @@ test.describe('Homepage Tests', () => {
   })
 
   test('homepage displays welcome heading', async ({ page }) => {
-    await expect(page.locator('h1')).toContainText(i18next.t('homepage.welcome'))
+    await expect(
+      page.getByRole('heading', { name: i18next.t('homepage.welcome') }),
+    ).toBeVisible()
   })
 
   test('homepage displays definition', async ({ page }) => {
-    await expect(page.locator('h2')).toContainText(i18next.t('homepage.databus_definition'))
+    await expect(page.locator('h2').last()).toContainText(i18next.t('homepage.databus_definition'))
   })
 
   test('homepage displays bus illustration', async ({ page }) => {
