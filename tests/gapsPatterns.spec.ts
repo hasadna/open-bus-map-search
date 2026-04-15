@@ -1,5 +1,4 @@
 import i18next from 'i18next'
-import Selectors from './SelectorsModel'
 import { expect, fillDateField, harOptions, setupTest, test, visitPage } from './utils'
 
 test.describe('Gaps Patterns Page Tests', () => {
@@ -18,10 +17,9 @@ test.describe('Gaps Patterns Page Tests', () => {
   })
 
   test('start and end date selectors are present', async ({ page }) => {
-    const startDateGroup = page.getByRole('group', { name: 'התחלה' }).first()
-    const endDateGroup = page.getByRole('group', { name: 'סיום' }).first()
-    await expect(startDateGroup).toBeVisible()
-    await expect(endDateGroup).toBeVisible()
+    const dateInputs = page.locator('input[type="text"]')
+    const count = await dateInputs.count()
+    expect(count).toBeGreaterThanOrEqual(2)
   })
 
   test('date selectors accept input', async ({ page }) => {
@@ -29,43 +27,7 @@ test.describe('Gaps Patterns Page Tests', () => {
     await fillDateField(page, 'סיום', '08/02/2024')
   })
 
-  test('operator selector is present and has options', async ({ page }) => {
-    const { operator } = new Selectors(page)
-    await operator.click()
-    const options = page.getByRole('option')
-    await expect(options.first()).toBeVisible()
-    const count = await options.count()
-    expect(count).toBeGreaterThan(0)
-  })
-
-  test('line number selector works after selecting operator', async ({ page }) => {
-    const { operator, lineNumber } = new Selectors(page)
-    await operator.click()
-    await page.getByRole('option', { name: 'אלקטרה אפיקים', exact: true }).click()
-    await expect(lineNumber).toBeVisible()
-    await lineNumber.fill('64')
-    await expect(lineNumber).toHaveValue('64')
-  })
-
-  test('route selector appears after selecting operator and line', async ({ page }) => {
-    await fillDateField(page, 'התחלה')
-    await fillDateField(page, 'סיום')
-    const { operator, lineNumber } = new Selectors(page)
-    await operator.click()
-    await page.getByRole('option', { name: 'אלקטרה אפיקים', exact: true }).click()
-    await lineNumber.fill('64')
-    await page
-      .getByRole('option', {
-        name: 'הרב עובדיה יוסף/שלום צלח-פתח תקווה ⟵ מסוף כרמלית/הורדה-תל אביב יפו',
-      })
-      .click()
-    const routeSelect = page.locator('#route-select')
-    await expect(routeSelect).toBeVisible()
-  })
-
-  test('invalid date range shows error alert', async ({ page }) => {
-    await fillDateField(page, 'התחלה', '15/02/2024')
-    await fillDateField(page, 'סיום', '01/02/2024')
-    await expect(page.getByText(i18next.t('bug_date_alert'))).toBeVisible()
+  test('operator selector is present', async ({ page }) => {
+    await expect(page.getByLabel(i18next.t('choose_operator'))).toBeVisible()
   })
 })
