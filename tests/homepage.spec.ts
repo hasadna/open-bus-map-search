@@ -8,9 +8,7 @@ test.describe('Homepage Tests', () => {
   })
 
   test('homepage displays welcome heading', async ({ page }) => {
-    await expect(
-      page.getByRole('heading', { name: i18next.t('homepage.welcome') }),
-    ).toBeVisible()
+    await expect(page.getByRole('heading', { name: i18next.t('homepage.welcome') })).toBeVisible()
   })
 
   test('homepage displays definition', async ({ page }) => {
