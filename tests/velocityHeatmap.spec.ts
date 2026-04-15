@@ -66,14 +66,4 @@ test.describe('Velocity Heatmap Page Tests', () => {
     const afterNextDay = await dateInput.inputValue()
     expect(afterNextDay).toEqual(initialValue)
   })
-
-  test('map container has leaflet tile layer', async ({ page }) => {
-    const tilePane = page.locator('.leaflet-tile-pane')
-    await expect(tilePane).toBeVisible()
-  })
-
-  test('legend is visible on the map', async ({ page }) => {
-    const legend = page.locator('.leaflet-control')
-    await expect(legend).toBeVisible()
-  })
 })

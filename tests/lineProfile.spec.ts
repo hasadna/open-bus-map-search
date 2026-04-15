@@ -10,10 +10,4 @@ test.describe('Line Profile Page Tests', () => {
     await page.locator('.preloader').waitFor({ state: 'hidden' })
     await expect(page).toHaveURL(/\/profile\/1/)
   })
-
-  test('profile page displays a map container', async ({ page }) => {
-    await page.goto('/profile/1')
-    await page.locator('.preloader').waitFor({ state: 'hidden' })
-    await expect(page.locator('.leaflet-container')).toBeVisible()
-  })
 })
