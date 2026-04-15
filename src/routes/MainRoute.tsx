@@ -2,6 +2,7 @@ import createCache from '@emotion/cache'
 import { CacheProvider } from '@emotion/react'
 import { useCallback, useEffect } from 'react'
 import ReactGA from 'react-ga4'
+import { useTranslation } from 'react-i18next'
 import { useLocation, useSearchParams } from 'react-router'
 import rtlPlugin from 'stylis-plugin-rtl'
 import { useSessionStorage } from 'usehooks-ts'
@@ -22,6 +23,7 @@ const SUPPORTED_LANGUAGES = ['he', 'en', 'ru', 'ar']
 export const MainRoute = () => {
   const location = useLocation()
   const [searchParams, setSearchParams] = useSearchParams()
+  const { i18n } = useTranslation()
   const operatorId = searchParams.get('operatorId')
   const lineNumber = searchParams.get('lineNumber')
   const vehicleNumber = searchParams.get('vehicleNumber')
@@ -32,9 +34,9 @@ export const MainRoute = () => {
 
   useEffect(() => {
     if (lang && SUPPORTED_LANGUAGES.includes(lang)) {
-      localStorage.setItem('language', JSON.stringify(lang))
+      i18n.changeLanguage(lang)
     }
-  }, [lang])
+  }, [lang, i18n])
 
   useEffect(() => {
     try {
