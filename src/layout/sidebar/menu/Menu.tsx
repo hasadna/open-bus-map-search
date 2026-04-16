@@ -4,6 +4,8 @@ import React, { useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useLocation } from 'react-router'
 import { LayoutContextInterface, LayoutCtx } from 'src/layout/LayoutContext'
+import { useTheme } from 'src/layout/ThemeContext'
+import { getPathWithoutLang } from 'src/locale/allTranslations'
 import DonateModal from 'src/pages/DonateModal/DonateModal'
 import { PAGES } from 'src/routes'
 import './menu.scss'
@@ -53,6 +55,7 @@ function getGroup(label: React.ReactNode, key: React.Key, children: MenuItem[]):
 
 const MainMenu = ({ collapsed = false }: MainMenuProps) => {
   const { t } = useTranslation()
+  const { currentLanguage } = useTheme()
   const { setDrawerOpen } = useContext<LayoutContextInterface>(LayoutCtx)
   const [isDonateModalVisible, setDonateModalVisible] = useState(false)
 
@@ -73,7 +76,7 @@ const MainMenu = ({ collapsed = false }: MainMenuProps) => {
             itm.icon,
           )
         : getItem(
-            <Link to={itm.path} onClick={() => setDrawerOpen(false)}>
+            <Link to={`/${currentLanguage}${itm.path}`} onClick={() => setDrawerOpen(false)}>
               {t(itm.label)}
             </Link>,
             itm.path,
@@ -101,10 +104,10 @@ const MainMenu = ({ collapsed = false }: MainMenuProps) => {
   const items = collapsed ? flatItems : groupedItems
 
   const location = useLocation()
-  const [current, setCurrent] = useState(location.pathname || '/')
+  const [current, setCurrent] = useState(getPathWithoutLang(location.pathname) || '/')
 
   useEffect(() => {
-    const nextPath = location.pathname || '/'
+    const nextPath = getPathWithoutLang(location.pathname) || '/'
 
     if (current !== nextPath) {
       setCurrent(nextPath)
