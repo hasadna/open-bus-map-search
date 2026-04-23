@@ -84,8 +84,9 @@ const GapsTable: React.FC<GapsTableProps> = ({
   const groupedGaps = useMemo(() => {
     const map: Record<string, { gap: Gap; status: keyof typeof colors }[]> = {}
     for (const gap of filteredGaps) {
-      const hour = gap.plannedStartTime?.get('hour') ?? gap.actualStartTime?.get('hour')
-      if (hour === undefined) continue
+      const rawHour = gap.plannedStartTime?.get('hour') ?? gap.actualStartTime?.get('hour')
+      if (rawHour === undefined) continue
+      const hour = rawHour < 4 ? rawHour + 24 : rawHour
       const status = formatStatus(gap, filteredGaps)
       if (!map[hour]) map[hour] = []
       map[hour].push({ gap, status })
@@ -125,7 +126,7 @@ const GapsTable: React.FC<GapsTableProps> = ({
           <Table sx={{ maxWidth: 'fit-content' }}>
             <TableBody>
               {Object.keys(groupedGaps)
-                .sort((a, b) => (a === '0' ? 1 : b === '0' ? -1 : Number(a) - Number(b)))
+                .sort((a, b) => Number(a) - Number(b))
                 .map((hour) => (
                   <TableRow key={hour}>
                     {groupedGaps[hour].map(({ gap, status }, j) => {
