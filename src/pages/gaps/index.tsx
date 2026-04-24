@@ -15,6 +15,7 @@ import OperatorSelector from '../components/OperatorSelector'
 import { PageContainer } from '../components/PageContainer'
 import RouteSelector from '../components/RouteSelector'
 import { Row } from '../components/Row'
+import { StickyInputs } from '../components/StickyInputs'
 import GapsTable from './GapsTable'
 
 const GapsPage = () => {
@@ -104,50 +105,52 @@ const GapsPage = () => {
       <Alert severity="info" variant="outlined" icon={false}>
         {t('gaps_page_description')}
       </Alert>
-      <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
-        {/* choose date */}
-        <Grid size={{ xs: 4 }}>
-          <Label text={t('choose_date')} />
+      <StickyInputs>
+        <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
+          {/* choose date */}
+          <Grid size={{ xs: 4 }}>
+            <Label text={t('choose_date')} />
+          </Grid>
+          <Grid size={{ xs: 8 }}>
+            <DateSelector time={dayjs(timestamp)} onChange={handleTimestampChange} />
+          </Grid>
+          {/* choose operator */}
+          <Grid size={{ xs: 4 }}>
+            <Label text={t('choose_operator')} />
+          </Grid>
+          <Grid size={{ xs: 8 }}>
+            <OperatorSelector operatorId={operatorId} setOperatorId={handleOperatorChange} />
+          </Grid>
+          {/* choose line */}
+          <Grid size={{ xs: 4 }}>
+            <Label text={t('choose_line')} />
+          </Grid>
+          <Grid size={{ xs: 8 }}>
+            <LineNumberSelector lineNumber={lineNumber} setLineNumber={handleLineNumberChange} />
+          </Grid>
+          {/* choose routes */}
+          <Grid size={{ xs: 12 }}>
+            {routes?.length === 0 ? (
+              <NotFound>{t('line_not_found')}</NotFound>
+            ) : (
+              <RouteSelector
+                routes={routes || []}
+                disabled={!routes}
+                routeKey={routeKey}
+                setRouteKey={handleRouteKeyChange}
+              />
+            )}
+          </Grid>
+          <Grid size={{ xs: 12 }}>
+            {gapsIsLoading && (
+              <Row>
+                <Label text={t('loading_gaps')} />
+                <CircularProgress />
+              </Row>
+            )}
+          </Grid>
         </Grid>
-        <Grid size={{ xs: 8 }}>
-          <DateSelector time={dayjs(timestamp)} onChange={handleTimestampChange} />
-        </Grid>
-        {/* choose operator */}
-        <Grid size={{ xs: 4 }}>
-          <Label text={t('choose_operator')} />
-        </Grid>
-        <Grid size={{ xs: 8 }}>
-          <OperatorSelector operatorId={operatorId} setOperatorId={handleOperatorChange} />
-        </Grid>
-        {/* choose line */}
-        <Grid size={{ xs: 4 }}>
-          <Label text={t('choose_line')} />
-        </Grid>
-        <Grid size={{ xs: 8 }}>
-          <LineNumberSelector lineNumber={lineNumber} setLineNumber={handleLineNumberChange} />
-        </Grid>
-        {/* choose routes */}
-        <Grid size={{ xs: 12 }}>
-          {routes?.length === 0 ? (
-            <NotFound>{t('line_not_found')}</NotFound>
-          ) : (
-            <RouteSelector
-              routes={routes || []}
-              disabled={!routes}
-              routeKey={routeKey}
-              setRouteKey={handleRouteKeyChange}
-            />
-          )}
-        </Grid>
-        <Grid size={{ xs: 12 }}>
-          {gapsIsLoading && (
-            <Row>
-              <Label text={t('loading_gaps')} />
-              <CircularProgress />
-            </Row>
-          )}
-        </Grid>
-      </Grid>
+      </StickyInputs>
       {routeKey && routeKey !== '' && (
         <GapsTable
           loading={gapsIsLoading}

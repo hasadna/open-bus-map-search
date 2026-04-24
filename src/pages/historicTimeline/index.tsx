@@ -15,6 +15,7 @@ import LineNumberSelector from 'src/pages/components/LineSelector'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
 import RouteSelector from 'src/pages/components/RouteSelector'
 import { Row } from 'src/pages/components/Row'
+import { StickyInputs } from 'src/pages/components/StickyInputs'
 import StopSelector from 'src/pages/components/StopSelector'
 import { TimelineBoard } from 'src/pages/components/timeline/TimelineBoard'
 import { MARGIN_MEDIUM } from 'src/resources/sizes'
@@ -108,108 +109,112 @@ const TimelinePage = () => {
             {t('no_data_from_ETL')}
           </Alert>
         )}
-      <Grid container spacing={2}>
-        {/* choose date */}
-        <Grid size={{ lg: 4, md: 6, xs: 12 }}>
-          <DateSelector
-            time={dayjs(timestamp)}
-            onChange={(ts) => {
-              if (!ts) return
-              const currentTime = dayjs(timestamp)
-              const newTimestamp = ts
-                .hour(currentTime.hour())
-                .minute(currentTime.minute())
-                .second(currentTime.second())
-                .valueOf()
-              setSearch((current) => ({ ...current, timestamp: newTimestamp }))
-            }}
-          />
-        </Grid>
-        {/* choose time */}
-        <Grid size={{ lg: 4, md: 6, xs: 12 }}>
-          <TimeSelector
-            time={dayjs(timestamp)}
-            onChange={(ts) => {
-              if (!ts) return
-              const currentDate = dayjs(timestamp)
-              const newTimestamp = currentDate
-                .hour(ts.hour())
-                .minute(ts.minute())
-                .second(ts.second())
-                .valueOf()
-              setSearch((current) => ({ ...current, timestamp: newTimestamp }))
-            }}
-          />
-        </Grid>
-        {/* choose operator */}
-        <Grid size={{ lg: 4, md: 6, xs: 12 }}>
-          <OperatorSelector
-            operatorId={operatorId}
-            setOperatorId={(id) => setSearch((current) => ({ ...current, operatorId: id }))}
-          />
-        </Grid>
-        {/* choose line */}
-        <Grid size={{ lg: 4, md: 6, xs: 12 }}>
-          <LineNumberSelector
-            lineNumber={lineNumber}
-            setLineNumber={(number) => setSearch((current) => ({ ...current, lineNumber: number }))}
-          />
-        </Grid>
-        {/* routes */}
-        <Grid container size={{ lg: 4, md: 6, xs: 12 }}>
-          <Row style={{ width: '100%' }}>
-            <div style={{ width: '100%' }}>
-              {routesQuery.data?.length === 0 ? (
-                <NotFound>{t('line_not_found')}</NotFound>
-              ) : (
-                <RouteSelector
-                  disabled={!routesQuery.data}
-                  routes={routesQuery.data || []}
-                  routeKey={routeKey}
-                  setRouteKey={(key) => setSearch((current) => ({ ...current, routeKey: key }))}
+      <StickyInputs>
+        <Grid container spacing={2}>
+          {/* choose date */}
+          <Grid size={{ lg: 4, md: 6, xs: 12 }}>
+            <DateSelector
+              time={dayjs(timestamp)}
+              onChange={(ts) => {
+                if (!ts) return
+                const currentTime = dayjs(timestamp)
+                const newTimestamp = ts
+                  .hour(currentTime.hour())
+                  .minute(currentTime.minute())
+                  .second(currentTime.second())
+                  .valueOf()
+                setSearch((current) => ({ ...current, timestamp: newTimestamp }))
+              }}
+            />
+          </Grid>
+          {/* choose time */}
+          <Grid size={{ lg: 4, md: 6, xs: 12 }}>
+            <TimeSelector
+              time={dayjs(timestamp)}
+              onChange={(ts) => {
+                if (!ts) return
+                const currentDate = dayjs(timestamp)
+                const newTimestamp = currentDate
+                  .hour(ts.hour())
+                  .minute(ts.minute())
+                  .second(ts.second())
+                  .valueOf()
+                setSearch((current) => ({ ...current, timestamp: newTimestamp }))
+              }}
+            />
+          </Grid>
+          {/* choose operator */}
+          <Grid size={{ lg: 4, md: 6, xs: 12 }}>
+            <OperatorSelector
+              operatorId={operatorId}
+              setOperatorId={(id) => setSearch((current) => ({ ...current, operatorId: id }))}
+            />
+          </Grid>
+          {/* choose line */}
+          <Grid size={{ lg: 4, md: 6, xs: 12 }}>
+            <LineNumberSelector
+              lineNumber={lineNumber}
+              setLineNumber={(number) =>
+                setSearch((current) => ({ ...current, lineNumber: number }))
+              }
+            />
+          </Grid>
+          {/* routes */}
+          <Grid container size={{ lg: 4, md: 6, xs: 12 }}>
+            <Row style={{ width: '100%' }}>
+              <div style={{ width: '100%' }}>
+                {routesQuery.data?.length === 0 ? (
+                  <NotFound>{t('line_not_found')}</NotFound>
+                ) : (
+                  <RouteSelector
+                    disabled={!routesQuery.data}
+                    routes={routesQuery.data || []}
+                    routeKey={routeKey}
+                    setRouteKey={(key) => setSearch((current) => ({ ...current, routeKey: key }))}
+                  />
+                )}
+              </div>
+              {routesQuery.isLoading && <CircularProgress />}
+            </Row>
+          </Grid>
+          {/* stops */}
+          <Grid container size={{ lg: 4, md: 6, xs: 12 }}>
+            <Row style={{ width: '100%' }}>
+              <div style={{ width: '100%' }}>
+                <StopSelector
+                  disabled={!stopsQuery.data}
+                  stops={stopsQuery.data || []}
+                  stopKey={stopKey}
+                  setStopKey={(key) => setStopKey(key)}
                 />
-              )}
-            </div>
-            {routesQuery.isLoading && <CircularProgress />}
-          </Row>
+              </div>
+              {stopsQuery.isLoading && <CircularProgress />}
+            </Row>
+          </Grid>
         </Grid>
-        {/* stops */}
-        <Grid container size={{ lg: 4, md: 6, xs: 12 }}>
-          <Row style={{ width: '100%' }}>
-            <div style={{ width: '100%' }}>
-              <StopSelector
-                disabled={!stopsQuery.data}
-                stops={stopsQuery.data || []}
-                stopKey={stopKey}
-                setStopKey={(key) => setStopKey(key)}
+      </StickyInputs>
+      {/* hits timeline */}
+      {selectedRoute && selectedStop && (
+        <Widget marginBottom>
+          {hitsQuery.isLoading && (
+            <Row>
+              <Label text={t('loading_hits')} />
+              <CircularProgress />
+            </Row>
+          )}
+          {!hitsQuery.isLoading &&
+            ((hitsQuery.data?.gtfsTime && hitsQuery.data.gtfsTime.length > 0) ||
+            (hitsQuery.data?.siriTime && hitsQuery.data.siriTime.length > 0) ? (
+              <StyledTimelineBoard
+                target={dayjs(timestamp)}
+                gtfsTimes={hitsQuery.data.gtfsTime}
+                siriTimes={hitsQuery.data.siriTime}
               />
-            </div>
-            {stopsQuery.isLoading && <CircularProgress />}
-          </Row>
-        </Grid>
-        {/* hits timeline */}
-        {selectedRoute && selectedStop && (
-          <Widget marginBottom>
-            {hitsQuery.isLoading && (
-              <Row>
-                <Label text={t('loading_hits')} />
-                <CircularProgress />
-              </Row>
-            )}
-            {!hitsQuery.isLoading &&
-              ((hitsQuery.data?.gtfsTime && hitsQuery.data.gtfsTime.length > 0) ||
-              (hitsQuery.data?.siriTime && hitsQuery.data.siriTime.length > 0) ? (
-                <StyledTimelineBoard
-                  target={dayjs(timestamp)}
-                  gtfsTimes={hitsQuery.data.gtfsTime}
-                  siriTimes={hitsQuery.data.siriTime}
-                />
-              ) : (
-                <NotFound>{t('hits_not_found')}</NotFound>
-              ))}
-          </Widget>
-        )}
-      </Grid>
+            ) : (
+              <NotFound>{t('hits_not_found')}</NotFound>
+            ))}
+        </Widget>
+      )}
     </PageContainer>
   )
 }
