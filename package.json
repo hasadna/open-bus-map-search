@@ -118,7 +118,7 @@
     "lightningcss": "^1.32.0",
     "msw": "^2.12.13",
     "msw-storybook-addon": "^2.0.6",
-    "nx": "22.5.4",
+    "nx": "22.6.5",
     "playwright-advanced-har": "^1.4.1",
     "playwright-assertions": "^1.0.1",
     "prettier": "^3.8.1",
