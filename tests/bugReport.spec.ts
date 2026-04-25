@@ -97,8 +97,51 @@ test('bug submission success', async ({ page }) => {
     await page.getByRole('button', { name: 'שלח את הדוח' }).click()
   })
 
-  await test.step('Verify error message is displayed', async () => {
-    await expect(page.getByText('לצפייה בדיווח (Github)')).toBeVisible()
+  await test.step('Verify success message is displayed', async () => {
+    await expect(page.getByText('לצפייה בדיווח (GitHub)')).toBeVisible()
+  })
+})
+
+const successBodyWithoutState = {
+  data: {
+    id: 123456,
+    number: 1347,
+    title: 'בדיקה',
+  },
+}
+
+test('bug submission success without state field', async ({ page }) => {
+  await test.step('Mock API to return success without state=open', async () => {
+    await page.route(
+      (url) => url.href.includes('/issues'),
+      (route) => route.fulfill({ status: 200, body: JSON.stringify(successBodyWithoutState) }),
+    )
+  })
+
+  await test.step('Open bug report modal', async () => {
+    await page.getByLabel('bug').locator('svg').click()
+  })
+
+  await test.step('Fill all required fields', async () => {
+    await page.getByLabel('סוג הבקשה').click()
+    await page.getByText('באג').click()
+    await page.getByLabel('כותרת/סיכום').fill('Test without state')
+    await page.getByLabel('שם מלא').fill('Test User')
+    await page.getByLabel('אי-מייל').fill('test@test.com')
+    await page.getByLabel('תיאור').fill('Testing without state field')
+    await page.getByLabel('סביבה (דפדפן, מערכת)').fill('Chrome')
+    await page.getByLabel('התנהגות צפויה').fill('Should show success')
+    await page.getByLabel('התנהגות נוכחית').fill('Previously showed error')
+    await page.getByLabel('באיזו תדירות זה קורה').click()
+    await page.getByText('תמיד').click()
+  })
+
+  await test.step('Submit the form', async () => {
+    await page.getByRole('button', { name: 'שלח את הדוח' }).click()
+  })
+
+  await test.step('Verify success message is displayed (not error)', async () => {
+    await expect(page.getByText('Bug report submitted successfully!')).toBeVisible()
   })
 })
 
