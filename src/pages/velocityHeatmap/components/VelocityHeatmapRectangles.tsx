@@ -1,5 +1,5 @@
 import type { SiriVelocityAggregationPydanticModel } from '@hasadna/open-bus-api-client'
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { Popup, Rectangle } from 'react-leaflet'
 import dayjs from 'src/dayjs'
 import { SearchContext } from '../../../model/pageState'
@@ -45,8 +45,10 @@ const DEFAULT_BOUNDS = {
 export const VelocityHeatmapRectangles: React.FC<
   VelocityHeatmapRectanglesProps & {
     setMinMax?: (min: number, max: number) => void
+    onLoadingChange?: (loading: boolean) => void
+    onErrorChange?: (error: string | null) => void
   }
-> = ({ visMode, setMinMax }) => {
+> = ({ visMode, setMinMax, onLoadingChange, onErrorChange }) => {
   const { search } = useContext(SearchContext)
   const zoom = useZoomLevel()
   const { data, loading, error, currZoom } = useVelocityAggregationData(
@@ -83,14 +85,17 @@ export const VelocityHeatmapRectangles: React.FC<
     if (setMinMax) setMinMax(minV, maxV)
   }, [minV, maxV, setMinMax])
 
+  // Propagate loading/error state to parent for overlay display
+  useEffect(() => {
+    onLoadingChange?.(loading)
+  }, [loading, onLoadingChange])
+
+  useEffect(() => {
+    onErrorChange?.(error ? String(error) : null)
+  }, [error, onErrorChange])
+
   return (
     <>
-      {error || loading ? (
-        <div className="err">
-          {error ? 'error' : null}
-          {loading ? 'loading! ' : null}
-        </div>
-      ) : null}
       {data?.map((point, idx) => {
         const bounds: [[number, number], [number, number]] = [
           [point.roundedLat - half, point.roundedLon - half],
