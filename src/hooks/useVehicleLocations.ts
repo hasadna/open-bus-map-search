@@ -49,19 +49,26 @@ class LocationObservable {
   loading = true
 
   async #loadData(querys: VehicleLocationQuery) {
-    let offset = 0
-    for (let i = 1; this.loading; i++) {
-      const data = await fetchWithQueue(querys, offset)
-      if (!data || data.length === 0) {
-        this.loading = false
-        this.#notifyObservers({ finished: true })
-      } else {
-        this.data = [...this.data, ...data]
-        this.#notifyObservers(data)
-        offset += LIMIT
+    try {
+      let offset = 0
+      for (let i = 1; this.loading; i++) {
+        const data = await fetchWithQueue(querys, offset)
+        if (!data || data.length === 0) {
+          this.loading = false
+          this.#notifyObservers({ finished: true })
+        } else {
+          this.data = [...this.data, ...data]
+          this.#notifyObservers(data)
+          offset += LIMIT
+        }
       }
+    } catch (error) {
+      console.error('Failed to load vehicle locations:', error)
+      this.loading = false
+      this.#notifyObservers({ finished: true })
+    } finally {
+      this.#observers = []
     }
-    this.#observers = []
   }
 
   #notifyObservers(data: SiriVehicleLocationWithRelatedPydanticModel[] | { finished: true }) {

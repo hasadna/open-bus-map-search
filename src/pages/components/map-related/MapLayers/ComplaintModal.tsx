@@ -76,6 +76,7 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
       (position.point!.siriRouteLineRef || 0).toString(),
     )
       .then((siriRideRes: SiriRideWithRelatedPydanticModel) => setSiriRide(siriRideRes))
+      .catch((err) => console.error('Failed to load ride data:', err))
       .finally(() => setIsLoading(false))
   }, [position])
 
