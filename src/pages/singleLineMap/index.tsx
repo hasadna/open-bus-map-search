@@ -8,7 +8,7 @@ import {
 } from '@mui/material'
 import { useContext, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import dayjs from 'src/dayjs'
+import dayjs, { toIsraelTimezone } from 'src/dayjs'
 import { useSingleLineData } from 'src/hooks/useSingleLineData'
 import LineNumberSelector from 'src/pages/components/LineSelector'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
@@ -94,7 +94,7 @@ const SingleLineMapPage = () => {
         <Grid container spacing={2} size={{ xs: 12 }}>
           {/* choose date*/}
           <Grid size={{ sm: 4, xs: 12 }}>
-            <DateSelector time={dayjs(timestamp)} onChange={handleTimestampChange} />
+            <DateSelector time={toIsraelTimezone(timestamp)} onChange={handleTimestampChange} />
           </Grid>
           {/* choose operator */}
           <Grid size={{ sm: 4, xs: 12 }}>

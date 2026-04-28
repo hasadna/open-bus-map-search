@@ -1,6 +1,6 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { getRoutesAsync, getRoutesByLineRef, getStopsForRouteAsync } from 'src/api/gtfsService'
-import dayjs from 'src/dayjs'
+import dayjs, { toIsraelTimezone } from 'src/dayjs'
 import useVehicleLocations from 'src/hooks/useVehicleLocations'
 import { BusRoute } from 'src/model/busRoute'
 import { BusStop } from 'src/model/busStop'
@@ -12,7 +12,7 @@ import {
   parseStartTimeToken,
 } from 'src/pages/components/utils/startTimeUtils'
 
-const formatTime = (time: dayjs.Dayjs) => time.format('HH:mm')
+const formatTime = (time: dayjs.ConfigType) => toIsraelTimezone(time).format('HH:mm')
 
 export const useSingleLineData = (
   operatorId?: string,
@@ -59,7 +59,7 @@ export const useSingleLineData = (
     }
 
     const controller = new AbortController()
-    const time = dayjs(search.timestamp)
+    const time = toIsraelTimezone(search.timestamp)
 
     getRoutesAsync(time, time, operatorId, lineNumber, controller.signal)
       .then((routes) => {
@@ -86,7 +86,7 @@ export const useSingleLineData = (
   }, [routes, routeKey])
 
   const [today, tomorrow] = useMemo(() => {
-    const today = dayjs(search.timestamp).startOf('day')
+    const today = toIsraelTimezone(search.timestamp).startOf('day')
     return [today, today.add(1, 'day')]
   }, [search.timestamp])
 
@@ -120,7 +120,7 @@ export const useSingleLineData = (
       for (const position of positions) {
         const startTime = position.point?.siriRideScheduledStartTime
         if (!startTime) continue
-        const dayjsTime = dayjs(startTime)
+        const dayjsTime = toIsraelTimezone(startTime)
         if (dayjsTime.isAfter(today) && dayjsTime.isBefore(tomorrow)) {
           const formattedTime = formatTime(dayjsTime)
           const key = `${formattedTime}|${position.point?.siriRideVehicleRef}`
@@ -183,7 +183,7 @@ export const useSingleLineData = (
         const vehicleRef = position.point?.siriRideVehicleRef?.toString()
         if (!scheduledStart || !vehicleRef || !scheduledTime) return false
         return (
-          formatTime(dayjs(scheduledStart)) === scheduledTime &&
+          formatTime(scheduledStart) === scheduledTime &&
           (scheduledVehicle ? scheduledVehicle === vehicleRef : true) &&
           (scheduledLine ? scheduledLine === position.point?.siriRouteLineRef?.toString() : true)
         )

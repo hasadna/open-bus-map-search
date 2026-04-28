@@ -12,7 +12,10 @@ dayjs.extend(minMax)
 dayjs.extend(isoWeek)
 
 // Set default timezone
-dayjs.tz.setDefault('Asia/Jerusalem')
+export const ISRAEL_TIMEZONE = 'Asia/Jerusalem'
+dayjs.tz.setDefault(ISRAEL_TIMEZONE)
+
+export const toIsraelTimezone = (value?: dayjs.ConfigType) => dayjs(value).tz(ISRAEL_TIMEZONE)
 
 // Set default locale
 dayjs.locale('he')
