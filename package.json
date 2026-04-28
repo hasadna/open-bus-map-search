@@ -23,7 +23,7 @@
     "babel-plugin-react-compiler": "^1.0.0",
     "classnames": "^2.5.1",
     "dayjs": "^1.11.20",
-    "es-toolkit": "^1.45.1",
+    "es-toolkit": "^1.46.0",
     "geolib": "^3.3.4",
     "git-username": "^1.0.0",
     "http-proxy-middleware": "^3.0.5",
