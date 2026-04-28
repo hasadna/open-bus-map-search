@@ -18,6 +18,25 @@ const SINGLE_LINE_ROUTES = [
   'תחנת מוניות תל אביב הכובשים-תל אביב יפו ⟵ תחנת מוניות רמת גן דרך הטייסים-תל אביב יפו',
 ]
 
+const SINGLE_LINE_VEHICLE_NUMBER = '7489226'
+const SINGLE_LINE_VEHICLE_START_TIME =
+  '04:30 (16 - תחנת מוניות רמת גן דרך הטייסים-תל אביב יפו ⇄ תחנת מוניות תל אביב הכובשים-תל אביב יפו)'
+
+const SINGLE_LINE_VEHICLE_LOCATIONS = [
+  {
+    id: 3363674430,
+    recorded_at_time: '2024-02-12T02:30:47+00:00',
+    lon: 34.806637,
+    lat: 32.045582,
+    bearing: 282,
+    velocity: 0,
+    siri_route__line_ref: 28099,
+    siri_route__operator_ref: 97,
+    siri_ride__scheduled_start_time: '2024-02-12T02:30:00+00:00',
+    siri_ride__vehicle_ref: SINGLE_LINE_VEHICLE_NUMBER,
+  },
+]
+
 for (const timezone of TIMEZONES) {
   test.describe(`Timezone: ${timezone}`, () => {
     test.use({ timezoneId: timezone })
@@ -72,6 +91,26 @@ for (const timezone of TIMEZONES) {
       await expect(page.getByRole('option', { name: SINGLE_LINE_START_TIMES[0] })).toBeVisible()
 
       await expect(page.getByRole('option')).toContainText(SINGLE_LINE_START_TIMES)
+    })
+
+    test(`single line vehicle number start time list uses Israel timezone (${timezone})`, async ({
+      page,
+      advancedRouteFromHAR,
+    }) => {
+      await setupTest(page)
+      await advancedRouteFromHAR('tests/HAR/singleline.har', harOptions)
+      await page.route(/siri_vehicle_locations\/list/, async (route) => {
+        await route.fulfill({ json: SINGLE_LINE_VEHICLE_LOCATIONS })
+      })
+      await visitPage(page, 'singleline_map_page_title')
+
+      await page.getByLabel('חברה מפעילה').click()
+      await page.getByRole('option', { name: 'אודליה מוניות בעמ', exact: true }).click()
+      await page.getByRole('button', { name: 'לפי מספר רכב' }).click()
+      await page.getByRole('textbox', { name: 'מספר רכב' }).fill(SINGLE_LINE_VEHICLE_NUMBER)
+
+      await page.getByLabel('בחירת שעת התחלה').click()
+      await expect(page.getByRole('option', { name: SINGLE_LINE_VEHICLE_START_TIME })).toBeVisible()
     })
   })
 }
