@@ -34,7 +34,7 @@ for (const timezone of TIMEZONES) {
       await expect(page.locator('h4')).toContainText(i18next.t('timeline_page_title'))
     })
 
-    test(`single line route selector uses Israel timezone (${timezone})`, async ({
+    test(`single line map page route selector uses Israel timezone (${timezone})`, async ({
       page,
       advancedRouteFromHAR,
     }) => {
@@ -50,7 +50,7 @@ for (const timezone of TIMEZONES) {
       await expect(page.getByRole('option')).toContainText(SINGLE_LINE_ROUTES)
     })
 
-    test(`single line start time list uses Israel timezone (${timezone})`, async ({
+    test(`single line map page start time list uses Israel timezone (${timezone})`, async ({
       page,
       advancedRouteFromHAR,
     }) => {
@@ -62,11 +62,7 @@ for (const timezone of TIMEZONES) {
       await page.getByRole('option', { name: 'אודליה מוניות בעמ', exact: true }).click()
       await page.getByRole('textbox', { name: 'מספר קו' }).fill('16')
       await page.getByLabel(/בחירת מסלול נסיעה/).click()
-      await page
-        .getByRole('option', {
-          name: 'תחנת מוניות רמת גן דרך הטייסים-תל אביב יפו ⟵ תחנת מוניות תל אביב הכובשים-תל אביב יפו',
-        })
-        .click()
+      await page.getByRole('option', { name: SINGLE_LINE_ROUTES[0] }).click()
 
       await page.getByLabel('בחירת שעת התחלה').click()
       await expect(page.getByRole('option', { name: SINGLE_LINE_START_TIMES[0] })).toBeVisible()
