@@ -1,11 +1,10 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { getRoutesAsync, getRoutesByLineRef, getStopsForRouteAsync } from 'src/api/gtfsService'
-import dayjs from 'src/dayjs'
+import dayjs, { toIsraelTimezone } from 'src/dayjs'
 import useVehicleLocations from 'src/hooks/useVehicleLocations'
 import { BusRoute } from 'src/model/busRoute'
 import { BusStop } from 'src/model/busStop'
 import { SearchContext } from 'src/model/pageState'
-import { getServiceDayBounds } from 'src/model/serviceDay'
 import { type Point, toPoint } from 'src/pages/components/map-related/map-types'
 import { routeStartEnd, vehicleIDFormat } from 'src/pages/components/utils/rotueUtils'
 import {
@@ -13,7 +12,7 @@ import {
   parseStartTimeToken,
 } from 'src/pages/components/utils/startTimeUtils'
 
-const formatTime = (time: dayjs.Dayjs) => time.format('HH:mm')
+const formatTime = (time: dayjs.ConfigType) => toIsraelTimezone(time).format('HH:mm')
 
 export const useSingleLineData = (
   operatorId?: string,
@@ -60,7 +59,7 @@ export const useSingleLineData = (
     }
 
     const controller = new AbortController()
-    const time = dayjs(search.timestamp)
+    const time = toIsraelTimezone(search.timestamp)
 
     getRoutesAsync(time, time, operatorId, lineNumber, controller.signal)
       .then((routes) => {
@@ -86,9 +85,9 @@ export const useSingleLineData = (
     return routes?.find((route) => route.key === routeKey)
   }, [routes, routeKey])
 
-  const [serviceDayStart, serviceDayEnd] = useMemo(() => {
-    const { start, end } = getServiceDayBounds(dayjs(search.timestamp))
-    return [start, end]
+  const [today, tomorrow] = useMemo(() => {
+    const today = toIsraelTimezone(search.timestamp).startOf('day')
+    return [today, today.add(1, 'day')]
   }, [search.timestamp])
 
   const validVehicleNumber = useMemo(() => {
@@ -98,8 +97,8 @@ export const useSingleLineData = (
   }, [vehicleNumber])
 
   const { locations, isLoading: locationsAreLoading } = useVehicleLocations({
-    from: serviceDayStart.valueOf(),
-    to: serviceDayEnd.valueOf(),
+    from: today.valueOf(),
+    to: tomorrow.valueOf(),
     operatorRef: operatorId ? Number(operatorId) : undefined,
     lineRef: selectedRoute?.lineRef ? Number(selectedRoute.lineRef) : undefined,
     vehicleRef: validVehicleNumber,
@@ -121,8 +120,8 @@ export const useSingleLineData = (
       for (const position of positions) {
         const startTime = position.point?.siriRideScheduledStartTime
         if (!startTime) continue
-        const dayjsTime = dayjs(startTime)
-        if (!dayjsTime.isBefore(serviceDayStart) && dayjsTime.isBefore(serviceDayEnd)) {
+        const dayjsTime = toIsraelTimezone(startTime)
+        if (dayjsTime.isAfter(today) && dayjsTime.isBefore(tomorrow)) {
           const formattedTime = formatTime(dayjsTime)
           const key = `${formattedTime}|${position.point?.siriRideVehicleRef}`
           if (!uniqueTimes.has(key)) {
@@ -168,7 +167,7 @@ export const useSingleLineData = (
     }
 
     fetchOptions()
-  }, [positions, serviceDayStart, serviceDayEnd, vehicleNumber])
+  }, [positions, today, tomorrow, vehicleNumber])
 
   useEffect(() => {
     const parsedStartTime = parseStartTimeToken(startTime)
@@ -184,7 +183,7 @@ export const useSingleLineData = (
         const vehicleRef = position.point?.siriRideVehicleRef?.toString()
         if (!scheduledStart || !vehicleRef || !scheduledTime) return false
         return (
-          formatTime(dayjs(scheduledStart)) === scheduledTime &&
+          formatTime(scheduledStart) === scheduledTime &&
           (scheduledVehicle ? scheduledVehicle === vehicleRef : true) &&
           (scheduledLine ? scheduledLine === position.point?.siriRouteLineRef?.toString() : true)
         )
@@ -199,11 +198,7 @@ export const useSingleLineData = (
         const scheduledTime = parsedStartTime?.scheduledTime
         const scheduledLine = parsedStartTime?.lineRef
         const [hour, minute] = scheduledTime ? scheduledTime.split(':').map(Number) : [0, 0]
-        const startTimeTimestamp = serviceDayStart
-          .hour(hour)
-          .minute(minute)
-          .second(0)
-          .millisecond(0)
+        const startTimeTimestamp = today.hour(hour).minute(minute).second(0).millisecond(0)
         let routeIds: number[] | undefined
         if (selectedRoute?.routeIds && selectedRoute.routeIds.length > 0) {
           routeIds = selectedRoute.routeIds
@@ -224,7 +219,7 @@ export const useSingleLineData = (
       }
     }
     fetchStops()
-  }, [selectedRoute?.routeIds, operatorId, startTime, serviceDayStart])
+  }, [selectedRoute?.routeIds, operatorId, startTime, today])
 
   return {
     positions: filteredPositions,
