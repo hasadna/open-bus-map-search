@@ -5,7 +5,6 @@ import useVehicleLocations from 'src/hooks/useVehicleLocations'
 import { BusRoute } from 'src/model/busRoute'
 import { BusStop } from 'src/model/busStop'
 import { SearchContext } from 'src/model/pageState'
-import { getServiceDayBounds } from 'src/model/serviceDay'
 import { type Point, toPoint } from 'src/pages/components/map-related/map-types'
 import { routeStartEnd, vehicleIDFormat } from 'src/pages/components/utils/rotueUtils'
 import {
@@ -98,8 +97,8 @@ export const useSingleLineData = (
   }, [vehicleNumber])
 
   const { locations, isLoading: locationsAreLoading } = useVehicleLocations({
-    from: serviceDayStart.valueOf(),
-    to: serviceDayEnd.valueOf(),
+    from: today.valueOf(),
+    to: tomorrow.valueOf(),
     operatorRef: operatorId ? Number(operatorId) : undefined,
     lineRef: selectedRoute?.lineRef ? Number(selectedRoute.lineRef) : undefined,
     vehicleRef: validVehicleNumber,
@@ -168,7 +167,7 @@ export const useSingleLineData = (
     }
 
     fetchOptions()
-  }, [positions, serviceDayStart, serviceDayEnd, vehicleNumber])
+  }, [positions, today, tomorrow, vehicleNumber])
 
   useEffect(() => {
     const parsedStartTime = parseStartTimeToken(startTime)
@@ -199,11 +198,7 @@ export const useSingleLineData = (
         const scheduledTime = parsedStartTime?.scheduledTime
         const scheduledLine = parsedStartTime?.lineRef
         const [hour, minute] = scheduledTime ? scheduledTime.split(':').map(Number) : [0, 0]
-        const startTimeTimestamp = serviceDayStart
-          .hour(hour)
-          .minute(minute)
-          .second(0)
-          .millisecond(0)
+        const startTimeTimestamp = today.hour(hour).minute(minute).second(0).millisecond(0)
         let routeIds: number[] | undefined
         if (selectedRoute?.routeIds && selectedRoute.routeIds.length > 0) {
           routeIds = selectedRoute.routeIds
@@ -224,7 +219,7 @@ export const useSingleLineData = (
       }
     }
     fetchStops()
-  }, [selectedRoute?.routeIds, operatorId, startTime, serviceDayStart])
+  }, [selectedRoute?.routeIds, operatorId, startTime, today])
 
   return {
     positions: filteredPositions,
