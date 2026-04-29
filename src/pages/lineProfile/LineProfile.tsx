@@ -63,7 +63,7 @@ const LineProfile = () => {
     if (!time || !route) return
 
     const abortController = new AbortController()
-    getRoutesAsync(
+    void getRoutesAsync(
       time,
       time,
       route?.operatorRef.toString(),
@@ -73,7 +73,7 @@ const LineProfile = () => {
       .then((routes) => {
         const newRoute = routes?.find((r) => r.key === `${route.routeMkt}-${route.routeDirection}`)
         if (newRoute?.routeIds?.[0]) {
-          navigate(`/profile/${newRoute.routeIds[0]}`)
+          void navigate(`/profile/${newRoute.routeIds[0]}`)
         }
       })
       .catch((error) => console.error(error))
@@ -83,7 +83,7 @@ const LineProfile = () => {
     if (!key || !routes) return
     const newRoute = routes?.find((route) => route.key === key)
     if (newRoute?.routeIds?.[0]) {
-      navigate(`/profile/${newRoute.routeIds[0]}`)
+      void navigate(`/profile/${newRoute.routeIds[0]}`)
     }
   }
 

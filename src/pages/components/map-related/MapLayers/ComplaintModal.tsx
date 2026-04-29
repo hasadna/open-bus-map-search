@@ -70,12 +70,13 @@ const ComplaintModal = ({ modalOpen = false, setModalOpen, position }: Complaint
 
   useEffect(() => {
     setIsLoading(true)
-    getSiriRideWithRelated(
+    void getSiriRideWithRelated(
       (position.point!.siriRouteId || 0).toString(),
       (position.point!.siriRideVehicleRef || '').toString(),
       (position.point!.siriRouteLineRef || 0).toString(),
     )
       .then((siriRideRes: SiriRideWithRelatedPydanticModel) => setSiriRide(siriRideRes))
+      .catch((err) => console.error('Failed to load ride data:', err))
       .finally(() => setIsLoading(false))
   }, [position])
 

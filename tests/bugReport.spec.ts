@@ -18,7 +18,7 @@ test('An instruction video for Report a bug', async ({ page }) => {
   await page.getByLabel('bug').locator('svg').click()
   await page.getByLabel('לפתוח סרטון על העמוד הזה').locator('svg').click()
   const videoFrame = page.locator('iframe')
-  expect(videoFrame).toBeVisible()
+  await expect(videoFrame).toBeVisible()
   await expect(videoFrame).toHaveAttribute('src', VIDEO_SRC)
   await videoFrame.contentFrame().getByLabel('Play', { exact: true }).click()
   await page.getByLabel('Close', { exact: true }).click()

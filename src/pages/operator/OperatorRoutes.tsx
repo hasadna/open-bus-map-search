@@ -55,7 +55,7 @@ export const OperatorRoutes = ({
                           lineNumber: route.line + route.suffix,
                           routeKey: route.routeKey,
                         }))
-                        navigate('/single-line-map')
+                        void navigate('/single-line-map')
                       }}
                       to={`/single-line-map`}>
                       {t('operator.map')}

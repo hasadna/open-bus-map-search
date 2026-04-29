@@ -160,15 +160,22 @@ const GapsPatternsPage = () => {
 
   const loadSearchData = async (signal: AbortSignal | undefined) => {
     setRoutesIsLoading(true)
-    const routes = await getRoutesAsync(
-      dayjs(startDate),
-      dayjs(endDate),
-      operatorId as string,
-      lineNumber as string,
-      signal,
-    )
-    setSearch((current) => (search.lineNumber === lineNumber ? { ...current, routes } : current))
-    setRoutesIsLoading(false)
+    try {
+      const routes = await getRoutesAsync(
+        dayjs(startDate),
+        dayjs(endDate),
+        operatorId as string,
+        lineNumber as string,
+        signal,
+      )
+      setSearch((current) => (search.lineNumber === lineNumber ? { ...current, routes } : current))
+    } catch (err) {
+      if ((err as Error)?.name !== 'AbortError') {
+        console.error('Failed to load routes:', err)
+      }
+    } finally {
+      setRoutesIsLoading(false)
+    }
   }
 
   useEffect(() => {
@@ -178,7 +185,7 @@ const GapsPatternsPage = () => {
       setSearch((current) => ({ ...current, routeKey: undefined, routes: undefined }))
       return
     }
-    loadSearchData(signal)
+    void loadSearchData(signal)
     return () => controller.abort()
   }, [operatorId, lineNumber, endDate, startDate, setSearch])
 
