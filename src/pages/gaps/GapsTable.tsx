@@ -122,7 +122,7 @@ const GapsTable: React.FC<GapsTableProps> = ({
               {Object.keys(groupedGaps).map((hour) => (
                 <TableRow key={hour}>
                   {groupedGaps[hour].map(({ gap, status }, j) => {
-                    const time = getGap(gap)?.format('HH:mm DD/MM')
+                    const time = getGap(gap)?.format('HH:mm')
                     const startTimeParam = formatStartTimeForQuery(time)
                     return (
                       <TableCell
