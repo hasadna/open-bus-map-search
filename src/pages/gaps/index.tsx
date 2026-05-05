@@ -41,7 +41,9 @@ const GapsPage = () => {
     getGapsAsync(start.valueOf(), start.add(1, 'day').valueOf(), operatorId, selectedRoute.lineRef)
       .then((res) =>
         setGaps(
-          res.filter((g) => (g.actualStartTime || g.plannedStartTime)?.isBefore(start.add(5, 'h'))),
+          res.filter((g) =>
+            (g.actualStartTime || g.plannedStartTime)?.isBefore(start.add(4, 'h').endOf('h')),
+          ),
         ),
       )
       .catch((err) => {
