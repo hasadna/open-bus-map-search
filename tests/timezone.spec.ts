@@ -1,4 +1,3 @@
-import i18next from 'i18next'
 import { expect, harOptions, setupTest, test, visitPage } from './utils'
 
 const TIMEZONES = ['Asia/Jerusalem', 'America/New_York', 'Europe/London', 'Asia/Tokyo'] as const
