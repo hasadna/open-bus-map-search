@@ -138,7 +138,7 @@ const GapsTable: React.FC<GapsTableProps> = ({
                         }}>
                         {!!gap.actualStartTime ? (
                           <Link
-                            to={`${singleLineMapBaseHref}&timestmpe=${gap.actualStartTime.startOf('day').valueOf()}&startTime=${startTimeParam}`}
+                            to={`${singleLineMapBaseHref}&timestamp=${gap.actualStartTime.startOf('day').valueOf()}&startTime=${startTimeParam}`}
                             onClick={() => onStartTimeClick?.(startTimeParam)}>
                             {time}
                           </Link>
