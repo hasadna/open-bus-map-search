@@ -23,7 +23,7 @@ interface GapsTableProps {
   loading?: boolean
   initOnlyGapped?: boolean
   singleLineMapBaseHref: string
-  onStartTimeClick?: (startTime: string) => void
+  onStartTimeClick?: (startTime: string, timestamp: number) => void
 }
 
 const cellStyle = {
@@ -126,6 +126,7 @@ const GapsTable: React.FC<GapsTableProps> = ({
                   {groupedGaps[hour].map(({ gap, status }, j) => {
                     const time = getGap(gap)?.format('HH:mm')
                     const startTimeParam = formatStartTimeForQuery(time)
+                    const actualDayTimestamp = gap.actualStartTime?.startOf('day').valueOf()
                     return (
                       <TableCell
                         key={`${hour}-${j}-${time}`}
@@ -140,8 +141,11 @@ const GapsTable: React.FC<GapsTableProps> = ({
                         }}>
                         {!!gap.actualStartTime ? (
                           <Link
-                            to={`${singleLineMapBaseHref}&timestamp=${gap.actualStartTime.startOf('day').valueOf()}&startTime=${startTimeParam}`}
-                            onClick={() => onStartTimeClick?.(startTimeParam)}>
+                            to={`${singleLineMapBaseHref}&timestamp=${actualDayTimestamp}&startTime=${startTimeParam}`}
+                            onClick={() =>
+                              actualDayTimestamp !== undefined &&
+                              onStartTimeClick?.(startTimeParam, actualDayTimestamp)
+                            }>
                             {time}
                           </Link>
                         ) : (

@@ -96,8 +96,8 @@ const GapsPage = () => {
   }
 
   const handleStartTimeClick = useCallback(
-    (startTime: string) => {
-      setSearch((current) => ({ ...current, startTime }))
+    (startTime: string, timestamp: number) => {
+      setSearch((current) => ({ ...current, startTime, timestamp }))
     },
     [setSearch],
   )
