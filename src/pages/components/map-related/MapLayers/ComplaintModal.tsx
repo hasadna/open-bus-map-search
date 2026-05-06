@@ -23,7 +23,7 @@ import {
   useCitiesQuery,
   useLinesQuery,
 } from 'src/hooks/useFormQuerys'
-import { EasterEgg } from '../../../EasterEgg/EasterEgg'
+import { EasterEgg } from '../../EasterEgg/EasterEgg'
 import { Row } from '../../Row'
 import {
   allComplaintFields,
