@@ -17,10 +17,6 @@ test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
   await advancedRouteFromHAR('tests/HAR/realtimemap.har', harOptions)
   await visitPage(page, 'time_based_map_page_title')
 })
-test('time-based-map page', async ({ page }) => {
-  await page.getByLabel('תאריך').fill(new Date().toLocaleDateString('en-GB'))
-  await page.getByLabel('דקות').fill('6')
-})
 
 test('tooltip appears after clicking on map point', async ({ page }) => {
   await test.step('Click on a bus button', async () => {

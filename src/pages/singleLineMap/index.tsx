@@ -8,7 +8,7 @@ import {
 } from '@mui/material'
 import { useContext, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import dayjs from 'src/dayjs'
+import dayjs, { toIsraelTimezone } from 'src/dayjs'
 import { useSingleLineData } from 'src/hooks/useSingleLineData'
 import LineNumberSelector from 'src/pages/components/LineSelector'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
@@ -21,7 +21,6 @@ import { MapWithLocationsAndPath } from '../components/map-related/MapWithLocati
 import { NotFound } from '../components/NotFound'
 import { PageContainer } from '../components/PageContainer'
 import InfoYoutubeModal from '../components/YoutubeModal'
-import '../Map.scss'
 
 const SingleLineMapPage = () => {
   const { search, setSearch } = useContext(SearchContext)
@@ -84,7 +83,7 @@ const SingleLineMapPage = () => {
   return (
     <PageContainer className="map-container">
       <Typography className="page-title" variant="h4">
-        {t('single_line_map_title')}
+        {t('singleline_map_page_title')}
         <InfoYoutubeModal
           label={t('open_video_about_this_page')}
           title={t('time_based_map_page_description')}
@@ -95,7 +94,7 @@ const SingleLineMapPage = () => {
         <Grid container spacing={2} size={{ xs: 12 }}>
           {/* choose date*/}
           <Grid size={{ sm: 4, xs: 12 }}>
-            <DateSelector time={dayjs(timestamp)} onChange={handleTimestampChange} />
+            <DateSelector time={toIsraelTimezone(timestamp)} onChange={handleTimestampChange} />
           </Grid>
           {/* choose operator */}
           <Grid size={{ sm: 4, xs: 12 }}>

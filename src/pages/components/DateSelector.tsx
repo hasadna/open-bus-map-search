@@ -50,6 +50,7 @@ export function DateSelector({
           sx: {
             '.MuiPickersCalendarHeader-labelContainer': {
               margin: '0',
+              marginInlineEnd: 'auto',
             },
           },
         },

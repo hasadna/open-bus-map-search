@@ -1,6 +1,6 @@
 import { GtfsRoutePydanticModel, RequestSubjectSchema } from '@hasadna/open-bus-api-client'
 import dayjs from 'dayjs'
-import { Point } from 'src/pages/timeBasedMap'
+import type { Point } from '../map-types'
 
 // --- Core Types ---
 export interface ComplaintUser {

@@ -4,10 +4,10 @@
  * if some of the interval has already been loaded,
  */
 import type { SiriVehicleLocationWithRelatedPydanticModel } from '@hasadna/open-bus-api-client'
-import { uniqBy } from 'lodash'
+import { uniqBy } from 'es-toolkit/compat'
 import { useEffect, useState } from 'react'
+import { SIRI_API } from 'src/api/apiConfig'
 import dayjs from 'src/dayjs'
-import { SIRI_API } from './apiConfig'
 
 const LIMIT = 10000 // the maximum number of vehicles to load in one request
 
@@ -51,14 +51,14 @@ class LocationObservable {
   async #loadData(querys: VehicleLocationQuery) {
     let offset = 0
     for (let i = 1; this.loading; i++) {
-      const data = await fetchWithQueue(querys, i, offset)
+      const data = await fetchWithQueue(querys, offset)
       if (!data || data.length === 0) {
         this.loading = false
         this.#notifyObservers({ finished: true })
       } else {
         this.data = [...this.data, ...data]
         this.#notifyObservers(data)
-        offset += LIMIT * i
+        offset += LIMIT
       }
     }
     this.#observers = []
@@ -94,7 +94,6 @@ const pool = new Array(10)
   .map(() => Promise.resolve<void | SiriVehicleLocationWithRelatedPydanticModel[]>(void 0))
 async function fetchWithQueue(
   { from, to, lineRef, operatorRef, vehicleRef }: VehicleLocationQuery,
-  index: number,
   offset: number,
 ) {
   const task = async () => {
@@ -103,7 +102,7 @@ async function fetchWithQueue(
         return await SIRI_API.siriVehicleLocationsListGet({
           recordedAtTimeFrom: dayjs(from).toDate(),
           recordedAtTimeTo: dayjs(to).toDate(),
-          limit: LIMIT * index,
+          limit: LIMIT,
           offset,
           siriRoutesOperatorRef: operatorRef?.toString(),
           siriRoutesLineRef: lineRef?.toString(),

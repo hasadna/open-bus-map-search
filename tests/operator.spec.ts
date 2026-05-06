@@ -3,6 +3,7 @@ import i18next from 'i18next'
 import { operatorList } from 'src/pages/operator/data'
 import {
   expect,
+  fillDateField,
   harOptions,
   setupTest,
   test,
@@ -27,9 +28,7 @@ test.describe('Operator Page Tests', () => {
     await expect(page.locator('h4')).toHaveText(i18next.t('operator_title'))
     await page.getByRole('button', { name: 'פתח' }).click()
     await page.getByRole('option', { name: 'אגד', exact: true }).click()
-    await page.getByRole('textbox', { name: 'תאריך' }).click()
-    await page.getByRole('textbox', { name: 'תאריך' }).fill('06/05/2024')
-    await page.getByRole('textbox', { name: 'תאריך' }).press('Enter')
+    await fillDateField(page, 'תאריך', '06/05/2024')
     await page.getByRole('button', { name: 'יומית' }).click()
     await page.getByRole('button', { name: 'שבועית' }).click()
     await page.getByRole('button', { name: 'חודשית' }).click()
@@ -43,7 +42,7 @@ test.describe('Operator Page Tests', () => {
   test('Test operator inputs', async ({ page }) => {
     await test.step('Validate inputs are disabled when no operator is selected', async () => {
       await expect(page.getByRole('combobox', { name: i18next.t('choose_operator') })).toBeEmpty()
-      await expect(page.getByRole('textbox', { name: i18next.t('choose_date') })).toBeDisabled()
+      await expect(page.locator('input.MuiPickersInputBase-input')).toBeDisabled()
       await expect(
         page.getByRole('button', { name: i18next.t('operator.time_range.day') }),
       ).toBeDisabled()
@@ -61,7 +60,7 @@ test.describe('Operator Page Tests', () => {
     })
 
     await test.step('Validate inputs are enabled after selecting an operator', async () => {
-      await expect(page.getByRole('textbox', { name: i18next.t('choose_date') })).toBeEnabled()
+      await expect(page.locator('input.MuiPickersInputBase-input')).toBeEnabled()
       await expect(
         page.getByRole('button', { name: i18next.t('operator.time_range.day') }),
       ).toBeEnabled()

@@ -1,5 +1,5 @@
 import { LeftOutlined, RightOutlined } from '@ant-design/icons'
-import { Point } from 'src/pages/timeBasedMap'
+import type { Point } from '../map-types'
 import './MapFooterButtons.scss'
 
 type TMapFooterButtons = {

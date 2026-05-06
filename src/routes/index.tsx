@@ -4,14 +4,13 @@ import {
   DollarOutlined,
   FieldTimeOutlined,
   GithubOutlined,
-  HeatMapOutlined,
   HomeOutlined,
   InfoCircleOutlined,
   LaptopOutlined,
   LineChartOutlined,
   RadarChartOutlined,
 } from '@ant-design/icons'
-import { AirportShuttle, Psychology } from '@mui/icons-material'
+import { DirectionsBusOutlined, MapOutlined, Psychology, RouteOutlined } from '@mui/icons-material'
 import { lazy } from 'react'
 import { createBrowserRouter, createRoutesFromElements, Navigate, Route } from 'react-router'
 import { getRouteById } from 'src/api/gtfsService'
@@ -29,7 +28,7 @@ const SingleLineMapPage = lazy(() => import('../pages/singleLineMap'))
 const About = lazy(() => import('../pages/about'))
 const Operator = lazy(() => import('../pages/operator'))
 const Profile = lazy(() => import('../pages/lineProfile/LineProfile'))
-const BugReportForm = lazy(() => import('../pages/BugReportForm'))
+const BugReportForm = lazy(() => import('../pages/bugReport/BugReportForm'))
 const DataResearch = lazy(() =>
   import('../pages/DataResearch/DataResearch').then((m) => ({
     default: m.DataResearch,
@@ -43,12 +42,6 @@ export const PAGES = [
     path: '/',
     icon: <HomeOutlined />,
     element: <HomePage />,
-  },
-  {
-    label: 'dashboard_page_title',
-    path: '/dashboard',
-    icon: <LaptopOutlined />,
-    element: <DashboardPage />,
   },
   {
     label: 'timeline_page_title',
@@ -73,28 +66,28 @@ export const PAGES = [
   {
     label: 'time_based_map_page_title',
     path: '/map',
-    icon: <HeatMapOutlined />,
+    icon: <MapOutlined />,
     element: <TimeBasedMapPage />,
   },
   {
     label: 'velocity_heatmap_page_title',
     path: '/velocity-heatmap',
     searchParamsRequired: true,
-    icon: <HeatMapOutlined />,
+    icon: <RadarChartOutlined />,
     element: <VelocityHeatmapPage />,
   },
   {
     label: 'singleline_map_page_title',
     path: '/single-line-map',
     searchParamsRequired: true,
-    icon: <RadarChartOutlined />,
+    icon: <RouteOutlined />,
     element: <SingleLineMapPage />,
   },
   {
     label: 'operator_title',
     path: '/operator',
     searchParamsRequired: true,
-    icon: <AirportShuttle />,
+    icon: <DirectionsBusOutlined />,
     element: <Operator />,
   },
   {
@@ -134,6 +127,12 @@ export const HEADER_LINKS = [
 
 const HIDDEN_PAGES = [
   {
+    label: 'dashboard_page_title',
+    path: '/dashboard',
+    icon: <LaptopOutlined />,
+    element: <DashboardPage />,
+  },
+  {
     label: 'data-research',
     path: '/data-research',
     icon: <InfoCircleOutlined />,
@@ -146,27 +145,35 @@ const RedirectToHomepage = <Navigate to={routesList[0].path} replace />
 
 export const getRoutesList = () => {
   return (
-    <Route element={<MainRoute />}>
-      {routesList.map(({ path, element }) => (
-        <Route key={path} path={path} element={element} ErrorBoundary={ErrorPage} />
-      ))}
-      <Route
-        path="/profile/:gtfsRideGtfsRouteId"
-        element={<Profile />}
-        ErrorBoundary={ErrorPage}
-        loader={async ({ params }) => {
-          try {
-            const route = await getRouteById(params?.gtfsRideGtfsRouteId)
-            return { route }
-          } catch (error) {
-            return {
-              route: null,
-              message: (error as Error).message,
+    <Route path="/:lang?">
+      <Route element={<MainRoute />}>
+        {routesList.map(({ path, element }) => (
+          <Route
+            key={path}
+            path={path === '/' ? undefined : path.replace(/^\//, '')}
+            index={path === '/'}
+            element={element}
+            ErrorBoundary={ErrorPage}
+          />
+        ))}
+        <Route
+          path="profile/:gtfsRideGtfsRouteId"
+          element={<Profile />}
+          ErrorBoundary={ErrorPage}
+          loader={async ({ params }) => {
+            try {
+              const route = await getRouteById(params?.gtfsRideGtfsRouteId)
+              return { route }
+            } catch (error) {
+              return {
+                route: null,
+                message: (error as Error).message,
+              }
             }
-          }
-        }}
-      />
-      <Route path="*" element={RedirectToHomepage} key="back" />
+          }}
+        />
+        <Route path="*" element={RedirectToHomepage} key="back" />
+      </Route>
     </Route>
   )
 }
@@ -177,6 +184,9 @@ window.addEventListener('vite:preloadError', () => {
 
 const routes = createRoutesFromElements(getRoutesList())
 
-const router = createBrowserRouter(routes, { basename: import.meta.env.VITE_BASE_PATH })
+// If the URL doesn't have a language prefix, we will use the saved language or default to Hebrew
+const router = createBrowserRouter(routes, {
+  basename: import.meta.env.VITE_BASE_PATH || '/',
+})
 
 export default router

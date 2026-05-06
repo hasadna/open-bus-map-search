@@ -45,7 +45,7 @@ class TimelinePage extends BasePage {
     return this.page.locator('ul#stop-select-listbox')
   }
   get closeButton() {
-    return this.page.locator("span[aria-label='close']")
+    return this.page.locator("span[aria-label='סגור'], span[aria-label='close']")
   }
 
   get lineNumberField() {

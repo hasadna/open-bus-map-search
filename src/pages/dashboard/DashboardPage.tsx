@@ -3,9 +3,9 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 // Services and libraries
 import dayjs from 'src/dayjs'
+import { useDate } from 'src/hooks/useDate'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
 import { DateSelector } from '../components/DateSelector'
-import { useDate } from '../components/DateTimePicker'
 import { PageContainer } from '../components/PageContainer'
 // Components
 import InfoYoutubeModal from '../components/YoutubeModal'

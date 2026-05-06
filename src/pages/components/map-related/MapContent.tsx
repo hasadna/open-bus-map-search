@@ -10,7 +10,6 @@ import MapFooterButtons from './MapFooterButtons/MapFooterButtons'
 import { MapIndex } from './MapIndex'
 import { BusToolTip } from './MapLayers/BusToolTip'
 import { useRecenterOnDataChange } from './useRecenterOnDataChange'
-import '../../Map.scss'
 
 // configs for planned & actual routes - line color & marker icon
 const getIcon = (path: string, width: number = 10, height: number = 10): Icon<IconOptions> => {

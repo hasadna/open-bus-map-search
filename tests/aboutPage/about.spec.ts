@@ -10,7 +10,7 @@ test.describe('About Page Tests', () => {
   test('after clicking "about" menu item, user should redirect to "about" page', async ({
     page,
   }) => {
-    const locator = page.locator('li').filter({ hasText: 'אודות' })
+    const locator = page.getByRole('menuitem', { name: /אודות/ })
     await expect(locator).toHaveClass(/menu-item-selected/)
   })
 

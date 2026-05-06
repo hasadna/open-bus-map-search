@@ -3,10 +3,9 @@ import { IconButton } from '@mui/material'
 import { useCallback, useRef, useState } from 'react'
 import { MapContainer } from 'react-leaflet'
 import { useConstrainedFloatingButton } from 'src/hooks/useConstrainedFloatingButton'
-import { Point } from 'src/pages/timeBasedMap'
 import { MapProps } from './map-types'
+import type { Point } from './map-types'
 import { MapContent } from './MapContent'
-import '../../Map.scss'
 
 const position: Point = {
   loc: [32.3057988, 34.85478613], // arbitrary default value... Netanya - best city to live & die in

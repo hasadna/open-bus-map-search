@@ -1,5 +1,5 @@
 const CACHE_NAME = 'get-requests-cache-v2'
-const CACHE_URLS = ['open-bus-stride-api', 'fonts.googleapis.com']
+const CACHE_URLS = ['open-bus-stride-api']
 
 // Install event: cache basic URLs (optional)
 self.addEventListener('install', (event) => {

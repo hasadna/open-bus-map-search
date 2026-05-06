@@ -48,12 +48,12 @@ type RouteItem = {
 
 function mapperRoutes(routes: GtfsRoutePydanticModel[]) {
   return routes
-    .map(({ id, routeShortName, routeLongName, routeMkt, routeDirection }) => {
+    .map(({ id, routeShortName, routeLongName, routeMkt, routeDirection, routeAlternative }) => {
       const [start, end] = routeStartEnd(routeLongName)
       const [, routeLine, routeSuffix] = routeShortName?.match(/^(\d+)(.*)$/) ?? []
       const line = Number(routeLine)
       const suffix = line && routeSuffix ? routeSuffix : ''
-      const routeKey = `${routeMkt}-${routeDirection}`
+      const routeKey = `${routeMkt}-${routeDirection}-${routeAlternative}`
       return { id, line, suffix, start, end, routeKey } as RouteItem
     })
     .sort((a, b) => a.line - b.line || a.suffix.localeCompare(b.suffix, 'he'))

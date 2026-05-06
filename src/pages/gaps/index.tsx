@@ -2,6 +2,7 @@ import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import dayjs from 'src/dayjs'
+import { getServiceDayBounds } from 'src/model/serviceDay'
 import { INPUT_SIZE } from 'src/resources/sizes'
 import { Gap, getGapsAsync } from '../../api/gapsService'
 import { getRoutesAsync } from '../../api/gtfsService'
@@ -38,7 +39,8 @@ const GapsPage = () => {
     if (!selectedRoute) return
 
     setGapsIsLoading(true)
-    getGapsAsync(timestamp, timestamp, operatorId, selectedRoute.lineRef)
+    const { start, end } = getServiceDayBounds(dayjs(timestamp))
+    getGapsAsync(start.valueOf(), end.valueOf(), operatorId, selectedRoute.lineRef)
       .then(setGaps)
       .catch((err) => {
         console.error('Failed to fetch gaps:', err.message)

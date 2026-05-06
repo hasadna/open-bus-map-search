@@ -10,7 +10,6 @@ import { MainLayout } from '../layout'
 import { ThemeProvider } from '../layout/ThemeContext'
 import { PageSearchState, SearchContext } from '../model/pageState'
 import { PAGES } from '../routes'
-import 'leaflet/dist/leaflet.css'
 
 // Create rtl cache
 const cacheRtl = createCache({
