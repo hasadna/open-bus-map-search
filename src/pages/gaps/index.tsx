@@ -39,15 +39,15 @@ const GapsPage = () => {
     setGapsIsLoading(true)
     const start = toIsraelTimezone(timestamp).startOf('day')
     const end = start.add(1, 'day').add(4, 'h')
-      getGapsAsync(start.valueOf(), end.valueOf(), operatorId, selectedRoute.lineRef)
-        .then((res) =>
-          setGaps(
-            res.filter((g) => {
-              const t = g.actualStartTime || g.plannedStartTime
-              return t && !t.isBefore(start) && t.isBefore(end)
-            }),
-          ),
-        )
+    getGapsAsync(start.valueOf(), end.valueOf(), operatorId, selectedRoute.lineRef)
+      .then((res) =>
+        setGaps(
+          res.filter((g) => {
+            const t = g.actualStartTime || g.plannedStartTime
+            return t && !t.isBefore(start) && t.isBefore(end)
+          }),
+        ),
+      )
       .catch((err) => {
         console.error('Failed to fetch gaps:', err.message)
         setGaps(undefined)
