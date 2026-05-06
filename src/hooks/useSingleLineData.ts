@@ -121,7 +121,7 @@ export const useSingleLineData = (
         for (const position of positions) {
           const startTime = position.point?.siriRideScheduledStartTime
           if (!startTime) continue
-          const dayjsTime = dayjs(startTime)
+          const dayjsTime = toIsraelTimezone(startTime)
           if (dayjsTime.isAfter(today) && dayjsTime.isBefore(tomorrow)) {
             const formattedTime = formatTime(dayjsTime)
             const key = `${formattedTime}|${position.point?.siriRideVehicleRef}`
