@@ -89,13 +89,15 @@ const GapsTable: React.FC<GapsTableProps> = ({
   }, [filteredGaps])
 
   const gapsPercentage = useMemo(() => {
-    const relevant = Object.values(groupedGaps)
-      .flat()
+    if (!gaps) return
+    const relevant = gaps
+      .filter(getGap)
+      .map((gap) => ({ gap, status: formatStatus(gap, gaps) }))
       .filter(({ status }) => status === 'ride_as_planned' || status === 'ride_missing')
     if (!relevant.length) return
     const missing = relevant.filter(({ status }) => status === 'ride_missing')
     return (missing.length / relevant.length) * 100
-  }, [groupedGaps])
+  }, [gaps])
 
   return (
     <Widget marginBottom sx={{ overflowY: 'none', maxWidth: '600px' }}>
