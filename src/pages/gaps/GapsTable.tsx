@@ -59,21 +59,21 @@ const formatStatus = (gap: Gap, gaps: Gap[] | undefined): keyof typeof colors =>
 }
 
 function buildTooltip(gap: Gap): React.ReactNode {
-    const planned = gap.plannedStartTime?.format(DATE_TIME_FORMAT)
-    const actual = gap.actualStartTime?.format(DATE_TIME_FORMAT)
-    const diffMin =
-      gap.actualStartTime && gap.plannedStartTime
-        ? gap.actualStartTime.diff(gap.plannedStartTime, 'minute')
-        : null
-    return (
-      <div style={{ fontSize: '0.85rem', lineHeight: 1.6 }}>
-        <div>planned: {planned ?? '—'}</div>
-        <div>actual: {actual ?? '—'}</div>
-        {diffMin !== null && diffMin !== 0 && (
-          <div>({diffMin > 0 ? `+${diffMin}` : diffMin} min)</div>
-        )}
-      </div>
-      )
+  const planned = gap.plannedStartTime?.format(DATE_TIME_FORMAT)
+  const actual = gap.actualStartTime?.format(DATE_TIME_FORMAT)
+  const diffMin =
+    gap.actualStartTime && gap.plannedStartTime
+      ? gap.actualStartTime.diff(gap.plannedStartTime, 'minute')
+      : null
+  return (
+    <div style={{ fontSize: '0.85rem', lineHeight: 1.6 }}>
+      <div>planned: {planned ?? '—'}</div>
+      <div>actual: {actual ?? '—'}</div>
+      {diffMin !== null && diffMin !== 0 && (
+        <div>({diffMin > 0 ? `+${diffMin}` : diffMin} min)</div>
+      )}
+    </div>
+  )
 }
 
 const GapsTable: React.FC<GapsTableProps> = ({
@@ -156,27 +156,29 @@ const GapsTable: React.FC<GapsTableProps> = ({
                       const startTimeParam = formatStartTimeForQuery(time)
                       const cellHref = `${singleLineMapBaseHref}&startTime=${startTimeParam}`
                       return (
-                          <Tooltip key={`${hour}-${j}-${time}`} title={buildTooltip(gap)} arrow>
-                            <TableCell
-                              sx={{
-                                ...cellStyle,
-                                background: colors[status],
-                                cursor: hasRide ? 'pointer' : 'default',
-                                '& a, & a:visited, & a:hover, & a:focus': {
-                                  color: 'inherit',
-                                  textDecoration: 'underline',
-                                },
-                              }}>
-                              {hasRide ? (
-                                <Link to={cellHref} onClick={() => onStartTimeClick?.(startTimeParam)}>
-                                  {time}
-                                </Link>
-                              ) : (
-                                time
-                              )}
-                            </TableCell>
-                          </Tooltip>
-                        )
+                        <Tooltip key={`${hour}-${j}-${time}`} title={buildTooltip(gap)} arrow>
+                          <TableCell
+                            sx={{
+                              ...cellStyle,
+                              background: colors[status],
+                              cursor: hasRide ? 'pointer' : 'default',
+                              '& a, & a:visited, & a:hover, & a:focus': {
+                                color: 'inherit',
+                                textDecoration: 'underline',
+                              },
+                            }}>
+                            {hasRide ? (
+                              <Link
+                                to={cellHref}
+                                onClick={() => onStartTimeClick?.(startTimeParam)}>
+                                {time}
+                              </Link>
+                            ) : (
+                              time
+                            )}
+                          </TableCell>
+                        </Tooltip>
+                      )
                     })}
                   </TableRow>
                 ))}
