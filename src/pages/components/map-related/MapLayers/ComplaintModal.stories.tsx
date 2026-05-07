@@ -79,6 +79,16 @@ const siriRidesHandler = http.get(
   },
 )
 
+const operatorsHandler = http.get(
+  (info) => new URL(info.request.url).pathname === '/gov/operators',
+  () => HttpResponse.json({ success: true, data: [{ dataText: 'אגד', dataCode: 3 }] }),
+)
+
+const citiesHandler = http.get(
+  (info) => new URL(info.request.url).pathname === '/gov/cities',
+  () => HttpResponse.json({ success: true, data: [{ dataText: 'גדרה', dataCode: 2550 }] }),
+)
+
 const defaultArgs: BusToolTipProps & { route: GtfsRoutePydanticModel } = {
   position: {
     loc: [31.799982, 34.786926],
@@ -130,7 +140,7 @@ const defaultArgs: BusToolTipProps & { route: GtfsRoutePydanticModel } = {
 export const Default: Story = {
   parameters: {
     msw: {
-      handlers: [siriRidesHandler],
+      handlers: [siriRidesHandler, operatorsHandler, citiesHandler],
     },
   },
   args: {
