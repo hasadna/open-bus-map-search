@@ -43,7 +43,7 @@ const GapsPage = () => {
       .then((res) =>
         setGaps(
           res.filter((g) => {
-            const t = g.actualStartTime || g.plannedStartTime
+            const t = g.plannedStartTime || g.actualStartTime
             return t && !t.isBefore(start) && t.isBefore(end)
           }),
         ),
