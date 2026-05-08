@@ -134,7 +134,9 @@ jobs:
           echo "hash.txt is valid with MIME type $mime_type and length $content_length characters."
       - name: Install Dependencies and Playwright
         run: npm ci
-      - run: npx playwright install chromium
+      - name: Install Playwright browser dependencies
+        timeout-minutes: 15
+        run: npx playwright install --with-deps --only-shell chromium
       - name: Run Playwright tests
         run: npm test
       - name: Prepare Playwright artifact directory
@@ -214,7 +216,9 @@ jobs:
           cache: 'npm'
       - name: Install Dependencies and Playwright
         run: npm ci
-      - run: npx playwright install chromium
+      - name: Install Playwright browser dependencies
+        timeout-minutes: 10
+        run: npx playwright install-deps chrome
       - name: Run Playwright Visual Tests
         env:
           APPLITOOLS_BATCH_NAME: open-bus-map-search/${{ github.ref }}/${{ env.SHORT_SHA }}/
@@ -255,7 +259,7 @@ jobs:
           path: test-results
       - name: Publish test results to S3
         uses: shallwefootball/s3-upload-action@master
-        if: always() && ${{ env.AWS_KEY_ID }}
+        if: always() && env.AWS_KEY_ID != ''
         id: s3-trace
         continue-on-error: true
         with:
@@ -266,7 +270,7 @@ jobs:
           destination_dir: ${{ github.run_id }}/open-bus/${{ github.event.pull_request.head.sha }}/test-results
       - name: Set commit status for test results
         uses: myrotvorets/set-commit-status-action@master
-        if: always() && ${{ env.AWS_KEY_ID }}
+        if: always() && env.AWS_KEY_ID != ''
         with:
           sha: ${{ github.event.pull_request.head.sha }}
           token: ${{ secrets.GITHUB_TOKEN }}
