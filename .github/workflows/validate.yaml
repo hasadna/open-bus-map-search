@@ -136,7 +136,7 @@ jobs:
         run: npm ci
       - name: Install Playwright browser dependencies
         timeout-minutes: 15
-        run: npx playwright install --with-deps --only-shell chromium
+        run: npx playwright install --with-deps chrome
       - name: Run Playwright tests
         run: npm test
       - name: Prepare Playwright artifact directory
@@ -218,7 +218,7 @@ jobs:
         run: npm ci
       - name: Install Playwright browser dependencies
         timeout-minutes: 10
-        run: npx playwright install-deps chrome
+        run: npx playwright install  --with-deps chrome
       - name: Run Playwright Visual Tests
         env:
           APPLITOOLS_BATCH_NAME: open-bus-map-search/${{ github.ref }}/${{ env.SHORT_SHA }}/
