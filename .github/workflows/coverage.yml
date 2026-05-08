@@ -21,16 +21,16 @@ jobs:
     steps:
       - name: Set timezone
         run: echo "TZ=Asia/Jerusalem" >> $GITHUB_ENV
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Use Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: latest
       - name: Run install
         run: npm ci
       - name: Install Playwright browser dependencies
         timeout-minutes: 15
-        run: npx playwright install --with-deps chrome
+        run: npx playwright install --with-deps chromium
       - name: Run test
         run: npm test
       - run: npx nyc report --reporter=lcovonly
