@@ -19,7 +19,7 @@
     "@tanstack/react-query": "^5.99.2",
     "@tanstack/react-query-persist-client": "^5.95.0",
     "antd": "^6.3.3",
-    "axios": "^1.16.0",
+    "axios": "^1.15.2",
     "babel-plugin-react-compiler": "^1.0.0",
     "classnames": "^2.5.1",
     "dayjs": "^1.11.20",
@@ -129,7 +129,7 @@
     "stylelint-prettier": "^5.0.3",
     "ts-jest": "^29.4.6",
     "typescript": "^5.9.3",
-    "vite": "^8.0.11",
+    "vite": "^8.0.10",
     "vite-plugin-istanbul": "^8.0.0"
   },
   "nx": {
