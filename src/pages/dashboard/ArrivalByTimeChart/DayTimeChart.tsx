@@ -18,6 +18,7 @@ const convertToGraphCompatibleStruct = (arr: GroupByRes[]) => {
       gtfsRouteHour: item.gtfsRouteHour ? new Date(item.gtfsRouteHour) : undefined,
     } as ArrivalByTimeData
   })
+}
 
 interface DayTimeChartProps {
   startDate: Dayjs
