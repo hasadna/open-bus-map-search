@@ -20,7 +20,7 @@ export const getGapsAsync = (
   operatorId: string,
   lineRef: number,
   limit = 10000,
-) => {
+): Promise<Gap[]> => {
   return USER_CASE_API.ridesExecutionListGet({
     dateFrom: new Date(fromTimestamp),
     dateTo: new Date(toTimestamp),
@@ -33,7 +33,7 @@ export const getGapsAsync = (
         actualStartTime: parseTime(gap.actualStartTime),
         plannedStartTime: parseTime(gap.plannedStartTime),
         gtfsRideId: gap.gtfsRideId,
-      } as Gap
+      }
     }),
   )
 }
