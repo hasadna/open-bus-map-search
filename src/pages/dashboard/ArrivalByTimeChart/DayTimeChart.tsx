@@ -6,7 +6,7 @@ import { Dayjs } from 'src/dayjs'
 import Widget from 'src/shared/Widget'
 import ArrivalByTimeChart, { ArrivalByTimeData } from './ArrivalByTimeChart'
 
-const convertToGraphCompatibleStruct = (arr: GroupByRes[]): ArrivalByTimeData[] => {
+const convertToGraphCompatibleStruct = (arr: GroupByRes[]) => {
   return arr.map((item) => {
     return {
       operatorId: item.operatorRef?.operatorRef.toString() || 'Unknown',
@@ -16,9 +16,8 @@ const convertToGraphCompatibleStruct = (arr: GroupByRes[]): ArrivalByTimeData[] 
       percent: (item.totalActualRides / item.totalPlannedRides) * 100,
       gtfsRouteDate: item.gtfsRouteDate ? new Date(item.gtfsRouteDate) : undefined,
       gtfsRouteHour: item.gtfsRouteHour ? new Date(item.gtfsRouteHour) : undefined,
-    }
+    } as ArrivalByTimeData
   })
-}
 
 interface DayTimeChartProps {
   startDate: Dayjs

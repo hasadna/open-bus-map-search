@@ -17,10 +17,9 @@ jest.mock('recharts', () => {
       )),
   }
 })
-const data: ArrivalByTimeData[] = testBusData.map((d) => ({
-  ...d,
-  gtfsRouteDate: new Date(d.gtfsRouteDate),
-}))
+const data = testBusData.map(
+  (d) => ({ ...d, gtfsRouteDate: new Date(d.gtfsRouteDate) }) as ArrivalByTimeData,
+)
 
 describe('ArrivalByTimeChart', () => {
   let renderedComponent: RenderResult

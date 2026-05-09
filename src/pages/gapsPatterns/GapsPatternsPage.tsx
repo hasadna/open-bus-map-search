@@ -163,8 +163,8 @@ const GapsPatternsPage = () => {
     const routes = await getRoutesAsync(
       dayjs(startDate),
       dayjs(endDate),
-      operatorId,
-      lineNumber,
+      operatorId as string,
+      lineNumber as string,
       signal,
     )
     setSearch((current) => (search.lineNumber === lineNumber ? { ...current, routes } : current))
