@@ -24,7 +24,7 @@ interface GapsTableProps {
   loading?: boolean
   initOnlyGapped?: boolean
   singleLineMapBaseHref: string
-  onStartTimeClick?: (startTime: string) => void
+  onStartTimeClick?: (startTime: string, timestamp: number) => void
 }
 
 const cellStyle = {
@@ -75,6 +75,7 @@ function buildTooltip(gap: Gap): React.ReactNode {
     </div>
   )
 }
+const getGap = (gap: Gap) => gap.plannedStartTime || gap.actualStartTime
 
 const GapsTable: React.FC<GapsTableProps> = ({
   gaps,
@@ -90,24 +91,16 @@ const GapsTable: React.FC<GapsTableProps> = ({
     if (!gaps) return []
     return gaps
       .filter((gap) =>
-        onlyGapped
-          ? !gap.actualStartTime && gap.plannedStartTime?.isBefore(dayjs())
-          : gap.plannedStartTime || gap.actualStartTime,
+        onlyGapped ? !gap.actualStartTime && gap.plannedStartTime?.isBefore(dayjs()) : getGap(gap),
       )
-      .sort(
-        (a, b) =>
-          (a?.actualStartTime || a?.plannedStartTime)?.diff(
-            b?.actualStartTime || b?.plannedStartTime,
-          ) ?? 0,
-      )
+      .sort((a, b) => getGap(a)?.diff(getGap(b)) ?? 0)
   }, [gaps, onlyGapped])
 
   const groupedGaps = useMemo(() => {
     const map: Record<string, { gap: Gap; status: keyof typeof colors }[]> = {}
     for (const gap of filteredGaps) {
-      const rawHour = gap.plannedStartTime?.get('hour') ?? gap.actualStartTime?.get('hour')
-      if (rawHour === undefined) continue
-      const hour = rawHour < 4 ? rawHour + 24 : rawHour
+      const hour = getGap(gap)?.startOf('hour').valueOf()
+      if (hour === undefined) continue
       const status = formatStatus(gap, filteredGaps)
       if (!map[hour]) map[hour] = []
       map[hour].push({ gap, status })
@@ -116,13 +109,15 @@ const GapsTable: React.FC<GapsTableProps> = ({
   }, [filteredGaps])
 
   const gapsPercentage = useMemo(() => {
-    const relevant = Object.values(groupedGaps)
-      .flat()
+    if (!gaps) return
+    const relevant = gaps
+      .filter(getGap)
+      .map((gap) => ({ gap, status: formatStatus(gap, gaps) }))
       .filter(({ status }) => status === 'ride_as_planned' || status === 'ride_missing')
     if (!relevant.length) return
     const missing = relevant.filter(({ status }) => status === 'ride_missing')
     return (missing.length / relevant.length) * 100
-  }, [groupedGaps])
+  }, [gaps])
 
   return (
     <Widget marginBottom sx={{ overflowY: 'none', maxWidth: '600px' }}>
