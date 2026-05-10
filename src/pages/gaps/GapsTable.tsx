@@ -23,7 +23,7 @@ interface GapsTableProps {
   loading?: boolean
   initOnlyGapped?: boolean
   singleLineMapBaseHref: string
-  onStartTimeClick?: (startTime: string) => void
+  onStartTimeClick?: (startTime: string, timestamp: number) => void
 }
 
 const cellStyle = {
@@ -55,6 +55,8 @@ const formatStatus = (gap: Gap, gaps: Gap[] | undefined): keyof typeof colors =>
   return hasTwinRide ? 'ride_duped' : 'ride_extra'
 }
 
+const getGap = (gap: Gap) => gap.plannedStartTime || gap.actualStartTime
+
 const GapsTable: React.FC<GapsTableProps> = ({
   gaps,
   loading,
@@ -69,24 +71,16 @@ const GapsTable: React.FC<GapsTableProps> = ({
     if (!gaps) return []
     return gaps
       .filter((gap) =>
-        onlyGapped
-          ? !gap.actualStartTime && gap.plannedStartTime?.isBefore(dayjs())
-          : gap.plannedStartTime || gap.actualStartTime,
+        onlyGapped ? !gap.actualStartTime && gap.plannedStartTime?.isBefore(dayjs()) : getGap(gap),
       )
-      .sort(
-        (a, b) =>
-          (a?.actualStartTime || a?.plannedStartTime)?.diff(
-            b?.actualStartTime || b?.plannedStartTime,
-          ) ?? 0,
-      )
+      .sort((a, b) => getGap(a)?.diff(getGap(b)) ?? 0)
   }, [gaps, onlyGapped])
 
   const groupedGaps = useMemo(() => {
     const map: Record<string, { gap: Gap; status: keyof typeof colors }[]> = {}
     for (const gap of filteredGaps) {
-      const rawHour = gap.plannedStartTime?.get('hour') ?? gap.actualStartTime?.get('hour')
-      if (rawHour === undefined) continue
-      const hour = rawHour < 4 ? rawHour + 24 : rawHour
+      const hour = getGap(gap)?.startOf('hour').valueOf()
+      if (hour === undefined) continue
       const status = formatStatus(gap, filteredGaps)
       if (!map[hour]) map[hour] = []
       map[hour].push({ gap, status })
@@ -95,13 +89,15 @@ const GapsTable: React.FC<GapsTableProps> = ({
   }, [filteredGaps])
 
   const gapsPercentage = useMemo(() => {
-    const relevant = Object.values(groupedGaps)
-      .flat()
+    if (!gaps) return
+    const relevant = gaps
+      .filter(getGap)
+      .map((gap) => ({ gap, status: formatStatus(gap, gaps) }))
       .filter(({ status }) => status === 'ride_as_planned' || status === 'ride_missing')
     if (!relevant.length) return
     const missing = relevant.filter(({ status }) => status === 'ride_missing')
     return (missing.length / relevant.length) * 100
-  }, [groupedGaps])
+  }, [gaps])
 
   return (
     <Widget marginBottom sx={{ overflowY: 'none', maxWidth: '600px' }}>
@@ -125,39 +121,41 @@ const GapsTable: React.FC<GapsTableProps> = ({
         ) : (
           <Table sx={{ maxWidth: 'fit-content' }}>
             <TableBody>
-              {Object.keys(groupedGaps)
-                .sort((a, b) => Number(a) - Number(b))
-                .map((hour) => (
-                  <TableRow key={hour}>
-                    {groupedGaps[hour].map(({ gap, status }, j) => {
-                      const time = (gap.plannedStartTime || gap.actualStartTime)?.format('HH:mm')
-                      const hasRide = Boolean(gap.actualStartTime)
-                      const startTimeParam = formatStartTimeForQuery(time)
-                      const cellHref = `${singleLineMapBaseHref}&startTime=${startTimeParam}`
-                      return (
-                        <TableCell
-                          key={`${hour}-${j}-${time}`}
-                          sx={{
-                            ...cellStyle,
-                            background: colors[status],
-                            cursor: hasRide ? 'pointer' : 'default',
-                            '& a, & a:visited, & a:hover, & a:focus': {
-                              color: 'inherit',
-                              textDecoration: 'underline',
-                            },
-                          }}>
-                          {hasRide ? (
-                            <Link to={cellHref} onClick={() => onStartTimeClick?.(startTimeParam)}>
-                              {time}
-                            </Link>
-                          ) : (
-                            time
-                          )}
-                        </TableCell>
-                      )
-                    })}
-                  </TableRow>
-                ))}
+              {Object.keys(groupedGaps).map((hour) => (
+                <TableRow key={hour}>
+                  {groupedGaps[hour].map(({ gap, status }, j) => {
+                    const time = getGap(gap)?.format('HH:mm')
+                    const startTimeParam = formatStartTimeForQuery(time)
+                    const actualDayTimestamp = gap.actualStartTime?.startOf('day').valueOf()
+                    return (
+                      <TableCell
+                        key={`${hour}-${j}-${time}`}
+                        sx={{
+                          ...cellStyle,
+                          background: colors[status],
+                          cursor: !!gap.actualStartTime ? 'pointer' : 'default',
+                          '& a, & a:visited, & a:hover, & a:focus': {
+                            color: 'inherit',
+                            textDecoration: 'underline',
+                          },
+                        }}>
+                        {!!gap.actualStartTime ? (
+                          <Link
+                            to={`${singleLineMapBaseHref}&timestamp=${actualDayTimestamp}&startTime=${startTimeParam}`}
+                            onClick={() =>
+                              actualDayTimestamp !== undefined &&
+                              onStartTimeClick?.(startTimeParam, actualDayTimestamp)
+                            }>
+                            {time}
+                          </Link>
+                        ) : (
+                          time
+                        )}
+                      </TableCell>
+                    )
+                  })}
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         )}

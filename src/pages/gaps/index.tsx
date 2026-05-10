@@ -1,8 +1,7 @@
 import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import dayjs from 'src/dayjs'
-import { getServiceDayBounds } from 'src/model/serviceDay'
+import dayjs, { toIsraelTimezone } from 'src/dayjs'
 import { INPUT_SIZE } from 'src/resources/sizes'
 import { Gap, getGapsAsync } from '../../api/gapsService'
 import { getRoutesAsync } from '../../api/gtfsService'
@@ -26,12 +25,11 @@ const GapsPage = () => {
 
   const singleLineMapBaseHref = useMemo(() => {
     const params = new URLSearchParams()
-    params.set('timestamp', search.timestamp.toString())
     params.set('operatorId', search.operatorId || '')
     params.set('lineNumber', search.lineNumber || '')
     params.set('routeKey', search.routeKey || '')
     return `/single-line-map?${params.toString()}`
-  }, [search.lineNumber, search.operatorId, search.routeKey, search.timestamp])
+  }, [search.lineNumber, search.operatorId, search.routeKey])
 
   useEffect(() => {
     if (!(operatorId && routes && routeKey && timestamp)) return
@@ -39,9 +37,17 @@ const GapsPage = () => {
     if (!selectedRoute) return
 
     setGapsIsLoading(true)
-    const { start, end } = getServiceDayBounds(dayjs(timestamp))
+    const start = toIsraelTimezone(timestamp).startOf('day')
+    const end = start.add(1, 'day').add(4, 'h')
     getGapsAsync(start.valueOf(), end.valueOf(), operatorId, selectedRoute.lineRef)
-      .then(setGaps)
+      .then((res) =>
+        setGaps(
+          res.filter((g) => {
+            const t = g.plannedStartTime || g.actualStartTime
+            return t && !t.isBefore(start) && t.isBefore(end)
+          }),
+        ),
+      )
       .catch((err) => {
         console.error('Failed to fetch gaps:', err.message)
         setGaps(undefined)
@@ -90,8 +96,8 @@ const GapsPage = () => {
   }
 
   const handleStartTimeClick = useCallback(
-    (startTime: string) => {
-      setSearch((current) => ({ ...current, startTime }))
+    (startTime: string, timestamp: number) => {
+      setSearch((current) => ({ ...current, startTime, timestamp }))
     },
     [setSearch],
   )
