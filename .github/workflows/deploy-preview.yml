@@ -16,7 +16,7 @@ jobs:
     name: Deploy to S3
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Download dist-build artifact
         uses: dawidd6/action-download-artifact@v11
         with:
