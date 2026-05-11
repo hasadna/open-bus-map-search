@@ -24,7 +24,7 @@ interface GapsTableProps {
   loading?: boolean
   initOnlyGapped?: boolean
   singleLineMapBaseHref: string
-  onStartTimeClick?: (startTime: string) => void
+  onStartTimeClick?: (startTime: string, timestamp: number) => void
 }
 
 const cellStyle = {
@@ -165,7 +165,13 @@ const GapsTable: React.FC<GapsTableProps> = ({
                             {hasRide ? (
                               <Link
                                 to={cellHref}
-                                onClick={() => onStartTimeClick?.(startTimeParam)}>
+                                onClick={() =>
+                                  gap.actualStartTime &&
+                                  onStartTimeClick?.(
+                                    startTimeParam,
+                                    gap.actualStartTime.startOf('day').valueOf(),
+                                  )
+                                }>
                                 {time}
                               </Link>
                             ) : (
