@@ -6,6 +6,7 @@ import {
   TableCell,
   TableContainer,
   TableRow,
+  Tooltip,
 } from '@mui/material'
 import { Skeleton } from 'antd'
 import React, { memo, useMemo, useState } from 'react'
@@ -23,7 +24,7 @@ interface GapsTableProps {
   loading?: boolean
   initOnlyGapped?: boolean
   singleLineMapBaseHref: string
-  onStartTimeClick?: (startTime: string, timestamp: number) => void
+  onStartTimeClick?: (startTime: string) => void
 }
 
 const cellStyle = {
@@ -40,6 +41,8 @@ const colors = {
   ride_in_future: 'rgba(0, 0, 255, 0.15)',
 } as const
 
+const DATE_TIME_FORMAT = 'DD/MM/YYYY HH:mm'
+
 const formatStatus = (gap: Gap, gaps: Gap[] | undefined): keyof typeof colors => {
   const currentTime = dayjs()
   if (gap.plannedStartTime?.isAfter(currentTime) && !gap.actualStartTime) return 'ride_in_future'
@@ -55,6 +58,23 @@ const formatStatus = (gap: Gap, gaps: Gap[] | undefined): keyof typeof colors =>
   return hasTwinRide ? 'ride_duped' : 'ride_extra'
 }
 
+function buildTooltip(gap: Gap): React.ReactNode {
+  const planned = gap.plannedStartTime?.format(DATE_TIME_FORMAT)
+  const actual = gap.actualStartTime?.format(DATE_TIME_FORMAT)
+  const diffMin =
+    gap.actualStartTime && gap.plannedStartTime
+      ? gap.actualStartTime.diff(gap.plannedStartTime, 'minute')
+      : null
+  return (
+    <div style={{ fontSize: '0.85rem', lineHeight: 1.6 }}>
+      <div>planned: {planned ?? '—'}</div>
+      <div>actual: {actual ?? '—'}</div>
+      {diffMin !== null && diffMin !== 0 && (
+        <div>({diffMin > 0 ? `+${diffMin}` : diffMin} min)</div>
+      )}
+    </div>
+  )
+}
 const getGap = (gap: Gap) => gap.plannedStartTime || gap.actualStartTime
 
 const GapsTable: React.FC<GapsTableProps> = ({
@@ -121,41 +141,42 @@ const GapsTable: React.FC<GapsTableProps> = ({
         ) : (
           <Table sx={{ maxWidth: 'fit-content' }}>
             <TableBody>
-              {Object.keys(groupedGaps).map((hour) => (
-                <TableRow key={hour}>
-                  {groupedGaps[hour].map(({ gap, status }, j) => {
-                    const time = getGap(gap)?.format('HH:mm')
-                    const startTimeParam = formatStartTimeForQuery(time)
-                    const actualDayTimestamp = gap.actualStartTime?.startOf('day').valueOf()
-                    return (
-                      <TableCell
-                        key={`${hour}-${j}-${time}`}
-                        sx={{
-                          ...cellStyle,
-                          background: colors[status],
-                          cursor: !!gap.actualStartTime ? 'pointer' : 'default',
-                          '& a, & a:visited, & a:hover, & a:focus': {
-                            color: 'inherit',
-                            textDecoration: 'underline',
-                          },
-                        }}>
-                        {!!gap.actualStartTime ? (
-                          <Link
-                            to={`${singleLineMapBaseHref}&timestamp=${actualDayTimestamp}&startTime=${startTimeParam}`}
-                            onClick={() =>
-                              actualDayTimestamp !== undefined &&
-                              onStartTimeClick?.(startTimeParam, actualDayTimestamp)
-                            }>
-                            {time}
-                          </Link>
-                        ) : (
-                          time
-                        )}
-                      </TableCell>
-                    )
-                  })}
-                </TableRow>
-              ))}
+              {Object.keys(groupedGaps)
+                .sort((a, b) => Number(a) - Number(b))
+                .map((hour) => (
+                  <TableRow key={hour}>
+                    {groupedGaps[hour].map(({ gap, status }, j) => {
+                      const time = (gap.plannedStartTime || gap.actualStartTime)?.format('HH:mm')
+                      const hasRide = Boolean(gap.actualStartTime)
+                      const startTimeParam = formatStartTimeForQuery(time)
+                      const cellHref = `${singleLineMapBaseHref}&startTime=${startTimeParam}`
+                      return (
+                        <Tooltip key={`${hour}-${j}-${time}`} title={buildTooltip(gap)} arrow>
+                          <TableCell
+                            sx={{
+                              ...cellStyle,
+                              background: colors[status],
+                              cursor: hasRide ? 'pointer' : 'default',
+                              '& a, & a:visited, & a:hover, & a:focus': {
+                                color: 'inherit',
+                                textDecoration: 'underline',
+                              },
+                            }}>
+                            {hasRide ? (
+                              <Link
+                                to={cellHref}
+                                onClick={() => onStartTimeClick?.(startTimeParam)}>
+                                {time}
+                              </Link>
+                            ) : (
+                              time
+                            )}
+                          </TableCell>
+                        </Tooltip>
+                      )
+                    })}
+                  </TableRow>
+                ))}
             </TableBody>
           </Table>
         )}
