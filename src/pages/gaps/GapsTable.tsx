@@ -24,7 +24,7 @@ interface GapsTableProps {
   loading?: boolean
   initOnlyGapped?: boolean
   singleLineMapBaseHref: string
-  onStartTimeClick?: (startTime: string, timestamp: number) => void
+  onStartTimeClick?: (startTime: string) => void
 }
 
 const cellStyle = {
