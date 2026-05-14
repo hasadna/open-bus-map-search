@@ -27,7 +27,7 @@ export const getLang = (): string => {
     localStorage.getItem('language') ||
     SUPPORTED_LANGUAGES.find((l) => new Intl.Locale(navigator.language).language === l) ||
     'he'
-    )
+  )
 }
 
 const initialLang = getLang()
