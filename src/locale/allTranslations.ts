@@ -23,7 +23,11 @@ export const getLang = (): string => {
     localStorage.setItem('language', langPart)
     return langPart
   }
-  return localStorage.getItem('language') || SUPPORTED_LANGUAGES.find((l) => new Intl.Locale(navigator.language).language === l) || 'he'
+  return (
+    localStorage.getItem('language') ||
+    SUPPORTED_LANGUAGES.find((l) => new Intl.Locale(navigator.language).language === l) || 
+    'he'
+    )
 }
 
 const initialLang = getLang()
