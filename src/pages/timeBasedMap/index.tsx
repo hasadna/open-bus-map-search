@@ -1,6 +1,6 @@
 import { OpenInFullRounded } from '@mui/icons-material'
 import { Alert, CircularProgress, Grid, IconButton, Typography } from '@mui/material'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet'
 import MarkerClusterGroup from 'react-leaflet-markercluster'
@@ -8,6 +8,7 @@ import dayjs from 'src/dayjs'
 import { useAgencyList } from 'src/hooks/useAgencyList'
 import { useConstrainedFloatingButton } from 'src/hooks/useConstrainedFloatingButton'
 import useVehicleLocations from 'src/hooks/useVehicleLocations'
+import { ExtraShareParamsContext, InitialUrlParamsContext } from 'src/model/pageState'
 import { type Point, toPoint } from 'src/pages/components/map-related/map-types'
 import { BusToolTip } from 'src/pages/components/map-related/MapLayers/BusToolTip'
 import { DateSelector } from '../components/DateSelector'
@@ -30,8 +31,10 @@ export default function TimeBasedMapPage() {
   const mapContainerRef = useRef<HTMLDivElement>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
 
-  //TODO (another PR and another issue) load from url like in another pages.
-  const [from, setFrom] = useState(DEFAULT_TIME)
+  const initialUrlParams = useContext(InitialUrlParamsContext)
+  const [from, setFrom] = useState(() =>
+    initialUrlParams.timestamp ? dayjs(+initialUrlParams.timestamp) : DEFAULT_TIME,
+  )
   const to = useMemo(() => dayjs(from).add(1, 'minutes'), [from])
   const { locations, isLoading } = useVehicleLocations({ from, to })
   const { t } = useTranslation()
@@ -39,6 +42,12 @@ export default function TimeBasedMapPage() {
   const handleFromChange = useCallback((timestamp: dayjs.Dayjs | null) => {
     setFrom(timestamp ?? DEFAULT_TIME)
   }, [])
+
+  const { setParams } = useContext(ExtraShareParamsContext)
+  useEffect(() => {
+    setParams({ timestamp: from.valueOf().toString() })
+    return () => setParams({})
+  }, [from, setParams])
 
   useConstrainedFloatingButton(mapContainerRef, buttonRef, isExpanded)
 

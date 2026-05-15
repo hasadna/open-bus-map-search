@@ -234,7 +234,6 @@
     "complaint_details_required": "In order for us to check your request, please specify in the request which modes of transportation you wish to match, line numbers, operator names, station SKU, and relevant times.",
     "new_complaint": "New Complaint"
   },
-
   "lineProfile": {
     "title": "Profile for Line",
     "notFound": "We couldn't find the line you were looking for :(",
@@ -384,5 +383,6 @@
     "destination": "Destination",
     "total": "Total Routes",
     "statistics": "Statistics"
-  }
+  },
+  "share_link": "Share this page"
 }
