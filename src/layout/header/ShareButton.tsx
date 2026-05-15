@@ -3,49 +3,8 @@ import { Tooltip } from 'antd'
 import { useCallback, useContext, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLocation } from 'react-router'
-import { getPathWithoutLang } from 'src/locale/allTranslations'
-import { ExtraShareParamsContext, PageSearchState, SearchContext } from 'src/model/pageState'
-
-type ShareableKey = Exclude<keyof PageSearchState, 'routes'>
-
-// Only include params that are actually used on each page
-const PAGE_SHARE_PARAMS: Partial<Record<string, ShareableKey[]>> = {
-  '/timeline': ['timestamp', 'operatorId', 'lineNumber', 'vehicleNumber', 'routeKey', 'startTime'],
-  '/gaps': ['timestamp', 'operatorId', 'lineNumber', 'routeKey'],
-  '/gaps_patterns': ['operatorId', 'lineNumber', 'routeKey'],
-  '/map': [],
-  '/velocity-heatmap': ['timestamp'],
-  '/single-line-map': [
-    'timestamp',
-    'operatorId',
-    'lineNumber',
-    'vehicleNumber',
-    'routeKey',
-    'startTime',
-  ],
-  '/operator': ['operatorId', 'timestamp'],
-}
-
-const buildShareUrl = (
-  pathname: string,
-  search: PageSearchState,
-  extraParams: Record<string, string>,
-): string => {
-  const pagePath = getPathWithoutLang(pathname)
-  const relevantKeys = PAGE_SHARE_PARAMS[pagePath] ?? []
-
-  const params = new URLSearchParams()
-
-  for (const key of relevantKeys) {
-    const value = search[key]
-    if (value) params.set(key, String(value))
-  }
-
-  Object.entries(extraParams).forEach(([key, value]) => params.set(key, value))
-
-  const query = params.toString()
-  return `${window.location.origin}${pathname}${query ? `?${query}` : ''}`
-}
+import { ExtraShareParamsContext, SearchContext } from 'src/model/pageState'
+import { buildShareUrl } from './shareUrl'
 
 export const ShareButton = () => {
   const { search } = useContext(SearchContext)
