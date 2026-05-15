@@ -40,7 +40,7 @@ describe('buildShareUrl — URL structure', () => {
 
   it('uses the provided origin', () => {
     const url = build('/gaps')
-    expect(url.startsWith(ORIGIN)).toBe(true)
+    expect(new URL(url).origin).toBe(ORIGIN)
   })
 
   it('produces no query string for pages not in PAGE_SHARE_PARAMS', () => {
