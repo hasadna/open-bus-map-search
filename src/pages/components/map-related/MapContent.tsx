@@ -128,7 +128,7 @@ export function MapContent({ positions, plannedRouteStops, showNavigationButtons
             <Marker key={stop.key} position={[latitude, longitude]} icon={plannedRouteStopMarker} />
           )
         })}
-      {positions.length && (
+      {positions.length > 0 && (
         <Polyline
           pathOptions={{ color: actualRouteLineColor }}
           positions={positions.map((position) => position.loc)}
