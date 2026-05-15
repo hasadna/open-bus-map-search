@@ -26,7 +26,7 @@ export function generateUUID(): string {
 }
 
 export const test = baseTest.extend<{ context: BrowserContext }>({
-  context: async ({ context }, use) => {
+  context: async ({ context }, handle) => {
     await context.addInitScript(() => {
       const w = window as CollectIstanbulCoverageWindow
       w.addEventListener('beforeunload', () => {
@@ -42,7 +42,7 @@ export const test = baseTest.extend<{ context: BrowserContext }>({
         )
       }
     })
-    await use(context)
+    await handle(context)
     for (const page of context.pages()) {
       await page.evaluate(() => {
         const w = window as CollectIstanbulCoverageWindow
