@@ -184,6 +184,33 @@ test.describe('Record HAR files', () => {
     await page.getByRole('textbox', { name: 'מספר קו' }).fill('9999')
     await page.waitForTimeout(3000)
     await page.waitForLoadState('networkidle')
+
+    // Switch to vehicle-number search and record the requests for vehicle-based start times
+    await page.getByRole('button', { name: 'לפי מספר רכב' }).click()
+    const vehicleRequestsPromise = page.waitForResponse((response) => {
+      const url = response.url()
+      return (
+        url.includes('/siri_vehicle_locations/list') &&
+        url.includes('siri_ride__vehicle_ref=7489226') &&
+        url.includes('recorded_at_time_from=2024-02-12T04%3A00%3A00.000Z')
+      )
+    })
+    await page.getByRole('textbox', { name: 'מספר רכב' }).fill('7489226')
+    await vehicleRequestsPromise
+    await page.waitForLoadState('networkidle')
+
+    const vehicleStartTimeDropdown = page.getByLabel('בחירת שעת התחלה')
+    if ((await vehicleStartTimeDropdown.count()) > 0) {
+      await vehicleStartTimeDropdown.click()
+      await page.waitForLoadState('networkidle')
+      const vehicleStartTime = page.getByRole('option', { name: /04:30/ }).first()
+      if ((await vehicleStartTime.count()) > 0) {
+        await vehicleStartTime.click()
+        await page.waitForLoadState('networkidle')
+      } else {
+        await page.keyboard.press('Escape')
+      }
+    }
   })
 
   // ---- missing.har --------------------------------------------------------
