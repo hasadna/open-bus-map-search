@@ -24,6 +24,7 @@ queryClient.setQueryData(['version'], '1.2.3')
 const preview: Preview = {
   beforeAll: () => {
     initialize({
+      await i18n.changeLanguage('he')
       serviceWorker: {
         url: './mockServiceWorker.js',
       },
