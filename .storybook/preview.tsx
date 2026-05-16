@@ -7,6 +7,8 @@ import { ThemeProvider, useTheme } from 'src/layout/ThemeContext'
 import i18n from 'src/locale/allTranslations'
 import 'src/index.scss'
 
+i18n.changeLanguage('he')
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -24,7 +26,6 @@ queryClient.setQueryData(['version'], '1.2.3')
 const preview: Preview = {
   beforeAll: () => {
     initialize({
-      await i18n.changeLanguage('he')
       serviceWorker: {
         url: './mockServiceWorker.js',
       },
