@@ -1,5 +1,5 @@
 import type { SiriVelocityAggregationPydanticModel } from '@hasadna/open-bus-api-client'
-import React, { useContext } from 'react'
+import { useContext, useEffect } from 'react'
 import { Popup, Rectangle } from 'react-leaflet'
 import dayjs from 'src/dayjs'
 import { SearchContext } from '../../../model/pageState'
@@ -33,6 +33,7 @@ function getRedOpacityColor(value: number, minV = 0, maxV = 1): string {
 
 interface VelocityHeatmapRectanglesProps {
   visMode: VisMode
+  setMinMax?: (min: number, max: number) => void
 }
 
 const DEFAULT_BOUNDS = {
@@ -42,11 +43,10 @@ const DEFAULT_BOUNDS = {
   maxLon: 35.7,
 }
 
-export const VelocityHeatmapRectangles: React.FC<
-  VelocityHeatmapRectanglesProps & {
-    setMinMax?: (min: number, max: number) => void
-  }
-> = ({ visMode, setMinMax }) => {
+export const VelocityHeatmapRectangles = ({
+  visMode,
+  setMinMax,
+}: VelocityHeatmapRectanglesProps) => {
   const { search } = useContext(SearchContext)
   const zoom = useZoomLevel()
   const { data, loading, error, currZoom } = useVelocityAggregationData(
@@ -79,8 +79,8 @@ export const VelocityHeatmapRectangles: React.FC<
     }
   }
   // Pass min/max to parent for legend
-  React.useEffect(() => {
-    if (setMinMax) setMinMax(minV, maxV)
+  useEffect(() => {
+    setMinMax?.(minV, maxV)
   }, [minV, maxV, setMinMax])
 
   return (
