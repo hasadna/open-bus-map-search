@@ -36,7 +36,7 @@ const TimelinePage = () => {
   const { operatorId, lineNumber, timestamp, routeKey } = search
   const [stopKey, setStopKey] = useState<string | undefined>()
 
-  const time = useMemo(() => dayjs(search.timestamp), [timestamp])
+  const time = useMemo(() => dayjs(search.timestamp).startOf('minute'), [timestamp])
 
   const routesQuery = useQuery({
     queryFn: async () => {

@@ -8,12 +8,9 @@
  * After running, commit the updated HAR files in tests/HAR/.
  */
 import { Page, test } from '@playwright/test'
+import { getPastDate } from './utils'
 
 test.describe.configure({ mode: 'serial' })
-
-function getPastDate() {
-  return new Date('2024-02-12T15:00:00+00:00')
-}
 
 async function setupRecording(page: Page, harFile: string) {
   await page.clock.setSystemTime(getPastDate())
@@ -60,33 +57,18 @@ test.describe('Record HAR files', () => {
     await page.getByPlaceholder('לדוגמה: 17א').fill('1')
     await page.waitForLoadState('networkidle')
 
-    // Open route dropdown and wait for options to load
-    await openDropdownAndWait(page, '#route-select')
-
-    // Select route to trigger stops fetch
-    const routeWithStops =
-      'בית ספר אלונים/הבנים-פרדס חנה כרכור ⟵ יד לבנים/דרך הבנים-פרדס חנה כרכור  '
-    const routeExists = await page.getByRole('option', { name: routeWithStops }).count()
-    if (routeExists > 0) {
-      await page.getByRole('option', { name: routeWithStops }).click()
-      await page.waitForLoadState('networkidle')
-      await openDropdownAndWait(page, '#stop-select')
-      await page.keyboard.press('Escape')
-    } else {
-      await page.keyboard.press('Escape')
-    }
-
     // Select route used for timeline hits test
     await openDropdownAndWait(page, '#route-select')
     const routeWithHits = 'שדרות מנחם בגין/כביש 7-גדרה ⟵ שדרות מנחם בגין/כביש 7-גדרה'
     const hitsRouteExists = await page.getByRole('option', { name: routeWithHits }).count()
     if (hitsRouteExists > 0) {
-      await page.getByRole('option', { name: routeWithHits }).click()
+      await page.getByRole('option', { name: routeWithHits, exact: true }).click()
       await page.waitForLoadState('networkidle')
       await openDropdownAndWait(page, '#stop-select')
       const stopOption = page.getByRole('option', { name: 'חיים הרצוג/שדרות מנחם בגין (גדרה)' })
       if ((await stopOption.count()) > 0) {
         await stopOption.click()
+        await page.locator('.MuiCircularProgress-svg').waitFor({ state: 'hidden' })
         await page.waitForLoadState('networkidle')
       } else {
         await page.keyboard.press('Escape')
@@ -106,8 +88,8 @@ test.describe('Record HAR files', () => {
     if ((await danBaDarom.count()) > 0) {
       await danBaDarom.click()
       await page.getByPlaceholder('לדוגמה: 17א').fill('9999')
-      await page.waitForTimeout(3000)
       await page.waitForLoadState('networkidle')
+      await page.getByText('הקו לא נמצא').waitFor({ state: 'visible' })
     } else {
       await page.keyboard.press('Escape')
     }

@@ -29,8 +29,13 @@ class TimelinePage extends BasePage {
     return this.page.locator('#operator-select')
   }
 
-  public get timelineGraph() {
-    return this.page.locator('h4')
+  public get timelineHourLabels() {
+    return this.page.getByText(/^\d{2}:\d{2}:\d{2}$/)
+  }
+
+  public async WaitForLoadingCompletion() {
+    await this.page.locator('.MuiCircularProgress-svg').waitFor({ state: 'hidden' })
+    await this.page.waitForLoadState('networkidle')
   }
 
   public get operatorsList() {
