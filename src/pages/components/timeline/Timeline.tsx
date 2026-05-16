@@ -4,7 +4,7 @@ import {
 } from '@hasadna/open-bus-api-client'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
-import dayjs, { toIsraelTimezone } from 'src/dayjs'
+import dayjs from 'src/dayjs'
 import { Coordinates } from 'src/model/location'
 import { PADDING } from 'src/pages/components/timeline/TimelineBoard'
 import {
@@ -73,9 +73,9 @@ export const Timeline = ({
         return (
           <LabeledPoint
             key={t.toString()}
-            top={timestampToTop(toIsraelTimezone(t))}
+            top={timestampToTop(dayjs(t))}
             type={pointType}
-            timestamp={toIsraelTimezone(t)}
+            timestamp={dayjs(t)}
           />
         )
       })}

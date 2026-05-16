@@ -9,7 +9,7 @@ import {
   getStopsForRouteAsync,
 } from 'src/api/gtfsService'
 import { getSiriStopHitTimesAsync } from 'src/api/siriService'
-import { toIsraelTimezone } from 'src/dayjs'
+import dayjs from 'src/dayjs'
 import { Label } from 'src/pages/components/Label'
 import LineNumberSelector from 'src/pages/components/LineSelector'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
@@ -36,7 +36,7 @@ const TimelinePage = () => {
   const { operatorId, lineNumber, timestamp, routeKey } = search
   const [stopKey, setStopKey] = useState<string | undefined>()
 
-  const time = useMemo(() => toIsraelTimezone(search.timestamp).startOf('minute'), [timestamp])
+  const time = useMemo(() => dayjs(search.timestamp).startOf('minute'), [timestamp])
 
   const routesQuery = useQuery({
     queryFn: async () => {
@@ -112,10 +112,10 @@ const TimelinePage = () => {
         {/* choose date */}
         <Grid size={{ lg: 4, md: 6, xs: 12 }}>
           <DateSelector
-            time={toIsraelTimezone(timestamp)}
+            time={dayjs(timestamp)}
             onChange={(ts) => {
               if (!ts) return
-              const currentTime = toIsraelTimezone(timestamp)
+              const currentTime = dayjs(timestamp)
               const newTimestamp = ts
                 .hour(currentTime.hour())
                 .minute(currentTime.minute())
@@ -128,10 +128,10 @@ const TimelinePage = () => {
         {/* choose time */}
         <Grid size={{ lg: 4, md: 6, xs: 12 }}>
           <TimeSelector
-            time={toIsraelTimezone(timestamp)}
+            time={dayjs(timestamp)}
             onChange={(ts) => {
               if (!ts) return
-              const currentDate = toIsraelTimezone(timestamp)
+              const currentDate = dayjs(timestamp)
               const newTimestamp = currentDate
                 .hour(ts.hour())
                 .minute(ts.minute())
@@ -200,7 +200,7 @@ const TimelinePage = () => {
               ((hitsQuery.data?.gtfsTime && hitsQuery.data.gtfsTime.length > 0) ||
               (hitsQuery.data?.siriTime && hitsQuery.data.siriTime.length > 0) ? (
                 <StyledTimelineBoard
-                  target={toIsraelTimezone(timestamp)}
+                  target={dayjs(timestamp)}
                   gtfsTimes={hitsQuery.data.gtfsTime}
                   siriTimes={hitsQuery.data.siriTime}
                 />
