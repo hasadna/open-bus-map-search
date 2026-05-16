@@ -7,8 +7,6 @@ import { ThemeProvider, useTheme } from 'src/layout/ThemeContext'
 import i18n from 'src/locale/allTranslations'
 import 'src/index.scss'
 
-i18n.changeLanguage('he')
-
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -65,6 +63,10 @@ const preview: Preview = {
     },
   ],
   tags: ['autodocs'],
+}
+
+export const initialGlobals = {
+  locale: 'he',
 }
 
 export const globalTypes = {
