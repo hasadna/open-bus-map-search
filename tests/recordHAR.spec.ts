@@ -43,7 +43,7 @@ async function openDropdownAndWait(page: Page, selector: string) {
 }
 
 test.describe('Record HAR files', () => {
-  // test.skip(!process.env['RECORD_HAR'], 'Set RECORD_HAR=1 to update HAR files')
+  test.skip(!process.env['RECORD_HAR'], 'Set RECORD_HAR=1 to update HAR files')
 
   // ---- timeline.har -------------------------------------------------------
   // Single test records ALL needed entries in one browser context
