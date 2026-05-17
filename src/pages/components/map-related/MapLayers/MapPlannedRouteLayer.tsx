@@ -16,12 +16,14 @@ export function MapPlannedRouteLayer({ plannedRouteStops }: MapPlannedRouteLayer
           stop.location.longitude,
         ])}
       />
-      {plannedRouteStops.map((stop) => {
-        const { latitude, longitude } = stop.location
-        return (
-          <Marker key={stop.key} position={[latitude, longitude]} icon={plannedRouteStopMarker} />
-        )
-      })}
+
+      {plannedRouteStops.map((stop) => (
+        <Marker
+          key={stop.key}
+          position={[stop.location.latitude, stop.location.longitude]}
+          icon={plannedRouteStopMarker}
+        />
+      ))}
     </>
   )
 }
