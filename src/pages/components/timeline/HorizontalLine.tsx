@@ -27,7 +27,7 @@ const StyledLine = styled.div<HorizontalLineProps & { visible: boolean }>`
 const HoverTarget = styled.div<HorizontalLineProps>`
   ${LineStyle};
   top: ${({ top }) => top - 1}px;
-  height: 12px;
+  height: 3px;
   background-color: red;
   opacity: 0;
   z-index: 5;

@@ -35,8 +35,8 @@ export const Point = styled.div<PointProps>`
   width: ${POINT_SIZE}px;
   border-radius: 50%;
   box-shadow: 0 0 0 2px
-    ${({ $highlighted, type }) =>
-      $highlighted ? pointTypeToColor[type ?? PointType.BOUNDARY] : NEUTRAL_COLOR};
+    ${({ $highlighted }) =>
+      $highlighted ? 'var(--timeline-highlight-ring, white)' : NEUTRAL_COLOR};
   background-color: ${({ type }) => pointTypeToColor[type || PointType.BOUNDARY]};
   position: absolute;
   top: ${({ top }) => top}px;

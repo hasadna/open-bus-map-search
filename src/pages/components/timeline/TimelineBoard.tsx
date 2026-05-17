@@ -48,7 +48,6 @@ const StyledContainer = styled.div`
   flex-direction: column;
   width: 100%;
 `
-const StyledTimeline = styled(Timeline)``
 
 type TimelineBoardProps = {
   className?: string
@@ -84,21 +83,24 @@ export const TimelineBoard = ({ className, target, gtfsTimes, siriTimes }: Timel
     <CenteringWrapper className={className}>
       <StyledContainer
         style={
-          { '--timeline-neutral': isDarkTheme ? '#8c8c8c' : '#bfbfbf' } as React.CSSProperties
+          {
+            '--timeline-neutral': isDarkTheme ? '#8c8c8c' : '#bfbfbf',
+            '--timeline-highlight-ring': isDarkTheme ? 'white' : '#333',
+          } as React.CSSProperties
         }>
         <TitleRow>
           <StyledTimelineTitle pointType={PointType.GTFS} />
           <StyledTimelineTitle pointType={PointType.SIRI} />
         </TitleRow>
         <Container>
-          <StyledTimeline
+          <Timeline
             timestamps={gtfsTimes}
             totalHeight={totalHeight}
             pointType={PointType.GTFS}
             timestampToTop={timestampToTop}
             hoveredTimestamp={hoveredTimestamp}
           />
-          <StyledTimeline
+          <Timeline
             timestamps={siriTimes}
             totalHeight={totalHeight}
             pointType={PointType.SIRI}

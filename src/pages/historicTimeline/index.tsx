@@ -2,7 +2,6 @@ import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
 import { useContext, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import styled from 'styled-components'
 import {
   getGtfsStopHitTimesAsync,
   getRoutesAsync,
@@ -17,18 +16,12 @@ import RouteSelector from 'src/pages/components/RouteSelector'
 import { Row } from 'src/pages/components/Row'
 import StopSelector from 'src/pages/components/StopSelector'
 import { TimelineBoard } from 'src/pages/components/timeline/TimelineBoard'
-import { MARGIN_MEDIUM } from 'src/resources/sizes'
 import Widget from 'src/shared/Widget'
 import { SearchContext } from '../../model/pageState'
 import { DateSelector } from '../components/DateSelector'
 import { NotFound } from '../components/NotFound'
 import { PageContainer } from '../components/PageContainer'
 import { TimeSelector } from '../components/TimeSelector'
-
-const StyledTimelineBoard = styled(TimelineBoard)`
-  margin-top: ${MARGIN_MEDIUM * 3}px;
-  margin-bottom: ${MARGIN_MEDIUM * 3}px;
-`
 
 const TimelinePage = () => {
   const { t } = useTranslation()
@@ -200,7 +193,7 @@ const TimelinePage = () => {
               {!hitsQuery.isLoading &&
                 ((hitsQuery.data?.gtfsTime && hitsQuery.data.gtfsTime.length > 0) ||
                 (hitsQuery.data?.siriTime && hitsQuery.data.siriTime.length > 0) ? (
-                  <StyledTimelineBoard
+                  <TimelineBoard
                     target={dayjs(timestamp)}
                     gtfsTimes={hitsQuery.data.gtfsTime}
                     siriTimes={hitsQuery.data.siriTime}
