@@ -66,9 +66,7 @@ export function MapContent({
         attribution='&copy <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url={tileUrl}
       />
-
       <MapIndexLayer heatmapMode={heatmapMode} showPlannedRoute={!!plannedRouteStops} />
-
       {heatmapMode ? (
         <MapHeatmapLayer positions={positions} navigateMarkers={navigateMarkers} />
       ) : (
@@ -78,7 +76,6 @@ export function MapContent({
           navigateMarkers={navigateMarkers}
         />
       )}
-
       <MapPlannedRouteLayer plannedRouteStops={plannedRouteStops} />
     </>
   )
