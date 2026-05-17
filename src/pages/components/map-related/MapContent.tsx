@@ -70,7 +70,7 @@ export function MapContent({
       <MapIndexLayer heatmapMode={heatmapMode} showPlannedRoute={!!plannedRouteStops} />
 
       {heatmapMode ? (
-        <MapHeatmapLayer positions={positions} />
+        <MapHeatmapLayer positions={positions} navigateMarkers={navigateMarkers} />
       ) : (
         <MapRouteLayer
           positions={positions}
