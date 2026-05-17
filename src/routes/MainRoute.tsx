@@ -22,16 +22,16 @@ const cacheRtl = createCache({
 })
 
 export const MainRoute = () => {
-  const location = useLocation()
+  const { pathname, search: locationParams } = useLocation()
   const [, setSearchParams] = useSearchParams()
 
   useEffect(() => {
     try {
-      ReactGA.send({ hitType: 'pageview', page: location.pathname + location.search })
+      ReactGA.send({ hitType: 'pageview', page: pathname + locationParams })
     } catch (e) {
       console.error('Failed to initialize Google Analytics', e)
     }
-  }, [location])
+  }, [pathname, locationParams])
 
   // Capture URL params synchronously on mount, before they are stripped.
   // useMemo with [] deps runs once and the value is stable — available to lazy-loaded
@@ -76,12 +76,11 @@ export const MainRoute = () => {
 
   // Strip URL params from the address bar after they've seeded state.
   // Params are only generated on-demand (Share button); they should never linger.
-  const locationSearch = location.search
   useEffect(() => {
-    if (locationSearch) {
+    if (locationParams) {
       setSearchParams({}, { replace: true })
     }
-  }, [locationSearch, setSearchParams])
+  }, [locationParams, setSearchParams])
 
   const [extraShareParams, setExtraShareParams] = useState<Record<string, string>>({})
 
