@@ -1,16 +1,14 @@
+import type { Layer } from 'leaflet'
 import { useCallback, useMemo, useRef } from 'react'
-import { CircleMarker, Polyline, Popup, useMap } from 'react-leaflet'
+import { CircleMarker, Polyline, Popup } from 'react-leaflet'
 import { busIconPath } from '../../utils/BusIcon'
 import type { Point } from '../map-types'
 import MapFooterButtons from '../MapFooterButtons/MapFooterButtons'
 import { BusToolTip } from './BusToolTip'
 
-type PopupLayerRef = {
-  openPopup: () => void
-}
-
 interface MapHeatmapLayerProps {
   positions: Point[]
+  navigateMarkers: (id: number, marker: Layer) => void
 }
 
 function getRidePolylineKey(position: Point, fallbackIndex: number) {
@@ -51,9 +49,8 @@ function groupRidePolylines(positions: Point[]) {
   })
 }
 
-export function MapHeatmapLayer({ positions }: MapHeatmapLayerProps) {
-  const markerRef = useRef<{ [key: number]: PopupLayerRef | null }>({})
-  const map = useMap()
+export function MapHeatmapLayer({ positions, navigateMarkers }: MapHeatmapLayerProps) {
+  const markerRef = useRef<{ [key: number]: Layer | null }>({})
 
   const ridePolylines = useMemo(() => groupRidePolylines(positions), [positions])
   const markerIdsByPositionId = useMemo(
@@ -66,17 +63,11 @@ export function MapHeatmapLayer({ positions }: MapHeatmapLayerProps) {
     [ridePolylines],
   )
 
-  const navigateMarkers = useCallback(
-    (positionId: number) => {
-      const pos = positions[positionId]
-      if (!map || !pos?.loc) return
-      const marker = markerRef.current[positionId]
-      if (marker) {
-        map.flyTo(pos.loc, map.getZoom())
-        marker.openPopup()
-      }
+  const navigateToMarker = useCallback(
+    (id: number) => {
+      if (markerRef.current[id]) navigateMarkers(id, markerRef.current[id])
     },
-    [map, positions],
+    [navigateMarkers],
   )
 
   return (
@@ -111,7 +102,7 @@ export function MapHeatmapLayer({ positions }: MapHeatmapLayerProps) {
               <MapFooterButtons
                 currentMarkerId={i}
                 markerIds={markerIdsByPositionId.get(i) || []}
-                navigateMarkers={navigateMarkers}
+                navigateToMarker={navigateToMarker}
               />
             </BusToolTip>
           </Popup>

@@ -1,5 +1,6 @@
+import type { Layer } from 'leaflet'
 import { useCallback, useMemo, useRef } from 'react'
-import { Marker, Polyline, Popup, useMap } from 'react-leaflet'
+import { Marker, Polyline, Popup } from 'react-leaflet'
 import { useAgencyList } from 'src/hooks/useAgencyList'
 import { busIcon, busIconPath } from '../../utils/BusIcon'
 import type { Point } from '../map-types'
@@ -7,36 +8,30 @@ import { actualRouteLineColor, actualRouteStopMarker } from '../MapContent'
 import MapFooterButtons from '../MapFooterButtons/MapFooterButtons'
 import { BusToolTip } from './BusToolTip'
 
-type PopupLayerRef = {
-  openPopup: () => void
-}
-
 interface MapRouteLayerProps {
   positions: Point[]
   showNavigationButtons?: boolean
+  navigateMarkers: (id: number, marker: Layer) => void
 }
 
-export function MapRouteLayer({ positions, showNavigationButtons }: MapRouteLayerProps) {
-  const markerRef = useRef<{ [key: number]: PopupLayerRef | null }>({})
+export function MapRouteLayer({
+  positions,
+  showNavigationButtons,
+  navigateMarkers,
+}: MapRouteLayerProps) {
+  const markerRef = useRef<{ [key: number]: Layer | null }>({})
   const agencyList = useAgencyList()
-  const map = useMap()
 
   const markerIdsByPositionId = useMemo(() => {
     const markerIds = positions.map((_, index) => index)
     return new Map(markerIds.map((markerId) => [markerId, markerIds]))
   }, [positions])
 
-  const navigateMarkers = useCallback(
-    (positionId: number) => {
-      const pos = positions[positionId]
-      if (!map || !pos?.loc) return
-      const marker = markerRef.current[positionId]
-      if (marker) {
-        map.flyTo(pos.loc, map.getZoom())
-        marker.openPopup()
-      }
+  const navigateToMarker = useCallback(
+    (id: number) => {
+      if (markerRef.current[id]) navigateMarkers(id, markerRef.current[id])
     },
-    [map, positions],
+    [navigateMarkers],
   )
 
   return (
@@ -68,7 +63,7 @@ export function MapRouteLayer({ positions, showNavigationButtons }: MapRouteLaye
                   <MapFooterButtons
                     currentMarkerId={i}
                     markerIds={markerIdsByPositionId.get(i) || []}
-                    navigateMarkers={navigateMarkers}
+                    navigateToMarker={navigateToMarker}
                   />
                 )}
               </BusToolTip>

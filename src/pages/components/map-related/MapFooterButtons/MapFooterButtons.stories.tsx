@@ -11,7 +11,7 @@ const meta = {
   args: {
     currentMarkerId: 3,
     markerIds: [1, 2, 3, 4, 5],
-    navigateMarkers: () => {},
+    navigateToMarker: () => {},
   },
   decorators: [
     (Story) => (

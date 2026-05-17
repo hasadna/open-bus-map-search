@@ -1,7 +1,7 @@
-import { Icon, IconOptions } from 'leaflet'
-import { useEffect, useState } from 'react'
+import { Icon, IconOptions, Layer } from 'leaflet'
+import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { TileLayer } from 'react-leaflet'
+import { TileLayer, useMap } from 'react-leaflet'
 import { MapProps } from './map-types'
 import { MapHeatmapLayer } from './MapLayers/MapHeatmapLayer'
 import { MapIndexLayer } from './MapLayers/MapIndexLayer'
@@ -16,12 +16,12 @@ const getIcon = (path: string, width: number = 10, height: number = 10): Icon<Ic
   })
 }
 
-export const actualRouteStopMarkerPath = '/marker-dot.png'
 export const actualRouteLineColor = 'orange'
+export const actualRouteStopMarkerPath = `${import.meta.env.BASE_URL}marker-dot.png`
 export const actualRouteStopMarker = getIcon(actualRouteStopMarkerPath, 20, 20)
 
 export const plannedRouteLineColor = 'black'
-export const plannedRouteStopMarkerPath = '/marker-bus-stop.png'
+export const plannedRouteStopMarkerPath = `${import.meta.env.BASE_URL}marker-bus-stop.png`
 export const plannedRouteStopMarker = getIcon(plannedRouteStopMarkerPath, 20, 25)
 
 export function MapContent({
@@ -31,6 +31,7 @@ export function MapContent({
   heatmapMode,
 }: MapProps) {
   const [tileUrl, setTileUrl] = useState('https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png')
+  const map = useMap()
   const { i18n } = useTranslation()
 
   useRecenterOnDataChange({ positions, plannedRouteStops })
@@ -49,6 +50,16 @@ export function MapContent({
     }
   }, [i18n])
 
+  const navigateMarkers = useCallback(
+    (positionId: number, marker: Layer) => {
+      const pos = positions[positionId]
+      if (!map || !pos?.loc) return
+      map.flyTo(pos.loc, map.getZoom())
+      marker.openPopup()
+    },
+    [map, positions],
+  )
+
   return (
     <>
       <TileLayer
@@ -61,7 +72,11 @@ export function MapContent({
       {heatmapMode ? (
         <MapHeatmapLayer positions={positions} />
       ) : (
-        <MapRouteLayer positions={positions} showNavigationButtons={showNavigationButtons} />
+        <MapRouteLayer
+          positions={positions}
+          showNavigationButtons={showNavigationButtons}
+          navigateMarkers={navigateMarkers}
+        />
       )}
 
       {plannedRouteStops?.length ? (
