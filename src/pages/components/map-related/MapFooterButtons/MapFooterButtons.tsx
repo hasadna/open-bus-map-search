@@ -1,32 +1,32 @@
 import { LeftOutlined, RightOutlined } from '@ant-design/icons'
-import type { Point } from '../map-types'
 import './MapFooterButtons.scss'
 
 type TMapFooterButtons = {
-  index: number
-  positions: Point[]
-  navigateMarkers: (id: number) => void
+  currentMarkerId: number
+  markerIds: number[]
+  navigateToMarker: (id: number) => void
 }
 
-function MapFooterButtons({ index, positions, navigateMarkers }: TMapFooterButtons) {
-  const rightStep = index + 1
-  const leftStep = index - 1
-
-  const checkIfValidStep = (i: number) => {
-    return Boolean(positions.at(i))
-  }
+function MapFooterButtons({
+  currentMarkerId,
+  markerIds,
+  navigateToMarker: navigateMarkers,
+}: TMapFooterButtons) {
+  const currentIndex = markerIds.indexOf(currentMarkerId)
+  const rightStep = markerIds[currentIndex + 1]
+  const leftStep = markerIds[currentIndex - 1]
+  const leftEnable = leftStep !== undefined
+  const rightEnable = rightStep !== undefined
 
   return (
-    <div className="map-footer-buttons">
+    <div className="map-footer-buttons" dir="rtl">
       <RightOutlined
-        title={'right-chevron'}
-        className={`${checkIfValidStep(rightStep) ? '' : 'disabled'}`}
-        onClick={() => navigateMarkers(rightStep)}
+        className={`${rightEnable ? '' : 'disabled'}`}
+        onClick={() => rightEnable && navigateMarkers(rightStep)}
       />
       <LeftOutlined
-        title={'left-chevron'}
-        className={`${checkIfValidStep(leftStep) ? '' : 'disabled'}`}
-        onClick={() => navigateMarkers(leftStep)}
+        className={`${leftEnable ? '' : 'disabled'}`}
+        onClick={() => leftEnable && navigateMarkers(leftStep)}
       />
     </div>
   )

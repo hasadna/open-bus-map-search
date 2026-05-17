@@ -149,7 +149,7 @@ export async function getAllRoutesList(operatorId: string, date: Date, signal?: 
       dateFrom: date,
       dateTo: date,
       orderBy: 'route_long_name asc',
-      limit: -1,
+      limit: 15000,
     },
     { signal },
   )
