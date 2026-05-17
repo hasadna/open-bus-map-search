@@ -28,6 +28,15 @@ const Line = styled.div<{ totalHeight: number }>`
   background-color: ${NEUTRAL_COLOR};
 `
 
+const BoundaryTick = styled.div<{ top: number }>`
+  width: 12px;
+  height: 2px;
+  background-color: ${NEUTRAL_COLOR};
+  position: absolute;
+  top: ${({ top }) => top}px;
+  right: -5px;
+`
+
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -157,8 +166,8 @@ export const Timeline = ({
       <Container>
         <AxisArea>
           <Line totalHeight={totalHeight} />
-          <Point top={-POINT_SIZE} />
-          <Point top={2 * PADDING + totalHeight + POINT_SIZE} />
+          <BoundaryTick top={-1} />
+          <BoundaryTick top={totalHeight + PADDING * 3 - 1} />
 
           <ConnectorSvg>
             {items.map((item) => {
