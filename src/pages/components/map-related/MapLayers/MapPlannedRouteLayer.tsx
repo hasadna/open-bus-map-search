@@ -1,18 +1,12 @@
-import type { Icon } from 'leaflet'
 import { Marker, Polyline } from 'react-leaflet'
 import type { BusStop } from 'src/model/busStop'
+import { plannedRouteLineColor, plannedRouteStopMarker } from '../MapContent'
 
 interface MapPlannedRouteLayerProps {
-  plannedRouteLineColor: string
-  plannedRouteStopMarker: Icon
   plannedRouteStops: BusStop[]
 }
 
-export function MapPlannedRouteLayer({
-  plannedRouteLineColor,
-  plannedRouteStopMarker,
-  plannedRouteStops,
-}: MapPlannedRouteLayerProps) {
+export function MapPlannedRouteLayer({ plannedRouteStops }: MapPlannedRouteLayerProps) {
   return (
     <>
       <Polyline
