@@ -1,4 +1,4 @@
-import { Icon, IconOptions, Marker as LeafletMarker } from 'leaflet'
+import { Icon, IconOptions, Layer } from 'leaflet'
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { TileLayer, useMap } from 'react-leaflet'
@@ -45,13 +45,11 @@ export function MapContent({ positions, plannedRouteStops, showNavigationButtons
   }, [i18n])
 
   const navigateMarkers = useCallback(
-    (positionId: number, marker: LeafletMarker | null) => {
+    (positionId: number, marker: Layer) => {
       const pos = positions[positionId]
       if (!map || !pos?.loc) return
-      if (marker) {
-        map.flyTo(pos.loc, map.getZoom())
-        marker.openPopup()
-      }
+      map.flyTo(pos.loc, map.getZoom())
+      marker.openPopup()
     },
     [map, positions],
   )

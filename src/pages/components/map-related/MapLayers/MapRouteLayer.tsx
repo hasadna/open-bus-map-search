@@ -1,4 +1,4 @@
-import type { Marker as LeafletMarker } from 'leaflet'
+import type { Layer } from 'leaflet'
 import { useCallback, useMemo, useRef } from 'react'
 import { Marker, Polyline, Popup } from 'react-leaflet'
 import { useAgencyList } from 'src/hooks/useAgencyList'
@@ -11,7 +11,7 @@ import { BusToolTip } from './BusToolTip'
 interface MapRouteLayerProps {
   positions: Point[]
   showNavigationButtons?: boolean
-  navigateMarkers: (id: number, marker: LeafletMarker | null) => void
+  navigateMarkers: (id: number, marker: Layer) => void
 }
 
 export function MapRouteLayer({
@@ -19,7 +19,7 @@ export function MapRouteLayer({
   showNavigationButtons,
   navigateMarkers,
 }: MapRouteLayerProps) {
-  const markerRef = useRef<{ [key: number]: LeafletMarker | null }>({})
+  const markerRef = useRef<{ [key: number]: Layer | null }>({})
   const agencyList = useAgencyList()
 
   const markerIdsByPositionId = useMemo(() => {
@@ -29,7 +29,7 @@ export function MapRouteLayer({
 
   const navigateToMarker = useCallback(
     (id: number) => {
-      navigateMarkers(id, markerRef.current[id] ?? null)
+      if (markerRef.current[id]) navigateMarkers(id, markerRef.current[id])
     },
     [navigateMarkers],
   )
@@ -63,7 +63,7 @@ export function MapRouteLayer({
                   <MapFooterButtons
                     currentMarkerId={i}
                     markerIds={markerIdsByPositionId.get(i) || []}
-                    navigateMarkers={navigateToMarker}
+                    navigateToMarker={navigateToMarker}
                   />
                 )}
               </BusToolTip>

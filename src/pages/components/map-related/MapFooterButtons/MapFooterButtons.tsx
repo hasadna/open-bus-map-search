@@ -4,10 +4,14 @@ import './MapFooterButtons.scss'
 type TMapFooterButtons = {
   currentMarkerId: number
   markerIds: number[]
-  navigateMarkers: (id: number) => void
+  navigateToMarker: (id: number) => void
 }
 
-function MapFooterButtons({ currentMarkerId, markerIds, navigateMarkers }: TMapFooterButtons) {
+function MapFooterButtons({
+  currentMarkerId,
+  markerIds,
+  navigateToMarker: navigateMarkers,
+}: TMapFooterButtons) {
   const currentIndex = markerIds.indexOf(currentMarkerId)
   const rightStep = markerIds[currentIndex + 1]
   const leftStep = markerIds[currentIndex - 1]
