@@ -1,14 +1,11 @@
-import { t } from 'i18next'
-import { Icon, IconOptions, Marker as LeafletMarker } from 'leaflet'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { Icon, IconOptions } from 'leaflet'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Marker, Polyline, Popup, TileLayer, useMap } from 'react-leaflet'
-import { useAgencyList } from 'src/hooks/useAgencyList'
-import { busIcon, busIconPath } from '../utils/BusIcon'
+import { TileLayer } from 'react-leaflet'
 import { MapProps } from './map-types'
-import MapFooterButtons from './MapFooterButtons/MapFooterButtons'
-import { MapIndex } from './MapIndex'
-import { BusToolTip } from './MapLayers/BusToolTip'
+import { MapIndexLayer } from './MapLayers/MapIndexLayer'
+import { MapPlannedRouteLayer } from './MapLayers/MapPlannedRouteLayer'
+import { MapRouteLayer } from './MapLayers/MapRouteLayer'
 import { useRecenterOnDataChange } from './useRecenterOnDataChange'
 
 // configs for planned & actual routes - line color & marker icon
@@ -26,10 +23,7 @@ const actualRouteStopMarker = getIcon(actualRouteStopMarkerPath, 20, 20)
 const plannedRouteStopMarker = getIcon(plannedRouteStopMarkerPath, 20, 25)
 
 export function MapContent({ positions, plannedRouteStops, showNavigationButtons }: MapProps) {
-  const markerRef = useRef<{ [key: number]: LeafletMarker | null }>({})
   const [tileUrl, setTileUrl] = useState('https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png')
-  const agencyList = useAgencyList()
-  const map = useMap()
   const { i18n } = useTranslation()
 
   useRecenterOnDataChange({ positions, plannedRouteStops })
@@ -46,20 +40,7 @@ export function MapContent({ positions, plannedRouteStops, showNavigationButtons
     return () => {
       i18n.off('languageChanged', handleLanguageChange)
     }
-  }, [])
-
-  const navigateMarkers = useCallback(
-    (positionId: number) => {
-      const pos = positions[positionId]
-      if (!map || !pos?.loc) return
-      const marker = markerRef.current[positionId]
-      if (marker) {
-        map.flyTo(pos.loc, map.getZoom())
-        marker.openPopup()
-      }
-    },
-    [map, positions],
-  )
+  }, [i18n])
 
   return (
     <>
@@ -67,73 +48,29 @@ export function MapContent({ positions, plannedRouteStops, showNavigationButtons
         attribution='&copy <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url={tileUrl}
       />
-      <div className="map-index">
-        <MapIndex
-          lineColor={actualRouteLineColor}
-          imgSrc={actualRouteStopMarkerPath}
-          title={t('actualRoute')}
-        />
-        {plannedRouteStops && (
-          <MapIndex
-            lineColor={plannedRouteLineColor}
-            imgSrc={plannedRouteStopMarkerPath}
-            title={t('plannedRoute')}
-          />
-        )}
-      </div>
-      {positions.map((pos, i) => {
-        const icon =
-          i === 0
-            ? busIcon({
-                operator_id: pos.operator?.toString() || 'default',
-                name: agencyList.find((agency) => agency.operatorRef === pos.operator)?.agencyName,
-              })
-            : actualRouteStopMarker
-        return (
-          <Marker
-            ref={(ref) => {
-              markerRef.current[i] = ref
-            }}
-            position={pos.loc}
-            icon={icon}
-            key={i}>
-            <Popup minWidth={300} maxWidth={700}>
-              <BusToolTip position={pos} icon={busIconPath(pos.operator!)}>
-                {showNavigationButtons && (
-                  <MapFooterButtons
-                    index={i}
-                    positions={positions}
-                    navigateMarkers={navigateMarkers}
-                  />
-                )}
-              </BusToolTip>
-            </Popup>
-          </Marker>
-        )
-      })}
 
-      {plannedRouteStops?.length && (
-        <Polyline
-          pathOptions={{ color: plannedRouteLineColor }}
-          positions={plannedRouteStops.map((stop) => [
-            stop.location.latitude,
-            stop.location.longitude,
-          ])}
+      <MapIndexLayer
+        actualRouteLineColor={actualRouteLineColor}
+        actualRouteStopMarkerPath={actualRouteStopMarkerPath}
+        plannedRouteLineColor={plannedRouteLineColor}
+        plannedRouteStopMarkerPath={plannedRouteStopMarkerPath}
+        showPlannedRoute={!!plannedRouteStops}
+      />
+
+      <MapRouteLayer
+        actualRouteLineColor={actualRouteLineColor}
+        actualRouteStopMarker={actualRouteStopMarker}
+        positions={positions}
+        showNavigationButtons={showNavigationButtons}
+      />
+
+      {plannedRouteStops?.length ? (
+        <MapPlannedRouteLayer
+          plannedRouteLineColor={plannedRouteLineColor}
+          plannedRouteStopMarker={plannedRouteStopMarker}
+          plannedRouteStops={plannedRouteStops}
         />
-      )}
-      {plannedRouteStops?.length &&
-        plannedRouteStops.map((stop) => {
-          const { latitude, longitude } = stop.location
-          return (
-            <Marker key={stop.key} position={[latitude, longitude]} icon={plannedRouteStopMarker} />
-          )
-        })}
-      {positions.length > 0 && (
-        <Polyline
-          pathOptions={{ color: actualRouteLineColor }}
-          positions={positions.map((position) => position.loc)}
-        />
-      )}
+      ) : null}
     </>
   )
 }
