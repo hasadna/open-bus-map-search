@@ -113,6 +113,7 @@ export function MapContent({ positions, plannedRouteStops, showNavigationButtons
       })}
 
       {plannedRouteStops && plannedRouteStops.length > 0 && (
+      {plannedRouteStops && plannedRouteStops.length > 0 && (
         <Polyline
           pathOptions={{ color: plannedRouteLineColor }}
           positions={plannedRouteStops.map((stop) => [
@@ -121,7 +122,8 @@ export function MapContent({ positions, plannedRouteStops, showNavigationButtons
           ])}
         />
       )}
-      {plannedRouteStops && plannedRouteStops.length > 0 &&
+      {plannedRouteStops &&
+        plannedRouteStops.length > 0 &&
         plannedRouteStops.map((stop) => {
           const { latitude, longitude } = stop.location
           return (
