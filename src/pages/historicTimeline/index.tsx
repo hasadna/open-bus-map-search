@@ -29,7 +29,7 @@ const TimelinePage = () => {
   const { operatorId, lineNumber, timestamp, routeKey } = search
   const [stopKey, setStopKey] = useState<string | undefined>()
 
-  const time = useMemo(() => dayjs(search.timestamp), [timestamp])
+  const time = useMemo(() => dayjs(search.timestamp).startOf('minute'), [timestamp])
 
   const routesQuery = useQuery({
     queryFn: async () => {
@@ -112,7 +112,7 @@ const TimelinePage = () => {
               const newTimestamp = ts
                 .hour(currentTime.hour())
                 .minute(currentTime.minute())
-                .second(currentTime.second())
+                .startOf('minute')
                 .valueOf()
               setSearch((current) => ({ ...current, timestamp: newTimestamp }))
             }}
@@ -128,7 +128,7 @@ const TimelinePage = () => {
               const newTimestamp = currentDate
                 .hour(ts.hour())
                 .minute(ts.minute())
-                .second(ts.second())
+                .startOf('minute')
                 .valueOf()
               setSearch((current) => ({ ...current, timestamp: newTimestamp }))
             }}
