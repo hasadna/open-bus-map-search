@@ -47,4 +47,3 @@ export const Point = styled.div<PointProps>`
     box-shadow 0.15s ease;
   z-index: ${({ $highlighted }) => ($highlighted ? 4 : 2)};
 `
-

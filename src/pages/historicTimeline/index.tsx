@@ -190,25 +190,25 @@ const TimelinePage = () => {
         {/* hits timeline */}
         {selectedRoute && selectedStop && (
           <Grid size={{ xs: 12 }}>
-          <Widget marginBottom>
-            {hitsQuery.isLoading && (
-              <Row>
-                <Label text={t('loading_hits')} />
-                <CircularProgress />
-              </Row>
-            )}
-            {!hitsQuery.isLoading &&
-              ((hitsQuery.data?.gtfsTime && hitsQuery.data.gtfsTime.length > 0) ||
-              (hitsQuery.data?.siriTime && hitsQuery.data.siriTime.length > 0) ? (
-                <StyledTimelineBoard
-                  target={dayjs(timestamp)}
-                  gtfsTimes={hitsQuery.data.gtfsTime}
-                  siriTimes={hitsQuery.data.siriTime}
-                />
-              ) : (
-                <NotFound>{t('hits_not_found')}</NotFound>
-              ))}
-          </Widget>
+            <Widget marginBottom>
+              {hitsQuery.isLoading && (
+                <Row>
+                  <Label text={t('loading_hits')} />
+                  <CircularProgress />
+                </Row>
+              )}
+              {!hitsQuery.isLoading &&
+                ((hitsQuery.data?.gtfsTime && hitsQuery.data.gtfsTime.length > 0) ||
+                (hitsQuery.data?.siriTime && hitsQuery.data.siriTime.length > 0) ? (
+                  <StyledTimelineBoard
+                    target={dayjs(timestamp)}
+                    gtfsTimes={hitsQuery.data.gtfsTime}
+                    siriTimes={hitsQuery.data.siriTime}
+                  />
+                ) : (
+                  <NotFound>{t('hits_not_found')}</NotFound>
+                ))}
+            </Widget>
           </Grid>
         )}
       </Grid>

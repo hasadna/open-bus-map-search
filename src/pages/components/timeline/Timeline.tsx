@@ -18,9 +18,9 @@ import {
 
 const LABEL_HEIGHT = 18
 const LABEL_GAP = 3
-const LABEL_OFFSET = 20    // gap between axis and label area
+const LABEL_OFFSET = 20 // gap between axis and label area
 const CONNECTOR_HORIZ = 8
-const DOT_CENTER_X = 2 + 3 - POINT_SIZE / 2  // = 1
+const DOT_CENTER_X = 2 + 3 - POINT_SIZE / 2 // = 1
 
 const Line = styled.div<{ totalHeight: number }>`
   height: ${({ totalHeight }) => totalHeight + PADDING * 3}px;
@@ -100,9 +100,19 @@ function resolveCollisions(ys: number[]): number[] {
   return result
 }
 
-export const TimelineTitle = ({ pointType, className }: { pointType: PointType; className?: string }) => {
+export const TimelineTitle = ({
+  pointType,
+  className,
+}: {
+  pointType: PointType
+  className?: string
+}) => {
   const { t } = useTranslation()
-  return <Title pointType={pointType} className={className}>{t(pointTypeToDescription[pointType]!)}</Title>
+  return (
+    <Title pointType={pointType} className={className}>
+      {t(pointTypeToDescription[pointType]!)}
+    </Title>
+  )
 }
 
 type TimelineProps = {
@@ -191,8 +201,7 @@ export const Timeline = ({
               key={`${item.i}_label`}
               $top={resolvedYs[item.i]}
               $highlighted={item.highlighted}
-              title={item.timeDisplay}
-            >
+              title={item.timeDisplay}>
               {item.timeDisplay}
             </Label>
           ))}

@@ -3,11 +3,10 @@ import {
   SiriVehicleLocationWithRelatedPydanticModel,
 } from '@hasadna/open-bus-api-client'
 import { useCallback, useState } from 'react'
-import { useTranslation } from 'react-i18next'
-import { useTheme } from 'src/layout/ThemeContext'
 import styled from 'styled-components'
 import { MAX_HITS_COUNT } from 'src/api/apiConfig'
 import dayjs from 'src/dayjs'
+import { useTheme } from 'src/layout/ThemeContext'
 import { Coordinates } from 'src/model/location'
 import { HorizontalLine } from 'src/pages/components/timeline/HorizontalLine'
 import { Timeline, TimelineTitle } from 'src/pages/components/timeline/Timeline'
@@ -59,7 +58,6 @@ type TimelineBoardProps = {
 }
 
 export const TimelineBoard = ({ className, target, gtfsTimes, siriTimes }: TimelineBoardProps) => {
-  const { t } = useTranslation()
   const { isDarkTheme } = useTheme()
   const [hoveredTimestamp, setHoveredTimestamp] = useState<string | undefined>(undefined)
   const gtfsDates = gtfsTimes.map((t) => t.arrivalTime!)
@@ -82,11 +80,13 @@ export const TimelineBoard = ({ className, target, gtfsTimes, siriTimes }: Timel
     [lowerBound, totalRange, totalHeight],
   )
 
-
   return (
     <CenteringWrapper className={className}>
-      <StyledContainer style={{ '--timeline-neutral': isDarkTheme ? '#8c8c8c' : '#bfbfbf' } as React.CSSProperties}>
-<TitleRow>
+      <StyledContainer
+        style={
+          { '--timeline-neutral': isDarkTheme ? '#8c8c8c' : '#bfbfbf' } as React.CSSProperties
+        }>
+        <TitleRow>
           <StyledTimelineTitle pointType={PointType.GTFS} />
           <StyledTimelineTitle pointType={PointType.SIRI} />
         </TitleRow>
