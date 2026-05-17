@@ -10,7 +10,13 @@ import {
   LineChartOutlined,
   RadarChartOutlined,
 } from '@ant-design/icons'
-import { DirectionsBusOutlined, MapOutlined, Psychology, RouteOutlined } from '@mui/icons-material'
+import {
+  DirectionsBusOutlined,
+  MapOutlined,
+  Psychology,
+  RouteOutlined,
+  TableChartOutlined,
+} from '@mui/icons-material'
 import { lazy } from 'react'
 import { createBrowserRouter, createRoutesFromElements, Navigate, Route } from 'react-router'
 import { getRouteById } from 'src/api/gtfsService'
@@ -22,6 +28,7 @@ const HomePage = lazy(() => import('../pages/homepage/HomePage'))
 const DashboardPage = lazy(() => import('../pages/dashboard/DashboardPage'))
 const TimelinePage = lazy(() => import('../pages/historicTimeline'))
 const GapsPage = lazy(() => import('../pages/gaps'))
+const LineHeatmapPage = lazy(() => import('../pages/lineHeatmap'))
 const GapsPatternsPage = lazy(() => import('../pages/gapsPatterns'))
 const TimeBasedMapPage = lazy(() => import('../pages/timeBasedMap'))
 const SingleLineMapPage = lazy(() => import('../pages/singleLineMap'))
@@ -56,6 +63,13 @@ export const PAGES = [
     searchParamsRequired: true,
     icon: <BarChartOutlined />,
     element: <GapsPage />,
+  },
+  {
+    label: 'line_heatmap_page_title',
+    path: '/line-heatmap',
+    searchParamsRequired: true,
+    icon: <TableChartOutlined />,
+    element: <LineHeatmapPage />,
   },
   {
     label: 'gaps_patterns_page_title',

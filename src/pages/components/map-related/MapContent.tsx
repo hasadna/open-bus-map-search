@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { TileLayer } from 'react-leaflet'
 import { MapProps } from './map-types'
+import { MapHeatmapLayer } from './MapLayers/MapHeatmapLayer'
 import { MapIndexLayer } from './MapLayers/MapIndexLayer'
 import { MapPlannedRouteLayer } from './MapLayers/MapPlannedRouteLayer'
 import { MapRouteLayer } from './MapLayers/MapRouteLayer'
@@ -22,7 +23,12 @@ const plannedRouteLineColor = 'black'
 const actualRouteStopMarker = getIcon(actualRouteStopMarkerPath, 20, 20)
 const plannedRouteStopMarker = getIcon(plannedRouteStopMarkerPath, 20, 25)
 
-export function MapContent({ positions, plannedRouteStops, showNavigationButtons }: MapProps) {
+export function MapContent({
+  positions,
+  plannedRouteStops,
+  showNavigationButtons,
+  heatmapMode,
+}: MapProps) {
   const [tileUrl, setTileUrl] = useState('https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png')
   const { i18n } = useTranslation()
 
@@ -52,17 +58,22 @@ export function MapContent({ positions, plannedRouteStops, showNavigationButtons
       <MapIndexLayer
         actualRouteLineColor={actualRouteLineColor}
         actualRouteStopMarkerPath={actualRouteStopMarkerPath}
+        heatmapMode={heatmapMode}
         plannedRouteLineColor={plannedRouteLineColor}
         plannedRouteStopMarkerPath={plannedRouteStopMarkerPath}
         showPlannedRoute={!!plannedRouteStops}
       />
 
-      <MapRouteLayer
-        actualRouteLineColor={actualRouteLineColor}
-        actualRouteStopMarker={actualRouteStopMarker}
-        positions={positions}
-        showNavigationButtons={showNavigationButtons}
-      />
+      {heatmapMode ? (
+        <MapHeatmapLayer positions={positions} />
+      ) : (
+        <MapRouteLayer
+          actualRouteLineColor={actualRouteLineColor}
+          actualRouteStopMarker={actualRouteStopMarker}
+          positions={positions}
+          showNavigationButtons={showNavigationButtons}
+        />
+      )}
 
       {plannedRouteStops?.length ? (
         <MapPlannedRouteLayer
