@@ -28,7 +28,7 @@ const Line = styled.div<{ totalHeight: number }>`
   background-color: ${NEUTRAL_COLOR};
 `
 
-const BoundaryTick = styled.div<{ top: number }>`
+const BoundaryTick = styled.div.withConfig({ componentId: 'sc-boundary-tick' })<{ top: number }>`
   width: 12px;
   height: 2px;
   background-color: ${NEUTRAL_COLOR};
