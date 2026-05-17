@@ -1,9 +1,9 @@
-import type { Icon } from 'leaflet'
 import { useCallback, useMemo, useRef } from 'react'
 import { Marker, Polyline, Popup, useMap } from 'react-leaflet'
 import { useAgencyList } from 'src/hooks/useAgencyList'
 import { busIcon, busIconPath } from '../../utils/BusIcon'
 import type { Point } from '../map-types'
+import { actualRouteLineColor, actualRouteStopMarker } from '../MapContent'
 import MapFooterButtons from '../MapFooterButtons/MapFooterButtons'
 import { BusToolTip } from './BusToolTip'
 
@@ -12,18 +12,11 @@ type PopupLayerRef = {
 }
 
 interface MapRouteLayerProps {
-  actualRouteLineColor: string
-  actualRouteStopMarker: Icon
   positions: Point[]
   showNavigationButtons?: boolean
 }
 
-export function MapRouteLayer({
-  actualRouteLineColor,
-  actualRouteStopMarker,
-  positions,
-  showNavigationButtons,
-}: MapRouteLayerProps) {
+export function MapRouteLayer({ positions, showNavigationButtons }: MapRouteLayerProps) {
   const markerRef = useRef<{ [key: number]: PopupLayerRef | null }>({})
   const agencyList = useAgencyList()
   const map = useMap()
@@ -48,6 +41,11 @@ export function MapRouteLayer({
 
   return (
     <>
+      <Polyline
+        pathOptions={{ color: actualRouteLineColor }}
+        positions={positions.map((position) => position.loc)}
+      />
+
       {positions.map((pos, i) => {
         const icon =
           i === 0
@@ -78,12 +76,6 @@ export function MapRouteLayer({
           </Marker>
         )
       })}
-      {positions.length > 0 && (
-        <Polyline
-          pathOptions={{ color: actualRouteLineColor }}
-          positions={positions.map((position) => position.loc)}
-        />
-      )}
     </>
   )
 }

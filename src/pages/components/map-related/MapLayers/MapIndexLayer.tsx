@@ -1,23 +1,18 @@
 import { t } from 'i18next'
+import {
+  actualRouteLineColor,
+  actualRouteStopMarkerPath,
+  plannedRouteLineColor,
+  plannedRouteStopMarkerPath,
+} from '../MapContent'
 import { MapIndex } from '../MapIndex'
 
 interface MapIndexLayerProps {
-  actualRouteLineColor: string
-  actualRouteStopMarkerPath: string
   heatmapMode?: boolean
-  plannedRouteLineColor: string
-  plannedRouteStopMarkerPath: string
   showPlannedRoute?: boolean
 }
 
-export function MapIndexLayer({
-  actualRouteLineColor,
-  actualRouteStopMarkerPath,
-  heatmapMode,
-  plannedRouteLineColor,
-  plannedRouteStopMarkerPath,
-  showPlannedRoute,
-}: MapIndexLayerProps) {
+export function MapIndexLayer({ heatmapMode, showPlannedRoute }: MapIndexLayerProps) {
   return (
     <div className="map-index">
       {!heatmapMode && (

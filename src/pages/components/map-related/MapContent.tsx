@@ -9,19 +9,20 @@ import { MapPlannedRouteLayer } from './MapLayers/MapPlannedRouteLayer'
 import { MapRouteLayer } from './MapLayers/MapRouteLayer'
 import { useRecenterOnDataChange } from './useRecenterOnDataChange'
 
-// configs for planned & actual routes - line color & marker icon
 const getIcon = (path: string, width: number = 10, height: number = 10): Icon<IconOptions> => {
   return new Icon<IconOptions>({
     iconUrl: path,
     iconSize: [width, height],
   })
 }
-const actualRouteStopMarkerPath = '/marker-dot.png'
-const plannedRouteStopMarkerPath = '/marker-bus-stop.png'
-const actualRouteLineColor = 'orange'
-const plannedRouteLineColor = 'black'
-const actualRouteStopMarker = getIcon(actualRouteStopMarkerPath, 20, 20)
-const plannedRouteStopMarker = getIcon(plannedRouteStopMarkerPath, 20, 25)
+
+export const actualRouteStopMarkerPath = '/marker-dot.png'
+export const actualRouteLineColor = 'orange'
+export const actualRouteStopMarker = getIcon(actualRouteStopMarkerPath, 20, 20)
+
+export const plannedRouteLineColor = 'black'
+export const plannedRouteStopMarkerPath = '/marker-bus-stop.png'
+export const plannedRouteStopMarker = getIcon(plannedRouteStopMarkerPath, 20, 25)
 
 export function MapContent({
   positions,
@@ -55,32 +56,16 @@ export function MapContent({
         url={tileUrl}
       />
 
-      <MapIndexLayer
-        actualRouteLineColor={actualRouteLineColor}
-        actualRouteStopMarkerPath={actualRouteStopMarkerPath}
-        heatmapMode={heatmapMode}
-        plannedRouteLineColor={plannedRouteLineColor}
-        plannedRouteStopMarkerPath={plannedRouteStopMarkerPath}
-        showPlannedRoute={!!plannedRouteStops}
-      />
+      <MapIndexLayer heatmapMode={heatmapMode} showPlannedRoute={!!plannedRouteStops} />
 
       {heatmapMode ? (
         <MapHeatmapLayer positions={positions} />
       ) : (
-        <MapRouteLayer
-          actualRouteLineColor={actualRouteLineColor}
-          actualRouteStopMarker={actualRouteStopMarker}
-          positions={positions}
-          showNavigationButtons={showNavigationButtons}
-        />
+        <MapRouteLayer positions={positions} showNavigationButtons={showNavigationButtons} />
       )}
 
       {plannedRouteStops?.length ? (
-        <MapPlannedRouteLayer
-          plannedRouteLineColor={plannedRouteLineColor}
-          plannedRouteStopMarker={plannedRouteStopMarker}
-          plannedRouteStops={plannedRouteStops}
-        />
+        <MapPlannedRouteLayer plannedRouteStops={plannedRouteStops} />
       ) : null}
     </>
   )

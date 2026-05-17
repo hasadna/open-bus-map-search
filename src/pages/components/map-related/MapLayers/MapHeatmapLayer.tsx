@@ -81,6 +81,16 @@ export function MapHeatmapLayer({ positions }: MapHeatmapLayerProps) {
 
   return (
     <>
+      {ridePolylines
+        .filter((ride) => ride.positions.length > 1)
+        .map((ride) => (
+          <Polyline
+            key={ride.key}
+            pathOptions={{ color: 'darkRed', opacity: 0.33 }}
+            positions={ride.positions.map((position) => position.loc)}
+          />
+        ))}
+
       {positions.map((pos, i) => (
         <CircleMarker
           ref={(ref) => {
@@ -107,15 +117,6 @@ export function MapHeatmapLayer({ positions }: MapHeatmapLayerProps) {
           </Popup>
         </CircleMarker>
       ))}
-      {ridePolylines
-        .filter((ride) => ride.positions.length > 1)
-        .map((ride) => (
-          <Polyline
-            key={ride.key}
-            pathOptions={{ color: 'darkRed', opacity: 0.33 }}
-            positions={ride.positions.map((position) => position.loc)}
-          />
-        ))}
     </>
   )
 }
