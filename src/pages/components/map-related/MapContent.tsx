@@ -79,9 +79,7 @@ export function MapContent({
         />
       )}
 
-      {plannedRouteStops?.length ? (
-        <MapPlannedRouteLayer plannedRouteStops={plannedRouteStops} />
-      ) : null}
+      <MapPlannedRouteLayer plannedRouteStops={plannedRouteStops} />
     </>
   )
 }

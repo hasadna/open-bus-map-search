@@ -5,11 +5,14 @@ import { NEUTRAL_COLOR } from 'src/pages/components/timeline/TimelinePoint'
 
 type HorizontalLineProps = {
   top: number
+  externalVisible?: boolean
+  onHoverChange?: (entering: boolean) => void
 }
 
 const LineStyle = css<HorizontalLineProps>`
   position: absolute;
-  width: 200%;
+  left: 0;
+  width: 100%;
   user-select: none;
 `
 
@@ -24,19 +27,24 @@ const StyledLine = styled.div<HorizontalLineProps & { visible: boolean }>`
 const HoverTarget = styled.div<HorizontalLineProps>`
   ${LineStyle};
   top: ${({ top }) => top - 1}px;
-  height: 12px;
+  height: 3px;
   background-color: red;
   opacity: 0;
-  z-index: 1;
+  z-index: 5;
 `
 
-export const HorizontalLine = ({ top }: HorizontalLineProps) => {
+export const HorizontalLine = ({ top, externalVisible, onHoverChange }: HorizontalLineProps) => {
   const hoverRef = useRef<HTMLDivElement>(null!)
   const isHovering = useHover(hoverRef)
   return (
     <>
-      <StyledLine top={top} visible={isHovering} />
-      <HoverTarget ref={hoverRef} top={top} />
+      <StyledLine top={top} visible={isHovering || !!externalVisible} />
+      <HoverTarget
+        ref={hoverRef}
+        top={top}
+        onMouseEnter={() => onHoverChange?.(true)}
+        onMouseLeave={() => onHoverChange?.(false)}
+      />
     </>
   )
 }

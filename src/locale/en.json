@@ -52,7 +52,6 @@
   "loading_stops": "Loading stops",
   "loading_gaps": "Loading missing trips",
   "timestamp_list": "A list of all stop times at the selected stop",
-  "timestamp_target": "⌚ Search time",
   "timestamp_gtfs": "🕛 Planned stop time",
   "timestamp_siri": "🚌 Actual stop time",
   "loading_hits": "Loading trip times",
