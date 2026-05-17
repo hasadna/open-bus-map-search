@@ -71,12 +71,11 @@ export function MapRouteLayer({ positions, showNavigationButtons }: MapRouteLaye
           </Marker>
         )
       })}
-      {positions.length > 0 && (
-        <Polyline
-          pathOptions={{ color: actualRouteLineColor }}
-          positions={positions.map((position) => position.loc)}
-        />
-      )}
+
+      <Polyline
+        pathOptions={{ color: actualRouteLineColor }}
+        positions={positions.map((position) => position.loc)}
+      />
     </>
   )
 }
