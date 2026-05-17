@@ -30,7 +30,7 @@ class TimelinePage extends BasePage {
   }
 
   public get timelineHourLabels() {
-    return this.page.getByText(/^\d{2}:\d{2}:\d{2}$/)
+    return this.page.getByText(/^\d{2}:\d{2}:\d{2}$/).filter({ visible: true })
   }
 
   public async WaitForLoadingCompletion() {
