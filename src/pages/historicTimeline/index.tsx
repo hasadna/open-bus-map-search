@@ -119,7 +119,7 @@ const TimelinePage = () => {
               const newTimestamp = ts
                 .hour(currentTime.hour())
                 .minute(currentTime.minute())
-                .second(0)
+                .startOf('minute')
                 .valueOf()
               setSearch((current) => ({ ...current, timestamp: newTimestamp }))
             }}
@@ -135,7 +135,7 @@ const TimelinePage = () => {
               const newTimestamp = currentDate
                 .hour(ts.hour())
                 .minute(ts.minute())
-                .second(0)
+                .startOf('minute')
                 .valueOf()
               setSearch((current) => ({ ...current, timestamp: newTimestamp }))
             }}
