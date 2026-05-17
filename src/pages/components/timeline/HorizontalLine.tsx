@@ -30,7 +30,7 @@ const HoverTarget = styled.div<HorizontalLineProps>`
   height: 12px;
   background-color: red;
   opacity: 0;
-  z-index: 1;
+  z-index: 5;
 `
 
 export const HorizontalLine = ({ top, externalVisible, onHoverChange }: HorizontalLineProps) => {
