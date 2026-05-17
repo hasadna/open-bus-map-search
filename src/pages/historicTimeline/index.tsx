@@ -189,6 +189,7 @@ const TimelinePage = () => {
         </Grid>
         {/* hits timeline */}
         {selectedRoute && selectedStop && (
+          <Grid size={{ xs: 12 }}>
           <Widget marginBottom>
             {hitsQuery.isLoading && (
               <Row>
@@ -208,6 +209,7 @@ const TimelinePage = () => {
                 <NotFound>{t('hits_not_found')}</NotFound>
               ))}
           </Widget>
+          </Grid>
         )}
       </Grid>
     </PageContainer>

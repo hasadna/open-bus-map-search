@@ -2,38 +2,54 @@ import {
   GtfsRideStopWithRelatedPydanticModel,
   SiriVehicleLocationWithRelatedPydanticModel,
 } from '@hasadna/open-bus-api-client'
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useTheme } from 'src/layout/ThemeContext'
 import styled from 'styled-components'
 import { MAX_HITS_COUNT } from 'src/api/apiConfig'
 import dayjs from 'src/dayjs'
 import { Coordinates } from 'src/model/location'
 import { HorizontalLine } from 'src/pages/components/timeline/HorizontalLine'
-import { Timeline } from 'src/pages/components/timeline/Timeline'
+import { Timeline, TimelineTitle } from 'src/pages/components/timeline/Timeline'
 import { PointType } from 'src/pages/components/timeline/TimelinePoint'
 
-const COLUMN_WIDTH = 140
 export const PADDING = 10
+const COLUMN_GAP = 32
 
 const getRange = (timestamps: Date[]) =>
   timestamps.length > 0 ? dayjs(timestamps[timestamps.length - 1]).diff(timestamps[0], 'second') : 0
 
 const minDate = (date1: Date, date2: Date) => (date1 <= date2 ? date1 : date2)
 
+const TitleRow = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: ${COLUMN_GAP}px;
+  margin-bottom: 16px;
+`
+
+const StyledTimelineTitle = styled(TimelineTitle)`
+  display: block;
+  text-align: center;
+`
+
 const Container = styled.div`
   position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: ${COLUMN_GAP}px;
+`
+const CenteringWrapper = styled.div`
   display: flex;
+  justify-content: center;
 `
+
 const StyledContainer = styled.div`
-  overflow-x: hidden;
+  display: flex;
   flex-direction: column;
-  margin-right: 8px;
+  width: 100%;
 `
-const StyledTimeline = styled(Timeline)`
-  min-width: ${COLUMN_WIDTH}px;
-  margin-left: 16px;
-  margin-right: 16px;
-`
+const StyledTimeline = styled(Timeline)``
 
 type TimelineBoardProps = {
   className?: string
@@ -44,6 +60,8 @@ type TimelineBoardProps = {
 
 export const TimelineBoard = ({ className, target, gtfsTimes, siriTimes }: TimelineBoardProps) => {
   const { t } = useTranslation()
+  const { isDarkTheme } = useTheme()
+  const [hoveredTimestamp, setHoveredTimestamp] = useState<string | undefined>(undefined)
   const gtfsDates = gtfsTimes.map((t) => t.arrivalTime!)
   const siriDates = siriTimes.map((t) => t.recordedAtTime!)
   const gtfsRange = getRange(gtfsDates)
@@ -63,28 +81,43 @@ export const TimelineBoard = ({ className, target, gtfsTimes, siriTimes }: Timel
     },
     [lowerBound, totalRange, totalHeight],
   )
+
+
   return (
-    <StyledContainer>
-      <h4>
-        {t('timestamp_target')} {target.format('DD/MM/YYYY HH:mm:ss')}
-      </h4>
-      <Container className={className}>
-        <StyledTimeline
-          timestamps={gtfsTimes}
-          totalHeight={totalHeight}
-          pointType={PointType.GTFS}
-          timestampToTop={timestampToTop}
-        />
-        <StyledTimeline
-          timestamps={siriTimes}
-          totalHeight={totalHeight}
-          pointType={PointType.SIRI}
-          timestampToTop={timestampToTop}
-        />
-        {Array.from(allTimestamps).map((timestamp, index) => (
-          <HorizontalLine key={index} top={timestampToTop(dayjs(timestamp))} />
-        ))}
-      </Container>
-    </StyledContainer>
+    <CenteringWrapper className={className}>
+      <StyledContainer style={{ '--timeline-neutral': isDarkTheme ? '#8c8c8c' : '#bfbfbf' } as React.CSSProperties}>
+<TitleRow>
+          <StyledTimelineTitle pointType={PointType.GTFS} />
+          <StyledTimelineTitle pointType={PointType.SIRI} />
+        </TitleRow>
+        <Container>
+          <StyledTimeline
+            timestamps={gtfsTimes}
+            totalHeight={totalHeight}
+            pointType={PointType.GTFS}
+            timestampToTop={timestampToTop}
+            hoveredTimestamp={hoveredTimestamp}
+          />
+          <StyledTimeline
+            timestamps={siriTimes}
+            totalHeight={totalHeight}
+            pointType={PointType.SIRI}
+            timestampToTop={timestampToTop}
+            hoveredTimestamp={hoveredTimestamp}
+          />
+          {Array.from(allTimestamps).map((timestamp, index) => {
+            const tsKey = dayjs(timestamp).toISOString()
+            return (
+              <HorizontalLine
+                key={index}
+                top={timestampToTop(dayjs(timestamp))}
+                externalVisible={hoveredTimestamp === tsKey}
+                onHoverChange={(entering) => setHoveredTimestamp(entering ? tsKey : undefined)}
+              />
+            )
+          })}
+        </Container>
+      </StyledContainer>
+    </CenteringWrapper>
   )
 }
