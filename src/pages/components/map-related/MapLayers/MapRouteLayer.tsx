@@ -1,4 +1,5 @@
-import { useMemo, useRef } from 'react'
+import type { Marker as LeafletMarker } from 'leaflet'
+import { useCallback, useMemo, useRef } from 'react'
 import { Marker, Polyline, Popup } from 'react-leaflet'
 import { useAgencyList } from 'src/hooks/useAgencyList'
 import { busIcon, busIconPath } from '../../utils/BusIcon'
@@ -7,14 +8,10 @@ import { actualRouteLineColor, actualRouteStopMarker } from '../MapContent'
 import MapFooterButtons from '../MapFooterButtons/MapFooterButtons'
 import { BusToolTip } from './BusToolTip'
 
-type PopupLayerRef = {
-  openPopup: () => void
-}
-
 interface MapRouteLayerProps {
   positions: Point[]
   showNavigationButtons?: boolean
-  navigateMarkers: (id: number) => void
+  navigateMarkers: (id: number, marker: LeafletMarker | null) => void
 }
 
 export function MapRouteLayer({
@@ -22,13 +19,20 @@ export function MapRouteLayer({
   showNavigationButtons,
   navigateMarkers,
 }: MapRouteLayerProps) {
-  const markerRef = useRef<{ [key: number]: PopupLayerRef | null }>({})
+  const markerRef = useRef<{ [key: number]: LeafletMarker | null }>({})
   const agencyList = useAgencyList()
 
   const markerIdsByPositionId = useMemo(() => {
     const markerIds = positions.map((_, index) => index)
     return new Map(markerIds.map((markerId) => [markerId, markerIds]))
   }, [positions])
+
+  const navigateToMarker = useCallback(
+    (id: number) => {
+      navigateMarkers(id, markerRef.current[id] ?? null)
+    },
+    [navigateMarkers],
+  )
 
   return (
     <>
@@ -59,7 +63,7 @@ export function MapRouteLayer({
                   <MapFooterButtons
                     currentMarkerId={i}
                     markerIds={markerIdsByPositionId.get(i) || []}
-                    navigateMarkers={navigateMarkers}
+                    navigateMarkers={navigateToMarker}
                   />
                 )}
               </BusToolTip>

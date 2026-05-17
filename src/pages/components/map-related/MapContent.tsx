@@ -1,5 +1,5 @@
 import { Icon, IconOptions, Marker as LeafletMarker } from 'leaflet'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { TileLayer, useMap } from 'react-leaflet'
 import { MapProps } from './map-types'
@@ -24,7 +24,6 @@ export const plannedRouteStopMarkerPath = `${import.meta.env.BASE_URL}marker-bus
 export const plannedRouteStopMarker = getIcon(plannedRouteStopMarkerPath, 20, 25)
 
 export function MapContent({ positions, plannedRouteStops, showNavigationButtons }: MapProps) {
-  const markerRef = useRef<{ [key: number]: LeafletMarker | null }>({})
   const [tileUrl, setTileUrl] = useState('https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png')
   const map = useMap()
   const { i18n } = useTranslation()
@@ -46,10 +45,9 @@ export function MapContent({ positions, plannedRouteStops, showNavigationButtons
   }, [i18n])
 
   const navigateMarkers = useCallback(
-    (positionId: number) => {
+    (positionId: number, marker: LeafletMarker | null) => {
       const pos = positions[positionId]
       if (!map || !pos?.loc) return
-      const marker = markerRef.current[positionId]
       if (marker) {
         map.flyTo(pos.loc, map.getZoom())
         marker.openPopup()
