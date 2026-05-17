@@ -18,7 +18,7 @@ const cacheRtl = createCache({
 })
 
 export const MainRoute = () => {
-  const location = useLocation()
+  const { pathname, search: locationParams } = useLocation()
   const [searchParams, setSearchParams] = useSearchParams()
   const operatorId = searchParams.get('operatorId')
   const lineNumber = searchParams.get('lineNumber')
@@ -29,11 +29,11 @@ export const MainRoute = () => {
 
   useEffect(() => {
     try {
-      ReactGA.send({ hitType: 'pageview', page: location.pathname + location.search })
+      ReactGA.send({ hitType: 'pageview', page: pathname + locationParams })
     } catch (e) {
       console.error('Failed to initialize Google Analytics', e)
     }
-  }, [location])
+  }, [pathname, locationParams])
 
   const [search, setSearch] = useSessionStorage<PageSearchState>('search', {
     timestamp: +timestamp! || dayjs().valueOf(),
@@ -75,7 +75,7 @@ export const MainRoute = () => {
     search.routeKey,
     search.startTime,
     search.timestamp,
-    location.pathname,
+    pathname,
     setSearchParams,
   ])
 
