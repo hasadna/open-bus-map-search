@@ -103,16 +103,16 @@ const MainMenu = ({ collapsed = false }: MainMenuProps) => {
 
   const items = collapsed ? flatItems : groupedItems
 
-  const location = useLocation()
-  const [current, setCurrent] = useState(getPathWithoutLang(location.pathname) || '/')
+  const { pathname } = useLocation()
+  const [current, setCurrent] = useState(getPathWithoutLang(pathname) || '/')
 
   useEffect(() => {
-    const nextPath = getPathWithoutLang(location.pathname) || '/'
+    const nextPath = getPathWithoutLang(pathname) || '/'
 
     if (current !== nextPath) {
       setCurrent(nextPath)
     }
-  }, [location.pathname, current])
+  }, [pathname, current])
 
   const handleClick: MenuProps['onClick'] = ({ key }) => {
     setCurrent(key)

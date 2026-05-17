@@ -54,7 +54,7 @@ class TimelinePage extends BasePage {
 }
 
 export const test = base.extend<{ timelinePage: TimelinePage }>({
-  timelinePage: async ({ page }, use) => {
-    await use(new TimelinePage(page))
+  timelinePage: async ({ page }, handle) => {
+    await handle(new TimelinePage(page))
   },
 })
