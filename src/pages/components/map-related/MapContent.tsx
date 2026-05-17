@@ -16,11 +16,11 @@ const getIcon = (path: string, width: number = 10, height: number = 10): Icon<Ic
 }
 
 export const actualRouteLineColor = 'orange'
-export const actualRouteStopMarkerPath = `${import.meta.env.BASE_URL}('marker-dot.png')`
+export const actualRouteStopMarkerPath = `${import.meta.env.BASE_URL}marker-dot.png`
 export const actualRouteStopMarker = getIcon(actualRouteStopMarkerPath, 20, 20)
 
 export const plannedRouteLineColor = 'black'
-export const plannedRouteStopMarkerPath = `${import.meta.env.BASE_URL}('marker-bus-stop.png')`
+export const plannedRouteStopMarkerPath = `${import.meta.env.BASE_URL}marker-bus-stop.png`
 export const plannedRouteStopMarker = getIcon(plannedRouteStopMarkerPath, 20, 25)
 
 export function MapContent({ positions, plannedRouteStops, showNavigationButtons }: MapProps) {
