@@ -3,10 +3,10 @@ import type { BusStop } from 'src/model/busStop'
 import { plannedRouteLineColor, plannedRouteStopMarker } from '../MapContent'
 
 interface MapPlannedRouteLayerProps {
-  plannedRouteStops: BusStop[]
+  plannedRouteStops?: BusStop[]
 }
 
-export function MapPlannedRouteLayer({ plannedRouteStops }: MapPlannedRouteLayerProps) {
+export function MapPlannedRouteLayer({ plannedRouteStops = [] }: MapPlannedRouteLayerProps) {
   return (
     <>
       <Polyline

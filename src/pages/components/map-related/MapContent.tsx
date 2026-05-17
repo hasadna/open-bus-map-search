@@ -1,7 +1,7 @@
-import { Icon, IconOptions } from 'leaflet'
-import { useEffect, useState } from 'react'
+import { Icon, IconOptions, Marker as LeafletMarker } from 'leaflet'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { TileLayer } from 'react-leaflet'
+import { TileLayer, useMap } from 'react-leaflet'
 import { MapProps } from './map-types'
 import { MapIndexLayer } from './MapLayers/MapIndexLayer'
 import { MapPlannedRouteLayer } from './MapLayers/MapPlannedRouteLayer'
@@ -24,7 +24,9 @@ export const plannedRouteStopMarkerPath = `${import.meta.env.BASE_URL}marker-bus
 export const plannedRouteStopMarker = getIcon(plannedRouteStopMarkerPath, 20, 25)
 
 export function MapContent({ positions, plannedRouteStops, showNavigationButtons }: MapProps) {
+  const markerRef = useRef<{ [key: number]: LeafletMarker | null }>({})
   const [tileUrl, setTileUrl] = useState('https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png')
+  const map = useMap()
   const { i18n } = useTranslation()
 
   useRecenterOnDataChange({ positions, plannedRouteStops })
@@ -43,20 +45,32 @@ export function MapContent({ positions, plannedRouteStops, showNavigationButtons
     }
   }, [i18n])
 
+  const navigateMarkers = useCallback(
+    (positionId: number) => {
+      const pos = positions[positionId]
+      if (!map || !pos?.loc) return
+      const marker = markerRef.current[positionId]
+      if (marker) {
+        map.flyTo(pos.loc, map.getZoom())
+        marker.openPopup()
+      }
+    },
+    [map, positions],
+  )
+
   return (
     <>
       <TileLayer
         attribution='&copy <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url={tileUrl}
       />
-
       <MapIndexLayer showPlannedRoute={!!plannedRouteStops} />
-
-      <MapRouteLayer positions={positions} showNavigationButtons={showNavigationButtons} />
-
-      {plannedRouteStops?.length ? (
-        <MapPlannedRouteLayer plannedRouteStops={plannedRouteStops} />
-      ) : null}
+      <MapRouteLayer
+        positions={positions}
+        showNavigationButtons={showNavigationButtons}
+        navigateMarkers={navigateMarkers}
+      />
+      <MapPlannedRouteLayer plannedRouteStops={plannedRouteStops} />
     </>
   )
 }
