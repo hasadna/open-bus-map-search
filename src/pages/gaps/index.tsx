@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import dayjs, { toIsraelTimezone } from 'src/dayjs'
 import { INPUT_SIZE } from 'src/resources/sizes'
 import { Gap, getGapsAsync } from '../../api/gapsService'
-import { getRoutesAsync } from '../../api/gtfsService'
+import { getServiceDayRoutes } from '../../api/serviceDayRoutesService'
 import { SearchContext } from '../../model/pageState'
 import { DateSelector } from '../components/DateSelector'
 import { Label } from '../components/Label'
@@ -62,7 +62,7 @@ const GapsPage = () => {
 
     const controller = new AbortController()
 
-    getRoutesAsync(dayjs(timestamp), dayjs(timestamp), operatorId, lineNumber, controller.signal)
+    getServiceDayRoutes(dayjs(timestamp), operatorId, lineNumber, controller.signal)
       .then((fetchedRoutes) => {
         setSearch((current) =>
           search.lineNumber === lineNumber ? { ...current, routes: fetchedRoutes } : current,
