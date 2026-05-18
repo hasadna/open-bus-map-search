@@ -41,7 +41,10 @@ const loadedLocations = new Map<
  * it also caches the data, so if the same interval is requested again, it will not load it again.
  */
 class LocationObservable {
-  constructor(query: VehicleLocationQuery) {
+  #key: string
+
+  constructor(query: VehicleLocationQuery, key: string) {
+    this.#key = key
     void this.#loadData(query)
   }
 
@@ -65,6 +68,11 @@ class LocationObservable {
     } catch (error) {
       console.error('Failed to load vehicle locations:', error)
       this.loading = false
+      // Don't cache a failed load as a successful completion: evict this
+      // entry so the next request for the same range retries instead of
+      // replaying empty/partial data. Current observers are still released
+      // below so the UI doesn't hang waiting on this failed load.
+      loadedLocations.delete(this.#key)
       this.#notifyObservers({ finished: true })
     } finally {
       this.#observers = []
@@ -146,7 +154,10 @@ function getLocations(
 ) {
   const key = `${formatTime(from)}-${formatTime(to)}-${operatorRef}-${lineRef}-${vehicleRef}`
   if (!loadedLocations.has(key)) {
-    loadedLocations.set(key, new LocationObservable({ from, to, lineRef, vehicleRef, operatorRef }))
+    loadedLocations.set(
+      key,
+      new LocationObservable({ from, to, lineRef, vehicleRef, operatorRef }, key),
+    )
   }
   const observable = loadedLocations.get(key)!
   return observable.observe(onUpdate)

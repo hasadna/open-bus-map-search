@@ -172,6 +172,15 @@ const GapsPatternsPage = () => {
     } catch (err) {
       if ((err as Error)?.name !== 'AbortError') {
         console.error('Failed to load routes:', err)
+        // Clear stale routes from the previous line so a failed fetch
+        // doesn't leave the old line's routes showing as if they're valid.
+        // Guarded by the line check (mirrors the success path) so we don't
+        // clobber a newer in-flight search.
+        setSearch((current) =>
+          search.lineNumber === lineNumber
+            ? { ...current, routes: undefined, routeKey: undefined }
+            : current,
+        )
       }
     } finally {
       setRoutesIsLoading(false)
