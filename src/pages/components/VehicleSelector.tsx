@@ -6,6 +6,11 @@ import { useTranslation } from 'react-i18next'
 import ClearButton from './ClearButton'
 import './Selector.scss'
 
+export const normalizeVehicleNumber = (inputValue: string): number | undefined => {
+  const digitsOnly = inputValue.replace(/\D/g, '')
+  return digitsOnly ? Number(digitsOnly) : undefined
+}
+
 type VehicleSelectorProps = {
   disabled?: boolean
   vehicleNumber: number | undefined
@@ -40,8 +45,7 @@ const VehicleSelector = ({ vehicleNumber, disabled, setVehicleNumber }: VehicleS
       type="text"
       value={value && +value < 0 ? 0 : value}
       onChange={(e) => {
-        const inputValue = e.target.value
-        const numericValue = inputValue === '' ? undefined : parseInt(inputValue, 10) || 0
+        const numericValue = normalizeVehicleNumber(e.target.value)
         setValue(numericValue)
         debouncedSetVehicleNumber(numericValue || 0)
       }}

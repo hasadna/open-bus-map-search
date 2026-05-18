@@ -29,8 +29,13 @@ class TimelinePage extends BasePage {
     return this.page.locator('#operator-select')
   }
 
-  public get timelineGraph() {
-    return this.page.locator('h4')
+  public get timelineHourLabels() {
+    return this.page.getByText(/^\d{2}:\d{2}:\d{2}$/).filter({ visible: true })
+  }
+
+  public async WaitForLoadingCompletion() {
+    await this.page.locator('.MuiCircularProgress-svg').waitFor({ state: 'hidden' })
+    await this.page.waitForLoadState('networkidle')
   }
 
   public get operatorsList() {
@@ -54,7 +59,7 @@ class TimelinePage extends BasePage {
 }
 
 export const test = base.extend<{ timelinePage: TimelinePage }>({
-  timelinePage: async ({ page }, use) => {
-    await use(new TimelinePage(page))
+  timelinePage: async ({ page }, handle) => {
+    await handle(new TimelinePage(page))
   },
 })
