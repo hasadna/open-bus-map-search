@@ -65,6 +65,10 @@ const preview: Preview = {
   tags: ['autodocs'],
 }
 
+export const initialGlobals = {
+  locale: 'he',
+}
+
 export const globalTypes = {
   locale: {
     name: 'Locale',

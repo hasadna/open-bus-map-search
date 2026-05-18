@@ -6,6 +6,7 @@ import {
   TableCell,
   TableContainer,
   TableRow,
+  Tooltip,
 } from '@mui/material'
 import { Skeleton } from 'antd'
 import React, { memo, useMemo, useState } from 'react'
@@ -23,7 +24,7 @@ interface GapsTableProps {
   loading?: boolean
   initOnlyGapped?: boolean
   singleLineMapBaseHref: string
-  onStartTimeClick?: (startTime: string) => void
+  onStartTimeClick?: (startTime: string, timestamp: number) => void
 }
 
 const cellStyle = {
@@ -40,6 +41,8 @@ const colors = {
   ride_in_future: 'rgba(0, 0, 255, 0.15)',
 } as const
 
+const DATE_TIME_FORMAT = 'DD/MM/YYYY HH:mm'
+
 const formatStatus = (gap: Gap, gaps: Gap[] | undefined): keyof typeof colors => {
   const currentTime = dayjs()
   if (gap.plannedStartTime?.isAfter(currentTime) && !gap.actualStartTime) return 'ride_in_future'
@@ -55,6 +58,25 @@ const formatStatus = (gap: Gap, gaps: Gap[] | undefined): keyof typeof colors =>
   return hasTwinRide ? 'ride_duped' : 'ride_extra'
 }
 
+function buildTooltip(gap: Gap): React.ReactNode {
+  const planned = gap.plannedStartTime?.format(DATE_TIME_FORMAT)
+  const actual = gap.actualStartTime?.format(DATE_TIME_FORMAT)
+  const diffMin =
+    gap.actualStartTime && gap.plannedStartTime
+      ? gap.actualStartTime.diff(gap.plannedStartTime, 'minute')
+      : null
+  return (
+    <div style={{ fontSize: '0.85rem', lineHeight: 1.6 }}>
+      <div>planned: {planned ?? '—'}</div>
+      <div>actual: {actual ?? '—'}</div>
+      {diffMin !== null && diffMin !== 0 && (
+        <div>({diffMin > 0 ? `+${diffMin}` : diffMin} min)</div>
+      )}
+    </div>
+  )
+}
+const getGap = (gap: Gap) => gap.plannedStartTime || gap.actualStartTime
+
 const GapsTable: React.FC<GapsTableProps> = ({
   gaps,
   loading,
@@ -69,24 +91,16 @@ const GapsTable: React.FC<GapsTableProps> = ({
     if (!gaps) return []
     return gaps
       .filter((gap) =>
-        onlyGapped
-          ? !gap.actualStartTime && gap.plannedStartTime?.isBefore(dayjs())
-          : gap.plannedStartTime || gap.actualStartTime,
+        onlyGapped ? !gap.actualStartTime && gap.plannedStartTime?.isBefore(dayjs()) : getGap(gap),
       )
-      .sort(
-        (a, b) =>
-          (a?.actualStartTime || a?.plannedStartTime)?.diff(
-            b?.actualStartTime || b?.plannedStartTime,
-          ) ?? 0,
-      )
+      .sort((a, b) => getGap(a)?.diff(getGap(b)) ?? 0)
   }, [gaps, onlyGapped])
 
   const groupedGaps = useMemo(() => {
     const map: Record<string, { gap: Gap; status: keyof typeof colors }[]> = {}
     for (const gap of filteredGaps) {
-      const rawHour = gap.plannedStartTime?.get('hour') ?? gap.actualStartTime?.get('hour')
-      if (rawHour === undefined) continue
-      const hour = rawHour < 4 ? rawHour + 24 : rawHour
+      const hour = getGap(gap)?.startOf('hour').valueOf()
+      if (hour === undefined) continue
       const status = formatStatus(gap, filteredGaps)
       if (!map[hour]) map[hour] = []
       map[hour].push({ gap, status })
@@ -95,13 +109,15 @@ const GapsTable: React.FC<GapsTableProps> = ({
   }, [filteredGaps])
 
   const gapsPercentage = useMemo(() => {
-    const relevant = Object.values(groupedGaps)
-      .flat()
+    if (!gaps) return
+    const relevant = gaps
+      .filter(getGap)
+      .map((gap) => ({ gap, status: formatStatus(gap, gaps) }))
       .filter(({ status }) => status === 'ride_as_planned' || status === 'ride_missing')
     if (!relevant.length) return
     const missing = relevant.filter(({ status }) => status === 'ride_missing')
     return (missing.length / relevant.length) * 100
-  }, [groupedGaps])
+  }, [gaps])
 
   return (
     <Widget marginBottom sx={{ overflowY: 'none', maxWidth: '600px' }}>
@@ -135,25 +151,34 @@ const GapsTable: React.FC<GapsTableProps> = ({
                       const startTimeParam = formatStartTimeForQuery(time)
                       const cellHref = `${singleLineMapBaseHref}&startTime=${startTimeParam}`
                       return (
-                        <TableCell
-                          key={`${hour}-${j}-${time}`}
-                          sx={{
-                            ...cellStyle,
-                            background: colors[status],
-                            cursor: hasRide ? 'pointer' : 'default',
-                            '& a, & a:visited, & a:hover, & a:focus': {
-                              color: 'inherit',
-                              textDecoration: 'underline',
-                            },
-                          }}>
-                          {hasRide ? (
-                            <Link to={cellHref} onClick={() => onStartTimeClick?.(startTimeParam)}>
-                              {time}
-                            </Link>
-                          ) : (
-                            time
-                          )}
-                        </TableCell>
+                        <Tooltip key={`${hour}-${j}-${time}`} title={buildTooltip(gap)} arrow>
+                          <TableCell
+                            sx={{
+                              ...cellStyle,
+                              background: colors[status],
+                              cursor: hasRide ? 'pointer' : 'default',
+                              '& a, & a:visited, & a:hover, & a:focus': {
+                                color: 'inherit',
+                                textDecoration: 'underline',
+                              },
+                            }}>
+                            {hasRide ? (
+                              <Link
+                                to={cellHref}
+                                onClick={() =>
+                                  gap.actualStartTime &&
+                                  onStartTimeClick?.(
+                                    startTimeParam,
+                                    gap.actualStartTime.startOf('day').valueOf(),
+                                  )
+                                }>
+                                {time}
+                              </Link>
+                            ) : (
+                              time
+                            )}
+                          </TableCell>
+                        </Tooltip>
                       )
                     })}
                   </TableRow>
