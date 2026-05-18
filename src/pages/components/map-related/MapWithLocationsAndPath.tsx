@@ -13,7 +13,7 @@ const position: Point = {
 }
 
 export function MapWithLocationsAndPath({
-  positions,
+  positionGroups,
   plannedRouteStops,
   showNavigationButtons,
 }: MapProps) {
@@ -37,7 +37,7 @@ export function MapWithLocationsAndPath({
 
       <MapContainer center={position.loc} zoom={13} scrollWheelZoom={true}>
         <MapContent
-          positions={positions}
+          positionGroups={positionGroups}
           plannedRouteStops={plannedRouteStops}
           showNavigationButtons={showNavigationButtons}
         />

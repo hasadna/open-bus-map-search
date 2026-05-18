@@ -29,7 +29,7 @@ const SingleLineMapPage = () => {
   const { t } = useTranslation()
 
   const {
-    positions,
+    positionGroups,
     locationsAreLoading,
     options,
     plannedRouteStops,
@@ -152,7 +152,7 @@ const SingleLineMapPage = () => {
               </Grid>
             </>
           )}
-          {positions && (
+          {options.length > 0 && (
             <>
               {/* choose start time */}
               <Grid
@@ -180,7 +180,7 @@ const SingleLineMapPage = () => {
         </Grid>
       </Grid>
       <MapWithLocationsAndPath
-        positions={positions}
+        positionGroups={positionGroups}
         plannedRouteStops={plannedRouteStops}
         showNavigationButtons
       />

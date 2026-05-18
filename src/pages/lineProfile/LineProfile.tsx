@@ -48,7 +48,7 @@ const LineProfile = () => {
   }, [route?.id])
 
   const {
-    positions,
+    positionGroups,
     locationsAreLoading,
     options,
     plannedRouteStops,
@@ -121,7 +121,7 @@ const LineProfile = () => {
               </Tooltip>
             )}
           </Grid>
-          <LineProfileRide point={positions[0]?.point} />
+          <LineProfileRide point={positionGroups[0]?.positions[0]?.point} />
           <StopSelector stops={plannedRouteStops} stopKey={stopKey} setStopKey={handelStopChange} />
           <LineProfileStop
             stop={plannedRouteStops.find((s) => s.key === stopKey)}
@@ -129,7 +129,7 @@ const LineProfile = () => {
           />
         </Grid>
       </Grid>
-      <MapWithLocationsAndPath positions={positions} plannedRouteStops={plannedRouteStops} />
+      <MapWithLocationsAndPath positionGroups={positionGroups} plannedRouteStops={plannedRouteStops} />
     </PageContainer>
   )
 }
