@@ -195,7 +195,7 @@ const ComplaintModal = ({
       }
 
       if ('eventHour' in changedValues) {
-        form.validateFields(['wait'])
+        void form.validateFields(['wait'])
       }
 
       if (Object.keys(changedValues).some((key) => USER_KEYS.has(key))) {
@@ -390,7 +390,7 @@ const ComplaintModal = ({
                   cursor: 'pointer',
                 }}
                 onClick={() => {
-                  copy(submitMutation?.data?.referenceNumber || '')
+                  void copy(submitMutation?.data?.referenceNumber || '')
                 }}>
                 {t('complaints.complaint_number')}
                 <br />
