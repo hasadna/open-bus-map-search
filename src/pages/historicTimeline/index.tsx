@@ -2,7 +2,6 @@ import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
 import { useContext, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import styled from 'styled-components'
 import {
   getGtfsStopHitTimesAsync,
   getRoutesAsync,
@@ -17,7 +16,6 @@ import RouteSelector from 'src/pages/components/RouteSelector'
 import { Row } from 'src/pages/components/Row'
 import StopSelector from 'src/pages/components/StopSelector'
 import { TimelineBoard } from 'src/pages/components/timeline/TimelineBoard'
-import { MARGIN_MEDIUM } from 'src/resources/sizes'
 import Widget from 'src/shared/Widget'
 import { SearchContext } from '../../model/pageState'
 import { DateSelector } from '../components/DateSelector'
@@ -25,18 +23,13 @@ import { NotFound } from '../components/NotFound'
 import { PageContainer } from '../components/PageContainer'
 import { TimeSelector } from '../components/TimeSelector'
 
-const StyledTimelineBoard = styled(TimelineBoard)`
-  margin-top: ${MARGIN_MEDIUM * 3}px;
-  margin-bottom: ${MARGIN_MEDIUM * 3}px;
-`
-
 const TimelinePage = () => {
   const { t } = useTranslation()
   const { search, setSearch } = useContext(SearchContext)
   const { operatorId, lineNumber, timestamp, routeKey } = search
   const [stopKey, setStopKey] = useState<string | undefined>()
 
-  const time = useMemo(() => dayjs(search.timestamp), [timestamp])
+  const time = useMemo(() => dayjs(search.timestamp).startOf('minute'), [timestamp])
 
   const routesQuery = useQuery({
     queryFn: async () => {
@@ -119,7 +112,7 @@ const TimelinePage = () => {
               const newTimestamp = ts
                 .hour(currentTime.hour())
                 .minute(currentTime.minute())
-                .second(currentTime.second())
+                .startOf('minute')
                 .valueOf()
               setSearch((current) => ({ ...current, timestamp: newTimestamp }))
             }}
@@ -135,7 +128,7 @@ const TimelinePage = () => {
               const newTimestamp = currentDate
                 .hour(ts.hour())
                 .minute(ts.minute())
-                .second(ts.second())
+                .startOf('minute')
                 .valueOf()
               setSearch((current) => ({ ...current, timestamp: newTimestamp }))
             }}
@@ -189,25 +182,27 @@ const TimelinePage = () => {
         </Grid>
         {/* hits timeline */}
         {selectedRoute && selectedStop && (
-          <Widget marginBottom>
-            {hitsQuery.isLoading && (
-              <Row>
-                <Label text={t('loading_hits')} />
-                <CircularProgress />
-              </Row>
-            )}
-            {!hitsQuery.isLoading &&
-              ((hitsQuery.data?.gtfsTime && hitsQuery.data.gtfsTime.length > 0) ||
-              (hitsQuery.data?.siriTime && hitsQuery.data.siriTime.length > 0) ? (
-                <StyledTimelineBoard
-                  target={dayjs(timestamp)}
-                  gtfsTimes={hitsQuery.data.gtfsTime}
-                  siriTimes={hitsQuery.data.siriTime}
-                />
-              ) : (
-                <NotFound>{t('hits_not_found')}</NotFound>
-              ))}
-          </Widget>
+          <Grid size={{ xs: 12 }}>
+            <Widget marginBottom>
+              {hitsQuery.isLoading && (
+                <Row>
+                  <Label text={t('loading_hits')} />
+                  <CircularProgress />
+                </Row>
+              )}
+              {!hitsQuery.isLoading &&
+                ((hitsQuery.data?.gtfsTime && hitsQuery.data.gtfsTime.length > 0) ||
+                (hitsQuery.data?.siriTime && hitsQuery.data.siriTime.length > 0) ? (
+                  <TimelineBoard
+                    target={dayjs(timestamp)}
+                    gtfsTimes={hitsQuery.data.gtfsTime}
+                    siriTimes={hitsQuery.data.siriTime}
+                  />
+                ) : (
+                  <NotFound>{t('hits_not_found')}</NotFound>
+                ))}
+            </Widget>
+          </Grid>
         )}
       </Grid>
     </PageContainer>

@@ -9,9 +9,9 @@ const meta = {
     layout: 'centered',
   },
   args: {
-    positions: [],
-    index: 3,
-    navigateMarkers: () => {},
+    currentMarkerId: 3,
+    markerIds: [1, 2, 3, 4, 5],
+    navigateToMarker: () => {},
   },
   decorators: [
     (Story) => (

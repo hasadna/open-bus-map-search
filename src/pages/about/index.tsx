@@ -190,8 +190,8 @@ const Contributors = () => {
         </Trans>
       </p>
       <ol className="contributions">
-        {isLoading && <p>Loading...</p>}
-        {isError && <p>Error...</p>}
+        {isLoading && <p>Loading&hellip;</p>}
+        {isError && <p>Error&hellip;</p>}
         {contributors &&
           contributors.map((author) => (
             <li key={author.id}>

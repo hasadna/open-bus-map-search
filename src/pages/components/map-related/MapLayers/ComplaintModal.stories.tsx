@@ -1,3 +1,4 @@
+import type { GtfsRoutePydanticModel } from '@hasadna/open-bus-api-client'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { http, HttpResponse } from 'msw'
 import { useState } from 'react'
@@ -11,7 +12,7 @@ const meta = {
   parameters: {
     layout: 'centered',
     eyes: {
-      waitBeforeCapture: 'form', // Wait for the modal to open before capturing
+      waitBeforeCapture: 'button[type="submit"]',
     },
   },
   argTypes: {
@@ -78,7 +79,17 @@ const siriRidesHandler = http.get(
   },
 )
 
-const defaultArgs: BusToolTipProps = {
+const operatorsHandler = http.get(
+  (info) => new URL(info.request.url).pathname === '/gov/operators',
+  () => HttpResponse.json({ success: true, data: [{ dataText: 'אגד', dataCode: 3 }] }),
+)
+
+const citiesHandler = http.get(
+  (info) => new URL(info.request.url).pathname === '/gov/cities',
+  () => HttpResponse.json({ success: true, data: [{ dataText: 'גדרה', dataCode: 2550 }] }),
+)
+
+const defaultArgs: BusToolTipProps & { route: GtfsRoutePydanticModel } = {
   position: {
     loc: [31.799982, 34.786926],
     color: 22,
@@ -111,16 +122,30 @@ const defaultArgs: BusToolTipProps = {
     },
   },
   icon: '/bus-logos/3.svg',
+  route: {
+    id: 125758768,
+    date: new Date('2025-10-27'),
+    lineRef: 19785,
+    operatorRef: 3,
+    routeShortName: '2',
+    routeLongName: 'וייצמן/כצנלסון-גדרה<->שדרות מנחם בגין/כביש 7-גדרה-1#',
+    routeMkt: '81002',
+    routeDirection: '1',
+    routeAlternative: '#',
+    agencyName: 'אגד',
+    routeType: '3',
+  } as GtfsRoutePydanticModel,
 }
 
 export const Default: Story = {
   parameters: {
     msw: {
-      handlers: [siriRidesHandler],
+      handlers: [siriRidesHandler, operatorsHandler, citiesHandler],
     },
   },
   args: {
     position: defaultArgs.position,
+    route: defaultArgs.route,
     modalOpen: true,
   },
 }
