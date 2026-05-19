@@ -1,7 +1,6 @@
 import { EyesFixture } from '@applitools/eyes-playwright/fixture'
 import { defineConfig, devices } from '@playwright/test'
 import username from 'git-username'
-import { getBranch } from 'tests/utils'
 
 /**
  * See https://playwright.dev/docs/test-configuration.
