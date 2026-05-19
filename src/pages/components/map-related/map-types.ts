@@ -15,6 +15,7 @@ export interface Point {
 export interface PositionGroup {
   positions: Point[]
   color: string
+  label?: string
 }
 
 export interface Path {

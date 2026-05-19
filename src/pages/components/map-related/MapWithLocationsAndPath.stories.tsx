@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { http, HttpResponse } from 'msw'
-import { positionGroups, plannedRouteStops } from './mapStorybookData'
+import { plannedRouteStops, positionGroups } from './mapStorybookData'
 import { MapWithLocationsAndPath } from './MapWithLocationsAndPath'
 
 const meta = {

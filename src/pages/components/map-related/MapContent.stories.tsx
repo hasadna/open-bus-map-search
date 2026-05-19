@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { MapContainer } from 'react-leaflet'
 import { MapContent } from './MapContent'
-import { positionGroups, plannedRouteStops } from './mapStorybookData'
+import { plannedRouteStops, positionGroups } from './mapStorybookData'
 
 const meta = {
   component: MapContent,
