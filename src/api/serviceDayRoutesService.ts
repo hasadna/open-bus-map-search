@@ -76,6 +76,7 @@ export async function getServiceDayRoutes(
     ),
     // Late-night rides: tomorrow's routes, starting between midnight and 04:00 Israel time.
     // The ride response embeds all route fields, so no separate routes fetch is needed.
+    // Failure is non-fatal — we still return today's routes on error.
     GTFS_API.gtfsRidesListGet(
       {
         ...(operatorId && { gtfsRouteOperatorRefs: operatorId }),
@@ -87,7 +88,7 @@ export async function getServiceDayRoutes(
         limit: 15000,
       },
       { signal },
-    ),
+    ).catch(() => [] as GtfsRideWithRelatedPydanticModel[]),
   ])
 
   // Deduplicate by gtfsRouteId and extract route objects from the embedded ride data
