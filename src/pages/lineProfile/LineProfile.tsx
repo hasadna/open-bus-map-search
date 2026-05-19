@@ -37,14 +37,15 @@ const LineProfile = () => {
     if (!route?.id) {
       return
     }
+    const key = `${route.routeMkt}-${route.routeDirection}-${route.routeAlternative}`
     setSearch(() => ({
       timestamp: route.date.getTime(),
       operatorId: route.operatorRef.toString(),
       lineNumber: route.routeShortName,
       routes,
-      routeKey: `${route.routeMkt}-${route.routeDirection}`,
+      routeKey: key,
     }))
-    setRouteKey(`${route.routeMkt}-${route.routeDirection}`)
+    setRouteKey(key)
   }, [route?.id])
 
   const {
