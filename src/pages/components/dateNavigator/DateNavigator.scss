@@ -1,18 +1,49 @@
 .nav-btn {
   padding-left: 4px;
   padding-right: 4px;
-  font-size: 0.75rem !important;
-  white-space: nowrap;
+
+  // Smallest breakpoint: 5 equal slices are tight, so a smaller font keeps
+  // the longest single word (EN "Previous") inside its button on phones.
+  font-size: 0.7rem !important;
+
+  // Allow labels to wrap inside the button instead of overflowing the
+  // border into the neighboring button (e.g. EN "Previous week" /
+  // "Previous day" at >=900px). min-height lets wrapped rows grow; the
+  // ButtonGroup keeps all buttons the same height.
+  white-space: normal;
+
+  // Break only at spaces, never mid-word: the 0.7rem mobile font keeps every
+  // single word inside its button, so labels wrap as "Previous" / "week"
+  // rather than the ugly "Nex / t day".
+  overflow-wrap: normal;
+  word-break: keep-all;
+  line-height: 1.2;
   min-width: 0;
   flex: 1;
-  height: 44px;
+  min-height: 44px;
   text-transform: none;
   border-color: rgb(0 0 0 / 12%);
+  justify-content: center;
+
+  // Only the Today button has a startIcon. On phones the 1/5-width button
+  // is too tight to fit icon + gap + label with comfortable padding, so
+  // hide the (decorative, redundant-next-to-the-word) icon at the smallest
+  // breakpoint. It returns at >=600px where MUI's asymmetric default
+  // margins are replaced with a symmetric gap so it stays centered.
+  .MuiButton-startIcon {
+    display: none;
+  }
 
   @media (width >= 600px) {
     padding-left: 16px;
     padding-right: 16px;
     font-size: 0.9rem !important;
+
+    .MuiButton-startIcon {
+      display: inline-flex;
+      margin-left: 0;
+      margin-right: 6px;
+    }
   }
 
   @media (width >= 900px) {
