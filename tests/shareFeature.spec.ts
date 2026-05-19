@@ -33,12 +33,12 @@ test.describe('Share URL feature', () => {
   // -------------------------------------------------------------------------
 
   test('share button is visible in the header on homepage', async ({ page }) => {
-    await expect(page.locator('[aria-label="שתף עמוד זה"]')).toBeVisible()
+    await expect(page.locator('[aria-label="העתק קישור"]')).toBeVisible()
   })
 
   test('share button is visible after navigating to gaps page', async ({ page }) => {
     await visitPage(page, 'gaps_page_title')
-    await expect(page.locator('[aria-label="שתף עמוד זה"]')).toBeVisible()
+    await expect(page.locator('[aria-label="העתק קישור"]')).toBeVisible()
   })
 
   // -------------------------------------------------------------------------
@@ -71,7 +71,7 @@ test.describe('Share URL feature', () => {
     await page.waitForURL((url) => !url.search)
     await page.locator('.preloader').waitFor({ state: 'hidden' })
 
-    await page.locator('[aria-label="שתף עמוד זה"]').click()
+    await page.locator('[aria-label="העתק קישור"]').click()
 
     const clipUrl = await getClipboard(page)
     const params = new URL(clipUrl).searchParams
@@ -87,7 +87,7 @@ test.describe('Share URL feature', () => {
     await page.waitForURL((url) => !url.search)
     await page.locator('.preloader').waitFor({ state: 'hidden' })
 
-    await page.locator('[aria-label="שתף עמוד זה"]').click()
+    await page.locator('[aria-label="העתק קישור"]').click()
 
     const clipUrl = await getClipboard(page)
     const params = new URL(clipUrl).searchParams
@@ -101,7 +101,7 @@ test.describe('Share URL feature', () => {
   // -------------------------------------------------------------------------
 
   test('homepage share URL has no query params', async ({ page }) => {
-    await page.locator('[aria-label="שתף עמוד זה"]').click()
+    await page.locator('[aria-label="העתק קישור"]').click()
     const clipUrl = await getClipboard(page)
     expect(new URL(clipUrl).search).toBe('')
     expect(new URL(clipUrl).pathname).toBe('/')
@@ -109,7 +109,7 @@ test.describe('Share URL feature', () => {
 
   test('velocity heatmap share URL includes timestamp', async ({ page }) => {
     await visitPage(page, 'velocity_heatmap_page_title')
-    await page.locator('[aria-label="שתף עמוד זה"]').click()
+    await page.locator('[aria-label="העתק קישור"]').click()
     const clipUrl = await getClipboard(page)
     const params = new URL(clipUrl).searchParams
     expect(params.has('timestamp')).toBe(true)
@@ -118,7 +118,7 @@ test.describe('Share URL feature', () => {
 
   test('share URL pathname has no language prefix', async ({ page }) => {
     await visitPage(page, 'gaps_page_title')
-    await page.locator('[aria-label="שתף עמוד זה"]').click()
+    await page.locator('[aria-label="העתק קישור"]').click()
     const clipUrl = await getClipboard(page)
     const { pathname } = new URL(clipUrl)
     expect(pathname).toBe('/gaps')
@@ -131,7 +131,7 @@ test.describe('Share URL feature', () => {
   test('line profile not-found page share URL has no query params', async ({ page }) => {
     await page.goto('/profile/not-a-valid-id')
     await page.waitForLoadState('networkidle')
-    await page.locator('[aria-label="שתף עמוד זה"]').click()
+    await page.locator('[aria-label="העתק קישור"]').click()
     const clipUrl = await getClipboard(page)
     // Without startTime selected, extra params are empty — only path
     expect(new URL(clipUrl).pathname).toMatch(/\/profile\//)
