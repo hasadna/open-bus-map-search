@@ -253,7 +253,6 @@
       "type": "Route Type"
     },
     "ride": {
-      "journey ": "Journey ID",
       "journey": "Journey ID",
       "id": "Ride ID",
       "duration": "Ride Duration",
@@ -383,5 +382,6 @@
     "total": "Total Routes",
     "statistics": "Statistics"
   },
-  "share_link": "Share this page"
+  "share_link": "Copy link",
+  "link_copied": "Link copied!"
 }
