@@ -18,12 +18,6 @@ const VIS_MODES = [
   { key: 'cv', labelKey: 'velocity_vis_cv' },
 ] as const
 
-const VIS_MODE_LABELS: Record<string, string> = {
-  avg: 'Average Speed',
-  std: 'Standard Deviation',
-  cv: 'Coefficient of Variation',
-}
-
 const DEFAULT_ZOOM_LEVEL = 10
 
 const VelocityHeatmapPage: React.FC = () => {
@@ -49,7 +43,7 @@ const VelocityHeatmapPage: React.FC = () => {
   return (
     <PageContainer>
       <Typography variant="h4" gutterBottom>
-        {t('velocity_page_title', { defaultValue: 'Velocity Heatmap' })}
+        {t('velocity_heatmap_page_title')}
       </Typography>
 
       <Stack direction="column" spacing={2} sx={{ maxWidth: 600 }}>
@@ -64,7 +58,7 @@ const VelocityHeatmapPage: React.FC = () => {
               key={mode.key}
               value={mode.key}
               control={<Radio size="small" />}
-              label={t(mode.labelKey, { defaultValue: VIS_MODE_LABELS[mode.key] })}
+              label={t(mode.labelKey)}
             />
           ))}
         </RadioGroup>
