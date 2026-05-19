@@ -1,5 +1,6 @@
 import { PageSearchState } from 'src/model/pageState'
 import { buildShareUrl, PAGE_SHARE_PARAMS } from './shareUrl'
+import type { ShareableKey } from './shareUrl'
 
 const ORIGIN = 'https://open-bus.example.com'
 
@@ -185,6 +186,70 @@ describe('buildShareUrl — edge cases', () => {
     expect(Object.keys(p)).toEqual(
       expect.arrayContaining(['operatorId', 'lineNumber', 'routeKey', 'startDate', 'endDate']),
     )
+  })
+})
+
+// ---------------------------------------------------------------------------
+// buildShareUrl — per-page param contracts
+// ---------------------------------------------------------------------------
+
+// Each entry in PAGE_SHARE_PARAMS is a contract: the URL for that page must
+// contain exactly the declared keys (when values are present) and nothing more.
+
+describe('buildShareUrl — per-page param contracts', () => {
+  for (const [path, keys] of Object.entries(PAGE_SHARE_PARAMS) as [string, ShareableKey[]][]) {
+    describe(path, () => {
+      it('includes all declared params that have a value', () => {
+        const p = paramsOf(build(path, fullSearch))
+        for (const key of keys) {
+          if (fullSearch[key as keyof PageSearchState]) {
+            expect(p[key]).toBeDefined()
+          }
+        }
+      })
+
+      it('does not include params from other pages', () => {
+        const p = paramsOf(build(path, fullSearch))
+        for (const k of Object.keys(p)) {
+          expect(keys).toContain(k)
+        }
+      })
+    })
+  }
+})
+
+// ---------------------------------------------------------------------------
+// buildShareUrl — dynamic profile path
+// ---------------------------------------------------------------------------
+
+// /profile/:id is not in PAGE_SHARE_PARAMS. The route ID is already in the
+// path, so SearchContext params must not leak into the URL — only explicit
+// extra params (e.g. startTime) registered via ExtraShareParamsContext appear.
+
+describe('buildShareUrl — dynamic profile path', () => {
+  it('no SearchContext params leak into the URL', () => {
+    const p = paramsOf(build('/profile/12345', fullSearch))
+    expect(p.operatorId).toBeUndefined()
+    expect(p.lineNumber).toBeUndefined()
+    expect(p.timestamp).toBeUndefined()
+    expect(p.routeKey).toBeUndefined()
+    expect(p.startTime).toBeUndefined()
+  })
+
+  it('extra params (startTime) are included', () => {
+    const p = paramsOf(build('/profile/12345', fullSearch, { startTime: '08:30:00' }))
+    expect(p.startTime).toBe('08:30:00')
+  })
+
+  it('profile id is preserved in the pathname', () => {
+    const url = new URL(build('/profile/12345', fullSearch, { startTime: '08:30:00' }))
+    expect(url.pathname).toBe('/profile/12345')
+  })
+
+  it('different profile ids produce different URLs', () => {
+    const url1 = build('/profile/111', fullSearch, { startTime: '08:00:00' })
+    const url2 = build('/profile/222', fullSearch, { startTime: '08:00:00' })
+    expect(new URL(url1).pathname).not.toBe(new URL(url2).pathname)
   })
 })
 

@@ -1,7 +1,7 @@
 import { getPathWithoutLang } from 'src/locale/allTranslations'
 import { PageSearchState } from 'src/model/pageState'
 
-type ShareableKey = Exclude<keyof PageSearchState, 'routes'>
+export type ShareableKey = Exclude<keyof PageSearchState, 'routes'>
 
 // Only include params that are actually used on each page.
 // Pages absent from this map (homepage, about, donate, etc.) get no params.
