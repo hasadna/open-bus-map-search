@@ -32,7 +32,11 @@ export function MapWithLocationsAndPath({
         color="primary"
         className="expand-button"
         onClick={toggleExpanded}>
-        {isExpanded ? <CloseFullscreenRounded fontSize="large" /> : <OpenInFullRounded fontSize="large" />}
+        {isExpanded ? (
+          <CloseFullscreenRounded fontSize="large" />
+        ) : (
+          <OpenInFullRounded fontSize="large" />
+        )}
       </IconButton>
 
       <MapContainer center={position.loc} zoom={13} scrollWheelZoom={true}>
@@ -42,7 +46,6 @@ export function MapWithLocationsAndPath({
           showNavigationButtons={showNavigationButtons}
         />
       </MapContainer>
-
     </div>
   )
 }

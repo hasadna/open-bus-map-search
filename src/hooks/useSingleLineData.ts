@@ -6,7 +6,11 @@ import { toIsraelTimezone } from 'src/dayjs'
 import { BusRoute } from 'src/model/busRoute'
 import { BusStop } from 'src/model/busStop'
 import { SearchContext } from 'src/model/pageState'
-import { type PositionGroup, ROUTE_COLORS, toPoint } from 'src/pages/components/map-related/map-types'
+import {
+  type PositionGroup,
+  ROUTE_COLORS,
+  toPoint,
+} from 'src/pages/components/map-related/map-types'
 import { routeStartEnd, vehicleIDFormat } from 'src/pages/components/utils/rotueUtils'
 import {
   normalizeStartTimeToken,
@@ -133,7 +137,10 @@ export const useSingleLineData = (
     )
       .then((rides) => {
         // group by scheduledTime — multiple vehicles at the same time = double trip
-        const byTime = new Map<string, { id: number; vehicleRef: string; ride: (typeof rides)[0] }[]>()
+        const byTime = new Map<
+          string,
+          { id: number; vehicleRef: string; ride: (typeof rides)[0] }[]
+        >()
         for (const ride of rides) {
           if (!ride.scheduledStartTime || !ride.vehicleRef || !ride.id) continue
           const scheduledTime = toIsraelTimezone(ride.scheduledStartTime).format('HH:mm')
@@ -153,9 +160,12 @@ export const useSingleLineData = (
         // past the +3h start-time filter (e.g. the batch ran late, after 03:00 IST).
         byTime.forEach((group, key) => {
           if (group.length > 4) return
-          idMap.set(key, group.map((g) => g.id))
+          idMap.set(
+            key,
+            group.map((g) => g.id),
+          )
           group.forEach((g) => vehMap.set(g.id, g.vehicleRef))
-          const scheduledTime = toIsraelTimezone(group[0].ride.scheduledStartTime!).format('HH:mm')
+          const scheduledTime = toIsraelTimezone(group[0].ride.scheduledStartTime).format('HH:mm')
           const routeLongName = group[0].ride.gtfsRouteRouteLongName
           const [start, end] = routeLongName ? routeStartEnd(routeLongName) : []
           const routePart = routeLongName

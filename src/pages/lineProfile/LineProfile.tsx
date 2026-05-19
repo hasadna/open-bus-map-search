@@ -140,7 +140,10 @@ const LineProfile = () => {
           />
         </Grid>
       </Grid>
-      <MapWithLocationsAndPath positionGroups={positionGroups} plannedRouteStops={plannedRouteStops} />
+      <MapWithLocationsAndPath
+        positionGroups={positionGroups}
+        plannedRouteStops={plannedRouteStops}
+      />
     </PageContainer>
   )
 }

@@ -76,7 +76,13 @@ const SingleLineMapPage = () => {
       value === 'routes'
         ? { ...current, vehicleNumber: undefined, startTime: undefined }
         : value === 'vehicle'
-          ? { ...current, lineNumber: undefined, routeKey: undefined, routes: undefined, startTime: undefined }
+          ? {
+              ...current,
+              lineNumber: undefined,
+              routeKey: undefined,
+              routes: undefined,
+              startTime: undefined,
+            }
           : current,
     )
   }
