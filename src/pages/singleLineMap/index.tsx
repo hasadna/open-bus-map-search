@@ -36,6 +36,7 @@ const SingleLineMapPage = () => {
     startTime,
     routes,
     routeKey,
+    error,
     setStartTime,
     setRouteKey,
   } = useSingleLineData(operatorId, lineNumber, vehicleNumber)
@@ -73,9 +74,9 @@ const SingleLineMapPage = () => {
     setType(value)
     setSearch((current) =>
       value === 'routes'
-        ? { ...current, vehicleNumber: undefined }
+        ? { ...current, vehicleNumber: undefined, startTime: undefined }
         : value === 'vehicle'
-          ? { ...current, lineNumber: undefined, routeKey: undefined, routes: undefined }
+          ? { ...current, lineNumber: undefined, routeKey: undefined, routes: undefined, startTime: undefined }
           : current,
     )
   }
@@ -128,7 +129,9 @@ const SingleLineMapPage = () => {
               </Grid>
               <Grid size={{ sm: 4, xs: 12 }}>
                 {/* choose route */}
-                {routes?.length === 0 ? (
+                {error ? (
+                  <NotFound>{error}</NotFound>
+                ) : routes?.length === 0 ? (
                   <NotFound>{t('line_not_found')}</NotFound>
                 ) : (
                   <RouteSelector
@@ -152,31 +155,27 @@ const SingleLineMapPage = () => {
               </Grid>
             </>
           )}
-          {options.length > 0 && (
-            <>
-              {/* choose start time */}
-              <Grid
-                size={{ sm: type === 'routes' ? 4 : 8, xs: 12 }}
-                container
-                alignItems="center"
-                display="flex"
-                gap={2}
-                flexWrap="nowrap"
-                justifyContent="space-between">
-                <FilterPositionsByStartTimeSelector
-                  options={options}
-                  disabled={!routeKey && !vehicleNumber}
-                  startTime={startTime}
-                  setStartTime={setStartTime}
-                />
-                {locationsAreLoading && (
-                  <Tooltip title={t('loading_times_tooltip_content')}>
-                    <CircularProgress />
-                  </Tooltip>
-                )}
-              </Grid>
-            </>
-          )}
+          {/* choose start time */}
+          <Grid
+            size={{ sm: type === 'routes' ? 4 : 8, xs: 12 }}
+            container
+            alignItems="center"
+            display="flex"
+            gap={2}
+            flexWrap="nowrap"
+            justifyContent="space-between">
+            <FilterPositionsByStartTimeSelector
+              options={options}
+              disabled={!routeKey && !vehicleNumber}
+              startTime={startTime}
+              setStartTime={setStartTime}
+            />
+            {locationsAreLoading && (
+              <Tooltip title={t('loading_times_tooltip_content')}>
+                <CircularProgress />
+              </Tooltip>
+            )}
+          </Grid>
         </Grid>
       </Grid>
       <MapWithLocationsAndPath

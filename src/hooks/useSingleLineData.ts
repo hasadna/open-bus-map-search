@@ -119,9 +119,11 @@ export const useSingleLineData = (
         siriRouteLineRefs: selectedRoute?.lineRef?.toString(),
         siriRouteOperatorRefs: operatorId,
         vehicleRefs: validVehicleNumber?.toString(),
-        // In line mode, skip midnight SIRI batch (phantom rides flood the query).
-        // In vehicle mode the query is already filtered to one vehicle — no flood risk,
-        // and real early-morning trips (04:00–06:00) must not be hidden.
+        // Primary guard against the midnight SIRI batch: every day at ~00:00 the backend
+        // mass-creates phantom siri_ride records for all tracked vehicles, which can fill the
+        // entire 500-result page leaving no real rides. Skipping to 03:00 avoids them in line
+        // mode. Vehicle mode is exempt — the query already filters to one vehicle so there is
+        // no flood risk, and real early-morning trips (04:00–06:00) must not be hidden.
         scheduledStartTimeFrom: validVehicleNumber ? today.toDate() : today.add(3, 'hour').toDate(),
         scheduledStartTimeTo: tomorrow.toDate(),
         orderBy: 'scheduled_start_time asc',
@@ -146,7 +148,9 @@ export const useSingleLineData = (
         const vehMap = new Map<number, string>()
         const opts: { value: string; label: string }[] = []
 
-        // skip time slots with >4 vehicles — those are SIRI batch initialization artifacts, not real double trips
+        // Secondary guard: skip time slots with >4 vehicles at the same scheduled time.
+        // Real double/triple trips have 2–3 vehicles max. >4 means a SIRI batch artifact slipped
+        // past the +3h start-time filter (e.g. the batch ran late, after 03:00 IST).
         byTime.forEach((group, key) => {
           if (group.length > 4) return
           idMap.set(key, group.map((g) => g.id))

@@ -1,7 +1,7 @@
 import { GtfsRoutePydanticModel } from '@hasadna/open-bus-api-client'
 import { CircularProgress, Grid } from '@mui/material'
 import { Tooltip } from 'antd'
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLoaderData, useNavigate } from 'react-router'
 import { getRoutesAsync } from 'src/api/gtfsService'
@@ -27,6 +27,7 @@ const LineProfile = () => {
   const { route, message } = useLoaderData<{ route?: GtfsRoutePydanticModel; message?: string }>()
   const [stopKey, setState] = useState<string>()
   const { setSearch } = useContext(SearchContext)
+  const dateChangeAbortRef = useRef<AbortController | null>(null)
 
   useEffect(() => {
     document.querySelector('main')?.scrollTo(0, 0)
@@ -56,14 +57,16 @@ const LineProfile = () => {
     startTime,
     routes,
     routeKey,
+    error,
     setStartTime,
     setRouteKey,
   } = useSingleLineData(route?.operatorRef.toString(), route?.routeShortName)
 
   const handleTimestampChange = (time: dayjs.Dayjs | null) => {
     if (!time || !route) return
-
+    dateChangeAbortRef.current?.abort()
     const abortController = new AbortController()
+    dateChangeAbortRef.current = abortController
     getRoutesAsync(
       time,
       time,
@@ -72,12 +75,14 @@ const LineProfile = () => {
       abortController.signal,
     )
       .then((routes) => {
-        const newRoute = routes?.find((r) => r.key === `${route.routeMkt}-${route.routeDirection}`)
+        const newRoute = routes?.find(
+          (r) => r.key === `${route.routeMkt}-${route.routeDirection}-${route.routeAlternative}`,
+        )
         if (newRoute?.routeIds?.[0]) {
           navigate(`/profile/${newRoute.routeIds[0]}`)
         }
       })
-      .catch((error) => console.error(error))
+      .catch((err) => console.error(err))
   }
 
   const handelRouteChange = (key?: string) => {
@@ -104,15 +109,20 @@ const LineProfile = () => {
           <LineProfileDetails {...route} />
         </Grid>
         <Grid size={{ xs: 12, lg: 5 }} container spacing={2} flexDirection="column">
-          <RouteSelector
-            routes={routes ?? []}
-            routeKey={routeKey}
-            setRouteKey={handelRouteChange}
-          />
+          {error ? (
+            <NotFound>{error}</NotFound>
+          ) : (
+            <RouteSelector
+              routes={routes ?? []}
+              routeKey={routeKey}
+              setRouteKey={handelRouteChange}
+            />
+          )}
           <DateSelector time={dayjs(route?.date.getTime())} onChange={handleTimestampChange} />
           <Grid container flexWrap="nowrap" alignItems="center">
             <FilterPositionsByStartTimeSelector
               options={options}
+              disabled={options.length === 0}
               startTime={startTime}
               setStartTime={setStartTime}
             />
