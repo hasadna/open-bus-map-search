@@ -47,7 +47,6 @@ export default defineConfig<EyesFixture>({
         { chromeEmulationInfo: { deviceName: 'Galaxy S23' } },
         { iosDeviceInfo: { deviceName: 'iPhone 16' } },
       ],
-      branchName: await getBranch(),
       parentBranchName: 'main',
     },
   },
