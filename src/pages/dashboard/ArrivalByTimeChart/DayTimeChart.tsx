@@ -16,7 +16,7 @@ const convertToGraphCompatibleStruct = (arr: GroupByRes[]) => {
       percent: (item.totalActualRides / item.totalPlannedRides) * 100,
       gtfsRouteDate: item.gtfsRouteDate ? new Date(item.gtfsRouteDate) : undefined,
       gtfsRouteHour: item.gtfsRouteHour ? new Date(item.gtfsRouteHour) : undefined,
-    } as ArrivalByTimeData
+    }
   })
 }
 

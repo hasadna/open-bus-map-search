@@ -49,7 +49,7 @@ export const useBoardingStationQuery = (line?: LineModel) => {
         eventDate: dayjs(eventDate).valueOf(),
         officelineId: lineCode,
         operatorId: operatorId,
-      } as GovStationsByLinePostRequest,
+      },
     }
   }, [line])
 
@@ -79,7 +79,7 @@ export const useLinesQuery = (eventDate?: dayjs.Dayjs, operator?: number, lineNu
         eventDate: eventDate.valueOf(),
         operatorId: Number(operator),
         operatorLineId: Number(lineNumber),
-      } as GovLinesByLinePostRequest,
+      },
     }
   }, [eventDate, operator, lineNumber])
 

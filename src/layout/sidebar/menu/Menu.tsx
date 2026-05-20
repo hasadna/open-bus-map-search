@@ -41,7 +41,7 @@ function getItem(
     icon,
     children,
     label,
-  } as MenuItem
+  }
 }
 
 function getGroup(label: React.ReactNode, key: React.Key, children: MenuItem[]): MenuItem {
@@ -50,7 +50,7 @@ function getGroup(label: React.ReactNode, key: React.Key, children: MenuItem[]):
     type: 'group',
     label,
     children,
-  } as MenuItem
+  }
 }
 
 const MainMenu = ({ collapsed = false }: MainMenuProps) => {
