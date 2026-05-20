@@ -77,7 +77,27 @@ export const ThemeProvider = ({ children }: PropsWithChildren) => {
 
   const muiTheme = useMemo(() => {
     const langConfig = {
-      he: { direction: 'rtl', muiLocale: heIL, dateLocale: dateHeIL },
+      he: {
+        direction: 'rtl',
+        muiLocale: heIL,
+        dateLocale: {
+          ...dateHeIL,
+          components: {
+            ...dateHeIL.components,
+            MuiLocalizationProvider: {
+              ...dateHeIL.components?.MuiLocalizationProvider,
+              defaultProps: {
+                ...dateHeIL.components?.MuiLocalizationProvider?.defaultProps,
+                localeText: {
+                  ...dateHeIL.components?.MuiLocalizationProvider?.defaultProps?.localeText,
+                  previousMonth: 'החודש הקודם',
+                  nextMonth: 'החודש הבא',
+                },
+              },
+            },
+          },
+        },
+      },
       en: { direction: 'ltr', muiLocale: enUS, dateLocale: dateEnUS },
       ru: { direction: 'ltr', muiLocale: ruRU, dateLocale: dateRuRU },
       ar: { direction: 'rtl', muiLocale: arEG, dateLocale: dateEnUS },
