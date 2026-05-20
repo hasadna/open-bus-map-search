@@ -139,6 +139,24 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
                 <span>{position.loc.join(' ,')}</span>
               </li>
             </ul>
+            {route.routeType === '3' && ( // Bus Only
+              <EasterEgg code="complaint" autohide={false}>
+                <Button
+                  variant="contained"
+                  color="success"
+                  onClick={() => setModalOpen((prev) => !prev)}
+                  style={{ borderRadius: '50px' }}>
+                  {t('complaints.open_complaint')}
+                </Button>
+                <ComplaintModal
+                  modalOpen={modalOpen}
+                  setModalOpen={setModalOpen}
+                  position={position}
+                  route={route}
+                />
+              </EasterEgg>
+            )}
+            <br />
             <Button
               href="https://www.gov.il/BlobFolder/generalpage/gtfs_general_transit_feed_specifications/he/GTFS_Developer_Information_2024.11.21b.pdf"
               target="_blank"
@@ -150,20 +168,6 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
             <Button sx={{ margin: '2px 0' }} onClick={() => setShowJson((showJson) => !showJson)}>
               {showJson ? t('hide_document') : t('show_document')}
             </Button>
-            {/* Open Complaint Button */}
-            <EasterEgg code="complaint">
-              <Button
-                variant="contained"
-                color="success"
-                onClick={() => setModalOpen((prev) => !prev)}
-                style={{ borderRadius: '50px' }}>
-                {t('open_complaint')}
-              </Button>
-            </EasterEgg>
-
-            {/* Complaint Modal */}
-            <ComplaintModal modalOpen={modalOpen} setModalOpen={setModalOpen} position={position} />
-
             {showJson && (
               <div dir={i18n.language === 'en' ? 'rtl' : 'ltr'}>
                 <CustomTreeView<Point>

@@ -25,6 +25,7 @@ const config = {
     return true
   },
   // puppeteerOptions: {headless: false, devtools: true},
+  puppeteerOptions: { args: ['--lang=he-IL', '--accept-lang=he-IL'] },
   showBrowserLogs: true,
   // showLogs: true,// uncomment to see Applitools logs
 }

@@ -1,7 +1,6 @@
 import { EyesFixture } from '@applitools/eyes-playwright/fixture'
 import { defineConfig, devices } from '@playwright/test'
 import username from 'git-username'
-import { getBranch } from 'tests/utils'
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -22,6 +21,7 @@ export default defineConfig<EyesFixture>({
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
     baseURL: 'http://localhost:3000',
+    locale: 'he-IL',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: process.env.CI ? 'on' : 'on-all-retries',
@@ -46,7 +46,6 @@ export default defineConfig<EyesFixture>({
         { chromeEmulationInfo: { deviceName: 'Galaxy S23' } },
         { iosDeviceInfo: { deviceName: 'iPhone 16' } },
       ],
-      branchName: await getBranch(),
       parentBranchName: 'main',
     },
   },

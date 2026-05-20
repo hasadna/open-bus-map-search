@@ -1,4 +1,3 @@
-// import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'; //TODO:
 import { InfoCircleOutlined } from '@ant-design/icons'
 import { Typography } from '@mui/material'
 import { Modal } from 'antd'
@@ -36,7 +35,7 @@ const InfoYoutubeModal = ({ videoUrl, label, title }: InfoYoutubeModalProps) => 
           {title}
         </Typography>
         <div className="modal-iframe-container">
-          <iframe allowFullScreen src={videoUrl} />
+          <iframe allowFullScreen src={videoUrl} title={title} />
         </div>
       </Modal>
     </>

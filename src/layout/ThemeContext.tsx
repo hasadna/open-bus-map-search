@@ -17,8 +17,10 @@ import {
   useMemo,
 } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useLocation, useNavigate } from 'react-router'
 import { useLocalStorage } from 'usehooks-ts'
 import dayjs from 'src/dayjs'
+import { getLang, getPathWithoutLang } from 'src/locale/allTranslations'
 
 export interface ThemeContextInterface {
   toggleTheme: () => void
@@ -34,17 +36,24 @@ export const ThemeProvider = ({ children }: PropsWithChildren) => {
     'isDarkTheme',
     window.matchMedia('(prefers-color-scheme: dark)').matches,
   )
-  const [language, setLanguage] = useLocalStorage<string>('language', 'he')
+
+  const initialLang = getLang()
+  const [language, setLanguage] = useLocalStorage<string>('language', () => initialLang)
+
   const { i18n } = useTranslation()
+  const navigate = useNavigate()
 
   const toggleTheme = useCallback(() => setIsDarkTheme((prev) => !prev), [setIsDarkTheme])
+
+  const location = useLocation()
 
   const changeLanguage = useCallback(
     (newLanguage: string) => {
       setLanguage(newLanguage)
-      i18n.changeLanguage(newLanguage)
+      const pathWithoutLang = getPathWithoutLang(location.pathname)
+      navigate(`/${newLanguage}${pathWithoutLang}`)
     },
-    [i18n, setLanguage],
+    [setLanguage, navigate, location],
   )
 
   const contextValue = useMemo(

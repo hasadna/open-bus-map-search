@@ -1,5 +1,5 @@
 import { Grid, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import dayjs from 'src/dayjs'
@@ -22,9 +22,6 @@ const OperatorPage = () => {
   const { t, i18n } = useTranslation()
 
   const [timeRange, setTimeRange] = useState<(typeof TIME_RANGES)[number]>('day')
-  useEffect(() => {
-    setSearch(({ operatorId, timestamp }) => ({ operatorId, timestamp }))
-  }, [])
 
   const handleOperatorChange = (operatorId: string) => {
     setSearch((current) => ({ ...current, operatorId }))

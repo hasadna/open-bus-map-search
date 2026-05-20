@@ -1,6 +1,9 @@
 import { expect, test } from 'src/test_pages/TimelinePage'
 import { harOptions, setupTest, verifyDateFromParameter, visitPage } from './utils'
 
+const ROUTE = 'שדרות מנחם בגין/כביש 7-גדרה ⟵ שדרות מנחם בגין/כביש 7-גדרה'
+const STATION = 'חיים הרצוג/שדרות מנחם בגין (גדרה)'
+
 test.describe('Timeline Page Tests', () => {
   test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
     await setupTest(page)
@@ -50,9 +53,7 @@ test.describe('Timeline Page Tests', () => {
     await timelinePage.selectOperator('אגד')
     await timelinePage.lineNumberField.fill('1')
     await expect(timelinePage.routeSelect).toBeEnabled()
-    await timelinePage.selectRoute(
-      'בית ספר אלונים/הבנים-פרדס חנה כרכור ⟵ יד לבנים/דרך הבנים-פרדס חנה כרכור  ',
-    )
+    await timelinePage.selectRoute(ROUTE)
     await expect(timelinePage.stationSelect).toBeEnabled()
   })
 
@@ -60,9 +61,7 @@ test.describe('Timeline Page Tests', () => {
     await timelinePage.selectOperator('אגד')
     await timelinePage.lineNumberField.fill('1')
     await expect(timelinePage.routeSelect).toBeEnabled()
-    await timelinePage.selectRoute(
-      'בית ספר אלונים/הבנים-פרדס חנה כרכור ⟵ יד לבנים/דרך הבנים-פרדס חנה כרכור  ',
-    )
+    await timelinePage.selectRoute(ROUTE)
     await expect(timelinePage.stationSelect).toBeEnabled()
     await timelinePage.stationSelect.click()
     const options = await timelinePage.getDropdownOptions()
@@ -75,10 +74,12 @@ test.describe('Timeline Page Tests', () => {
     await timelinePage.selectOperator('אגד')
     await timelinePage.lineNumberField.fill('1')
     await expect(timelinePage.routeSelect).toBeEnabled()
-    await timelinePage.selectRoute('שדרות מנחם בגין/כביש 7-גדרה ⟵ שדרות מנחם בגין/כביש 7-גדרה')
+    await timelinePage.selectRoute(ROUTE)
     await expect(timelinePage.stationSelect).toBeEnabled()
-    await timelinePage.selectStation('חיים הרצוג/שדרות מנחם בגין (גדרה)')
-    await expect(timelinePage.timelineGraph).toBeEnabled()
+    await timelinePage.selectStation(STATION)
+    await timelinePage.WaitForLoadingCompletion()
+    await expect(timelinePage.timelineHourLabels).toContainText(['17:00:59'])
+    expect(await timelinePage.timelineHourLabels.count()).toBe(49)
   })
 
   test('Verify date_from parameter', async ({ page }) => {

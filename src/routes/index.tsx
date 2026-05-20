@@ -145,27 +145,35 @@ const RedirectToHomepage = <Navigate to={routesList[0].path} replace />
 
 export const getRoutesList = () => {
   return (
-    <Route element={<MainRoute />}>
-      {routesList.map(({ path, element }) => (
-        <Route key={path} path={path} element={element} ErrorBoundary={ErrorPage} />
-      ))}
-      <Route
-        path="/profile/:gtfsRideGtfsRouteId"
-        element={<Profile />}
-        ErrorBoundary={ErrorPage}
-        loader={async ({ params }) => {
-          try {
-            const route = await getRouteById(params?.gtfsRideGtfsRouteId)
-            return { route }
-          } catch (error) {
-            return {
-              route: null,
-              message: (error as Error).message,
+    <Route path="/:lang?">
+      <Route element={<MainRoute />}>
+        {routesList.map(({ path, element }) => (
+          <Route
+            key={path}
+            path={path === '/' ? undefined : path.replace(/^\//, '')}
+            index={path === '/'}
+            element={element}
+            ErrorBoundary={ErrorPage}
+          />
+        ))}
+        <Route
+          path="profile/:gtfsRideGtfsRouteId"
+          element={<Profile />}
+          ErrorBoundary={ErrorPage}
+          loader={async ({ params }) => {
+            try {
+              const route = await getRouteById(params?.gtfsRideGtfsRouteId)
+              return { route }
+            } catch (error) {
+              return {
+                route: null,
+                message: (error as Error).message,
+              }
             }
-          }
-        }}
-      />
-      <Route path="*" element={RedirectToHomepage} key="back" />
+          }}
+        />
+        <Route path="*" element={RedirectToHomepage} key="back" />
+      </Route>
     </Route>
   )
 }
@@ -176,6 +184,9 @@ window.addEventListener('vite:preloadError', () => {
 
 const routes = createRoutesFromElements(getRoutesList())
 
-const router = createBrowserRouter(routes, { basename: import.meta.env.VITE_BASE_PATH })
+// If the URL doesn't have a language prefix, we will use the saved language or default to Hebrew
+const router = createBrowserRouter(routes, {
+  basename: import.meta.env.VITE_BASE_PATH || '/',
+})
 
 export default router

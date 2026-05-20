@@ -22,6 +22,10 @@ async function fillLineNumber(page: Page, lineNumber = '16') {
   await page.getByRole('textbox', { name: 'מספר קו' }).fill(lineNumber)
 }
 
+async function fillVehicleNumber(page: Page, vehicleNumber = '7489226') {
+  await page.getByRole('textbox', { name: 'מספר רכב' }).fill(vehicleNumber)
+}
+
 async function selectRoute(
   page: Page,
   routeName = 'תחנת מוניות רמת גן דרך הטייסים-תל אביב יפו ⟵ תחנת מוניות תל אביב הכובשים-תל אביב יפו',
@@ -75,6 +79,20 @@ test.describe('Single line page tests', () => {
     await test.step('Verify bus stop marker is in the page', async () => {
       await expect(page.locator(STATION_MARKER_SELECTOR)).toHaveCount(2, { timeout: 10000 })
     })
+  })
+
+  test('should show vehicle locations after selecting vehicle number', async ({ page }) => {
+    await selectOperator(page)
+    await page.getByRole('button', { name: 'לפי מספר רכב' }).click()
+    await expect(page.getByRole('textbox', { name: 'מספר רכב' })).toBeEditable()
+    await fillVehicleNumber(page)
+    await expect(page.locator('#start-time-select')).toBeEditable({ timeout: 10000 })
+    await selectStartTime(page)
+
+    await expect(async () => {
+      const count = await page.locator(BUS_MARKER_SELECTOR).count()
+      expect(count).toBeGreaterThan(0)
+    }).toPass({ timeout: 10000 })
   })
 
   test('should show tooltip after clicking on map point in single line map', async ({ page }) => {
