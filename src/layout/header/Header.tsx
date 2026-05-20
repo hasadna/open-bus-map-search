@@ -7,6 +7,7 @@ import { useTheme } from '../ThemeContext'
 import { DonationButton } from './DonationButton'
 import HeaderLinks from './HeaderLinks/HeaderLinks'
 import { LanguageToggleButton } from './LanguageToggleButton'
+import { ShareButton } from './ShareButton'
 import ToggleThemeButton from './ToggleThemeButton'
 import './Header.css'
 
@@ -19,6 +20,7 @@ const MainHeader = () => {
     <Header className={cn('main-header', { dark: isDarkTheme })}>
       <MenuOutlined onClick={() => setDrawerOpen(true)} className="hideOnDesktop" />
       <HeaderLinks>
+        <ShareButton />
         <LanguageToggleButton />
         <ToggleThemeButton toggleTheme={toggleTheme} isDarkTheme={isDarkTheme} />
         <DonationButton />

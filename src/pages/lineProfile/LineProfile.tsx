@@ -7,7 +7,11 @@ import { useLoaderData, useNavigate } from 'react-router'
 import { getRoutesAsync } from 'src/api/gtfsService'
 import dayjs from 'src/dayjs'
 import { useSingleLineData } from 'src/hooks/useSingleLineData'
-import { SearchContext } from 'src/model/pageState'
+import {
+  ExtraShareParamsContext,
+  InitialUrlParamsContext,
+  SearchContext,
+} from 'src/model/pageState'
 import StopSelector from 'src/pages/components/StopSelector'
 import Widget from 'src/shared/Widget'
 import { DateSelector } from '../components/DateSelector'
@@ -27,6 +31,8 @@ const LineProfile = () => {
   const { route, message } = useLoaderData<{ route?: GtfsRoutePydanticModel; message?: string }>()
   const [stopKey, setState] = useState<string>()
   const { setSearch } = useContext(SearchContext)
+  const initialUrlParams = useContext(InitialUrlParamsContext)
+  const { setParams } = useContext(ExtraShareParamsContext)
 
   useEffect(() => {
     document.querySelector('main')?.scrollTo(0, 0)
@@ -43,6 +49,7 @@ const LineProfile = () => {
       lineNumber: route.routeShortName,
       routes,
       routeKey: `${route.routeMkt}-${route.routeDirection}`,
+      startTime: initialUrlParams.startTime,
     }))
     setRouteKey(`${route.routeMkt}-${route.routeDirection}`)
   }, [route?.id])
@@ -58,6 +65,12 @@ const LineProfile = () => {
     setStartTime,
     setRouteKey,
   } = useSingleLineData(route?.operatorRef.toString(), route?.routeShortName)
+
+  useEffect(() => {
+    if (startTime) setParams({ startTime })
+    else setParams({})
+    return () => setParams({})
+  }, [startTime, setParams])
 
   const handleTimestampChange = (time: dayjs.Dayjs | null) => {
     if (!time || !route) return
