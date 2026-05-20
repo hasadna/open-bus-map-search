@@ -19,7 +19,11 @@ import { useDate } from 'src/hooks/useDate'
 import { INPUT_SIZE } from 'src/resources/sizes'
 import Widget from 'src/shared/Widget'
 import { getRoutesAsync } from '../../api/gtfsService'
-import { SearchContext } from '../../model/pageState'
+import {
+  ExtraShareParamsContext,
+  InitialUrlParamsContext,
+  SearchContext,
+} from '../../model/pageState'
 import { DateSelector } from '../components/DateSelector'
 import { Label } from '../components/Label'
 import LineNumberSelector from '../components/LineSelector'
@@ -151,9 +155,26 @@ function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatistic
 }
 
 const GapsPatternsPage = () => {
-  const [startDate, setStartDate] = useDate(now.clone().subtract(7, 'days'))
-  const [endDate, setEndDate] = useDate(now.clone().subtract(1, 'day'))
+  const initialUrlParams = useContext(InitialUrlParamsContext)
+
+  const [startDate, setStartDate] = useDate(
+    initialUrlParams.startDate
+      ? dayjs(initialUrlParams.startDate)
+      : now.clone().subtract(7, 'days'),
+  )
+  const [endDate, setEndDate] = useDate(
+    initialUrlParams.endDate ? dayjs(initialUrlParams.endDate) : now.clone().subtract(1, 'day'),
+  )
   const { search, setSearch } = useContext(SearchContext)
+  const { setParams } = useContext(ExtraShareParamsContext)
+
+  useEffect(() => {
+    setParams({
+      startDate: startDate.toISOString(),
+      endDate: endDate.toISOString(),
+    })
+    return () => setParams({})
+  }, [startDate, endDate, setParams])
   const { operatorId, lineNumber, routes, routeKey } = search
   const [routesIsLoading, setRoutesIsLoading] = useState(false)
   const { t } = useTranslation()
