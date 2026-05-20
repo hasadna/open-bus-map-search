@@ -46,7 +46,12 @@ const DEFAULT_BOUNDS = {
 export const VelocityHeatmapRectangles = ({
   visMode,
   setMinMax,
-}: VelocityHeatmapRectanglesProps) => {
+  onLoadingChange,
+  onErrorChange,
+}: VelocityHeatmapRectanglesProps & {
+  onLoadingChange?: (loading: boolean) => void
+  onErrorChange?: (error: string | null) => void
+}) => {
   const { search } = useContext(SearchContext)
   const zoom = useZoomLevel()
   const { data, loading, error, currZoom } = useVelocityAggregationData(
@@ -83,14 +88,17 @@ export const VelocityHeatmapRectangles = ({
     setMinMax?.(minV, maxV)
   }, [minV, maxV, setMinMax])
 
+  // Propagate loading/error state to parent for overlay display
+  useEffect(() => {
+    onLoadingChange?.(loading)
+  }, [loading, onLoadingChange])
+
+  useEffect(() => {
+    onErrorChange?.(error ? String(error) : null)
+  }, [error, onErrorChange])
+
   return (
     <>
-      {error || loading ? (
-        <div className="err">
-          {error ? 'error' : null}
-          {loading ? 'loading! ' : null}
-        </div>
-      ) : null}
       {data?.map((point, idx) => {
         const bounds: [[number, number], [number, number]] = [
           [point.roundedLat - half, point.roundedLon - half],
