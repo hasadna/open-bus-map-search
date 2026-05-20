@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
 import { Dayjs } from 'src/dayjs'
 import Widget from 'src/shared/Widget'
-import ArrivalByTimeChart, { ArrivalByTimeData } from './ArrivalByTimeChart'
+import ArrivalByTimeChart from './ArrivalByTimeChart'
 
 const convertToGraphCompatibleStruct = (arr: GroupByRes[]) => {
   return arr.map((item) => {

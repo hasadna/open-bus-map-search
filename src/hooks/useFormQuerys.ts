@@ -1,8 +1,4 @@
-import {
-  GovLinesByLinePostRequest,
-  GovStationsByLinePostRequest,
-  LineModel,
-} from '@hasadna/open-bus-api-client'
+import { LineModel } from '@hasadna/open-bus-api-client'
 import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import { GOVERNMENT_TRANSPORTATION_API } from 'src/api/apiConfig'
