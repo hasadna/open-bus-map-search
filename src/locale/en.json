@@ -575,17 +575,17 @@
         "nextSteps": "Add more endpoints, publish as npm/pypi package, list on the public MCP registry."
       },
       "mapping-stride-audit": {
-        "title": "Audit `open-bus-stride-client`",
-        "oneLiner": "What works, what's dead, what's worth reviving.",
-        "ship": "A PR with a README that summarizes the repo's state.",
-        "learn": "How to quickly evaluate an abandoned open-source project.",
-        "brief": "stride-client is an older Databus library. Maybe there's gold in there, maybe it should be archived. We'll review the code, check usage, and write a recommendation.",
+        "title": "Explore `open-bus-stride-client` and map what's usable",
+        "oneLiner": "A Python library that wraps the Stride API — what can it do, what's missing?",
+        "ship": "A PR with a README section (or separate doc) that maps the library's capabilities against current frontend needs.",
+        "learn": "How the Stride REST API works, pandas + transit data, evaluating a Python library as a frontend consumer.",
+        "brief": "`open-bus-stride-client` is an actively maintained Python client that wraps the Stride REST API. It can load routes into pandas DataFrames, retrieve arrivals, SIRI vehicle locations, and GTFS schedules, and even run accessibility analysis. The frontend currently calls the API directly — but does the Python client expose things the frontend can't easily reach? Review the library's capabilities, run a few queries, and document what could be exposed via a new backend endpoint or MCP tool.",
         "done": [
-          "Survey of all public functions",
-          "Clear recommendation — continue / merge / archive",
-          "List of issues if we recommend continuing"
+          "Ran at least 3 different queries using the library",
+          "Document of capabilities vs. what the frontend already shows",
+          "At least one concrete suggestion for a new feature enabled by the library"
         ],
-        "nextSteps": "Execute the recommendation — merge into the main repo, or split into a new package."
+        "nextSteps": "Implement one of the suggested features — either as a new backend endpoint or as an MCP tool."
       },
       "mapping-resurrect-pr": {
         "title": "Resurrect a stale PR",
@@ -597,24 +597,28 @@
         "nextSteps": "Keep closing more PRs — create a priority list for the maintainer."
       },
       "data-new-chart": {
-        "title": "New dashboard chart",
-        "oneLiner": "What insights are you missing? Add them.",
-        "ship": "A new chart in the dashboard, using an existing API.",
-        "learn": "Recharts, data shaping, picking the right visualization. Domain experts: how to pick the right metric.",
-        "brief": "The dashboard shows several charts, but there's a ton of data that hasn't been visualized yet. Pick a metric — with a domain expert if you have one — and build a chart that shows it.",
-        "done": ["Chart embedded in dashboard", "Shows real data", "Clear title and description"],
+        "title": "New visualization for transit data",
+        "oneLiner": "What insights are you missing? Add them to an existing or new page.",
+        "ship": "A new chart, map, or table — in an existing page (gaps, operator, line profile) or a dedicated new page.",
+        "learn": "Recharts, data shaping, picking the right visualization. Domain experts: how to choose the metric that matters most to regulators.",
+        "brief": "There's a lot of transit data that hasn't been visualized yet. The existing dashboard is unreliable and hidden from the menu — so pick an existing page like the gaps page, operator page, or line profile, and add a visualization that shows a new metric. Or open a new dedicated page if the metric doesn't fit any existing one. Decide at the start which page you're targeting.",
+        "done": [
+          "Visualization embedded in an existing or new page",
+          "Shows real data",
+          "Clear title and description"
+        ],
         "nextSteps": "Add filtering by date, operator, and geographic region."
       },
       "data-arrival-gap-fix": {
-        "title": "Fix arrival-gap calculation when a bus skips a stop",
-        "oneLiner": "Known bug from the slides — let's finally close it.",
-        "ship": "A PR with the algorithmic fix + tests.",
-        "learn": "Time-comparison algorithms, GTFS/SIRI edge cases. Domain experts critical here.",
-        "brief": "When a driver skips a stop, our current calculation misreads it as a gap. We need to identify the edge case, define correct behavior (with operator help), and fix.",
+        "title": "Fix ride-gap detection edge cases",
+        "oneLiner": "When a ride starts late or two rides are adjacent, the algorithm gets confused.",
+        "ship": "A PR with the algorithmic fix + unit tests that fail before and pass after.",
+        "learn": "Matching algorithm between GTFS (planned) and SIRI (actual), transit data edge cases. Domain experts are critical — they'll tell you what the 'right answer' is.",
+        "brief": "The gaps page tracks entire rides (trips) that didn't happen — not individual stops. Each ride has a plannedStartTime from GTFS and an actualStartTime from SIRI. The problem: when a ride departs late, or when two adjacent rides run on the same line, the algorithm may mark one as 'missing' and one as 'extra' instead of matching them. An operator or regulator can help define the acceptable time threshold before a ride counts as 'missing'.",
         "done": [
-          "Test that fails before the fix, passes after",
+          "Unit test that fails before the fix, passes after",
           "Code review with maintainer",
-          "Documentation of the new behavior"
+          "Documentation of the time threshold chosen and why"
         ],
         "nextSteps": "Cover more edge cases — route detours, emergency trips, duplicates."
       },
