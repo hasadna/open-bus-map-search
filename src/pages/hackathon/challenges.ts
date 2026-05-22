@@ -58,7 +58,7 @@ export const CHALLENGES: Challenge[] = [
     tier: 'intermediate',
     track: 'harness',
     sizedMinutes: 60,
-    stack: ['Claude skills', 'Python', 'pytest'],
+    stack: ['Claude skills', 'Python', 'pytest', 'test authoring'],
     domainExpertFriendly: false,
     startingPoints: [
       {

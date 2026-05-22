@@ -508,8 +508,8 @@
     "schedule": {
       "title": "Evening schedule",
       "mingling": { "time": "18:00–18:30", "label": "Mingling and intros" },
-      "talks": { "time": "18:30–19:20", "label": "Opening talks: Hasadna, Databus, Applitools" },
-      "groupWork": { "time": "19:20–21:00", "label": "Group work — bring laptops" },
+      "talks": { "time": "18:30–19:00", "label": "Opening talks: Hasadna, Databus, Applitools" },
+      "groupWork": { "time": "19:00–21:00", "label": "Group work — bring laptops" },
       "demos": { "time": "21:00–21:30", "label": "Group demos" },
       "cleanup": { "time": "21:30–22:00", "label": "Wrap-up and cleanup" }
     },
@@ -543,17 +543,17 @@
         "nextSteps": "Add more skills, wire to a local PostgreSQL, publish as the recommended entry point for new contributors across all Hasadna repos."
       },
       "harness-skill-backend-tests": {
-        "title": "Claude skill that runs the backend tests",
-        "oneLiner": "One skill, saves 10 minutes on every PR review.",
-        "ship": "A skill in `.claude/skills/` that runs the tests, gathers results, and summarizes failures.",
-        "learn": "How to design a Claude skill that works well without inflating the context window.",
-        "brief": "Every PR needs a manual pytest run. We'll build one well-named skill with a clear description and usage notes — Claude runs it, gathers results, prints a short summary.",
+        "title": "Claude skill for backend test authoring and running",
+        "oneLiner": "Some repos have tests; others have none. Build a skill that handles both.",
+        "ship": "A Claude skill that guides an agent to discover, run, and write pytest tests in at least one backend repo.",
+        "learn": "How to write a skill description that navigates an agent through ambiguity; pytest patterns in Python codebases.",
+        "brief": "The Databus backend spans repos like siri-etl, stride-etl, and open-bus-stride-client — Python codebases with wildly different test coverage. Some have pytest suites already; some have zero tests at all. Build a Claude skill that handles both cases: it helps the agent discover what exists, run it, and write new tests for uncovered modules. The real challenge isn't the first working version — it's the iteration. Run the skill, watch where the agent goes wrong, rewrite the description, run again. A well-written skill gets the agent 80% of the way without a human hand-holding.",
         "done": [
-          "Skill exists in the repo and works locally",
-          "Short README documentation",
-          "Tested on one real PR"
+          "Skill works on a backend repo that already has tests",
+          "Skill successfully guides the agent to write at least one new test in a repo with zero coverage",
+          "You ran it, saw it fail at something, improved it — at least one full iteration"
         ],
-        "nextSteps": "Spread the skill to other Hasadna repos and wire it into CI."
+        "nextSteps": "Generalize across all Hasadna backend repos; publish as a shared skill library new contributors can install in one command."
       },
       "harness-hooks-gate": {
         "title": "Hooks that stop AI from pushing broken code",
