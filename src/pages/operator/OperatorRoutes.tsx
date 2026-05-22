@@ -4,6 +4,7 @@ import { useContext } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useNavigate } from 'react-router'
 import styled from 'styled-components'
+import { ISRAEL_TRAIN_ID } from 'src/model/operator'
 import { SearchContext } from 'src/model/pageState'
 import Widget from 'src/shared/Widget'
 import { useAllRoutes } from '../../hooks/useAllRoutes'
@@ -47,19 +48,21 @@ export const OperatorRoutes = ({
                     <Link to={`/profile/${route.id}`}>{t('operator.profile')}</Link>
                   </TableCell>
                   <TableCell>
-                    <Link
-                      onClick={(e) => {
-                        e.preventDefault()
-                        setSearch((current) => ({
-                          ...current,
-                          lineNumber: route.line + route.suffix,
-                          routeKey: route.routeKey,
-                        }))
-                        navigate('/single-line-map')
-                      }}
-                      to={`/single-line-map`}>
-                      {t('operator.map')}
-                    </Link>
+                    {operatorId !== ISRAEL_TRAIN_ID && (
+                      <Link
+                        onClick={(e) => {
+                          e.preventDefault()
+                          setSearch((current) => ({
+                            ...current,
+                            lineNumber: route.line + route.suffix,
+                            routeKey: route.routeKey,
+                          }))
+                          navigate('/single-line-map')
+                        }}
+                        to={`/single-line-map`}>
+                        {t('operator.map')}
+                      </Link>
+                    )}
                   </TableCell>
                 </TableRow>
               ))}
