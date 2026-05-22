@@ -18,6 +18,42 @@ export const REGISTRATION_FORM_URL =
 
 export const CHALLENGES: Challenge[] = [
   {
+    id: 'harness-tests-ci',
+    tier: 'intermediate',
+    track: 'harness',
+    sizedMinutes: 60,
+    stack: ['Jest', 'GitHub Actions', 'TypeScript'],
+    domainExpertFriendly: false,
+    startingPoints: [
+      {
+        labelKey: 'links.existing_tests',
+        href: 'https://github.com/hasadna/open-bus-map-search/blob/main/src/api/serviceDayRoutesService.test.ts',
+      },
+      {
+        labelKey: 'links.offline_tests_workflow',
+        href: 'https://github.com/hasadna/open-bus-map-search/blob/main/.github/workflows/offline-tests.yml',
+      },
+    ],
+  },
+  {
+    id: 'harness-backend-devenv',
+    tier: 'advanced',
+    track: 'harness',
+    sizedMinutes: 90,
+    stack: ['Python', 'devcontainer', 'Claude skills', 'stride-client'],
+    domainExpertFriendly: false,
+    startingPoints: [
+      {
+        labelKey: 'links.pipelines_repo',
+        href: 'https://github.com/hasadna/open-bus-pipelines',
+      },
+      {
+        labelKey: 'links.stride_client_repo',
+        href: 'https://github.com/hasadna/open-bus-stride-client',
+      },
+    ],
+  },
+  {
     id: 'harness-skill-backend-tests',
     tier: 'intermediate',
     track: 'harness',
@@ -29,7 +65,10 @@ export const CHALLENGES: Challenge[] = [
         labelKey: 'links.claude_skills_docs',
         href: 'https://docs.claude.com/en/docs/claude-code/skills',
       },
-      { labelKey: 'links.backend_repo', href: 'https://github.com/hasadna/open-bus-backend' },
+      {
+        labelKey: 'links.pipelines_repo',
+        href: 'https://github.com/hasadna/open-bus-pipelines',
+      },
     ],
   },
   {
@@ -86,12 +125,20 @@ export const CHALLENGES: Challenge[] = [
     tier: 'starter',
     track: 'mapping',
     sizedMinutes: 60,
-    stack: ['Python', 'documentation'],
+    stack: ['Python', 'Jupyter', 'documentation'],
     domainExpertFriendly: true,
     startingPoints: [
       {
         labelKey: 'links.stride_client_repo',
         href: 'https://github.com/hasadna/open-bus-stride-client',
+      },
+      {
+        labelKey: 'links.stride_notebooks',
+        href: 'https://github.com/hasadna/open-bus-stride-client/tree/main/notebooks',
+      },
+      {
+        labelKey: 'links.figma_designs',
+        href: 'https://www.figma.com/file/Plw8Uuu6U96CcX5tJyRMoW/Public-Transportation-visual-informaiton?node-id=0%3A1',
       },
     ],
   },
@@ -106,6 +153,10 @@ export const CHALLENGES: Challenge[] = [
       {
         labelKey: 'links.stale_prs',
         href: 'https://github.com/hasadna/open-bus-map-search/pulls?q=is%3Apr+is%3Aclosed+sort%3Aupdated-desc',
+      },
+      {
+        labelKey: 'links.figma_designs',
+        href: 'https://www.figma.com/file/Plw8Uuu6U96CcX5tJyRMoW/Public-Transportation-visual-informaiton?node-id=0%3A1',
       },
     ],
   },

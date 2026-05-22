@@ -442,6 +442,11 @@
       "mcp_spec": "מפרט MCP",
       "stride_api": "תיעוד Stride API",
       "stride_client_repo": "ריפו open-bus-stride-client",
+      "pipelines_repo": "ריפו open-bus-pipelines",
+      "existing_tests": "דוגמה לבדיקות קיימות",
+      "offline_tests_workflow": "GitHub Actions — offline-tests",
+      "stride_notebooks": "Jupyter notebooks — stride-client",
+      "figma_designs": "עיצובים ב-Figma — רעיונות לתצוגה",
       "stale_prs": "PRs ישנים שלא נסגרו",
       "dashboard_page": "עמוד הדאשבורד",
       "gaps_service": "קוד שירות הפערים",
@@ -509,6 +514,32 @@
     "challenges": {
       "title": "האתגרים",
       "intro": "כל אתגר נבחר כך שיהיה אפשר להגיע ל-MVP ב-90 דקות. אלה רעיונות לנקודות פתיחה — לא רשימה סגורה. יש לכם רעיון משלכם? שתפו אותנו בתחילת הערב. סננו לפי רמה, בחרו מסלול, ופתחו את הכרטיס לקריאה מלאה.",
+      "harness-tests-ci": {
+        "title": "כתבו בדיקות ופתחו את לולאת המשוב לסוכן",
+        "oneLiner": "ללא בדיקות, הסוכן לא יודע אם שבר משהו — ואתם גם לא.",
+        "ship": "PR עם unit tests ל-module אחד חסר בדיקות + GitHub Actions שמריץ אותם על PRs.",
+        "learn": "Jest, GitHub Actions, איך כותבים בדיקות שנותנות פלט ברור לסוכן AI.",
+        "brief": "כשסוכן AI כותב קוד, הדרך המהירה לדעת שהוא לא שבר כלום היא tests שרצים ב-CI ומחזירים פלט ברור. יש ב-frontend מודולים שאין להם בדיקות בכלל: לוגיקת gap-detection, חישובי זמן, רכיב ה-Countdown ועוד. בחרו module אחד, כתבו unit tests, והוסיפו (או שפרו) GitHub Actions שמריץ אותם. הדרישה: הסוכן יצטרך להריץ את ה-tests ולפרש את הפלט — ודאו שהוא קריא.",
+        "done": [
+          "לפחות 3 unit tests שעוברים על הקוד הנוכחי",
+          "לפחות test אחד שבודק edge case",
+          "GitHub Actions שמריץ Jest על כל PR"
+        ],
+        "nextSteps": "להרחיב ל-integration tests, להוסיף coverage report, לחבר לסוכן כ-skill שמריץ tests ומסכם כשלים."
+      },
+      "harness-backend-devenv": {
+        "title": "סביבת backend מוכנה לסוכן — כל הריפואים בפקודה אחת",
+        "oneLiner": "ה-backend מפוצל על 7 ריפואים. תכינו כניסה אחת שסוכן יכול לעבוד איתה.",
+        "ship": "devcontainer.json + Claude skill אחד שמריץ שאילתה אמיתית על Stride API ומחזיר תוצאה.",
+        "learn": "ארכיטקטורת ה-backend של דאטאבוס, devcontainers, Claude skills עם Python.",
+        "brief": "ה-backend של דאטאבוס מפוצל: open-bus-pipelines מנגד, stride-db לסכמה, stride-etl לעיבוד, siri-etl לנתוני real-time ועוד. מפתח חדש — ובוודאי סוכן AI — צריך לדעת מה לשכפל, מה להפעיל ובאיזה סדר. בנו devcontainer שמגיע עם stride-client מותקן ומוגדר, .claude/settings.json עם פקודות Python מאושרות, וסקריל Claude אחד שמריץ שאילתה על ה-Stride API ומחזיר תשובה עם נתונים אמיתיים.",
+        "done": [
+          "devcontainer.json עובד — `devcontainer open` מביא Python + stride-client",
+          "stride-client מתחבר ל-Stride API ומחזיר נתונים",
+          "Claude skill אחד שמריץ שאילתה ומחזיר תשובה קריאה"
+        ],
+        "nextSteps": "להוסיף עוד skills, לחבר ל-PostgreSQL מקומי, להפיץ כנקודת כניסה מומלצת לתורמים חדשים בכל ריפואי הסדנא."
+      },
       "harness-skill-backend-tests": {
         "title": "סקיל Claude שמריץ את בדיקות ה-backend",
         "oneLiner": "סקיל בודד, חוסך 10 דקות לכל PR שעובר.",
@@ -571,7 +602,7 @@
         "oneLiner": "ספריית Python שעוטפת את Stride API — מה היא יכולה, מה חסר?",
         "ship": "PR עם סעיף README (או מסמך נפרד) שממפה את יכולות הספרייה מול הצרכים הקיימים.",
         "learn": "איך Stride REST API עובד, pandas + נתוני תחבורה, הערכת ספריית Python מנקודת מבט של frontend.",
-        "brief": "`open-bus-stride-client` היא ספריית Python מתוחזקת שעוטפת את Stride REST API. היא יכולה לטעון מסלולים ל-DataFrames של pandas, לשלוף הגעות, מיקומי רכב SIRI, לוחות GTFS ואף ניתוח נגישות. ה-frontend כיום קורא ל-API ישירות — אבל האם הספרייה חושפת יכולות שה-frontend לא מגיע אליהן? סקרו את הספרייה, הריצו כמה שאילתות, ותעדו מה אפשר להוסיף.",
+        "brief": "`open-bus-stride-client` היא ספריית Python מתוחזקת שעוטפת את Stride REST API. היא יכולה לטעון מסלולים ל-DataFrames של pandas, לשלוף הגעות, מיקומי רכב SIRI, לוחות GTFS ואף ניתוח נגישות. בריפו יש גם Jupyter notebooks שמדגימים שאילתות אמיתיות — נקודת פתיחה מצוינת. ה-frontend כיום קורא ל-API ישירות — אבל האם הספרייה חושפת יכולות שה-frontend לא מגיע אליהן? קיים גם Figma עם עיצובים שחיכו לביצוע — אולי אחד מהם מתחבר לנתוני stride-client.",
         "done": [
           "הרצתם לפחות 3 שאילתות שונות עם הספרייה",
           "מסמך של יכולות הספרייה מול מה שה-frontend כבר מציג",

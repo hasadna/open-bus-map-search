@@ -442,6 +442,11 @@
       "mcp_spec": "MCP spec",
       "stride_api": "Stride API docs",
       "stride_client_repo": "open-bus-stride-client repo",
+      "pipelines_repo": "open-bus-pipelines repo",
+      "existing_tests": "Example existing tests",
+      "offline_tests_workflow": "GitHub Actions — offline-tests",
+      "stride_notebooks": "Jupyter notebooks — stride-client",
+      "figma_designs": "Figma designs — visualization ideas",
       "stale_prs": "Stale PRs",
       "dashboard_page": "Dashboard page",
       "gaps_service": "Gaps service code",
@@ -509,6 +514,32 @@
     "challenges": {
       "title": "Challenges",
       "intro": "Every challenge is sized so you can ship an MVP in 90 minutes. These are starting ideas — not a closed list. Have your own idea? Share it with us at the start of the evening. Filter by tier, pick a track, expand a card to read the full brief.",
+      "harness-tests-ci": {
+        "title": "Write tests and open the agent feedback loop",
+        "oneLiner": "Without tests, the agent doesn't know if it broke something — and neither do you.",
+        "ship": "A PR with unit tests for one currently-untested module + a GitHub Actions job that runs them on every PR.",
+        "learn": "Jest, GitHub Actions, writing tests whose output is legible to an AI agent.",
+        "brief": "When an AI agent edits code, the fastest way to know it didn't break anything is tests running in CI and returning clear output. The frontend has several modules with zero test coverage: gap detection logic, time-calculation utilities, the Countdown component, and more. Pick one module, write unit tests, and add (or improve) the GitHub Actions job that runs them. Requirement: the agent will need to run the tests and interpret the output — make sure it's readable.",
+        "done": [
+          "At least 3 unit tests passing on current code",
+          "At least 1 test covering an edge case",
+          "GitHub Actions job running Jest on every PR"
+        ],
+        "nextSteps": "Expand to integration tests, add a coverage report, wire into a Claude skill that runs tests and summarizes failures."
+      },
+      "harness-backend-devenv": {
+        "title": "Agent-ready backend environment — all repos, one command",
+        "oneLiner": "The backend spans 7 repos. Build a single entry point an agent can actually use.",
+        "ship": "A devcontainer.json + one Claude skill that runs a real query against the Stride API and returns results.",
+        "learn": "Databus backend architecture, devcontainers, Claude skills with Python.",
+        "brief": "The Databus backend is split across open-bus-pipelines (orchestration), stride-db (schema), stride-etl (processing), siri-etl (real-time), and more. A new contributor — let alone an AI agent — needs to know what to clone, what to start, and in what order. Build a devcontainer that ships with stride-client pre-installed, a .claude/settings.json with approved Python commands, and one Claude skill that runs a query against the live Stride API and returns readable results.",
+        "done": [
+          "devcontainer.json works — `devcontainer open` lands you in Python + stride-client",
+          "stride-client connects to Stride API and returns real data",
+          "One Claude skill runs a query and returns a human-readable answer"
+        ],
+        "nextSteps": "Add more skills, wire to a local PostgreSQL, publish as the recommended entry point for new contributors across all Hasadna repos."
+      },
       "harness-skill-backend-tests": {
         "title": "Claude skill that runs the backend tests",
         "oneLiner": "One skill, saves 10 minutes on every PR review.",
@@ -579,7 +610,7 @@
         "oneLiner": "A Python library that wraps the Stride API — what can it do, what's missing?",
         "ship": "A PR with a README section (or separate doc) that maps the library's capabilities against current frontend needs.",
         "learn": "How the Stride REST API works, pandas + transit data, evaluating a Python library as a frontend consumer.",
-        "brief": "`open-bus-stride-client` is an actively maintained Python client that wraps the Stride REST API. It can load routes into pandas DataFrames, retrieve arrivals, SIRI vehicle locations, and GTFS schedules, and even run accessibility analysis. The frontend currently calls the API directly — but does the Python client expose things the frontend can't easily reach? Review the library's capabilities, run a few queries, and document what could be exposed via a new backend endpoint or MCP tool.",
+        "brief": "`open-bus-stride-client` is an actively maintained Python client that wraps the Stride REST API. It can load routes into pandas DataFrames, retrieve arrivals, SIRI vehicle locations, GTFS schedules, and run accessibility analysis. The repo also has Jupyter notebooks with real worked examples — a great starting point. The frontend currently calls the API directly — but does the Python client expose things the frontend can't easily reach? There's also a Figma file with visualization designs that were never built; one of them might connect directly to stride-client data.",
         "done": [
           "Ran at least 3 different queries using the library",
           "Document of capabilities vs. what the frontend already shows",
