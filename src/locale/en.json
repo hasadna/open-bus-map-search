@@ -684,6 +684,13 @@
         "imri": "Deputy Director, Public Knowledge Workshop"
       }
     },
+    "sponsors": {
+      "title": "Our Sponsors",
+      "applitools": "Applitools is sponsoring this hackathon — hosting the venue and providing us with a free open-source licence to Applitools Eyes. That licence helps us ship visual regression tests faster and with better coverage across the whole project.",
+      "callout": "Want to sponsor a future event? We're looking for companies that want to host a hackathon or make a long-term contribution to open-source public transit software in Israel.",
+      "donate": "Donate",
+      "contact": "Get in touch"
+    },
     "registration": {
       "title": "Registration",
       "body": "Registration closes 6 days before the event — June 3 at midnight. After that, message us for the waitlist."

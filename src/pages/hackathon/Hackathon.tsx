@@ -174,6 +174,20 @@ const Hackathon = () => {
         </MentorGrid>
       </Widget>
 
+      <Widget title={t('hackathonPage.sponsors.title')}>
+        <SponsorBlock>
+          <SponsorLogo>🧿 Applitools</SponsorLogo>
+          <p>{t('hackathonPage.sponsors.applitools')}</p>
+        </SponsorBlock>
+        <SponsorCallout>
+          <p>{t('hackathonPage.sponsors.callout')}</p>
+          <SponsorLinks>
+            <a href="/donate">{t('hackathonPage.sponsors.donate')}</a>
+            <a href="mailto:noam.gaash@gmail.com">{t('hackathonPage.sponsors.contact')}</a>
+          </SponsorLinks>
+        </SponsorCallout>
+      </Widget>
+
       <Widget title={t('hackathonPage.registration.title')}>
         <div id="register" />
         <p>{t('hackathonPage.registration.body')}</p>
@@ -536,6 +550,63 @@ const FaqItem = styled.div`
     margin: 0;
     opacity: 0.85;
     line-height: 1.6;
+  }
+`
+
+const SponsorBlock = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  border-radius: 8px;
+  background: #f0f9ff;
+  margin-bottom: 16px;
+
+  p {
+    margin: 0;
+    line-height: 1.6;
+    font-size: 15px;
+  }
+
+  .dark & {
+    background: #0c2340;
+  }
+`
+
+const SponsorLogo = styled.div`
+  font-size: 18px;
+  font-weight: 700;
+`
+
+const SponsorCallout = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 8px;
+  border: 1px dashed #c0cad4;
+
+  p {
+    margin: 0;
+    line-height: 1.6;
+    font-size: 15px;
+  }
+`
+
+const SponsorLinks = styled.div`
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+
+  a {
+    font-weight: 600;
+    font-size: 14px;
+    color: #1677ff;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
   }
 `
 
