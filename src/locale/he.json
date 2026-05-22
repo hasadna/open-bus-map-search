@@ -448,9 +448,11 @@
       "stride_notebooks": "Jupyter notebooks — stride-client",
       "figma_designs": "עיצובים ב-Figma — רעיונות לתצוגה",
       "stale_prs": "PRs ישנים שלא נסגרו",
-      "dashboard_page": "עמוד הדאשבורד",
+      "gaps_page": "עמוד הפערים (פעיל)",
       "gaps_service": "קוד שירות הפערים",
-      "siri_docs": "מהו SIRI?"
+      "siri_docs": "מהו SIRI?",
+      "data_model": "סכמת המידע (stride-db)",
+      "stride_api_repo": "ריפו open-bus-stride-api"
     },
     "countdown": {
       "days": "ימים",
@@ -695,6 +697,10 @@
       "regulator": {
         "q": "אני מארגון רגולטורי / חברת הפעלה — מה התפקיד שלי?",
         "a": "תשובצו לצוות פיתוח, ברירת מחדל במסלול דאטא ואלגוריתמיקה, ותהיו מומחה הדומיין שמכווין את הצוות לבעיות אמיתיות."
+      },
+      "devenv": {
+        "q": "אין לי סביבת פיתוח מוכנה — האם אפשר לפתח בכל זאת?",
+        "a": "כן. פיתחו את הריפו ב-Gitpod לסביבת VS Code בדפדפן עם כל ה-dependencies מותקנים מראש: https://gitpod.io/#https://github.com/hasadna/open-bus-map-search"
       }
     }
   }

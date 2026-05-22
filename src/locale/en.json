@@ -448,9 +448,11 @@
       "stride_notebooks": "Jupyter notebooks — stride-client",
       "figma_designs": "Figma designs — visualization ideas",
       "stale_prs": "Stale PRs",
-      "dashboard_page": "Dashboard page",
+      "gaps_page": "Gaps page (live)",
       "gaps_service": "Gaps service code",
-      "siri_docs": "What is SIRI?"
+      "siri_docs": "What is SIRI?",
+      "data_model": "Data model schema (stride-db)",
+      "stride_api_repo": "open-bus-stride-api repo"
     },
     "countdown": {
       "days": "Days",
@@ -703,6 +705,10 @@
       "regulator": {
         "q": "I'm from a regulator / operator — what's my role?",
         "a": "You'll be matched to a dev team, by default in Data & Algorithms, and serve as the domain expert who points the team at real problems."
+      },
+      "devenv": {
+        "q": "I don't have a local dev environment set up — can I still code?",
+        "a": "Yes. Open the repo in Gitpod for a browser-based VS Code environment with everything pre-installed: https://gitpod.io/#https://github.com/hasadna/open-bus-map-search"
       }
     }
   }

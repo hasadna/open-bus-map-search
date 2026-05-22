@@ -56,7 +56,7 @@ const Hackathon = () => {
 
   const whyComeKeys = ['contribute', 'learn', 'sunkCost']
   const scheduleKeys = ['mingling', 'talks', 'groupWork', 'demos', 'cleanup']
-  const faqKeys = ['bring', 'experience', 'free', 'regulator']
+  const faqKeys = ['bring', 'experience', 'free', 'regulator', 'devenv']
 
   return (
     <Page>

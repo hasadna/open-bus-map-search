@@ -118,6 +118,7 @@ export const CHALLENGES: Challenge[] = [
     startingPoints: [
       { labelKey: 'links.mcp_spec', href: 'https://modelcontextprotocol.io/' },
       { labelKey: 'links.stride_api', href: 'https://open-bus-stride-api.hasadna.org.il/docs' },
+      { labelKey: 'links.stride_api_repo', href: 'https://github.com/hasadna/open-bus-stride-api' },
     ],
   },
   {
@@ -168,7 +169,8 @@ export const CHALLENGES: Challenge[] = [
     stack: ['React', 'Recharts', 'TypeScript'],
     domainExpertFriendly: true,
     startingPoints: [
-      { labelKey: 'links.dashboard_page', href: 'https://www.databus.org.il/dashboard' },
+      { labelKey: 'links.gaps_page', href: 'https://www.databus.org.il/gaps' },
+      { labelKey: 'links.line_profile', href: 'https://www.databus.org.il/profile/' },
     ],
   },
   {
@@ -183,6 +185,10 @@ export const CHALLENGES: Challenge[] = [
         labelKey: 'links.gaps_service',
         href: 'https://github.com/hasadna/open-bus-map-search/blob/main/src/api/gapsService.ts',
       },
+      {
+        labelKey: 'links.data_model',
+        href: 'https://github.com/hasadna/open-bus-stride-db/blob/main/DATA_MODEL.md',
+      },
     ],
   },
   {
@@ -196,6 +202,14 @@ export const CHALLENGES: Challenge[] = [
       {
         labelKey: 'links.siri_docs',
         href: 'https://en.wikipedia.org/wiki/Service_Interface_for_Real_Time_Information',
+      },
+      {
+        labelKey: 'links.data_model',
+        href: 'https://github.com/hasadna/open-bus-stride-db/blob/main/DATA_MODEL.md',
+      },
+      {
+        labelKey: 'links.stride_api',
+        href: 'https://open-bus-stride-api.hasadna.org.il/docs',
       },
     ],
   },
