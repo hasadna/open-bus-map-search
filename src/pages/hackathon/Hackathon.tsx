@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
+import DonateModal from 'src/pages/DonateModal/DonateModal'
 import Widget from 'src/shared/Widget'
 import ChallengeCard from './ChallengeCard'
 import { CHALLENGES, ChallengeTier, REGISTRATION_CLOSE_ISO, Track } from './challenges'
@@ -37,6 +38,7 @@ const Hackathon = () => {
   const { t, i18n } = useTranslation()
   const tx = t as (key: string, opts?: Record<string, unknown>) => string
   const [tierFilter, setTierFilter] = useState<ChallengeTier | 'all'>('all')
+  const [donateOpen, setDonateOpen] = useState(false)
 
   const challengesByTrack = useMemo(() => {
     const filtered = CHALLENGES.filter((c) => tierFilter === 'all' || c.tier === tierFilter)
@@ -182,10 +184,13 @@ const Hackathon = () => {
         <SponsorCallout>
           <p>{t('hackathonPage.sponsors.callout')}</p>
           <SponsorLinks>
-            <a href="/donate">{t('hackathonPage.sponsors.donate')}</a>
+            <SponsorLinkButton onClick={() => setDonateOpen(true)}>
+              {t('hackathonPage.sponsors.donate')}
+            </SponsorLinkButton>
             <a href="mailto:noam.gaash@gmail.com">{t('hackathonPage.sponsors.contact')}</a>
           </SponsorLinks>
         </SponsorCallout>
+        <DonateModal isVisible={donateOpen} onClose={() => setDonateOpen(false)} />
       </Widget>
 
       <Widget title={t('hackathonPage.registration.title')}>
@@ -607,6 +612,20 @@ const SponsorLinks = styled.div`
     &:hover {
       text-decoration: underline;
     }
+  }
+`
+
+const SponsorLinkButton = styled.button`
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  color: #1677ff;
+
+  &:hover {
+    text-decoration: underline;
   }
 `
 
