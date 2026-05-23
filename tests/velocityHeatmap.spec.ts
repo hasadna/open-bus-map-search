@@ -22,7 +22,7 @@ test.describe('Velocity Heatmap', () => {
 
   test('shows all three visualization mode options', async ({ page }) => {
     await expect(page.getByText('Visualize Avg Speed')).toBeVisible()
-    await expect(page.getByText('Visualize Std')).toBeVisible()
+    await expect(page.getByText('Visualize Std', { exact: true })).toBeVisible()
     await expect(page.getByText('Visualize Std / Avg Speed (Coeff of Var)')).toBeVisible()
   })
 
