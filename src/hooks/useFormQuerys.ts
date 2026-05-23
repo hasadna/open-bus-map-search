@@ -1,8 +1,4 @@
-import {
-  GovLinesByLinePostRequest,
-  GovStationsByLinePostRequest,
-  LineModel,
-} from '@hasadna/open-bus-api-client'
+import { LineModel } from '@hasadna/open-bus-api-client'
 import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import { GOVERNMENT_TRANSPORTATION_API } from 'src/api/apiConfig'
@@ -49,7 +45,7 @@ export const useBoardingStationQuery = (line?: LineModel) => {
         eventDate: dayjs(eventDate).valueOf(),
         officelineId: lineCode,
         operatorId: operatorId,
-      } as GovStationsByLinePostRequest,
+      },
     }
   }, [line])
 
@@ -79,7 +75,7 @@ export const useLinesQuery = (eventDate?: dayjs.Dayjs, operator?: number, lineNu
         eventDate: eventDate.valueOf(),
         operatorId: Number(operator),
         operatorLineId: Number(lineNumber),
-      } as GovLinesByLinePostRequest,
+      },
     }
   }, [eventDate, operator, lineNumber])
 

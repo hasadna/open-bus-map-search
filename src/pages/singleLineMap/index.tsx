@@ -105,7 +105,11 @@ const SingleLineMapPage = () => {
           </Grid>
           {/* choose operator */}
           <Grid size={{ sm: 4, xs: 12 }}>
-            <OperatorSelector operatorId={operatorId} setOperatorId={handleOperatorChange} />
+            <OperatorSelector
+              operatorId={operatorId}
+              setOperatorId={handleOperatorChange}
+              excludeIsraelRailways
+            />
           </Grid>
           <Grid size={{ sm: 4, xs: 12 }}>
             {/* choose type */}

@@ -54,7 +54,7 @@ function mapperRoutes(routes: GtfsRoutePydanticModel[]) {
       const line = Number(routeLine)
       const suffix = line && routeSuffix ? routeSuffix : ''
       const routeKey = `${routeMkt}-${routeDirection}-${routeAlternative}`
-      return { id, line, suffix, start, end, routeKey } as RouteItem
+      return { id, line, suffix, start, end, routeKey }
     })
     .sort((a, b) => a.line - b.line || a.suffix.localeCompare(b.suffix, 'he'))
 }

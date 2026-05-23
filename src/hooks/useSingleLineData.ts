@@ -17,6 +17,15 @@ import {
   parseStartTimeToken,
 } from 'src/pages/components/utils/startTimeUtils'
 
+const formatTime = (time: dayjs.ConfigType) => toIsraelTimezone(time).format('HH:mm')
+
+const LIGHT_TRAIN_OPERATORS = new Set(['21', '22'])
+
+const VEHICLE_NUMBER_TEST = {
+  lightTrain: /^\d{1,6}$/,
+  bus: /^\d{7,8}$/,
+} as const
+
 export const useSingleLineData = (
   operatorId?: string,
   lineNumber?: string,
@@ -97,10 +106,16 @@ export const useSingleLineData = (
   }, [search.timestamp])
 
   const validVehicleNumber = useMemo(() => {
-    return vehicleNumber && /^\d{7,8}$/.test(vehicleNumber.toString())
-      ? Number(vehicleNumber)
-      : undefined
-  }, [vehicleNumber])
+    if (!vehicleNumber) return undefined
+
+    const vehicleNumberText = String(vehicleNumber)
+    const isLightTrain = LIGHT_TRAIN_OPERATORS.has(operatorId ?? '')
+    const vehicleNumberTest = isLightTrain
+      ? VEHICLE_NUMBER_TEST.lightTrain
+      : VEHICLE_NUMBER_TEST.bus
+
+    return vehicleNumberTest.test(vehicleNumberText) ? vehicleNumber : undefined
+  }, [operatorId, vehicleNumber])
 
   const parsedStartTime = useMemo(() => parseStartTimeToken(startTime), [startTime])
 
