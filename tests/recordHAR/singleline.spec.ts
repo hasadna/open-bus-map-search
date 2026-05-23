@@ -25,18 +25,7 @@ test.describe('Record singleline.har', () => {
     await page.getByRole('textbox', { name: 'מספר קו' }).fill('16')
     await page.waitForLoadState('networkidle')
 
-    // Fill line 9999 BEFORE route selection to record the empty routes response.
-    // Done here so no route or SIRI state is active, preventing transient aborted
-    // requests (ghost HAR entries) that would otherwise appear when cleaning up.
-    await page.getByRole('textbox', { name: 'מספר קו' }).fill('9999')
-    await page.waitForTimeout(1000)
-    await page.waitForLoadState('networkidle')
-
-    // Re-fill line 16 to proceed with route selection
-    await page.getByRole('textbox', { name: 'מספר קו' }).fill('16')
-    await page.waitForLoadState('networkidle')
-
-    // Select a route (triggers gtfs_rides/list, gtfs_ride_stops/list, gtfs_stops/get, siri data)
+    // Select a route (triggers siri_rides/list for start time options)
     const routeDropdown = page.getByLabel(/בחירת מסלול נסיעה/)
     if ((await routeDropdown.count()) > 0) {
       await routeDropdown.click()
@@ -50,9 +39,9 @@ test.describe('Record singleline.har', () => {
       }
     }
 
-    // Select start time to trigger siri data fetch
+    // Select start time to trigger siri vehicle locations fetch
     const startTimeDropdown = page.getByLabel('בחירת שעת התחלה')
-    if ((await startTimeDropdown.count()) > 0) {
+    if ((await startTimeDropdown.count()) > 0 && await startTimeDropdown.isEnabled()) {
       await startTimeDropdown.click()
       await page.waitForLoadState('networkidle')
       const firstTime = page.getByRole('option').first()
@@ -64,22 +53,24 @@ test.describe('Record singleline.har', () => {
       }
     }
 
-    // Switch to vehicle-number search and record the requests for vehicle-based start times
+    // Fill line 9999 to record the empty routes response.
+    // Done after route selection so no active route/SIRI state is disrupted.
+    await page.getByRole('textbox', { name: 'מספר קו' }).fill('9999')
+    await page.waitForTimeout(3000)
+    await page.waitForLoadState('networkidle')
+
+    // Switch to vehicle-number search and record siri_rides/list for vehicle-based start times
     await page.getByRole('button', { name: 'לפי מספר רכב' }).click()
-    const vehicleRequestsPromise = page.waitForResponse((response) => {
+    const vehicleRidesPromise = page.waitForResponse((response) => {
       const url = response.url()
-      return (
-        url.includes('/siri_vehicle_locations/list') &&
-        url.includes('siri_ride__vehicle_ref=7489226') &&
-        url.includes('recorded_at_time_from=2024-02-12T04%3A00%3A00.000Z')
-      )
+      return url.includes('/siri_rides/list') && url.includes('vehicle_refs=7489226')
     })
     await page.getByRole('textbox', { name: 'מספר רכב' }).fill('7489226')
-    await vehicleRequestsPromise
+    await vehicleRidesPromise
     await page.waitForLoadState('networkidle')
 
     const vehicleStartTimeDropdown = page.getByLabel('בחירת שעת התחלה')
-    if ((await vehicleStartTimeDropdown.count()) > 0) {
+    if ((await vehicleStartTimeDropdown.count()) > 0 && await vehicleStartTimeDropdown.isEnabled()) {
       await vehicleStartTimeDropdown.click()
       await page.waitForLoadState('networkidle')
       const vehicleStartTime = page.getByRole('option', { name: /04:30/ }).first()
