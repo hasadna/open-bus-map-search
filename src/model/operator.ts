@@ -5,23 +5,26 @@ export type Operator = {
   id: string
 }
 
-export const MAJOR_OPERATORS = ['3', '5', '15', '18', '25', '34'] // ['אלקטרה אפיקים', 'דן', 'מטרופולין', 'קווים', 'אגד', 'תנופה']
+export const MAJOR_OPERATORS = new Set(['3', '5', '15', '18', '25', '34']) // ['אלקטרה אפיקים', 'דן', 'מטרופולין', 'קווים', 'אגד', 'תנופה']
+export const ISRAEL_TRAIN_ID = '2'
 
 /**
  * Get operators list, based on agencies fetched from MOT api
  * @param filter Operator ID list
  * @returns List of operators
  */
-export async function getOperators(filter?: string[]): Promise<Operator[]> {
-  const agencyList = await getAgencyList()
-  const seen = new Map<string, Operator>()
-  for (const agency of agencyList) {
-    const id = agency.operatorRef.toString()
-    if (!seen.has(id)) {
-      if (!filter || filter.includes(id)) {
-        seen.set(id, { name: agency.agencyName, id })
-      }
+export async function getOperators(filter?: Set<string>): Promise<Operator[]> {
+  const agencies = await getAgencyList()
+  const operators = new Map<string, Operator>()
+
+  for (const agency of agencies) {
+    const id = String(agency.operatorRef)
+
+    if (operators.has(id) || (filter && !filter.has(id))) {
+      continue
     }
+
+    operators.set(id, { id, name: agency.agencyName })
   }
-  return Array.from(seen.values())
+  return Array.from(operators.values())
 }

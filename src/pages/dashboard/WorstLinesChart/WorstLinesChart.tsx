@@ -19,7 +19,7 @@ const convertToWorstLineChartCompatibleStruct = (arr: GroupByRes[], operatorId?:
   return arr
     .filter((row) => {
       if (operatorId) return row.operatorRef?.operatorRef.toString() === operatorId
-      return row.operatorRef && MAJOR_OPERATORS.includes(row.operatorRef.operatorRef.toString())
+      return row.operatorRef && MAJOR_OPERATORS.has(row.operatorRef.operatorRef.toString())
     })
     .map(
       (item) =>
