@@ -8,14 +8,14 @@ import { buildShareUrl } from './shareUrl'
 
 export const ShareButton = () => {
   const { search } = useContext(SearchContext)
-  const { params: extraParams } = useContext(ExtraShareParamsContext)
+  const { params: pageParams } = useContext(ExtraShareParamsContext)
   const location = useLocation()
   const [copied, setCopied] = useState(false)
   const { t } = useTranslation()
 
   const shareUrl = useMemo(
-    () => buildShareUrl(location.pathname, search, extraParams),
-    [location.pathname, search, extraParams],
+    () => buildShareUrl(location.pathname, search, pageParams),
+    [location.pathname, search, pageParams],
   )
 
   const handleShare = useCallback(() => {

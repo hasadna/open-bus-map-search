@@ -1,6 +1,6 @@
 import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
-import { useContext, useMemo, useState } from 'react'
+import { useContext, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   getGtfsStopHitTimesAsync,
@@ -9,6 +9,7 @@ import {
 } from 'src/api/gtfsService'
 import { getSiriStopHitTimesAsync } from 'src/api/siriService'
 import dayjs from 'src/dayjs'
+import { usePageState } from 'src/hooks/usePageState'
 import { Label } from 'src/pages/components/Label'
 import LineNumberSelector from 'src/pages/components/LineSelector'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
@@ -26,21 +27,27 @@ import { TimeSelector } from '../components/TimeSelector'
 const TimelinePage = () => {
   const { t } = useTranslation()
   const { search, setSearch } = useContext(SearchContext)
-  const { operatorId, lineNumber, timestamp, routeKey } = search
-  const [stopKey, setStopKey] = useState<string | undefined>()
+  const { operatorId, lineNumber, date, routeKey } = search
 
-  const time = useMemo(() => dayjs(search.timestamp).startOf('minute'), [timestamp])
+  // stopKey is global: shared with /single-line-map and /profile so the
+  // selected stop survives navigation between these related views.
+  const stopKey = search.stopKey
+  const setStopKey = (key: string | undefined) =>
+    setSearch((prev) => ({ ...prev, stopKey: key ?? null }))
+
+  // No shareable page params beyond what's in global; ui tracks scroll only.
+  usePageState('timeline', { params: {}, ui: { scrollPosition: 0 } })
+
+  const time = useMemo(() => dayjs(date).startOf('minute'), [date])
 
   const routesQuery = useQuery({
     queryFn: async () => {
       if (operatorId && lineNumber) {
         try {
-          const routes = await getRoutesAsync(time, time, operatorId, lineNumber)
-          setSearch((prev) => ({ ...prev, routes }))
-          return routes
+          return await getRoutesAsync(time, time, operatorId, lineNumber)
         } catch (error) {
           console.error(error)
-          setSearch((current) => ({ ...current, routes: undefined, routeKey: undefined }))
+          setSearch((current) => ({ ...current, routeKey: null }))
           setStopKey(undefined)
         }
       }
@@ -49,9 +56,10 @@ const TimelinePage = () => {
     queryKey: ['routes', operatorId, lineNumber, time.valueOf()],
   })
 
-  const selectedRoute = useMemo(() => {
-    return routesQuery.data?.find((route) => route.key === routeKey)
-  }, [routesQuery.data, routeKey])
+  const selectedRoute = useMemo(
+    () => routesQuery.data?.find((route) => route.key === routeKey),
+    [routesQuery.data, routeKey],
+  )
 
   const stopsQuery = useQuery({
     queryFn: async () => {
@@ -68,9 +76,10 @@ const TimelinePage = () => {
     queryKey: ['stops', selectedRoute?.lineRef, time.valueOf()],
   })
 
-  const selectedStop = useMemo(() => {
-    return stopsQuery.data?.find((stop) => stop.key === stopKey)
-  }, [stopsQuery.data, stopKey])
+  const selectedStop = useMemo(
+    () => stopsQuery.data?.find((stop) => stop.key === stopKey),
+    [stopsQuery.data, stopKey],
+  )
 
   const hitsQuery = useQuery({
     queryFn: async () => {
@@ -105,32 +114,32 @@ const TimelinePage = () => {
         {/* choose date */}
         <Grid size={{ lg: 4, md: 6, xs: 12 }}>
           <DateSelector
-            time={dayjs(timestamp)}
+            time={dayjs(date)}
             onChange={(ts) => {
               if (!ts) return
-              const currentTime = dayjs(timestamp)
-              const newTimestamp = ts
-                .hour(currentTime.hour())
-                .minute(currentTime.minute())
+              const current = dayjs(date)
+              const newDate = ts
+                .hour(current.hour())
+                .minute(current.minute())
                 .startOf('minute')
                 .valueOf()
-              setSearch((current) => ({ ...current, timestamp: newTimestamp }))
+              setSearch((prev) => ({ ...prev, date: newDate }))
             }}
           />
         </Grid>
         {/* choose time */}
         <Grid size={{ lg: 4, md: 6, xs: 12 }}>
           <TimeSelector
-            time={dayjs(timestamp)}
+            time={dayjs(date)}
             onChange={(ts) => {
               if (!ts) return
-              const currentDate = dayjs(timestamp)
-              const newTimestamp = currentDate
+              const current = dayjs(date)
+              const newDate = current
                 .hour(ts.hour())
                 .minute(ts.minute())
                 .startOf('minute')
                 .valueOf()
-              setSearch((current) => ({ ...current, timestamp: newTimestamp }))
+              setSearch((prev) => ({ ...prev, date: newDate }))
             }}
           />
         </Grid>
@@ -138,14 +147,14 @@ const TimelinePage = () => {
         <Grid size={{ lg: 4, md: 6, xs: 12 }}>
           <OperatorSelector
             operatorId={operatorId}
-            setOperatorId={(id) => setSearch((current) => ({ ...current, operatorId: id }))}
+            setOperatorId={(id) => setSearch((prev) => ({ ...prev, operatorId: id }))}
           />
         </Grid>
         {/* choose line */}
         <Grid size={{ lg: 4, md: 6, xs: 12 }}>
           <LineNumberSelector
             lineNumber={lineNumber}
-            setLineNumber={(number) => setSearch((current) => ({ ...current, lineNumber: number }))}
+            setLineNumber={(number) => setSearch((prev) => ({ ...prev, lineNumber: number }))}
           />
         </Grid>
         {/* routes */}
@@ -159,7 +168,7 @@ const TimelinePage = () => {
                   disabled={!routesQuery.data}
                   routes={routesQuery.data || []}
                   routeKey={routeKey}
-                  setRouteKey={(key) => setSearch((current) => ({ ...current, routeKey: key }))}
+                  setRouteKey={(key) => setSearch((prev) => ({ ...prev, routeKey: key ?? null }))}
                 />
               )}
             </div>
@@ -173,8 +182,8 @@ const TimelinePage = () => {
               <StopSelector
                 disabled={!stopsQuery.data}
                 stops={stopsQuery.data || []}
-                stopKey={stopKey}
-                setStopKey={(key) => setStopKey(key)}
+                stopKey={stopKey ?? undefined}
+                setStopKey={setStopKey}
               />
             </div>
             {stopsQuery.isLoading && <CircularProgress />}
@@ -194,7 +203,7 @@ const TimelinePage = () => {
                 ((hitsQuery.data?.gtfsTime && hitsQuery.data.gtfsTime.length > 0) ||
                 (hitsQuery.data?.siriTime && hitsQuery.data.siriTime.length > 0) ? (
                   <TimelineBoard
-                    target={dayjs(timestamp)}
+                    target={dayjs(date)}
                     gtfsTimes={hitsQuery.data.gtfsTime}
                     siriTimes={hitsQuery.data.siriTime}
                   />

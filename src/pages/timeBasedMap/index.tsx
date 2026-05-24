@@ -1,14 +1,15 @@
 import { OpenInFullRounded } from '@mui/icons-material'
 import { Alert, CircularProgress, Grid, IconButton, Typography } from '@mui/material'
-import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useMemo } from 'react'
+import { useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet'
+import { MapContainer, Marker, Popup, TileLayer, useMap, useMapEvents } from 'react-leaflet'
 import MarkerClusterGroup from 'react-leaflet-markercluster'
 import dayjs from 'src/dayjs'
 import { useAgencyList } from 'src/hooks/useAgencyList'
 import { useConstrainedFloatingButton } from 'src/hooks/useConstrainedFloatingButton'
+import { usePageState } from 'src/hooks/usePageState'
 import useVehicleLocations from 'src/hooks/useVehicleLocations'
-import { ExtraShareParamsContext, InitialUrlParamsContext } from 'src/model/pageState'
 import { type Point, toPoint } from 'src/pages/components/map-related/map-types'
 import { BusToolTip } from 'src/pages/components/map-related/MapLayers/BusToolTip'
 import { DateSelector } from '../components/DateSelector'
@@ -18,38 +19,59 @@ import { busIcon, busIconPath } from '../components/utils/BusIcon'
 import createClusterCustomIcon from '../components/utils/customCluster/customCluster'
 import InfoYoutubeModal from '../components/YoutubeModal'
 
-const DEFAULT_TIME = dayjs('2023-03-14T15:00:00Z')
-const DEFAULT_POSITION: Point = {
-  loc: [32.3057988, 34.85478613],
-  color: 0,
-}
+// Hardcoded default so the API/CDN cache is warm for first-time visitors.
+// The page owns its datetime independently from the global `date` field
+// because it needs sub-day precision and should not reset when the user
+// navigates away and back (unlike global date which is a shared day picker).
+const PI_DAY = dayjs('2023-03-14T15:00:00Z').valueOf().toString()
+
+const DEFAULT_CENTER: [number, number] = [32.3057988, 34.85478613]
+const DEFAULT_ZOOM = 8
 
 export default function TimeBasedMapPage() {
-  const [isExpanded, setIsExpanded] = useState<boolean>(false)
-  const toggleExpanded = useCallback(() => setIsExpanded((expanded) => !expanded), [])
-
   const mapContainerRef = useRef<HTMLDivElement>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
-
-  const initialUrlParams = useContext(InitialUrlParamsContext)
-  const [from, setFrom] = useState(() =>
-    initialUrlParams.timestamp ? dayjs(+initialUrlParams.timestamp) : DEFAULT_TIME,
-  )
-  const to = useMemo(() => dayjs(from).add(1, 'minutes'), [from])
-  const { locations, isLoading } = useVehicleLocations({ from, to })
   const { t } = useTranslation()
+
+  // All time-map state is page-specific.
+  // datetime, center, zoom go in params (shareable) — the recipient sees the
+  //   same moment AND the same map viewport (no auto-fit here).
+  // isExpanded goes in ui (device-specific layout, not worth sharing).
+  const { params, ui, setParams, setUi } = usePageState(
+    'time-map',
+    {
+      params: {
+        datetime: PI_DAY,
+        centerLat: DEFAULT_CENTER[0],
+        centerLng: DEFAULT_CENTER[1],
+        zoom: DEFAULT_ZOOM,
+      },
+      ui: { isExpanded: false, scrollPosition: 0 },
+    },
+    ['datetime', 'centerLat', 'centerLng', 'zoom'],
+  )
+
+  const from = useMemo(() => dayjs(Number(params.datetime)), [params.datetime])
+  const to = useMemo(() => from.add(1, 'minutes'), [from])
+  const { locations, isLoading } = useVehicleLocations({ from, to })
   const positions = useMemo(() => locations.map(toPoint), [locations])
-  const handleFromChange = useCallback((timestamp: dayjs.Dayjs | null) => {
-    setFrom(timestamp ?? DEFAULT_TIME)
-  }, [])
 
-  const { setParams } = useContext(ExtraShareParamsContext)
-  useEffect(() => {
-    setParams({ timestamp: from.valueOf().toString() })
-    return () => setParams({})
-  }, [from, setParams])
+  const handleFromChange = useCallback(
+    (timestamp: dayjs.Dayjs | null) => {
+      setParams((prev) => ({
+        ...prev,
+        datetime: (timestamp ?? dayjs(Number(PI_DAY))).valueOf().toString(),
+      }))
+    },
+    [setParams],
+  )
 
-  useConstrainedFloatingButton(mapContainerRef, buttonRef, isExpanded)
+  const toggleExpanded = useCallback(
+    () => setUi((prev) => ({ ...prev, isExpanded: !prev.isExpanded })),
+    [setUi],
+  )
+
+  useConstrainedFloatingButton(mapContainerRef, buttonRef, ui.isExpanded)
 
   return (
     <PageContainer className="map-container">
@@ -67,20 +89,18 @@ export default function TimeBasedMapPage() {
         </Alert>
       </Grid>
       <Grid container spacing={2}>
-        {/* from date */}
         <Grid size={{ md: 4, sm: 6, xs: 12 }}>
           <DateSelector time={from} onChange={handleFromChange} />
         </Grid>
         <Grid size={{ md: 4, sm: 6, xs: 12 }}>
           <TimeSelector time={from} onChange={handleFromChange} />
         </Grid>
-        {/* loaded info */}
         <Grid size={{ xs: 11 }} container alignItems="center">
           <p>{`${locations.length} - ${t('show_x_bus_locations')}`}</p>
           {isLoading && <CircularProgress size="20px" />}
         </Grid>
       </Grid>
-      <div ref={mapContainerRef} className={`map-info ${isExpanded ? 'expanded' : 'collapsed'}`}>
+      <div ref={mapContainerRef} className={`map-info ${ui.isExpanded ? 'expanded' : 'collapsed'}`}>
         <IconButton
           ref={buttonRef}
           color="primary"
@@ -88,16 +108,43 @@ export default function TimeBasedMapPage() {
           onClick={toggleExpanded}>
           <OpenInFullRounded fontSize="large" />
         </IconButton>
-        <MapContainer center={DEFAULT_POSITION.loc} zoom={8} scrollWheelZoom={true}>
+        <MapContainer
+          center={[params.centerLat, params.centerLng]}
+          zoom={params.zoom}
+          scrollWheelZoom={true}>
           <TileLayer
             attribution='&copy <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
+          />
+          <MapViewportTracker
+            onViewportChange={(centerLat, centerLng, zoom) =>
+              setParams((prev) => ({ ...prev, centerLat, centerLng, zoom }))
+            }
           />
           <Markers positions={positions} />
         </MapContainer>
       </div>
     </PageContainer>
   )
+}
+
+/** Persists map viewport so the share URL reproduces the same view. */
+function MapViewportTracker({
+  onViewportChange,
+}: {
+  onViewportChange: (lat: number, lng: number, zoom: number) => void
+}) {
+  useMapEvents({
+    moveend(e) {
+      const map = e.target as {
+        getCenter: () => { lat: number; lng: number }
+        getZoom: () => number
+      }
+      const c = map.getCenter()
+      onViewportChange(c.lat, c.lng, map.getZoom())
+    },
+  })
+  return null
 }
 
 function Markers({ positions }: { positions: Point[] }) {
@@ -114,12 +161,14 @@ function Markers({ positions }: { positions: Point[] }) {
     [agencyList],
   )
 
-  useEffect(() => {
+  // Fly to user's location on first load for a personalised default view.
+  // Geolocation is best-effort; failure is silently ignored.
+  useMemo(() => {
     if (!navigator.geolocation) return
     navigator.geolocation.getCurrentPosition((position) => {
       map.flyTo([position.coords.latitude, position.coords.longitude], 13)
     })
-  }, [map])
+  }, [])
 
   const markerNodes = useMemo(
     () =>

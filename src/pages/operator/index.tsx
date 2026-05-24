@@ -1,8 +1,9 @@
 import { Grid, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
-import { useContext, useState } from 'react'
+import { useContext } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import dayjs from 'src/dayjs'
+import { usePageState } from 'src/hooks/usePageState'
 import { SearchContext } from 'src/model/pageState'
 import { DateSelector } from '../components/DateSelector'
 import OperatorSelector from '../components/OperatorSelector'
@@ -12,23 +13,32 @@ import { OperatorGaps } from './OperatorGaps'
 import { OperatorInfo } from './OperatorInfo'
 import { OperatorRoutes } from './OperatorRoutes'
 
-const TIME_RANGES = ['day', 'week', 'month'] as const //  'year'
+const TIME_RANGES = ['day', 'week', 'month'] as const
 
 const OperatorPage = () => {
   const {
-    search: { operatorId, timestamp },
+    search: { operatorId, date },
     setSearch,
   } = useContext(SearchContext)
   const { t, i18n } = useTranslation()
 
-  const [timeRange, setTimeRange] = useState<(typeof TIME_RANGES)[number]>('day')
+  // timeRange is shareable: a colleague receiving the link sees the same
+  // aggregation window (day / week / month).
+  const { params, setParams } = usePageState(
+    'operator',
+    {
+      params: { timeRange: 'day' as (typeof TIME_RANGES)[number] },
+      ui: { scrollPosition: 0 },
+    },
+    ['timeRange'],
+  )
 
   const handleOperatorChange = (operatorId: string) => {
     setSearch((current) => ({ ...current, operatorId }))
   }
 
-  const handleTimestampChange = (time: dayjs.Dayjs | null) => {
-    setSearch((current) => ({ ...current, timestamp: time?.valueOf() ?? Date.now() }))
+  const handleDateChange = (time: dayjs.Dayjs | null) => {
+    setSearch((current) => ({ ...current, date: time?.valueOf() ?? Date.now() }))
   }
 
   return (
@@ -40,24 +50,20 @@ const OperatorPage = () => {
         </Grid>
 
         <Grid size={{ sm: 4, xs: 12 }}>
-          <DateSelector
-            time={dayjs(timestamp)}
-            disabled={!operatorId}
-            onChange={handleTimestampChange}
-          />
+          <DateSelector time={dayjs(date)} disabled={!operatorId} onChange={handleDateChange} />
         </Grid>
 
         <Grid size={{ sm: 4, xs: 12 }}>
           <ToggleButtonGroup
             color={!operatorId ? 'standard' : 'primary'}
-            value={timeRange}
+            value={params.timeRange}
             disabled={!operatorId}
             sx={{ height: 56 }}
             exclusive
             fullWidth
             dir="rtl"
             onChange={(_, value: (typeof TIME_RANGES)[number]) =>
-              value ? setTimeRange(value) : undefined
+              value ? setParams((prev) => ({ ...prev, timeRange: value })) : undefined
             }>
             {(i18n.dir() === 'rtl' ? TIME_RANGES : TIME_RANGES.toReversed()).map((time) => (
               <ToggleButton key={time} value={time}>
@@ -72,14 +78,14 @@ const OperatorPage = () => {
           <Grid size={{ lg: 6, xs: 12 }}>
             <OperatorInfo operatorId={operatorId} />
             <Spacing />
-            <OperatorGaps operatorId={operatorId} timestamp={timestamp} timeRange={timeRange} />
+            <OperatorGaps operatorId={operatorId} timestamp={date} timeRange={params.timeRange} />
           </Grid>
           <Grid size={{ lg: 6, xs: 12 }}>
             <ChartWrapper>
               <WorstLinesChart
                 operatorId={operatorId}
-                startDate={dayjs(timestamp).add(-1, timeRange)}
-                endDate={dayjs(timestamp)}
+                startDate={dayjs(date).add(-1, params.timeRange)}
+                endDate={dayjs(date)}
                 alertWorstLineHandling={function (arg: boolean): void {
                   console.log('alertWorstLineHandling', arg)
                 }}
@@ -87,7 +93,7 @@ const OperatorPage = () => {
             </ChartWrapper>
           </Grid>
           <Grid size={{ xs: 12 }}>
-            <OperatorRoutes operatorId={operatorId} timestamp={timestamp} />
+            <OperatorRoutes operatorId={operatorId} timestamp={date} />
           </Grid>
         </Grid>
       )}

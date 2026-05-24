@@ -56,7 +56,7 @@ export const VelocityHeatmapRectangles = ({
       minLon: DEFAULT_BOUNDS.minLon,
       maxLon: DEFAULT_BOUNDS.maxLon,
     },
-    dayjs(search.timestamp),
+    dayjs(search.date),
     zoom - 6,
   )
   const half = 0.5 / Math.pow(2, currZoom)

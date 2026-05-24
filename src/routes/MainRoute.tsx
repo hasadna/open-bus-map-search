@@ -5,17 +5,11 @@ import ReactGA from 'react-ga4'
 import { useLocation, useSearchParams } from 'react-router'
 import rtlPlugin from 'stylis-plugin-rtl'
 import { useSessionStorage } from 'usehooks-ts'
-import dayjs from 'src/dayjs'
 import { MainLayout } from '../layout'
 import { ThemeProvider } from '../layout/ThemeContext'
-import {
-  ExtraShareParamsContext,
-  InitialUrlParamsContext,
-  PageSearchState,
-  SearchContext,
-} from '../model/pageState'
+import { ExtraShareParamsContext, InitialUrlParamsContext, SearchContext } from '../model/pageState'
+import { GLOBAL_SEARCH_DEFAULTS, GlobalSearchState } from '../model/searchState'
 
-// Create rtl cache
 const cacheRtl = createCache({
   key: 'muirtl',
   stylisPlugins: [rtlPlugin],
@@ -34,8 +28,8 @@ export const MainRoute = () => {
   }, [pathname, locationParams])
 
   // Capture URL params synchronously on mount, before they are stripped.
-  // useMemo with [] deps runs once and the value is stable — available to lazy-loaded
-  // child pages via InitialUrlParamsContext even after the address bar is cleaned up.
+  // useMemo with [] deps runs once — available to lazy-loaded child pages via
+  // InitialUrlParamsContext even after the address bar has been cleaned up.
   const initialUrlParams = useMemo<Record<string, string>>(() => {
     const result: Record<string, string> = {}
     new URLSearchParams(window.location.search).forEach((v, k) => {
@@ -44,30 +38,28 @@ export const MainRoute = () => {
     return result
   }, [])
 
-  // Parse the captured URL params into SearchContext fields
-  const urlState = useMemo<Partial<PageSearchState>>(() => {
+  // Parse captured URL params into GlobalSearchState fields.
+  // Field names match the new state model (date, rideTime, stopKey).
+  const urlState = useMemo<Partial<GlobalSearchState>>(() => {
     const p = initialUrlParams
     return {
-      ...(p.timestamp ? { timestamp: +p.timestamp } : {}),
+      ...(p.date ? { date: new Date(p.date).getTime() || +p.date } : {}),
       ...(p.operatorId ? { operatorId: p.operatorId } : {}),
       ...(p.lineNumber ? { lineNumber: p.lineNumber } : {}),
       ...(p.vehicleNumber ? { vehicleNumber: Number(p.vehicleNumber) } : {}),
       ...(p.routeKey ? { routeKey: p.routeKey } : {}),
-      ...(p.startTime ? { startTime: p.startTime } : {}),
+      ...(p.rideTime ? { rideTime: p.rideTime } : {}),
+      ...(p.stopKey ? { stopKey: p.stopKey } : {}),
     }
   }, [])
 
-  const [search, setSearch] = useSessionStorage<PageSearchState>('search', {
-    timestamp: dayjs().valueOf(),
-    operatorId: '',
-    lineNumber: '',
-    routeKey: '',
-    startTime: '',
+  const [search, setSearch] = useSessionStorage<GlobalSearchState>('search', {
+    ...GLOBAL_SEARCH_DEFAULTS,
     ...urlState,
   })
 
-  // If session storage already had values, urlState was ignored above — apply it now.
-  // This ensures shared links always override stale session state.
+  // If session storage already had values, urlState was ignored above — apply
+  // it now. Shared links must always override stale session state.
   useEffect(() => {
     if (Object.keys(urlState).length > 0) {
       setSearch((current) => ({ ...current, ...urlState }))
@@ -84,9 +76,12 @@ export const MainRoute = () => {
 
   const [extraShareParams, setExtraShareParams] = useState<Record<string, string>>({})
 
-  const safeSetSearch = useCallback((mutate: (prevState: PageSearchState) => PageSearchState) => {
-    setSearch((current: PageSearchState) => mutate(current))
-  }, [])
+  const safeSetSearch = useCallback(
+    (mutate: (prevState: GlobalSearchState) => GlobalSearchState) => {
+      setSearch((current: GlobalSearchState) => mutate(current))
+    },
+    [],
+  )
 
   const setExtraShareParamsStable = useCallback((params: Record<string, string>) => {
     setExtraShareParams(params)
