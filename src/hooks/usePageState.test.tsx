@@ -1,16 +1,13 @@
 import { act, renderHook } from '@testing-library/react'
 import React from 'react'
-import { PageShareParamsContext, InitialUrlParamsContext } from 'src/model/pageState'
+import { InitialUrlParamsContext, PageShareParamsContext } from 'src/model/pageState'
 import { usePageState } from './usePageState'
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
-function makeWrapper(
-  initialUrlParams: Record<string, string> = {},
-  setShareParams = jest.fn(),
-) {
+function makeWrapper(initialUrlParams: Record<string, string> = {}, setShareParams = jest.fn()) {
   const Wrapper = ({ children }: { children: React.ReactNode }) => (
     <InitialUrlParamsContext.Provider value={initialUrlParams}>
       <PageShareParamsContext.Provider value={{ params: {}, setParams: setShareParams }}>
@@ -97,7 +94,11 @@ describe('usePageState — sessionStorage persistence', () => {
       wrapper: Wrapper,
     })
     const { result: r2 } = renderHook(
-      () => usePageState('page-b', { params: { mode: 'std' as const, count: 5, active: true, label: 'hello' }, ui: { scrollPosition: 0, isExpanded: false } }),
+      () =>
+        usePageState('page-b', {
+          params: { mode: 'std' as const, count: 5, active: true, label: 'hello' },
+          ui: { scrollPosition: 0, isExpanded: false },
+        }),
       { wrapper: Wrapper },
     )
     act(() => {
@@ -115,76 +116,68 @@ describe('usePageState — sessionStorage persistence', () => {
 describe('usePageState — URL param seeding', () => {
   it('seeds a string param from the URL', () => {
     const { Wrapper } = makeWrapper({ label: 'from-url' })
-    const { result } = renderHook(
-      () => usePageState('test', DEFAULTS, ['label']),
-      { wrapper: Wrapper },
-    )
+    const { result } = renderHook(() => usePageState('test', DEFAULTS, ['label']), {
+      wrapper: Wrapper,
+    })
     expect(result.current.params.label).toBe('from-url')
   })
 
   it('coerces a numeric URL param to number', () => {
     const { Wrapper } = makeWrapper({ count: '42' })
-    const { result } = renderHook(
-      () => usePageState('test', DEFAULTS, ['count']),
-      { wrapper: Wrapper },
-    )
+    const { result } = renderHook(() => usePageState('test', DEFAULTS, ['count']), {
+      wrapper: Wrapper,
+    })
     expect(result.current.params.count).toBe(42)
   })
 
   it('coerces a boolean URL param: "true" → true', () => {
     const { Wrapper } = makeWrapper({ active: 'true' })
-    const { result } = renderHook(
-      () => usePageState('test', DEFAULTS, ['active']),
-      { wrapper: Wrapper },
-    )
+    const { result } = renderHook(() => usePageState('test', DEFAULTS, ['active']), {
+      wrapper: Wrapper,
+    })
     expect(result.current.params.active).toBe(true)
   })
 
   it('coerces a boolean URL param: anything other than "true" → false', () => {
     const { Wrapper } = makeWrapper({ active: 'false' })
-    const { result } = renderHook(
-      () => usePageState('test', DEFAULTS, ['active']),
-      { wrapper: Wrapper },
-    )
+    const { result } = renderHook(() => usePageState('test', DEFAULTS, ['active']), {
+      wrapper: Wrapper,
+    })
     expect(result.current.params.active).toBe(false)
   })
 
   it('falls back to default when URL number param is not finite', () => {
     const { Wrapper } = makeWrapper({ count: 'not-a-number' })
-    const { result } = renderHook(
-      () => usePageState('test', DEFAULTS, ['count']),
-      { wrapper: Wrapper },
-    )
+    const { result } = renderHook(() => usePageState('test', DEFAULTS, ['count']), {
+      wrapper: Wrapper,
+    })
     expect(result.current.params.count).toBe(DEFAULTS.params.count)
   })
 
   it('does not apply a URL param that is not listed in urlParamKeys', () => {
     const { Wrapper } = makeWrapper({ mode: 'std', label: 'from-url' })
     // only 'label' is listed — 'mode' should be ignored
-    const { result } = renderHook(
-      () => usePageState('test', DEFAULTS, ['label']),
-      { wrapper: Wrapper },
-    )
+    const { result } = renderHook(() => usePageState('test', DEFAULTS, ['label']), {
+      wrapper: Wrapper,
+    })
     expect(result.current.params.mode).toBe(DEFAULTS.params.mode)
     expect(result.current.params.label).toBe('from-url')
   })
 
   it('ignores URL params absent from the URL without error', () => {
     const { Wrapper } = makeWrapper({}) // no url params at all
-    const { result } = renderHook(
-      () => usePageState('test', DEFAULTS, ['label', 'count']),
-      { wrapper: Wrapper },
-    )
+    const { result } = renderHook(() => usePageState('test', DEFAULTS, ['label', 'count']), {
+      wrapper: Wrapper,
+    })
     expect(result.current.params.label).toBe(DEFAULTS.params.label)
     expect(result.current.params.count).toBe(DEFAULTS.params.count)
   })
 
   it('does not re-apply URL overrides on subsequent renders', () => {
     const { Wrapper } = makeWrapper({ count: '99' })
-    const { result } = renderHook(
-      () => usePageState('test', DEFAULTS, ['count']),
-      { wrapper: Wrapper },
-    )
+    const { result } = renderHook(() => usePageState('test', DEFAULTS, ['count']), {
+      wrapper: Wrapper,
+    })
     expect(result.current.params.count).toBe(99)
     // manually change it back
     act(() => {

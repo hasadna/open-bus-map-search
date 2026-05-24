@@ -17,7 +17,7 @@ export function normalizeScheduledTime(raw?: string): string | undefined {
     Number.isNaN(hour) ||
     Number.isNaN(minute) ||
     hour < 0 ||
-    hour > 23 ||
+    hour > 30 ||
     minute < 0 ||
     minute > 59
   ) {

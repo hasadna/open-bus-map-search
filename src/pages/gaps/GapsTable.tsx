@@ -13,7 +13,7 @@ import React, { memo, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
 import { Gap } from 'src/api/gapsService'
-import dayjs from 'src/dayjs'
+import dayjs, { toIsraelTimezone } from 'src/dayjs'
 import { formatStartTimeForQuery } from 'src/pages/components/utils/startTimeUtils'
 import Widget from 'src/shared/Widget'
 import DisplayGapsPercentage from '../components/DisplayGapsPercentage'
@@ -24,7 +24,8 @@ interface GapsTableProps {
   loading?: boolean
   initOnlyGapped?: boolean
   singleLineMapBaseHref: string
-  onStartTimeClick?: (rideTime: string, date: number) => void
+  date: number
+  onStartTimeClick?: (rideTime: string) => void
 }
 
 const cellStyle = {
@@ -82,9 +83,11 @@ const GapsTable: React.FC<GapsTableProps> = ({
   loading,
   initOnlyGapped = false,
   singleLineMapBaseHref,
+  date,
   onStartTimeClick,
 }) => {
   const { t } = useTranslation()
+  const serviceDayStart = toIsraelTimezone(date).startOf('day')
   const [onlyGapped, setOnlyGapped] = useState(initOnlyGapped)
 
   const filteredGaps: Gap[] = useMemo(() => {
@@ -146,12 +149,23 @@ const GapsTable: React.FC<GapsTableProps> = ({
                 .map((hour) => (
                   <TableRow key={hour}>
                     {groupedGaps[hour].map(({ gap, status }, j) => {
-                      const time = (gap.plannedStartTime || gap.actualStartTime)?.format('HH:mm')
+                      const gapTime = gap.plannedStartTime || gap.actualStartTime
+                      const displayTime = gapTime?.format('HH:mm')
+                      const rideToken = (() => {
+                        if (!gapTime) return undefined
+                        const totalMinutes = gapTime.diff(serviceDayStart, 'minutes')
+                        const h = Math.floor(totalMinutes / 60)
+                        const m = totalMinutes % 60
+                        return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`
+                      })()
                       const hasRide = Boolean(gap.actualStartTime)
-                      const startTimeParam = formatStartTimeForQuery(time)
+                      const startTimeParam = formatStartTimeForQuery(rideToken)
                       const cellHref = `${singleLineMapBaseHref}&rideTime=${startTimeParam}`
                       return (
-                        <Tooltip key={`${hour}-${j}-${time}`} title={buildTooltip(gap)} arrow>
+                        <Tooltip
+                          key={`${hour}-${j}-${displayTime}`}
+                          title={buildTooltip(gap)}
+                          arrow>
                           <TableCell
                             sx={{
                               ...cellStyle,
@@ -166,16 +180,12 @@ const GapsTable: React.FC<GapsTableProps> = ({
                               <Link
                                 to={cellHref}
                                 onClick={() =>
-                                  gap.actualStartTime &&
-                                  onStartTimeClick?.(
-                                    startTimeParam,
-                                    gap.actualStartTime.startOf('day').valueOf(),
-                                  )
+                                  gap.actualStartTime && onStartTimeClick?.(startTimeParam)
                                 }>
-                                {time}
+                                {displayTime}
                               </Link>
                             ) : (
-                              time
+                              displayTime
                             )}
                           </TableCell>
                         </Tooltip>

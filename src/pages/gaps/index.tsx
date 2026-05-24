@@ -105,11 +105,12 @@ const GapsPage = () => {
     setSearch((current) => ({ ...current, routeKey: routeKey ?? null }))
   }
 
-  // On gap row click: set rideTime + date in global state so /single-line-map
-  // can display that specific ride.
+  // On gap row click: only set rideTime — date stays as the service day the
+  // user was browsing. rideTime uses 24+ hour format for past-midnight rides
+  // (e.g. "25:30") so single-line-map can reconstruct the correct timestamp.
   const handleStartTimeClick = useCallback(
-    (rideTime: string, date: number) => {
-      setSearch((current) => ({ ...current, rideTime, date }))
+    (rideTime: string) => {
+      setSearch((current) => ({ ...current, rideTime }))
     },
     [setSearch],
   )
@@ -170,6 +171,7 @@ const GapsPage = () => {
         <GapsTable
           loading={gapsIsLoading}
           gaps={gaps}
+          date={date}
           singleLineMapBaseHref={singleLineMapBaseHref}
           onStartTimeClick={handleStartTimeClick}
         />

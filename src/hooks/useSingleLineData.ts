@@ -12,8 +12,6 @@ import {
   parseStartTimeToken,
 } from 'src/pages/components/utils/startTimeUtils'
 
-const formatTime = (time: dayjs.ConfigType) => toIsraelTimezone(time).format('HH:mm')
-
 const LIGHT_TRAIN_OPERATORS = new Set(['21', '22'])
 
 const VEHICLE_NUMBER_TEST = {
@@ -94,10 +92,26 @@ export const useSingleLineData = (
     return routes?.find((route) => route.key === routeKey)
   }, [routes, routeKey])
 
-  const [today, tomorrow] = useMemo(() => {
+  const [today, serviceDayEnd] = useMemo(() => {
     const today = toIsraelTimezone(search.date).startOf('day')
-    return [today, today.add(1, 'day')]
+    // Israeli service day runs up to ~04:00 AM the next calendar day.
+    // Use 30 hours to safely cover all past-midnight rides.
+    return [today, today.add(30, 'hours')]
   }, [search.date])
+
+  // Express position times as minutes-since-service-day-midnight so that
+  // past-midnight rides get 24+ hour values (e.g. 01:30 AM = "25:30").
+  // This matches the format GapsTable uses when building rideTime tokens.
+  const formatTime = useCallback(
+    (time: dayjs.ConfigType) => {
+      const t = toIsraelTimezone(time)
+      const totalMinutes = t.diff(today, 'minutes')
+      const h = Math.floor(totalMinutes / 60)
+      const m = totalMinutes % 60
+      return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`
+    },
+    [today],
+  )
 
   const validVehicleNumber = useMemo(() => {
     if (!vehicleNumber) return undefined
@@ -113,7 +127,7 @@ export const useSingleLineData = (
 
   const { locations, isLoading: locationsAreLoading } = useVehicleLocations({
     from: today.valueOf(),
-    to: tomorrow.valueOf(),
+    to: serviceDayEnd.valueOf(),
     operatorRef: operatorId ? Number(operatorId) : undefined,
     lineRef: selectedRoute?.lineRef ? Number(selectedRoute.lineRef) : undefined,
     vehicleRef: validVehicleNumber,
@@ -136,7 +150,7 @@ export const useSingleLineData = (
         const startTime = position.point?.siriRideScheduledStartTime
         if (!startTime) continue
         const dayjsTime = toIsraelTimezone(startTime as dayjs.ConfigType)
-        if (dayjsTime.isAfter(today) && dayjsTime.isBefore(tomorrow)) {
+        if (dayjsTime.isAfter(today) && dayjsTime.isBefore(serviceDayEnd)) {
           const formattedTime = formatTime(dayjsTime)
           const key = `${formattedTime}|${position.point?.siriRideVehicleRef}`
           if (!uniqueTimes.has(key)) {
@@ -156,7 +170,7 @@ export const useSingleLineData = (
               (option.position.point!.siriRouteOperatorRef ?? 0).toString(),
               (option.position.point!.siriRouteLineRef ?? 0).toString(),
               option.position.point!.recordedAtTime
-                ? new Date(option.position.point!.recordedAtTime as string)
+                ? new Date(option.position.point!.recordedAtTime as unknown as string)
                 : new Date(),
             )
             const [start, end] = routeStartEnd(routes[0]?.routeLongName)
@@ -180,7 +194,7 @@ export const useSingleLineData = (
     }
 
     fetchOptions()
-  }, [positions, today, tomorrow, vehicleNumber])
+  }, [positions, today, serviceDayEnd, vehicleNumber])
 
   useEffect(() => {
     const parsedStartTime = parseStartTimeToken(rideTime ?? undefined)
@@ -211,7 +225,7 @@ export const useSingleLineData = (
         const scheduledTime = parsedStartTime?.scheduledTime
         const scheduledLine = parsedStartTime?.lineRef
         const [hour, minute] = scheduledTime ? scheduledTime.split(':').map(Number) : [0, 0]
-        const startTimeTimestamp = today.hour(hour).minute(minute).second(0).millisecond(0)
+        const startTimeTimestamp = today.add(hour, 'hour').minute(minute).second(0).millisecond(0)
         let routeIds: number[] | undefined
         if (selectedRoute?.routeIds && selectedRoute.routeIds.length > 0) {
           routeIds = selectedRoute.routeIds
