@@ -1,6 +1,6 @@
 import { useContext, useEffect, useMemo, useRef } from 'react'
 import { useSessionStorage } from 'usehooks-ts'
-import { ExtraShareParamsContext, InitialUrlParamsContext } from 'src/model/pageState'
+import { PageShareParamsContext, InitialUrlParamsContext } from 'src/model/pageState'
 
 type Serializable = string | number | boolean | null
 
@@ -19,7 +19,7 @@ function serializeParams(params: Record<string, Serializable>): Record<string, s
 /**
  * Per-page state with a params/ui split.
  *
- * params — shareable: included in the share URL via ExtraShareParamsContext.
+ * params — shareable: included in the share URL via PageShareParamsContext.
  *          Restored from URL params on first load (for incoming shared links).
  *          Stored in sessionStorage['page:<key>:params'].
  *
@@ -45,7 +45,7 @@ export function usePageState<
   const [ui, setUi] = useSessionStorage(`page:${storageKey}:ui`, defaults.ui)
 
   const initialUrlParams = useContext(InitialUrlParamsContext)
-  const { setParams: setShareParams } = useContext(ExtraShareParamsContext)
+  const { setParams: setShareParams } = useContext(PageShareParamsContext)
 
   // Apply URL param overrides exactly once on mount.
   // This lets shared links restore page-specific state (e.g. gaps_patterns
@@ -81,7 +81,7 @@ export function usePageState<
     }
   }, [])
 
-  // Keep ExtraShareParamsContext in sync with current params so the share
+  // Keep PageShareParamsContext in sync with current params so the share
   // button always produces a URL that restores this page's exact view.
   const serialized = useMemo(
     () => serializeParams(params as Record<string, Serializable>),

@@ -13,8 +13,8 @@ export const SearchContext = createContext<{
 
 /** Page-specific shareable params registered by usePageState.
  *  The share button merges these with the relevant global fields to build
- *  the copy URL. Replaces the ad-hoc ExtraShareParamsContext pattern. */
-export const ExtraShareParamsContext = createContext<{
+ *  the copy URL. Replaces the ad-hoc PageShareParamsContext pattern. */
+export const PageShareParamsContext = createContext<{
   params: Record<string, string>
   setParams: (params: Record<string, string>) => void
 }>({ params: {}, setParams: () => {} })

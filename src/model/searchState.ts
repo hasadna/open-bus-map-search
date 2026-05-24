@@ -54,7 +54,7 @@ export const GLOBAL_SEARCH_DEFAULTS: GlobalSearchState = {
  *     vehicleNumber, so including them would confuse recipients).
  *   - Pages absent from this map get no global params in the share URL.
  *   - Page-specific params (startDate, visMode, etc.) are registered
- *     separately via usePageState → ExtraShareParamsContext.
+ *     separately via usePageState → PageShareParamsContext.
  */
 export const PAGE_GLOBAL_SHARE_KEYS: Partial<Record<string, (keyof GlobalSearchState)[]>> = {
   '/timeline': ['date', 'operatorId', 'lineNumber', 'routeKey', 'stopKey'],
@@ -76,5 +76,5 @@ export const PAGE_GLOBAL_SHARE_KEYS: Partial<Record<string, (keyof GlobalSearchS
   ],
   '/operator': ['operatorId', 'date'],
   // /profile/:id — route ID is already in the URL path; rideTime and stopKey
-  // come through as page params via ExtraShareParamsContext
+  // come through as page params via PageShareParamsContext
 }

@@ -8,7 +8,7 @@ export type { GlobalSearchState }
  *
  * The URL contains two groups of params:
  *   1. Global fields relevant to this page (from PAGE_GLOBAL_SHARE_KEYS).
- *   2. Page-specific params registered via usePageState → ExtraShareParamsContext
+ *   2. Page-specific params registered via usePageState → PageShareParamsContext
  *      (e.g. gaps_patterns' startDate/endDate, velocity-heatmap's visMode/center/zoom).
  *
  * Scroll position, map viewport on auto-fit pages, and other purely local UI

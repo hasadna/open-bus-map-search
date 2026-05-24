@@ -59,7 +59,7 @@ describe('buildShareUrl — null/falsy exclusion', () => {
 })
 
 // ---------------------------------------------------------------------------
-// Page-specific params (replaces ExtraShareParamsContext tests)
+// Page-specific params (replaces PageShareParamsContext tests)
 // ---------------------------------------------------------------------------
 
 describe('buildShareUrl — page-specific params', () => {

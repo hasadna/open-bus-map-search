@@ -7,7 +7,7 @@ import rtlPlugin from 'stylis-plugin-rtl'
 import { useSessionStorage } from 'usehooks-ts'
 import { MainLayout } from '../layout'
 import { ThemeProvider } from '../layout/ThemeContext'
-import { ExtraShareParamsContext, InitialUrlParamsContext, SearchContext } from '../model/pageState'
+import { PageShareParamsContext, InitialUrlParamsContext, SearchContext } from '../model/pageState'
 import { GLOBAL_SEARCH_DEFAULTS, GlobalSearchState } from '../model/searchState'
 
 const cacheRtl = createCache({
@@ -89,7 +89,7 @@ export const MainRoute = () => {
 
   return (
     <InitialUrlParamsContext.Provider value={initialUrlParams}>
-      <ExtraShareParamsContext.Provider
+      <PageShareParamsContext.Provider
         value={{ params: extraShareParams, setParams: setExtraShareParamsStable }}>
         <SearchContext.Provider value={{ search, setSearch: safeSetSearch }}>
           <CacheProvider value={cacheRtl}>
@@ -98,7 +98,7 @@ export const MainRoute = () => {
             </ThemeProvider>
           </CacheProvider>
         </SearchContext.Provider>
-      </ExtraShareParamsContext.Provider>
+      </PageShareParamsContext.Provider>
     </InitialUrlParamsContext.Provider>
   )
 }
