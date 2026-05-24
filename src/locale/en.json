@@ -679,7 +679,7 @@
       "roles": {
         "noam": "Databus maintainer",
         "aviv": "FE/JS mentor, maintainer",
-        "uri": "Backend & DevOps",
+        "ori": "Backend & DevOps",
         "dorit": "Executive Director, Public Knowledge Workshop",
         "imri": "Deputy Director, Public Knowledge Workshop"
       }
@@ -693,7 +693,7 @@
     },
     "registration": {
       "title": "Registration",
-      "body": "Registration closes 6 days before the event — June 3 at midnight. After that, message us for the waitlist."
+      "body": "Filling in the form below is mandatory to participate. Submitting the form is not enough — your registration is only confirmed once you receive an approval email from us. We confirm registrations manually so we can assign you to the right team. Registration closes June 3 at midnight."
     },
     "faq": {
       "title": "FAQ",

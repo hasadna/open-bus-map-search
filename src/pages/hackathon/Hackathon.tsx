@@ -29,7 +29,7 @@ const TRACK_ACCENT: Record<Track, string> = {
 const MENTORS = [
   { id: 'noam', nameHe: 'נועם', nameEn: 'Noam', emoji: '🧭' },
   { id: 'aviv', nameHe: 'אביב', nameEn: 'Aviv', emoji: '⚡' },
-  { id: 'uri', nameHe: 'אורי', nameEn: 'Uri', emoji: '🏗️' },
+  { id: 'ori', nameHe: 'אורי', nameEn: 'Ori', emoji: '🏗️' },
   { id: 'dorit', nameHe: 'דורית', nameEn: 'Dorit', emoji: '🎯' },
   { id: 'imri', nameHe: 'אימרי', nameEn: 'Imri', emoji: '✨' },
 ] as const
