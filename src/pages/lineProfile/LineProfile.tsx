@@ -5,7 +5,7 @@ import { useContext, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLoaderData, useNavigate } from 'react-router'
 import { getRoutesAsync } from 'src/api/gtfsService'
-import dayjs from 'src/dayjs'
+import dayjs, { toIsraelTimezone } from 'src/dayjs'
 import { usePageState } from 'src/hooks/usePageState'
 import { useSingleLineData } from 'src/hooks/useSingleLineData'
 import { SearchContext } from 'src/model/pageState'
@@ -50,7 +50,7 @@ const LineProfile = () => {
     setStopKey(undefined)
     if (!route?.id) return
     setSearch(() => ({
-      date: route.date.getTime(),
+      date: toIsraelTimezone(route.date.getTime()).format('YYYY-MM-DD'),
       operatorId: route.operatorRef.toString(),
       lineNumber: route.routeShortName,
       routeKey: `${route.routeMkt}-${route.routeDirection}`,

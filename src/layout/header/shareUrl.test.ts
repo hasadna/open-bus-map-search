@@ -4,7 +4,7 @@ import { buildShareUrl } from './shareUrl'
 const ORIGIN = 'https://open-bus.example.com'
 
 const fullSearch: GlobalSearchState = {
-  date: 1700000000000,
+  date: '2024-02-12',
   operatorId: '3',
   lineNumber: '64',
   vehicleNumber: 12345,
@@ -123,10 +123,9 @@ describe('buildShareUrl — round-trip', () => {
     expect(p.routeKey).toBe(fullSearch.routeKey)
   })
 
-  it('numeric date survives as a parseable number', () => {
+  it('date string survives URL encode/decode unchanged', () => {
     const p = paramsOf(build('/gaps'))
-    expect(Number.isFinite(Number(p.date))).toBe(true)
-    expect(Number(p.date)).toBe(fullSearch.date)
+    expect(p.date).toBe(fullSearch.date)
   })
 
   it('numeric vehicleNumber survives as a parseable number', () => {
@@ -161,7 +160,7 @@ describe('buildShareUrl — edge cases', () => {
 
   it('a search with all null/empty values produces no query string', () => {
     const empty: GlobalSearchState = {
-      date: 0,
+      date: '',
       operatorId: null,
       lineNumber: null,
       routeKey: null,

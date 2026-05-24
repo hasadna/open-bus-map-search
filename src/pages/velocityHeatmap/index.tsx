@@ -3,7 +3,7 @@ import { IconButton, Stack } from '@mui/material'
 import React, { useCallback, useContext, useRef } from 'react'
 import { MapContainer, TileLayer } from 'react-leaflet'
 import { useMapEvents } from 'react-leaflet'
-import dayjs from 'src/dayjs'
+import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone } from 'src/dayjs'
 import { useConstrainedFloatingButton } from 'src/hooks/useConstrainedFloatingButton'
 import { usePageState } from 'src/hooks/usePageState'
 import { SearchContext } from '../../model/pageState'
@@ -49,7 +49,10 @@ const VelocityHeatmapPage: React.FC = () => {
   const [max, setMax] = React.useState(1)
 
   const handleDateChange = (time: dayjs.Dayjs | null) => {
-    setSearch((current) => ({ ...current, date: time?.valueOf() ?? +new Date('2026-01-01') }))
+    setSearch((current) => ({
+      ...current,
+      date: time?.format('YYYY-MM-DD') ?? toIsraelTimezone(dayjs()).format('YYYY-MM-DD'),
+    }))
   }
 
   const toggleExpanded = useCallback(
@@ -65,8 +68,8 @@ const VelocityHeatmapPage: React.FC = () => {
       <p>This page will display a heatmap of velocity aggregation data.</p>
 
       <Stack direction="column" spacing={2} sx={{ mb: 2, width: { xs: '100%', md: '70%' } }}>
-        <DateSelector time={dayjs(search.date)} onChange={handleDateChange} />
-        <DateNavigator currentTime={dayjs(search.date)} onChange={handleDateChange} />
+        <DateSelector time={dayjs.tz(search.date, ISRAEL_TIMEZONE)} onChange={handleDateChange} />
+        <DateNavigator currentTime={dayjs.tz(search.date, ISRAEL_TIMEZONE)} onChange={handleDateChange} />
       </Stack>
 
       <div style={{ margin: '12px 0' }}>

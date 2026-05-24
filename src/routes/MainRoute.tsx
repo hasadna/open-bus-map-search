@@ -5,9 +5,10 @@ import ReactGA from 'react-ga4'
 import { useLocation, useSearchParams } from 'react-router'
 import rtlPlugin from 'stylis-plugin-rtl'
 import { useSessionStorage } from 'usehooks-ts'
+import { toIsraelTimezone } from 'src/dayjs'
 import { MainLayout } from '../layout'
 import { ThemeProvider } from '../layout/ThemeContext'
-import { InitialUrlParamsContext, PageShareParamsContext, SearchContext } from '../model/pageState'
+import { PageShareParamsContext, InitialUrlParamsContext, SearchContext } from '../model/pageState'
 import { GLOBAL_SEARCH_DEFAULTS, GlobalSearchState } from '../model/searchState'
 
 const cacheRtl = createCache({
@@ -43,7 +44,14 @@ export const MainRoute = () => {
   const urlState = useMemo<Partial<GlobalSearchState>>(() => {
     const p = initialUrlParams
     return {
-      ...(p.date ? { date: new Date(p.date).getTime() || +p.date } : {}),
+      // Accept both legacy numeric timestamps and new "YYYY-MM-DD" strings.
+      ...(p.date
+        ? {
+            date: /^\d+$/.test(p.date)
+              ? toIsraelTimezone(parseInt(p.date)).format('YYYY-MM-DD')
+              : p.date,
+          }
+        : {}),
       ...(p.operatorId ? { operatorId: p.operatorId } : {}),
       ...(p.lineNumber ? { lineNumber: p.lineNumber } : {}),
       ...(p.vehicleNumber ? { vehicleNumber: Number(p.vehicleNumber) } : {}),

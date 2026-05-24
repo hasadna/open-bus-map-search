@@ -1,7 +1,7 @@
 import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import dayjs, { toIsraelTimezone } from 'src/dayjs'
+import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone } from 'src/dayjs'
 import { usePageState } from 'src/hooks/usePageState'
 import { INPUT_SIZE } from 'src/resources/sizes'
 import { Gap, getGapsAsync } from '../../api/gapsService'
@@ -36,11 +36,12 @@ const GapsPage = () => {
 
   const singleLineMapBaseHref = useMemo(() => {
     const params = new URLSearchParams()
+    params.set('date', search.date || '')
     params.set('operatorId', search.operatorId || '')
     params.set('lineNumber', search.lineNumber || '')
     params.set('routeKey', search.routeKey || '')
     return `/single-line-map?${params.toString()}`
-  }, [search.lineNumber, search.operatorId, search.routeKey])
+  }, [search.date, search.lineNumber, search.operatorId, search.routeKey])
 
   useEffect(() => {
     if (!(operatorId && routes && routeKey && date)) return
@@ -48,7 +49,7 @@ const GapsPage = () => {
     if (!selectedRoute) return
 
     setGapsIsLoading(true)
-    const start = toIsraelTimezone(date).startOf('day')
+    const start = dayjs.tz(date, ISRAEL_TIMEZONE).startOf('day')
     const end = start.add(1, 'day').add(4, 'h')
     getGapsAsync(start.valueOf(), end.valueOf(), operatorId, selectedRoute.lineRef)
       .then((res) =>
@@ -73,7 +74,7 @@ const GapsPage = () => {
 
     const controller = new AbortController()
 
-    getServiceDayRoutes(dayjs(date), operatorId, lineNumber, controller.signal)
+    getServiceDayRoutes(dayjs.tz(date, ISRAEL_TIMEZONE), operatorId, lineNumber, controller.signal)
       .then((fetchedRoutes) => {
         if (search.lineNumber === lineNumber) {
           setRoutes(fetchedRoutes)
@@ -87,7 +88,10 @@ const GapsPage = () => {
   }, [operatorId, lineNumber, date])
 
   const handleDateChange = (time: dayjs.Dayjs | null) => {
-    setSearch((current) => ({ ...current, date: time?.valueOf() ?? Date.now() }))
+    setSearch((current) => ({
+      ...current,
+      date: time?.format('YYYY-MM-DD') ?? toIsraelTimezone(dayjs()).format('YYYY-MM-DD'),
+    }))
   }
 
   const handleOperatorChange = (operatorId: string) => {
@@ -129,7 +133,7 @@ const GapsPage = () => {
           <Label text={t('choose_date')} />
         </Grid>
         <Grid size={{ xs: 8 }}>
-          <DateSelector time={dayjs(date)} onChange={handleDateChange} />
+          <DateSelector time={dayjs.tz(date, ISRAEL_TIMEZONE)} onChange={handleDateChange} />
         </Grid>
         {/* choose operator */}
         <Grid size={{ xs: 4 }}>

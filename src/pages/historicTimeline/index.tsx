@@ -8,7 +8,7 @@ import {
   getStopsForRouteAsync,
 } from 'src/api/gtfsService'
 import { getSiriStopHitTimesAsync } from 'src/api/siriService'
-import dayjs from 'src/dayjs'
+import dayjs, { ISRAEL_TIMEZONE } from 'src/dayjs'
 import { usePageState } from 'src/hooks/usePageState'
 import { Label } from 'src/pages/components/Label'
 import LineNumberSelector from 'src/pages/components/LineSelector'
@@ -35,10 +35,18 @@ const TimelinePage = () => {
   const setStopKey = (key: string | undefined) =>
     setSearch((prev) => ({ ...prev, stopKey: key ?? null }))
 
-  // No shareable page params beyond what's in global; ui tracks scroll only.
-  usePageState('timeline', { params: {}, ui: { scrollPosition: 0 } })
+  // time-of-day is page-local: not shared across pages, but is shareable so a
+  // link recipient sees the same moment (date comes from global state).
+  const { params, setParams } = usePageState(
+    'timeline',
+    { params: { time: dayjs().format('HH:mm') }, ui: { scrollPosition: 0 } },
+    ['time'],
+  )
 
-  const time = useMemo(() => dayjs(date).startOf('minute'), [date])
+  const time = useMemo(() => {
+    const [h, m] = params.time.split(':').map(Number)
+    return dayjs.tz(date, ISRAEL_TIMEZONE).hour(h).minute(m).startOf('minute')
+  }, [date, params.time])
 
   const routesQuery = useQuery({
     queryFn: async () => {
@@ -114,32 +122,20 @@ const TimelinePage = () => {
         {/* choose date */}
         <Grid size={{ lg: 4, md: 6, xs: 12 }}>
           <DateSelector
-            time={dayjs(date)}
+            time={dayjs.tz(date, ISRAEL_TIMEZONE)}
             onChange={(ts) => {
               if (!ts) return
-              const current = dayjs(date)
-              const newDate = ts
-                .hour(current.hour())
-                .minute(current.minute())
-                .startOf('minute')
-                .valueOf()
-              setSearch((prev) => ({ ...prev, date: newDate }))
+              setSearch((prev) => ({ ...prev, date: ts.format('YYYY-MM-DD') }))
             }}
           />
         </Grid>
         {/* choose time */}
         <Grid size={{ lg: 4, md: 6, xs: 12 }}>
           <TimeSelector
-            time={dayjs(date)}
+            time={time}
             onChange={(ts) => {
               if (!ts) return
-              const current = dayjs(date)
-              const newDate = current
-                .hour(ts.hour())
-                .minute(ts.minute())
-                .startOf('minute')
-                .valueOf()
-              setSearch((prev) => ({ ...prev, date: newDate }))
+              setParams((prev) => ({ ...prev, time: ts.format('HH:mm') }))
             }}
           />
         </Grid>
@@ -203,7 +199,7 @@ const TimelinePage = () => {
                 ((hitsQuery.data?.gtfsTime && hitsQuery.data.gtfsTime.length > 0) ||
                 (hitsQuery.data?.siriTime && hitsQuery.data.siriTime.length > 0) ? (
                   <TimelineBoard
-                    target={dayjs(date)}
+                    target={time}
                     gtfsTimes={hitsQuery.data.gtfsTime}
                     siriTimes={hitsQuery.data.siriTime}
                   />

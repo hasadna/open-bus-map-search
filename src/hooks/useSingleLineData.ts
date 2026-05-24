@@ -1,6 +1,6 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { getRoutesAsync, getRoutesByLineRef, getStopsForRouteAsync } from 'src/api/gtfsService'
-import dayjs, { toIsraelTimezone } from 'src/dayjs'
+import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone } from 'src/dayjs'
 import useVehicleLocations from 'src/hooks/useVehicleLocations'
 import { BusRoute } from 'src/model/busRoute'
 import { BusStop } from 'src/model/busStop'
@@ -93,7 +93,9 @@ export const useSingleLineData = (
   }, [routes, routeKey])
 
   const [today, serviceDayEnd] = useMemo(() => {
-    const today = toIsraelTimezone(search.date).startOf('day')
+    // Parse the Israel date string as Israel local time (not browser local or UTC).
+    // dayjs(str) is ambiguous in non-Israel timezones; dayjs.tz(str, tz) is explicit.
+    const today = dayjs.tz(search.date, ISRAEL_TIMEZONE).startOf('day')
     // Israeli service day runs up to ~04:00 AM the next calendar day.
     // Use 30 hours to safely cover all past-midnight rides.
     return [today, today.add(30, 'hours')]

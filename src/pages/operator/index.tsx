@@ -2,7 +2,7 @@ import { Grid, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material
 import { useContext } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
-import dayjs from 'src/dayjs'
+import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone } from 'src/dayjs'
 import { usePageState } from 'src/hooks/usePageState'
 import { SearchContext } from 'src/model/pageState'
 import { DateSelector } from '../components/DateSelector'
@@ -38,8 +38,14 @@ const OperatorPage = () => {
   }
 
   const handleDateChange = (time: dayjs.Dayjs | null) => {
-    setSearch((current) => ({ ...current, date: time?.valueOf() ?? Date.now() }))
+    setSearch((current) => ({
+      ...current,
+      date: time?.format('YYYY-MM-DD') ?? toIsraelTimezone(dayjs()).format('YYYY-MM-DD'),
+    }))
   }
+
+  // OperatorGaps and OperatorRoutes still accept a numeric timestamp.
+  const dateTimestamp = dayjs.tz(date, ISRAEL_TIMEZONE).valueOf()
 
   return (
     <PageContainer>
@@ -50,7 +56,7 @@ const OperatorPage = () => {
         </Grid>
 
         <Grid size={{ sm: 4, xs: 12 }}>
-          <DateSelector time={dayjs(date)} disabled={!operatorId} onChange={handleDateChange} />
+          <DateSelector time={dayjs.tz(date, ISRAEL_TIMEZONE)} disabled={!operatorId} onChange={handleDateChange} />
         </Grid>
 
         <Grid size={{ sm: 4, xs: 12 }}>
@@ -78,14 +84,14 @@ const OperatorPage = () => {
           <Grid size={{ lg: 6, xs: 12 }}>
             <OperatorInfo operatorId={operatorId} />
             <Spacing />
-            <OperatorGaps operatorId={operatorId} timestamp={date} timeRange={params.timeRange} />
+            <OperatorGaps operatorId={operatorId} timestamp={dateTimestamp} timeRange={params.timeRange} />
           </Grid>
           <Grid size={{ lg: 6, xs: 12 }}>
             <ChartWrapper>
               <WorstLinesChart
                 operatorId={operatorId}
-                startDate={dayjs(date).add(-1, params.timeRange)}
-                endDate={dayjs(date)}
+                startDate={dayjs(dateTimestamp).add(-1, params.timeRange)}
+                endDate={dayjs(dateTimestamp)}
                 alertWorstLineHandling={function (arg: boolean): void {
                   console.log('alertWorstLineHandling', arg)
                 }}
@@ -93,7 +99,7 @@ const OperatorPage = () => {
             </ChartWrapper>
           </Grid>
           <Grid size={{ xs: 12 }}>
-            <OperatorRoutes operatorId={operatorId} timestamp={date} />
+            <OperatorRoutes operatorId={operatorId} timestamp={dateTimestamp} />
           </Grid>
         </Grid>
       )}

@@ -1,3 +1,6 @@
+import dayjs from 'src/dayjs'
+import { toIsraelTimezone } from 'src/dayjs'
+
 /**
  * Global search state shared across all pages.
  *
@@ -10,9 +13,9 @@
  *   - `null` means "not selected"; never use empty string or undefined here.
  */
 export type GlobalSearchState = {
-  /** The selected calendar day as Unix ms. Named 'date' not 'timestamp'
-   *  because it represents a day, not a precise moment in time. */
-  date: number
+  /** The selected calendar day as an Israeli date string "YYYY-MM-DD".
+   *  Empty string means "not set" (treated as falsy, same as null for other fields). */
+  date: string
 
   operatorId: string | null
   lineNumber: string | null
@@ -36,7 +39,7 @@ export type GlobalSearchState = {
 }
 
 export const GLOBAL_SEARCH_DEFAULTS: GlobalSearchState = {
-  date: Date.now(),
+  date: toIsraelTimezone(dayjs()).format('YYYY-MM-DD'),
   operatorId: null,
   lineNumber: null,
   routeKey: null,

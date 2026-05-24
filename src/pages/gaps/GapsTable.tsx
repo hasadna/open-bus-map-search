@@ -13,7 +13,7 @@ import React, { memo, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
 import { Gap } from 'src/api/gapsService'
-import dayjs, { toIsraelTimezone } from 'src/dayjs'
+import dayjs, { ISRAEL_TIMEZONE } from 'src/dayjs'
 import { formatStartTimeForQuery } from 'src/pages/components/utils/startTimeUtils'
 import Widget from 'src/shared/Widget'
 import DisplayGapsPercentage from '../components/DisplayGapsPercentage'
@@ -24,7 +24,7 @@ interface GapsTableProps {
   loading?: boolean
   initOnlyGapped?: boolean
   singleLineMapBaseHref: string
-  date: number
+  date: string
   onStartTimeClick?: (rideTime: string) => void
 }
 
@@ -87,7 +87,7 @@ const GapsTable: React.FC<GapsTableProps> = ({
   onStartTimeClick,
 }) => {
   const { t } = useTranslation()
-  const serviceDayStart = toIsraelTimezone(date).startOf('day')
+  const serviceDayStart = dayjs.tz(date, ISRAEL_TIMEZONE).startOf('day')
   const [onlyGapped, setOnlyGapped] = useState(initOnlyGapped)
 
   const filteredGaps: Gap[] = useMemo(() => {
@@ -162,10 +162,7 @@ const GapsTable: React.FC<GapsTableProps> = ({
                       const startTimeParam = formatStartTimeForQuery(rideToken)
                       const cellHref = `${singleLineMapBaseHref}&rideTime=${startTimeParam}`
                       return (
-                        <Tooltip
-                          key={`${hour}-${j}-${displayTime}`}
-                          title={buildTooltip(gap)}
-                          arrow>
+                        <Tooltip key={`${hour}-${j}-${displayTime}`} title={buildTooltip(gap)} arrow>
                           <TableCell
                             sx={{
                               ...cellStyle,
@@ -180,7 +177,8 @@ const GapsTable: React.FC<GapsTableProps> = ({
                               <Link
                                 to={cellHref}
                                 onClick={() =>
-                                  gap.actualStartTime && onStartTimeClick?.(startTimeParam)
+                                  gap.actualStartTime &&
+                                  onStartTimeClick?.(startTimeParam)
                                 }>
                                 {displayTime}
                               </Link>
