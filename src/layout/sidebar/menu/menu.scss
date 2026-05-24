@@ -54,6 +54,19 @@
   }
 }
 
+.hackathon-badge {
+  display: inline-block;
+  font-size: 10px;
+  background: #e6f4ff;
+  color: #1677ff;
+  border-radius: 4px;
+  padding: 1px 5px;
+  margin-inline-start: 6px;
+  font-weight: 700;
+  line-height: 1.5;
+  vertical-align: middle;
+}
+
 .dark .sidebar-menu {
   .ant-menu-item-group-title {
     color: rgb(255 255 255 / 65%);
