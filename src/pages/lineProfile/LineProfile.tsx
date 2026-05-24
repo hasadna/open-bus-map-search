@@ -37,11 +37,15 @@ const LineProfile = () => {
   // Shares the 'line-view' storage slot with /single-line-map — same route,
   // same map, so the viewport should persist when navigating between them.
   // rideTime is in page params so it's included in the share URL.
-  const { setParams: setPageParams } = usePageState(
+  const {
+    setParams: setPageParams,
+    ui,
+    setUi,
+  } = usePageState(
     'line-view',
     {
       params: { mode: 'routes' as const, rideTime: null as string | null },
-      ui: { scrollPosition: 0 },
+      ui: { isExpanded: false, scrollPosition: 0, centerLat: 0, centerLng: 0, zoom: 13 },
     },
     ['rideTime'],
   )
@@ -152,7 +156,19 @@ const LineProfile = () => {
           />
         </Grid>
       </Grid>
-      <MapWithLocationsAndPath positions={positions} plannedRouteStops={plannedRouteStops} />
+      <MapWithLocationsAndPath
+        positions={positions}
+        plannedRouteStops={plannedRouteStops}
+        isExpanded={ui.isExpanded}
+        onToggleExpanded={() => setUi((prev) => ({ ...prev, isExpanded: !prev.isExpanded }))}
+        centerLat={ui.centerLat || undefined}
+        centerLng={ui.centerLng || undefined}
+        zoom={ui.zoom || undefined}
+        onViewportChange={(centerLat, centerLng, zoom) =>
+          setUi((prev) => ({ ...prev, centerLat, centerLng, zoom }))
+        }
+        routeIdentity={`${route?.operatorRef}:${routeKey}`}
+      />
     </PageContainer>
   )
 }

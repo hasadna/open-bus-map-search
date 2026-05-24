@@ -1,10 +1,22 @@
 import { LatLngTuple } from 'leaflet'
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { useMap } from 'react-leaflet'
 import { MapProps } from './map-types'
 
-export function useRecenterOnDataChange({ positions, plannedRouteStops }: MapProps) {
+type UseRecenterProps = MapProps & {
+  /** When provided, auto-fit only fires when this key changes — not on every
+   *  positions update. Pass routeKey+operatorId so returning to the same route
+   *  preserves the user's saved viewport. */
+  routeIdentity?: string
+}
+
+export function useRecenterOnDataChange({
+  positions,
+  plannedRouteStops,
+  routeIdentity,
+}: UseRecenterProps) {
   const map = useMap()
+  const prevIdentity = useRef<string | undefined>(undefined)
 
   const center = useMemo(() => {
     const sum: LatLngTuple = [0, 0]
@@ -30,8 +42,16 @@ export function useRecenterOnDataChange({ positions, plannedRouteStops }: MapPro
   }, [positions, plannedRouteStops])
 
   useEffect(() => {
-    if (center[0] || center[1]) {
-      map.setView(center, map.getZoom(), { animate: true })
+    if (!center[0] && !center[1]) return
+
+    // If a routeIdentity is provided, only re-fit when it changes.
+    // This preserves the user's panned/zoomed viewport when returning to the
+    // same route, while still auto-fitting when they select a different one.
+    if (routeIdentity !== undefined) {
+      if (routeIdentity === prevIdentity.current) return
+      prevIdentity.current = routeIdentity
     }
-  }, [...center, map])
+
+    map.setView(center, map.getZoom(), { animate: true })
+  }, [...center, map, routeIdentity])
 }

@@ -23,12 +23,17 @@ export const plannedRouteLineColor = 'black'
 export const plannedRouteStopMarkerPath = `${import.meta.env.BASE_URL}marker-bus-stop.png`
 export const plannedRouteStopMarker = getIcon(plannedRouteStopMarkerPath, 20, 25)
 
-export function MapContent({ positions, plannedRouteStops, showNavigationButtons }: MapProps) {
+export function MapContent({
+  positions,
+  plannedRouteStops,
+  showNavigationButtons,
+  routeIdentity,
+}: MapProps & { routeIdentity?: string }) {
   const [tileUrl, setTileUrl] = useState('https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png')
   const map = useMap()
   const { i18n } = useTranslation()
 
-  useRecenterOnDataChange({ positions, plannedRouteStops })
+  useRecenterOnDataChange({ positions, plannedRouteStops, routeIdentity })
 
   useEffect(() => {
     const handleLanguageChange = (lng: string) => {

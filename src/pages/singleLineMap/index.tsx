@@ -30,11 +30,11 @@ const SingleLineMapPage = () => {
 
   // mode is page-specific: only single-line-map has the routes/vehicle toggle.
   // Shareable so a recipient sees the same mode. Persisted across navigations.
-  const { params, setParams } = usePageState(
+  const { params, ui, setParams, setUi } = usePageState(
     'line-view',
     {
       params: { mode: vehicleNumber ? 'vehicle' : 'routes' },
-      ui: { scrollPosition: 0 },
+      ui: { isExpanded: false, scrollPosition: 0, centerLat: 0, centerLng: 0, zoom: 13 },
     },
     ['mode'],
   )
@@ -189,6 +189,15 @@ const SingleLineMapPage = () => {
         positions={positions}
         plannedRouteStops={plannedRouteStops}
         showNavigationButtons
+        isExpanded={ui.isExpanded}
+        onToggleExpanded={() => setUi((prev) => ({ ...prev, isExpanded: !prev.isExpanded }))}
+        centerLat={ui.centerLat || undefined}
+        centerLng={ui.centerLng || undefined}
+        zoom={ui.zoom || undefined}
+        onViewportChange={(centerLat, centerLng, zoom) =>
+          setUi((prev) => ({ ...prev, centerLat, centerLng, zoom }))
+        }
+        routeIdentity={`${operatorId}:${routeKey ?? vehicleNumber}`}
       />
     </PageContainer>
   )
