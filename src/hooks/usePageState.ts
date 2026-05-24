@@ -1,3 +1,4 @@
+import { debounce } from 'es-toolkit/compat'
 import { useContext, useEffect, useMemo, useRef } from 'react'
 import { useSessionStorage } from 'usehooks-ts'
 import { PageShareParamsContext, InitialUrlParamsContext } from 'src/model/pageState'
@@ -91,6 +92,29 @@ export function usePageState<
     setShareParams(serialized)
     return () => setShareParams({})
   }, [serialized, setShareParams])
+
+  // Scroll save + restore.
+  // The scroll container is #main-content (overflow:auto), not window —
+  // the outer layout has overflow:hidden so window.scrollY is always 0.
+  useEffect(() => {
+    const container = document.getElementById('main-content')
+    if (!container) return
+
+    const saved = (ui as Record<string, unknown>).scrollPosition
+    if (typeof saved === 'number' && saved > 0) {
+      requestAnimationFrame(() => container.scrollTo(0, saved))
+    }
+
+    const saveScroll = debounce(() => {
+      setUi((prev) => ({ ...prev, scrollPosition: container.scrollTop }))
+    }, 300)
+
+    container.addEventListener('scroll', saveScroll)
+    return () => {
+      saveScroll.cancel()
+      container.removeEventListener('scroll', saveScroll)
+    }
+  }, [])
 
   return { params, ui, setParams, setUi }
 }

@@ -31,7 +31,7 @@ export function MainLayout() {
         <SideBar />
         <Layout>
           <MainHeader />
-          <StyledContent>
+          <StyledContent id="main-content">
             <StyledBody>
               <Suspense fallback={<Preloader />}>
                 <Outlet />
