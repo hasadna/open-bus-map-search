@@ -17,8 +17,6 @@ import {
   parseStartTimeToken,
 } from 'src/pages/components/utils/startTimeUtils'
 
-const formatTime = (time: dayjs.ConfigType) => toIsraelTimezone(time).format('HH:mm')
-
 const LIGHT_TRAIN_OPERATORS = new Set(['21', '22'])
 
 const VEHICLE_NUMBER_TEST = {
