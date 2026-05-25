@@ -169,9 +169,10 @@ test.describe('Record HAR files', () => {
 
     // Switch to vehicle-number search and record the requests for vehicle-based start times
     await page.getByRole('button', { name: 'לפי מספר רכב' }).click()
-    const vehicleRequestsPromise = page.waitForResponse((response) =>
-      response.url().includes('/siri_rides/list') &&
-      response.url().includes('vehicle_refs=7489226'),
+    const vehicleRequestsPromise = page.waitForResponse(
+      (response) =>
+        response.url().includes('/siri_rides/list') &&
+        response.url().includes('vehicle_refs=7489226'),
     )
     await page.getByRole('textbox', { name: 'מספר רכב' }).fill('7489226')
     await vehicleRequestsPromise
