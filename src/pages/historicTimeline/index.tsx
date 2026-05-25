@@ -9,7 +9,6 @@ import {
 } from 'src/api/gtfsService'
 import { getSiriStopHitTimesAsync } from 'src/api/siriService'
 import dayjs, { ISRAEL_TIMEZONE } from 'src/dayjs'
-import { SearchContext } from 'src/model/globalState'
 import { Label } from 'src/pages/components/Label'
 import LineNumberSelector from 'src/pages/components/LineSelector'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
@@ -18,6 +17,7 @@ import { Row } from 'src/pages/components/Row'
 import StopSelector from 'src/pages/components/StopSelector'
 import { TimelineBoard } from 'src/pages/components/timeline/TimelineBoard'
 import Widget from 'src/shared/Widget'
+import { GlobalSearchContext } from 'src/model/globalState'
 import { DateSelector } from '../components/DateSelector'
 import { NotFound } from '../components/NotFound'
 import { PageContainer } from '../components/PageContainer'
@@ -25,7 +25,7 @@ import { TimeSelector } from '../components/TimeSelector'
 
 const TimelinePage = () => {
   const { t } = useTranslation()
-  const { search, setSearch } = useContext(SearchContext)
+  const { search, setSearch } = useContext(GlobalSearchContext)
   const { operatorId, lineNumber, date, routeKey } = search
 
   // Time-of-day is page-local (only /timeline has a time picker)

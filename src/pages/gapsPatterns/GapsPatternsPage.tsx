@@ -16,12 +16,12 @@ import {
 } from 'recharts'
 import dayjs from 'src/dayjs'
 import { useDate } from 'src/hooks/useDate'
-import { SearchContext } from 'src/model/globalState'
-import { ExtraShareParamsContext, InitialUrlParamsContext } from 'src/model/routeContext'
 import { INPUT_SIZE } from 'src/resources/sizes'
 import Widget from 'src/shared/Widget'
 import { getRoutesAsync } from '../../api/gtfsService'
 import { BusRoute } from '../../model/busRoute'
+import { GlobalSearchContext } from 'src/model/globalState'
+import { ExtraShareParamsContext, InitialUrlParamsContext } from 'src/model/routeContext'
 import { DateSelector } from '../components/DateSelector'
 import { Label } from '../components/Label'
 import LineNumberSelector from '../components/LineSelector'
@@ -163,7 +163,7 @@ const GapsPatternsPage = () => {
   const [endDate, setEndDate] = useDate(
     initialUrlParams.endDate ? dayjs(initialUrlParams.endDate) : now.clone().subtract(1, 'day'),
   )
-  const { search, setSearch } = useContext(SearchContext)
+  const { search, setSearch } = useContext(GlobalSearchContext)
   const { setParams } = useContext(ExtraShareParamsContext)
 
   useEffect(() => {

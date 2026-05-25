@@ -3,7 +3,7 @@ import dayjs from 'src/dayjs'
 import { toIsraelTimezone } from 'src/dayjs'
 
 /**
- * Global search state shared across all pages via SearchContext.
+ * Global search state shared across all pages via GlobalSearchContext.
  *
  * A field is global if navigating between pages that both use it should
  * preserve the value. Fields meaningful only within a single page belong in
@@ -40,7 +40,7 @@ export const GLOBAL_SEARCH_DEFAULTS: GlobalSearchState = {
 
 type MutateStateAction<S> = (prevState: S) => S
 
-export const SearchContext = createContext<{
+export const GlobalSearchContext = createContext<{
   search: GlobalSearchState
   setSearch: Dispatch<MutateStateAction<GlobalSearchState>>
 }>({ search: GLOBAL_SEARCH_DEFAULTS, setSearch: (search) => search })

@@ -86,13 +86,13 @@ describe('buildShareUrl — extra params', () => {
     expect(p.startDate).toBe('2026-05-01T00:00:00Z')
   })
 
-  it('extra params override a SearchContext param with the same key', () => {
+  it('extra params override a GlobalSearchContext param with the same key', () => {
     // e.g. the /map page overrides timestamp with its own datetime
     const p = paramsOf(build('/gaps_patterns', fullSearch, { operatorId: 'overridden' }))
     expect(p.operatorId).toBe('overridden')
   })
 
-  it('/map produces no params from SearchContext — only extras are included', () => {
+  it('/map produces no params from GlobalSearchContext — only extras are included', () => {
     const p = paramsOf(build('/map', fullSearch, { timestamp: '1699900000000' }))
     expect(Object.keys(p)).toEqual(['timestamp'])
     expect(p.timestamp).toBe('1699900000000')
@@ -228,11 +228,11 @@ describe('buildShareUrl — per-page param contracts', () => {
 // ---------------------------------------------------------------------------
 
 // /profile/:id is not in PAGE_SHARE_PARAMS. The route ID is already in the
-// path, so SearchContext params must not leak into the URL — only explicit
+// path, so GlobalSearchContext params must not leak into the URL — only explicit
 // extra params (e.g. rideTime) registered via ExtraShareParamsContext appear.
 
 describe('buildShareUrl — dynamic profile path', () => {
-  it('no SearchContext params leak into the URL', () => {
+  it('no GlobalSearchContext params leak into the URL', () => {
     const p = paramsOf(build('/profile/12345', fullSearch))
     expect(p.operatorId).toBeUndefined()
     expect(p.lineNumber).toBeUndefined()

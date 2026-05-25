@@ -20,7 +20,7 @@ export const PAGE_SHARE_PARAMS: Partial<Record<string, ShareableKey[]>> = {
  *
  * Only the params relevant to that page are included (see PAGE_SHARE_PARAMS).
  * Extra params (e.g. page-local state registered via ExtraShareParamsContext)
- * are appended last and override any SearchContext param with the same key.
+ * are appended last and override any GlobalSearchContext param with the same key.
  */
 export const buildShareUrl = (
   pathname: string,

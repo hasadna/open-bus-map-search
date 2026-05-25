@@ -4,7 +4,7 @@ import React, { useCallback, useContext, useRef, useState } from 'react'
 import { MapContainer, TileLayer } from 'react-leaflet'
 import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone } from 'src/dayjs'
 import { useConstrainedFloatingButton } from 'src/hooks/useConstrainedFloatingButton'
-import { SearchContext } from 'src/model/globalState'
+import { GlobalSearchContext } from 'src/model/globalState'
 import { DateNavigator } from '../components/dateNavigator/DateNavigator'
 import { DateSelector } from '../components/DateSelector'
 import { VelocityHeatmapLegend } from './components/VelocityHeatmapLegend'
@@ -22,7 +22,7 @@ const VelocityHeatmapPage: React.FC = () => {
   const [isExpanded, setIsExpanded] = useState<boolean>(false)
   const toggleExpanded = useCallback(() => setIsExpanded((expanded) => !expanded), [])
 
-  const { search, setSearch } = useContext(SearchContext)
+  const { search, setSearch } = useContext(GlobalSearchContext)
   const dateDayjs = dayjs.tz(search.date, ISRAEL_TIMEZONE)
 
   const [visMode, setVisMode] = useState<'avg' | 'std' | 'cv'>('avg')

@@ -3,7 +3,7 @@ import { useContext, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone } from 'src/dayjs'
-import { SearchContext } from 'src/model/globalState'
+import { GlobalSearchContext } from 'src/model/globalState'
 import { DateSelector } from '../components/DateSelector'
 import OperatorSelector from '../components/OperatorSelector'
 import { PageContainer } from '../components/PageContainer'
@@ -18,7 +18,7 @@ const OperatorPage = () => {
   const {
     search: { operatorId, date },
     setSearch,
-  } = useContext(SearchContext)
+  } = useContext(GlobalSearchContext)
   const { t, i18n } = useTranslation()
 
   const [timeRange, setTimeRange] = useState<(typeof TIME_RANGES)[number]>('day')

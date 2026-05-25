@@ -8,7 +8,7 @@ import { useSessionStorage } from 'usehooks-ts'
 import { toIsraelTimezone } from 'src/dayjs'
 import { MainLayout } from '../layout'
 import { ThemeProvider } from '../layout/ThemeContext'
-import { GLOBAL_SEARCH_DEFAULTS, GlobalSearchState, SearchContext } from '../model/globalState'
+import { GLOBAL_SEARCH_DEFAULTS, GlobalSearchState, GlobalSearchContext } from '../model/globalState'
 import { ExtraShareParamsContext, InitialUrlParamsContext } from '../model/routeContext'
 
 // Create rtl cache
@@ -40,7 +40,7 @@ export const MainRoute = () => {
     return result
   }, [])
 
-  // Parse the captured URL params into SearchContext fields
+  // Parse the captured URL params into GlobalSearchContext fields
   const urlState = useMemo<Partial<GlobalSearchState>>(() => {
     const p = initialUrlParams
     // Accept 'date' (new) or 'timestamp' (old shared links) for backward compat
@@ -102,13 +102,13 @@ export const MainRoute = () => {
     <InitialUrlParamsContext.Provider value={initialUrlParams}>
       <ExtraShareParamsContext.Provider
         value={{ params: extraShareParams, setParams: setExtraShareParamsStable }}>
-        <SearchContext.Provider value={{ search, setSearch: safeSetSearch }}>
+        <GlobalSearchContext.Provider value={{ search, setSearch: safeSetSearch }}>
           <CacheProvider value={cacheRtl}>
             <ThemeProvider>
               <MainLayout />
             </ThemeProvider>
           </CacheProvider>
-        </SearchContext.Provider>
+        </GlobalSearchContext.Provider>
       </ExtraShareParamsContext.Provider>
     </InitialUrlParamsContext.Provider>
   )

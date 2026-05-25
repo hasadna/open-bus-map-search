@@ -2,11 +2,11 @@ import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import dayjs, { ISRAEL_TIMEZONE } from 'src/dayjs'
-import { SearchContext } from 'src/model/globalState'
 import { INPUT_SIZE } from 'src/resources/sizes'
 import { Gap, getGapsAsync } from '../../api/gapsService'
 import { getServiceDayRoutes } from '../../api/serviceDayRoutesService'
 import { BusRoute } from '../../model/busRoute'
+import { GlobalSearchContext } from 'src/model/globalState'
 import { DateSelector } from '../components/DateSelector'
 import { Label } from '../components/Label'
 import LineNumberSelector from '../components/LineSelector'
@@ -19,7 +19,7 @@ import GapsTable from './GapsTable'
 
 const GapsPage = () => {
   const { t } = useTranslation()
-  const { search, setSearch } = useContext(SearchContext)
+  const { search, setSearch } = useContext(GlobalSearchContext)
   const { operatorId, lineNumber, date, routeKey } = search
   const [routes, setRoutes] = useState<BusRoute[] | undefined>()
   const [gaps, setGaps] = useState<Gap[]>()

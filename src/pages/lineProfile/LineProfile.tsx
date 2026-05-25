@@ -7,7 +7,7 @@ import { useLoaderData, useNavigate } from 'react-router'
 import { getRoutesAsync } from 'src/api/gtfsService'
 import dayjs, { toIsraelTimezone } from 'src/dayjs'
 import { useSingleLineData } from 'src/hooks/useSingleLineData'
-import { GLOBAL_SEARCH_DEFAULTS, SearchContext } from 'src/model/globalState'
+import { GLOBAL_SEARCH_DEFAULTS, GlobalSearchContext } from 'src/model/globalState'
 import { ExtraShareParamsContext, InitialUrlParamsContext } from 'src/model/routeContext'
 import StopSelector from 'src/pages/components/StopSelector'
 import Widget from 'src/shared/Widget'
@@ -27,7 +27,7 @@ const LineProfile = () => {
   const navigate = useNavigate()
   const { route, message } = useLoaderData<{ route?: GtfsRoutePydanticModel; message?: string }>()
   const [stopKey, setState] = useState<string>()
-  const { search, setSearch } = useContext(SearchContext)
+  const { search, setSearch } = useContext(GlobalSearchContext)
   const initialUrlParams = useContext(InitialUrlParamsContext)
   const { setParams } = useContext(ExtraShareParamsContext)
 

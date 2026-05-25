@@ -4,8 +4,8 @@ import { useContext } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useNavigate } from 'react-router'
 import styled from 'styled-components'
-import { SearchContext } from 'src/model/globalState'
 import { ISRAEL_TRAIN_ID } from 'src/model/operator'
+import { GlobalSearchContext } from 'src/model/globalState'
 import Widget from 'src/shared/Widget'
 import { useAllRoutes } from '../../hooks/useAllRoutes'
 
@@ -16,7 +16,7 @@ export const OperatorRoutes = ({
   operatorId?: string
   timestamp?: number
 }) => {
-  const { setSearch } = useContext(SearchContext)
+  const { setSearch } = useContext(GlobalSearchContext)
   const { t } = useTranslation()
   const { routes, isLoading } = useAllRoutes(operatorId, timestamp)
 
