@@ -1,16 +1,17 @@
-import { PageSearchState } from 'src/model/pageState'
+import { GLOBAL_SEARCH_DEFAULTS, GlobalSearchState } from 'src/model/globalState'
 import { buildShareUrl, PAGE_SHARE_PARAMS } from './shareUrl'
 import type { ShareableKey } from './shareUrl'
 
 const ORIGIN = 'https://open-bus.example.com'
 
-const fullSearch: PageSearchState = {
-  timestamp: 1700000000000,
+const fullSearch: GlobalSearchState = {
+  date: '2026-05-01',
   operatorId: '3',
   lineNumber: '64',
   vehicleNumber: 12345,
   routeKey: 'route-abc',
-  startTime: '08:30:00',
+  rideTime: '08:30:00',
+  stopKey: null,
 }
 
 const build = (pathname: string, search = fullSearch, extra: Record<string, string> = {}) =>
@@ -57,13 +58,13 @@ describe('buildShareUrl — URL structure', () => {
 
 describe('buildShareUrl — falsy value exclusion', () => {
   it('omits params whose value is empty string', () => {
-    const search: PageSearchState = { timestamp: 1700000000000, operatorId: '' }
+    const search: GlobalSearchState = { ...fullSearch, operatorId: '' }
     const p = paramsOf(build('/gaps', search))
     expect(p.operatorId).toBeUndefined()
   })
 
-  it('omits params whose value is undefined', () => {
-    const search: PageSearchState = { timestamp: 1700000000000 }
+  it('omits params whose value is null', () => {
+    const search: GlobalSearchState = { ...fullSearch, lineNumber: null, routeKey: null }
     const p = paramsOf(build('/gaps', search))
     expect(p.lineNumber).toBeUndefined()
     expect(p.routeKey).toBeUndefined()
@@ -139,11 +140,9 @@ describe('buildShareUrl — round-trip', () => {
     expect(p.routeKey).toBe(fullSearch.routeKey)
   })
 
-  it('numeric timestamp survives as a parseable number', () => {
+  it('date string survives URL encode/decode unchanged', () => {
     const p = paramsOf(build('/gaps', fullSearch))
-    const restored = Number(p.timestamp)
-    expect(Number.isFinite(restored)).toBe(true)
-    expect(restored).toBe(fullSearch.timestamp)
+    expect(p.date).toBe(fullSearch.date)
   })
 
   it('numeric vehicleNumber survives as a parseable number', () => {
@@ -168,13 +167,19 @@ describe('buildShareUrl — round-trip', () => {
 describe('buildShareUrl — edge cases', () => {
   it('vehicleNumber 0 is treated as falsy and excluded', () => {
     // Vehicle number 0 is not a real vehicle; the falsy guard is intentional
-    const search: PageSearchState = { ...fullSearch, vehicleNumber: 0 }
+    const search: GlobalSearchState = { ...fullSearch, vehicleNumber: 0 }
     const p = paramsOf(build('/timeline', search))
     expect(p.vehicleNumber).toBeUndefined()
   })
 
-  it('a page with all empty search values produces no query string', () => {
-    const empty: PageSearchState = { timestamp: 0, operatorId: '', lineNumber: '', routeKey: '' }
+  it('a page with all empty/null search values produces no query string', () => {
+    const empty: GlobalSearchState = {
+      ...GLOBAL_SEARCH_DEFAULTS,
+      date: '',
+      operatorId: null,
+      lineNumber: null,
+      routeKey: null,
+    }
     expect(new URL(build('/gaps', empty)).search).toBe('')
   })
 
@@ -202,7 +207,7 @@ describe('buildShareUrl — per-page param contracts', () => {
       it('includes all declared params that have a value', () => {
         const p = paramsOf(build(path, fullSearch))
         for (const key of keys) {
-          if (fullSearch[key as keyof PageSearchState]) {
+          if (fullSearch[key]) {
             expect(p[key]).toBeDefined()
           }
         }
@@ -224,31 +229,31 @@ describe('buildShareUrl — per-page param contracts', () => {
 
 // /profile/:id is not in PAGE_SHARE_PARAMS. The route ID is already in the
 // path, so SearchContext params must not leak into the URL — only explicit
-// extra params (e.g. startTime) registered via ExtraShareParamsContext appear.
+// extra params (e.g. rideTime) registered via ExtraShareParamsContext appear.
 
 describe('buildShareUrl — dynamic profile path', () => {
   it('no SearchContext params leak into the URL', () => {
     const p = paramsOf(build('/profile/12345', fullSearch))
     expect(p.operatorId).toBeUndefined()
     expect(p.lineNumber).toBeUndefined()
-    expect(p.timestamp).toBeUndefined()
+    expect(p.date).toBeUndefined()
     expect(p.routeKey).toBeUndefined()
-    expect(p.startTime).toBeUndefined()
+    expect(p.rideTime).toBeUndefined()
   })
 
-  it('extra params (startTime) are included', () => {
-    const p = paramsOf(build('/profile/12345', fullSearch, { startTime: '08:30:00' }))
-    expect(p.startTime).toBe('08:30:00')
+  it('extra params (rideTime) are included', () => {
+    const p = paramsOf(build('/profile/12345', fullSearch, { rideTime: '08:30:00' }))
+    expect(p.rideTime).toBe('08:30:00')
   })
 
   it('profile id is preserved in the pathname', () => {
-    const url = new URL(build('/profile/12345', fullSearch, { startTime: '08:30:00' }))
+    const url = new URL(build('/profile/12345', fullSearch, { rideTime: '08:30:00' }))
     expect(url.pathname).toBe('/profile/12345')
   })
 
   it('different profile ids produce different URLs', () => {
-    const url1 = build('/profile/111', fullSearch, { startTime: '08:00:00' })
-    const url2 = build('/profile/222', fullSearch, { startTime: '08:00:00' })
+    const url1 = build('/profile/111', fullSearch, { rideTime: '08:00:00' })
+    const url2 = build('/profile/222', fullSearch, { rideTime: '08:00:00' })
     expect(new URL(url1).pathname).not.toBe(new URL(url2).pathname)
   })
 })
@@ -281,11 +286,11 @@ describe('InitialUrlParamsContext contract', () => {
 
   it('missing params fall back to undefined without throwing', () => {
     const captured: Record<string, string> = {}
-    expect(captured['timestamp']).toBeUndefined()
+    expect(captured['date']).toBeUndefined()
     expect(captured['operatorId']).toBeUndefined()
   })
 
-  it('map page timestamp is readable from captured params', () => {
+  it('map page timestamp is readable from captured params (backward compat)', () => {
     const mapDatetime = 1699900000000
     const captured = { timestamp: String(mapDatetime) }
 

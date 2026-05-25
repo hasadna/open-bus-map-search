@@ -3,7 +3,8 @@ import { Tooltip } from 'antd'
 import { useCallback, useContext, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLocation } from 'react-router'
-import { ExtraShareParamsContext, SearchContext } from 'src/model/pageState'
+import { SearchContext } from 'src/model/globalState'
+import { ExtraShareParamsContext } from 'src/model/routeContext'
 import { buildShareUrl } from './shareUrl'
 
 export const ShareButton = () => {

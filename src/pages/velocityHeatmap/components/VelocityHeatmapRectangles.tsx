@@ -1,8 +1,8 @@
 import type { SiriVelocityAggregationPydanticModel } from '@hasadna/open-bus-api-client'
 import { useContext, useEffect } from 'react'
 import { Popup, Rectangle } from 'react-leaflet'
-import dayjs from 'src/dayjs'
-import { SearchContext } from '../../../model/pageState'
+import dayjs, { ISRAEL_TIMEZONE } from 'src/dayjs'
+import { SearchContext } from 'src/model/globalState'
 import { useVelocityAggregationData } from '../useVelocityAggregationData'
 import { VelocityHeatmapPopup } from './VelocityHeatmapPopup'
 import { useZoomLevel } from './ZoomComponent'
@@ -56,7 +56,7 @@ export const VelocityHeatmapRectangles = ({
       minLon: DEFAULT_BOUNDS.minLon,
       maxLon: DEFAULT_BOUNDS.maxLon,
     },
-    dayjs(search.timestamp),
+    dayjs.tz(search.date, ISRAEL_TIMEZONE),
     zoom - 6,
   )
   const half = 0.5 / Math.pow(2, currZoom)
