@@ -8,7 +8,11 @@ import { useSessionStorage } from 'usehooks-ts'
 import { toIsraelTimezone } from 'src/dayjs'
 import { MainLayout } from '../layout'
 import { ThemeProvider } from '../layout/ThemeContext'
-import { GLOBAL_SEARCH_DEFAULTS, GlobalSearchState, GlobalSearchContext } from '../model/globalState'
+import {
+  GLOBAL_SEARCH_DEFAULTS,
+  GlobalSearchContext,
+  GlobalSearchState,
+} from '../model/globalState'
 import { ExtraShareParamsContext, InitialUrlParamsContext } from '../model/routeContext'
 
 // Create rtl cache
