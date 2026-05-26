@@ -203,12 +203,14 @@ const CardTitle = styled.div`
   font-weight: 650;
   color: #111827;
   line-height: 1.4;
+  overflow-wrap: break-word;
 `
 
 const OneLiner = styled.div`
   font-size: 13px;
   color: #6b7280;
   line-height: 1.4;
+  overflow-wrap: break-word;
 `
 
 const ExpandRegion = styled.div<{ $open: boolean }>`
@@ -229,6 +231,7 @@ const ExpandContent = styled.div<{ $open: boolean }>`
     line-height: 1.7;
     color: #374151;
     margin: 6px 0 0;
+    overflow-wrap: break-word;
   }
 
   ul {
@@ -237,6 +240,7 @@ const ExpandContent = styled.div<{ $open: boolean }>`
     font-size: 13.5px;
     line-height: 1.65;
     color: #374151;
+    overflow-wrap: break-word;
   }
 `
 
@@ -329,6 +333,8 @@ const ExtLink = styled.a`
   color: #2563eb;
   text-decoration: none;
   font-size: 13.5px;
+  overflow-wrap: break-word;
+  word-break: break-word;
 
   &:hover {
     text-decoration: underline;
