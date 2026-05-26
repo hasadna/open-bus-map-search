@@ -224,7 +224,6 @@ const Page = styled.div`
   padding: 0 16px 32px;
   max-width: 980px;
   margin: 0 auto;
-  overflow-x: hidden;
 `
 
 const Hero = styled.section`
@@ -299,7 +298,7 @@ const PersonaGrid = styled.div`
 
 const WhyComeGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 12px;
 `
 
@@ -409,7 +408,6 @@ const ScheduleList = styled.ol`
     gap: 12px;
     align-items: baseline;
     font-size: 14px;
-    flex-wrap: wrap;
   }
 `
 
@@ -418,7 +416,6 @@ const Time = styled.span`
   font-variant-numeric: tabular-nums;
   min-width: 110px;
   direction: ltr;
-  flex-shrink: 0;
 `
 
 const Filters = styled.div`
@@ -553,14 +550,11 @@ const FaqItem = styled.div`
   dt {
     font-weight: 600;
     margin-bottom: 4px;
-    overflow-wrap: break-word;
   }
   dd {
     margin: 0;
     opacity: 0.85;
     line-height: 1.6;
-    overflow-wrap: break-word;
-    word-break: break-word;
   }
 `
 
