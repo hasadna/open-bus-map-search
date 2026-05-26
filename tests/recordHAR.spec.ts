@@ -148,14 +148,20 @@ test.describe('Record HAR files', () => {
       }
     }
 
-    // Select start time to trigger siri data fetch
+    // Select start time to trigger siri data fetch (including siri_vehicle_locations/list)
     const startTimeDropdown = page.getByLabel('בחירת שעת התחלה')
     if ((await startTimeDropdown.count()) > 0) {
       await startTimeDropdown.click()
       await page.waitForLoadState('networkidle')
       const firstTime = page.getByRole('option').first()
       if ((await firstTime.count()) > 0) {
+        // Register before click to avoid missing the response
+        const lineLocationsPromise = page.waitForResponse(
+          (response) => response.url().includes('/siri_vehicle_locations/list'),
+          { timeout: 30000 },
+        )
         await firstTime.click()
+        await lineLocationsPromise
         await page.waitForLoadState('networkidle')
       } else {
         await page.keyboard.press('Escape')
@@ -184,7 +190,13 @@ test.describe('Record HAR files', () => {
       await page.waitForLoadState('networkidle')
       const vehicleStartTime = page.getByRole('option', { name: /04:30/ }).first()
       if ((await vehicleStartTime.count()) > 0) {
+        // Register before click to avoid missing the response
+        const vehicleLocationsPromise = page.waitForResponse(
+          (response) => response.url().includes('/siri_vehicle_locations/list'),
+          { timeout: 30000 },
+        )
         await vehicleStartTime.click()
+        await vehicleLocationsPromise
         await page.waitForLoadState('networkidle')
       } else {
         await page.keyboard.press('Escape')
