@@ -41,7 +41,6 @@ export const useGapsList = (
   const [hourlyData, setHourlyData] = useState<HourlyData[]>([])
 
   useEffect(() => {
-    if (!operatorRef || lineRef <= 0) return
     const fetchData = async () => {
       try {
         const gapsList = await getGapsAsync(fromDate, toDate, operatorRef, lineRef)

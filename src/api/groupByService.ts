@@ -38,9 +38,6 @@ async function fetchGroupBy({
     dateFrom: new Date(dateFrom),
     dateTo: new Date(dateTo),
     groupBy,
-    // Exclude 23:00–02:00 IST: SIRI mass-initializes phantom rides for all tracked vehicles at
-    // midnight each day, creating hundreds of fake siri_ride records with scheduled_start_time
-    // near 00:00. Including them would inflate planned-trip counts and skew on-time statistics.
     excludeHoursFrom: 23,
     excludeHoursTo: 2,
   })

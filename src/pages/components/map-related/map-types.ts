@@ -1,8 +1,6 @@
 import type { SiriVehicleLocationWithRelatedPydanticModel } from '@hasadna/open-bus-api-client'
 import { BusStop } from 'src/model/busStop'
 
-export const ROUTE_COLORS = ['#f97316', '#3b82f6', '#22c55e', '#a855f7', '#ef4444']
-
 export interface Point {
   loc: [number, number]
   color: number
@@ -10,11 +8,6 @@ export interface Point {
   bearing?: number
   point?: SiriVehicleLocationWithRelatedPydanticModel
   recordedAtTime?: number
-}
-
-export interface PositionGroup {
-  positions: Point[]
-  color: string
 }
 
 export interface Path {
@@ -25,7 +18,7 @@ export interface Path {
 }
 
 export interface MapProps {
-  positionGroups: PositionGroup[]
+  positions: Point[]
   plannedRouteStops?: BusStop[]
   showNavigationButtons?: boolean
 }

@@ -23,12 +23,12 @@ export const plannedRouteLineColor = 'black'
 export const plannedRouteStopMarkerPath = `${import.meta.env.BASE_URL}marker-bus-stop.png`
 export const plannedRouteStopMarker = getIcon(plannedRouteStopMarkerPath, 20, 25)
 
-export function MapContent({ positionGroups, plannedRouteStops, showNavigationButtons }: MapProps) {
+export function MapContent({ positions, plannedRouteStops, showNavigationButtons }: MapProps) {
   const [tileUrl, setTileUrl] = useState('https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png')
   const map = useMap()
   const { i18n } = useTranslation()
 
-  useRecenterOnDataChange({ positionGroups, plannedRouteStops })
+  useRecenterOnDataChange({ positions, plannedRouteStops })
 
   useEffect(() => {
     const handleLanguageChange = (lng: string) => {
@@ -45,13 +45,13 @@ export function MapContent({ positionGroups, plannedRouteStops, showNavigationBu
   }, [i18n])
 
   const navigateMarkers = useCallback(
-    (groupIndex: number, positionId: number, marker: Layer) => {
-      const pos = positionGroups[groupIndex]?.positions[positionId]
+    (positionId: number, marker: Layer) => {
+      const pos = positions[positionId]
       if (!map || !pos?.loc) return
       map.flyTo(pos.loc, map.getZoom())
       marker.openPopup()
     },
-    [map, positionGroups],
+    [map, positions],
   )
 
   return (
@@ -62,7 +62,7 @@ export function MapContent({ positionGroups, plannedRouteStops, showNavigationBu
       />
       <MapIndexLayer showPlannedRoute={!!plannedRouteStops} />
       <MapRouteLayer
-        positionGroups={positionGroups}
+        positions={positions}
         showNavigationButtons={showNavigationButtons}
         navigateMarkers={navigateMarkers}
       />

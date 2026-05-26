@@ -2,7 +2,15 @@ import { expect, harOptions, setupTest, test, visitPage } from './utils'
 
 const TIMEZONES = ['Asia/Jerusalem', 'America/New_York', 'Europe/London', 'Asia/Tokyo'] as const
 
-const SINGLE_LINE_START_TIMES = ['04:30 (74-892-26)'] as const
+const SINGLE_LINE_START_TIMES = [
+  '04:30 (74-892-26)',
+  '04:47 (61-265-26)',
+  '05:00 (74-891-26)',
+  '05:23 (74-899-26)',
+  '05:33 (60-860-26)',
+  '05:44 (74-893-26)',
+  '05:54 (74-895-26)',
+] as const
 
 const SINGLE_LINE_ROUTES = [
   'תחנת מוניות רמת גן דרך הטייסים-תל אביב יפו ⟵ תחנת מוניות תל אביב הכובשים-תל אביב יפו',

@@ -1,4 +1,4 @@
-import { CloseFullscreenRounded, OpenInFullRounded } from '@mui/icons-material'
+import { OpenInFullRounded } from '@mui/icons-material'
 import { IconButton } from '@mui/material'
 import { useCallback, useRef, useState } from 'react'
 import { MapContainer } from 'react-leaflet'
@@ -13,7 +13,7 @@ const position: Point = {
 }
 
 export function MapWithLocationsAndPath({
-  positionGroups,
+  positions,
   plannedRouteStops,
   showNavigationButtons,
 }: MapProps) {
@@ -32,16 +32,12 @@ export function MapWithLocationsAndPath({
         color="primary"
         className="expand-button"
         onClick={toggleExpanded}>
-        {isExpanded ? (
-          <CloseFullscreenRounded fontSize="large" />
-        ) : (
-          <OpenInFullRounded fontSize="large" />
-        )}
+        <OpenInFullRounded fontSize="large" />
       </IconButton>
 
       <MapContainer center={position.loc} zoom={13} scrollWheelZoom={true}>
         <MapContent
-          positionGroups={positionGroups}
+          positions={positions}
           plannedRouteStops={plannedRouteStops}
           showNavigationButtons={showNavigationButtons}
         />

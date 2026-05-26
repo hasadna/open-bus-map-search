@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { MapContainer } from 'react-leaflet'
 import { MapContent } from './MapContent'
-import { positionGroups, plannedRouteStops } from './mapStorybookData'
+import { filteredPositions, plannedRouteStops } from './mapStorybookData'
 
 const meta = {
   component: MapContent,
@@ -24,14 +24,14 @@ const meta = {
   ],
   args: {
     plannedRouteStops: [],
-    positionGroups: [],
+    positions: [],
     showNavigationButtons: true,
   },
   argTypes: {
-    positionGroups: {
+    positions: {
       control: false,
       table: {
-        type: { summary: 'PositionGroup[]' },
+        type: { summary: 'Point[]' },
       },
     },
     plannedRouteStops: {
@@ -55,6 +55,6 @@ export const Default: Story = {}
 export const WhitData: Story = {
   args: {
     plannedRouteStops: plannedRouteStops,
-    positionGroups: positionGroups,
+    positions: filteredPositions,
   },
 }

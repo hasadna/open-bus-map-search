@@ -135,9 +135,9 @@ test.describe('Operator Page Tests', () => {
     })
 
     await test.step('Validate operator routes', async () => {
-      const routesCard = page.locator('.MuiCard-root', { hasText: i18next.t('operator.all_lines') })
-      const rows = routesCard.locator('tbody tr')
-      await rows.first().waitFor({ state: 'visible' })
+      await waitForSkeletonsToHide(page)
+      const table = page.locator('table').nth(2)
+      const rows = table.locator('tbody tr')
       const totalText = await page.getByText(i18next.t('operator.total')).textContent()
       const total = Number(totalText?.split(' ')[i18next.language === 'en' ? 2 : 3] || 0)
       if (total !== 0) {

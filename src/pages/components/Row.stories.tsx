@@ -1,10 +1,11 @@
+import type { ComponentType } from 'react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import Widget from 'src/shared/Widget'
 import { Row } from './Row'
 
 const meta: Meta<{ items: number }> = {
   title: 'Components/Row',
-  component: Row,
+  component: Row as ComponentType<{ items: number }>,
   parameters: {
     layout: 'centered',
   },
