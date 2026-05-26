@@ -48,7 +48,7 @@ async function fetchGroupBy({
   return data
     .map((data) => {
       const operatorRef = agencies.find((agency) => agency.operatorRef === data.operatorRef)
-      return { ...data, operatorRef } as GroupByRes
+      return { ...data, operatorRef }
     })
     .filter((data) => data.operatorRef !== undefined)
 }
