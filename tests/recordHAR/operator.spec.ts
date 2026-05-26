@@ -14,15 +14,31 @@ test.describe('Record operator.har', () => {
     await page.waitForLoadState('networkidle')
 
     // Select אגד — triggers group_by × 2 + gtfs_routes/list via React state update.
-    // Click-triggered requests are in-flight before we call networkidle, so it
-    // correctly waits for all three responses (unlike navigation-triggered requests).
+    // Register all three response promises before clicking so none are missed.
+    const groupByOperatorPromise = page.waitForResponse((response) =>
+      response.url().includes('/gtfs_rides_agg/group_by') &&
+      response.url().includes('group_by=operator_ref') &&
+      !response.url().includes('line_ref'),
+    )
+    const groupByLinePromise = page.waitForResponse((response) =>
+      response.url().includes('/gtfs_rides_agg/group_by') &&
+      response.url().includes('line_ref'),
+    )
     const routesPromise = page.waitForResponse(
       (response) =>
         response.url().includes('/gtfs_routes/list') && response.url().includes('limit=15000'),
     )
     await page.getByRole('option', { name: 'אגד', exact: true }).click()
-    const routesResponse = await routesPromise
-    await routesResponse.body()
+    const [groupByOperatorResponse, groupByLineResponse, routesResponse] = await Promise.all([
+      groupByOperatorPromise,
+      groupByLinePromise,
+      routesPromise,
+    ])
+    await Promise.all([
+      groupByOperatorResponse.body(),
+      groupByLineResponse.body(),
+      routesResponse.body(),
+    ])
     await page.waitForLoadState('networkidle')
   })
 })
