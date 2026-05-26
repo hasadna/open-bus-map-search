@@ -1,5 +1,5 @@
-import type { ComponentType } from 'react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import type { ComponentType } from 'react'
 import Widget from 'src/shared/Widget'
 import { Row } from './Row'
 

@@ -15,14 +15,15 @@ test.describe('Record operator.har', () => {
 
     // Select אגד — triggers group_by × 2 + gtfs_routes/list via React state update.
     // Register all three response promises before clicking so none are missed.
-    const groupByOperatorPromise = page.waitForResponse((response) =>
-      response.url().includes('/gtfs_rides_agg/group_by') &&
-      response.url().includes('group_by=operator_ref') &&
-      !response.url().includes('line_ref'),
+    const groupByOperatorPromise = page.waitForResponse(
+      (response) =>
+        response.url().includes('/gtfs_rides_agg/group_by') &&
+        response.url().includes('group_by=operator_ref') &&
+        !response.url().includes('line_ref'),
     )
-    const groupByLinePromise = page.waitForResponse((response) =>
-      response.url().includes('/gtfs_rides_agg/group_by') &&
-      response.url().includes('line_ref'),
+    const groupByLinePromise = page.waitForResponse(
+      (response) =>
+        response.url().includes('/gtfs_rides_agg/group_by') && response.url().includes('line_ref'),
     )
     const routesPromise = page.waitForResponse(
       (response) =>

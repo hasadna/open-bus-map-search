@@ -48,7 +48,7 @@ test.describe('Record singleline.har', () => {
 
     // Select start time to trigger siri vehicle locations fetch.
     const startTimeDropdown = page.getByLabel('בחירת שעת התחלה')
-    if ((await startTimeDropdown.count()) > 0 && await startTimeDropdown.isEnabled()) {
+    if ((await startTimeDropdown.count()) > 0 && (await startTimeDropdown.isEnabled())) {
       await startTimeDropdown.click()
       await page.waitForLoadState('networkidle')
       const firstTime = page.getByRole('option').first()
@@ -113,7 +113,10 @@ test.describe('Record singleline.har', () => {
     await page.waitForLoadState('networkidle')
 
     const vehicleStartTimeDropdown = page.getByLabel('בחירת שעת התחלה')
-    if ((await vehicleStartTimeDropdown.count()) > 0 && await vehicleStartTimeDropdown.isEnabled()) {
+    if (
+      (await vehicleStartTimeDropdown.count()) > 0 &&
+      (await vehicleStartTimeDropdown.isEnabled())
+    ) {
       await vehicleStartTimeDropdown.click()
       await page.waitForLoadState('networkidle')
       const vehicleStartTime = page.getByRole('option', { name: /04:30/ }).first()
