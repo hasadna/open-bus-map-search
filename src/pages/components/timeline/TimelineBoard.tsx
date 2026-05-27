@@ -82,12 +82,10 @@ export const TimelineBoard = ({ className, target, gtfsTimes, siriTimes }: Timel
   return (
     <CenteringWrapper className={className}>
       <StyledContainer
-        style={
-          {
-            '--timeline-neutral': isDarkTheme ? '#8c8c8c' : '#bfbfbf',
-            '--timeline-highlight-ring': isDarkTheme ? 'white' : '#333',
-          } as React.CSSProperties
-        }>
+        style={{
+          '--timeline-neutral': isDarkTheme ? '#8c8c8c' : '#bfbfbf',
+          '--timeline-highlight-ring': isDarkTheme ? 'white' : '#333',
+        }}>
         <TitleRow>
           <StyledTimelineTitle pointType={PointType.GTFS} />
           <StyledTimelineTitle pointType={PointType.SIRI} />
