@@ -134,7 +134,7 @@ const defaultArgs: BusToolTipProps & { route: GtfsRoutePydanticModel } = {
     routeAlternative: '#',
     agencyName: 'אגד',
     routeType: '3',
-  } as GtfsRoutePydanticModel,
+  },
 }
 
 export const Default: Story = {

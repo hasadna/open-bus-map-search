@@ -100,16 +100,16 @@
     "@types/node": "^25.6.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
-    "@typescript-eslint/eslint-plugin": "^8.57.1",
+    "@typescript-eslint/eslint-plugin": "^8.59.4",
     "@typescript-eslint/parser": "^8.58.0",
-    "@vitejs/plugin-react": "^6.0.1",
+    "@vitejs/plugin-react": "^6.0.2",
     "cross-env": "^10.1.0",
     "eslint": "^9.39.4",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.5",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
-    "eslint-plugin-storybook": "^10.2.19",
+    "eslint-plugin-storybook": "^10.4.1",
     "globals": "^17.4.0",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^30.3.0",
@@ -130,7 +130,7 @@
     "ts-jest": "^29.4.6",
     "typescript": "^5.9.3",
     "vite": "^8.0.10",
-    "vite-plugin-istanbul": "^8.0.0"
+    "vite-plugin-istanbul": "^9.0.0"
   },
   "nx": {
     "targets": {

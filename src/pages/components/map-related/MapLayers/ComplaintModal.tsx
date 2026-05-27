@@ -358,22 +358,20 @@ const ComplaintModal = ({
         <Form
           form={form}
           layout="vertical"
-          initialValues={
-            {
-              ...userStorage,
-              addOrRemoveStation: '2',
-              busOperator: position.operator,
-              eventDate: date,
-              // reportdate: date,
-              eventHour: date,
-              // reportTime: date,
-              wait: [date?.add(-30, 'm'), date?.add(30, 'm')],
-              raisingStationCity: routeParts?.[1],
-              destinationStationCity: routeParts?.[3],
-              licenseNum: position.point?.siriRideVehicleRef,
-              lineNumberText: route.routeShortName,
-            } as Partial<ComplaintFormValues>
-          }
+          initialValues={{
+            ...userStorage,
+            addOrRemoveStation: '2',
+            busOperator: position.operator,
+            eventDate: date,
+            // reportdate: date,
+            eventHour: date,
+            // reportTime: date,
+            wait: [date?.add(-30, 'm'), date?.add(30, 'm')],
+            raisingStationCity: routeParts?.[1],
+            destinationStationCity: routeParts?.[3],
+            licenseNum: position.point?.siriRideVehicleRef,
+            lineNumberText: route.routeShortName,
+          }}
           onFinish={handleSubmit}
           onValuesChange={onValuesChange}>
           {submitMutation.isSuccess ? (

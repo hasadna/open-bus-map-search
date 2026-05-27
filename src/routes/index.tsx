@@ -1,6 +1,7 @@
 import {
   BarChartOutlined,
   BugOutlined,
+  CalendarOutlined,
   DollarOutlined,
   FieldTimeOutlined,
   GithubOutlined,
@@ -35,6 +36,7 @@ const DataResearch = lazy(() =>
   })),
 )
 const PublicAppeal = lazy(() => import('../pages/publicAppeal'))
+const Hackathon = lazy(() => import('../pages/hackathon/Hackathon'))
 
 export const PAGES = [
   {
@@ -107,6 +109,12 @@ export const PAGES = [
     path: '/public-appeal',
     icon: <Psychology />,
     element: <PublicAppeal />,
+  },
+  {
+    label: 'hackathon_title',
+    path: '/hackathon',
+    icon: <CalendarOutlined />,
+    element: <Hackathon />,
   },
 ] as const
 
