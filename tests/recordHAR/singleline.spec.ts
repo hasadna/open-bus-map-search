@@ -5,6 +5,7 @@ test.describe('Record singleline.har', () => {
   test.skip(!process.env['RECORD_HAR'], 'Set RECORD_HAR=1 to update HAR files')
 
   test('record singleline.har', async ({ page }) => {
+    test.setTimeout(300_000)
     await setupRecording(page, 'tests/HAR/singleline.har')
     await goToPage(page, '/')
     await goToPage(page, '/single-line-map')
@@ -25,42 +26,47 @@ test.describe('Record singleline.har', () => {
     await page.getByRole('textbox', { name: 'מספר קו' }).fill('16')
     await page.waitForLoadState('networkidle')
 
-    // Select a route. Explicitly await siri_rides/list body so React has re-rendered
-    // the start-time dropdown as enabled before we check isEnabled() below.
+    // Select a route. Wait for the loading spinner to disappear — it only clears once
+    // ALL split chunks and any paginated follow-up requests have finished loading.
     const routeDropdown = page.getByLabel(/בחירת מסלול נסיעה/)
     if ((await routeDropdown.count()) > 0) {
       await routeDropdown.click()
       await page.waitForLoadState('networkidle')
       const firstRoute = page.getByRole('option').first()
       if ((await firstRoute.count()) > 0) {
-        const ridesPromise = page.waitForResponse(
-          (r) => r.url().includes('/siri_rides/list') && !r.url().includes('vehicle_refs'),
+        // Register before clicking so the first chunk response anchors us past the
+        // race: by the time it resolves, locationsAreLoading is true and the spinner
+        // is guaranteed visible. Then wait for spinner hidden — that only fires after
+        // ALL split chunks AND any paginated follow-up requests complete.
+        const firstChunkPromise = page.waitForResponse(
+          (r) =>
+            r.url().includes('/siri_vehicle_locations/list') &&
+            !r.url().includes('siri_ride__vehicle_ref'),
           { timeout: 30_000 },
         )
         await firstRoute.click()
-        const ridesResponse = await ridesPromise
-        await ridesResponse.body()
+        await firstChunkPromise
+        const spinner = page.locator(
+          '[aria-label="שעות נוספות בטעינה. ניתן להשתמש בשעות הזמינות כבר עכשיו"]',
+        )
+        await spinner.waitFor({ state: 'hidden', timeout: 60_000 })
         await page.waitForLoadState('networkidle')
       } else {
         await page.keyboard.press('Escape')
       }
     }
 
-    // Select start time to trigger siri vehicle locations fetch.
+    // Select a start time to filter positions and show markers on the map.
+    // Selecting a start time is purely client-side (no network request fires).
+    // The only network event that follows is gtfs_routes/list?limit=1 when a
+    // marker is clicked and BusToolTip mounts — captured via .bus-tooltip .content.
     const startTimeDropdown = page.getByLabel('בחירת שעת התחלה')
     if ((await startTimeDropdown.count()) > 0 && (await startTimeDropdown.isEnabled())) {
       await startTimeDropdown.click()
       await page.waitForLoadState('networkidle')
       const firstTime = page.getByRole('option').first()
       if ((await firstTime.count()) > 0) {
-        // Register before clicking so the response is captured even if networkidle fires first.
-        const vehicleLocationsPromise = page.waitForResponse(
-          (r) => r.url().includes('/siri_vehicle_locations/list'),
-          { timeout: 60_000 },
-        )
         await firstTime.click()
-        const locationsResponse = await vehicleLocationsPromise
-        await locationsResponse.body()
         await page.waitForLoadState('networkidle')
 
         // Click a bus marker to open its Leaflet popup. BusToolTip only mounts after
@@ -101,15 +107,21 @@ test.describe('Record singleline.har', () => {
     await page.waitForTimeout(3000)
     await page.waitForLoadState('networkidle')
 
-    // Switch to vehicle-number search and record siri_rides/list for vehicle-based start times
+    // Switch to vehicle-number search and record vehicle-based start times.
+    // Same anchor pattern: waitForResponse before fill, then spinner hidden to
+    // cover all split chunks and any paginated follow-up requests.
     await page.getByRole('button', { name: 'לפי מספר רכב' }).click()
-    const vehicleRidesPromise = page.waitForResponse((response) => {
-      const url = response.url()
-      return url.includes('/siri_rides/list') && url.includes('vehicle_refs=7489226')
-    })
+    const firstVehicleChunkPromise = page.waitForResponse(
+      (r) =>
+        r.url().includes('/siri_vehicle_locations/list') &&
+        r.url().includes('siri_ride__vehicle_ref=7489226'),
+    )
     await page.getByRole('textbox', { name: 'מספר רכב' }).fill('7489226')
-    const vehicleRidesResponse = await vehicleRidesPromise
-    await vehicleRidesResponse.body()
+    await firstVehicleChunkPromise
+    const vehicleSpinner = page.locator(
+      '[aria-label="שעות נוספות בטעינה. ניתן להשתמש בשעות הזמינות כבר עכשיו"]',
+    )
+    await vehicleSpinner.waitFor({ state: 'hidden', timeout: 60_000 })
     await page.waitForLoadState('networkidle')
 
     const vehicleStartTimeDropdown = page.getByLabel('בחירת שעת התחלה')
@@ -121,13 +133,10 @@ test.describe('Record singleline.har', () => {
       await page.waitForLoadState('networkidle')
       const vehicleStartTime = page.getByRole('option', { name: /04:30/ }).first()
       if ((await vehicleStartTime.count()) > 0) {
-        const vehicleLocationsPromise = page.waitForResponse(
-          (r) => r.url().includes('/siri_vehicle_locations/list'),
-          { timeout: 60_000 },
-        )
         await vehicleStartTime.click()
-        const vehicleLocationsResponse = await vehicleLocationsPromise
-        await vehicleLocationsResponse.body()
+        // Wait for React to re-render filteredPositions and fire the fetchOptions effect,
+        // which triggers getRoutesByLineRef requests for each option label.
+        await page.waitForTimeout(1000)
         await page.waitForLoadState('networkidle')
       } else {
         await page.keyboard.press('Escape')
