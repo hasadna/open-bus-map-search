@@ -1,3 +1,4 @@
+import { useTheme } from '@mui/material'
 import { useTranslation } from 'react-i18next'
 
 type VisMode = 'avg' | 'std' | 'cv'
@@ -11,6 +12,8 @@ interface VelocityHeatmapLegendProps {
 export const VelocityHeatmapLegend = ({ visMode, min, max }: VelocityHeatmapLegendProps) => {
   const { t, i18n } = useTranslation()
   const isRtl = i18n.dir() === 'rtl'
+  const theme = useTheme()
+  const isDark = theme.palette.mode === 'dark'
 
   return (
     <div
@@ -23,11 +26,12 @@ export const VelocityHeatmapLegend = ({ visMode, min, max }: VelocityHeatmapLege
         right: isRtl ? 10 : undefined,
         zIndex: 1000,
         maxWidth: 300,
-        background: 'rgba(255, 255, 255, 0.9)',
+        background: isDark ? 'rgba(30, 30, 30, 0.92)' : 'rgba(255, 255, 255, 0.9)',
+        color: isDark ? '#fff' : 'rgba(0, 0, 0, 0.87)',
         borderRadius: 8,
         padding: '8px 12px',
         boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
-        border: '1px solid rgba(0,0,0,0.1)',
+        border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.1)',
       }}>
       <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 4 }}>
         {t(`velocity_legend_${visMode}`)}

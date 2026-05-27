@@ -18,7 +18,7 @@ main > div,
   margin-bottom: 1em;
 
   .expand-button {
-    left: 5px;
+    inset-inline-start: 5px;
     bottom: 5px;
     color: #1976d2 !important;
     position: fixed;

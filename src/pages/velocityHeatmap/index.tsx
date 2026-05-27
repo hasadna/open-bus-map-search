@@ -42,27 +42,29 @@ const VelocityHeatmapPage: React.FC = () => {
 
   return (
     <PageContainer>
-      <Typography variant="h4" gutterBottom>
+      <Typography variant="h4" component="h1" gutterBottom>
         {t('velocity_heatmap_page_title')}
       </Typography>
 
       <Stack direction="column" spacing={2} sx={{ maxWidth: 600 }}>
         <DateSelector time={dayjs(search.timestamp)} onChange={handleTimestampChange} />
         <DateNavigator currentTime={dayjs(search.timestamp)} onChange={handleTimestampChange} />
-        <RadioGroup
-          row
-          value={visMode}
-          onChange={(e) => setVisMode(e.target.value as 'avg' | 'std' | 'cv')}>
-          {VIS_MODES.map((mode) => (
-            <FormControlLabel
-              key={mode.key}
-              value={mode.key}
-              control={<Radio size="small" />}
-              label={t(mode.labelKey)}
-            />
-          ))}
-        </RadioGroup>
       </Stack>
+      <RadioGroup
+        row
+        name="visMode"
+        value={visMode}
+        onChange={(e) => setVisMode(e.target.value as 'avg' | 'std' | 'cv')}
+        sx={{ flexWrap: 'wrap', mt: 2 }}>
+        {VIS_MODES.map((mode) => (
+          <FormControlLabel
+            key={mode.key}
+            value={mode.key}
+            control={<Radio size="small" />}
+            label={t(mode.labelKey)}
+          />
+        ))}
+      </RadioGroup>
 
       <div ref={mapContainerRef} className={`map-info ${isExpanded ? 'expanded' : 'collapsed'}`}>
         <IconButton
