@@ -15,6 +15,9 @@ test.describe('Record realtimemap.har', () => {
     // Zoom in once so individual markers appear within the visible viewport.
     // At the default zoom (8) the only individual marker is ~200px below the fold.
     await page.locator('.leaflet-control-zoom-in').click()
+    // leaflet-zoom-anim is added to .leaflet-map-pane at animation start and removed at zoomend.
+    await page.waitForFunction(() => !!document.querySelector('.leaflet-map-pane.leaflet-zoom-anim'), { timeout: 2000 }).catch(() => {})
+    await page.waitForFunction(() => !document.querySelector('.leaflet-map-pane.leaflet-zoom-anim'), { timeout: 10000 })
     await page.waitForFunction(
       () => {
         const icons = document.querySelectorAll('.leaflet-marker-pane .my-div-icon')
@@ -32,6 +35,7 @@ test.describe('Record realtimemap.har', () => {
     )
 
     // Click the first in-viewport individual bus marker.
+    const gtfsRoutesResponse = page.waitForResponse(/gtfs_routes\/list/, { timeout: 30000 })
     const coords = await page.evaluate(() => {
       const icons = document.querySelectorAll('.leaflet-marker-pane .my-div-icon')
       const el = Array.from(icons).find((el) => {
@@ -53,6 +57,8 @@ test.describe('Record realtimemap.har', () => {
     await page.waitForFunction(() => document.querySelector('.bus-tooltip .content') !== null, {
       timeout: 30000,
     })
+    const gtfsResp = await gtfsRoutesResponse
+    await gtfsResp.body()
     await page.waitForLoadState('networkidle', { timeout: 30000 })
   })
 })
