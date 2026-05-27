@@ -16,8 +16,15 @@ test.describe('Record realtimemap.har', () => {
     // At the default zoom (8) the only individual marker is ~200px below the fold.
     await page.locator('.leaflet-control-zoom-in').click()
     // leaflet-zoom-anim is added to .leaflet-map-pane at animation start and removed at zoomend.
-    await page.waitForFunction(() => !!document.querySelector('.leaflet-map-pane.leaflet-zoom-anim'), { timeout: 2000 }).catch(() => {})
-    await page.waitForFunction(() => !document.querySelector('.leaflet-map-pane.leaflet-zoom-anim'), { timeout: 10000 })
+    await page
+      .waitForFunction(() => !!document.querySelector('.leaflet-map-pane.leaflet-zoom-anim'), {
+        timeout: 2000,
+      })
+      .catch(() => {})
+    await page.waitForFunction(
+      () => !document.querySelector('.leaflet-map-pane.leaflet-zoom-anim'),
+      { timeout: 10000 },
+    )
     await page.waitForFunction(
       () => {
         const icons = document.querySelectorAll('.leaflet-marker-pane .my-div-icon')
