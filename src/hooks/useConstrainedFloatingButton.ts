@@ -16,9 +16,17 @@ export function useConstrainedFloatingButton(
 
       const buttonElement = buttonRef.current
 
+      const isRtl = document.documentElement.dir === 'rtl'
+
       if (isExpanded) {
         if (buttonElement) {
-          buttonElement.style.left = `${offset}px`
+          if (isRtl) {
+            buttonElement.style.left = `${offset}px`
+            buttonElement.style.right = ''
+          } else {
+            buttonElement.style.right = `${offset}px`
+            buttonElement.style.left = ''
+          }
           buttonElement.style.bottom = `${3 * offset + offset}px`
           buttonElement.style.top = ''
           buttonElement.style.display = ''
@@ -69,7 +77,13 @@ export function useConstrainedFloatingButton(
       }
 
       if (buttonElement) {
-        buttonElement.style.left = `${mapRect.left + offset}px`
+        if (isRtl) {
+          buttonElement.style.left = `${mapRect.left + offset}px`
+          buttonElement.style.right = ''
+        } else {
+          buttonElement.style.right = `${window.innerWidth - mapRect.right + offset}px`
+          buttonElement.style.left = ''
+        }
         if (finalTop !== undefined) {
           buttonElement.style.top = `${finalTop}px`
           buttonElement.style.bottom = ''
@@ -102,10 +116,14 @@ export function useConstrainedFloatingButton(
       ?.addEventListener('scroll', updateButtonPosition)
     window.addEventListener('resize', updateButtonPosition)
 
+    const dirObserver = new MutationObserver(updateButtonPosition)
+    dirObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['dir'] })
+
     return () => {
       if (intersectionObserver) {
         intersectionObserver.disconnect()
       }
+      dirObserver.disconnect()
       window.document
         .getElementsByClassName('ant-layout-content')
         .item(0)
