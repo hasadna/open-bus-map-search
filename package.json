@@ -81,13 +81,13 @@
     ]
   },
   "devDependencies": {
-    "@applitools/eyes-playwright": "^1.47.2",
+    "@applitools/eyes-playwright": "^1.47.4",
     "@applitools/eyes-storybook": "^3.65.2",
     "@eslint/eslintrc": "^3.3.5",
     "@eslint/js": "^9.39.4",
     "@nx/eslint": "22.5.4",
     "@nx/eslint-plugin": "22.6.3",
-    "@playwright/test": "^1.59.1",
+    "@playwright/test": "^1.60.0",
     "@storybook/addon-docs": "^10.4.0",
     "@storybook/react-vite": "^10.2.19",
     "@testing-library/jest-dom": "^6.9.1",
