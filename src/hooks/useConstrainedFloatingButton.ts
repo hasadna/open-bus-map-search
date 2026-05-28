@@ -21,11 +21,11 @@ export function useConstrainedFloatingButton(
       if (isExpanded) {
         if (buttonElement) {
           if (isRtl) {
-            buttonElement.style.right = `${offset}px`
-            buttonElement.style.left = ''
-          } else {
             buttonElement.style.left = `${offset}px`
             buttonElement.style.right = ''
+          } else {
+            buttonElement.style.right = `${offset}px`
+            buttonElement.style.left = ''
           }
           buttonElement.style.bottom = `${3 * offset + offset}px`
           buttonElement.style.top = ''
@@ -78,11 +78,11 @@ export function useConstrainedFloatingButton(
 
       if (buttonElement) {
         if (isRtl) {
-          buttonElement.style.right = `${window.innerWidth - mapRect.right + offset}px`
-          buttonElement.style.left = ''
-        } else {
           buttonElement.style.left = `${mapRect.left + offset}px`
           buttonElement.style.right = ''
+        } else {
+          buttonElement.style.right = `${window.innerWidth - mapRect.right + offset}px`
+          buttonElement.style.left = ''
         }
         if (finalTop !== undefined) {
           buttonElement.style.top = `${finalTop}px`

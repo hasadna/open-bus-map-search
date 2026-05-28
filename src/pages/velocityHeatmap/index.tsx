@@ -2,7 +2,7 @@ import { OpenInFullRounded } from '@mui/icons-material'
 import { FormControlLabel, IconButton, Radio, RadioGroup, Stack, Typography } from '@mui/material'
 import React, { useCallback, useContext, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { MapContainer, TileLayer } from 'react-leaflet'
+import { AttributionControl, MapContainer, TileLayer, ZoomControl } from 'react-leaflet'
 import dayjs from 'src/dayjs'
 import { useConstrainedFloatingButton } from 'src/hooks/useConstrainedFloatingButton'
 import { SearchContext } from '../../model/pageState'
@@ -23,7 +23,8 @@ const DEFAULT_ZOOM_LEVEL = 10
 const VelocityHeatmapPage: React.FC = () => {
   const [isExpanded, setIsExpanded] = useState<boolean>(false)
   const toggleExpanded = useCallback(() => setIsExpanded((expanded) => !expanded), [])
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const isRtl = i18n.dir() === 'rtl'
 
   const { search, setSearch } = useContext(SearchContext)
 
@@ -78,7 +79,11 @@ const VelocityHeatmapPage: React.FC = () => {
           center={[29.65, 34.6]}
           zoom={DEFAULT_ZOOM_LEVEL}
           scrollWheelZoom={true}
+          zoomControl={false}
+          attributionControl={false}
           style={{ height: '100%', width: '100%' }}>
+          <ZoomControl position={isRtl ? 'topleft' : 'topright'} />
+          <AttributionControl position={isRtl ? 'bottomright' : 'bottomleft'} prefix={false} />
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
