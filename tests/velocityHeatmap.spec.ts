@@ -11,9 +11,7 @@ test.describe('Velocity Heatmap', () => {
   })
 
   test('shows page title', async ({ page }) => {
-    await expect(
-      page.getByRole('heading', { name: 'Velocity Aggregation Heatmap', level: 1 }),
-    ).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'מפת מהירות', level: 1 })).toBeVisible()
   })
 
   test('shows date selector', async ({ page }) => {
@@ -21,9 +19,9 @@ test.describe('Velocity Heatmap', () => {
   })
 
   test('shows all three visualization mode options', async ({ page }) => {
-    await expect(page.getByText('Visualize Avg Speed')).toBeVisible()
-    await expect(page.getByText('Visualize Std')).toBeVisible()
-    await expect(page.getByText('Visualize Std / Avg Speed (Coeff of Var)')).toBeVisible()
+    await expect(page.getByText('מהירות ממוצעת')).toBeVisible()
+    await expect(page.getByText('סטיית תקן')).toBeVisible()
+    await expect(page.getByText('מקדם שונות')).toBeVisible()
   })
 
   test('avg is the default selected visualization mode', async ({ page }) => {
