@@ -84,7 +84,9 @@ const LineProfile = () => {
       abortController.signal,
     )
       .then((routes) => {
-        const newRoute = routes?.find((r) => r.key === `${route.routeMkt}-${route.routeDirection}-${route.routeAlternative}`)
+        const newRoute = routes?.find(
+          (r) => r.key === `${route.routeMkt}-${route.routeDirection}-${route.routeAlternative}`,
+        )
         if (newRoute?.routeIds?.[0]) {
           navigate(`/profile/${newRoute.routeIds[0]}`)
         }
