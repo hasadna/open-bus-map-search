@@ -22,6 +22,6 @@ export const getPastDate = () => {
 
 export default config
 
-function getAbsolutePath(value: string): any {
+function getAbsolutePath(value: string): string {
   return dirname(fileURLToPath(import.meta.resolve(`${value}/package.json`)))
 }
