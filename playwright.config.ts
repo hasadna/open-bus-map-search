@@ -3,8 +3,11 @@ import { EyesFixture } from '@applitools/eyes-playwright/fixture'
 import { defineConfig, devices } from '@playwright/test'
 
 const gitUser = () => {
-  try { return execSync('git config user.name', { encoding: 'utf-8' }).trim() }
-  catch { return 'unknown' }
+  try {
+    return execSync('git config user.name', { encoding: 'utf-8' }).trim()
+  } catch {
+    return 'unknown'
+  }
 }
 
 /**
