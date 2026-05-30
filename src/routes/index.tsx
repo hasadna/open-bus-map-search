@@ -17,24 +17,23 @@ import { createBrowserRouter, createRoutesFromElements, Navigate, Route } from '
 import { getRouteById } from 'src/api/gtfsService'
 import { ErrorPage } from 'src/pages/ErrorPage'
 import VelocityHeatmapPage from 'src/pages/velocityHeatmap'
+// Eager-imported to merge their recharts/CJS modules into the main chunk and
+// avoid a rolldown OXC-minifier codegen bug that produces `var X=X()` self-calls
+// in the lazy chunks (vite:preloadError -> reload loop). See rolldown-vite #595.
+import DashboardPage from 'src/pages/dashboard/DashboardPage'
+import GapsPatternsPage from 'src/pages/gapsPatterns'
+import { DataResearch } from 'src/pages/DataResearch/DataResearch'
 import { MainRoute } from './MainRoute'
 
 const HomePage = lazy(() => import('../pages/homepage/HomePage'))
-const DashboardPage = lazy(() => import('../pages/dashboard/DashboardPage'))
 const TimelinePage = lazy(() => import('../pages/historicTimeline'))
 const GapsPage = lazy(() => import('../pages/gaps'))
-const GapsPatternsPage = lazy(() => import('../pages/gapsPatterns'))
 const TimeBasedMapPage = lazy(() => import('../pages/timeBasedMap'))
 const SingleLineMapPage = lazy(() => import('../pages/singleLineMap'))
 const About = lazy(() => import('../pages/about'))
 const Operator = lazy(() => import('../pages/operator'))
 const Profile = lazy(() => import('../pages/lineProfile/LineProfile'))
 const BugReportForm = lazy(() => import('../pages/bugReport/BugReportForm'))
-const DataResearch = lazy(() =>
-  import('../pages/DataResearch/DataResearch').then((m) => ({
-    default: m.DataResearch,
-  })),
-)
 const PublicAppeal = lazy(() => import('../pages/publicAppeal'))
 const Hackathon = lazy(() => import('../pages/hackathon/Hackathon'))
 
