@@ -48,10 +48,10 @@ const LineProfile = () => {
       operatorId: route.operatorRef.toString(),
       lineNumber: route.routeShortName,
       routes,
-      routeKey: `${route.routeMkt}-${route.routeDirection}`,
+      routeKey: `${route.routeMkt}-${route.routeDirection}-${route.routeAlternative}`,
       startTime: initialUrlParams.startTime,
     }))
-    setRouteKey(`${route.routeMkt}-${route.routeDirection}`)
+    setRouteKey(`${route.routeMkt}-${route.routeDirection}-${route.routeAlternative}`)
   }, [route?.id])
 
   const {
@@ -84,7 +84,9 @@ const LineProfile = () => {
       abortController.signal,
     )
       .then((routes) => {
-        const newRoute = routes?.find((r) => r.key === `${route.routeMkt}-${route.routeDirection}`)
+        const newRoute = routes?.find(
+          (r) => r.key === `${route.routeMkt}-${route.routeDirection}-${route.routeAlternative}`,
+        )
         if (newRoute?.routeIds?.[0]) {
           navigate(`/profile/${newRoute.routeIds[0]}`)
         }

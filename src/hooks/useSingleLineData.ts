@@ -1,10 +1,10 @@
+import { useQuery } from '@tanstack/react-query'
 import { uniqBy } from 'es-toolkit/compat'
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { SIRI_API } from 'src/api/apiConfig'
 import { getRoutesAsync, getRoutesByLineRef, getStopsForRouteAsync } from 'src/api/gtfsService'
 import { toIsraelTimezone } from 'src/dayjs'
 import { BusRoute } from 'src/model/busRoute'
-import { BusStop } from 'src/model/busStop'
 import { SearchContext } from 'src/model/pageState'
 import { toPoint } from 'src/pages/components/map-related/map-types'
 import type { Point } from 'src/pages/components/map-related/map-types'
@@ -29,7 +29,6 @@ export const useSingleLineData = (
   const { search, setSearch } = useContext(SearchContext)
   const [routes, setRoutes] = useState<BusRoute[] | undefined>(search.routes)
   const [routeKey, _setRouteKey] = useState<string | undefined>(search.routeKey)
-  const [plannedRouteStops, setPlannedRouteStops] = useState<BusStop[]>([])
   const [options, setOptions] = useState<{ value: string; label: string }[]>([])
   const [rideIdsByToken, setRideIdsByToken] = useState<Map<string, number[]>>(new Map())
   const [positions, setPositions] = useState<Point[]>([])
@@ -228,38 +227,30 @@ export const useSingleLineData = (
   }, [selectedRideIdsKey])
 
   // Fetch planned stops for the black polyline
-  useEffect(() => {
-    const fetchStops = async () => {
-      try {
-        const scheduledTime = parsedStartTime?.scheduledTime
-        const scheduledLine = parsedStartTime?.lineRef
-        const [hour, minute] = scheduledTime ? scheduledTime.split(':').map(Number) : [0, 0]
-        const startTimeTimestamp = today.hour(hour).minute(minute).second(0).millisecond(0)
-        let routeIds: number[] | undefined
-        if (selectedRoute?.routeIds && selectedRoute.routeIds.length > 0) {
-          routeIds = selectedRoute.routeIds
-        } else if (scheduledLine && operatorId) {
-          routeIds = (
-            await getRoutesByLineRef(operatorId, scheduledLine, startTimeTimestamp.toDate())
-          ).map((route) => route.id)
-        }
-        if (!routeIds || routeIds.length === 0) {
-          setPlannedRouteStops([])
-          return
-        }
-        const stops = await getStopsForRouteAsync(routeIds, startTimeTimestamp)
-        setPlannedRouteStops(stops)
-      } catch (err) {
-        console.error(err)
-        setPlannedRouteStops([])
+  const stopsQuery = useQuery({
+    queryFn: async () => {
+      const scheduledTime = parsedStartTime?.scheduledTime
+      const scheduledLine = parsedStartTime?.lineRef
+      const [hour, minute] = scheduledTime ? scheduledTime.split(':').map(Number) : [0, 0]
+      const startTimeTimestamp = today.hour(hour).minute(minute).second(0).millisecond(0)
+      let routeIds: number[] | undefined
+      if (selectedRoute?.routeIds && selectedRoute.routeIds.length > 0) {
+        routeIds = selectedRoute.routeIds
+      } else if (scheduledLine && operatorId) {
+        routeIds = (
+          await getRoutesByLineRef(operatorId, scheduledLine, startTimeTimestamp.toDate())
+        ).map((route) => route.id)
       }
-    }
-    fetchStops()
-  }, [selectedRoute?.routeIds, operatorId, parsedStartTime, today])
+      if (!routeIds || routeIds.length === 0) return []
+      return await getStopsForRouteAsync(routeIds, startTimeTimestamp)
+    },
+    queryKey: ['stops', selectedRoute?.lineRef, today.valueOf(), parsedStartTime?.scheduledTime],
+    enabled: !!(selectedRoute?.routeIds?.length || parsedStartTime?.lineRef),
+  })
 
   return {
     positions,
-    plannedRouteStops,
+    plannedRouteStops: stopsQuery.data ?? [],
     options,
     startTime: normalizeStartTimeToken(startTime),
     locationsAreLoading,
