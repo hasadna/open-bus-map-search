@@ -15,14 +15,14 @@ import { DirectionsBusOutlined, MapOutlined, Psychology, RouteOutlined } from '@
 import { lazy } from 'react'
 import { createBrowserRouter, createRoutesFromElements, Navigate, Route } from 'react-router'
 import { getRouteById } from 'src/api/gtfsService'
-import { ErrorPage } from 'src/pages/ErrorPage'
-import VelocityHeatmapPage from 'src/pages/velocityHeatmap'
-// Eager-imported to merge their recharts/CJS modules into the main chunk and
+// Eager-imported [DashboardPage, GapsPatternsPage, DataResearch] to merge their recharts/CJS modules into the main chunk and
 // avoid a rolldown OXC-minifier codegen bug that produces `var X=X()` self-calls
 // in the lazy chunks (vite:preloadError -> reload loop). See rolldown-vite #595.
 import DashboardPage from 'src/pages/dashboard/DashboardPage'
-import GapsPatternsPage from 'src/pages/gapsPatterns'
 import { DataResearch } from 'src/pages/DataResearch/DataResearch'
+import { ErrorPage } from 'src/pages/ErrorPage'
+import GapsPatternsPage from 'src/pages/gapsPatterns'
+import VelocityHeatmapPage from 'src/pages/velocityHeatmap'
 import { MainRoute } from './MainRoute'
 
 const HomePage = lazy(() => import('../pages/homepage/HomePage'))
