@@ -1,13 +1,11 @@
 import { useQuery } from '@tanstack/react-query'
 import { uniqBy } from 'es-toolkit/compat'
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { SIRI_API } from 'src/api/apiConfig'
 import { getRoutesAsync, getRoutesByLineRef, getStopsForRouteAsync } from 'src/api/gtfsService'
-import { toIsraelTimezone } from 'src/dayjs'
+import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone } from 'src/dayjs'
 import { BusRoute } from 'src/model/busRoute'
-import { SearchContext } from 'src/model/pageState'
-import { toPoint } from 'src/pages/components/map-related/map-types'
-import type { Point } from 'src/pages/components/map-related/map-types'
+import { type Point, toPoint } from 'src/pages/components/map-related/map-types'
 import { routeStartEnd, vehicleIDFormat } from 'src/pages/components/utils/rotueUtils'
 import {
   normalizeStartTimeToken,
@@ -21,65 +19,70 @@ const VEHICLE_NUMBER_TEST = {
   bus: /^\d{7,8}$/,
 } as const
 
-export const useSingleLineData = (
-  operatorId?: string,
-  lineNumber?: string,
-  vehicleNumber?: number,
-) => {
-  const { search, setSearch } = useContext(SearchContext)
-  const [routes, setRoutes] = useState<BusRoute[] | undefined>(search.routes)
-  const [routeKey, _setRouteKey] = useState<string | undefined>(search.routeKey)
+interface UseSingleLineDataOptions {
+  operatorId?: string
+  lineNumber?: string
+  vehicleNumber?: number
+  date: string
+  routeKey?: string | null
+  rideTime?: string | null
+  onRouteKeyChange?: (routeKey: string | null) => void
+  onRideTimeChange?: (rideTime: string | null) => void
+}
+
+export const useSingleLineData = ({
+  operatorId,
+  lineNumber,
+  vehicleNumber,
+  date,
+  routeKey,
+  rideTime,
+  onRouteKeyChange,
+  onRideTimeChange,
+}: UseSingleLineDataOptions) => {
+  const [routes, setRoutes] = useState<BusRoute[] | undefined>()
   const [options, setOptions] = useState<{ value: string; label: string }[]>([])
   const [rideIdsByToken, setRideIdsByToken] = useState<Map<string, number[]>>(new Map())
   const [positions, setPositions] = useState<Point[]>([])
   const [locationsAreLoading, setLocationsAreLoading] = useState(false)
-  const { startTime } = search
   const [error, setError] = useState<string>()
+  const startTime = useMemo(() => normalizeStartTimeToken(rideTime ?? undefined), [rideTime])
 
   const setStartTime = useCallback(
     (startTime?: string) => {
-      setSearch((prev) => ({ ...prev, startTime: normalizeStartTimeToken(startTime) }))
+      onRideTimeChange?.(normalizeStartTimeToken(startTime) ?? null)
     },
-    [setSearch],
+    [onRideTimeChange],
   )
 
   const setRouteKey = useCallback(
-    (routeKey?: string) => {
-      _setRouteKey(routeKey)
-      setSearch((prev) => ({ ...prev, routeKey }))
+    (key?: string) => {
+      onRouteKeyChange?.(key ?? null)
     },
-    [setSearch],
+    [onRouteKeyChange],
   )
 
   useEffect(() => {
     if (!operatorId || !lineNumber) {
       setRoutes(undefined)
-      setRouteKey(undefined)
-      setStartTime(undefined)
       setError(undefined)
-      setSearch((prev) => ({
-        ...prev,
-        routes: undefined,
-        routeKey: undefined,
-        startTime: undefined,
-      }))
+      onRouteKeyChange?.(null)
+      onRideTimeChange?.(null)
       return
     }
 
     const controller = new AbortController()
-    const time = toIsraelTimezone(search.timestamp)
+    const time = dayjs.tz(date, ISRAEL_TIMEZONE)
 
     getRoutesAsync(time, time, operatorId, lineNumber, controller.signal)
       .then((routes) => {
         setRoutes(routes)
-        setSearch((prev) => ({ ...prev, routes }))
         setError(undefined)
       })
       .catch((err) => {
         if (err?.cause?.name !== 'AbortError') {
           setRoutes(undefined)
-          setSearch((prev) => ({ ...prev, routes: undefined }))
-          setRouteKey(undefined)
+          onRouteKeyChange?.(null)
           setError(err instanceof Error ? err.message : 'Failed to fetch routes')
         }
       })
@@ -87,16 +90,16 @@ export const useSingleLineData = (
     return () => {
       controller.abort()
     }
-  }, [operatorId, lineNumber, search.timestamp, setSearch, setRouteKey])
+  }, [operatorId, lineNumber, date, onRouteKeyChange, onRideTimeChange])
 
   const selectedRoute = useMemo(() => {
-    return routes?.find((route) => route.key === routeKey)
+    return routes?.find((route) => route.key === (routeKey ?? undefined))
   }, [routes, routeKey])
 
   const [today, tomorrow] = useMemo(() => {
-    const today = toIsraelTimezone(search.timestamp).startOf('day')
+    const today = dayjs.tz(date, ISRAEL_TIMEZONE).startOf('day')
     return [today, today.add(1, 'day')]
-  }, [search.timestamp])
+  }, [date])
 
   const validVehicleNumber = useMemo(() => {
     if (!vehicleNumber) return undefined
@@ -252,10 +255,10 @@ export const useSingleLineData = (
     positions,
     plannedRouteStops: stopsQuery.data ?? [],
     options,
-    startTime: normalizeStartTimeToken(startTime),
+    startTime,
     locationsAreLoading,
     routes,
-    routeKey,
+    routeKey: routeKey ?? undefined,
     error,
     setStartTime,
     setRouteKey,
