@@ -59,10 +59,26 @@ export function getPastDate() {
 const urlMatcher: Matcher = customMatcher({
   urlComparator(a, b) {
     const paramsToIgnore = new Set(['t', 'limit', 'date_from', 'date_to'])
+    // Coordinate bounds come from geolib's floating-point math, whose last digits
+    // can shift between library versions — which would break exact URL matching.
+    // Round them so the HAR match is stable across geolib bumps.
+    // (6 decimals ≈ 11cm, far finer than the source stop data and the 500m box.)
+    const floatParams = new Set([
+      'lat__greater_or_equal',
+      'lat__lower_or_equal',
+      'lon__greater_or_equal',
+      'lon__lower_or_equal',
+    ])
     function normalize(url: string) {
       const urlObj = new URL(url)
       for (const param of paramsToIgnore) {
         urlObj.searchParams.delete(param)
+      }
+      for (const param of floatParams) {
+        const value = urlObj.searchParams.get(param)
+        if (value !== null) {
+          urlObj.searchParams.set(param, Number(value).toFixed(6))
+        }
       }
       const sortedParams = Array.from(urlObj.searchParams.entries()).sort(([a], [b]) =>
         a.localeCompare(b),
