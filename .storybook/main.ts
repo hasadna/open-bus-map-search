@@ -1,11 +1,13 @@
 import type { StorybookConfig } from '@storybook/react-vite'
+import { dirname } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 const config: StorybookConfig = {
   stories: ['../src/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
   staticDirs: ['../public'],
-  addons: ['@storybook/addon-docs'],
+  addons: [getAbsolutePath('@storybook/addon-docs')],
   framework: {
-    name: '@storybook/react-vite',
+    name: getAbsolutePath('@storybook/react-vite'),
     options: {},
   },
   typescript: {
@@ -19,3 +21,7 @@ export const getPastDate = () => {
 }
 
 export default config
+
+function getAbsolutePath(value: string): string {
+  return dirname(fileURLToPath(import.meta.resolve(`${value}/package.json`)))
+}

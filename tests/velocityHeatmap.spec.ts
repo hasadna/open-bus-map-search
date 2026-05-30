@@ -19,9 +19,9 @@ test.describe('Velocity Heatmap', () => {
   })
 
   test('shows all three visualization mode options', async ({ page }) => {
-    await expect(page.getByText('מהירות ממוצעת')).toBeVisible()
-    await expect(page.getByText('סטיית תקן')).toBeVisible()
-    await expect(page.getByText('מקדם שונות')).toBeVisible()
+    await expect(page.getByText('מהירות ממוצעת', { exact: true })).toBeVisible()
+    await expect(page.getByText('סטיית תקן', { exact: true })).toBeVisible()
+    await expect(page.getByText('מקדם שונות', { exact: true })).toBeVisible()
   })
 
   test('avg is the default selected visualization mode', async ({ page }) => {
