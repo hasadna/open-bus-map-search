@@ -1,22 +1,29 @@
 import { OpenInFullRounded } from '@mui/icons-material'
-import { IconButton, Stack } from '@mui/material'
+import { FormControlLabel, IconButton, Radio, RadioGroup, Stack, Typography } from '@mui/material'
 import React, { useCallback, useContext, useRef } from 'react'
-import { MapContainer, TileLayer } from 'react-leaflet'
-import { useMapEvents } from 'react-leaflet'
+import { useTranslation } from 'react-i18next'
+import {
+  AttributionControl,
+  MapContainer,
+  TileLayer,
+  useMapEvents,
+  ZoomControl,
+} from 'react-leaflet'
 import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone } from 'src/dayjs'
 import { useConstrainedFloatingButton } from 'src/hooks/useConstrainedFloatingButton'
 import { usePageState } from 'src/hooks/usePageState'
 import { SearchContext } from '../../model/pageState'
 import { DateNavigator } from '../components/dateNavigator/DateNavigator'
 import { DateSelector } from '../components/DateSelector'
+import { PageContainer } from '../components/PageContainer'
 import { VelocityHeatmapLegend } from './components/VelocityHeatmapLegend'
 import { VelocityHeatmapRectangles } from './components/VelocityHeatmapRectangles'
 
 const VIS_MODES = [
-  { key: 'avg', label: 'Visualize Avg Speed' },
-  { key: 'std', label: 'Visualize Std' },
-  { key: 'cv', label: 'Visualize Std / Avg Speed (Coeff of Var)' },
-]
+  { key: 'avg', labelKey: 'velocity_vis_avg' },
+  { key: 'std', labelKey: 'velocity_vis_std' },
+  { key: 'cv', labelKey: 'velocity_vis_cv' },
+] as const
 
 // Negev-centered default: the heatmap covers southern Israel where
 // velocity variation is most prominent for demonstrations.
@@ -27,6 +34,8 @@ const VelocityHeatmapPage: React.FC = () => {
   const { search, setSearch } = useContext(SearchContext)
   const mapContainerRef = useRef<HTMLDivElement>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
+  const { t, i18n } = useTranslation()
+  const isRtl = i18n.dir() === 'rtl'
 
   // visMode, center, zoom go in params (shareable) — this map has no auto-fit,
   // so the recipient needs the viewport to see the same area.
@@ -35,7 +44,7 @@ const VelocityHeatmapPage: React.FC = () => {
     'velocity-heatmap',
     {
       params: {
-        visMode: 'avg' as 'avg' | 'std' | 'cv',
+        visMode: 'avg',
         centerLat: DEFAULT_CENTER[0],
         centerLng: DEFAULT_CENTER[1],
         zoom: DEFAULT_ZOOM,
@@ -63,32 +72,33 @@ const VelocityHeatmapPage: React.FC = () => {
   useConstrainedFloatingButton(mapContainerRef, buttonRef, ui.isExpanded)
 
   return (
-    <div>
-      <h1>Velocity Aggregation Heatmap</h1>
-      <p>This page will display a heatmap of velocity aggregation data.</p>
+    <PageContainer>
+      <Typography variant="h4" component="h1" gutterBottom>
+        {t('velocity_heatmap_page_title')}
+      </Typography>
 
-      <Stack direction="column" spacing={2} sx={{ mb: 2, width: { xs: '100%', md: '70%' } }}>
+      <Stack direction="column" spacing={2} sx={{ maxWidth: 600 }}>
         <DateSelector time={dayjs.tz(search.date, ISRAEL_TIMEZONE)} onChange={handleDateChange} />
-        <DateNavigator currentTime={dayjs.tz(search.date, ISRAEL_TIMEZONE)} onChange={handleDateChange} />
+        <DateNavigator
+          currentTime={dayjs.tz(search.date, ISRAEL_TIMEZONE)}
+          onChange={handleDateChange}
+        />
       </Stack>
-
-      <div style={{ margin: '12px 0' }}>
-        <b>Visualization:</b>{' '}
+      <RadioGroup
+        row
+        name="visMode"
+        value={params.visMode}
+        onChange={(e) => setParams((prev) => ({ ...prev, visMode: e.target.value }))}
+        sx={{ flexWrap: 'wrap', mt: 2 }}>
         {VIS_MODES.map((mode) => (
-          <label key={mode.key} style={{ marginRight: 12 }}>
-            <input
-              type="radio"
-              name="visMode"
-              value={mode.key}
-              checked={params.visMode === mode.key}
-              onChange={() =>
-                setParams((prev) => ({ ...prev, visMode: mode.key as 'avg' | 'std' | 'cv' }))
-              }
-            />{' '}
-            {mode.label}
-          </label>
+          <FormControlLabel
+            key={mode.key}
+            value={mode.key}
+            control={<Radio size="small" />}
+            label={t(mode.labelKey)}
+          />
         ))}
-      </div>
+      </RadioGroup>
 
       <div ref={mapContainerRef} className={`map-info ${ui.isExpanded ? 'expanded' : 'collapsed'}`}>
         <IconButton
@@ -102,7 +112,11 @@ const VelocityHeatmapPage: React.FC = () => {
           center={[params.centerLat, params.centerLng]}
           zoom={params.zoom}
           scrollWheelZoom={true}
+          zoomControl={false}
+          attributionControl={false}
           style={{ height: '100%', width: '100%' }}>
+          <ZoomControl position={isRtl ? 'topleft' : 'topright'} />
+          <AttributionControl position={isRtl ? 'bottomright' : 'bottomleft'} prefix={false} />
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
@@ -122,7 +136,7 @@ const VelocityHeatmapPage: React.FC = () => {
           <VelocityHeatmapLegend visMode={params.visMode} min={min} max={max} />
         </MapContainer>
       </div>
-    </div>
+    </PageContainer>
   )
 }
 

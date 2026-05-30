@@ -8,7 +8,7 @@ import { useSessionStorage } from 'usehooks-ts'
 import { toIsraelTimezone } from 'src/dayjs'
 import { MainLayout } from '../layout'
 import { ThemeProvider } from '../layout/ThemeContext'
-import { PageShareParamsContext, InitialUrlParamsContext, SearchContext } from '../model/pageState'
+import { InitialUrlParamsContext, PageShareParamsContext, SearchContext } from '../model/pageState'
 import { GLOBAL_SEARCH_DEFAULTS, GlobalSearchState } from '../model/searchState'
 
 const cacheRtl = createCache({

@@ -151,7 +151,7 @@ export const useSingleLineData = (
       for (const position of positions) {
         const startTime = position.point?.siriRideScheduledStartTime
         if (!startTime) continue
-        const dayjsTime = toIsraelTimezone(startTime as dayjs.ConfigType)
+        const dayjsTime = toIsraelTimezone(startTime)
         if (dayjsTime.isAfter(today) && dayjsTime.isBefore(serviceDayEnd)) {
           const formattedTime = formatTime(dayjsTime)
           const key = `${formattedTime}|${position.point?.siriRideVehicleRef}`
@@ -172,7 +172,7 @@ export const useSingleLineData = (
               (option.position.point!.siriRouteOperatorRef ?? 0).toString(),
               (option.position.point!.siriRouteLineRef ?? 0).toString(),
               option.position.point!.recordedAtTime
-                ? new Date(option.position.point!.recordedAtTime as unknown as string)
+                ? new Date(option.position.point!.recordedAtTime)
                 : new Date(),
             )
             const [start, end] = routeStartEnd(routes[0]?.routeLongName)
@@ -180,7 +180,7 @@ export const useSingleLineData = (
               value: `${option.scheduledTime}|${option.position.point!.siriRideVehicleRef}|${option.position.point!.siriRouteLineRef}`,
               label: routes[0]?.routeLongName
                 ? `${option.scheduledTime} (${routes[0]?.routeShortName} - ${start} ⇄ ${end})`
-                : `${option.scheduledTime} (${vehicleIDFormat(option.position.point!.siriRideVehicleRef as string)})`,
+                : `${option.scheduledTime} (${vehicleIDFormat(option.position.point!.siriRideVehicleRef)})`,
             }
           }),
         )
@@ -212,7 +212,7 @@ export const useSingleLineData = (
         const vehicleRef = position.point?.siriRideVehicleRef?.toString()
         if (!scheduledStart || !vehicleRef || !scheduledTime) return false
         return (
-          formatTime(scheduledStart as dayjs.ConfigType) === scheduledTime &&
+          formatTime(scheduledStart) === scheduledTime &&
           (scheduledVehicle ? scheduledVehicle === vehicleRef : true) &&
           (scheduledLine ? scheduledLine === position.point?.siriRouteLineRef?.toString() : true)
         )

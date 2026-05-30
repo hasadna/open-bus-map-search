@@ -176,7 +176,7 @@ const GapsPatternsPage = () => {
       params: {
         startDate: DEFAULT_START,
         endDate: DEFAULT_END,
-        sortingMode: 'hour' as 'hour' | 'severity',
+        sortingMode: 'hour',
       },
       ui: { scrollPosition: 0 },
     },

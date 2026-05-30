@@ -27,7 +27,7 @@ const OperatorPage = () => {
   const { params, setParams } = usePageState(
     'operator',
     {
-      params: { timeRange: 'day' as (typeof TIME_RANGES)[number] },
+      params: { timeRange: 'day' },
       ui: { scrollPosition: 0 },
     },
     ['timeRange'],
@@ -56,7 +56,11 @@ const OperatorPage = () => {
         </Grid>
 
         <Grid size={{ sm: 4, xs: 12 }}>
-          <DateSelector time={dayjs.tz(date, ISRAEL_TIMEZONE)} disabled={!operatorId} onChange={handleDateChange} />
+          <DateSelector
+            time={dayjs.tz(date, ISRAEL_TIMEZONE)}
+            disabled={!operatorId}
+            onChange={handleDateChange}
+          />
         </Grid>
 
         <Grid size={{ sm: 4, xs: 12 }}>
@@ -84,7 +88,11 @@ const OperatorPage = () => {
           <Grid size={{ lg: 6, xs: 12 }}>
             <OperatorInfo operatorId={operatorId} />
             <Spacing />
-            <OperatorGaps operatorId={operatorId} timestamp={dateTimestamp} timeRange={params.timeRange} />
+            <OperatorGaps
+              operatorId={operatorId}
+              timestamp={dateTimestamp}
+              timeRange={params.timeRange}
+            />
           </Grid>
           <Grid size={{ lg: 6, xs: 12 }}>
             <ChartWrapper>

@@ -162,7 +162,10 @@ const GapsTable: React.FC<GapsTableProps> = ({
                       const startTimeParam = formatStartTimeForQuery(rideToken)
                       const cellHref = `${singleLineMapBaseHref}&rideTime=${startTimeParam}`
                       return (
-                        <Tooltip key={`${hour}-${j}-${displayTime}`} title={buildTooltip(gap)} arrow>
+                        <Tooltip
+                          key={`${hour}-${j}-${displayTime}`}
+                          title={buildTooltip(gap)}
+                          arrow>
                           <TableCell
                             sx={{
                               ...cellStyle,
@@ -177,8 +180,7 @@ const GapsTable: React.FC<GapsTableProps> = ({
                               <Link
                                 to={cellHref}
                                 onClick={() =>
-                                  gap.actualStartTime &&
-                                  onStartTimeClick?.(startTimeParam)
+                                  gap.actualStartTime && onStartTimeClick?.(startTimeParam)
                                 }>
                                 {displayTime}
                               </Link>
