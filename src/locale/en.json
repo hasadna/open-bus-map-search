@@ -60,6 +60,12 @@
   "dashboard_tooltip_content": "A GPS is attached to every line in Israel that reports the location of the bus every few moments.\nSo what is a missed trip? This is a trip that was planned, but was not reported to have taken place in the GPS data. You can see it in the app for example, but when you wait at the station, it will never arrive",
   "worst_lines_page_title": "Least Efficient Lines",
   "velocity_heatmap_page_title": "Velocity Heatmap",
+  "velocity_vis_avg": "Average Speed",
+  "velocity_vis_std": "Standard Deviation",
+  "velocity_vis_cv": "Coefficient of Variation",
+  "velocity_legend_avg": "Avg Speed (km/h)",
+  "velocity_legend_std": "Std Dev (km/h)",
+  "velocity_legend_cv": "Coeff. of Var (avg/std)",
   "rides_planned": "planned trips",
   "rides_history": "Trips History",
   "rides_actual": "Trips out",
@@ -383,5 +389,340 @@
     "statistics": "Statistics"
   },
   "share_link": "Copy link",
-  "link_copied": "Link copied!"
+  "link_copied": "Link copied!",
+  "hackathon_title": "Hackathon",
+  "hackathonPage": {
+    "registrationClosed": "Registration closed",
+    "registrationClosedNote": "Thanks to everyone who signed up! To join the waitlist, ping us on WhatsApp.",
+    "registrationFormTitle": "Hackathon registration form",
+    "formTrouble": "Form not loading?",
+    "openFormInNewTab": "Open it in a new tab →",
+    "paths": {
+      "title": "Choose your path",
+      "intro": "Four tracks, each with a different audience and difficulty range. Pick a track now and find the specific challenges further down the page.",
+      "goToChallenges": "See challenges ↓",
+      "challengeCount": "{{count}} challenges"
+    },
+    "trackAudience": {
+      "harness": "Developers using AI tools",
+      "ai-readiness": "Frontend & backend developers",
+      "mapping": "All developers",
+      "data": "Developers + transit experts"
+    },
+    "minutes": "min",
+    "ship": "You'll ship",
+    "learn": "You'll learn",
+    "stack": "Stack",
+    "brief": "Brief",
+    "startingPoints": "Starting points",
+    "definitionOfDone": "Done when:",
+    "nextSteps": "If you continue after the event",
+    "domainExpertBadge": "Great for domain experts",
+    "noChallengesForFilter": "No challenges match this filter — try a different tier",
+    "tier": {
+      "all": "All",
+      "starter": "Starter",
+      "intermediate": "Intermediate",
+      "advanced": "Advanced"
+    },
+    "track": {
+      "harness": "🔩 AI dev tooling",
+      "ai-readiness": "🤖 Feed the AI agents",
+      "mapping": "🗺️ Discover & revive",
+      "data": "📊 Transit data"
+    },
+    "trackDescription": {
+      "harness": "Build tools that make AI assistants genuinely useful in a dev workflow — scripts, hooks, and skills that turn Claude into a real team member",
+      "ai-readiness": "Make Databus's data readable by AI agents — llms.txt, a Markdown-returning endpoint, an MCP server. If you write code with AI help, you'll benefit from the output",
+      "mapping": "The project has features and PRs that have been waiting for attention — discover what exists, what's broken, and what can be revived. You can ship a real PR with no prior knowledge",
+      "data": "Analyze and improve Israeli public transit data. Best fit for government officials, bus operators, and NPOs — your domain knowledge is the most valuable input here"
+    },
+    "openContributions": "These challenges are starting ideas, not a closed list. Have your own idea? Share it with us at the start of the evening.",
+    "links": {
+      "claude_skills_docs": "Claude Skills docs",
+      "claude_hooks_docs": "Claude Hooks docs",
+      "backend_repo": "Backend repo",
+      "databus_repo": "Databus repo",
+      "llms_txt_spec": "llms.txt spec",
+      "line_profile": "Line profile page (example)",
+      "mcp_spec": "MCP spec",
+      "stride_api": "Stride API docs",
+      "stride_client_repo": "open-bus-stride-client repo",
+      "pipelines_repo": "open-bus-pipelines repo",
+      "existing_tests": "Example existing tests",
+      "offline_tests_workflow": "GitHub Actions — offline-tests",
+      "stride_notebooks": "Jupyter notebooks — stride-client",
+      "figma_designs": "Figma designs — visualization ideas",
+      "stale_prs": "Stale PRs",
+      "gaps_page": "Gaps page (live)",
+      "gaps_service": "Gaps service code",
+      "siri_docs": "What is SIRI?",
+      "data_model": "Data model schema (stride-db)",
+      "stride_api_repo": "open-bus-stride-api repo"
+    },
+    "countdown": {
+      "days": "Days",
+      "hours": "Hours",
+      "minutes": "Minutes",
+      "seconds": "Seconds"
+    },
+    "hero": {
+      "title": "Databus Hackathon · June 9, 2026",
+      "subtitle": "One evening, challenges for every level, open source for Israeli public transit.",
+      "audience": "Developers, designers, Ministry of Transport, bus operators, NPOs, domain experts — all welcome",
+      "date": "Tue, June 9 2026, 18:00–21:30",
+      "location": "Applitools, One Towers, Ramat Gan (10 min from Savidor train station, 2 min from Aba Hilel light rail)",
+      "partner": "Sponsored by Applitools",
+      "countdownLabel": "Registration closes in",
+      "cta": "Sign up"
+    },
+    "personas": {
+      "title": "Who is this for?",
+      "intro": "We're not just a coders' hackathon. Databus's power comes from mixing developers, domain experts, policy people, and NPOs. Everyone joins mixed teams — domain experts mostly embed in Data & Algorithms tracks, but every track welcomes you.",
+      "developer": {
+        "name": "Developer",
+        "invite": "Sharpen your AI skills while contributing to real open source."
+      },
+      "government": {
+        "name": "Ministry of Transport / regulator",
+        "invite": "Join a dev team as a domain expert — point the code at real field problems."
+      },
+      "operator": {
+        "name": "Bus operator",
+        "invite": "Be the voice of the driver and dispatcher inside a dev team — Data & Algorithms especially."
+      },
+      "npo": {
+        "name": "NPOs & domain experts",
+        "invite": "Supply context and user experience to teams building features that serve the public."
+      }
+    },
+    "whyCome": {
+      "title": "What you'll get out of it",
+      "contribute": {
+        "title": "Contribute to Israeli open source",
+        "body": "Databus serves journalists, citizens, regulators — every feature you ship reaches the real world."
+      },
+      "learn": {
+        "title": "Work with experts",
+        "body": "Meet developers, domain experts, and policy people — and work together on a real problem."
+      },
+      "sunkCost": {
+        "title": "Walk out with something shipped",
+        "body": "An open PR, a requirements doc, or a prototype. Those who want to continue can join the weekly Monday volunteering at Bet HaAmutot, Tel Aviv."
+      }
+    },
+    "schedule": {
+      "title": "Evening schedule",
+      "mingling": { "time": "18:00–18:30", "label": "Mingling and intros" },
+      "talks": { "time": "18:30–19:00", "label": "Opening talks: Hasadna, Databus, Applitools" },
+      "groupWork": { "time": "19:00–21:00", "label": "Group work — bring laptops" },
+      "demos": { "time": "21:00–21:30", "label": "Group demos" },
+      "cleanup": { "time": "21:30–22:00", "label": "Wrap-up and cleanup" }
+    },
+    "challenges": {
+      "title": "Challenges",
+      "intro": "Every challenge is sized so you can ship an MVP in 90 minutes. These are starting ideas — not a closed list. Have your own idea? Share it with us at the start of the evening. Filter by tier, pick a track, expand a card to read the full brief.",
+      "harness-tests-ci": {
+        "title": "Write tests and open the agent feedback loop",
+        "oneLiner": "Without tests, the agent doesn't know if it broke something — and neither do you.",
+        "ship": "A PR with unit tests for one currently-untested module + a GitHub Actions job that runs them on every PR.",
+        "learn": "Jest, GitHub Actions, writing tests whose output is legible to an AI agent.",
+        "brief": "When an AI agent edits code, the fastest way to know it didn't break anything is tests running in CI and returning clear output. The frontend has several modules with zero test coverage: gap detection logic, time-calculation utilities, the Countdown component, and more. Pick one module, write unit tests, and add (or improve) the GitHub Actions job that runs them. Requirement: the agent will need to run the tests and interpret the output — make sure it's readable.",
+        "done": [
+          "At least 3 unit tests passing on current code",
+          "At least 1 test covering an edge case",
+          "GitHub Actions job running Jest on every PR"
+        ],
+        "nextSteps": "Expand to integration tests, add a coverage report, wire into a Claude skill that runs tests and summarizes failures."
+      },
+      "harness-backend-devenv": {
+        "title": "Agent-ready backend environment — all repos, one command",
+        "oneLiner": "The backend spans 7 repos. Build a single entry point an agent can actually use.",
+        "ship": "A devcontainer.json + one Claude skill that runs a real query against the Stride API and returns results.",
+        "learn": "Databus backend architecture, devcontainers, Claude skills with Python.",
+        "brief": "The Databus backend is split across open-bus-pipelines (orchestration), stride-db (schema), stride-etl (processing), siri-etl (real-time), and more. A new contributor — let alone an AI agent — needs to know what to clone, what to start, and in what order. Build a devcontainer that ships with stride-client pre-installed, a .claude/settings.json with approved Python commands, and one Claude skill that runs a query against the live Stride API and returns readable results.",
+        "done": [
+          "devcontainer.json works — `devcontainer open` lands you in Python + stride-client",
+          "stride-client connects to Stride API and returns real data",
+          "One Claude skill runs a query and returns a human-readable answer"
+        ],
+        "nextSteps": "Add more skills, wire to a local PostgreSQL, publish as the recommended entry point for new contributors across all Hasadna repos."
+      },
+      "harness-skill-backend-tests": {
+        "title": "Claude skill for backend test authoring and running",
+        "oneLiner": "Some repos have tests; others have none. Build a skill that handles both.",
+        "ship": "A Claude skill that guides an agent to discover, run, and write pytest tests in at least one backend repo.",
+        "learn": "How to write a skill description that navigates an agent through ambiguity; pytest patterns in Python codebases.",
+        "brief": "The Databus backend spans repos like siri-etl, stride-etl, and open-bus-stride-client — Python codebases with wildly different test coverage. Some have pytest suites already; some have zero tests at all. Build a Claude skill that handles both cases: it helps the agent discover what exists, run it, and write new tests for uncovered modules. The real challenge isn't the first working version — it's the iteration. Run the skill, watch where the agent goes wrong, rewrite the description, run again. A well-written skill gets the agent 80% of the way without a human hand-holding.",
+        "done": [
+          "Skill works on a backend repo that already has tests",
+          "Skill successfully guides the agent to write at least one new test in a repo with zero coverage",
+          "You ran it, saw it fail at something, improved it — at least one full iteration"
+        ],
+        "nextSteps": "Generalize across all Hasadna backend repos; publish as a shared skill library new contributors can install in one command."
+      },
+      "harness-hooks-gate": {
+        "title": "Hooks that stop AI from pushing broken code",
+        "oneLiner": "Automatic guardrails for code written by an agent.",
+        "ship": "A set of hooks in `.claude/hooks/` that runs lint+tests before every commit and sends the agent back to fix.",
+        "learn": "Feedback-loop architecture for AI agents.",
+        "brief": "When an AI agent writes code, you need fences. We'll design a hook setup that catches problems at the right moment — not just in CI.",
+        "done": [
+          "Hooks at `pre-commit` and `stop`",
+          "The AI receives the output and knows how to fix",
+          "Live demo on a test task"
+        ],
+        "nextSteps": "Add more gates (security scan, type check) and publish as a template for other projects."
+      },
+      "ai-llms-txt": {
+        "title": "Add llms.txt to Databus",
+        "oneLiner": "First step toward making the site readable by LLMs.",
+        "ship": "A PR that adds `llms.txt` at the site root with the 8 most important pages.",
+        "learn": "The llms.txt standard, how AI agents load context from sites.",
+        "brief": "llms.txt is the standard way to give LLMs a map of your site. We'll fill in a template, point at the critical pages, and open a PR.",
+        "done": [
+          "Spec-compliant llms.txt file",
+          "Points to 8 main pages",
+          "Available in Hebrew and English"
+        ],
+        "nextSteps": "Add `llms-full.txt` with full page content, and verify Claude/ChatGPT understand the data."
+      },
+      "ai-markdown-export": {
+        "title": "Markdown export for the line profile page",
+        "oneLiner": "One URL, clean output, agents are happy.",
+        "ship": "An endpoint that returns the same content as the line profile page in Markdown format.",
+        "learn": "How to structure content for AI agents (not just humans).",
+        "brief": "The line profile page is hard for an agent to read. We'll add a path like `/profile/:id.md` that returns clean Markdown — no JavaScript, no CSS.",
+        "done": [
+          "URL works for 3 sample lines",
+          "Content matches the regular page",
+          "Claude/ChatGPT can read it and answer questions"
+        ],
+        "nextSteps": "Extend to other pages (gaps, map) and wire into llms.txt."
+      },
+      "ai-mcp-prototype": {
+        "title": "First MCP server for Databus",
+        "oneLiner": "Free-form transit queries — from ChatGPT.",
+        "ship": "A basic MCP server exposing one query (e.g. \"find skipped trips for line 17א\") with an end-to-end demo.",
+        "learn": "The MCP protocol, how to wire LLMs to live data.",
+        "brief": "MCP is the protocol that connects LLMs to external tools. We'll build a minimal MCP server wrapping one query from the Stride API and demo a real question.",
+        "done": [
+          "Server runs locally",
+          "Claude Desktop / Cursor connects",
+          "One query returns a real answer"
+        ],
+        "nextSteps": "Add more endpoints, publish as npm/pypi package, list on the public MCP registry."
+      },
+      "mapping-stride-audit": {
+        "title": "Explore `open-bus-stride-client` and map what's usable",
+        "oneLiner": "A Python library that wraps the Stride API — what can it do, what's missing?",
+        "ship": "A PR with a README section (or separate doc) that maps the library's capabilities against current frontend needs.",
+        "learn": "How the Stride REST API works, pandas + transit data, evaluating a Python library as a frontend consumer.",
+        "brief": "`open-bus-stride-client` is an actively maintained Python client that wraps the Stride REST API. It can load routes into pandas DataFrames, retrieve arrivals, SIRI vehicle locations, GTFS schedules, and run accessibility analysis. The repo also has Jupyter notebooks with real worked examples — a great starting point. The frontend currently calls the API directly — but does the Python client expose things the frontend can't easily reach? There's also a Figma file with visualization designs that were never built; one of them might connect directly to stride-client data.",
+        "done": [
+          "Ran at least 3 different queries using the library",
+          "Document of capabilities vs. what the frontend already shows",
+          "At least one concrete suggestion for a new feature enabled by the library"
+        ],
+        "nextSteps": "Implement one of the suggested features — either as a new backend endpoint or as an MCP tool."
+      },
+      "mapping-resurrect-pr": {
+        "title": "Resurrect a stale PR",
+        "oneLiner": "Several contributors left work nearly done. Finish it.",
+        "ship": "An old PR merged to main.",
+        "learn": "Git history management, merging old changes, communicating with the maintainer.",
+        "brief": "Some PRs were opened but never crossed the finish line — usually due to conflicts or lack of time. Pick one from a curated shortlist, resolve conflicts, push to merge.",
+        "done": ["PR passes review", "Tests pass", "PR merged to main"],
+        "nextSteps": "Keep closing more PRs — create a priority list for the maintainer."
+      },
+      "data-new-chart": {
+        "title": "New visualization for transit data",
+        "oneLiner": "What insights are you missing? Add them to an existing or new page.",
+        "ship": "A new chart, map, or table — in an existing page (gaps, operator, line profile) or a dedicated new page.",
+        "learn": "Recharts, data shaping, picking the right visualization. Domain experts: how to choose the metric that matters most to regulators.",
+        "brief": "There's a lot of transit data that hasn't been visualized yet. The existing dashboard is unreliable and hidden from the menu — so pick an existing page like the gaps page, operator page, or line profile, and add a visualization that shows a new metric. Or open a new dedicated page if the metric doesn't fit any existing one. Decide at the start which page you're targeting.",
+        "done": [
+          "Visualization embedded in an existing or new page",
+          "Shows real data",
+          "Clear title and description"
+        ],
+        "nextSteps": "Add filtering by date, operator, and geographic region."
+      },
+      "data-arrival-gap-fix": {
+        "title": "Fix ride-gap detection edge cases",
+        "oneLiner": "When a ride starts late or two rides are adjacent, the algorithm gets confused.",
+        "ship": "A PR with the algorithmic fix + unit tests that fail before and pass after.",
+        "learn": "Matching algorithm between GTFS (planned) and SIRI (actual), transit data edge cases. Domain experts are critical — they'll tell you what the 'right answer' is.",
+        "brief": "The gaps page tracks entire rides (trips) that didn't happen — not individual stops. Each ride has a plannedStartTime from GTFS and an actualStartTime from SIRI. The problem: when a ride departs late, or when two adjacent rides run on the same line, the algorithm may mark one as 'missing' and one as 'extra' instead of matching them. An operator or regulator can help define the acceptable time threshold before a ride counts as 'missing'.",
+        "done": [
+          "Unit test that fails before the fix, passes after",
+          "Code review with maintainer",
+          "Documentation of the time threshold chosen and why"
+        ],
+        "nextSteps": "Cover more edge cases — route detours, emergency trips, duplicates."
+      },
+      "data-bus-bunching": {
+        "title": "Bus bunching detection",
+        "oneLiner": "When two buses arrive together — a known issue, let's address it.",
+        "ship": "A prototype algorithm that detects bunching from SIRI data.",
+        "learn": "Real-time data algorithms, operational definition of bunching with a domain expert.",
+        "brief": "Bus bunching hurts service reliability. We'll define what bunching means in numbers with an operator expert, run detection on historical data, present findings in the demo.",
+        "done": [
+          "Algorithm runs on one day of real data",
+          "Results displayed in a chart or table",
+          "Domain expert confirms detection makes sense"
+        ],
+        "nextSteps": "Wire into the dashboard, add alerts, publish a regulator-facing report."
+      }
+    },
+    "nonDev": {
+      "title": "How do non-devs participate?",
+      "body": "On hackathon day, during the half-hour mingling, mentors will match you to a dev team working on a challenge that fits your domain expertise. Default: Data & Algorithms, where your knowledge is most critical. Your contribution will be part of the team's demo and you'll get credit on the PR."
+    },
+    "mentors": {
+      "title": "Mentors",
+      "body": "Each working group will have a mentor to help you navigate the codebase and the project. Find them by their name tag.",
+      "roles": {
+        "noam": "Databus maintainer",
+        "aviv": "FE/JS mentor, maintainer",
+        "ori": "Backend & DevOps",
+        "dorit": "Executive Director, Public Knowledge Workshop",
+        "imri": "Deputy Director, Public Knowledge Workshop"
+      }
+    },
+    "sponsors": {
+      "title": "Our Sponsors",
+      "applitools": "Applitools is sponsoring this hackathon — hosting the venue and providing us with a free open-source licence to Applitools Eyes. That licence helps us ship visual regression tests faster and with better coverage across the whole project.",
+      "callout": "Want to sponsor a future event? We're looking for companies that want to host a hackathon or make a long-term contribution to open-source public transit software in Israel.",
+      "donate": "Donate",
+      "contact": "Get in touch"
+    },
+    "registration": {
+      "title": "Registration",
+      "body": "Filling in the form below is mandatory to participate. Submitting the form is not enough — your registration is only confirmed once you receive an approval email from us. We confirm registrations manually so we can assign you to the right team. Registration closes June 3 at midnight."
+    },
+    "faq": {
+      "title": "FAQ",
+      "bring": {
+        "q": "What to bring?",
+        "a": "Developers: a code-ready laptop with git. Everyone else: just yourself and your knowledge."
+      },
+      "experience": {
+        "q": "Do I need coding experience?",
+        "a": "No! There are Starter challenges, and domain experts embed in dev teams."
+      },
+      "free": {
+        "q": "Is it free?",
+        "a": "Yes. Light refreshments will be served."
+      },
+      "regulator": {
+        "q": "I'm from a regulator / operator — what's my role?",
+        "a": "You'll be matched to a dev team, by default in Data & Algorithms, and serve as the domain expert who points the team at real problems."
+      },
+      "devenv": {
+        "q": "I don't have a local dev environment set up — can I still code?",
+        "a": "Yes. Open the repo in Gitpod for a browser-based VS Code environment with everything pre-installed: https://gitpod.io/#https://github.com/hasadna/open-bus-map-search"
+      }
+    }
+  }
 }
