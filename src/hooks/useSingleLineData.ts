@@ -1,11 +1,10 @@
+import { useQuery } from '@tanstack/react-query'
 import { uniqBy } from 'es-toolkit/compat'
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { SIRI_API } from 'src/api/apiConfig'
 import { getRoutesAsync, getRoutesByLineRef, getStopsForRouteAsync } from 'src/api/gtfsService'
-import { toIsraelTimezone } from 'src/dayjs'
+import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone } from 'src/dayjs'
 import { BusRoute } from 'src/model/busRoute'
-import { BusStop } from 'src/model/busStop'
-import { SearchContext } from 'src/model/pageState'
 import {
   type PositionGroup,
   ROUTE_COLORS,
@@ -24,67 +23,71 @@ const VEHICLE_NUMBER_TEST = {
   bus: /^\d{7,8}$/,
 } as const
 
-export const useSingleLineData = (
-  operatorId?: string,
-  lineNumber?: string,
-  vehicleNumber?: number,
-) => {
-  const { search, setSearch } = useContext(SearchContext)
-  const [routes, setRoutes] = useState<BusRoute[] | undefined>(search.routes)
-  const [routeKey, _setRouteKey] = useState<string | undefined>(search.routeKey)
-  const [plannedRouteStops, setPlannedRouteStops] = useState<BusStop[]>([])
+interface UseSingleLineDataOptions {
+  operatorId?: string
+  lineNumber?: string
+  vehicleNumber?: number
+  date: string
+  routeKey?: string | null
+  rideTime?: string | null
+  onRouteKeyChange?: (routeKey: string | null) => void
+  onRideTimeChange?: (rideTime: string | null) => void
+}
+
+export const useSingleLineData = ({
+  operatorId,
+  lineNumber,
+  vehicleNumber,
+  date,
+  routeKey,
+  rideTime,
+  onRouteKeyChange,
+  onRideTimeChange,
+}: UseSingleLineDataOptions) => {
+  const [routes, setRoutes] = useState<BusRoute[] | undefined>()
   const [options, setOptions] = useState<{ value: string; label: string }[]>([])
   const [rideIdsByToken, setRideIdsByToken] = useState<Map<string, number[]>>(new Map())
   const [vehicleRefById, setVehicleRefById] = useState<Map<number, string>>(new Map())
   const [positionGroups, setPositionGroups] = useState<PositionGroup[]>([])
   const [locationsAreLoading, setLocationsAreLoading] = useState(false)
-  const { startTime } = search
   const [error, setError] = useState<string>()
+  const startTime = useMemo(() => normalizeStartTimeToken(rideTime ?? undefined), [rideTime])
 
   const setStartTime = useCallback(
     (startTime?: string) => {
-      setSearch((prev) => ({ ...prev, startTime: normalizeStartTimeToken(startTime) }))
+      onRideTimeChange?.(normalizeStartTimeToken(startTime) ?? null)
     },
-    [setSearch],
+    [onRideTimeChange],
   )
 
   const setRouteKey = useCallback(
-    (routeKey?: string) => {
-      _setRouteKey(routeKey)
-      setSearch((prev) => ({ ...prev, routeKey }))
+    (key?: string) => {
+      onRouteKeyChange?.(key ?? null)
     },
-    [setSearch],
+    [onRouteKeyChange],
   )
 
   useEffect(() => {
     if (!operatorId || !lineNumber) {
       setRoutes(undefined)
-      setRouteKey(undefined)
-      setStartTime(undefined)
       setError(undefined)
-      setSearch((prev) => ({
-        ...prev,
-        routes: undefined,
-        routeKey: undefined,
-        startTime: undefined,
-      }))
+      onRouteKeyChange?.(null)
+      onRideTimeChange?.(null)
       return
     }
 
     const controller = new AbortController()
-    const time = toIsraelTimezone(search.timestamp)
+    const time = dayjs.tz(date, ISRAEL_TIMEZONE)
 
     getRoutesAsync(time, time, operatorId, lineNumber, controller.signal)
       .then((routes) => {
         setRoutes(routes)
-        setSearch((prev) => ({ ...prev, routes }))
         setError(undefined)
       })
       .catch((err) => {
         if (err?.cause?.name !== 'AbortError') {
           setRoutes(undefined)
-          setSearch((prev) => ({ ...prev, routes: undefined }))
-          setRouteKey(undefined)
+          onRouteKeyChange?.(null)
           setError(err instanceof Error ? err.message : 'Failed to fetch routes')
         }
       })
@@ -92,16 +95,16 @@ export const useSingleLineData = (
     return () => {
       controller.abort()
     }
-  }, [operatorId, lineNumber, search.timestamp, setSearch, setRouteKey])
+  }, [operatorId, lineNumber, date, onRouteKeyChange, onRideTimeChange])
 
   const selectedRoute = useMemo(() => {
-    return routes?.find((route) => route.key === routeKey)
+    return routes?.find((route) => route.key === (routeKey ?? undefined))
   }, [routes, routeKey])
 
   const [today, tomorrow] = useMemo(() => {
-    const today = toIsraelTimezone(search.timestamp).startOf('day')
+    const today = dayjs.tz(date, ISRAEL_TIMEZONE).startOf('day')
     return [today, today.add(1, 'day')]
-  }, [search.timestamp])
+  }, [date])
 
   const validVehicleNumber = useMemo(() => {
     if (!vehicleNumber) return undefined
@@ -149,7 +152,6 @@ export const useSingleLineData = (
       { signal: controller.signal },
     )
       .then((rides) => {
-        // group by scheduledTime — multiple vehicles at the same time = double trip
         const byTime = new Map<
           string,
           { id: number; vehicleRef: string; ride: (typeof rides)[0] }[]
@@ -169,8 +171,8 @@ export const useSingleLineData = (
         const opts: { value: string; label: string }[] = []
 
         // Secondary guard: skip time slots with >4 vehicles at the same scheduled time.
-        // Real double/triple trips have 2–3 vehicles max. >4 means a SIRI batch artifact slipped
-        // past the +3h start-time filter (e.g. the batch ran late, after 03:00 IST).
+        // Real double/triple trips have 2–3 vehicles max. >4 means a SIRI batch artifact
+        // slipped past the +3h start-time filter (e.g. the batch ran late, after 03:00 IST).
         byTime.forEach((group, key) => {
           if (group.length > 4) return
           idMap.set(
@@ -184,7 +186,6 @@ export const useSingleLineData = (
           const routePart = routeLongName
             ? `${group[0].ride.gtfsRouteRouteShortName} - ${start} ⇄ ${end}`
             : undefined
-          // In vehicle mode the user already knows which vehicle — show route info without repeating the ref
           const label = validVehicleNumber
             ? routePart
               ? `${scheduledTime} (${routePart})`
@@ -242,43 +243,35 @@ export const useSingleLineData = (
   }, [selectedRideIdsKey, vehicleRefById])
 
   // Fetch planned stops for the black polyline
-  useEffect(() => {
-    const fetchStops = async () => {
-      try {
-        const scheduledTime = parsedStartTime?.scheduledTime
-        const scheduledLine = parsedStartTime?.lineRef
-        const [hour, minute] = scheduledTime ? scheduledTime.split(':').map(Number) : [0, 0]
-        const startTimeTimestamp = today.hour(hour).minute(minute).second(0).millisecond(0)
-        let routeIds: number[] | undefined
-        if (selectedRoute?.routeIds && selectedRoute.routeIds.length > 0) {
-          routeIds = selectedRoute.routeIds
-        } else if (scheduledLine && operatorId) {
-          routeIds = (
-            await getRoutesByLineRef(operatorId, scheduledLine, startTimeTimestamp.toDate())
-          ).map((route) => route.id)
-        }
-        if (!routeIds || routeIds.length === 0) {
-          setPlannedRouteStops([])
-          return
-        }
-        const stops = await getStopsForRouteAsync(routeIds, startTimeTimestamp)
-        setPlannedRouteStops(stops)
-      } catch (err) {
-        console.error(err)
-        setPlannedRouteStops([])
+  const stopsQuery = useQuery({
+    queryFn: async () => {
+      const scheduledTime = parsedStartTime?.scheduledTime
+      const scheduledLine = parsedStartTime?.lineRef
+      const [hour, minute] = scheduledTime ? scheduledTime.split(':').map(Number) : [0, 0]
+      const startTimeTimestamp = today.hour(hour).minute(minute).second(0).millisecond(0)
+      let routeIds: number[] | undefined
+      if (selectedRoute?.routeIds && selectedRoute.routeIds.length > 0) {
+        routeIds = selectedRoute.routeIds
+      } else if (scheduledLine && operatorId) {
+        routeIds = (
+          await getRoutesByLineRef(operatorId, scheduledLine, startTimeTimestamp.toDate())
+        ).map((route) => route.id)
       }
-    }
-    fetchStops()
-  }, [selectedRoute?.routeIds, operatorId, parsedStartTime, today])
+      if (!routeIds || routeIds.length === 0) return []
+      return await getStopsForRouteAsync(routeIds, startTimeTimestamp)
+    },
+    queryKey: ['stops', selectedRoute?.lineRef, today.valueOf(), parsedStartTime?.scheduledTime],
+    enabled: !!(selectedRoute?.routeIds?.length || parsedStartTime?.lineRef),
+  })
 
   return {
     positionGroups,
-    plannedRouteStops,
+    plannedRouteStops: stopsQuery.data ?? [],
     options,
-    startTime: normalizeStartTimeToken(startTime),
+    startTime,
     locationsAreLoading,
     routes,
-    routeKey,
+    routeKey: routeKey ?? undefined,
     error,
     setStartTime,
     setRouteKey,

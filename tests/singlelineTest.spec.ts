@@ -159,4 +159,54 @@ test.describe('Single line page tests', () => {
   test('Verify date_from parameter from - "Map by line"', async ({ page }) => {
     await verifyDateFromParameter(page)
   })
+
+  // Anti-regression for the route-key + start-time refactor on
+  // fix-line-profile-page-route-selection:
+  //
+  //   1. start-time options must come from a single /siri_rides/list query —
+  //      the old code paged through /siri_vehicle_locations/list to discover
+  //      departure times, which was slow and prone to truncation.
+  //   2. once a start time is picked, /siri_vehicle_locations/list must be
+  //      requested with order_by=recorded_at_time asc, because primary-key
+  //      order in the DB is *not* time-ordered (commit d75e664) and the map
+  //      polyline was previously zig-zagging.
+  test('fills all input fields and fetches start-time options via a single SIRI rides query', async ({
+    page,
+  }) => {
+    const requests: string[] = []
+    page.on('request', (req) => {
+      const url = req.url()
+      if (/\/siri_(rides|vehicle_locations)\/list/.test(url)) requests.push(url)
+    })
+
+    await selectOperator(page)
+    await fillLineNumber(page)
+    await selectRoute(page)
+
+    // The dropdown is enabled as soon as siri_rides/list resolves — if the old
+    // useVehicleLocations path comes back, this would only flip after many
+    // siri_vehicle_locations/list pages have loaded.
+    await expect(page.locator('#start-time-select')).toBeEditable({ timeout: 10000 })
+
+    const ridesCalls = requests.filter((u) => u.includes('/siri_rides/list'))
+    const vehicleLocationsBefore = requests.filter((u) =>
+      u.includes('/siri_vehicle_locations/list'),
+    )
+    expect(ridesCalls).toHaveLength(1)
+    expect(vehicleLocationsBefore).toHaveLength(0)
+    expect(ridesCalls[0]).toContain('order_by=scheduled_start_time')
+
+    // Sanity check that the dropdown actually got populated.
+    await page.getByLabel('בחירת שעת התחלה').click()
+    expect(await page.getByRole('option').count()).toBeGreaterThan(0)
+
+    const locationsResponse = page.waitForResponse((r) =>
+      r.url().includes('/siri_vehicle_locations/list'),
+    )
+    await page.getByRole('option').first().click()
+    const response = await locationsResponse
+
+    // Anti-regression: GPS pings must be ordered by recorded_at_time, not id.
+    expect(response.url()).toContain('order_by=recorded_at_time')
+  })
 })

@@ -16,14 +16,12 @@ import {
 } from 'recharts'
 import dayjs from 'src/dayjs'
 import { useDate } from 'src/hooks/useDate'
+import { GlobalSearchContext } from 'src/model/globalState'
+import { ExtraShareParamsContext, InitialUrlParamsContext } from 'src/model/routeContext'
 import { INPUT_SIZE } from 'src/resources/sizes'
 import Widget from 'src/shared/Widget'
 import { getRoutesAsync } from '../../api/gtfsService'
-import {
-  ExtraShareParamsContext,
-  InitialUrlParamsContext,
-  SearchContext,
-} from '../../model/pageState'
+import { BusRoute } from '../../model/busRoute'
 import { DateSelector } from '../components/DateSelector'
 import { Label } from '../components/Label'
 import LineNumberSelector from '../components/LineSelector'
@@ -165,7 +163,7 @@ const GapsPatternsPage = () => {
   const [endDate, setEndDate] = useDate(
     initialUrlParams.endDate ? dayjs(initialUrlParams.endDate) : now.clone().subtract(1, 'day'),
   )
-  const { search, setSearch } = useContext(SearchContext)
+  const { search, setSearch } = useContext(GlobalSearchContext)
   const { setParams } = useContext(ExtraShareParamsContext)
 
   useEffect(() => {
@@ -175,20 +173,23 @@ const GapsPatternsPage = () => {
     })
     return () => setParams({})
   }, [startDate, endDate, setParams])
-  const { operatorId, lineNumber, routes, routeKey } = search
+  const { operatorId, lineNumber, routeKey } = search
+  const [routes, setRoutes] = useState<BusRoute[] | undefined>()
   const [routesIsLoading, setRoutesIsLoading] = useState(false)
   const { t } = useTranslation()
 
   const loadSearchData = async (signal: AbortSignal | undefined) => {
     setRoutesIsLoading(true)
-    const routes = await getRoutesAsync(
+    const fetchedRoutes = await getRoutesAsync(
       dayjs(startDate),
       dayjs(endDate),
-      operatorId,
-      lineNumber,
+      operatorId ?? undefined,
+      lineNumber ?? undefined,
       signal,
     )
-    setSearch((current) => (search.lineNumber === lineNumber ? { ...current, routes } : current))
+    if (search.lineNumber === lineNumber) {
+      setRoutes(fetchedRoutes)
+    }
     setRoutesIsLoading(false)
   }
 
@@ -196,7 +197,8 @@ const GapsPatternsPage = () => {
     const controller = new AbortController()
     const signal = controller.signal
     if (!operatorId || operatorId === '0' || !lineNumber) {
-      setSearch((current) => ({ ...current, routeKey: undefined, routes: undefined }))
+      setSearch((current) => ({ ...current, routeKey: null }))
+      setRoutes(undefined)
       return
     }
     loadSearchData(signal)
@@ -256,7 +258,7 @@ const GapsPatternsPage = () => {
         </Grid>
         <Grid size={{ xs: 12, sm: 8 }}>
           <OperatorSelector
-            operatorId={operatorId}
+            operatorId={operatorId ?? undefined}
             setOperatorId={(id) => setSearch((current) => ({ ...current, operatorId: id }))}
           />
         </Grid>
@@ -265,7 +267,7 @@ const GapsPatternsPage = () => {
         </Grid>
         <Grid size={{ xs: 12, sm: 8 }}>
           <LineNumberSelector
-            lineNumber={lineNumber}
+            lineNumber={lineNumber ?? undefined}
             setLineNumber={(number) => setSearch((current) => ({ ...current, lineNumber: number }))}
           />
         </Grid>
@@ -284,8 +286,10 @@ const GapsPatternsPage = () => {
               <>
                 <RouteSelector
                   routes={routes}
-                  routeKey={routeKey}
-                  setRouteKey={(key) => setSearch((current) => ({ ...current, routeKey: key }))}
+                  routeKey={routeKey ?? undefined}
+                  setRouteKey={(key) =>
+                    setSearch((current) => ({ ...current, routeKey: key ?? null }))
+                  }
                 />
               </>
             ))}

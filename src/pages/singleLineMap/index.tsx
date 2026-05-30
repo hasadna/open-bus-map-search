@@ -6,15 +6,15 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material'
-import { useContext, useState } from 'react'
+import { useCallback, useContext, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import dayjs, { toIsraelTimezone } from 'src/dayjs'
+import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone } from 'src/dayjs'
 import { useSingleLineData } from 'src/hooks/useSingleLineData'
+import { GlobalSearchContext } from 'src/model/globalState'
 import LineNumberSelector from 'src/pages/components/LineSelector'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
 import RouteSelector from 'src/pages/components/RouteSelector'
 import VehicleNumberSelector from 'src/pages/components/VehicleSelector'
-import { SearchContext } from '../../model/pageState'
 import { DateSelector } from '../components/DateSelector'
 import { FilterPositionsByStartTimeSelector } from '../components/FilterPositionsByStartTimeSelector'
 import { MapWithLocationsAndPath } from '../components/map-related/MapWithLocationsAndPath'
@@ -23,10 +23,19 @@ import { PageContainer } from '../components/PageContainer'
 import InfoYoutubeModal from '../components/YoutubeModal'
 
 const SingleLineMapPage = () => {
-  const { search, setSearch } = useContext(SearchContext)
-  const { operatorId, lineNumber, vehicleNumber, timestamp } = search
+  const { search, setSearch } = useContext(GlobalSearchContext)
+  const { operatorId, lineNumber, vehicleNumber, date, routeKey: searchRouteKey, rideTime } = search
   const [type, setType] = useState<'routes' | 'vehicle'>(vehicleNumber ? 'vehicle' : 'routes')
   const { t } = useTranslation()
+
+  const onRouteKeyChange = useCallback(
+    (key: string | null) => setSearch((c) => ({ ...c, routeKey: key })),
+    [setSearch],
+  )
+  const onRideTimeChange = useCallback(
+    (time: string | null) => setSearch((c) => ({ ...c, rideTime: time })),
+    [setSearch],
+  )
 
   const {
     positionGroups,
@@ -38,32 +47,39 @@ const SingleLineMapPage = () => {
     routeKey,
     error,
     setStartTime,
-    setRouteKey,
-  } = useSingleLineData(operatorId, lineNumber, vehicleNumber)
+  } = useSingleLineData({
+    operatorId: operatorId ?? undefined,
+    lineNumber: lineNumber ?? undefined,
+    vehicleNumber: vehicleNumber ?? undefined,
+    date,
+    routeKey: searchRouteKey,
+    rideTime,
+    onRouteKeyChange,
+    onRideTimeChange,
+  })
 
-  const handleTimestampChange = (time: dayjs.Dayjs | null) => {
+  const handleDateChange = (time: dayjs.Dayjs | null) => {
     setSearch((current) => ({
       ...current,
-      timestamp: time?.valueOf() ?? Date.now(),
-      startTime: undefined,
+      date: toIsraelTimezone(time ?? dayjs()).format('YYYY-MM-DD'),
+      rideTime: null,
     }))
   }
 
   const handleOperatorChange = (operatorId: string) => {
-    setSearch((current) => ({ ...current, operatorId, startTime: undefined }))
+    setSearch((current) => ({ ...current, operatorId, rideTime: null }))
   }
 
   const handleLineNumberChange = (lineNumber: string) => {
-    setSearch((current) => ({ ...current, lineNumber, startTime: undefined }))
+    setSearch((current) => ({ ...current, lineNumber, rideTime: null }))
   }
 
   const handleRouteKeyChange = (routeKey?: string) => {
-    setSearch((current) => ({ ...current, routeKey, startTime: undefined }))
-    setRouteKey(routeKey)
+    setSearch((current) => ({ ...current, routeKey: routeKey ?? null, rideTime: null }))
   }
 
   const handleVehicleNumberChange = (vehicleNumber?: number) => {
-    setSearch((current) => ({ ...current, vehicleNumber, startTime: undefined }))
+    setSearch((current) => ({ ...current, vehicleNumber: vehicleNumber ?? null, rideTime: null }))
   }
 
   const handleTypeChange = (
@@ -74,15 +90,9 @@ const SingleLineMapPage = () => {
     setType(value)
     setSearch((current) =>
       value === 'routes'
-        ? { ...current, vehicleNumber: undefined, startTime: undefined }
+        ? { ...current, vehicleNumber: null, rideTime: null }
         : value === 'vehicle'
-          ? {
-              ...current,
-              lineNumber: undefined,
-              routeKey: undefined,
-              routes: undefined,
-              startTime: undefined,
-            }
+          ? { ...current, lineNumber: null, routeKey: null, rideTime: null }
           : current,
     )
   }
@@ -101,12 +111,12 @@ const SingleLineMapPage = () => {
         <Grid container spacing={2} size={{ xs: 12 }}>
           {/* choose date*/}
           <Grid size={{ sm: 4, xs: 12 }}>
-            <DateSelector time={toIsraelTimezone(timestamp)} onChange={handleTimestampChange} />
+            <DateSelector time={dayjs.tz(date, ISRAEL_TIMEZONE)} onChange={handleDateChange} />
           </Grid>
           {/* choose operator */}
           <Grid size={{ sm: 4, xs: 12 }}>
             <OperatorSelector
-              operatorId={operatorId}
+              operatorId={operatorId ?? undefined}
               setOperatorId={handleOperatorChange}
               excludeIsraelRailways
             />
@@ -133,7 +143,7 @@ const SingleLineMapPage = () => {
               <Grid size={{ sm: 4, xs: 12 }}>
                 <LineNumberSelector
                   disabled={!operatorId}
-                  lineNumber={lineNumber}
+                  lineNumber={lineNumber ?? undefined}
                   setLineNumber={handleLineNumberChange}
                 />
               </Grid>
@@ -159,7 +169,7 @@ const SingleLineMapPage = () => {
                 {/* choose vehicle number */}
                 <VehicleNumberSelector
                   disabled={!operatorId}
-                  vehicleNumber={vehicleNumber}
+                  vehicleNumber={vehicleNumber ?? undefined}
                   setVehicleNumber={handleVehicleNumberChange}
                 />
               </Grid>
