@@ -134,7 +134,14 @@ jobs:
           echo "hash.txt is valid with MIME type $mime_type and length $content_length characters."
       - name: Install Dependencies and Playwright
         run: npm ci
+      - name: Cache Playwright browsers
+        uses: actions/cache@v3
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
       - name: Install Playwright browser dependencies
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
         timeout-minutes: 15
         run: npx playwright install chromium
       - name: Run Playwright tests
@@ -216,9 +223,16 @@ jobs:
           cache: 'npm'
       - name: Install Dependencies and Playwright
         run: npm ci
+      - name: Cache Playwright browsers
+        uses: actions/cache@v3
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
       - name: Install Playwright browser dependencies
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
         timeout-minutes: 15
-        run: npx playwright install  chromium
+        run: npx playwright install chromium
       - name: Run Playwright Visual Tests
         env:
           APPLITOOLS_BATCH_NAME: open-bus-map-search/${{ github.ref }}/${{ env.SHORT_SHA }}/
