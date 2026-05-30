@@ -45,7 +45,7 @@ const LineProfile = () => {
       date: toIsraelTimezone(route.date.getTime()).format('YYYY-MM-DD'),
       operatorId: route.operatorRef.toString(),
       lineNumber: route.routeShortName ?? null,
-      routeKey: `${route.routeMkt}-${route.routeDirection}`,
+      routeKey: `${route.routeMkt}-${route.routeDirection}-${route.routeAlternative}`,
       rideTime: initialUrlParams.rideTime ?? initialUrlParams.startTime ?? null,
     }))
   }, [route?.id])
@@ -96,7 +96,9 @@ const LineProfile = () => {
       abortController.signal,
     )
       .then((routes) => {
-        const newRoute = routes?.find((r) => r.key === `${route.routeMkt}-${route.routeDirection}`)
+        const newRoute = routes?.find(
+          (r) => r.key === `${route.routeMkt}-${route.routeDirection}-${route.routeAlternative}`,
+        )
         if (newRoute?.routeIds?.[0]) {
           navigate(`/profile/${newRoute.routeIds[0]}`)
         }
