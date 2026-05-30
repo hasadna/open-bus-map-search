@@ -148,14 +148,20 @@ test.describe('Record HAR files', () => {
       }
     }
 
-    // Select start time to trigger siri data fetch
+    // Select start time to trigger siri data fetch (including siri_vehicle_locations/list)
     const startTimeDropdown = page.getByLabel('בחירת שעת התחלה')
     if ((await startTimeDropdown.count()) > 0) {
       await startTimeDropdown.click()
       await page.waitForLoadState('networkidle')
       const firstTime = page.getByRole('option').first()
       if ((await firstTime.count()) > 0) {
+        // Register before click to avoid missing the response
+        const lineLocationsPromise = page.waitForResponse(
+          (response) => response.url().includes('/siri_vehicle_locations/list'),
+          { timeout: 30000 },
+        )
         await firstTime.click()
+        await lineLocationsPromise
         await page.waitForLoadState('networkidle')
       } else {
         await page.keyboard.press('Escape')
@@ -169,14 +175,11 @@ test.describe('Record HAR files', () => {
 
     // Switch to vehicle-number search and record the requests for vehicle-based start times
     await page.getByRole('button', { name: 'לפי מספר רכב' }).click()
-    const vehicleRequestsPromise = page.waitForResponse((response) => {
-      const url = response.url()
-      return (
-        url.includes('/siri_vehicle_locations/list') &&
-        url.includes('siri_ride__vehicle_ref=7489226') &&
-        url.includes('recorded_at_time_from=2024-02-12T04%3A00%3A00.000Z')
-      )
-    })
+    const vehicleRequestsPromise = page.waitForResponse(
+      (response) =>
+        response.url().includes('/siri_rides/list') &&
+        response.url().includes('vehicle_refs=7489226'),
+    )
     await page.getByRole('textbox', { name: 'מספר רכב' }).fill('7489226')
     await vehicleRequestsPromise
     await page.waitForLoadState('networkidle')
@@ -187,7 +190,13 @@ test.describe('Record HAR files', () => {
       await page.waitForLoadState('networkidle')
       const vehicleStartTime = page.getByRole('option', { name: /04:30/ }).first()
       if ((await vehicleStartTime.count()) > 0) {
+        // Register before click to avoid missing the response
+        const vehicleLocationsPromise = page.waitForResponse(
+          (response) => response.url().includes('/siri_vehicle_locations/list'),
+          { timeout: 30000 },
+        )
         await vehicleStartTime.click()
+        await vehicleLocationsPromise
         await page.waitForLoadState('networkidle')
       } else {
         await page.keyboard.press('Escape')
