@@ -16,8 +16,11 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
   test.describe(`Visual Tests - ${mode}`, () => {
     test.describe.configure({ retries: 0 })
 
-    test.beforeEach(async ({ page }) => {
-      await page.route(/.*youtube*/, (route) => route.abort())
+    test.beforeEach(async ({ page }, testInfo) => {
+      // Block YouTube for all tests except YouTube modal test
+      if (!testInfo.title.includes('YouTube info modal')) {
+        await page.route(/.*youtube*/, (route) => route.abort())
+      }
       await setupTest(page, mode === 'LTR' ? 'en' : 'he')
       if (mode === 'Dark') {
         await page.getByLabel('עבור למצב כהה').first().click()
@@ -115,6 +118,16 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
       await page.getByLabel(i18next.t('donate_title')).first().click()
       await page.locator('.MuiTypography-root').first().waitFor()
       await eyes.check('donation modal', {
+        region: page.getByRole('dialog').first(),
+      })
+    })
+
+    test(`YouTube info modal Should Look Good [${mode}]`, async ({ page, eyes }) => {
+      await page.goto('/report-a-bug')
+      await page.locator('.bug-report-form-container').waitFor()
+      await page.getByRole('img', { name: i18next.t('open_video_about_this_page') }).click()
+      await page.locator('iframe').first().waitFor({ state: 'visible' })
+      await eyes.check('youtube info modal', {
         region: page.getByRole('dialog').first(),
       })
     })
