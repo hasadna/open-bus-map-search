@@ -34,17 +34,20 @@ const LineProfile = () => {
   const setStopKey = (key: string | undefined) =>
     setSearch((prev) => ({ ...prev, stopKey: key ?? null }))
 
-  // Shares the 'line-view' storage slot with /single-line-map — same route,
-  // same map, so the viewport should persist when navigating between them.
   // rideTime is in page params so it's included in the share URL.
+  // Uses its own key ('line-profile') — not shared with single-line-map —
+  // so mode never leaks in and the two pages don't clobber each other's params.
   const {
     setParams: setPageParams,
     ui,
     setUi,
-  } = usePageState(
-    'line-view',
+  } = usePageState<
+    { rideTime: string | null },
+    { isExpanded: boolean; scrollPosition: number; centerLat: number; centerLng: number; zoom: number }
+  >(
+    'line-profile',
     {
-      params: { mode: 'routes' as const, rideTime: null as string | null },
+      params: { rideTime: null },
       ui: { isExpanded: false, scrollPosition: 0, centerLat: 0, centerLng: 0, zoom: 13 },
     },
     ['rideTime'],
@@ -56,8 +59,8 @@ const LineProfile = () => {
     setSearch(() => ({
       date: toIsraelTimezone(route.date.getTime()).format('YYYY-MM-DD'),
       operatorId: route.operatorRef.toString(),
-      lineNumber: route.routeShortName,
-      routeKey: `${route.routeMkt}-${route.routeDirection}`,
+      lineNumber: route.routeShortName ?? null,
+      routeKey: `${route.routeMkt}-${route.routeDirection}-${route.routeAlternative}`,
       vehicleNumber: null,
       rideTime: null,
       stopKey: null,

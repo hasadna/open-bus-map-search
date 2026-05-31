@@ -17,7 +17,7 @@ import { DateNavigator } from '../components/dateNavigator/DateNavigator'
 import { DateSelector } from '../components/DateSelector'
 import { PageContainer } from '../components/PageContainer'
 import { VelocityHeatmapLegend } from './components/VelocityHeatmapLegend'
-import { VelocityHeatmapRectangles } from './components/VelocityHeatmapRectangles'
+import { type VisMode, VelocityHeatmapRectangles } from './components/VelocityHeatmapRectangles'
 
 const VIS_MODES = [
   { key: 'avg', labelKey: 'velocity_vis_avg' },
@@ -40,7 +40,10 @@ const VelocityHeatmapPage: React.FC = () => {
   // visMode, center, zoom go in params (shareable) — this map has no auto-fit,
   // so the recipient needs the viewport to see the same area.
   // isExpanded goes in ui — layout preference, device-specific.
-  const { params, ui, setParams, setUi } = usePageState(
+  const { params, ui, setParams, setUi } = usePageState<
+    { visMode: VisMode; centerLat: number; centerLng: number; zoom: number },
+    { isExpanded: boolean; scrollPosition: number }
+  >(
     'velocity-heatmap',
     {
       params: {
@@ -88,7 +91,7 @@ const VelocityHeatmapPage: React.FC = () => {
         row
         name="visMode"
         value={params.visMode}
-        onChange={(e) => setParams((prev) => ({ ...prev, visMode: e.target.value }))}
+        onChange={(e) => setParams((prev) => ({ ...prev, visMode: e.target.value as VisMode }))}
         sx={{ flexWrap: 'wrap', mt: 2 }}>
         {VIS_MODES.map((mode) => (
           <FormControlLabel

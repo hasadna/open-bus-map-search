@@ -142,14 +142,14 @@ const TimelinePage = () => {
         {/* choose operator */}
         <Grid size={{ lg: 4, md: 6, xs: 12 }}>
           <OperatorSelector
-            operatorId={operatorId}
+            operatorId={operatorId ?? undefined}
             setOperatorId={(id) => setSearch((prev) => ({ ...prev, operatorId: id }))}
           />
         </Grid>
         {/* choose line */}
         <Grid size={{ lg: 4, md: 6, xs: 12 }}>
           <LineNumberSelector
-            lineNumber={lineNumber}
+            lineNumber={lineNumber ?? undefined}
             setLineNumber={(number) => setSearch((prev) => ({ ...prev, lineNumber: number }))}
           />
         </Grid>
@@ -163,7 +163,7 @@ const TimelinePage = () => {
                 <RouteSelector
                   disabled={!routesQuery.data}
                   routes={routesQuery.data || []}
-                  routeKey={routeKey}
+                  routeKey={routeKey ?? undefined}
                   setRouteKey={(key) => setSearch((prev) => ({ ...prev, routeKey: key ?? null }))}
                 />
               )}

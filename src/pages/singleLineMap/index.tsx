@@ -166,7 +166,7 @@ const SingleLineMapPage = () => {
             <Grid size={{ sm: 4, xs: 12 }}>
               <VehicleNumberSelector
                 disabled={!operatorId}
-                vehicleNumber={vehicleNumber}
+                vehicleNumber={vehicleNumber ?? undefined}
                 setVehicleNumber={handleVehicleNumberChange}
               />
             </Grid>

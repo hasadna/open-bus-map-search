@@ -5,7 +5,7 @@ import ReactGA from 'react-ga4'
 import { useLocation, useSearchParams } from 'react-router'
 import rtlPlugin from 'stylis-plugin-rtl'
 import { useSessionStorage } from 'usehooks-ts'
-import { toIsraelTimezone } from 'src/dayjs'
+
 import { MainLayout } from '../layout'
 import { ThemeProvider } from '../layout/ThemeContext'
 import { GlobalSearchContext } from '../model/globalState'
@@ -40,28 +40,11 @@ export const MainRoute = () => {
     return result
   }, [])
 
-  // Parse captured URL params into GlobalSearchState fields.
-  // Field names match the new state model (date, rideTime, stopKey).
   const urlState = useMemo<Partial<GlobalSearchState>>(() => {
     const p = initialUrlParams
-    // Accept 'date' (new) or 'timestamp' (old shared links) for backward compat
-    let date: string | undefined
-    if (p.date) {
-      date = p.date
-    } else if (p.timestamp) {
-      date = toIsraelTimezone(+p.timestamp).format('YYYY-MM-DD')
-    }
-    // Accept 'rideTime' (new) or 'startTime' (old shared links) for backward compat
     const rideTime = p.rideTime ?? p.startTime ?? undefined
     return {
-      // Accept both legacy numeric timestamps and new "YYYY-MM-DD" strings.
-      ...(p.date
-        ? {
-            date: /^\d+$/.test(p.date)
-              ? toIsraelTimezone(parseInt(p.date)).format('YYYY-MM-DD')
-              : p.date,
-          }
-        : {}),
+      ...(p.date ? { date: p.date } : {}),
       ...(p.operatorId ? { operatorId: p.operatorId } : {}),
       ...(p.lineNumber ? { lineNumber: p.lineNumber } : {}),
       ...(p.vehicleNumber ? { vehicleNumber: Number(p.vehicleNumber) } : {}),

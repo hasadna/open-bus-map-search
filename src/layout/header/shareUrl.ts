@@ -21,7 +21,9 @@ export const buildShareUrl = (
   origin = window.location.origin,
 ): string => {
   const pagePath = getPathWithoutLang(pathname)
-  const relevantKeys = PAGE_GLOBAL_SHARE_KEYS[pagePath] ?? []
+  // For dynamic paths like /profile/123, fall back to the base path /profile
+  const basePath = pagePath.replace(/\/[^/]+$/, '') || '/'
+  const relevantKeys = PAGE_GLOBAL_SHARE_KEYS[pagePath] ?? PAGE_GLOBAL_SHARE_KEYS[basePath] ?? []
 
   const params = new URLSearchParams()
 

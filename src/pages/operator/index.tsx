@@ -24,7 +24,10 @@ const OperatorPage = () => {
 
   // timeRange is shareable: a colleague receiving the link sees the same
   // aggregation window (day / week / month).
-  const { params, setParams } = usePageState(
+  const { params, setParams } = usePageState<
+    { timeRange: 'day' | 'week' | 'month' },
+    { scrollPosition: number }
+  >(
     'operator',
     {
       params: { timeRange: 'day' },
@@ -34,7 +37,6 @@ const OperatorPage = () => {
   )
 
   const dateDayjs = dayjs.tz(date, ISRAEL_TIMEZONE)
-  const timestamp = dateDayjs.valueOf()
 
   const handleOperatorChange = (operatorId: string) => {
     setSearch((current) => ({ ...current, operatorId }))

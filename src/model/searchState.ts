@@ -78,6 +78,7 @@ export const PAGE_GLOBAL_SHARE_KEYS: Partial<Record<string, (keyof GlobalSearchS
     'stopKey',
   ],
   '/operator': ['operatorId', 'date'],
-  // /profile/:id — route ID is already in the URL path; rideTime and stopKey
-  // come through as page params via PageShareParamsContext
+  // /profile/:id — route ID is already in the URL path (encodes operator/line/direction).
+  // date determines which ride times are shown; rideTime comes via PageShareParamsContext.
+  '/profile': ['date'],
 }

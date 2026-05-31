@@ -170,7 +170,10 @@ const GapsPatternsPage = () => {
   // Page params are shareable: a colleague receiving the link sees the same
   // date range and chart ordering. startDate/endDate are ISO strings.
   // sortingMode is persisted so the user's preferred view survives navigation.
-  const { params, setParams } = usePageState(
+  const { params, setParams } = usePageState<
+    { startDate: string; endDate: string; sortingMode: 'hour' | 'severity' },
+    { scrollPosition: number }
+  >(
     'gaps-patterns',
     {
       params: {
@@ -192,7 +195,7 @@ const GapsPatternsPage = () => {
 
   const loadRoutes = async (signal: AbortSignal | undefined) => {
     setRoutesIsLoading(true)
-    const fetched = await getRoutesAsync(startDate, endDate, operatorId, lineNumber, signal)
+    const fetched = await getRoutesAsync(startDate, endDate, operatorId ?? undefined, lineNumber ?? undefined, signal)
     if (search.lineNumber === lineNumber) {
       setRoutes(fetched)
     }
@@ -294,7 +297,7 @@ const GapsPatternsPage = () => {
             ) : (
               <RouteSelector
                 routes={routes}
-                routeKey={routeKey}
+                routeKey={routeKey ?? undefined}
                 setRouteKey={(key) =>
                   setSearch((current) => ({ ...current, routeKey: key ?? null }))
                 }
