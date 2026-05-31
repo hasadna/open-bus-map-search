@@ -1,4 +1,4 @@
-import { GlobalSearchState } from 'src/model/searchState'
+import { GlobalSearchState } from 'src/model/globalState'
 import { buildShareUrl } from './shareUrl'
 
 const ORIGIN = 'https://open-bus.example.com'
@@ -229,16 +229,19 @@ describe('buildShareUrl — per-page global key contracts', () => {
 // Dynamic profile path
 // ---------------------------------------------------------------------------
 
-// /profile/:id is not in PAGE_GLOBAL_SHARE_KEYS. The route ID is in the path.
-// Only page params (rideTime, registered via usePageState) appear in the URL.
+// /profile/:id falls back to the '/profile' entry in PAGE_GLOBAL_SHARE_KEYS.
+// All relevant global fields are shared so recipients land with full context.
 
 describe('buildShareUrl — dynamic profile path', () => {
-  it('no global SearchContext params leak into the URL', () => {
+  it('includes date, operatorId, lineNumber, routeKey, stopKey', () => {
     const p = paramsOf(build('/profile/12345'))
-    expect(p.operatorId).toBeUndefined()
-    expect(p.lineNumber).toBeUndefined()
-    expect(p.date).toBeUndefined()
-    expect(p.routeKey).toBeUndefined()
+    expect(p.date).toBeDefined()
+    expect(p.operatorId).toBeDefined()
+    expect(p.lineNumber).toBeDefined()
+    expect(p.routeKey).toBeDefined()
+    expect(p.stopKey).toBeDefined()
+    expect(p.vehicleNumber).toBeUndefined()
+    expect(p.rideTime).toBeUndefined()
   })
 
   it('page params (rideTime) are included', () => {

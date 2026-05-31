@@ -17,7 +17,7 @@ import { DateNavigator } from '../components/dateNavigator/DateNavigator'
 import { DateSelector } from '../components/DateSelector'
 import { PageContainer } from '../components/PageContainer'
 import { VelocityHeatmapLegend } from './components/VelocityHeatmapLegend'
-import { type VisMode, VelocityHeatmapRectangles } from './components/VelocityHeatmapRectangles'
+import { VelocityHeatmapRectangles, type VisMode } from './components/VelocityHeatmapRectangles'
 
 const VIS_MODES = [
   { key: 'avg', labelKey: 'velocity_vis_avg' },

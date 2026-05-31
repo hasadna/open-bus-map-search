@@ -43,7 +43,13 @@ const LineProfile = () => {
     setUi,
   } = usePageState<
     { rideTime: string | null },
-    { isExpanded: boolean; scrollPosition: number; centerLat: number; centerLng: number; zoom: number }
+    {
+      isExpanded: boolean
+      scrollPosition: number
+      centerLat: number
+      centerLng: number
+      zoom: number
+    }
   >(
     'line-profile',
     {
@@ -54,16 +60,15 @@ const LineProfile = () => {
   )
 
   useEffect(() => {
-    setStopKey(undefined)
     if (!route?.id) return
-    setSearch(() => ({
+    setSearch((prev) => ({
+      ...prev,
       date: toIsraelTimezone(route.date.getTime()).format('YYYY-MM-DD'),
       operatorId: route.operatorRef.toString(),
       lineNumber: route.routeShortName ?? null,
       routeKey: `${route.routeMkt}-${route.routeDirection}-${route.routeAlternative}`,
       vehicleNumber: null,
       rideTime: null,
-      stopKey: null,
     }))
   }, [route?.id])
 

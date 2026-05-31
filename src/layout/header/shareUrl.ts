@@ -1,5 +1,6 @@
 import { getPathWithoutLang } from 'src/locale/allTranslations'
-import { GlobalSearchState, PAGE_GLOBAL_SHARE_KEYS } from 'src/model/searchState'
+import { GlobalSearchState } from 'src/model/globalState'
+import { PAGE_GLOBAL_SHARE_KEYS } from 'src/model/pageState'
 
 export type { GlobalSearchState }
 

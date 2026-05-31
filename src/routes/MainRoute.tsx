@@ -5,12 +5,11 @@ import ReactGA from 'react-ga4'
 import { useLocation, useSearchParams } from 'react-router'
 import rtlPlugin from 'stylis-plugin-rtl'
 import { useSessionStorage } from 'usehooks-ts'
-
 import { MainLayout } from '../layout'
 import { ThemeProvider } from '../layout/ThemeContext'
 import { GlobalSearchContext } from '../model/globalState'
+import { GLOBAL_SEARCH_DEFAULTS, GlobalSearchState } from '../model/globalState'
 import { InitialUrlParamsContext, PageShareParamsContext } from '../model/pageState'
-import { GLOBAL_SEARCH_DEFAULTS, GlobalSearchState } from '../model/searchState'
 
 const cacheRtl = createCache({
   key: 'muirtl',
