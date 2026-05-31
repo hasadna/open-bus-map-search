@@ -46,13 +46,13 @@ test.describe('Share URL feature', () => {
   // -------------------------------------------------------------------------
 
   test('URL params are stripped from the address bar after page load', async ({ page }) => {
-    await page.goto('/gaps?timestamp=1707739200000&operatorId=3&lineNumber=64')
+    await page.goto('/gaps?date=2024-02-12&operatorId=3&lineNumber=64')
     await page.waitForURL((url) => !url.search)
     expect(new URL(page.url()).search).toBe('')
   })
 
   test('address bar shows clean path after loading with params', async ({ page }) => {
-    await page.goto('/timeline?timestamp=1707739200000&operatorId=5&lineNumber=18')
+    await page.goto('/timeline?date=2024-02-12&operatorId=5&lineNumber=18')
     await page.waitForURL((url) => !url.search)
     expect(new URL(page.url()).pathname).toMatch(/\/timeline$/)
     expect(new URL(page.url()).search).toBe('')
@@ -67,7 +67,7 @@ test.describe('Share URL feature', () => {
   // and writes it to clipboard. The clipboard URL must contain the original params.
 
   test('round-trip: gaps page share button writes correct URL to clipboard', async ({ page }) => {
-    await page.goto('/gaps?timestamp=1707739200000&operatorId=3&lineNumber=64')
+    await page.goto('/gaps?date=2024-02-12&operatorId=3&lineNumber=64')
     await page.waitForURL((url) => !url.search)
     await page.locator('.preloader').waitFor({ state: 'hidden' })
 
@@ -75,7 +75,7 @@ test.describe('Share URL feature', () => {
 
     const clipUrl = await getClipboard(page)
     const params = new URL(clipUrl).searchParams
-    expect(params.get('timestamp')).toBe('1707739200000')
+    expect(params.get('date')).toBe('2024-02-12')
     expect(params.get('operatorId')).toBe('3')
     expect(params.get('lineNumber')).toBe('64')
   })
@@ -83,7 +83,7 @@ test.describe('Share URL feature', () => {
   test('round-trip: timeline page share button writes correct URL to clipboard', async ({
     page,
   }) => {
-    await page.goto('/timeline?timestamp=1707739200000&operatorId=5&lineNumber=18')
+    await page.goto('/timeline?date=2024-02-12&operatorId=5&lineNumber=18')
     await page.waitForURL((url) => !url.search)
     await page.locator('.preloader').waitFor({ state: 'hidden' })
 
@@ -91,7 +91,7 @@ test.describe('Share URL feature', () => {
 
     const clipUrl = await getClipboard(page)
     const params = new URL(clipUrl).searchParams
-    expect(params.get('timestamp')).toBe('1707739200000')
+    expect(params.get('date')).toBe('2024-02-12')
     expect(params.get('operatorId')).toBe('5')
     expect(params.get('lineNumber')).toBe('18')
   })
@@ -107,13 +107,13 @@ test.describe('Share URL feature', () => {
     expect(new URL(clipUrl).pathname).toBe('/')
   })
 
-  test('velocity heatmap share URL includes timestamp', async ({ page }) => {
+  test('velocity heatmap share URL includes date', async ({ page }) => {
     await visitPage(page, 'velocity_heatmap_page_title')
     await page.locator('[aria-label="העתק קישור"]').click()
     const clipUrl = await getClipboard(page)
     const params = new URL(clipUrl).searchParams
-    expect(params.has('timestamp')).toBe(true)
-    expect(Number(params.get('timestamp'))).toBeGreaterThan(0)
+    expect(params.has('date')).toBe(true)
+    expect(params.get('date')).toMatch(/^\d{4}-\d{2}-\d{2}$/)
   })
 
   test('share URL pathname has no language prefix', async ({ page }) => {
