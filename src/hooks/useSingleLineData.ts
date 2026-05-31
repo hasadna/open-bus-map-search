@@ -98,9 +98,8 @@ export const useSingleLineData = ({
 
   const [today, serviceDayEnd] = useMemo(() => {
     const today = dayjs.tz(date, ISRAEL_TIMEZONE).startOf('day')
-    // Israeli service day runs up to ~04:00 AM the next calendar day.
-    // Use 30 hours to safely cover all past-midnight rides.
-    return [today, today.add(30, 'hours')]
+    // Service window: 00:00 of the selected day through 28:00 (04:00 next day).
+    return [today, today.add(28, 'hours')]
   }, [date])
 
   const validVehicleNumber = useMemo(() => {
@@ -135,12 +134,7 @@ export const useSingleLineData = ({
         siriRouteLineRefs: selectedRoute?.lineRef?.toString(),
         siriRouteOperatorRefs: operatorId,
         vehicleRefs: validVehicleNumber?.toString(),
-        // Primary guard against the midnight SIRI batch: every day at ~00:00 the backend
-        // mass-creates phantom siri_ride records for all tracked vehicles, which can fill the
-        // entire 500-result page leaving no real rides. Skipping to 03:00 avoids them in line
-        // mode. Vehicle mode is exempt — the query already filters to one vehicle so there is
-        // no flood risk, and real early-morning trips (04:00–06:00) must not be hidden.
-        scheduledStartTimeFrom: validVehicleNumber ? today.toDate() : today.add(3, 'hour').toDate(),
+        scheduledStartTimeFrom: today.toDate(),
         scheduledStartTimeTo: serviceDayEnd.toDate(),
         orderBy: 'scheduled_start_time asc',
         limit: 500,
@@ -177,7 +171,7 @@ export const useSingleLineData = ({
             key,
             group.map((g) => g.id),
           )
-          const scheduledTime = toIsraelTimezone(group[0].ride.scheduledStartTime).format('HH:mm')
+          const scheduledTime = validVehicleNumber ? key.split('|')[0] : key
           const routeLongName = group[0].ride.gtfsRouteRouteLongName
           const [start, end] = routeLongName ? routeStartEnd(routeLongName) : []
           const routePart = routeLongName
