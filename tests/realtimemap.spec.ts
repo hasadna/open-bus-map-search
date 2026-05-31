@@ -1,4 +1,4 @@
-import { expect, getPastDate, harOptions, setupTest, test, visitPage } from './utils'
+import { expect, getPastDate, harOptions, setupTest, test } from './utils'
 
 const TOOLTIP_CONTENT_ITEMS = [
   'שם חברה מפעילה:',
@@ -15,7 +15,11 @@ test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
   await setupTest(page)
   await page.clock.setSystemTime(getPastDate())
   await advancedRouteFromHAR('tests/HAR/realtimemap.har', harOptions)
-  await visitPage(page, 'time_based_map_page_title')
+  // Pin datetime to the instant realtimemap.har was recorded against
+  // (2023-03-14T15:00Z == 17:00 Israel). Full page load so usePageState seeds
+  // datetime from the URL on mount, decoupling the test from the page's default.
+  await page.goto('/map?datetime=2023-03-14T17:00')
+  await page.locator('.leaflet-marker-icon').first().waitFor({ state: 'visible' })
 })
 
 test('tooltip appears after clicking on map point', async ({ page }) => {
