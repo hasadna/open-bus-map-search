@@ -7,10 +7,16 @@
  *
  * After running, commit the updated HAR files in tests/HAR/.
  */
+import * as fs from 'fs'
 import { Page, test } from '@playwright/test'
 import { getPastDate } from './utils'
 
 test.describe.configure({ mode: 'serial' })
+
+function formatHAR(harFile: string) {
+  const raw = fs.readFileSync(harFile, 'utf-8')
+  fs.writeFileSync(harFile, JSON.stringify(JSON.parse(raw), null, 2) + '\n')
+}
 
 async function setupRecording(page: Page, harFile: string) {
   await page.clock.setSystemTime(getPastDate())
@@ -41,6 +47,19 @@ async function openDropdownAndWait(page: Page, selector: string) {
 
 test.describe('Record HAR files', () => {
   test.skip(!process.env['RECORD_HAR'], 'Set RECORD_HAR=1 to update HAR files')
+
+  test.afterAll(() => {
+    for (const file of [
+      'tests/HAR/timeline.har',
+      'tests/HAR/operator.har',
+      'tests/HAR/singleline.har',
+      'tests/HAR/lineprofile.har',
+      'tests/HAR/missing.har',
+      'tests/HAR/clearbutton.har',
+    ]) {
+      if (fs.existsSync(file)) formatHAR(file)
+    }
+  })
 
   // ---- timeline.har -------------------------------------------------------
   // Single test records ALL needed entries in one browser context
@@ -230,12 +249,14 @@ test.describe('Record HAR files', () => {
   test('record lineprofile.har', async ({ page }) => {
     await setupRecording(page, 'tests/HAR/lineprofile.har')
     await goToPage(page, '/')
-    await goToPage(page, '/profile/4339841')
-    // Wait for the SIRI rides response so start-time options are populated in the HAR.
-    await page
+    // Register before navigation — siri_rides fires during page load and may complete
+    // before networkidle, so registering after goToPage would miss it entirely.
+    const siriRidesBody = page
       .waitForResponse((r) => r.url().includes('/siri_rides/list'), { timeout: 30000 })
+      .then((r) => r.body())
       .catch(() => undefined)
-    await page.waitForLoadState('networkidle')
+    await goToPage(page, '/profile/4339841')
+    await siriRidesBody
   })
 
   // ---- missing.har --------------------------------------------------------

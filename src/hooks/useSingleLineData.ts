@@ -154,7 +154,10 @@ export const useSingleLineData = ({
         >()
         for (const ride of rides) {
           if (!ride.scheduledStartTime || !ride.vehicleRef || !ride.id) continue
-          const scheduledTime = toIsraelTimezone(ride.scheduledStartTime).format('HH:mm')
+          const totalMinutes = toIsraelTimezone(ride.scheduledStartTime).diff(today, 'minutes')
+          const h = Math.floor(totalMinutes / 60)
+          const m = totalMinutes % 60
+          const scheduledTime = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`
           const key = validVehicleNumber
             ? `${scheduledTime}|${ride.vehicleRef}|${ride.siriRouteLineRef}`
             : scheduledTime
