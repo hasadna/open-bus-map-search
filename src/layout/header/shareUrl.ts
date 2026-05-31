@@ -1,25 +1,18 @@
 import { getPathWithoutLang } from 'src/locale/allTranslations'
-import { PageSearchState } from 'src/model/pageState'
+import { GlobalSearchState } from 'src/model/globalState'
 
-export type ShareableKey = Exclude<keyof PageSearchState, 'routes'>
+export type ShareableKey = keyof GlobalSearchState
 
 // Only include params that are actually used on each page.
 // Pages absent from this map (homepage, about, donate, etc.) get no params.
 export const PAGE_SHARE_PARAMS: Partial<Record<string, ShareableKey[]>> = {
-  '/timeline': ['timestamp', 'operatorId', 'lineNumber', 'vehicleNumber', 'routeKey', 'startTime'],
-  '/gaps': ['timestamp', 'operatorId', 'lineNumber', 'routeKey'],
+  '/timeline': ['date', 'operatorId', 'lineNumber', 'vehicleNumber', 'routeKey', 'stopKey'],
+  '/gaps': ['date', 'operatorId', 'lineNumber', 'routeKey'],
   '/gaps_patterns': ['operatorId', 'lineNumber', 'routeKey'],
   '/map': [],
-  '/velocity-heatmap': ['timestamp'],
-  '/single-line-map': [
-    'timestamp',
-    'operatorId',
-    'lineNumber',
-    'vehicleNumber',
-    'routeKey',
-    'startTime',
-  ],
-  '/operator': ['operatorId', 'timestamp'],
+  '/velocity-heatmap': ['date'],
+  '/single-line-map': ['date', 'operatorId', 'lineNumber', 'vehicleNumber', 'routeKey', 'rideTime'],
+  '/operator': ['operatorId', 'date'],
 }
 
 /**
@@ -27,11 +20,11 @@ export const PAGE_SHARE_PARAMS: Partial<Record<string, ShareableKey[]>> = {
  *
  * Only the params relevant to that page are included (see PAGE_SHARE_PARAMS).
  * Extra params (e.g. page-local state registered via ExtraShareParamsContext)
- * are appended last and override any SearchContext param with the same key.
+ * are appended last and override any GlobalSearchContext param with the same key.
  */
 export const buildShareUrl = (
   pathname: string,
-  search: PageSearchState,
+  search: GlobalSearchState,
   extraParams: Record<string, string>,
   origin = window.location.origin,
 ): string => {
