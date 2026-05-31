@@ -5,7 +5,7 @@ import { useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { MapContainer, Marker, Popup, TileLayer, useMap, useMapEvents } from 'react-leaflet'
 import MarkerClusterGroup from 'react-leaflet-markercluster'
-import dayjs from 'src/dayjs'
+import dayjs, { ISRAEL_TIMEZONE } from 'src/dayjs'
 import { useAgencyList } from 'src/hooks/useAgencyList'
 import { useConstrainedFloatingButton } from 'src/hooks/useConstrainedFloatingButton'
 import { usePageState } from 'src/hooks/usePageState'
@@ -23,7 +23,9 @@ import InfoYoutubeModal from '../components/YoutubeModal'
 // The page owns its datetime independently from the global `date` field
 // because it needs sub-day precision and should not reset when the user
 // navigates away and back (unlike global date which is a shared day picker).
-const PI_DAY = dayjs('2023-03-14T15:00:00Z').valueOf().toString()
+// Stored as a readable Israel-local "YYYY-MM-DDTHH:mm" (17:00 IST == 15:00 UTC;
+// Israel is pre-DST on Pi Day, so the offset is +02 not +03).
+const PI_DAY = '2026-03-14T17:00'
 
 const DEFAULT_CENTER: [number, number] = [32.3057988, 34.85478613]
 const DEFAULT_ZOOM = 8
@@ -51,7 +53,7 @@ export default function TimeBasedMapPage() {
     ['datetime', 'centerLat', 'centerLng', 'zoom'],
   )
 
-  const from = useMemo(() => dayjs(Number(params.datetime)), [params.datetime])
+  const from = useMemo(() => dayjs.tz(params.datetime, ISRAEL_TIMEZONE), [params.datetime])
   const to = useMemo(() => from.add(1, 'minutes'), [from])
   const { locations, isLoading } = useVehicleLocations({ from, to })
   const positions = useMemo(() => locations.map(toPoint), [locations])
@@ -60,7 +62,7 @@ export default function TimeBasedMapPage() {
     (timestamp: dayjs.Dayjs | null) => {
       setParams((prev) => ({
         ...prev,
-        datetime: (timestamp ?? dayjs(Number(PI_DAY))).valueOf().toString(),
+        datetime: (timestamp ?? dayjs.tz(PI_DAY, ISRAEL_TIMEZONE)).format('YYYY-MM-DDTHH:mm'),
       }))
     },
     [setParams],
