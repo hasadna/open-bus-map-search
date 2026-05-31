@@ -6,7 +6,7 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material'
-import { useContext } from 'react'
+import { useCallback, useContext } from 'react'
 import { useTranslation } from 'react-i18next'
 import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone } from 'src/dayjs'
 import { usePageState } from 'src/hooks/usePageState'
@@ -40,8 +40,14 @@ const SingleLineMapPage = () => {
   )
   const type = params.mode
 
-  const onRouteKeyChange = (key: string | null) => setSearch((c) => ({ ...c, routeKey: key }))
-  const onRideTimeChange = (time: string | null) => setSearch((c) => ({ ...c, rideTime: time }))
+  const onRouteKeyChange = useCallback(
+    (key: string | null) => setSearch((c) => ({ ...c, routeKey: key })),
+    [setSearch],
+  )
+  const onRideTimeChange = useCallback(
+    (time: string | null) => setSearch((c) => ({ ...c, rideTime: time })),
+    [setSearch],
+  )
 
   const {
     positions,
