@@ -1,4 +1,5 @@
-import { BulbFilled, BulbOutlined } from '@ant-design/icons'
+import DarkModeIcon from '@mui/icons-material/DarkMode'
+import LightModeIcon from '@mui/icons-material/LightMode'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -19,7 +20,7 @@ const ToggleThemeButton: React.FC<ToggleThemeButtonProps> = ({ toggleTheme, isDa
       aria-label={tooltip_title}
       title={tooltip_title}
       style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}>
-      {isDarkTheme ? <BulbOutlined className="bulb-dark" /> : <BulbFilled />}
+      {isDarkTheme ? <LightModeIcon className="theme-icon-dark" /> : <DarkModeIcon />}
     </button>
   )
 }

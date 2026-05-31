@@ -3,11 +3,11 @@ import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone } from 'src/dayjs'
 import { usePageState } from 'src/hooks/usePageState'
+import { GlobalSearchContext } from 'src/model/globalState'
 import { INPUT_SIZE } from 'src/resources/sizes'
 import { Gap, getGapsAsync } from '../../api/gapsService'
 import { getServiceDayRoutes } from '../../api/serviceDayRoutesService'
 import { BusRoute } from '../../model/busRoute'
-import { SearchContext } from '../../model/pageState'
 import { DateSelector } from '../components/DateSelector'
 import { Label } from '../components/Label'
 import LineNumberSelector from '../components/LineSelector'
@@ -20,7 +20,7 @@ import GapsTable from './GapsTable'
 
 const GapsPage = () => {
   const { t } = useTranslation()
-  const { search, setSearch } = useContext(SearchContext)
+  const { search, setSearch } = useContext(GlobalSearchContext)
   const { operatorId, lineNumber, date, routeKey } = search
 
   // Routes are page-local: they are fetched from the API and used only
@@ -140,14 +140,20 @@ const GapsPage = () => {
           <Label text={t('choose_operator')} />
         </Grid>
         <Grid size={{ xs: 8 }}>
-          <OperatorSelector operatorId={operatorId} setOperatorId={handleOperatorChange} />
+          <OperatorSelector
+            operatorId={operatorId ?? undefined}
+            setOperatorId={handleOperatorChange}
+          />
         </Grid>
         {/* choose line */}
         <Grid size={{ xs: 4 }}>
           <Label text={t('choose_line')} />
         </Grid>
         <Grid size={{ xs: 8 }}>
-          <LineNumberSelector lineNumber={lineNumber} setLineNumber={handleLineNumberChange} />
+          <LineNumberSelector
+            lineNumber={lineNumber ?? undefined}
+            setLineNumber={handleLineNumberChange}
+          />
         </Grid>
         {/* choose routes */}
         <Grid size={{ xs: 12 }}>
@@ -157,7 +163,7 @@ const GapsPage = () => {
             <RouteSelector
               routes={routes || []}
               disabled={!routes}
-              routeKey={routeKey}
+              routeKey={routeKey ?? undefined}
               setRouteKey={handleRouteKeyChange}
             />
           )}

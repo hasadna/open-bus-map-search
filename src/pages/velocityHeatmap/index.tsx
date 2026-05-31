@@ -12,7 +12,7 @@ import {
 import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone } from 'src/dayjs'
 import { useConstrainedFloatingButton } from 'src/hooks/useConstrainedFloatingButton'
 import { usePageState } from 'src/hooks/usePageState'
-import { SearchContext } from '../../model/pageState'
+import { GlobalSearchContext } from 'src/model/globalState'
 import { DateNavigator } from '../components/dateNavigator/DateNavigator'
 import { DateSelector } from '../components/DateSelector'
 import { PageContainer } from '../components/PageContainer'
@@ -31,7 +31,7 @@ const DEFAULT_CENTER: [number, number] = [29.65, 34.6]
 const DEFAULT_ZOOM = 10
 
 const VelocityHeatmapPage: React.FC = () => {
-  const { search, setSearch } = useContext(SearchContext)
+  const { search, setSearch } = useContext(GlobalSearchContext)
   const mapContainerRef = useRef<HTMLDivElement>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
   const { t, i18n } = useTranslation()
@@ -60,7 +60,7 @@ const VelocityHeatmapPage: React.FC = () => {
   const handleDateChange = (time: dayjs.Dayjs | null) => {
     setSearch((current) => ({
       ...current,
-      date: time?.format('YYYY-MM-DD') ?? toIsraelTimezone(dayjs()).format('YYYY-MM-DD'),
+      date: toIsraelTimezone(time ?? dayjs()).format('YYYY-MM-DD'),
     }))
   }
 

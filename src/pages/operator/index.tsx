@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone } from 'src/dayjs'
 import { usePageState } from 'src/hooks/usePageState'
-import { SearchContext } from 'src/model/pageState'
+import { GlobalSearchContext } from 'src/model/globalState'
 import { DateSelector } from '../components/DateSelector'
 import OperatorSelector from '../components/OperatorSelector'
 import { PageContainer } from '../components/PageContainer'
@@ -19,7 +19,7 @@ const OperatorPage = () => {
   const {
     search: { operatorId, date },
     setSearch,
-  } = useContext(SearchContext)
+  } = useContext(GlobalSearchContext)
   const { t, i18n } = useTranslation()
 
   // timeRange is shareable: a colleague receiving the link sees the same
@@ -33,6 +33,9 @@ const OperatorPage = () => {
     ['timeRange'],
   )
 
+  const dateDayjs = dayjs.tz(date, ISRAEL_TIMEZONE)
+  const timestamp = dateDayjs.valueOf()
+
   const handleOperatorChange = (operatorId: string) => {
     setSearch((current) => ({ ...current, operatorId }))
   }
@@ -40,7 +43,7 @@ const OperatorPage = () => {
   const handleDateChange = (time: dayjs.Dayjs | null) => {
     setSearch((current) => ({
       ...current,
-      date: time?.format('YYYY-MM-DD') ?? toIsraelTimezone(dayjs()).format('YYYY-MM-DD'),
+      date: toIsraelTimezone(time ?? dayjs()).format('YYYY-MM-DD'),
     }))
   }
 
@@ -52,15 +55,14 @@ const OperatorPage = () => {
       <Typography variant="h4">{t('operator_title')}</Typography>
       <Grid container spacing={2}>
         <Grid size={{ sm: 4, xs: 12 }}>
-          <OperatorSelector operatorId={operatorId} setOperatorId={handleOperatorChange} />
+          <OperatorSelector
+            operatorId={operatorId ?? undefined}
+            setOperatorId={handleOperatorChange}
+          />
         </Grid>
 
         <Grid size={{ sm: 4, xs: 12 }}>
-          <DateSelector
-            time={dayjs.tz(date, ISRAEL_TIMEZONE)}
-            disabled={!operatorId}
-            onChange={handleDateChange}
-          />
+          <DateSelector time={dateDayjs} disabled={!operatorId} onChange={handleDateChange} />
         </Grid>
 
         <Grid size={{ sm: 4, xs: 12 }}>

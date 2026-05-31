@@ -8,7 +8,8 @@ import { useSessionStorage } from 'usehooks-ts'
 import { toIsraelTimezone } from 'src/dayjs'
 import { MainLayout } from '../layout'
 import { ThemeProvider } from '../layout/ThemeContext'
-import { InitialUrlParamsContext, PageShareParamsContext, SearchContext } from '../model/pageState'
+import { GlobalSearchContext } from '../model/globalState'
+import { InitialUrlParamsContext, PageShareParamsContext } from '../model/pageState'
 import { GLOBAL_SEARCH_DEFAULTS, GlobalSearchState } from '../model/searchState'
 
 const cacheRtl = createCache({
@@ -43,6 +44,15 @@ export const MainRoute = () => {
   // Field names match the new state model (date, rideTime, stopKey).
   const urlState = useMemo<Partial<GlobalSearchState>>(() => {
     const p = initialUrlParams
+    // Accept 'date' (new) or 'timestamp' (old shared links) for backward compat
+    let date: string | undefined
+    if (p.date) {
+      date = p.date
+    } else if (p.timestamp) {
+      date = toIsraelTimezone(+p.timestamp).format('YYYY-MM-DD')
+    }
+    // Accept 'rideTime' (new) or 'startTime' (old shared links) for backward compat
+    const rideTime = p.rideTime ?? p.startTime ?? undefined
     return {
       // Accept both legacy numeric timestamps and new "YYYY-MM-DD" strings.
       ...(p.date
@@ -56,7 +66,7 @@ export const MainRoute = () => {
       ...(p.lineNumber ? { lineNumber: p.lineNumber } : {}),
       ...(p.vehicleNumber ? { vehicleNumber: Number(p.vehicleNumber) } : {}),
       ...(p.routeKey ? { routeKey: p.routeKey } : {}),
-      ...(p.rideTime ? { rideTime: p.rideTime } : {}),
+      ...(rideTime ? { rideTime } : {}),
       ...(p.stopKey ? { stopKey: p.stopKey } : {}),
     }
   }, [])
@@ -99,13 +109,13 @@ export const MainRoute = () => {
     <InitialUrlParamsContext.Provider value={initialUrlParams}>
       <PageShareParamsContext.Provider
         value={{ params: extraShareParams, setParams: setExtraShareParamsStable }}>
-        <SearchContext.Provider value={{ search, setSearch: safeSetSearch }}>
+        <GlobalSearchContext.Provider value={{ search, setSearch: safeSetSearch }}>
           <CacheProvider value={cacheRtl}>
             <ThemeProvider>
               <MainLayout />
             </ThemeProvider>
           </CacheProvider>
-        </SearchContext.Provider>
+        </GlobalSearchContext.Provider>
       </PageShareParamsContext.Provider>
     </InitialUrlParamsContext.Provider>
   )

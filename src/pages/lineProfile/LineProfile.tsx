@@ -1,14 +1,14 @@
 import { GtfsRoutePydanticModel } from '@hasadna/open-bus-api-client'
 import { CircularProgress, Grid } from '@mui/material'
 import { Tooltip } from 'antd'
-import { useContext, useEffect } from 'react'
+import { useCallback, useContext, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLoaderData, useNavigate } from 'react-router'
 import { getRoutesAsync } from 'src/api/gtfsService'
 import dayjs, { toIsraelTimezone } from 'src/dayjs'
 import { usePageState } from 'src/hooks/usePageState'
 import { useSingleLineData } from 'src/hooks/useSingleLineData'
-import { SearchContext } from 'src/model/pageState'
+import { GlobalSearchContext } from 'src/model/globalState'
 import StopSelector from 'src/pages/components/StopSelector'
 import Widget from 'src/shared/Widget'
 import { DateSelector } from '../components/DateSelector'
@@ -26,7 +26,7 @@ const LineProfile = () => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { route, message } = useLoaderData<{ route?: GtfsRoutePydanticModel; message?: string }>()
-  const { search, setSearch } = useContext(SearchContext)
+  const { search, setSearch } = useContext(GlobalSearchContext)
 
   // stopKey is in global state — shared with /timeline so selecting a stop
   // there and navigating here (or vice versa) preserves the selection.
@@ -62,8 +62,16 @@ const LineProfile = () => {
       rideTime: null,
       stopKey: null,
     }))
-    setRouteKey(`${route.routeMkt}-${route.routeDirection}`)
   }, [route?.id])
+
+  const onRouteKeyChange = useCallback(
+    (key: string | null) => setSearch((c) => ({ ...c, routeKey: key })),
+    [setSearch],
+  )
+  const onRideTimeChange = useCallback(
+    (time: string | null) => setSearch((c) => ({ ...c, rideTime: time })),
+    [setSearch],
+  )
 
   const {
     positions,
@@ -74,8 +82,15 @@ const LineProfile = () => {
     routes,
     routeKey,
     setStartTime,
-    setRouteKey,
-  } = useSingleLineData(route?.operatorRef.toString(), route?.routeShortName)
+  } = useSingleLineData({
+    operatorId: route?.operatorRef.toString(),
+    lineNumber: route?.routeShortName,
+    date: search.date,
+    routeKey: search.routeKey,
+    rideTime: search.rideTime,
+    onRouteKeyChange,
+    onRideTimeChange,
+  })
 
   // Keep rideTime in page params so the share button produces a link that
   // restores the same selected ride for the recipient.
@@ -94,7 +109,9 @@ const LineProfile = () => {
       abortController.signal,
     )
       .then((routes) => {
-        const newRoute = routes?.find((r) => r.key === `${route.routeMkt}-${route.routeDirection}`)
+        const newRoute = routes?.find(
+          (r) => r.key === `${route.routeMkt}-${route.routeDirection}-${route.routeAlternative}`,
+        )
         if (newRoute?.routeIds?.[0]) {
           navigate(`/profile/${newRoute.routeIds[0]}`)
         }

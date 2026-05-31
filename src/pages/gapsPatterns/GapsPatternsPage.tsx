@@ -16,11 +16,11 @@ import {
 } from 'recharts'
 import dayjs from 'src/dayjs'
 import { usePageState } from 'src/hooks/usePageState'
+import { GlobalSearchContext } from 'src/model/globalState'
 import { INPUT_SIZE } from 'src/resources/sizes'
 import Widget from 'src/shared/Widget'
 import { getRoutesAsync } from '../../api/gtfsService'
 import { BusRoute } from '../../model/busRoute'
-import { SearchContext } from '../../model/pageState'
 import { DateSelector } from '../components/DateSelector'
 import { Label } from '../components/Label'
 import LineNumberSelector from '../components/LineSelector'
@@ -163,7 +163,7 @@ function GapsByHour({
 }
 
 const GapsPatternsPage = () => {
-  const { search, setSearch } = useContext(SearchContext)
+  const { search, setSearch } = useContext(GlobalSearchContext)
   const { operatorId, lineNumber, routeKey } = search
   const { t } = useTranslation()
 
@@ -267,7 +267,7 @@ const GapsPatternsPage = () => {
         </Grid>
         <Grid size={{ xs: 12, sm: 8 }}>
           <OperatorSelector
-            operatorId={operatorId}
+            operatorId={operatorId ?? undefined}
             setOperatorId={(id) => setSearch((current) => ({ ...current, operatorId: id }))}
           />
         </Grid>
@@ -276,7 +276,7 @@ const GapsPatternsPage = () => {
         </Grid>
         <Grid size={{ xs: 12, sm: 8 }}>
           <LineNumberSelector
-            lineNumber={lineNumber}
+            lineNumber={lineNumber ?? undefined}
             setLineNumber={(number) => setSearch((current) => ({ ...current, lineNumber: number }))}
           />
         </Grid>

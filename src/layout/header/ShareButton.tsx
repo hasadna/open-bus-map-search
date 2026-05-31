@@ -3,11 +3,12 @@ import { Tooltip } from 'antd'
 import { useCallback, useContext, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLocation } from 'react-router'
-import { PageShareParamsContext, SearchContext } from 'src/model/pageState'
+import { GlobalSearchContext } from 'src/model/globalState'
+import { PageShareParamsContext } from 'src/model/pageState'
 import { buildShareUrl } from './shareUrl'
 
 export const ShareButton = () => {
-  const { search } = useContext(SearchContext)
+  const { search } = useContext(GlobalSearchContext)
   const { params: pageParams } = useContext(PageShareParamsContext)
   const location = useLocation()
   const [copied, setCopied] = useState(false)
