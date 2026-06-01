@@ -1,11 +1,12 @@
 import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import dayjs, { toIsraelTimezone } from 'src/dayjs'
+import dayjs, { ISRAEL_TIMEZONE } from 'src/dayjs'
+import { GlobalSearchContext } from 'src/model/globalState'
 import { INPUT_SIZE } from 'src/resources/sizes'
 import { Gap, getGapsAsync } from '../../api/gapsService'
 import { getServiceDayRoutes } from '../../api/serviceDayRoutesService'
-import { SearchContext } from '../../model/pageState'
+import { BusRoute } from '../../model/busRoute'
 import { DateSelector } from '../components/DateSelector'
 import { Label } from '../components/Label'
 import LineNumberSelector from '../components/LineSelector'
@@ -19,8 +20,9 @@ import GapsTable from './GapsTable'
 
 const GapsPage = () => {
   const { t } = useTranslation()
-  const { search, setSearch } = useContext(SearchContext)
-  const { operatorId, lineNumber, timestamp, routes, routeKey } = search
+  const { search, setSearch } = useContext(GlobalSearchContext)
+  const { operatorId, lineNumber, date, routeKey } = search
+  const [routes, setRoutes] = useState<BusRoute[] | undefined>()
   const [gaps, setGaps] = useState<Gap[]>()
   const [gapsIsLoading, setGapsIsLoading] = useState(false)
 
@@ -33,12 +35,12 @@ const GapsPage = () => {
   }, [search.lineNumber, search.operatorId, search.routeKey])
 
   useEffect(() => {
-    if (!(operatorId && routes && routeKey && timestamp)) return
+    if (!(operatorId && routes && routeKey && date)) return
     const selectedRoute = routes.find((route) => route.key === routeKey)
     if (!selectedRoute) return
 
     setGapsIsLoading(true)
-    const start = toIsraelTimezone(timestamp).startOf('day')
+    const start = dayjs.tz(date, ISRAEL_TIMEZONE).startOf('day')
     const end = start.add(1, 'day').add(4, 'h')
     getGapsAsync(start.valueOf(), end.valueOf(), operatorId, selectedRoute.lineRef)
       .then((res) =>
@@ -54,7 +56,7 @@ const GapsPage = () => {
         setGaps(undefined)
       })
       .finally(() => setGapsIsLoading(false))
-  }, [operatorId, routes, routeKey, timestamp])
+  }, [operatorId, routes, routeKey, date])
 
   useEffect(() => {
     if (!operatorId || !lineNumber) {
@@ -63,21 +65,25 @@ const GapsPage = () => {
 
     const controller = new AbortController()
 
-    getServiceDayRoutes(dayjs(timestamp), operatorId, lineNumber, controller.signal)
+    getServiceDayRoutes(dayjs.tz(date, ISRAEL_TIMEZONE), operatorId, lineNumber, controller.signal)
       .then((fetchedRoutes) => {
-        setSearch((current) =>
-          search.lineNumber === lineNumber ? { ...current, routes: fetchedRoutes } : current,
-        )
+        if (search.lineNumber === lineNumber) {
+          setRoutes(fetchedRoutes)
+        }
       })
       .catch((err) => {
         console.error('Failed to fetch routes:', err.message)
       })
 
     return () => controller.abort()
-  }, [operatorId, lineNumber, timestamp, setSearch])
+  }, [operatorId, lineNumber, date, setSearch])
 
-  const handleTimestampChange = (time: dayjs.Dayjs | null) => {
-    setSearch((current) => ({ ...current, timestamp: time?.valueOf() ?? Date.now() }))
+  const handleDateChange = (time: dayjs.Dayjs | null) => {
+    if (!time) return
+    setSearch((current) => ({
+      ...current,
+      date: time.format('YYYY-MM-DD'),
+    }))
   }
 
   const handleOperatorChange = (operatorId: string) => {
@@ -88,17 +94,20 @@ const GapsPage = () => {
     setSearch((current) =>
       lineNumber === current.lineNumber
         ? { ...current }
-        : { ...current, lineNumber, routes: undefined, routeKey: undefined },
+        : { ...current, lineNumber, routeKey: null },
     )
+    if (lineNumber !== search.lineNumber) {
+      setRoutes(undefined)
+    }
   }
 
   const handleRouteKeyChange = (routeKey?: string) => {
-    setSearch((current) => ({ ...current, routeKey }))
+    setSearch((current) => ({ ...current, routeKey: routeKey ?? null }))
   }
 
   const handleStartTimeClick = useCallback(
-    (startTime: string, timestamp: number) => {
-      setSearch((current) => ({ ...current, startTime, timestamp }))
+    (rideTime: string) => {
+      setSearch((current) => ({ ...current, rideTime }))
     },
     [setSearch],
   )
@@ -118,21 +127,27 @@ const GapsPage = () => {
             <Label text={t('choose_date')} />
           </Grid>
           <Grid size={{ xs: 8 }}>
-            <DateSelector time={dayjs(timestamp)} onChange={handleTimestampChange} />
+            <DateSelector time={dayjs.tz(date, ISRAEL_TIMEZONE)} onChange={handleDateChange} />
           </Grid>
           {/* choose operator */}
           <Grid size={{ xs: 4 }}>
             <Label text={t('choose_operator')} />
           </Grid>
           <Grid size={{ xs: 8 }}>
-            <OperatorSelector operatorId={operatorId} setOperatorId={handleOperatorChange} />
+            <OperatorSelector
+              operatorId={operatorId ?? undefined}
+              setOperatorId={handleOperatorChange}
+            />
           </Grid>
           {/* choose line */}
           <Grid size={{ xs: 4 }}>
             <Label text={t('choose_line')} />
           </Grid>
           <Grid size={{ xs: 8 }}>
-            <LineNumberSelector lineNumber={lineNumber} setLineNumber={handleLineNumberChange} />
+            <LineNumberSelector
+              lineNumber={lineNumber ?? undefined}
+              setLineNumber={handleLineNumberChange}
+            />
           </Grid>
           {/* choose routes */}
           <Grid size={{ xs: 12 }}>
@@ -142,7 +157,7 @@ const GapsPage = () => {
               <RouteSelector
                 routes={routes || []}
                 disabled={!routes}
-                routeKey={routeKey}
+                routeKey={routeKey ?? undefined}
                 setRouteKey={handleRouteKeyChange}
               />
             )}
