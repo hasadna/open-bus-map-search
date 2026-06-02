@@ -378,7 +378,7 @@
       "month": "חודשית",
       "year": "שנתית"
     },
-    "all_lines": "כל המסלולים",
+    "all_lines": "כל הקווים היום",
     "line": "קו",
     "profile": "פרופיל",
     "map": "מפה",
@@ -386,7 +386,9 @@
     "origin": "מוצא",
     "destination": "יעד",
     "total": "סך כל המסלולים",
-    "statistics": "סטטיסטיקה"
+    "statistics": "סטטיסטיקה",
+    "routes_count": "{{count}} מסלולים",
+    "routes_in_lines": "{{routes}} מסלולים ב-{{lines}} קווים"
   },
   "share_link": "העתק קישור",
   "link_copied": "הקישור הועתק!",

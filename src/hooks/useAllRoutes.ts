@@ -9,18 +9,17 @@ type AllRoutesState = {
   error: boolean
 }
 
-export const useAllRoutes = (operatorId?: string, timestamp?: number) => {
+export const useAllRoutes = (operatorId?: string, date?: Date) => {
   const [state, setState] = useState<AllRoutesState>({ routes: [], isLoading: true, error: false })
 
   useEffect(() => {
-    if (!operatorId || !timestamp) {
+    if (!operatorId || !date || isNaN(date.valueOf())) {
       setState({ routes: [], isLoading: false, error: false })
       return
     }
 
     setState({ routes: [], isLoading: true, error: false })
     const controller = new AbortController()
-    const date = new Date(timestamp)
 
     getAllRoutesList(operatorId, date, controller.signal)
       .then((routes) => {
@@ -32,7 +31,7 @@ export const useAllRoutes = (operatorId?: string, timestamp?: number) => {
       })
 
     return () => controller.abort()
-  }, [operatorId, timestamp])
+  }, [operatorId, date])
 
   return state
 }

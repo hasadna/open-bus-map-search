@@ -36,7 +36,10 @@ test.describe('Operator Page Tests', () => {
     const h2Tags = await page.evaluate(() => {
       return Array.from(document.querySelectorAll('h2')).map((tag) => tag.textContent)
     })
-    expect(h2Tags).toEqual(['אגד', 'סטטיסטיקה חודשית', 'הקווים הגרועים ביותר', 'כל המסלולים'])
+    expect(h2Tags).toHaveLength(4)
+    expect(h2Tags.slice(0, 3)).toEqual(['אגד', 'סטטיסטיקה חודשית', 'הקווים הגרועים ביותר'])
+    // the routes widget title may carry a "(x routes in y lines)" suffix once loaded
+    expect(h2Tags[3]).toContain('כל הקווים היום')
   })
 
   test('Test operator inputs', async ({ page }) => {
@@ -136,16 +139,16 @@ test.describe('Operator Page Tests', () => {
 
     await test.step('Validate operator routes', async () => {
       await waitForSkeletonsToHide(page)
-      const table = page.locator('table').nth(2)
-      const rows = table.locator('tbody tr')
-      const totalText = await page.getByText(i18next.t('operator.total')).textContent()
-      const total = Number(totalText?.split(' ')[i18next.language === 'en' ? 2 : 3] || 0)
-      if (total !== 0) {
-        const rowsCount = await rows.count()
-        expect(rowsCount).toEqual(total)
-      } else {
+      // routes are grouped into one collapsible accordion per line
+      const groupCount = await page.locator('.MuiAccordionSummary-root').count()
+      if (groupCount === 0) {
         throw new Error('Operator routes not loaded')
       }
+      // the widget title reads "<title> (<routes> routes in <lines> lines)" — the
+      // lines number must match the number of rendered group headers
+      const titleText = await page.getByRole('heading', { name: /כל הקווים היום/ }).textContent()
+      const numbers = titleText?.match(/\d+/g)?.map(Number) ?? []
+      expect(numbers[1]).toEqual(groupCount)
     })
   })
 
