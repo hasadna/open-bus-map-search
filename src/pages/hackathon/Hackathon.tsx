@@ -39,6 +39,7 @@ const Hackathon = () => {
   const tx = t as (key: string, opts?: Record<string, unknown>) => string
   const [tierFilter, setTierFilter] = useState<ChallengeTier | 'all'>('all')
   const [donateOpen, setDonateOpen] = useState(false)
+  const [shuffledMentors] = useState(() => [...MENTORS].sort(() => Math.random() - 0.5))
 
   const challengesByTrack = useMemo(() => {
     const filtered = CHALLENGES.filter((c) => tierFilter === 'all' || c.tier === tierFilter)
@@ -166,7 +167,7 @@ const Hackathon = () => {
       <Widget title={t('hackathonPage.mentors.title')}>
         <p>{t('hackathonPage.mentors.body')}</p>
         <MentorGrid>
-          {MENTORS.map((m) => (
+          {shuffledMentors.map((m) => (
             <MentorCard key={m.id}>
               <MentorEmoji>{m.emoji}</MentorEmoji>
               <MentorName>{i18n.language === 'en' ? m.nameEn : m.nameHe}</MentorName>
