@@ -32,6 +32,7 @@ const MENTORS = [
   { id: 'ori', nameHe: 'אורי', nameEn: 'Ori', emoji: '🏗️' },
   { id: 'dorit', nameHe: 'דורית', nameEn: 'Dorit', emoji: '🎯' },
   { id: 'imri', nameHe: 'אימרי', nameEn: 'Imri', emoji: '✨' },
+  { id: 'shay', nameHe: 'שי הראל', nameEn: 'Shay Harel', emoji: '🔩' },
 ] as const
 
 const Hackathon = () => {
