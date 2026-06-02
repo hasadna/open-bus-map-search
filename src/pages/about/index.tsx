@@ -13,7 +13,7 @@ const About = () => {
   return (
     <AboutStyle>
       <Stack spacing={4} sx={{ marginBottom: 3 }}>
-        <Typography variant="h4" gutterBottom className="page-title">
+        <Typography variant="h4" gutterBottom className="page-title" sx={{ color: 'red' }}>
           {t(`${pageName}.title`)}
         </Typography>
         <WhatIsWebsite />
