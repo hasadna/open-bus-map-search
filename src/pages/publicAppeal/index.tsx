@@ -13,7 +13,7 @@ const PublicAppeal = () => {
   return (
     <PublicAppealStyle>
       <Space direction="vertical" size="middle">
-        <Title className="page-title" level={3}>
+        <Title className="page-title" level={3} style={{ backgroundColor: 'yellow' }}>
           {t(`${pageName}.title`)}
         </Title>
         {tasks.map((task, i) => (
