@@ -54,7 +54,6 @@ export default defineConfig<EyesFixture>({
         { chromeEmulationInfo: { deviceName: 'Galaxy S23' } },
         { iosDeviceInfo: { deviceName: 'iPhone 16' } },
       ],
-      parentBranchName: 'hasadna/open-bus-map-search/main',
     },
   },
   expect: {
