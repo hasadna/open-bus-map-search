@@ -12,54 +12,20 @@ test.describe('Record realtimemap.har', () => {
     // Wait for chunkedLoading to finish and for all react-leaflet Popup effects to run.
     await page.waitForTimeout(5000)
 
-    // Zoom in once so individual markers appear within the visible viewport.
-    // At the default zoom (8) the only individual marker is ~200px below the fold.
-    await page.locator('.leaflet-control-zoom-in').click()
-    // leaflet-zoom-anim is added to .leaflet-map-pane at animation start and removed at zoomend.
-    await page
-      .waitForFunction(() => !!document.querySelector('.leaflet-map-pane.leaflet-zoom-anim'), {
-        timeout: 2000,
-      })
-      .catch(() => {})
-    await page.waitForFunction(
-      () => !document.querySelector('.leaflet-map-pane.leaflet-zoom-anim'),
-      { timeout: 10000 },
-    )
-    await page.waitForFunction(
-      () => {
-        const icons = document.querySelectorAll('.leaflet-marker-pane .my-div-icon')
-        return Array.from(icons).some((el) => {
-          const r = el.getBoundingClientRect()
-          return (
-            r.x >= 0 &&
-            r.y >= 0 &&
-            r.x + r.width <= window.innerWidth &&
-            r.y + r.height <= window.innerHeight
-          )
-        })
-      },
-      { timeout: 10000 },
-    )
-
-    // Click the first in-viewport individual bus marker.
+    // Click the SAME marker the consumer test (tests/realtimemap.spec.ts) clicks: the
+    // Egged ('אגד אגד') bus marker, selected by agency name — NOT by viewport position.
+    // Markers are named by agency (MapRouteLayer: name = agencyName), and the consumer
+    // uses getByRole('button', { name: 'אגד אגד' }). Matching that exact locator here
+    // guarantees the recorded gtfs_routes/list?line_refs=… route is the one BusToolTip
+    // requests on the consumer's click, independent of vehicle-location ordering.
+    // (No zoom: the consumer clicks at default zoom and Playwright scrolls the marker
+    // into view, so recording at the same view state keeps the two in sync.)
+    const marker = page.getByRole('button', { name: 'אגד אגד' })
     const gtfsRoutesResponse = page.waitForResponse(/gtfs_routes\/list/, { timeout: 30000 })
-    const coords = await page.evaluate(() => {
-      const icons = document.querySelectorAll('.leaflet-marker-pane .my-div-icon')
-      const el = Array.from(icons).find((el) => {
-        const r = el.getBoundingClientRect()
-        return (
-          r.x >= 0 &&
-          r.y >= 0 &&
-          r.x + r.width <= window.innerWidth &&
-          r.y + r.height <= window.innerHeight
-        )
-      })
-      const r = el!.getBoundingClientRect()
-      return { x: r.x + r.width / 2, y: r.y + r.height / 2 }
-    })
-    await page.mouse.click(coords.x, coords.y)
+    await marker.click()
+    await marker.click({ force: true })
 
-    // Wait for the popup to open and the route data to load.
+    // Wait for the popup to open and the route data to load before capturing the body.
     await page.locator('.bus-tooltip').waitFor({ state: 'visible', timeout: 10000 })
     await page.waitForFunction(() => document.querySelector('.bus-tooltip .content') !== null, {
       timeout: 30000,
