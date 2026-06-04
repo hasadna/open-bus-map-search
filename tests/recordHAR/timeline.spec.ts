@@ -12,40 +12,38 @@ recordTest('timeline.har', async (page) => {
   await page.getByPlaceholder('לדוגמה: 17א').fill('1')
   await page.waitForLoadState('networkidle')
 
-  // Select route used for timeline hits test
+  // Select the route used for the timeline-hits test. The route's stop fan-out
+  // (gtfs_stops/get per stop) completes during the networkidle waits below.
   await openDropdownAndWait(page, '#route-select')
   const routeWithHits = 'שדרות מנחם בגין/כביש 7-גדרה ⟵ שדרות מנחם בגין/כביש 7-גדרה'
-  const hitsRouteExists = await page.getByRole('option', { name: routeWithHits }).count()
-  if (hitsRouteExists > 0) {
-    await page.getByRole('option', { name: routeWithHits, exact: true }).click()
-    await page.waitForLoadState('networkidle')
-    await openDropdownAndWait(page, '#stop-select')
-    const stopOption = page.getByRole('option', { name: 'חיים הרצוג/שדרות מנחם בגין (גדרה)' })
-    if ((await stopOption.count()) > 0) {
-      await stopOption.click()
-      await page.locator('.MuiCircularProgress-svg').waitFor({ state: 'hidden' })
-      await page.waitForLoadState('networkidle')
-    } else {
-      await page.keyboard.press('Escape')
-    }
-  } else {
-    await page.keyboard.press('Escape')
-  }
+  await page.getByRole('option', { name: routeWithHits, exact: true }).click()
+  await page.waitForLoadState('networkidle')
 
-  // Also test אגד operator without clearing (so duplication test passes)
+  // Select the stop → loads the timeline: a stop-window gtfs_ride_stops/list and the
+  // matching siri_vehicle_locations. Wait on those responses instead of the loading
+  // spinner (.MuiCircularProgress-svg), which can hang and abort the rest of the run.
+  await openDropdownAndWait(page, '#stop-select')
+  const stopRideStops = page.waitForResponse(
+    (r) => r.url().includes('/gtfs_ride_stops/list') && r.url().includes('arrival_time_from'),
+  )
+  const stopLocations = page.waitForResponse(
+    (r) =>
+      r.url().includes('/siri_vehicle_locations/list') && r.url().includes('recorded_at_time_from'),
+  )
+  await page.getByRole('option', { name: 'חיים הרצוג/שדרות מנחם בגין (גדרה)' }).click()
+  await Promise.all([stopRideStops.then((r) => r.body()), stopLocations.then((r) => r.body())])
+  await page.waitForLoadState('networkidle')
 
-  // Test empty routes: switch to דן בדרום + line 9999
-  // First clear the operator by navigating away and back
+  // Empty-routes round: switch operator to דן בדרום + line 9999 (records the 2nd
+  // gtfs_agencies/list and the empty gtfs_routes/list). Navigate away and back to clear.
   await page.goto('/timeline')
   await page.locator('.preloader').waitFor({ state: 'hidden' })
   await openDropdownAndWait(page, '#operator-select')
-  const danBaDarom = page.getByRole('option', { name: 'דן בדרום', exact: true })
-  if ((await danBaDarom.count()) > 0) {
-    await danBaDarom.click()
-    await page.getByPlaceholder('לדוגמה: 17א').fill('9999')
-    await page.waitForLoadState('networkidle')
-    await page.getByText('הקו לא נמצא').waitFor({ state: 'visible' })
-  } else {
-    await page.keyboard.press('Escape')
-  }
+  await page.getByRole('option', { name: 'דן בדרום', exact: true }).click()
+  const emptyRoutes = page.waitForResponse(
+    (r) => r.url().includes('/gtfs_routes/list') && r.url().includes('route_short_name=9999'),
+  )
+  await page.getByPlaceholder('לדוגמה: 17א').fill('9999')
+  await (await emptyRoutes).body()
+  await page.getByText('הקו לא נמצא').waitFor({ state: 'visible' })
 })
