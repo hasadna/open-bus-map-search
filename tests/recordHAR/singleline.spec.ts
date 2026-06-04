@@ -1,12 +1,8 @@
-import { test } from '@playwright/test'
-import { goToPage, setupRecording } from './utils'
+import { goToPage, recordTest } from './utils'
 
-test.describe('Record singleline.har', () => {
-  test.skip(!process.env['RECORD_HAR'], 'Set RECORD_HAR=1 to update HAR files')
-
-  test('record singleline.har', async ({ page }) => {
-    test.setTimeout(300_000)
-    await setupRecording(page, 'tests/HAR/singleline.har')
+recordTest(
+  'singleline.har',
+  async (page) => {
     await goToPage(page, '/')
     await goToPage(page, '/single-line-map')
 
@@ -110,5 +106,6 @@ test.describe('Record singleline.har', () => {
         await page.keyboard.press('Escape')
       }
     }
-  })
-})
+  },
+  { timeout: 300_000 },
+)

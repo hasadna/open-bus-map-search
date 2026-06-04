@@ -4,7 +4,7 @@
  * How and when to (re)record HAR fixtures: see the "Recording HAR fixtures"
  * section in CONTRIBUTING.md.
  */
-import { Page } from '@playwright/test'
+import { Page, test } from '@playwright/test'
 import { getPastDate } from '../utils'
 
 export async function setupRecording(page: Page, harFile: string) {
@@ -25,6 +25,27 @@ export async function setupRecording(page: Page, harFile: string) {
     update: true,
     updateContent: 'embed',
     updateMode: 'full',
+  })
+}
+
+/**
+ * Wraps a HAR recorder spec: skips unless RECORD_HAR=1, sets up recording into
+ * `tests/HAR/<harName>`, then runs the navigation `body`. Keeps the per-recorder
+ * boilerplate (describe / skip / setupRecording) in one place.
+ */
+export function recordTest(
+  harName: string,
+  body: (page: Page) => Promise<void>,
+  options: { timeout?: number } = {},
+) {
+  test.describe(`Record ${harName}`, () => {
+    test.skip(!process.env['RECORD_HAR'], 'Set RECORD_HAR=1 to update HAR files')
+
+    test(`record ${harName}`, async ({ page }) => {
+      if (options.timeout) test.setTimeout(options.timeout)
+      await setupRecording(page, `tests/HAR/${harName}`)
+      await body(page)
+    })
   })
 }
 
