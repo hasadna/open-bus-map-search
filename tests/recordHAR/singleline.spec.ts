@@ -6,10 +6,6 @@ import { goToPage, recordTest } from './utils'
 // request in the consumer. Each step waits on the concrete API responses it
 // triggers (and forces their bodies); clicks rely on Playwright's built-in
 // auto-waiting rather than explicit timeouts.
-const ROUTE_NAME =
-  'תחנת מוניות רמת גן דרך הטייסים-תל אביב יפו ⟵ תחנת מוניות תל אביב הכובשים-תל אביב יפו'
-const BUS_MARKER = '.leaflet-marker-pane > img[src$="marker-dot.png"]'
-
 recordTest('singleline.har', async (page) => {
   await goToPage(page, '/')
   await goToPage(page, '/single-line-map')
@@ -36,7 +32,11 @@ recordTest('singleline.har', async (page) => {
     })
   })
   await page.getByLabel(/בחירת מסלול נסיעה/).click()
-  await page.getByRole('option', { name: ROUTE_NAME }).click()
+  await page
+    .getByRole('option', {
+      name: 'תחנת מוניות רמת גן דרך הטייסים-תל אביב יפו ⟵ תחנת מוניות תל אביב הכובשים-תל אביב יפו',
+    })
+    .click()
   await bothStops
   await page.waitForLoadState('networkidle')
 
@@ -52,7 +52,10 @@ recordTest('singleline.har', async (page) => {
 
   // Click a bus marker (records BusToolTip's gtfs_routes/list?line_refs=…). click() auto-waits
   // for the marker to be present and actionable.
-  await page.locator(BUS_MARKER).nth(2).click({ force: true })
+  await page
+    .locator('.leaflet-marker-pane > img[src$="marker-dot.png"]')
+    .nth(2)
+    .click({ force: true })
   await page.waitForLoadState('networkidle')
   await page.keyboard.press('Escape')
 
