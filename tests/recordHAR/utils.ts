@@ -1,13 +1,8 @@
 /**
  * HAR Recording Utilities
  *
- * Run all recorders to update HAR fixtures when API responses change:
- *   RECORD_HAR=1 npx playwright test tests/recordHAR/ --workers=1
- *
- * Run a single recorder:
- *   RECORD_HAR=1 npx playwright test tests/recordHAR/<name>.spec.ts
- *
- * After running, commit the updated HAR files in tests/HAR/.
+ * How and when to (re)record HAR fixtures: see the "Recording HAR fixtures"
+ * section in CONTRIBUTING.md.
  */
 import { Page } from '@playwright/test'
 import { getPastDate } from '../utils'
