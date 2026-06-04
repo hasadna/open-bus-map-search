@@ -34,7 +34,10 @@ test.describe('Record missing.har', () => {
         response.url().includes('/rides_execution/list'),
       )
       await routeOption.click()
-      await waitForGaps
+      // waitForResponse alone resolves at headers — .body() blocks until the full
+      // rides_execution body arrives, so it gets embedded in the HAR (otherwise the
+      // entry is recorded with size:-1 and no text, and the gaps table has no rides).
+      await waitForGaps.then((r) => r.body())
       await page.waitForLoadState('networkidle')
     } else {
       await page.keyboard.press('Escape')
