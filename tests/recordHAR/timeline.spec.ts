@@ -1,4 +1,15 @@
+import he from 'src/locale/he.json' with { type: 'json' }
 import { goToPage, openDropdownAndWait, recordTest } from './utils'
+
+// Transit data this recording depends on existing for the frozen test date.
+const OPERATOR = 'אגד'
+const LINE = '1'
+const ROUTE = 'שדרות מנחם בגין/כביש 7-גדרה ⟵ שדרות מנחם בגין/כביש 7-גדרה'
+const STOP = 'חיים הרצוג/שדרות מנחם בגין (גדרה)'
+// Second round: an operator + line combination with no matching route, to record the
+// empty-routes response.
+const EMPTY_OPERATOR = 'דן בדרום'
+const MISSING_LINE = '9999'
 
 recordTest('timeline.har', async (page) => {
   await goToPage(page, '/')
@@ -7,16 +18,15 @@ recordTest('timeline.har', async (page) => {
   // Trigger agencies list by opening operator dropdown
   await openDropdownAndWait(page, '#operator-select')
 
-  // Select אגד and fill line 1 (triggers routes list)
-  await page.getByRole('option', { name: 'אגד', exact: true }).click()
-  await page.getByPlaceholder('לדוגמה: 17א').fill('1')
+  // Select the operator and fill the line (triggers routes list)
+  await page.getByRole('option', { name: OPERATOR, exact: true }).click()
+  await page.getByPlaceholder(he.line_placeholder).fill(LINE)
   await page.waitForLoadState('networkidle')
 
   // Select the route used for the timeline-hits test. The route's stop fan-out
   // (gtfs_stops/get per stop) completes during the networkidle waits below.
   await openDropdownAndWait(page, '#route-select')
-  const routeWithHits = 'שדרות מנחם בגין/כביש 7-גדרה ⟵ שדרות מנחם בגין/כביש 7-גדרה'
-  await page.getByRole('option', { name: routeWithHits, exact: true }).click()
+  await page.getByRole('option', { name: ROUTE, exact: true }).click()
   await page.waitForLoadState('networkidle')
 
   // Select the stop → loads the timeline: a stop-window gtfs_ride_stops/list and the
@@ -30,20 +40,21 @@ recordTest('timeline.har', async (page) => {
     (r) =>
       r.url().includes('/siri_vehicle_locations/list') && r.url().includes('recorded_at_time_from'),
   )
-  await page.getByRole('option', { name: 'חיים הרצוג/שדרות מנחם בגין (גדרה)' }).click()
+  await page.getByRole('option', { name: STOP }).click()
   await Promise.all([stopRideStops.then((r) => r.body()), stopLocations.then((r) => r.body())])
   await page.waitForLoadState('networkidle')
 
-  // Empty-routes round: switch operator to דן בדרום + line 9999 (records the 2nd
-  // gtfs_agencies/list and the empty gtfs_routes/list). Navigate away and back to clear.
+  // Empty-routes round: switch operator + line 9999 (records the 2nd gtfs_agencies/list
+  // and the empty gtfs_routes/list). Navigate away and back to clear.
   await page.goto('/timeline')
   await page.locator('.preloader').waitFor({ state: 'hidden' })
   await openDropdownAndWait(page, '#operator-select')
-  await page.getByRole('option', { name: 'דן בדרום', exact: true }).click()
+  await page.getByRole('option', { name: EMPTY_OPERATOR, exact: true }).click()
   const emptyRoutes = page.waitForResponse(
-    (r) => r.url().includes('/gtfs_routes/list') && r.url().includes('route_short_name=9999'),
+    (r) =>
+      r.url().includes('/gtfs_routes/list') && r.url().includes(`route_short_name=${MISSING_LINE}`),
   )
-  await page.getByPlaceholder('לדוגמה: 17א').fill('9999')
+  await page.getByPlaceholder(he.line_placeholder).fill(MISSING_LINE)
   await (await emptyRoutes).body()
-  await page.getByText('הקו לא נמצא').waitFor({ state: 'visible' })
+  await page.getByText(he.line_not_found).waitFor({ state: 'visible' })
 })

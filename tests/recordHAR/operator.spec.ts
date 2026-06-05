@@ -1,5 +1,8 @@
 import { goToPage, recordTest } from './utils'
 
+// Transit data this recording depends on existing for the frozen test date.
+const OPERATOR = 'אגד'
+
 recordTest('operator.har', async (page) => {
   await goToPage(page, '/')
   await goToPage(page, '/operator')
@@ -8,7 +11,7 @@ recordTest('operator.har', async (page) => {
   await page.getByRole('button', { name: 'פתח' }).click()
   await page.waitForLoadState('networkidle')
 
-  // Select אגד — triggers group_by × 2 + gtfs_routes/list via React state update.
+  // Select the operator — triggers group_by × 2 + gtfs_routes/list via React state update.
   // Register all three response promises before clicking so none are missed.
   const groupByOperatorPromise = page.waitForResponse(
     (response) =>
@@ -24,7 +27,7 @@ recordTest('operator.har', async (page) => {
     (response) =>
       response.url().includes('/gtfs_routes/list') && response.url().includes('limit=15000'),
   )
-  await page.getByRole('option', { name: 'אגד', exact: true }).click()
+  await page.getByRole('option', { name: OPERATOR, exact: true }).click()
   const [groupByOperatorResponse, groupByLineResponse, routesResponse] = await Promise.all([
     groupByOperatorPromise,
     groupByLinePromise,
