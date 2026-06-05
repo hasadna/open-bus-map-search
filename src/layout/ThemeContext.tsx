@@ -1,3 +1,5 @@
+import createCache from '@emotion/cache'
+import { CacheProvider } from '@emotion/react'
 import { createTheme, ThemeProvider as MuiThemeProvider, ScopedCssBaseline } from '@mui/material'
 import { arEG, enUS, heIL, ruRU } from '@mui/material/locale'
 import { LocalizationProvider } from '@mui/x-date-pickers'
@@ -18,9 +20,19 @@ import {
 } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLocation, useNavigate } from 'react-router'
+import rtlPlugin from 'stylis-plugin-rtl'
 import { useLocalStorage } from 'usehooks-ts'
 import dayjs from 'src/dayjs'
 import { getLang, getPathWithoutLang } from 'src/locale/allTranslations'
+
+// Direction-aware emotion caches: the RTL cache flips physical CSS (left↔right),
+// the LTR cache uses emotion's default (prefixer only). Selecting the cache by the
+// active language keeps MUI's generated styles in sync with the layout direction,
+// so grouped components (ButtonGroup/ToggleButtonGroup) round their outer corners
+// correctly without per-component dir="rtl" workarounds.
+const cacheRtl = createCache({ key: 'muirtl', stylisPlugins: [rtlPlugin] })
+const cacheLtr = createCache({ key: 'mui' })
+const RTL_LANGUAGES = ['he', 'ar']
 
 export interface ThemeContextInterface {
   toggleTheme: () => void
@@ -44,6 +56,8 @@ export const ThemeProvider = ({ children }: PropsWithChildren) => {
   const navigate = useNavigate()
 
   const toggleTheme = useCallback(() => setIsDarkTheme((prev) => !prev), [setIsDarkTheme])
+
+  const emotionCache = RTL_LANGUAGES.includes(language) ? cacheRtl : cacheLtr
 
   const location = useLocation()
 
@@ -142,15 +156,17 @@ export const ThemeProvider = ({ children }: PropsWithChildren) => {
   }, [isDarkTheme, language])
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={language}>
-      <ConfigProvider {...antdTheme}>
-        <MuiThemeProvider theme={muiTheme}>
-          <ScopedCssBaseline enableColorScheme>
-            <ThemeContext.Provider value={contextValue}>{children}</ThemeContext.Provider>
-          </ScopedCssBaseline>
-        </MuiThemeProvider>
-      </ConfigProvider>
-    </LocalizationProvider>
+    <CacheProvider value={emotionCache}>
+      <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={language}>
+        <ConfigProvider {...antdTheme}>
+          <MuiThemeProvider theme={muiTheme}>
+            <ScopedCssBaseline enableColorScheme>
+              <ThemeContext.Provider value={contextValue}>{children}</ThemeContext.Provider>
+            </ScopedCssBaseline>
+          </MuiThemeProvider>
+        </ConfigProvider>
+      </LocalizationProvider>
+    </CacheProvider>
   )
 }
 
