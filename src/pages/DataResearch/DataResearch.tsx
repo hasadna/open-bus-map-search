@@ -1,5 +1,4 @@
 import { Grid } from '@mui/material'
-import { Skeleton } from 'antd'
 import React, { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
@@ -14,6 +13,7 @@ import {
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
 import dayjs from 'src/dayjs'
 import { useDate } from 'src/hooks/useDate'
+import SkeletonLoader from 'src/shared/SkeletonLoader'
 import Widget from 'src/shared/Widget'
 import { DateSelector } from '../components/DateSelector'
 import OperatorSelector from '../components/OperatorSelector'
@@ -199,7 +199,7 @@ const StackedResearchChart = ({
         </p>
       )}
       {isLoading ? (
-        <Skeleton active />
+        <SkeletonLoader active />
       ) : (
         <ResponsiveContainer width="100%" height="100%" minHeight="500px">
           <AreaChart
