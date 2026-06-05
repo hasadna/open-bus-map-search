@@ -7,7 +7,7 @@ import { getRoutesAsync, getStopsForRouteAsync } from 'src/api/gtfsService'
 import dayjs, { toIsraelTimezone } from 'src/dayjs'
 import useVehicleLocations from 'src/hooks/useVehicleLocations'
 import { BusStop } from 'src/model/busStop'
-import { SearchContext } from 'src/model/globalState'
+import { GlobalSearchContext } from 'src/model/globalState'
 import { DateSelector } from 'src/pages/components/DateSelector'
 import { Label } from 'src/pages/components/Label'
 import LineNumberSelector from 'src/pages/components/LineSelector'
@@ -50,7 +50,7 @@ function countRides(
 
 const LineHeatmapPage = () => {
   const { t } = useTranslation()
-  const { search, setSearch } = useContext(SearchContext)
+  const { search, setSearch } = useContext(GlobalSearchContext)
   const { operatorId, lineNumber, timestamp, routes, routeKey } = search
   const [stops, setStops] = useState<BusStop[]>()
   const [routesAreLoading, setRoutesAreLoading] = useState(false)
