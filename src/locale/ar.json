@@ -389,5 +389,17 @@
   "date_navigator_today": "اليوم",
   "date_navigator_next_day": "اليوم التالي",
   "date_navigator_next_week": "الأسبوع التالي",
-  "gaps_tooltip_rides_executed": "تم تنفيذ {{percentage}}% من الرحلات ({{actual}}/{{planned}})"
+  "gaps_tooltip_rides_executed": "تم تنفيذ {{percentage}}% من الرحلات ({{actual}}/{{planned}})",
+  "dataResearch": {
+    "title": "أبحاث",
+    "intro": "إذا كانت لديكم فكرة مثيرة للاهتمام حول سبب حدوث الأمور هنا، تحدثوا معنا على Slack!",
+    "global_issues_title": "مشاكل ETL/GPS/مشكلة عامة أخرى",
+    "what_in_graph": "ماذا نرى في الرسم البياني؟",
+    "actual_rides_title": "عدد الرحلات الفعلية",
+    "actual_rides_description": "كم عدد الرحلات التي سُجِّلت كمُنفَّذة في كل يوم/ساعة ضمن النطاق الزمني الذي اخترتموه. (الرحلات = siri rides)",
+    "planned_rides_title": "عدد الرحلات المخطط لها",
+    "planned_rides_description": "كم عدد الرحلات التي كان من المفترض أن تُنفَّذ في كل يوم/ساعة ضمن النطاق الزمني الذي اخترتموه. (الرحلات = الرحلات المخطط لها في gtfs)",
+    "missed_rides_title": "عدد الرحلات التي لم تُنفَّذ",
+    "missed_rides_description": "كم عدد الرحلات التي كان من المفترض أن تُنفَّذ في كل يوم/ساعة ضمن النطاق الزمني الذي اخترتموه لكنها لم تُنفَّذ. (الفرق بين الرسمين البيانيين السابقين)"
+  }
 }

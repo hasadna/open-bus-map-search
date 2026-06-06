@@ -721,5 +721,17 @@
         "a": "כן. פיתחו את הריפו ב-Gitpod לסביבת VS Code בדפדפן עם כל ה-dependencies מותקנים מראש: https://gitpod.io/#https://github.com/hasadna/open-bus-map-search"
       }
     }
+  },
+  "dataResearch": {
+    "title": "מחקרים",
+    "intro": "אם יש לכם רעיון מעניין למה קורים פה דברים, דברו איתנו בסלאק!",
+    "global_issues_title": "בעיות etl/gps/משהו גלובאלי אחר",
+    "what_in_graph": "מה רואים בגרף?",
+    "actual_rides_title": "מספר נסיעות בפועל",
+    "actual_rides_description": "כמה נסיעות נרשמו כהתבצעו בכל יום/שעה בטווח הזמן שבחרתם. (נסיעות = siri rides)",
+    "planned_rides_title": "מספר נסיעות מתוכננות",
+    "planned_rides_description": "כמה נסיעות היו אמורות להיות בכל יום/שעה בטווח הזמן שבחרתם. (נסיעות = נסיעות מתוכננות בgtfs)",
+    "missed_rides_title": "מספר נסיעות שלא התבצעו",
+    "missed_rides_description": "כמה נסיעות היו אמורות להיות בכל יום/שעה בטווח הזמן שבחרתם אבל לא התבצעו. (הפרש בין שני הגרפים הקודמים)"
   }
 }
