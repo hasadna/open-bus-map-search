@@ -28,6 +28,29 @@ async function setupRecording(page: Page, harFile: string) {
   })
 }
 
+/**
+ * Force every stride-api response body to fully download before the HAR is written.
+ *
+ * routeFromHAR({ updateContent: 'embed' }) only embeds bodies it actually has in
+ * hand; any response still streaming when the test ends is saved truncated or
+ * empty. response.body() blocks until the full body has arrived, so collecting one
+ * per stride-api response and awaiting them all at the end guarantees complete
+ * fixtures — no need to hand-pick individual deferred requests. Errors are
+ * swallowed: an aborted or body-less response must not fail the recording.
+ *
+ * Call right after setupRecording (before any navigation) so no response is missed,
+ * then `await settleResponseBodies()` as the last step of the test.
+ */
+function trackResponseBodies(page: Page): () => Promise<unknown> {
+  const bodies: Promise<unknown>[] = []
+  page.on('response', (response) => {
+    if (/stride-api/.test(response.url())) {
+      bodies.push(response.body().catch(() => undefined))
+    }
+  })
+  return () => Promise.all(bodies)
+}
+
 async function goToPage(page: Page, path: string) {
   await page.goto(path)
   await page.locator('.preloader').waitFor({ state: 'hidden' })
@@ -115,6 +138,7 @@ test.describe('Record HAR files', () => {
   // Single test records ALL needed entries in one browser context
   test('record singleline.har', async ({ page }) => {
     await setupRecording(page, 'tests/HAR/singleline.har')
+    const settleResponseBodies = trackResponseBodies(page)
     await goToPage(page, '/')
     await goToPage(page, '/single-line-map')
 
@@ -218,6 +242,12 @@ test.describe('Record HAR files', () => {
         await page.keyboard.press('Escape')
       }
     }
+
+    // Drain the planned-stops chain (gtfs_routes?line_refs -> gtfs_rides?limit=1 ->
+    // gtfs_ride_stops -> gtfs_stops) so its tail isn't aborted at teardown and
+    // recorded as a status:-1 empty entry. Then capture all bodies.
+    await page.waitForLoadState('networkidle')
+    await settleResponseBodies()
   })
 
   // ---- lineprofile.har ----------------------------------------------------
@@ -229,6 +259,7 @@ test.describe('Record HAR files', () => {
   // single-line tests; it is stable for the frozen test date.
   test('record lineprofile.har', async ({ page }) => {
     await setupRecording(page, 'tests/HAR/lineprofile.har')
+    const settleResponseBodies = trackResponseBodies(page)
     await goToPage(page, '/')
     await goToPage(page, '/profile/4339841')
     // Wait for the SIRI rides response so start-time options are populated in the HAR.
@@ -236,6 +267,9 @@ test.describe('Record HAR files', () => {
       .waitForResponse((r) => r.url().includes('/siri_rides/list'), { timeout: 30000 })
       .catch(() => undefined)
     await page.waitForLoadState('networkidle')
+
+    // Ensure every stride-api response body is fully captured in the HAR.
+    await settleResponseBodies()
   })
 
   // ---- missing.har --------------------------------------------------------

@@ -27,11 +27,12 @@ const GapsPage = () => {
 
   const singleLineMapBaseHref = useMemo(() => {
     const params = new URLSearchParams()
+    params.set('date', search.date || '')
     params.set('operatorId', search.operatorId || '')
     params.set('lineNumber', search.lineNumber || '')
     params.set('routeKey', search.routeKey || '')
     return `/single-line-map?${params.toString()}`
-  }, [search.lineNumber, search.operatorId, search.routeKey])
+  }, [search.date, search.lineNumber, search.operatorId, search.routeKey])
 
   useEffect(() => {
     if (!(operatorId && routes && routeKey && date)) return
@@ -104,6 +105,9 @@ const GapsPage = () => {
     setSearch((current) => ({ ...current, routeKey: routeKey ?? null }))
   }
 
+  // On gap row click: only set rideTime — date stays as the service day the
+  // user was browsing. rideTime uses 24+ hour format for past-midnight rides
+  // (e.g. "25:30") so single-line-map can reconstruct the correct timestamp.
   const handleStartTimeClick = useCallback(
     (rideTime: string) => {
       setSearch((current) => ({ ...current, rideTime }))
@@ -173,6 +177,7 @@ const GapsPage = () => {
         <GapsTable
           loading={gapsIsLoading}
           gaps={gaps}
+          date={date}
           singleLineMapBaseHref={singleLineMapBaseHref}
           onStartTimeClick={handleStartTimeClick}
         />

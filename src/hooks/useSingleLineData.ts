@@ -8,6 +8,7 @@ import { BusRoute } from 'src/model/busRoute'
 import { type Point, toPoint } from 'src/pages/components/map-related/map-types'
 import { routeStartEnd, vehicleIDFormat } from 'src/pages/components/utils/rotueUtils'
 import {
+  formatServiceDayTime,
   normalizeStartTimeToken,
   parseStartTimeToken,
 } from 'src/pages/components/utils/startTimeUtils'
@@ -79,8 +80,8 @@ export const useSingleLineData = ({
         setRoutes(routes)
         setError(undefined)
       })
-      .catch((err) => {
-        if (err?.cause?.name !== 'AbortError') {
+      .catch((err: unknown) => {
+        if ((err as { cause?: { name?: string } })?.cause?.name !== 'AbortError') {
           setRoutes(undefined)
           onRouteKeyChange?.(null)
           setError(err instanceof Error ? err.message : 'Failed to fetch routes')
@@ -96,9 +97,13 @@ export const useSingleLineData = ({
     return routes?.find((route) => route.key === (routeKey ?? undefined))
   }, [routes, routeKey])
 
-  const [today, tomorrow] = useMemo(() => {
-    const today = dayjs.tz(date, ISRAEL_TIMEZONE).startOf('day')
-    return [today, today.add(1, 'day')]
+  const [serviceDayStart, serviceDayEnd] = useMemo(() => {
+    const serviceDayStart = dayjs.tz(date, ISRAEL_TIMEZONE).startOf('day')
+    // Service window: 00:00 of the selected day through 04:00 the next day.
+    // Built as a wall-clock 04:00 (not +28h) so it stays at 04:00 across DST
+    // transitions — +28h would drift to 03:00/05:00 on the fall-back/spring days.
+    const serviceDayEnd = serviceDayStart.add(1, 'day').startOf('day').add(4, 'hours')
+    return [serviceDayStart, serviceDayEnd]
   }, [date])
 
   const validVehicleNumber = useMemo(() => {
@@ -133,13 +138,8 @@ export const useSingleLineData = ({
         siriRouteLineRefs: selectedRoute?.lineRef?.toString(),
         siriRouteOperatorRefs: operatorId,
         vehicleRefs: validVehicleNumber?.toString(),
-        // Primary guard against the midnight SIRI batch: every day at ~00:00 the backend
-        // mass-creates phantom siri_ride records for all tracked vehicles, which can fill the
-        // entire 500-result page leaving no real rides. Skipping to 03:00 avoids them in line
-        // mode. Vehicle mode is exempt — the query already filters to one vehicle so there is
-        // no flood risk, and real early-morning trips (04:00–06:00) must not be hidden.
-        scheduledStartTimeFrom: validVehicleNumber ? today.toDate() : today.add(3, 'hour').toDate(),
-        scheduledStartTimeTo: tomorrow.toDate(),
+        scheduledStartTimeFrom: serviceDayStart.toDate(),
+        scheduledStartTimeTo: serviceDayEnd.toDate(),
         orderBy: 'scheduled_start_time asc',
         limit: 500,
       },
@@ -152,7 +152,10 @@ export const useSingleLineData = ({
         >()
         for (const ride of rides) {
           if (!ride.scheduledStartTime || !ride.vehicleRef || !ride.id) continue
-          const scheduledTime = toIsraelTimezone(ride.scheduledStartTime).format('HH:mm')
+          const scheduledTime = formatServiceDayTime(
+            toIsraelTimezone(ride.scheduledStartTime),
+            serviceDayStart,
+          )
           const key = validVehicleNumber
             ? `${scheduledTime}|${ride.vehicleRef}|${ride.siriRouteLineRef}`
             : scheduledTime
@@ -163,16 +166,17 @@ export const useSingleLineData = ({
         const idMap = new Map<string, number[]>()
         const opts: { value: string; label: string }[] = []
 
-        // Secondary guard: skip time slots with >4 vehicles at the same scheduled time.
-        // Real double/triple trips have 2–3 vehicles max. >4 means a SIRI batch artifact
-        // slipped past the +3h start-time filter (e.g. the batch ran late, after 03:00 IST).
+        // Guard against the midnight SIRI batch: at ~00:00 the backend mass-creates phantom
+        // siri_ride records for all tracked vehicles. Real double/triple trips share a
+        // scheduled time across 2–3 vehicles at most, so >4 vehicles at one time is a batch
+        // artifact — skip it. (The window now starts at 00:00, so this is the only such guard.)
         byTime.forEach((group, key) => {
           if (group.length > 4) return
           idMap.set(
             key,
             group.map((g) => g.id),
           )
-          const scheduledTime = toIsraelTimezone(group[0].ride.scheduledStartTime).format('HH:mm')
+          const scheduledTime = validVehicleNumber ? key.split('|')[0] : key
           const routeLongName = group[0].ride.gtfsRouteRouteLongName
           const [start, end] = routeLongName ? routeStartEnd(routeLongName) : []
           const routePart = routeLongName
@@ -199,7 +203,7 @@ export const useSingleLineData = ({
         if (err?.name !== 'AbortError') console.error(err)
       })
     return () => controller.abort()
-  }, [selectedRoute?.lineRef, operatorId, validVehicleNumber, today, tomorrow])
+  }, [selectedRoute?.lineRef, operatorId, validVehicleNumber, serviceDayStart, serviceDayEnd])
 
   // Fetch location pings for the selected ride(s)
   useEffect(() => {
@@ -235,7 +239,7 @@ export const useSingleLineData = ({
       const scheduledTime = parsedStartTime?.scheduledTime
       const scheduledLine = parsedStartTime?.lineRef
       const [hour, minute] = scheduledTime ? scheduledTime.split(':').map(Number) : [0, 0]
-      const startTimeTimestamp = today.hour(hour).minute(minute).second(0).millisecond(0)
+      const startTimeTimestamp = serviceDayStart.hour(hour).minute(minute).second(0).millisecond(0)
       let routeIds: number[] | undefined
       if (selectedRoute?.routeIds && selectedRoute.routeIds.length > 0) {
         routeIds = selectedRoute.routeIds
@@ -247,7 +251,12 @@ export const useSingleLineData = ({
       if (!routeIds || routeIds.length === 0) return []
       return await getStopsForRouteAsync(routeIds, startTimeTimestamp)
     },
-    queryKey: ['stops', selectedRoute?.lineRef, today.valueOf(), parsedStartTime?.scheduledTime],
+    queryKey: [
+      'stops',
+      selectedRoute?.lineRef,
+      serviceDayStart.valueOf(),
+      parsedStartTime?.scheduledTime,
+    ],
     enabled: !!(selectedRoute?.routeIds?.length || parsedStartTime?.lineRef),
   })
 
