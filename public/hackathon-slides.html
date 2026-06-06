@@ -229,26 +229,20 @@
   .code-block .fn  { color: #a6e22e; }
   .code-block .cm  { color: #75715e; font-style: italic; }
 
-  /* S10 - GROUPS */
+  /* S14 - GROUPS + RESOURCES */
   .s10 { background: var(--black); }
-  .s10 h2 { font-size: clamp(26px, 4vw, 46px); font-weight: 900; margin-bottom: 8px; }
-  .s10 .sub { color: #888; margin-bottom: 24px; font-size: 15px; }
-  .groups-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; width: 100%; max-width: 820px; }
-  .group-card { background: var(--mid); padding: 18px; border-radius: 2px; text-align: right; border-right: 4px solid; }
-  .group-card:nth-child(1) { border-color: #FF5C00; }
-  .group-card:nth-child(2) { border-color: var(--yellow); }
-  .group-card:nth-child(3) { border-color: #00E5FF; }
-  .group-card:nth-child(4) { border-color: #A855F7; }
-  .group-title { font-size: 15px; font-weight: 900; margin-bottom: 6px; }
-  .group-card:nth-child(1) .group-title { color: #FF5C00; }
-  .group-card:nth-child(2) .group-title { color: var(--yellow); }
-  .group-card:nth-child(3) .group-title { color: #00E5FF; }
-  .group-card:nth-child(4) .group-title { color: #A855F7; }
-  .group-desc { font-size: 13px; color: #aaa; line-height: 1.5; margin-bottom: 8px; }
-  .group-mentor { font-family: 'Space Mono', monospace; font-size: 11px; color: #666; }
-  .resources-row { margin-top: 16px; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; width: 100%; max-width: 820px; }
-  .res-chip { font-family: 'Space Mono', monospace; font-size: 11px; background: var(--gray); padding: 6px 14px; border-radius: 2px; color: #aaa; border: 1px solid #333; word-break: break-all; }
-  .res-chip span { color: var(--yellow); }
+  .s10 h2 { font-size: clamp(22px, 3.5vw, 40px); font-weight: 900; margin-bottom: 10px; }
+  .groups-strip { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; justify-content: center; }
+  .group-mini { display: flex; flex-direction: column; align-items: center; gap: 3px; background: var(--mid); padding: 8px 16px; border-radius: 2px; font-size: 13px; font-weight: 700; border-top: 3px solid; min-width: 140px; }
+  .group-mini span { font-size: 10px; color: #666; font-weight: 400; font-family: 'Space Mono', monospace; }
+  .group-mini.g1 { border-color: #FF5C00; color: #FF5C00; }
+  .group-mini.g2 { border-color: var(--yellow); color: var(--yellow); }
+  .group-mini.g3 { border-color: #00E5FF; color: #00E5FF; }
+  .group-mini.g4 { border-color: #A855F7; color: #A855F7; }
+  .res-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; width: 100%; max-width: 840px; }
+  .res-item { background: var(--gray); padding: 9px 14px; border-radius: 2px; font-size: 11.5px; color: #aaa; border: 1px solid #2a2a2a; text-align: right; text-decoration: none; word-break: break-all; transition: background 0.15s, color 0.15s; font-family: 'Space Mono', monospace; display: block; line-height: 1.4; }
+  .res-item:hover { background: #222; color: var(--yellow); }
+  .res-item .res-label { font-size: 10px; color: var(--orange); display: block; margin-bottom: 2px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; }
 </style>
 </head>
 <body>
@@ -498,35 +492,23 @@
   <!-- S14: GROUPS + RESOURCES -->
   <div class="slide s10" data-index="13">
     <div class="slide-label">יאללה מתחילים</div>
-    <h2>חלוקה לקבוצות</h2>
-    <p class="sub">מצאו מנטור לפי תג השם שלו</p>
-    <div class="groups-grid">
-      <div class="group-card">
-        <div class="group-title">🤖 AI Harness</div>
-        <div class="group-desc">טסטים, CI, Claude skills, hooks — תשתית לעבודה עם AI agent</div>
-        <div class="group-mentor">מנטור: אביב / נועם</div>
-      </div>
-      <div class="group-card">
-        <div class="group-title">✨ AI Features</div>
-        <div class="group-desc">llms.txt, Markdown export, MCP server — לגרום לדאטאבוס לעבוד עם LLMs</div>
-        <div class="group-mentor">מנטור: נועם / אביב</div>
-      </div>
-      <div class="group-card">
-        <div class="group-title">📊 Data & Algo</div>
-        <div class="group-desc">bus bunching, gap detection, ויזואליזציות — כאן אנשי דומיין הם קריטיים!</div>
-        <div class="group-mentor">מנטור: אורי / נועם</div>
-      </div>
-      <div class="group-card">
-        <div class="group-title">🧹 Good First</div>
-        <div class="group-desc">PRs ישנים להחיות, באגים קלים, תיעוד — מתחילים ברוכים הבאים</div>
-        <div class="group-mentor">מנטור: אביב</div>
-      </div>
+    <h2>קבוצות ומשאבים</h2>
+    <div class="groups-strip">
+      <div class="group-mini g1">🤖 AI Harness<span>אביב / נועם</span></div>
+      <div class="group-mini g2">✨ AI Features<span>נועם / אביב</span></div>
+      <div class="group-mini g3">📊 Data & Algo<span>אורי / נועם</span></div>
+      <div class="group-mini g4">🧹 Good First<span>אביב</span></div>
     </div>
-    <div class="resources-row">
-      <div class="res-chip"><span>GitHub →</span> hasadna/open-bus-map-search</div>
-      <div class="res-chip"><span>Gitpod →</span> gitpod.io/#github.com/hasadna/open-bus-map-search</div>
-      <div class="res-chip"><span>API →</span> open-bus-stride-api.hasadna.org.il/docs</div>
-      <div class="res-chip"><span>Slack →</span> hasadna</div>
+    <div class="res-grid">
+      <a class="res-item" href="https://github.com/hasadna/open-bus-map-search" target="_blank"><span class="res-label">Main Repo</span>hasadna/open-bus-map-search</a>
+      <a class="res-item" href="https://github.com/hasadna/open-bus-stride-client/tree/main/notebooks" target="_blank"><span class="res-label">Notebooks</span>stride-client/notebooks</a>
+      <a class="res-item" href="https://open-bus-stride-api.hasadna.org.il/docs" target="_blank"><span class="res-label">Swagger</span>open-bus-stride-api…/docs</a>
+      <a class="res-item" href="https://github.com/hasadna/open-bus-pipelines" target="_blank"><span class="res-label">Pipelines</span>hasadna/open-bus-pipelines</a>
+      <a class="res-item" href="https://github.com/hasadna/open-bus-backend" target="_blank"><span class="res-label">Backend</span>hasadna/open-bus-backend</a>
+      <a class="res-item" href="https://github.com/NoamGaash/open-bus-mcp" target="_blank"><span class="res-label">MCP</span>NoamGaash/open-bus-mcp</a>
+      <a class="res-item" href="https://agentskills.co.il/en/mcp/openbus" target="_blank"><span class="res-label">MCP Hosted</span>agentskills.co.il/mcp/openbus</a>
+      <a class="res-item" href="https://gitpod.io/#github.com/hasadna/open-bus-map-search" target="_blank"><span class="res-label">Dev Environment</span>Gitpod — פתיחה בדפדפן</a>
+      <div class="res-item"><span class="res-label">Figma</span>בקשו מנועם</div>
     </div>
   </div>
 
