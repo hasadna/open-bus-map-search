@@ -38,8 +38,7 @@ export const StickyInputs = ({ children }: { children: ReactNode }) => {
     if (!el) return
     const scrollAncestor = findScrollableAncestor(el)
     const target: HTMLElement | Window = scrollAncestor ?? window
-    const getScroll = () =>
-      scrollAncestor ? scrollAncestor.scrollTop : window.scrollY
+    const getScroll = () => (scrollAncestor ? scrollAncestor.scrollTop : window.scrollY)
     const check = () => setStuck(getScroll() > 0)
     check()
     target.addEventListener('scroll', check, { passive: true })
