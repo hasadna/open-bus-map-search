@@ -303,9 +303,9 @@
   <!-- S3b: KOBI PADWA VIDEO -->
   <div class="slide s-video" data-index="4">
     <div class="slide-label">קול מהשטח</div>
-    <h2>קובי פדוה — סגן ראש עיר כפר-סבא, מחזיק תיק תחבורה</h2>
-    <p class="vid-credit">הוקלט 30.5.2026</p>
-    <video controls preload="metadata" src="/kobi-padwa.mp4"></video>
+    <h2>קובי פדוה — סגן ראש עיר כפר-סבא</h2>
+    <p class="vid-credit">מחזיק תיק תחבורה</p>
+    <video controls preload="metadata" src="./kobi-padwa.mp4"></video>
   </div>
 
   <!-- S4: WHAT IS DATABUS -->
@@ -331,7 +331,7 @@
       <div class="data-card">
         <div class="icon">🔓</div>
         <h3>קוד פתוח לגמרי</h3>
-        <p>הכל ב-GitHub. תרומות מתקבלות בברכה. כולכם כאן יכולים לתרום הלילה</p>
+        <p>הכל ב-GitHub. תרומות קוד מתקבלות בברכה</p>
       </div>
     </div>
   </div>
@@ -343,7 +343,7 @@
     <div class="dorit-badge">🎤 דורית — 5 דקות</div>
     <p>הסדנא לידע ציבורי היא ארגון ללא מטרות רווח, מבוסס מתנדבים, הפועל לקידום שקיפות שלטונית, מעורבות אזרחית ושיח ציבורי מבוסס נתונים. הסדנא עושה זאת על ידי פיתוח כלים טכנולוגיים בקוד פתוח — אתרים ואפליקציות — לפתיחה והנגשה של מידע המצוי ברשותם של מוסדות ציבוריים.</p>
     <p style="margin-top:10px;font-size:clamp(13px,1.5vw,16px);color:#888">כנסת פתוחה · תקציב המדינה · תאונות דרכים · תחבורה ציבורית · מידע תכנוני · פנסיה ועוד</p>
-    <div class="timer-chip">⏱ 5 MINUTES</div>
+    <div class="timer-chip"></div>
   </div>
 
   <!-- S6: HACKATHON GOALS -->
@@ -361,7 +361,7 @@
       </div>
       <div class="goal-item">
         <div class="goal-num">03</div>
-        <div class="goal-text">לחזק את הקהילה סביב תחב"צ פתוח — ולהביא עוד קול לדיון הציבורי</div>
+        <div class="goal-text">לחזק את הקהילה סביב תחב"צ פתוח — אולי נצליח לגייס עוד משתתפים</div>
       </div>
     </div>
   </div>
@@ -397,38 +397,39 @@
   <!-- S8: CHALLENGES -->
   <div class="slide s8" data-index="7">
     <div class="slide-label">אתגרי הערב</div>
-    <h2>מה עובדים עליו?</h2>
+    <h2>על מה נעבוד?</h2>
     <div class="tracks">
       <div class="track-card">
         <div class="track-name">🤖 AI Harness</div>
         <div class="challenge-items">
           <div class="ch-item">כתיבת טסטים + CI לסוכן AI</div>
-          <div class="ch-item">סביבת פיתוח אחת לכל ה-repos</div>
+          <div class="ch-item">יצירת סביבת פיתוח לכל ה-repos - devenv? Docker Swarm?</div>
           <div class="ch-item">Hooks שעוצרים קוד שבור לפני push</div>
+          <div class="ch-item">Custom skills, commands, agents and context engineering</div>
         </div>
       </div>
       <div class="track-card">
         <div class="track-name">✨ AI Features</div>
         <div class="challenge-items">
           <div class="ch-item">הוספת llms.txt לדאטאבוס</div>
-          <div class="ch-item">Markdown export לדף פרופיל הקו</div>
-          <div class="ch-item">MCP server ראשון לדאטאבוס</div>
+          <div class="ch-item">Markdown export לדף פרופיל הקו ואחרים</div>
+          <div class="ch-item">MCP server לדאטאבוס</div>
         </div>
       </div>
       <div class="track-card">
         <div class="track-name">📊 Data & Algo</div>
         <div class="challenge-items">
           <div class="ch-item">זיהוי bus bunching</div>
-          <div class="ch-item">תיקון edge cases בזיהוי פערים</div>
-          <div class="ch-item">ויזואליזציה חדשה לנתוני תחבורה</div>
+          <div class="ch-item">זיהוי פערים - אי הגעה, איחור, אנומליות, סטייה מהמסלול, אגרגציה וניקוי נתונים</div>
+          <div class="ch-item">מיפוי הנחות סמויות בבסיס הקוד מול הנתונים בפועל (כמה שעות יש ביממה, מה ההבדל בין route, line וride וכו')</div>
         </div>
       </div>
       <div class="track-card">
         <div class="track-name">🧹 Good First Issues</div>
         <div class="challenge-items">
-          <div class="ch-item">PRs ישנים להחיות ולמזג</div>
-          <div class="ch-item">באגים קלים מה-issue tracker</div>
-          <div class="ch-item">תיעוד ו-llms.txt</div>
+          <div class="ch-item">להחיות יוזמות ישנות - PRs ישנים, מחברות פייטון</div>
+          <div class="ch-item">באגים קלים מה-GitHub issues</div>
+          <div class="ch-item">תיעוד ותיקון markdowns ישנים שזקוקים לעדכון</div>
         </div>
       </div>
     </div>
@@ -436,33 +437,49 @@
 
   <!-- S9: APPLITOOLS — THANKS -->
   <div class="slide s-app1" data-index="10">
-    <div class="slide-label">מארחים ושותפים</div>
-    <h2>תודה ל-Applitools 🏠</h2>
-    <div class="applitools-badge">Applitools</div>
+    <div class="slide-label">מארחים</div>
+    <h2>
+      תודה ל-Applitools
+      <svg
+        viewBox="0 0 256 350" version="1.1" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid"
+        style="vertical-align: middle;height:1.4em;"
+      >
+          <title>Applitools</title>
+          <g>
+              <path
+                d="M195.725388,174.716429 C195.725388,191.583884 193.942968,208.01884 190.600932,223.890237 C168.766293,210.273076 139.880612,193.90365 101.781396,174.716429 C139.880612,155.516101 168.753187,139.146675 190.600932,125.529514 C193.942968,141.400911 195.712282,157.848974 195.712282,174.716429 M256,74.2456356 L256,21.4938821 C237.62413,37.7533364 218.669298,53.346484 199.172273,68.2430758 C178.844827,37.221113 152.868684,15.320944 118.701275,0 C145.476885,23.7481186 163.877745,50.510623 177.770133,84.0882609 C70.1172375,161.32207 0,174.716429 0,174.716429 C0,174.716429 70.1172375,188.097681 177.770133,265.344596 C163.877745,298.93534 145.489991,325.671633 118.701275,349.419751 C152.868684,334.098807 178.844827,312.198638 199.172273,281.176675 C218.670122,296.076793 237.624985,311.674337 256,327.938975 L256,275.187222 C256,275.187222 249.551835,264.440281 218.700251,242.527006 C226.563866,221.413198 230.888855,198.569395 230.888855,174.716429 C230.905056,151.566666 226.777083,128.600933 218.700251,106.905852 C249.551835,84.9794706 256,74.2456356 256,74.2456356"
+                fill="#ffffff"
+              ></path>
+          </g>
+      </svg>
+    </h2>
+    <!-- <div class="applitools-badge">Applitools</div> -->
     <div class="app-facts">
-      <div class="app-fact">🏠 מארחים אותנו הלילה ב-One Towers, רמת גן</div>
-      <div class="app-fact">🎁 רישיון open-source ל-Eyes — בחינם לחלוטין</div>
+      <div class="app-fact">🏠 מארחים אותנו במשרד שלהם (נשמור על הנקיון)</div>
+      <div class="app-fact">🎁 תורמים לנו רישיון ל-Eyes (כחלק ממדיניות תמיכה בקוד פתוח)</div>
     </div>
     <div class="app-story">
-      <div class="app-story-label">⚡ מה זה אומר בפועל — <a href="https://github.com/hasadna/open-bus-map-search/pull/1613" target="_blank" rel="noopener" style="color:var(--orange);text-decoration:underline">PR #1613</a> מאתמול</div>
-      <p>arielvino גילה דרך Eyes שינויים ויזואליים שלא תכנן לתקן — ותיקן אותם בכל זאת. יצא PR יותר טוב ממה שנכנס.</p>
+      <div class="app-story-label">⚡ מה זה אומר בפועל — <a href="https://github.com/hasadna/open-bus-map-search/pull/1613" target="_blank" rel="noopener" style="color:var(--orange);text-decoration:underline">דוגמה - PR #1613</a></div>
+      <p>אנחנו מקבלים עשרות PRs בחודש. הפרוייקט מופעל על ידי מתנדבים.</p>
+      <p>עם Applitools Eyes, כל PR עובר בדיקת regression ויזואלית.</p>
+      <ul>
+        <li>פידבק מיידי</li>
+        <li>פחות שחיקה של מתנדבים</li>
+      </ul>
     </div>
-    <p class="app-footer">Eyes = velocity + כיסוי + בטחון לאמץ קוד ממתחילים ומ-AI — בלי לשרוף מתנדבים</p>
+    <p class="app-footer">Eyes = velocity</p>
   </div>
 
   <!-- S10: APPLITOOLS — STORYBOOK -->
   <div class="slide s-app2" data-index="11">
     <div class="slide-label">visual regression — Storybook</div>
-    <h2>כל קומפוננטה — אוטומטית 🎨</h2>
+    <h2>בדיקת קומפוננטות אוטומטית 🎨</h2>
     <div class="app-two-col">
       <div class="app-col-text">
         <div class="app-bullet">📸 Eyes מצלם כל Storybook story</div>
-        <div class="app-bullet">🔍 משווה אוטומטית לבסיס ידוע (baseline)</div>
-        <div class="app-bullet">⚠️ הבדל ויזואלי = PR check אדום</div>
-        <div class="app-bullet">✅ Approve ב-Eyes Dashboard = ה-PR עובר</div>
-        <div class="app-bullet">🤖 עובד גם על PRs מ-AI — בלי reviewer אנושי לכל שינוי</div>
+        <div class="app-bullet">🔍 משווה אוטומטית לריצות קודמות (baseline)</div>
       </div>
-      <img src="/applitools-diff.png" alt="Applitools Eyes dashboard — side-by-side diff" style="max-height:42vh;max-width:100%;border-radius:6px;border:1px solid #333;object-fit:contain">
+      <img src="./applitools-diff.png" alt="Applitools Eyes dashboard — side-by-side diff" style="max-height:42vh;max-width:100%;border-radius:6px;border:1px solid #333;object-fit:contain">
     </div>
     <div class="app-chip">npx @applitools/eyes-storybook@latest</div>
   </div>
@@ -470,8 +487,8 @@
   <!-- S11: APPLITOOLS — PLAYWRIGHT -->
   <div class="slide s-app3" data-index="12">
     <div class="slide-label">visual regression — E2E</div>
-    <h2>כל flow — E2E 🧪</h2>
-    <img src="/ci-diagram.png" alt="CI pipeline diagram" style="max-height:38vh;max-width:100%;border-radius:6px;object-fit:contain;margin-bottom:4px">
+    <h2>תהליך הבדיקות (בפרונט) 🧪</h2>
+    <img src="./ci-diagram.png" alt="CI pipeline diagram" style="max-height:38vh;max-width:100%;border-radius:6px;object-fit:contain;margin-bottom:4px">
     <pre class="code-block"><code><span class="fn">test</span>(<span class="str">`Gaps Page Should Look Good`</span>, <span class="kw">async</span> ({ page, eyes }) => {
   <span class="kw">await</span> page.<span class="fn">goto</span>(<span class="str">'/gaps'</span>)
   <span class="kw">await</span> eyes.<span class="fn">check</span>(<span class="str">'gaps page'</span>)
@@ -509,7 +526,7 @@
       <div class="res-chip"><span>GitHub →</span> hasadna/open-bus-map-search</div>
       <div class="res-chip"><span>Gitpod →</span> gitpod.io/#github.com/hasadna/open-bus-map-search</div>
       <div class="res-chip"><span>API →</span> open-bus-stride-api.hasadna.org.il/docs</div>
-      <div class="res-chip"><span>Discord →</span> hasadna</div>
+      <div class="res-chip"><span>Slack →</span> hasadna</div>
     </div>
   </div>
 
