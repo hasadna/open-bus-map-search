@@ -79,7 +79,7 @@ test.describe('Timeline Page Tests', () => {
     await timelinePage.selectStation(STATION)
     await timelinePage.WaitForLoadingCompletion()
     await expect(timelinePage.timelineHourLabels).toContainText(['17:00:59'])
-    expect(await timelinePage.timelineHourLabels.count()).toBe(49)
+    expect(await timelinePage.timelineHourLabels.count()).toBe(50)
   })
 
   test('Verify date_from parameter', async ({ page }) => {

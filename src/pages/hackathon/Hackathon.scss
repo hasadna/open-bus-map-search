@@ -1,0 +1,6 @@
+// Hackathon page styles. Most styling is via styled-components in Hackathon.tsx.
+// This file exists for global tweaks that need to escape the styled-components scope.
+
+[dir='rtl'] .hackathon-cta-icon {
+  transform: scaleX(-1);
+}

@@ -1,6 +1,14 @@
+import { execSync } from 'child_process'
 import { EyesFixture } from '@applitools/eyes-playwright/fixture'
 import { defineConfig, devices } from '@playwright/test'
-import username from 'git-username'
+
+const gitUser = () => {
+  try {
+    return execSync('git config user.name', { encoding: 'utf-8' }).trim()
+  } catch {
+    return 'unknown'
+  }
+}
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -37,7 +45,7 @@ export default defineConfig<EyesFixture>({
       isDisabled: !process.env.APPLITOOLS_API_KEY,
       failTestsOnDiff: false,
       batch: {
-        name: process.env.APPLITOOLS_BATCH_NAME ?? `Visual Tests - ${username()}`,
+        name: process.env.APPLITOOLS_BATCH_NAME ?? `Visual Tests - ${gitUser()}`,
         id: process.env.APPLITOOLS_BATCH_ID,
       },
       browsersInfo: [
@@ -46,7 +54,6 @@ export default defineConfig<EyesFixture>({
         { chromeEmulationInfo: { deviceName: 'Galaxy S23' } },
         { iosDeviceInfo: { deviceName: 'iPhone 16' } },
       ],
-      parentBranchName: 'main',
     },
   },
   expect: {
