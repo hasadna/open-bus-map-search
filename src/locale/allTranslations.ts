@@ -15,37 +15,16 @@ export const getPathWithoutLang = (pathname: string): string => {
   return rest ? `/${rest}` : '/'
 }
 
-// The 'language' localStorage key is also managed by useLocalStorage (usehooks-ts) in
-// ThemeContext, which stores values JSON-encoded (e.g. `"he"`). Read/write it in the same
-// format here so the useLocalStorage reader doesn't throw "is not valid JSON" on a raw value.
-const getStoredLang = (): string | null => {
-  const raw = localStorage.getItem('language')
-  if (raw == null) return null
-  try {
-    const parsed = JSON.parse(raw)
-    return typeof parsed === 'string' ? parsed : null
-  } catch {
-    // Legacy raw value written before this fix — migrate it to JSON so the
-    // useLocalStorage reader in ThemeContext doesn't choke on it.
-    setStoredLang(raw)
-    return raw
-  }
-}
-
-const setStoredLang = (lang: string): void => {
-  localStorage.setItem('language', JSON.stringify(lang))
-}
-
 // Get saved language from URL or localStorage, default to 'he' if not found
 export const getLang = (): string => {
   const parts = window.location.pathname.split('/').filter(Boolean)
   const langPart = parts.find((part) => SUPPORTED_LANGUAGES.includes(part))
   if (langPart) {
-    setStoredLang(langPart)
+    localStorage.setItem('language', langPart)
     return langPart
   }
   return (
-    getStoredLang() ||
+    localStorage.getItem('language') ||
     SUPPORTED_LANGUAGES.find((l) => new Intl.Locale(navigator.language).language === l) ||
     'he'
   )
