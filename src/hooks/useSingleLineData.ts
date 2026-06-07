@@ -2,7 +2,8 @@ import { useQuery } from '@tanstack/react-query'
 import { uniqBy } from 'es-toolkit/compat'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { SIRI_API } from 'src/api/apiConfig'
-import { getRoutesAsync, getRoutesByLineRef, getStopsForRouteAsync } from 'src/api/gtfsService'
+import { getRoutesByLineRef, getStopsForRouteAsync } from 'src/api/gtfsService'
+import { getServiceDayRoutes } from 'src/api/serviceDayRoutesService'
 import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone } from 'src/dayjs'
 import { BusRoute } from 'src/model/busRoute'
 import { type Point, toPoint } from 'src/pages/components/map-related/map-types'
@@ -11,6 +12,7 @@ import {
   formatServiceDayTime,
   normalizeStartTimeToken,
   parseStartTimeToken,
+  serviceDayBounds,
   serviceDayTokenToDisplay,
 } from 'src/pages/components/utils/startTimeUtils'
 
@@ -74,9 +76,10 @@ export const useSingleLineData = ({
     }
 
     const controller = new AbortController()
-    const time = dayjs.tz(date, ISRAEL_TIMEZONE)
 
-    getRoutesAsync(time, time, operatorId, lineNumber, controller.signal)
+    // Service-day aware: includes the next calendar day's late-night routes
+    // (00:00–04:00) that belong to this service day, matching the gaps page.
+    getServiceDayRoutes(dayjs.tz(date, ISRAEL_TIMEZONE), operatorId, lineNumber, controller.signal)
       .then((routes) => {
         setRoutes(routes)
         setError(undefined)
@@ -99,12 +102,8 @@ export const useSingleLineData = ({
   }, [routes, routeKey])
 
   const [serviceDayStart, serviceDayEnd] = useMemo(() => {
-    const serviceDayStart = dayjs.tz(date, ISRAEL_TIMEZONE).startOf('day')
-    // Service window: 00:00 of the selected day through 04:00 the next day.
-    // Built as a wall-clock 04:00 (not +28h) so it stays at 04:00 across DST
-    // transitions — +28h would drift to 03:00/05:00 on the fall-back/spring days.
-    const serviceDayEnd = serviceDayStart.add(1, 'day').startOf('day').add(4, 'hours')
-    return [serviceDayStart, serviceDayEnd]
+    const { start, end } = serviceDayBounds(date)
+    return [start, end]
   }, [date])
 
   const validVehicleNumber = useMemo(() => {
@@ -128,12 +127,9 @@ export const useSingleLineData = ({
 
   // Fetch departure list for the dropdown, grouping double trips into one entry
   useEffect(() => {
-    // Clear the previous day's ride mapping synchronously (before the async
-    // refetch) so the pings effect below can't fire with stale, other-date
-    // siri_ride ids while a ride-time token is still selected across a date change.
-    setOptions([])
-    setRideIdsByToken(new Map())
     if (!selectedRoute?.lineRef && !validVehicleNumber) {
+      setOptions([])
+      setRideIdsByToken(new Map())
       return
     }
     const controller = new AbortController()

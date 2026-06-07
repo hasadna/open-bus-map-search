@@ -274,10 +274,10 @@ test.describe('Record HAR files', () => {
 
   // ---- interlink.har ------------------------------------------------------
   // Covers the gaps -> single-line interlink for a line with POST-MIDNIGHT service
-  // (Dan line 1, Yavne, operator_ref=5, line_ref=2296 on 2024-02-12). This line has
-  // actual rides at 00:15/00:35/00:55 the next calendar day — i.e. extended-hour
-  // tokens 24:15/24:35/24:55 — with vehicle locations, so the destination page can
-  // surface and select them. Records BOTH pages in one context:
+  // (Egged line 402, operator_ref=3, line_ref=33267 — the '...הורדה...' direction —
+  // on 2024-02-12). This 24/7 line has actual rides just past midnight the next
+  // calendar day (extended-hour token 24:30) with vehicle locations, so the
+  // destination page can surface and select them. Records BOTH pages in one context:
   //   * /gaps:            rides_execution for the route (the clickable post-midnight cells)
   //   * /single-line-map: gtfs_routes + siri_rides + siri_vehicle_locations + planned stops
   test('record interlink.har', async ({ page }) => {
@@ -301,6 +301,14 @@ test.describe('Record HAR files', () => {
     await page.getByRole('option', { name: /הורדה/ }).first().click()
     await gapsLoaded
     await page.waitForLoadState('networkidle')
+
+    // CRITICAL: settle all gaps-side bodies BEFORE navigating to single-line below.
+    // The final settleResponseBodies() runs only at test end — after this navigation —
+    // and any gaps body still streaming when we leave the page is dropped from the HAR
+    // (recorded empty, with no status:-1 to flag it). That empties the rides_execution
+    // payload, so the replayed gaps table has no post-midnight cells. Settling here
+    // forces rides_execution (and the route lists) to fully download first.
+    await settleResponseBodies()
 
     // -- single-line side: same route, then select the post-midnight (24:30) ride --
     await goToPage(page, '/single-line-map')

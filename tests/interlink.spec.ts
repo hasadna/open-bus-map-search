@@ -13,7 +13,7 @@ import { expect, harOptions, setupTest, test, visitPage } from './utils'
  *
  * Recorded by the `interlink.har` block in recordHAR.spec.ts. If the recording
  * selects a different 402 variant or the post-midnight times shift, update
- * PM_DISPLAY / PM_TOKEN below to match.
+ * PM_DISPLAY / PM_TOKEN_URL below to match.
  */
 
 const OPERATOR = 'אגד'

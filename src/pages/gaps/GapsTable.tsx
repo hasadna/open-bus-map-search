@@ -14,10 +14,11 @@ import React, { memo, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
 import { Gap } from 'src/api/gapsService'
-import dayjs, { ISRAEL_TIMEZONE } from 'src/dayjs'
+import dayjs from 'src/dayjs'
 import {
   formatServiceDayTime,
   formatStartTimeForQuery,
+  serviceDayBounds,
 } from 'src/pages/components/utils/startTimeUtils'
 import Widget from 'src/shared/Widget'
 import DisplayGapsPercentage from '../components/DisplayGapsPercentage'
@@ -91,7 +92,7 @@ const GapsTable: React.FC<GapsTableProps> = ({
   onStartTimeClick,
 }) => {
   const { t } = useTranslation()
-  const serviceDayStart = dayjs.tz(date, ISRAEL_TIMEZONE).startOf('day')
+  const { start: serviceDayStart } = serviceDayBounds(date)
   const [onlyGapped, setOnlyGapped] = useState(initOnlyGapped)
 
   const filteredGaps: Gap[] = useMemo(() => {
