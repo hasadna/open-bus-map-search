@@ -125,7 +125,6 @@ const SingleLineMapPage = () => {
             <ToggleButtonGroup
               value={type}
               color="primary"
-              dir="rtl"
               onChange={handleTypeChange}
               sx={{ height: 56 }}
               exclusive
