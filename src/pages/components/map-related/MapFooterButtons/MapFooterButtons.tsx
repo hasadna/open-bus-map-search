@@ -26,13 +26,13 @@ function MapFooterButtons({
     <Box
       dir={i18n.dir()}
       sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1.5 }}>
-      <Tooltip title={t('map_footer_previous_stop')}>
+      <Tooltip title={t('map_footer_previous_location')}>
         {/* span wrapper lets the Tooltip work while the button is disabled */}
         <span>
           <IconButton
             color="primary"
             size="small"
-            aria-label={t('map_footer_previous_stop')}
+            aria-label={t('map_footer_previous_location')}
             disabled={!prevEnable}
             onClick={() => navigateMarkers(prevStep)}>
             <Remove />
@@ -42,12 +42,12 @@ function MapFooterButtons({
       <Typography variant="body2" color="text.secondary">
         {currentIndex + 1} / {markerIds.length}
       </Typography>
-      <Tooltip title={t('map_footer_next_stop')}>
+      <Tooltip title={t('map_footer_next_location')}>
         <span>
           <IconButton
             color="primary"
             size="small"
-            aria-label={t('map_footer_next_stop')}
+            aria-label={t('map_footer_next_location')}
             disabled={!nextEnable}
             onClick={() => navigateMarkers(nextStep)}>
             <Add />
