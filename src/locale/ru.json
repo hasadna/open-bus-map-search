@@ -24,6 +24,8 @@
   "singleline_map_page_description": "Отображение автобусного маршрута на карте по заданному автобусному оператору, номеру транспортного средства, номеру маршрута, маршруту, дате и времени",
   "singleline_map_page_route": "По маршруту",
   "singleline_map_page_vehicle_id": "По ID транспортного средства",
+  "map_footer_previous_stop": "Предыдущая остановка",
+  "map_footer_next_stop": "Следующая остановка",
   "open_menu_description": "Отображает различные опции и параметры, доступные в приложении",
   "choose_datetime": "Дата и время",
   "choose_date": "Дата",

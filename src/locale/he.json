@@ -24,6 +24,8 @@
   "singleline_map_page_description": "תצוגה של מסלול קו על מפה ע\"פ נתוני חברת אוטובוסים, מספר רכב, קו, מסלול, תאריך ושעה",
   "singleline_map_page_route": "לפי מסלול",
   "singleline_map_page_vehicle_id": "לפי מספר רכב",
+  "map_footer_previous_stop": "התחנה הקודמת",
+  "map_footer_next_stop": "התחנה הבאה",
   "open_menu_description": "תצוגה של שלל אפשרויות ופרמטרים שונים הניתנים לביצוע באפליקצייה",
   "choose_datetime": "תאריך ושעה",
   "choose_date": "תאריך",

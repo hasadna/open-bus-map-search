@@ -5,6 +5,8 @@
 
 .bus-tooltip {
   height: 22rem;
+  display: flex;
+  flex-direction: column;
 
   .loading {
     display: flex;
@@ -12,7 +14,7 @@
   }
 
   > .header {
-    max-height: 30%;
+    flex: 0 0 auto;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -25,7 +27,11 @@
   }
 
   > .content {
-    max-height: 70%;
+    flex: 1 1 auto;
+
+    // min-height:0 lets the flex item shrink below its content size so the
+    // footer below it stays inside the popup and this area scrolls instead.
+    min-height: 0;
     overflow-y: auto;
     padding-left: 1rem;
     margin-bottom: 0.75rem;
