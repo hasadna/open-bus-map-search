@@ -18,7 +18,8 @@ import { expect, harOptions, setupTest, test, visitPage } from './utils'
 
 const OPERATOR = 'אגד'
 const LINE = '402'
-const ROUTE = /הורדה/ // 402 direction Ayalon->Jerusalem (line_ref 33267); "הורדה" is unique to it
+const ROUTE_FILTER = 'הורדה' // 402 direction Ayalon->Jerusalem (line_ref 33267); unique to it
+const ROUTE = new RegExp(ROUTE_FILTER)
 const SERVICE_DAY = '2024-02-12'
 const PM_DISPLAY = '00:30' // wall-clock time shown in the gaps cell
 const PM_TOKEN_URL = '24-30' // extended-hour token carried in the share URL (dash form)
@@ -30,7 +31,7 @@ async function selectRoute(page: Page) {
   await page.getByRole('textbox', { name: 'מספר קו' }).fill(LINE)
   // Type-to-filter the route Autocomplete so the target option renders even when
   // the line has many variants (MUI virtualizes long option lists).
-  await page.getByLabel(/בחירת מסלול נסיעה/).fill('הורדה')
+  await page.getByLabel(/בחירת מסלול נסיעה/).fill(ROUTE_FILTER)
   await page.getByRole('option', { name: ROUTE }).first().click()
 }
 

@@ -127,9 +127,12 @@ export const useSingleLineData = ({
 
   // Fetch departure list for the dropdown, grouping double trips into one entry
   useEffect(() => {
+    // Clear the previous day's ride mapping synchronously (before the async
+    // refetch) so the pings effect below can't fire with stale, other-date
+    // siri_ride ids while a ride-time token is still selected across a date change.
+    setOptions([])
+    setRideIdsByToken(new Map())
     if (!selectedRoute?.lineRef && !validVehicleNumber) {
-      setOptions([])
-      setRideIdsByToken(new Map())
       return
     }
     const controller = new AbortController()
