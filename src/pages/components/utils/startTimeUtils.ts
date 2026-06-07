@@ -23,6 +23,24 @@ export function formatServiceDayTime(instant: dayjs.Dayjs, serviceDayStart: dayj
   return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`
 }
 
+/** Render a service-day token "HH:mm" (hour may be >=24) for HUMANS.
+ *  A past-midnight departure like "24:10" becomes the wall-clock "00:10" with
+ *  nextDay=true, so the UI can show the real clock time plus a "next night"
+ *  marker instead of the confusing extended hour. The extended token is still
+ *  what gets stored in the URL / passed around — this is display-only. */
+export function serviceDayTokenToDisplay(token: string): { time: string; nextDay: boolean } {
+  const [hourPart, minutePart] = token.split(':')
+  const hour = Number(hourPart)
+  const minute = Number(minutePart)
+  if (Number.isNaN(hour) || Number.isNaN(minute)) return { time: token, nextDay: false }
+  const nextDay = hour >= 24
+  const wallHour = hour % 24
+  return {
+    time: `${wallHour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`,
+    nextDay,
+  }
+}
+
 export function normalizeScheduledTime(raw?: string): string | undefined {
   if (!raw) return undefined
 

@@ -272,6 +272,67 @@ test.describe('Record HAR files', () => {
     await settleResponseBodies()
   })
 
+  // ---- interlink.har ------------------------------------------------------
+  // Covers the gaps -> single-line interlink for a line with POST-MIDNIGHT service
+  // (Dan line 1, Yavne, operator_ref=5, line_ref=2296 on 2024-02-12). This line has
+  // actual rides at 00:15/00:35/00:55 the next calendar day — i.e. extended-hour
+  // tokens 24:15/24:35/24:55 — with vehicle locations, so the destination page can
+  // surface and select them. Records BOTH pages in one context:
+  //   * /gaps:            rides_execution for the route (the clickable post-midnight cells)
+  //   * /single-line-map: gtfs_routes + siri_rides + siri_vehicle_locations + planned stops
+  test('record interlink.har', async ({ page }) => {
+    await setupRecording(page, 'tests/HAR/interlink.har')
+    const settleResponseBodies = trackResponseBodies(page)
+
+    // -- gaps side --
+    await goToPage(page, '/')
+    await goToPage(page, '/gaps')
+    await page.getByLabel('חברה מפעילה').click()
+    await page.getByRole('option', { name: 'אגד', exact: true }).click()
+    await page.getByRole('textbox', { name: 'מספר קו' }).fill('402')
+    await page.waitForLoadState('networkidle')
+    // Type-to-filter the route Autocomplete (defeats option virtualization on lines
+    // with many variants), then pick the line_ref 33267 direction ('...הורדה...').
+    await page.getByLabel(/בחירת מסלול נסיעה/).fill('הורדה')
+    await page.waitForLoadState('networkidle')
+    // Wait for the gaps response to finish before navigating away, so it is not
+    // aborted at teardown and recorded as a status:-1 empty entry.
+    const gapsLoaded = page.waitForResponse((r) => r.url().includes('/rides_execution/list'))
+    await page.getByRole('option', { name: /הורדה/ }).first().click()
+    await gapsLoaded
+    await page.waitForLoadState('networkidle')
+
+    // -- single-line side: same route, then select the post-midnight (24:30) ride --
+    await goToPage(page, '/single-line-map')
+    await page.getByLabel('חברה מפעילה').click()
+    await page.getByRole('option', { name: 'אגד', exact: true }).click()
+    await page.getByRole('textbox', { name: 'מספר קו' }).fill('402')
+    await page.waitForLoadState('networkidle')
+    await page.getByLabel(/בחירת מסלול נסיעה/).fill('הורדה')
+    await page.waitForLoadState('networkidle')
+    await page.getByRole('option', { name: /הורדה/ }).first().click()
+    await page.waitForLoadState('networkidle')
+    const startTime = page.getByLabel('בחירת שעת התחלה')
+    if ((await startTime.count()) > 0) {
+      // Type-to-filter the start-time Autocomplete too (~100 options on this line).
+      await startTime.fill('24:30')
+      await page.waitForLoadState('networkidle')
+      const pm = page.getByRole('option', { name: /24:30/ }).first()
+      if ((await pm.count()) > 0) {
+        const locations = page
+          .waitForResponse((r) => r.url().includes('/siri_vehicle_locations/list'))
+          .then((r) => r.body())
+        await pm.click()
+        await locations
+      } else {
+        await page.keyboard.press('Escape')
+      }
+    }
+
+    await page.waitForLoadState('networkidle')
+    await settleResponseBodies()
+  })
+
   // ---- missing.har --------------------------------------------------------
   // Single test records ALL needed entries for the gaps page
   test('record missing.har', async ({ page }) => {

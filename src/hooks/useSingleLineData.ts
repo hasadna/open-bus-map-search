@@ -11,6 +11,7 @@ import {
   formatServiceDayTime,
   normalizeStartTimeToken,
   parseStartTimeToken,
+  serviceDayTokenToDisplay,
 } from 'src/pages/components/utils/startTimeUtils'
 
 const LIGHT_TRAIN_OPERATORS = new Set(['21', '22'])
@@ -166,17 +167,17 @@ export const useSingleLineData = ({
         const idMap = new Map<string, number[]>()
         const opts: { value: string; label: string }[] = []
 
-        // Guard against the midnight SIRI batch: at ~00:00 the backend mass-creates phantom
-        // siri_ride records for all tracked vehicles. Real double/triple trips share a
-        // scheduled time across 2–3 vehicles at most, so >4 vehicles at one time is a batch
-        // artifact — skip it. (The window now starts at 00:00, so this is the only such guard.)
         byTime.forEach((group, key) => {
-          if (group.length > 4) return
           idMap.set(
             key,
             group.map((g) => g.id),
           )
-          const scheduledTime = validVehicleNumber ? key.split('|')[0] : key
+          const token = validVehicleNumber ? key.split('|')[0] : key
+          // Show the wall-clock time (00:10), not the extended-hour token (24:10),
+          // and flag past-midnight departures with a moon so the next-night rides
+          // are obvious. The extended token stays the option `value` for the URL.
+          const { time: displayTime, nextDay } = serviceDayTokenToDisplay(token)
+          const scheduledTime = nextDay ? `🌙 ${displayTime}` : displayTime
           const routeLongName = group[0].ride.gtfsRouteRouteLongName
           const [start, end] = routeLongName ? routeStartEnd(routeLongName) : []
           const routePart = routeLongName

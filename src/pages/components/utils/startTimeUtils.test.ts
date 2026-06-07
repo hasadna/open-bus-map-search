@@ -1,5 +1,10 @@
 import dayjs, { ISRAEL_TIMEZONE } from 'src/dayjs'
-import { formatServiceDayTime, normalizeScheduledTime, parseStartTimeToken } from './startTimeUtils'
+import {
+  formatServiceDayTime,
+  normalizeScheduledTime,
+  parseStartTimeToken,
+  serviceDayTokenToDisplay,
+} from './startTimeUtils'
 
 /**
  * Regression tests for the service-day token logic used by the single-line / gaps
@@ -89,6 +94,37 @@ describe('normalizeScheduledTime', () => {
     [undefined],
   ])('rejects %s', (raw) => {
     expect(normalizeScheduledTime(raw)).toBeUndefined()
+  })
+})
+
+describe('serviceDayTokenToDisplay', () => {
+  it.each([
+    // own-day times pass through unchanged, not flagged
+    ['06:30', '06:30', false],
+    ['23:45', '23:45', false],
+    ['00:00', '00:00', false],
+    // extended hours fold back to the wall clock and are flagged next-day
+    ['24:00', '00:00', true],
+    ['24:15', '00:15', true],
+    ['25:30', '01:30', true],
+    ['27:30', '03:30', true],
+    ['28:00', '04:00', true],
+  ])('%s -> %s (nextDay=%s)', (token, time, nextDay) => {
+    expect(serviceDayTokenToDisplay(token)).toEqual({ time, nextDay })
+  })
+
+  it('zero-pads the folded hour', () => {
+    expect(serviceDayTokenToDisplay('24:05')).toEqual({ time: '00:05', nextDay: true })
+  })
+
+  it('returns the input unchanged for an unparseable token', () => {
+    expect(serviceDayTokenToDisplay('abc')).toEqual({ time: 'abc', nextDay: false })
+  })
+
+  it('folds the wall-clock time that formatServiceDayTime produced for a past-midnight ride', () => {
+    const token = formatServiceDayTime(il('2024-02-13T00:10'), serviceDayStart('2024-02-12'))
+    expect(token).toBe('24:10')
+    expect(serviceDayTokenToDisplay(token)).toEqual({ time: '00:10', nextDay: true })
   })
 })
 
