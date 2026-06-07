@@ -1,9 +1,6 @@
-import createCache from '@emotion/cache'
-import { CacheProvider } from '@emotion/react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import ReactGA from 'react-ga4'
 import { useLocation, useSearchParams } from 'react-router'
-import rtlPlugin from 'stylis-plugin-rtl'
 import { useSessionStorage } from 'usehooks-ts'
 import { toIsraelTimezone } from 'src/dayjs'
 import { MainLayout } from '../layout'
@@ -14,12 +11,6 @@ import {
   GlobalSearchState,
 } from '../model/globalState'
 import { ExtraShareParamsContext, InitialUrlParamsContext } from '../model/routeContext'
-
-// Create rtl cache
-const cacheRtl = createCache({
-  key: 'muirtl',
-  stylisPlugins: [rtlPlugin],
-})
 
 export const MainRoute = () => {
   const { pathname, search: locationParams } = useLocation()
@@ -107,11 +98,9 @@ export const MainRoute = () => {
       <ExtraShareParamsContext.Provider
         value={{ params: extraShareParams, setParams: setExtraShareParamsStable }}>
         <GlobalSearchContext.Provider value={{ search, setSearch: safeSetSearch }}>
-          <CacheProvider value={cacheRtl}>
-            <ThemeProvider>
-              <MainLayout />
-            </ThemeProvider>
-          </CacheProvider>
+          <ThemeProvider>
+            <MainLayout />
+          </ThemeProvider>
         </GlobalSearchContext.Provider>
       </ExtraShareParamsContext.Provider>
     </InitialUrlParamsContext.Provider>

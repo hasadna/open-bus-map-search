@@ -122,9 +122,12 @@ export const useSingleLineData = ({
 
   // Fetch departure list for the dropdown, grouping double trips into one entry
   useEffect(() => {
+    // Clear the previous day's ride mapping synchronously (before the async
+    // refetch) so the pings effect below can't fire with stale, other-date
+    // siri_ride ids while a ride-time token is still selected across a date change.
+    setOptions([])
+    setRideIdsByToken(new Map())
     if (!selectedRoute?.lineRef && !validVehicleNumber) {
-      setOptions([])
-      setRideIdsByToken(new Map())
       return
     }
     const controller = new AbortController()
@@ -247,7 +250,17 @@ export const useSingleLineData = ({
       if (!routeIds || routeIds.length === 0) return []
       return await getStopsForRouteAsync(routeIds, startTimeTimestamp)
     },
-    queryKey: ['stops', selectedRoute?.lineRef, today.valueOf(), parsedStartTime?.scheduledTime],
+    // Key on the resolved route ids (not the date-stable lineRef): during a date
+    // change the previous date's route is briefly still selected, and fetching
+    // stops for it can yield an empty list. Keying on routeIds makes the query
+    // refetch once selectedRoute corrects to the new date's route, instead of
+    // caching that stale empty result under an unchanged key.
+    queryKey: [
+      'stops',
+      selectedRoute?.routeIds?.join(','),
+      today.valueOf(),
+      parsedStartTime?.scheduledTime,
+    ],
     enabled: !!(selectedRoute?.routeIds?.length || parsedStartTime?.lineRef),
   })
 
