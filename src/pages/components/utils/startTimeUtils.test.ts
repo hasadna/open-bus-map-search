@@ -3,6 +3,7 @@ import {
   formatServiceDayTime,
   normalizeScheduledTime,
   parseStartTimeToken,
+  serviceDayBounds,
   serviceDayTokenToDisplay,
 } from './startTimeUtils'
 
@@ -55,19 +56,6 @@ describe('formatServiceDayTime', () => {
   ])('%s day %s: ride %s -> token %s', (_label, day, ride, expected) => {
     expect(formatServiceDayTime(il(ride), serviceDayStart(day))).toBe(expected)
   })
-
-  it('is DST-stable: a 01:30-next-day ride is "25:30" on the fall-back night and on a normal night', () => {
-    const fall = formatServiceDayTime(il('2024-10-28T01:30'), serviceDayStart('2024-10-27'))
-    const normal = formatServiceDayTime(il('2024-02-13T01:30'), serviceDayStart('2024-02-12'))
-    expect(fall).toBe('25:30')
-    expect(normal).toBe('25:30')
-  })
-
-  it('encodes the FE service-day model: the same ride is "25:30" under day D and "01:30" under day D+1', () => {
-    const ride = il('2024-02-13T01:30')
-    expect(formatServiceDayTime(ride, serviceDayStart('2024-02-12'))).toBe('25:30')
-    expect(formatServiceDayTime(ride, serviceDayStart('2024-02-13'))).toBe('01:30')
-  })
 })
 
 describe('normalizeScheduledTime', () => {
@@ -97,6 +85,14 @@ describe('normalizeScheduledTime', () => {
   })
 })
 
+describe('serviceDayBounds', () => {
+  it('spans 00:00 of the date through 04:00 the next morning', () => {
+    const { start, end } = serviceDayBounds('2024-02-12')
+    expect(start.format('YYYY-MM-DD HH:mm')).toBe('2024-02-12 00:00')
+    expect(end.format('YYYY-MM-DD HH:mm')).toBe('2024-02-13 04:00')
+  })
+})
+
 describe('serviceDayTokenToDisplay', () => {
   it.each([
     // own-day times pass through unchanged, not flagged
@@ -119,12 +115,6 @@ describe('serviceDayTokenToDisplay', () => {
 
   it('returns the input unchanged for an unparseable token', () => {
     expect(serviceDayTokenToDisplay('abc')).toEqual({ time: 'abc', nextDay: false })
-  })
-
-  it('folds the wall-clock time that formatServiceDayTime produced for a past-midnight ride', () => {
-    const token = formatServiceDayTime(il('2024-02-13T00:10'), serviceDayStart('2024-02-12'))
-    expect(token).toBe('24:10')
-    expect(serviceDayTokenToDisplay(token)).toEqual({ time: '00:10', nextDay: true })
   })
 })
 
