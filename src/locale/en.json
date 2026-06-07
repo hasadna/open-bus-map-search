@@ -725,5 +725,17 @@
         "a": "Yes. Open the repo in Gitpod for a browser-based VS Code environment with everything pre-installed: https://gitpod.io/#https://github.com/hasadna/open-bus-map-search"
       }
     }
+  },
+  "dataResearch": {
+    "title": "Research",
+    "intro": "If you have an interesting idea about why things are happening here, talk to us on Slack!",
+    "global_issues_title": "ETL / GPS / other global issues",
+    "what_in_graph": "What does the graph show?",
+    "actual_rides_title": "Number of actual rides",
+    "actual_rides_description": "How many rides were recorded as having taken place on each day/hour in the time range you selected. (rides = siri rides)",
+    "planned_rides_title": "Number of planned rides",
+    "planned_rides_description": "How many rides were supposed to take place on each day/hour in the time range you selected. (rides = rides planned in gtfs)",
+    "missed_rides_title": "Number of rides that didn't take place",
+    "missed_rides_description": "How many rides were supposed to take place on each day/hour in the time range you selected but didn't. (the difference between the two previous graphs)"
   }
 }
