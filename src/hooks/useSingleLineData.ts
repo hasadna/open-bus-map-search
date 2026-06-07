@@ -252,9 +252,14 @@ export const useSingleLineData = ({
       if (!routeIds || routeIds.length === 0) return []
       return await getStopsForRouteAsync(routeIds, startTimeTimestamp)
     },
+    // Key on the resolved route ids (not the date-stable lineRef): during a date
+    // change the previous date's route is briefly still selected, and fetching
+    // stops for it can yield an empty list. Keying on routeIds makes the query
+    // refetch once selectedRoute corrects to the new date's route, instead of
+    // caching that stale empty result under an unchanged key.
     queryKey: [
       'stops',
-      selectedRoute?.lineRef,
+      selectedRoute?.routeIds?.join(','),
       serviceDayStart.valueOf(),
       parsedStartTime?.scheduledTime,
     ],
