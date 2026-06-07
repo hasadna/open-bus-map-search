@@ -86,6 +86,34 @@ Open [http://localhost:3000](http://localhost:3000).
 
 More: [Playwright CLI](https://playwright.dev/docs/test-cli)
 
+### Recording HAR fixtures
+
+E2E tests replay API responses from `tests/HAR/*.har`. Re-record when they go
+stale — the API responses change, or a page's fetch flow changes (endpoints,
+params, order, count).
+
+Delete the old HAR(s) first so dropped requests don't
+linger.
+
+Record all recorders:
+
+```bash
+RECORD_HAR=1 npx playwright test tests/recordHAR/ --workers=1 \
+  && npx prettier --ignore-path /dev/null --write 'tests/HAR/*.har'
+```
+
+Record a single recorder (spec and HAR share a name, e.g. `singleline`):
+
+```bash
+RECORD_HAR=1 npx playwright test tests/recordHAR/singleline.spec.ts \
+  && npx prettier --ignore-path /dev/null --write 'tests/HAR/singleline.har'
+```
+
+Recorders hit the real stride-api, so `--workers=1` (serial) is intentional. The
+prettier step must run after Playwright exits — the `.har` isn't flushed until
+the browser context closes — and `--ignore-path /dev/null` overrides the
+`.prettierignore` entry for `*.har`. Commit the updated `tests/HAR/` files.
+
 ## 📚 Resources
 
 - 🎨 [Figma design file](https://www.figma.com/file/Plw8Uuu6U96CcX5tJyRMoW/Public-Transportation-visual-informaiton)
