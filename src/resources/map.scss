@@ -54,28 +54,6 @@ main > div,
     }
   }
 
-  // Zoom sits at the inline-end corner, attribution at the inline-start corner
-  // (legend/expand sit opposite). Logical insets auto-flip for RTL.
-  .leaflet-left {
-    inset-inline: auto 0;
-  }
-
-  .leaflet-right {
-    inset-inline: 0 auto;
-  }
-
-  // The corner containers were moved to the opposite inline edge, so the edge
-  // gap must move with them (Leaflet hardcodes margin-left/right per corner).
-  .leaflet-left .leaflet-control {
-    margin-left: 0;
-    margin-inline-end: 10px;
-  }
-
-  .leaflet-right .leaflet-control {
-    margin-right: 0;
-    margin-inline-start: 10px;
-  }
-
   // Match the expand button's frame so both buttons read with equal weight.
   .leaflet-control-zoom.leaflet-bar {
     border: $button-border;
