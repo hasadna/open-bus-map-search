@@ -314,12 +314,13 @@ const Subtitle = styled.p`
 `
 
 const PostponementBanner = styled.div`
-  max-width: 640px;
-  padding: 12px 18px;
+  max-width: 680px;
+  padding: 16px 22px;
   border-radius: 10px;
   background: #fef3c7;
   border: 1.5px solid #fcd34d;
-  font-size: 15px;
+  font-size: clamp(17px, 2.4vw, 21px);
+  font-weight: 600;
   line-height: 1.6;
   color: #78350f;
   text-align: center;
