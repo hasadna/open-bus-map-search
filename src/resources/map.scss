@@ -1,3 +1,19 @@
+// Shared translucency for map overlay controls so they read consistently across
+// both themes. Informational surfaces (legend, attribution) are more see-through;
+// interactive buttons (zoom, expand) are more opaque for a clearer hit target.
+$control-bg: rgb(255 255 255 / 70%);
+$control-bg-dark: rgb(40 40 40 / 70%);
+$button-bg: rgb(255 255 255 / 90%);
+$button-bg-dark: rgb(40 40 40 / 90%);
+
+// Shared frame so the zoom bar and expand button read identically (Leaflet's
+// default heavy shadow + missing border otherwise make them look unequal).
+$button-shadow:
+  0 1px 3px rgb(0 0 0 / 8%),
+  0 6px 16px rgb(0 0 0 / 10%);
+$button-border: 1px solid rgb(0 0 0 / 25%);
+$button-border-dark: 1px solid rgb(255 255 255 / 25%);
+
 main,
 main > div,
 .map-container,
@@ -25,46 +41,95 @@ main > div,
     z-index: 2000;
     width: 2.6rem;
     height: 2.6rem;
-    background: rgb(255 255 255 / 50%);
-    border: 1px solid black;
-    box-shadow:
-      0 1px 3px rgb(0 0 0 / 8%),
-      0 6px 16px rgb(0 0 0 / 10%);
+    background: $button-bg;
+    border: $button-border;
+    box-shadow: $button-shadow;
 
     &:hover {
-      background: rgb(255 255 255 / 65%);
+      background: rgb(255 255 255 / 95%);
     }
 
     &:active {
-      background: rgb(255 255 255 / 75%);
+      background: rgb(255 255 255 / 100%);
     }
+  }
+
+  // Zoom sits at the inline-end corner, attribution at the inline-start corner
+  // (legend/expand sit opposite). Logical insets auto-flip for RTL.
+  .leaflet-left {
+    inset-inline: auto 0;
+  }
+
+  .leaflet-right {
+    inset-inline: 0 auto;
+  }
+
+  // The corner containers were moved to the opposite inline edge, so the edge
+  // gap must move with them (Leaflet hardcodes margin-left/right per corner).
+  .leaflet-left .leaflet-control {
+    margin-left: 0;
+    margin-inline-end: 10px;
+  }
+
+  .leaflet-right .leaflet-control {
+    margin-right: 0;
+    margin-inline-start: 10px;
+  }
+
+  // Match the expand button's frame so both buttons read with equal weight.
+  .leaflet-control-zoom.leaflet-bar {
+    border: $button-border;
+    box-shadow: $button-shadow;
+  }
+
+  .leaflet-control-zoom a {
+    background: $button-bg;
+
+    &:hover {
+      background: rgb(255 255 255 / 95%);
+    }
+  }
+
+  .leaflet-control-attribution {
+    background: $control-bg;
   }
 
   .map-index {
     position: absolute;
     top: 1em;
-    right: 1em;
+    inset-inline-start: 1em;
     z-index: 1000;
+
+    // Two-column table: icons in the start column, text in the end column.
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.5em 1em;
+    align-items: center;
     border: 2px solid black;
-    background-color: rgba($color: #fff, $alpha: 50%);
+    border-radius: 8px;
+    background-color: $control-bg;
     padding: 1em;
 
+    // display:contents promotes each item's cells into the parent grid so the
+    // icon and text columns line up across every row.
     &-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      display: contents;
 
+      // The icon is a composite (route-line behind a stop marker); give it a
+      // fixed box and center both parts so they overlap correctly.
       &-config {
-        display: flex;
+        justify-self: center;
         align-items: center;
         justify-content: center;
         position: relative;
-        margin-left: 1em;
+        width: 25px;
       }
 
       &-line {
         z-index: -1;
         position: absolute;
+        inset: 0;
+        margin: auto;
         width: 25px;
         height: 4px;
       }
@@ -79,8 +144,8 @@ main > div,
       }
 
       &-title {
-        width: 100px;
-        text-align: left;
+        justify-self: start;
+        text-align: start;
         color: black;
       }
     }
@@ -88,7 +153,67 @@ main > div,
 }
 
 .map-index.dark {
-  background-color: #303230;
+  background-color: $control-bg-dark;
+  border-color: #fff;
+
+  .map-index-item-title {
+    color: #fff;
+  }
+}
+
+// Leaflet's popup/controls render hardcoded-white. The .map-info wrapper gets a
+// `dark` class in dark mode, so theme every Leaflet sub-element + the expand
+// button under it (one reactive hook covers popup, zoom, attribution, button).
+.map-info.dark {
+  .leaflet-popup-content-wrapper,
+  .leaflet-popup-tip {
+    background: #1c1d1c;
+    color: #fff;
+  }
+
+  .leaflet-popup-close-button {
+    color: #fff;
+  }
+
+  .leaflet-popup-content-wrapper a {
+    color: #90caf9;
+  }
+
+  .leaflet-control-zoom.leaflet-bar {
+    border: $button-border-dark;
+  }
+
+  .leaflet-control-zoom a {
+    background: $button-bg-dark;
+    color: #fff;
+    border-color: #444;
+
+    &:hover {
+      background: rgb(40 40 40 / 100%);
+    }
+  }
+
+  .leaflet-control-attribution {
+    background: $control-bg-dark;
+    color: #ccc;
+
+    a {
+      color: #90caf9;
+    }
+  }
+
+  .expand-button {
+    background: $button-bg-dark;
+    border: $button-border-dark;
+
+    &:hover {
+      background: rgb(40 40 40 / 95%);
+    }
+
+    &:active {
+      background: rgb(40 40 40 / 100%);
+    }
+  }
 }
 
 pre {

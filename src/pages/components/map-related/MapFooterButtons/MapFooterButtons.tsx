@@ -39,7 +39,8 @@ function MapFooterButtons({
           </IconButton>
         </span>
       </Tooltip>
-      <Typography variant="body2" color="text.secondary">
+      {/* dir=ltr keeps the "3 / 5" counter reading left-to-right in RTL too */}
+      <Typography variant="body2" color="text.secondary" dir="ltr">
         {currentIndex + 1} / {markerIds.length}
       </Typography>
       <Tooltip title={t('map_footer_next_location')}>

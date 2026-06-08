@@ -1,12 +1,10 @@
-.bus-tooltip.hebrew {
-  direction: rtl;
-  text-align: right;
-}
-
 .bus-tooltip {
   height: 22rem;
   display: flex;
   flex-direction: column;
+
+  // direction comes from the dir attribute on the element; start = reading side
+  text-align: start;
 
   .loading {
     display: flex;
@@ -33,7 +31,7 @@
     // footer below it stays inside the popup and this area scrolls instead.
     min-height: 0;
     overflow-y: auto;
-    padding-left: 1rem;
+    padding-inline-start: 1rem;
     margin-bottom: 0.75rem;
   }
 

@@ -3,6 +3,7 @@ import { IconButton } from '@mui/material'
 import { useCallback, useRef, useState } from 'react'
 import { MapContainer } from 'react-leaflet'
 import { useConstrainedFloatingButton } from 'src/hooks/useConstrainedFloatingButton'
+import { useTheme } from 'src/layout/ThemeContext'
 import { MapProps } from './map-types'
 import type { Point } from './map-types'
 import { MapContent } from './MapContent'
@@ -19,6 +20,7 @@ export function MapWithLocationsAndPath({
 }: MapProps) {
   const [isExpanded, setIsExpanded] = useState<boolean>(false)
   const toggleExpanded = useCallback(() => setIsExpanded((expanded) => !expanded), [])
+  const { isDarkTheme } = useTheme()
 
   const mapContainerRef = useRef<HTMLDivElement>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
@@ -26,7 +28,9 @@ export function MapWithLocationsAndPath({
   useConstrainedFloatingButton(mapContainerRef, buttonRef, isExpanded)
 
   return (
-    <div ref={mapContainerRef} className={`map-info ${isExpanded ? 'expanded' : 'collapsed'}`}>
+    <div
+      ref={mapContainerRef}
+      className={`map-info ${isExpanded ? 'expanded' : 'collapsed'}${isDarkTheme ? ' dark' : ''}`}>
       <IconButton
         ref={buttonRef}
         color="primary"
