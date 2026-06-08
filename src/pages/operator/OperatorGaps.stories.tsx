@@ -11,9 +11,9 @@ const meta = {
       control: 'text',
       description: 'The operator id of the chart.',
     },
-    timestamp: {
+    date: {
       control: 'date',
-      description: 'The timestamp of the chart.',
+      description: 'The date of the chart.',
     },
     timeRange: {
       control: 'select',
@@ -43,7 +43,7 @@ export const Default: Story = {
   },
   args: {
     operatorId: '3',
-    timestamp: getPastDate().getTime(),
+    date: getPastDate(),
     timeRange: 'day',
   },
 }

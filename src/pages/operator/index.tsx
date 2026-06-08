@@ -1,5 +1,5 @@
 import { Grid, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
-import { useContext, useState } from 'react'
+import { useContext, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone } from 'src/dayjs'
@@ -24,7 +24,8 @@ const OperatorPage = () => {
   const [timeRange, setTimeRange] = useState<(typeof TIME_RANGES)[number]>('day')
 
   const dateDayjs = dayjs.tz(date, ISRAEL_TIMEZONE)
-  const timestamp = dateDayjs.valueOf()
+  // memoized so child fetch effects/queries don't re-run on every render
+  const operatorDate = useMemo(() => dayjs.tz(date, ISRAEL_TIMEZONE).toDate(), [date])
 
   const handleOperatorChange = (operatorId: string) => {
     setSearch((current) => ({ ...current, operatorId }))
@@ -76,7 +77,7 @@ const OperatorPage = () => {
           <Grid size={{ lg: 6, xs: 12 }}>
             <OperatorInfo operatorId={operatorId} />
             <Spacing />
-            <OperatorGaps operatorId={operatorId} timestamp={timestamp} timeRange={timeRange} />
+            <OperatorGaps operatorId={operatorId} date={operatorDate} timeRange={timeRange} />
           </Grid>
           <Grid size={{ lg: 6, xs: 12 }}>
             <ChartWrapper>
@@ -91,7 +92,7 @@ const OperatorPage = () => {
             </ChartWrapper>
           </Grid>
           <Grid size={{ xs: 12 }}>
-            <OperatorRoutes operatorId={operatorId} timestamp={timestamp} />
+            <OperatorRoutes operatorId={operatorId} date={operatorDate} />
           </Grid>
         </Grid>
       )}

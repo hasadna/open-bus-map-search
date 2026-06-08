@@ -10,17 +10,17 @@ import { InfoItem, InfoTable } from '../components/InfoTable'
 
 export const OperatorGaps = ({
   operatorId,
-  timestamp,
+  date,
   timeRange = 'day',
 }: {
   operatorId?: string
-  timestamp?: number
+  date?: Date
   timeRange?: 'day' | 'week' | 'month' | 'year'
 }) => {
   const { t, i18n } = useTranslation()
   const [groupByOperatorData, isLoading] = useGroupBy({
-    dateFrom: dayjs(timestamp).add(-1, timeRange).valueOf(),
-    dateTo: timestamp || dayjs().valueOf(),
+    dateFrom: dayjs(date).add(-1, timeRange).valueOf(),
+    dateTo: date?.valueOf() || dayjs().valueOf(),
     groupBy: 'operator_ref',
   })
 
@@ -37,7 +37,7 @@ export const OperatorGaps = ({
       { name: t('rides_missing'), value: missing, color: '#FF4040' },
       // { name: t('ride_extra'), value: 0, color: '#FFBB28' },
     ]
-  }, [operatorId, timestamp, groupByOperatorData, i18n.language])
+  }, [operatorId, date, groupByOperatorData, i18n.language])
 
   const prefersReducedMotion = useMemo(() => {
     return window?.matchMedia('(prefers-reduced-motion: reduce)').matches
