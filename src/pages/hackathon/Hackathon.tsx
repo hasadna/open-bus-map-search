@@ -66,14 +66,14 @@ const Hackathon = () => {
     <>
       {POSTPONED && (
         <>
-          <Rocket $dur={9} $delay={0} $size="2rem" aria-hidden="true">
-            🚀
+          <Rocket $dur={9} $delay={0} aria-hidden="true">
+            <RocketBody $size="2rem">🚀</RocketBody>
           </Rocket>
-          <Rocket $dur={13} $delay={4} $size="1.5rem" aria-hidden="true">
-            🚀
+          <Rocket $dur={13} $delay={4} aria-hidden="true">
+            <RocketBody $size="1.5rem">🚀</RocketBody>
           </Rocket>
-          <Rocket $dur={11} $delay={8} $size="1.8rem" aria-hidden="true">
-            🚀
+          <Rocket $dur={11} $delay={8} aria-hidden="true">
+            <RocketBody $size="1.8rem">🚀</RocketBody>
           </Rocket>
         </>
       )}
@@ -267,16 +267,33 @@ const rocketFlyby = keyframes`
   }
 `
 
-const Rocket = styled.div<{ $dur: number; $delay: number; $size: string }>`
+const rocketWobble = keyframes`
+  0%   { transform: translate(0, 0) rotate(0deg); }
+  25%  { transform: translate(1px, -1px) rotate(1.5deg); }
+  50%  { transform: translate(-1px, 1px) rotate(-1.5deg); }
+  75%  { transform: translate(1px, 1px) rotate(1deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+`
+
+const Rocket = styled.div<{ $dur: number; $delay: number }>`
   position: fixed;
   top: 0;
   left: 0;
-  font-size: ${({ $size }) => $size};
   line-height: 1;
   pointer-events: none;
   z-index: 0;
   will-change: transform, opacity;
   animation: ${rocketFlyby} ${({ $dur }) => $dur}s ease-in-out ${({ $delay }) => $delay}s infinite;
+`
+
+const RocketBody = styled.div<{ $size: string }>`
+  font-size: ${({ $size }) => $size};
+  line-height: 1;
+  animation: ${rocketWobble} 0.35s ease-in-out infinite;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
 `
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -313,6 +330,11 @@ const Subtitle = styled.p`
   max-width: 640px;
 `
 
+const bannerGlow = keyframes`
+  0%, 100% { box-shadow: 0 0 12px 2px rgba(252, 211, 77, 0.45); }
+  50%      { box-shadow: 0 0 26px 6px rgba(250, 204, 21, 0.85); }
+`
+
 const PostponementBanner = styled.div`
   max-width: 680px;
   padding: 16px 22px;
@@ -324,11 +346,17 @@ const PostponementBanner = styled.div`
   line-height: 1.6;
   color: #78350f;
   text-align: center;
+  animation: ${bannerGlow} 2.4s ease-in-out infinite;
 
   .dark & {
     background: #451a03;
     border-color: #92400e;
     color: #fde68a;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+    box-shadow: 0 0 18px 3px rgba(250, 204, 21, 0.6);
   }
 `
 
