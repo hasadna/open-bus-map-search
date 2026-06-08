@@ -37,19 +37,35 @@ const pad = (n: number) => String(n).padStart(2, '0')
 type AnimType = 'roll' | 'shake' | 'flip'
 
 const GLITCH_CHARS = '0123456789?!#%@*'
+const FLIPS = ['none', 'rotate(180deg)', 'scaleX(-1)', 'scaleY(-1)', 'rotate(90deg)']
 
 const randomChar = () => GLITCH_CHARS[Math.floor(Math.random() * GLITCH_CHARS.length)]
+const randomFlip = () => FLIPS[Math.floor(Math.random() * FLIPS.length)]
 const randomAnim = (): AnimType =>
   (['roll', 'shake', 'flip'] as AnimType[])[Math.floor(Math.random() * 3)]
 
+interface GlitchChar {
+  char: string
+  flip: string
+}
+
 interface GlitchState {
-  display: string
+  chars: GlitchChar[]
   animKey: number
   animType: AnimType
 }
 
+const restState = (): GlitchChar[] => [
+  { char: '?', flip: randomFlip() },
+  { char: '?', flip: randomFlip() },
+]
+
 function useGlitchUnit(): GlitchState {
-  const [state, setState] = useState<GlitchState>({ display: '??', animKey: 0, animType: 'shake' })
+  const [state, setState] = useState<GlitchState>({
+    chars: restState(),
+    animKey: 0,
+    animType: 'shake',
+  })
 
   useEffect(() => {
     let glitchTimer: number
@@ -59,14 +75,17 @@ function useGlitchUnit(): GlitchState {
       let count = 0
       burstTimer = window.setInterval(() => {
         setState((prev) => ({
-          display: randomChar() + randomChar(),
+          chars: [
+            { char: randomChar(), flip: randomFlip() },
+            { char: randomChar(), flip: randomFlip() },
+          ],
           animKey: prev.animKey + 1,
           animType: randomAnim(),
         }))
         count++
         if (count >= 5) {
           window.clearInterval(burstTimer)
-          setState((prev) => ({ ...prev, display: '??' }))
+          setState((prev) => ({ ...prev, chars: restState() }))
           scheduleNext()
         }
       }, 110)
@@ -88,11 +107,15 @@ function useGlitchUnit(): GlitchState {
 }
 
 const GlitchUnit = ({ label }: { label: string }) => {
-  const { display, animKey, animType } = useGlitchUnit()
+  const { chars, animKey, animType } = useGlitchUnit()
   return (
     <Unit>
       <GlitchValue key={animKey} data-anim={animType}>
-        {display}
+        {chars.map((c, i) => (
+          <GlitchChar key={i} style={{ transform: c.flip }}>
+            {c.char}
+          </GlitchChar>
+        ))}
       </GlitchValue>
       <Label>{label}</Label>
     </Unit>
@@ -174,9 +197,9 @@ const rollIn = keyframes`
 
 const shake = keyframes`
   0%   { transform: translateX(0);    text-shadow: none; }
-  20%  { transform: translateX(-4px); text-shadow: -2px 0 #ef4444, 2px 0 cyan; }
-  40%  { transform: translateX(3px);  text-shadow:  2px 0 #ef4444, -2px 0 cyan; }
-  60%  { transform: translateX(-3px); text-shadow: -3px 0 #ef4444, 3px 0 cyan; }
+  20%  { transform: translateX(-4px); text-shadow: -2px 0 #facc15, 2px 0 #fde68a; }
+  40%  { transform: translateX(3px);  text-shadow:  2px 0 #facc15, -2px 0 #fde68a; }
+  60%  { transform: translateX(-3px); text-shadow: -3px 0 #facc15, 3px 0 #fde68a; }
   80%  { transform: translateX(2px);  text-shadow: none; }
   100% { transform: translateX(0);    text-shadow: none; }
 `
@@ -258,7 +281,7 @@ const GlitchValue = styled.span`
   font-size: clamp(28px, 6vw, 48px);
   font-weight: 700;
   line-height: 1;
-  display: inline-block;
+  display: inline-flex;
   overflow: hidden;
   perspective: 400px;
 
@@ -268,12 +291,16 @@ const GlitchValue = styled.span`
 
   &[data-anim='shake'] {
     animation: ${shake} 180ms ease-in-out both;
-    color: #b91c1c;
+    color: #ca8a04;
   }
 
   &[data-anim='flip'] {
     animation: ${flip} 320ms ease-in-out both;
   }
+`
+
+const GlitchChar = styled.span`
+  display: inline-block;
 `
 
 const PostponedNote = styled.span`
