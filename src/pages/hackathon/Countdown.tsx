@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import styled from 'styled-components'
+import styled, { keyframes } from 'styled-components'
+import { POSTPONED } from './challenges'
 
 interface CountdownProps {
   targetIso: string
@@ -31,6 +32,91 @@ const computeTimeLeft = (targetIso: string, now: number = Date.now()): TimeLeft 
 
 const pad = (n: number) => String(n).padStart(2, '0')
 
+// ─── Glitch unit logic ────────────────────────────────────────────────────
+
+type AnimType = 'roll' | 'shake' | 'flip'
+
+const GLITCH_CHARS = '0123456789?!#%@*'
+
+const randomChar = () => GLITCH_CHARS[Math.floor(Math.random() * GLITCH_CHARS.length)]
+const randomAnim = (): AnimType =>
+  (['roll', 'shake', 'flip'] as AnimType[])[Math.floor(Math.random() * 3)]
+
+interface GlitchState {
+  display: string
+  animKey: number
+  animType: AnimType
+}
+
+function useGlitchUnit(): GlitchState {
+  const [state, setState] = useState<GlitchState>({ display: '??', animKey: 0, animType: 'shake' })
+
+  useEffect(() => {
+    let glitchTimer: number
+    let burstTimer: number
+
+    const startBurst = () => {
+      let count = 0
+      burstTimer = window.setInterval(() => {
+        setState((prev) => ({
+          display: randomChar() + randomChar(),
+          animKey: prev.animKey + 1,
+          animType: randomAnim(),
+        }))
+        count++
+        if (count >= 5) {
+          window.clearInterval(burstTimer)
+          setState((prev) => ({ ...prev, display: '??' }))
+          scheduleNext()
+        }
+      }, 110)
+    }
+
+    const scheduleNext = () => {
+      glitchTimer = window.setTimeout(startBurst, 3000 + Math.random() * 6000)
+    }
+
+    scheduleNext()
+
+    return () => {
+      window.clearTimeout(glitchTimer)
+      window.clearInterval(burstTimer)
+    }
+  }, [])
+
+  return state
+}
+
+const GlitchUnit = ({ label }: { label: string }) => {
+  const { display, animKey, animType } = useGlitchUnit()
+  return (
+    <Unit>
+      <GlitchValue key={animKey} data-anim={animType}>
+        {display}
+      </GlitchValue>
+      <Label>{label}</Label>
+    </Unit>
+  )
+}
+
+const PostponedCountdown = ({ variant = 'large' }: { variant?: 'large' | 'compact' }) => {
+  const { t } = useTranslation()
+  return (
+    <PostponedWrapper $variant={variant}>
+      <DigitRow $variant={variant}>
+        <GlitchUnit label="DD" />
+        <Sep>:</Sep>
+        <GlitchUnit label="HH" />
+        <Sep>:</Sep>
+        <GlitchUnit label="MM" />
+        <Sep>:</Sep>
+        <GlitchUnit label="SS" />
+      </DigitRow>
+      <PostponedNote>{t('hackathonPage.countdown.postponedNote')}</PostponedNote>
+    </PostponedWrapper>
+  )
+}
+
 const Countdown = ({ targetIso, variant = 'large' }: CountdownProps) => {
   const { t } = useTranslation()
   const [timeLeft, setTimeLeft] = useState<TimeLeft>(() => computeTimeLeft(targetIso))
@@ -41,6 +127,10 @@ const Countdown = ({ targetIso, variant = 'large' }: CountdownProps) => {
     const id = window.setInterval(tick, 1000)
     return () => window.clearInterval(id)
   }, [targetIso])
+
+  if (POSTPONED) {
+    return <PostponedCountdown variant={variant} />
+  }
 
   if (timeLeft.isClosed) {
     return (
@@ -74,6 +164,31 @@ const Countdown = ({ targetIso, variant = 'large' }: CountdownProps) => {
     </Wrapper>
   )
 }
+
+// ─── Animations ────────────────────────────────────────────────────────────
+
+const rollIn = keyframes`
+  from { transform: translateY(110%); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+`
+
+const shake = keyframes`
+  0%   { transform: translateX(0);    text-shadow: none; }
+  20%  { transform: translateX(-4px); text-shadow: -2px 0 #ef4444, 2px 0 cyan; }
+  40%  { transform: translateX(3px);  text-shadow:  2px 0 #ef4444, -2px 0 cyan; }
+  60%  { transform: translateX(-3px); text-shadow: -3px 0 #ef4444, 3px 0 cyan; }
+  80%  { transform: translateX(2px);  text-shadow: none; }
+  100% { transform: translateX(0);    text-shadow: none; }
+`
+
+const flip = keyframes`
+  0%   { transform: rotateX(0deg);   opacity: 1; }
+  45%  { transform: rotateX(90deg);  opacity: 0.2; }
+  55%  { transform: rotateX(-90deg); opacity: 0.2; }
+  100% { transform: rotateX(0deg);   opacity: 1; }
+`
+
+// ─── Styled components ─────────────────────────────────────────────────────
 
 const Wrapper = styled.div<{ $variant: 'large' | 'compact' }>`
   display: flex;
@@ -122,5 +237,50 @@ const ClosedState = styled.div`
   background: rgba(0, 0, 0, 0.05);
 `
 
-export { computeTimeLeft }
+const PostponedWrapper = styled.div<{ $variant: 'large' | 'compact' }>`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+`
+
+const DigitRow = styled.div<{ $variant: 'large' | 'compact' }>`
+  display: flex;
+  align-items: center;
+  gap: ${({ $variant }) => ($variant === 'large' ? '12px' : '6px')};
+  font-variant-numeric: tabular-nums;
+  direction: ltr;
+  flex-wrap: wrap;
+  justify-content: center;
+`
+
+const GlitchValue = styled.span`
+  font-size: clamp(28px, 6vw, 48px);
+  font-weight: 700;
+  line-height: 1;
+  display: inline-block;
+  overflow: hidden;
+  perspective: 400px;
+
+  &[data-anim='roll'] {
+    animation: ${rollIn} 200ms ease-out both;
+  }
+
+  &[data-anim='shake'] {
+    animation: ${shake} 180ms ease-in-out both;
+    color: #b91c1c;
+  }
+
+  &[data-anim='flip'] {
+    animation: ${flip} 320ms ease-in-out both;
+  }
+`
+
+const PostponedNote = styled.span`
+  font-size: 11px;
+  opacity: 0.5;
+  letter-spacing: 0.03em;
+`
+
+export { computeTimeLeft, PostponedCountdown }
 export default Countdown
