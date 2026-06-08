@@ -44,8 +44,8 @@ const randomFlip = () => FLIPS[Math.floor(Math.random() * FLIPS.length)]
 const randomAnim = (): AnimType =>
   (['roll', 'shake', 'flip'] as AnimType[])[Math.floor(Math.random() * 3)]
 
-// Resting char: mostly '?', but sometimes a random digit 0-6 peeks through
-const randomRestChar = () => (Math.random() < 0.3 ? String(Math.floor(Math.random() * 7)) : '?')
+// Resting char: often a random digit 0-6, otherwise a '?'
+const randomRestChar = () => (Math.random() < 0.65 ? String(Math.floor(Math.random() * 7)) : '?')
 
 interface GlitchChar {
   char: string
