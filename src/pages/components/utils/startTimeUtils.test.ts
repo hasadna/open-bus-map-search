@@ -1,7 +1,9 @@
 import dayjs, { ISRAEL_TIMEZONE } from 'src/dayjs'
 import {
   formatServiceDayTime,
+  formatStartTimeForQuery,
   normalizeScheduledTime,
+  normalizeStartTimeToken,
   parseStartTimeToken,
   serviceDayBounds,
   serviceDayTokenToDisplay,
@@ -137,5 +139,51 @@ describe('service-day token round-trip (format -> parse -> reconstruct)', () => 
     const instant = il(ride)
     const token = formatServiceDayTime(instant, start)
     expect(reconstruct(start, token).isSame(instant)).toBe(true)
+  })
+})
+
+describe('parseStartTimeToken', () => {
+  it('parses full token into an object with all three parts', () => {
+    expect(parseStartTimeToken('08:30|v123|l64')).toEqual({
+      scheduledTime: '08:30',
+      vehicleRef: 'v123',
+      lineRef: 'l64',
+    })
+  })
+
+  it('parses time-only token with undefined vehicleRef and lineRef', () => {
+    expect(parseStartTimeToken('08:30')).toEqual({
+      scheduledTime: '08:30',
+      vehicleRef: undefined,
+      lineRef: undefined,
+    })
+  })
+
+  it('returns undefined when the time part is invalid', () => {
+    expect(parseStartTimeToken('invalid|v123|l64')).toBeUndefined()
+  })
+})
+
+describe('normalizeStartTimeToken', () => {
+  it('normalizes dashes in the time part of a full token', () => {
+    expect(normalizeStartTimeToken('08-30|v123|l64')).toBe('08:30|v123|l64')
+  })
+
+  it('returns scheduledTime and vehicleRef when lineRef is absent', () => {
+    expect(normalizeStartTimeToken('08:30|v123')).toBe('08:30|v123')
+  })
+
+  it('returns only scheduledTime when vehicleRef and lineRef are absent', () => {
+    expect(normalizeStartTimeToken('08:30')).toBe('08:30')
+  })
+})
+
+describe('formatStartTimeForQuery', () => {
+  it('converts colons to dashes for URL query param', () => {
+    expect(formatStartTimeForQuery('08:30')).toBe('08-30')
+  })
+
+  it('returns empty string for undefined input', () => {
+    expect(formatStartTimeForQuery(undefined)).toBe('')
   })
 })
