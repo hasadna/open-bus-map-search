@@ -37,12 +37,15 @@ const pad = (n: number) => String(n).padStart(2, '0')
 type AnimType = 'roll' | 'shake' | 'flip'
 
 const GLITCH_CHARS = '0123456789?!#%@*'
-const FLIPS = ['none', 'rotate(180deg)', 'scaleX(-1)', 'scaleY(-1)', 'rotate(90deg)']
+const FLIPS = ['none', 'rotate(180deg)', 'scaleX(-1)', 'scaleY(-1)']
 
 const randomChar = () => GLITCH_CHARS[Math.floor(Math.random() * GLITCH_CHARS.length)]
 const randomFlip = () => FLIPS[Math.floor(Math.random() * FLIPS.length)]
 const randomAnim = (): AnimType =>
   (['roll', 'shake', 'flip'] as AnimType[])[Math.floor(Math.random() * 3)]
+
+// Resting char: mostly '?', but sometimes a random digit 0-6 peeks through
+const randomRestChar = () => (Math.random() < 0.3 ? String(Math.floor(Math.random() * 7)) : '?')
 
 interface GlitchChar {
   char: string
@@ -56,8 +59,8 @@ interface GlitchState {
 }
 
 const restState = (): GlitchChar[] => [
-  { char: '?', flip: randomFlip() },
-  { char: '?', flip: randomFlip() },
+  { char: randomRestChar(), flip: randomFlip() },
+  { char: randomRestChar(), flip: randomFlip() },
 ]
 
 function useGlitchUnit(): GlitchState {
