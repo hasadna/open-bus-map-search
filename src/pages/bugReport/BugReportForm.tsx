@@ -19,11 +19,8 @@ const BugReportForm = () => {
   const mutation = useMutation({
     mutationFn: (values: CreateIssuePostRequest) =>
       ISSUES_API.issuesCreatePost({ createIssuePostRequest: values }),
-    onSuccess: (response) => {
-      if (response.data?.state === 'open') {
-        form.resetFields()
-        // setFileList([])
-      }
+    onSuccess: () => {
+      form.resetFields()
     },
     onError: (error) => {
       console.error('Error submitting bug report:', error)
@@ -62,13 +59,21 @@ const BugReportForm = () => {
         </p>
       }>
       <span>{t('reportBug.description')}</span>
-      {mutation.isSuccess && mutation.data?.data && (
-        <Alert severity="success" sx={{ marginBottom: 2 }}>
-          <a href={mutation.data.data.url} target="_blank" rel="noopener noreferrer">
-            {t('reportBug.viewIssue')} (Github)
-          </a>
-        </Alert>
-      )}
+      {mutation.isSuccess &&
+        (() => {
+          const issueUrl = mutation.data?.data?.url
+          return (
+            <Alert severity="success" sx={{ marginBottom: 2 }}>
+              {issueUrl ? (
+                <a href={issueUrl} target="_blank" rel="noopener noreferrer">
+                  {t('reportBug.viewIssue')} (GitHub)
+                </a>
+              ) : (
+                t('reportBug.success', { defaultValue: 'Bug report submitted successfully!' })
+              )}
+            </Alert>
+          )
+        })()}
 
       {mutation.isError && (
         <Alert severity="error" onClose={mutation.reset} sx={{ marginBottom: 2 }}>
