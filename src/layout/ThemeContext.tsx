@@ -53,7 +53,13 @@ export const ThemeProvider = ({ children }: PropsWithChildren) => {
   )
 
   const initialLang = getLang()
-  const [language, setLanguage] = useLocalStorage<string>('language', () => initialLang)
+  // Store the language as a raw string (e.g. `he`, not `"he"`) so it matches the value
+  // written by getLang()/i18n in allTranslations.ts. Without identity (de)serializers,
+  // useLocalStorage would JSON.parse the raw value and throw "is not valid JSON".
+  const [language, setLanguage] = useLocalStorage<string>('language', () => initialLang, {
+    serializer: (value) => value,
+    deserializer: (value) => value,
+  })
 
   const { i18n } = useTranslation()
   const navigate = useNavigate()
