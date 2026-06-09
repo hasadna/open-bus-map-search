@@ -306,6 +306,8 @@
   "date_navigator_today": "Today",
   "date_navigator_next_day": "Next day",
   "date_navigator_next_week": "Next week",
+  "date_navigator_unit_day": "day",
+  "date_navigator_unit_days": "days",
   "gaps_tooltip_rides_executed": "{{percentage}}% of rides were executed ({{actual}}/{{planned}})",
   "operatorSelectorOptions": {
     "all": "all"

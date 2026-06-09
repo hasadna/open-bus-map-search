@@ -1,28 +1,59 @@
 .nav-btn {
-  padding-left: 4px;
-  padding-right: 4px;
-
-  // Fluid font: shrink as the viewport gets tighter so even the longest words
-  // (RU "Предыдущая") stay on one line inside a 1/5-width phone button, capped
-  // at 1rem on wide screens and floored at 0.6rem so it stays readable.
-  font-size: clamp(0.6rem, 0.375rem + 1.1vw, 1rem) !important;
-
-  // Stack the label's words vertically (see stackedLabel in DateNavigator.tsx)
-  // so the navigation buttons are always two lines and Today is one centered
-  // line — every button the same shape in every language. nowrap keeps each
-  // single word on its own line instead of breaking mid-word.
+  // Two centered lines for every button: signed magnitude (-7 / -1 / +1 / +7)
+  // over its unit (day / days); the Today button shows its icon over "Today".
+  // Identical layout in every language, so nothing can overflow.
+  display: flex;
   flex-direction: column;
-  white-space: nowrap;
-  line-height: 1.2;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  padding: 4px;
   min-width: 0;
   flex: 1;
-  min-height: 44px;
+  min-height: 48px;
+  line-height: 1.15;
+  white-space: nowrap;
   text-transform: none;
   border-color: rgb(0 0 0 / 12%);
 
+  .nav-btn-icon {
+    font-size: 1.25rem;
+  }
+
+  // Match the icon's box (its font-size) so line 1 is the same height whether it
+  // holds a number or the icon; line-height:1 + centering drops the number's
+  // font leading so both buttons' blocks align line-for-line.
+  .nav-btn-num {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 1.25rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1;
+  }
+
+  .nav-btn-unit {
+    font-size: 0.7rem;
+    opacity: 0.8;
+  }
+
   @media (width >= 600px) {
-    padding-left: 16px;
-    padding-right: 16px;
+    padding: 6px;
+    min-height: 56px;
+
+    .nav-btn-icon {
+      font-size: 1.5rem;
+    }
+
+    .nav-btn-num {
+      height: 1.5rem;
+      font-size: 1.1rem;
+    }
+
+    .nav-btn-unit {
+      font-size: 0.85rem;
+    }
   }
 
   &.today {

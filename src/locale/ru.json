@@ -306,6 +306,8 @@
   "date_navigator_today": "Сегодня",
   "date_navigator_next_day": "Следующий день",
   "date_navigator_next_week": "Следующая неделя",
+  "date_navigator_unit_day": "день",
+  "date_navigator_unit_days": "дней",
   "gaps_tooltip_rides_executed": "Выполнено {{percentage}}% поездок ({{actual}}/{{planned}})",
   "operatorSelectorOptions": {
     "all": "все"

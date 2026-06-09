@@ -309,6 +309,8 @@
   "date_navigator_today": "היום",
   "date_navigator_next_day": "היום הבא",
   "date_navigator_next_week": "השבוע הבא",
+  "date_navigator_unit_day": "יום",
+  "date_navigator_unit_days": "ימים",
   "gaps_tooltip_rides_executed": "בוצעו {{percentage}}% מהנסיעות ({{actual}}/{{planned}})",
   "reportBug": {
     "description": "טופס זה נועד על מנת שנוכל לקבל פידבק ולשפר את האפליקציה. לתשומת לבך - הטופס נשלח לGitHub, והמידע שיצויין בו יהיה ציבורי.",
