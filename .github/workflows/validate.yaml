@@ -15,6 +15,12 @@ env:
   DOCKER_APP_IMAGE_TAG: 'latest'
   APPLITOOLS_API_KEY: ${{ secrets.APPLITOOLS_API_KEY }}
   APPLITOOLS_BATCH_ID: ${{ github.event.pull_request.head.sha }}
+  # buildId disambiguates "multiple builds on the same commit SHA" (Applitools' own requirement
+  # for parallel jobs/reruns). core auto-derives it from GITHUB_RUN_ID, but run_id is STABLE across
+  # reruns, so a rerun collides with the prior attempt's build → results pile into one batch and the
+  # scm/applitools status can't find a clean end-of-build. run_attempt makes each rerun a distinct
+  # build. Kept top-level so storybook-test + visual-test in the SAME run share one build.
+  APPLITOOLS_BATCH_BUILD_ID: ${{ github.run_id }}-${{ github.run_attempt }}
   APPLITOOLS_LOG_DIR: ./logs
   APPLITOOLS_SHOW_LOGS: true
 
