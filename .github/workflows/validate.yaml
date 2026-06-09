@@ -236,6 +236,7 @@ jobs:
       - name: Run Playwright Visual Tests
         env:
           APPLITOOLS_BATCH_NAME: open-bus-map-search/${{ github.ref }}/${{ env.SHORT_SHA }}/
+          PWTEST_CHILD_PROCESS_TIMEOUT: '1800000' # 30 min; default 300000 force-kills slow UFG result collection → false CI failure
         run: npm run test:e2e:visual
       - name: Prepare Playwright artifact directory
         if: always()
