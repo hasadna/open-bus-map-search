@@ -75,7 +75,7 @@ export default function TimeBasedMapPage() {
           <TimeSelector time={from} onChange={handleFromChange} />
         </Grid>
         {/* loaded info */}
-        <Grid size={{ xs: 11 }} container alignItems="center">
+        <Grid size={{ xs: 11 }} container sx={{ alignItems: 'center' }}>
           <p>{`${locations.length} - ${t('show_x_bus_locations')}`}</p>
           {isLoading && <CircularProgress size="20px" />}
         </Grid>
