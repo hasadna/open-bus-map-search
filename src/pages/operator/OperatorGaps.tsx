@@ -48,7 +48,7 @@ export const OperatorGaps = ({
       {isLoading ? (
         <SkeletonLoader active rows={2} />
       ) : (
-        <Stack flexDirection="row" justifyContent="space-between">
+        <Stack sx={{ flexDirection: 'row', justifyContent: 'space-between' }}>
           <div>
             <InfoTable>
               {data.map((d) => (
