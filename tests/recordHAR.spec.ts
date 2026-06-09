@@ -28,6 +28,29 @@ async function setupRecording(page: Page, harFile: string) {
   })
 }
 
+/**
+ * Force every stride-api response body to fully download before the HAR is written.
+ *
+ * routeFromHAR({ updateContent: 'embed' }) only embeds bodies it actually has in
+ * hand; any response still streaming when the test ends is saved truncated or
+ * empty. response.body() blocks until the full body has arrived, so collecting one
+ * per stride-api response and awaiting them all at the end guarantees complete
+ * fixtures — no need to hand-pick individual deferred requests. Errors are
+ * swallowed: an aborted or body-less response must not fail the recording.
+ *
+ * Call right after setupRecording (before any navigation) so no response is missed,
+ * then `await settleResponseBodies()` as the last step of the test.
+ */
+function trackResponseBodies(page: Page): () => Promise<unknown> {
+  const bodies: Promise<unknown>[] = []
+  page.on('response', (response) => {
+    if (/stride-api/.test(response.url())) {
+      bodies.push(response.body().catch(() => undefined))
+    }
+  })
+  return () => Promise.all(bodies)
+}
+
 async function goToPage(page: Page, path: string) {
   await page.goto(path)
   await page.locator('.preloader').waitFor({ state: 'hidden' })
@@ -115,6 +138,7 @@ test.describe('Record HAR files', () => {
   // Single test records ALL needed entries in one browser context
   test('record singleline.har', async ({ page }) => {
     await setupRecording(page, 'tests/HAR/singleline.har')
+    const settleResponseBodies = trackResponseBodies(page)
     await goToPage(page, '/')
     await goToPage(page, '/single-line-map')
 
@@ -218,6 +242,12 @@ test.describe('Record HAR files', () => {
         await page.keyboard.press('Escape')
       }
     }
+
+    // Drain the planned-stops chain (gtfs_routes?line_refs -> gtfs_rides?limit=1 ->
+    // gtfs_ride_stops -> gtfs_stops) so its tail isn't aborted at teardown and
+    // recorded as a status:-1 empty entry. Then capture all bodies.
+    await page.waitForLoadState('networkidle')
+    await settleResponseBodies()
   })
 
   // ---- lineprofile.har ----------------------------------------------------
@@ -229,6 +259,7 @@ test.describe('Record HAR files', () => {
   // single-line tests; it is stable for the frozen test date.
   test('record lineprofile.har', async ({ page }) => {
     await setupRecording(page, 'tests/HAR/lineprofile.har')
+    const settleResponseBodies = trackResponseBodies(page)
     await goToPage(page, '/')
     await goToPage(page, '/profile/4339841')
     // Wait for the SIRI rides response so start-time options are populated in the HAR.
@@ -236,6 +267,78 @@ test.describe('Record HAR files', () => {
       .waitForResponse((r) => r.url().includes('/siri_rides/list'), { timeout: 30000 })
       .catch(() => undefined)
     await page.waitForLoadState('networkidle')
+
+    // Ensure every stride-api response body is fully captured in the HAR.
+    await settleResponseBodies()
+  })
+
+  // ---- interlink.har ------------------------------------------------------
+  // Covers the gaps -> single-line interlink for a line with POST-MIDNIGHT service
+  // (Egged line 402, operator_ref=3, line_ref=33267 — the '...הורדה...' direction —
+  // on 2024-02-12). This 24/7 line has actual rides just past midnight the next
+  // calendar day (extended-hour token 24:30) with vehicle locations, so the
+  // destination page can surface and select them. Records BOTH pages in one context:
+  //   * /gaps:            rides_execution for the route (the clickable post-midnight cells)
+  //   * /single-line-map: gtfs_routes + siri_rides + siri_vehicle_locations + planned stops
+  test('record interlink.har', async ({ page }) => {
+    await setupRecording(page, 'tests/HAR/interlink.har')
+    const settleResponseBodies = trackResponseBodies(page)
+
+    // -- gaps side --
+    await goToPage(page, '/')
+    await goToPage(page, '/gaps')
+    await page.getByLabel('חברה מפעילה').click()
+    await page.getByRole('option', { name: 'אגד', exact: true }).click()
+    await page.getByRole('textbox', { name: 'מספר קו' }).fill('402')
+    await page.waitForLoadState('networkidle')
+    // Type-to-filter the route Autocomplete (defeats option virtualization on lines
+    // with many variants), then pick the line_ref 33267 direction ('...הורדה...').
+    await page.getByLabel(/בחירת מסלול נסיעה/).fill('הורדה')
+    await page.waitForLoadState('networkidle')
+    // Wait for the gaps response to finish before navigating away, so it is not
+    // aborted at teardown and recorded as a status:-1 empty entry.
+    const gapsLoaded = page.waitForResponse((r) => r.url().includes('/rides_execution/list'))
+    await page.getByRole('option', { name: /הורדה/ }).first().click()
+    await gapsLoaded
+    await page.waitForLoadState('networkidle')
+
+    // CRITICAL: settle all gaps-side bodies BEFORE navigating to single-line below.
+    // The final settleResponseBodies() runs only at test end — after this navigation —
+    // and any gaps body still streaming when we leave the page is dropped from the HAR
+    // (recorded empty, with no status:-1 to flag it). That empties the rides_execution
+    // payload, so the replayed gaps table has no post-midnight cells. Settling here
+    // forces rides_execution (and the route lists) to fully download first.
+    await settleResponseBodies()
+
+    // -- single-line side: same route, then select the post-midnight (24:30) ride --
+    await goToPage(page, '/single-line-map')
+    await page.getByLabel('חברה מפעילה').click()
+    await page.getByRole('option', { name: 'אגד', exact: true }).click()
+    await page.getByRole('textbox', { name: 'מספר קו' }).fill('402')
+    await page.waitForLoadState('networkidle')
+    await page.getByLabel(/בחירת מסלול נסיעה/).fill('הורדה')
+    await page.waitForLoadState('networkidle')
+    await page.getByRole('option', { name: /הורדה/ }).first().click()
+    await page.waitForLoadState('networkidle')
+    const startTime = page.getByLabel('בחירת שעת התחלה')
+    if ((await startTime.count()) > 0) {
+      // Type-to-filter the start-time Autocomplete too (~100 options on this line).
+      await startTime.fill('24:30')
+      await page.waitForLoadState('networkidle')
+      const pm = page.getByRole('option', { name: /24:30/ }).first()
+      if ((await pm.count()) > 0) {
+        const locations = page
+          .waitForResponse((r) => r.url().includes('/siri_vehicle_locations/list'))
+          .then((r) => r.body())
+        await pm.click()
+        await locations
+      } else {
+        await page.keyboard.press('Escape')
+      }
+    }
+
+    await page.waitForLoadState('networkidle')
+    await settleResponseBodies()
   })
 
   // ---- missing.har --------------------------------------------------------

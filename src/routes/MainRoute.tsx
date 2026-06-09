@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import ReactGA from 'react-ga4'
+import ReactGAImport from 'react-ga4'
 import { useLocation, useSearchParams } from 'react-router'
 import { useSessionStorage } from 'usehooks-ts'
 import { toIsraelTimezone } from 'src/dayjs'
@@ -11,6 +11,11 @@ import {
   GlobalSearchState,
 } from '../model/globalState'
 import { ExtraShareParamsContext, InitialUrlParamsContext } from '../model/routeContext'
+
+// react-ga4's default export is nested under `.default` under some CJS/ESM interop
+// (e.g. Vite/Rolldown), so unwrap it to keep the shared singleton.
+const ReactGA =
+  (ReactGAImport as unknown as { default?: typeof ReactGAImport }).default ?? ReactGAImport
 
 export const MainRoute = () => {
   const { pathname, search: locationParams } = useLocation()

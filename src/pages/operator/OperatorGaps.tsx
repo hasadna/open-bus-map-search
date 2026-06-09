@@ -1,10 +1,10 @@
 import { Stack } from '@mui/material'
-import { Skeleton } from 'antd'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Cell, Pie, PieChart } from 'recharts'
 import { useGroupBy } from 'src/api/groupByService'
 import dayjs from 'src/dayjs'
+import SkeletonLoader from 'src/shared/SkeletonLoader'
 import Widget from 'src/shared/Widget'
 import { InfoItem, InfoTable } from '../components/InfoTable'
 
@@ -46,7 +46,7 @@ export const OperatorGaps = ({
   return (
     <Widget title={`${t('operator.statistics')} ${t(`operator.time_range.${timeRange}`)}`}>
       {isLoading ? (
-        <Skeleton active paragraph={{ rows: 2 }} />
+        <SkeletonLoader active rows={2} />
       ) : (
         <Stack flexDirection="row" justifyContent="space-between">
           <div>
