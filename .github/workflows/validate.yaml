@@ -201,7 +201,20 @@ jobs:
         if: env.APPLITOOLS_API_KEY
         env:
           APPLITOOLS_BATCH_NAME: open-bus-map-search/${{ github.ref }}/${{ env.SHORT_SHA }}/storybook
-        run: npm run test:storybook -- --storybook-url http://localhost:3000/storybook/index.html
+        # eyes-storybook is BOTH the test runner and the reporter here. applitools.config.cjs sets
+        # `exitcode: false` so visual *diffs* don't fail the job (they're reported via the GitHub
+        # integration). But that same flag makes eyes-storybook exit 0 on FATAL errors too — e.g. when
+        # it can't read/render any story (cli.js: `process.exit(config.exitcode ? 1 : 0)`). That made a
+        # totally-broken Storybook build pass as green for weeks. The guard below restores a loud
+        # failure on "tested nothing" while still letting diffs pass.
+        run: |
+          set -o pipefail
+          npm run test:storybook -- --storybook-url http://localhost:3000/storybook/index.html 2>&1 | tee storybook-eyes.log
+          if ! grep -q '\[EYES: TEST RESULTS\]' storybook-eyes.log \
+             || grep -qiE 'Error when reading stories|Could not load stories|Failed to resolve module specifier|no results returned' storybook-eyes.log; then
+            echo "::error title=Storybook visual tests did not run::eyes-storybook produced no results summary — it failed to read/render stories. exitcode:false masked this as a green run. See the log above."
+            exit 1
+          fi
       - name: Upload logs if exists
         if: always()
         uses: actions/upload-artifact@v7
