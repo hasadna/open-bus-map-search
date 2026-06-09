@@ -9,7 +9,6 @@ import {
   TableRow,
   Tooltip,
 } from '@mui/material'
-import { Skeleton } from 'antd'
 import React, { memo, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
@@ -20,6 +19,7 @@ import {
   formatStartTimeForQuery,
   serviceDayBounds,
 } from 'src/pages/components/utils/startTimeUtils'
+import SkeletonLoader from 'src/shared/SkeletonLoader'
 import Widget from 'src/shared/Widget'
 import DisplayGapsPercentage from '../components/DisplayGapsPercentage'
 import { Row } from '../components/Row'
@@ -145,7 +145,7 @@ const GapsTable: React.FC<GapsTableProps> = ({
 
       <TableContainer>
         {loading ? (
-          <Skeleton active paragraph={{ rows: 8 }} title={false} style={{ minWidth: '100%' }} />
+          <SkeletonLoader active title={false} rows={8} style={{ minWidth: '100%' }} />
         ) : (
           <Table sx={{ maxWidth: 'fit-content' }}>
             <TableBody>
