@@ -2,6 +2,7 @@ import createCache from '@emotion/cache'
 import { CacheProvider } from '@emotion/react'
 import { createTheme, ThemeProvider as MuiThemeProvider, ScopedCssBaseline } from '@mui/material'
 import { arEG, enUS, heIL, ruRU } from '@mui/material/locale'
+import rtlPlugin from '@mui/stylis-plugin-rtl'
 import { LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { enUS as dateEnUS, heIL as dateHeIL, ruRU as dateRuRU } from '@mui/x-date-pickers/locales'
@@ -20,17 +21,19 @@ import {
 } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLocation, useNavigate } from 'react-router'
-import rtlPlugin from 'stylis-plugin-rtl'
+import { prefixer } from 'stylis'
 import { useLocalStorage } from 'usehooks-ts'
 import dayjs from 'src/dayjs'
 import { getLang, getPathWithoutLang } from 'src/locale/allTranslations'
 
-// Direction-aware emotion caches: the RTL cache flips physical CSS (left↔right),
-// the LTR cache uses emotion's default (prefixer only). Selecting the cache by the
-// active language keeps MUI's generated styles in sync with the layout direction,
-// so grouped components (ButtonGroup/ToggleButtonGroup) round their outer corners
-// correctly without per-component dir="rtl" workarounds.
-const cacheRtl = createCache({ key: 'muirtl', stylisPlugins: [rtlPlugin] })
+// Direction-aware emotion caches: the RTL cache runs the vendor prefixer and then
+// flips physical CSS (left↔right); the LTR cache uses emotion's default (prefixer
+// only). prefixer must be listed explicitly because passing stylisPlugins replaces
+// emotion's default plugin chain. Selecting the cache by the active language keeps
+// MUI's generated styles in sync with the layout direction, so grouped components
+// (ButtonGroup/ToggleButtonGroup) round their outer corners correctly without
+// per-component dir="rtl" workarounds.
+const cacheRtl = createCache({ key: 'muirtl', stylisPlugins: [prefixer, rtlPlugin] })
 const cacheLtr = createCache({ key: 'mui' })
 const RTL_LANGUAGES = ['he', 'ar']
 
