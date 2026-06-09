@@ -107,8 +107,10 @@ export const getBranch = async (): Promise<string> => {
 }
 
 export const waitForSkeletonsToHide = async (page: Page) => {
-  while ((await page.locator('.ant-skeleton-content').count()) > 0) {
-    await page.locator('.ant-skeleton-content').last().waitFor({ state: 'hidden' })
+  // matches both the legacy antd skeleton and the MUI-based SkeletonLoader
+  const skeletons = page.locator('.ant-skeleton-content, [data-testid="skeleton-loader"]')
+  while ((await skeletons.count()) > 0) {
+    await skeletons.last().waitFor({ state: 'hidden' })
   }
 }
 

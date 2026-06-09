@@ -1,6 +1,5 @@
 import { GtfsRoutePydanticModel } from '@hasadna/open-bus-api-client'
 import { Button, CircularProgress } from '@mui/material'
-import { Skeleton } from 'antd'
 import cn from 'classnames'
 import { ReactNode, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -8,6 +7,7 @@ import { Link } from 'react-router'
 import { getRoutesByLineRef } from 'src/api/gtfsService'
 import dayjs from 'src/dayjs'
 import { routeStartEnd, vehicleIDFormat } from 'src/pages/components/utils/rotueUtils'
+import SkeletonLoader from 'src/shared/SkeletonLoader'
 import CustomTreeView from '../../CustomTreeView'
 import { EasterEgg } from '../../EasterEgg/EasterEgg'
 import type { Point } from '../map-types'
@@ -73,7 +73,7 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
             <span>{t('loading_routes')}</span>
             <CircularProgress />
           </h1>
-          <Skeleton title={false} paragraph={{ rows: 7 }} />
+          <SkeletonLoader active={false} title={false} rows={7} />
         </div>
       ) : (
         <>
