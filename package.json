@@ -10,8 +10,9 @@
     "@emotion/styled": "^11.14.1",
     "@hasadna/open-bus-api-client": "^1.2.3",
     "@juggle/resize-observer": "^3.4.0",
-    "@mui/icons-material": "^7.3.11",
-    "@mui/material": "^7.3.9",
+    "@mui/icons-material": "^9.1.0",
+    "@mui/material": "^9.1.0",
+    "@mui/stylis-plugin-rtl": "^9.0.1",
     "@mui/x-date-pickers": "^9.3.0",
     "@mui/x-tree-view": "^9.0.1",
     "@rolldown/plugin-babel": "^0.2.3",
@@ -39,17 +40,12 @@
     "react-router": "^7.13.1",
     "recharts": "^3.8.0",
     "styled-components": "^6.3.11",
-    "stylis-plugin-rtl": "^2.1.1",
+    "stylis": "^4.4.0",
     "use-konami": "^1.0.1",
     "usehooks-ts": "^3.1.1"
   },
   "resolutions": {
     "autoprefixer": "10.4.5"
-  },
-  "overrides": {
-    "@mui/system": "^7.3.11",
-    "@mui/styled-engine": "^7.3.10",
-    "@mui/private-theming": "^7.3.11"
   },
   "engines": {
     "node": ">=22.12.0"
@@ -103,6 +99,7 @@
     "@types/node": "^25.6.0",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
+    "@types/stylis": "^4.2.7",
     "@typescript-eslint/eslint-plugin": "^8.60.1",
     "@typescript-eslint/parser": "^8.58.0",
     "@vitejs/plugin-react": "^6.0.2",

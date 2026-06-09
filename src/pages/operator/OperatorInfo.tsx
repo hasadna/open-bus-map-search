@@ -12,7 +12,7 @@ export const OperatorInfo = ({ operatorId }: { operatorId?: string }) => {
 
   return (
     <Widget title={i18n.language === 'en' ? operator?.eng_name : operator?.name}>
-      <Stack justifyContent="space-between" flexDirection="row">
+      <Stack sx={{ justifyContent: 'space-between', flexDirection: 'row' }}>
         <InfoTable>
           <InfoItem label={t('operator.ref')} value={operator?.ref} />
           <InfoItem label={t('operator.founded')} value={operator?.founded} />

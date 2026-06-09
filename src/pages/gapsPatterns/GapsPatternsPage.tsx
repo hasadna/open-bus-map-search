@@ -227,7 +227,7 @@ const GapsPatternsPage = () => {
         </Alert>
       ) : null}
 
-      <Grid container spacing={2} alignItems="center" sx={{ maxWidth: INPUT_SIZE }}>
+      <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE, alignItems: 'center' }}>
         <Grid size={{ xs: 12, sm: 4 }} className="hideOnMobile">
           <Label text={t('choose_dates')} />
         </Grid>
@@ -235,8 +235,7 @@ const GapsPatternsPage = () => {
           container
           size={{ xs: 12, sm: 8 }}
           spacing={2}
-          alignItems="center"
-          justifyContent="space-between">
+          sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
           <Grid size={{ xs: 6 }}>
             <DateSelector
               time={startDate}
