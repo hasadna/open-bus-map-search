@@ -127,17 +127,17 @@ const LineProfile = () => {
   return (
     <PageContainer className="line-profile-container">
       <Grid container spacing={2} sx={{ marginTop: '0.5rem' }}>
-        <Grid size={{ xs: 12, lg: 7 }} container spacing={2} flexDirection="column">
+        <Grid size={{ xs: 12, lg: 7 }} container spacing={2} sx={{ flexDirection: 'column' }}>
           <LineProfileDetails {...route} />
         </Grid>
-        <Grid size={{ xs: 12, lg: 5 }} container spacing={2} flexDirection="column">
+        <Grid size={{ xs: 12, lg: 5 }} container spacing={2} sx={{ flexDirection: 'column' }}>
           <RouteSelector
             routes={routes ?? []}
             routeKey={routeKey}
             setRouteKey={handelRouteChange}
           />
           <DateSelector time={dayjs(route?.date.getTime())} onChange={handleTimestampChange} />
-          <Grid container flexWrap="nowrap" alignItems="center">
+          <Grid container sx={{ flexWrap: 'nowrap', alignItems: 'center' }}>
             <FilterPositionsByStartTimeSelector
               options={options}
               startTime={startTime}
