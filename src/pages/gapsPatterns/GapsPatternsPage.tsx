@@ -1,5 +1,5 @@
 import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
-import { Radio, RadioChangeEvent, Skeleton, Space } from 'antd'
+import { Radio, RadioChangeEvent, Space } from 'antd'
 import { useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
@@ -19,6 +19,7 @@ import { useDate } from 'src/hooks/useDate'
 import { GlobalSearchContext } from 'src/model/globalState'
 import { ExtraShareParamsContext, InitialUrlParamsContext } from 'src/model/routeContext'
 import { INPUT_SIZE } from 'src/resources/sizes'
+import SkeletonLoader from 'src/shared/SkeletonLoader'
 import Widget from 'src/shared/Widget'
 import { getRoutesAsync } from '../../api/gtfsService'
 import { BusRoute } from '../../model/busRoute'
@@ -85,7 +86,7 @@ function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatistic
     lineRef > 0 && (
       <Widget marginBottom>
         {isLoading && lineRef ? (
-          <Skeleton active />
+          <SkeletonLoader active />
         ) : (
           <>
             <Radio.Group
