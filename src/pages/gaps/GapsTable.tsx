@@ -1,4 +1,5 @@
 import {
+  Box,
   FormControlLabel,
   Switch,
   Table,
@@ -13,7 +14,11 @@ import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
 import { Gap } from 'src/api/gapsService'
 import dayjs from 'src/dayjs'
-import { formatStartTimeForQuery } from 'src/pages/components/utils/startTimeUtils'
+import {
+  formatServiceDayTime,
+  formatStartTimeForQuery,
+  serviceDayBounds,
+} from 'src/pages/components/utils/startTimeUtils'
 import SkeletonLoader from 'src/shared/SkeletonLoader'
 import Widget from 'src/shared/Widget'
 import DisplayGapsPercentage from '../components/DisplayGapsPercentage'
@@ -24,6 +29,7 @@ interface GapsTableProps {
   loading?: boolean
   initOnlyGapped?: boolean
   singleLineMapBaseHref: string
+  date: string
   onStartTimeClick?: (rideTime: string) => void
 }
 
@@ -82,9 +88,11 @@ const GapsTable: React.FC<GapsTableProps> = ({
   loading,
   initOnlyGapped = false,
   singleLineMapBaseHref,
+  date,
   onStartTimeClick,
 }) => {
   const { t } = useTranslation()
+  const { start: serviceDayStart } = serviceDayBounds(date)
   const [onlyGapped, setOnlyGapped] = useState(initOnlyGapped)
 
   const filteredGaps: Gap[] = useMemo(() => {
@@ -143,42 +151,68 @@ const GapsTable: React.FC<GapsTableProps> = ({
             <TableBody>
               {Object.keys(groupedGaps)
                 .sort((a, b) => Number(a) - Number(b))
-                .map((hour) => (
-                  <TableRow key={hour}>
-                    {groupedGaps[hour].map(({ gap, status }, j) => {
-                      const time = (gap.plannedStartTime || gap.actualStartTime)?.format('HH:mm')
-                      const hasRide = Boolean(gap.actualStartTime)
-                      const startTimeParam = formatStartTimeForQuery(time)
-                      const cellHref = `${singleLineMapBaseHref}&rideTime=${startTimeParam}`
-                      return (
-                        <Tooltip key={`${hour}-${j}-${time}`} title={buildTooltip(gap)} arrow>
-                          <TableCell
-                            sx={{
-                              ...cellStyle,
-                              background: colors[status],
-                              cursor: hasRide ? 'pointer' : 'default',
-                              '& a, & a:visited, & a:hover, & a:focus': {
-                                color: 'inherit',
-                                textDecoration: 'underline',
-                              },
-                            }}>
-                            {hasRide ? (
-                              <Link
-                                to={cellHref}
-                                onClick={() =>
-                                  gap.actualStartTime && onStartTimeClick?.(startTimeParam)
-                                }>
-                                {time}
-                              </Link>
-                            ) : (
-                              time
-                            )}
-                          </TableCell>
-                        </Tooltip>
-                      )
-                    })}
-                  </TableRow>
-                ))}
+                .map((hour) => {
+                  // Every cell in an hour-row shares the same calendar day, so the
+                  // "next night" marker lives once in a leading column for the whole row
+                  // rather than on each time cell.
+                  const rowGapTime =
+                    groupedGaps[hour][0]?.gap.plannedStartTime ||
+                    groupedGaps[hour][0]?.gap.actualStartTime
+                  const rowIsNextDay = rowGapTime
+                    ? !rowGapTime.isSame(serviceDayStart, 'day')
+                    : false
+                  return (
+                    <TableRow key={hour}>
+                      <TableCell
+                        sx={{ ...cellStyle, padding: '0 4px', width: '1em', border: 'none' }}>
+                        {rowIsNextDay && (
+                          <Box component="span" role="img" aria-label="next night">
+                            🌙
+                          </Box>
+                        )}
+                      </TableCell>
+                      {groupedGaps[hour].map(({ gap, status }, j) => {
+                        const gapTime = gap.plannedStartTime || gap.actualStartTime
+                        const displayTime = gapTime?.format('HH:mm')
+                        const rideToken = gapTime
+                          ? formatServiceDayTime(gapTime, serviceDayStart)
+                          : undefined
+                        const hasRide = Boolean(gap.actualStartTime)
+                        const startTimeParam = formatStartTimeForQuery(rideToken)
+                        const cellHref = `${singleLineMapBaseHref}&rideTime=${startTimeParam}`
+                        return (
+                          <Tooltip
+                            key={`${hour}-${j}-${displayTime}`}
+                            title={buildTooltip(gap)}
+                            arrow>
+                            <TableCell
+                              sx={{
+                                ...cellStyle,
+                                background: colors[status],
+                                cursor: hasRide ? 'pointer' : 'default',
+                                '& a, & a:visited, & a:hover, & a:focus': {
+                                  color: 'primary.main',
+                                  textDecoration: 'none',
+                                },
+                              }}>
+                              {hasRide ? (
+                                <Link
+                                  to={cellHref}
+                                  onClick={() =>
+                                    gap.actualStartTime && onStartTimeClick?.(startTimeParam)
+                                  }>
+                                  {displayTime}
+                                </Link>
+                              ) : (
+                                displayTime
+                              )}
+                            </TableCell>
+                          </Tooltip>
+                        )
+                      })}
+                    </TableRow>
+                  )
+                })}
             </TableBody>
           </Table>
         )}
