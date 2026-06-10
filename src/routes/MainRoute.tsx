@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import ReactGAImport from 'react-ga4'
 import { useLocation, useSearchParams } from 'react-router'
 import { useSessionStorage } from 'usehooks-ts'
-import { toIsraelTimezone } from 'src/dayjs'
 import { MainLayout } from '../layout'
 import { ThemeProvider } from '../layout/ThemeContext'
 import {
@@ -43,17 +42,10 @@ export const MainRoute = () => {
   // Parse the captured URL params into GlobalSearchContext fields
   const urlState = useMemo<Partial<GlobalSearchState>>(() => {
     const p = initialUrlParams
-    // Accept 'date' (new) or 'timestamp' (old shared links) for backward compat
-    let date: string | undefined
-    if (p.date) {
-      date = p.date
-    } else if (p.timestamp) {
-      date = toIsraelTimezone(+p.timestamp).format('YYYY-MM-DD')
-    }
     // Accept 'rideTime' (new) or 'startTime' (old shared links) for backward compat
     const rideTime = p.rideTime ?? p.startTime ?? undefined
     return {
-      ...(date ? { date } : {}),
+      ...(p.date ? { date: p.date } : {}),
       ...(p.operatorId ? { operatorId: p.operatorId } : {}),
       ...(p.lineNumber ? { lineNumber: p.lineNumber } : {}),
       ...(p.vehicleNumber ? { vehicleNumber: Number(p.vehicleNumber) } : {}),
