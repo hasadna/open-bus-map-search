@@ -66,7 +66,6 @@ class LocationObservable {
 
   #notifyObservers(data: SiriVehicleLocationWithRelatedPydanticModel[] | { finished: true }) {
     const observers = this.#observers
-    console.log('notifying observers', observers.length)
     observers.forEach((observer) => observer(data))
   }
 

@@ -1,4 +1,4 @@
-import { t } from 'i18next'
+import { useTranslation } from 'react-i18next'
 import {
   actualRouteLineColor,
   actualRouteStopMarkerPath,
@@ -12,6 +12,7 @@ interface MapIndexLayerProps {
 }
 
 export function MapIndexLayer({ showPlannedRoute }: MapIndexLayerProps) {
+  const { t } = useTranslation()
   return (
     <div className="map-index">
       <MapIndex

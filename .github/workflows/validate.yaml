@@ -134,12 +134,17 @@ jobs:
           echo "hash.txt is valid with MIME type $mime_type and length $content_length characters."
       - name: Install Dependencies and Playwright
         run: npm ci
+      - name: Resolve Playwright cache key inputs
+        id: playwright-version
+        run: |
+          echo "version=$(node -p 'require("@playwright/test/package.json").version')" >> "$GITHUB_OUTPUT"
+          echo "imageos=$ImageOS" >> "$GITHUB_OUTPUT"
       - name: Cache Playwright browsers
         uses: actions/cache@v4
         id: playwright-cache
         with:
           path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
+          key: ${{ runner.os }}-${{ runner.arch }}-${{ steps.playwright-version.outputs.imageos }}-playwright-${{ steps.playwright-version.outputs.version }}
       - name: Install Playwright browser dependencies
         if: steps.playwright-cache.outputs.cache-hit != 'true'
         timeout-minutes: 15
@@ -223,12 +228,17 @@ jobs:
           cache: 'npm'
       - name: Install Dependencies and Playwright
         run: npm ci
+      - name: Resolve Playwright cache key inputs
+        id: playwright-version
+        run: |
+          echo "version=$(node -p 'require("@playwright/test/package.json").version')" >> "$GITHUB_OUTPUT"
+          echo "imageos=$ImageOS" >> "$GITHUB_OUTPUT"
       - name: Cache Playwright browsers
         uses: actions/cache@v4
         id: playwright-cache
         with:
           path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
+          key: ${{ runner.os }}-${{ runner.arch }}-${{ steps.playwright-version.outputs.imageos }}-playwright-${{ steps.playwright-version.outputs.version }}
       - name: Install Playwright browser dependencies
         if: steps.playwright-cache.outputs.cache-hit != 'true'
         timeout-minutes: 15
