@@ -1,6 +1,5 @@
 import { GtfsRoutePydanticModel } from '@hasadna/open-bus-api-client'
 import { Button, CircularProgress } from '@mui/material'
-import cn from 'classnames'
 import { ReactNode, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
@@ -66,7 +65,7 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
   const [from, destination] = routeStartEnd(route?.routeLongName)
 
   return (
-    <div className={cn('bus-tooltip', { hebrew: i18n.language === 'he' })}>
+    <div className="bus-tooltip" dir={i18n.dir()}>
       {isLoading || !route ? (
         <div>
           <h1 className="loading title">
@@ -169,7 +168,7 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
               {showJson ? t('hide_document') : t('show_document')}
             </Button>
             {showJson && (
-              <div dir={i18n.language === 'en' ? 'rtl' : 'ltr'}>
+              <div dir="ltr">
                 <CustomTreeView<Point>
                   id={`${position.point?.id}`}
                   data={position}

@@ -30,6 +30,8 @@
   "singleline_map_page_description": "Display of bus route on map by user-given bus operator, vehicle number, route number, route, date & time",
   "singleline_map_page_route": "By Route",
   "singleline_map_page_vehicle_id": "By Vehicle ID",
+  "bus_tooltip_footer_previous_location": "Previous location",
+  "bus_tooltip_footer_next_location": "Next location",
   "open_menu_description": "Displays different options and parameters which are accessible in the application",
   "open_video_about_this_page": "Open video about this page",
   "choose_datetime": "Date and time",
