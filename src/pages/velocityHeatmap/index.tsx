@@ -1,4 +1,12 @@
-import { FormControlLabel, Radio, RadioGroup, Stack, Typography } from '@mui/material'
+import {
+  Box,
+  Stack,
+  ToggleButton,
+  ToggleButtonGroup,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material'
 import React, { useContext, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { TileLayer } from 'react-leaflet'
@@ -21,6 +29,10 @@ const DEFAULT_ZOOM_LEVEL = 10
 
 const VelocityHeatmapPage: React.FC = () => {
   const { t } = useTranslation()
+  const theme = useTheme()
+  // Long labels are cramped as 3 columns on a phone, so stack the selector
+  // vertically (one button per row) there and keep a single row on wider screens.
+  const stackVisSelector = useMediaQuery(theme.breakpoints.down('sm'))
 
   const { search, setSearch } = useContext(GlobalSearchContext)
   const dateDayjs = dayjs.tz(search.date, ISRAEL_TIMEZONE)
@@ -36,32 +48,40 @@ const VelocityHeatmapPage: React.FC = () => {
     }))
   }
 
+  const handleVisModeChange = (
+    _: React.MouseEvent<HTMLElement>,
+    value: 'avg' | 'std' | 'cv' | null,
+  ) => {
+    if (value) setVisMode(value)
+  }
+
   return (
     <PageContainer>
       <Typography variant="h4" component="h1" gutterBottom>
         {t('velocity_heatmap_page_title')}
       </Typography>
 
-      {/* choose date*/}
-      <Stack direction="column" spacing={2} sx={{ mb: 2, width: { xs: '100%', md: '70%' } }}>
-        <DateSelector time={dateDayjs} onChange={handleDateChange} />
-        <DateNavigator currentTime={dateDayjs} onChange={handleDateChange} />
-      </Stack>
-      <RadioGroup
-        row
-        name="visMode"
-        value={visMode}
-        onChange={(e) => setVisMode(e.target.value as 'avg' | 'std' | 'cv')}
-        sx={{ flexWrap: 'wrap', mt: 2 }}>
-        {VIS_MODES.map((mode) => (
-          <FormControlLabel
-            key={mode.key}
-            value={mode.key}
-            control={<Radio size="small" />}
-            label={t(mode.labelKey)}
-          />
-        ))}
-      </RadioGroup>
+      {/* choose date + visualization — centered block */}
+      <Box sx={{ width: '100%', maxWidth: 520, mx: 'auto' }}>
+        <Stack direction="column" spacing={2} sx={{ mb: 2 }}>
+          <DateSelector time={dateDayjs} onChange={handleDateChange} />
+          <DateNavigator currentTime={dateDayjs} onChange={handleDateChange} />
+        </Stack>
+        <ToggleButtonGroup
+          value={visMode}
+          color="primary"
+          exclusive
+          fullWidth
+          orientation={stackVisSelector ? 'vertical' : 'horizontal'}
+          onChange={handleVisModeChange}
+          sx={{ mt: 2 }}>
+          {VIS_MODES.map((mode) => (
+            <ToggleButton key={mode.key} value={mode.key}>
+              {t(mode.labelKey)}
+            </ToggleButton>
+          ))}
+        </ToggleButtonGroup>
+      </Box>
 
       <MapShell
         center={[29.65, 34.6]}
