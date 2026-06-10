@@ -1,5 +1,14 @@
 import { OpenInFullRounded } from '@mui/icons-material'
-import { FormControlLabel, IconButton, Radio, RadioGroup, Stack, Typography } from '@mui/material'
+import {
+  Box,
+  IconButton,
+  Stack,
+  ToggleButton,
+  ToggleButtonGroup,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material'
 import React, { useCallback, useContext, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { AttributionControl, MapContainer, TileLayer, ZoomControl } from 'react-leaflet'
@@ -25,6 +34,10 @@ const VelocityHeatmapPage: React.FC = () => {
   const toggleExpanded = useCallback(() => setIsExpanded((expanded) => !expanded), [])
   const { t, i18n } = useTranslation()
   const isRtl = i18n.dir() === 'rtl'
+  const theme = useTheme()
+  // Long labels are cramped as 3 columns on a phone, so stack the selector
+  // vertically (one button per row) there and keep a single row on wider screens.
+  const stackVisSelector = useMediaQuery(theme.breakpoints.down('sm'))
 
   const { search, setSearch } = useContext(GlobalSearchContext)
   const dateDayjs = dayjs.tz(search.date, ISRAEL_TIMEZONE)
@@ -43,6 +56,13 @@ const VelocityHeatmapPage: React.FC = () => {
     }))
   }
 
+  const handleVisModeChange = (
+    _: React.MouseEvent<HTMLElement>,
+    value: 'avg' | 'std' | 'cv' | null,
+  ) => {
+    if (value) setVisMode(value)
+  }
+
   useConstrainedFloatingButton(mapContainerRef, buttonRef, isExpanded)
 
   return (
@@ -51,26 +71,27 @@ const VelocityHeatmapPage: React.FC = () => {
         {t('velocity_heatmap_page_title')}
       </Typography>
 
-      {/* choose date*/}
-      <Stack direction="column" spacing={2} sx={{ mb: 2, width: { xs: '100%', md: '70%' } }}>
-        <DateSelector time={dateDayjs} onChange={handleDateChange} />
-        <DateNavigator currentTime={dateDayjs} onChange={handleDateChange} />
-      </Stack>
-      <RadioGroup
-        row
-        name="visMode"
-        value={visMode}
-        onChange={(e) => setVisMode(e.target.value as 'avg' | 'std' | 'cv')}
-        sx={{ flexWrap: 'wrap', mt: 2 }}>
-        {VIS_MODES.map((mode) => (
-          <FormControlLabel
-            key={mode.key}
-            value={mode.key}
-            control={<Radio size="small" />}
-            label={t(mode.labelKey)}
-          />
-        ))}
-      </RadioGroup>
+      {/* choose date + visualization — centered block */}
+      <Box sx={{ width: '100%', maxWidth: 520, mx: 'auto' }}>
+        <Stack direction="column" spacing={2} sx={{ mb: 2 }}>
+          <DateSelector time={dateDayjs} onChange={handleDateChange} />
+          <DateNavigator currentTime={dateDayjs} onChange={handleDateChange} />
+        </Stack>
+        <ToggleButtonGroup
+          value={visMode}
+          color="primary"
+          exclusive
+          fullWidth
+          orientation={stackVisSelector ? 'vertical' : 'horizontal'}
+          onChange={handleVisModeChange}
+          sx={{ mt: 2 }}>
+          {VIS_MODES.map((mode) => (
+            <ToggleButton key={mode.key} value={mode.key}>
+              {t(mode.labelKey)}
+            </ToggleButton>
+          ))}
+        </ToggleButtonGroup>
+      </Box>
 
       <div ref={mapContainerRef} className={`map-info ${isExpanded ? 'expanded' : 'collapsed'}`}>
         <IconButton
