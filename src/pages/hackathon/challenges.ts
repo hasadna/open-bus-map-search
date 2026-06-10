@@ -106,7 +106,10 @@ export const CHALLENGES: Challenge[] = [
     stack: ['React', 'TypeScript', 'routing'],
     domainExpertFriendly: false,
     startingPoints: [
-      { labelKey: 'links.line_profile', href: 'https://www.databus.org.il/profile/' },
+      {
+        labelKey: 'links.line_profile',
+        href: 'https://open-bus-map-search.hasadna.org.il/profile/4339841',
+      },
     ],
   },
   {
@@ -170,8 +173,11 @@ export const CHALLENGES: Challenge[] = [
     stack: ['React', 'Recharts', 'TypeScript'],
     domainExpertFriendly: true,
     startingPoints: [
-      { labelKey: 'links.gaps_page', href: 'https://www.databus.org.il/gaps' },
-      { labelKey: 'links.line_profile', href: 'https://www.databus.org.il/profile/' },
+      { labelKey: 'links.gaps_page', href: 'https://open-bus-map-search.hasadna.org.il/gaps' },
+      {
+        labelKey: 'links.line_profile',
+        href: 'https://open-bus-map-search.hasadna.org.il/profile/4339841',
+      },
     ],
   },
   {
