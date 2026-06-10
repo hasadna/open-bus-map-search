@@ -8,17 +8,20 @@ import {
 import { MapIndex } from '../MapIndex'
 
 interface MapIndexLayerProps {
+  heatmapMode?: boolean
   showPlannedRoute?: boolean
 }
 
-export function MapIndexLayer({ showPlannedRoute }: MapIndexLayerProps) {
+export function MapIndexLayer({ heatmapMode, showPlannedRoute }: MapIndexLayerProps) {
   return (
     <div className="map-index">
-      <MapIndex
-        lineColor={actualRouteLineColor}
-        imgSrc={actualRouteStopMarkerPath}
-        title={t('actualRoute')}
-      />
+      {!heatmapMode && (
+        <MapIndex
+          lineColor={actualRouteLineColor}
+          imgSrc={actualRouteStopMarkerPath}
+          title={t('actualRoute')}
+        />
+      )}
       {showPlannedRoute && (
         <MapIndex
           lineColor={plannedRouteLineColor}

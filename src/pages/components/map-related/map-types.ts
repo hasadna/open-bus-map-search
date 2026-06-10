@@ -21,6 +21,7 @@ export interface MapProps {
   positions: Point[]
   plannedRouteStops?: BusStop[]
   showNavigationButtons?: boolean
+  heatmapMode?: boolean
 }
 
 export function toPoint(location: SiriVehicleLocationWithRelatedPydanticModel): Point {
