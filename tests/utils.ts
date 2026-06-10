@@ -106,6 +106,24 @@ export const getBranch = async (): Promise<string> => {
   })
 }
 
+/**
+ * Wait until the Leaflet map stops moving. The recenter effect pans the map as
+ * vehicle-position batches stream in, so marker screen coordinates are not
+ * trustworthy (clicks can miss) until the pane's transform stays unchanged
+ * between two consecutive samples.
+ */
+export const waitForMapIdle = async (page: Page) => {
+  let previousTransform = ''
+  await expect(async () => {
+    const transform = await page
+      .locator('.leaflet-map-pane')
+      .evaluate((el) => (el as HTMLElement).style.transform)
+    const stable = transform !== '' && transform === previousTransform
+    previousTransform = transform
+    expect(stable).toBe(true)
+  }).toPass({ timeout: 15000, intervals: [500] })
+}
+
 export const waitForSkeletonsToHide = async (page: Page) => {
   // matches both the legacy antd skeleton and the MUI-based SkeletonLoader
   const skeletons = page.locator('.ant-skeleton-content, [data-testid="skeleton-loader"]')

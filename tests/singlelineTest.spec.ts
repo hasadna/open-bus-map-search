@@ -7,6 +7,7 @@ import {
   test,
   verifyDateFromParameter,
   visitPage,
+  waitForMapIdle,
   waitForSkeletonsToHide,
 } from './utils'
 
@@ -109,8 +110,13 @@ test.describe('Single line page tests', () => {
     })
 
     await test.step('Click on bus button', async () => {
-      await page.getByText('מסלול בפועלמסלול מתוכנן').click()
-      await page.locator(BUS_MARKER_SELECTOR).nth(2).click({ force: true })
+      await waitForMapIdle(page)
+      const marker = page.locator(BUS_MARKER_SELECTOR).nth(2)
+      // Center the marker first: markers are focused on mousedown (tabindex),
+      // and Chromium auto-scrolls the focused element toward the center - if
+      // that scroll happens between press and release, the click is lost.
+      await marker.evaluate((el) => el.scrollIntoView({ block: 'center', behavior: 'instant' }))
+      await marker.click({ force: true })
       await expect(page.locator('.leaflet-popup-content-wrapper')).toBeAttached({ timeout: 10000 })
       await waitForSkeletonsToHide(page)
     })
