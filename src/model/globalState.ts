@@ -28,6 +28,12 @@ export type GlobalSearchState = {
   stopKey: string | null
 }
 
+/** True if the value is a readable "YYYY-MM-DD" calendar date (the format of
+ *  GlobalSearchState.date). Used to drop corrupt dates from shared URLs or
+ *  stale session storage instead of letting them break every date consumer. */
+export const isValidSearchDate = (date: unknown): date is string =>
+  typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date) && dayjs(date).isValid()
+
 export const GLOBAL_SEARCH_DEFAULTS: GlobalSearchState = {
   date: toIsraelTimezone(dayjs()).format('YYYY-MM-DD'),
   operatorId: null,

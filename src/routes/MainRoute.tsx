@@ -8,6 +8,7 @@ import {
   GLOBAL_SEARCH_DEFAULTS,
   GlobalSearchContext,
   GlobalSearchState,
+  isValidSearchDate,
 } from '../model/globalState'
 import { ExtraShareParamsContext, InitialUrlParamsContext } from '../model/routeContext'
 
@@ -45,7 +46,7 @@ export const MainRoute = () => {
     // Accept 'rideTime' (new) or 'startTime' (old shared links) for backward compat
     const rideTime = p.rideTime ?? p.startTime ?? undefined
     return {
-      ...(p.date ? { date: p.date } : {}),
+      ...(isValidSearchDate(p.date) ? { date: p.date } : {}),
       ...(p.operatorId ? { operatorId: p.operatorId } : {}),
       ...(p.lineNumber ? { lineNumber: p.lineNumber } : {}),
       ...(p.vehicleNumber ? { vehicleNumber: Number(p.vehicleNumber) } : {}),
@@ -56,10 +57,20 @@ export const MainRoute = () => {
   }, [])
 
   // 'search_v2' avoids type collisions with old 'search' session storage (which used timestamp)
-  const [search, setSearch] = useSessionStorage<GlobalSearchState>('search_v2', {
+  const [storedSearch, setSearch] = useSessionStorage<GlobalSearchState>('search_v2', {
     ...GLOBAL_SEARCH_DEFAULTS,
     ...urlState,
   })
+
+  // A stored date that no longer parses (stale format, manual edit) falls back
+  // to the default day instead of propagating an invalid date to every page.
+  const search = useMemo<GlobalSearchState>(
+    () =>
+      isValidSearchDate(storedSearch.date)
+        ? storedSearch
+        : { ...storedSearch, date: GLOBAL_SEARCH_DEFAULTS.date },
+    [storedSearch],
+  )
 
   // If session storage already had values, urlState was ignored above — apply it now.
   // This ensures shared links always override stale session state.
