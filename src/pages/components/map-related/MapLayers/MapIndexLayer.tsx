@@ -1,5 +1,4 @@
 import { useTranslation } from 'react-i18next'
-import { useTheme } from 'src/layout/ThemeContext'
 import {
   actualRouteLineColor,
   actualRouteStopMarkerPath,
@@ -13,10 +12,9 @@ interface MapIndexLayerProps {
 }
 
 export function MapIndexLayer({ showPlannedRoute }: MapIndexLayerProps) {
-  const { isDarkTheme } = useTheme()
   const { t } = useTranslation()
   return (
-    <div className={`map-index${isDarkTheme ? ' dark' : ''}`}>
+    <div className="map-index">
       <MapIndex
         lineColor={actualRouteLineColor}
         imgSrc={actualRouteStopMarkerPath}

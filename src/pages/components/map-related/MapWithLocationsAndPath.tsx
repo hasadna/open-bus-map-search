@@ -1,6 +1,7 @@
 import { MapProps } from './map-types'
 import type { Point } from './map-types'
 import { MapContent } from './MapContent'
+import { MapIndexLayer } from './MapLayers/MapIndexLayer'
 import { MapShell } from './MapShell'
 
 const position: Point = {
@@ -14,7 +15,11 @@ export function MapWithLocationsAndPath({
   showNavigationButtons,
 }: MapProps) {
   return (
-    <MapShell center={position.loc} zoom={13} scrollWheelZoom={true}>
+    <MapShell
+      center={position.loc}
+      zoom={13}
+      scrollWheelZoom={true}
+      legend={<MapIndexLayer showPlannedRoute={!!plannedRouteStops} />}>
       <MapContent
         positions={positions}
         plannedRouteStops={plannedRouteStops}

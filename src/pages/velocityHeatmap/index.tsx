@@ -67,7 +67,8 @@ const VelocityHeatmapPage: React.FC = () => {
         center={[29.65, 34.6]}
         zoom={DEFAULT_ZOOM_LEVEL}
         scrollWheelZoom={true}
-        style={{ height: '100%', width: '100%' }}>
+        style={{ height: '100%', width: '100%' }}
+        legend={<VelocityHeatmapLegend visMode={visMode} min={min} max={max} />}>
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
@@ -79,7 +80,6 @@ const VelocityHeatmapPage: React.FC = () => {
             setMax(max)
           }}
         />
-        <VelocityHeatmapLegend visMode={visMode} min={min} max={max} />
       </MapShell>
     </PageContainer>
   )

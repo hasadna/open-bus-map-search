@@ -1,10 +1,15 @@
 // Shared translucency for map overlay controls so they read consistently across
-// both themes. Informational surfaces (legend, attribution) are more see-through;
-// interactive buttons (zoom, expand) are more opaque for a clearer hit target.
+// both themes. The attribution is more see-through; interactive buttons (zoom,
+// expand) are more opaque for a clearer hit target.
 $control-bg: rgb(255 255 255 / 70%);
 $control-bg-dark: rgb(40 40 40 / 70%);
 $button-bg: rgb(255 255 255 / 90%);
 $button-bg-dark: rgb(40 40 40 / 90%);
+
+// The legend is near-opaque: at 70% the map content under it (e.g. the velocity
+// heatmap's saturated overlay) tints it a different color on every page.
+$legend-bg: rgb(255 255 255 / 90%);
+$legend-bg-dark: rgb(40 40 40 / 92%);
 
 // Shared frame so the zoom bar and expand button read identically (Leaflet's
 // default heavy shadow + missing border otherwise make them look unequal).
@@ -72,21 +77,27 @@ main > div,
     background: $control-bg;
   }
 
-  .map-index {
+  // Shared legend slot rendered by MapShell's `legend` prop: every map page's
+  // legend gets the same corner, box chrome and dark theming; pages provide
+  // only the content.
+  .map-legend {
     position: absolute;
     top: 1em;
     inset-inline-start: 1em;
     z-index: 1000;
+    border: 2px solid black;
+    border-radius: 8px;
+    background-color: $legend-bg;
+    padding: 8px 12px;
+    color: black;
+  }
 
+  .map-index {
     // Two-column table: icons in the start column, text in the end column.
     display: grid;
     grid-template-columns: auto 1fr;
-    gap: 0.5em 1em;
+    gap: 4px 8px;
     align-items: center;
-    border: 2px solid black;
-    border-radius: 8px;
-    background-color: $control-bg;
-    padding: 1em;
 
     // display:contents promotes each item's cells into the parent grid so the
     // icon and text columns line up across every row.
@@ -124,18 +135,16 @@ main > div,
       &-title {
         justify-self: start;
         text-align: start;
-        color: black;
+
+        // Match the velocity legend's typography; the h3 browser-default
+        // margins were the bulk of this legend's wasted space.
+        h3 {
+          margin: 0;
+          font-size: 13px;
+          font-weight: 600;
+        }
       }
     }
-  }
-}
-
-.map-index.dark {
-  background-color: $control-bg-dark;
-  border-color: #fff;
-
-  .map-index-item-title {
-    color: #fff;
   }
 }
 
@@ -143,6 +152,12 @@ main > div,
 // `dark` class in dark mode, so theme every Leaflet sub-element + the expand
 // button under it (one reactive hook covers popup, zoom, attribution, button).
 .map-info.dark {
+  .map-legend {
+    background-color: $legend-bg-dark;
+    border-color: #fff;
+    color: #fff;
+  }
+
   .leaflet-popup-content-wrapper,
   .leaflet-popup-tip {
     background: #1c1d1c;
@@ -235,4 +250,9 @@ pre {
   position: absolute;
   inset: 0;
   margin-bottom: 0;
+
+  // Above the sidebar (.ant-layout-sider, z-index 1) and MUI input labels
+  // (z-index 1), which would otherwise paint over the map and steal clicks;
+  // below antd/MUI portal layers (dropdowns/modals, 1050+).
+  z-index: 1000;
 }
