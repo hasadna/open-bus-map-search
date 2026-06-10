@@ -30,11 +30,11 @@ const SingleLineMapPage = () => {
 
   // mode is page-specific: only single-line-map has the routes/vehicle toggle.
   // Shareable so a recipient sees the same mode. Persisted across navigations.
-  const { params, ui, setParams, setUi } = usePageState(
+  const { params, setParams } = usePageState(
     'line-view',
     {
       params: { mode: vehicleNumber ? 'vehicle' : 'routes' },
-      ui: { isExpanded: false, scrollPosition: 0, centerLat: 0, centerLng: 0, zoom: 13 },
+      ui: { scrollPosition: 0 },
     },
     ['mode'],
   )
@@ -135,7 +135,6 @@ const SingleLineMapPage = () => {
             <ToggleButtonGroup
               value={type}
               color="primary"
-              dir="rtl"
               onChange={handleTypeChange}
               sx={{ height: 56 }}
               exclusive
@@ -145,7 +144,7 @@ const SingleLineMapPage = () => {
             </ToggleButtonGroup>
           </Grid>
         </Grid>
-        <Grid container spacing={2} size={12} alignContent={'center'}>
+        <Grid container spacing={2} size={12} sx={{ alignContent: 'center' }}>
           {type === 'routes' ? (
             <>
               <Grid size={{ sm: 4, xs: 12 }}>
@@ -181,11 +180,13 @@ const SingleLineMapPage = () => {
             <Grid
               size={{ sm: type === 'routes' ? 4 : 8, xs: 12 }}
               container
-              alignItems="center"
-              display="flex"
-              gap={2}
-              flexWrap="nowrap"
-              justifyContent="space-between">
+              sx={{
+                alignItems: 'center',
+                display: 'flex',
+                gap: 2,
+                flexWrap: 'nowrap',
+                justifyContent: 'space-between',
+              }}>
               <FilterPositionsByStartTimeSelector
                 options={options}
                 disabled={!routeKey && !vehicleNumber}
@@ -205,15 +206,6 @@ const SingleLineMapPage = () => {
         positions={positions}
         plannedRouteStops={plannedRouteStops}
         showNavigationButtons
-        isExpanded={ui.isExpanded}
-        onToggleExpanded={() => setUi((prev) => ({ ...prev, isExpanded: !prev.isExpanded }))}
-        centerLat={ui.centerLat || undefined}
-        centerLng={ui.centerLng || undefined}
-        zoom={ui.zoom || undefined}
-        onViewportChange={(centerLat, centerLng, zoom) =>
-          setUi((prev) => ({ ...prev, centerLat, centerLng, zoom }))
-        }
-        routeIdentity={`${operatorId}:${routeKey ?? vehicleNumber}`}
       />
     </PageContainer>
   )

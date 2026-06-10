@@ -16,6 +16,7 @@ import OperatorSelector from '../components/OperatorSelector'
 import { PageContainer } from '../components/PageContainer'
 import RouteSelector from '../components/RouteSelector'
 import { Row } from '../components/Row'
+import { serviceDayBounds } from '../components/utils/startTimeUtils'
 import GapsTable from './GapsTable'
 
 const GapsPage = () => {
@@ -49,8 +50,7 @@ const GapsPage = () => {
     if (!selectedRoute) return
 
     setGapsIsLoading(true)
-    const start = dayjs.tz(date, ISRAEL_TIMEZONE).startOf('day')
-    const end = start.add(1, 'day').add(4, 'h')
+    const { start, end } = serviceDayBounds(date)
     getGapsAsync(start.valueOf(), end.valueOf(), operatorId, selectedRoute.lineRef)
       .then((res) =>
         setGaps(

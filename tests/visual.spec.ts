@@ -99,6 +99,21 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
       await eyes.check('map page')
     })
 
+    test(`Single Line Map Page Should Look Good [${mode}]`, async ({ page, eyes }) => {
+      await visitPage(page, 'singleline_map_page_title')
+      // wait for the mode-selector toggle — a stale dir="rtl" workaround rendered it
+      // wrong in LTR once the direction-aware emotion cache made it redundant
+      await page
+        .getByText(i18next.t('singleline_map_page_route'), { exact: true })
+        .first()
+        .waitFor()
+      await waitForSkeletonsToHide(page)
+      await eyes.check('single line map page', {
+        // map tiles are aborted/blank in tests — compare layout, not pixels
+        layoutRegions: ['.leaflet-container'],
+      })
+    })
+
     test(`Operator Page Should Look Good [${mode}]`, async ({
       page,
       advancedRouteFromHAR,

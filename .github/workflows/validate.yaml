@@ -96,7 +96,7 @@ jobs:
       - name: Set timezone
         run: echo "TZ=Asia/Jerusalem" >> $GITHUB_ENV
       - name: Download Docker image artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: docker-image
           path: /tmp
@@ -134,12 +134,17 @@ jobs:
           echo "hash.txt is valid with MIME type $mime_type and length $content_length characters."
       - name: Install Dependencies and Playwright
         run: npm ci
+      - name: Resolve Playwright cache key inputs
+        id: playwright-version
+        run: |
+          echo "version=$(node -p 'require("@playwright/test/package.json").version')" >> "$GITHUB_OUTPUT"
+          echo "imageos=$ImageOS" >> "$GITHUB_OUTPUT"
       - name: Cache Playwright browsers
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         id: playwright-cache
         with:
           path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
+          key: ${{ runner.os }}-${{ runner.arch }}-${{ steps.playwright-version.outputs.imageos }}-playwright-${{ steps.playwright-version.outputs.version }}
       - name: Install Playwright browser dependencies
         if: steps.playwright-cache.outputs.cache-hit != 'true'
         timeout-minutes: 15
@@ -181,7 +186,7 @@ jobs:
         run: |
           echo "SHORT_SHA=$(echo ${{ github.event.pull_request.head.sha }} | cut -c1-7)" >> $GITHUB_ENV
       - name: Download Docker image artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: docker-image
           path: /tmp
@@ -223,12 +228,17 @@ jobs:
           cache: 'npm'
       - name: Install Dependencies and Playwright
         run: npm ci
+      - name: Resolve Playwright cache key inputs
+        id: playwright-version
+        run: |
+          echo "version=$(node -p 'require("@playwright/test/package.json").version')" >> "$GITHUB_OUTPUT"
+          echo "imageos=$ImageOS" >> "$GITHUB_OUTPUT"
       - name: Cache Playwright browsers
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         id: playwright-cache
         with:
           path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
+          key: ${{ runner.os }}-${{ runner.arch }}-${{ steps.playwright-version.outputs.imageos }}-playwright-${{ steps.playwright-version.outputs.version }}
       - name: Install Playwright browser dependencies
         if: steps.playwright-cache.outputs.cache-hit != 'true'
         timeout-minutes: 15
@@ -236,6 +246,7 @@ jobs:
       - name: Run Playwright Visual Tests
         env:
           APPLITOOLS_BATCH_NAME: open-bus-map-search/${{ github.ref }}/${{ env.SHORT_SHA }}/
+          PWTEST_CHILD_PROCESS_TIMEOUT: '1800000' # 30 min; default 300000 force-kills slow UFG result collection → false CI failure
         run: npm run test:e2e:visual
       - name: Prepare Playwright artifact directory
         if: always()
@@ -267,7 +278,7 @@ jobs:
       AWS_KEY_ID: ${{ secrets.AWS_KEY_ID }}
     steps:
       - name: Download Playwright test artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: playwright-test
           path: test-results

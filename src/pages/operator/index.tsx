@@ -20,7 +20,7 @@ const OperatorPage = () => {
     search: { operatorId, date },
     setSearch,
   } = useContext(GlobalSearchContext)
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
 
   // timeRange is shareable: a colleague receiving the link sees the same
   // aggregation window (day / week / month).
@@ -75,11 +75,10 @@ const OperatorPage = () => {
             sx={{ height: 56 }}
             exclusive
             fullWidth
-            dir="rtl"
             onChange={(_, value: (typeof TIME_RANGES)[number]) =>
               value ? setParams((prev) => ({ ...prev, timeRange: value })) : undefined
             }>
-            {(i18n.dir() === 'rtl' ? TIME_RANGES : TIME_RANGES.toReversed()).map((time) => (
+            {TIME_RANGES.map((time) => (
               <ToggleButton key={time} value={time}>
                 {t(`operator.time_range.${time}`)}
               </ToggleButton>

@@ -4,7 +4,7 @@ import { Tooltip } from 'antd'
 import { useCallback, useContext, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLoaderData, useNavigate } from 'react-router'
-import { getRoutesAsync } from 'src/api/gtfsService'
+import { getServiceDayRoutes } from 'src/api/serviceDayRoutesService'
 import dayjs, { toIsraelTimezone } from 'src/dayjs'
 import { usePageState } from 'src/hooks/usePageState'
 import { useSingleLineData } from 'src/hooks/useSingleLineData'
@@ -20,7 +20,6 @@ import RouteSelector from '../components/RouteSelector'
 import { LineProfileDetails } from './LineProfileDetails'
 import { LineProfileRide } from './LineProfileRide'
 import { LineProfileStop } from './LineProfileStop'
-import './LineProfile.scss'
 
 const LineProfile = () => {
   const { t } = useTranslation()
@@ -37,24 +36,14 @@ const LineProfile = () => {
   // rideTime is in page params so it's included in the share URL.
   // Uses its own key ('line-profile') — not shared with single-line-map —
   // so mode never leaks in and the two pages don't clobber each other's params.
-  const {
-    setParams: setPageParams,
-    ui,
-    setUi,
-  } = usePageState<
+  const { setParams: setPageParams } = usePageState<
     { rideTime: string | null },
-    {
-      isExpanded: boolean
-      scrollPosition: number
-      centerLat: number
-      centerLng: number
-      zoom: number
-    }
+    { scrollPosition: number }
   >(
     'line-profile',
     {
       params: { rideTime: null },
-      ui: { isExpanded: false, scrollPosition: 0, centerLat: 0, centerLng: 0, zoom: 13 },
+      ui: { scrollPosition: 0 },
     },
     ['rideTime'],
   )
@@ -109,8 +98,9 @@ const LineProfile = () => {
   const handleDateChange = (time: dayjs.Dayjs | null) => {
     if (!time || !route) return
     const abortController = new AbortController()
-    getRoutesAsync(
-      time,
+    // Service-day aware (and Israel-tz normalized internally), consistent with the
+    // gaps page and the single-line ride list.
+    getServiceDayRoutes(
       time,
       route.operatorRef.toString(),
       route.routeShortName,
@@ -145,19 +135,19 @@ const LineProfile = () => {
   }
 
   return (
-    <PageContainer className="line-profile-container">
+    <PageContainer className="map-container">
       <Grid container spacing={2} sx={{ marginTop: '0.5rem' }}>
-        <Grid size={{ xs: 12, lg: 7 }} container spacing={2} flexDirection="column">
+        <Grid size={{ xs: 12, lg: 7 }} container spacing={2} sx={{ flexDirection: 'column' }}>
           <LineProfileDetails {...route} />
         </Grid>
-        <Grid size={{ xs: 12, lg: 5 }} container spacing={2} flexDirection="column">
+        <Grid size={{ xs: 12, lg: 5 }} container spacing={2} sx={{ flexDirection: 'column' }}>
           <RouteSelector
             routes={routes ?? []}
             routeKey={routeKey}
             setRouteKey={handleRouteChange}
           />
           <DateSelector time={dayjs(route?.date.getTime())} onChange={handleDateChange} />
-          <Grid container flexWrap="nowrap" alignItems="center">
+          <Grid container sx={{ flexWrap: 'nowrap', alignItems: 'center' }}>
             <FilterPositionsByStartTimeSelector
               options={options}
               startTime={startTime}
@@ -181,19 +171,7 @@ const LineProfile = () => {
           />
         </Grid>
       </Grid>
-      <MapWithLocationsAndPath
-        positions={positions}
-        plannedRouteStops={plannedRouteStops}
-        isExpanded={ui.isExpanded}
-        onToggleExpanded={() => setUi((prev) => ({ ...prev, isExpanded: !prev.isExpanded }))}
-        centerLat={ui.centerLat || undefined}
-        centerLng={ui.centerLng || undefined}
-        zoom={ui.zoom || undefined}
-        onViewportChange={(centerLat, centerLng, zoom) =>
-          setUi((prev) => ({ ...prev, centerLat, centerLng, zoom }))
-        }
-        routeIdentity={`${route?.operatorRef}:${routeKey}`}
-      />
+      <MapWithLocationsAndPath positions={positions} plannedRouteStops={plannedRouteStops} />
     </PageContainer>
   )
 }

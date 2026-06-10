@@ -3,7 +3,6 @@ import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { TileLayer, useMap } from 'react-leaflet'
 import { MapProps } from './map-types'
-import { MapIndexLayer } from './MapLayers/MapIndexLayer'
 import { MapPlannedRouteLayer } from './MapLayers/MapPlannedRouteLayer'
 import { MapRouteLayer } from './MapLayers/MapRouteLayer'
 import { useRecenterOnDataChange } from './useRecenterOnDataChange'
@@ -23,17 +22,12 @@ export const plannedRouteLineColor = 'black'
 export const plannedRouteStopMarkerPath = `${import.meta.env.BASE_URL}marker-bus-stop.png`
 export const plannedRouteStopMarker = getIcon(plannedRouteStopMarkerPath, 20, 25)
 
-export function MapContent({
-  positions,
-  plannedRouteStops,
-  showNavigationButtons,
-  routeIdentity,
-}: MapProps & { routeIdentity?: string }) {
+export function MapContent({ positions, plannedRouteStops, showNavigationButtons }: MapProps) {
   const [tileUrl, setTileUrl] = useState('https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png')
   const map = useMap()
   const { i18n } = useTranslation()
 
-  useRecenterOnDataChange({ positions, plannedRouteStops, routeIdentity })
+  useRecenterOnDataChange({ positions, plannedRouteStops })
 
   useEffect(() => {
     const handleLanguageChange = (lng: string) => {
@@ -65,7 +59,6 @@ export function MapContent({
         attribution='&copy <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url={tileUrl}
       />
-      <MapIndexLayer showPlannedRoute={!!plannedRouteStops} />
       <MapRouteLayer
         positions={positions}
         showNavigationButtons={showNavigationButtons}

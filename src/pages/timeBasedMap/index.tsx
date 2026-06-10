@@ -1,17 +1,15 @@
-import { OpenInFullRounded } from '@mui/icons-material'
-import { Alert, CircularProgress, Grid, IconButton, Typography } from '@mui/material'
+import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
 import { useCallback, useMemo } from 'react'
-import { useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import { MapContainer, Marker, Popup, TileLayer, useMap, useMapEvents } from 'react-leaflet'
+import { Marker, Popup, TileLayer, useMap } from 'react-leaflet'
 import MarkerClusterGroup from 'react-leaflet-markercluster'
 import dayjs, { ISRAEL_TIMEZONE } from 'src/dayjs'
 import { useAgencyList } from 'src/hooks/useAgencyList'
-import { useConstrainedFloatingButton } from 'src/hooks/useConstrainedFloatingButton'
 import { usePageState } from 'src/hooks/usePageState'
 import useVehicleLocations from 'src/hooks/useVehicleLocations'
 import { type Point, toPoint } from 'src/pages/components/map-related/map-types'
 import { BusToolTip } from 'src/pages/components/map-related/MapLayers/BusToolTip'
+import { MapShell } from 'src/pages/components/map-related/MapShell'
 import { DateSelector } from '../components/DateSelector'
 import { PageContainer } from '../components/PageContainer'
 import { TimeSelector } from '../components/TimeSelector'
@@ -31,26 +29,18 @@ const DEFAULT_CENTER: [number, number] = [32.3057988, 34.85478613]
 const DEFAULT_ZOOM = 8
 
 export default function TimeBasedMapPage() {
-  const mapContainerRef = useRef<HTMLDivElement>(null)
-  const buttonRef = useRef<HTMLButtonElement>(null)
   const { t } = useTranslation()
 
-  // All time-map state is page-specific.
-  // datetime, center, zoom go in params (shareable) — the recipient sees the
-  //   same moment AND the same map viewport (no auto-fit here).
-  // isExpanded goes in ui (device-specific layout, not worth sharing).
-  const { params, ui, setParams, setUi } = usePageState(
+  // The page's datetime is page-specific and shareable — the recipient of a
+  // share link sees the same moment. Map viewport/expansion are left to
+  // MapShell's own state.
+  const { params, setParams } = usePageState(
     'time-map',
     {
-      params: {
-        datetime: PI_DAY,
-        centerLat: DEFAULT_CENTER[0],
-        centerLng: DEFAULT_CENTER[1],
-        zoom: DEFAULT_ZOOM,
-      },
-      ui: { isExpanded: false, scrollPosition: 0 },
+      params: { datetime: PI_DAY },
+      ui: { scrollPosition: 0 },
     },
-    ['datetime', 'centerLat', 'centerLng', 'zoom'],
+    ['datetime'],
   )
 
   const from = useMemo(() => dayjs.tz(params.datetime, ISRAEL_TIMEZONE), [params.datetime])
@@ -67,13 +57,6 @@ export default function TimeBasedMapPage() {
     },
     [setParams],
   )
-
-  const toggleExpanded = useCallback(
-    () => setUi((prev) => ({ ...prev, isExpanded: !prev.isExpanded })),
-    [setUi],
-  )
-
-  useConstrainedFloatingButton(mapContainerRef, buttonRef, ui.isExpanded)
 
   return (
     <PageContainer className="map-container">
@@ -97,56 +80,21 @@ export default function TimeBasedMapPage() {
         <Grid size={{ md: 4, sm: 6, xs: 12 }}>
           <TimeSelector time={from} onChange={handleFromChange} />
         </Grid>
-        <Grid size={{ xs: 11 }} container alignItems="center">
+        {/* loaded info */}
+        <Grid size={{ xs: 11 }} container sx={{ alignItems: 'center' }}>
           <p>{`${locations.length} - ${t('show_x_bus_locations')}`}</p>
           {isLoading && <CircularProgress size="20px" />}
         </Grid>
       </Grid>
-      <div ref={mapContainerRef} className={`map-info ${ui.isExpanded ? 'expanded' : 'collapsed'}`}>
-        <IconButton
-          ref={buttonRef}
-          color="primary"
-          className="expand-button"
-          onClick={toggleExpanded}>
-          <OpenInFullRounded fontSize="large" />
-        </IconButton>
-        <MapContainer
-          center={[params.centerLat, params.centerLng]}
-          zoom={params.zoom}
-          scrollWheelZoom={true}>
-          <TileLayer
-            attribution='&copy <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
-          />
-          <MapViewportTracker
-            onViewportChange={(centerLat, centerLng, zoom) =>
-              setParams((prev) => ({ ...prev, centerLat, centerLng, zoom }))
-            }
-          />
-          <Markers positions={positions} />
-        </MapContainer>
-      </div>
+      <MapShell center={DEFAULT_CENTER} zoom={DEFAULT_ZOOM} scrollWheelZoom={true}>
+        <TileLayer
+          attribution='&copy <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
+        />
+        <Markers positions={positions} />
+      </MapShell>
     </PageContainer>
   )
-}
-
-/** Persists map viewport so the share URL reproduces the same view. */
-function MapViewportTracker({
-  onViewportChange,
-}: {
-  onViewportChange: (lat: number, lng: number, zoom: number) => void
-}) {
-  useMapEvents({
-    moveend(e) {
-      const map = e.target as {
-        getCenter: () => { lat: number; lng: number }
-        getZoom: () => number
-      }
-      const c = map.getCenter()
-      onViewportChange(c.lat, c.lng, map.getZoom())
-    },
-  })
-  return null
 }
 
 function Markers({ positions }: { positions: Point[] }) {

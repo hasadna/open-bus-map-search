@@ -11,7 +11,8 @@ export interface Challenge {
   startingPoints: { labelKey: string; href: string }[]
 }
 
-export const REGISTRATION_CLOSE_ISO = '2026-06-03T23:59:00+03:00'
+export const POSTPONED = true
+export const REGISTRATION_CLOSE_ISO = '2027-01-01T00:00:00+03:00'
 export const EVENT_DATE_ISO = '2026-06-09T18:00:00+03:00'
 export const REGISTRATION_FORM_URL =
   'https://docs.google.com/forms/d/e/1FAIpQLSfCzB5sA4HaJAii8FT6v4f9SV2Shyujfe3QBgslRsbDWqmByg/viewform?embedded=true'
@@ -105,7 +106,10 @@ export const CHALLENGES: Challenge[] = [
     stack: ['React', 'TypeScript', 'routing'],
     domainExpertFriendly: false,
     startingPoints: [
-      { labelKey: 'links.line_profile', href: 'https://www.databus.org.il/profile/' },
+      {
+        labelKey: 'links.line_profile',
+        href: 'https://open-bus-map-search.hasadna.org.il/profile/4339841',
+      },
     ],
   },
   {
@@ -169,8 +173,11 @@ export const CHALLENGES: Challenge[] = [
     stack: ['React', 'Recharts', 'TypeScript'],
     domainExpertFriendly: true,
     startingPoints: [
-      { labelKey: 'links.gaps_page', href: 'https://www.databus.org.il/gaps' },
-      { labelKey: 'links.line_profile', href: 'https://www.databus.org.il/profile/' },
+      { labelKey: 'links.gaps_page', href: 'https://open-bus-map-search.hasadna.org.il/gaps' },
+      {
+        labelKey: 'links.line_profile',
+        href: 'https://open-bus-map-search.hasadna.org.il/profile/4339841',
+      },
     ],
   },
   {

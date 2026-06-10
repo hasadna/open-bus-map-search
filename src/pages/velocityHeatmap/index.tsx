@@ -1,18 +1,19 @@
-import { OpenInFullRounded } from '@mui/icons-material'
-import { FormControlLabel, IconButton, Radio, RadioGroup, Stack, Typography } from '@mui/material'
-import React, { useCallback, useContext, useRef } from 'react'
-import { useTranslation } from 'react-i18next'
 import {
-  AttributionControl,
-  MapContainer,
-  TileLayer,
-  useMapEvents,
-  ZoomControl,
-} from 'react-leaflet'
+  Box,
+  Stack,
+  ToggleButton,
+  ToggleButtonGroup,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material'
+import React, { useContext, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { TileLayer } from 'react-leaflet'
 import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone } from 'src/dayjs'
-import { useConstrainedFloatingButton } from 'src/hooks/useConstrainedFloatingButton'
 import { usePageState } from 'src/hooks/usePageState'
 import { GlobalSearchContext } from 'src/model/globalState'
+import { MapShell } from 'src/pages/components/map-related/MapShell'
 import { DateNavigator } from '../components/dateNavigator/DateNavigator'
 import { DateSelector } from '../components/DateSelector'
 import { PageContainer } from '../components/PageContainer'
@@ -32,33 +33,26 @@ const DEFAULT_ZOOM = 10
 
 const VelocityHeatmapPage: React.FC = () => {
   const { search, setSearch } = useContext(GlobalSearchContext)
-  const mapContainerRef = useRef<HTMLDivElement>(null)
-  const buttonRef = useRef<HTMLButtonElement>(null)
-  const { t, i18n } = useTranslation()
-  const isRtl = i18n.dir() === 'rtl'
+  const { t } = useTranslation()
+  const theme = useTheme()
+  // Long labels are cramped as 3 columns on a phone, so stack the selector
+  // vertically (one button per row) there and keep a single row on wider screens.
+  const stackVisSelector = useMediaQuery(theme.breakpoints.down('sm'))
+  const dateDayjs = dayjs.tz(search.date, ISRAEL_TIMEZONE)
 
-  // visMode, center, zoom go in params (shareable) — this map has no auto-fit,
-  // so the recipient needs the viewport to see the same area.
-  // isExpanded goes in ui — layout preference, device-specific.
-  const { params, ui, setParams, setUi } = usePageState<
-    { visMode: VisMode; centerLat: number; centerLng: number; zoom: number },
-    { isExpanded: boolean; scrollPosition: number }
-  >(
+  // visMode goes in params (shareable) — the recipient sees the same
+  // visualization. Map viewport/expansion are left to MapShell's own state.
+  const { params, setParams } = usePageState<{ visMode: VisMode }, { scrollPosition: number }>(
     'velocity-heatmap',
     {
-      params: {
-        visMode: 'avg',
-        centerLat: DEFAULT_CENTER[0],
-        centerLng: DEFAULT_CENTER[1],
-        zoom: DEFAULT_ZOOM,
-      },
-      ui: { isExpanded: false, scrollPosition: 0 },
+      params: { visMode: 'avg' },
+      ui: { scrollPosition: 0 },
     },
-    ['visMode', 'centerLat', 'centerLng', 'zoom'],
+    ['visMode'],
   )
 
-  const [min, setMin] = React.useState(0)
-  const [max, setMax] = React.useState(1)
+  const [min, setMin] = useState(0)
+  const [max, setMax] = useState(1)
 
   const handleDateChange = (time: dayjs.Dayjs | null) => {
     setSearch((current) => ({
@@ -67,12 +61,9 @@ const VelocityHeatmapPage: React.FC = () => {
     }))
   }
 
-  const toggleExpanded = useCallback(
-    () => setUi((prev) => ({ ...prev, isExpanded: !prev.isExpanded })),
-    [setUi],
-  )
-
-  useConstrainedFloatingButton(mapContainerRef, buttonRef, ui.isExpanded)
+  const handleVisModeChange = (_: React.MouseEvent<HTMLElement>, value: VisMode | null) => {
+    if (value) setParams((prev) => ({ ...prev, visMode: value }))
+  }
 
   return (
     <PageContainer>
@@ -80,86 +71,48 @@ const VelocityHeatmapPage: React.FC = () => {
         {t('velocity_heatmap_page_title')}
       </Typography>
 
-      <Stack direction="column" spacing={2} sx={{ maxWidth: 600 }}>
-        <DateSelector time={dayjs.tz(search.date, ISRAEL_TIMEZONE)} onChange={handleDateChange} />
-        <DateNavigator
-          currentTime={dayjs.tz(search.date, ISRAEL_TIMEZONE)}
-          onChange={handleDateChange}
-        />
-      </Stack>
-      <RadioGroup
-        row
-        name="visMode"
-        value={params.visMode}
-        onChange={(e) => setParams((prev) => ({ ...prev, visMode: e.target.value as VisMode }))}
-        sx={{ flexWrap: 'wrap', mt: 2 }}>
-        {VIS_MODES.map((mode) => (
-          <FormControlLabel
-            key={mode.key}
-            value={mode.key}
-            control={<Radio size="small" />}
-            label={t(mode.labelKey)}
-          />
-        ))}
-      </RadioGroup>
-
-      <div ref={mapContainerRef} className={`map-info ${ui.isExpanded ? 'expanded' : 'collapsed'}`}>
-        <IconButton
-          ref={buttonRef}
+      {/* choose date + visualization — centered block */}
+      <Box sx={{ width: '100%', maxWidth: 520, mx: 'auto' }}>
+        <Stack direction="column" spacing={2} sx={{ mb: 2 }}>
+          <DateSelector time={dateDayjs} onChange={handleDateChange} />
+          <DateNavigator currentTime={dateDayjs} onChange={handleDateChange} />
+        </Stack>
+        <ToggleButtonGroup
+          value={params.visMode}
           color="primary"
-          className="expand-button"
-          onClick={toggleExpanded}>
-          <OpenInFullRounded fontSize="large" />
-        </IconButton>
-        <MapContainer
-          center={[params.centerLat, params.centerLng]}
-          zoom={params.zoom}
-          scrollWheelZoom={true}
-          zoomControl={false}
-          attributionControl={false}
-          style={{ height: '100%', width: '100%' }}>
-          <ZoomControl position={isRtl ? 'topleft' : 'topright'} />
-          <AttributionControl position={isRtl ? 'bottomright' : 'bottomleft'} prefix={false} />
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
-          />
-          <MapViewportTracker
-            onViewportChange={(centerLat, centerLng, zoom) =>
-              setParams((prev) => ({ ...prev, centerLat, centerLng, zoom }))
-            }
-          />
-          <VelocityHeatmapRectangles
-            visMode={params.visMode}
-            setMinMax={(min, max) => {
-              setMin(min)
-              setMax(max)
-            }}
-          />
-          <VelocityHeatmapLegend visMode={params.visMode} min={min} max={max} />
-        </MapContainer>
-      </div>
+          exclusive
+          fullWidth
+          orientation={stackVisSelector ? 'vertical' : 'horizontal'}
+          onChange={handleVisModeChange}
+          sx={{ mt: 2 }}>
+          {VIS_MODES.map((mode) => (
+            <ToggleButton key={mode.key} value={mode.key}>
+              {t(mode.labelKey)}
+            </ToggleButton>
+          ))}
+        </ToggleButtonGroup>
+      </Box>
+
+      <MapShell
+        center={DEFAULT_CENTER}
+        zoom={DEFAULT_ZOOM}
+        scrollWheelZoom={true}
+        style={{ height: '100%', width: '100%' }}
+        legend={<VelocityHeatmapLegend visMode={params.visMode} min={min} max={max} />}>
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
+        />
+        <VelocityHeatmapRectangles
+          visMode={params.visMode}
+          setMinMax={(min, max) => {
+            setMin(min)
+            setMax(max)
+          }}
+        />
+      </MapShell>
     </PageContainer>
   )
-}
-
-/** Persists map viewport so the share URL reproduces the same area. */
-function MapViewportTracker({
-  onViewportChange,
-}: {
-  onViewportChange: (lat: number, lng: number, zoom: number) => void
-}) {
-  useMapEvents({
-    moveend(e) {
-      const map = e.target as {
-        getCenter: () => { lat: number; lng: number }
-        getZoom: () => number
-      }
-      const c = map.getCenter()
-      onViewportChange(c.lat, c.lng, map.getZoom())
-    },
-  })
-  return null
 }
 
 export default VelocityHeatmapPage
