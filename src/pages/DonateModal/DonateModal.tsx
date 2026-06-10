@@ -75,11 +75,13 @@ const DonateModal = ({ isVisible, onClose }: DonateModalProps) => {
       <Box sx={boxStyle}>
         <Typography
           component="div"
-          display="flex"
-          justifyContent="space-between"
-          alignItems="start"
-          padding={2}
-          paddingBottom={0}>
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'start',
+            padding: 2,
+            paddingBottom: 0,
+          }}>
           <h1 id="modal-modal-title" style={{ margin: 0 }}>
             {t('how_to_donate_title')}
           </h1>
@@ -90,7 +92,7 @@ const DonateModal = ({ isVisible, onClose }: DonateModalProps) => {
             <CloseRounded sx={{ height: '100%', width: '100%' }} />
           </Button>
         </Typography>
-        <Box padding={2} overflow="auto" maxHeight="calc(100vh - 210px)">
+        <Box sx={{ padding: 2, overflow: 'auto', maxHeight: 'calc(100vh - 210px)' }}>
           <p style={{ margin: 0 }}>{t('how_to_donate_text')}</p>
           <Grid container spacing={2}>
             <Grid size={{ xs: 12, md: 6 }}>
