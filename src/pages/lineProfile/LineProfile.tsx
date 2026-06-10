@@ -20,7 +20,6 @@ import RouteSelector from '../components/RouteSelector'
 import { LineProfileDetails } from './LineProfileDetails'
 import { LineProfileRide } from './LineProfileRide'
 import { LineProfileStop } from './LineProfileStop'
-import './LineProfile.scss'
 
 const LineProfile = () => {
   const { t } = useTranslation()
@@ -125,7 +124,7 @@ const LineProfile = () => {
   }
 
   return (
-    <PageContainer className="line-profile-container">
+    <PageContainer className="map-container">
       <Grid container spacing={2} sx={{ marginTop: '0.5rem' }}>
         <Grid size={{ xs: 12, lg: 7 }} container spacing={2} sx={{ flexDirection: 'column' }}>
           <LineProfileDetails {...route} />

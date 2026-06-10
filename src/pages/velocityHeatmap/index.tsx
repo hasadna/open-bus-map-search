@@ -1,11 +1,18 @@
-import { OpenInFullRounded } from '@mui/icons-material'
-import { FormControlLabel, IconButton, Radio, RadioGroup, Stack, Typography } from '@mui/material'
-import React, { useCallback, useContext, useRef, useState } from 'react'
+import {
+  Box,
+  Stack,
+  ToggleButton,
+  ToggleButtonGroup,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material'
+import React, { useContext, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { AttributionControl, MapContainer, TileLayer, ZoomControl } from 'react-leaflet'
+import { TileLayer } from 'react-leaflet'
 import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone } from 'src/dayjs'
-import { useConstrainedFloatingButton } from 'src/hooks/useConstrainedFloatingButton'
 import { GlobalSearchContext } from 'src/model/globalState'
+import { MapShell } from 'src/pages/components/map-related/MapShell'
 import { DateNavigator } from '../components/dateNavigator/DateNavigator'
 import { DateSelector } from '../components/DateSelector'
 import { PageContainer } from '../components/PageContainer'
@@ -21,10 +28,11 @@ const VIS_MODES = [
 const DEFAULT_ZOOM_LEVEL = 10
 
 const VelocityHeatmapPage: React.FC = () => {
-  const [isExpanded, setIsExpanded] = useState<boolean>(false)
-  const toggleExpanded = useCallback(() => setIsExpanded((expanded) => !expanded), [])
-  const { t, i18n } = useTranslation()
-  const isRtl = i18n.dir() === 'rtl'
+  const { t } = useTranslation()
+  const theme = useTheme()
+  // Long labels are cramped as 3 columns on a phone, so stack the selector
+  // vertically (one button per row) there and keep a single row on wider screens.
+  const stackVisSelector = useMediaQuery(theme.breakpoints.down('sm'))
 
   const { search, setSearch } = useContext(GlobalSearchContext)
   const dateDayjs = dayjs.tz(search.date, ISRAEL_TIMEZONE)
@@ -33,9 +41,6 @@ const VelocityHeatmapPage: React.FC = () => {
   const [min, setMin] = useState(0)
   const [max, setMax] = useState(1)
 
-  const mapContainerRef = useRef<HTMLDivElement>(null)
-  const buttonRef = useRef<HTMLButtonElement>(null)
-
   const handleDateChange = (time: dayjs.Dayjs | null) => {
     setSearch((current) => ({
       ...current,
@@ -43,7 +48,12 @@ const VelocityHeatmapPage: React.FC = () => {
     }))
   }
 
-  useConstrainedFloatingButton(mapContainerRef, buttonRef, isExpanded)
+  const handleVisModeChange = (
+    _: React.MouseEvent<HTMLElement>,
+    value: 'avg' | 'std' | 'cv' | null,
+  ) => {
+    if (value) setVisMode(value)
+  }
 
   return (
     <PageContainer>
@@ -51,58 +61,46 @@ const VelocityHeatmapPage: React.FC = () => {
         {t('velocity_heatmap_page_title')}
       </Typography>
 
-      {/* choose date*/}
-      <Stack direction="column" spacing={2} sx={{ mb: 2, width: { xs: '100%', md: '70%' } }}>
-        <DateSelector time={dateDayjs} onChange={handleDateChange} />
-        <DateNavigator currentTime={dateDayjs} onChange={handleDateChange} />
-      </Stack>
-      <RadioGroup
-        row
-        name="visMode"
-        value={visMode}
-        onChange={(e) => setVisMode(e.target.value as 'avg' | 'std' | 'cv')}
-        sx={{ flexWrap: 'wrap', mt: 2 }}>
-        {VIS_MODES.map((mode) => (
-          <FormControlLabel
-            key={mode.key}
-            value={mode.key}
-            control={<Radio size="small" />}
-            label={t(mode.labelKey)}
-          />
-        ))}
-      </RadioGroup>
-
-      <div ref={mapContainerRef} className={`map-info ${isExpanded ? 'expanded' : 'collapsed'}`}>
-        <IconButton
-          ref={buttonRef}
+      {/* choose date + visualization — centered block */}
+      <Box sx={{ width: '100%', maxWidth: 520, mx: 'auto' }}>
+        <Stack direction="column" spacing={2} sx={{ mb: 2 }}>
+          <DateSelector time={dateDayjs} onChange={handleDateChange} />
+          <DateNavigator currentTime={dateDayjs} onChange={handleDateChange} />
+        </Stack>
+        <ToggleButtonGroup
+          value={visMode}
           color="primary"
-          className="expand-button"
-          onClick={toggleExpanded}>
-          <OpenInFullRounded fontSize="large" />
-        </IconButton>
-        <MapContainer
-          center={[29.65, 34.6]}
-          zoom={DEFAULT_ZOOM_LEVEL}
-          scrollWheelZoom={true}
-          zoomControl={false}
-          attributionControl={false}
-          style={{ height: '100%', width: '100%' }}>
-          <ZoomControl position={isRtl ? 'topleft' : 'topright'} />
-          <AttributionControl position={isRtl ? 'bottomright' : 'bottomleft'} prefix={false} />
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
-          />
-          <VelocityHeatmapRectangles
-            visMode={visMode}
-            setMinMax={(min, max) => {
-              setMin(min)
-              setMax(max)
-            }}
-          />
-          <VelocityHeatmapLegend visMode={visMode} min={min} max={max} />
-        </MapContainer>
-      </div>
+          exclusive
+          fullWidth
+          orientation={stackVisSelector ? 'vertical' : 'horizontal'}
+          onChange={handleVisModeChange}
+          sx={{ mt: 2 }}>
+          {VIS_MODES.map((mode) => (
+            <ToggleButton key={mode.key} value={mode.key}>
+              {t(mode.labelKey)}
+            </ToggleButton>
+          ))}
+        </ToggleButtonGroup>
+      </Box>
+
+      <MapShell
+        center={[29.65, 34.6]}
+        zoom={DEFAULT_ZOOM_LEVEL}
+        scrollWheelZoom={true}
+        style={{ height: '100%', width: '100%' }}
+        legend={<VelocityHeatmapLegend visMode={visMode} min={min} max={max} />}>
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
+        />
+        <VelocityHeatmapRectangles
+          visMode={visMode}
+          setMinMax={(min, max) => {
+            setMin(min)
+            setMax(max)
+          }}
+        />
+      </MapShell>
     </PageContainer>
   )
 }
