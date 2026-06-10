@@ -1,6 +1,5 @@
-import { Add, Remove } from '@mui/icons-material'
-import { Box, IconButton, Tooltip, Typography } from '@mui/material'
-import { useTranslation } from 'react-i18next'
+import { LeftOutlined, RightOutlined } from '@ant-design/icons'
+import './MapFooterButtons.scss'
 
 type TMapFooterButtons = {
   currentMarkerId: number
@@ -13,49 +12,23 @@ function MapFooterButtons({
   markerIds,
   navigateToMarker: navigateMarkers,
 }: TMapFooterButtons) {
-  const { t, i18n } = useTranslation()
   const currentIndex = markerIds.indexOf(currentMarkerId)
-  const nextStep = markerIds[currentIndex + 1]
-  const prevStep = markerIds[currentIndex - 1]
-  const nextEnable = nextStep !== undefined
-  const prevEnable = prevStep !== undefined
+  const rightStep = markerIds[currentIndex + 1]
+  const leftStep = markerIds[currentIndex - 1]
+  const leftEnable = leftStep !== undefined
+  const rightEnable = rightStep !== undefined
 
   return (
-    // dir follows the active language so the buttons sit on the reading-correct
-    // sides (prev at the start, next at the end) in both LTR and RTL.
-    <Box
-      dir={i18n.dir()}
-      sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1.5 }}>
-      <Tooltip title={t('map_footer_previous_location')}>
-        {/* span wrapper lets the Tooltip work while the button is disabled */}
-        <span>
-          <IconButton
-            color="primary"
-            size="small"
-            aria-label={t('map_footer_previous_location')}
-            disabled={!prevEnable}
-            onClick={() => navigateMarkers(prevStep)}>
-            <Remove />
-          </IconButton>
-        </span>
-      </Tooltip>
-      {/* dir=ltr keeps the "3 / 5" counter reading left-to-right in RTL too */}
-      <Typography variant="body2" color="text.secondary" dir="ltr">
-        {currentIndex + 1} / {markerIds.length}
-      </Typography>
-      <Tooltip title={t('map_footer_next_location')}>
-        <span>
-          <IconButton
-            color="primary"
-            size="small"
-            aria-label={t('map_footer_next_location')}
-            disabled={!nextEnable}
-            onClick={() => navigateMarkers(nextStep)}>
-            <Add />
-          </IconButton>
-        </span>
-      </Tooltip>
-    </Box>
+    <div className="map-footer-buttons" dir="rtl">
+      <RightOutlined
+        className={`${rightEnable ? '' : 'disabled'}`}
+        onClick={() => rightEnable && navigateMarkers(rightStep)}
+      />
+      <LeftOutlined
+        className={`${leftEnable ? '' : 'disabled'}`}
+        onClick={() => leftEnable && navigateMarkers(leftStep)}
+      />
+    </div>
   )
 }
 
