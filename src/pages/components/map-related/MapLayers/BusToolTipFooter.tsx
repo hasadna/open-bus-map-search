@@ -2,17 +2,17 @@ import { Add, Remove } from '@mui/icons-material'
 import { Box, IconButton, Tooltip, Typography } from '@mui/material'
 import { useTranslation } from 'react-i18next'
 
-type TMapFooterButtons = {
+type TBusToolTipFooter = {
   currentMarkerId: number
   markerIds: number[]
   navigateToMarker: (id: number) => void
 }
 
-function MapFooterButtons({
+function BusToolTipFooter({
   currentMarkerId,
   markerIds,
   navigateToMarker: navigateMarkers,
-}: TMapFooterButtons) {
+}: TBusToolTipFooter) {
   const { t, i18n } = useTranslation()
   const currentIndex = markerIds.indexOf(currentMarkerId)
   const nextStep = markerIds[currentIndex + 1]
@@ -26,13 +26,13 @@ function MapFooterButtons({
     <Box
       dir={i18n.dir()}
       sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1.5 }}>
-      <Tooltip title={t('map_footer_previous_location')}>
+      <Tooltip title={t('bus_tooltip_footer_previous_location')}>
         {/* span wrapper lets the Tooltip work while the button is disabled */}
         <span>
           <IconButton
             color="primary"
             size="small"
-            aria-label={t('map_footer_previous_location')}
+            aria-label={t('bus_tooltip_footer_previous_location')}
             disabled={!prevEnable}
             onClick={() => navigateMarkers(prevStep)}>
             <Remove />
@@ -43,12 +43,12 @@ function MapFooterButtons({
       <Typography variant="body2" color="text.secondary" dir="ltr">
         {currentIndex + 1} / {markerIds.length}
       </Typography>
-      <Tooltip title={t('map_footer_next_location')}>
+      <Tooltip title={t('bus_tooltip_footer_next_location')}>
         <span>
           <IconButton
             color="primary"
             size="small"
-            aria-label={t('map_footer_next_location')}
+            aria-label={t('bus_tooltip_footer_next_location')}
             disabled={!nextEnable}
             onClick={() => navigateMarkers(nextStep)}>
             <Add />
@@ -59,4 +59,4 @@ function MapFooterButtons({
   )
 }
 
-export default MapFooterButtons
+export default BusToolTipFooter
