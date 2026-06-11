@@ -43,7 +43,9 @@ export const MainRoute = () => {
   // Parse the captured URL params into GlobalSearchContext fields
   const urlState = useMemo<Partial<GlobalSearchState>>(() => {
     const p = initialUrlParams
-    // Accept 'rideTime' (new) or 'startTime' (old shared links) for backward compat
+    // Accept 'rideTime' (new) or 'startTime' (old shared links) for backward compat.
+    // 'startTime' is the previous name of the ride-departure token ("HH:mm", hour may
+    // exceed 23 for past-midnight rides) — unrelated to the retired epoch 'timestamp' param.
     const rideTime = p.rideTime ?? p.startTime ?? undefined
     return {
       ...(isValidSearchDate(p.date) ? { date: p.date } : {}),
@@ -56,8 +58,9 @@ export const MainRoute = () => {
     }
   }, [])
 
-  // 'search_v2' avoids type collisions with old 'search' session storage (which used timestamp)
-  const [storedSearch, setSearch] = useSessionStorage<GlobalSearchState>('search_v2', {
+  // A pre-migration 'search' entry stored `timestamp: number` and no `date`, so the
+  // isValidSearchDate fallback below resets its date — reusing the key is safe.
+  const [storedSearch, setSearch] = useSessionStorage<GlobalSearchState>('search', {
     ...GLOBAL_SEARCH_DEFAULTS,
     ...urlState,
   })
