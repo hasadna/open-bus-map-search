@@ -32,7 +32,10 @@ export function useRecenterOnDataChange({ positionGroups, plannedRouteStops }: M
 
   useEffect(() => {
     if (center[0] || center[1]) {
-      map.setView(center, map.getZoom(), { animate: true })
+      // No animation: this effect re-fires per streamed position batch, and
+      // chained animated pans keep the map (and its markers) drifting long
+      // after the data is on screen.
+      map.setView(center, map.getZoom(), { animate: false })
     }
   }, [...center, map])
 }

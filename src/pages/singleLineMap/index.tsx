@@ -126,7 +126,6 @@ const SingleLineMapPage = () => {
             <ToggleButtonGroup
               value={type}
               color="primary"
-              dir="rtl"
               onChange={handleTypeChange}
               sx={{ height: 56 }}
               exclusive
@@ -136,7 +135,7 @@ const SingleLineMapPage = () => {
             </ToggleButtonGroup>
           </Grid>
         </Grid>
-        <Grid container spacing={2} size={12} alignContent={'center'}>
+        <Grid container spacing={2} size={12} sx={{ alignContent: 'center' }}>
           {type === 'routes' ? (
             <>
               {/* choose line number */}
@@ -179,11 +178,13 @@ const SingleLineMapPage = () => {
           <Grid
             size={{ sm: type === 'routes' ? 4 : 8, xs: 12 }}
             container
-            alignItems="center"
-            display="flex"
-            gap={2}
-            flexWrap="nowrap"
-            justifyContent="space-between">
+            sx={{
+              alignItems: 'center',
+              display: 'flex',
+              gap: 2,
+              flexWrap: 'nowrap',
+              justifyContent: 'space-between',
+            }}>
             <FilterPositionsByStartTimeSelector
               options={options}
               disabled={!routeKey && !vehicleNumber}

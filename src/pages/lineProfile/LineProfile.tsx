@@ -4,7 +4,7 @@ import { Tooltip } from 'antd'
 import { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLoaderData, useNavigate } from 'react-router'
-import { getRoutesAsync } from 'src/api/gtfsService'
+import { getServiceDayRoutes } from 'src/api/serviceDayRoutesService'
 import dayjs, { toIsraelTimezone } from 'src/dayjs'
 import { useSingleLineData } from 'src/hooks/useSingleLineData'
 import { GLOBAL_SEARCH_DEFAULTS, GlobalSearchContext } from 'src/model/globalState'
@@ -20,7 +20,6 @@ import RouteSelector from '../components/RouteSelector'
 import { LineProfileDetails } from './LineProfileDetails'
 import { LineProfileRide } from './LineProfileRide'
 import { LineProfileStop } from './LineProfileStop'
-import './LineProfile.scss'
 
 const LineProfile = () => {
   const { t } = useTranslation()
@@ -92,8 +91,9 @@ const LineProfile = () => {
     dateChangeAbortRef.current?.abort()
     const abortController = new AbortController()
     dateChangeAbortRef.current = abortController
-    getRoutesAsync(
-      time,
+    // Service-day aware (and Israel-tz normalized internally), consistent with the
+    // gaps page and the single-line ride list.
+    getServiceDayRoutes(
       time,
       route?.operatorRef.toString(),
       route?.routeShortName,
@@ -128,12 +128,12 @@ const LineProfile = () => {
   }
 
   return (
-    <PageContainer className="line-profile-container">
+    <PageContainer className="map-container">
       <Grid container spacing={2} sx={{ marginTop: '0.5rem' }}>
-        <Grid size={{ xs: 12, lg: 7 }} container spacing={2} flexDirection="column">
+        <Grid size={{ xs: 12, lg: 7 }} container spacing={2} sx={{ flexDirection: 'column' }}>
           <LineProfileDetails {...route} />
         </Grid>
-        <Grid size={{ xs: 12, lg: 5 }} container spacing={2} flexDirection="column">
+        <Grid size={{ xs: 12, lg: 5 }} container spacing={2} sx={{ flexDirection: 'column' }}>
           {error ? (
             <NotFound>{error}</NotFound>
           ) : (
@@ -144,7 +144,7 @@ const LineProfile = () => {
             />
           )}
           <DateSelector time={dayjs(route?.date.getTime())} onChange={handleTimestampChange} />
-          <Grid container flexWrap="nowrap" alignItems="center">
+          <Grid container sx={{ flexWrap: 'nowrap', alignItems: 'center' }}>
             <FilterPositionsByStartTimeSelector
               options={options}
               disabled={options.length === 0}

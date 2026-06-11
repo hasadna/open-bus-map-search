@@ -3,7 +3,6 @@ import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { TileLayer, useMap } from 'react-leaflet'
 import { MapProps } from './map-types'
-import { MapIndexLayer } from './MapLayers/MapIndexLayer'
 import { MapPlannedRouteLayer } from './MapLayers/MapPlannedRouteLayer'
 import { MapRouteLayer } from './MapLayers/MapRouteLayer'
 import { useRecenterOnDataChange } from './useRecenterOnDataChange'
@@ -60,7 +59,6 @@ export function MapContent({ positionGroups, plannedRouteStops, showNavigationBu
         attribution='&copy <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url={tileUrl}
       />
-      <MapIndexLayer showPlannedRoute={!!plannedRouteStops} />
       <MapRouteLayer
         positionGroups={positionGroups}
         showNavigationButtons={showNavigationButtons}

@@ -21,10 +21,10 @@ const Widget = ({ marginBottom, children, className, sx, title, titleSx }: Widge
         {title && (
           <Typography
             variant="h2"
-            fontSize="28px"
-            fontWeight="bold"
-            marginBottom="8px"
-            sx={titleSx}>
+            sx={[
+              { fontSize: '28px', fontWeight: 'bold', marginBottom: '8px' },
+              ...(Array.isArray(titleSx) ? titleSx : [titleSx]),
+            ]}>
             {title}
           </Typography>
         )}

@@ -346,7 +346,7 @@ const ComplaintModal = ({
       onClose={() => setModalOpen?.(false)}
       slotProps={{ paper: { sx: { maxWidth: '648px', width: '90%', position: 'relative' } } }}>
       <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between' }}>
-        <Typography fontSize="28px" fontWeight="bold" marginBottom="8px">
+        <Typography sx={{ fontSize: '28px', fontWeight: 'bold', marginBottom: '8px' }}>
           {t('complaints.complaint')}
         </Typography>
         <IconButton onClick={() => setModalOpen?.(false)}>

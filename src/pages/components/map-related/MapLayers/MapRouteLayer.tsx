@@ -5,8 +5,8 @@ import { useAgencyList } from 'src/hooks/useAgencyList'
 import { busIcon, busIconPath } from '../../utils/BusIcon'
 import type { PositionGroup } from '../map-types'
 import { actualRouteStopMarker } from '../MapContent'
-import MapFooterButtons from '../MapFooterButtons/MapFooterButtons'
 import { BusToolTip } from './BusToolTip'
+import BusToolTipFooter from './BusToolTipFooter'
 
 interface MapRouteLayerProps {
   positionGroups: PositionGroup[]
@@ -61,7 +61,7 @@ export function MapRouteLayer({
                   <Popup minWidth={300} maxWidth={700}>
                     <BusToolTip position={pos} icon={busIconPath(pos.operator!)}>
                       {showNavigationButtons && (
-                        <MapFooterButtons
+                        <BusToolTipFooter
                           currentMarkerId={i}
                           markerIds={markerIds}
                           navigateToMarker={(id) => navigateToMarker(groupIndex, id)}
