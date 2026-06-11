@@ -1,6 +1,6 @@
 import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
-import { useContext, useMemo, useState } from 'react'
+import { useContext, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   getGtfsStopHitTimesAsync,
@@ -9,6 +9,7 @@ import {
 } from 'src/api/gtfsService'
 import { getSiriStopHitTimesAsync } from 'src/api/siriService'
 import dayjs, { ISRAEL_TIMEZONE } from 'src/dayjs'
+import { usePageState } from 'src/hooks/usePageState'
 import { GlobalSearchContext } from 'src/model/globalState'
 import { Label } from 'src/pages/components/Label'
 import LineNumberSelector from 'src/pages/components/LineSelector'
@@ -28,27 +29,34 @@ const TimelinePage = () => {
   const { search, setSearch } = useContext(GlobalSearchContext)
   const { operatorId, lineNumber, date, routeKey } = search
 
-  // Time-of-day is page-local (only /timeline has a time picker)
-  const [timeOfDay, setTimeOfDay] = useState(() => dayjs().startOf('minute'))
+  // stopKey is global: shared with /single-line-map and /profile so the
+  // selected stop survives navigation between these related views.
+  const stopKey = search.stopKey
+  const setStopKey = (key: string | undefined) =>
+    setSearch((prev) => ({ ...prev, stopKey: key ?? null }))
+
+  // time-of-day is page-local: not shared across pages, but is shareable so a
+  // link recipient sees the same moment (date comes from global state).
+  const { params, setParams } = usePageState(
+    'timeline',
+    { params: { time: dayjs().format('HH:mm') }, ui: { scrollPosition: 0 } },
+    ['time'],
+  )
 
   const time = useMemo(() => {
-    return dayjs
-      .tz(date, ISRAEL_TIMEZONE)
-      .hour(timeOfDay.hour())
-      .minute(timeOfDay.minute())
-      .startOf('minute')
-  }, [date, timeOfDay])
+    const [h, m] = params.time.split(':').map(Number)
+    return dayjs.tz(date, ISRAEL_TIMEZONE).hour(h).minute(m).startOf('minute')
+  }, [date, params.time])
 
   const routesQuery = useQuery({
     queryFn: async () => {
       if (operatorId && lineNumber) {
         try {
-          const routes = await getRoutesAsync(time, time, operatorId, lineNumber)
-          return routes
+          return await getRoutesAsync(time, time, operatorId, lineNumber)
         } catch (error) {
           console.error(error)
           setSearch((current) => ({ ...current, routeKey: null }))
-          setSearch((current) => ({ ...current, stopKey: null }))
+          setStopKey(undefined)
         }
       }
       return null
@@ -56,9 +64,10 @@ const TimelinePage = () => {
     queryKey: ['routes', operatorId, lineNumber, time.valueOf()],
   })
 
-  const selectedRoute = useMemo(() => {
-    return routesQuery.data?.find((route) => route.key === routeKey)
-  }, [routesQuery.data, routeKey])
+  const selectedRoute = useMemo(
+    () => routesQuery.data?.find((route) => route.key === routeKey),
+    [routesQuery.data, routeKey],
+  )
 
   const stopsQuery = useQuery({
     queryFn: async () => {
@@ -75,9 +84,10 @@ const TimelinePage = () => {
     queryKey: ['stops', selectedRoute?.lineRef, time.valueOf()],
   })
 
-  const selectedStop = useMemo(() => {
-    return stopsQuery.data?.find((stop) => stop.key === search.stopKey)
-  }, [stopsQuery.data, search.stopKey])
+  const selectedStop = useMemo(
+    () => stopsQuery.data?.find((stop) => stop.key === stopKey),
+    [stopsQuery.data, stopKey],
+  )
 
   const hitsQuery = useQuery({
     queryFn: async () => {
@@ -115,20 +125,17 @@ const TimelinePage = () => {
             time={dayjs.tz(date, ISRAEL_TIMEZONE)}
             onChange={(ts) => {
               if (!ts) return
-              setSearch((current) => ({
-                ...current,
-                date: ts.format('YYYY-MM-DD'),
-              }))
+              setSearch((prev) => ({ ...prev, date: ts.format('YYYY-MM-DD') }))
             }}
           />
         </Grid>
         {/* choose time */}
         <Grid size={{ lg: 4, md: 6, xs: 12 }}>
           <TimeSelector
-            time={timeOfDay}
+            time={time}
             onChange={(ts) => {
               if (!ts) return
-              setTimeOfDay(ts.startOf('minute'))
+              setParams((prev) => ({ ...prev, time: ts.format('HH:mm') }))
             }}
           />
         </Grid>
@@ -136,14 +143,14 @@ const TimelinePage = () => {
         <Grid size={{ lg: 4, md: 6, xs: 12 }}>
           <OperatorSelector
             operatorId={operatorId ?? undefined}
-            setOperatorId={(id) => setSearch((current) => ({ ...current, operatorId: id }))}
+            setOperatorId={(id) => setSearch((prev) => ({ ...prev, operatorId: id }))}
           />
         </Grid>
         {/* choose line */}
         <Grid size={{ lg: 4, md: 6, xs: 12 }}>
           <LineNumberSelector
             lineNumber={lineNumber ?? undefined}
-            setLineNumber={(number) => setSearch((current) => ({ ...current, lineNumber: number }))}
+            setLineNumber={(number) => setSearch((prev) => ({ ...prev, lineNumber: number }))}
           />
         </Grid>
         {/* routes */}
@@ -157,9 +164,7 @@ const TimelinePage = () => {
                   disabled={!routesQuery.data}
                   routes={routesQuery.data || []}
                   routeKey={routeKey ?? undefined}
-                  setRouteKey={(key) =>
-                    setSearch((current) => ({ ...current, routeKey: key ?? null }))
-                  }
+                  setRouteKey={(key) => setSearch((prev) => ({ ...prev, routeKey: key ?? null }))}
                 />
               )}
             </div>
@@ -173,8 +178,8 @@ const TimelinePage = () => {
               <StopSelector
                 disabled={!stopsQuery.data}
                 stops={stopsQuery.data || []}
-                stopKey={search.stopKey ?? undefined}
-                setStopKey={(key) => setSearch((current) => ({ ...current, stopKey: key ?? null }))}
+                stopKey={stopKey ?? undefined}
+                setStopKey={setStopKey}
               />
             </div>
             {stopsQuery.isLoading && <CircularProgress />}

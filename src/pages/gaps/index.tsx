@@ -1,7 +1,8 @@
 import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import dayjs, { ISRAEL_TIMEZONE } from 'src/dayjs'
+import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone } from 'src/dayjs'
+import { usePageState } from 'src/hooks/usePageState'
 import { GlobalSearchContext } from 'src/model/globalState'
 import { INPUT_SIZE } from 'src/resources/sizes'
 import { Gap, getGapsAsync } from '../../api/gapsService'
@@ -22,9 +23,17 @@ const GapsPage = () => {
   const { t } = useTranslation()
   const { search, setSearch } = useContext(GlobalSearchContext)
   const { operatorId, lineNumber, date, routeKey } = search
+
+  // Routes are page-local: they are fetched from the API and used only
+  // within this page to populate the RouteSelector and find the selected
+  // route for the gaps query. Storing them in global state was unnecessary.
   const [routes, setRoutes] = useState<BusRoute[] | undefined>()
   const [gaps, setGaps] = useState<Gap[]>()
   const [gapsIsLoading, setGapsIsLoading] = useState(false)
+
+  // Scroll position persisted so the user can return to their position after
+  // navigating to /single-line-map (via gap row click) and pressing back.
+  usePageState('gaps', { params: {}, ui: { scrollPosition: 0 } })
 
   const singleLineMapBaseHref = useMemo(() => {
     const params = new URLSearchParams()
@@ -76,13 +85,12 @@ const GapsPage = () => {
       })
 
     return () => controller.abort()
-  }, [operatorId, lineNumber, date, setSearch])
+  }, [operatorId, lineNumber, date])
 
   const handleDateChange = (time: dayjs.Dayjs | null) => {
-    if (!time) return
     setSearch((current) => ({
       ...current,
-      date: time.format('YYYY-MM-DD'),
+      date: time?.format('YYYY-MM-DD') ?? toIsraelTimezone(dayjs()).format('YYYY-MM-DD'),
     }))
   }
 
@@ -92,13 +100,9 @@ const GapsPage = () => {
 
   const handleLineNumberChange = (lineNumber: string) => {
     setSearch((current) =>
-      lineNumber === current.lineNumber
-        ? { ...current }
-        : { ...current, lineNumber, routeKey: null },
+      lineNumber === current.lineNumber ? current : { ...current, lineNumber, routeKey: null },
     )
-    if (lineNumber !== search.lineNumber) {
-      setRoutes(undefined)
-    }
+    setRoutes(undefined)
   }
 
   const handleRouteKeyChange = (routeKey?: string) => {

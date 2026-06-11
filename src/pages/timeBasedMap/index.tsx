@@ -1,12 +1,12 @@
 import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Marker, Popup, TileLayer, useMap } from 'react-leaflet'
 import MarkerClusterGroup from 'react-leaflet-markercluster'
-import dayjs from 'src/dayjs'
+import dayjs, { ISRAEL_TIMEZONE } from 'src/dayjs'
 import { useAgencyList } from 'src/hooks/useAgencyList'
+import { usePageState } from 'src/hooks/usePageState'
 import useVehicleLocations from 'src/hooks/useVehicleLocations'
-import { ExtraShareParamsContext, InitialUrlParamsContext } from 'src/model/routeContext'
 import { type Point, toPoint } from 'src/pages/components/map-related/map-types'
 import { BusToolTip } from 'src/pages/components/map-related/MapLayers/BusToolTip'
 import { MapShell } from 'src/pages/components/map-related/MapShell'
@@ -17,30 +17,46 @@ import { busIcon, busIconPath } from '../components/utils/BusIcon'
 import createClusterCustomIcon from '../components/utils/customCluster/customCluster'
 import InfoYoutubeModal from '../components/YoutubeModal'
 
-const DEFAULT_TIME = dayjs('2023-03-14T15:00:00Z')
-const DEFAULT_POSITION: Point = {
-  loc: [32.3057988, 34.85478613],
-  color: 0,
-}
+// Hardcoded default so the API/CDN cache is warm for first-time visitors.
+// The page owns its datetime independently from the global `date` field
+// because it needs sub-day precision and should not reset when the user
+// navigates away and back (unlike global date which is a shared day picker).
+// Stored as a readable Israel-local "YYYY-MM-DDTHH:mm" (17:00 IST == 15:00 UTC;
+// Israel is pre-DST on Pi Day, so the offset is +02 not +03).
+const PI_DAY = '2026-03-14T17:00'
+
+const DEFAULT_CENTER: [number, number] = [32.3057988, 34.85478613]
+const DEFAULT_ZOOM = 8
 
 export default function TimeBasedMapPage() {
-  const initialUrlParams = useContext(InitialUrlParamsContext)
-  const [from, setFrom] = useState(() =>
-    initialUrlParams.timestamp ? dayjs(+initialUrlParams.timestamp) : DEFAULT_TIME,
-  )
-  const to = useMemo(() => dayjs(from).add(1, 'minutes'), [from])
-  const { locations, isLoading } = useVehicleLocations({ from, to })
   const { t } = useTranslation()
-  const positions = useMemo(() => locations.map(toPoint), [locations])
-  const handleFromChange = useCallback((timestamp: dayjs.Dayjs | null) => {
-    setFrom(timestamp ?? DEFAULT_TIME)
-  }, [])
 
-  const { setParams } = useContext(ExtraShareParamsContext)
-  useEffect(() => {
-    setParams({ timestamp: from.valueOf().toString() })
-    return () => setParams({})
-  }, [from, setParams])
+  // The page's datetime is page-specific and shareable — the recipient of a
+  // share link sees the same moment. Map viewport/expansion are left to
+  // MapShell's own state.
+  const { params, setParams } = usePageState(
+    'time-map',
+    {
+      params: { datetime: PI_DAY },
+      ui: { scrollPosition: 0 },
+    },
+    ['datetime'],
+  )
+
+  const from = useMemo(() => dayjs.tz(params.datetime, ISRAEL_TIMEZONE), [params.datetime])
+  const to = useMemo(() => from.add(1, 'minutes'), [from])
+  const { locations, isLoading } = useVehicleLocations({ from, to })
+  const positions = useMemo(() => locations.map(toPoint), [locations])
+
+  const handleFromChange = useCallback(
+    (timestamp: dayjs.Dayjs | null) => {
+      setParams((prev) => ({
+        ...prev,
+        datetime: (timestamp ?? dayjs.tz(PI_DAY, ISRAEL_TIMEZONE)).format('YYYY-MM-DDTHH:mm'),
+      }))
+    },
+    [setParams],
+  )
 
   return (
     <PageContainer className="map-container">
@@ -58,7 +74,6 @@ export default function TimeBasedMapPage() {
         </Alert>
       </Grid>
       <Grid container spacing={2}>
-        {/* from date */}
         <Grid size={{ md: 4, sm: 6, xs: 12 }}>
           <DateSelector time={from} onChange={handleFromChange} />
         </Grid>
@@ -71,7 +86,7 @@ export default function TimeBasedMapPage() {
           {isLoading && <CircularProgress size="20px" />}
         </Grid>
       </Grid>
-      <MapShell center={DEFAULT_POSITION.loc} zoom={8} scrollWheelZoom={true}>
+      <MapShell center={DEFAULT_CENTER} zoom={DEFAULT_ZOOM} scrollWheelZoom={true}>
         <TileLayer
           attribution='&copy <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
@@ -96,12 +111,14 @@ function Markers({ positions }: { positions: Point[] }) {
     [agencyList],
   )
 
-  useEffect(() => {
+  // Fly to user's location on first load for a personalised default view.
+  // Geolocation is best-effort; failure is silently ignored.
+  useMemo(() => {
     if (!navigator.geolocation) return
     navigator.geolocation.getCurrentPosition((position) => {
       map.flyTo([position.coords.latitude, position.coords.longitude], 13)
     })
-  }, [map])
+  }, [])
 
   const markerNodes = useMemo(
     () =>

@@ -113,7 +113,7 @@ test.describe('Share URL feature', () => {
     const clipUrl = await getClipboard(page)
     const params = new URL(clipUrl).searchParams
     expect(params.has('date')).toBe(true)
-    expect(params.get('date')).toMatch(/^\d{4}-\d{2}-\d{2}$/)
+    expect(/^\d{4}-\d{2}-\d{2}$/.test(params.get('date') ?? '')).toBe(true)
   })
 
   test('share URL pathname has no language prefix', async ({ page }) => {

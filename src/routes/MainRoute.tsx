@@ -2,15 +2,11 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import ReactGAImport from 'react-ga4'
 import { useLocation, useSearchParams } from 'react-router'
 import { useSessionStorage } from 'usehooks-ts'
-import { toIsraelTimezone } from 'src/dayjs'
 import { MainLayout } from '../layout'
 import { ThemeProvider } from '../layout/ThemeContext'
-import {
-  GLOBAL_SEARCH_DEFAULTS,
-  GlobalSearchContext,
-  GlobalSearchState,
-} from '../model/globalState'
-import { ExtraShareParamsContext, InitialUrlParamsContext } from '../model/routeContext'
+import { GlobalSearchContext } from '../model/globalState'
+import { GLOBAL_SEARCH_DEFAULTS, GlobalSearchState } from '../model/globalState'
+import { InitialUrlParamsContext, PageShareParamsContext } from '../model/pageState'
 
 // react-ga4's default export is nested under `.default` under some CJS/ESM interop
 // (e.g. Vite/Rolldown), so unwrap it to keep the shared singleton.
@@ -30,8 +26,8 @@ export const MainRoute = () => {
   }, [pathname, locationParams])
 
   // Capture URL params synchronously on mount, before they are stripped.
-  // useMemo with [] deps runs once and the value is stable — available to lazy-loaded
-  // child pages via InitialUrlParamsContext even after the address bar is cleaned up.
+  // useMemo with [] deps runs once — available to lazy-loaded child pages via
+  // InitialUrlParamsContext even after the address bar has been cleaned up.
   const initialUrlParams = useMemo<Record<string, string>>(() => {
     const result: Record<string, string> = {}
     new URLSearchParams(window.location.search).forEach((v, k) => {
@@ -40,20 +36,11 @@ export const MainRoute = () => {
     return result
   }, [])
 
-  // Parse the captured URL params into GlobalSearchContext fields
   const urlState = useMemo<Partial<GlobalSearchState>>(() => {
     const p = initialUrlParams
-    // Accept 'date' (new) or 'timestamp' (old shared links) for backward compat
-    let date: string | undefined
-    if (p.date) {
-      date = p.date
-    } else if (p.timestamp) {
-      date = toIsraelTimezone(+p.timestamp).format('YYYY-MM-DD')
-    }
-    // Accept 'rideTime' (new) or 'startTime' (old shared links) for backward compat
     const rideTime = p.rideTime ?? p.startTime ?? undefined
     return {
-      ...(date ? { date } : {}),
+      ...(p.date ? { date: p.date } : {}),
       ...(p.operatorId ? { operatorId: p.operatorId } : {}),
       ...(p.lineNumber ? { lineNumber: p.lineNumber } : {}),
       ...(p.vehicleNumber ? { vehicleNumber: Number(p.vehicleNumber) } : {}),
@@ -63,14 +50,13 @@ export const MainRoute = () => {
     }
   }, [])
 
-  // 'search_v2' avoids type collisions with old 'search' session storage (which used timestamp)
-  const [search, setSearch] = useSessionStorage<GlobalSearchState>('search_v2', {
+  const [search, setSearch] = useSessionStorage<GlobalSearchState>('search', {
     ...GLOBAL_SEARCH_DEFAULTS,
     ...urlState,
   })
 
-  // If session storage already had values, urlState was ignored above — apply it now.
-  // This ensures shared links always override stale session state.
+  // If session storage already had values, urlState was ignored above — apply
+  // it now. Shared links must always override stale session state.
   useEffect(() => {
     if (Object.keys(urlState).length > 0) {
       setSearch((current) => ({ ...current, ...urlState }))
@@ -100,14 +86,14 @@ export const MainRoute = () => {
 
   return (
     <InitialUrlParamsContext.Provider value={initialUrlParams}>
-      <ExtraShareParamsContext.Provider
+      <PageShareParamsContext.Provider
         value={{ params: extraShareParams, setParams: setExtraShareParamsStable }}>
         <GlobalSearchContext.Provider value={{ search, setSearch: safeSetSearch }}>
           <ThemeProvider>
             <MainLayout />
           </ThemeProvider>
         </GlobalSearchContext.Provider>
-      </ExtraShareParamsContext.Provider>
+      </PageShareParamsContext.Provider>
     </InitialUrlParamsContext.Provider>
   )
 }

@@ -8,7 +8,7 @@ import { VelocityHeatmapPopup } from './VelocityHeatmapPopup'
 import { useZoomLevel } from './ZoomComponent'
 import './VelocityHeatmapRectangles.scss'
 
-type VisMode = 'avg' | 'std' | 'cv'
+export type VisMode = 'avg' | 'std' | 'cv'
 
 function getValue(point: SiriVelocityAggregationPydanticModel, visMode: VisMode): number {
   const avg = point.averageRollingAvg ?? 0
