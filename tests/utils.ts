@@ -58,7 +58,19 @@ export function getPastDate() {
 
 const urlMatcher: Matcher = customMatcher({
   urlComparator(a, b) {
-    const paramsToIgnore = new Set(['t', 'limit', 'date_from', 'date_to'])
+    // exclude_hour(s)_from/to: the app no longer sends these (the 23-2 exclusion was
+    // removed from groupByService), but recorded HARs still carry them in both the old
+    // raw-fetch spelling and the API-client spelling.
+    const paramsToIgnore = new Set([
+      't',
+      'limit',
+      'date_from',
+      'date_to',
+      'exclude_hour_from',
+      'exclude_hour_to',
+      'exclude_hours_from',
+      'exclude_hours_to',
+    ])
     // Coordinate bounds come from geolib's floating-point math, whose last digits
     // can shift between library versions — which would break exact URL matching.
     // Round them so the HAR match is stable across geolib bumps.

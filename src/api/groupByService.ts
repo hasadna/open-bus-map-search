@@ -38,8 +38,6 @@ async function fetchGroupBy({
     dateFrom: new Date(dateFrom),
     dateTo: new Date(dateTo),
     groupBy,
-    excludeHoursFrom: 23,
-    excludeHoursTo: 2,
   })
 
   return data
