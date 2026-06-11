@@ -8,7 +8,7 @@
  * After running, commit the updated HAR files in tests/HAR/.
  */
 import { Page, test } from '@playwright/test'
-import { getPastDate } from './utils'
+import { fillDateField, getPastDate, waitForSkeletonsToHide } from './utils'
 
 test.describe.configure({ mode: 'serial' })
 
@@ -49,6 +49,26 @@ function trackResponseBodies(page: Page): () => Promise<unknown> {
     }
   })
   return () => Promise.all(bodies)
+}
+
+/**
+ * Wait for every in-flight stride-api request to finish before the recording
+ * context closes. trackResponseBodies only covers responses whose headers have
+ * already arrived; a slow aggregation query still computing on the server when
+ * the test ends is written to the HAR as status -1 with an empty body.
+ * (waitForLoadState('networkidle') does NOT cover this: it resolves immediately
+ * if the page already reached networkidle once, regardless of new XHRs.)
+ */
+function trackPendingRequests(page: Page): () => Promise<void> {
+  const pending = new Set<unknown>()
+  page.on('request', (request) => {
+    if (/stride-api/.test(request.url())) pending.add(request)
+  })
+  page.on('requestfinished', (request) => pending.delete(request))
+  page.on('requestfailed', (request) => pending.delete(request))
+  return async () => {
+    while (pending.size > 0) await new Promise((resolve) => setTimeout(resolve, 250))
+  }
 }
 
 async function goToPage(page: Page, path: string) {
@@ -122,6 +142,8 @@ test.describe('Record HAR files', () => {
   // Single test records ALL needed entries in one browser context
   test('record operator.har', async ({ page }) => {
     await setupRecording(page, 'tests/HAR/operator.har')
+    const settleResponseBodies = trackResponseBodies(page)
+    const waitForPendingRequests = trackPendingRequests(page)
     await goToPage(page, '/')
     await goToPage(page, '/operator')
 
@@ -131,7 +153,37 @@ test.describe('Record HAR files', () => {
 
     // Select אגד (triggers group_by × 2 + gtfs_routes/list)
     await page.getByRole('option', { name: 'אגד', exact: true }).click()
+    await waitForSkeletonsToHide(page)
+    await waitForPendingRequests()
+    await settleResponseBodies()
+  })
+
+  // ---- dashboard.har ------------------------------------------------------
+  // Single test records ALL needed entries in one browser context, mirroring
+  // the interactions of dashboard.spec.ts (default load, date change, operator
+  // selection, group-by-hour/day toggle) and visual.spec.ts.
+  test('record dashboard.har', async ({ page }) => {
+    await setupRecording(page, 'tests/HAR/dashboard.har')
+    const settleResponseBodies = trackResponseBodies(page)
+    const waitForPendingRequests = trackPendingRequests(page)
+    await goToPage(page, '/')
+    await goToPage(page, '/dashboard')
+    await page.getByText('הקווים הגרועים ביותר').waitFor()
+    await waitForSkeletonsToHide(page)
+
+    // Same param changes as the 'choosing params' replay test
+    await fillDateField(page, 'התחלה', '02/6/2024')
+    await fillDateField(page, 'סיום', '02/6/2024')
     await page.waitForLoadState('networkidle')
+    await page.getByLabel('חברה מפעילה').click()
+    await page.getByRole('option', { name: 'דן', exact: true }).click()
+    await page.waitForLoadState('networkidle')
+    await page.getByText('קיבוץ לפי שעה').click()
+    await page.waitForLoadState('networkidle')
+    await page.getByText('קיבוץ לפי יום').click()
+    await waitForSkeletonsToHide(page)
+    await waitForPendingRequests()
+    await settleResponseBodies()
   })
 
   // ---- singleline.har -----------------------------------------------------
