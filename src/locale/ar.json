@@ -138,6 +138,7 @@
   "to_date": "حتّى تاريخ",
   "watch_locations_in_range": "شاهد مواقع الباصات في نطاق",
   "minutes": "دقائق",
+  "minutes_from_route_start": "{{minutes}} دقيقة من بداية المسار",
   "minutes_5": "5 دقائق",
   "show_x_bus_locations": "مواقع الباصات",
   "show_document": "عرض معلومات للمهوسين",

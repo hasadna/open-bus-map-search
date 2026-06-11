@@ -138,6 +138,7 @@
   "to_date": "עד תאריך",
   "watch_locations_in_range": "צפה במיקומי אוטובוסים בטווח של",
   "minutes": "דקות",
+  "minutes_from_route_start": "{{minutes}} דקות מתחילת המסלול",
   "minutes_5": "5 דקות",
   "show_x_bus_locations": "מיקומי אוטובוסים",
   "show_document": "הצג מידע לגיקים",
