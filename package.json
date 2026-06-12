@@ -3,6 +3,9 @@
   "version": "1.4.0",
   "private": true,
   "type": "module",
+  "overrides": {
+    "debug@4": "4.3.0"
+  },
   "dependencies": {
     "@ant-design/icons": "^6.1.0",
     "@emotion/cache": "^11.14.0",
