@@ -33,7 +33,7 @@ export const getGapsAsync = (
         actualStartTime: parseTime(gap.actualStartTime),
         plannedStartTime: parseTime(gap.plannedStartTime),
         gtfsRideId: gap.gtfsRideId,
-      } as Gap
+      }
     }),
   )
 }

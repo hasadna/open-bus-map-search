@@ -1,10 +1,11 @@
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
-import { Skeleton } from 'antd'
 import { useContext } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useNavigate } from 'react-router'
 import styled from 'styled-components'
-import { SearchContext } from 'src/model/pageState'
+import { GlobalSearchContext } from 'src/model/globalState'
+import { ISRAEL_TRAIN_ID } from 'src/model/operator'
+import SkeletonLoader from 'src/shared/SkeletonLoader'
 import Widget from 'src/shared/Widget'
 import { useAllRoutes } from '../../hooks/useAllRoutes'
 
@@ -15,7 +16,7 @@ export const OperatorRoutes = ({
   operatorId?: string
   timestamp?: number
 }) => {
-  const { setSearch } = useContext(SearchContext)
+  const { setSearch } = useContext(GlobalSearchContext)
   const { t } = useTranslation()
   const { routes, isLoading } = useAllRoutes(operatorId, timestamp)
 
@@ -25,7 +26,7 @@ export const OperatorRoutes = ({
     <Widget title={t('operator.all_lines')} marginBottom>
       <TableContainer sx={{ height: 345 }}>
         {isLoading ? (
-          <Skeleton active paragraph={{ rows: 8 }} />
+          <SkeletonLoader active rows={8} />
         ) : (
           <Table size="small" stickyHeader>
             <TableHead>
@@ -47,19 +48,21 @@ export const OperatorRoutes = ({
                     <Link to={`/profile/${route.id}`}>{t('operator.profile')}</Link>
                   </TableCell>
                   <TableCell>
-                    <Link
-                      onClick={(e) => {
-                        e.preventDefault()
-                        setSearch((current) => ({
-                          ...current,
-                          lineNumber: route.line + route.suffix,
-                          routeKey: route.routeKey,
-                        }))
-                        void navigate('/single-line-map')
-                      }}
-                      to={`/single-line-map`}>
-                      {t('operator.map')}
-                    </Link>
+                    {operatorId !== ISRAEL_TRAIN_ID && (
+                      <Link
+                        onClick={(e) => {
+                          e.preventDefault()
+                          setSearch((current) => ({
+                            ...current,
+                            lineNumber: route.line + route.suffix,
+                            routeKey: route.routeKey,
+                          }))
+                          void navigate('/single-line-map')
+                        }}
+                        to={`/single-line-map`}>
+                        {t('operator.map')}
+                      </Link>
+                    )}
                   </TableCell>
                 </TableRow>
               ))}

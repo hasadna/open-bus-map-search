@@ -471,6 +471,24 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "eithanwes",
+      "name": "eithanwes",
+      "avatar_url": "https://avatars.githubusercontent.com/u/209318276?v=4",
+      "profile": "http://www.lastmile.co.il",
+      "contributions": [
+        "bug"
+      ]
+    },
+    {
+      "login": "alon-greenshtein",
+      "name": "Alon Greenstein",
+      "avatar_url": "https://avatars.githubusercontent.com/u/175951799?v=4",
+      "profile": "https://github.com/alon-greenshtein",
+      "contributions": [
+        "code"
+      ]
     }
   ]
 }

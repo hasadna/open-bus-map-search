@@ -1,9 +1,9 @@
-import { Skeleton } from 'antd'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
 import { Dayjs } from 'src/dayjs'
 import { MAJOR_OPERATORS } from 'src/model/operator'
+import SkeletonLoader from 'src/shared/SkeletonLoader'
 import Widget from 'src/shared/Widget'
 import LinesHbarChart, { LineBar } from './LineHbarChart/LinesHbarChart'
 
@@ -19,7 +19,7 @@ const convertToWorstLineChartCompatibleStruct = (arr: GroupByRes[], operatorId?:
   return arr
     .filter((row) => {
       if (operatorId) return row.operatorRef?.operatorRef.toString() === operatorId
-      return row.operatorRef && MAJOR_OPERATORS.includes(row.operatorRef.operatorRef.toString())
+      return row.operatorRef && MAJOR_OPERATORS.has(row.operatorRef.operatorRef.toString())
     })
     .map(
       (item) =>
@@ -61,7 +61,7 @@ export const WorstLinesChart = ({
   return (
     <Widget title={t('worst_lines_page_title')}>
       {lineDataLoading ? (
-        <Skeleton active />
+        <SkeletonLoader active />
       ) : (
         <LinesHbarChart
           lines={convertToWorstLineChartCompatibleStruct(groupByLineData, operatorId)}

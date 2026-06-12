@@ -90,25 +90,11 @@ export async function getStopsForRouteAsync(
 
 export async function getGtfsStopHitTimesAsync(stop: BusStop, timestamp: dayjs.Dayjs) {
   try {
-    const start = timestamp.subtract(4, 'hour').toDate()
-    const end = timestamp.add(4, 'hour').toDate()
-
-    const rides = await GTFS_API.gtfsRidesListGet({
-      gtfsRouteId: stop.routeId,
-      startTimeFrom: start,
-      startTimeTo: end,
-      orderBy: 'start_time asc',
-    })
-
-    if (rides.length === 0) return []
-
-    const rideIds = rides.map((ride) => ride.id).join(',')
-
     return await GTFS_API.gtfsRideStopsListGet({
-      gtfsRideIds: rideIds,
+      gtfsRideGtfsRouteId: stop.routeId,
       gtfsStopIds: stop.stopId.toString(),
-      arrivalTimeFrom: start,
-      arrivalTimeTo: end,
+      arrivalTimeFrom: timestamp.subtract(4, 'hour').toDate(),
+      arrivalTimeTo: timestamp.add(4, 'hour').toDate(),
       orderBy: 'arrival_time asc',
     })
   } catch (error) {

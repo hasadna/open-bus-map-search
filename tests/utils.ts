@@ -59,10 +59,26 @@ export function getPastDate() {
 const urlMatcher: Matcher = customMatcher({
   urlComparator(a, b) {
     const paramsToIgnore = new Set(['t', 'limit', 'date_from', 'date_to'])
+    // Coordinate bounds come from geolib's floating-point math, whose last digits
+    // can shift between library versions — which would break exact URL matching.
+    // Round them so the HAR match is stable across geolib bumps.
+    // (6 decimals ≈ 11cm, far finer than the source stop data and the 500m box.)
+    const floatParams = new Set([
+      'lat__greater_or_equal',
+      'lat__lower_or_equal',
+      'lon__greater_or_equal',
+      'lon__lower_or_equal',
+    ])
     function normalize(url: string) {
       const urlObj = new URL(url)
       for (const param of paramsToIgnore) {
         urlObj.searchParams.delete(param)
+      }
+      for (const param of floatParams) {
+        const value = urlObj.searchParams.get(param)
+        if (value !== null) {
+          urlObj.searchParams.set(param, Number(value).toFixed(6))
+        }
       }
       const sortedParams = Array.from(urlObj.searchParams.entries()).sort(([a], [b]) =>
         a.localeCompare(b),
@@ -90,9 +106,29 @@ export const getBranch = async (): Promise<string> => {
   })
 }
 
+/**
+ * Wait until the Leaflet map stops moving. The recenter effect pans the map as
+ * vehicle-position batches stream in, so marker screen coordinates are not
+ * trustworthy (clicks can miss) until the pane's transform stays unchanged
+ * between two consecutive samples.
+ */
+export const waitForMapIdle = async (page: Page) => {
+  let previousTransform = ''
+  await expect(async () => {
+    const transform = await page
+      .locator('.leaflet-map-pane')
+      .evaluate((el) => (el as HTMLElement).style.transform)
+    const stable = transform !== '' && transform === previousTransform
+    previousTransform = transform
+    expect(stable).toBe(true)
+  }).toPass({ timeout: 15000, intervals: [500] })
+}
+
 export const waitForSkeletonsToHide = async (page: Page) => {
-  while ((await page.locator('.ant-skeleton-content').count()) > 0) {
-    await page.locator('.ant-skeleton-content').last().waitFor({ state: 'hidden' })
+  // matches both the legacy antd skeleton and the MUI-based SkeletonLoader
+  const skeletons = page.locator('.ant-skeleton-content, [data-testid="skeleton-loader"]')
+  while ((await skeletons.count()) > 0) {
+    await skeletons.last().waitFor({ state: 'hidden' })
   }
 }
 
@@ -131,9 +167,7 @@ export const setupTest = async (page: Page, lng: string = 'he') => {
   await page.route(/stride-api/, (route) => route.abort())
   await page.clock.setSystemTime(getPastDate())
   await page.emulateMedia({ reducedMotion: 'reduce' })
-  await i18next
-    .use(Backend)
-    .init({ showSupportNotice: false, lng, backend: { loadPath: 'src/locale/{{lng}}.json' } })
+  await i18next.use(Backend).init({ lng, backend: { loadPath: 'src/locale/{{lng}}.json' } })
   await page.goto('/')
   await page.locator('.preloader').waitFor({ state: 'hidden' })
 }

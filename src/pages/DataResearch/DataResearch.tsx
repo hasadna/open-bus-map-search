@@ -1,5 +1,4 @@
 import { Grid } from '@mui/material'
-import { Skeleton } from 'antd'
 import React, { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
@@ -14,6 +13,7 @@ import {
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
 import dayjs from 'src/dayjs'
 import { useDate } from 'src/hooks/useDate'
+import SkeletonLoader from 'src/shared/SkeletonLoader'
 import Widget from 'src/shared/Widget'
 import { DateSelector } from '../components/DateSelector'
 import OperatorSelector from '../components/OperatorSelector'
@@ -24,10 +24,11 @@ import './DataResearch.scss'
 const now = dayjs()
 
 export const DataResearch = () => {
+  const { t } = useTranslation()
   return (
     <PageContainer>
-      <Widget title="מחקרים">
-        <p>אם יש לכם רעיון מעניין למה קורים פה דברים, דברו איתנו בסלאק!</p>
+      <Widget title={t('dataResearch.title')}>
+        <p>{t('dataResearch.intro')}</p>
       </Widget>
       <StackedResearchSection />
     </PageContainer>
@@ -35,6 +36,7 @@ export const DataResearch = () => {
 }
 
 function StackedResearchSection() {
+  const { t } = useTranslation()
   const [startDate, setStartDate] = useDate(now.clone().subtract(7, 'days'))
   const [endDate, setEndDate] = useDate(now.clone().subtract(1, 'day'))
   const [operatorId, setOperatorId] = useState('')
@@ -46,7 +48,7 @@ function StackedResearchSection() {
   })
 
   return (
-    <Widget title="בעיות etl/gps/משהו גלובאלי אחר" marginBottom>
+    <Widget title={t('dataResearch.global_issues_title')} marginBottom>
       <StackedResearchInputs
         startDate={startDate}
         setStartDate={setStartDate}
@@ -61,24 +63,24 @@ function StackedResearchSection() {
         graphData={graphData}
         isLoading={loadingGraph}
         field="totalActualRides"
-        title="מספר נסיעות בפועל"
-        description="כמה נסיעות נרשמו כהתבצעו בכל יום/שעה בטווח הזמן שבחרתם. (נסיעות = siri rides)"
+        title={t('dataResearch.actual_rides_title')}
+        description={t('dataResearch.actual_rides_description')}
         agencyId={operatorId}
       />
       <StackedResearchChart
         graphData={graphData}
         isLoading={loadingGraph}
         field="totalPlannedRides"
-        title="מספר נסיעות מתוכננות"
-        description="כמה נסיעות היו אמורות להיות בכל יום/שעה בטווח הזמן שבחרתם. (נסיעות = נסיעות מתוכננות בgtfs)"
+        title={t('dataResearch.planned_rides_title')}
+        description={t('dataResearch.planned_rides_description')}
         agencyId={operatorId}
       />
       <StackedResearchChart
         graphData={graphData}
         isLoading={loadingGraph}
         field="totalMissedRides"
-        title="מספר נסיעות שלא התבצעו"
-        description="כמה נסיעות היו אמורות להיות בכל יום/שעה בטווח הזמן שבחרתם אבל לא התבצעו. (הפרש בין שני הגרפים הקודמים)"
+        title={t('dataResearch.missed_rides_title')}
+        description={t('dataResearch.missed_rides_description')}
         agencyId={operatorId}
       />
     </Widget>
@@ -107,7 +109,7 @@ function StackedResearchInputs({
   const { t } = useTranslation()
   return (
     <>
-      <Grid container gap={2}>
+      <Grid container sx={{ gap: 2 }}>
         <Grid size={{ md: 'grow', xs: 12 }}>
           <DateSelector
             time={startDate}
@@ -152,6 +154,7 @@ const StackedResearchChart = ({
   field?: 'totalActualRides' | 'totalPlannedRides' | 'totalMissedRides'
   agencyId?: string
 }) => {
+  const { t } = useTranslation()
   const filteredGraphData = useMemo(() => {
     if (!agencyId) return graphData
     return graphData.filter((record) => record.operatorRef?.operatorRef?.toString() === agencyId)
@@ -193,13 +196,13 @@ const StackedResearchChart = ({
       {title && <h2>{title}</h2>}
       {description && (
         <p>
-          <strong>מה רואים בגרף?</strong>
+          <strong>{t('dataResearch.what_in_graph')}</strong>
           <br />
           {description}
         </p>
       )}
       {isLoading ? (
-        <Skeleton active />
+        <SkeletonLoader active />
       ) : (
         <ResponsiveContainer width="100%" height="100%" minHeight="500px">
           <AreaChart

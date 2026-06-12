@@ -1,5 +1,8 @@
+import createCache from '@emotion/cache'
+import { CacheProvider } from '@emotion/react'
 import { createTheme, ThemeProvider as MuiThemeProvider, ScopedCssBaseline } from '@mui/material'
 import { arEG, enUS, heIL, ruRU } from '@mui/material/locale'
+import rtlPlugin from '@mui/stylis-plugin-rtl'
 import { LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { enUS as dateEnUS, heIL as dateHeIL, ruRU as dateRuRU } from '@mui/x-date-pickers/locales'
@@ -18,9 +21,21 @@ import {
 } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLocation, useNavigate } from 'react-router'
+import { prefixer } from 'stylis'
 import { useLocalStorage } from 'usehooks-ts'
 import dayjs from 'src/dayjs'
 import { getLang, getPathWithoutLang } from 'src/locale/allTranslations'
+
+// Direction-aware emotion caches: the RTL cache runs the vendor prefixer and then
+// flips physical CSS (left↔right); the LTR cache uses emotion's default (prefixer
+// only). prefixer must be listed explicitly because passing stylisPlugins replaces
+// emotion's default plugin chain. Selecting the cache by the active language keeps
+// MUI's generated styles in sync with the layout direction, so grouped components
+// (ButtonGroup/ToggleButtonGroup) round their outer corners correctly without
+// per-component dir="rtl" workarounds.
+const cacheRtl = createCache({ key: 'muirtl', stylisPlugins: [prefixer, rtlPlugin] })
+const cacheLtr = createCache({ key: 'mui' })
+const RTL_LANGUAGES = ['he', 'ar']
 
 export interface ThemeContextInterface {
   toggleTheme: () => void
@@ -38,12 +53,20 @@ export const ThemeProvider = ({ children }: PropsWithChildren) => {
   )
 
   const initialLang = getLang()
-  const [language, setLanguage] = useLocalStorage<string>('language', () => initialLang)
+  // Store the language as a raw string (e.g. `he`, not `"he"`) so it matches the value
+  // written by getLang()/i18n in allTranslations.ts. Without identity (de)serializers,
+  // useLocalStorage would JSON.parse the raw value and throw "is not valid JSON".
+  const [language, setLanguage] = useLocalStorage<string>('language', () => initialLang, {
+    serializer: (value) => value,
+    deserializer: (value) => value,
+  })
 
   const { i18n } = useTranslation()
   const navigate = useNavigate()
 
   const toggleTheme = useCallback(() => setIsDarkTheme((prev) => !prev), [setIsDarkTheme])
+
+  const emotionCache = RTL_LANGUAGES.includes(language) ? cacheRtl : cacheLtr
 
   const location = useLocation()
 
@@ -142,15 +165,17 @@ export const ThemeProvider = ({ children }: PropsWithChildren) => {
   }, [isDarkTheme, language])
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={language}>
-      <ConfigProvider {...antdTheme}>
-        <MuiThemeProvider theme={muiTheme}>
-          <ScopedCssBaseline enableColorScheme>
-            <ThemeContext.Provider value={contextValue}>{children}</ThemeContext.Provider>
-          </ScopedCssBaseline>
-        </MuiThemeProvider>
-      </ConfigProvider>
-    </LocalizationProvider>
+    <CacheProvider value={emotionCache}>
+      <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={language}>
+        <ConfigProvider {...antdTheme}>
+          <MuiThemeProvider theme={muiTheme}>
+            <ScopedCssBaseline enableColorScheme>
+              <ThemeContext.Provider value={contextValue}>{children}</ThemeContext.Provider>
+            </ScopedCssBaseline>
+          </MuiThemeProvider>
+        </ConfigProvider>
+      </LocalizationProvider>
+    </CacheProvider>
   )
 }
 

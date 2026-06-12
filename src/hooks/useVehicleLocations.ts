@@ -81,7 +81,6 @@ class LocationObservable {
 
   #notifyObservers(data: SiriVehicleLocationWithRelatedPydanticModel[] | { finished: true }) {
     const observers = this.#observers
-    console.log('notifying observers', observers.length)
     observers.forEach((observer) => observer(data))
   }
 
@@ -210,7 +209,11 @@ export default function useVehicleLocations({
           } else {
             setLocations((prev) =>
               uniqBy<SiriVehicleLocationWithRelatedPydanticModel>(
-                [...prev, ...data].sort((a, b) => (a.id || 0) - (b.id || 0)),
+                [...prev, ...data].sort(
+                  (a, b) =>
+                    new Date(a.recordedAtTime ?? 0).getTime() -
+                    new Date(b.recordedAtTime ?? 0).getTime(),
+                ),
                 (loc) => loc.id,
               ),
             )

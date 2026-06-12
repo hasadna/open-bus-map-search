@@ -1,7 +1,11 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { useState } from 'react'
 import type { BusRoute } from 'src/model/busRoute'
-import { type PageSearchState, SearchContext } from 'src/model/pageState'
+import {
+  GLOBAL_SEARCH_DEFAULTS,
+  GlobalSearchContext,
+  type GlobalSearchState,
+} from 'src/model/globalState'
 import { getRoutesAsync } from '../../api/gtfsService'
 import GapsPatternsPage from './GapsPatternsPage'
 
@@ -20,25 +24,32 @@ jest.mock('../components/DateSelector', () => ({
 }))
 jest.mock('../components/LineSelector', () => ({ __esModule: true, default: () => null }))
 jest.mock('../components/OperatorSelector', () => ({ __esModule: true, default: () => null }))
-jest.mock('../components/RouteSelector', () => ({ __esModule: true, default: () => null }))
+// Routes now live in the page's local state; the selector is the observable output.
+jest.mock('../components/RouteSelector', () => ({
+  __esModule: true,
+  default: ({ routes }: { routes: BusRoute[] }) => (
+    <div data-testid="route-selector">count:{routes.length}</div>
+  ),
+}))
 
 const getRoutesMock = getRoutesAsync as jest.Mock
 
 function Harness() {
-  const [search, setSearch] = useState<PageSearchState>({
-    timestamp: new Date('2024-01-01T08:00:00Z').valueOf(),
+  const [search, setSearch] = useState<GlobalSearchState>({
+    ...GLOBAL_SEARCH_DEFAULTS,
     operatorId: '3',
     lineNumber: '18',
     routeKey: 'stale-route',
-    routes: [{ key: 'stale-route' } as BusRoute],
   })
   return (
-    <SearchContext.Provider value={{ search, setSearch }}>
-      <div data-testid="routes-state">
-        {search.routes === undefined ? 'cleared' : `count:${search.routes.length}`}
-      </div>
+    <GlobalSearchContext.Provider value={{ search, setSearch }}>
+      <div data-testid="route-key">{search.routeKey ?? 'cleared'}</div>
+      <button
+        data-testid="switch-line"
+        onClick={() => setSearch((current) => ({ ...current, lineNumber: '99' }))}
+      />
       <GapsPatternsPage />
-    </SearchContext.Provider>
+    </GlobalSearchContext.Provider>
   )
 }
 
@@ -48,15 +59,22 @@ describe('GapsPatternsPage - failed route fetch clears stale routes', () => {
   })
 
   it('clears the previous line routes/routeKey when the fetch fails', async () => {
-    getRoutesMock.mockRejectedValue(new Error('500 from gtfs'))
+    getRoutesMock.mockResolvedValueOnce([{ key: 'stale-route' } as BusRoute])
+    getRoutesMock.mockRejectedValueOnce(new Error('500 from gtfs'))
 
     render(<Harness />)
-    expect(screen.getByTestId('routes-state')).toHaveTextContent('count:1')
-
-    // The load effect runs, getRoutesAsync rejects (non-abort), and the catch
-    // must clear the stale routes instead of leaving them rendered as valid.
-    await waitFor(() => expect(screen.getByTestId('routes-state')).toHaveTextContent('cleared'), {
+    // First line loads fine and its routes render.
+    await waitFor(() => expect(screen.getByTestId('route-selector')).toHaveTextContent('count:1'), {
       timeout: 8000,
     })
+
+    // Switching lines reruns the load effect; getRoutesAsync rejects (non-abort),
+    // and the catch must clear the stale routes/routeKey instead of leaving the
+    // previous line's routes rendered as valid.
+    fireEvent.click(screen.getByTestId('switch-line'))
+    await waitFor(() => expect(screen.getByTestId('route-key')).toHaveTextContent('cleared'), {
+      timeout: 8000,
+    })
+    expect(screen.queryByTestId('route-selector')).not.toBeInTheDocument()
   }, 15000)
 })

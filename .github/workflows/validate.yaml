@@ -59,9 +59,9 @@ jobs:
       - name: Generate hash.txt with commit hash
         run: echo "$(git rev-parse --short HEAD)" >> public/hash.txt
       - name: Setup Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
       - name: Build and export Docker image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           tags: ${{ env.DOCKER_APP_IMAGE_NAME }}:${{ env.DOCKER_APP_IMAGE_TAG }}
@@ -96,7 +96,7 @@ jobs:
       - name: Set timezone
         run: echo "TZ=Asia/Jerusalem" >> $GITHUB_ENV
       - name: Download Docker image artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: docker-image
           path: /tmp
@@ -134,7 +134,19 @@ jobs:
           echo "hash.txt is valid with MIME type $mime_type and length $content_length characters."
       - name: Install Dependencies and Playwright
         run: npm ci
+      - name: Resolve Playwright cache key inputs
+        id: playwright-version
+        run: |
+          echo "version=$(node -p 'require("@playwright/test/package.json").version')" >> "$GITHUB_OUTPUT"
+          echo "imageos=$ImageOS" >> "$GITHUB_OUTPUT"
+      - name: Cache Playwright browsers
+        uses: actions/cache@v5
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-${{ runner.arch }}-${{ steps.playwright-version.outputs.imageos }}-playwright-${{ steps.playwright-version.outputs.version }}
       - name: Install Playwright browser dependencies
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
         timeout-minutes: 15
         run: npx playwright install chromium
       - name: Run Playwright tests
@@ -174,7 +186,7 @@ jobs:
         run: |
           echo "SHORT_SHA=$(echo ${{ github.event.pull_request.head.sha }} | cut -c1-7)" >> $GITHUB_ENV
       - name: Download Docker image artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: docker-image
           path: /tmp
@@ -216,12 +228,25 @@ jobs:
           cache: 'npm'
       - name: Install Dependencies and Playwright
         run: npm ci
+      - name: Resolve Playwright cache key inputs
+        id: playwright-version
+        run: |
+          echo "version=$(node -p 'require("@playwright/test/package.json").version')" >> "$GITHUB_OUTPUT"
+          echo "imageos=$ImageOS" >> "$GITHUB_OUTPUT"
+      - name: Cache Playwright browsers
+        uses: actions/cache@v5
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-${{ runner.arch }}-${{ steps.playwright-version.outputs.imageos }}-playwright-${{ steps.playwright-version.outputs.version }}
       - name: Install Playwright browser dependencies
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
         timeout-minutes: 15
-        run: npx playwright install  chromium
+        run: npx playwright install chromium
       - name: Run Playwright Visual Tests
         env:
           APPLITOOLS_BATCH_NAME: open-bus-map-search/${{ github.ref }}/${{ env.SHORT_SHA }}/
+          PWTEST_CHILD_PROCESS_TIMEOUT: '1800000' # 30 min; default 300000 force-kills slow UFG result collection → false CI failure
         run: npm run test:e2e:visual
       - name: Prepare Playwright artifact directory
         if: always()
@@ -253,21 +278,18 @@ jobs:
       AWS_KEY_ID: ${{ secrets.AWS_KEY_ID }}
     steps:
       - name: Download Playwright test artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: playwright-test
           path: test-results
       - name: Publish test results to S3
-        uses: shallwefootball/s3-upload-action@master
         if: always() && env.AWS_KEY_ID != ''
-        id: s3-trace
         continue-on-error: true
-        with:
-          aws_key_id: ${{env.AWS_KEY_ID}}
-          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
-          aws_bucket: noam-gaash.co.il
-          source_dir: test-results
-          destination_dir: ${{ github.run_id }}/open-bus/${{ github.event.pull_request.head.sha }}/test-results
+        env:
+          AWS_ACCESS_KEY_ID: ${{ env.AWS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: us-east-1
+        run: aws s3 cp test-results 's3://noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.event.pull_request.head.sha }}/test-results' --recursive --acl public-read --only-show-errors
       - name: Set commit status for test results
         uses: myrotvorets/set-commit-status-action@master
         if: always() && env.AWS_KEY_ID != ''

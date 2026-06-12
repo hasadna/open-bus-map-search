@@ -106,6 +106,10 @@ We’ve hidden a few fun surprises in the [web app](https://open-bus-map-search.
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/ayalagellis"><img src="https://avatars.githubusercontent.com/u/100130564?v=4?s=100" width="100px;" alt="ayalagellis"/><br /><sub><b>ayalagellis</b></sub></a><br /><a href="#code-ayalagellis" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/arielvino"><img src="https://avatars.githubusercontent.com/u/71963953?v=4?s=100" width="100px;" alt="arielvino"/><br /><sub><b>arielvino</b></sub></a><br /><a href="#code-arielvino" title="Code">💻</a></td>
     </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="http://www.lastmile.co.il"><img src="https://avatars.githubusercontent.com/u/209318276?v=4?s=100" width="100px;" alt="eithanwes"/><br /><sub><b>eithanwes</b></sub></a><br /><a href="#bug-eithanwes" title="Bug reports">🐛</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/alon-greenshtein"><img src="https://avatars.githubusercontent.com/u/175951799?v=4?s=100" width="100px;" alt="Alon Greenstein"/><br /><sub><b>Alon Greenstein</b></sub></a><br /><a href="#code-alon-greenshtein" title="Code">💻</a></td>
+    </tr>
   </tbody>
 </table>
 
