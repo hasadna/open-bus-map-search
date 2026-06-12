@@ -56,12 +56,23 @@ jobs:
     name: Dependency Review
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
+    permissions:
+      contents: read
+      # Needed for comment-summary-in-pr; on fork PRs the token stays read-only
+      # and the action falls back to the job summary instead of a comment.
+      pull-requests: write
     steps:
       - uses: actions/checkout@v6
       - name: Review dependency changes introduced by this PR
         uses: actions/dependency-review-action@v5
         with:
           fail-on-severity: low
+          comment-summary-in-pr: on-failure
+          # Exception policy: a GHSA may be allowlisted below only if
+          #   - severity is low or moderate (never high/critical), AND
+          #   - there is no patched version / alternative package, AND
+          #   - the entry has a justification and a removal condition.
+          # allow-ghsas: GHSA-xxxx-xxxx-xxxx # <why it's acceptable>, remove when <condition>
 
   # Informational (not a required check): goes red when any known vulnerability exists
   # anywhere in the tree, including advisories published after the dependency was merged.
