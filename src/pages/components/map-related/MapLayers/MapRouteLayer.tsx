@@ -45,6 +45,7 @@ export function MapRouteLayer({
         const icon =
           i === 0
             ? busIcon({
+                // eslint-disable-next-line i18next/no-literal-string -- icon lookup key, not user text
                 operator_id: pos.operator?.toString() || 'default',
                 name: agencyList.find((agency) => agency.operatorRef === pos.operator)?.agencyName,
               })
