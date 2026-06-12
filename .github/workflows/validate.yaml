@@ -59,9 +59,9 @@ jobs:
       - name: Generate hash.txt with commit hash
         run: echo "$(git rev-parse --short HEAD)" >> public/hash.txt
       - name: Setup Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
       - name: Build and export Docker image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           tags: ${{ env.DOCKER_APP_IMAGE_NAME }}:${{ env.DOCKER_APP_IMAGE_TAG }}
@@ -140,7 +140,7 @@ jobs:
           echo "version=$(node -p 'require("@playwright/test/package.json").version')" >> "$GITHUB_OUTPUT"
           echo "imageos=$ImageOS" >> "$GITHUB_OUTPUT"
       - name: Cache Playwright browsers
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         id: playwright-cache
         with:
           path: ~/.cache/ms-playwright
@@ -234,7 +234,7 @@ jobs:
           echo "version=$(node -p 'require("@playwright/test/package.json").version')" >> "$GITHUB_OUTPUT"
           echo "imageos=$ImageOS" >> "$GITHUB_OUTPUT"
       - name: Cache Playwright browsers
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         id: playwright-cache
         with:
           path: ~/.cache/ms-playwright
@@ -283,16 +283,13 @@ jobs:
           name: playwright-test
           path: test-results
       - name: Publish test results to S3
-        uses: shallwefootball/s3-upload-action@master
         if: always() && env.AWS_KEY_ID != ''
-        id: s3-trace
         continue-on-error: true
-        with:
-          aws_key_id: ${{env.AWS_KEY_ID}}
-          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
-          aws_bucket: noam-gaash.co.il
-          source_dir: test-results
-          destination_dir: ${{ github.run_id }}/open-bus/${{ github.event.pull_request.head.sha }}/test-results
+        env:
+          AWS_ACCESS_KEY_ID: ${{ env.AWS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: us-east-1
+        run: aws s3 cp test-results 's3://noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.event.pull_request.head.sha }}/test-results' --recursive --acl public-read --only-show-errors
       - name: Set commit status for test results
         uses: myrotvorets/set-commit-status-action@master
         if: always() && env.AWS_KEY_ID != ''
