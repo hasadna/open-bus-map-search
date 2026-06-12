@@ -44,9 +44,8 @@ jobs:
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
 
-          # Run at max effort — the absolute ceiling. Dial back to "xhigh"
-          # (Claude Code's recommended coding setting) if runs get slow or
-          # quota-hungry.
+          # Likely was "high" before.
+          # Can be "high", "xhigh", or "max".
           settings: |
             {
               "effortLevel": "max"
@@ -68,8 +67,8 @@ jobs:
           #   2. The deny-list below blocks Docker image pushes explicitly.
           # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
           #
-          # Model: Claude Fable 5 (most capable GA model). If the OAuth
-          # subscription tier doesn't serve it, fall back to Opus 4.8 instead
+          # Model: Claude Fable 5 (most capable GA model).
+          # If the OAuth subscription tier doesn't serve it, fall back to Opus 4.8 instead
           # of failing the run.
           claude_args: >-
             --model claude-fable-5
