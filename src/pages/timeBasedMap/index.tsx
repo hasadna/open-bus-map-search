@@ -3,7 +3,7 @@ import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Marker, Popup, TileLayer, useMap } from 'react-leaflet'
 import MarkerClusterGroup from 'react-leaflet-markercluster'
-import dayjs from 'src/dayjs'
+import dayjs, { ISRAEL_TIMEZONE, parseIsraelLocalDatetime } from 'src/dayjs'
 import { useAgencyList } from 'src/hooks/useAgencyList'
 import useVehicleLocations from 'src/hooks/useVehicleLocations'
 import { ExtraShareParamsContext, InitialUrlParamsContext } from 'src/model/routeContext'
@@ -25,20 +25,23 @@ const DEFAULT_POSITION: Point = {
 
 export default function TimeBasedMapPage() {
   const initialUrlParams = useContext(InitialUrlParamsContext)
-  const [from, setFrom] = useState(() =>
-    initialUrlParams.timestamp ? dayjs(+initialUrlParams.timestamp) : DEFAULT_TIME,
+  const [from, setFrom] = useState(
+    () =>
+      (initialUrlParams.datetime && parseIsraelLocalDatetime(initialUrlParams.datetime)) ||
+      DEFAULT_TIME,
   )
   const to = useMemo(() => dayjs(from).add(1, 'minutes'), [from])
   const { locations, isLoading } = useVehicleLocations({ from, to })
   const { t } = useTranslation()
   const positions = useMemo(() => locations.map(toPoint), [locations])
-  const handleFromChange = useCallback((timestamp: dayjs.Dayjs | null) => {
-    setFrom(timestamp ?? DEFAULT_TIME)
+  const handleFromChange = useCallback((time: dayjs.Dayjs | null) => {
+    setFrom(time ?? DEFAULT_TIME)
   }, [])
 
   const { setParams } = useContext(ExtraShareParamsContext)
   useEffect(() => {
-    setParams({ timestamp: from.valueOf().toString() })
+    // Shared as a readable Israel-local datetime, e.g. 2023-03-14T17:00
+    setParams({ datetime: from.tz(ISRAEL_TIMEZONE).format('YYYY-MM-DDTHH:mm') })
     return () => setParams({})
   }, [from, setParams])
 

@@ -9,16 +9,10 @@ import SkeletonLoader from 'src/shared/SkeletonLoader'
 import Widget from 'src/shared/Widget'
 import { useAllRoutes } from '../../hooks/useAllRoutes'
 
-export const OperatorRoutes = ({
-  operatorId,
-  timestamp,
-}: {
-  operatorId?: string
-  timestamp?: number
-}) => {
+export const OperatorRoutes = ({ operatorId, date }: { operatorId?: string; date?: string }) => {
   const { setSearch } = useContext(GlobalSearchContext)
   const { t } = useTranslation()
-  const { routes, isLoading } = useAllRoutes(operatorId, timestamp)
+  const { routes, isLoading } = useAllRoutes(operatorId, date)
 
   const navigate = useNavigate()
 

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import type { Dayjs } from 'src/dayjs'
 import { Gap, getGapsAsync } from '../../api/gapsService'
 import { HourlyData, sortByMode } from '../components/utils'
 
@@ -32,13 +33,18 @@ export const convertGapsToHourlyStruct = (gapsList: Gap[]): HourlyDataList => {
 }
 
 export const useGapsList = (
-  fromDate: number,
-  toDate: number,
+  fromDate: Dayjs,
+  toDate: Dayjs,
   operatorRef: string,
   lineRef: number,
   sortingMode: string,
 ): HourlyData[] => {
   const [hourlyData, setHourlyData] = useState<HourlyData[]>([])
+
+  // Depend on the instants, not the Dayjs identities — an inline-constructed
+  // fromDate/toDate would otherwise re-run the effect (and refetch) every render.
+  const fromKey = fromDate.valueOf()
+  const toKey = toDate.valueOf()
 
   useEffect(() => {
     const fetchData = async () => {
@@ -55,6 +61,6 @@ export const useGapsList = (
     return () => {
       setHourlyData([])
     }
-  }, [lineRef, operatorRef, fromDate, toDate, sortingMode])
+  }, [lineRef, operatorRef, fromKey, toKey, sortingMode])
   return hourlyData
 }

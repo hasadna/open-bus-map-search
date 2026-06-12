@@ -41,8 +41,8 @@ export const WorstLinesChart = ({
   alertWorstLineHandling,
 }: WorstLinesChartProps) => {
   const [groupByLineData, lineDataLoading] = useGroupBy({
-    dateFrom: startDate.valueOf(),
-    dateTo: endDate.valueOf(),
+    dateFrom: startDate,
+    dateTo: endDate,
     groupBy: 'operator_ref,line_ref',
   })
 

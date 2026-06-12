@@ -4,21 +4,21 @@ import { BusRoute, fromGtfsRoute } from 'src/model/busRoute'
 import { BusStop, fromGtfsStop } from 'src/model/busStop'
 
 export async function getRoutesAsync(
-  fromTimestamp: dayjs.Dayjs,
-  toTimestamp: dayjs.Dayjs,
+  from: dayjs.Dayjs,
+  to: dayjs.Dayjs,
   operatorId?: string,
   lineNumber?: string,
   signal?: AbortSignal,
 ): Promise<BusRoute[]> {
-  const fromDate = toIsraelTimezone(fromTimestamp).format('YYYY-MM-DD')
-  const toDate = toIsraelTimezone(toTimestamp).format('YYYY-MM-DD')
+  const fromDate = toIsraelTimezone(from).format('YYYY-MM-DD')
+  const toDate = toIsraelTimezone(to).format('YYYY-MM-DD')
 
   const gtfsRoutes = await GTFS_API.gtfsRoutesListGet(
     {
       routeShortName: lineNumber,
       operatorRefs: operatorId,
-      dateFrom: fromTimestamp.startOf('day').toDate(),
-      dateTo: dayjs.min(toTimestamp.endOf('day'), toIsraelTimezone()).toDate(),
+      dateFrom: from.startOf('day').toDate(),
+      dateTo: dayjs.min(to.endOf('day'), toIsraelTimezone()).toDate(),
       limit: 100,
     },
     { signal },
@@ -49,15 +49,15 @@ export async function getRoutesAsync(
 
 export async function getStopsForRouteAsync(
   routeIds: number[],
-  timestamp: dayjs.Dayjs,
+  time: dayjs.Dayjs,
 ): Promise<BusStop[]> {
   const stops: BusStop[] = []
 
   for (const routeId of routeIds) {
     const rides = await GTFS_API.gtfsRidesListGet({
       gtfsRouteId: routeId,
-      startTimeFrom: timestamp.subtract(1, 'day').second(0).millisecond(0).toDate(),
-      startTimeTo: timestamp.add(1, 'day').second(0).millisecond(0).toDate(),
+      startTimeFrom: time.subtract(1, 'day').second(0).millisecond(0).toDate(),
+      startTimeTo: time.add(1, 'day').second(0).millisecond(0).toDate(),
       limit: 1,
       orderBy: 'start_time',
     })
@@ -88,13 +88,13 @@ export async function getStopsForRouteAsync(
   )
 }
 
-export async function getGtfsStopHitTimesAsync(stop: BusStop, timestamp: dayjs.Dayjs) {
+export async function getGtfsStopHitTimesAsync(stop: BusStop, time: dayjs.Dayjs) {
   try {
     return await GTFS_API.gtfsRideStopsListGet({
       gtfsRideGtfsRouteId: stop.routeId,
       gtfsStopIds: stop.stopId.toString(),
-      arrivalTimeFrom: timestamp.subtract(4, 'hour').toDate(),
-      arrivalTimeTo: timestamp.add(4, 'hour').toDate(),
+      arrivalTimeFrom: time.subtract(4, 'hour').toDate(),
+      arrivalTimeTo: time.add(4, 'hour').toDate(),
       orderBy: 'arrival_time asc',
     })
   } catch (error) {
