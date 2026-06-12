@@ -73,6 +73,7 @@ jobs:
           #   - there is no patched version / alternative package, AND
           #   - the entry has a justification and a removal condition.
           # allow-ghsas: GHSA-xxxx-xxxx-xxxx # <why it's acceptable>, remove when <condition>
+          allow-ghsas: GHSA-gxpj-cx7g-858c # For testing, remove when test is done.
 
   # Informational (not a required check): goes red when any known vulnerability exists
   # anywhere in the tree, including advisories published after the dependency was merged.
