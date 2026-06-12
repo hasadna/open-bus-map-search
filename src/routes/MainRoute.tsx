@@ -75,6 +75,20 @@ export const MainRoute = () => {
     [storedSearch],
   )
 
+  // Also repair the stored value itself — otherwise the corrupt date sits in
+  // session storage forever and every functional setSearch spreads it back in.
+  // Only `date` is touched (functional update) so this can't clobber the
+  // urlState effect below regardless of effect ordering.
+  useEffect(() => {
+    if (!isValidSearchDate(storedSearch.date)) {
+      setSearch((current) =>
+        isValidSearchDate(current.date)
+          ? current
+          : { ...current, date: GLOBAL_SEARCH_DEFAULTS.date },
+      )
+    }
+  }, [storedSearch.date])
+
   // If session storage already had values, urlState was ignored above — apply it now.
   // This ensures shared links always override stale session state.
   useEffect(() => {

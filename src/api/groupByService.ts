@@ -3,7 +3,7 @@ import {
   GtfsRidesAggGroupByPydanticModel,
 } from '@hasadna/open-bus-api-client'
 import { useQuery } from '@tanstack/react-query'
-import { Dayjs } from 'src/dayjs'
+import type { Dayjs } from 'src/dayjs'
 import { getAgencyList } from './agencyList'
 import { AGGREGATIONS_API } from './apiConfig'
 
