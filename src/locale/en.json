@@ -138,6 +138,7 @@
   "to_date": "Until",
   "watch_locations_in_range": "View bus locations within a range of",
   "minutes": "minutes",
+  "minutes_from_route_start": "{{minutes}} minutes from route start",
   "minutes_5": "5 minutes",
   "show_x_bus_locations": "Bus locations",
   "show_document": "Show geeks data",

@@ -142,6 +142,12 @@ main > div,
           margin: 0;
           font-size: 13px;
           font-weight: 600;
+
+          // Per-vehicle subtitle, e.g. "(123-45-678)" — secondary to the title.
+          span {
+            margin-inline-start: 4px;
+            font-weight: 500;
+          }
         }
       }
     }
@@ -166,6 +172,29 @@ main > div,
 
   .leaflet-popup-close-button {
     color: #fff;
+  }
+
+  .leaflet-tooltip {
+    background: #1c1d1c;
+    border-color: #1c1d1c;
+    color: #fff;
+  }
+
+  // The tooltip's pointer arrow is drawn with a ::before border per placement side.
+  .leaflet-tooltip-top::before {
+    border-top-color: #1c1d1c;
+  }
+
+  .leaflet-tooltip-bottom::before {
+    border-bottom-color: #1c1d1c;
+  }
+
+  .leaflet-tooltip-left::before {
+    border-left-color: #1c1d1c;
+  }
+
+  .leaflet-tooltip-right::before {
+    border-right-color: #1c1d1c;
   }
 
   .leaflet-popup-content-wrapper a {
