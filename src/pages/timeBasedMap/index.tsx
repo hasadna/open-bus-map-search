@@ -3,7 +3,7 @@ import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Marker, Popup, TileLayer, useMap } from 'react-leaflet'
 import MarkerClusterGroup from 'react-leaflet-markercluster'
-import dayjs, { ISRAEL_TIMEZONE } from 'src/dayjs'
+import dayjs, { ISRAEL_TIMEZONE, parseIsraelLocalDatetime } from 'src/dayjs'
 import { useAgencyList } from 'src/hooks/useAgencyList'
 import useVehicleLocations from 'src/hooks/useVehicleLocations'
 import { ExtraShareParamsContext, InitialUrlParamsContext } from 'src/model/routeContext'
@@ -25,8 +25,10 @@ const DEFAULT_POSITION: Point = {
 
 export default function TimeBasedMapPage() {
   const initialUrlParams = useContext(InitialUrlParamsContext)
-  const [from, setFrom] = useState(() =>
-    initialUrlParams.datetime ? dayjs.tz(initialUrlParams.datetime, ISRAEL_TIMEZONE) : DEFAULT_TIME,
+  const [from, setFrom] = useState(
+    () =>
+      (initialUrlParams.datetime && parseIsraelLocalDatetime(initialUrlParams.datetime)) ||
+      DEFAULT_TIME,
   )
   const to = useMemo(() => dayjs(from).add(1, 'minutes'), [from])
   const { locations, isLoading } = useVehicleLocations({ from, to })
