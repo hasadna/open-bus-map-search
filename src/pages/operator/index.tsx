@@ -24,7 +24,6 @@ const OperatorPage = () => {
   const [timeRange, setTimeRange] = useState<(typeof TIME_RANGES)[number]>('day')
 
   const dateDayjs = dayjs.tz(date, ISRAEL_TIMEZONE)
-  const timestamp = dateDayjs.valueOf()
 
   const handleOperatorChange = (operatorId: string) => {
     setSearch((current) => ({ ...current, operatorId }))
@@ -76,7 +75,7 @@ const OperatorPage = () => {
           <Grid size={{ lg: 6, xs: 12 }}>
             <OperatorInfo operatorId={operatorId} />
             <Spacing />
-            <OperatorGaps operatorId={operatorId} timestamp={timestamp} timeRange={timeRange} />
+            <OperatorGaps operatorId={operatorId} date={date} timeRange={timeRange} />
           </Grid>
           <Grid size={{ lg: 6, xs: 12 }}>
             <ChartWrapper>
@@ -91,7 +90,7 @@ const OperatorPage = () => {
             </ChartWrapper>
           </Grid>
           <Grid size={{ xs: 12 }}>
-            <OperatorRoutes operatorId={operatorId} timestamp={timestamp} />
+            <OperatorRoutes operatorId={operatorId} date={date} />
           </Grid>
         </Grid>
       )}
