@@ -59,16 +59,6 @@ jobs:
           #      publishing is impossible regardless of the command run.
           #   2. The deny-list below blocks Docker image pushes explicitly.
           # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
-          #
-          # Model + effort are passed straight through to the Claude Code CLI.
-          # Pin Opus 4.8 explicitly (Fable 5 was retired; the `opus` alias could
-          # also shift under us when a newer Opus ships). Effort is set with
-          # --effort here rather than via settings.json `effortLevel`, because the
-          # settings key only accepts up to `xhigh` — `max` is reachable only
-          # through the --effort flag. Drop to `xhigh` (the coding sweet spot) or
-          # `high` to cut token cost.
           claude_args: >-
-            --model claude-opus-4-8
-            --effort max
             --allowed-tools "Bash,Edit,Write,Read,Glob,Grep,WebFetch,WebSearch,TodoWrite"
             --disallowed-tools "Bash(docker push:*),Bash(docker image push:*),Bash(docker buildx:*),Bash(podman push:*)"
