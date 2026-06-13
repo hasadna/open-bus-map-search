@@ -61,6 +61,9 @@ jobs:
       # Needed for comment-summary-in-pr; on fork PRs the token stays read-only
       # and the action falls back to the job summary instead of a comment.
       pull-requests: write
+      # deleteComment (the success-path cleanup) is gated on Issues:write even for
+      # comments on a PR; pull-requests:write only covers create/update.
+      issues: write
     steps:
       - uses: actions/checkout@v6
       - name: Review dependency changes introduced by this PR
@@ -74,13 +77,13 @@ jobs:
           #   - there is no patched version / alternative package, AND
           #   - the entry has a justification.
           # allow-ghsas: GHSA-xxxx-xxxx-xxxx, GHSA-yyyy-yyyy-yyyy  # <why first is acceptable> | <why second is acceptable>
-          allow-ghsas: GHSA-9vvw-cc9w-f27h, GHSA-gxpj-cx7g-858c # low severity, no patch | low severity, no patch
+          # allow-ghsas: GHSA-9vvw-cc9w-f27h, GHSA-gxpj-cx7g-858c # low severity, no patch | low severity, no patch
       - name: Allowlist help comment
         # On failure: post a short how-to. On success: delete both this help comment
         # and the action's own summary, so a fixed PR cleans up after itself.
         if: always() && github.event_name == 'pull_request'
         continue-on-error: true # never let the comment housekeeping fail the gate (e.g. read-only token on fork PRs)
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8 # v8 runs on node24 (v7 was node20, deprecated)
         env:
           REVIEW_OUTCOME: ${{ steps.review.outcome }}
         with:
