@@ -98,7 +98,7 @@ jobs:
                 '',
                 'Best fix: bump it to a patched version so the advisory is gone.',
                 '',
-                "If there's no patch and a reviewer agrees (low/moderate only — never high/critical):",
+                "If there's no patch and a reviewer approves:",
                 'grab the `GHSA-…` id from the advisory link in the summary above (it only lives there),',
                 'and add it under `allow-ghsas` in `.github/workflows/validate.yaml`, with a reason + removal note:',
                 '',
@@ -106,7 +106,7 @@ jobs:
                 '          allow-ghsas: GHSA-xxxx-xxxx-xxxx # why it is OK, remove when <condition>',
                 '```',
                 '',
-                '_On your way, feel free to delete any `allow-ghsas` lines that existed before this PR - (they are only needed on PR merge).',
+                'On your way, feel free to delete any `allow-ghsas` lines that existed before this PR - (they are only needed on PR merge).',
               ].join('\n')
               const existing = find(helpMarker)
               if (existing) await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body })
