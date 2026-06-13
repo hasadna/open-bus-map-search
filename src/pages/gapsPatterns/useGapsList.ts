@@ -1,29 +1,26 @@
 import { useEffect, useState } from 'react'
-import { Moment } from 'moment'
-import axios from 'axios'
-import { getGapsAsync } from '../../api/gapsService'
-
-import { sortByMode, HourlyData } from '../components/utils'
-import { GapsList } from 'src/model/gaps'
+import type { Dayjs } from 'src/dayjs'
+import { Gap, getGapsAsync } from '../../api/gapsService'
+import { HourlyData, sortByMode } from '../components/utils'
 
 type HourlyDataList = HourlyData[]
 // Convert gapsList into HourlyDataList structure
-export const convertGapsToHourlyStruct = (gapsList: GapsList): HourlyDataList => {
+export const convertGapsToHourlyStruct = (gapsList: Gap[]): HourlyDataList => {
   // Convert gapsList data to hourly mapping structure, where hour is a key
   const hourlyMapping: Record<string, { planned_rides: number; actual_rides: number }> = {}
 
   for (const ride of gapsList) {
-    if (ride.gtfsTime === null) {
+    if (ride.plannedStartTime === undefined) {
       continue
     }
-    const plannedHour = ride.gtfsTime.format('HH:mm')
+    const plannedHour = ride.plannedStartTime.format('HH:mm')
 
     if (!hourlyMapping[plannedHour]) {
       hourlyMapping[plannedHour] = { planned_rides: 0, actual_rides: 0 }
     }
 
     hourlyMapping[plannedHour].planned_rides += 1
-    if (ride.siriTime) {
+    if (ride.actualStartTime) {
       hourlyMapping[plannedHour].actual_rides += 1
     }
   }
@@ -36,28 +33,25 @@ export const convertGapsToHourlyStruct = (gapsList: GapsList): HourlyDataList =>
 }
 
 export const useGapsList = (
-  fromDate: Moment,
-  toDate: Moment,
+  fromDate: Dayjs,
+  toDate: Dayjs,
   operatorRef: string,
   lineRef: number,
   sortingMode: string,
 ): HourlyData[] => {
   const [hourlyData, setHourlyData] = useState<HourlyData[]>([])
 
+  // Depend on the instants, not the Dayjs identities — an inline-constructed
+  // fromDate/toDate would otherwise re-run the effect (and refetch) every render.
+  const fromKey = fromDate.valueOf()
+  const toKey = toDate.valueOf()
+
   useEffect(() => {
-    const source = axios.CancelToken.source()
     const fetchData = async () => {
       try {
-        const gapsList: GapsList = await getGapsAsync(
-          fromDate,
-          toDate,
-          operatorRef,
-          lineRef,
-          source.token,
-        )
+        const gapsList = await getGapsAsync(fromDate, toDate, operatorRef, lineRef)
         const result = convertGapsToHourlyStruct(gapsList)
         setHourlyData(sortByMode(result, sortingMode))
-        return () => source.cancel()
       } catch (error) {
         console.error('Error fetching data:', error)
       }
@@ -67,6 +61,6 @@ export const useGapsList = (
     return () => {
       setHourlyData([])
     }
-  }, [lineRef, operatorRef, fromDate, toDate, sortingMode])
+  }, [lineRef, operatorRef, fromKey, toKey, sortingMode])
   return hourlyData
 }

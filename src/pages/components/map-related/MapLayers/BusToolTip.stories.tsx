@@ -1,19 +1,62 @@
-import type { Meta, StoryObj } from '@storybook/react'
-import { BrowserRouter } from 'react-router-dom'
+import type { Meta, StoryObj } from '@storybook/react-vite'
+import { http, HttpResponse } from 'msw'
+import Widget from 'src/shared/Widget'
+import {
+  busToolTipMockedRoute,
+  busToolTipMockedSiriRides,
+} from '../../../../../.storybook/mockData'
 import { BusToolTip, BusToolTipProps } from './BusToolTip'
 
 const meta = {
-  title: 'Components/MapLayers/BusToolTip',
+  title: 'Map/Layers/BusToolTip',
   component: BusToolTip,
   parameters: {
     layout: 'centered',
   },
-  tags: ['map', 'tooltip', 'autodocs'],
+  decorators: [
+    (Story) => (
+      <Widget>
+        <Story />
+      </Widget>
+    ),
+  ],
 } satisfies Meta<typeof BusToolTip>
 
 export default meta
 
 type Story = StoryObj<typeof meta>
+
+const routeHandler = http.get(
+  (info) => new URL(info.request.url).pathname === '/gtfs_routes/list',
+  ({ request }) => {
+    const { searchParams } = new URL(request.url)
+    const matchesLineRef = searchParams.get('line_refs') === '2974'
+    const matchesOperatorRef = searchParams.get('operator_refs') === '3'
+
+    if (!matchesLineRef || !matchesOperatorRef) {
+      return HttpResponse.json()
+    }
+
+    return HttpResponse.json(busToolTipMockedRoute)
+  },
+)
+
+const ridesHandler = http.get(
+  (info) => new URL(info.request.url).pathname === '/siri_rides/list',
+  ({ request }) => {
+    const { searchParams } = new URL(request.url)
+
+    const matchesLineRef = searchParams.get('siri_route__line_refs') === '2974'
+    const matchesRouteRef = searchParams.get('siri_route_ids') === '973'
+    const matchesVehicleRef = searchParams.get('vehicle_refs') === '23321002'
+
+    if (!matchesLineRef || !matchesRouteRef || !matchesVehicleRef) {
+      return HttpResponse.json()
+    }
+
+    return HttpResponse.json(busToolTipMockedSiriRides)
+  },
+)
 
 const defaultArgs: BusToolTipProps = {
   position: {
@@ -21,42 +64,54 @@ const defaultArgs: BusToolTipProps = {
     color: 22,
     operator: 3,
     bearing: 106,
-    recorded_at_time: 1698809440000,
+    recordedAtTime: 1698809440000,
     point: {
       id: 2838516282,
-      siri_snapshot_id: 919509,
-      siri_ride_stop_id: 1370461085,
-      recorded_at_time: '2023-11-01T03:30:40+00:00',
+      siriSnapshotId: 919509,
+      siriRideStopId: 1370461085,
+      recordedAtTime: new Date('2023-11-01T03:30:40+00:00'),
       lon: 34.786926,
       lat: 31.799982,
       bearing: 106,
       velocity: 22,
-      distance_from_journey_start: 636,
-      distance_from_siri_ride_stop_meters: 278,
-      siri_snapshot__snapshot_id: '2023/11/01/03/30',
-      siri_route__id: 973,
-      siri_route__line_ref: 2974,
-      siri_route__operator_ref: 3,
-      siri_ride__id: 52703935,
-      siri_ride__journey_ref: '2023-11-01-56650774',
-      siri_ride__scheduled_start_time: '2023-11-01T03:30:00+00:00',
-      siri_ride__vehicle_ref: '23321002',
-      siri_ride__first_vehicle_location_id: 2838509585,
-      siri_ride__last_vehicle_location_id: 2838555351,
-      siri_ride__duration_minutes: 27,
-      siri_ride__gtfs_ride_id: 57365030,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } as any,
+      distanceFromJourneyStart: 636,
+      distanceFromSiriRideStopMeters: 278,
+      siriSnapshotSnapshotId: '2023/11/01/03/30',
+      siriRouteId: 973,
+      siriRouteLineRef: 2974,
+      siriRouteOperatorRef: 3,
+      siriRideId: 52703935,
+      siriRideJourneyRef: '2023-11-01-56650774',
+      siriRideScheduledStartTime: new Date('2023-11-01T03:30:00+00:00'),
+      siriRideVehicleRef: '23321002',
+      siriRideFirstVehicleLocationId: 2838509585,
+      siriRideLastVehicleLocationId: 2838555351,
+      siriRideDurationMinutes: 27,
+      siriRideGtfsRideId: 57365030,
+    },
   },
   icon: '/bus-logos/3.svg',
 }
 
 export const Default: Story = {
+  parameters: {
+    msw: {
+      handlers: [routeHandler, ridesHandler],
+    },
+  },
   args: defaultArgs,
-  // Wrap the component render function with BrowserRouter
-  render: (args) => (
-    <BrowserRouter>
-      <BusToolTip {...args} />
-    </BrowserRouter>
-  ),
+}
+
+export const WithComplaint: Story = {
+  parameters: {
+    msw: {
+      handlers: [routeHandler, ridesHandler],
+    },
+  },
+  args: defaultArgs,
+  play: async ({ canvasElement, userEvent }) => {
+    // Simulate typing 'complaint' to trigger the EasterEgg
+    await new Promise((resolve) => setTimeout(resolve, 1000)) // wait for 1 second
+    await userEvent.type(canvasElement, 'complaint')
+  },
 }

@@ -1,8 +1,9 @@
+import { ResizeObserver } from '@juggle/resize-observer'
 import '@testing-library/jest-dom'
 import { cleanup } from '@testing-library/react'
-// runs a cleanup after each test case (e.g. clearing jsdom)
+import './src/locale/allTranslations'
 
-global.ResizeObserver = require('resize-observer-polyfill')
+global.ResizeObserver = ResizeObserver
 afterEach(() => {
   cleanup()
 })

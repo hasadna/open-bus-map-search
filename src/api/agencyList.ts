@@ -1,34 +1,30 @@
-import { useEffect, useState } from 'react'
-import moment from 'moment'
-import { BASE_PATH } from './apiConfig'
-export interface Agency {
-  date: string // example - "2019-07-01"
-  operator_ref: number // example - 25,
-  agency_name: string // example - "אלקטרה אפיקים"
-}
+import { GtfsAgencyPydanticModel } from '@hasadna/open-bus-api-client'
+import { GTFS_API } from './apiConfig'
 
-let agencyList: Agency[]
+let agencyListPromise: Promise<GtfsAgencyPydanticModel[]> | null = null
 
-/**
- * Fetch agency data from MOT api
- * @returns Agency data array, might contain DUPLICATE agencies with different `date` values
- */
-export default async function getAgencyList(): Promise<Agency[]> {
-  if (!agencyList) {
-    const yesterday = moment().subtract(1, 'day').format('YYYY-MM-DD')
-    const response = await fetch(`${BASE_PATH}/gtfs_agencies/list?date_from=${yesterday}`)
-    const data = (await response.json()) as Awaited<Agency[]>
-    agencyList = data.filter(Boolean) // filter empty entries
+const tryDates = [
+  new Date(Date.now() - 24 * 60 * 60 * 1000),
+  new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+  new Date('2025-05-18'),
+]
+
+async function fetchAgencyList() {
+  let data: GtfsAgencyPydanticModel[] = []
+  for (const date of tryDates) {
+    try {
+      data = await GTFS_API.gtfsAgenciesListGet({ dateFrom: date })
+      if (data.length > 0) break
+    } catch (err) {
+      console.error('Error fetching agencies:', err)
+    }
   }
-  return agencyList
+  return data.filter(Boolean)
 }
 
-export function useAgencyList() {
-  const [agencyList, setAgencyList] = useState<Agency[]>([])
-
-  useEffect(() => {
-    getAgencyList().then(setAgencyList).catch(console.log)
-  }, [])
-
-  return agencyList
+export function getAgencyList() {
+  if (!agencyListPromise) {
+    agencyListPromise = fetchAgencyList()
+  }
+  return agencyListPromise
 }

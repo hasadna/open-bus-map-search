@@ -9,6 +9,7 @@
 
 # production
 /dist
+sitemap.xml
 
 # misc
 .DS_Store
@@ -29,4 +30,6 @@ npm-debug.log*
 
 storybook-static
 
-.nx/cache
+.nx
+.envrc
+*.local.*

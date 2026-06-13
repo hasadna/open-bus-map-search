@@ -4,27 +4,30 @@ import { formatted } from 'src/locale/utils'
 import { BusStop } from 'src/model/busStop'
 
 type StopSelectorProps = {
+  disabled?: boolean
   stops: BusStop[]
   stopKey: string | undefined
   setStopKey: (stopId: string) => void
 }
 
-const StopSelector = ({ stops, stopKey, setStopKey }: StopSelectorProps) => {
-  const valueFinned = stops.find((stop) => stop.key === stopKey)
-  const value = valueFinned ? valueFinned : null
+const StopSelector = ({ disabled, stops, stopKey, setStopKey }: StopSelectorProps) => {
+  const value = stops.find((stop) => stop.key === stopKey) || null
   const { t } = useTranslation()
 
   return (
     <Autocomplete
+      disabled={disabled}
       disablePortal
+      fullWidth
       value={value}
-      onChange={(e, value) => setStopKey(value ? value.key : '0')}
+      onChange={(e, value) => setStopKey(value ? value.key : '')}
       id="stop-select"
       options={stops}
       renderInput={(params) => (
         <TextField {...params} label={formatted(t('choose_stop'), stops.length.toString())} />
       )}
       getOptionLabel={(stop) => stop.name}
+      getOptionKey={(stop) => stop.key}
     />
   )
 }

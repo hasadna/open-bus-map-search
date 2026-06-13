@@ -1,118 +1,119 @@
-import { useContext, useEffect, useState } from 'react'
+import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import moment, { Moment } from 'moment'
-import styled from 'styled-components'
-import { useSessionStorage } from 'usehooks-ts'
-import { FormControlLabel, Switch } from '@mui/material'
-import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
-import CircularProgress from '@mui/material/CircularProgress'
-import axios from 'axios'
-import Typography from '@mui/material/Typography'
-import Alert from '@mui/material/Alert'
-import { PageContainer } from '../components/PageContainer'
-import { Row } from '../components/Row'
-import { Label } from '../components/Label'
-import OperatorSelector from '../components/OperatorSelector'
-import LineNumberSelector from '../components/LineSelector'
-import { SearchContext } from '../../model/pageState'
-import { Gap, GapsList } from '../../model/gaps'
-import { getGapsAsync } from '../../api/gapsService'
-import RouteSelector from '../components/RouteSelector'
-import { NotFound } from '../components/NotFound'
-import { getRoutesAsync } from '../../api/gtfsService'
-import { DateSelector } from '../components/DateSelector'
-import DisplayGapsPercentage from '../components/DisplayGapsPercentage'
+import dayjs, { ISRAEL_TIMEZONE } from 'src/dayjs'
+import { GlobalSearchContext } from 'src/model/globalState'
 import { INPUT_SIZE } from 'src/resources/sizes'
-
-const Cell = styled.div`
-  width: 120px;
-`
-
-const TitleCell = styled(Cell)`
-  font-weight: bold;
-`
+import { Gap, getGapsAsync } from '../../api/gapsService'
+import { getServiceDayRoutes } from '../../api/serviceDayRoutesService'
+import { BusRoute } from '../../model/busRoute'
+import { DateSelector } from '../components/DateSelector'
+import { Label } from '../components/Label'
+import LineNumberSelector from '../components/LineSelector'
+import { NotFound } from '../components/NotFound'
+import OperatorSelector from '../components/OperatorSelector'
+import { PageContainer } from '../components/PageContainer'
+import RouteSelector from '../components/RouteSelector'
+import { Row } from '../components/Row'
+import { serviceDayBounds } from '../components/utils/startTimeUtils'
+import GapsTable from './GapsTable'
 
 const GapsPage = () => {
   const { t } = useTranslation()
-  const { search, setSearch } = useContext(SearchContext)
-  const { operatorId, lineNumber, timestamp, routes, routeKey } = search
-  const [gaps, setGaps] = useState<GapsList>()
-  const [routesIsLoading, setRoutesIsLoading] = useState(false)
+  const { search, setSearch } = useContext(GlobalSearchContext)
+  const { operatorId, lineNumber, date, routeKey } = search
+  const [routes, setRoutes] = useState<BusRoute[] | undefined>()
+  const [gaps, setGaps] = useState<Gap[]>()
   const [gapsIsLoading, setGapsIsLoading] = useState(false)
-  const [onlyGapped, setOnlyGapped] = useSessionStorage('onlyGapped', false)
 
-  function formatTime(time: Moment) {
-    return time.format(t('time_format'))
-  }
-
-  function formatStatus(all: GapsList, gap: Gap) {
-    if (!gap.siriTime) {
-      return t('ride_missing')
-    }
-    if (gap.gtfsTime) {
-      return t('ride_as_planned')
-    }
-    const hasTwinRide = all.some((g) => g.gtfsTime && g.siriTime && g.siriTime.isSame(gap.siriTime))
-    if (hasTwinRide) {
-      return t('ride_duped')
-    }
-    return t('ride_extra')
-  }
-
-  function getGapsPercentage(gaps: GapsList | undefined): number | undefined {
-    const ridesInTime = gaps?.filter((gap) => formatStatus([], gap) === t('ride_as_planned'))
-    if (!gaps || !ridesInTime) return undefined
-    const ridesInTimePercentage = (ridesInTime?.length / gaps?.length) * 100
-    const allRidesPercentage = 100
-    return allRidesPercentage - ridesInTimePercentage
-  }
+  const singleLineMapBaseHref = useMemo(() => {
+    const params = new URLSearchParams()
+    params.set('date', search.date || '')
+    params.set('operatorId', search.operatorId || '')
+    params.set('lineNumber', search.lineNumber || '')
+    params.set('routeKey', search.routeKey || '')
+    return `/single-line-map?${params.toString()}`
+  }, [search.date, search.lineNumber, search.operatorId, search.routeKey])
 
   useEffect(() => {
-    const source = axios.CancelToken.source()
-    if (operatorId && routes && routeKey && timestamp) {
-      const selectedRoute = routes.find((route) => route.key === routeKey)
-      if (!selectedRoute) {
-        return
-      }
-      setGapsIsLoading(true)
-      getGapsAsync(
-        moment(timestamp),
-        moment(timestamp),
-        operatorId,
-        selectedRoute.lineRef,
-        source.token,
-      )
-        .then(setGaps)
-        .catch((err) => console.error(err.message))
-        .finally(() => setGapsIsLoading(false))
-    }
-    return () => source.cancel()
-  }, [operatorId, routeKey, timestamp])
+    if (!(operatorId && routes && routeKey && date)) return
+    const selectedRoute = routes.find((route) => route.key === routeKey)
+    if (!selectedRoute) return
 
-  useEffect(() => {
-    const controller = new AbortController()
-    const signal = controller.signal
-    if (!operatorId || operatorId === '0' || !lineNumber) {
-      setSearch((current) => ({
-        ...current,
-        routes: undefined,
-        routeKey: undefined,
-      }))
-      return
-    }
-    setRoutesIsLoading(true)
-    getRoutesAsync(moment(timestamp), moment(timestamp), operatorId, lineNumber, signal)
-      .then((routes) =>
-        setSearch((current) =>
-          search.lineNumber === lineNumber ? { ...current, routes: routes } : current,
+    setGapsIsLoading(true)
+    const { start, end } = serviceDayBounds(date)
+    getGapsAsync(start, end, operatorId, selectedRoute.lineRef)
+      .then((res) =>
+        setGaps(
+          res.filter((g) => {
+            const t = g.plannedStartTime || g.actualStartTime
+            return t && !t.isBefore(start) && t.isBefore(end)
+          }),
         ),
       )
-      .catch((err) => console.error(err.message))
-      .finally(() => setRoutesIsLoading(false))
-    return () => controller.abort()
-  }, [operatorId, lineNumber, timestamp, setSearch])
+      .catch((err) => {
+        console.error('Failed to fetch gaps:', err.message)
+        setGaps(undefined)
+      })
+      .finally(() => setGapsIsLoading(false))
+  }, [operatorId, routes, routeKey, date])
 
-  const gapsPercentage = getGapsPercentage(gaps)
+  useEffect(() => {
+    if (!operatorId || !lineNumber) {
+      return
+    }
+
+    const controller = new AbortController()
+
+    getServiceDayRoutes(dayjs.tz(date, ISRAEL_TIMEZONE), operatorId, lineNumber, controller.signal)
+      .then((fetchedRoutes) => {
+        if (search.lineNumber === lineNumber) {
+          setRoutes(fetchedRoutes)
+        }
+      })
+      .catch((err) => {
+        console.error('Failed to fetch routes:', err.message)
+      })
+
+    return () => controller.abort()
+  }, [operatorId, lineNumber, date, setSearch])
+
+  const handleDateChange = (time: dayjs.Dayjs | null) => {
+    if (!time) return
+    setSearch((current) => ({
+      ...current,
+      date: time.format('YYYY-MM-DD'),
+    }))
+  }
+
+  const handleOperatorChange = (operatorId: string) => {
+    setSearch((current) => ({ ...current, operatorId }))
+  }
+
+  const handleLineNumberChange = (lineNumber: string) => {
+    setSearch((current) =>
+      lineNumber === current.lineNumber
+        ? { ...current }
+        : { ...current, lineNumber, routeKey: null },
+    )
+    if (lineNumber !== search.lineNumber) {
+      setRoutes(undefined)
+    }
+  }
+
+  const handleRouteKeyChange = (routeKey?: string) => {
+    setSearch((current) => ({ ...current, routeKey: routeKey ?? null }))
+  }
+
+  // On gap row click: only set rideTime — date stays as the service day the
+  // user was browsing. rideTime uses 24+ hour format for past-midnight rides
+  // (e.g. "25:30") so single-line-map can reconstruct the correct time.
+  const handleStartTimeClick = useCallback(
+    (rideTime: string) => {
+      setSearch((current) => ({ ...current, rideTime }))
+    },
+    [setSearch],
+  )
 
   return (
     <PageContainer>
@@ -124,58 +125,46 @@ const GapsPage = () => {
       </Alert>
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
         {/* choose date */}
-        <Grid xs={4}>
+        <Grid size={{ xs: 4 }}>
           <Label text={t('choose_date')} />
         </Grid>
-        <Grid xs={8}>
-          <DateSelector
-            time={moment(timestamp)}
-            onChange={(ts) =>
-              setSearch((current) => ({ ...current, timestamp: ts ? ts.valueOf() : 0 }))
-            }
-          />
+        <Grid size={{ xs: 8 }}>
+          <DateSelector time={dayjs.tz(date, ISRAEL_TIMEZONE)} onChange={handleDateChange} />
         </Grid>
         {/* choose operator */}
-        <Grid xs={4}>
+        <Grid size={{ xs: 4 }}>
           <Label text={t('choose_operator')} />
         </Grid>
-        <Grid xs={8}>
+        <Grid size={{ xs: 8 }}>
           <OperatorSelector
-            operatorId={operatorId}
-            setOperatorId={(id) => setSearch((current) => ({ ...current, operatorId: id }))}
+            operatorId={operatorId ?? undefined}
+            setOperatorId={handleOperatorChange}
           />
         </Grid>
         {/* choose line */}
-        <Grid xs={4}>
+        <Grid size={{ xs: 4 }}>
           <Label text={t('choose_line')} />
         </Grid>
-        <Grid xs={8}>
+        <Grid size={{ xs: 8 }}>
           <LineNumberSelector
-            lineNumber={lineNumber}
-            setLineNumber={(number) => setSearch((current) => ({ ...current, lineNumber: number }))}
+            lineNumber={lineNumber ?? undefined}
+            setLineNumber={handleLineNumberChange}
           />
         </Grid>
         {/* choose routes */}
-        <Grid xs={12}>
-          {routesIsLoading && (
-            <Row>
-              <Label text={t('loading_routes')} />
-              <CircularProgress />
-            </Row>
+        <Grid size={{ xs: 12 }}>
+          {routes?.length === 0 ? (
+            <NotFound>{t('line_not_found')}</NotFound>
+          ) : (
+            <RouteSelector
+              routes={routes || []}
+              disabled={!routes}
+              routeKey={routeKey ?? undefined}
+              setRouteKey={handleRouteKeyChange}
+            />
           )}
-          {!routesIsLoading &&
-            routes &&
-            (routes.length === 0 ? (
-              <NotFound>{t('line_not_found')}</NotFound>
-            ) : (
-              <RouteSelector
-                routes={routes}
-                routeKey={routeKey}
-                setRouteKey={(key) => setSearch((current) => ({ ...current, routeKey: key }))}
-              />
-            ))}
         </Grid>
-        <Grid xs={12}>
+        <Grid size={{ xs: 12 }}>
           {gapsIsLoading && (
             <Row>
               <Label text={t('loading_gaps')} />
@@ -184,36 +173,14 @@ const GapsPage = () => {
           )}
         </Grid>
       </Grid>
-      {!gapsIsLoading && routeKey && routeKey !== '0' && (
-        <>
-          <FormControlLabel
-            control={
-              <Switch checked={onlyGapped} onChange={(e) => setOnlyGapped(e.target.checked)} />
-            }
-            label={t('checkbox_only_gaps')}
-          />
-          <DisplayGapsPercentage
-            gapsPercentage={gapsPercentage}
-            decentPercentage={5}
-            terriblePercentage={20}
-          />
-          <Row>
-            <TitleCell>{t('planned_time')}</TitleCell>
-            <TitleCell>{t('planned_status')}</TitleCell>
-          </Row>
-          {gaps
-            ?.filter((gap) => gap.gtfsTime || gap.siriTime)
-            .filter((gap) => !onlyGapped || !gap.gtfsTime || !gap.siriTime)
-            .sort((t1, t2) => {
-              return Number((t1?.siriTime || t1?.gtfsTime)?.diff(t2?.siriTime || t2?.gtfsTime))
-            })
-            .map((gap, i) => (
-              <Row key={i}>
-                <Cell>{formatTime(gap.gtfsTime || gap.siriTime || moment())}</Cell>
-                <Cell>{formatStatus(gaps, gap)}</Cell>
-              </Row>
-            ))}
-        </>
+      {routeKey && routeKey !== '' && (
+        <GapsTable
+          loading={gapsIsLoading}
+          gaps={gaps}
+          date={date}
+          singleLineMapBaseHref={singleLineMapBaseHref}
+          onStartTimeClick={handleStartTimeClick}
+        />
       )}
     </PageContainer>
   )

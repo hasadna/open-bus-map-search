@@ -1,0 +1,38 @@
+import { expect, setupTest, test, visitPage } from './utils'
+
+test.describe('Velocity Heatmap', () => {
+  test.beforeEach(async ({ page }) => {
+    await setupTest(page)
+    await visitPage(page, 'velocity_heatmap_page_title')
+  })
+
+  test('navigates to /velocity-heatmap', async ({ page }) => {
+    await expect(page).toHaveURL(/velocity-heatmap/)
+  })
+
+  test('shows page title', async ({ page }) => {
+    await expect(page.getByRole('heading', { name: 'מפת מהירות', level: 1 })).toBeVisible()
+  })
+
+  test('shows date selector', async ({ page }) => {
+    await expect(page.getByRole('group').first()).toBeVisible()
+  })
+
+  test('shows all three visualization mode options', async ({ page }) => {
+    await expect(page.getByText('מהירות ממוצעת', { exact: true })).toBeVisible()
+    await expect(page.getByText('סטיית תקן', { exact: true })).toBeVisible()
+    await expect(page.getByText('מקדם שונות', { exact: true })).toBeVisible()
+  })
+
+  test('avg is the default selected visualization mode', async ({ page }) => {
+    const avgRadio = page.locator('input[name="visMode"][value="avg"]')
+    await expect(avgRadio).toBeChecked()
+  })
+
+  test('can switch visualization mode', async ({ page }) => {
+    const stdRadio = page.locator('input[name="visMode"][value="std"]')
+    await stdRadio.click()
+    await expect(stdRadio).toBeChecked()
+    await expect(page.locator('input[name="visMode"][value="avg"]')).not.toBeChecked()
+  })
+})

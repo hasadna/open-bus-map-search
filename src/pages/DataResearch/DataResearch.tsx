@@ -1,36 +1,34 @@
-import React, { useMemo, useState } from 'react'
-import moment from 'moment'
 import { Grid } from '@mui/material'
+import React, { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Skeleton } from 'antd'
 import {
   Area,
-  Tooltip,
   AreaChart,
   CartesianGrid,
   ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
 } from 'recharts'
+import { GroupByRes, useGroupBy } from 'src/api/groupByService'
+import dayjs from 'src/dayjs'
+import { useDate } from 'src/hooks/useDate'
+import SkeletonLoader from 'src/shared/SkeletonLoader'
+import Widget from 'src/shared/Widget'
 import { DateSelector } from '../components/DateSelector'
-import { useDate } from '../components/DateTimePicker'
+import OperatorSelector from '../components/OperatorSelector'
 import { PageContainer } from '../components/PageContainer'
 import { getColorName } from '../dashboard/AllLineschart/OperatorHbarChart/OperatorHbarChart'
 import './DataResearch.scss'
-import OperatorSelector from '../components/OperatorSelector'
-import { useGroupBy } from 'src/api/groupByService'
-import Widget from 'src/shared/Widget'
 
-const now = moment()
-const unique: (value: string, index: number, self: string[]) => boolean = (value, index, self) =>
-  self.indexOf(value) === index
+const now = dayjs()
 
 export const DataResearch = () => {
+  const { t } = useTranslation()
   return (
     <PageContainer>
-      <Widget>
-        <h1>מחקרים</h1>
-        <p>אם יש לכם רעיון מעניין למה קורים פה דברים, דברו איתנו בסלאק!</p>
+      <Widget title={t('dataResearch.title')}>
+        <p>{t('dataResearch.intro')}</p>
       </Widget>
       <StackedResearchSection />
     </PageContainer>
@@ -38,19 +36,19 @@ export const DataResearch = () => {
 }
 
 function StackedResearchSection() {
+  const { t } = useTranslation()
   const [startDate, setStartDate] = useDate(now.clone().subtract(7, 'days'))
   const [endDate, setEndDate] = useDate(now.clone().subtract(1, 'day'))
   const [operatorId, setOperatorId] = useState('')
-  const [groupByHour, setGroupByHour] = React.useState<boolean>(false)
+  const [groupByHour, setGroupByHour] = useState<boolean>(false)
   const [graphData, loadingGraph] = useGroupBy({
-    dateTo: endDate,
     dateFrom: startDate,
+    dateTo: endDate,
     groupBy: groupByHour ? 'operator_ref,gtfs_route_hour' : 'operator_ref,gtfs_route_date',
   })
 
   return (
-    <Widget>
-      <h1>בעיות etl/gps/משהו גלובאלי אחר</h1>
+    <Widget title={t('dataResearch.global_issues_title')} marginBottom>
       <StackedResearchInputs
         startDate={startDate}
         setStartDate={setStartDate}
@@ -64,25 +62,25 @@ function StackedResearchSection() {
       <StackedResearchChart
         graphData={graphData}
         isLoading={loadingGraph}
-        field="total_actual_rides"
-        title="מספר נסיעות בפועל"
-        description="כמה נסיעות נרשמו כהתבצעו בכל יום/שעה בטווח הזמן שבחרתם. (נסיעות = siri rides)"
+        field="totalActualRides"
+        title={t('dataResearch.actual_rides_title')}
+        description={t('dataResearch.actual_rides_description')}
         agencyId={operatorId}
       />
       <StackedResearchChart
         graphData={graphData}
         isLoading={loadingGraph}
-        field="total_planned_rides"
-        title="מספר נסיעות מתוכננות"
-        description="כמה נסיעות היו אמורות להיות בכל יום/שעה בטווח הזמן שבחרתם. (נסיעות = נסיעות מתוכננות בgtfs)"
+        field="totalPlannedRides"
+        title={t('dataResearch.planned_rides_title')}
+        description={t('dataResearch.planned_rides_description')}
         agencyId={operatorId}
       />
       <StackedResearchChart
         graphData={graphData}
         isLoading={loadingGraph}
-        field="total_missed_rides"
-        title="מספר נסיעות שלא התבצעו"
-        description="כמה נסיעות היו אמורות להיות בכל יום/שעה בטווח הזמן שבחרתם אבל לא התבצעו. (הפרש בין שני הגרפים הקודמים)"
+        field="totalMissedRides"
+        title={t('dataResearch.missed_rides_title')}
+        description={t('dataResearch.missed_rides_description')}
         agencyId={operatorId}
       />
     </Widget>
@@ -99,10 +97,10 @@ function StackedResearchInputs({
   operatorId,
   setOperatorId,
 }: {
-  startDate: moment.Moment
-  setStartDate: (date: moment.Moment) => void
-  endDate: moment.Moment
-  setEndDate: (date: moment.Moment) => void
+  startDate: dayjs.Dayjs
+  setStartDate: (date: dayjs.Dayjs) => void
+  endDate: dayjs.Dayjs
+  setEndDate: (date: dayjs.Dayjs) => void
   groupByHour: boolean
   setGroupByHour: (value: boolean) => void
   operatorId: string
@@ -111,15 +109,15 @@ function StackedResearchInputs({
   const { t } = useTranslation()
   return (
     <>
-      <Grid container>
-        <Grid xs={6} item>
+      <Grid container sx={{ gap: 2 }}>
+        <Grid size={{ md: 'grow', xs: 12 }}>
           <DateSelector
             time={startDate}
             onChange={(data) => data && setStartDate(data)}
             customLabel={t('start')}
           />
         </Grid>
-        <Grid xs={6} item>
+        <Grid size={{ md: 'grow', xs: 12 }}>
           <DateSelector
             time={endDate}
             onChange={(data) => data && setEndDate(data)}
@@ -128,6 +126,7 @@ function StackedResearchInputs({
         </Grid>
         <OperatorSelector operatorId={operatorId} setOperatorId={setOperatorId} />
       </Grid>
+      <br />
       <label>
         <input
           type="checkbox"
@@ -145,77 +144,65 @@ const StackedResearchChart = ({
   isLoading,
   title,
   description,
-  field = 'total_actual_rides',
+  field = 'totalActualRides',
   agencyId = '',
 }: {
-  graphData: {
-    gtfs_route_date: string
-    gtfs_route_hour: string
-    operator_ref?: {
-      agency_id?: string
-      agency_name?: string
-    }
-    total_actual_rides: number
-    total_planned_rides: number
-  }[]
+  graphData: GroupByRes[]
   isLoading?: boolean
   title?: string
   description?: string
-  field?: 'total_actual_rides' | 'total_planned_rides' | 'total_missed_rides'
+  field?: 'totalActualRides' | 'totalPlannedRides' | 'totalMissedRides'
   agencyId?: string
 }) => {
-  const filteredGraphData =
-    agencyId == ''
-      ? graphData
-      : graphData.filter((dataRecord) => dataRecord.operator_ref?.agency_id === agencyId)
-  const data = useMemo(
-    () =>
-      filteredGraphData
-        .reduce(
-          (acc, curr) => {
-            const val =
-              field === 'total_missed_rides'
-                ? curr.total_planned_rides - curr.total_actual_rides
-                : curr[field]
-            const date = curr.gtfs_route_date ?? curr.gtfs_route_hour
-            const entry = acc.find((item) => item.date === date)
-            if (entry) {
-              if (val) entry[curr.operator_ref?.agency_name || 'Unknown'] = val
-            } else {
-              const newEntry = {
-                date: date,
-                [curr.operator_ref?.agency_name || 'Unknown']: val,
-              }
-              acc.push(newEntry)
-            }
-            return acc
-          },
-          [] as Record<string, string | number>[],
-        )
-        .sort((a, b) => {
-          if (a.date > b.date) return 1
-          if (a.date < b.date) return -1
-          return 0
-        }),
-    [filteredGraphData],
-  )
+  const { t } = useTranslation()
+  const filteredGraphData = useMemo(() => {
+    if (!agencyId) return graphData
+    return graphData.filter((record) => record.operatorRef?.operatorRef?.toString() === agencyId)
+  }, [graphData, agencyId])
 
-  const operators = filteredGraphData
-    .map((operator) => operator.operator_ref?.agency_name || 'Unknown')
-    .filter(unique)
+  const { data, operators } = useMemo(() => {
+    const result: { date: string; ts: number; [key: string]: number | string }[] = []
+    const dateIndex = new Map<string, number>()
+    const operatorSet = new Set<string>()
+
+    for (const record of filteredGraphData) {
+      const date = dayjs(record.gtfsRouteDate ?? record.gtfsRouteHour)
+      const formatDate = date.format('hh:mm-DD/MM/YY')
+      const agencyName = record.operatorRef?.agencyName || 'Unknown'
+
+      operatorSet.add(agencyName)
+
+      let rowIndex = dateIndex.get(formatDate)
+      if (rowIndex === undefined) {
+        rowIndex = result.length
+        dateIndex.set(formatDate, rowIndex)
+        result.push({ date: formatDate, ts: date.valueOf() })
+      }
+
+      result[rowIndex][agencyName] =
+        field === 'totalMissedRides'
+          ? record.totalPlannedRides - record.totalActualRides
+          : record[field]
+    }
+
+    return {
+      data: result.sort((a, b) => a.ts - b.ts),
+      operators: Array.from(operatorSet),
+    }
+  }, [filteredGraphData, field])
 
   return (
     <>
       {title && <h2>{title}</h2>}
       {description && (
         <p>
-          <strong>מה רואים בגרף?</strong>
+          <strong>{t('dataResearch.what_in_graph')}</strong>
           <br />
           {description}
         </p>
       )}
       {isLoading ? (
-        <Skeleton active />
+        <SkeletonLoader active />
       ) : (
         <ResponsiveContainer width="100%" height="100%" minHeight="500px">
           <AreaChart

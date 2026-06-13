@@ -1,51 +1,34 @@
-import axios from 'axios'
-import {
-  GtfsApi,
-  GtfsRideStopPydanticModel,
-  GtfsRideWithRelatedPydanticModel,
-} from 'open-bus-stride-client'
-import moment, { Moment } from 'moment'
+import { GTFS_API } from 'src/api/apiConfig'
+import dayjs, { toIsraelTimezone } from 'src/dayjs'
 import { BusRoute, fromGtfsRoute } from 'src/model/busRoute'
 import { BusStop, fromGtfsStop } from 'src/model/busStop'
-import { API_CONFIG, MAX_HITS_COUNT, BASE_PATH } from 'src/api/apiConfig'
-// import { Route } from 'react-router'
-
-const GTFS_API = new GtfsApi(API_CONFIG)
-//const USER_CASES_API = new UserCasesApi(API_CONFIG)
-const JOIN_SEPARATOR = ','
-const SEARCH_MARGIN_HOURS = 4
-
-type StopHitsPayLoadType = {
-  gtfsRideIds: string
-  gtfsStopIds: string
-  arrival_time_to: number
-  arrival_time_from: number
-}
 
 export async function getRoutesAsync(
-  fromTimestamp: moment.Moment,
-  toTimestamp: moment.Moment,
-  operatorId: string | undefined,
-  lineNumber: string | undefined,
-  signal?: AbortSignal | undefined,
+  from: dayjs.Dayjs,
+  to: dayjs.Dayjs,
+  operatorId?: string,
+  lineNumber?: string,
+  signal?: AbortSignal,
 ): Promise<BusRoute[]> {
+  const fromDate = toIsraelTimezone(from).format('YYYY-MM-DD')
+  const toDate = toIsraelTimezone(to).format('YYYY-MM-DD')
+
   const gtfsRoutes = await GTFS_API.gtfsRoutesListGet(
     {
       routeShortName: lineNumber,
       operatorRefs: operatorId,
-      dateFrom: fromTimestamp.startOf('day').toDate(),
-      dateTo: moment.min(toTimestamp.endOf('day'), moment()).toDate(),
+      dateFrom: from.startOf('day').toDate(),
+      dateTo: dayjs.min(to.endOf('day'), toIsraelTimezone()).toDate(),
       limit: 100,
     },
     { signal },
   )
   const routes = Object.values(
     gtfsRoutes
-      .filter(
-        (route) =>
-          route.date.getDate() >= fromTimestamp.date() &&
-          route.date.getDate() <= toTimestamp.date(),
-      )
+      .filter((route) => {
+        const routeDate = toIsraelTimezone(route.date).format('YYYY-MM-DD')
+        return routeDate >= fromDate && routeDate <= toDate
+      })
       .map((route) => fromGtfsRoute(route))
       .reduce(
         (agg, line) => {
@@ -66,15 +49,15 @@ export async function getRoutesAsync(
 
 export async function getStopsForRouteAsync(
   routeIds: number[],
-  timestamp: Moment,
+  time: dayjs.Dayjs,
 ): Promise<BusStop[]> {
   const stops: BusStop[] = []
 
   for (const routeId of routeIds) {
     const rides = await GTFS_API.gtfsRidesListGet({
       gtfsRouteId: routeId,
-      startTimeFrom: moment(timestamp).subtract(1, 'days').second(0).milliseconds(0).toDate(),
-      startTimeTo: moment(timestamp).add(1, 'days').second(0).milliseconds(0).toDate(),
+      startTimeFrom: time.subtract(1, 'day').second(0).millisecond(0).toDate(),
+      startTimeTo: time.add(1, 'day').second(0).millisecond(0).toDate(),
       limit: 1,
       orderBy: 'start_time',
     })
@@ -87,6 +70,12 @@ export async function getStopsForRouteAsync(
     })
     await Promise.all(
       rideStops.map(async (rideStop) => {
+        if (
+          !rideStop.gtfsStopId ||
+          stops.find((b) => b.code === rideStop.gtfsStopCode?.toString())
+        ) {
+          return
+        }
         const stop = await GTFS_API.gtfsStopsGetGet({ id: rideStop.gtfsStopId })
         stops.push(fromGtfsStop(rideStop, stop, rideRepresentative))
       }),
@@ -99,72 +88,73 @@ export async function getStopsForRouteAsync(
   )
 }
 
-export async function getGtfsStopHitTimesAsync(stop: BusStop, timestamp: Moment) {
-  const targetStartTime = moment(timestamp).subtract(stop.minutesFromRouteStartTime, 'minutes')
-
-  const rides = await GTFS_API.gtfsRidesListGet({
-    gtfsRouteId: stop.routeId,
-    startTimeFrom: moment(targetStartTime)
-      .subtract(SEARCH_MARGIN_HOURS, 'hours')
-      .second(0)
-      .milliseconds(0)
-      .toDate(),
-    startTimeTo: moment(targetStartTime)
-      .add(SEARCH_MARGIN_HOURS, 'hours')
-      .second(0)
-      .milliseconds(0)
-      .toDate(),
-    limit: 1024,
-    orderBy: 'start_time asc',
-  })
-
-  if (rides.length === 0) {
-    return []
-  }
-
-  const diffFromTargetStart = (ride: GtfsRideWithRelatedPydanticModel): number =>
-    Math.abs(timestamp.diff(ride.startTime, 'seconds'))
-
-  const closestInTimeRides = rides
-    .sort((a, b) => diffFromTargetStart(a) - diffFromTargetStart(b))
-    .slice(0, MAX_HITS_COUNT)
-
-  const rideIds = closestInTimeRides.map((ride) => ride.id).join(JOIN_SEPARATOR)
-
-  const minStartTime = Math.min(...rides.map((ride) => Number(ride.startTime)))
-  const maxEndTime = Math.max(...rides.map((ride) => Number(ride.endTime)))
-
-  /* Fix StopHits bugs next steps TODO:
-  1. Add a test to ensure this feature is working correctly.
-  2. Optimize the axios request to minimize latency. - Currently takes forever.
-  3. Fix any on this- define the hit type
-  */
-
+export async function getGtfsStopHitTimesAsync(stop: BusStop, time: dayjs.Dayjs) {
   try {
-    const stopHitsRequestPayLoad: StopHitsPayLoadType = {
-      gtfsRideIds: rideIds,
+    return await GTFS_API.gtfsRideStopsListGet({
+      gtfsRideGtfsRouteId: stop.routeId,
       gtfsStopIds: stop.stopId.toString(),
-      arrival_time_from: minStartTime,
-      arrival_time_to: maxEndTime,
-    }
-
-    const stopHitsRes = await axios.get(`${BASE_PATH}/gtfs_ride_stops/list`, {
-      params: stopHitsRequestPayLoad,
+      arrivalTimeFrom: time.subtract(4, 'hour').toDate(),
+      arrivalTimeTo: time.add(4, 'hour').toDate(),
+      orderBy: 'arrival_time asc',
     })
-
-    if (stopHitsRes.status !== 200) {
-      throw new Error(`Error fetching stop hits: ${stopHitsRes.statusText}`)
-    }
-
-    if (stopHitsRes.data.length === 0) {
-      throw new Error(`No stop hits found`)
-    }
-
-    const stopHits: GtfsRideStopPydanticModel[] = stopHitsRes.data
-
-    return stopHits.sort((hit1, hit2) => +hit1.arrivalTime! - +hit2.arrivalTime!)
   } catch (error) {
-    console.error(`Error fetching stop hits:`, error)
+    console.error(`Error fetching stop hits for stop ${stop.stopId}:`, error)
     return []
   }
+}
+
+export async function getRouteById(routeId?: string, signal?: AbortSignal) {
+  try {
+    if (!routeId?.trim()) {
+      throw new Error('Route id is required and cannot be empty')
+    }
+    const id = Number(routeId)
+    if (!Number.isInteger(id) || id <= 0 || id > Number.MAX_SAFE_INTEGER) {
+      throw new Error(`Invalid route id: ${routeId}.`)
+    }
+    return await GTFS_API.gtfsRoutesGetGet({ id }, { signal })
+  } catch (error) {
+    let errorMessage: string
+    if (error instanceof Error) {
+      errorMessage =
+        error.message === 'Response returned an error code'
+          ? `Route with id ${routeId} not found`
+          : error.message
+    } else {
+      errorMessage = 'An unexpected error occurred while fetching route data'
+    }
+    console.error(`Failed to get route ${routeId}:`, errorMessage)
+    throw new Error(errorMessage)
+  }
+}
+
+export async function getAllRoutesList(operatorId: string, date: Date, signal?: AbortSignal) {
+  return await GTFS_API.gtfsRoutesListGet(
+    {
+      operatorRefs: operatorId,
+      dateFrom: date,
+      dateTo: date,
+      orderBy: 'route_long_name asc',
+      limit: 15000,
+    },
+    { signal },
+  )
+}
+
+export async function getRoutesByLineRef(
+  operatorId: string,
+  lineRefs: string,
+  date: Date,
+  signal?: AbortSignal,
+) {
+  return await GTFS_API.gtfsRoutesListGet(
+    {
+      operatorRefs: operatorId,
+      dateFrom: date,
+      dateTo: date,
+      lineRefs,
+      limit: 1,
+    },
+    { signal },
+  )
 }

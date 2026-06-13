@@ -1,18 +1,18 @@
-import styled from 'styled-components'
-import { Trans, useTranslation } from 'react-i18next'
-import Typography from '@mui/material/Typography'
-import Stack from '@mui/material/Stack'
-import './About.scss'
+import { Stack, Typography } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
-import SlackIcon from '../../resources/slack-icon.svg'
+import { Trans, useTranslation } from 'react-i18next'
+import styled from 'styled-components'
 import Widget from 'src/shared/Widget'
+import SlackIcon from '../../resources/slack-icon.svg'
+import { VersionInfo } from './version/VersionInfo'
+import './About.scss'
 
 const pageName = 'aboutPage'
 const About = () => {
   const { t } = useTranslation()
   return (
     <AboutStyle>
-      <Stack spacing={4}>
+      <Stack spacing={4} sx={{ marginBottom: 3 }}>
         <Typography variant="h4" gutterBottom className="page-title">
           {t(`${pageName}.title`)}
         </Typography>
@@ -24,8 +24,9 @@ const About = () => {
         <Questions />
         <Funding />
         <Attributions />
+        <VersionInfo />
+        <Contributors />
       </Stack>
-      <Contributors />
     </AboutStyle>
   )
 }
@@ -34,10 +35,9 @@ const WhatIsWebsite = () => {
   const { t } = useTranslation()
 
   return (
-    <Widget>
-      <h2>{t('what_is_website')}</h2>
+    <Widget title={t('what_is_website')}>
       <p>{t('what_is_website_paragraph')}</p>
-      <ul style={{ listStyle: 'disc', paddingRight: '40px' }}>
+      <ul style={{ listStyle: 'disc', paddingInlineStart: '40px' }}>
         <li>{t('planning_information')}</li>
         <li>{t('performance_information')}</li>
       </ul>
@@ -49,9 +49,9 @@ const YoutubePlaylist = () => {
     <iframe
       width="560"
       height="315"
+      style={{ border: 'none' }}
       src="https://www.youtube.com/embed/videoseries?si=oTULlxq8Is188hPu&amp;list=PL6Rh06rT7uiX1AQE-lm55hy-seL3idx3T"
       title="YouTube video player"
-      frameBorder="0"
       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
       referrerPolicy="strict-origin-when-cross-origin"
       allowFullScreen></iframe>
@@ -61,8 +61,7 @@ const DiscoveredMistake = () => {
   const { t } = useTranslation()
 
   return (
-    <Widget>
-      <h2>{t('discovered_mistake')}</h2>
+    <Widget title={t('discovered_mistake')}>
       <p>{t('discovered_mistake_paragraph')}</p>
     </Widget>
   )
@@ -73,8 +72,7 @@ const Privacy = () => {
   const googlAnalyticsUrl = 'https://marketingplatform.google.com/about/analytics/'
   const googleAnaliticsPrivacyUrl = 'https://support.google.com/analytics/answer/6004245?hl=iw'
   return (
-    <Widget>
-      <h2>{t('privacy')}</h2>
+    <Widget title={t('privacy')}>
       <p>
         <Trans i18nKey="aboutPage.privacyText">
           <a href={googlAnalyticsUrl}></a>
@@ -90,8 +88,7 @@ const License = () => {
   const licenseLink = 'https://creativecommons.org/licenses/by-sa/4.0/'
   const licenseOrgLink = 'https://creativecommons.org/'
   return (
-    <Widget>
-      <h2>{t('license')}</h2>
+    <Widget title={t('license')}>
       <p>
         <Trans
           i18nKey="aboutPage.licenseInfo.text"
@@ -108,8 +105,7 @@ const Questions = () => {
   const { t } = useTranslation()
   const linksTextPath = `${pageName}.contactLinksText`
   return (
-    <Widget>
-      <h2>{t('questions')}</h2>
+    <Widget title={t('questions')}>
       <ul>
         <li>
           <a href="https://www.hasadna.org.il/%D7%A6%D7%95%D7%A8-%D7%A7%D7%A9%D7%A8/">
@@ -117,9 +113,9 @@ const Questions = () => {
           </a>
         </li>
         <li>
-          <img src={SlackIcon} alt="Slack icon" />
           <a href="https://hasadna.slack.com/join/shared_invite/zt-167h764cg-J18ZcY1odoitq978IyMMig#/shared-invite/email">
             {t(`${linksTextPath}.slack`)}
+            <img src={SlackIcon} alt="Slack icon" />
           </a>
         </li>
         <li>
@@ -136,8 +132,7 @@ const Funding = () => {
   const { t } = useTranslation()
 
   return (
-    <Widget>
-      <h2>{t('funding')}</h2>
+    <Widget title={t('funding')}>
       <div>
         <p>
           {t('funding_paragraph')}&nbsp;
@@ -160,12 +155,11 @@ const Funding = () => {
 
 const Attributions = () => {
   return (
-    <Widget>
-      <h2>Attributions</h2>
-      <ul>
+    <Widget title="Attributions" sx={{ textAlign: 'right', direction: 'ltr' }}>
+      <ul dir="ltr">
         <li>
-          Thanks <a href="http://www.applitools.com/">Applitools</a> for the free open-source
-          license for their visual testing tool
+          Thanks <a href="https://applitools.com/">Applitools</a> for the free open-source license
+          for their visual testing tool
         </li>
         <li>
           Bus ifmage by{' '}
@@ -187,8 +181,7 @@ const Contributors = () => {
   const { contributors, isLoading, isError } = useContributions()
 
   return (
-    <Widget>
-      <h2>{t('aboutPage.contributors')}</h2>
+    <Widget title={t('aboutPage.contributors')}>
       <p>
         {t('aboutPage.contributorsText')}
         <br />
@@ -196,9 +189,9 @@ const Contributors = () => {
           <a href="https://github.com/hasadna/open-bus-map-search/blob/main/CONTRIBUTING.md"></a>
         </Trans>
       </p>
-      <ul className="contributions">
-        {isLoading && <p>Loading...</p>}
-        {isError && <p>Error...</p>}
+      <ol className="contributions">
+        {isLoading && <p>Loading&hellip;</p>}
+        {isError && <p>Error&hellip;</p>}
         {contributors &&
           contributors.map((author) => (
             <li key={author.id}>
@@ -211,7 +204,7 @@ const Contributors = () => {
               </a>
             </li>
           ))}
-      </ul>
+      </ol>
     </Widget>
   )
 }
@@ -228,7 +221,7 @@ const AboutStyle = styled.div`
     }
   }
 `
-function useContributions(start: Date = new Date('2023-01-01'), end: Date = new Date()) {
+function useContributions() {
   const owner = 'hasadna'
   const repos = [
     'open-bus-map-search',
@@ -241,8 +234,7 @@ function useContributions(start: Date = new Date('2023-01-01'), end: Date = new 
   ]
 
   const apis = repos.map(
-    (repo) =>
-      `https://api.github.com/repos/${owner}/${repo}/contributors?order=desc&until=${end.toISOString()}&since=${start.toISOString()}`,
+    (repo) => `https://api.github.com/repos/${owner}/${repo}/contributors?order=desc`,
   )
 
   const { data, isLoading, isError } = useQuery({
@@ -274,6 +266,7 @@ function useContributions(start: Date = new Date('2023-01-01'), end: Date = new 
       .reduce(combineAuthor, [] as Author[])
     return { contributors, isLoading, isError }
   } catch (error) {
+    console.error(error)
     return { contributors: [] as const, isLoading: false, isError: true }
   }
 }

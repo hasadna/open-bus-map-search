@@ -1,0 +1,64 @@
+name: Claude Code
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+  issues:
+    types: [opened, assigned]
+  pull_request_review:
+    types: [submitted]
+
+jobs:
+  claude:
+    if: |
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude') && (github.event.comment.user.login == 'NoamGaash' || github.event.comment.user.login == 'AvivAbachi' || github.event.comment.user.login == 'arielvino')) ||
+      (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude') && (github.event.comment.user.login == 'NoamGaash' || github.event.comment.user.login == 'AvivAbachi' || github.event.comment.user.login == 'arielvino')) ||
+      (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude') && (github.event.review.user.login == 'NoamGaash' || github.event.review.user.login == 'AvivAbachi' || github.event.review.user.login == 'arielvino')) ||
+      (github.event_name == 'issues' && (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude')) && (github.event.issue.user.login == 'NoamGaash' || github.event.issue.user.login == 'AvivAbachi' || github.event.issue.user.login == 'arielvino'))
+    runs-on: ubuntu-latest
+    permissions:
+      # Write access so Claude can push branches and open pull requests.
+      contents: write
+      pull-requests: write
+      issues: write
+      id-token: write
+      actions: read # Required for Claude to read CI results on PRs
+      # NOTE: `packages: write` is intentionally omitted so the workflow token
+      # cannot push Docker images to the GitHub Container Registry.
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          # Shallow checkout for speed; Claude can run `git fetch --unshallow`
+          # on demand when an operation actually needs full history.
+          fetch-depth: 1
+
+      - name: Run Claude Code
+        id: claude
+        uses: anthropics/claude-code-action@v1
+        env:
+          # Allow Claude to run the Applitools visual regression tests in CI.
+          APPLITOOLS_API_KEY: ${{ secrets.APPLITOOLS_API_KEY }}
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+
+          # This is an optional setting that allows Claude to read CI results on PRs
+          additional_permissions: |
+            actions: read
+
+          # Optional: Give a custom prompt to Claude. If this is not specified, Claude will perform the instructions specified in the comment that tagged it.
+          # prompt: 'Update the pull request description to include a summary of changes.'
+
+          # Allow Claude to run any command in CI (push branches, open PRs, run the
+          # full lint/test/build suite, etc.). Destructive / outward-publishing
+          # actions are blocked at two levels:
+          #   1. The workflow token has no `packages: write` and no registry or
+          #      cloud credentials are exposed to this step, so image / artifact
+          #      publishing is impossible regardless of the command run.
+          #   2. The deny-list below blocks Docker image pushes explicitly.
+          # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
+          claude_args: >-
+            --allowed-tools "Bash,Edit,Write,Read,Glob,Grep,WebFetch,WebSearch,TodoWrite"
+            --disallowed-tools "Bash(docker push:*),Bash(docker image push:*),Bash(docker buildx:*),Bash(podman push:*)"

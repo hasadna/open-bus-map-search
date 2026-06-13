@@ -1,8 +1,35 @@
-import type { Preview } from '@storybook/react'
-import React from 'react'
+import type { Preview } from '@storybook/react-vite'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { initialize, mswLoader } from 'msw-storybook-addon'
+import { Suspense, useEffect } from 'react'
+import { BrowserRouter } from 'react-router'
+import { ThemeProvider, useTheme } from 'src/layout/ThemeContext'
 import i18n from 'src/locale/allTranslations'
+import 'src/index.scss'
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      gcTime: Infinity,
+      staleTime: 1000 * 60 * 60 * 24, // 24 hours
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+    },
+  },
+})
+
+queryClient.setQueryData(['version'], '1.2.3')
 
 const preview: Preview = {
+  beforeAll: () => {
+    initialize({
+      serviceWorker: {
+        url: './mockServiceWorker.js',
+      },
+    })
+  },
+  loaders: [mswLoader],
   parameters: {
     actions: { argTypesRegex: '^on[A-Z].*' },
     controls: {
@@ -11,17 +38,90 @@ const preview: Preview = {
         date: /Date$/i,
       },
     },
+    options: {
+      storySort: {
+        method: 'alphabetical',
+      },
+    },
   },
   decorators: [
-    (Story) => {
-      i18n
+    (Story, context) => {
+      const { locale, darkMode } = context.globals
       return (
-        <div style={{ direction: 'rtl' }}>
-          <Story />
-        </div>
+        <Suspense fallback={null}>
+          <BrowserRouter>
+            <QueryClientProvider client={queryClient}>
+              <ThemeProvider>
+                <StoryBookWrapper locale={locale} darkMode={darkMode}>
+                  <Story />
+                </StoryBookWrapper>
+              </ThemeProvider>
+            </QueryClientProvider>
+          </BrowserRouter>
+        </Suspense>
       )
     },
   ],
+  tags: ['autodocs'],
+}
+
+export const initialGlobals = {
+  locale: 'he',
+}
+
+export const globalTypes = {
+  locale: {
+    name: 'Locale',
+    description: 'Internationalization locale',
+    defaultValue: 'he',
+    toolbar: {
+      icon: 'globe',
+      items: [
+        { value: 'he', title: 'עברית' },
+        { value: 'en', title: 'English' },
+        { value: 'ru', title: 'Русский' },
+        { value: 'ar', title: 'العربية' },
+      ],
+      showName: true,
+    },
+  },
+  darkMode: {
+    name: 'Dark Mode',
+    description: 'Enable dark mode',
+    defaultValue: false,
+    toolbar: {
+      icon: 'paintbrush',
+      items: [
+        { value: false, title: 'Light' },
+        { value: true, title: 'Dark' },
+      ],
+      showName: true,
+    },
+  },
+}
+
+const StoryBookWrapper = ({
+  darkMode,
+  locale,
+  children,
+}: {
+  darkMode?: boolean
+  locale?: string
+  children: React.ReactNode
+}) => {
+  const { isDarkTheme, toggleTheme } = useTheme()
+
+  useEffect(() => {
+    if (isDarkTheme !== darkMode) {
+      toggleTheme()
+    }
+  }, [darkMode, isDarkTheme, toggleTheme])
+
+  useEffect(() => {
+    i18n.changeLanguage(locale)
+  }, [locale])
+
+  return children
 }
 
 export default preview

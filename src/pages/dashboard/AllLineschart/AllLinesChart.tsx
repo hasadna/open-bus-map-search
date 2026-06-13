@@ -1,48 +1,65 @@
-import { Tooltip } from '@mui/material'
-import { Skeleton } from 'antd'
-import { Fragment } from 'react'
-import { useTranslation } from 'react-i18next'
-import { FC } from 'react'
-import { Moment } from 'moment/moment'
 import { InfoCircleOutlined } from '@ant-design/icons'
-import OperatorHbarChart from './OperatorHbarChart/OperatorHbarChart'
+import { Tooltip } from '@mui/material'
+import { FC, Fragment, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
+import { Dayjs } from 'src/dayjs'
+import SkeletonLoader from 'src/shared/SkeletonLoader'
 import Widget from 'src/shared/Widget'
+import OperatorHbarChart from './OperatorHbarChart/OperatorHbarChart'
 
 const convertToChartCompatibleStruct = (arr: GroupByRes[]) => {
-  return arr.map((item: GroupByRes) => ({
-    id: item.operator_ref?.agency_id || 'Unknown',
-    name: item.operator_ref?.agency_name || 'Unknown',
-    total: item.total_planned_rides,
-    actual: item.total_actual_rides,
+  return arr.map((operator) => ({
+    id: operator.operatorRef?.operatorRef || 'Unknown',
+    name: operator.operatorRef?.agencyName || 'Unknown',
+    total: operator.totalPlannedRides,
+    actual: operator.totalActualRides,
   }))
 }
 
 interface AllChartComponentProps {
-  startDate: Moment
-  endDate: Moment
+  startDate: Dayjs
+  endDate: Dayjs
+  alertAllChartsZeroLinesHandling: (arg: boolean) => void
 }
 
-export const AllLinesChart: FC<AllChartComponentProps> = ({ startDate, endDate }) => {
+export const AllLinesChart: FC<AllChartComponentProps> = ({
+  startDate,
+  endDate,
+  alertAllChartsZeroLinesHandling,
+}) => {
   const [groupByOperatorData, groupByOperatorLoading] = useGroupBy({
-    dateTo: endDate,
     dateFrom: startDate,
+    dateTo: endDate,
     groupBy: 'operator_ref',
   })
   const { t } = useTranslation()
+
+  useEffect(() => {
+    const totalElements = groupByOperatorData.length
+    const totalZeroElements = groupByOperatorData.filter((el) => el.totalActualRides === 0).length
+    if (totalElements === 0 || totalZeroElements === totalElements) {
+      alertAllChartsZeroLinesHandling(true)
+    } else {
+      alertAllChartsZeroLinesHandling(false)
+    }
+  }, [groupByOperatorData])
+
   return (
-    <Widget>
-      <h2 className="title">
-        {t('dashboard_page_title')}
-        <Tooltip
-          title={convertLineFeedToHtmlTags(t('dashboard_tooltip_content'))}
-          placement="left"
-          arrow>
-          <InfoCircleOutlined style={{ marginRight: '12px' }} />
-        </Tooltip>
-      </h2>
+    <Widget
+      title={
+        <>
+          {t('dashboard_page_title')}
+          <Tooltip
+            title={convertLineFeedToHtmlTags(t('dashboard_tooltip_content'))}
+            placement="left"
+            arrow>
+            <InfoCircleOutlined style={{ marginRight: '12px' }} />
+          </Tooltip>
+        </>
+      }>
       {groupByOperatorLoading ? (
-        <Skeleton active />
+        <SkeletonLoader active />
       ) : (
         <OperatorHbarChart operators={convertToChartCompatibleStruct(groupByOperatorData)} />
       )}

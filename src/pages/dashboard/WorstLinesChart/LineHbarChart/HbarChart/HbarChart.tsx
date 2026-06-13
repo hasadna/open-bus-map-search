@@ -1,7 +1,7 @@
+import { Tooltip } from '@mui/material'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 import './HbarChart.scss'
-import { Tooltip } from '@mui/material'
 
 export type Entry = { name: string; total: number; actual: number; color?: string }
 const numberFormatter = new Intl.NumberFormat('he-IL')

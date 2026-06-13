@@ -1,0 +1,103 @@
+main:has(> div > .bug-report-form-container) {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 !important;
+  padding: 24px;
+
+  > div {
+    display: contents;
+  }
+}
+
+.bug-report-form-container {
+  max-width: 800px;
+  width: 100%;
+  padding: 24px;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  .MuiCardContent-root {
+    display: contents;
+  }
+
+  form {
+    overflow-y: auto !important;
+  }
+
+  .ant-form-item-label > label {
+    display: block !important;
+    font-weight: bold;
+    text-align: start;
+    text-wrap: pretty;
+    min-height: fit-content;
+  }
+
+  @media (width <= 600px) {
+    padding: 15px;
+
+    .logo {
+      font-size: 24px;
+      margin: 10px auto;
+      border-top: 4px solid gray;
+      border-bottom: 6px solid gray;
+    }
+
+    .ant-btn-primary {
+      width: 100%;
+    }
+  }
+
+  .logo {
+    position: relative;
+    margin: 20px auto;
+    width: 119px;
+    font-size: 30px;
+    border-top: 6px solid gray;
+    border-bottom: 8px solid gray;
+    padding-bottom: 0;
+    line-height: 25px;
+    text-align: center;
+    display: flex;
+  }
+
+  .ant-form-item {
+    margin-bottom: 20px;
+    width: 100%;
+
+    &:last-child {
+      margin-bottom: 0;
+      text-align: end;
+
+      & > div > div {
+        max-width: 100%;
+      }
+    }
+  }
+
+  .ant-input,
+  .ant-input-textarea {
+    width: 100%;
+  }
+
+  .ant-upload {
+    width: 100%;
+  }
+
+  .ant-btn-primary {
+    background-color: #1890ff;
+    border-color: #1890ff;
+    display: inline-block;
+    font-weight: 500;
+
+    &:hover {
+      background-color: #40a9ff;
+      border-color: #40a9ff;
+    }
+
+    &:focus {
+      box-shadow: 0 0 0 2px rgb(24 144 255 / 20%);
+    }
+  }
+}

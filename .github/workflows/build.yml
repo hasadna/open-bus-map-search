@@ -1,50 +1,66 @@
 name: Build
 on: pull_request
 
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+env:
+  VITE_BASE_PATH: /noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.run_number }}/
+
 jobs:
   build:
+    name: Build Application
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
-          node-version: 18
+          node-version: 24
           cache: 'npm'
+      - name: Get Commit Hash and generate Version File
+        run: echo "${{ github.event.pull_request.head.sha }}" >> public/hash.txt
       - name: Run install
         run: npm ci
       - name: Build
+        env:
+          VITE_BASE_PATH: ${{ env.VITE_BASE_PATH }}
         run: npm run build
       - name: Upload artifact (build)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: dist-build
           path: dist
 
   build-storybook:
+    name: Build Storybook
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
-          node-version: 18
+          node-version: 24
           cache: 'npm'
       - name: Run install
         run: npm ci
       - name: Build Storybook
+        env:
+          VITE_BASE_PATH: ${{ env.VITE_BASE_PATH }}
         run: npm run build-storybook -- -o dist/storybook
       - name: Upload artifact (storybook)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: dist-storybook
           path: dist/storybook
-  
+
       - name: Save PR number
         env:
           PR_NUMBER: ${{ github.event.number }}
         run: |
           mkdir -p ./pr
           echo $PR_NUMBER > ./pr/pr_number
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: pr_number
           path: pr/

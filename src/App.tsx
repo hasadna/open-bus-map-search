@@ -1,15 +1,8 @@
-import './App.scss'
-import 'leaflet/dist/leaflet.css'
-import 'moment/locale/he'
-import { RouterProvider } from 'react-router-dom'
 import { Suspense } from 'react'
-import moment from 'moment-timezone'
-import Preloader from './shared/Preloader'
+import { useTranslation } from 'react-i18next'
+import { RouterProvider } from 'react-router'
 import router from './routes'
-import 'moment/dist/locale/he'
-
-moment.tz.setDefault('Asia/Jerusalem')
-moment.locale('he')
+import Preloader from './shared/Preloader'
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker
@@ -18,9 +11,13 @@ if ('serviceWorker' in navigator) {
     .catch((err) => console.error('Service Worker Registration Failed', err))
 }
 
-export const RoutedApp = () => (
-  <Suspense fallback={<Preloader />}>
-    <RouterProvider router={router} />
-  </Suspense>
-)
+export const RoutedApp = () => {
+  const { ready } = useTranslation()
+
+  return (
+    <Suspense fallback={<Preloader />}>
+      {ready ? <RouterProvider router={router} /> : null}
+    </Suspense>
+  )
+}
 export default RoutedApp

@@ -1,7 +1,5 @@
-import { TreeView } from '@mui/x-tree-view/TreeView'
-import { TreeItem } from '@mui/x-tree-view/TreeItem'
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
-import ChevronRightIcon from '@mui/icons-material/ChevronRight'
+import { ChevronRight, ExpandMore } from '@mui/icons-material'
+import { SimpleTreeView, TreeItem } from '@mui/x-tree-view'
 
 interface BaseTreeNode {
   id: string
@@ -34,7 +32,7 @@ const objectToTreeNode = <T extends Record<string, unknown>>(
       // Handle primitive types directly
       return {
         id: `${nodeId}-${index}`,
-        name: `${k}: ${value}`,
+        name: `${k}: ${String(value)}`,
       }
     } else if (Array.isArray(value)) {
       // If it's an array, create a node that lists all elements
@@ -67,8 +65,8 @@ const objectToTreeNode = <T extends Record<string, unknown>>(
 }
 
 // Render tree function utilizing the TreeNode interface
-const renderTree = <T extends BaseTreeNode>(nodes: TreeNode<T>): JSX.Element => (
-  <TreeItem key={nodes.id} nodeId={nodes.id} label={nodes.name}>
+const renderTree = <T extends BaseTreeNode>(nodes: TreeNode<T>) => (
+  <TreeItem key={nodes.id} itemId={nodes.id} label={nodes.name}>
     {nodes.children?.map((node) => renderTree(node))}
   </TreeItem>
 )
@@ -77,12 +75,14 @@ const renderTree = <T extends BaseTreeNode>(nodes: TreeNode<T>): JSX.Element => 
 const CustomTreeView = <T,>({ data, name, id }: CustomTreeViewProps<T>) => {
   const dataAsTreeNode = objectToTreeNode({ id, name, children: [data] })
   return (
-    <TreeView
-      defaultCollapseIcon={<ExpandMoreIcon />}
-      defaultExpandIcon={<ChevronRightIcon />}
-      defaultEndIcon={<div style={{ width: 24 }} />}>
+    <SimpleTreeView
+      slots={{
+        collapseIcon: ExpandMore,
+        expandIcon: ChevronRight,
+        endIcon: () => <div style={{ width: 24 }} />,
+      }}>
       {renderTree(dataAsTreeNode)}
-    </TreeView>
+    </SimpleTreeView>
   )
 }
 

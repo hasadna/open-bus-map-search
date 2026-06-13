@@ -1,140 +1,88 @@
-import i18next from 'i18next'
-import Backend from 'i18next-fs-backend'
-import TimelinePage from '../src/test_pages/TimelinePage'
-import { getPastDate, test, urlMatcher } from './utils'
+import { expect, test } from 'src/test_pages/TimelinePage'
+import { harOptions, setupTest, verifyDateFromParameter, visitPage } from './utils'
+
+const ROUTE = 'שדרות מנחם בגין/כביש 7-גדרה ⟵ שדרות מנחם בגין/כביש 7-גדרה'
+const STATION = 'חיים הרצוג/שדרות מנחם בגין (גדרה)'
 
 test.describe('Timeline Page Tests', () => {
-  let timelinePage: TimelinePage
-
   test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
-    await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
-    await i18next.use(Backend).init({
-      lng: 'he',
-      backend: {
-        loadPath: 'src/locale/{{lng}}.json',
-      },
+    await setupTest(page)
+    await advancedRouteFromHAR('tests/HAR/timeline.har', harOptions)
+    await visitPage(page, 'timeline_page_title')
+  })
+
+  test.describe('Route selection visibility tests', () => {
+    test('route selection should appear after line number selected', async ({ timelinePage }) => {
+      await timelinePage.selectOperator('אגד')
+      await timelinePage.lineNumberField.fill('1')
+      await expect(timelinePage.routeSelect).toBeEnabled()
     })
 
-    await advancedRouteFromHAR('tests/HAR/timeline.har', {
-      updateContent: 'embed',
-      update: false,
-      notFound: 'abort',
-      url: /stride-api\/list\?/,
-      matcher: urlMatcher,
+    test('clearing the line number should hide route selection', async ({ timelinePage }) => {
+      await timelinePage.selectOperator('אגד')
+      await timelinePage.lineNumberField.fill('1')
+      await expect(timelinePage.routeSelect).toBeEnabled()
+      await timelinePage.closeButton.click()
+      await expect(timelinePage.lineNumberField).toBeEmpty()
+      await expect(timelinePage.routeSelect).toBeDisabled()
     })
-    timelinePage = new TimelinePage(page) // Initialize timelinePage before each test
-    await timelinePage.setFakeTime(getPastDate())
-    await page.goto('/')
-    await page
-      .getByText(i18next.t('timeline_page_title'), { exact: true })
-      .and(page.getByRole('link'))
-      .click()
-    await page.getByRole('progressbar').waitFor({ state: 'hidden' })
-    await timelinePage.validatePageUrl(/timeline/)
   })
 
-  test('Test route selection disappears after line number is closed', async () => {
-    await timelinePage.selectOperatorFromDropbox(
-      timelinePage.operatorsDropDown,
-      timelinePage.operatorsList,
-      'אגד',
-    )
-    await timelinePage.fillLineNumber('1')
-    await timelinePage.closeLineNumber()
-    await timelinePage.verifyRouteSelectionVisible(timelinePage.routeSelect, false, 3000)
+  test('should have no duplications in Operators list', async ({ timelinePage }) => {
+    await timelinePage.operatorsSelect.click()
+    const options = await timelinePage.getDropdownOptions()
+    expect(options).not.toHaveDuplications()
   })
 
-  test('Test route selection appears after line number selected', async () => {
-    await timelinePage.selectOperatorFromDropbox(
-      timelinePage.operatorsDropDown,
-      timelinePage.operatorsList,
-      'אגד',
-    )
-    await timelinePage.fillLineNumber('1')
-    await timelinePage.verifyRouteSelectionVisible(timelinePage.routeSelect, true, 3000)
+  test('should have no duplications in Route Selection list', async ({ timelinePage }) => {
+    await timelinePage.selectOperator('אגד')
+    await timelinePage.lineNumberField.fill('1')
+    await expect(timelinePage.routeSelect).toBeEnabled()
+    await timelinePage.routeSelect.click()
+    const options = await timelinePage.getDropdownOptions()
+    expect(options).not.toHaveDuplications()
   })
 
-  test('Test Verify no duplications in Operators list', async () => {
-    await timelinePage.openSelectBox(timelinePage.operatorsDropDown)
-    await timelinePage.verifyNoDuplications()
+  test('should indicate when the line Number is not found', async ({ timelinePage, page }) => {
+    await timelinePage.selectOperator('דן בדרום')
+    await timelinePage.lineNumberField.fill('9999')
+    await expect(page.getByText('הקו לא נמצא')).toBeEnabled()
   })
 
-  test('Test Verify no duplications in Route Selection list', async () => {
-    await timelinePage.selectOperatorFromDropbox(
-      timelinePage.operatorsDropDown,
-      timelinePage.operatorsList,
-      'אגד',
-    )
-    await timelinePage.fillLineNumber('1')
-    await timelinePage.verifyRouteSelectionVisible(timelinePage.routeSelect, true, 3000)
-    await timelinePage.openSelectBox(timelinePage.routeSelect)
-    await timelinePage.verifyNoDuplications()
+  test('The station selection drop box should appear', async ({ timelinePage }) => {
+    await timelinePage.selectOperator('אגד')
+    await timelinePage.lineNumberField.fill('1')
+    await expect(timelinePage.routeSelect).toBeEnabled()
+    await timelinePage.selectRoute(ROUTE)
+    await expect(timelinePage.stationSelect).toBeEnabled()
   })
 
-  test('Test Verify the line Number is not found', async () => {
-    await timelinePage.selectOperatorFromDropbox(
-      timelinePage.operatorsDropDown,
-      timelinePage.operatorsList,
-      'דן בדרום',
-    )
-    await timelinePage.fillLineNumber('9999')
-    await timelinePage.verifyLineNumberNotFound()
+  test('Should load stations list', async ({ timelinePage }) => {
+    await timelinePage.selectOperator('אגד')
+    await timelinePage.lineNumberField.fill('1')
+    await expect(timelinePage.routeSelect).toBeEnabled()
+    await timelinePage.selectRoute(ROUTE)
+    await expect(timelinePage.stationSelect).toBeEnabled()
+    await timelinePage.stationSelect.click()
+    const options = await timelinePage.getDropdownOptions()
+    expect(options.length).toBeGreaterThan(0) // at least one station
   })
 
-  test('Test Verify station selection drop box appears', async () => {
-    await timelinePage.selectOperatorFromDropbox(
-      timelinePage.operatorsDropDown,
-      timelinePage.operatorsList,
-      'אגד',
-    )
-    await timelinePage.fillLineNumber('1')
-    await timelinePage.verifyRouteSelectionVisible(timelinePage.routeSelect, true, 3000)
-    await timelinePage.selectOperatorFromDropbox(
-      timelinePage.routeSelect,
-      timelinePage.routeList,
-      'בית ספר אלונים/הבנים-פרדס חנה כרכור ⟵ יד לבנים/דרך הבנים-פרדס חנה כרכור  ',
-    )
-    await timelinePage.verifyRouteSelectionVisible(timelinePage.stationSelect, true, 3000)
+  test('Test choosing [Operator -> Line # -> Route -> Stop station] opens the timestamp graph', async ({
+    timelinePage,
+  }) => {
+    await timelinePage.selectOperator('אגד')
+    await timelinePage.lineNumberField.fill('1')
+    await expect(timelinePage.routeSelect).toBeEnabled()
+    await timelinePage.selectRoute(ROUTE)
+    await expect(timelinePage.stationSelect).toBeEnabled()
+    await timelinePage.selectStation(STATION)
+    await timelinePage.WaitForLoadingCompletion()
+    await expect(timelinePage.timelineHourLabels).toContainText(['17:00:59'])
+    expect(await timelinePage.timelineHourLabels.count()).toBe(50)
   })
 
-  test('Test Verify no duplications in stations list', async () => {
-    await timelinePage.selectOperatorFromDropbox(
-      timelinePage.operatorsDropDown,
-      timelinePage.operatorsList,
-      'אגד',
-    )
-    await timelinePage.fillLineNumber('1')
-    await timelinePage.verifyRouteSelectionVisible(timelinePage.routeSelect, true, 3000)
-    await timelinePage.selectOperatorFromDropbox(
-      timelinePage.routeSelect,
-      timelinePage.routeList,
-      'בית ספר אלונים/הבנים-פרדס חנה כרכור ⟵ יד לבנים/דרך הבנים-פרדס חנה כרכור  ',
-    )
-    await timelinePage.verifyRouteSelectionVisible(timelinePage.stationSelect, true, 3000)
-    //have duplications in stations list.
-    // await timelinePage.openSelectBox(timelinePage.stationSelect)
-    // await timelinePage.verifyNoDuplications()
-  })
-
-  test('Test choosing [Operator -> Line # -> Route -> Stop station] opens the timestamp graph', async () => {
-    await timelinePage.selectOperatorFromDropbox(
-      timelinePage.operatorsDropDown,
-      timelinePage.operatorsList,
-      'אגד',
-    )
-    await timelinePage.fillLineNumber('1')
-    await timelinePage.verifyRouteSelectionVisible(timelinePage.routeSelect, true, 3000)
-    await timelinePage.selectOperatorFromDropbox(
-      timelinePage.routeSelect,
-      timelinePage.routeList,
-      'שדרות מנחם בגין/כביש 7-גדרה ⟵ שדרות מנחם בגין/כביש 7-גדרה  ',
-    )
-    await timelinePage.verifyRouteSelectionVisible(timelinePage.stationSelect, true)
-    await timelinePage.selectOperatorFromDropbox(
-      timelinePage.stationSelect,
-      timelinePage.stationList,
-      'חיים הרצוג/שדרות מנחם בגין (גדרה)',
-    )
-    await timelinePage.verifyRouteSelectionVisible(timelinePage.timelineGraph, true, 100000)
+  test('Verify date_from parameter', async ({ page }) => {
+    await verifyDateFromParameter(page)
   })
 })

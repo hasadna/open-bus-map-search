@@ -1,0 +1,258 @@
+// Shared translucency for map overlay controls so they read consistently across
+// both themes. The attribution is more see-through; interactive buttons (zoom,
+// expand) are more opaque for a clearer hit target.
+$control-bg: rgb(255 255 255 / 70%);
+$control-bg-dark: rgb(40 40 40 / 70%);
+$button-bg: rgb(255 255 255 / 90%);
+$button-bg-dark: rgb(40 40 40 / 90%);
+
+// The legend is near-opaque: at 70% the map content under it (e.g. the velocity
+// heatmap's saturated overlay) tints it a different color on every page.
+$legend-bg: rgb(255 255 255 / 90%);
+$legend-bg-dark: rgb(40 40 40 / 92%);
+
+// Shared frame so the zoom bar and expand button read identically (Leaflet's
+// default heavy shadow + missing border otherwise make them look unequal).
+$button-shadow:
+  0 1px 3px rgb(0 0 0 / 8%),
+  0 6px 16px rgb(0 0 0 / 10%);
+$button-border: 1px solid rgb(0 0 0 / 25%);
+$button-border-dark: 1px solid rgb(255 255 255 / 25%);
+
+main,
+main > div,
+.map-container,
+.leaflet-container,
+.map-info,
+.map-index-item-config {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+}
+
+.leaflet-container {
+  min-height: calc(100vh - 88px);
+}
+
+.map-info {
+  position: relative;
+  margin-bottom: 1em;
+
+  .expand-button {
+    inset-inline-end: 5px;
+    bottom: 5px;
+    color: #1976d2 !important;
+    position: fixed;
+    z-index: 2000;
+    width: 2.6rem;
+    height: 2.6rem;
+    background: $button-bg;
+    border: $button-border;
+    box-shadow: $button-shadow;
+
+    &:hover {
+      background: rgb(255 255 255 / 95%);
+    }
+
+    &:active {
+      background: rgb(255 255 255 / 100%);
+    }
+  }
+
+  // Match the expand button's frame so both buttons read with equal weight.
+  .leaflet-control-zoom.leaflet-bar {
+    border: $button-border;
+    box-shadow: $button-shadow;
+  }
+
+  .leaflet-control-zoom a {
+    background: $button-bg;
+
+    &:hover {
+      background: rgb(255 255 255 / 95%);
+    }
+  }
+
+  .leaflet-control-attribution {
+    background: $control-bg;
+  }
+
+  // Shared legend slot rendered by MapShell's `legend` prop: every map page's
+  // legend gets the same corner, box chrome and dark theming; pages provide
+  // only the content.
+  .map-legend {
+    position: absolute;
+    top: 1em;
+    inset-inline-start: 1em;
+    z-index: 1000;
+    border: 2px solid black;
+    border-radius: 8px;
+    background-color: $legend-bg;
+    padding: 8px 12px;
+    color: black;
+  }
+
+  .map-index {
+    // Two-column table: icons in the start column, text in the end column.
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 4px 8px;
+    align-items: center;
+
+    // display:contents promotes each item's cells into the parent grid so the
+    // icon and text columns line up across every row.
+    &-item {
+      display: contents;
+
+      // The icon is a composite (route-line behind a stop marker); give it a
+      // fixed box and center both parts so they overlap correctly.
+      &-config {
+        justify-self: center;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        width: 25px;
+      }
+
+      &-line {
+        z-index: -1;
+        position: absolute;
+        inset: 0;
+        margin: auto;
+        width: 25px;
+        height: 4px;
+      }
+
+      &-icon {
+        display: flex;
+
+        img {
+          width: 20px;
+          height: 20px;
+        }
+      }
+
+      &-title {
+        justify-self: start;
+        text-align: start;
+
+        // Match the velocity legend's typography; the h3 browser-default
+        // margins were the bulk of this legend's wasted space.
+        h3 {
+          margin: 0;
+          font-size: 13px;
+          font-weight: 600;
+        }
+      }
+    }
+  }
+}
+
+// Leaflet's popup/controls render hardcoded-white. The .map-info wrapper gets a
+// `dark` class in dark mode, so theme every Leaflet sub-element + the expand
+// button under it (one reactive hook covers popup, zoom, attribution, button).
+.map-info.dark {
+  .map-legend {
+    background-color: $legend-bg-dark;
+    border-color: #fff;
+    color: #fff;
+  }
+
+  .leaflet-popup-content-wrapper,
+  .leaflet-popup-tip {
+    background: #1c1d1c;
+    color: #fff;
+  }
+
+  .leaflet-popup-close-button {
+    color: #fff;
+  }
+
+  .leaflet-popup-content-wrapper a {
+    color: #90caf9;
+  }
+
+  .leaflet-control-zoom.leaflet-bar {
+    border: $button-border-dark;
+  }
+
+  .leaflet-control-zoom a {
+    background: $button-bg-dark;
+    color: #fff;
+    border-color: #444;
+
+    &:hover {
+      background: rgb(40 40 40 / 100%);
+    }
+  }
+
+  .leaflet-control-attribution {
+    background: $control-bg-dark;
+    color: #ccc;
+
+    a {
+      color: #90caf9;
+    }
+  }
+
+  .expand-button {
+    background: $button-bg-dark;
+    border: $button-border-dark;
+
+    &:hover {
+      background: rgb(40 40 40 / 95%);
+    }
+
+    &:active {
+      background: rgb(40 40 40 / 100%);
+    }
+  }
+}
+
+pre {
+  direction: ltr;
+  height: 200px;
+  overflow-y: auto;
+}
+
+.map-header-buttons {
+  display: flex;
+  flex-direction: row;
+  margin-top: 10px;
+}
+
+.bus-icon-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  > .bus-icon-circle {
+    width: 30px;
+    height: 30px;
+    padding: 5px;
+    border-radius: 50%;
+    background-color: white;
+
+    img {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  > .operator-name {
+    background-color: rgb(255 255 255 / 40%);
+    font-weight: bold;
+  }
+}
+
+.expanded {
+  position: absolute;
+  inset: 0;
+  margin-bottom: 0;
+
+  // Above the sidebar (.ant-layout-sider, z-index 1) and MUI input labels
+  // (z-index 1), which would otherwise paint over the map and steal clicks;
+  // below antd/MUI portal layers (dropdowns/modals, 1050+).
+  z-index: 1000;
+}

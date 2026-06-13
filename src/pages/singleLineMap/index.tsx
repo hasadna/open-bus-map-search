@@ -1,66 +1,100 @@
-import moment from 'moment'
-import { useContext, useEffect, useMemo } from 'react'
+import {
+  CircularProgress,
+  Grid,
+  ToggleButton,
+  ToggleButtonGroup,
+  Tooltip,
+  Typography,
+} from '@mui/material'
+import { useCallback, useContext, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import Grid from '@mui/material/Unstable_Grid2'
-import { CircularProgress, Tooltip } from '@mui/material'
-import Typography from '@mui/material/Typography'
-import { SearchContext } from '../../model/pageState'
-import { NotFound } from '../components/NotFound'
-import '../Map.scss'
+import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone } from 'src/dayjs'
+import { useSingleLineData } from 'src/hooks/useSingleLineData'
+import { GlobalSearchContext } from 'src/model/globalState'
+import LineNumberSelector from 'src/pages/components/LineSelector'
+import OperatorSelector from 'src/pages/components/OperatorSelector'
+import RouteSelector from 'src/pages/components/RouteSelector'
+import VehicleNumberSelector from 'src/pages/components/VehicleSelector'
 import { DateSelector } from '../components/DateSelector'
 import { FilterPositionsByStartTimeSelector } from '../components/FilterPositionsByStartTimeSelector'
-import { PageContainer } from '../components/PageContainer'
 import { MapWithLocationsAndPath } from '../components/map-related/MapWithLocationsAndPath'
+import { NotFound } from '../components/NotFound'
+import { PageContainer } from '../components/PageContainer'
 import InfoYoutubeModal from '../components/YoutubeModal'
-import { INPUT_SIZE } from 'src/resources/sizes'
-import RouteSelector from 'src/pages/components/RouteSelector'
-import OperatorSelector from 'src/pages/components/OperatorSelector'
-import LineNumberSelector from 'src/pages/components/LineSelector'
-import { getRoutesAsync } from 'src/api/gtfsService'
-import { useSingleLineData } from 'src/hooks/useSingleLineData'
 
 const SingleLineMapPage = () => {
-  const { search, setSearch } = useContext(SearchContext)
-  const { operatorId, lineNumber, timestamp, routes, routeKey } = search
+  const { search, setSearch } = useContext(GlobalSearchContext)
+  const { operatorId, lineNumber, vehicleNumber, date, routeKey: searchRouteKey, rideTime } = search
+  const [type, setType] = useState<'routes' | 'vehicle'>(vehicleNumber ? 'vehicle' : 'routes')
   const { t } = useTranslation()
 
-  useEffect(() => {
-    const controller = new AbortController()
-    const signal = controller.signal
-    if (!operatorId || operatorId === '0' || !lineNumber) {
-      setSearch((current) => ({ ...current, routes: undefined, routeKey: undefined }))
-      return
-    }
-
-    getRoutesAsync(moment(timestamp), moment(timestamp), operatorId, lineNumber, signal)
-      .then((routes) =>
-        setSearch((current) =>
-          search.lineNumber === lineNumber ? { ...current, routes: routes } : current,
-        ),
-      )
-      .catch((err) => {
-        console.error(err)
-        setSearch((current) => ({ ...current, routes: undefined, routeKey: undefined }))
-        controller.abort()
-      })
-    return () => controller.abort()
-  }, [operatorId, lineNumber, timestamp])
-
-  const selectedRoute = useMemo(
-    () => routes?.find((route) => route.key === routeKey),
-    [routes, routeKey],
+  const onRouteKeyChange = useCallback(
+    (key: string | null) => setSearch((c) => ({ ...c, routeKey: key })),
+    [setSearch],
   )
-  const selectedRouteIds = selectedRoute?.routeIds
+  const onRideTimeChange = useCallback(
+    (time: string | null) => setSearch((c) => ({ ...c, rideTime: time })),
+    [setSearch],
+  )
 
   const {
     positions,
-    filteredPositions,
     locationsAreLoading,
     options,
     plannedRouteStops,
     startTime,
+    routes,
+    routeKey,
     setStartTime,
-  } = useSingleLineData(selectedRoute?.lineRef, selectedRouteIds)
+  } = useSingleLineData({
+    operatorId: operatorId ?? undefined,
+    lineNumber: lineNumber ?? undefined,
+    vehicleNumber: vehicleNumber ?? undefined,
+    date,
+    routeKey: searchRouteKey,
+    rideTime,
+    onRouteKeyChange,
+    onRideTimeChange,
+  })
+
+  const handleDateChange = (time: dayjs.Dayjs | null) => {
+    setSearch((current) => ({
+      ...current,
+      date: toIsraelTimezone(time ?? dayjs()).format('YYYY-MM-DD'),
+      rideTime: null,
+    }))
+  }
+
+  const handleOperatorChange = (operatorId: string) => {
+    setSearch((current) => ({ ...current, operatorId, rideTime: null }))
+  }
+
+  const handleLineNumberChange = (lineNumber: string) => {
+    setSearch((current) => ({ ...current, lineNumber, rideTime: null }))
+  }
+
+  const handleRouteKeyChange = (routeKey?: string) => {
+    setSearch((current) => ({ ...current, routeKey: routeKey ?? null, rideTime: null }))
+  }
+
+  const handleVehicleNumberChange = (vehicleNumber?: number) => {
+    setSearch((current) => ({ ...current, vehicleNumber: vehicleNumber ?? null, rideTime: null }))
+  }
+
+  const handleTypeChange = (
+    _: React.MouseEvent<HTMLElement>,
+    value: 'routes' | 'vehicle' | null,
+  ) => {
+    if (!value) return
+    setType(value)
+    setSearch((current) =>
+      value === 'routes'
+        ? { ...current, vehicleNumber: null }
+        : value === 'vehicle'
+          ? { ...current, lineNumber: null, routeKey: null }
+          : current,
+    )
+  }
 
   return (
     <PageContainer className="map-container">
@@ -72,71 +106,102 @@ const SingleLineMapPage = () => {
           videoUrl="https://www.youtube-nocookie.com/embed/bXg50_j_hTA?si=inyvqDylStvgNRA6&amp;start=93"
         />
       </Typography>
-      <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
-        <Grid container spacing={2} xs={12}>
+      <Grid container spacing={2}>
+        <Grid container spacing={2} size={{ xs: 12 }}>
           {/* choose date*/}
-          <Grid sm={4} xs={12}>
-            <DateSelector
-              time={moment(timestamp)}
-              onChange={(ts) =>
-                setSearch((current) => ({ ...current, timestamp: ts?.valueOf() ?? Date.now() }))
-              }
-            />
+          <Grid size={{ sm: 4, xs: 12 }}>
+            <DateSelector time={dayjs.tz(date, ISRAEL_TIMEZONE)} onChange={handleDateChange} />
           </Grid>
           {/* choose operator */}
-          <Grid sm={4} xs={12}>
+          <Grid size={{ sm: 4, xs: 12 }}>
             <OperatorSelector
-              operatorId={operatorId}
-              setOperatorId={(id) => setSearch((current) => ({ ...current, operatorId: id }))}
+              operatorId={operatorId ?? undefined}
+              setOperatorId={handleOperatorChange}
+              excludeIsraelRailways
             />
           </Grid>
-          {/* choose line number */}
-          <Grid sm={4} xs={12}>
-            <LineNumberSelector
-              lineNumber={lineNumber}
-              setLineNumber={(number) =>
-                setSearch((current) => ({ ...current, lineNumber: number }))
-              }
-            />
+          <Grid size={{ sm: 4, xs: 12 }}>
+            {/* choose type */}
+            <ToggleButtonGroup
+              value={type}
+              color="primary"
+              onChange={handleTypeChange}
+              sx={{ height: 56 }}
+              exclusive
+              fullWidth>
+              <ToggleButton value="routes">{t('singleline_map_page_route')}</ToggleButton>
+              <ToggleButton value="vehicle">{t('singleline_map_page_vehicle_id')}</ToggleButton>
+            </ToggleButtonGroup>
           </Grid>
         </Grid>
-        <Grid container spacing={2} xs={12} alignContent={'center'}>
-          <Grid sm={6} xs={12}>
-            {/* choose route */}
-            {routes &&
-              (routes.length === 0 ? (
-                <NotFound>{t('line_not_found')}</NotFound>
-              ) : (
-                <RouteSelector
-                  routes={routes}
-                  routeKey={routeKey}
-                  setRouteKey={(key) => setSearch((current) => ({ ...current, routeKey: key }))}
+        <Grid container spacing={2} size={12} sx={{ alignContent: 'center' }}>
+          {type === 'routes' ? (
+            <>
+              {/* choose line number */}
+              <Grid size={{ sm: 4, xs: 12 }}>
+                <LineNumberSelector
+                  disabled={!operatorId}
+                  lineNumber={lineNumber ?? undefined}
+                  setLineNumber={handleLineNumberChange}
                 />
-              ))}
-          </Grid>
+              </Grid>
+              <Grid size={{ sm: 4, xs: 12 }}>
+                {/* choose route */}
+                {routes?.length === 0 ? (
+                  <NotFound>{t('line_not_found')}</NotFound>
+                ) : (
+                  <RouteSelector
+                    disabled={!routes}
+                    routes={routes || []}
+                    routeKey={routeKey}
+                    setRouteKey={handleRouteKeyChange}
+                  />
+                )}
+              </Grid>
+            </>
+          ) : (
+            <>
+              <Grid size={{ sm: 4, xs: 12 }}>
+                {/* choose vehicle number */}
+                <VehicleNumberSelector
+                  disabled={!operatorId}
+                  vehicleNumber={vehicleNumber ?? undefined}
+                  setVehicleNumber={handleVehicleNumberChange}
+                />
+              </Grid>
+            </>
+          )}
           {positions && (
             <>
-              <Grid sm={2} xs={12}>
+              {/* choose start time */}
+              <Grid
+                size={{ sm: type === 'routes' ? 4 : 8, xs: 12 }}
+                container
+                sx={{
+                  alignItems: 'center',
+                  display: 'flex',
+                  gap: 2,
+                  flexWrap: 'nowrap',
+                  justifyContent: 'space-between',
+                }}>
+                <FilterPositionsByStartTimeSelector
+                  options={options}
+                  disabled={!routeKey && !vehicleNumber}
+                  startTime={startTime}
+                  setStartTime={setStartTime}
+                />
                 {locationsAreLoading && (
                   <Tooltip title={t('loading_times_tooltip_content')}>
                     <CircularProgress />
                   </Tooltip>
                 )}
               </Grid>
-              {/* choose start time */}
-              <Grid sm={4} xs={12}>
-                <FilterPositionsByStartTimeSelector
-                  options={options}
-                  startTime={startTime}
-                  setStartTime={setStartTime}
-                />
-              </Grid>
             </>
           )}
         </Grid>
       </Grid>
       <MapWithLocationsAndPath
-        positions={filteredPositions}
+        positions={positions}
         plannedRouteStops={plannedRouteStops}
         showNavigationButtons
       />

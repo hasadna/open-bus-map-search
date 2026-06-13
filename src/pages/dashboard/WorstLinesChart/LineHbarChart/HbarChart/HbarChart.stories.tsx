@@ -1,10 +1,9 @@
-import type { Meta, StoryObj } from '@storybook/react'
-import { HbarChart, Entry } from './HbarChart'
+import type { Meta, StoryObj } from '@storybook/react-vite'
+import { Entry, HbarChart } from './HbarChart'
 
 const meta = {
-  title: 'Components/MapLayers/HbarChart',
+  title: 'Pages/Dashboard/Bar/HbarChart',
   component: HbarChart,
-  tags: ['map', 'tooltip', 'autodocs'],
 } satisfies Meta<typeof HbarChart>
 
 export default meta

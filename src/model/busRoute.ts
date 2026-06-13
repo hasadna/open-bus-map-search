@@ -1,5 +1,5 @@
-import { GtfsRoutePydanticModel } from 'open-bus-stride-client/openapi/models'
-import { strLeftBack } from 'underscore.string'
+import { GtfsRoutePydanticModel } from '@hasadna/open-bus-api-client'
+import { routeStartEnd } from 'src/pages/components/utils/rotueUtils'
 
 export type BusRoute = {
   date: Date
@@ -12,21 +12,23 @@ export type BusRoute = {
   routeIds: number[]
   lineRef: number
   routeAlternative: string
+  mkt: string
 }
 
 export function fromGtfsRoute(gtfsRoute: GtfsRoutePydanticModel): BusRoute {
-  const cleanedName = strLeftBack(gtfsRoute.routeLongName!, '-')
-  const parts = cleanedName.split('<->')
+  const [fromName, toName] = routeStartEnd(gtfsRoute.routeLongName)
+
   return {
     date: gtfsRoute.date,
     operatorId: gtfsRoute.operatorRef.toString(),
     lineNumber: gtfsRoute.routeShortName!,
-    key: gtfsRoute.routeLongName!,
-    fromName: parts[0] || '',
-    toName: parts[1] || '',
+    key: `${gtfsRoute.routeMkt}-${gtfsRoute.routeDirection}-${gtfsRoute.routeAlternative}`,
+    fromName,
+    toName,
     direction: gtfsRoute.routeDirection!,
     routeIds: [gtfsRoute.id],
     lineRef: gtfsRoute.lineRef,
     routeAlternative: gtfsRoute.routeAlternative!,
+    mkt: gtfsRoute.routeMkt!,
   }
 }

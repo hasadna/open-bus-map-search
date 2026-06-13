@@ -1,14 +1,14 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import './index.css'
-import ReactGA from 'react-ga4'
-import './locale/allTranslations'
+import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister'
 import { QueryClient } from '@tanstack/react-query'
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client'
-import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister'
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import ReactGAImport from 'react-ga4'
 import App from './App'
+import './locale/allTranslations'
+import './index.scss'
 
-const persister = createSyncStoragePersister({
+const persister = createAsyncStoragePersister({
   storage: window.localStorage,
 })
 
@@ -24,7 +24,16 @@ const queryClient = new QueryClient({
   },
 })
 
-ReactGA.initialize('G-0YRQT80GG1')
+// react-ga4's default export is nested under `.default` under some CJS/ESM interop
+// (e.g. Vite/Rolldown), so unwrap it to keep the shared singleton.
+const ReactGA =
+  (ReactGAImport as unknown as { default?: typeof ReactGAImport }).default ?? ReactGAImport
+
+try {
+  ReactGA.initialize('G-0YRQT80GG1')
+} catch (e) {
+  console.error('Failed to initialize Google Analytics', e)
+}
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(

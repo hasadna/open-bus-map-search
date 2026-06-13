@@ -1,89 +1,133 @@
-import { useCallback, useEffect } from 'react'
-import 'leaflet/dist/leaflet.css'
-import { useSearchParams } from 'react-router-dom'
-import moment from 'moment'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import ReactGAImport from 'react-ga4'
+import { useLocation, useSearchParams } from 'react-router'
 import { useSessionStorage } from 'usehooks-ts'
-import { useLocation } from 'react-router-dom'
-import ReactGA from 'react-ga4'
-import { CacheProvider } from '@emotion/react'
-import createCache from '@emotion/cache'
-import rtlPlugin from 'stylis-plugin-rtl'
-import 'moment/locale/he'
-import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
-import { LocalizationProvider } from '@mui/x-date-pickers'
-import { PageSearchState, SearchContext } from '../model/pageState'
-import { ThemeProvider } from '../layout/ThemeContext'
-import { PAGES } from '../routes'
 import { MainLayout } from '../layout'
+import { ThemeProvider } from '../layout/ThemeContext'
+import {
+  GLOBAL_SEARCH_DEFAULTS,
+  GlobalSearchContext,
+  GlobalSearchState,
+  isValidSearchDate,
+} from '../model/globalState'
+import { ExtraShareParamsContext, InitialUrlParamsContext } from '../model/routeContext'
 
-// Create rtl cache
-const cacheRtl = createCache({
-  key: 'muirtl',
-  stylisPlugins: [rtlPlugin],
-})
+// react-ga4's default export is nested under `.default` under some CJS/ESM interop
+// (e.g. Vite/Rolldown), so unwrap it to keep the shared singleton.
+const ReactGA =
+  (ReactGAImport as unknown as { default?: typeof ReactGAImport }).default ?? ReactGAImport
 
 export const MainRoute = () => {
-  const location = useLocation()
-  const [searchParams, setSearchParams] = useSearchParams()
-  const operatorId = searchParams.get('operatorId')
-  const lineNumber = searchParams.get('lineNumber')
-  const routeKey = searchParams.get('routeKey')
-  const timestamp = searchParams.get('timestamp')
+  const { pathname, search: locationParams } = useLocation()
+  const [, setSearchParams] = useSearchParams()
 
   useEffect(() => {
-    ReactGA.send({ hitType: 'pageview', page: location.pathname + location.search })
-  }, [location])
+    try {
+      ReactGA.send({ hitType: 'pageview', page: pathname + locationParams })
+    } catch (e) {
+      console.error('Failed to initialize Google Analytics', e)
+    }
+  }, [pathname, locationParams])
 
-  const [search, setSearch] = useSessionStorage<PageSearchState>('search', {
-    timestamp: +timestamp! || moment().valueOf(),
-    operatorId: operatorId || '',
-    lineNumber: lineNumber || '',
-    routeKey: routeKey || '',
+  // Capture URL params synchronously on mount, before they are stripped.
+  // useMemo with [] deps runs once and the value is stable — available to lazy-loaded
+  // child pages via InitialUrlParamsContext even after the address bar is cleaned up.
+  const initialUrlParams = useMemo<Record<string, string>>(() => {
+    const result: Record<string, string> = {}
+    new URLSearchParams(window.location.search).forEach((v, k) => {
+      result[k] = v
+    })
+    return result
+  }, [])
+
+  // Parse the captured URL params into GlobalSearchContext fields
+  const urlState = useMemo<Partial<GlobalSearchState>>(() => {
+    const p = initialUrlParams
+    // Accept 'rideTime' (new) or 'startTime' (old shared links) for backward compat.
+    // 'startTime' is the previous name of the ride-departure token ("HH:mm", hour may
+    // exceed 23 for past-midnight rides) — unrelated to the retired epoch 'timestamp' param.
+    const rideTime = p.rideTime ?? p.startTime ?? undefined
+    return {
+      ...(isValidSearchDate(p.date) ? { date: p.date } : {}),
+      ...(p.operatorId ? { operatorId: p.operatorId } : {}),
+      ...(p.lineNumber ? { lineNumber: p.lineNumber } : {}),
+      ...(p.vehicleNumber ? { vehicleNumber: Number(p.vehicleNumber) } : {}),
+      ...(p.routeKey ? { routeKey: p.routeKey } : {}),
+      ...(rideTime ? { rideTime } : {}),
+      ...(p.stopKey ? { stopKey: p.stopKey } : {}),
+    }
+  }, [])
+
+  // A pre-migration 'search' entry stored `timestamp: number` and no `date`, so the
+  // isValidSearchDate fallback below resets its date — reusing the key is safe.
+  const [storedSearch, setSearch] = useSessionStorage<GlobalSearchState>('search', {
+    ...GLOBAL_SEARCH_DEFAULTS,
+    ...urlState,
   })
 
+  // A stored date that no longer parses (stale format, manual edit) falls back
+  // to the default day instead of propagating an invalid date to every page.
+  const search = useMemo<GlobalSearchState>(
+    () =>
+      isValidSearchDate(storedSearch.date)
+        ? storedSearch
+        : { ...storedSearch, date: GLOBAL_SEARCH_DEFAULTS.date },
+    [storedSearch],
+  )
+
+  // Also repair the stored value itself — otherwise the corrupt date sits in
+  // session storage forever and every functional setSearch spreads it back in.
+  // Only `date` is touched (functional update) so this can't clobber the
+  // urlState effect below regardless of effect ordering.
   useEffect(() => {
-    const page = PAGES.find((page) => page.path === location.pathname)
-    if (page && 'searchParamsRequired' in page && page.searchParamsRequired) {
-      const params = new URLSearchParams({
-        timestamp: search.timestamp?.toString(),
-      })
-
-      if (search.operatorId) {
-        params.set('operatorId', search.operatorId)
-      }
-      if (search.lineNumber) {
-        params.set('lineNumber', search.lineNumber)
-      }
-      if (search.routeKey) {
-        params.set('routeKey', search.routeKey)
-      }
-      setSearchParams(params)
+    if (!isValidSearchDate(storedSearch.date)) {
+      setSearch((current) =>
+        isValidSearchDate(current.date)
+          ? current
+          : { ...current, date: GLOBAL_SEARCH_DEFAULTS.date },
+      )
     }
-  }, [
-    search.lineNumber,
-    search.operatorId,
-    search.routeKey,
-    search.timestamp,
-    location.pathname,
-    setSearchParams,
-  ])
+  }, [storedSearch.date])
 
-  const safeSetSearch = useCallback((mutate: (prevState: PageSearchState) => PageSearchState) => {
-    setSearch((current: PageSearchState) => {
-      const newSearch = mutate(current)
-      return newSearch
-    })
+  // If session storage already had values, urlState was ignored above — apply it now.
+  // This ensures shared links always override stale session state.
+  useEffect(() => {
+    if (Object.keys(urlState).length > 0) {
+      setSearch((current) => ({ ...current, ...urlState }))
+    }
+  }, [])
+
+  // Strip URL params from the address bar after they've seeded state.
+  // Params are only generated on-demand (Share button); they should never linger.
+  useEffect(() => {
+    if (locationParams) {
+      setSearchParams({}, { replace: true })
+    }
+  }, [locationParams, setSearchParams])
+
+  const [extraShareParams, setExtraShareParams] = useState<Record<string, string>>({})
+
+  const safeSetSearch = useCallback(
+    (mutate: (prevState: GlobalSearchState) => GlobalSearchState) => {
+      setSearch((current: GlobalSearchState) => mutate(current))
+    },
+    [],
+  )
+
+  const setExtraShareParamsStable = useCallback((params: Record<string, string>) => {
+    setExtraShareParams(params)
   }, [])
 
   return (
-    <SearchContext.Provider value={{ search, setSearch: safeSetSearch }}>
-      <CacheProvider value={cacheRtl}>
-        <LocalizationProvider dateAdapter={AdapterMoment} adapterLocale="he">
+    <InitialUrlParamsContext.Provider value={initialUrlParams}>
+      <ExtraShareParamsContext.Provider
+        value={{ params: extraShareParams, setParams: setExtraShareParamsStable }}>
+        <GlobalSearchContext.Provider value={{ search, setSearch: safeSetSearch }}>
           <ThemeProvider>
             <MainLayout />
           </ThemeProvider>
-        </LocalizationProvider>
-      </CacheProvider>
-    </SearchContext.Provider>
+        </GlobalSearchContext.Provider>
+      </ExtraShareParamsContext.Provider>
+    </InitialUrlParamsContext.Provider>
   )
 }

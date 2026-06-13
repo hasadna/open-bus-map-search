@@ -1,15 +1,17 @@
-# Security Policy
+## 🔒 Security Policy
 
-First of all, thank you! The fast you're here reading this tells what a great person you are. We truly appreciate your commitment toward a safer web for everyone.
+Thank you for helping us keep this project safe! 🌍  
+We appreciate your commitment to a more secure web.
 
-## Supported Versions
+## ✅ Supported Versions
 
-Latest - since only the latest version is deployed to production, please avoid submitting security disclousers on older releases
+Only the **latest release** is supported, as that’s what’s deployed to production.  
+Please avoid reporting issues on outdated versions.
 
-## Reporting a Vulnerability
+## 📢 Reporting a Vulnerability
 
-Please contact us on info@hasadna.org.il
-We appreciate responsible coordinated disclosures.
-If you didn't recieve any update within a week, or it's an urgent matter we should immidiatly fix, please send a copy to noam.gaash@gmail.com.
+1. Email **info@hasadna.org.il**
+2. If urgent or no response in 7 days → CC **noam.gaash@gmail.com**
+3. Please use **responsible, coordinated disclosure**
 
-Thank you
+Thank you for keeping the project safe! 🛡️

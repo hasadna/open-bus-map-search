@@ -1,7 +1,7 @@
-import { useState } from 'react'
-// import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'; //TODO:
 import { InfoCircleOutlined } from '@ant-design/icons'
+import { Typography } from '@mui/material'
 import { Modal } from 'antd'
+import { useState } from 'react'
 import './YotubeModal.scss'
 
 type InfoYoutubeModalProps = {
@@ -23,14 +23,19 @@ const InfoYoutubeModal = ({ videoUrl, label, title }: InfoYoutubeModalProps) => 
       <Modal
         width={'1000px'}
         footer={null}
-        title={title}
+        styles={{
+          container: { borderRadius: '12px' },
+        }}
         open={visible}
-        destroyOnClose={true}
+        destroyOnHidden={true}
         onCancel={() => {
           setVisible(false)
         }}>
+        <Typography variant="h2" sx={{ fontSize: '28px', fontWeight: 'bold', marginBottom: 1.5 }}>
+          {title}
+        </Typography>
         <div className="modal-iframe-container">
-          <iframe allowFullScreen src={videoUrl} />
+          <iframe allowFullScreen src={videoUrl} title={title} />
         </div>
       </Modal>
     </>

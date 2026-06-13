@@ -1,10 +1,10 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
     "paths": {
-      "src/*": ["./src/*"]
+      "src/*": ["./src/*"],
+      "tests/*": ["./tests/*"]
     },
-    "target": "ESNext",
+    "target": "esnext",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": false,
     "skipLibCheck": true,
@@ -14,12 +14,12 @@
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "types": ["vite/client", "vitest/globals", "vite-plugin-svgr/client", "node"]
+    "types": ["vite/client", "node"]
   },
   "include": [
     "src",
@@ -28,8 +28,7 @@
     "tests",
     "setupTests.ts",
     "playwright.config.ts",
-    ".storybook/preview.tsx",
-    ".storybook/main.ts",
-    "jest.config.ts"
+    ".storybook/*",
+    "*.cjs"
   ]
 }

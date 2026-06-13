@@ -1,0 +1,101 @@
+import { Stack } from '@mui/material'
+import { useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
+import { Cell, Pie, PieChart } from 'recharts'
+import { useGroupBy } from 'src/api/groupByService'
+import dayjs, { ISRAEL_TIMEZONE } from 'src/dayjs'
+import SkeletonLoader from 'src/shared/SkeletonLoader'
+import Widget from 'src/shared/Widget'
+import { InfoItem, InfoTable } from '../components/InfoTable'
+
+export const OperatorGaps = ({
+  operatorId,
+  date,
+  timeRange = 'day',
+}: {
+  operatorId?: string
+  date?: string
+  timeRange?: 'day' | 'week' | 'month' | 'year'
+}) => {
+  const { t, i18n } = useTranslation()
+  const dateDayjs = date ? dayjs.tz(date, ISRAEL_TIMEZONE) : dayjs()
+  const [groupByOperatorData, isLoading] = useGroupBy({
+    dateFrom: dateDayjs.subtract(1, timeRange),
+    dateTo: dateDayjs,
+    groupBy: 'operator_ref',
+  })
+
+  const data = useMemo(() => {
+    const operator = groupByOperatorData?.find(
+      (d) => d.operatorRef?.operatorRef.toString() === operatorId,
+    )
+    if (!operator) return []
+
+    const missing = operator?.totalPlannedRides - operator?.totalActualRides
+    return [
+      { name: t('rides_planned'), value: operator?.totalPlannedRides },
+      { name: t('rides_actual'), value: operator?.totalActualRides, color: '#00C49F' },
+      { name: t('rides_missing'), value: missing, color: '#FF4040' },
+      // { name: t('ride_extra'), value: 0, color: '#FFBB28' },
+    ]
+  }, [operatorId, date, groupByOperatorData, i18n.language])
+
+  const prefersReducedMotion = useMemo(() => {
+    return window?.matchMedia('(prefers-reduced-motion: reduce)').matches
+  }, [])
+
+  return (
+    <Widget title={`${t('operator.statistics')} ${t(`operator.time_range.${timeRange}`)}`}>
+      {isLoading ? (
+        <SkeletonLoader active rows={2} />
+      ) : (
+        <Stack sx={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          <div>
+            <InfoTable>
+              {data.map((d) => (
+                <InfoItem key={d.name} label={d.name} value={d.value} />
+              ))}
+            </InfoTable>
+          </div>
+
+          <PieChart width={160} height={160}>
+            <Pie
+              isAnimationActive={!prefersReducedMotion}
+              data={data.filter((data) => data?.color)}
+              innerRadius={65}
+              outerRadius={80}
+              paddingAngle={3}
+              dataKey="value">
+              {data
+                .filter((data) => data?.color)
+                .map((entry) => (
+                  <Cell key={entry.name} fill={entry.color} />
+                ))}
+            </Pie>
+            <text
+              x="50%"
+              y="50%"
+              textAnchor="middle"
+              dominantBaseline="middle"
+              fill="currentColor"
+              fontSize="32"
+              fontWeight={500}>
+              {calculatePercentage(data[1]?.value, data[2]?.value)}
+            </text>
+          </PieChart>
+        </Stack>
+      )}
+    </Widget>
+  )
+}
+
+const calculatePercentage = (
+  planned: number | undefined = 0,
+  missing: number | undefined = 0,
+  extra: number | undefined = 0,
+) => {
+  const total = planned + missing + extra
+  if (total === 0) return ''
+  const percentage = ((planned + extra) / total) * 100
+  return `${percentage.toFixed(1)}%`
+}

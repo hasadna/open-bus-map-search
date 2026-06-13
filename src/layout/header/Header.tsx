@@ -1,14 +1,15 @@
-import { Layout } from 'antd'
-import { useContext } from 'react'
 import { MenuOutlined } from '@ant-design/icons'
+import { Layout } from 'antd'
 import cn from 'classnames'
+import { useContext } from 'react'
 import { LayoutContextInterface, LayoutCtx } from '../LayoutContext'
 import { useTheme } from '../ThemeContext'
-import './Header.css'
-import ToggleThemeButton from './ToggleThemeButton'
 import { DonationButton } from './DonationButton'
 import HeaderLinks from './HeaderLinks/HeaderLinks'
-import { LanguageToggle } from './LanguageToggle'
+import { LanguageToggleButton } from './LanguageToggleButton'
+import { ShareButton } from './ShareButton'
+import ToggleThemeButton from './ToggleThemeButton'
+import './Header.css'
 
 const { Header } = Layout
 
@@ -19,7 +20,8 @@ const MainHeader = () => {
     <Header className={cn('main-header', { dark: isDarkTheme })}>
       <MenuOutlined onClick={() => setDrawerOpen(true)} className="hideOnDesktop" />
       <HeaderLinks>
-        <LanguageToggle />
+        <ShareButton />
+        <LanguageToggleButton />
         <ToggleThemeButton toggleTheme={toggleTheme} isDarkTheme={isDarkTheme} />
         <DonationButton />
       </HeaderLinks>

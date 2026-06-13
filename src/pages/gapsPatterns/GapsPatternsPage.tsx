@@ -1,64 +1,68 @@
+import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
+import { Radio, RadioChangeEvent, Space } from 'antd'
 import { useContext, useEffect, useState } from 'react'
-import './GapsPatternsPage.scss'
-import { Moment } from 'moment'
-import { Skeleton, Radio, RadioChangeEvent, Space } from 'antd'
-import CircularProgress from '@mui/material/CircularProgress'
-import moment from 'moment/moment'
-import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
-import Typography from '@mui/material/Typography'
-import Alert from '@mui/material/Alert'
+import { useTranslation } from 'react-i18next'
 import {
   Bar,
   CartesianGrid,
+  Cell,
+  ComposedChart,
   Legend,
+  ResponsiveContainer,
   Tooltip,
+  TooltipContentProps,
   XAxis,
   YAxis,
-  ComposedChart,
-  Cell,
-  TooltipProps,
-  ResponsiveContainer,
 } from 'recharts'
-import { useTranslation } from 'react-i18next'
-import { useDate } from '../components/DateTimePicker'
-import { PageContainer } from '../components/PageContainer'
-import { Row } from '../components/Row'
+import dayjs from 'src/dayjs'
+import { useDate } from 'src/hooks/useDate'
+import { GlobalSearchContext } from 'src/model/globalState'
+import { ExtraShareParamsContext, InitialUrlParamsContext } from 'src/model/routeContext'
+import { INPUT_SIZE } from 'src/resources/sizes'
+import SkeletonLoader from 'src/shared/SkeletonLoader'
+import Widget from 'src/shared/Widget'
+import { getRoutesAsync } from '../../api/gtfsService'
+import { BusRoute } from '../../model/busRoute'
+import { DateSelector } from '../components/DateSelector'
 import { Label } from '../components/Label'
-import OperatorSelector from '../components/OperatorSelector'
 import LineNumberSelector from '../components/LineSelector'
 import { NotFound } from '../components/NotFound'
+import OperatorSelector from '../components/OperatorSelector'
+import { PageContainer } from '../components/PageContainer'
 import RouteSelector from '../components/RouteSelector'
-import { SearchContext } from '../../model/pageState'
-import { getRoutesAsync } from '../../api/gtfsService'
-
+import { Row } from '../components/Row'
 import { mapColorByExecution } from '../components/utils'
-import { DateSelector } from '../components/DateSelector'
 import InfoYoutubeModal from '../components/YoutubeModal'
 import { useGapsList } from './useGapsList'
-import { INPUT_SIZE } from 'src/resources/sizes'
-import Widget from 'src/shared/Widget'
-// Define prop types for the component
+import './GapsPatternsPage.scss'
+
 interface BusLineStatisticsProps {
   lineRef: number
   operatorRef: string
-  fromDate: Moment
-  toDate: Moment
+  fromDate: dayjs.Dayjs
+  toDate: dayjs.Dayjs
 }
 
-const now = moment()
+const now = dayjs()
 
-const CustomTooltip = ({ active, payload }: TooltipProps<number, string>) => {
+const CustomTooltip = ({ active, payload }: TooltipContentProps) => {
+  const { t } = useTranslation()
   if (active && payload && payload.length > 1) {
-    const actualRides = payload[0].value || 0
-    const plannedRides = payload[1].value || 0
-    const actualPercentage = ((actualRides / plannedRides) * 100).toFixed(0)
+    const actualRides = Number(payload[0].value)
+    const plannedRides = Number(payload[1].value)
+    const actualPercentage =
+      plannedRides > 0 ? ((actualRides / plannedRides) * 100).toFixed(0) : '0'
+
     return (
       <div className="custom-tooltip tooltip-style">
-        {` בוצעו ${actualPercentage}% מהנסיעות (${actualRides}/${plannedRides})`}
+        {t('gaps_tooltip_rides_executed', {
+          percentage: actualPercentage,
+          actual: actualRides,
+          planned: plannedRides,
+        })}
       </div>
     )
   }
-
   return null
 }
 
@@ -74,9 +78,9 @@ function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatistic
 
   return (
     lineRef > 0 && (
-      <Widget>
+      <Widget marginBottom>
         {isLoading && lineRef ? (
-          <Skeleton active />
+          <SkeletonLoader active />
         ) : (
           <>
             <Radio.Group
@@ -123,7 +127,7 @@ function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatistic
                   orientation={'right'}
                   style={{ direction: 'ltr', marginTop: '-10px' }}
                 />
-                <Tooltip content={<CustomTooltip />} />
+                <Tooltip content={CustomTooltip} />
                 <Legend />
                 <Bar dataKey="actual_rides" barSize={20} radius={9} xAxisId={1} opacity={30}>
                   {hourlyData.map((entry, index) => (
@@ -144,23 +148,43 @@ function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatistic
 }
 
 const GapsPatternsPage = () => {
-  const [startDate, setStartDate] = useDate(now.clone().subtract(7, 'days'))
-  const [endDate, setEndDate] = useDate(now.clone().subtract(1, 'day'))
-  const { search, setSearch } = useContext(SearchContext)
-  const { operatorId, lineNumber, routes, routeKey } = search
+  const initialUrlParams = useContext(InitialUrlParamsContext)
+
+  const [startDate, setStartDate] = useDate(
+    initialUrlParams.startDate
+      ? dayjs(initialUrlParams.startDate)
+      : now.clone().subtract(7, 'days'),
+  )
+  const [endDate, setEndDate] = useDate(
+    initialUrlParams.endDate ? dayjs(initialUrlParams.endDate) : now.clone().subtract(1, 'day'),
+  )
+  const { search, setSearch } = useContext(GlobalSearchContext)
+  const { setParams } = useContext(ExtraShareParamsContext)
+
+  useEffect(() => {
+    setParams({
+      startDate: startDate.toISOString(),
+      endDate: endDate.toISOString(),
+    })
+    return () => setParams({})
+  }, [startDate, endDate, setParams])
+  const { operatorId, lineNumber, routeKey } = search
+  const [routes, setRoutes] = useState<BusRoute[] | undefined>()
   const [routesIsLoading, setRoutesIsLoading] = useState(false)
   const { t } = useTranslation()
 
   const loadSearchData = async (signal: AbortSignal | undefined) => {
     setRoutesIsLoading(true)
-    const routes = await getRoutesAsync(
-      moment(startDate),
-      moment(endDate),
-      operatorId as string,
-      lineNumber as string,
+    const fetchedRoutes = await getRoutesAsync(
+      dayjs(startDate),
+      dayjs(endDate),
+      operatorId ?? undefined,
+      lineNumber ?? undefined,
       signal,
     )
-    setSearch((current) => (search.lineNumber === lineNumber ? { ...current, routes } : current))
+    if (search.lineNumber === lineNumber) {
+      setRoutes(fetchedRoutes)
+    }
     setRoutesIsLoading(false)
   }
 
@@ -168,7 +192,8 @@ const GapsPatternsPage = () => {
     const controller = new AbortController()
     const signal = controller.signal
     if (!operatorId || operatorId === '0' || !lineNumber) {
-      setSearch((current) => ({ ...current, routeKey: undefined, routes: undefined }))
+      setSearch((current) => ({ ...current, routeKey: null }))
+      setRoutes(undefined)
       return
     }
     loadSearchData(signal)
@@ -196,25 +221,23 @@ const GapsPatternsPage = () => {
         </Alert>
       ) : null}
 
-      <Grid container spacing={2} alignItems="center" sx={{ maxWidth: INPUT_SIZE }}>
-        <Grid sm={4} className="hideOnMobile">
+      <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE, alignItems: 'center' }}>
+        <Grid size={{ xs: 12, sm: 4 }} className="hideOnMobile">
           <Label text={t('choose_dates')} />
         </Grid>
         <Grid
           container
+          size={{ xs: 12, sm: 8 }}
           spacing={2}
-          xs={12}
-          sm={8}
-          alignItems="center"
-          justifyContent="space-between">
-          <Grid xs={6}>
+          sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
+          <Grid size={{ xs: 6 }}>
             <DateSelector
               time={startDate}
               onChange={(data) => setStartDate(data)}
               customLabel={t('start')}
             />
           </Grid>
-          <Grid xs={6}>
+          <Grid size={{ xs: 6 }}>
             <DateSelector
               time={endDate}
               onChange={(data) => setEndDate(data)}
@@ -224,25 +247,25 @@ const GapsPatternsPage = () => {
           </Grid>
         </Grid>
 
-        <Grid xs={4} className="hideOnMobile">
+        <Grid size={{ xs: 12, sm: 4 }} className="hideOnMobile">
           <Label text={t('choose_operator')} />
         </Grid>
-        <Grid xs={12} sm={8}>
+        <Grid size={{ xs: 12, sm: 8 }}>
           <OperatorSelector
-            operatorId={operatorId}
+            operatorId={operatorId ?? undefined}
             setOperatorId={(id) => setSearch((current) => ({ ...current, operatorId: id }))}
           />
         </Grid>
-        <Grid xs={4} className="hideOnMobile">
+        <Grid size={{ xs: 12, sm: 4 }} className="hideOnMobile">
           <Label text={t('choose_line')} />
         </Grid>
-        <Grid xs={12} sm={8}>
+        <Grid size={{ xs: 12, sm: 8 }}>
           <LineNumberSelector
-            lineNumber={lineNumber}
+            lineNumber={lineNumber ?? undefined}
             setLineNumber={(number) => setSearch((current) => ({ ...current, lineNumber: number }))}
           />
         </Grid>
-        <Grid xs={12}>
+        <Grid size={{ xs: 12 }}>
           {routesIsLoading && (
             <Row>
               <Label text={t('loading_routes')} />
@@ -257,14 +280,16 @@ const GapsPatternsPage = () => {
               <>
                 <RouteSelector
                   routes={routes}
-                  routeKey={routeKey}
-                  setRouteKey={(key) => setSearch((current) => ({ ...current, routeKey: key }))}
+                  routeKey={routeKey ?? undefined}
+                  setRouteKey={(key) =>
+                    setSearch((current) => ({ ...current, routeKey: key ?? null }))
+                  }
                 />
               </>
             ))}
         </Grid>
       </Grid>
-      <Grid xs={12}>
+      <Grid size={{ xs: 12 }}>
         <GapsByHour
           lineRef={routes?.find((route) => route.key === routeKey)?.lineRef || 0}
           operatorRef={operatorId || ''}

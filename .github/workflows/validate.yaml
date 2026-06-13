@@ -4,163 +4,318 @@ on:
   pull_request:
     branches: [main]
   push:
-    branches: main
+    branches: [main]
+
+permissions:
+  contents: read
+  statuses: write
 
 env:
   DOCKER_APP_IMAGE_NAME: 'ghcr.io/hasadna/open-bus-map-search/open-bus-map-search'
   DOCKER_APP_IMAGE_TAG: 'latest'
+  APPLITOOLS_API_KEY: ${{ secrets.APPLITOOLS_API_KEY }}
+  APPLITOOLS_BATCH_ID: ${{ github.event.pull_request.head.sha }}
+  APPLITOOLS_LOG_DIR: ./logs
+  APPLITOOLS_SHOW_LOGS: true
 
 jobs:
   local-tests:
+    name: Local Tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
-          node-version: 18
-      - name: make sure no yarn.json is added
+          node-version: 24
+          cache: 'npm'
+      - name: Check for yarn.json
         run: |
-            if [ -f yarn.json ]; then
-                echo "::error file=yarn.json::yarn.json is being added"
-                exit 1
-            fi
-      - name: make sure no package-lock.json is removed
+          if [ -f yarn.json ]; then
+              echo "::error file=yarn.json::yarn.json is being added"
+              exit 1
+          fi
+      - name: Ensure package-lock.json exists
         run: |
-            if [ ! -f package-lock.json ]; then
-                echo "::error file=package-lock.json::package-lock.json is being removed"
-                exit 1
-            fi
-      - name: make sure package-lock.json is updated
+          if [ ! -f package-lock.json ]; then
+              echo "::error file=package-lock.json::package-lock.json is being removed"
+              exit 1
+          fi
+      - name: Validate package-lock.json is updated
         run: |
-            if ! npm ci; then
-                echo "::error file=package-lock.json::package-lock.json is not updated"
-                exit 1
-            fi
-      - name: lint
+          if ! npm ci; then
+              echo "::error file=package-lock.json::package-lock.json is not updated"
+              exit 1
+          fi
+      - name: Run linter
         run: npm run lint
-      - name: madge
+      - name: Check for circular dependencies
         run: npx madge --extensions js,ts --circular .
-      - name: unit tests
-        run: npm run test:unit
+
   build:
+    name: Docker Build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      - name: Build and Export Docker image
-        uses: docker/build-push-action@v2
+      - uses: actions/checkout@v6
+      - name: Generate hash.txt with commit hash
+        run: echo "$(git rev-parse --short HEAD)" >> public/hash.txt
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v4
+      - name: Build and export Docker image
+        uses: docker/build-push-action@v7
         with:
           context: .
           tags: ${{ env.DOCKER_APP_IMAGE_NAME }}:${{ env.DOCKER_APP_IMAGE_TAG }}
           outputs: type=docker, dest=/tmp/docker-image.tar
-      - name: Save Docker image
-        uses: actions/upload-artifact@v4
+      - name: Upload Docker image artifact
+        uses: actions/upload-artifact@v7
         with:
           name: docker-image
           path: /tmp/docker-image.tar
-  test:
+
+  build-outside-docker:
+    name: Node.js Build
     runs-on: ubuntu-latest
-    needs: build
-    env:
-      APPLITOOLS_API_KEY: ${{ secrets.APPLITOOLS_API_KEY }}
-      APPLITOOLS_LOG_DIR: ./logs
-      APPLITOOLS_SHOW_LOGS: true
     steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
+      - name: Build application
+        run: npm run build
+      - name: Build Storybook
+        run: npm run build-storybook
+
+  test:
+    name: Application & Playwright Tests
+    runs-on: ubuntu-latest
+    needs: [build, build-outside-docker]
+    steps:
+      - name: Set timezone
+        run: echo "TZ=Asia/Jerusalem" >> $GITHUB_ENV
+      - name: Download Docker image artifact
+        uses: actions/download-artifact@v8
         with:
           name: docker-image
           path: /tmp
-      - name: Load image
+      - name: Load Docker image
         run: docker load -i /tmp/docker-image.tar
-      - name: Run application
+      - name: Start application container
         run: docker run -d -p 3000:80 ${{ env.DOCKER_APP_IMAGE_NAME }}:${{ env.DOCKER_APP_IMAGE_TAG }}
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
         with:
           ref: ${{ github.event.pull_request.head.sha }}
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v6
         with:
-          node-version: 18
-      - name: Run install
+          node-version: 24
+          cache: 'npm'
+      - name: Configure blocked external hosts
+        uses: ./.github/actions/block-network
+      - name: Validate hash.txt endpoint
+        run: |
+          response=$(curl -s -w "%{http_code}" -o /tmp/hash.txt http://localhost:3000/hash.txt)
+          http_code=${response: -3}
+          if [ "$http_code" -ne 200 ]; then
+            echo "Error: HTTP request failed with status code $http_code"
+            exit 1
+          fi
+          mime_type=$(file --mime-type -b /tmp/hash.txt)
+          if [ "$mime_type" != "text/plain" ]; then
+            echo "Error: hash.txt does not have MIME type text/plain. Found: $mime_type"
+            exit 1
+          fi
+          content_length=$(wc -c < /tmp/hash.txt | xargs)
+          if [ "$content_length" -ge 100 ]; then
+            echo "Error: hash.txt content exceeds 100 characters. Length: $content_length"
+            exit 1
+          fi
+          echo "hash.txt is valid with MIME type $mime_type and length $content_length characters."
+      - name: Install Dependencies and Playwright
         run: npm ci
-      - run: npx playwright install
-      - name: Run test
+      - name: Resolve Playwright cache key inputs
+        id: playwright-version
+        run: |
+          echo "version=$(node -p 'require("@playwright/test/package.json").version')" >> "$GITHUB_OUTPUT"
+          echo "imageos=$ImageOS" >> "$GITHUB_OUTPUT"
+      - name: Cache Playwright browsers
+        uses: actions/cache@v5
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-${{ runner.arch }}-${{ steps.playwright-version.outputs.imageos }}-playwright-${{ steps.playwright-version.outputs.version }}
+      - name: Install Playwright browser dependencies
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        timeout-minutes: 15
+        run: npx playwright install chromium
+      - name: Run Playwright tests
         run: npm test
-      - name: Run Storybook tests
-        if: env.APPLITOOLS_API_KEY
-        run: npx -y @applitools/eyes-storybook --storybook-url http://localhost:3000/storybook/index.html
-      - name: Prepare playwright artifact directory
+      - name: Prepare Playwright artifact directory
         if: always()
         run: |
           mkdir -p playwright-artifact
-          cp -r test-results/* playwright-artifact/
-          cp -r playwright-report/* playwright-artifact/
-      - name: upload combined playwright artifact
+          if [ -d test-results ]; then cp -r test-results/* playwright-artifact/; fi
+          if [ -d playwright-report ]; then cp -r playwright-report/* playwright-artifact/; fi
+          touch playwright-artifact/.keep
+      - name: Upload Playwright test artifact
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
-          name: playwright
+          name: playwright-test
           path: playwright-artifact
-      - name: upload logs if exists
+      - name: Upload logs if exists
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
-          name: logs
+          name: logs-test
           path: logs
           if-no-files-found: warn
 
+  storybook-test:
+    name: Storybook Visual Tests
+    runs-on: ubuntu-22.04 # not working whit ubuntu 23+
+    needs: [build, build-outside-docker]
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Configure blocked external hosts
+        uses: ./.github/actions/block-network
+      - name: Prepare for Testing
+        run: |
+          echo "SHORT_SHA=$(echo ${{ github.event.pull_request.head.sha }} | cut -c1-7)" >> $GITHUB_ENV
+      - name: Download Docker image artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: docker-image
+          path: /tmp
+      - name: Load Docker image
+        run: docker load -i /tmp/docker-image.tar
+      - name: Start application container
+        run: docker run -d -p 3000:80 ${{ env.DOCKER_APP_IMAGE_NAME }}:${{ env.DOCKER_APP_IMAGE_TAG }}
+      - run: export APPLITOOLS_SHOW_LOGS=true && export APPLITOOLS_LOG_DIR=./logs
+      - run: npm i -g @applitools/eyes-storybook
+      - name: Run Storybook visual tests
+        if: env.APPLITOOLS_API_KEY
+        env:
+          APPLITOOLS_BATCH_NAME: open-bus-map-search/${{ github.ref }}/${{ env.SHORT_SHA }}/storybook
+        run: npm run test:storybook -- --storybook-url http://localhost:3000/storybook/index.html
+      - name: Upload logs if exists
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: logs-storybook-test
+          path: logs
+          if-no-files-found: warn
+
+  visual-test:
+    name: Playwright Visual Tests
+    runs-on: ubuntu-latest
+    needs: [build, build-outside-docker]
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Configure blocked external hosts
+        uses: ./.github/actions/block-network
+      - name: Prepare for Testing
+        run: |
+          echo "SHORT_SHA=$(echo ${{ github.event.pull_request.head.sha }} | cut -c1-7)" >> $GITHUB_ENV
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: 'npm'
+      - name: Install Dependencies and Playwright
+        run: npm ci
+      - name: Resolve Playwright cache key inputs
+        id: playwright-version
+        run: |
+          echo "version=$(node -p 'require("@playwright/test/package.json").version')" >> "$GITHUB_OUTPUT"
+          echo "imageos=$ImageOS" >> "$GITHUB_OUTPUT"
+      - name: Cache Playwright browsers
+        uses: actions/cache@v5
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-${{ runner.arch }}-${{ steps.playwright-version.outputs.imageos }}-playwright-${{ steps.playwright-version.outputs.version }}
+      - name: Install Playwright browser dependencies
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        timeout-minutes: 15
+        run: npx playwright install chromium
+      - name: Run Playwright Visual Tests
+        env:
+          APPLITOOLS_BATCH_NAME: open-bus-map-search/${{ github.ref }}/${{ env.SHORT_SHA }}/
+          PWTEST_CHILD_PROCESS_TIMEOUT: '1800000' # 30 min; default 300000 force-kills slow UFG result collection → false CI failure
+        run: npm run test:e2e:visual
+      - name: Prepare Playwright artifact directory
+        if: always()
+        run: |
+          mkdir -p playwright-artifact
+          if [ -d test-results ]; then cp -r test-results/* playwright-artifact/; fi
+          if [ -d playwright-report ]; then cp -r playwright-report/* playwright-artifact/; fi
+          touch playwright-artifact/.keep
+      - name: Upload Playwright test artifact
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-visual-test
+          path: playwright-artifact
+      - name: Upload logs if exists
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: logs-visual-test
+          path: logs
+          if-no-files-found: warn
 
   publish-test-results:
+    name: Publish Test Results
     runs-on: ubuntu-latest
-    needs: test
+    needs: [test]
     if: always() && github.event.repository.fork == false && github.actor != 'dependabot[bot]'
     env:
       AWS_KEY_ID: ${{ secrets.AWS_KEY_ID }}
     steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v4
+      - name: Download Playwright test artifact
+        uses: actions/download-artifact@v8
         with:
-          name: playwright
+          name: playwright-test
           path: test-results
-      - uses: shallwefootball/s3-upload-action@master
-        name: Publish test results
-        if: always() && ${{ env.AWS_KEY_ID }}
-        id: s3-trace
+      - name: Publish test results to S3
+        if: always() && env.AWS_KEY_ID != ''
         continue-on-error: true
-        with:
-          aws_key_id: ${{env.AWS_KEY_ID}}
-          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
-          aws_bucket: noam-gaash.co.il
-          source_dir: test-results
-          destination_dir: ${{ github.run_id }}/open-bus/${{ github.sha }}/test-results
-      - name: Set test results
+        env:
+          AWS_ACCESS_KEY_ID: ${{ env.AWS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: us-east-1
+        run: aws s3 cp test-results 's3://noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.event.pull_request.head.sha }}/test-results' --recursive --acl public-read --only-show-errors
+      - name: Set commit status for test results
         uses: myrotvorets/set-commit-status-action@master
-        if: always() && ${{ env.AWS_KEY_ID }}
+        if: always() && env.AWS_KEY_ID != ''
         with:
-          sha: ${{ github.sha }}
+          sha: ${{ github.event.pull_request.head.sha }}
           token: ${{ secrets.GITHUB_TOKEN }}
           description: 'Playwright html report with traces'
           status: ${{needs.test.result}}
-          context: 'Test results'
-          targetUrl: 'https://s3.amazonaws.com/noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.sha }}/test-results/index.html'
-  build-outside-docker:
+          context: 'Test results (click to see!)'
+          targetUrl: 'https://s3.amazonaws.com/noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.event.pull_request.head.sha }}/test-results/index.html'
+
+  close-visual-batches:
+    name: Close Applitools Visual Test Batches
     runs-on: ubuntu-latest
+    needs: [visual-test, storybook-test]
+    if: always() && github.event.repository.fork == false && github.actor != 'dependabot[bot]'
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
-      - name: Run install
-        run: npm ci
-      - name: build
-        run: npm run build
-      - name: build storybook
-        run: npm run build-storybook
-      
+      - name: Close Applitools batches
+        run: |
+          export APPLITOOLS_SERVER_URL=https://eyesapi.applitools.com
+          curl -v -X DELETE "$APPLITOOLS_SERVER_URL/api/sessions/batches/$APPLITOOLS_BATCH_ID/close/bypointerid?apiKey=$APPLITOOLS_API_KEY"
+
   all-passed:
+    name: All Jobs Passed
     runs-on: ubuntu-latest
-    needs: [local-tests, test]
+    needs: [test, visual-test, storybook-test]
     steps:
-      - name: All passed
+      - name: All jobs passed
         run: echo "All passed"
