@@ -72,8 +72,8 @@ jobs:
           # Exception policy: a GHSA may be allowlisted below only if
           #   - severity is low or moderate (never high/critical), AND
           #   - there is no patched version / alternative package, AND
-          #   - the entry has a justification and a removal condition.
-          # allow-ghsas: GHSA-xxxx-xxxx-xxxx # <why it's acceptable>, remove when <condition>
+          #   - the entry has a justification.
+          # allow-ghsas: GHSA-xxxx-xxxx-xxxx # <why it's acceptable>
       - name: Allowlist help comment
         # On failure: post a short how-to. On success: delete both this help comment
         # and the action's own summary, so a fixed PR cleans up after itself.
@@ -100,10 +100,10 @@ jobs:
                 '',
                 "If there's no patch and a reviewer approves:",
                 'grab the `GHSA-…` id from the advisory link in the summary above (it only lives there),',
-                'and add it under `allow-ghsas` in `.github/workflows/validate.yaml`, with a reason + removal note:',
+                'and add it under `allow-ghsas` in `.github/workflows/validate.yaml`, with a reason why it is OK to allow it:',
                 '',
                 '```yaml',
-                '          allow-ghsas: GHSA-xxxx-xxxx-xxxx # why it is OK, remove when <condition>',
+                '          allow-ghsas: GHSA-xxxx-xxxx-xxxx # why it is OK',
                 '```',
                 '',
                 'On your way, feel free to delete any `allow-ghsas` lines that existed before this PR - (they are only needed on PR merge).',
