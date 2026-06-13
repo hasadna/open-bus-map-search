@@ -60,5 +60,6 @@ jobs:
           #   2. The deny-list below blocks Docker image pushes explicitly.
           # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
           claude_args: >-
+            --model opus
             --allowed-tools "Bash,Edit,Write,Read,Glob,Grep,WebFetch,WebSearch,TodoWrite"
             --disallowed-tools "Bash(docker push:*),Bash(docker image push:*),Bash(docker buildx:*),Bash(podman push:*)"
