@@ -74,7 +74,7 @@ export const ThemeProvider = ({ children }: PropsWithChildren) => {
     (newLanguage: string) => {
       setLanguage(newLanguage)
       const pathWithoutLang = getPathWithoutLang(location.pathname)
-      navigate(`/${newLanguage}${pathWithoutLang}`)
+      void navigate(`/${newLanguage}${pathWithoutLang}`)
     },
     [setLanguage, navigate, location],
   )
@@ -91,7 +91,7 @@ export const ThemeProvider = ({ children }: PropsWithChildren) => {
 
   useEffect(() => {
     if (!language) return
-    i18n.changeLanguage(language)
+    void i18n.changeLanguage(language)
     document.title = i18n.t('website_name')
     document.documentElement.dir = i18n.dir()
     document.documentElement.lang = language

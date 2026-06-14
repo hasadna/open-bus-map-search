@@ -22,7 +22,7 @@ export default function OperatorSelector({
   const [operators, setOperators] = useState<Operator[]>([])
 
   useEffect(() => {
-    getOperators(filter).then((operators) =>
+    void getOperators(filter).then((operators) =>
       setOperators(
         excludeIsraelRailways
           ? operators.filter((operator) => operator.id !== ISRAEL_TRAIN_ID)
