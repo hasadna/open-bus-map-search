@@ -1,24 +1,18 @@
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
-import { Skeleton } from 'antd'
 import { useContext } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useNavigate } from 'react-router'
 import styled from 'styled-components'
 import { GlobalSearchContext } from 'src/model/globalState'
 import { ISRAEL_TRAIN_ID } from 'src/model/operator'
+import SkeletonLoader from 'src/shared/SkeletonLoader'
 import Widget from 'src/shared/Widget'
 import { useAllRoutes } from '../../hooks/useAllRoutes'
 
-export const OperatorRoutes = ({
-  operatorId,
-  timestamp,
-}: {
-  operatorId?: string
-  timestamp?: number
-}) => {
+export const OperatorRoutes = ({ operatorId, date }: { operatorId?: string; date?: string }) => {
   const { setSearch } = useContext(GlobalSearchContext)
   const { t } = useTranslation()
-  const { routes, isLoading } = useAllRoutes(operatorId, timestamp)
+  const { routes, isLoading } = useAllRoutes(operatorId, date)
 
   const navigate = useNavigate()
 
@@ -26,7 +20,7 @@ export const OperatorRoutes = ({
     <Widget title={t('operator.all_lines')} marginBottom>
       <TableContainer sx={{ height: 345 }}>
         {isLoading ? (
-          <Skeleton active paragraph={{ rows: 8 }} />
+          <SkeletonLoader active rows={8} />
         ) : (
           <Table size="small" stickyHeader>
             <TableHead>

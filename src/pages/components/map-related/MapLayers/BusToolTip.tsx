@@ -1,13 +1,12 @@
 import { GtfsRoutePydanticModel } from '@hasadna/open-bus-api-client'
 import { Button, CircularProgress } from '@mui/material'
-import { Skeleton } from 'antd'
-import cn from 'classnames'
 import { ReactNode, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
 import { getRoutesByLineRef } from 'src/api/gtfsService'
 import dayjs from 'src/dayjs'
 import { routeStartEnd, vehicleIDFormat } from 'src/pages/components/utils/rotueUtils'
+import SkeletonLoader from 'src/shared/SkeletonLoader'
 import CustomTreeView from '../../CustomTreeView'
 import { EasterEgg } from '../../EasterEgg/EasterEgg'
 import type { Point } from '../map-types'
@@ -66,14 +65,14 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
   const [from, destination] = routeStartEnd(route?.routeLongName)
 
   return (
-    <div className={cn('bus-tooltip', { hebrew: i18n.language === 'he' })}>
+    <div className="bus-tooltip" dir={i18n.dir()}>
       {isLoading || !route ? (
         <div>
           <h1 className="loading title">
             <span>{t('loading_routes')}</span>
             <CircularProgress />
           </h1>
-          <Skeleton title={false} paragraph={{ rows: 7 }} />
+          <SkeletonLoader active={false} title={false} rows={7} />
         </div>
       ) : (
         <>
@@ -169,7 +168,7 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
               {showJson ? t('hide_document') : t('show_document')}
             </Button>
             {showJson && (
-              <div dir={i18n.language === 'en' ? 'rtl' : 'ltr'}>
+              <div dir="ltr">
                 <CustomTreeView<Point>
                   id={`${position.point?.id}`}
                   data={position}

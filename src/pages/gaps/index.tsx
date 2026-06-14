@@ -15,6 +15,7 @@ import OperatorSelector from '../components/OperatorSelector'
 import { PageContainer } from '../components/PageContainer'
 import RouteSelector from '../components/RouteSelector'
 import { Row } from '../components/Row'
+import { serviceDayBounds } from '../components/utils/startTimeUtils'
 import GapsTable from './GapsTable'
 
 const GapsPage = () => {
@@ -27,11 +28,12 @@ const GapsPage = () => {
 
   const singleLineMapBaseHref = useMemo(() => {
     const params = new URLSearchParams()
+    params.set('date', search.date || '')
     params.set('operatorId', search.operatorId || '')
     params.set('lineNumber', search.lineNumber || '')
     params.set('routeKey', search.routeKey || '')
     return `/single-line-map?${params.toString()}`
-  }, [search.lineNumber, search.operatorId, search.routeKey])
+  }, [search.date, search.lineNumber, search.operatorId, search.routeKey])
 
   useEffect(() => {
     if (!(operatorId && routes && routeKey && date)) return
@@ -39,9 +41,8 @@ const GapsPage = () => {
     if (!selectedRoute) return
 
     setGapsIsLoading(true)
-    const start = dayjs.tz(date, ISRAEL_TIMEZONE).startOf('day')
-    const end = start.add(1, 'day').add(4, 'h')
-    getGapsAsync(start.valueOf(), end.valueOf(), operatorId, selectedRoute.lineRef)
+    const { start, end } = serviceDayBounds(date)
+    getGapsAsync(start, end, operatorId, selectedRoute.lineRef)
       .then((res) =>
         setGaps(
           res.filter((g) => {
@@ -104,6 +105,9 @@ const GapsPage = () => {
     setSearch((current) => ({ ...current, routeKey: routeKey ?? null }))
   }
 
+  // On gap row click: only set rideTime — date stays as the service day the
+  // user was browsing. rideTime uses 24+ hour format for past-midnight rides
+  // (e.g. "25:30") so single-line-map can reconstruct the correct time.
   const handleStartTimeClick = useCallback(
     (rideTime: string) => {
       setSearch((current) => ({ ...current, rideTime }))
@@ -173,6 +177,7 @@ const GapsPage = () => {
         <GapsTable
           loading={gapsIsLoading}
           gaps={gaps}
+          date={date}
           singleLineMapBaseHref={singleLineMapBaseHref}
           onStartTimeClick={handleStartTimeClick}
         />

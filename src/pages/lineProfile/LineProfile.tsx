@@ -1,10 +1,10 @@
 import { GtfsRoutePydanticModel } from '@hasadna/open-bus-api-client'
 import { CircularProgress, Grid } from '@mui/material'
 import { Tooltip } from 'antd'
-import { useCallback, useContext, useEffect } from 'react'
+import { useCallback, useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLoaderData, useNavigate } from 'react-router'
-import { getRoutesAsync } from 'src/api/gtfsService'
+import { getServiceDayRoutes } from 'src/api/serviceDayRoutesService'
 import dayjs, { toIsraelTimezone } from 'src/dayjs'
 import { useSingleLineData } from 'src/hooks/useSingleLineData'
 import { GLOBAL_SEARCH_DEFAULTS, GlobalSearchContext } from 'src/model/globalState'
@@ -20,12 +20,12 @@ import RouteSelector from '../components/RouteSelector'
 import { LineProfileDetails } from './LineProfileDetails'
 import { LineProfileRide } from './LineProfileRide'
 import { LineProfileStop } from './LineProfileStop'
-import './LineProfile.scss'
 
 const LineProfile = () => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { route, message } = useLoaderData<{ route?: GtfsRoutePydanticModel; message?: string }>()
+  const [stopKey, setState] = useState<string>()
   const { search, setSearch } = useContext(GlobalSearchContext)
   const initialUrlParams = useContext(InitialUrlParamsContext)
   const { setParams } = useContext(ExtraShareParamsContext)
@@ -34,24 +34,18 @@ const LineProfile = () => {
     document.querySelector('main')?.scrollTo(0, 0)
   }, [])
 
-  // Re-init the global search whenever a route loads. Changing the date lands on
-  // a new per-date route id for the same line, so this also runs on date change.
   useEffect(() => {
+    setState(undefined)
     if (!route?.id) {
       return
     }
-    // Preserve stopKey: it lives in global state and is keyed on the (date-stable)
-    // stop code, so it survives date changes and is shared with the Timeline page.
-    // It only appears "unselected" when the current stop list has no stop with that
-    // code — StopSelector falls back to no selection, which is the desired behavior.
-    setSearch((c) => ({
+    setSearch(() => ({
       ...GLOBAL_SEARCH_DEFAULTS,
       date: toIsraelTimezone(route.date.getTime()).format('YYYY-MM-DD'),
       operatorId: route.operatorRef.toString(),
       lineNumber: route.routeShortName ?? null,
       routeKey: `${route.routeMkt}-${route.routeDirection}-${route.routeAlternative}`,
       rideTime: initialUrlParams.rideTime ?? initialUrlParams.startTime ?? null,
-      stopKey: c.stopKey,
     }))
   }, [route?.id])
 
@@ -89,21 +83,16 @@ const LineProfile = () => {
     return () => setParams({})
   }, [startTime, setParams])
 
-  const handleTimestampChange = (time: dayjs.Dayjs | null) => {
+  const handleDateChange = (time: dayjs.Dayjs | null) => {
     if (!time || !route) return
 
-    // Always move to the selected date — even on days the line doesn't run (e.g.
-    // Saturday). The stops query then refetches for the new date and simply comes
-    // back empty when there's no service, instead of the date silently refusing
-    // to change because no matching route exists to navigate to.
-    setSearch((c) => ({ ...c, date: toIsraelTimezone(time).format('YYYY-MM-DD') }))
-
     const abortController = new AbortController()
-    getRoutesAsync(
+    // Service-day aware (and Israel-tz normalized internally), consistent with the
+    // gaps page and the single-line ride list.
+    getServiceDayRoutes(
       time,
-      time,
-      route.operatorRef.toString(),
-      route.routeShortName,
+      route?.operatorRef.toString(),
+      route?.routeShortName,
       abortController.signal,
     )
       .then((routes) => {
@@ -126,7 +115,8 @@ const LineProfile = () => {
   }
 
   const handelStopChange = (key?: string) => {
-    setSearch((c) => ({ ...c, stopKey: key || null }))
+    const stop = plannedRouteStops?.find((stop) => stop.key === key)
+    setState(stop?.key)
   }
 
   if (message || !route) {
@@ -134,22 +124,19 @@ const LineProfile = () => {
   }
 
   return (
-    <PageContainer className="line-profile-container">
+    <PageContainer className="map-container">
       <Grid container spacing={2} sx={{ marginTop: '0.5rem' }}>
-        <Grid size={{ xs: 12, lg: 7 }} container spacing={2} flexDirection="column">
+        <Grid size={{ xs: 12, lg: 7 }} container spacing={2} sx={{ flexDirection: 'column' }}>
           <LineProfileDetails {...route} />
         </Grid>
-        <Grid size={{ xs: 12, lg: 5 }} container spacing={2} flexDirection="column">
+        <Grid size={{ xs: 12, lg: 5 }} container spacing={2} sx={{ flexDirection: 'column' }}>
           <RouteSelector
             routes={routes ?? []}
             routeKey={routeKey}
             setRouteKey={handelRouteChange}
           />
-          <DateSelector
-            time={search.date ? dayjs(search.date) : dayjs(route.date.getTime())}
-            onChange={handleTimestampChange}
-          />
-          <Grid container flexWrap="nowrap" alignItems="center">
+          <DateSelector time={dayjs(route?.date.getTime())} onChange={handleDateChange} />
+          <Grid container sx={{ flexWrap: 'nowrap', alignItems: 'center' }}>
             <FilterPositionsByStartTimeSelector
               options={options}
               startTime={startTime}
@@ -162,13 +149,9 @@ const LineProfile = () => {
             )}
           </Grid>
           <LineProfileRide point={positions[0]?.point} />
-          <StopSelector
-            stops={plannedRouteStops}
-            stopKey={search.stopKey ?? undefined}
-            setStopKey={handelStopChange}
-          />
+          <StopSelector stops={plannedRouteStops} stopKey={stopKey} setStopKey={handelStopChange} />
           <LineProfileStop
-            stop={plannedRouteStops.find((s) => s.key === search.stopKey)}
+            stop={plannedRouteStops.find((s) => s.key === stopKey)}
             total={plannedRouteStops.length}
           />
         </Grid>

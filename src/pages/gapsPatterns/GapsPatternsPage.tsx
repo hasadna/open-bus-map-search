@@ -1,5 +1,5 @@
 import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
-import { Radio, RadioChangeEvent, Skeleton, Space } from 'antd'
+import { Radio, RadioChangeEvent, Space } from 'antd'
 import { useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
@@ -19,6 +19,7 @@ import { useDate } from 'src/hooks/useDate'
 import { GlobalSearchContext } from 'src/model/globalState'
 import { ExtraShareParamsContext, InitialUrlParamsContext } from 'src/model/routeContext'
 import { INPUT_SIZE } from 'src/resources/sizes'
+import SkeletonLoader from 'src/shared/SkeletonLoader'
 import Widget from 'src/shared/Widget'
 import { getRoutesAsync } from '../../api/gtfsService'
 import { BusRoute } from '../../model/busRoute'
@@ -67,13 +68,7 @@ const CustomTooltip = ({ active, payload }: TooltipContentProps) => {
 
 function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatisticsProps) {
   const [sortingMode, setSortingMode] = useState<'hour' | 'severity'>('hour')
-  const hourlyData = useGapsList(
-    fromDate.valueOf(),
-    toDate.valueOf(),
-    operatorRef,
-    lineRef,
-    sortingMode,
-  )
+  const hourlyData = useGapsList(fromDate, toDate, operatorRef, lineRef, sortingMode)
   const isLoading = !hourlyData.length
   const { t } = useTranslation()
   const maxHourlyRides = Math.max(
@@ -85,7 +80,7 @@ function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatistic
     lineRef > 0 && (
       <Widget marginBottom>
         {isLoading && lineRef ? (
-          <Skeleton active />
+          <SkeletonLoader active />
         ) : (
           <>
             <Radio.Group
@@ -226,7 +221,7 @@ const GapsPatternsPage = () => {
         </Alert>
       ) : null}
 
-      <Grid container spacing={2} alignItems="center" sx={{ maxWidth: INPUT_SIZE }}>
+      <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE, alignItems: 'center' }}>
         <Grid size={{ xs: 12, sm: 4 }} className="hideOnMobile">
           <Label text={t('choose_dates')} />
         </Grid>
@@ -234,8 +229,7 @@ const GapsPatternsPage = () => {
           container
           size={{ xs: 12, sm: 8 }}
           spacing={2}
-          alignItems="center"
-          justifyContent="space-between">
+          sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
           <Grid size={{ xs: 6 }}>
             <DateSelector
               time={startDate}

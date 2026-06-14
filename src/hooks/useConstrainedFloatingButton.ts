@@ -27,7 +27,7 @@ export function useConstrainedFloatingButton(
             buttonElement.style.right = `${offset}px`
             buttonElement.style.left = ''
           }
-          buttonElement.style.bottom = `${3 * offset + offset}px`
+          buttonElement.style.bottom = `${offset}px`
           buttonElement.style.top = ''
           buttonElement.style.display = ''
         }

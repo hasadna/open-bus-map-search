@@ -1,9 +1,9 @@
-import { Skeleton } from 'antd'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
 import { Dayjs } from 'src/dayjs'
 import { MAJOR_OPERATORS } from 'src/model/operator'
+import SkeletonLoader from 'src/shared/SkeletonLoader'
 import Widget from 'src/shared/Widget'
 import LinesHbarChart, { LineBar } from './LineHbarChart/LinesHbarChart'
 
@@ -41,8 +41,8 @@ export const WorstLinesChart = ({
   alertWorstLineHandling,
 }: WorstLinesChartProps) => {
   const [groupByLineData, lineDataLoading] = useGroupBy({
-    dateFrom: startDate.valueOf(),
-    dateTo: endDate.valueOf(),
+    dateFrom: startDate,
+    dateTo: endDate,
     groupBy: 'operator_ref,line_ref',
   })
 
@@ -61,7 +61,7 @@ export const WorstLinesChart = ({
   return (
     <Widget title={t('worst_lines_page_title')}>
       {lineDataLoading ? (
-        <Skeleton active />
+        <SkeletonLoader active />
       ) : (
         <LinesHbarChart
           lines={convertToWorstLineChartCompatibleStruct(groupByLineData, operatorId)}
