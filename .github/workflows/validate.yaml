@@ -17,6 +17,7 @@ env:
   APPLITOOLS_BATCH_ID: ${{ github.event.pull_request.head.sha }}
   APPLITOOLS_LOG_DIR: ./logs
   APPLITOOLS_SHOW_LOGS: true
+  APPLITOOLS_MASK_LOG: true # mask the API key (and tokens) in Applitools logs
 
 jobs:
   local-tests:
