@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import type { PositionGroup } from '../map-types'
 import {
+  actualRouteLineColor,
   actualRouteStopMarkerPath,
   plannedRouteLineColor,
   plannedRouteStopMarkerPath,
@@ -18,6 +19,13 @@ export function MapIndexLayer({ showPlannedRoute, positionGroups = [] }: MapInde
 
   return (
     <div className="map-index">
+      {showPlannedRoute && (
+        <MapIndex
+          lineColor={plannedRouteLineColor}
+          imgSrc={plannedRouteStopMarkerPath}
+          title={t('plannedRoute')}
+        />
+      )}
       {multiVehicle ? (
         positionGroups.map((group, idx) => (
           <MapIndex
@@ -29,13 +37,10 @@ export function MapIndexLayer({ showPlannedRoute, positionGroups = [] }: MapInde
           />
         ))
       ) : (
-        <MapIndex lineColor="orange" imgSrc={actualRouteStopMarkerPath} title={t('actualRoute')} />
-      )}
-      {showPlannedRoute && (
         <MapIndex
-          lineColor={plannedRouteLineColor}
-          imgSrc={plannedRouteStopMarkerPath}
-          title={t('plannedRoute')}
+          lineColor={positionGroups[0]?.color ?? actualRouteLineColor}
+          imgSrc={actualRouteStopMarkerPath}
+          title={t('actualRoute')}
         />
       )}
     </div>
