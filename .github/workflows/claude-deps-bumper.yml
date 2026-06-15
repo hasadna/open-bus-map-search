@@ -1,0 +1,216 @@
+name: Claude Dependency Bumper
+
+# A *judgment* layer on top of Dependabot. Dependabot keeps opening dumb,
+# one-package-at-a-time PRs; this workflow asks Claude to do the smart thing:
+# verify CVEs are real (not `npm audit` theater), prioritise genuine value,
+# group related packages, prefer small behaviour-preserving changes, and
+# opportunistically prune redundant dependencies. It is throughput-limited (at most MAX_OPEN PRs
+# open at once), self-clocking (re-fires when one of its PRs is closed/merged so
+# it can open a replacement), and quietly idle (opens nothing when nothing is
+# worth doing, and the weekly cron is the only thing that re-checks in that case).
+
+on:
+  # Fallback heartbeat. When 0 of our PRs are open (e.g. nothing was worth doing,
+  # or all of them were closed while this workflow was failing), no close-event
+  # ever fires, so this weekly tick is the only thing that re-evaluates.
+  schedule:
+    - cron: '0 6 * * 1' # Mondays 06:00 UTC
+
+  # Self-clocking loop: when one of OUR labelled PRs is closed or merged a slot
+  # frees up, so re-run and top back up to the cap. The `gate` job below filters
+  # to PRs carrying the `claude-deps` label, so unrelated PR closes are ignored.
+  pull_request:
+    types: [closed]
+
+  # Manual kick.
+  workflow_dispatch:
+
+# Serialise runs so two triggers can't both pass the gate and open 2*MAX_OPEN
+# PRs. `cancel-in-progress: false` lets an in-flight run finish; GitHub keeps at
+# most one additional run queued, and that queued run re-counts open PRs anyway.
+concurrency:
+  group: claude-deps-bumper
+  cancel-in-progress: false
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Cheap gate. The PR cap is enforced HERE, in plain shell, NOT by trusting
+  # Claude to count. It counts how many open PRs carry the `claude-deps` label
+  # and exposes the number of free slots. Claude only runs when slots > 0.
+  # ---------------------------------------------------------------------------
+  gate:
+    # For pull_request runs, only proceed when the closed PR was one of ours.
+    # schedule / workflow_dispatch always proceed.
+    if: >-
+      github.event_name != 'pull_request' ||
+      contains(github.event.pull_request.labels.*.name, 'claude-deps')
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    outputs:
+      slots: ${{ steps.count.outputs.slots }}
+    steps:
+      - name: Count open claude-deps PRs and compute free slots
+        id: count
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Max number of Claude dependency PRs allowed open at the same time.
+          MAX_OPEN: '2'
+        run: |
+          set -euo pipefail
+          # Filter by label in jq (NOT `gh pr list --label`) so this still works
+          # before the `claude-deps` label has ever been created.
+          open=$(gh pr list --repo "$GITHUB_REPOSITORY" --state open --limit 100 \
+            --json labels \
+            --jq '[.[] | select(.labels[]?.name == "claude-deps")] | length')
+          slots=$(( MAX_OPEN - open ))
+          if [ "$slots" -lt 0 ]; then slots=0; fi
+          echo "open claude-deps PRs: $open / cap $MAX_OPEN -> $slots free slot(s)"
+          echo "slots=$slots" >> "$GITHUB_OUTPUT"
+
+  # ---------------------------------------------------------------------------
+  # The smart part. Only runs when there is at least one free slot.
+  # ---------------------------------------------------------------------------
+  bump:
+    needs: gate
+    if: ${{ needs.gate.outputs.slots > 0 }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 40 # hard ceiling on cost per run
+    permissions:
+      # This workflow's own explicit grant (not inherited from claude.yml):
+      # only what a dependency PR needs. Deliberately NO `packages: write`, so it
+      # can never push images regardless of what command runs.
+      contents: write # push the deps/* branch
+      pull-requests: write # open the PR
+      issues: write # create/apply the `claude-deps` label (labels are issue-scoped)
+      id-token: write # OIDC for the action
+      actions: read # read CI results on PRs
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0 # full history so Claude can branch / diff freely
+
+      - name: Run Claude dependency bumper
+        uses: anthropics/claude-code-action@v1
+        env:
+          # How many PRs Claude is allowed to open THIS run (1 or 2). Often the
+          # right answer is fewer than this — or zero.
+          SLOTS: ${{ needs.gate.outputs.slots }}
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+
+          additional_permissions: |
+            actions: read
+
+          prompt: |
+            You are the dependency steward for the open-bus-map-search repo
+            (TypeScript / React / Vite, npm, single `package-lock.json`). Your job
+            is to keep dependencies healthy with a SMALL number of high-signal,
+            easy-to-review pull requests — NOT to mechanically bump everything.
+            Dependabot already does the dumb version-by-version churn; you are the
+            judgment layer on top of it. Be genuinely smart.
+
+            ## Hard limit
+            The environment variable SLOTS tells you the MAXIMUM number of pull
+            requests you may open this run (it will be 1 or 2). NEVER exceed it.
+            Opening fewer than SLOTS — including ZERO — is a perfectly good and
+            common outcome. Quality and review-ability beat quantity every time.
+
+            ## Survey first (do not edit anything yet)
+            1. `npm ci` (or `npm install`) to get a working tree.
+            2. `npm outdated --json` for the candidate set.
+            3. `npm audit --json` for security findings.
+            4. `gh pr list --state open --json number,title,headRefName,labels` —
+               note what Dependabot and prior `claude-deps` runs already have open.
+               NEVER open a PR that duplicates an already-open PR (same package /
+               same bump). Coexist politely with Dependabot.
+            5. Skim `package.json` + the source (`grep` imports) to spot
+               dependencies that look unused, redundant, or trivially replaceable.
+
+            ## CVE reality check — kill the `npm audit` theater
+            For every security finding, do NOT take the severity at face value.
+            Look up the actual GHSA / CVE advisory (use WebFetch / WebSearch on the
+            GitHub advisory) and judge whether it is REAL for THIS app:
+            - Is the vulnerable code path actually reachable here, or is it a
+              transitive dev/build-only dependency where the flaw can't be
+              triggered in production (e.g. a ReDoS in a CLI we only run in CI)?
+            - Is there a fix version, and is upgrading to it low-risk?
+            Treat unreachable / dev-only / disputed advisories as noise and say so.
+            A real, exploitable CVE in a runtime dependency is your TOP priority.
+
+            ## How to prioritise (highest value first)
+            1. Real, exploitable CVEs in runtime dependencies.
+            2. Updates that deliver genuine value (real bug fixes we're hitting,
+               meaningful perf / DX wins, fixes that unblock other upgrades).
+            3. Removing or consolidating redundant / unused dependencies — this is
+               explicitly in scope and encouraged. Fewer deps = less attack
+               surface and less future churn. If two libraries do the same job, or
+               a dependency is no longer imported, propose removing one.
+            4. Routine patch / minor bumps that are trivially safe — but batch
+               these; don't spend a slot on a single boring patch.
+
+            ## Grouping
+            Combine related packages into ONE coherent PR rather than many:
+            e.g. all `@mui/*` together, the `@typescript-eslint/*` pair together,
+            an eslint-plugin set together, a `@types/x` with its `x`. One logical
+            change per PR. A well-grouped PR is worth more than several thin ones.
+
+            ## Risk discipline — judge by behaviour, not line count
+            Code changes to accommodate a bump are fine; you are NOT limited to a
+            fixed number of lines. The test is BEHAVIOURAL: a change is acceptable
+            when it stays focused and localized to a few spots, is essentially
+            mechanical (a renamed import / API, an adjusted function signature, a
+            changed config key, a type tweak), and does NOT alter the app's actual
+            runtime behaviour. Major-version bumps are allowed under exactly that
+            bar — read the changelog, make the focused edits, and confirm via
+            lint/build/tests that behaviour is unchanged.
+            What you MUST avoid is a sprawling or behaviour-changing migration: if
+            accommodating a bump means touching many files, reworking logic, or
+            risking any user-visible change, DO NOT do it here — skip it and note
+            it in your final summary (or the PR body) as "deferred, needs a human".
+            Never open a half-broken PR.
+
+            ## For each PR you decide to open
+            1. Create a branch named `deps/<short-slug>` off the default branch.
+            2. Make the minimal edits; run `npm install` so `package-lock.json`
+               updates.
+            3. Verify it actually works — these MUST pass or you abandon the
+               candidate: `npm run lint`, `npm run build`, `npm run test:unit:ci`.
+            4. Ensure the label exists, then open the PR with it:
+               `gh label create claude-deps --color 0e8a16 --description "Claude-curated dependency PR" --force`
+               then `gh pr create --base main --label claude-deps ...`.
+            5. Conventional-commit PR title (CI enforces it): `chore(deps): ...`
+               for routine/grouped bumps and removals, `fix(deps): ...` when it
+               closes a real CVE.
+            6. The PR body must explain the JUDGMENT, not just the version delta:
+               - what changed and why it's worth a human's review time;
+               - for security: the GHSA/CVE link AND your reachability assessment;
+               - the grouping rationale (why these packages travel together);
+               - a one-line risk read (diff size, breaking-change analysis);
+               - the test results you got.
+
+            ## If nothing clears the bar
+            Open NOTHING. Print a short summary of what you considered and why you
+            skipped each candidate. That is a successful run — the weekly schedule
+            will re-check later.
+
+          # Model, effort and tool permissions are configured EXPLICITLY here —
+          # this workflow deliberately does NOT inherit claude.yml's choices, so
+          # the dependency steward can be tuned independently of the @claude
+          # responder.
+          #   --model opus       the alias (not a pinned id) so the run rides the
+          #                      newest Opus automatically as it ships.
+          #   --effort max       dependency triage wants maximum reasoning; `max`
+          #                      is ONLY accepted via this CLI flag (the
+          #                      settings.json effortLevel enum drops it silently).
+          #   --fallback-model   keeps the run alive through Opus overload.
+          # Tool surface is scoped to what a dependency PR needs; the deny-list
+          # blocks anything that publishes a package, cuts a release, or pushes an
+          # image — none of which a bump PR should ever do.
+          claude_args: >-
+            --model opus
+            --effort max
+            --fallback-model sonnet
+            --allowed-tools "Bash,Edit,Write,Read,Glob,Grep,WebFetch,WebSearch,TodoWrite"
+            --disallowed-tools "Bash(npm publish:*),Bash(gh release:*),Bash(docker push:*),Bash(docker image push:*),Bash(docker buildx:*),Bash(podman push:*)"
