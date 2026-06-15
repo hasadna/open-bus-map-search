@@ -110,7 +110,6 @@
   "loading_hits": "Loading trip times",
   "loading_times_tooltip_content": "Loading bus times. Current times available to use",
   "loading": "loading...",
-  "timestamp_list": "A list of all stop times at the selected stop",
   "timestamp_gtfs": "🕛 Planned stop time",
   "timestamp_siri": "🚌 Actual stop time",
   "hits_not_found": "No planned or actual trips found",

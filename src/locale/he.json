@@ -110,7 +110,6 @@
   "loading_hits": "זמני נסיעה בטעינה",
   "loading_times_tooltip_content": "שעות נוספות בטעינה. ניתן להשתמש בשעות הזמינות כבר עכשיו",
   "loading": "טוען...",
-  "timestamp_list": "רשימת זמני עצירה בתחנה שנבחרה",
   "timestamp_gtfs": "🕛 זמן עצירה מתוכנן",
   "timestamp_siri": "🚌 זמן עצירה בפועל",
   "hits_not_found": "לא נמצאו נסיעות מתוכננות או בפועל",

@@ -87,15 +87,14 @@ describe('buildShareUrl — extra params', () => {
   })
 
   it('extra params override a GlobalSearchContext param with the same key', () => {
-    // e.g. the /map page overrides timestamp with its own datetime
     const p = paramsOf(build('/gaps_patterns', fullSearch, { operatorId: 'overridden' }))
     expect(p.operatorId).toBe('overridden')
   })
 
   it('/map produces no params from GlobalSearchContext — only extras are included', () => {
-    const p = paramsOf(build('/map', fullSearch, { timestamp: '1699900000000' }))
-    expect(Object.keys(p)).toEqual(['timestamp'])
-    expect(p.timestamp).toBe('1699900000000')
+    const p = paramsOf(build('/map', fullSearch, { datetime: '2023-03-14T17:00' }))
+    expect(Object.keys(p)).toEqual(['datetime'])
+    expect(p.datetime).toBe('2023-03-14T17:00')
   })
 
   it('/map with no extras produces a clean URL', () => {
@@ -288,13 +287,5 @@ describe('InitialUrlParamsContext contract', () => {
     const captured: Record<string, string> = {}
     expect(captured['date']).toBeUndefined()
     expect(captured['operatorId']).toBeUndefined()
-  })
-
-  it('map page timestamp is readable from captured params (backward compat)', () => {
-    const mapDatetime = 1699900000000
-    const captured = { timestamp: String(mapDatetime) }
-
-    const fromTimestamp = captured['timestamp'] ? +captured['timestamp'] : null
-    expect(fromTimestamp).toBe(mapDatetime)
   })
 })

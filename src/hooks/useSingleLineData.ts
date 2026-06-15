@@ -255,17 +255,17 @@ export const useSingleLineData = ({
       const scheduledTime = parsedStartTime?.scheduledTime
       const scheduledLine = parsedStartTime?.lineRef
       const [hour, minute] = scheduledTime ? scheduledTime.split(':').map(Number) : [0, 0]
-      const startTimeTimestamp = serviceDayStart.hour(hour).minute(minute).second(0).millisecond(0)
+      const rideStartTime = serviceDayStart.hour(hour).minute(minute).second(0).millisecond(0)
       let routeIds: number[] | undefined
       if (selectedRoute?.routeIds && selectedRoute.routeIds.length > 0) {
         routeIds = selectedRoute.routeIds
       } else if (scheduledLine && operatorId) {
         routeIds = (
-          await getRoutesByLineRef(operatorId, scheduledLine, startTimeTimestamp.toDate())
+          await getRoutesByLineRef(operatorId, scheduledLine, rideStartTime.toDate())
         ).map((route) => route.id)
       }
       if (!routeIds || routeIds.length === 0) return []
-      return await getStopsForRouteAsync(routeIds, startTimeTimestamp)
+      return await getStopsForRouteAsync(routeIds, rideStartTime)
     },
     // Key on the resolved route ids (not the date-stable lineRef): during a date
     // change the previous date's route is briefly still selected, and fetching

@@ -86,7 +86,7 @@ const LineProfile = () => {
     return () => setParams({})
   }, [startTime, setParams])
 
-  const handleTimestampChange = (time: dayjs.Dayjs | null) => {
+  const handleDateChange = (time: dayjs.Dayjs | null) => {
     if (!time || !route) return
     dateChangeAbortRef.current?.abort()
     const abortController = new AbortController()
@@ -143,7 +143,7 @@ const LineProfile = () => {
               setRouteKey={handelRouteChange}
             />
           )}
-          <DateSelector time={dayjs(route?.date.getTime())} onChange={handleTimestampChange} />
+          <DateSelector time={dayjs(route?.date.getTime())} onChange={handleDateChange} />
           <Grid container sx={{ flexWrap: 'nowrap', alignItems: 'center' }}>
             <FilterPositionsByStartTimeSelector
               options={options}

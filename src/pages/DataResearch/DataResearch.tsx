@@ -42,8 +42,8 @@ function StackedResearchSection() {
   const [operatorId, setOperatorId] = useState('')
   const [groupByHour, setGroupByHour] = useState<boolean>(false)
   const [graphData, loadingGraph] = useGroupBy({
-    dateFrom: startDate.valueOf(),
-    dateTo: endDate.valueOf(),
+    dateFrom: startDate,
+    dateTo: endDate,
     groupBy: groupByHour ? 'operator_ref,gtfs_route_hour' : 'operator_ref,gtfs_route_date',
   })
 

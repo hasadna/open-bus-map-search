@@ -29,8 +29,8 @@ export const AllLinesChart: FC<AllChartComponentProps> = ({
   alertAllChartsZeroLinesHandling,
 }) => {
   const [groupByOperatorData, groupByOperatorLoading] = useGroupBy({
-    dateFrom: startDate.valueOf(),
-    dateTo: endDate.valueOf(),
+    dateFrom: startDate,
+    dateTo: endDate,
     groupBy: 'operator_ref',
   })
   const { t } = useTranslation()
