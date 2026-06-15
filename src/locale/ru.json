@@ -137,7 +137,6 @@
   "to_date": "До",
   "watch_locations_in_range": "Просмотр местоположений автобусов в диапазоне",
   "minutes": "минуты",
-  "minutes_from_route_start": "{{minutes}} мин. от начала маршрута",
   "minutes_5": "5 минут",
   "show_x_bus_locations": "Местоположения автобусов",
   "show_document": "Показать данные для гиков",
