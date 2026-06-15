@@ -10,7 +10,7 @@
     "@emotion/styled": "^11.14.1",
     "@hasadna/open-bus-api-client": "^1.2.3",
     "@juggle/resize-observer": "^3.4.0",
-    "@mui/icons-material": "^9.1.0",
+    "@mui/icons-material": "^9.1.1",
     "@mui/material": "^9.1.0",
     "@mui/stylis-plugin-rtl": "^9.0.1",
     "@mui/x-date-pickers": "^9.5.0",
