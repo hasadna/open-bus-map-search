@@ -158,7 +158,11 @@ describe('locale files are in sync', () => {
     },
   )
 
-  test('every key is either in all languages or a new en+he key awaiting translation', () => {
+  // en and he are mandatory for every key (en is the i18next type source, he the
+  // fallbackLng) — a key missing from either throws. ru and ar are allowed to lag:
+  // a key present in en+he but missing one or both only warns.
+  const REQUIRED = ['en', 'he']
+  test('every key exists in en+he; missing ru/ar only warns', () => {
     const keyToLanguages = new Map<string, string[]>()
     for (const lang of languages) {
       for (const key of flatKeys[lang]) {
@@ -170,18 +174,20 @@ describe('locale files are in sync', () => {
     const awaitingTranslation: string[] = []
     for (const [key, langs] of keyToLanguages) {
       if (langs.length === languages.length) continue
-      if (langs.length === 2 && langs.includes('en') && langs.includes('he')) {
-        awaitingTranslation.push(key)
-      } else {
-        const missing = languages.filter((lang) => !langs.includes(lang))
+      const missing = languages.filter((lang) => !langs.includes(lang))
+      const missingRequired = missing.filter((lang) => REQUIRED.includes(lang))
+      if (missingRequired.length > 0) {
         const holder = langs.includes(REFERENCE) ? REFERENCE : langs[0]
         errors.push(
           codeFrame(
             holder,
             key,
-            `exists only in [${langs.join(', ')}] — missing from ${missing.join(', ')}`,
+            `exists only in [${langs.join(', ')}] — missing from required ${missingRequired.join(', ')}`,
           ),
         )
+      } else {
+        // en+he present, only ru and/or ar missing — let it lag, just warn
+        awaitingTranslation.push(key)
       }
     }
 
@@ -198,12 +204,14 @@ describe('locale files are in sync', () => {
       // not console.warn — jest decorates intercepted console calls with a
       // useless code frame of this test file
       process.stderr.write(
-        `\n${banner('⚠ WARNING')}\n${awaitingTranslation.length} keys exist only in en+he, awaiting ru/ar translation: ${summary}\n\n`,
+        `\n${banner('⚠ WARNING')}\n${awaitingTranslation.length} keys exist in en+he but are missing ru and/or ar translation: ${summary}\n\n`,
       )
     }
 
     if (errors.length > 0) {
-      failWith(`${errors.length} key(s) are out of sync:\n\n${errors.join('\n \n')}`)
+      failWith(
+        `${errors.length} key(s) are missing a required en/he translation:\n\n${errors.join('\n \n')}`,
+      )
     }
   })
 })
