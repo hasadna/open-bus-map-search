@@ -15,15 +15,15 @@ export function parseTime(time?: dayjs.ConfigType) {
 }
 
 export const getGapsAsync = (
-  fromTimestamp: number,
-  toTimestamp: number,
+  from: dayjs.Dayjs,
+  to: dayjs.Dayjs,
   operatorId: string,
   lineRef: number,
   limit = 10000,
 ) => {
   return USER_CASE_API.ridesExecutionListGet({
-    dateFrom: new Date(fromTimestamp),
-    dateTo: new Date(toTimestamp),
+    dateFrom: from.toDate(),
+    dateTo: to.toDate(),
     limit,
     lineRef,
     operatorRef: parseInt(operatorId),

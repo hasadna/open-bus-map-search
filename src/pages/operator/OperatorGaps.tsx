@@ -3,24 +3,25 @@ import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Cell, Pie, PieChart } from 'recharts'
 import { useGroupBy } from 'src/api/groupByService'
-import dayjs from 'src/dayjs'
+import dayjs, { ISRAEL_TIMEZONE } from 'src/dayjs'
 import SkeletonLoader from 'src/shared/SkeletonLoader'
 import Widget from 'src/shared/Widget'
 import { InfoItem, InfoTable } from '../components/InfoTable'
 
 export const OperatorGaps = ({
   operatorId,
-  timestamp,
+  date,
   timeRange = 'day',
 }: {
   operatorId?: string
-  timestamp?: number
+  date?: string
   timeRange?: 'day' | 'week' | 'month' | 'year'
 }) => {
   const { t, i18n } = useTranslation()
+  const dateDayjs = date ? dayjs.tz(date, ISRAEL_TIMEZONE) : dayjs()
   const [groupByOperatorData, isLoading] = useGroupBy({
-    dateFrom: dayjs(timestamp).add(-1, timeRange).valueOf(),
-    dateTo: timestamp || dayjs().valueOf(),
+    dateFrom: dateDayjs.subtract(1, timeRange),
+    dateTo: dateDayjs,
     groupBy: 'operator_ref',
   })
 
@@ -37,7 +38,7 @@ export const OperatorGaps = ({
       { name: t('rides_missing'), value: missing, color: '#FF4040' },
       // { name: t('ride_extra'), value: 0, color: '#FFBB28' },
     ]
-  }, [operatorId, timestamp, groupByOperatorData, i18n.language])
+  }, [operatorId, date, groupByOperatorData, i18n.language])
 
   const prefersReducedMotion = useMemo(() => {
     return window?.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -48,7 +49,7 @@ export const OperatorGaps = ({
       {isLoading ? (
         <SkeletonLoader active rows={2} />
       ) : (
-        <Stack flexDirection="row" justifyContent="space-between">
+        <Stack sx={{ flexDirection: 'row', justifyContent: 'space-between' }}>
           <div>
             <InfoTable>
               {data.map((d) => (

@@ -42,8 +42,8 @@ function StackedResearchSection() {
   const [operatorId, setOperatorId] = useState('')
   const [groupByHour, setGroupByHour] = useState<boolean>(false)
   const [graphData, loadingGraph] = useGroupBy({
-    dateFrom: startDate.valueOf(),
-    dateTo: endDate.valueOf(),
+    dateFrom: startDate,
+    dateTo: endDate,
     groupBy: groupByHour ? 'operator_ref,gtfs_route_hour' : 'operator_ref,gtfs_route_date',
   })
 
@@ -109,7 +109,7 @@ function StackedResearchInputs({
   const { t } = useTranslation()
   return (
     <>
-      <Grid container gap={2}>
+      <Grid container sx={{ gap: 2 }}>
         <Grid size={{ md: 'grow', xs: 12 }}>
           <DateSelector
             time={startDate}

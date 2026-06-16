@@ -38,13 +38,14 @@ const SingleLineMapPage = () => {
   )
 
   const {
-    positions,
+    positionGroups,
     locationsAreLoading,
     options,
     plannedRouteStops,
     startTime,
     routes,
     routeKey,
+    error,
     setStartTime,
   } = useSingleLineData({
     operatorId: operatorId ?? undefined,
@@ -89,9 +90,9 @@ const SingleLineMapPage = () => {
     setType(value)
     setSearch((current) =>
       value === 'routes'
-        ? { ...current, vehicleNumber: null }
+        ? { ...current, vehicleNumber: null, rideTime: null }
         : value === 'vehicle'
-          ? { ...current, lineNumber: null, routeKey: null }
+          ? { ...current, lineNumber: null, routeKey: null, rideTime: null }
           : current,
     )
   }
@@ -125,7 +126,6 @@ const SingleLineMapPage = () => {
             <ToggleButtonGroup
               value={type}
               color="primary"
-              dir="rtl"
               onChange={handleTypeChange}
               sx={{ height: 56 }}
               exclusive
@@ -135,7 +135,7 @@ const SingleLineMapPage = () => {
             </ToggleButtonGroup>
           </Grid>
         </Grid>
-        <Grid container spacing={2} size={12} alignContent={'center'}>
+        <Grid container spacing={2} size={12} sx={{ alignContent: 'center' }}>
           {type === 'routes' ? (
             <>
               {/* choose line number */}
@@ -148,7 +148,9 @@ const SingleLineMapPage = () => {
               </Grid>
               <Grid size={{ sm: 4, xs: 12 }}>
                 {/* choose route */}
-                {routes?.length === 0 ? (
+                {error ? (
+                  <NotFound>{error}</NotFound>
+                ) : routes?.length === 0 ? (
                   <NotFound>{t('line_not_found')}</NotFound>
                 ) : (
                   <RouteSelector
@@ -172,35 +174,33 @@ const SingleLineMapPage = () => {
               </Grid>
             </>
           )}
-          {positions && (
-            <>
-              {/* choose start time */}
-              <Grid
-                size={{ sm: type === 'routes' ? 4 : 8, xs: 12 }}
-                container
-                alignItems="center"
-                display="flex"
-                gap={2}
-                flexWrap="nowrap"
-                justifyContent="space-between">
-                <FilterPositionsByStartTimeSelector
-                  options={options}
-                  disabled={!routeKey && !vehicleNumber}
-                  startTime={startTime}
-                  setStartTime={setStartTime}
-                />
-                {locationsAreLoading && (
-                  <Tooltip title={t('loading_times_tooltip_content')}>
-                    <CircularProgress />
-                  </Tooltip>
-                )}
-              </Grid>
-            </>
-          )}
+          {/* choose start time */}
+          <Grid
+            size={{ sm: type === 'routes' ? 4 : 8, xs: 12 }}
+            container
+            sx={{
+              alignItems: 'center',
+              display: 'flex',
+              gap: 2,
+              flexWrap: 'nowrap',
+              justifyContent: 'space-between',
+            }}>
+            <FilterPositionsByStartTimeSelector
+              options={options}
+              disabled={!routeKey && !vehicleNumber}
+              startTime={startTime}
+              setStartTime={setStartTime}
+            />
+            {locationsAreLoading && (
+              <Tooltip title={t('loading_times_tooltip_content')}>
+                <CircularProgress />
+              </Tooltip>
+            )}
+          </Grid>
         </Grid>
       </Grid>
       <MapWithLocationsAndPath
-        positions={positions}
+        positionGroups={positionGroups}
         plannedRouteStops={plannedRouteStops}
         showNavigationButtons
       />

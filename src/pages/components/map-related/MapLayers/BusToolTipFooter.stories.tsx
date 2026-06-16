@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import Widget from 'src/shared/Widget'
-import MapFooterButtons from './MapFooterButtons'
+import BusToolTipFooter from './BusToolTipFooter'
 
 const meta = {
-  component: MapFooterButtons,
-  title: 'Map/Layers/MapFooterButtons',
+  component: BusToolTipFooter,
+  title: 'Map/Layers/BusToolTipFooter',
   parameters: {
     layout: 'centered',
   },
@@ -22,7 +22,7 @@ const meta = {
       </Widget>
     ),
   ],
-} satisfies Meta<typeof MapFooterButtons>
+} satisfies Meta<typeof BusToolTipFooter>
 
 export default meta
 

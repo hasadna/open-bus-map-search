@@ -3,7 +3,6 @@ import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { TileLayer, useMap } from 'react-leaflet'
 import { MapProps } from './map-types'
-import { MapIndexLayer } from './MapLayers/MapIndexLayer'
 import { MapPlannedRouteLayer } from './MapLayers/MapPlannedRouteLayer'
 import { MapRouteLayer } from './MapLayers/MapRouteLayer'
 import { useRecenterOnDataChange } from './useRecenterOnDataChange'
@@ -23,12 +22,12 @@ export const plannedRouteLineColor = 'black'
 export const plannedRouteStopMarkerPath = `${import.meta.env.BASE_URL}marker-bus-stop.png`
 export const plannedRouteStopMarker = getIcon(plannedRouteStopMarkerPath, 20, 25)
 
-export function MapContent({ positions, plannedRouteStops, showNavigationButtons }: MapProps) {
+export function MapContent({ positionGroups, plannedRouteStops, showNavigationButtons }: MapProps) {
   const [tileUrl, setTileUrl] = useState('https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png')
   const map = useMap()
   const { i18n } = useTranslation()
 
-  useRecenterOnDataChange({ positions, plannedRouteStops })
+  useRecenterOnDataChange({ positionGroups, plannedRouteStops })
 
   useEffect(() => {
     const handleLanguageChange = (lng: string) => {
@@ -45,13 +44,13 @@ export function MapContent({ positions, plannedRouteStops, showNavigationButtons
   }, [i18n])
 
   const navigateMarkers = useCallback(
-    (positionId: number, marker: Layer) => {
-      const pos = positions[positionId]
+    (groupIndex: number, positionId: number, marker: Layer) => {
+      const pos = positionGroups[groupIndex]?.positions[positionId]
       if (!map || !pos?.loc) return
       map.flyTo(pos.loc, map.getZoom())
       marker.openPopup()
     },
-    [map, positions],
+    [map, positionGroups],
   )
 
   return (
@@ -60,9 +59,8 @@ export function MapContent({ positions, plannedRouteStops, showNavigationButtons
         attribution='&copy <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url={tileUrl}
       />
-      <MapIndexLayer showPlannedRoute={!!plannedRouteStops} />
       <MapRouteLayer
-        positions={positions}
+        positionGroups={positionGroups}
         showNavigationButtons={showNavigationButtons}
         navigateMarkers={navigateMarkers}
       />

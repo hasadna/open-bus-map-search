@@ -33,7 +33,6 @@ export const getLang = (): string => {
 const initialLang = getLang()
 
 i18n.use(initReactI18next).init({
-  showSupportNotice: false,
   resources: {
     ar: { translation: translationsAR },
     he: { translation: translationsHE },
