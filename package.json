@@ -13,7 +13,7 @@
     "@mui/icons-material": "^9.1.1",
     "@mui/material": "^9.1.0",
     "@mui/stylis-plugin-rtl": "^9.0.1",
-    "@mui/x-date-pickers": "^9.3.0",
+    "@mui/x-date-pickers": "^9.5.0",
     "@mui/x-tree-view": "^9.0.1",
     "@rolldown/plugin-babel": "^0.2.3",
     "@tanstack/query-async-storage-persister": "^5.96.2",
