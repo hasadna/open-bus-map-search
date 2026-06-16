@@ -171,7 +171,7 @@ describe('locale files are in sync', () => {
     }
 
     const errors: string[] = []
-    const awaitingTranslation: string[] = []
+    const awaitingTranslation: { key: string; missing: string[] }[] = []
     for (const [key, langs] of keyToLanguages) {
       if (langs.length === languages.length) continue
       const missing = languages.filter((lang) => !langs.includes(lang))
@@ -186,25 +186,47 @@ describe('locale files are in sync', () => {
           ),
         )
       } else {
-        // en+he present, only ru and/or ar missing — let it lag, just warn
-        awaitingTranslation.push(key)
+        // en+he present, only ru and/or ar missing — let it lag, just warn.
+        // `missing` here is a non-empty subset of the optional languages.
+        awaitingTranslation.push({ key, missing })
       }
     }
 
     if (awaitingTranslation.length > 0) {
-      // group by top-level key so 200 untranslated leaves of one page print as one line
-      const byPrefix = new Map<string, number>()
-      for (const key of awaitingTranslation) {
-        const prefix = key.split('.')[0]
-        byPrefix.set(prefix, (byPrefix.get(prefix) ?? 0) + 1)
+      // collapse a list of dotted keys to a compact summary: a prefix that owns
+      // more than one missing key prints as "prefix.* (N keys)", a lone key
+      // prints in full so the exact path is visible
+      const summarize = (keys: string[]): string => {
+        const byPrefix = new Map<string, string[]>()
+        for (const key of keys) {
+          const prefix = key.split('.')[0]
+          byPrefix.set(prefix, [...(byPrefix.get(prefix) ?? []), key])
+        }
+        return [...byPrefix]
+          .map(([prefix, owned]) =>
+            owned.length === 1 ? owned[0] : `${prefix}.* (${owned.length} keys)`,
+          )
+          .join(', ')
       }
-      const summary = [...byPrefix]
-        .map(([prefix, count]) => (count === 1 ? prefix : `${prefix}.* (${count} keys)`))
-        .join(', ')
+
+      // bucket by the exact set of missing languages ("ru, ar" vs "ru" vs "ar")
+      // so the warning spells out where each group of keys is missing from
+      const byMissing = new Map<string, string[]>()
+      for (const { key, missing } of awaitingTranslation) {
+        const label = missing.join(', ')
+        byMissing.set(label, [...(byMissing.get(label) ?? []), key])
+      }
+      const lines = [...byMissing]
+        // widest gaps first (missing both, then single-language), then alphabetical
+        .sort(([a], [b]) => b.split(', ').length - a.split(', ').length || a.localeCompare(b))
+        .map(
+          ([label, keys]) =>
+            `  • missing from ${label} — ${keys.length} key(s): ${summarize(keys)}`,
+        )
       // not console.warn — jest decorates intercepted console calls with a
       // useless code frame of this test file
       process.stderr.write(
-        `\n${banner('⚠ WARNING')}\n${awaitingTranslation.length} keys exist in en+he but are missing ru and/or ar translation: ${summary}\n\n`,
+        `\n${banner('⚠ WARNING')}\n${awaitingTranslation.length} keys exist in en+he but lack a ru/ar translation:\n${lines.join('\n')}\n\n`,
       )
     }
 
