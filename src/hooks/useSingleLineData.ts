@@ -6,7 +6,11 @@ import { getRoutesByLineRef, getStopsForRouteAsync } from 'src/api/gtfsService'
 import { getServiceDayRoutes } from 'src/api/serviceDayRoutesService'
 import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone } from 'src/dayjs'
 import { BusRoute } from 'src/model/busRoute'
-import { type Point, toPoint } from 'src/pages/components/map-related/map-types'
+import {
+  type PositionGroup,
+  ROUTE_COLORS,
+  toPoint,
+} from 'src/pages/components/map-related/map-types'
 import { routeStartEnd, vehicleIDFormat } from 'src/pages/components/utils/rotueUtils'
 import {
   formatServiceDayTime,
@@ -47,7 +51,8 @@ export const useSingleLineData = ({
   const [routes, setRoutes] = useState<BusRoute[] | undefined>()
   const [options, setOptions] = useState<{ value: string; label: string }[]>([])
   const [rideIdsByToken, setRideIdsByToken] = useState<Map<string, number[]>>(new Map())
-  const [positions, setPositions] = useState<Point[]>([])
+  const [vehicleRefById, setVehicleRefById] = useState<Map<number, string>>(new Map())
+  const [positionGroups, setPositionGroups] = useState<PositionGroup[]>([])
   const [locationsAreLoading, setLocationsAreLoading] = useState(false)
   const [error, setError] = useState<string>()
   const startTime = useMemo(() => normalizeStartTimeToken(rideTime ?? undefined), [rideTime])
@@ -132,6 +137,7 @@ export const useSingleLineData = ({
     // siri_ride ids while a ride-time token is still selected across a date change.
     setOptions([])
     setRideIdsByToken(new Map())
+    setVehicleRefById(new Map())
     if (!selectedRoute?.lineRef && !validVehicleNumber) {
       return
     }
@@ -167,6 +173,7 @@ export const useSingleLineData = ({
         }
 
         const idMap = new Map<string, number[]>()
+        const vehMap = new Map<number, string>()
         const opts: { value: string; label: string }[] = []
 
         byTime.forEach((group, key) => {
@@ -174,6 +181,7 @@ export const useSingleLineData = ({
             key,
             group.map((g) => g.id),
           )
+          group.forEach((g) => vehMap.set(g.id, g.vehicleRef))
           const token = validVehicleNumber ? key.split('|')[0] : key
           // Show the wall-clock time (00:10), not the extended-hour token (24:10),
           // and flag past-midnight departures with a moon so the next-night rides
@@ -201,6 +209,7 @@ export const useSingleLineData = ({
 
         setOptions(opts)
         setRideIdsByToken(idMap)
+        setVehicleRefById(vehMap)
       })
       .catch((err) => {
         if (err?.name !== 'AbortError') console.error(err)
@@ -208,16 +217,16 @@ export const useSingleLineData = ({
     return () => controller.abort()
   }, [selectedRoute?.lineRef, operatorId, validVehicleNumber, serviceDayStart, serviceDayEnd])
 
-  // Fetch location pings for the selected ride(s)
+  // Fetch location pings for the selected ride(s), one group per vehicle
   useEffect(() => {
     const rideIds = selectedRideIdsKey ? selectedRideIdsKey.split(',').map(Number) : []
     if (!rideIds.length) {
-      setPositions([])
+      setPositionGroups([])
       return
     }
     setLocationsAreLoading(true)
     Promise.all(
-      rideIds.map((rideId) =>
+      rideIds.map((rideId, idx) =>
         SIRI_API.siriVehicleLocationsListGet({
           siriRidesIds: rideId.toString(),
           // Israel bounding box — drops null/zero-coordinate and stray pings at the API level
@@ -228,13 +237,17 @@ export const useSingleLineData = ({
           orderBy: 'recorded_at_time asc',
           limit: 10000,
           getCount: false,
-        }),
+        }).then((data) => ({
+          color: ROUTE_COLORS[idx % ROUTE_COLORS.length],
+          label: vehicleIDFormat(vehicleRefById.get(rideId)) ?? String(idx + 1),
+          positions: uniqBy(data, (l) => l.id).map(toPoint),
+        })),
       ),
     )
-      .then((results) => setPositions(uniqBy(results.flat(), (l) => l.id).map(toPoint)))
+      .then(setPositionGroups)
       .catch(console.error)
       .finally(() => setLocationsAreLoading(false))
-  }, [selectedRideIdsKey])
+  }, [selectedRideIdsKey, vehicleRefById])
 
   // Fetch planned stops for the black polyline
   const stopsQuery = useQuery({
@@ -269,7 +282,7 @@ export const useSingleLineData = ({
   })
 
   return {
-    positions,
+    positionGroups,
     plannedRouteStops: stopsQuery.data ?? [],
     options,
     startTime,

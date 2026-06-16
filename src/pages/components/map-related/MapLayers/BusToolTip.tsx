@@ -157,7 +157,7 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
             )}
             <br />
             <Button
-              href="https://www.gov.il/BlobFolder/generalpage/gtfs_general_transit_feed_specifications/he/GTFS_Developer_Information_2024.11.21b.pdf"
+              href="https://www.gov.il/BlobFolder/generalpage/gtfs_general_transit_feed_specifications/he/Gtfs%20Documentation%20v3.pdf"
               target="_blank"
               rel="noopener noreferrer"
               sx={{ marginTop: '2px' }}>
