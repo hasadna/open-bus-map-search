@@ -156,20 +156,25 @@ jobs:
             an eslint-plugin set together, a `@types/x` with its `x`. One logical
             change per PR. A well-grouped PR is worth more than several thin ones.
 
-            ## Risk discipline — judge by behaviour, not line count
+            ## Risk discipline — judge by the MIGRATION, not the version number
             Code changes to accommodate a bump are fine; you are NOT limited to a
-            fixed number of lines. The test is BEHAVIOURAL: a change is acceptable
-            when it stays focused and localized to a few spots, is essentially
-            mechanical (a renamed import / API, an adjusted function signature, a
-            changed config key, a type tweak), and does NOT alter the app's actual
-            runtime behaviour. Major-version bumps are allowed under exactly that
-            bar — read the changelog, make the focused edits, and confirm via
-            lint/build/tests that behaviour is unchanged.
-            What you MUST avoid is a sprawling or behaviour-changing migration: if
-            accommodating a bump means touching many files, reworking logic, or
-            risking any user-visible change, DO NOT do it here — skip it and note
-            it in your final summary (or the PR body) as "deferred, needs a human".
-            Never open a half-broken PR.
+            fixed number of lines, and a MAJOR version bump is NOT a veto. Never
+            skip something just because it crosses a major. For EVERY candidate —
+            majors included — read the changelog / migration guide and assess the
+            ACTUAL migration THIS repo needs. The bar is BEHAVIOURAL: do it when
+            the required change stays focused and localized to a few spots, is
+            essentially mechanical (a renamed import / API, an adjusted signature,
+            a changed config key, a type tweak), and does NOT alter the app's
+            runtime behaviour — then make the edits and confirm via
+            lint/build/tests that behaviour is unchanged. A major that migrates
+            this cleanly is a perfectly good PR; open it.
+            Defer ONLY when the migration ITSELF is genuinely large or risky —
+            touching many files, reworking logic, or risking a user-visible change
+            — regardless of whether it's a major or a minor. In that case skip it
+            and note it in your final summary (or the PR body) as "deferred, needs
+            a human", with a line on what the migration would entail. The deciding
+            question is always "is the migration easy and behaviour-preserving?",
+            never "is this a major?". Never open a half-broken PR.
 
             ## For each PR you decide to open
             1. Create a branch named `deps/<short-slug>` off the default branch.
