@@ -211,11 +211,13 @@ jobs:
           #                      settings.json effortLevel enum drops it silently).
           #   --fallback-model   keeps the run alive through Opus overload.
           # Tool surface is scoped to what a dependency PR needs; the deny-list
-          # blocks anything that publishes a package, cuts a release, or pushes an
-          # image — none of which a bump PR should ever do.
+          # blocks anything that publishes a package, cuts a release, pushes an
+          # image, or MERGES/REVIEWS a PR — its job is to OPEN PRs for humans to
+          # review and merge, never to merge or approve them itself. (Branch
+          # protection on main is the real backstop; this just makes it explicit.)
           claude_args: >-
             --model opus
             --effort max
             --fallback-model sonnet
             --allowed-tools "Bash,Edit,Write,Read,Glob,Grep,WebFetch,WebSearch,TodoWrite"
-            --disallowed-tools "Bash(npm publish:*),Bash(gh release:*),Bash(docker push:*),Bash(docker image push:*),Bash(docker buildx:*),Bash(podman push:*)"
+            --disallowed-tools "Bash(gh pr merge:*),Bash(gh pr review:*),Bash(npm publish:*),Bash(gh release:*),Bash(docker push:*),Bash(docker image push:*),Bash(docker buildx:*),Bash(podman push:*)"
