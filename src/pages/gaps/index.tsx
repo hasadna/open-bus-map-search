@@ -31,17 +31,22 @@ const GapsPage = () => {
   const [gaps, setGaps] = useState<Gap[]>()
   const [gapsIsLoading, setGapsIsLoading] = useState(false)
 
-  // Scroll position persisted so the user can return to their position after
-  // navigating to /single-line-map (via gap row click) and pressing back.
-  usePageState('gaps', { params: {}, ui: { scrollPosition: 0 } })
+  // onlyGapped (the "only gaps" table toggle) is a shareable page param so a
+  // recipient sees the same filtered view; scroll position is persisted so the
+  // user returns to their place after visiting /single-line-map and going back.
+  const { params, setParams } = usePageState<{ onlyGapped: boolean }, { scrollPosition: number }>(
+    'gaps',
+    { params: { onlyGapped: false }, ui: { scrollPosition: 0 } },
+    ['onlyGapped'],
+  )
 
   const singleLineMapBaseHref = useMemo(() => {
-    const params = new URLSearchParams()
-    params.set('date', search.date || '')
-    params.set('operatorId', search.operatorId || '')
-    params.set('lineNumber', search.lineNumber || '')
-    params.set('routeKey', search.routeKey || '')
-    return `/single-line-map?${params.toString()}`
+    const urlParams = new URLSearchParams()
+    urlParams.set('date', search.date || '')
+    urlParams.set('operatorId', search.operatorId || '')
+    urlParams.set('lineNumber', search.lineNumber || '')
+    urlParams.set('routeKey', search.routeKey || '')
+    return `/single-line-map?${urlParams.toString()}`
   }, [search.date, search.lineNumber, search.operatorId, search.routeKey])
 
   useEffect(() => {
@@ -184,6 +189,8 @@ const GapsPage = () => {
           date={date}
           singleLineMapBaseHref={singleLineMapBaseHref}
           onStartTimeClick={handleStartTimeClick}
+          onlyGapped={params.onlyGapped}
+          setOnlyGapped={(value) => setParams((prev) => ({ ...prev, onlyGapped: value }))}
         />
       )}
     </PageContainer>

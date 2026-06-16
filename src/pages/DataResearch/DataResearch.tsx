@@ -1,5 +1,5 @@
 import { Grid } from '@mui/material'
-import React, { useMemo, useState } from 'react'
+import React, { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   Area,
@@ -12,7 +12,7 @@ import {
 } from 'recharts'
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
 import dayjs from 'src/dayjs'
-import { useDate } from 'src/hooks/useDate'
+import { usePageState } from 'src/hooks/usePageState'
 import SkeletonLoader from 'src/shared/SkeletonLoader'
 import Widget from 'src/shared/Widget'
 import { DateSelector } from '../components/DateSelector'
@@ -22,6 +22,8 @@ import { getColorName } from '../dashboard/AllLineschart/OperatorHbarChart/Opera
 import './DataResearch.scss'
 
 const now = dayjs()
+const DEFAULT_START = now.clone().subtract(7, 'days').toISOString()
+const DEFAULT_END = now.clone().subtract(1, 'day').toISOString()
 
 export const DataResearch = () => {
   const { t } = useTranslation()
@@ -37,10 +39,29 @@ export const DataResearch = () => {
 
 function StackedResearchSection() {
   const { t } = useTranslation()
-  const [startDate, setStartDate] = useDate(now.clone().subtract(7, 'days'))
-  const [endDate, setEndDate] = useDate(now.clone().subtract(1, 'day'))
-  const [operatorId, setOperatorId] = useState('')
-  const [groupByHour, setGroupByHour] = useState<boolean>(false)
+
+  // Dates, operator and the day/hour grouping are shareable page params,
+  // persisted across navigation. Dates are stored as ISO strings.
+  const { params, setParams } = usePageState<
+    { startDate: string; endDate: string; operatorId: string; groupByHour: boolean },
+    { scrollPosition: number }
+  >(
+    'data-research',
+    {
+      params: {
+        startDate: DEFAULT_START,
+        endDate: DEFAULT_END,
+        operatorId: '',
+        groupByHour: false,
+      },
+      ui: { scrollPosition: 0 },
+    },
+    ['startDate', 'endDate', 'operatorId', 'groupByHour'],
+  )
+  const startDate = dayjs(params.startDate)
+  const endDate = dayjs(params.endDate)
+  const operatorId = params.operatorId
+  const groupByHour = params.groupByHour
   const [graphData, loadingGraph] = useGroupBy({
     dateFrom: startDate,
     dateTo: endDate,
@@ -51,13 +72,13 @@ function StackedResearchSection() {
     <Widget title={t('dataResearch.global_issues_title')} marginBottom>
       <StackedResearchInputs
         startDate={startDate}
-        setStartDate={setStartDate}
+        setStartDate={(d) => setParams((prev) => ({ ...prev, startDate: d.toISOString() }))}
         endDate={endDate}
-        setEndDate={setEndDate}
+        setEndDate={(d) => setParams((prev) => ({ ...prev, endDate: d.toISOString() }))}
         groupByHour={groupByHour}
-        setGroupByHour={setGroupByHour}
+        setGroupByHour={(v) => setParams((prev) => ({ ...prev, groupByHour: v }))}
         operatorId={operatorId}
-        setOperatorId={setOperatorId}
+        setOperatorId={(id) => setParams((prev) => ({ ...prev, operatorId: id }))}
       />
       <StackedResearchChart
         graphData={graphData}
