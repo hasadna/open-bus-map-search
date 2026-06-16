@@ -8,7 +8,6 @@ const fullSearch: GlobalSearchState = {
   date: '2026-05-01',
   operatorId: '3',
   lineNumber: '64',
-  vehicleNumber: 12345,
   routeKey: 'route-abc',
   rideTime: '08:30:00',
   stopKey: null,
@@ -144,13 +143,6 @@ describe('buildShareUrl — round-trip', () => {
     expect(p.date).toBe(fullSearch.date)
   })
 
-  it('numeric vehicleNumber survives as a parseable number', () => {
-    const p = paramsOf(build('/timeline', fullSearch))
-    const restored = Number(p.vehicleNumber)
-    expect(Number.isFinite(restored)).toBe(true)
-    expect(restored).toBe(fullSearch.vehicleNumber)
-  })
-
   it('extra param values with special characters are encoded correctly', () => {
     const iso = '2026-05-01T00:00:00.000Z'
     const p = paramsOf(build('/gaps_patterns', fullSearch, { startDate: iso }))
@@ -164,13 +156,6 @@ describe('buildShareUrl — round-trip', () => {
 // ---------------------------------------------------------------------------
 
 describe('buildShareUrl — edge cases', () => {
-  it('vehicleNumber 0 is treated as falsy and excluded', () => {
-    // Vehicle number 0 is not a real vehicle; the falsy guard is intentional
-    const search: GlobalSearchState = { ...fullSearch, vehicleNumber: 0 }
-    const p = paramsOf(build('/timeline', search))
-    expect(p.vehicleNumber).toBeUndefined()
-  })
-
   it('a page with all empty/null search values produces no query string', () => {
     const empty: GlobalSearchState = {
       ...GLOBAL_SEARCH_DEFAULTS,
