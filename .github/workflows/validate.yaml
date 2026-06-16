@@ -294,6 +294,20 @@ jobs:
       - name: Prepare for Testing
         run: |
           echo "SHORT_SHA=$(echo ${{ github.event.pull_request.head.sha }} | cut -c1-7)" >> $GITHUB_ENV
+      # Visual tests must run against the nginx-served Docker artifact (with the
+      # production CSP/security headers), not the bare Vite dev server. Start the
+      # container on :3000 so Playwright's webServer (reuseExistingServer) reuses
+      # it instead of spinning up `npm start`. Otherwise CSP regressions (e.g. a
+      # missing connect-src breaking MSW-mocked stories) go undetected.
+      - name: Download Docker image artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: docker-image
+          path: /tmp
+      - name: Load Docker image
+        run: docker load -i /tmp/docker-image.tar
+      - name: Start application container
+        run: docker run -d -p 3000:80 ${{ env.DOCKER_APP_IMAGE_NAME }}:${{ env.DOCKER_APP_IMAGE_TAG }}
       - uses: actions/setup-node@v6
         with:
           node-version: 24
