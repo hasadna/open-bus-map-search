@@ -2,10 +2,12 @@ export function MapIndex({
   lineColor,
   imgSrc,
   title,
+  subtitle,
 }: {
   lineColor: string
   imgSrc: string
   title: string
+  subtitle?: string
 }) {
   return (
     <div className="map-index-item">
@@ -16,7 +18,10 @@ export function MapIndex({
         <div className="map-index-item-line" style={{ backgroundColor: lineColor }} />
       </div>
       <div className="map-index-item-title">
-        <h3>{title}</h3>
+        <h3>
+          {title}
+          {subtitle && <span>{subtitle}</span>}
+        </h3>
       </div>
     </div>
   )
