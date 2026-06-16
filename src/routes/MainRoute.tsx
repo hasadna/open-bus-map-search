@@ -4,8 +4,12 @@ import { useLocation, useSearchParams } from 'react-router'
 import { useSessionStorage } from 'usehooks-ts'
 import { MainLayout } from '../layout'
 import { ThemeProvider } from '../layout/ThemeContext'
-import { GlobalSearchContext } from '../model/globalState'
-import { GLOBAL_SEARCH_DEFAULTS, GlobalSearchState } from '../model/globalState'
+import {
+  GLOBAL_SEARCH_DEFAULTS,
+  GlobalSearchContext,
+  GlobalSearchState,
+  isValidSearchDate,
+} from '../model/globalState'
 import { InitialUrlParamsContext, PageShareParamsContext } from '../model/pageState'
 
 // react-ga4's default export is nested under `.default` under some CJS/ESM interop
@@ -38,9 +42,12 @@ export const MainRoute = () => {
 
   const urlState = useMemo<Partial<GlobalSearchState>>(() => {
     const p = initialUrlParams
+    // Accept 'rideTime' (new) or 'startTime' (old shared links) for backward compat.
+    // 'startTime' is the previous name of the ride-departure token ("HH:mm", hour may
+    // exceed 23 for past-midnight rides) — unrelated to the retired epoch 'timestamp' param.
     const rideTime = p.rideTime ?? p.startTime ?? undefined
     return {
-      ...(p.date ? { date: p.date } : {}),
+      ...(isValidSearchDate(p.date) ? { date: p.date } : {}),
       ...(p.operatorId ? { operatorId: p.operatorId } : {}),
       ...(p.lineNumber ? { lineNumber: p.lineNumber } : {}),
       ...(p.vehicleNumber ? { vehicleNumber: Number(p.vehicleNumber) } : {}),
@@ -50,13 +57,39 @@ export const MainRoute = () => {
     }
   }, [])
 
-  const [search, setSearch] = useSessionStorage<GlobalSearchState>('search', {
+  // A pre-migration 'search' entry stored `timestamp: number` and no `date`, so the
+  // isValidSearchDate fallback below resets its date — reusing the key is safe.
+  const [storedSearch, setSearch] = useSessionStorage<GlobalSearchState>('search', {
     ...GLOBAL_SEARCH_DEFAULTS,
     ...urlState,
   })
 
-  // If session storage already had values, urlState was ignored above — apply
-  // it now. Shared links must always override stale session state.
+  // A stored date that no longer parses (stale format, manual edit) falls back
+  // to the default day instead of propagating an invalid date to every page.
+  const search = useMemo<GlobalSearchState>(
+    () =>
+      isValidSearchDate(storedSearch.date)
+        ? storedSearch
+        : { ...storedSearch, date: GLOBAL_SEARCH_DEFAULTS.date },
+    [storedSearch],
+  )
+
+  // Also repair the stored value itself — otherwise the corrupt date sits in
+  // session storage forever and every functional setSearch spreads it back in.
+  // Only `date` is touched (functional update) so this can't clobber the
+  // urlState effect below regardless of effect ordering.
+  useEffect(() => {
+    if (!isValidSearchDate(storedSearch.date)) {
+      setSearch((current) =>
+        isValidSearchDate(current.date)
+          ? current
+          : { ...current, date: GLOBAL_SEARCH_DEFAULTS.date },
+      )
+    }
+  }, [storedSearch.date])
+
+  // If session storage already had values, urlState was ignored above — apply it now.
+  // This ensures shared links always override stale session state.
   useEffect(() => {
     if (Object.keys(urlState).length > 0) {
       setSearch((current) => ({ ...current, ...urlState }))

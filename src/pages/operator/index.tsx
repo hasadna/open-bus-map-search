@@ -49,7 +49,7 @@ const OperatorPage = () => {
     }))
   }
 
-  // OperatorGaps and OperatorRoutes still accept a numeric timestamp.
+  // WorstLinesChart derives its start/end Dayjs window from a numeric timestamp.
   const dateTimestamp = dayjs.tz(date, ISRAEL_TIMEZONE).valueOf()
 
   return (
@@ -91,11 +91,7 @@ const OperatorPage = () => {
           <Grid size={{ lg: 6, xs: 12 }}>
             <OperatorInfo operatorId={operatorId} />
             <Spacing />
-            <OperatorGaps
-              operatorId={operatorId}
-              timestamp={dateTimestamp}
-              timeRange={params.timeRange}
-            />
+            <OperatorGaps operatorId={operatorId} date={date} timeRange={params.timeRange} />
           </Grid>
           <Grid size={{ lg: 6, xs: 12 }}>
             <ChartWrapper>
@@ -110,7 +106,7 @@ const OperatorPage = () => {
             </ChartWrapper>
           </Grid>
           <Grid size={{ xs: 12 }}>
-            <OperatorRoutes operatorId={operatorId} timestamp={dateTimestamp} />
+            <OperatorRoutes operatorId={operatorId} date={date} />
           </Grid>
         </Grid>
       )}

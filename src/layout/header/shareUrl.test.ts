@@ -75,7 +75,8 @@ describe('buildShareUrl — page-specific params', () => {
 
   it('/map produces no global params — only page params are included', () => {
     const p = paramsOf(build('/map', fullSearch, { datetime: '2026-03-14T17:00' }))
-    expect(Object.keys(p)).toEqual(expect.arrayContaining(['datetime']))
+    expect(Object.keys(p)).toEqual(['datetime'])
+    expect(p.datetime).toBe('2026-03-14T17:00')
     // No global fields should leak in
     expect(p.operatorId).toBeUndefined()
     expect(p.date).toBeUndefined()

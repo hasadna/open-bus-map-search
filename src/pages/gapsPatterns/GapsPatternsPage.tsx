@@ -78,13 +78,7 @@ function GapsByHour({
   sortingMode: 'hour' | 'severity'
   setSortingMode: (m: 'hour' | 'severity') => void
 }) {
-  const hourlyData = useGapsList(
-    fromDate.valueOf(),
-    toDate.valueOf(),
-    operatorRef,
-    lineRef,
-    sortingMode,
-  )
+  const hourlyData = useGapsList(fromDate, toDate, operatorRef, lineRef, sortingMode)
   const isLoading = !hourlyData.length
   const { t } = useTranslation()
   const maxHourlyRides = Math.max(

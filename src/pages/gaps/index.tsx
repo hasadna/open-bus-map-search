@@ -51,7 +51,7 @@ const GapsPage = () => {
 
     setGapsIsLoading(true)
     const { start, end } = serviceDayBounds(date)
-    getGapsAsync(start.valueOf(), end.valueOf(), operatorId, selectedRoute.lineRef)
+    getGapsAsync(start, end, operatorId, selectedRoute.lineRef)
       .then((res) =>
         setGaps(
           res.filter((g) => {
@@ -111,7 +111,7 @@ const GapsPage = () => {
 
   // On gap row click: only set rideTime — date stays as the service day the
   // user was browsing. rideTime uses 24+ hour format for past-midnight rides
-  // (e.g. "25:30") so single-line-map can reconstruct the correct timestamp.
+  // (e.g. "25:30") so single-line-map can reconstruct the correct time.
   const handleStartTimeClick = useCallback(
     (rideTime: string) => {
       setSearch((current) => ({ ...current, rideTime }))

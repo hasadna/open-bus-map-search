@@ -14,12 +14,12 @@ const cacheDomain = 'https://docbuvbfdq5r6.cloudfront.net/'
 
 export function useVelocityAggregationData(
   bounds: VelocityAggregationBounds,
-  timestamp: dayjs.Dayjs,
+  date: dayjs.Dayjs,
   zoom: number,
 ) {
-  timestamp = timestamp.startOf('day').add(12, 'hour') // use midday to avoid timezone issues
+  date = date.startOf('day').add(12, 'hour') // use midday to avoid timezone issues
   const { data, isLoading, error } = useQuery({
-    queryFn: queryFn.bind(null, bounds, timestamp, zoom),
+    queryFn: queryFn.bind(null, bounds, date, zoom),
     queryKey: [
       'velocity_aggregation',
       bounds.minLon,
@@ -27,7 +27,7 @@ export function useVelocityAggregationData(
       bounds.minLat,
       bounds.maxLat,
       zoom,
-      timestamp.toString(),
+      date.toString(),
       'v2',
     ],
   })
@@ -44,14 +44,10 @@ function snakeToCamel(o: SiriVelocityAggregationPydanticModel) {
   )
 }
 
-async function loadFromCache(
-  bounds: VelocityAggregationBounds,
-  timestamp: dayjs.Dayjs,
-  zoom: number,
-) {
+async function loadFromCache(bounds: VelocityAggregationBounds, date: dayjs.Dayjs, zoom: number) {
   const dataFromCache = await fetch(
     `${cacheDomain}siri_velocity_aggregation/siri_velocity_aggregation?recorded_from=${encodeURIComponent(
-      timestamp.toISOString(),
+      date.toISOString(),
     )}&lon_min=${bounds.minLon}&lon_max=${bounds.maxLon}&lat_min=${bounds.minLat}&lat_max=${bounds.maxLat}&rounding_precision=${zoom}`,
   ).then(async (res) => {
     if (!res.ok) {
@@ -64,11 +60,11 @@ async function loadFromCache(
   return dataFromCache
 }
 
-async function queryFn(bounds: VelocityAggregationBounds, timestamp: dayjs.Dayjs, zoom: number) {
+async function queryFn(bounds: VelocityAggregationBounds, date: dayjs.Dayjs, zoom: number) {
   // only try cached data if date is in the past
-  if (timestamp.isBefore(dayjs('yesterday'))) {
+  if (date.isBefore(dayjs('yesterday'))) {
     try {
-      const cachedData = await loadFromCache(bounds, timestamp, zoom)
+      const cachedData = await loadFromCache(bounds, date, zoom)
       if (cachedData) {
         return cachedData
       }
@@ -77,7 +73,7 @@ async function queryFn(bounds: VelocityAggregationBounds, timestamp: dayjs.Dayjs
     }
   }
   const data = await SIRI_API.velocityAggregationSiriVelocityAggregationSiriVelocityAggregationGet({
-    recordedFrom: timestamp.toDate(),
+    recordedFrom: date.toDate(),
     lonMin: bounds.minLon,
     lonMax: bounds.maxLon,
     latMin: bounds.minLat,

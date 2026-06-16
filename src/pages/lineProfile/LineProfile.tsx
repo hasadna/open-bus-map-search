@@ -1,7 +1,7 @@
 import { GtfsRoutePydanticModel } from '@hasadna/open-bus-api-client'
 import { CircularProgress, Grid } from '@mui/material'
 import { Tooltip } from 'antd'
-import { useCallback, useContext, useEffect } from 'react'
+import { useCallback, useContext, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLoaderData, useNavigate } from 'react-router'
 import { getServiceDayRoutes } from 'src/api/serviceDayRoutesService'
@@ -26,6 +26,10 @@ const LineProfile = () => {
   const navigate = useNavigate()
   const { route, message } = useLoaderData<{ route?: GtfsRoutePydanticModel; message?: string }>()
   const { search, setSearch } = useContext(GlobalSearchContext)
+
+  // Cancels an in-flight service-day lookup when the user picks a new date
+  // before the previous request resolves (see handleDateChange).
+  const dateChangeAbortRef = useRef<AbortController | null>(null)
 
   // stopKey is in global state — shared with /timeline so selecting a stop
   // there and navigating here (or vice versa) preserves the selection.
@@ -71,13 +75,14 @@ const LineProfile = () => {
   )
 
   const {
-    positions,
+    positionGroups,
     locationsAreLoading,
     options,
     plannedRouteStops,
     startTime,
     routes,
     routeKey,
+    error,
     setStartTime,
   } = useSingleLineData({
     operatorId: route?.operatorRef.toString(),
@@ -97,7 +102,9 @@ const LineProfile = () => {
 
   const handleDateChange = (time: dayjs.Dayjs | null) => {
     if (!time || !route) return
+    dateChangeAbortRef.current?.abort()
     const abortController = new AbortController()
+    dateChangeAbortRef.current = abortController
     // Service-day aware (and Israel-tz normalized internally), consistent with the
     // gaps page and the single-line ride list.
     getServiceDayRoutes(
@@ -114,7 +121,7 @@ const LineProfile = () => {
           navigate(`/profile/${newRoute.routeIds[0]}`)
         }
       })
-      .catch((error) => console.error(error))
+      .catch((err) => console.error(err))
   }
 
   const handleRouteChange = (key?: string) => {
@@ -141,15 +148,20 @@ const LineProfile = () => {
           <LineProfileDetails {...route} />
         </Grid>
         <Grid size={{ xs: 12, lg: 5 }} container spacing={2} sx={{ flexDirection: 'column' }}>
-          <RouteSelector
-            routes={routes ?? []}
-            routeKey={routeKey}
-            setRouteKey={handleRouteChange}
-          />
+          {error ? (
+            <NotFound>{error}</NotFound>
+          ) : (
+            <RouteSelector
+              routes={routes ?? []}
+              routeKey={routeKey}
+              setRouteKey={handleRouteChange}
+            />
+          )}
           <DateSelector time={dayjs(route?.date.getTime())} onChange={handleDateChange} />
           <Grid container sx={{ flexWrap: 'nowrap', alignItems: 'center' }}>
             <FilterPositionsByStartTimeSelector
               options={options}
+              disabled={options.length === 0}
               startTime={startTime}
               setStartTime={setStartTime}
             />
@@ -159,7 +171,7 @@ const LineProfile = () => {
               </Tooltip>
             )}
           </Grid>
-          <LineProfileRide point={positions[0]?.point} />
+          <LineProfileRide point={positionGroups[0]?.positions[0]?.point} />
           <StopSelector
             stops={plannedRouteStops}
             stopKey={stopKey ?? undefined}
@@ -171,7 +183,10 @@ const LineProfile = () => {
           />
         </Grid>
       </Grid>
-      <MapWithLocationsAndPath positions={positions} plannedRouteStops={plannedRouteStops} />
+      <MapWithLocationsAndPath
+        positionGroups={positionGroups}
+        plannedRouteStops={plannedRouteStops}
+      />
     </PageContainer>
   )
 }
