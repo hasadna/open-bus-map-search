@@ -87,13 +87,7 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
 
     test(`Map Page Should Look Good [${mode}]`, async ({ page, advancedRouteFromHAR, eyes }) => {
       await advancedRouteFromHAR('tests/HAR/realtimemap.har', harOptions)
-      // Pin the datetime to the instant realtimemap.har was recorded against
-      // (2023-03-14T15:00Z == 17:00 Israel) so the vehicle-locations request matches
-      // the fixture regardless of the page's hardcoded default. Must be a full
-      // page load — datetime is seeded from the URL only on initial mount.
-      await page.goto('/map?datetime=2023-03-14T17:00')
-      await page.locator('.preloader').waitFor({ state: 'hidden' })
-      await page.locator('.leaflet-container').first().waitFor({ state: 'visible' })
+      await visitPage(page, 'time_based_map_page_title')
       await page.locator('.leaflet-marker-icon').first().waitFor({ state: 'visible' })
       await page.locator('.ant-spin-dot').first().waitFor({ state: 'hidden' })
       await eyes.check('map page')
