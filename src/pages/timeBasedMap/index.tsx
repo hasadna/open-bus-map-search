@@ -1,5 +1,5 @@
 import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
-import { useCallback, useMemo } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Marker, Popup, TileLayer, useMap } from 'react-leaflet'
 import MarkerClusterGroup from 'react-leaflet-markercluster'
@@ -111,14 +111,12 @@ function Markers({ positions }: { positions: Point[] }) {
     [agencyList],
   )
 
-  // Fly to user's location on first load for a personalised default view.
-  // Geolocation is best-effort; failure is silently ignored.
-  useMemo(() => {
+  useEffect(() => {
     if (!navigator.geolocation) return
     navigator.geolocation.getCurrentPosition((position) => {
       map.flyTo([position.coords.latitude, position.coords.longitude], 13)
     })
-  }, [])
+  }, [map])
 
   const markerNodes = useMemo(
     () =>
