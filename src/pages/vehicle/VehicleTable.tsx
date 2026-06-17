@@ -141,9 +141,6 @@ export function VehicleRidesCards({ rows, onRowClick }: VehicleTableProps) {
  *  by buildVehicleRideRows; these components only render it. */
 export function VehicleTable(props: VehicleTableProps) {
   const theme = useTheme()
-  // The 5-column table doesn't fit phones in either orientation (an S23 is 360px
-  // portrait / 780px landscape), so switch to the stacked-card layout up to `md`
-  // (<900px) — covers phones and small tablets, not just the narrow `sm` (<600px).
-  const isNarrow = useMediaQuery(theme.breakpoints.down('md'))
+  const isNarrow = useMediaQuery(theme.breakpoints.down('sm'))
   return isNarrow ? <VehicleRidesCards {...props} /> : <VehicleRidesTable {...props} />
 }
