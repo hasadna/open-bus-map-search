@@ -119,7 +119,7 @@ const VehiclePage = () => {
     [rides],
   )
 
-  const { data: routeByLineRef } = useQuery({
+  const { data: routes } = useQuery({
     queryKey: ['vehicleRoutes', serviceDayStart.valueOf(), operatorIds],
     enabled: operatorIds.length > 0,
     queryFn: async ({ signal }) => {
@@ -128,16 +128,18 @@ const VehiclePage = () => {
           getAllRoutesList(operatorId, serviceDayStart.toDate(), signal),
         ),
       )
-      return new Map(
-        routeLists
-          .flat()
-          .map((route) => [
-            String(route.lineRef),
-            { ...fromGtfsRoute(route), agencyName: route.agencyName },
-          ]),
-      )
+      return routeLists
+        .flat()
+        .map((route) => ({ ...fromGtfsRoute(route), agencyName: route.agencyName }))
     },
   })
+
+  // Built here, not in queryFn: the query cache is persisted (JSON), and a Map
+  // would not survive serialization — it rehydrates as a plain object with no .get.
+  const routeByLineRef = useMemo(
+    () => new Map((routes ?? []).map((route) => [String(route.lineRef), route])),
+    [routes],
+  )
 
   const rows = useMemo<VehicleRideRow[]>(() => {
     return (rides ?? [])
