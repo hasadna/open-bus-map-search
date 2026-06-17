@@ -17,11 +17,12 @@ import { useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
 import { SIRI_API } from 'src/api/apiConfig'
+import { getAllRoutesList } from 'src/api/gtfsService'
 import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone } from 'src/dayjs'
 import { useAgencyList } from 'src/hooks/useAgencyList'
+import { fromGtfsRoute } from 'src/model/busRoute'
 import { GlobalSearchContext } from 'src/model/globalState'
 import { ExtraShareParamsContext, InitialUrlParamsContext } from 'src/model/routeContext'
-import { routeStartEnd } from 'src/pages/components/utils/rotueUtils'
 import {
   formatServiceDayTime,
   formatStartTimeForQuery,
@@ -37,7 +38,8 @@ type VehicleRideRow = {
   id: number
   operator: string
   lineNumber: string
-  route: string
+  origin: string
+  destination: string
   displayTime: string
   href?: string
   setSearchPayload?: {
@@ -110,13 +112,50 @@ const VehiclePage = () => {
       ),
   })
 
+  // SIRI rides carry only siri_route__line_ref; the human-readable line number and
+  // route names (gtfs_route__*) are frequently null on the ride. Resolve them from
+  // the operator's GTFS routes for the service day — same source the operator page
+  // uses (getAllRoutesList) — and key by line ref to match each ride.
+  const operatorIds = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          (rides ?? [])
+            .map((ride) => ride.gtfsRouteOperatorRef ?? ride.siriRouteOperatorRef)
+            .filter((ref): ref is number => ref != null)
+            .map(String),
+        ),
+      ),
+    [rides],
+  )
+
+  const { data: routeByLineRef } = useQuery({
+    queryKey: ['vehicleRoutes', serviceDayStart.valueOf(), operatorIds],
+    enabled: operatorIds.length > 0,
+    queryFn: async ({ signal }) => {
+      const routeLists = await Promise.all(
+        operatorIds.map((operatorId) =>
+          getAllRoutesList(operatorId, serviceDayStart.toDate(), signal),
+        ),
+      )
+      return new Map(
+        routeLists.flat().map((route) => [String(route.lineRef), fromGtfsRoute(route)]),
+      )
+    },
+  })
+
   const rows = useMemo<VehicleRideRow[]>(() => {
     return (rides ?? [])
       .filter((ride): ride is SiriRideWithRelatedPydanticModel & { id: number } => !!ride.id)
       .map((ride) => {
-        const [from, to] = routeStartEnd(ride.gtfsRouteRouteLongName)
-        const operatorId = (ride.gtfsRouteOperatorRef ?? ride.siriRouteOperatorRef)?.toString()
-        const lineNumber = ride.gtfsRouteRouteShortName ?? undefined
+        // The ride's own gtfs_route fields are frequently null; resolve the route from
+        // the operator's GTFS routes via line ref (BusRoute carries the line number,
+        // origin/destination names, operator and route key — same model the rest of
+        // the app uses).
+        const lineRef = ride.siriRouteLineRef ?? ride.gtfsRouteLineRef
+        const route = lineRef != null ? routeByLineRef?.get(String(lineRef)) : undefined
+        const operatorId = route?.operatorId ?? ride.siriRouteOperatorRef?.toString()
+        const lineNumber = route?.lineNumber
         const token = ride.scheduledStartTime
           ? formatServiceDayTime(toIsraelTimezone(ride.scheduledStartTime), serviceDayStart)
           : undefined
@@ -126,17 +165,11 @@ const VehiclePage = () => {
 
         // A ride is linkable to single-line-map only if we can fully reconstruct its
         // route identity (operator + line + GTFS route key) and departure token.
-        const routeKey =
-          ride.gtfsRouteRouteMkt != null &&
-          ride.gtfsRouteRouteDirection != null &&
-          ride.gtfsRouteRouteAlternative != null
-            ? `${ride.gtfsRouteRouteMkt}-${ride.gtfsRouteRouteDirection}-${ride.gtfsRouteRouteAlternative}`
-            : undefined
-        const canLink = !!(operatorId && lineNumber && routeKey && token)
+        const canLink = !!(operatorId && lineNumber && route?.key && token)
         const rideTime = token ? formatStartTimeForQuery(token) : ''
         const setSearchPayload =
-          canLink && routeKey && operatorId && lineNumber
-            ? { operatorId, lineNumber, routeKey, rideTime }
+          canLink && route?.key && operatorId && lineNumber
+            ? { operatorId, lineNumber, routeKey: route.key, rideTime }
             : undefined
         const href = setSearchPayload
           ? `/single-line-map?${new URLSearchParams({
@@ -150,19 +183,16 @@ const VehiclePage = () => {
 
         return {
           id: ride.id,
-          operator:
-            (operatorId && agencyNameByRef.get(operatorId)) ??
-            ride.gtfsRouteAgencyName ??
-            operatorId ??
-            '—',
+          operator: (operatorId && agencyNameByRef.get(operatorId)) ?? operatorId ?? '—',
           lineNumber: lineNumber ?? '—',
-          route: from || to ? `${from} ⇄ ${to}` : '—',
+          origin: route?.fromName || '—',
+          destination: route?.toName || '—',
           displayTime: nextDay ? `🌙 ${time}` : time,
           href,
           setSearchPayload,
         }
       })
-  }, [rides, serviceDayStart, date, agencyNameByRef])
+  }, [rides, serviceDayStart, date, agencyNameByRef, routeByLineRef])
 
   const handleRowClick = (payload: VehicleRideRow['setSearchPayload']) => {
     if (!payload) return
@@ -202,7 +232,8 @@ const VehiclePage = () => {
                 <TableRow>
                   <TableCell>{t('operator_title')}</TableCell>
                   <TableCell>{t('line')}</TableCell>
-                  <TableCell>{t('vehicle_rides_route')}</TableCell>
+                  <TableCell>{t('operator.origin')}</TableCell>
+                  <TableCell>{t('operator.destination')}</TableCell>
                   <TableCell>{t('vehicle_rides_start_time')}</TableCell>
                 </TableRow>
               </TableHead>
@@ -211,7 +242,8 @@ const VehiclePage = () => {
                   <TableRow key={row.id} hover>
                     <TableCell>{row.operator}</TableCell>
                     <TableCell>{row.lineNumber}</TableCell>
-                    <TableCell>{row.route}</TableCell>
+                    <TableCell>{row.origin}</TableCell>
+                    <TableCell>{row.destination}</TableCell>
                     <TableCell>
                       {row.href ? (
                         <MuiLink
