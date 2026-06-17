@@ -1,12 +1,17 @@
 import {
+  Box,
   Link as MuiLink,
   Paper,
+  Stack,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
+  Typography,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
@@ -18,10 +23,29 @@ interface VehicleTableProps {
   onRowClick: (payload: VehicleRideRow['setSearchPayload']) => void
 }
 
-/** Presentational table of a vehicle's rides for the day. All data is pre-resolved
- *  by buildVehicleRideRows; this component only renders it (and is isolated so the
- *  resolved/dashes/past-midnight row variants can be pinned in Storybook). */
-export function VehicleTable({ rows, onRowClick }: VehicleTableProps) {
+/** The ride time — a link to single-line-map when the ride is resolvable, plain text
+ *  otherwise. Shared by both the table and the card layout. */
+function RideTime({
+  row,
+  onRowClick,
+}: {
+  row: VehicleRideRow
+  onRowClick: VehicleTableProps['onRowClick']
+}) {
+  if (!row.href) return <>{row.displayTime}</>
+  return (
+    <MuiLink
+      component={Link}
+      to={row.href}
+      underline="hover"
+      onClick={() => onRowClick(row.setSearchPayload)}>
+      {row.displayTime}
+    </MuiLink>
+  )
+}
+
+/** Wide-screen layout: one row per ride, operator last (least important column). */
+export function VehicleRidesTable({ rows, onRowClick }: VehicleTableProps) {
   const { t } = useTranslation()
   return (
     <TableContainer component={Paper} sx={{ mt: 2 }}>
@@ -42,17 +66,7 @@ export function VehicleTable({ rows, onRowClick }: VehicleTableProps) {
               <TableCell>{row.origin}</TableCell>
               <TableCell>{row.destination}</TableCell>
               <TableCell>
-                {row.href ? (
-                  <MuiLink
-                    component={Link}
-                    to={row.href}
-                    underline="hover"
-                    onClick={() => onRowClick(row.setSearchPayload)}>
-                    {row.displayTime}
-                  </MuiLink>
-                ) : (
-                  row.displayTime
-                )}
+                <RideTime row={row} onRowClick={onRowClick} />
               </TableCell>
               <TableCell>{row.operator}</TableCell>
             </TableRow>
@@ -61,4 +75,72 @@ export function VehicleTable({ rows, onRowClick }: VehicleTableProps) {
       </Table>
     </TableContainer>
   )
+}
+
+/** Narrow-screen layout: the table doesn't fit, so each ride becomes a stacked card —
+ *  line + time on top, origin and destination in a small two-row label/value table,
+ *  operator as a small caption. <bdi> isolates each place name so a Latin name can't
+ *  reorder the surrounding RTL label. */
+export function VehicleRidesCards({ rows, onRowClick }: VehicleTableProps) {
+  const { t } = useTranslation()
+  return (
+    <Stack spacing={1} sx={{ mt: 2 }} aria-label={t('vehicle_page_title')}>
+      {rows.map((row) => (
+        <Paper key={row.id} variant="outlined" sx={{ p: 1.5 }}>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'baseline',
+              gap: 1,
+            }}>
+            <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+              {t('line')} {row.lineNumber}
+            </Typography>
+            <Typography variant="subtitle1">
+              <RideTime row={row} onRowClick={onRowClick} />
+            </Typography>
+          </Box>
+          <Table size="small" sx={{ width: 'auto' }}>
+            <TableBody>
+              {[
+                { label: t('operator.origin'), value: row.origin },
+                { label: t('operator.destination'), value: row.destination },
+              ].map((field) => (
+                <TableRow key={field.label}>
+                  <TableCell
+                    sx={{
+                      border: 0,
+                      p: 0,
+                      pb: 0.5,
+                      paddingInlineEnd: '0.75rem',
+                      color: 'text.secondary',
+                      whiteSpace: 'nowrap',
+                      verticalAlign: 'top',
+                    }}>
+                    {field.label}
+                  </TableCell>
+                  <TableCell sx={{ border: 0, p: 0, pb: 0.5 }}>
+                    <bdi>{field.value}</bdi>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          <Typography variant="caption" color="text.secondary">
+            {t('operator_title')}: {row.operator}
+          </Typography>
+        </Paper>
+      ))}
+    </Stack>
+  )
+}
+
+/** A vehicle's rides for the day. Renders as a table on wider screens and as a stacked
+ *  card list on narrow ones (the table is too wide for phones). All data is pre-resolved
+ *  by buildVehicleRideRows; these components only render it. */
+export function VehicleTable(props: VehicleTableProps) {
+  const theme = useTheme()
+  const isNarrow = useMediaQuery(theme.breakpoints.down('sm'))
+  return isNarrow ? <VehicleRidesCards {...props} /> : <VehicleRidesTable {...props} />
 }

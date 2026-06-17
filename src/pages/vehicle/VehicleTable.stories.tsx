@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { VehicleRideRow } from './buildVehicleRideRows'
-import { VehicleTable } from './VehicleTable'
+import { VehicleRidesCards, VehicleTable } from './VehicleTable'
 
 // The vehicle page's rides table. Rows are pre-resolved by buildVehicleRideRows, so
 // these stories hand the component fixed rows to pin its three render branches:
@@ -71,4 +71,11 @@ export const SingleResolvedRide: Story = {
 
 export const UnresolvedRideOnly: Story = {
   args: { rows: [unresolvedRow] },
+}
+
+// The narrow-screen card layout, rendered directly so it's pinned regardless of the
+// Storybook viewport (VehicleTable itself switches to this below the `sm` breakpoint).
+export const MobileCards: Story = {
+  args: { rows: [resolvedRow, unresolvedRow, pastMidnightRow] },
+  render: (args) => <VehicleRidesCards {...args} />,
 }
