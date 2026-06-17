@@ -19,21 +19,30 @@ interface MapIndexLayerProps {
  *  vehicle ref is known it links to the vehicle page; otherwise it falls back to
  *  the plain label (or nothing). reloadDocument: the vehicle page seeds its
  *  number from the URL captured at page load (InitialUrlParamsContext), so this
- *  must be a full navigation, not an in-app SPA transition. */
+ *  must be a full navigation, not an in-app SPA transition.
+ *  The <bdi> wrapper isolates the parenthesized number as its own run so the
+ *  brackets don't mirror to ")12-345-67(" in RTL (he/ar) layouts — the number and
+ *  its parens are split across element boundaries, which defeats bidi bracket
+ *  matching unless they're isolated. */
 function vehicleSubtitle(group: PositionGroup): ReactNode {
-  if (!group.vehicleRef) return group.label ? `(${group.label})` : undefined
+  if (!group.label) return undefined
+  const number = group.vehicleRef ? (
+    <MuiLink
+      component={Link}
+      to={`/vehicle?vehicleNumber=${group.vehicleRef}`}
+      reloadDocument
+      underline="hover">
+      {group.label}
+    </MuiLink>
+  ) : (
+    group.label
+  )
   return (
-    <>
+    <bdi>
       {'('}
-      <MuiLink
-        component={Link}
-        to={`/vehicle?vehicleNumber=${group.vehicleRef}`}
-        reloadDocument
-        underline="hover">
-        {group.label}
-      </MuiLink>
+      {number}
       {')'}
-    </>
+    </bdi>
   )
 }
 

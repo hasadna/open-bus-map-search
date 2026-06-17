@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import dayjs from 'src/dayjs'
 import Widget from 'src/shared/Widget'
 import { InfoItem, InfoTable } from '../components/InfoTable'
+import { vehicleIDFormat } from '../components/utils/rotueUtils'
 
 export const LineProfileRide = ({
   point,
@@ -16,6 +17,7 @@ export const LineProfileRide = ({
       <InfoTable>
         <InfoItem label={t('lineProfile.ride.journey')} value={point?.siriRideJourneyRef} />
         <InfoItem label={t('lineProfile.ride.id')} value={point?.siriRideId?.toString()} />
+        <InfoItem label={t('vehicle_ref')} value={vehicleIDFormat(point?.siriRideVehicleRef)} />
         <InfoItem
           label={t('lineProfile.ride.duration')}
           value={
