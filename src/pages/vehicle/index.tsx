@@ -19,7 +19,6 @@ import { Link } from 'react-router'
 import { SIRI_API } from 'src/api/apiConfig'
 import { getAllRoutesList } from 'src/api/gtfsService'
 import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone } from 'src/dayjs'
-import { useAgencyList } from 'src/hooks/useAgencyList'
 import { fromGtfsRoute } from 'src/model/busRoute'
 import { GlobalSearchContext } from 'src/model/globalState'
 import { ExtraShareParamsContext, InitialUrlParamsContext } from 'src/model/routeContext'
@@ -56,15 +55,6 @@ const VehiclePage = () => {
   const { date } = search
   const initialUrlParams = useContext(InitialUrlParamsContext)
   const { setParams } = useContext(ExtraShareParamsContext)
-  const agencyList = useAgencyList()
-
-  // operator_ref -> agency name, the canonical mapping used across the app
-  // (OperatorSelector, getOperators). siri_rides' gtfs_route__agency_name is
-  // frequently null, so resolving by operator ref is what keeps the column a name.
-  const agencyNameByRef = useMemo(
-    () => new Map(agencyList.map((agency) => [String(agency.operatorRef), agency.agencyName])),
-    [agencyList],
-  )
 
   // The vehicle number is page-local — never in GlobalSearchContext. Seeded once on
   // mount from the URL captured at page load (InitialUrlParamsContext), and published
@@ -139,7 +129,12 @@ const VehiclePage = () => {
         ),
       )
       return new Map(
-        routeLists.flat().map((route) => [String(route.lineRef), fromGtfsRoute(route)]),
+        routeLists
+          .flat()
+          .map((route) => [
+            String(route.lineRef),
+            { ...fromGtfsRoute(route), agencyName: route.agencyName },
+          ]),
       )
     },
   })
@@ -183,7 +178,7 @@ const VehiclePage = () => {
 
         return {
           id: ride.id,
-          operator: (operatorId && agencyNameByRef.get(operatorId)) ?? operatorId ?? '—',
+          operator: route?.agencyName ?? operatorId ?? '—',
           lineNumber: lineNumber ?? '—',
           origin: route?.fromName || '—',
           destination: route?.toName || '—',
@@ -192,7 +187,7 @@ const VehiclePage = () => {
           setSearchPayload,
         }
       })
-  }, [rides, serviceDayStart, date, agencyNameByRef, routeByLineRef])
+  }, [rides, serviceDayStart, date, routeByLineRef])
 
   const handleRowClick = (payload: VehicleRideRow['setSearchPayload']) => {
     if (!payload) return
