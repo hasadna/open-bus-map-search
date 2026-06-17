@@ -8,7 +8,7 @@ import { getServiceDayRoutes } from 'src/api/serviceDayRoutesService'
 import dayjs, { toIsraelTimezone } from 'src/dayjs'
 import { useSingleLineData } from 'src/hooks/useSingleLineData'
 import { GLOBAL_SEARCH_DEFAULTS, GlobalSearchContext } from 'src/model/globalState'
-import { ExtraShareParamsContext, InitialUrlParamsContext } from 'src/model/routeContext'
+import { InitialUrlParamsContext, PageShareParamsContext } from 'src/model/pageState'
 import StopSelector from 'src/pages/components/StopSelector'
 import Widget from 'src/shared/Widget'
 import { DateSelector } from '../components/DateSelector'
@@ -29,7 +29,7 @@ const LineProfile = () => {
   const { search, setSearch } = useContext(GlobalSearchContext)
   const dateChangeAbortRef = useRef<AbortController | null>(null)
   const initialUrlParams = useContext(InitialUrlParamsContext)
-  const { setParams } = useContext(ExtraShareParamsContext)
+  const { setParams } = useContext(PageShareParamsContext)
 
   useEffect(() => {
     document.querySelector('main')?.scrollTo(0, 0)

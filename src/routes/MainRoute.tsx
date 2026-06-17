@@ -10,7 +10,7 @@ import {
   GlobalSearchState,
   isValidSearchDate,
 } from '../model/globalState'
-import { ExtraShareParamsContext, InitialUrlParamsContext } from '../model/routeContext'
+import { InitialUrlParamsContext, PageShareParamsContext } from '../model/pageState'
 
 // react-ga4's default export is nested under `.default` under some CJS/ESM interop
 // (e.g. Vite/Rolldown), so unwrap it to keep the shared singleton.
@@ -30,8 +30,8 @@ export const MainRoute = () => {
   }, [pathname, locationParams])
 
   // Capture URL params synchronously on mount, before they are stripped.
-  // useMemo with [] deps runs once and the value is stable — available to lazy-loaded
-  // child pages via InitialUrlParamsContext even after the address bar is cleaned up.
+  // useMemo with [] deps runs once — available to lazy-loaded child pages via
+  // InitialUrlParamsContext even after the address bar has been cleaned up.
   const initialUrlParams = useMemo<Record<string, string>>(() => {
     const result: Record<string, string> = {}
     new URLSearchParams(window.location.search).forEach((v, k) => {
@@ -40,7 +40,6 @@ export const MainRoute = () => {
     return result
   }, [])
 
-  // Parse the captured URL params into GlobalSearchContext fields
   const urlState = useMemo<Partial<GlobalSearchState>>(() => {
     const p = initialUrlParams
     // Accept 'rideTime' (new) or 'startTime' (old shared links) for backward compat.
@@ -120,14 +119,14 @@ export const MainRoute = () => {
 
   return (
     <InitialUrlParamsContext.Provider value={initialUrlParams}>
-      <ExtraShareParamsContext.Provider
+      <PageShareParamsContext.Provider
         value={{ params: extraShareParams, setParams: setExtraShareParamsStable }}>
         <GlobalSearchContext.Provider value={{ search, setSearch: safeSetSearch }}>
           <ThemeProvider>
             <MainLayout />
           </ThemeProvider>
         </GlobalSearchContext.Provider>
-      </ExtraShareParamsContext.Provider>
+      </PageShareParamsContext.Provider>
     </InitialUrlParamsContext.Provider>
   )
 }

@@ -17,7 +17,7 @@ import {
 import dayjs from 'src/dayjs'
 import { useDate } from 'src/hooks/useDate'
 import { GlobalSearchContext } from 'src/model/globalState'
-import { ExtraShareParamsContext, InitialUrlParamsContext } from 'src/model/routeContext'
+import { InitialUrlParamsContext, PageShareParamsContext } from 'src/model/pageState'
 import { INPUT_SIZE } from 'src/resources/sizes'
 import SkeletonLoader from 'src/shared/SkeletonLoader'
 import Widget from 'src/shared/Widget'
@@ -159,7 +159,7 @@ const GapsPatternsPage = () => {
     initialUrlParams.endDate ? dayjs(initialUrlParams.endDate) : now.clone().subtract(1, 'day'),
   )
   const { search, setSearch } = useContext(GlobalSearchContext)
-  const { setParams } = useContext(ExtraShareParamsContext)
+  const { setParams } = useContext(PageShareParamsContext)
 
   useEffect(() => {
     setParams({
