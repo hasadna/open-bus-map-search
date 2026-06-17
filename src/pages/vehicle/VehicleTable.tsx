@@ -28,17 +28,16 @@ export function VehicleTable({ rows, onRowClick }: VehicleTableProps) {
       <Table size="small" aria-label={t('vehicle_page_title')}>
         <TableHead>
           <TableRow>
-            <TableCell>{t('operator_title')}</TableCell>
             <TableCell>{t('line')}</TableCell>
             <TableCell>{t('operator.origin')}</TableCell>
             <TableCell>{t('operator.destination')}</TableCell>
             <TableCell>{t('vehicle_rides_start_time')}</TableCell>
+            <TableCell>{t('operator_title')}</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {rows.map((row) => (
             <TableRow key={row.id} hover>
-              <TableCell>{row.operator}</TableCell>
               <TableCell>{row.lineNumber}</TableCell>
               <TableCell>{row.origin}</TableCell>
               <TableCell>{row.destination}</TableCell>
@@ -55,6 +54,7 @@ export function VehicleTable({ rows, onRowClick }: VehicleTableProps) {
                   row.displayTime
                 )}
               </TableCell>
+              <TableCell>{row.operator}</TableCell>
             </TableRow>
           ))}
         </TableBody>
