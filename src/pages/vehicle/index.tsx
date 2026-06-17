@@ -18,6 +18,7 @@ import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
 import { SIRI_API } from 'src/api/apiConfig'
 import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone } from 'src/dayjs'
+import { useAgencyList } from 'src/hooks/useAgencyList'
 import { GlobalSearchContext } from 'src/model/globalState'
 import { ExtraShareParamsContext, InitialUrlParamsContext } from 'src/model/routeContext'
 import { routeStartEnd } from 'src/pages/components/utils/rotueUtils'
@@ -53,6 +54,15 @@ const VehiclePage = () => {
   const { date } = search
   const initialUrlParams = useContext(InitialUrlParamsContext)
   const { setParams } = useContext(ExtraShareParamsContext)
+  const agencyList = useAgencyList()
+
+  // operator_ref -> agency name, the canonical mapping used across the app
+  // (OperatorSelector, getOperators). siri_rides' gtfs_route__agency_name is
+  // frequently null, so resolving by operator ref is what keeps the column a name.
+  const agencyNameByRef = useMemo(
+    () => new Map(agencyList.map((agency) => [String(agency.operatorRef), agency.agencyName])),
+    [agencyList],
+  )
 
   // The vehicle number is page-local — never in GlobalSearchContext. Seeded once on
   // mount from the URL captured at page load (InitialUrlParamsContext), and published
@@ -140,7 +150,11 @@ const VehiclePage = () => {
 
         return {
           id: ride.id,
-          operator: ride.gtfsRouteAgencyName ?? operatorId ?? '—',
+          operator:
+            (operatorId && agencyNameByRef.get(operatorId)) ??
+            ride.gtfsRouteAgencyName ??
+            operatorId ??
+            '—',
           lineNumber: lineNumber ?? '—',
           route: from || to ? `${from} ⇄ ${to}` : '—',
           displayTime: nextDay ? `🌙 ${time}` : time,
@@ -148,7 +162,7 @@ const VehiclePage = () => {
           setSearchPayload,
         }
       })
-  }, [rides, serviceDayStart, date])
+  }, [rides, serviceDayStart, date, agencyNameByRef])
 
   const handleRowClick = (payload: VehicleRideRow['setSearchPayload']) => {
     if (!payload) return
