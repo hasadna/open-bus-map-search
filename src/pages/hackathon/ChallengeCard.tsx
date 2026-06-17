@@ -106,6 +106,7 @@ const ChallengeCard = ({ challenge }: Props) => {
               <DoneList>
                 {doneItems.map((item, i) => (
                   <DoneItem key={i}>
+                    {/* eslint-disable-next-line i18next/no-literal-string -- decorative glyph */}
                     <Check>✓</Check>
                     <span>{item}</span>
                   </DoneItem>
