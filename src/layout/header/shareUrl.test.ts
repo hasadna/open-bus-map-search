@@ -102,6 +102,33 @@ describe('buildShareUrl — extra params', () => {
 })
 
 // ---------------------------------------------------------------------------
+// buildShareUrl — /vehicle page
+// ---------------------------------------------------------------------------
+
+// vehicleNumber is no longer a GlobalSearchState field; the /vehicle page keeps
+// it page-local and appends it through ExtraShareParamsContext, sharing only the
+// global `date`. These guard that contract (and that the page never leaks the
+// operator/line/route global state a vehicle link must not carry).
+
+describe('buildShareUrl — /vehicle page', () => {
+  it('shares only the global date — not operator/line/route', () => {
+    const p = paramsOf(build('/vehicle', fullSearch))
+    expect(p).toEqual({ date: fullSearch.date })
+  })
+
+  it('appends the page-local vehicleNumber via extra params', () => {
+    const p = paramsOf(build('/vehicle', fullSearch, { vehicleNumber: '7489226' }))
+    expect(p).toEqual({ date: fullSearch.date, vehicleNumber: '7489226' })
+  })
+
+  it('vehicleNumber is no longer a shareable global key on any page', () => {
+    for (const keys of Object.values(PAGE_SHARE_PARAMS)) {
+      expect(keys as string[]).not.toContain('vehicleNumber')
+    }
+  })
+})
+
+// ---------------------------------------------------------------------------
 // buildShareUrl — language prefix stripping
 // ---------------------------------------------------------------------------
 

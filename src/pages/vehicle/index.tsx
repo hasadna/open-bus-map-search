@@ -1,4 +1,3 @@
-import { SiriRideWithRelatedPydanticModel } from '@hasadna/open-bus-api-client'
 import {
   CircularProgress,
   Grid,
@@ -22,32 +21,12 @@ import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone } from 'src/dayjs'
 import { fromGtfsRoute } from 'src/model/busRoute'
 import { GlobalSearchContext } from 'src/model/globalState'
 import { ExtraShareParamsContext, InitialUrlParamsContext } from 'src/model/routeContext'
-import {
-  formatServiceDayTime,
-  formatStartTimeForQuery,
-  serviceDayBounds,
-  serviceDayTokenToDisplay,
-} from 'src/pages/components/utils/startTimeUtils'
+import { serviceDayBounds } from 'src/pages/components/utils/startTimeUtils'
 import VehicleSelector, { normalizeVehicleNumber } from 'src/pages/components/VehicleSelector'
 import { DateSelector } from '../components/DateSelector'
 import { NotFound } from '../components/NotFound'
 import { PageContainer } from '../components/PageContainer'
-
-type VehicleRideRow = {
-  id: number
-  operator: string
-  lineNumber: string
-  origin: string
-  destination: string
-  displayTime: string
-  href?: string
-  setSearchPayload?: {
-    operatorId: string
-    lineNumber: string
-    routeKey: string
-    rideTime: string
-  }
-}
+import { buildVehicleRideRows, VehicleRideRow } from './buildVehicleRideRows'
 
 const VehiclePage = () => {
   const { t } = useTranslation()
@@ -141,55 +120,10 @@ const VehiclePage = () => {
     [routes],
   )
 
-  const rows = useMemo<VehicleRideRow[]>(() => {
-    return (rides ?? [])
-      .filter((ride): ride is SiriRideWithRelatedPydanticModel & { id: number } => !!ride.id)
-      .map((ride) => {
-        // The ride's own gtfs_route fields are frequently null; resolve the route from
-        // the operator's GTFS routes via line ref (BusRoute carries the line number,
-        // origin/destination names, operator and route key — same model the rest of
-        // the app uses).
-        const lineRef = ride.siriRouteLineRef ?? ride.gtfsRouteLineRef
-        const route = lineRef != null ? routeByLineRef?.get(String(lineRef)) : undefined
-        const operatorId = route?.operatorId ?? ride.siriRouteOperatorRef?.toString()
-        const lineNumber = route?.lineNumber
-        const token = ride.scheduledStartTime
-          ? formatServiceDayTime(toIsraelTimezone(ride.scheduledStartTime), serviceDayStart)
-          : undefined
-        const { time, nextDay } = token
-          ? serviceDayTokenToDisplay(token)
-          : { time: '—', nextDay: false }
-
-        // A ride is linkable to single-line-map only if we can fully reconstruct its
-        // route identity (operator + line + GTFS route key) and departure token.
-        const canLink = !!(operatorId && lineNumber && route?.key && token)
-        const rideTime = token ? formatStartTimeForQuery(token) : ''
-        const setSearchPayload =
-          canLink && route?.key && operatorId && lineNumber
-            ? { operatorId, lineNumber, routeKey: route.key, rideTime }
-            : undefined
-        const href = setSearchPayload
-          ? `/single-line-map?${new URLSearchParams({
-              date,
-              operatorId: setSearchPayload.operatorId,
-              lineNumber: setSearchPayload.lineNumber,
-              routeKey: setSearchPayload.routeKey,
-              rideTime: setSearchPayload.rideTime,
-            }).toString()}`
-          : undefined
-
-        return {
-          id: ride.id,
-          operator: route?.agencyName ?? operatorId ?? '—',
-          lineNumber: lineNumber ?? '—',
-          origin: route?.fromName || '—',
-          destination: route?.toName || '—',
-          displayTime: nextDay ? `🌙 ${time}` : time,
-          href,
-          setSearchPayload,
-        }
-      })
-  }, [rides, serviceDayStart, date, routeByLineRef])
+  const rows = useMemo<VehicleRideRow[]>(
+    () => buildVehicleRideRows({ rides, routeByLineRef, serviceDayStart, date }),
+    [rides, serviceDayStart, date, routeByLineRef],
+  )
 
   const handleRowClick = (payload: VehicleRideRow['setSearchPayload']) => {
     if (!payload) return
