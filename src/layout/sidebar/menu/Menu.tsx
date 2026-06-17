@@ -78,7 +78,9 @@ const MainMenu = ({ collapsed = false }: MainMenuProps) => {
         <Link to={`/${currentLanguage}/hackathon`} onClick={() => setDrawerOpen(false)}>
           {t('hackathon_title')}
           {hackathonDaysLeft !== null && (
-            <span className="hackathon-badge">{hackathonDaysLeft}d</span>
+            <span className="hackathon-badge">
+              {t('hackathon_days_left_badge', { days: hackathonDaysLeft })}
+            </span>
           )}
         </Link>,
         '/hackathon',

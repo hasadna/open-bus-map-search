@@ -103,6 +103,7 @@ export const ThemeProvider = ({ children }: PropsWithChildren) => {
       he: { direction: 'rtl', muiLocale: heIL, dateLocale: dateHeIL },
       en: { direction: 'ltr', muiLocale: enUS, dateLocale: dateEnUS },
       ru: { direction: 'ltr', muiLocale: ruRU, dateLocale: dateRuRU },
+      // MUI X ships no Arabic date-picker locale, so the pickers fall back to English
       ar: { direction: 'rtl', muiLocale: arEG, dateLocale: dateEnUS },
     } as const
 
