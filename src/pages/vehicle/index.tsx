@@ -1,20 +1,7 @@
-import {
-  CircularProgress,
-  Grid,
-  Link as MuiLink,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Typography,
-} from '@mui/material'
+import { CircularProgress, Grid, Typography } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
 import { useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router'
 import { SIRI_API } from 'src/api/apiConfig'
 import { getAllRoutesList } from 'src/api/gtfsService'
 import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone } from 'src/dayjs'
@@ -27,6 +14,7 @@ import { DateSelector } from '../components/DateSelector'
 import { NotFound } from '../components/NotFound'
 import { PageContainer } from '../components/PageContainer'
 import { buildVehicleRideRows, VehicleRideRow } from './buildVehicleRideRows'
+import { VehicleTable } from './VehicleTable'
 
 const VehiclePage = () => {
   const { t } = useTranslation()
@@ -157,42 +145,7 @@ const VehiclePage = () => {
         ) : rows.length === 0 ? (
           <NotFound>{t('vehicle_no_rides')}</NotFound>
         ) : (
-          <TableContainer component={Paper} sx={{ mt: 2 }}>
-            <Table size="small" aria-label={t('vehicle_page_title')}>
-              <TableHead>
-                <TableRow>
-                  <TableCell>{t('operator_title')}</TableCell>
-                  <TableCell>{t('line')}</TableCell>
-                  <TableCell>{t('operator.origin')}</TableCell>
-                  <TableCell>{t('operator.destination')}</TableCell>
-                  <TableCell>{t('vehicle_rides_start_time')}</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {rows.map((row) => (
-                  <TableRow key={row.id} hover>
-                    <TableCell>{row.operator}</TableCell>
-                    <TableCell>{row.lineNumber}</TableCell>
-                    <TableCell>{row.origin}</TableCell>
-                    <TableCell>{row.destination}</TableCell>
-                    <TableCell>
-                      {row.href ? (
-                        <MuiLink
-                          component={Link}
-                          to={row.href}
-                          underline="hover"
-                          onClick={() => handleRowClick(row.setSearchPayload)}>
-                          {row.displayTime}
-                        </MuiLink>
-                      ) : (
-                        row.displayTime
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+          <VehicleTable rows={rows} onRowClick={handleRowClick} />
         )
       ) : null}
     </PageContainer>
