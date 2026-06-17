@@ -178,8 +178,8 @@ export const useSingleLineData = ({
           const label =
             group.length === 1
               ? routePart
-                ? `${scheduledTime} (${routePart}, ${vehicleIDFormat(group[0].vehicleRef)})`
-                : `${scheduledTime} (${vehicleIDFormat(group[0].vehicleRef)})`
+                ? `${scheduledTime} (${routePart})`
+                : scheduledTime
               : routePart
                 ? `${scheduledTime} (${routePart}, ${group.length} vehicles)`
                 : `${scheduledTime} (${group.length} vehicles)`
