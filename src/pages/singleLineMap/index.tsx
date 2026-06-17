@@ -1,14 +1,12 @@
-import { CircularProgress, Grid, Link as MuiLink, Tooltip, Typography } from '@mui/material'
+import { CircularProgress, Grid, Tooltip, Typography } from '@mui/material'
 import { useCallback, useContext } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router'
 import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone } from 'src/dayjs'
 import { useSingleLineData } from 'src/hooks/useSingleLineData'
 import { GlobalSearchContext } from 'src/model/globalState'
 import LineNumberSelector from 'src/pages/components/LineSelector'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
 import RouteSelector from 'src/pages/components/RouteSelector'
-import { vehicleIDFormat } from 'src/pages/components/utils/rotueUtils'
 import { DateSelector } from '../components/DateSelector'
 import { FilterPositionsByStartTimeSelector } from '../components/FilterPositionsByStartTimeSelector'
 import { MapWithLocationsAndPath } from '../components/map-related/MapWithLocationsAndPath'
@@ -38,7 +36,6 @@ const SingleLineMapPage = () => {
     startTime,
     routes,
     routeKey,
-    selectedVehicleRefs,
     error,
     setStartTime,
   } = useSingleLineData({
@@ -144,29 +141,6 @@ const SingleLineMapPage = () => {
             )}
           </Grid>
         </Grid>
-        {/* vehicle(s) of the shown ride — link to the vehicle page */}
-        {selectedVehicleRefs.length > 0 && (
-          <Grid size={12}>
-            <Typography variant="body2">
-              {t('singleline_map_page_vehicle_id')}:{' '}
-              {selectedVehicleRefs.map((ref, idx) => (
-                <span key={ref}>
-                  {idx > 0 && ', '}
-                  {/* reloadDocument: the vehicle page seeds its number from the URL
-                      captured at page load (InitialUrlParamsContext), so this link
-                      must be a full navigation, not an in-app SPA transition. */}
-                  <MuiLink
-                    component={Link}
-                    to={`/vehicle?vehicleNumber=${ref}`}
-                    reloadDocument
-                    underline="hover">
-                    {vehicleIDFormat(ref)}
-                  </MuiLink>
-                </span>
-              ))}
-            </Typography>
-          </Grid>
-        )}
       </Grid>
       <MapWithLocationsAndPath
         positionGroups={positionGroups}

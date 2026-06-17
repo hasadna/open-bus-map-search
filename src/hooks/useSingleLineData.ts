@@ -109,14 +109,6 @@ export const useSingleLineData = ({
     [startTime, rideIdsByToken],
   )
 
-  // The vehicle(s) that performed the currently shown ride — exposed so callers
-  // can deep-link to the vehicle page. A scheduled time may have several vehicles.
-  const selectedVehicleRefs = useMemo(() => {
-    const ids = selectedRideIdsKey ? selectedRideIdsKey.split(',').map(Number) : []
-    const refs = ids.map((id) => vehicleRefById.get(id)).filter((ref): ref is string => !!ref)
-    return [...new Set(refs)]
-  }, [selectedRideIdsKey, vehicleRefById])
-
   // Fetch departure list for the dropdown, grouping double trips into one entry
   useEffect(() => {
     // Clear the previous day's ride mapping synchronously (before the async
@@ -219,6 +211,7 @@ export const useSingleLineData = ({
         }).then((data) => ({
           color: ROUTE_COLORS[idx % ROUTE_COLORS.length],
           label: vehicleIDFormat(vehicleRefById.get(rideId)) ?? String(idx + 1),
+          vehicleRef: vehicleRefById.get(rideId),
           positions: uniqBy(data, (l) => l.id).map(toPoint),
         })),
       ),
@@ -268,7 +261,6 @@ export const useSingleLineData = ({
     locationsAreLoading,
     routes,
     routeKey: routeKey ?? undefined,
-    selectedVehicleRefs,
     error,
     setStartTime,
     setRouteKey,

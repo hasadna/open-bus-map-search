@@ -1,7 +1,9 @@
+import { Link as MuiLink } from '@mui/material'
+import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router'
 import type { PositionGroup } from '../map-types'
 import {
-  actualRouteLineColor,
   actualRouteStopMarkerPath,
   plannedRouteLineColor,
   plannedRouteStopMarkerPath,
@@ -13,9 +15,30 @@ interface MapIndexLayerProps {
   positionGroups?: PositionGroup[]
 }
 
+/** Parenthesized vehicle-number subtitle for a legend row. When the ride's raw
+ *  vehicle ref is known it links to the vehicle page; otherwise it falls back to
+ *  the plain label (or nothing). reloadDocument: the vehicle page seeds its
+ *  number from the URL captured at page load (InitialUrlParamsContext), so this
+ *  must be a full navigation, not an in-app SPA transition. */
+function vehicleSubtitle(group: PositionGroup): ReactNode {
+  if (!group.vehicleRef) return group.label ? `(${group.label})` : undefined
+  return (
+    <>
+      {'('}
+      <MuiLink
+        component={Link}
+        to={`/vehicle?vehicleNumber=${group.vehicleRef}`}
+        reloadDocument
+        underline="hover">
+        {group.label}
+      </MuiLink>
+      {')'}
+    </>
+  )
+}
+
 export function MapIndexLayer({ showPlannedRoute, positionGroups = [] }: MapIndexLayerProps) {
   const { t } = useTranslation()
-  const multiVehicle = positionGroups.length > 1
 
   return (
     <div className="map-index">
@@ -26,23 +49,17 @@ export function MapIndexLayer({ showPlannedRoute, positionGroups = [] }: MapInde
           title={t('plannedRoute')}
         />
       )}
-      {multiVehicle ? (
-        positionGroups.map((group, idx) => (
-          <MapIndex
-            key={idx}
-            lineColor={group.color}
-            imgSrc={actualRouteStopMarkerPath}
-            title={t('actualRoute')}
-            subtitle={`(${group.label ?? idx + 1})`}
-          />
-        ))
-      ) : (
+      {/* The actual-route entry appears only once a ride is selected (positionGroups
+          populated); before that the legend shows just the planned route. */}
+      {positionGroups.map((group, idx) => (
         <MapIndex
-          lineColor={positionGroups[0]?.color ?? actualRouteLineColor}
+          key={idx}
+          lineColor={group.color}
           imgSrc={actualRouteStopMarkerPath}
           title={t('actualRoute')}
+          subtitle={vehicleSubtitle(group)}
         />
-      )}
+      ))}
     </div>
   )
 }

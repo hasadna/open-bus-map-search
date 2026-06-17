@@ -1,3 +1,5 @@
+import type { ReactNode } from 'react'
+
 export function MapIndex({
   lineColor,
   imgSrc,
@@ -7,7 +9,7 @@ export function MapIndex({
   lineColor: string
   imgSrc: string
   title: string
-  subtitle?: string
+  subtitle?: ReactNode
 }) {
   return (
     <div className="map-index-item">
