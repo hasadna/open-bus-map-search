@@ -1,14 +1,14 @@
 import { GtfsRoutePydanticModel } from '@hasadna/open-bus-api-client'
 import { CircularProgress, Grid } from '@mui/material'
 import { Tooltip } from 'antd'
-import { useCallback, useContext, useEffect, useRef } from 'react'
+import { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLoaderData, useNavigate } from 'react-router'
 import { getServiceDayRoutes } from 'src/api/serviceDayRoutesService'
 import dayjs, { toIsraelTimezone } from 'src/dayjs'
-import { usePageState } from 'src/hooks/usePageState'
 import { useSingleLineData } from 'src/hooks/useSingleLineData'
-import { GlobalSearchContext } from 'src/model/globalState'
+import { GLOBAL_SEARCH_DEFAULTS, GlobalSearchContext } from 'src/model/globalState'
+import { ExtraShareParamsContext, InitialUrlParamsContext } from 'src/model/routeContext'
 import StopSelector from 'src/pages/components/StopSelector'
 import Widget from 'src/shared/Widget'
 import { DateSelector } from '../components/DateSelector'
@@ -25,43 +25,29 @@ const LineProfile = () => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { route, message } = useLoaderData<{ route?: GtfsRoutePydanticModel; message?: string }>()
+  const [stopKey, setState] = useState<string>()
   const { search, setSearch } = useContext(GlobalSearchContext)
-
-  // Cancels an in-flight service-day lookup when the user picks a new date
-  // before the previous request resolves (see handleDateChange).
   const dateChangeAbortRef = useRef<AbortController | null>(null)
-
-  // stopKey is in global state — shared with /timeline so selecting a stop
-  // there and navigating here (or vice versa) preserves the selection.
-  const stopKey = search.stopKey
-  const setStopKey = (key: string | undefined) =>
-    setSearch((prev) => ({ ...prev, stopKey: key ?? null }))
-
-  // rideTime is in page params so it's included in the share URL.
-  // Uses its own key ('line-profile') — not shared with single-line-map —
-  // so mode never leaks in and the two pages don't clobber each other's params.
-  const { setParams: setPageParams } = usePageState<
-    { rideTime: string | null },
-    { scrollPosition: number }
-  >(
-    'line-profile',
-    {
-      params: { rideTime: null },
-      ui: { scrollPosition: 0 },
-    },
-    ['rideTime'],
-  )
+  const initialUrlParams = useContext(InitialUrlParamsContext)
+  const { setParams } = useContext(ExtraShareParamsContext)
 
   useEffect(() => {
-    if (!route?.id) return
-    setSearch((prev) => ({
-      ...prev,
+    document.querySelector('main')?.scrollTo(0, 0)
+  }, [])
+
+  useEffect(() => {
+    setState(undefined)
+    if (!route?.id) {
+      return
+    }
+    const key = `${route.routeMkt}-${route.routeDirection}-${route.routeAlternative}`
+    setSearch(() => ({
+      ...GLOBAL_SEARCH_DEFAULTS,
       date: toIsraelTimezone(route.date.getTime()).format('YYYY-MM-DD'),
       operatorId: route.operatorRef.toString(),
       lineNumber: route.routeShortName ?? null,
-      routeKey: `${route.routeMkt}-${route.routeDirection}-${route.routeAlternative}`,
-      vehicleNumber: null,
-      rideTime: null,
+      routeKey: key,
+      rideTime: initialUrlParams.rideTime ?? initialUrlParams.startTime ?? null,
     }))
   }, [route?.id])
 
@@ -94,11 +80,11 @@ const LineProfile = () => {
     onRideTimeChange,
   })
 
-  // Keep rideTime in page params so the share button produces a link that
-  // restores the same selected ride for the recipient.
   useEffect(() => {
-    setPageParams((prev) => ({ ...prev, rideTime: startTime ?? null }))
-  }, [startTime])
+    if (startTime) setParams({ startTime })
+    else setParams({})
+    return () => setParams({})
+  }, [startTime, setParams])
 
   const handleDateChange = (time: dayjs.Dayjs | null) => {
     if (!time || !route) return
@@ -109,8 +95,8 @@ const LineProfile = () => {
     // gaps page and the single-line ride list.
     getServiceDayRoutes(
       time,
-      route.operatorRef.toString(),
-      route.routeShortName,
+      route?.operatorRef.toString(),
+      route?.routeShortName,
       abortController.signal,
     )
       .then((routes) => {
@@ -124,17 +110,17 @@ const LineProfile = () => {
       .catch((err) => console.error(err))
   }
 
-  const handleRouteChange = (key?: string) => {
+  const handelRouteChange = (key?: string) => {
     if (!key || !routes) return
-    const newRoute = routes.find((r) => r.key === key)
+    const newRoute = routes?.find((route) => route.key === key)
     if (newRoute?.routeIds?.[0]) {
       navigate(`/profile/${newRoute.routeIds[0]}`)
     }
   }
 
-  const handleStopChange = (key?: string) => {
-    const stop = plannedRouteStops?.find((s) => s.key === key)
-    setStopKey(stop?.key)
+  const handelStopChange = (key?: string) => {
+    const stop = plannedRouteStops?.find((stop) => stop.key === key)
+    setState(stop?.key)
   }
 
   if (message || !route) {
@@ -154,7 +140,7 @@ const LineProfile = () => {
             <RouteSelector
               routes={routes ?? []}
               routeKey={routeKey}
-              setRouteKey={handleRouteChange}
+              setRouteKey={handelRouteChange}
             />
           )}
           <DateSelector time={dayjs(route?.date.getTime())} onChange={handleDateChange} />
@@ -172,11 +158,7 @@ const LineProfile = () => {
             )}
           </Grid>
           <LineProfileRide point={positionGroups[0]?.positions[0]?.point} />
-          <StopSelector
-            stops={plannedRouteStops}
-            stopKey={stopKey ?? undefined}
-            setStopKey={handleStopChange}
-          />
+          <StopSelector stops={plannedRouteStops} stopKey={stopKey} setStopKey={handelStopChange} />
           <LineProfileStop
             stop={plannedRouteStops.find((s) => s.key === stopKey)}
             total={plannedRouteStops.length}

@@ -15,8 +15,9 @@ import {
   YAxis,
 } from 'recharts'
 import dayjs from 'src/dayjs'
-import { usePageState } from 'src/hooks/usePageState'
+import { useDate } from 'src/hooks/useDate'
 import { GlobalSearchContext } from 'src/model/globalState'
+import { ExtraShareParamsContext, InitialUrlParamsContext } from 'src/model/routeContext'
 import { INPUT_SIZE } from 'src/resources/sizes'
 import SkeletonLoader from 'src/shared/SkeletonLoader'
 import Widget from 'src/shared/Widget'
@@ -43,8 +44,6 @@ interface BusLineStatisticsProps {
 }
 
 const now = dayjs()
-const DEFAULT_START = now.clone().subtract(7, 'days').toISOString()
-const DEFAULT_END = now.clone().subtract(1, 'day').toISOString()
 
 const CustomTooltip = ({ active, payload }: TooltipContentProps) => {
   const { t } = useTranslation()
@@ -67,17 +66,8 @@ const CustomTooltip = ({ active, payload }: TooltipContentProps) => {
   return null
 }
 
-function GapsByHour({
-  lineRef,
-  operatorRef,
-  fromDate,
-  toDate,
-  sortingMode,
-  setSortingMode,
-}: BusLineStatisticsProps & {
-  sortingMode: 'hour' | 'severity'
-  setSortingMode: (m: 'hour' | 'severity') => void
-}) {
+function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatisticsProps) {
+  const [sortingMode, setSortingMode] = useState<'hour' | 'severity'>('hour')
   const hourlyData = useGapsList(fromDate, toDate, operatorRef, lineRef, sortingMode)
   const isLoading = !hourlyData.length
   const { t } = useTranslation()
@@ -158,61 +148,57 @@ function GapsByHour({
 }
 
 const GapsPatternsPage = () => {
-  const { search, setSearch } = useContext(GlobalSearchContext)
-  const { operatorId, lineNumber, routeKey } = search
-  const { t } = useTranslation()
+  const initialUrlParams = useContext(InitialUrlParamsContext)
 
-  // Page params are shareable: a colleague receiving the link sees the same
-  // date range and chart ordering. startDate/endDate are ISO strings.
-  // sortingMode is persisted so the user's preferred view survives navigation.
-  const { params, setParams } = usePageState<
-    { startDate: string; endDate: string; sortingMode: 'hour' | 'severity' },
-    { scrollPosition: number }
-  >(
-    'gaps-patterns',
-    {
-      params: {
-        startDate: DEFAULT_START,
-        endDate: DEFAULT_END,
-        sortingMode: 'hour',
-      },
-      ui: { scrollPosition: 0 },
-    },
-    ['startDate', 'endDate', 'sortingMode'],
+  const [startDate, setStartDate] = useDate(
+    initialUrlParams.startDate
+      ? dayjs(initialUrlParams.startDate)
+      : now.clone().subtract(7, 'days'),
   )
+  const [endDate, setEndDate] = useDate(
+    initialUrlParams.endDate ? dayjs(initialUrlParams.endDate) : now.clone().subtract(1, 'day'),
+  )
+  const { search, setSearch } = useContext(GlobalSearchContext)
+  const { setParams } = useContext(ExtraShareParamsContext)
 
-  const startDate = dayjs(params.startDate)
-  const endDate = dayjs(params.endDate)
-
-  // Routes are page-local: used only to populate the RouteSelector.
+  useEffect(() => {
+    setParams({
+      startDate: startDate.toISOString(),
+      endDate: endDate.toISOString(),
+    })
+    return () => setParams({})
+  }, [startDate, endDate, setParams])
+  const { operatorId, lineNumber, routeKey } = search
   const [routes, setRoutes] = useState<BusRoute[] | undefined>()
   const [routesIsLoading, setRoutesIsLoading] = useState(false)
+  const { t } = useTranslation()
 
-  const loadRoutes = async (signal: AbortSignal | undefined) => {
+  const loadSearchData = async (signal: AbortSignal | undefined) => {
     setRoutesIsLoading(true)
-    const fetched = await getRoutesAsync(
-      startDate,
-      endDate,
+    const fetchedRoutes = await getRoutesAsync(
+      dayjs(startDate),
+      dayjs(endDate),
       operatorId ?? undefined,
       lineNumber ?? undefined,
       signal,
     )
     if (search.lineNumber === lineNumber) {
-      setRoutes(fetched)
+      setRoutes(fetchedRoutes)
     }
     setRoutesIsLoading(false)
   }
 
   useEffect(() => {
     const controller = new AbortController()
+    const signal = controller.signal
     if (!operatorId || operatorId === '0' || !lineNumber) {
       setSearch((current) => ({ ...current, routeKey: null }))
       setRoutes(undefined)
       return
     }
-    loadRoutes(controller.signal)
+    loadSearchData(signal)
     return () => controller.abort()
-  }, [operatorId, lineNumber, params.endDate, params.startDate])
+  }, [operatorId, lineNumber, endDate, startDate, setSearch])
 
   return (
     <PageContainer>
@@ -247,18 +233,14 @@ const GapsPatternsPage = () => {
           <Grid size={{ xs: 6 }}>
             <DateSelector
               time={startDate}
-              onChange={(data) =>
-                setParams((prev) => ({ ...prev, startDate: data?.toISOString() ?? prev.startDate }))
-              }
+              onChange={(data) => setStartDate(data)}
               customLabel={t('start')}
             />
           </Grid>
           <Grid size={{ xs: 6 }}>
             <DateSelector
               time={endDate}
-              onChange={(data) =>
-                setParams((prev) => ({ ...prev, endDate: data?.toISOString() ?? prev.endDate }))
-              }
+              onChange={(data) => setEndDate(data)}
               minDate={startDate}
               customLabel={t('end')}
             />
@@ -295,13 +277,15 @@ const GapsPatternsPage = () => {
             (routes.length === 0 ? (
               <NotFound>{t('line_not_found')}</NotFound>
             ) : (
-              <RouteSelector
-                routes={routes}
-                routeKey={routeKey ?? undefined}
-                setRouteKey={(key) =>
-                  setSearch((current) => ({ ...current, routeKey: key ?? null }))
-                }
-              />
+              <>
+                <RouteSelector
+                  routes={routes}
+                  routeKey={routeKey ?? undefined}
+                  setRouteKey={(key) =>
+                    setSearch((current) => ({ ...current, routeKey: key ?? null }))
+                  }
+                />
+              </>
             ))}
         </Grid>
       </Grid>
@@ -311,8 +295,6 @@ const GapsPatternsPage = () => {
           operatorRef={operatorId || ''}
           fromDate={startDate}
           toDate={endDate}
-          sortingMode={params.sortingMode}
-          setSortingMode={(m) => setParams((prev) => ({ ...prev, sortingMode: m }))}
         />
       </Grid>
     </PageContainer>

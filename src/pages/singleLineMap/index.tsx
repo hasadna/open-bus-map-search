@@ -6,10 +6,9 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material'
-import { useCallback, useContext } from 'react'
+import { useCallback, useContext, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone } from 'src/dayjs'
-import { usePageState } from 'src/hooks/usePageState'
 import { useSingleLineData } from 'src/hooks/useSingleLineData'
 import { GlobalSearchContext } from 'src/model/globalState'
 import LineNumberSelector from 'src/pages/components/LineSelector'
@@ -26,19 +25,8 @@ import InfoYoutubeModal from '../components/YoutubeModal'
 const SingleLineMapPage = () => {
   const { search, setSearch } = useContext(GlobalSearchContext)
   const { operatorId, lineNumber, vehicleNumber, date, routeKey: searchRouteKey, rideTime } = search
+  const [type, setType] = useState<'routes' | 'vehicle'>(vehicleNumber ? 'vehicle' : 'routes')
   const { t } = useTranslation()
-
-  // mode is page-specific: only single-line-map has the routes/vehicle toggle.
-  // Shareable so a recipient sees the same mode. Persisted across navigations.
-  const { params, setParams } = usePageState(
-    'line-view',
-    {
-      params: { mode: vehicleNumber ? 'vehicle' : 'routes' },
-      ui: { scrollPosition: 0 },
-    },
-    ['mode'],
-  )
-  const type = params.mode
 
   const onRouteKeyChange = useCallback(
     (key: string | null) => setSearch((c) => ({ ...c, routeKey: key })),
@@ -99,7 +87,7 @@ const SingleLineMapPage = () => {
     value: 'routes' | 'vehicle' | null,
   ) => {
     if (!value) return
-    setParams((prev) => ({ ...prev, mode: value }))
+    setType(value)
     setSearch((current) =>
       value === 'routes'
         ? { ...current, vehicleNumber: null, rideTime: null }
@@ -121,7 +109,7 @@ const SingleLineMapPage = () => {
       </Typography>
       <Grid container spacing={2}>
         <Grid container spacing={2} size={{ xs: 12 }}>
-          {/* choose date */}
+          {/* choose date*/}
           <Grid size={{ sm: 4, xs: 12 }}>
             <DateSelector time={dayjs.tz(date, ISRAEL_TIMEZONE)} onChange={handleDateChange} />
           </Grid>
@@ -133,8 +121,8 @@ const SingleLineMapPage = () => {
               excludeIsraelRailways
             />
           </Grid>
-          {/* routes / vehicle toggle */}
           <Grid size={{ sm: 4, xs: 12 }}>
+            {/* choose type */}
             <ToggleButtonGroup
               value={type}
               color="primary"
@@ -150,6 +138,7 @@ const SingleLineMapPage = () => {
         <Grid container spacing={2} size={12} sx={{ alignContent: 'center' }}>
           {type === 'routes' ? (
             <>
+              {/* choose line number */}
               <Grid size={{ sm: 4, xs: 12 }}>
                 <LineNumberSelector
                   disabled={!operatorId}
@@ -174,13 +163,16 @@ const SingleLineMapPage = () => {
               </Grid>
             </>
           ) : (
-            <Grid size={{ sm: 4, xs: 12 }}>
-              <VehicleNumberSelector
-                disabled={!operatorId}
-                vehicleNumber={vehicleNumber ?? undefined}
-                setVehicleNumber={handleVehicleNumberChange}
-              />
-            </Grid>
+            <>
+              <Grid size={{ sm: 4, xs: 12 }}>
+                {/* choose vehicle number */}
+                <VehicleNumberSelector
+                  disabled={!operatorId}
+                  vehicleNumber={vehicleNumber ?? undefined}
+                  setVehicleNumber={handleVehicleNumberChange}
+                />
+              </Grid>
+            </>
           )}
           {/* choose start time */}
           <Grid

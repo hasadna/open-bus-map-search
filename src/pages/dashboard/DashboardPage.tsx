@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 // Services and libraries
 import dayjs from 'src/dayjs'
-import { usePageState } from 'src/hooks/usePageState'
+import { useDate } from 'src/hooks/useDate'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
 import { DateSelector } from '../components/DateSelector'
 import { PageContainer } from '../components/PageContainer'
@@ -17,30 +17,13 @@ import './DashboardPage.scss'
 
 // Declarations
 const now = dayjs()
-const DEFAULT_START = now.subtract(7, 'day').toISOString()
-const DEFAULT_END = now.subtract(1, 'day').toISOString()
 
 const DashboardPage = () => {
+  const [startDate, setStartDate] = useDate(now.subtract(7, 'day'))
+  const [endDate, setEndDate] = useDate(now.subtract(1, 'day'))
+  const [operatorId, setOperatorId] = useState('')
   const { t } = useTranslation()
 
-  // Dates + operator are shareable page params, persisted across navigation.
-  const { params, setParams } = usePageState<
-    { startDate: string; endDate: string; operatorId: string },
-    { scrollPosition: number }
-  >(
-    'dashboard',
-    {
-      params: { startDate: DEFAULT_START, endDate: DEFAULT_END, operatorId: '' },
-      ui: { scrollPosition: 0 },
-    },
-    ['startDate', 'endDate', 'operatorId'],
-  )
-  const startDate = dayjs(params.startDate)
-  const endDate = dayjs(params.endDate)
-  const operatorId = params.operatorId
-
-  // ZeroLines flags are data-derived signals reported by the child charts (is
-  // the result empty?) — not user input, so they stay local-only.
   const [AllChartsZeroLines, setAllChartsZeroLines] = useState(false)
   const [WorstLineZeroLines, setWorstLineZeroLines] = useState(false)
   const [AllDayTimeChartZeroLines, setAllDayTimeChartZeroLines] = useState(false)
@@ -76,28 +59,21 @@ const DashboardPage = () => {
           <Grid size={{ xs: 6 }}>
             <DateSelector
               time={startDate}
-              onChange={(data) =>
-                setParams((prev) => ({ ...prev, startDate: data?.toISOString() ?? prev.startDate }))
-              }
+              onChange={(data) => setStartDate(data)}
               customLabel={t('start')}
             />
           </Grid>
           <Grid size={{ xs: 6 }}>
             <DateSelector
               time={endDate}
-              onChange={(data) =>
-                setParams((prev) => ({ ...prev, endDate: data?.toISOString() ?? prev.endDate }))
-              }
+              onChange={(data) => setEndDate(data)}
               minDate={startDate}
               customLabel={t('end')}
             />
           </Grid>
         </Grid>
         <Grid size={{ xs: 12, lg: 6 }}>
-          <OperatorSelector
-            operatorId={operatorId}
-            setOperatorId={(id) => setParams((prev) => ({ ...prev, operatorId: id }))}
-          />
+          <OperatorSelector operatorId={operatorId} setOperatorId={setOperatorId} />
         </Grid>
       </Grid>
       <Grid container spacing={2} sx={{ alignItems: 'flex-start' }}>

@@ -199,6 +199,7 @@ export const verifyDateFromParameter = async (page: Page) => {
   const daysAgo = dayjs(getPastDate()).diff(dateFrom, 'days')
 
   expect(daysAgo).toBeGreaterThanOrEqual(0)
+  expect(daysAgo).toBeLessThanOrEqual(3)
 }
 
 export const harOptions: RouteFromHAROptions = {

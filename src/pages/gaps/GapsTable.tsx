@@ -29,11 +29,6 @@ interface GapsTableProps {
   gaps?: Gap[]
   loading?: boolean
   initOnlyGapped?: boolean
-  /** Controlled "only gaps" value. When provided (with setOnlyGapped) the
-   *  toggle is driven by the parent (gaps page lifts it into per-page state);
-   *  otherwise the table keeps its own state seeded from initOnlyGapped. */
-  onlyGapped?: boolean
-  setOnlyGapped?: (value: boolean) => void
   singleLineMapBaseHref: string
   date: string
   onStartTimeClick?: (rideTime: string) => void
@@ -97,19 +92,13 @@ const GapsTable: React.FC<GapsTableProps> = ({
   gaps,
   loading,
   initOnlyGapped = false,
-  onlyGapped: controlledOnlyGapped,
-  setOnlyGapped: controlledSetOnlyGapped,
   singleLineMapBaseHref,
   date,
   onStartTimeClick,
 }) => {
   const { t } = useTranslation()
   const { start: serviceDayStart } = serviceDayBounds(date)
-  // Controlled when the parent passes onlyGapped; otherwise fall back to
-  // internal state seeded from initOnlyGapped (used by Storybook).
-  const [uncontrolledOnlyGapped, setUncontrolledOnlyGapped] = useState(initOnlyGapped)
-  const onlyGapped = controlledOnlyGapped ?? uncontrolledOnlyGapped
-  const setOnlyGapped = controlledSetOnlyGapped ?? setUncontrolledOnlyGapped
+  const [onlyGapped, setOnlyGapped] = useState(initOnlyGapped)
 
   const filteredGaps: Gap[] = useMemo(() => {
     if (!gaps) return []

@@ -113,7 +113,7 @@ test.describe('Share URL feature', () => {
     const clipUrl = await getClipboard(page)
     const params = new URL(clipUrl).searchParams
     expect(params.has('date')).toBe(true)
-    expect(/^\d{4}-\d{2}-\d{2}$/.test(params.get('date') ?? '')).toBe(true)
+    expect(params.get('date')).toMatch(/^\d{4}-\d{2}-\d{2}$/)
   })
 
   test('share URL pathname has no language prefix', async ({ page }) => {
@@ -136,53 +136,5 @@ test.describe('Share URL feature', () => {
     // Without startTime selected, extra params are empty — only path
     expect(new URL(clipUrl).pathname).toMatch(/\/profile\//)
     expect(new URL(clipUrl).searchParams.has('operatorId')).toBe(false)
-  })
-
-  // -------------------------------------------------------------------------
-  // Per-page state params in the share URL
-  // -------------------------------------------------------------------------
-  // These pages keep view state (only-gaps toggle, date range, operator,
-  // day/hour grouping) in per-page state (usePageState). A shared link must
-  // round-trip those params: seed from the URL → register in the share context
-  // → the Share button rebuilds an identical URL.
-
-  test("round-trip: gaps page share URL includes the 'only gaps' toggle", async ({ page }) => {
-    await page.goto('/gaps?date=2024-02-12&operatorId=3&lineNumber=64&onlyGapped=true')
-    await page.waitForURL((url) => !url.search)
-    await page.locator('.preloader').waitFor({ state: 'hidden' })
-
-    await page.locator('[aria-label="העתק קישור"]').click()
-    const params = new URL(await getClipboard(page)).searchParams
-    expect(params.get('onlyGapped')).toBe('true')
-    // global fields still ride along
-    expect(params.get('date')).toBe('2024-02-12')
-    expect(params.get('operatorId')).toBe('3')
-  })
-
-  test('round-trip: dashboard share URL includes date range and operator', async ({ page }) => {
-    await page.goto(
-      '/dashboard?startDate=2024-02-01T00:00:00.000Z&endDate=2024-02-08T00:00:00.000Z&operatorId=3',
-    )
-    await page.waitForURL((url) => !url.search)
-    await page.locator('.preloader').waitFor({ state: 'hidden' })
-
-    await page.locator('[aria-label="העתק קישור"]').click()
-    const params = new URL(await getClipboard(page)).searchParams
-    expect(params.get('operatorId')).toBe('3')
-    expect(params.get('startDate')).toBe('2024-02-01T00:00:00.000Z')
-    expect(params.get('endDate')).toBe('2024-02-08T00:00:00.000Z')
-  })
-
-  test('round-trip: data research share URL includes day/hour grouping and operator', async ({
-    page,
-  }) => {
-    await page.goto('/data-research?groupByHour=true&operatorId=3')
-    await page.waitForURL((url) => !url.search)
-    await page.locator('.preloader').waitFor({ state: 'hidden' })
-
-    await page.locator('[aria-label="העתק קישור"]').click()
-    const params = new URL(await getClipboard(page)).searchParams
-    expect(params.get('groupByHour')).toBe('true')
-    expect(params.get('operatorId')).toBe('3')
   })
 })

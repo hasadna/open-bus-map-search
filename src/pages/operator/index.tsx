@@ -1,9 +1,8 @@
 import { Grid, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
-import { useContext } from 'react'
+import { useContext, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone } from 'src/dayjs'
-import { usePageState } from 'src/hooks/usePageState'
 import { GlobalSearchContext } from 'src/model/globalState'
 import { DateSelector } from '../components/DateSelector'
 import OperatorSelector from '../components/OperatorSelector'
@@ -13,7 +12,7 @@ import { OperatorGaps } from './OperatorGaps'
 import { OperatorInfo } from './OperatorInfo'
 import { OperatorRoutes } from './OperatorRoutes'
 
-const TIME_RANGES = ['day', 'week', 'month'] as const
+const TIME_RANGES = ['day', 'week', 'month'] as const //  'year'
 
 const OperatorPage = () => {
   const {
@@ -22,19 +21,7 @@ const OperatorPage = () => {
   } = useContext(GlobalSearchContext)
   const { t } = useTranslation()
 
-  // timeRange is shareable: a colleague receiving the link sees the same
-  // aggregation window (day / week / month).
-  const { params, setParams } = usePageState<
-    { timeRange: 'day' | 'week' | 'month' },
-    { scrollPosition: number }
-  >(
-    'operator',
-    {
-      params: { timeRange: 'day' },
-      ui: { scrollPosition: 0 },
-    },
-    ['timeRange'],
-  )
+  const [timeRange, setTimeRange] = useState<(typeof TIME_RANGES)[number]>('day')
 
   const dateDayjs = dayjs.tz(date, ISRAEL_TIMEZONE)
 
@@ -48,9 +35,6 @@ const OperatorPage = () => {
       date: toIsraelTimezone(time ?? dayjs()).format('YYYY-MM-DD'),
     }))
   }
-
-  // WorstLinesChart derives its start/end Dayjs window from a numeric timestamp.
-  const dateTimestamp = dayjs.tz(date, ISRAEL_TIMEZONE).valueOf()
 
   return (
     <PageContainer>
@@ -70,13 +54,13 @@ const OperatorPage = () => {
         <Grid size={{ sm: 4, xs: 12 }}>
           <ToggleButtonGroup
             color={!operatorId ? 'standard' : 'primary'}
-            value={params.timeRange}
+            value={timeRange}
             disabled={!operatorId}
             sx={{ height: 56 }}
             exclusive
             fullWidth
             onChange={(_, value: (typeof TIME_RANGES)[number]) =>
-              value ? setParams((prev) => ({ ...prev, timeRange: value })) : undefined
+              value ? setTimeRange(value) : undefined
             }>
             {TIME_RANGES.map((time) => (
               <ToggleButton key={time} value={time}>
@@ -91,14 +75,14 @@ const OperatorPage = () => {
           <Grid size={{ lg: 6, xs: 12 }}>
             <OperatorInfo operatorId={operatorId} />
             <Spacing />
-            <OperatorGaps operatorId={operatorId} date={date} timeRange={params.timeRange} />
+            <OperatorGaps operatorId={operatorId} date={date} timeRange={timeRange} />
           </Grid>
           <Grid size={{ lg: 6, xs: 12 }}>
             <ChartWrapper>
               <WorstLinesChart
                 operatorId={operatorId}
-                startDate={dayjs(dateTimestamp).add(-1, params.timeRange)}
-                endDate={dayjs(dateTimestamp)}
+                startDate={dateDayjs.add(-1, timeRange)}
+                endDate={dateDayjs}
                 alertWorstLineHandling={function (arg: boolean): void {
                   console.log('alertWorstLineHandling', arg)
                 }}
