@@ -123,7 +123,8 @@ const VehiclePage = () => {
       <Typography className="page-title" variant="h4">
         {t('vehicle_page_title')}
       </Typography>
-      <Grid container spacing={2} sx={{ maxWidth: 600 }}>
+      {/* choose date + vehicle — centered block, like the velocity-heatmap page */}
+      <Grid container spacing={2} sx={{ width: '100%', maxWidth: 600, mx: 'auto' }}>
         {/* choose date */}
         <Grid size={{ sm: 6, xs: 12 }}>
           <DateSelector time={dayjs.tz(date, ISRAEL_TIMEZONE)} onChange={handleDateChange} />

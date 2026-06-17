@@ -38,6 +38,8 @@ function RideTime({
       component={Link}
       to={row.href}
       underline="hover"
+      // a deeper blue + medium weight so the linked time reads as clickable
+      sx={{ color: 'primary.dark', fontWeight: 500 }}
       onClick={() => onRowClick(row.setSearchPayload)}>
       {row.displayTime}
     </MuiLink>
@@ -78,8 +80,8 @@ export function VehicleRidesTable({ rows, onRowClick }: VehicleTableProps) {
 }
 
 /** Narrow-screen layout: the table doesn't fit, so each ride becomes a stacked card —
- *  line + time on top, origin and destination in a small two-row label/value table,
- *  operator as a small caption. <bdi> isolates each place name so a Latin name can't
+ *  line + time on top, then origin, destination and operator in a small label/value
+ *  table (gray labels, normal values). <bdi> isolates each value so a Latin name can't
  *  reorder the surrounding RTL label. */
 export function VehicleRidesCards({ rows, onRowClick }: VehicleTableProps) {
   const { t } = useTranslation()
@@ -106,6 +108,7 @@ export function VehicleRidesCards({ rows, onRowClick }: VehicleTableProps) {
               {[
                 { label: t('operator.origin'), value: row.origin },
                 { label: t('operator.destination'), value: row.destination },
+                { label: t('operator_title'), value: row.operator },
               ].map((field) => (
                 <TableRow key={field.label}>
                   <TableCell
@@ -127,9 +130,6 @@ export function VehicleRidesCards({ rows, onRowClick }: VehicleTableProps) {
               ))}
             </TableBody>
           </Table>
-          <Typography variant="caption" color="text.secondary">
-            {t('operator_title')}: {row.operator}
-          </Typography>
         </Paper>
       ))}
     </Stack>
