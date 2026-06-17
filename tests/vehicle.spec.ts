@@ -14,64 +14,21 @@ const rideRow = (page: Parameters<typeof setupTest>[0], text: string) =>
   page.getByRole('row').filter({ hasText: text })
 
 test.describe('Vehicle page', () => {
-  test('resolves operator, line, origin/destination and times for the vehicle rides', async ({
+  // The per-field resolution (operator/line/origin/destination, moon prefix, no-route
+  // dashes, exact link payload) is exhaustively covered in buildVehicleRideRows.test.ts.
+  // This smoke only verifies the page wires that transform up: it renders the seeded
+  // vehicle's rides and a resolvable ride navigates to single-line-map.
+  test('renders the seeded vehicle rides and links a resolvable ride to single-line-map', async ({
     page,
   }) => {
     await setupTest(page)
     await mockVehicleApi(page)
     await gotoSeededVehiclePage(page)
 
-    // line 16 ride: every field resolved from the GTFS route, not from the (null) ride fields
-    const line16 = rideRow(page, '04:30')
-    await expect(line16).toBeVisible()
-    await expect(line16).toContainText('אגד')
-    await expect(line16).toContainText('16')
-    await expect(line16).toContainText('תל אביב')
-    await expect(line16).toContainText('ירושלים')
+    await expect(rideRow(page, '04:30')).toBeVisible()
+    await expect(page.locator('tbody tr')).toHaveCount(3) // all three mocked rides rendered
 
-    // post-midnight ride: real wall-clock time + moon, not the extended-hour token
-    const moonRow = rideRow(page, '🌙 00:30')
-    await expect(moonRow).toBeVisible()
-    await expect(moonRow).toContainText('17')
-    await expect(page.getByText('24:30')).toHaveCount(0)
-  })
-
-  test('renders dashes and no link for a ride whose line ref has no GTFS route', async ({
-    page,
-  }) => {
-    await setupTest(page)
-    await mockVehicleApi(page)
-    await gotoSeededVehiclePage(page)
-
-    const unresolved = rideRow(page, '08:00')
-    await expect(unresolved).toBeVisible()
-    // line / origin / destination all fall back to the em-dash placeholder
-    await expect(unresolved.getByText('—')).toHaveCount(3)
-    // an unresolvable ride is not clickable
-    await expect(unresolved.getByRole('link')).toHaveCount(0)
-  })
-
-  test('a resolvable ride links to single-line-map carrying its route identity', async ({
-    page,
-  }) => {
-    await setupTest(page)
-    await mockVehicleApi(page)
-    await gotoSeededVehiclePage(page)
-
-    const link = rideRow(page, '04:30').getByRole('link')
-    const href = await link.getAttribute('href')
-    const url = new URL(href!, 'http://localhost:3000')
-    expect(url.pathname).toBe('/single-line-map')
-    expect(Object.fromEntries(url.searchParams)).toEqual({
-      date: '2024-02-12',
-      operatorId: '97',
-      lineNumber: '16',
-      routeKey: '52016-1-#',
-      rideTime: '04-30',
-    })
-
-    // and it actually navigates there
-    await link.click()
+    await rideRow(page, '04:30').getByRole('link').click()
     await page.waitForURL((u) => u.pathname === '/single-line-map')
   })
 
