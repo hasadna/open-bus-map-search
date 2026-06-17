@@ -65,7 +65,7 @@ const BugReportForm = () => {
       {mutation.isSuccess && mutation.data?.data && (
         <Alert severity="success" sx={{ marginBottom: 2 }}>
           <a href={mutation.data.data.url} target="_blank" rel="noopener noreferrer">
-            {t('reportBug.viewIssue')} (Github)
+            {t('reportBug.viewIssue')}
           </a>
         </Alert>
       )}
@@ -156,6 +156,7 @@ const BugReportForm = () => {
         </Form.Item>
 
         <EasterEgg code="debug" autohide={false} onShow={() => form.setFieldValue('debug', true)}>
+          {/* eslint-disable-next-line i18next/no-literal-string -- hidden developer toggle */}
           <Form.Item label="debug" name="debug" valuePropName="checked">
             <Checkbox />
           </Form.Item>

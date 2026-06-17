@@ -35,6 +35,9 @@ const MENTORS = [
   { id: 'shay', nameHe: 'שי', nameEn: 'Shay', emoji: '🔩' },
 ] as const
 
+// brand name, not translatable
+const applitoolsLogoText = '🧿 Applitools'
+
 const Hackathon = () => {
   const { t, i18n } = useTranslation()
   const tx = t as (key: string, opts?: Record<string, unknown>) => string
@@ -133,7 +136,7 @@ const Hackathon = () => {
                     {tx(`hackathonPage.trackAudience.${track}`)}
                   </PathAudienceBadge>
                   <PathCount>
-                    {tx('hackathonPage.paths.challengeCount', {
+                    {t('hackathonPage.paths.challengeCount', {
                       count: challengeCountByTrack[track],
                     })}
                   </PathCount>
@@ -203,7 +206,7 @@ const Hackathon = () => {
 
         <Widget title={t('hackathonPage.sponsors.title')}>
           <SponsorBlock>
-            <SponsorLogo>🧿 Applitools</SponsorLogo>
+            <SponsorLogo>{applitoolsLogoText}</SponsorLogo>
             <p>{t('hackathonPage.sponsors.applitools')}</p>
           </SponsorBlock>
           <SponsorCallout>
