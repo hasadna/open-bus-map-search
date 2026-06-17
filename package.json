@@ -26,7 +26,6 @@
     "dayjs": "^1.11.20",
     "es-toolkit": "^1.46.0",
     "geolib": "^3.3.4",
-    "http-proxy-middleware": "^3.0.5",
     "i18next": "^26.3.1",
     "i18next-fs-backend": "^2.6.5",
     "leaflet": "^1.9.4",
@@ -81,8 +80,8 @@
     ]
   },
   "devDependencies": {
-    "@applitools/eyes-playwright": "^1.47.2",
-    "@applitools/eyes-storybook": "^3.65.4",
+    "@applitools/eyes-playwright": "^1.47.8",
+    "@applitools/eyes-storybook": "^3.65.8",
     "@eslint/eslintrc": "^3.3.5",
     "@eslint/js": "^9.39.4",
     "@nx/eslint": "^22.7.5",
@@ -106,6 +105,7 @@
     "cross-env": "^10.1.0",
     "eslint": "^9.39.4",
     "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-i18next": "^6.1.4",
     "eslint-plugin-prettier": "^5.5.5",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",

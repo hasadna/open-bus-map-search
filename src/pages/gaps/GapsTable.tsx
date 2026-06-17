@@ -9,6 +9,7 @@ import {
   TableRow,
   Tooltip,
 } from '@mui/material'
+import type { TFunction } from 'i18next'
 import React, { memo, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
@@ -69,7 +70,7 @@ const formatStatus = (gap: Gap, gaps: Gap[] | undefined): keyof typeof colors =>
   return hasTwinRide ? 'ride_duped' : 'ride_extra'
 }
 
-function buildTooltip(gap: Gap): React.ReactNode {
+function buildTooltip(gap: Gap, t: TFunction): React.ReactNode {
   const planned = gap.plannedStartTime?.format(DATE_TIME_FORMAT)
   const actual = gap.actualStartTime?.format(DATE_TIME_FORMAT)
   const diffMin =
@@ -78,10 +79,14 @@ function buildTooltip(gap: Gap): React.ReactNode {
       : null
   return (
     <div style={{ fontSize: '0.85rem', lineHeight: 1.6 }}>
-      <div>planned: {planned ?? '—'}</div>
-      <div>actual: {actual ?? '—'}</div>
+      <div>
+        {t('gap_tooltip_planned')}: {planned ?? '—'}
+      </div>
+      <div>
+        {t('gap_tooltip_actual')}: {actual ?? '—'}
+      </div>
       {diffMin !== null && diffMin !== 0 && (
-        <div>({diffMin > 0 ? `+${diffMin}` : diffMin} min)</div>
+        <div>{t('gap_tooltip_diff_minutes', { diff: diffMin > 0 ? `+${diffMin}` : diffMin })}</div>
       )}
     </div>
   )
@@ -177,13 +182,17 @@ const GapsTable: React.FC<GapsTableProps> = ({
                       <TableCell
                         sx={{ ...cellStyle, padding: '0 4px', width: '1em', border: 'none' }}>
                         {rowIsNextDay && (
-                          <Box component="span" role="img" aria-label="next night">
+                          <Box
+                            component="span"
+                            role="img"
+                            aria-label={t('after_midnight_indicator')}>
                             🌙
                           </Box>
                         )}
                       </TableCell>
                       {groupedGaps[hour].map(({ gap, status }, j) => {
                         const gapTime = gap.plannedStartTime || gap.actualStartTime
+                        // eslint-disable-next-line i18next/no-literal-string -- dayjs format pattern, not user text
                         const displayTime = gapTime?.format('HH:mm')
                         const rideToken = gapTime
                           ? formatServiceDayTime(gapTime, serviceDayStart)
@@ -194,7 +203,7 @@ const GapsTable: React.FC<GapsTableProps> = ({
                         return (
                           <Tooltip
                             key={`${hour}-${j}-${displayTime}`}
-                            title={buildTooltip(gap)}
+                            title={buildTooltip(gap, t)}
                             arrow>
                             <TableCell
                               sx={{
