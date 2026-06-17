@@ -53,21 +53,21 @@ export function VehicleRidesTable({ rows, onRowClick }: VehicleTableProps) {
         <TableHead>
           <TableRow>
             <TableCell>{t('line')}</TableCell>
+            <TableCell>{t('vehicle_rides_start_time')}</TableCell>
             <TableCell>{t('operator.origin')}</TableCell>
             <TableCell>{t('operator.destination')}</TableCell>
-            <TableCell>{t('vehicle_rides_start_time')}</TableCell>
             <TableCell>{t('operator_title')}</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {rows.map((row) => (
             <TableRow key={row.id} hover>
-              <TableCell>{row.lineNumber}</TableCell>
-              <TableCell>{row.origin}</TableCell>
-              <TableCell>{row.destination}</TableCell>
+              <TableCell sx={{ fontWeight: 600 }}>{row.lineNumber}</TableCell>
               <TableCell>
                 <RideTime row={row} onRowClick={onRowClick} />
               </TableCell>
+              <TableCell>{row.origin}</TableCell>
+              <TableCell>{row.destination}</TableCell>
               <TableCell>{row.operator}</TableCell>
             </TableRow>
           ))}
