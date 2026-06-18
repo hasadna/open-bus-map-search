@@ -50,7 +50,7 @@ const InternalLink = ({ label, path, icon }: LinkType) => {
       title={t(label)}
       className="header-link"
       onClick={() => {
-        navigate(path)
+        void navigate(path)
       }}>
       {icon}
     </div>

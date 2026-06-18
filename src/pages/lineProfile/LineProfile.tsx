@@ -104,7 +104,7 @@ const LineProfile = () => {
           (r) => r.key === `${route.routeMkt}-${route.routeDirection}-${route.routeAlternative}`,
         )
         if (newRoute?.routeIds?.[0]) {
-          navigate(`/profile/${newRoute.routeIds[0]}`)
+          void navigate(`/profile/${newRoute.routeIds[0]}`)
         }
       })
       .catch((err) => console.error(err))
@@ -114,7 +114,7 @@ const LineProfile = () => {
     if (!key || !routes) return
     const newRoute = routes?.find((route) => route.key === key)
     if (newRoute?.routeIds?.[0]) {
-      navigate(`/profile/${newRoute.routeIds[0]}`)
+      void navigate(`/profile/${newRoute.routeIds[0]}`)
     }
   }
 
