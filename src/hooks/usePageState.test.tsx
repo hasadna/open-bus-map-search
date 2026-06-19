@@ -18,9 +18,11 @@ function makeWrapper(initialUrlParams: Record<string, string> = {}, setSharePara
   return { Wrapper, setShareParams }
 }
 
+// The timeline page is the real consumer: a single shareable string param
+// (time-of-day) plus session-only scroll position.
 const DEFAULTS = {
-  params: { mode: 'avg' as 'avg' | 'std', count: 5, active: true, label: 'hello' },
-  ui: { scrollPosition: 0, isExpanded: false },
+  params: { time: '08:30' },
+  ui: { scrollPosition: 0 },
 }
 
 beforeEach(() => {
@@ -54,38 +56,38 @@ describe('usePageState — sessionStorage persistence', () => {
     const { Wrapper } = makeWrapper()
     const { result } = renderHook(() => usePageState('my-page', DEFAULTS), { wrapper: Wrapper })
     act(() => {
-      result.current.setParams((prev) => ({ ...prev, mode: 'std' }))
+      result.current.setParams((prev) => ({ ...prev, time: '09:15' }))
     })
     const stored = JSON.parse(sessionStorage.getItem('page:my-page:params')!)
-    expect(stored.mode).toBe('std')
+    expect(stored.time).toBe('09:15')
   })
 
   it('stores ui under page:<key>:ui after a mutation', () => {
     const { Wrapper } = makeWrapper()
     const { result } = renderHook(() => usePageState('my-page', DEFAULTS), { wrapper: Wrapper })
     act(() => {
-      result.current.setUi((prev) => ({ ...prev, isExpanded: true }))
+      result.current.setUi((prev) => ({ ...prev, scrollPosition: 240 }))
     })
     const stored = JSON.parse(sessionStorage.getItem('page:my-page:ui')!)
-    expect(stored.isExpanded).toBe(true)
+    expect(stored.scrollPosition).toBe(240)
   })
 
   it('setParams updates params', () => {
     const { Wrapper } = makeWrapper()
     const { result } = renderHook(() => usePageState('test', DEFAULTS), { wrapper: Wrapper })
     act(() => {
-      result.current.setParams((prev) => ({ ...prev, mode: 'std' }))
+      result.current.setParams((prev) => ({ ...prev, time: '09:15' }))
     })
-    expect(result.current.params.mode).toBe('std')
+    expect(result.current.params.time).toBe('09:15')
   })
 
   it('setUi updates ui', () => {
     const { Wrapper } = makeWrapper()
     const { result } = renderHook(() => usePageState('test', DEFAULTS), { wrapper: Wrapper })
     act(() => {
-      result.current.setUi((prev) => ({ ...prev, isExpanded: true }))
+      result.current.setUi((prev) => ({ ...prev, scrollPosition: 240 }))
     })
-    expect(result.current.ui.isExpanded).toBe(true)
+    expect(result.current.ui.scrollPosition).toBe(240)
   })
 
   it('different storage keys do not interfere with each other', () => {
@@ -94,88 +96,94 @@ describe('usePageState — sessionStorage persistence', () => {
       wrapper: Wrapper,
     })
     const { result: r2 } = renderHook(
-      () =>
-        usePageState('page-b', {
-          params: { mode: 'std' as const, count: 5, active: true, label: 'hello' },
-          ui: { scrollPosition: 0, isExpanded: false },
-        }),
+      () => usePageState('page-b', { params: { time: '12:00' }, ui: { scrollPosition: 0 } }),
       { wrapper: Wrapper },
     )
     act(() => {
-      r1.current.setParams((prev) => ({ ...prev, mode: 'std' }))
+      r1.current.setParams((prev) => ({ ...prev, time: '09:15' }))
     })
-    expect(r2.current.params.mode).toBe('std') // page-b default unchanged
-    expect(r1.current.params.mode).toBe('std')
+    expect(r2.current.params.time).toBe('12:00') // page-b default unchanged
+    expect(r1.current.params.time).toBe('09:15')
   })
 })
 
 // ---------------------------------------------------------------------------
 // URL param seeding — type coercion
+//
+// time is a string, so number/boolean coercion is exercised with small
+// purpose-built fixtures (the hook is generic and other pages will use them).
 // ---------------------------------------------------------------------------
 
 describe('usePageState — URL param seeding', () => {
   it('seeds a string param from the URL', () => {
-    const { Wrapper } = makeWrapper({ label: 'from-url' })
-    const { result } = renderHook(() => usePageState('test', DEFAULTS, ['label']), {
+    const { Wrapper } = makeWrapper({ time: '07:45' })
+    const { result } = renderHook(() => usePageState('test', DEFAULTS, ['time']), {
       wrapper: Wrapper,
     })
-    expect(result.current.params.label).toBe('from-url')
+    expect(result.current.params.time).toBe('07:45')
   })
 
   it('coerces a numeric URL param to number', () => {
+    const numericDefaults = { params: { count: 0 }, ui: { scrollPosition: 0 } }
     const { Wrapper } = makeWrapper({ count: '42' })
-    const { result } = renderHook(() => usePageState('test', DEFAULTS, ['count']), {
+    const { result } = renderHook(() => usePageState('test', numericDefaults, ['count']), {
       wrapper: Wrapper,
     })
     expect(result.current.params.count).toBe(42)
   })
 
   it('coerces a boolean URL param: "true" → true', () => {
+    const boolDefaults = { params: { active: false }, ui: { scrollPosition: 0 } }
     const { Wrapper } = makeWrapper({ active: 'true' })
-    const { result } = renderHook(() => usePageState('test', DEFAULTS, ['active']), {
+    const { result } = renderHook(() => usePageState('test', boolDefaults, ['active']), {
       wrapper: Wrapper,
     })
     expect(result.current.params.active).toBe(true)
   })
 
   it('coerces a boolean URL param: anything other than "true" → false', () => {
+    const boolDefaults = { params: { active: true }, ui: { scrollPosition: 0 } }
     const { Wrapper } = makeWrapper({ active: 'false' })
-    const { result } = renderHook(() => usePageState('test', DEFAULTS, ['active']), {
+    const { result } = renderHook(() => usePageState('test', boolDefaults, ['active']), {
       wrapper: Wrapper,
     })
     expect(result.current.params.active).toBe(false)
   })
 
   it('falls back to default when URL number param is not finite', () => {
+    const numericDefaults = { params: { count: 5 }, ui: { scrollPosition: 0 } }
     const { Wrapper } = makeWrapper({ count: 'not-a-number' })
-    const { result } = renderHook(() => usePageState('test', DEFAULTS, ['count']), {
+    const { result } = renderHook(() => usePageState('test', numericDefaults, ['count']), {
       wrapper: Wrapper,
     })
-    expect(result.current.params.count).toBe(DEFAULTS.params.count)
+    expect(result.current.params.count).toBe(numericDefaults.params.count)
   })
 
   it('does not apply a URL param that is not listed in urlParamKeys', () => {
-    const { Wrapper } = makeWrapper({ mode: 'std', label: 'from-url' })
-    // only 'label' is listed — 'mode' should be ignored
-    const { result } = renderHook(() => usePageState('test', DEFAULTS, ['label']), {
+    const { Wrapper } = makeWrapper({ time: '07:45', operatorId: '3' })
+    // only 'time' is listed — 'operatorId' should be ignored
+    const defaults = { params: { time: '08:30', operatorId: '' }, ui: { scrollPosition: 0 } }
+    const { result } = renderHook(() => usePageState('test', defaults, ['time']), {
       wrapper: Wrapper,
     })
-    expect(result.current.params.mode).toBe(DEFAULTS.params.mode)
-    expect(result.current.params.label).toBe('from-url')
+    expect(result.current.params.operatorId).toBe('')
+    expect(result.current.params.time).toBe('07:45')
   })
 
   it('ignores URL params absent from the URL without error', () => {
     const { Wrapper } = makeWrapper({}) // no url params at all
-    const { result } = renderHook(() => usePageState('test', DEFAULTS, ['label', 'count']), {
+    const defaults = { params: { time: '08:30', count: 5 }, ui: { scrollPosition: 0 } }
+    const { result } = renderHook(() => usePageState('test', defaults, ['time', 'count']), {
       wrapper: Wrapper,
     })
-    expect(result.current.params.label).toBe(DEFAULTS.params.label)
-    expect(result.current.params.count).toBe(DEFAULTS.params.count)
+    expect(result.current.params.time).toBe(defaults.params.time)
+    expect(result.current.params.count).toBe(defaults.params.count)
   })
 
   it('does not re-apply URL overrides on subsequent renders', () => {
+    const numericDefaults = { params: { count: 1 }, ui: { scrollPosition: 0 } }
     const { Wrapper } = makeWrapper({ count: '99' })
-    const { result } = renderHook(() => usePageState('test', DEFAULTS, ['count']), {
+    const { result } = renderHook(() => usePageState('test', numericDefaults, ['count']), {
       wrapper: Wrapper,
     })
     expect(result.current.params.count).toBe(99)
@@ -197,9 +205,7 @@ describe('usePageState — PageShareParamsContext sync', () => {
     const setShareParams = jest.fn()
     const { Wrapper } = makeWrapper({}, setShareParams)
     renderHook(() => usePageState('test', DEFAULTS), { wrapper: Wrapper })
-    expect(setShareParams).toHaveBeenCalledWith(
-      expect.objectContaining({ mode: 'avg', count: '5', active: 'true', label: 'hello' }),
-    )
+    expect(setShareParams).toHaveBeenCalledWith(expect.objectContaining({ time: '08:30' }))
   })
 
   it('updates PageShareParamsContext when params change', () => {
@@ -208,22 +214,22 @@ describe('usePageState — PageShareParamsContext sync', () => {
     const { result } = renderHook(() => usePageState('test', DEFAULTS), { wrapper: Wrapper })
     setShareParams.mockClear()
     act(() => {
-      result.current.setParams((prev) => ({ ...prev, count: 99 }))
+      result.current.setParams((prev) => ({ ...prev, time: '09:15' }))
     })
-    expect(setShareParams).toHaveBeenCalledWith(expect.objectContaining({ count: '99' }))
+    expect(setShareParams).toHaveBeenCalledWith(expect.objectContaining({ time: '09:15' }))
   })
 
   it('omits null param values from the share context', () => {
     const setShareParams = jest.fn()
     const defaults = {
-      params: { label: null as string | null, count: 5 },
+      params: { time: '08:30', note: null as string | null },
       ui: { scrollPosition: 0 },
     }
     const { Wrapper } = makeWrapper({}, setShareParams)
     renderHook(() => usePageState('nullable', defaults), { wrapper: Wrapper })
     const lastCall = setShareParams.mock.calls[setShareParams.mock.calls.length - 1][0]
-    expect(lastCall.label).toBeUndefined()
-    expect(lastCall.count).toBe('5')
+    expect(lastCall.note).toBeUndefined()
+    expect(lastCall.time).toBe('08:30')
   })
 
   it('clears PageShareParamsContext on unmount', () => {
