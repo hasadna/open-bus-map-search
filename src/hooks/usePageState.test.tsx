@@ -1,6 +1,6 @@
 import { act, renderHook } from '@testing-library/react'
 import React from 'react'
-import { InitialUrlParamsContext, PageShareParamsContext } from 'src/model/pageState'
+import { ExtraShareParamsContext, InitialUrlParamsContext } from 'src/model/routeContext'
 import { usePageState } from './usePageState'
 
 // ---------------------------------------------------------------------------
@@ -10,9 +10,9 @@ import { usePageState } from './usePageState'
 function makeWrapper(initialUrlParams: Record<string, string> = {}, setShareParams = jest.fn()) {
   const Wrapper = ({ children }: { children: React.ReactNode }) => (
     <InitialUrlParamsContext.Provider value={initialUrlParams}>
-      <PageShareParamsContext.Provider value={{ params: {}, setParams: setShareParams }}>
+      <ExtraShareParamsContext.Provider value={{ params: {}, setParams: setShareParams }}>
         {children}
-      </PageShareParamsContext.Provider>
+      </ExtraShareParamsContext.Provider>
     </InitialUrlParamsContext.Provider>
   )
   return { Wrapper, setShareParams }
@@ -197,18 +197,18 @@ describe('usePageState — URL param seeding', () => {
 })
 
 // ---------------------------------------------------------------------------
-// PageShareParamsContext sync
+// ExtraShareParamsContext sync
 // ---------------------------------------------------------------------------
 
-describe('usePageState — PageShareParamsContext sync', () => {
-  it('registers serialized params into PageShareParamsContext on mount', () => {
+describe('usePageState — ExtraShareParamsContext sync', () => {
+  it('registers serialized params into ExtraShareParamsContext on mount', () => {
     const setShareParams = jest.fn()
     const { Wrapper } = makeWrapper({}, setShareParams)
     renderHook(() => usePageState('test', DEFAULTS), { wrapper: Wrapper })
     expect(setShareParams).toHaveBeenCalledWith(expect.objectContaining({ time: '08:30' }))
   })
 
-  it('updates PageShareParamsContext when params change', () => {
+  it('updates ExtraShareParamsContext when params change', () => {
     const setShareParams = jest.fn()
     const { Wrapper } = makeWrapper({}, setShareParams)
     const { result } = renderHook(() => usePageState('test', DEFAULTS), { wrapper: Wrapper })
@@ -232,7 +232,7 @@ describe('usePageState — PageShareParamsContext sync', () => {
     expect(lastCall.time).toBe('08:30')
   })
 
-  it('clears PageShareParamsContext on unmount', () => {
+  it('clears ExtraShareParamsContext on unmount', () => {
     const setShareParams = jest.fn()
     const { Wrapper } = makeWrapper({}, setShareParams)
     const { unmount } = renderHook(() => usePageState('test', DEFAULTS), { wrapper: Wrapper })

@@ -1,7 +1,7 @@
 import { debounce } from 'es-toolkit/compat'
 import { useContext, useEffect, useMemo, useRef } from 'react'
 import { useSessionStorage } from 'usehooks-ts'
-import { InitialUrlParamsContext, PageShareParamsContext } from 'src/model/pageState'
+import { ExtraShareParamsContext, InitialUrlParamsContext } from 'src/model/routeContext'
 
 type Serializable = string | number | boolean | null
 
@@ -20,7 +20,7 @@ function serializeParams(params: Record<string, Serializable>): Record<string, s
 /**
  * Per-page state with a params/ui split.
  *
- * params — shareable: included in the share URL via PageShareParamsContext.
+ * params — shareable: included in the share URL via ExtraShareParamsContext.
  *          Restored from URL params on first load (for incoming shared links).
  *          Stored in sessionStorage['page:<key>:params'].
  *
@@ -46,7 +46,7 @@ export function usePageState<
   const [ui, setUi] = useSessionStorage(`page:${storageKey}:ui`, defaults.ui)
 
   const initialUrlParams = useContext(InitialUrlParamsContext)
-  const { setParams: setShareParams } = useContext(PageShareParamsContext)
+  const { setParams: setShareParams } = useContext(ExtraShareParamsContext)
 
   // Apply URL param overrides exactly once on mount.
   // This lets shared links restore page-specific state (e.g. gaps_patterns
@@ -82,7 +82,7 @@ export function usePageState<
     }
   }, [])
 
-  // Keep PageShareParamsContext in sync with current params so the share
+  // Keep ExtraShareParamsContext in sync with current params so the share
   // button always produces a URL that restores this page's exact view.
   const serialized = useMemo(
     () => serializeParams(params as Record<string, Serializable>),

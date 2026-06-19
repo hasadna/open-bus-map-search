@@ -1,45 +1,44 @@
 import { getPathWithoutLang } from 'src/locale/allTranslations'
 import { GlobalSearchState } from 'src/model/globalState'
-import { PAGE_GLOBAL_SHARE_KEYS } from 'src/model/pageState'
 
-export type { GlobalSearchState }
+export type ShareableKey = keyof GlobalSearchState
+
+// Only include params that are actually used on each page.
+// Pages absent from this map (homepage, about, donate, etc.) get no params.
+export const PAGE_SHARE_PARAMS: Partial<Record<string, ShareableKey[]>> = {
+  '/timeline': ['date', 'operatorId', 'lineNumber', 'vehicleNumber', 'routeKey', 'stopKey'],
+  '/gaps': ['date', 'operatorId', 'lineNumber', 'routeKey'],
+  '/gaps_patterns': ['operatorId', 'lineNumber', 'routeKey'],
+  '/map': [],
+  '/velocity-heatmap': ['date'],
+  '/single-line-map': ['date', 'operatorId', 'lineNumber', 'vehicleNumber', 'routeKey', 'rideTime'],
+  '/operator': ['operatorId', 'date'],
+}
 
 /**
- * Build a shareable URL for the current page.
+ * Build a shareable URL for the given page.
  *
- * The URL contains two groups of params:
- *   1. Global fields relevant to this page (from PAGE_GLOBAL_SHARE_KEYS).
- *   2. Page-specific params registered via usePageState → PageShareParamsContext
- *      (e.g. gaps_patterns' startDate/endDate, velocity-heatmap's visMode/center/zoom).
- *
- * Scroll position, map viewport on auto-fit pages, and other purely local UI
- * state are never included — they are device-specific and useless to a recipient.
+ * Only the params relevant to that page are included (see PAGE_SHARE_PARAMS).
+ * Extra params (e.g. page-local state registered via ExtraShareParamsContext)
+ * are appended last and override any GlobalSearchContext param with the same key.
  */
 export const buildShareUrl = (
   pathname: string,
   search: GlobalSearchState,
-  pageParams: Record<string, string>,
+  extraParams: Record<string, string>,
   origin = window.location.origin,
 ): string => {
   const pagePath = getPathWithoutLang(pathname)
-  // For dynamic paths like /profile/123, fall back to the base path /profile
-  const basePath = pagePath.replace(/\/[^/]+$/, '') || '/'
-  const relevantKeys = PAGE_GLOBAL_SHARE_KEYS[pagePath] ?? PAGE_GLOBAL_SHARE_KEYS[basePath] ?? []
+  const relevantKeys = PAGE_SHARE_PARAMS[pagePath] ?? []
 
   const params = new URLSearchParams()
 
   for (const key of relevantKeys) {
     const value = search[key]
-    // Falsy values (null, 0, '') are treated as "not set" and omitted.
-    // vehicleNumber 0 is not a real vehicle; date 0 (epoch) is never a valid query date.
-    if (value) {
-      params.set(key, String(value))
-    }
+    if (value) params.set(key, String(value))
   }
 
-  // Page-specific params come last and can override global ones with the same
-  // key (e.g. /map registers its own 'date' with full datetime precision).
-  Object.entries(pageParams).forEach(([key, value]) => params.set(key, value))
+  Object.entries(extraParams).forEach(([key, value]) => params.set(key, value))
 
   const query = params.toString()
   // Use the lang-stripped path so shared links are language-agnostic.
