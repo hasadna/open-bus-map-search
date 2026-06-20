@@ -6,7 +6,7 @@ import MarkerClusterGroup from 'react-leaflet-markercluster'
 import dayjs, { ISRAEL_TIMEZONE, parseIsraelLocalDatetime } from 'src/dayjs'
 import { useAgencyList } from 'src/hooks/useAgencyList'
 import useVehicleLocations from 'src/hooks/useVehicleLocations'
-import { ExtraShareParamsContext, InitialUrlParamsContext } from 'src/model/routeContext'
+import { InitialUrlParamsContext, PageShareParamsContext } from 'src/model/routeContext'
 import { type Point, toPoint } from 'src/pages/components/map-related/map-types'
 import { BusToolTip } from 'src/pages/components/map-related/MapLayers/BusToolTip'
 import { MapShell } from 'src/pages/components/map-related/MapShell'
@@ -40,7 +40,7 @@ export default function TimeBasedMapPage() {
 
   // LEGACY: manual share-param injection — replace with usePageState's per-page
   // persistent `params` when this page is migrated.
-  const { setParams } = useContext(ExtraShareParamsContext)
+  const { setParams } = useContext(PageShareParamsContext)
   useEffect(() => {
     // Shared as a readable Israel-local datetime, e.g. 2023-03-14T17:00
     setParams({ datetime: from.tz(ISRAEL_TIMEZONE).format('YYYY-MM-DDTHH:mm') })

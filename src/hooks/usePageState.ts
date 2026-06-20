@@ -1,7 +1,7 @@
 import { debounce } from 'es-toolkit/compat'
 import { useContext, useEffect, useMemo, useRef } from 'react'
 import { useSessionStorage } from 'usehooks-ts'
-import { ExtraShareParamsContext, InitialUrlParamsContext } from 'src/model/routeContext'
+import { InitialUrlParamsContext, PageShareParamsContext } from 'src/model/routeContext'
 
 type Serializable = string | number | boolean | null
 
@@ -25,7 +25,7 @@ function serializeParams(
 /**
  * Per-page state with a params/ui split.
  *
- * params — shareable: included in the share URL via ExtraShareParamsContext,
+ * params — shareable: included in the share URL via PageShareParamsContext,
  *          namespaced as `<storageKey>.<param>` so they never collide with the
  *          global search keys or another page's params.
  *          Restored from URL params on first load (for incoming shared links).
@@ -37,7 +37,7 @@ function serializeParams(
  *
  * @param storageKey  Short page identifier, e.g. 'gaps-patterns'.
  * @param defaults    Default { params, ui } — used when nothing is in storage.
- *                    Every params key is shareable (out via ExtraShareParamsContext)
+ *                    Every params key is shareable (out via PageShareParamsContext)
  *                    and seedable from the URL on first load, with type coercion
  *                    based on the default value's type.
  */
@@ -49,9 +49,9 @@ export function usePageState<
   const [ui, setUi] = useSessionStorage(`page:${storageKey}:ui`, defaults.ui)
 
   const initialUrlParams = useContext(InitialUrlParamsContext)
-  const { setParams: setShareParams } = useContext(ExtraShareParamsContext)
+  const { setParams: setShareParams } = useContext(PageShareParamsContext)
 
- /*
+  /*
     On first mount, apply any URL params that match the page's params keys.
     Then delete those keys from the initialUrlParams so a later remount (app menu navigation - sharing this snapshot) won't re-seed.
   */
@@ -88,7 +88,7 @@ export function usePageState<
     }
   }, [])
 
-  // Keep ExtraShareParamsContext in sync with current params so the share
+  // Keep PageShareParamsContext in sync with current params so the share
   // button always produces a URL that restores this page's exact view.
   const serialized = useMemo(
     () => serializeParams(params as Record<string, Serializable>, storageKey),

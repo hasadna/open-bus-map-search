@@ -14,8 +14,8 @@ const fullSearch: GlobalSearchState = {
   stopKey: null,
 }
 
-const build = (pathname: string, search = fullSearch, extra: Record<string, string> = {}) =>
-  buildShareUrl(pathname, search, extra, ORIGIN)
+const build = (pathname: string, search = fullSearch, pageParams: Record<string, string> = {}) =>
+  buildShareUrl(pathname, search, pageParams, ORIGIN)
 
 const paramsOf = (url: string) => Object.fromEntries(new URL(url).searchParams)
 
@@ -77,27 +77,27 @@ describe('buildShareUrl — falsy value exclusion', () => {
 })
 
 // ---------------------------------------------------------------------------
-// buildShareUrl — extra params
+// buildShareUrl — page params
 // ---------------------------------------------------------------------------
 
-describe('buildShareUrl — extra params', () => {
-  it('appends extra params that are not in PAGE_SHARE_PARAMS', () => {
+describe('buildShareUrl — page params', () => {
+  it('appends page params that are not in PAGE_SHARE_PARAMS', () => {
     const p = paramsOf(build('/gaps_patterns', fullSearch, { startDate: '2026-05-01T00:00:00Z' }))
     expect(p.startDate).toBe('2026-05-01T00:00:00Z')
   })
 
-  it('extra params override a GlobalSearchContext param with the same key', () => {
+  it('page params override a GlobalSearchContext param with the same key', () => {
     const p = paramsOf(build('/gaps_patterns', fullSearch, { operatorId: 'overridden' }))
     expect(p.operatorId).toBe('overridden')
   })
 
-  it('/map produces no params from GlobalSearchContext — only extras are included', () => {
+  it('/map produces no params from GlobalSearchContext — only page params are included', () => {
     const p = paramsOf(build('/map', fullSearch, { datetime: '2023-03-14T17:00' }))
     expect(Object.keys(p)).toEqual(['datetime'])
     expect(p.datetime).toBe('2023-03-14T17:00')
   })
 
-  it('/map with no extras produces a clean URL', () => {
+  it('/map with no page params produces a clean URL', () => {
     expect(new URL(build('/map', fullSearch)).search).toBe('')
   })
 })
@@ -151,7 +151,7 @@ describe('buildShareUrl — round-trip', () => {
     expect(restored).toBe(fullSearch.vehicleNumber)
   })
 
-  it('extra param values with special characters are encoded correctly', () => {
+  it('page param values with special characters are encoded correctly', () => {
     const iso = '2026-05-01T00:00:00.000Z'
     const p = paramsOf(build('/gaps_patterns', fullSearch, { startDate: iso }))
     // URLSearchParams encodes '+' and ':' — but decoding must give back the original
@@ -182,11 +182,11 @@ describe('buildShareUrl — edge cases', () => {
     expect(new URL(build('/gaps', empty)).search).toBe('')
   })
 
-  it('only the relevant subset of extra params ends up in the URL', () => {
-    // Extra params are passed through as-is — the caller is responsible for
+  it('only the relevant subset of page params ends up in the URL', () => {
+    // Page params are passed through as-is — the caller is responsible for
     // only registering what the current page actually needs
-    const extra = { startDate: '2026-05-01T00:00:00Z', endDate: '2026-05-08T00:00:00Z' }
-    const p = paramsOf(build('/gaps_patterns', fullSearch, extra))
+    const pageParams = { startDate: '2026-05-01T00:00:00Z', endDate: '2026-05-08T00:00:00Z' }
+    const p = paramsOf(build('/gaps_patterns', fullSearch, pageParams))
     expect(Object.keys(p)).toEqual(
       expect.arrayContaining(['operatorId', 'lineNumber', 'routeKey', 'startDate', 'endDate']),
     )
@@ -228,7 +228,7 @@ describe('buildShareUrl — per-page param contracts', () => {
 
 // /profile/:id is not in PAGE_SHARE_PARAMS. The route ID is already in the
 // path, so GlobalSearchContext params must not leak into the URL — only explicit
-// extra params (e.g. rideTime) registered via ExtraShareParamsContext appear.
+// page params (e.g. rideTime) registered via PageShareParamsContext appear.
 
 describe('buildShareUrl — dynamic profile path', () => {
   it('no GlobalSearchContext params leak into the URL', () => {
@@ -240,7 +240,7 @@ describe('buildShareUrl — dynamic profile path', () => {
     expect(p.rideTime).toBeUndefined()
   })
 
-  it('extra params (rideTime) are included', () => {
+  it('page params (rideTime) are included', () => {
     const p = paramsOf(build('/profile/12345', fullSearch, { rideTime: '08:30:00' }))
     expect(p.rideTime).toBe('08:30:00')
   })

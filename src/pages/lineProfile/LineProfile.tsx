@@ -8,7 +8,7 @@ import { getServiceDayRoutes } from 'src/api/serviceDayRoutesService'
 import dayjs, { toIsraelTimezone } from 'src/dayjs'
 import { useSingleLineData } from 'src/hooks/useSingleLineData'
 import { GLOBAL_SEARCH_DEFAULTS, GlobalSearchContext } from 'src/model/globalState'
-import { ExtraShareParamsContext, InitialUrlParamsContext } from 'src/model/routeContext'
+import { InitialUrlParamsContext, PageShareParamsContext } from 'src/model/routeContext'
 import StopSelector from 'src/pages/components/StopSelector'
 import Widget from 'src/shared/Widget'
 import { DateSelector } from '../components/DateSelector'
@@ -31,7 +31,7 @@ const LineProfile = () => {
   const initialUrlParams = useContext(InitialUrlParamsContext)
   // LEGACY: manual share-param injection — replace with usePageState's per-page
   // persistent `params` when this page is migrated.
-  const { setParams } = useContext(ExtraShareParamsContext)
+  const { setParams } = useContext(PageShareParamsContext)
 
   useEffect(() => {
     document.querySelector('main')?.scrollTo(0, 0)

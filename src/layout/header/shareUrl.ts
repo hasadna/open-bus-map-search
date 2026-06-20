@@ -19,13 +19,13 @@ export const PAGE_SHARE_PARAMS: Partial<Record<string, ShareableKey[]>> = {
  * Build a shareable URL for the given page.
  *
  * Only the params relevant to that page are included (see PAGE_SHARE_PARAMS).
- * Extra params (e.g. page-local state registered via ExtraShareParamsContext)
+ * Page params (e.g. page-local state registered via PageShareParamsContext)
  * are appended last and override any GlobalSearchContext param with the same key.
  */
 export const buildShareUrl = (
   pathname: string,
   search: GlobalSearchState,
-  extraParams: Record<string, string>,
+  pageParams: Record<string, string>,
   origin = window.location.origin,
 ): string => {
   const pagePath = getPathWithoutLang(pathname)
@@ -38,7 +38,7 @@ export const buildShareUrl = (
     if (value) params.set(key, String(value))
   }
 
-  Object.entries(extraParams).forEach(([key, value]) => params.set(key, value))
+  Object.entries(pageParams).forEach(([key, value]) => params.set(key, value))
 
   const query = params.toString()
   // Use the lang-stripped path so shared links are language-agnostic.
