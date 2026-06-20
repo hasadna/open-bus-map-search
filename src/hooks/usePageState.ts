@@ -30,18 +30,14 @@ function serializeParams(params: Record<string, Serializable>): Record<string, s
  *
  * @param storageKey  Short page identifier, e.g. 'gaps-patterns'.
  * @param defaults    Default { params, ui } — used when nothing is in storage.
- * @param urlParamKeys  Keys of params that can be seeded from the URL on first
- *                    load. The hook reads these from InitialUrlParamsContext and
- *                    applies type coercion based on the default value's type.
+ *                    Every params key is shareable (out via ExtraShareParamsContext)
+ *                    and seedable from the URL on first load, with type coercion
+ *                    based on the default value's type.
  */
 export function usePageState<
   TParams extends Record<string, Serializable>,
   TUi extends Record<string, unknown>,
->(
-  storageKey: string,
-  defaults: { params: TParams; ui: TUi },
-  urlParamKeys: (keyof TParams)[] = [],
-) {
+>(storageKey: string, defaults: { params: TParams; ui: TUi }) {
   const [params, setParams] = useSessionStorage(`page:${storageKey}:params`, defaults.params)
   const [ui, setUi] = useSessionStorage(`page:${storageKey}:ui`, defaults.ui)
 
@@ -54,11 +50,11 @@ export function usePageState<
   // global SearchContext.
   const appliedUrlOverrides = useRef(false)
   useEffect(() => {
-    if (appliedUrlOverrides.current || urlParamKeys.length === 0) return
+    if (appliedUrlOverrides.current) return
     appliedUrlOverrides.current = true
 
     const overrides: Partial<TParams> = {}
-    for (const key of urlParamKeys) {
+    for (const key of Object.keys(defaults.params) as (keyof TParams)[]) {
       const raw = initialUrlParams[key as string]
       if (raw === undefined) continue
 

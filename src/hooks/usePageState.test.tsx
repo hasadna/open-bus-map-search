@@ -117,7 +117,7 @@ describe('usePageState — sessionStorage persistence', () => {
 describe('usePageState — URL param seeding', () => {
   it('seeds a string param from the URL', () => {
     const { Wrapper } = makeWrapper({ time: '07:45' })
-    const { result } = renderHook(() => usePageState('test', DEFAULTS, ['time']), {
+    const { result } = renderHook(() => usePageState('test', DEFAULTS), {
       wrapper: Wrapper,
     })
     expect(result.current.params.time).toBe('07:45')
@@ -126,7 +126,7 @@ describe('usePageState — URL param seeding', () => {
   it('coerces a numeric URL param to number', () => {
     const numericDefaults = { params: { count: 0 }, ui: { scrollPosition: 0 } }
     const { Wrapper } = makeWrapper({ count: '42' })
-    const { result } = renderHook(() => usePageState('test', numericDefaults, ['count']), {
+    const { result } = renderHook(() => usePageState('test', numericDefaults), {
       wrapper: Wrapper,
     })
     expect(result.current.params.count).toBe(42)
@@ -135,7 +135,7 @@ describe('usePageState — URL param seeding', () => {
   it('coerces a boolean URL param: "true" → true', () => {
     const boolDefaults = { params: { active: false }, ui: { scrollPosition: 0 } }
     const { Wrapper } = makeWrapper({ active: 'true' })
-    const { result } = renderHook(() => usePageState('test', boolDefaults, ['active']), {
+    const { result } = renderHook(() => usePageState('test', boolDefaults), {
       wrapper: Wrapper,
     })
     expect(result.current.params.active).toBe(true)
@@ -144,7 +144,7 @@ describe('usePageState — URL param seeding', () => {
   it('coerces a boolean URL param: anything other than "true" → false', () => {
     const boolDefaults = { params: { active: true }, ui: { scrollPosition: 0 } }
     const { Wrapper } = makeWrapper({ active: 'false' })
-    const { result } = renderHook(() => usePageState('test', boolDefaults, ['active']), {
+    const { result } = renderHook(() => usePageState('test', boolDefaults), {
       wrapper: Wrapper,
     })
     expect(result.current.params.active).toBe(false)
@@ -153,27 +153,36 @@ describe('usePageState — URL param seeding', () => {
   it('falls back to default when URL number param is not finite', () => {
     const numericDefaults = { params: { count: 5 }, ui: { scrollPosition: 0 } }
     const { Wrapper } = makeWrapper({ count: 'not-a-number' })
-    const { result } = renderHook(() => usePageState('test', numericDefaults, ['count']), {
+    const { result } = renderHook(() => usePageState('test', numericDefaults), {
       wrapper: Wrapper,
     })
     expect(result.current.params.count).toBe(numericDefaults.params.count)
   })
 
-  it('does not apply a URL param that is not listed in urlParamKeys', () => {
+  it('seeds every params key present in the URL', () => {
     const { Wrapper } = makeWrapper({ time: '07:45', operatorId: '3' })
-    // only 'time' is listed — 'operatorId' should be ignored
     const defaults = { params: { time: '08:30', operatorId: '' }, ui: { scrollPosition: 0 } }
-    const { result } = renderHook(() => usePageState('test', defaults, ['time']), {
+    const { result } = renderHook(() => usePageState('test', defaults), {
       wrapper: Wrapper,
     })
-    expect(result.current.params.operatorId).toBe('')
+    expect(result.current.params.operatorId).toBe('3')
     expect(result.current.params.time).toBe('07:45')
+  })
+
+  it('ignores URL keys that are not params', () => {
+    const { Wrapper } = makeWrapper({ time: '07:45', unrelated: 'x' })
+    const defaults = { params: { time: '08:30' }, ui: { scrollPosition: 0 } }
+    const { result } = renderHook(() => usePageState('test', defaults), {
+      wrapper: Wrapper,
+    })
+    expect(result.current.params.time).toBe('07:45')
+    expect((result.current.params as Record<string, unknown>).unrelated).toBeUndefined()
   })
 
   it('ignores URL params absent from the URL without error', () => {
     const { Wrapper } = makeWrapper({}) // no url params at all
     const defaults = { params: { time: '08:30', count: 5 }, ui: { scrollPosition: 0 } }
-    const { result } = renderHook(() => usePageState('test', defaults, ['time', 'count']), {
+    const { result } = renderHook(() => usePageState('test', defaults), {
       wrapper: Wrapper,
     })
     expect(result.current.params.time).toBe(defaults.params.time)
@@ -183,7 +192,7 @@ describe('usePageState — URL param seeding', () => {
   it('does not re-apply URL overrides on subsequent renders', () => {
     const numericDefaults = { params: { count: 1 }, ui: { scrollPosition: 0 } }
     const { Wrapper } = makeWrapper({ count: '99' })
-    const { result } = renderHook(() => usePageState('test', numericDefaults, ['count']), {
+    const { result } = renderHook(() => usePageState('test', numericDefaults), {
       wrapper: Wrapper,
     })
     expect(result.current.params.count).toBe(99)

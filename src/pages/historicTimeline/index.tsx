@@ -37,11 +37,10 @@ const TimelinePage = () => {
 
   // time-of-day is page-local: not shared across pages, but is shareable so a
   // link recipient sees the same moment (date comes from global state).
-  const { params, setParams } = usePageState(
-    'timeline',
-    { params: { time: dayjs().format('HH:mm') }, ui: { scrollPosition: 0 } },
-    ['time'],
-  )
+  const { params, setParams } = usePageState('timeline', {
+    params: { time: dayjs().format('HH:mm') },
+    ui: { scrollPosition: 0 },
+  })
 
   const time = useMemo(() => {
     const [h, m] = params.time.split(':').map(Number)
