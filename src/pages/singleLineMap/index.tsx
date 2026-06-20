@@ -1,12 +1,5 @@
-import {
-  CircularProgress,
-  Grid,
-  ToggleButton,
-  ToggleButtonGroup,
-  Tooltip,
-  Typography,
-} from '@mui/material'
-import { useCallback, useContext, useState } from 'react'
+import { CircularProgress, Grid, Tooltip, Typography } from '@mui/material'
+import { useCallback, useContext } from 'react'
 import { useTranslation } from 'react-i18next'
 import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone } from 'src/dayjs'
 import { useSingleLineData } from 'src/hooks/useSingleLineData'
@@ -14,7 +7,6 @@ import { GlobalSearchContext } from 'src/model/globalState'
 import LineNumberSelector from 'src/pages/components/LineSelector'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
 import RouteSelector from 'src/pages/components/RouteSelector'
-import VehicleNumberSelector from 'src/pages/components/VehicleSelector'
 import { DateSelector } from '../components/DateSelector'
 import { FilterPositionsByStartTimeSelector } from '../components/FilterPositionsByStartTimeSelector'
 import { MapWithLocationsAndPath } from '../components/map-related/MapWithLocationsAndPath'
@@ -24,8 +16,7 @@ import InfoYoutubeModal from '../components/YoutubeModal'
 
 const SingleLineMapPage = () => {
   const { search, setSearch } = useContext(GlobalSearchContext)
-  const { operatorId, lineNumber, vehicleNumber, date, routeKey: searchRouteKey, rideTime } = search
-  const [type, setType] = useState<'routes' | 'vehicle'>(vehicleNumber ? 'vehicle' : 'routes')
+  const { operatorId, lineNumber, date, routeKey: searchRouteKey, rideTime } = search
   const { t } = useTranslation()
 
   const onRouteKeyChange = useCallback(
@@ -50,7 +41,6 @@ const SingleLineMapPage = () => {
   } = useSingleLineData({
     operatorId: operatorId ?? undefined,
     lineNumber: lineNumber ?? undefined,
-    vehicleNumber: vehicleNumber ?? undefined,
     date,
     routeKey: searchRouteKey,
     rideTime,
@@ -78,25 +68,6 @@ const SingleLineMapPage = () => {
     setSearch((current) => ({ ...current, routeKey: routeKey ?? null, rideTime: null }))
   }
 
-  const handleVehicleNumberChange = (vehicleNumber?: number) => {
-    setSearch((current) => ({ ...current, vehicleNumber: vehicleNumber ?? null, rideTime: null }))
-  }
-
-  const handleTypeChange = (
-    _: React.MouseEvent<HTMLElement>,
-    value: 'routes' | 'vehicle' | null,
-  ) => {
-    if (!value) return
-    setType(value)
-    setSearch((current) =>
-      value === 'routes'
-        ? { ...current, vehicleNumber: null, rideTime: null }
-        : value === 'vehicle'
-          ? { ...current, lineNumber: null, routeKey: null, rideTime: null }
-          : current,
-    )
-  }
-
   return (
     <PageContainer className="map-container">
       <Typography className="page-title" variant="h4">
@@ -121,62 +92,34 @@ const SingleLineMapPage = () => {
               excludeIsraelRailways
             />
           </Grid>
+          {/* choose line number */}
           <Grid size={{ sm: 4, xs: 12 }}>
-            {/* choose type */}
-            <ToggleButtonGroup
-              value={type}
-              color="primary"
-              onChange={handleTypeChange}
-              sx={{ height: 56 }}
-              exclusive
-              fullWidth>
-              <ToggleButton value="routes">{t('singleline_map_page_route')}</ToggleButton>
-              <ToggleButton value="vehicle">{t('singleline_map_page_vehicle_id')}</ToggleButton>
-            </ToggleButtonGroup>
+            <LineNumberSelector
+              disabled={!operatorId}
+              lineNumber={lineNumber ?? undefined}
+              setLineNumber={handleLineNumberChange}
+            />
           </Grid>
         </Grid>
         <Grid container spacing={2} size={12} sx={{ alignContent: 'center' }}>
-          {type === 'routes' ? (
-            <>
-              {/* choose line number */}
-              <Grid size={{ sm: 4, xs: 12 }}>
-                <LineNumberSelector
-                  disabled={!operatorId}
-                  lineNumber={lineNumber ?? undefined}
-                  setLineNumber={handleLineNumberChange}
-                />
-              </Grid>
-              <Grid size={{ sm: 4, xs: 12 }}>
-                {/* choose route */}
-                {error ? (
-                  <NotFound>{error}</NotFound>
-                ) : routes?.length === 0 ? (
-                  <NotFound>{t('line_not_found')}</NotFound>
-                ) : (
-                  <RouteSelector
-                    disabled={!routes}
-                    routes={routes || []}
-                    routeKey={routeKey}
-                    setRouteKey={handleRouteKeyChange}
-                  />
-                )}
-              </Grid>
-            </>
-          ) : (
-            <>
-              <Grid size={{ sm: 4, xs: 12 }}>
-                {/* choose vehicle number */}
-                <VehicleNumberSelector
-                  disabled={!operatorId}
-                  vehicleNumber={vehicleNumber ?? undefined}
-                  setVehicleNumber={handleVehicleNumberChange}
-                />
-              </Grid>
-            </>
-          )}
+          <Grid size={{ sm: 4, xs: 12 }}>
+            {/* choose route */}
+            {error ? (
+              <NotFound>{error}</NotFound>
+            ) : routes?.length === 0 ? (
+              <NotFound>{t('line_not_found')}</NotFound>
+            ) : (
+              <RouteSelector
+                disabled={!routes}
+                routes={routes || []}
+                routeKey={routeKey}
+                setRouteKey={handleRouteKeyChange}
+              />
+            )}
+          </Grid>
           {/* choose start time */}
           <Grid
-            size={{ sm: type === 'routes' ? 4 : 8, xs: 12 }}
+            size={{ sm: 8, xs: 12 }}
             container
             sx={{
               alignItems: 'center',
@@ -187,7 +130,7 @@ const SingleLineMapPage = () => {
             }}>
             <FilterPositionsByStartTimeSelector
               options={options}
-              disabled={!routeKey && !vehicleNumber}
+              disabled={!routeKey}
               startTime={startTime}
               setStartTime={setStartTime}
             />
