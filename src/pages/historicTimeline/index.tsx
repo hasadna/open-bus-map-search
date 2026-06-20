@@ -29,8 +29,6 @@ const TimelinePage = () => {
   const { search, setSearch } = useContext(GlobalSearchContext)
   const { operatorId, lineNumber, date, routeKey } = search
 
-  // stopKey is global: shared with /single-line-map and /profile so the
-  // selected stop survives navigation between these related views.
   const stopKey = search.stopKey
   const setStopKey = (key: string | undefined) =>
     setSearch((prev) => ({ ...prev, stopKey: key ?? null }))
