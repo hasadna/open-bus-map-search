@@ -26,7 +26,9 @@ test.describe('Vehicle page', () => {
     await gotoSeededVehiclePage(page)
 
     await expect(rideRow(page, '04:30')).toBeVisible()
-    await expect(page.locator('tbody tr')).toHaveCount(3) // all three mocked rides rendered
+    await expect(
+      page.getByRole('table', { name: i18next.t('vehicle_page_title') }).locator('tbody tr'),
+    ).toHaveCount(3) // all three mocked rides rendered
 
     await rideRow(page, '04:30').getByRole('link').click()
     await page.waitForURL((u) => u.pathname === '/single-line-map')
