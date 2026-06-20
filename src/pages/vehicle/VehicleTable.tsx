@@ -10,8 +10,6 @@ import {
   TableHead,
   TableRow,
   Typography,
-  useMediaQuery,
-  useTheme,
 } from '@mui/material'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
@@ -23,8 +21,7 @@ interface VehicleTableProps {
   onRowClick: (payload: VehicleRideRow['setSearchPayload']) => void
 }
 
-/** The ride time — a link to single-line-map when the ride is resolvable, plain text
- *  otherwise. Shared by both the table and the card layout. */
+/** Ride time: links to single-line-map when resolvable, plain text otherwise. */
 function RideTime({
   row,
   onRowClick,
@@ -79,10 +76,8 @@ export function VehicleRidesTable({ rows, onRowClick }: VehicleTableProps) {
   )
 }
 
-/** Narrow-screen layout: the table doesn't fit, so each ride becomes a stacked card —
- *  line + time on top, then origin, destination and operator in a small label/value
- *  table (gray labels, normal values). <bdi> isolates each value so a Latin name can't
- *  reorder the surrounding RTL label. */
+/** Narrow-screen layout: each ride as a stacked card. <bdi> isolates each value so a
+ *  Latin name can't reorder the surrounding RTL label. */
 export function VehicleRidesCards({ rows, onRowClick }: VehicleTableProps) {
   const { t } = useTranslation()
   return (
@@ -136,11 +131,17 @@ export function VehicleRidesCards({ rows, onRowClick }: VehicleTableProps) {
   )
 }
 
-/** A vehicle's rides for the day. Renders as a table on wider screens and as a stacked
- *  card list on narrow ones (the table is too wide for phones). All data is pre-resolved
- *  by buildVehicleRideRows; these components only render it. */
+/** Table on wide screens, cards on narrow — both in the DOM, toggled by CSS at `sm`
+ *  (not a JS branch, so no layout shift and Applitools captures both). */
 export function VehicleTable(props: VehicleTableProps) {
-  const theme = useTheme()
-  const isNarrow = useMediaQuery(theme.breakpoints.down('sm'))
-  return isNarrow ? <VehicleRidesCards {...props} /> : <VehicleRidesTable {...props} />
+  return (
+    <>
+      <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
+        <VehicleRidesTable {...props} />
+      </Box>
+      <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
+        <VehicleRidesCards {...props} />
+      </Box>
+    </>
+  )
 }
