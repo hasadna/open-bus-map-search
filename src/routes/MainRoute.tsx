@@ -51,7 +51,6 @@ export const MainRoute = () => {
       ...(isValidSearchDate(p.date) ? { date: p.date } : {}),
       ...(p.operatorId ? { operatorId: p.operatorId } : {}),
       ...(p.lineNumber ? { lineNumber: p.lineNumber } : {}),
-      ...(p.vehicleNumber ? { vehicleNumber: Number(p.vehicleNumber) } : {}),
       ...(p.routeKey ? { routeKey: p.routeKey } : {}),
       ...(rideTime ? { rideTime } : {}),
       ...(p.stopKey ? { stopKey: p.stopKey } : {}),

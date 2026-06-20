@@ -16,6 +16,8 @@ export interface PositionGroup {
   positions: Point[]
   color: string
   label?: string
+  /** Raw SIRI vehicle ref of the ride — used to deep-link the legend to the vehicle page. */
+  vehicleRef?: string
 }
 
 export interface Path {
