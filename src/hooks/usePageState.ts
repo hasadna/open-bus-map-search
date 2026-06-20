@@ -51,10 +51,10 @@ export function usePageState<
   const initialUrlParams = useContext(InitialUrlParamsContext)
   const { setParams: setShareParams } = useContext(ExtraShareParamsContext)
 
-  // Apply URL param overrides exactly once on mount.
-  // This lets shared links restore page-specific state (e.g. gaps_patterns
-  // date range, velocity-heatmap visMode) even though these aren't in the
-  // global SearchContext.
+ /*
+    On first mount, apply any URL params that match the page's params keys.
+    Then delete those keys from the initialUrlParams so a later remount (app menu navigation - sharing this snapshot) won't re-seed.
+  */
   const appliedUrlOverrides = useRef(false)
   useEffect(() => {
     if (appliedUrlOverrides.current) return
@@ -62,7 +62,8 @@ export function usePageState<
 
     const overrides: Partial<TParams> = {}
     for (const key of Object.keys(defaults.params) as (keyof TParams)[]) {
-      const raw = initialUrlParams[`${storageKey}.${String(key)}`]
+      const urlKey = `${storageKey}.${String(key)}`
+      const raw = initialUrlParams[urlKey]
       if (raw === undefined) continue
 
       const defaultVal = defaults.params[key]
@@ -78,6 +79,8 @@ export function usePageState<
       }
 
       ;(overrides as Record<string, Serializable>)[key as string] = coerced
+      // Consume the key so a later remount (sharing this snapshot) won't re-seed.
+      delete initialUrlParams[urlKey]
     }
 
     if (Object.keys(overrides).length > 0) {

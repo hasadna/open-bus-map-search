@@ -199,6 +199,23 @@ describe('usePageState — URL param seeding', () => {
     expect(result.current.params.count).toBe(defaults.params.count)
   })
 
+  it('does not re-seed from the URL on a later remount (same session snapshot)', () => {
+    // Reproduces the re-seed bug: open a shared link, edit the value, then
+    // navigate away and back via the app menu. The page unmounts/remounts but
+    // MainRoute (and its snapshot) does not, so the edit must survive.
+    const snapshot = { 'test.time': '07:45' }
+    const { Wrapper } = makeWrapper(snapshot)
+    const first = renderHook(() => usePageState('test', DEFAULTS), { wrapper: Wrapper })
+    expect(first.result.current.params.time).toBe('07:45') // seeded from URL
+    act(() => {
+      first.result.current.setParams((prev) => ({ ...prev, time: '09:00' }))
+    })
+    first.unmount()
+    // Remount sharing the SAME snapshot object (MainRoute did not remount).
+    const second = renderHook(() => usePageState('test', DEFAULTS), { wrapper: Wrapper })
+    expect(second.result.current.params.time).toBe('09:00') // edit preserved, not re-clobbered
+  })
+
   it('does not re-apply URL overrides on subsequent renders', () => {
     const numericDefaults = { params: { count: 1 }, ui: { scrollPosition: 0 } }
     const { Wrapper } = makeWrapper({ 'test.count': '99' })
