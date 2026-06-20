@@ -6,12 +6,17 @@ import { ExtraShareParamsContext, InitialUrlParamsContext } from 'src/model/rout
 type Serializable = string | number | boolean | null
 
 /** Converts page params to a flat string record for URL serialization.
+ *  Keys are namespaced as `<storageKey>.<param>` so a page-local param can
+ *  never collide with a global search key (e.g. an isolated `date`).
  *  null and undefined values are omitted (no param = not set). */
-function serializeParams(params: Record<string, Serializable>): Record<string, string> {
+function serializeParams(
+  params: Record<string, Serializable>,
+  storageKey: string,
+): Record<string, string> {
   const result: Record<string, string> = {}
   for (const [key, value] of Object.entries(params)) {
     if (value !== null && value !== undefined) {
-      result[key] = String(value)
+      result[`${storageKey}.${key}`] = String(value)
     }
   }
   return result
@@ -20,7 +25,9 @@ function serializeParams(params: Record<string, Serializable>): Record<string, s
 /**
  * Per-page state with a params/ui split.
  *
- * params — shareable: included in the share URL via ExtraShareParamsContext.
+ * params — shareable: included in the share URL via ExtraShareParamsContext,
+ *          namespaced as `<storageKey>.<param>` so they never collide with the
+ *          global search keys or another page's params.
  *          Restored from URL params on first load (for incoming shared links).
  *          Stored in sessionStorage['page:<key>:params'].
  *
@@ -55,7 +62,7 @@ export function usePageState<
 
     const overrides: Partial<TParams> = {}
     for (const key of Object.keys(defaults.params) as (keyof TParams)[]) {
-      const raw = initialUrlParams[key as string]
+      const raw = initialUrlParams[`${storageKey}.${String(key)}`]
       if (raw === undefined) continue
 
       const defaultVal = defaults.params[key]
@@ -81,8 +88,8 @@ export function usePageState<
   // Keep ExtraShareParamsContext in sync with current params so the share
   // button always produces a URL that restores this page's exact view.
   const serialized = useMemo(
-    () => serializeParams(params as Record<string, Serializable>),
-    [params],
+    () => serializeParams(params as Record<string, Serializable>, storageKey),
+    [params, storageKey],
   )
   useEffect(() => {
     setShareParams(serialized)

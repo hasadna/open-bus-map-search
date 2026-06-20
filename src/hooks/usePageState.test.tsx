@@ -115,8 +115,8 @@ describe('usePageState — sessionStorage persistence', () => {
 // ---------------------------------------------------------------------------
 
 describe('usePageState — URL param seeding', () => {
-  it('seeds a string param from the URL', () => {
-    const { Wrapper } = makeWrapper({ time: '07:45' })
+  it('seeds a string param from the namespaced URL key', () => {
+    const { Wrapper } = makeWrapper({ 'test.time': '07:45' })
     const { result } = renderHook(() => usePageState('test', DEFAULTS), {
       wrapper: Wrapper,
     })
@@ -125,7 +125,7 @@ describe('usePageState — URL param seeding', () => {
 
   it('coerces a numeric URL param to number', () => {
     const numericDefaults = { params: { count: 0 }, ui: { scrollPosition: 0 } }
-    const { Wrapper } = makeWrapper({ count: '42' })
+    const { Wrapper } = makeWrapper({ 'test.count': '42' })
     const { result } = renderHook(() => usePageState('test', numericDefaults), {
       wrapper: Wrapper,
     })
@@ -134,7 +134,7 @@ describe('usePageState — URL param seeding', () => {
 
   it('coerces a boolean URL param: "true" → true', () => {
     const boolDefaults = { params: { active: false }, ui: { scrollPosition: 0 } }
-    const { Wrapper } = makeWrapper({ active: 'true' })
+    const { Wrapper } = makeWrapper({ 'test.active': 'true' })
     const { result } = renderHook(() => usePageState('test', boolDefaults), {
       wrapper: Wrapper,
     })
@@ -143,7 +143,7 @@ describe('usePageState — URL param seeding', () => {
 
   it('coerces a boolean URL param: anything other than "true" → false', () => {
     const boolDefaults = { params: { active: true }, ui: { scrollPosition: 0 } }
-    const { Wrapper } = makeWrapper({ active: 'false' })
+    const { Wrapper } = makeWrapper({ 'test.active': 'false' })
     const { result } = renderHook(() => usePageState('test', boolDefaults), {
       wrapper: Wrapper,
     })
@@ -152,7 +152,7 @@ describe('usePageState — URL param seeding', () => {
 
   it('falls back to default when URL number param is not finite', () => {
     const numericDefaults = { params: { count: 5 }, ui: { scrollPosition: 0 } }
-    const { Wrapper } = makeWrapper({ count: 'not-a-number' })
+    const { Wrapper } = makeWrapper({ 'test.count': 'not-a-number' })
     const { result } = renderHook(() => usePageState('test', numericDefaults), {
       wrapper: Wrapper,
     })
@@ -160,7 +160,7 @@ describe('usePageState — URL param seeding', () => {
   })
 
   it('seeds every params key present in the URL', () => {
-    const { Wrapper } = makeWrapper({ time: '07:45', operatorId: '3' })
+    const { Wrapper } = makeWrapper({ 'test.time': '07:45', 'test.operatorId': '3' })
     const defaults = { params: { time: '08:30', operatorId: '' }, ui: { scrollPosition: 0 } }
     const { result } = renderHook(() => usePageState('test', defaults), {
       wrapper: Wrapper,
@@ -169,14 +169,24 @@ describe('usePageState — URL param seeding', () => {
     expect(result.current.params.time).toBe('07:45')
   })
 
-  it('ignores URL keys that are not params', () => {
-    const { Wrapper } = makeWrapper({ time: '07:45', unrelated: 'x' })
+  it('ignores a bare (un-namespaced) URL key — e.g. a colliding global key', () => {
+    // A page-local param named `date` must NOT be seeded from the global `date`
+    // key. Only the namespaced `test.date` key seeds this page's param.
+    const { Wrapper } = makeWrapper({ date: '2020-01-01' })
+    const defaults = { params: { date: '2026-06-20' }, ui: { scrollPosition: 0 } }
+    const { result } = renderHook(() => usePageState('test', defaults), {
+      wrapper: Wrapper,
+    })
+    expect(result.current.params.date).toBe('2026-06-20') // default, not the global value
+  })
+
+  it('ignores another page’s namespaced key', () => {
+    const { Wrapper } = makeWrapper({ 'other.time': '07:45' })
     const defaults = { params: { time: '08:30' }, ui: { scrollPosition: 0 } }
     const { result } = renderHook(() => usePageState('test', defaults), {
       wrapper: Wrapper,
     })
-    expect(result.current.params.time).toBe('07:45')
-    expect((result.current.params as Record<string, unknown>).unrelated).toBeUndefined()
+    expect(result.current.params.time).toBe('08:30') // unaffected by other.time
   })
 
   it('ignores URL params absent from the URL without error', () => {
@@ -191,7 +201,7 @@ describe('usePageState — URL param seeding', () => {
 
   it('does not re-apply URL overrides on subsequent renders', () => {
     const numericDefaults = { params: { count: 1 }, ui: { scrollPosition: 0 } }
-    const { Wrapper } = makeWrapper({ count: '99' })
+    const { Wrapper } = makeWrapper({ 'test.count': '99' })
     const { result } = renderHook(() => usePageState('test', numericDefaults), {
       wrapper: Wrapper,
     })
@@ -210,11 +220,11 @@ describe('usePageState — URL param seeding', () => {
 // ---------------------------------------------------------------------------
 
 describe('usePageState — ExtraShareParamsContext sync', () => {
-  it('registers serialized params into ExtraShareParamsContext on mount', () => {
+  it('registers namespaced serialized params into ExtraShareParamsContext on mount', () => {
     const setShareParams = jest.fn()
     const { Wrapper } = makeWrapper({}, setShareParams)
     renderHook(() => usePageState('test', DEFAULTS), { wrapper: Wrapper })
-    expect(setShareParams).toHaveBeenCalledWith(expect.objectContaining({ time: '08:30' }))
+    expect(setShareParams).toHaveBeenCalledWith(expect.objectContaining({ 'test.time': '08:30' }))
   })
 
   it('updates ExtraShareParamsContext when params change', () => {
@@ -225,7 +235,7 @@ describe('usePageState — ExtraShareParamsContext sync', () => {
     act(() => {
       result.current.setParams((prev) => ({ ...prev, time: '09:15' }))
     })
-    expect(setShareParams).toHaveBeenCalledWith(expect.objectContaining({ time: '09:15' }))
+    expect(setShareParams).toHaveBeenCalledWith(expect.objectContaining({ 'test.time': '09:15' }))
   })
 
   it('omits null param values from the share context', () => {
@@ -237,8 +247,8 @@ describe('usePageState — ExtraShareParamsContext sync', () => {
     const { Wrapper } = makeWrapper({}, setShareParams)
     renderHook(() => usePageState('nullable', defaults), { wrapper: Wrapper })
     const lastCall = setShareParams.mock.calls[setShareParams.mock.calls.length - 1][0]
-    expect(lastCall.note).toBeUndefined()
-    expect(lastCall.time).toBe('08:30')
+    expect(lastCall['nullable.note']).toBeUndefined()
+    expect(lastCall['nullable.time']).toBe('08:30')
   })
 
   it('clears ExtraShareParamsContext on unmount', () => {
