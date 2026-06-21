@@ -7,7 +7,7 @@ import { getAllRoutesList } from 'src/api/gtfsService'
 import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone } from 'src/dayjs'
 import { fromGtfsRoute } from 'src/model/busRoute'
 import { GlobalSearchContext } from 'src/model/globalState'
-import { ExtraShareParamsContext, InitialUrlParamsContext } from 'src/model/routeContext'
+import { InitialUrlParamsContext, PageShareParamsContext } from 'src/model/routeContext'
 import { serviceDayBounds } from 'src/pages/components/utils/startTimeUtils'
 import VehicleSelector, { normalizeVehicleNumber } from 'src/pages/components/VehicleSelector'
 import { DateSelector } from '../components/DateSelector'
@@ -21,11 +21,11 @@ const VehiclePage = () => {
   const { search, setSearch } = useContext(GlobalSearchContext)
   const { date } = search
   const initialUrlParams = useContext(InitialUrlParamsContext)
-  const { setParams } = useContext(ExtraShareParamsContext)
+  const { setParams } = useContext(PageShareParamsContext)
 
   // The vehicle number is page-local — never in GlobalSearchContext. Seeded once on
   // mount from the URL captured at page load (InitialUrlParamsContext), and published
-  // to ExtraShareParamsContext for the Share button — the same page-local-param
+  // to PageShareParamsContext for the Share button — the same page-local-param
   // pattern as gaps_patterns' start/end dates and timeBasedMap's datetime.
   const [vehicleNumber, setVehicleNumber] = useState<number | undefined>(() =>
     normalizeVehicleNumber(initialUrlParams.vehicleNumber ?? ''),
