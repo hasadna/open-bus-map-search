@@ -16,10 +16,10 @@ import { Link } from 'react-router'
 import { toIsraelTimezone } from 'src/dayjs'
 import { PositionGroup } from 'src/pages/components/map-related/map-types'
 import {
+  distanceMeters,
   distinctPingCount,
   GAP_FACTOR,
   gapSeverity,
-  haversineMeters,
   medianPingInterval,
   PingGap,
   pingGaps,
@@ -107,7 +107,7 @@ const GapTooltip = ({
       <span style={tooltipRowStyle}>
         <SquareFoot fontSize="small" />
         {t('gps_coverage_tooltip_distance', {
-          distance: fmtDistance(haversineMeters(gap.startLoc, gap.endLoc), t),
+          distance: fmtDistance(distanceMeters(gap.startLoc, gap.endLoc), t),
         })}
       </span>
       {onFocusPing && (
@@ -149,8 +149,7 @@ interface GpsCoverageStripProps {
  * *gaps between consecutive pings* — every segment's width is proportional to how long
  * that gap lasted, and its color reflects the gap relative to the ride's own median
  * cadence (green = on cadence, orange = stretched, red = the bus stopped reporting).
- * A long dropout therefore shows up as a single wide red band you can place in time,
- * which is the first step toward telling a per-bus fault from a poor-reception area.
+ * A long dropout therefore shows up as a single wide red band you can place in time.
  *
  * Consumes the pings the SingleLineMap page already fetched — it makes no API calls.
  */
@@ -161,9 +160,7 @@ export const GpsCoverageStrip = ({
 }: GpsCoverageStripProps) => {
   const { t } = useTranslation()
   const theme = useTheme()
-  // Opaque tooltip that stays in the page's tonal family rather than inverting it: a slightly
-  // lighter dark in dark mode, a slightly shaded (greyish) white in light mode — just enough
-  // offset from the background to read as a raised surface. Text stays the theme's primary.
+  // Opaque tooltip that stays in the page's tonal family rather than inverting it.
   const tooltipBg =
     theme.palette.mode === 'dark' ? theme.palette.grey[800] : theme.palette.grey[200]
   const tooltipFg = theme.palette.text.primary
@@ -308,10 +305,8 @@ export const GpsCoverageStrip = ({
                               // rising from a flat baseline.
                               borderRadius: '3px 3px 0 0',
                               background: gapColor(gapSeverity(gap.gapMs, median)),
-                              // Always-on blue border drawn as an inset ring (not outline) so it
-                              // sits *inside* the column and is never painted over by the next one;
-                              // on hover it grows thicker and shifts to the lighter blue. The
-                              // raised z-index keeps the hovered column above its neighbours.
+                              // Blue border as an inset ring (not outline) so it stays inside the
+                              // column and isn't painted over by the next; thicker/lighter on hover.
                               position: 'relative',
                               zIndex: isHovered ? 2 : undefined,
                               boxShadow: isHovered

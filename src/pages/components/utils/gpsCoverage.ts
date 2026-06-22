@@ -1,9 +1,9 @@
+import { getDistance } from 'geolib'
 import { Point } from 'src/pages/components/map-related/map-types'
 
 /**
  * A gap up to this multiple of the ride's median interval is normal jitter (`ok`).
  * Between this and {@link GAP_FACTOR} the coverage is `sparse`; above it, a `gap`.
- * Tuned against the median so it self-calibrates to each operator's cadence.
  */
 export const SPARSE_FACTOR = 2
 export const GAP_FACTOR = 4
@@ -24,13 +24,11 @@ export interface PingGap {
 export type Density = 'gap' | 'sparse' | 'ok'
 
 /**
- * Sorted, valid (positive-timestamp) pings for a ride, keeping each ping's location and
- * collapsing pings that share a `recordedAtTime`. The SIRI pipeline re-ingests the same
- * onboard observation across snapshots, so a ride routinely carries several rows with an
- * identical `recordedAtTime` (and identical lat/lon) but distinct DB ids — which survive
- * the `uniqBy(id)` dedup upstream. Left in, each duplicate becomes a meaningless
- * zero-length gap and two columns share a `startMs` (a duplicate React key). Since same
- * time means same position in the data, keeping the first row per timestamp is lossless.
+ * Sorted, valid (positive-timestamp) pings for a ride, collapsing pings that share a
+ * `recordedAtTime`. The SIRI pipeline re-ingests the same observation across snapshots, so a
+ * ride routinely carries rows with identical `recordedAtTime` (and lat/lon) but distinct ids
+ * that survive the upstream `uniqBy(id)`. Same time means same position, so keeping the first
+ * row per timestamp is lossless and avoids meaningless zero-length gaps.
  */
 function sortedTimedPings(positions: Point[]): { t: number; loc: [number, number] }[] {
   const sorted = positions
@@ -42,12 +40,9 @@ function sortedTimedPings(positions: Point[]): { t: number; loc: [number, number
 }
 
 /**
- * The elapsed time between each pair of consecutive pings across the ride. This is the
- * raw signal the coverage strip renders: a healthy ride is a run of short, even gaps;
- * a bus that stopped reporting (technical fault) or crossed a poor-reception area shows
- * up as one long gap. Each gap also carries the two bounding ping locations so the strip
- * can show how far the bus moved while dark and focus the map on the last-seen position.
- * Returns [] for fewer than two valid pings (nothing to span).
+ * The elapsed time between each pair of consecutive pings across the ride. Each gap also
+ * carries its two bounding ping locations (for the strip's distance readout and map focus).
+ * Returns [] for fewer than two valid pings.
  */
 export function pingGaps(positions: Point[]): PingGap[] {
   const pings = sortedTimedPings(positions)
@@ -86,16 +81,9 @@ export function medianPingInterval(positions: Point[]): number {
   return gaps.length % 2 === 0 ? (gaps[mid - 1] + gaps[mid]) / 2 : gaps[mid]
 }
 
-/** Great-circle (haversine) distance between two [lat, lon] points, in meters. */
-export function haversineMeters(a: [number, number], b: [number, number]): number {
-  const R = 6_371_000 // Earth radius, m
-  const toRad = (deg: number) => (deg * Math.PI) / 180
-  const dLat = toRad(b[0] - a[0])
-  const dLon = toRad(b[1] - a[1])
-  const lat1 = toRad(a[0])
-  const lat2 = toRad(b[0])
-  const h = Math.sin(dLat / 2) ** 2 + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon / 2) ** 2
-  return 2 * R * Math.asin(Math.sqrt(h))
+/** Great-circle distance between two [lat, lon] points, in meters (via geolib). */
+export function distanceMeters(a: [number, number], b: [number, number]): number {
+  return getDistance({ latitude: a[0], longitude: a[1] }, { latitude: b[0], longitude: b[1] })
 }
 
 /**

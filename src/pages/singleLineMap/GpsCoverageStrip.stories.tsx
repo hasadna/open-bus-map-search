@@ -114,11 +114,6 @@ export const MixedSeverity: Story = {
   args: { positionGroups: [mixedGroup] },
 }
 
-/** Several selected vehicles, each its own card with an independent strip. */
-export const MultipleVehicles: Story = {
-  args: { positionGroups: [healthyGroup, dropoutGroup, mixedGroup] },
-}
-
 /** A vehicle that reported only one distinct time — notice instead of a blank strip. */
 export const SingleReport: Story = {
   args: { positionGroups: [onePingGroup] },
@@ -129,7 +124,12 @@ export const NoReports: Story = {
   args: { positionGroups: [noPingsGroup] },
 }
 
-/** Mix of plottable rides and the two empty-state notices in one list. */
-export const MixedStates: Story = {
-  args: { positionGroups: [healthyGroup, onePingGroup, noPingsGroup] },
+/**
+ * Several vehicles in one list: plottable rides of varying severity alongside both
+ * empty-state notices — exercises the multi-card layout and every state together.
+ */
+export const MultipleVehicles: Story = {
+  args: {
+    positionGroups: [healthyGroup, dropoutGroup, mixedGroup, onePingGroup, noPingsGroup],
+  },
 }

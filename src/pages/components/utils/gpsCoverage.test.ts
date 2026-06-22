@@ -1,12 +1,10 @@
 import { Point } from 'src/pages/components/map-related/map-types'
 import {
   classifyGap,
-  GAP_FACTOR,
+  distanceMeters,
   gapSeverity,
-  haversineMeters,
   medianPingInterval,
   pingGaps,
-  SPARSE_FACTOR,
 } from './gpsCoverage'
 
 /**
@@ -88,21 +86,24 @@ describe('pingGaps', () => {
   })
 })
 
-describe('haversineMeters', () => {
+describe('distanceMeters', () => {
+  // Thin [lat, lon]-tuple adapter over geolib.getDistance; these pin the tuple order, not geolib.
   it('is 0 for identical points', () => {
-    expect(haversineMeters([32, 34], [32, 34])).toBe(0)
+    expect(distanceMeters([32, 34], [32, 34])).toBe(0)
   })
 
   it('measures ~111 km per degree of latitude', () => {
-    const d = haversineMeters([0, 0], [1, 0])
+    const d = distanceMeters([0, 0], [1, 0])
     expect(d).toBeGreaterThan(111_000)
     expect(d).toBeLessThan(111_400)
   })
 
-  it('is symmetric', () => {
-    const a: [number, number] = [32.05, 34.78]
-    const b: [number, number] = [32.09, 34.81]
-    expect(haversineMeters(a, b)).toBeCloseTo(haversineMeters(b, a))
+  it('reads the tuple as [lat, lon] (not [lon, lat])', () => {
+    // At latitude 32°, a degree of longitude is much shorter than a degree of latitude;
+    // a swapped adapter would make these equal.
+    const oneLat = distanceMeters([32, 34], [33, 34])
+    const oneLon = distanceMeters([32, 34], [32, 35])
+    expect(oneLon).toBeLessThan(oneLat)
   })
 })
 
@@ -131,30 +132,32 @@ describe('medianPingInterval', () => {
 })
 
 describe('classifyGap', () => {
-  const median = 15_000 // a 15s cadence
+  // 15s cadence; bands break at the sparse threshold (2× = 30s) and dropout (4× = 60s).
+  const median = 15_000
 
   it('treats everything as ok when there is no baseline', () => {
     expect(classifyGap(10 * MIN, 0)).toBe('ok')
   })
 
-  it('flags a near-cadence gap as ok', () => {
+  it('flags a near-cadence gap as ok up to the sparse threshold', () => {
     expect(classifyGap(median, median)).toBe('ok')
-    expect(classifyGap(median * SPARSE_FACTOR, median)).toBe('ok')
+    expect(classifyGap(30_000, median)).toBe('ok') // exactly 2×
   })
 
   it('flags a moderately stretched gap as sparse', () => {
-    expect(classifyGap(median * SPARSE_FACTOR + 1, median)).toBe('sparse')
-    expect(classifyGap(median * GAP_FACTOR, median)).toBe('sparse')
+    expect(classifyGap(30_001, median)).toBe('sparse') // just past 2×
+    expect(classifyGap(60_000, median)).toBe('sparse') // exactly 4×
   })
 
   it('flags a long gap as a dropout', () => {
-    expect(classifyGap(median * GAP_FACTOR + 1, median)).toBe('gap')
+    expect(classifyGap(60_001, median)).toBe('gap') // just past 4×
     expect(classifyGap(5 * MIN, median)).toBe('gap')
   })
 })
 
 describe('gapSeverity', () => {
-  const median = 15_000 // a 15s cadence
+  // 15s cadence; severity ramps 0 at 1× to 1 at the 4× dropout threshold (60s).
+  const median = 15_000
 
   it('is 0 when there is no baseline', () => {
     expect(gapSeverity(10 * MIN, 0)).toBe(0)
@@ -166,13 +169,11 @@ describe('gapSeverity', () => {
   })
 
   it('reaches 1 at (and clamps above) the dropout threshold', () => {
-    expect(gapSeverity(median * GAP_FACTOR, median)).toBe(1)
-    expect(gapSeverity(median * GAP_FACTOR * 10, median)).toBe(1)
+    expect(gapSeverity(60_000, median)).toBe(1) // exactly 4×
+    expect(gapSeverity(10 * MIN, median)).toBe(1) // far beyond
   })
 
   it('ramps linearly between the median and the dropout threshold', () => {
-    // ratio halfway from 1× to GAP_FACTOR× -> severity 0.5
-    const midRatio = 1 + (GAP_FACTOR - 1) / 2
-    expect(gapSeverity(median * midRatio, median)).toBeCloseTo(0.5)
+    expect(gapSeverity(37_500, median)).toBeCloseTo(0.5) // ratio 2.5, halfway from 1× to 4×
   })
 })
