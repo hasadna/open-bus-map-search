@@ -13,6 +13,7 @@ export function MapWithLocationsAndPath({
   positionGroups,
   plannedRouteStops,
   showNavigationButtons,
+  focusTarget,
 }: MapProps) {
   return (
     <MapShell
@@ -26,6 +27,7 @@ export function MapWithLocationsAndPath({
         positionGroups={positionGroups}
         plannedRouteStops={plannedRouteStops}
         showNavigationButtons={showNavigationButtons}
+        focusTarget={focusTarget}
       />
     </MapShell>
   )

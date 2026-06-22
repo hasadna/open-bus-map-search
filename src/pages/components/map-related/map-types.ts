@@ -27,10 +27,19 @@ export interface Path {
   vehicleRef: string
 }
 
+/** A request to fly the map to a location; `seq` bumps so repeated requests for the same
+ * location still re-trigger the fly-to (clicking the same ping twice). */
+export interface FocusTarget {
+  loc: [number, number]
+  seq: number
+}
+
 export interface MapProps {
   positionGroups: PositionGroup[]
   plannedRouteStops?: BusStop[]
   showNavigationButtons?: boolean
+  /** When set/changed, the map flies to this location (e.g. a coverage-gap ping). */
+  focusTarget?: FocusTarget | null
 }
 
 export function toPoint(location: SiriVehicleLocationWithRelatedPydanticModel): Point {
