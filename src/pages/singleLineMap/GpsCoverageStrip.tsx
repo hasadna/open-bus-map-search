@@ -9,6 +9,7 @@ import {
   Typography,
   useTheme,
 } from '@mui/material'
+import type { TFunction } from 'i18next'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
@@ -69,10 +70,13 @@ const fmtDuration = (ms: number) => {
   return `${pad(h)}:${pad(m)}:${pad(s)}`
 }
 
-/** Human-readable distance, e.g. "85 m", "1.4 km". */
-const fmtDistance = (m: number) => {
-  if (m < 1000) return `${Math.round(m)} m`
-  return `${(m / 1000).toFixed(m < 10_000 ? 1 : 0)} km`
+/**
+ * Human-readable distance with a localized unit, e.g. "85 m" / "85 מטר", "1.4 km" / "1.4 קמ".
+ * The unit word is translated so RTL locales read naturally rather than showing "km"/"m".
+ */
+const fmtDistance = (m: number, t: TFunction) => {
+  if (m < 1000) return `${Math.round(m)} ${t('gps_coverage_unit_meter')}`
+  return `${(m / 1000).toFixed(m < 10_000 ? 1 : 0)} ${t('gps_coverage_unit_km')}`
 }
 
 const tooltipRowStyle = { display: 'flex', alignItems: 'center', gap: 6 } as const
@@ -91,6 +95,7 @@ const GapTooltip = ({
   onFocusPing?: (loc: [number, number]) => void
 }) => {
   const { t } = useTranslation()
+  const theme = useTheme()
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 13 }}>
       <span style={tooltipRowStyle}>
@@ -102,7 +107,7 @@ const GapTooltip = ({
       <span style={tooltipRowStyle}>
         <SquareFoot fontSize="small" />
         {t('gps_coverage_tooltip_distance', {
-          distance: fmtDistance(haversineMeters(gap.startLoc, gap.endLoc)),
+          distance: fmtDistance(haversineMeters(gap.startLoc, gap.endLoc), t),
         })}
       </span>
       {onFocusPing && (
@@ -114,9 +119,10 @@ const GapTooltip = ({
             background: 'none',
             border: 'none',
             padding: 0,
-            color: 'inherit',
+            color: theme.palette.primary.main,
             font: 'inherit',
-            textDecoration: 'underline',
+            fontWeight: 600,
+            textDecoration: 'none',
             cursor: 'pointer',
           }}>
           <Place fontSize="small" />
@@ -131,6 +137,11 @@ interface GpsCoverageStripProps {
   positionGroups: PositionGroup[]
   /** Focus the map on a [lat, lon] ping — wired from the SingleLineMap page. */
   onFocusPing?: (loc: [number, number]) => void
+  /**
+   * Start with the disclosure open. Off in the app (it's an opt-in diagnostic view), but
+   * stories set it so the strip is visible without driving a click through `play`.
+   */
+  defaultExpanded?: boolean
 }
 
 /**
@@ -143,9 +154,19 @@ interface GpsCoverageStripProps {
  *
  * Consumes the pings the SingleLineMap page already fetched — it makes no API calls.
  */
-export const GpsCoverageStrip = ({ positionGroups, onFocusPing }: GpsCoverageStripProps) => {
+export const GpsCoverageStrip = ({
+  positionGroups,
+  onFocusPing,
+  defaultExpanded = false,
+}: GpsCoverageStripProps) => {
   const { t } = useTranslation()
   const theme = useTheme()
+  // Opaque tooltip that stays in the page's tonal family rather than inverting it: a slightly
+  // lighter dark in dark mode, a slightly shaded (greyish) white in light mode — just enough
+  // offset from the background to read as a raised surface. Text stays the theme's primary.
+  const tooltipBg =
+    theme.palette.mode === 'dark' ? theme.palette.grey[800] : theme.palette.grey[200]
+  const tooltipFg = theme.palette.text.primary
   // Which column is currently focused. Mouse hover drives this on desktop and touch
   // drives it on mobile, so the same key controls both the highlight and the tooltip.
   const [hoveredKey, setHoveredKey] = useState<string | null>(null)
@@ -160,6 +181,7 @@ export const GpsCoverageStrip = ({ positionGroups, onFocusPing }: GpsCoverageStr
     // behind an "advanced data" disclosure below the map rather than always on screen.
     <Accordion
       disableGutters
+      defaultExpanded={defaultExpanded}
       sx={{
         my: 3,
         borderRadius: 3,
@@ -263,7 +285,18 @@ export const GpsCoverageStrip = ({ positionGroups, onFocusPing }: GpsCoverageStr
                           leaveTouchDelay={60_000}
                           onOpen={() => setHoveredKey(key)}
                           onClose={() => setHoveredKey((k) => (k === key ? null : k))}
-                          slotProps={{ tooltip: { sx: { maxWidth: 'none' } } }}
+                          slotProps={{
+                            tooltip: {
+                              sx: {
+                                maxWidth: 'none',
+                                backgroundColor: tooltipBg,
+                                color: tooltipFg,
+                                border: `1px solid ${theme.palette.divider}`,
+                                boxShadow: theme.shadows[3],
+                              },
+                            },
+                            arrow: { sx: { color: tooltipBg } },
+                          }}
                           title={<GapTooltip gap={gap} onFocusPing={onFocusPing} />}>
                           <div
                             style={{

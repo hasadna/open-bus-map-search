@@ -83,6 +83,10 @@ const meta = {
   title: 'SingleLineMap/GpsCoverageStrip',
   args: {
     positionGroups: [healthyGroup],
+    // Render the disclosure open so the strip is actually visible in every story (in the app
+    // it starts collapsed as an opt-in diagnostic). Done via a prop rather than a `play`
+    // click so it holds in the Docs view and visual snapshots, not just the canvas.
+    defaultExpanded: true,
   },
   argTypes: {
     positionGroups: {
@@ -90,17 +94,6 @@ const meta = {
       table: { type: { summary: 'PositionGroup[]' } },
     },
     onFocusPing: { action: 'focusPing' },
-  },
-  /**
-   * Expand the collapsed disclosure so the strip itself is visible in the story (the
-   * component renders behind an "advanced data" accordion that starts closed). The summary
-   * is the first `role="button"` in the tree; a short wait lets MUI's Collapse transition
-   * finish before any visual snapshot is taken.
-   */
-  play: async ({ canvasElement, userEvent }) => {
-    const summary = canvasElement.querySelector<HTMLElement>('[role="button"]')
-    if (summary) await userEvent.click(summary)
-    await new Promise((resolve) => setTimeout(resolve, 500))
   },
 } satisfies Meta<typeof GpsCoverageStrip>
 
@@ -139,10 +132,4 @@ export const NoReports: Story = {
 /** Mix of plottable rides and the two empty-state notices in one list. */
 export const MixedStates: Story = {
   args: { positionGroups: [healthyGroup, onePingGroup, noPingsGroup] },
-}
-
-/** Nothing selected — the component renders nothing at all (no empty accordion). */
-export const Empty: Story = {
-  args: { positionGroups: [] },
-  play: undefined,
 }

@@ -36,6 +36,8 @@
   "gps_coverage_description": "Density of GPS reports over time. Each column is the gap between two consecutive reports.",
   "gps_coverage_tooltip_duration": "{{duration}}",
   "gps_coverage_tooltip_distance": "{{distance}} apart",
+  "gps_coverage_unit_meter": "m",
+  "gps_coverage_unit_km": "km",
   "gps_coverage_tooltip_focus_start": "Last reported position",
   "gps_coverage_vehicle_label": "Vehicle:",
   "gps_coverage_no_pings": "No GPS reports received for this vehicle",
