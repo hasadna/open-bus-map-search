@@ -19,11 +19,16 @@ import { useContext, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useNavigate } from 'react-router'
 import styled from 'styled-components'
+import { useDebounceValue } from 'usehooks-ts'
 import { GlobalSearchContext } from 'src/model/globalState'
 import { ISRAEL_TRAIN_ID } from 'src/model/operator'
 import SkeletonLoader from 'src/shared/SkeletonLoader'
 import Widget from 'src/shared/Widget'
 import { useAllRoutes } from '../../hooks/useAllRoutes'
+
+// Above this many matched routes, searching stops auto-expanding the line
+// groups — mounting that many route rows at once is what froze the UI.
+const MAX_AUTO_EXPAND_ROUTES = 50
 
 type Route = ReturnType<typeof useAllRoutes>['routes'][number]
 
@@ -36,8 +41,11 @@ export const OperatorRoutes = ({ operatorId, date }: { operatorId?: string; date
   const { t } = useTranslation()
   const { routes, isLoading } = useAllRoutes(operatorId, date)
   const [query, setQuery] = useState('')
+  // Filter on a debounced copy so each keystroke doesn't re-run the filter and
+  // re-mount expanded groups; the input itself stays bound to `query` (instant).
+  const [debouncedQuery] = useDebounceValue(query, 250)
 
-  const trimmedQuery = query.trim().toLowerCase()
+  const trimmedQuery = debouncedQuery.trim().toLowerCase()
 
   // Search is line-first: the query matches against the displayed line number,
   // but also against each route's origin/destination so a place name surfaces
@@ -66,6 +74,12 @@ export const OperatorRoutes = ({ operatorId, date }: { operatorId?: string; date
   }, [routes, trimmedQuery])
 
   const matchingRoutes = useMemo(() => groups.reduce((n, g) => n + g.routes.length, 0), [groups])
+
+  // Auto-expanding every matched group force-mounts a table of rows per group,
+  // which freezes the UI on broad queries that match most of the operator. Cap
+  // it by route count (rows are the heavy thing to mount); above the cap the
+  // groups stay collapsed but still show their matching-route count in the head.
+  const autoExpand = !!trimmedQuery && matchingRoutes <= MAX_AUTO_EXPAND_ROUTES
 
   return (
     <Widget
@@ -112,7 +126,7 @@ export const OperatorRoutes = ({ operatorId, date }: { operatorId?: string; date
               key={group.label || '—'}
               group={group}
               operatorId={operatorId}
-              forceExpanded={!!trimmedQuery}
+              forceExpanded={autoExpand}
             />
           ))
         )}
