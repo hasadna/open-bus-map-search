@@ -18,7 +18,6 @@ import { PositionGroup } from 'src/pages/components/map-related/map-types'
 import {
   distanceMeters,
   distinctPingCount,
-  GAP_FACTOR,
   gapSeverity,
   medianPingInterval,
   PingGap,
@@ -206,11 +205,6 @@ export const GpsCoverageStrip = ({
         {positionGroups.map((group, idx) => {
           const gaps = pingGaps(group.positions)
           const median = medianPingInterval(group.positions)
-          // Column height encodes pause length against the same threshold the color uses:
-          // a gap at the dropout threshold (or longer) reaches full height, so a real
-          // dropout is a tall red column while on-cadence pings stay a short green baseline.
-          const reference =
-            median > 0 ? median * GAP_FACTOR : Math.max(...gaps.map((g) => g.gapMs), 1)
 
           return (
             // One card per vehicle so the sections read as distinct blocks with clear
@@ -265,10 +259,12 @@ export const GpsCoverageStrip = ({
                       width: '100%',
                     }}>
                     {gaps.map((gap) => {
-                      const heightFraction = Math.min(
-                        1,
-                        Math.max(MIN_BAR_FRACTION, gap.gapMs / reference),
-                      )
+                      // Height is driven by the same gapSeverity the color uses, lifted onto a
+                      // MIN_BAR_FRACTION floor so on-cadence gaps stay a visible baseline. Both
+                      // channels are now one signal: tall ⇔ red, each reaching full at the
+                      // GAP_FACTOR× dropout threshold, while absolute duration is carried by width.
+                      const heightFraction =
+                        MIN_BAR_FRACTION + (1 - MIN_BAR_FRACTION) * gapSeverity(gap.gapMs, median)
                       const key = String(gap.startMs)
                       const isHovered = hoveredKey === key
                       return (
