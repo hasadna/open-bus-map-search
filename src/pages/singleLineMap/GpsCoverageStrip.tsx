@@ -193,11 +193,10 @@ export const GpsCoverageStrip = ({
           borderInlineStart: `4px solid ${theme.palette.primary.main}`,
         }}>
         <Typography variant="h6" sx={{ fontWeight: 700 }}>
-          {t('gps_coverage_advanced_title')}
+          {t('gps_coverage_title')}
         </Typography>
       </AccordionSummary>
       <AccordionDetails>
-        <Typography variant="h6">{t('gps_coverage_title')}</Typography>
         <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1 }}>
           {t('gps_coverage_description')}
         </Typography>
