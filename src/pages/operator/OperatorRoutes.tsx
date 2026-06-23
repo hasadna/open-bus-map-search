@@ -12,13 +12,13 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material'
-import { Skeleton } from 'antd'
 import { useContext, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useNavigate } from 'react-router'
 import styled from 'styled-components'
 import { GlobalSearchContext } from 'src/model/globalState'
 import { ISRAEL_TRAIN_ID } from 'src/model/operator'
+import SkeletonLoader from 'src/shared/SkeletonLoader'
 import Widget from 'src/shared/Widget'
 import { useAllRoutes } from '../../hooks/useAllRoutes'
 
@@ -29,7 +29,7 @@ type RouteGroup = {
   routes: Route[]
 }
 
-export const OperatorRoutes = ({ operatorId, date }: { operatorId?: string; date?: Date }) => {
+export const OperatorRoutes = ({ operatorId, date }: { operatorId?: string; date?: string }) => {
   const { t } = useTranslation()
   const { routes, isLoading } = useAllRoutes(operatorId, date)
 
@@ -65,7 +65,7 @@ export const OperatorRoutes = ({ operatorId, date }: { operatorId?: string; date
       marginBottom>
       <Box sx={{ maxHeight: 345, overflow: 'auto' }}>
         {isLoading ? (
-          <Skeleton active paragraph={{ rows: 8 }} />
+          <SkeletonLoader active rows={8} />
         ) : (
           groups.map((group) => (
             <RouteGroup key={group.label || '—'} group={group} operatorId={operatorId} />

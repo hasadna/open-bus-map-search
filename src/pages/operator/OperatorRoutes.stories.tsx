@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { http, HttpResponse } from 'msw'
+import dayjs from 'src/dayjs'
 import { getPastDate } from '../../../.storybook/main'
 import { OperatorRoutes } from './OperatorRoutes'
 
@@ -12,8 +13,8 @@ const meta = {
       description: 'The operator id of the chart.',
     },
     date: {
-      control: 'date',
-      description: 'The date for which routes are listed.',
+      control: 'text',
+      description: 'The date of the chart (YYYY-MM-DD).',
     },
   },
   decorators: [
@@ -45,6 +46,6 @@ export const Default: Story = {
   },
   args: {
     operatorId: '3',
-    date: getPastDate(),
+    date: dayjs(getPastDate()).format('YYYY-MM-DD'),
   },
 }

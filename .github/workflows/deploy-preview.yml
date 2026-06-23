@@ -18,7 +18,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Download dist-build artifact
-        uses: dawidd6/action-download-artifact@v11
+        uses: dawidd6/action-download-artifact@v21
         with:
           workflow: 'Build'
           workflow_conclusion: success
@@ -29,7 +29,7 @@ jobs:
           path: .
 
       - name: Download dist-storybook artifact
-        uses: dawidd6/action-download-artifact@v11
+        uses: dawidd6/action-download-artifact@v21
         with:
           workflow: 'Build'
           workflow_conclusion: success
@@ -40,7 +40,7 @@ jobs:
           path: storybook
 
       - name: Download pr number
-        uses: dawidd6/action-download-artifact@v11
+        uses: dawidd6/action-download-artifact@v21
         with:
           workflow: 'Build'
           workflow_conclusion: success
@@ -60,20 +60,17 @@ jobs:
           fi
           echo "PR_NUMBER=${pr_number}" >> $GITHUB_ENV
 
-      - uses: shallwefootball/s3-upload-action@master
-        name: Upload preview to S3
+      - name: Upload preview to S3
         if: always()
-        id: s3-trace
         continue-on-error: true
-        with:
-          aws_key_id: ${{ secrets.AWS_KEY_ID }}
-          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws_bucket: noam-gaash.co.il
-          source_dir: . # Upload the root directory
-          destination_dir: ${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: us-east-1
+        run: aws s3 cp . 's3://noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}' --recursive --acl public-read --only-show-errors
 
       - name: find comment
-        uses: peter-evans/find-comment@v3
+        uses: peter-evans/find-comment@v4
         if: env.PR_NUMBER
         id: fc
         with:
@@ -82,7 +79,7 @@ jobs:
           body-includes: 'Preview'
 
       - name: update comment
-        uses: peter-evans/create-or-update-comment@v4
+        uses: peter-evans/create-or-update-comment@v5
         if: steps.fc.outputs.comment-id
         with:
           comment-id: ${{ steps.fc.outputs.comment-id }}
@@ -93,7 +90,7 @@ jobs:
             Test Report (if available): 'https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.head_sha }}/test-results/index.html'
 
       - name: create comment
-        uses: peter-evans/create-or-update-comment@v4
+        uses: peter-evans/create-or-update-comment@v5
         if: steps.fc.outputs.comment-id == ''
         with:
           issue-number: ${{ env.PR_NUMBER }}

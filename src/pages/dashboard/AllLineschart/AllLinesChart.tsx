@@ -1,10 +1,10 @@
 import { InfoCircleOutlined } from '@ant-design/icons'
 import { Tooltip } from '@mui/material'
-import { Skeleton } from 'antd'
 import { FC, Fragment, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
 import { Dayjs } from 'src/dayjs'
+import SkeletonLoader from 'src/shared/SkeletonLoader'
 import Widget from 'src/shared/Widget'
 import OperatorHbarChart from './OperatorHbarChart/OperatorHbarChart'
 
@@ -29,8 +29,8 @@ export const AllLinesChart: FC<AllChartComponentProps> = ({
   alertAllChartsZeroLinesHandling,
 }) => {
   const [groupByOperatorData, groupByOperatorLoading] = useGroupBy({
-    dateFrom: startDate.valueOf(),
-    dateTo: endDate.valueOf(),
+    dateFrom: startDate,
+    dateTo: endDate,
     groupBy: 'operator_ref',
   })
   const { t } = useTranslation()
@@ -59,7 +59,7 @@ export const AllLinesChart: FC<AllChartComponentProps> = ({
         </>
       }>
       {groupByOperatorLoading ? (
-        <Skeleton active />
+        <SkeletonLoader active />
       ) : (
         <OperatorHbarChart operators={convertToChartCompatibleStruct(groupByOperatorData)} />
       )}

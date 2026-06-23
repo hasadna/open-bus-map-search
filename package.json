@@ -1,6 +1,6 @@
 {
   "name": "open-bus-map-search",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "private": true,
   "type": "module",
   "dependencies": {
@@ -10,9 +10,10 @@
     "@emotion/styled": "^11.14.1",
     "@hasadna/open-bus-api-client": "^1.2.3",
     "@juggle/resize-observer": "^3.4.0",
-    "@mui/icons-material": "^7.3.11",
-    "@mui/material": "^7.3.9",
-    "@mui/x-date-pickers": "^9.3.0",
+    "@mui/icons-material": "^9.1.1",
+    "@mui/material": "^9.1.0",
+    "@mui/stylis-plugin-rtl": "^9.0.1",
+    "@mui/x-date-pickers": "^9.5.0",
     "@mui/x-tree-view": "^9.0.1",
     "@rolldown/plugin-babel": "^0.2.3",
     "@tanstack/query-async-storage-persister": "^5.96.2",
@@ -25,8 +26,7 @@
     "dayjs": "^1.11.20",
     "es-toolkit": "^1.46.0",
     "geolib": "^3.3.4",
-    "http-proxy-middleware": "^3.0.5",
-    "i18next": "^25.8.18",
+    "i18next": "^26.3.1",
     "i18next-fs-backend": "^2.6.5",
     "leaflet": "^1.9.4",
     "leaflet.markercluster": "^1.5.3",
@@ -39,17 +39,12 @@
     "react-router": "^7.13.1",
     "recharts": "^3.8.0",
     "styled-components": "^6.3.11",
-    "stylis-plugin-rtl": "^2.1.1",
+    "stylis": "^4.4.0",
     "use-konami": "^1.0.1",
     "usehooks-ts": "^3.1.1"
   },
   "resolutions": {
     "autoprefixer": "10.4.5"
-  },
-  "overrides": {
-    "@mui/system": "^7.3.11",
-    "@mui/styled-engine": "^7.3.10",
-    "@mui/private-theming": "^7.3.11"
   },
   "engines": {
     "node": ">=22.12.0"
@@ -85,8 +80,8 @@
     ]
   },
   "devDependencies": {
-    "@applitools/eyes-playwright": "^1.47.2",
-    "@applitools/eyes-storybook": "^3.65.4",
+    "@applitools/eyes-playwright": "^1.47.8",
+    "@applitools/eyes-storybook": "^3.65.8",
     "@eslint/eslintrc": "^3.3.5",
     "@eslint/js": "^9.39.4",
     "@nx/eslint": "^22.7.5",
@@ -101,14 +96,16 @@
     "@types/jest": "^30.0.0",
     "@types/leaflet": "^1.9.21",
     "@types/node": "^25.6.0",
-    "@types/react": "^19.2.14",
+    "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
+    "@types/stylis": "^4.2.7",
     "@typescript-eslint/eslint-plugin": "^8.60.1",
     "@typescript-eslint/parser": "^8.58.0",
     "@vitejs/plugin-react": "^6.0.2",
     "cross-env": "^10.1.0",
     "eslint": "^9.39.4",
     "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-i18next": "^6.1.4",
     "eslint-plugin-prettier": "^5.5.5",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
@@ -127,7 +124,7 @@
     "prettier": "^3.8.1",
     "sass": "^1.98.0",
     "storybook": "^10.4.1",
-    "stylelint": "^17.6.0",
+    "stylelint": "^17.13.0",
     "stylelint-config-standard-scss": "^17.0.0",
     "stylelint-prettier": "^5.0.3",
     "ts-jest": "^29.4.6",

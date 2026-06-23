@@ -1,10 +1,10 @@
 import { Stack } from '@mui/material'
-import { Skeleton } from 'antd'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Cell, Pie, PieChart } from 'recharts'
 import { useGroupBy } from 'src/api/groupByService'
-import dayjs from 'src/dayjs'
+import dayjs, { ISRAEL_TIMEZONE } from 'src/dayjs'
+import SkeletonLoader from 'src/shared/SkeletonLoader'
 import Widget from 'src/shared/Widget'
 import { InfoItem, InfoTable } from '../components/InfoTable'
 
@@ -14,13 +14,14 @@ export const OperatorGaps = ({
   timeRange = 'day',
 }: {
   operatorId?: string
-  date?: Date
+  date?: string
   timeRange?: 'day' | 'week' | 'month' | 'year'
 }) => {
   const { t, i18n } = useTranslation()
+  const dateDayjs = date ? dayjs.tz(date, ISRAEL_TIMEZONE) : dayjs()
   const [groupByOperatorData, isLoading] = useGroupBy({
-    dateFrom: dayjs(date).add(-1, timeRange).valueOf(),
-    dateTo: date?.valueOf() || dayjs().valueOf(),
+    dateFrom: dateDayjs.subtract(1, timeRange),
+    dateTo: dateDayjs,
     groupBy: 'operator_ref',
   })
 
@@ -46,9 +47,9 @@ export const OperatorGaps = ({
   return (
     <Widget title={`${t('operator.statistics')} ${t(`operator.time_range.${timeRange}`)}`}>
       {isLoading ? (
-        <Skeleton active paragraph={{ rows: 2 }} />
+        <SkeletonLoader active rows={2} />
       ) : (
-        <Stack flexDirection="row" justifyContent="space-between">
+        <Stack sx={{ flexDirection: 'row', justifyContent: 'space-between' }}>
           <div>
             <InfoTable>
               {data.map((d) => (
