@@ -89,7 +89,9 @@
     "total": "مجموع المسارات",
     "statistics": "إحصائيات",
     "routes_count": "{{count}} مسارات",
-    "routes_in_lines": "{{routes}} مسارات في {{lines}} خطوط"
+    "routes_in_lines": "{{routes}} مسارات في {{lines}} خطوط",
+    "search_placeholder": "ابحث عن خط أو مصدر أو وجهة",
+    "no_results": "لا توجد مسارات مطابقة"
   },
   "line_placeholder": "مثال: 17أ",
   "line_not_found": "الخط غير موجود",

@@ -89,7 +89,9 @@
     "total": "Всего маршрутов",
     "statistics": "Статистика",
     "routes_count": "{{count}} маршрутов",
-    "routes_in_lines": "{{routes}} маршрутов в {{lines}} линиях"
+    "routes_in_lines": "{{routes}} маршрутов в {{lines}} линиях",
+    "search_placeholder": "Поиск линии, начала или конца",
+    "no_results": "Нет подходящих маршрутов"
   },
   "line_placeholder": "Например: 17a",
   "line_not_found": "Линия не найдена",

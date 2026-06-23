@@ -1,18 +1,21 @@
-import { ArrowBack, ArrowForward, ExpandMore } from '@mui/icons-material'
+import { ArrowBack, ArrowForward, ExpandMore, Search } from '@mui/icons-material'
 import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
   Box,
+  InputAdornment,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableRow,
+  TextField,
+  Typography,
   useMediaQuery,
   useTheme,
 } from '@mui/material'
-import { useContext, useMemo } from 'react'
+import { useContext, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useNavigate } from 'react-router'
 import styled from 'styled-components'
@@ -32,11 +35,25 @@ type RouteGroup = {
 export const OperatorRoutes = ({ operatorId, date }: { operatorId?: string; date?: string }) => {
   const { t } = useTranslation()
   const { routes, isLoading } = useAllRoutes(operatorId, date)
+  const [query, setQuery] = useState('')
 
+  const trimmedQuery = query.trim().toLowerCase()
+
+  // Search is line-first: the query matches against the displayed line number,
+  // but also against each route's origin/destination so a place name surfaces
+  // the lines that serve it. A matching route's whole line group stays visible.
   const groups = useMemo<RouteGroup[]>(() => {
     const byLine = new Map<string, RouteGroup>()
     for (const route of routes) {
       const label = isNaN(route.line) ? '' : route.line + route.suffix
+      if (
+        trimmedQuery &&
+        !label.toLowerCase().includes(trimmedQuery) &&
+        !route.start.toLowerCase().includes(trimmedQuery) &&
+        !route.end.toLowerCase().includes(trimmedQuery)
+      ) {
+        continue
+      }
       let group = byLine.get(label)
       if (!group) {
         group = { label, routes: [] }
@@ -46,7 +63,9 @@ export const OperatorRoutes = ({ operatorId, date }: { operatorId?: string; date
     }
     // routes are already sorted by line/suffix, so insertion order preserves it
     return [...byLine.values()]
-  }, [routes])
+  }, [routes, trimmedQuery])
+
+  const matchingRoutes = useMemo(() => groups.reduce((n, g) => n + g.routes.length, 0), [groups])
 
   return (
     <Widget
@@ -56,19 +75,45 @@ export const OperatorRoutes = ({ operatorId, date }: { operatorId?: string; date
           {!isLoading && routes.length > 0 && (
             <TitleCount>
               {'('}
-              {t('operator.routes_in_lines', { routes: routes.length, lines: groups.length })}
+              {t('operator.routes_in_lines', { routes: matchingRoutes, lines: groups.length })}
               {')'}
             </TitleCount>
           )}
         </>
       }
       marginBottom>
+      {!isLoading && routes.length > 0 && (
+        <TextField
+          size="small"
+          fullWidth
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder={t('operator.search_placeholder')}
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Search fontSize="small" />
+                </InputAdornment>
+              ),
+            },
+          }}
+          sx={{ mb: 1 }}
+        />
+      )}
       <Box sx={{ maxHeight: 345, overflow: 'auto' }}>
         {isLoading ? (
           <SkeletonLoader active rows={8} />
+        ) : groups.length === 0 && trimmedQuery ? (
+          <Typography sx={{ p: 2, opacity: 0.6 }}>{t('operator.no_results')}</Typography>
         ) : (
           groups.map((group) => (
-            <RouteGroup key={group.label || '—'} group={group} operatorId={operatorId} />
+            <RouteGroup
+              key={group.label || '—'}
+              group={group}
+              operatorId={operatorId}
+              forceExpanded={!!trimmedQuery}
+            />
           ))
         )}
       </Box>
@@ -76,13 +121,25 @@ export const OperatorRoutes = ({ operatorId, date }: { operatorId?: string; date
   )
 }
 
-const RouteGroup = ({ group, operatorId }: { group: RouteGroup; operatorId?: string }) => {
+const RouteGroup = ({
+  group,
+  operatorId,
+  forceExpanded,
+}: {
+  group: RouteGroup
+  operatorId?: string
+  forceExpanded?: boolean
+}) => {
   const { t, i18n } = useTranslation()
   const { setSearch } = useContext(GlobalSearchContext)
   const navigate = useNavigate()
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
   const DirectionArrow = i18n.dir() === 'rtl' ? ArrowBack : ArrowForward
+  const [userExpanded, setUserExpanded] = useState(false)
+  // While a search is active every matching group is forced open, so a route
+  // that matched on its origin/destination is never hidden in a collapsed line.
+  const expanded = forceExpanded || userExpanded
 
   const profileLink = (route: Route) => (
     <Link to={`/profile/${route.id}`}>{t('operator.profile')}</Link>
@@ -108,6 +165,8 @@ const RouteGroup = ({ group, operatorId }: { group: RouteGroup; operatorId?: str
   return (
     <Accordion
       disableGutters
+      expanded={expanded}
+      onChange={(_, value) => setUserExpanded(value)}
       slotProps={{ transition: { unmountOnExit: true } }}
       sx={{
         '&.Mui-expanded::before': { opacity: 1 },

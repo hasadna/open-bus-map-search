@@ -91,7 +91,9 @@
     "total": "Total Routes",
     "statistics": "Statistics",
     "routes_count": "{{count}} routes",
-    "routes_in_lines": "{{routes}} routes in {{lines}} lines"
+    "routes_in_lines": "{{routes}} routes in {{lines}} lines",
+    "search_placeholder": "Search line, origin or destination",
+    "no_results": "No matching routes"
   },
   "line_placeholder": "For example: 17a",
   "line_not_found": "The line is not found",
