@@ -152,6 +152,44 @@ test.describe('Operator Page Tests', () => {
     })
   })
 
+  test('Test operator routes search box', async ({ page }) => {
+    // line labels rendered in the (collapsed) accordion headers
+    const groupLabels = page.locator('.MuiAccordionSummary-content strong')
+    const search = page.getByPlaceholder(i18next.t('operator.search_placeholder'))
+
+    await test.step('Select operator and wait for routes', async () => {
+      await page.getByRole('combobox', { name: i18next.t('choose_operator') }).click()
+      await page.getByRole('option', { name: 'אגד', exact: true }).click()
+      await waitForSkeletonsToHide(page)
+      // the full אגד list groups into 354 lines (HAR fixture)
+      await expect(groupLabels).toHaveCount(354)
+    })
+
+    await test.step('Search by line-number substring matches all lines containing it', async () => {
+      // "33" must surface 33, 33א, 133, 433 — and only those
+      await search.fill('33')
+      await expect(groupLabels).toHaveText(['33', '33א', '133', '433'])
+    })
+
+    await test.step('Clear button restores the full list', async () => {
+      await page.getByRole('button', { name: i18next.t('operator.clear') }).click()
+      await expect(search).toHaveValue('')
+      await expect(groupLabels).toHaveCount(354)
+    })
+
+    await test.step('Search by city name filters to the lines serving it', async () => {
+      await search.fill('קרית שמונה')
+      // a distinctive city narrows the list to a small subset of lines
+      await expect(groupLabels).toHaveCount(12)
+    })
+
+    await test.step('Non-matching query shows the empty-results message', async () => {
+      await search.fill('זזחחקק')
+      await expect(page.getByText(i18next.t('operator.no_results'))).toBeVisible()
+      await expect(groupLabels).toHaveCount(0)
+    })
+  })
+
   test('Verify date_from parameter from - "Operator"', async ({ page }) => {
     await verifyDateFromParameter(page)
   })
