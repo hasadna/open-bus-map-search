@@ -1,5 +1,5 @@
 import { CircularProgress, Grid, Tooltip, Typography } from '@mui/material'
-import { useCallback, useContext } from 'react'
+import { useCallback, useContext, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone } from 'src/dayjs'
 import { useSingleLineData } from 'src/hooks/useSingleLineData'
@@ -9,10 +9,12 @@ import OperatorSelector from 'src/pages/components/OperatorSelector'
 import RouteSelector from 'src/pages/components/RouteSelector'
 import { DateSelector } from '../components/DateSelector'
 import { FilterPositionsByStartTimeSelector } from '../components/FilterPositionsByStartTimeSelector'
+import type { FocusTarget } from '../components/map-related/map-types'
 import { MapWithLocationsAndPath } from '../components/map-related/MapWithLocationsAndPath'
 import { NotFound } from '../components/NotFound'
 import { PageContainer } from '../components/PageContainer'
 import InfoYoutubeModal from '../components/YoutubeModal'
+import { GpsCoverageStrip } from './GpsCoverageStrip'
 
 const SingleLineMapPage = () => {
   const { search, setSearch } = useContext(GlobalSearchContext)
@@ -27,6 +29,15 @@ const SingleLineMapPage = () => {
     (time: string | null) => setSearch((c) => ({ ...c, rideTime: time })),
     [setSearch],
   )
+
+  // Lets the coverage strip (rendered below the map) fly the map to a ping. The seq
+  // counter makes repeated clicks on the same ping re-trigger the fly-to.
+  const [focusTarget, setFocusTarget] = useState<FocusTarget | null>(null)
+  const focusSeq = useRef(0)
+  const focusPing = useCallback((loc: [number, number]) => {
+    focusSeq.current += 1
+    setFocusTarget({ loc, seq: focusSeq.current })
+  }, [])
 
   const {
     positionGroups,
@@ -146,7 +157,9 @@ const SingleLineMapPage = () => {
         positionGroups={positionGroups}
         plannedRouteStops={plannedRouteStops}
         showNavigationButtons
+        focusTarget={focusTarget}
       />
+      <GpsCoverageStrip positionGroups={positionGroups} onFocusPing={focusPing} />
     </PageContainer>
   )
 }

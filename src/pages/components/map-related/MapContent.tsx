@@ -22,12 +22,25 @@ export const plannedRouteLineColor = 'black'
 export const plannedRouteStopMarkerPath = `${import.meta.env.BASE_URL}marker-bus-stop.png`
 export const plannedRouteStopMarker = getIcon(plannedRouteStopMarkerPath, 20, 25)
 
-export function MapContent({ positionGroups, plannedRouteStops, showNavigationButtons }: MapProps) {
+export function MapContent({
+  positionGroups,
+  plannedRouteStops,
+  showNavigationButtons,
+  focusTarget,
+}: MapProps) {
   const [tileUrl, setTileUrl] = useState('https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png')
   const map = useMap()
   const { i18n } = useTranslation()
 
   useRecenterOnDataChange({ positionGroups, plannedRouteStops })
+
+  // Fly to (and scroll into view) an externally requested location — e.g. clicking a
+  // coverage-gap's geomarker focuses the last-seen ping before the bus went dark.
+  useEffect(() => {
+    if (!map || !focusTarget) return
+    map.flyTo(focusTarget.loc, Math.max(map.getZoom(), 16))
+    map.getContainer().scrollIntoView({ behavior: 'smooth', block: 'center' })
+  }, [map, focusTarget])
 
   useEffect(() => {
     const handleLanguageChange = (lng: string) => {
