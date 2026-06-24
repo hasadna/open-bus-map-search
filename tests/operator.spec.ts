@@ -39,7 +39,7 @@ test.describe('Operator Page Tests', () => {
     expect(h2Tags).toHaveLength(4)
     expect(h2Tags.slice(0, 3)).toEqual(['אגד', 'סטטיסטיקה חודשית', 'הקווים הגרועים ביותר'])
     // the routes widget title may carry a "(x routes in y lines)" suffix once loaded
-    expect(h2Tags[3]).toContain('כל הקווים היום')
+    expect(h2Tags[3]).toContain(i18next.t('operator.all_lines_on_date'))
   })
 
   test('Test operator inputs', async ({ page }) => {
@@ -146,7 +146,9 @@ test.describe('Operator Page Tests', () => {
       }
       // the widget title reads "<title> (<routes> routes in <lines> lines)" — the
       // lines number must match the number of rendered group headers
-      const titleText = await page.getByRole('heading', { name: /כל הקווים היום/ }).textContent()
+      const titleText = await page
+        .getByRole('heading', { name: i18next.t('operator.all_lines_on_date') })
+        .textContent()
       const numbers = titleText?.match(/\d+/g)?.map(Number) ?? []
       expect(numbers[1]).toEqual(groupCount)
     })
