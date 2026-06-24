@@ -183,14 +183,18 @@ const RouteGroup = ({ group, operatorId }: { group: RouteGroup; operatorId?: str
         {isMobile ? (
           group.routes.map((route) => (
             <StackedRoute key={route.id}>
-              <div>
-                <StackedLabel>{t('operator.origin')}: </StackedLabel>
-                {route.start}
-              </div>
-              <div>
-                <StackedLabel>{t('operator.destination')}: </StackedLabel>
-                {route.end}
-              </div>
+              <StackedTable>
+                <tbody>
+                  <tr>
+                    <StackedLabelCell>{t('operator.origin')}:</StackedLabelCell>
+                    <StackedValueCell>{route.start}</StackedValueCell>
+                  </tr>
+                  <tr>
+                    <StackedLabelCell>{t('operator.destination')}:</StackedLabelCell>
+                    <StackedValueCell>{route.end}</StackedValueCell>
+                  </tr>
+                </tbody>
+              </StackedTable>
               <StackedActions>
                 {profileLink(route)}
                 {mapLink(route)}
@@ -240,8 +244,21 @@ const StackedRoute = styled.div`
   }
 `
 
-const StackedLabel = styled.span`
+const StackedTable = styled.table`
+  border-collapse: collapse;
+  width: 100%;
+`
+
+const StackedLabelCell = styled.td`
   opacity: 0.6;
+  vertical-align: top;
+  white-space: nowrap;
+  width: 1%;
+  padding-inline-end: 0.5rem;
+`
+
+const StackedValueCell = styled.td`
+  vertical-align: top;
 `
 
 const StackedActions = styled.div`
