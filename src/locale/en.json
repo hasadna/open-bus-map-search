@@ -106,6 +106,7 @@
   "line": "Line",
   "vehicle_placeholder": "For example: 12345",
   "vehicle_ref": "vehicle plate",
+  "vehicle_refs": "vehicle plates",
   "vehicle_page_title": "Vehicle",
   "vehicle_page_description": "All the rides a specific vehicle performed on a given day",
   "vehicle_rides_route": "Route",
