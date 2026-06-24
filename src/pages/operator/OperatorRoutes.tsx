@@ -236,7 +236,7 @@ const StackedRoute = styled.div`
   font-size: 0.875rem;
 
   &:not(:last-child) {
-    border-bottom: 1px solid rgba(128, 128, 128, 0.2);
+    border-bottom: 2px solid rgba(128, 128, 128, 0.5);
   }
 `
 
