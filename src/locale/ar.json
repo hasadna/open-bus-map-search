@@ -91,7 +91,8 @@
     "routes_count": "{{count}} مسارات",
     "routes_in_lines": "{{routes}} مسارات في {{lines}} خطوط",
     "search_placeholder": "ابحث عن خط أو مصدر أو وجهة",
-    "no_results": "لا توجد مسارات مطابقة"
+    "no_results": "لا توجد مسارات مطابقة",
+    "clear": "مسح البحث"
   },
   "line_placeholder": "مثال: 17أ",
   "line_not_found": "الخط غير موجود",

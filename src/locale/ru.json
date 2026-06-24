@@ -91,7 +91,8 @@
     "routes_count": "{{count}} маршрутов",
     "routes_in_lines": "{{routes}} маршрутов в {{lines}} линиях",
     "search_placeholder": "Поиск линии, начала или конца",
-    "no_results": "Нет подходящих маршрутов"
+    "no_results": "Нет подходящих маршрутов",
+    "clear": "Очистить поиск"
   },
   "line_placeholder": "Например: 17a",
   "line_not_found": "Линия не найдена",

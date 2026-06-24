@@ -1,9 +1,10 @@
-import { ArrowBack, ArrowForward, ExpandMore, Search } from '@mui/icons-material'
+import { ArrowBack, ArrowForward, Clear, ExpandMore, Search } from '@mui/icons-material'
 import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
   Box,
+  IconButton,
   InputAdornment,
   Table,
   TableBody,
@@ -26,10 +27,6 @@ import SkeletonLoader from 'src/shared/SkeletonLoader'
 import Widget from 'src/shared/Widget'
 import { useAllRoutes } from '../../hooks/useAllRoutes'
 
-// Above this many matched routes, searching stops auto-expanding the line
-// groups — mounting that many route rows at once is what froze the UI.
-const MAX_AUTO_EXPAND_ROUTES = 50
-
 type Route = ReturnType<typeof useAllRoutes>['routes'][number]
 
 type RouteGroup = {
@@ -43,7 +40,7 @@ export const OperatorRoutes = ({ operatorId, date }: { operatorId?: string; date
   const [query, setQuery] = useState('')
   // Filter on a debounced copy so each keystroke doesn't re-run the filter and
   // re-mount expanded groups; the input itself stays bound to `query` (instant).
-  const [debouncedQuery] = useDebounceValue(query, 250)
+  const [debouncedQuery] = useDebounceValue(query, 500)
 
   const trimmedQuery = debouncedQuery.trim().toLowerCase()
 
@@ -75,12 +72,6 @@ export const OperatorRoutes = ({ operatorId, date }: { operatorId?: string; date
 
   const matchingRoutes = useMemo(() => groups.reduce((n, g) => n + g.routes.length, 0), [groups])
 
-  // Auto-expanding every matched group force-mounts a table of rows per group,
-  // which freezes the UI on broad queries that match most of the operator. Cap
-  // it by route count (rows are the heavy thing to mount); above the cap the
-  // groups stay collapsed but still show their matching-route count in the head.
-  const autoExpand = !!trimmedQuery && matchingRoutes <= MAX_AUTO_EXPAND_ROUTES
-
   return (
     <Widget
       title={
@@ -110,6 +101,17 @@ export const OperatorRoutes = ({ operatorId, date }: { operatorId?: string; date
                   <Search fontSize="small" />
                 </InputAdornment>
               ),
+              endAdornment: query ? (
+                <InputAdornment position="end">
+                  <IconButton
+                    size="small"
+                    edge="end"
+                    aria-label={t('operator.clear')}
+                    onClick={() => setQuery('')}>
+                    <Clear fontSize="small" />
+                  </IconButton>
+                </InputAdornment>
+              ) : undefined,
             },
           }}
           sx={{ mb: 1 }}
@@ -122,12 +124,7 @@ export const OperatorRoutes = ({ operatorId, date }: { operatorId?: string; date
           <Typography sx={{ p: 2, opacity: 0.6 }}>{t('operator.no_results')}</Typography>
         ) : (
           groups.map((group) => (
-            <RouteGroup
-              key={group.label || '—'}
-              group={group}
-              operatorId={operatorId}
-              forceExpanded={autoExpand}
-            />
+            <RouteGroup key={group.label || '—'} group={group} operatorId={operatorId} />
           ))
         )}
       </Box>
@@ -135,25 +132,13 @@ export const OperatorRoutes = ({ operatorId, date }: { operatorId?: string; date
   )
 }
 
-const RouteGroup = ({
-  group,
-  operatorId,
-  forceExpanded,
-}: {
-  group: RouteGroup
-  operatorId?: string
-  forceExpanded?: boolean
-}) => {
+const RouteGroup = ({ group, operatorId }: { group: RouteGroup; operatorId?: string }) => {
   const { t, i18n } = useTranslation()
   const { setSearch } = useContext(GlobalSearchContext)
   const navigate = useNavigate()
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
   const DirectionArrow = i18n.dir() === 'rtl' ? ArrowBack : ArrowForward
-  const [userExpanded, setUserExpanded] = useState(false)
-  // While a search is active every matching group is forced open, so a route
-  // that matched on its origin/destination is never hidden in a collapsed line.
-  const expanded = forceExpanded || userExpanded
 
   const profileLink = (route: Route) => (
     <Link to={`/profile/${route.id}`}>{t('operator.profile')}</Link>
@@ -179,8 +164,6 @@ const RouteGroup = ({
   return (
     <Accordion
       disableGutters
-      expanded={expanded}
-      onChange={(_, value) => setUserExpanded(value)}
       slotProps={{ transition: { unmountOnExit: true } }}
       sx={{
         '&.Mui-expanded::before': { opacity: 1 },

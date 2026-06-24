@@ -93,7 +93,8 @@
     "routes_count": "{{count}} מסלולים",
     "routes_in_lines": "{{routes}} מסלולים ב-{{lines}} קווים",
     "search_placeholder": "חיפוש קו, מוצא או יעד",
-    "no_results": "לא נמצאו מסלולים תואמים"
+    "no_results": "לא נמצאו מסלולים תואמים",
+    "clear": "ניקוי החיפוש"
   },
   "line_placeholder": "לדוגמה: 17א",
   "line_not_found": "הקו לא נמצא",

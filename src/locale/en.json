@@ -93,7 +93,8 @@
     "routes_count": "{{count}} routes",
     "routes_in_lines": "{{routes}} routes in {{lines}} lines",
     "search_placeholder": "Search line, origin or destination",
-    "no_results": "No matching routes"
+    "no_results": "No matching routes",
+    "clear": "Clear search"
   },
   "line_placeholder": "For example: 17a",
   "line_not_found": "The line is not found",
