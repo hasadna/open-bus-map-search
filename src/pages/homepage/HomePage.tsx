@@ -54,7 +54,7 @@ export const HomePage = () => {
 
   return (
     <div className="container">
-      <img src={busImage} alt="Public Transportaion Bus Illustration" />
+      <img src={busImage} alt={t('homepage.bus_illustration_alt')} />
       <h1>{t('homepage.welcome')}</h1>
       <h2>{t('homepage.databus_definition')}</h2>
       <p>{t('homepage.website_goal')}</p>

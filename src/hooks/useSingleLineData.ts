@@ -6,7 +6,11 @@ import { getRoutesByLineRef, getStopsForRouteAsync } from 'src/api/gtfsService'
 import { getServiceDayRoutes } from 'src/api/serviceDayRoutesService'
 import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone } from 'src/dayjs'
 import { BusRoute } from 'src/model/busRoute'
-import { type Point, toPoint } from 'src/pages/components/map-related/map-types'
+import {
+  type PositionGroup,
+  ROUTE_COLORS,
+  toPoint,
+} from 'src/pages/components/map-related/map-types'
 import { routeStartEnd, vehicleIDFormat } from 'src/pages/components/utils/rotueUtils'
 import {
   formatServiceDayTime,
@@ -16,17 +20,9 @@ import {
   serviceDayTokenToDisplay,
 } from 'src/pages/components/utils/startTimeUtils'
 
-const LIGHT_TRAIN_OPERATORS = new Set(['21', '22'])
-
-const VEHICLE_NUMBER_TEST = {
-  lightTrain: /^\d{1,6}$/,
-  bus: /^\d{7,8}$/,
-} as const
-
 interface UseSingleLineDataOptions {
   operatorId?: string
   lineNumber?: string
-  vehicleNumber?: number
   date: string
   routeKey?: string | null
   rideTime?: string | null
@@ -37,7 +33,6 @@ interface UseSingleLineDataOptions {
 export const useSingleLineData = ({
   operatorId,
   lineNumber,
-  vehicleNumber,
   date,
   routeKey,
   rideTime,
@@ -47,7 +42,8 @@ export const useSingleLineData = ({
   const [routes, setRoutes] = useState<BusRoute[] | undefined>()
   const [options, setOptions] = useState<{ value: string; label: string }[]>([])
   const [rideIdsByToken, setRideIdsByToken] = useState<Map<string, number[]>>(new Map())
-  const [positions, setPositions] = useState<Point[]>([])
+  const [vehicleRefById, setVehicleRefById] = useState<Map<number, string>>(new Map())
+  const [positionGroups, setPositionGroups] = useState<PositionGroup[]>([])
   const [locationsAreLoading, setLocationsAreLoading] = useState(false)
   const [error, setError] = useState<string>()
   const startTime = useMemo(() => normalizeStartTimeToken(rideTime ?? undefined), [rideTime])
@@ -106,18 +102,6 @@ export const useSingleLineData = ({
     return [start, end]
   }, [date])
 
-  const validVehicleNumber = useMemo(() => {
-    if (!vehicleNumber) return undefined
-
-    const vehicleNumberText = String(vehicleNumber)
-    const isLightTrain = LIGHT_TRAIN_OPERATORS.has(operatorId ?? '')
-    const vehicleNumberTest = isLightTrain
-      ? VEHICLE_NUMBER_TEST.lightTrain
-      : VEHICLE_NUMBER_TEST.bus
-
-    return vehicleNumberTest.test(vehicleNumberText) ? vehicleNumber : undefined
-  }, [operatorId, vehicleNumber])
-
   const parsedStartTime = useMemo(() => parseStartTimeToken(startTime), [startTime])
 
   const selectedRideIdsKey = useMemo(
@@ -132,7 +116,8 @@ export const useSingleLineData = ({
     // siri_ride ids while a ride-time token is still selected across a date change.
     setOptions([])
     setRideIdsByToken(new Map())
-    if (!selectedRoute?.lineRef && !validVehicleNumber) {
+    setVehicleRefById(new Map())
+    if (!selectedRoute?.lineRef) {
       return
     }
     const controller = new AbortController()
@@ -140,7 +125,6 @@ export const useSingleLineData = ({
       {
         siriRouteLineRefs: selectedRoute?.lineRef?.toString(),
         siriRouteOperatorRefs: operatorId,
-        vehicleRefs: validVehicleNumber?.toString(),
         scheduledStartTimeFrom: serviceDayStart.toDate(),
         scheduledStartTimeTo: serviceDayEnd.toDate(),
         orderBy: 'scheduled_start_time asc',
@@ -155,18 +139,16 @@ export const useSingleLineData = ({
         >()
         for (const ride of rides) {
           if (!ride.scheduledStartTime || !ride.vehicleRef || !ride.id) continue
-          const scheduledTime = formatServiceDayTime(
+          const key = formatServiceDayTime(
             toIsraelTimezone(ride.scheduledStartTime),
             serviceDayStart,
           )
-          const key = validVehicleNumber
-            ? `${scheduledTime}|${ride.vehicleRef}|${ride.siriRouteLineRef}`
-            : scheduledTime
           if (!byTime.has(key)) byTime.set(key, [])
           byTime.get(key)!.push({ id: ride.id, vehicleRef: ride.vehicleRef, ride })
         }
 
         const idMap = new Map<string, number[]>()
+        const vehMap = new Map<number, string>()
         const opts: { value: string; label: string }[] = []
 
         byTime.forEach((group, key) => {
@@ -174,25 +156,22 @@ export const useSingleLineData = ({
             key,
             group.map((g) => g.id),
           )
-          const token = validVehicleNumber ? key.split('|')[0] : key
+          group.forEach((g) => vehMap.set(g.id, g.vehicleRef))
           // Show the wall-clock time (00:10), not the extended-hour token (24:10),
           // and flag past-midnight departures with a moon so the next-night rides
           // are obvious. The extended token stays the option `value` for the URL.
-          const { time: displayTime, nextDay } = serviceDayTokenToDisplay(token)
+          const { time: displayTime, nextDay } = serviceDayTokenToDisplay(key)
           const scheduledTime = nextDay ? `🌙 ${displayTime}` : displayTime
           const routeLongName = group[0].ride.gtfsRouteRouteLongName
           const [start, end] = routeLongName ? routeStartEnd(routeLongName) : []
           const routePart = routeLongName
             ? `${group[0].ride.gtfsRouteRouteShortName} - ${start} ⇄ ${end}`
             : undefined
-          const label = validVehicleNumber
-            ? routePart
-              ? `${scheduledTime} (${routePart})`
-              : scheduledTime
-            : group.length === 1
+          const label =
+            group.length === 1
               ? routePart
-                ? `${scheduledTime} (${routePart}, ${vehicleIDFormat(group[0].vehicleRef)})`
-                : `${scheduledTime} (${vehicleIDFormat(group[0].vehicleRef)})`
+                ? `${scheduledTime} (${routePart})`
+                : scheduledTime
               : routePart
                 ? `${scheduledTime} (${routePart}, ${group.length} vehicles)`
                 : `${scheduledTime} (${group.length} vehicles)`
@@ -201,23 +180,24 @@ export const useSingleLineData = ({
 
         setOptions(opts)
         setRideIdsByToken(idMap)
+        setVehicleRefById(vehMap)
       })
       .catch((err) => {
         if (err?.name !== 'AbortError') console.error(err)
       })
     return () => controller.abort()
-  }, [selectedRoute?.lineRef, operatorId, validVehicleNumber, serviceDayStart, serviceDayEnd])
+  }, [selectedRoute?.lineRef, operatorId, serviceDayStart, serviceDayEnd])
 
-  // Fetch location pings for the selected ride(s)
+  // Fetch location pings for the selected ride(s), one group per vehicle
   useEffect(() => {
     const rideIds = selectedRideIdsKey ? selectedRideIdsKey.split(',').map(Number) : []
     if (!rideIds.length) {
-      setPositions([])
+      setPositionGroups([])
       return
     }
     setLocationsAreLoading(true)
     Promise.all(
-      rideIds.map((rideId) =>
+      rideIds.map((rideId, idx) =>
         SIRI_API.siriVehicleLocationsListGet({
           siriRidesIds: rideId.toString(),
           // Israel bounding box — drops null/zero-coordinate and stray pings at the API level
@@ -228,13 +208,18 @@ export const useSingleLineData = ({
           orderBy: 'recorded_at_time asc',
           limit: 10000,
           getCount: false,
-        }),
+        }).then((data) => ({
+          color: ROUTE_COLORS[idx % ROUTE_COLORS.length],
+          label: vehicleIDFormat(vehicleRefById.get(rideId)) ?? String(idx + 1),
+          vehicleRef: vehicleRefById.get(rideId),
+          positions: uniqBy(data, (l) => l.id).map(toPoint),
+        })),
       ),
     )
-      .then((results) => setPositions(uniqBy(results.flat(), (l) => l.id).map(toPoint)))
+      .then(setPositionGroups)
       .catch(console.error)
       .finally(() => setLocationsAreLoading(false))
-  }, [selectedRideIdsKey])
+  }, [selectedRideIdsKey, vehicleRefById])
 
   // Fetch planned stops for the black polyline
   const stopsQuery = useQuery({
@@ -269,7 +254,7 @@ export const useSingleLineData = ({
   })
 
   return {
-    positions,
+    positionGroups,
     plannedRouteStops: stopsQuery.data ?? [],
     options,
     startTime,

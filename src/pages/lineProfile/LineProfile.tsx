@@ -1,14 +1,14 @@
 import { GtfsRoutePydanticModel } from '@hasadna/open-bus-api-client'
 import { CircularProgress, Grid } from '@mui/material'
 import { Tooltip } from 'antd'
-import { useCallback, useContext, useEffect, useState } from 'react'
+import { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLoaderData, useNavigate } from 'react-router'
 import { getServiceDayRoutes } from 'src/api/serviceDayRoutesService'
 import dayjs, { toIsraelTimezone } from 'src/dayjs'
 import { useSingleLineData } from 'src/hooks/useSingleLineData'
 import { GLOBAL_SEARCH_DEFAULTS, GlobalSearchContext } from 'src/model/globalState'
-import { ExtraShareParamsContext, InitialUrlParamsContext } from 'src/model/routeContext'
+import { InitialUrlParamsContext, PageShareParamsContext } from 'src/model/routeContext'
 import StopSelector from 'src/pages/components/StopSelector'
 import Widget from 'src/shared/Widget'
 import { DateSelector } from '../components/DateSelector'
@@ -27,8 +27,11 @@ const LineProfile = () => {
   const { route, message } = useLoaderData<{ route?: GtfsRoutePydanticModel; message?: string }>()
   const [stopKey, setState] = useState<string>()
   const { search, setSearch } = useContext(GlobalSearchContext)
+  const dateChangeAbortRef = useRef<AbortController | null>(null)
   const initialUrlParams = useContext(InitialUrlParamsContext)
-  const { setParams } = useContext(ExtraShareParamsContext)
+  // LEGACY: manual share-param injection — replace with usePageState's per-page
+  // persistent `params` when this page is migrated.
+  const { setParams } = useContext(PageShareParamsContext)
 
   useEffect(() => {
     document.querySelector('main')?.scrollTo(0, 0)
@@ -39,12 +42,13 @@ const LineProfile = () => {
     if (!route?.id) {
       return
     }
+    const key = `${route.routeMkt}-${route.routeDirection}-${route.routeAlternative}`
     setSearch(() => ({
       ...GLOBAL_SEARCH_DEFAULTS,
       date: toIsraelTimezone(route.date.getTime()).format('YYYY-MM-DD'),
       operatorId: route.operatorRef.toString(),
       lineNumber: route.routeShortName ?? null,
-      routeKey: `${route.routeMkt}-${route.routeDirection}-${route.routeAlternative}`,
+      routeKey: key,
       rideTime: initialUrlParams.rideTime ?? initialUrlParams.startTime ?? null,
     }))
   }, [route?.id])
@@ -59,13 +63,14 @@ const LineProfile = () => {
   )
 
   const {
-    positions,
+    positionGroups,
     locationsAreLoading,
     options,
     plannedRouteStops,
     startTime,
     routes,
     routeKey,
+    error,
     setStartTime,
   } = useSingleLineData({
     operatorId: route?.operatorRef.toString(),
@@ -85,8 +90,9 @@ const LineProfile = () => {
 
   const handleDateChange = (time: dayjs.Dayjs | null) => {
     if (!time || !route) return
-
+    dateChangeAbortRef.current?.abort()
     const abortController = new AbortController()
+    dateChangeAbortRef.current = abortController
     // Service-day aware (and Israel-tz normalized internally), consistent with the
     // gaps page and the single-line ride list.
     getServiceDayRoutes(
@@ -103,7 +109,7 @@ const LineProfile = () => {
           navigate(`/profile/${newRoute.routeIds[0]}`)
         }
       })
-      .catch((error) => console.error(error))
+      .catch((err) => console.error(err))
   }
 
   const handelRouteChange = (key?: string) => {
@@ -130,15 +136,20 @@ const LineProfile = () => {
           <LineProfileDetails {...route} />
         </Grid>
         <Grid size={{ xs: 12, lg: 5 }} container spacing={2} sx={{ flexDirection: 'column' }}>
-          <RouteSelector
-            routes={routes ?? []}
-            routeKey={routeKey}
-            setRouteKey={handelRouteChange}
-          />
+          {error ? (
+            <NotFound>{error}</NotFound>
+          ) : (
+            <RouteSelector
+              routes={routes ?? []}
+              routeKey={routeKey}
+              setRouteKey={handelRouteChange}
+            />
+          )}
           <DateSelector time={dayjs(route?.date.getTime())} onChange={handleDateChange} />
           <Grid container sx={{ flexWrap: 'nowrap', alignItems: 'center' }}>
             <FilterPositionsByStartTimeSelector
               options={options}
+              disabled={options.length === 0}
               startTime={startTime}
               setStartTime={setStartTime}
             />
@@ -148,7 +159,7 @@ const LineProfile = () => {
               </Tooltip>
             )}
           </Grid>
-          <LineProfileRide point={positions[0]?.point} />
+          <LineProfileRide point={positionGroups[0]?.positions[0]?.point} />
           <StopSelector stops={plannedRouteStops} stopKey={stopKey} setStopKey={handelStopChange} />
           <LineProfileStop
             stop={plannedRouteStops.find((s) => s.key === stopKey)}
@@ -156,7 +167,10 @@ const LineProfile = () => {
           />
         </Grid>
       </Grid>
-      <MapWithLocationsAndPath positions={positions} plannedRouteStops={plannedRouteStops} />
+      <MapWithLocationsAndPath
+        positionGroups={positionGroups}
+        plannedRouteStops={plannedRouteStops}
+      />
     </PageContainer>
   )
 }

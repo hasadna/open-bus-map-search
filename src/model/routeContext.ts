@@ -1,6 +1,6 @@
 import { createContext } from 'react'
 
-export const ExtraShareParamsContext = createContext<{
+export const PageShareParamsContext = createContext<{
   params: Record<string, string>
   setParams: (params: Record<string, string>) => void
 }>({ params: {}, setParams: () => {} })

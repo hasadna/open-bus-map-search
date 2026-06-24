@@ -3,6 +3,7 @@ import eslintJs from '@eslint/js'
 import nxPlugin from '@nx/eslint-plugin'
 import typescriptEslintEslintPlugin from '@typescript-eslint/eslint-plugin'
 import typescriptEslintParser from '@typescript-eslint/parser'
+import eslintPluginI18next from 'eslint-plugin-i18next'
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended'
 import eslintPluginReact from 'eslint-plugin-react'
 import eslintPluginReactHooks from 'eslint-plugin-react-hooks'
@@ -72,6 +73,23 @@ export default [
       '@typescript-eslint/no-unsafe-assignment': 'off',
       // Prettier
       'prettier/prettier': 'error',
+    },
+  },
+  // User-visible strings must go through i18next, so every language gets them
+  {
+    files: ['src/**/*.{ts,tsx}'],
+    ignores: ['src/**/*.test.{ts,tsx}', 'src/**/*.stories.{ts,tsx}', 'src/test_pages/**'],
+    plugins: { i18next: eslintPluginI18next },
+    rules: {
+      'i18next/no-literal-string': [
+        'error',
+        {
+          mode: 'jsx-only',
+          'jsx-attributes': {
+            include: ['label', 'aria-label', 'alt', 'title', 'placeholder'],
+          },
+        },
+      ],
     },
   },
   // Disable React rules in tests and test_pages folders
