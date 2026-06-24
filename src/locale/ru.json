@@ -80,13 +80,11 @@
       "year": "Ежегодно"
     },
     "all_lines_today": "Все линии сегодня",
-    "line": "Линия",
     "profile": "Профиль",
     "map": "Карта",
     "id": "ID",
     "origin": "Отправление",
     "destination": "Назначение",
-    "total": "Всего маршрутов",
     "statistics": "Статистика",
     "routes_count": "{{count}} маршрутов",
     "routes_in_lines": "{{routes}} маршрутов в {{lines}} линиях",

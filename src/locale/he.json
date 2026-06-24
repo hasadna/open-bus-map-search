@@ -92,13 +92,11 @@
       "year": "שנתית"
     },
     "all_lines_today": "כל הקווים היום",
-    "line": "קו",
     "profile": "פרופיל",
     "map": "מפה",
     "id": "מזהה טכני",
     "origin": "מוצא",
     "destination": "יעד",
-    "total": "סך כל המסלולים",
     "statistics": "סטטיסטיקה",
     "routes_count": "{{count}} מסלולים",
     "routes_in_lines": "{{routes}} מסלולים ב-{{lines}} קווים",

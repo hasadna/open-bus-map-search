@@ -80,13 +80,11 @@
       "year": "سنوياً"
     },
     "all_lines_today": "جميع الخطوط اليوم",
-    "line": "خط",
     "profile": "بروفايل",
     "map": "خريطة",
     "id": "معرّف تقني",
     "origin": "المصدر",
     "destination": "الوجهة",
-    "total": "مجموع المسارات",
     "statistics": "إحصائيات",
     "routes_count": "{{count}} مسارات",
     "routes_in_lines": "{{routes}} مسارات في {{lines}} خطوط",

@@ -92,13 +92,11 @@
       "year": "Yearly"
     },
     "all_lines_today": "All Lines Today",
-    "line": "Line",
     "profile": "Profile",
     "map": "Map",
     "id": "ID",
     "origin": "Origin",
     "destination": "Destination",
-    "total": "Total Routes",
     "statistics": "Statistics",
     "routes_count": "{{count}} routes",
     "routes_in_lines": "{{routes}} routes in {{lines}} lines",
