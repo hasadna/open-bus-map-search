@@ -74,7 +74,7 @@ export const OperatorRoutes = ({ operatorId, date }: { operatorId?: string; date
     <Widget
       title={
         <>
-          {t('operator.all_lines_today')}
+          {t('operator.all_lines_on_date')}
           {!isLoading && routes.length > 0 && (
             <TitleCount>
               {'('}
