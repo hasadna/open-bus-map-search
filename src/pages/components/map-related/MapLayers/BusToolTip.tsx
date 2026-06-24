@@ -4,7 +4,7 @@ import { ReactNode, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
 import { getRoutesByLineRef } from 'src/api/gtfsService'
-import dayjs from 'src/dayjs'
+import dayjs, { ISRAEL_TIMEZONE } from 'src/dayjs'
 import { routeStartEnd, vehicleIDFormat } from 'src/pages/components/utils/rotueUtils'
 import SkeletonLoader from 'src/shared/SkeletonLoader'
 import CustomTreeView from '../../CustomTreeView'
@@ -80,11 +80,12 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
             <h1 className="title">
               {`${t('line')}: `}
               <span>
+                {/* eslint-disable-next-line i18next/no-literal-string -- fallback for a missing route number */}
                 <Link to={`/profile/${route.id}`}>{route?.routeShortName || 'NaN'}</Link>
               </span>
             </h1>
             <Link to={`/operator?operatorId=${position.point?.siriRouteOperatorRef}`}>
-              <img src={icon} alt="bus icon" className="bus-icon" />
+              <img src={icon} alt={t('bus_icon_alt')} className="bus-icon" />
             </Link>
           </header>
           <div className="content">
@@ -114,7 +115,7 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
                 {`${t('sample_time')}: `}
                 <span>
                   {dayjs(position.point!.recordedAtTime || new Date())
-                    .tz('Israel')
+                    .tz(ISRAEL_TIMEZONE)
                     .format(`l [${t('at_time')}] LT`)}
                 </span>
               </li>
@@ -157,7 +158,7 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
             )}
             <br />
             <Button
-              href="https://www.gov.il/BlobFolder/generalpage/gtfs_general_transit_feed_specifications/he/GTFS_Developer_Information_2024.11.21b.pdf"
+              href="https://www.gov.il/BlobFolder/generalpage/gtfs_general_transit_feed_specifications/he/Gtfs%20Documentation%20v3.pdf"
               target="_blank"
               rel="noopener noreferrer"
               sx={{ marginTop: '2px' }}>
