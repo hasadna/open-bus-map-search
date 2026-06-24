@@ -13,8 +13,6 @@ import {
   TableRow,
   TextField,
   Typography,
-  useMediaQuery,
-  useTheme,
 } from '@mui/material'
 import { useContext, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -136,8 +134,6 @@ const RouteGroup = ({ group, operatorId }: { group: RouteGroup; operatorId?: str
   const { t, i18n } = useTranslation()
   const { setSearch } = useContext(GlobalSearchContext)
   const navigate = useNavigate()
-  const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
   const DirectionArrow = i18n.dir() === 'rtl' ? ArrowBack : ArrowForward
 
   const profileLink = (route: Route) => (
@@ -180,8 +176,11 @@ const RouteGroup = ({ group, operatorId }: { group: RouteGroup; operatorId?: str
         <RouteCount>{t('operator.routes_count', { count: group.routes.length })}</RouteCount>
       </AccordionSummary>
       <AccordionDetails sx={{ p: 0 }}>
-        {isMobile ? (
-          group.routes.map((route) => (
+        {/* Both layouts stay in the DOM, toggled by CSS at `sm` (not a JS branch, so no
+            first-render flash and Applitools captures both). Collapsed groups render
+            nothing thanks to the Accordion's unmountOnExit, so the duplication is free. */}
+        <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
+          {group.routes.map((route) => (
             <StackedRoute key={route.id}>
               <StackedTable>
                 <tbody>
@@ -200,8 +199,9 @@ const RouteGroup = ({ group, operatorId }: { group: RouteGroup; operatorId?: str
                 {mapLink(route)}
               </StackedActions>
             </StackedRoute>
-          ))
-        ) : (
+          ))}
+        </Box>
+        <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
           <Table size="small">
             <TableHead>
               <TableRow>
@@ -226,7 +226,7 @@ const RouteGroup = ({ group, operatorId }: { group: RouteGroup; operatorId?: str
               ))}
             </TableBody>
           </Table>
-        )}
+        </Box>
       </AccordionDetails>
     </Accordion>
   )
