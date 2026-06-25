@@ -80,8 +80,8 @@
     ]
   },
   "devDependencies": {
-    "@applitools/eyes-playwright": "^1.47.8",
-    "@applitools/eyes-storybook": "^3.65.8",
+    "@applitools/eyes-playwright": "^1.47.9",
+    "@applitools/eyes-storybook": "^3.66.0",
     "@eslint/eslintrc": "^3.3.5",
     "@eslint/js": "^9.39.4",
     "@nx/eslint": "^22.7.5",
