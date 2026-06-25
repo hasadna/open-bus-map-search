@@ -1,10 +1,10 @@
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import styled, { keyframes } from 'styled-components'
+import styled from 'styled-components'
 import DonateModal from 'src/pages/DonateModal/DonateModal'
 import Widget from 'src/shared/Widget'
 import ChallengeCard from './ChallengeCard'
-import { CHALLENGES, ChallengeTier, POSTPONED, REGISTRATION_CLOSE_ISO, Track } from './challenges'
+import { CHALLENGES, ChallengeTier, REGISTRATION_CLOSE_ISO, Track } from './challenges'
 import Countdown from './Countdown'
 import PersonaCard, { PERSONAS } from './PersonaCard'
 import RegistrationEmbed from './RegistrationEmbed'
@@ -67,39 +67,19 @@ const Hackathon = () => {
 
   return (
     <>
-      {POSTPONED && (
-        <>
-          <Rocket $dur={9} $delay={0} aria-hidden="true">
-            <RocketBody $size="2rem">🚀</RocketBody>
-          </Rocket>
-          <Rocket $dur={13} $delay={4} aria-hidden="true">
-            <RocketBody $size="1.5rem">🚀</RocketBody>
-          </Rocket>
-          <Rocket $dur={11} $delay={8} aria-hidden="true">
-            <RocketBody $size="1.8rem">🚀</RocketBody>
-          </Rocket>
-        </>
-      )}
       <Page>
         <Hero>
           <Title>{t('hackathonPage.hero.title')}</Title>
           <Subtitle>{t('hackathonPage.hero.subtitle')}</Subtitle>
-          {POSTPONED && (
-            <PostponementBanner>{t('hackathonPage.postponementBanner')}</PostponementBanner>
-          )}
           <Audience>{t('hackathonPage.hero.audience')}</Audience>
           <Meta>
-            <span>
-              {POSTPONED ? t('hackathonPage.hero.dateTBD') : `📅 ${t('hackathonPage.hero.date')}`}
-            </span>
+            <span>📅 {t('hackathonPage.hero.date')}</span>
             <span>📍 {t('hackathonPage.hero.location')}</span>
             <span>🤝 {t('hackathonPage.hero.partner')}</span>
           </Meta>
-          <CtaLink href="#register">
-            {POSTPONED ? t('hackathonPage.hero.ctaPostponed') : t('hackathonPage.hero.cta')}
-          </CtaLink>
+          <CtaLink href="#register">{t('hackathonPage.hero.cta')}</CtaLink>
           <CountdownStrip>
-            {!POSTPONED && <span>{t('hackathonPage.hero.countdownLabel')}</span>}
+            <span>{t('hackathonPage.hero.countdownLabel')}</span>
             <Countdown targetIso={REGISTRATION_CLOSE_ISO} variant="compact" />
           </CountdownStrip>
         </Hero>
@@ -223,17 +203,11 @@ const Hackathon = () => {
 
         <Widget title={t('hackathonPage.registration.title')}>
           <div id="register" />
-          <p>
-            {POSTPONED
-              ? t('hackathonPage.registration.bodyPostponed')
-              : t('hackathonPage.registration.body')}
-          </p>
-          {!POSTPONED && (
-            <CountdownStrip>
-              <span>{t('hackathonPage.hero.countdownLabel')}</span>
-              <Countdown targetIso={REGISTRATION_CLOSE_ISO} variant="compact" />
-            </CountdownStrip>
-          )}
+          <p>{t('hackathonPage.registration.body')}</p>
+          <CountdownStrip>
+            <span>{t('hackathonPage.hero.countdownLabel')}</span>
+            <Countdown targetIso={REGISTRATION_CLOSE_ISO} variant="compact" />
+          </CountdownStrip>
           <RegistrationEmbed />
         </Widget>
 
@@ -251,53 +225,6 @@ const Hackathon = () => {
     </>
   )
 }
-
-// ─── Rocket background (postponed mode) ───────────────────────────────────
-
-const rocketFlyby = keyframes`
-  0% {
-    transform: translate(-10vw, 100vh) rotate(0deg) scale(0.7);
-    opacity: 0;
-  }
-  10% { opacity: 1; }
-  50% {
-    transform: translate(40vw, 38vh) rotate(-15deg) scale(0.95);
-  }
-  90% { opacity: 1; }
-  100% {
-    transform: translate(110vw, -10vh) rotate(10deg) scale(0.5);
-    opacity: 0;
-  }
-`
-
-const rocketWobble = keyframes`
-  0%   { transform: translate(0, 0) rotate(0deg); }
-  25%  { transform: translate(1px, -1px) rotate(1.5deg); }
-  50%  { transform: translate(-1px, 1px) rotate(-1.5deg); }
-  75%  { transform: translate(1px, 1px) rotate(1deg); }
-  100% { transform: translate(0, 0) rotate(0deg); }
-`
-
-const Rocket = styled.div<{ $dur: number; $delay: number }>`
-  position: fixed;
-  top: 0;
-  left: 0;
-  line-height: 1;
-  pointer-events: none;
-  z-index: 0;
-  will-change: transform, opacity;
-  animation: ${rocketFlyby} ${({ $dur }) => $dur}s ease-in-out ${({ $delay }) => $delay}s infinite;
-`
-
-const RocketBody = styled.div<{ $size: string }>`
-  font-size: ${({ $size }) => $size};
-  line-height: 1;
-  animation: ${rocketWobble} 0.35s ease-in-out infinite;
-
-  @media (prefers-reduced-motion: reduce) {
-    animation: none;
-  }
-`
 
 // ─────────────────────────────────────────────────────────────────────────
 
@@ -331,36 +258,6 @@ const Subtitle = styled.p`
   font-size: clamp(16px, 2.4vw, 20px);
   margin: 0;
   max-width: 640px;
-`
-
-const bannerGlow = keyframes`
-  0%, 100% { box-shadow: 0 0 12px 2px rgba(252, 211, 77, 0.45); }
-  50%      { box-shadow: 0 0 26px 6px rgba(250, 204, 21, 0.85); }
-`
-
-const PostponementBanner = styled.div`
-  max-width: 680px;
-  padding: 16px 22px;
-  border-radius: 10px;
-  background: #fef3c7;
-  border: 1.5px solid #fcd34d;
-  font-size: clamp(17px, 2.4vw, 21px);
-  font-weight: 600;
-  line-height: 1.6;
-  color: #78350f;
-  text-align: center;
-  animation: ${bannerGlow} 2.4s ease-in-out infinite;
-
-  .dark & {
-    background: #451a03;
-    border-color: #92400e;
-    color: #fde68a;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    animation: none;
-    box-shadow: 0 0 18px 3px rgba(250, 204, 21, 0.6);
-  }
 `
 
 const Audience = styled.p`
