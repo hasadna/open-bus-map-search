@@ -235,17 +235,17 @@ const RouteGroup = ({ group, operatorId }: { group: RouteGroup; operatorId?: str
   )
 }
 
-const StackedRoute = styled('div')`
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  padding: 0.6rem 1rem;
-  font-size: 0.875rem;
+const StackedRoute = styled('div')(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '0.25rem',
+  padding: '0.6rem 1rem',
+  fontSize: '0.875rem',
 
-  &:not(:last-child) {
-    border-bottom: 2px solid rgba(128, 128, 128, 0.5);
-  }
-`
+  '&:not(:last-child)': {
+    borderBottom: `2px solid ${theme.palette.divider}`,
+  },
+}))
 
 const StackedTable = styled('table')`
   border-collapse: collapse;
