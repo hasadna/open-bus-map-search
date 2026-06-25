@@ -286,6 +286,11 @@ const RescheduledNotice = styled.p`
   color: #9a3412;
   font-size: 14px;
   line-height: 1.5;
+
+  .dark & {
+    background: #431407;
+    color: #fed7aa;
+  }
 `
 
 const CountdownStrip = styled.div`
