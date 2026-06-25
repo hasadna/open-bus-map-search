@@ -1,5 +1,5 @@
 import { GTFS_API } from 'src/api/apiConfig'
-import dayjs, { toIsraelTimezone } from 'src/dayjs'
+import dayjs, { toGtfsServiceDate, toIsraelTimezone } from 'src/dayjs'
 import { BusRoute, fromGtfsRoute } from 'src/model/busRoute'
 import { BusStop, fromGtfsStop } from 'src/model/busStop'
 
@@ -10,25 +10,18 @@ export async function getRoutesAsync(
   lineNumber?: string,
   signal?: AbortSignal,
 ): Promise<BusRoute[]> {
-  const fromDate = toIsraelTimezone(from).format('YYYY-MM-DD')
-  const toDate = toIsraelTimezone(to).format('YYYY-MM-DD')
-
   const gtfsRoutes = await GTFS_API.gtfsRoutesListGet(
     {
       routeShortName: lineNumber,
       operatorRefs: operatorId,
-      dateFrom: from.startOf('day').toDate(),
-      dateTo: dayjs.min(to.endOf('day'), toIsraelTimezone()).toDate(),
+      dateFrom: toGtfsServiceDate(from),
+      dateTo: toGtfsServiceDate(dayjs.min(to.endOf('day'), toIsraelTimezone())),
       limit: 100,
     },
     { signal },
   )
   const routes = Object.values(
     gtfsRoutes
-      .filter((route) => {
-        const routeDate = toIsraelTimezone(route.date).format('YYYY-MM-DD')
-        return routeDate >= fromDate && routeDate <= toDate
-      })
       .map((route) => fromGtfsRoute(route))
       .reduce(
         (agg, line) => {
@@ -129,11 +122,12 @@ export async function getRouteById(routeId?: string, signal?: AbortSignal) {
 }
 
 export async function getAllRoutesList(operatorId: string, date: Date, signal?: AbortSignal) {
+  const serviceDate = toGtfsServiceDate(date)
   return await GTFS_API.gtfsRoutesListGet(
     {
       operatorRefs: operatorId,
-      dateFrom: date,
-      dateTo: date,
+      dateFrom: serviceDate,
+      dateTo: serviceDate,
       orderBy: 'route_long_name asc',
       limit: 15000,
     },
@@ -147,11 +141,12 @@ export async function getRoutesByLineRef(
   date: Date,
   signal?: AbortSignal,
 ) {
+  const serviceDate = toGtfsServiceDate(date)
   return await GTFS_API.gtfsRoutesListGet(
     {
       operatorRefs: operatorId,
-      dateFrom: date,
-      dateTo: date,
+      dateFrom: serviceDate,
+      dateTo: serviceDate,
       lineRefs,
       limit: 1,
     },
