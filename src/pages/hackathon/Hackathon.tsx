@@ -77,6 +77,7 @@ const Hackathon = () => {
             <span>📍 {t('hackathonPage.hero.location')}</span>
             <span>🤝 {t('hackathonPage.hero.partner')}</span>
           </Meta>
+          <RescheduledNotice>{t('hackathonPage.hero.rescheduledNotice')}</RescheduledNotice>
           <CtaLink href="#register">{t('hackathonPage.hero.cta')}</CtaLink>
           <CountdownStrip>
             <span>{t('hackathonPage.hero.countdownLabel')}</span>
@@ -274,6 +275,17 @@ const Meta = styled.div`
   justify-content: center;
   font-size: 14px;
   opacity: 0.85;
+`
+
+const RescheduledNotice = styled.p`
+  max-width: 640px;
+  margin: 0;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: #fff7ed;
+  color: #9a3412;
+  font-size: 14px;
+  line-height: 1.5;
 `
 
 const CountdownStrip = styled.div`
