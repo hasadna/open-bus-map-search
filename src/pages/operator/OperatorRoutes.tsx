@@ -209,7 +209,6 @@ const RouteGroup = ({ group, operatorId }: { group: RouteGroup; operatorId?: str
                 <TableCell padding="none" />
                 <TableCell>{t('operator.destination')}</TableCell>
                 <TableCell />
-                <TableCell />
               </TableRow>
             </TableHead>
             <TableBody>
@@ -220,8 +219,12 @@ const RouteGroup = ({ group, operatorId }: { group: RouteGroup; operatorId?: str
                     <DirectionArrow fontSize="inherit" sx={{ opacity: 0.5, display: 'block' }} />
                   </TableCell>
                   <TableCell>{route.end}</TableCell>
-                  <TableCell>{profileLink(route)}</TableCell>
-                  <TableCell>{mapLink(route)}</TableCell>
+                  <TableCell>
+                    <Box sx={{ display: 'flex', gap: 2 }}>
+                      {profileLink(route)}
+                      {mapLink(route)}
+                    </Box>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
