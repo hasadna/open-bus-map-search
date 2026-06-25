@@ -14,10 +14,10 @@ import {
   TextField,
   Typography,
 } from '@mui/material'
+import { alpha, styled } from '@mui/material/styles'
 import { useContext, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useNavigate } from 'react-router'
-import styled from 'styled-components'
 import { useDebounceValue } from 'usehooks-ts'
 import { GlobalSearchContext } from 'src/model/globalState'
 import { ISRAEL_TRAIN_ID } from 'src/model/operator'
@@ -235,7 +235,7 @@ const RouteGroup = ({ group, operatorId }: { group: RouteGroup; operatorId?: str
   )
 }
 
-const StackedRoute = styled.div`
+const StackedRoute = styled('div')`
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
@@ -247,12 +247,12 @@ const StackedRoute = styled.div`
   }
 `
 
-const StackedTable = styled.table`
+const StackedTable = styled('table')`
   border-collapse: collapse;
   width: 100%;
 `
 
-const StackedLabelCell = styled.td`
+const StackedLabelCell = styled('td')`
   opacity: 0.6;
   vertical-align: top;
   white-space: nowrap;
@@ -260,32 +260,32 @@ const StackedLabelCell = styled.td`
   padding-inline-end: 0.5rem;
 `
 
-const StackedValueCell = styled.td`
+const StackedValueCell = styled('td')`
   vertical-align: top;
 `
 
-const StackedActions = styled.div`
+const StackedActions = styled('div')`
   display: flex;
   gap: 1rem;
   margin-top: 0.15rem;
 `
 
-const LineLabel = styled.strong`
+const LineLabel = styled('strong')`
   min-width: 3rem;
   font-size: 1.1rem;
 `
 
-const RouteCount = styled.span`
-  background-color: #e3f2fd;
-  color: #1565c0;
-  border-radius: 12px;
-  padding: 2px 10px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  white-space: nowrap;
-`
+const RouteCount = styled('span')(({ theme }) => ({
+  backgroundColor: alpha(theme.palette.primary.main, 0.12),
+  color: theme.palette.primary.main,
+  borderRadius: 12,
+  padding: '2px 10px',
+  fontSize: '0.75rem',
+  fontWeight: 600,
+  whiteSpace: 'nowrap',
+}))
 
-const TitleCount = styled.span`
+const TitleCount = styled('span')`
   display: block;
   font-size: 0.875rem;
   font-weight: normal;
