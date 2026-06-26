@@ -1,14 +1,12 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
-import { POSTPONED, REGISTRATION_CLOSE_ISO, REGISTRATION_FORM_URL } from './challenges'
+import { REGISTRATION_CLOSE_ISO, REGISTRATION_FORM_URL } from './challenges'
 import { computeTimeLeft } from './Countdown'
 
 const RegistrationEmbed = () => {
   const { t } = useTranslation()
-  const [isClosed, setIsClosed] = useState(
-    () => !POSTPONED && computeTimeLeft(REGISTRATION_CLOSE_ISO).isClosed,
-  )
+  const [isClosed, setIsClosed] = useState(() => computeTimeLeft(REGISTRATION_CLOSE_ISO).isClosed)
 
   useEffect(() => {
     if (isClosed) return
