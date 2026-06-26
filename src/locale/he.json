@@ -91,15 +91,18 @@
       "month": "חודשית",
       "year": "שנתית"
     },
-    "all_lines": "כל המסלולים",
-    "line": "קו",
+    "all_lines_on_date": "כל הקווים בתאריך זה",
     "profile": "פרופיל",
     "map": "מפה",
     "id": "מזהה טכני",
     "origin": "מוצא",
     "destination": "יעד",
-    "total": "סך כל המסלולים",
-    "statistics": "סטטיסטיקה"
+    "statistics": "סטטיסטיקה",
+    "routes_count": "{{count}} מסלולים",
+    "routes_in_lines": "{{routes}} מסלולים ב-{{lines}} קווים",
+    "search_placeholder": "חיפוש קו, מוצא או יעד",
+    "no_results": "לא נמצאו מסלולים תואמים",
+    "clear": "ניקוי החיפוש"
   },
   "line_placeholder": "לדוגמה: 17א",
   "line_not_found": "הקו לא נמצא",
