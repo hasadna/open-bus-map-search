@@ -39,8 +39,6 @@ async function fetchGroupBy({
     dateFrom: dateFrom.toDate(),
     dateTo: dateTo.toDate(),
     groupBy,
-    excludeHoursFrom: 23,
-    excludeHoursTo: 2,
   })
 
   return data
