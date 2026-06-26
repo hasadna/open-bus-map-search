@@ -10,10 +10,6 @@ permissions:
   contents: read
   statuses: write
 
-# Applitools concurrency is a global, org-wide limit shared across all PRs/commits.
-# Group runs per PR (or per branch for pushes to main) so back-to-back commits don't
-# flood the shared queue. Newer commits on a PR cancel the in-flight run; pushes to
-# main queue rather than cancel. See https://github.com/hasadna/open-bus-map-search/pull/1682
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}

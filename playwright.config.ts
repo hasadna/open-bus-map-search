@@ -48,11 +48,6 @@ export default defineConfig<EyesFixture>({
         name: process.env.APPLITOOLS_BATCH_NAME ?? `Visual Tests - ${gitUser()}`,
         id: process.env.APPLITOOLS_BATCH_ID,
       },
-      // Safari/iOS environments are intentionally dropped: Applitools concurrency is a
-      // global, org-wide limit (~10 units, shared across all PRs/commits). Halving the
-      // environments to Desktop & Mobile Chrome keeps the per-commit test count within
-      // that budget so runs don't back up the global queue and hit Playwright's teardown
-      // timeout. See https://github.com/hasadna/open-bus-map-search/pull/1682
       browsersInfo: [
         { width: 1280, height: 720, name: 'chrome' },
         { chromeEmulationInfo: { deviceName: 'Galaxy S23' } },
