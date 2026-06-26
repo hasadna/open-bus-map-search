@@ -98,6 +98,12 @@ export const ThemeProvider = ({ children }: PropsWithChildren) => {
     dayjs.locale(language)
   }, [language, i18n])
 
+  // Expose the active theme as a body-level class so styled-components and
+  // plain CSS can target dark mode via `.dark &` / `.dark .foo` selectors.
+  useEffect(() => {
+    document.body.classList.toggle('dark', !!isDarkTheme)
+  }, [isDarkTheme])
+
   const muiTheme = useMemo(() => {
     const langConfig = {
       he: { direction: 'rtl', muiLocale: heIL, dateLocale: dateHeIL },

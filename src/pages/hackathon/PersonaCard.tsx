@@ -40,6 +40,11 @@ const Card = styled.div`
   border: 1px solid rgba(0, 0, 0, 0.08);
   background: var(--card-bg, #fff);
   height: 100%;
+
+  .dark & {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
 `
 
 const Emoji = styled.span`
