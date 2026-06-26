@@ -15,7 +15,7 @@ test.describe('Homepage', () => {
   })
 
   test('shows bus illustration image', async ({ page }) => {
-    await expect(page.getByAltText('Public Transportaion Bus Illustration')).toBeVisible()
+    await expect(page.getByAltText('איור של אוטובוס תחבורה ציבורית')).toBeVisible()
   })
 
   test('shows links to all main pages', async ({ page }) => {

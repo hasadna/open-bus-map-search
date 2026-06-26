@@ -17,6 +17,8 @@ env:
   APPLITOOLS_BATCH_ID: ${{ github.event.pull_request.head.sha }}
   APPLITOOLS_LOG_DIR: ./logs
   APPLITOOLS_SHOW_LOGS: true
+  APPLITOOLS_MASK_LOG: true # mask the API key (and tokens) in Applitools logs
+  APPLITOOLS_MASK_VALUES: ${{ secrets.APPLITOOLS_API_KEY }} # seed the mask set at logger startup so the key is hidden even in the early config dump
 
 jobs:
   local-tests:
@@ -51,6 +53,76 @@ jobs:
       - name: Check for circular dependencies
         run: npx madge --extensions js,ts --circular .
 
+  # Should block merge (required status check): a PR must not introduce new vulnerable dependencies.
+  dependency-review:
+    name: Dependency Review
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    permissions:
+      contents: read
+      # Needed for comment-summary-in-pr; on fork PRs the token stays read-only
+      # and the action falls back to the job summary instead of a comment.
+      pull-requests: write
+      # deleteComment (the success-path cleanup) is gated on Issues:write even for
+      # comments on a PR; pull-requests:write only covers create/update.
+      issues: write
+    steps:
+      - uses: actions/checkout@v6
+      - name: Review dependency changes introduced by this PR
+        id: review
+        uses: actions/dependency-review-action@v5
+        with:
+          fail-on-severity: low
+          comment-summary-in-pr: on-failure
+          # Exception policy: a GHSA may be allowlisted below only if
+          #   - severity is low or moderate (never high/critical), AND
+          #   - there is no patched version / alternative package, AND
+          #   - the entry has a justification.
+          # allow-ghsas: GHSA-xxxx-xxxx-xxxx # <why it's acceptable>
+      - name: Allowlist help comment
+        # On failure: post a short how-to. On success: delete both this help comment
+        # and the action's own summary, so a fixed PR cleans up after itself.
+        if: always() && github.event_name == 'pull_request'
+        continue-on-error: true # never let the comment housekeeping fail the gate (e.g. read-only token on fork PRs)
+        uses: actions/github-script@v8 # v8 runs on node24 (v7 was node20, deprecated)
+        env:
+          REVIEW_OUTCOME: ${{ steps.review.outcome }}
+        with:
+          script: |
+            const helpMarker = '<!-- dep-review-allowlist-help -->'
+            const reviewMarker = '<!-- dependency-review-pr-comment-marker -->' // the action's own sticky marker
+            const { owner, repo } = context.repo
+            const issue_number = context.issue.number
+            const comments = await github.paginate(github.rest.issues.listComments, { owner, repo, issue_number })
+            const find = (m) => comments.find((c) => c.body && c.body.includes(m))
+
+            if (process.env.REVIEW_OUTCOME === 'failure') {
+              const body = [
+                helpMarker,
+                '### A dependency this PR adds is flagged 🛑',
+                '',
+                'Best fix: bump it to a patched version so the advisory is gone.',
+                '',
+                "If there's no patch and a reviewer approves:",
+                'grab the `GHSA-…` id from the advisory link in the summary above (it only lives there),',
+                'and add it under `allow-ghsas` in `.github/workflows/validate.yaml`, with a reason why it is OK to allow it:',
+                '',
+                '```yaml',
+                '          allow-ghsas: GHSA-xxxx-xxxx-xxxx # why it is OK',
+                '```',
+                '',
+                'On your way, feel free to delete any `allow-ghsas` lines that existed before this PR - (they are only needed on PR merge).',
+              ].join('\n')
+              const existing = find(helpMarker)
+              if (existing) await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body })
+              else await github.rest.issues.createComment({ owner, repo, issue_number, body })
+            } else if (process.env.REVIEW_OUTCOME === 'success') {
+              for (const m of [helpMarker, reviewMarker]) {
+                const c = find(m)
+                if (c) await github.rest.issues.deleteComment({ owner, repo, comment_id: c.id })
+              }
+            }
+
   build:
     name: Docker Build
     runs-on: ubuntu-latest
@@ -59,9 +131,9 @@ jobs:
       - name: Generate hash.txt with commit hash
         run: echo "$(git rev-parse --short HEAD)" >> public/hash.txt
       - name: Setup Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
       - name: Build and export Docker image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           tags: ${{ env.DOCKER_APP_IMAGE_NAME }}:${{ env.DOCKER_APP_IMAGE_TAG }}
@@ -140,7 +212,7 @@ jobs:
           echo "version=$(node -p 'require("@playwright/test/package.json").version')" >> "$GITHUB_OUTPUT"
           echo "imageos=$ImageOS" >> "$GITHUB_OUTPUT"
       - name: Cache Playwright browsers
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         id: playwright-cache
         with:
           path: ~/.cache/ms-playwright
@@ -222,6 +294,20 @@ jobs:
       - name: Prepare for Testing
         run: |
           echo "SHORT_SHA=$(echo ${{ github.event.pull_request.head.sha }} | cut -c1-7)" >> $GITHUB_ENV
+      # Visual tests must run against the nginx-served Docker artifact (with the
+      # production CSP/security headers), not the bare Vite dev server. Start the
+      # container on :3000 so Playwright's webServer (reuseExistingServer) reuses
+      # it instead of spinning up `npm start`. Otherwise CSP regressions (e.g. a
+      # missing connect-src breaking MSW-mocked stories) go undetected.
+      - name: Download Docker image artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: docker-image
+          path: /tmp
+      - name: Load Docker image
+        run: docker load -i /tmp/docker-image.tar
+      - name: Start application container
+        run: docker run -d -p 3000:80 ${{ env.DOCKER_APP_IMAGE_NAME }}:${{ env.DOCKER_APP_IMAGE_TAG }}
       - uses: actions/setup-node@v6
         with:
           node-version: 24
@@ -234,7 +320,7 @@ jobs:
           echo "version=$(node -p 'require("@playwright/test/package.json").version')" >> "$GITHUB_OUTPUT"
           echo "imageos=$ImageOS" >> "$GITHUB_OUTPUT"
       - name: Cache Playwright browsers
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         id: playwright-cache
         with:
           path: ~/.cache/ms-playwright
@@ -283,16 +369,13 @@ jobs:
           name: playwright-test
           path: test-results
       - name: Publish test results to S3
-        uses: shallwefootball/s3-upload-action@master
         if: always() && env.AWS_KEY_ID != ''
-        id: s3-trace
         continue-on-error: true
-        with:
-          aws_key_id: ${{env.AWS_KEY_ID}}
-          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
-          aws_bucket: noam-gaash.co.il
-          source_dir: test-results
-          destination_dir: ${{ github.run_id }}/open-bus/${{ github.event.pull_request.head.sha }}/test-results
+        env:
+          AWS_ACCESS_KEY_ID: ${{ env.AWS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: us-east-1
+        run: aws s3 cp test-results 's3://noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.event.pull_request.head.sha }}/test-results' --recursive --acl public-read --only-show-errors
       - name: Set commit status for test results
         uses: myrotvorets/set-commit-status-action@master
         if: always() && env.AWS_KEY_ID != ''

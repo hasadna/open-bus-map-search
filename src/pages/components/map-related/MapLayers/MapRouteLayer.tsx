@@ -1,74 +1,79 @@
 import type { Layer } from 'leaflet'
-import { useCallback, useMemo, useRef } from 'react'
+import { Fragment, useCallback, useRef } from 'react'
 import { Marker, Polyline, Popup } from 'react-leaflet'
 import { useAgencyList } from 'src/hooks/useAgencyList'
 import { busIcon, busIconPath } from '../../utils/BusIcon'
-import type { Point } from '../map-types'
-import { actualRouteLineColor, actualRouteStopMarker } from '../MapContent'
+import type { PositionGroup } from '../map-types'
+import { actualRouteStopMarker } from '../MapContent'
 import { BusToolTip } from './BusToolTip'
 import BusToolTipFooter from './BusToolTipFooter'
 
 interface MapRouteLayerProps {
-  positions: Point[]
+  positionGroups: PositionGroup[]
   showNavigationButtons?: boolean
-  navigateMarkers: (id: number, marker: Layer) => void
+  navigateMarkers: (groupIndex: number, id: number, marker: Layer) => void
 }
 
 export function MapRouteLayer({
-  positions,
+  positionGroups,
   showNavigationButtons,
   navigateMarkers,
 }: MapRouteLayerProps) {
-  const markerRef = useRef<{ [key: number]: Layer | null }>({})
+  const markerRef = useRef<{ [key: string]: Layer | null }>({})
   const agencyList = useAgencyList()
 
-  const markerIdsByPositionId = useMemo(() => {
-    const markerIds = positions.map((_, index) => index)
-    return new Map(markerIds.map((markerId) => [markerId, markerIds]))
-  }, [positions])
-
   const navigateToMarker = useCallback(
-    (id: number) => {
-      if (markerRef.current[id]) navigateMarkers(id, markerRef.current[id])
+    (groupIndex: number, id: number) => {
+      const key = `${groupIndex}-${id}`
+      if (markerRef.current[key]) navigateMarkers(groupIndex, id, markerRef.current[key])
     },
     [navigateMarkers],
   )
 
   return (
     <>
-      <Polyline
-        pathOptions={{ color: actualRouteLineColor }}
-        positions={positions.map((position) => position.loc)}
-      />
-
-      {positions.map((pos, i) => {
-        const icon =
-          i === 0
-            ? busIcon({
-                operator_id: pos.operator?.toString() || 'default',
-                name: agencyList.find((agency) => agency.operatorRef === pos.operator)?.agencyName,
-              })
-            : actualRouteStopMarker
+      {positionGroups.map((group, groupIndex) => {
+        const markerIds = group.positions.map((_, i) => i)
         return (
-          <Marker
-            ref={(ref) => {
-              markerRef.current[i] = ref
-            }}
-            position={pos.loc}
-            icon={icon}
-            key={i}>
-            <Popup minWidth={300} maxWidth={700}>
-              <BusToolTip position={pos} icon={busIconPath(pos.operator!)}>
-                {showNavigationButtons && (
-                  <BusToolTipFooter
-                    currentMarkerId={i}
-                    markerIds={markerIdsByPositionId.get(i) || []}
-                    navigateToMarker={navigateToMarker}
-                  />
-                )}
-              </BusToolTip>
-            </Popup>
-          </Marker>
+          <Fragment key={groupIndex}>
+            <Polyline
+              pathOptions={{ color: group.color }}
+              positions={group.positions.map((p) => p.loc)}
+            />
+            {group.positions.map((pos, i) => {
+              const markerKey = `${groupIndex}-${i}`
+              const icon =
+                i === 0
+                  ? busIcon({
+                      // eslint-disable-next-line i18next/no-literal-string -- icon lookup key, not user text
+                      operator_id: pos.operator?.toString() || 'default',
+                      name: agencyList.find((agency) => agency.operatorRef === pos.operator)
+                        ?.agencyName,
+                    })
+                  : actualRouteStopMarker
+              return (
+                <Marker
+                  ref={(ref) => {
+                    markerRef.current[markerKey] = ref
+                  }}
+                  position={pos.loc}
+                  icon={icon}
+                  key={markerKey}>
+                  <Popup minWidth={300} maxWidth={700}>
+                    <BusToolTip position={pos} icon={busIconPath(pos.operator!)}>
+                      {showNavigationButtons && (
+                        <BusToolTipFooter
+                          currentMarkerId={i}
+                          markerIds={markerIds}
+                          navigateToMarker={(id) => navigateToMarker(groupIndex, id)}
+                        />
+                      )}
+                    </BusToolTip>
+                  </Popup>
+                </Marker>
+              )
+            })}
+          </Fragment>
         )
       })}
     </>

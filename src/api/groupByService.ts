@@ -3,6 +3,7 @@ import {
   GtfsRidesAggGroupByPydanticModel,
 } from '@hasadna/open-bus-api-client'
 import { useQuery } from '@tanstack/react-query'
+import type { Dayjs } from 'src/dayjs'
 import { getAgencyList } from './agencyList'
 import { AGGREGATIONS_API } from './apiConfig'
 
@@ -27,16 +28,16 @@ async function fetchGroupBy({
   dateFrom,
   groupBy,
 }: {
-  dateTo: number
-  dateFrom: number
+  dateTo: Dayjs
+  dateFrom: Dayjs
   groupBy: groupByFields
 }): Promise<GroupByRes[]> {
   const agencies = await getAgencyList()
 
   // example: https://open-bus-stride-api.hasadna.org.il/gtfs_rides_agg/group_by?date_from=2023-01-27&date_to=2023-01-29&group_by=operator_ref
   const data = await AGGREGATIONS_API.byGtfsRidesAggGroupByGet({
-    dateFrom: new Date(dateFrom),
-    dateTo: new Date(dateTo),
+    dateFrom: dateFrom.toDate(),
+    dateTo: dateTo.toDate(),
     groupBy,
   })
 
@@ -52,12 +53,12 @@ export function useGroupBy({
   dateTo,
   groupBy,
 }: {
-  dateTo: number
-  dateFrom: number
+  dateTo: Dayjs
+  dateFrom: Dayjs
   groupBy: groupByFields
 }) {
   const { isLoading, isError, data, error } = useQuery({
-    queryKey: ['groupBy', dateFrom, dateTo, groupBy],
+    queryKey: ['groupBy', dateFrom.toISOString(), dateTo.toISOString(), groupBy],
     queryFn: () => fetchGroupBy({ dateFrom, dateTo, groupBy }),
   })
 

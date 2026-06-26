@@ -11,7 +11,13 @@ import {
   LineChartOutlined,
   RadarChartOutlined,
 } from '@ant-design/icons'
-import { DirectionsBusOutlined, MapOutlined, Psychology, RouteOutlined } from '@mui/icons-material'
+import {
+  AirportShuttle,
+  DirectionsBusOutlined,
+  MapOutlined,
+  Psychology,
+  RouteOutlined,
+} from '@mui/icons-material'
 import { lazy } from 'react'
 import { createBrowserRouter, createRoutesFromElements, Navigate, Route } from 'react-router'
 import { getRouteById } from 'src/api/gtfsService'
@@ -30,6 +36,7 @@ const TimelinePage = lazy(() => import('../pages/historicTimeline'))
 const GapsPage = lazy(() => import('../pages/gaps'))
 const TimeBasedMapPage = lazy(() => import('../pages/timeBasedMap'))
 const SingleLineMapPage = lazy(() => import('../pages/singleLineMap'))
+const VehiclePage = lazy(() => import('../pages/vehicle'))
 const About = lazy(() => import('../pages/about'))
 const Operator = lazy(() => import('../pages/operator'))
 const Profile = lazy(() => import('../pages/lineProfile/LineProfile'))
@@ -83,6 +90,13 @@ export const PAGES = [
     searchParamsRequired: true,
     icon: <RouteOutlined />,
     element: <SingleLineMapPage />,
+  },
+  {
+    label: 'vehicle_page_title',
+    path: '/vehicle',
+    searchParamsRequired: true,
+    icon: <AirportShuttle />,
+    element: <VehiclePage />,
   },
   {
     label: 'operator_title',

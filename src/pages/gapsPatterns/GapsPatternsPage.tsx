@@ -17,7 +17,7 @@ import {
 import dayjs from 'src/dayjs'
 import { useDate } from 'src/hooks/useDate'
 import { GlobalSearchContext } from 'src/model/globalState'
-import { ExtraShareParamsContext, InitialUrlParamsContext } from 'src/model/routeContext'
+import { InitialUrlParamsContext, PageShareParamsContext } from 'src/model/routeContext'
 import { INPUT_SIZE } from 'src/resources/sizes'
 import SkeletonLoader from 'src/shared/SkeletonLoader'
 import Widget from 'src/shared/Widget'
@@ -68,13 +68,7 @@ const CustomTooltip = ({ active, payload }: TooltipContentProps) => {
 
 function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatisticsProps) {
   const [sortingMode, setSortingMode] = useState<'hour' | 'severity'>('hour')
-  const hourlyData = useGapsList(
-    fromDate.valueOf(),
-    toDate.valueOf(),
-    operatorRef,
-    lineRef,
-    sortingMode,
-  )
+  const hourlyData = useGapsList(fromDate, toDate, operatorRef, lineRef, sortingMode)
   const isLoading = !hourlyData.length
   const { t } = useTranslation()
   const maxHourlyRides = Math.max(
@@ -165,7 +159,9 @@ const GapsPatternsPage = () => {
     initialUrlParams.endDate ? dayjs(initialUrlParams.endDate) : now.clone().subtract(1, 'day'),
   )
   const { search, setSearch } = useContext(GlobalSearchContext)
-  const { setParams } = useContext(ExtraShareParamsContext)
+  // LEGACY: manual share-param injection — replace with usePageState's per-page
+  // persistent `params` when this page is migrated.
+  const { setParams } = useContext(PageShareParamsContext)
 
   useEffect(() => {
     setParams({
