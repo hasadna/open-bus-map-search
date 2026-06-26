@@ -502,22 +502,18 @@
       "days": "Days",
       "hours": "Hours",
       "minutes": "Minutes",
-      "seconds": "Seconds",
-      "postponedNote": "(glitched — date unknown)"
+      "seconds": "Seconds"
     },
-    "postponementBanner": "🚀 The hackathon is temporarily postponed due to Iranian missile fire. It will happen — once things calm down. Pre-register now and we'll notify you when the new date is set.",
     "hero": {
       "title": "Databus Hackathon",
       "subtitle": "One evening, challenges for every level, open source for Israeli public transit.",
       "audience": "Developers, designers, Ministry of Transport, bus operators, NPOs, domain experts — all welcome",
-      "date": "Tue, June 9 2026, 18:00–21:30",
-      "dateTBD": "📅 Date TBD — we'll announce once the skies clear 🚀",
+      "date": "Tue, July 21 2026, 18:00–21:30",
       "location": "Applitools, One Towers, Ramat Gan (10 min from Savidor train station)",
       "partner": "Sponsored by Applitools",
+      "rescheduledNotice": "New date: the hackathon has been rescheduled to July 21, 2026. Already registered? You're all set — no need to sign up again, we'll be in touch. New here? Register below.",
       "countdownLabel": "Registration closes in",
-      "countdownLabelPostponed": "Countdown status:",
-      "cta": "Sign up",
-      "ctaPostponed": "Pre-register for the next date"
+      "cta": "Sign up"
     },
     "personas": {
       "title": "Who is this for?",
@@ -758,8 +754,7 @@
     },
     "registration": {
       "title": "Registration",
-      "body": "Filling in the form below is mandatory to participate. Submitting the form is not enough — your registration is only confirmed once you receive an approval email from us. We confirm registrations manually so we can assign you to the right team. Registration closes June 3 at midnight.",
-      "bodyPostponed": "Leave your details — we'll reach out once the new date is confirmed."
+      "body": "Filling in the form below is mandatory to participate. Submitting the form is not enough — your registration is only confirmed once you receive an approval email from us. We confirm registrations manually so we can assign you to the right team. Registration closes July 20 at midnight. Heads up: we already have many registrants, so there's a good chance we'll have to turn down new registrations. If it's important to you to take part, tell us why in the form so we can prioritize you."
     },
     "faq": {
       "title": "FAQ",
