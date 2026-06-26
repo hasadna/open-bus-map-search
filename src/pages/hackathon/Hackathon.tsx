@@ -1,10 +1,10 @@
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import styled, { keyframes } from 'styled-components'
+import styled from 'styled-components'
 import DonateModal from 'src/pages/DonateModal/DonateModal'
 import Widget from 'src/shared/Widget'
 import ChallengeCard from './ChallengeCard'
-import { CHALLENGES, ChallengeTier, POSTPONED, REGISTRATION_CLOSE_ISO, Track } from './challenges'
+import { CHALLENGES, ChallengeTier, REGISTRATION_CLOSE_ISO, Track } from './challenges'
 import Countdown from './Countdown'
 import PersonaCard, { PERSONAS } from './PersonaCard'
 import RegistrationEmbed from './RegistrationEmbed'
@@ -24,6 +24,15 @@ const TRACK_ACCENT: Record<Track, string> = {
   'ai-readiness': '#0f766e',
   mapping: '#92400e',
   data: '#1e3a5f',
+}
+
+// Lightened accents for dark mode — the light-theme accents are too dark to
+// read as text or borders against a dark surface.
+const TRACK_ACCENT_DARK: Record<Track, string> = {
+  harness: '#94a3b8',
+  'ai-readiness': '#5eead4',
+  mapping: '#fdba74',
+  data: '#93c5fd',
 }
 
 const MENTORS = [
@@ -67,39 +76,20 @@ const Hackathon = () => {
 
   return (
     <>
-      {POSTPONED && (
-        <>
-          <Rocket $dur={9} $delay={0} aria-hidden="true">
-            <RocketBody $size="2rem">🚀</RocketBody>
-          </Rocket>
-          <Rocket $dur={13} $delay={4} aria-hidden="true">
-            <RocketBody $size="1.5rem">🚀</RocketBody>
-          </Rocket>
-          <Rocket $dur={11} $delay={8} aria-hidden="true">
-            <RocketBody $size="1.8rem">🚀</RocketBody>
-          </Rocket>
-        </>
-      )}
       <Page>
         <Hero>
           <Title>{t('hackathonPage.hero.title')}</Title>
           <Subtitle>{t('hackathonPage.hero.subtitle')}</Subtitle>
-          {POSTPONED && (
-            <PostponementBanner>{t('hackathonPage.postponementBanner')}</PostponementBanner>
-          )}
           <Audience>{t('hackathonPage.hero.audience')}</Audience>
           <Meta>
-            <span>
-              {POSTPONED ? t('hackathonPage.hero.dateTBD') : `📅 ${t('hackathonPage.hero.date')}`}
-            </span>
+            <span>📅 {t('hackathonPage.hero.date')}</span>
             <span>📍 {t('hackathonPage.hero.location')}</span>
             <span>🤝 {t('hackathonPage.hero.partner')}</span>
           </Meta>
-          <CtaLink href="#register">
-            {POSTPONED ? t('hackathonPage.hero.ctaPostponed') : t('hackathonPage.hero.cta')}
-          </CtaLink>
+          <RescheduledNotice>{t('hackathonPage.hero.rescheduledNotice')}</RescheduledNotice>
+          <CtaLink href="#register">{t('hackathonPage.hero.cta')}</CtaLink>
           <CountdownStrip>
-            {!POSTPONED && <span>{t('hackathonPage.hero.countdownLabel')}</span>}
+            <span>{t('hackathonPage.hero.countdownLabel')}</span>
             <Countdown targetIso={REGISTRATION_CLOSE_ISO} variant="compact" />
           </CountdownStrip>
         </Hero>
@@ -128,7 +118,11 @@ const Hackathon = () => {
           <p>{t('hackathonPage.paths.intro')}</p>
           <PathGrid>
             {TRACKS.map((track) => (
-              <PathCard key={track} $accent={TRACK_ACCENT[track]} href={`#track-${track}`}>
+              <PathCard
+                key={track}
+                $accent={TRACK_ACCENT[track]}
+                $accentDark={TRACK_ACCENT_DARK[track]}
+                href={`#track-${track}`}>
                 <PathCardName>{tx(`hackathonPage.track.${track}`)}</PathCardName>
                 <PathCardDesc>{tx(`hackathonPage.trackDescription.${track}`)}</PathCardDesc>
                 <PathCardFooter>
@@ -174,7 +168,10 @@ const Hackathon = () => {
           </Filters>
           {challengesByTrack.map(({ track, items }) => (
             <TrackBlock key={track} $accent={TRACK_ACCENT[track]}>
-              <TrackHeader id={`track-${track}`} $accent={TRACK_ACCENT[track]}>
+              <TrackHeader
+                id={`track-${track}`}
+                $accent={TRACK_ACCENT[track]}
+                $accentDark={TRACK_ACCENT_DARK[track]}>
                 <h3>{tx(`hackathonPage.track.${track}`)}</h3>
                 <p className="track-description">{tx(`hackathonPage.trackDescription.${track}`)}</p>
               </TrackHeader>
@@ -223,17 +220,11 @@ const Hackathon = () => {
 
         <Widget title={t('hackathonPage.registration.title')}>
           <div id="register" />
-          <p>
-            {POSTPONED
-              ? t('hackathonPage.registration.bodyPostponed')
-              : t('hackathonPage.registration.body')}
-          </p>
-          {!POSTPONED && (
-            <CountdownStrip>
-              <span>{t('hackathonPage.hero.countdownLabel')}</span>
-              <Countdown targetIso={REGISTRATION_CLOSE_ISO} variant="compact" />
-            </CountdownStrip>
-          )}
+          <p>{t('hackathonPage.registration.body')}</p>
+          <CountdownStrip>
+            <span>{t('hackathonPage.hero.countdownLabel')}</span>
+            <Countdown targetIso={REGISTRATION_CLOSE_ISO} variant="compact" />
+          </CountdownStrip>
           <RegistrationEmbed />
         </Widget>
 
@@ -251,53 +242,6 @@ const Hackathon = () => {
     </>
   )
 }
-
-// ─── Rocket background (postponed mode) ───────────────────────────────────
-
-const rocketFlyby = keyframes`
-  0% {
-    transform: translate(-10vw, 100vh) rotate(0deg) scale(0.7);
-    opacity: 0;
-  }
-  10% { opacity: 1; }
-  50% {
-    transform: translate(40vw, 38vh) rotate(-15deg) scale(0.95);
-  }
-  90% { opacity: 1; }
-  100% {
-    transform: translate(110vw, -10vh) rotate(10deg) scale(0.5);
-    opacity: 0;
-  }
-`
-
-const rocketWobble = keyframes`
-  0%   { transform: translate(0, 0) rotate(0deg); }
-  25%  { transform: translate(1px, -1px) rotate(1.5deg); }
-  50%  { transform: translate(-1px, 1px) rotate(-1.5deg); }
-  75%  { transform: translate(1px, 1px) rotate(1deg); }
-  100% { transform: translate(0, 0) rotate(0deg); }
-`
-
-const Rocket = styled.div<{ $dur: number; $delay: number }>`
-  position: fixed;
-  top: 0;
-  left: 0;
-  line-height: 1;
-  pointer-events: none;
-  z-index: 0;
-  will-change: transform, opacity;
-  animation: ${rocketFlyby} ${({ $dur }) => $dur}s ease-in-out ${({ $delay }) => $delay}s infinite;
-`
-
-const RocketBody = styled.div<{ $size: string }>`
-  font-size: ${({ $size }) => $size};
-  line-height: 1;
-  animation: ${rocketWobble} 0.35s ease-in-out infinite;
-
-  @media (prefers-reduced-motion: reduce) {
-    animation: none;
-  }
-`
 
 // ─────────────────────────────────────────────────────────────────────────
 
@@ -333,36 +277,6 @@ const Subtitle = styled.p`
   max-width: 640px;
 `
 
-const bannerGlow = keyframes`
-  0%, 100% { box-shadow: 0 0 12px 2px rgba(252, 211, 77, 0.45); }
-  50%      { box-shadow: 0 0 26px 6px rgba(250, 204, 21, 0.85); }
-`
-
-const PostponementBanner = styled.div`
-  max-width: 680px;
-  padding: 16px 22px;
-  border-radius: 10px;
-  background: #fef3c7;
-  border: 1.5px solid #fcd34d;
-  font-size: clamp(17px, 2.4vw, 21px);
-  font-weight: 600;
-  line-height: 1.6;
-  color: #78350f;
-  text-align: center;
-  animation: ${bannerGlow} 2.4s ease-in-out infinite;
-
-  .dark & {
-    background: #451a03;
-    border-color: #92400e;
-    color: #fde68a;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    animation: none;
-    box-shadow: 0 0 18px 3px rgba(250, 204, 21, 0.6);
-  }
-`
-
 const Audience = styled.p`
   font-size: 14px;
   opacity: 0.75;
@@ -377,6 +291,22 @@ const Meta = styled.div`
   justify-content: center;
   font-size: 14px;
   opacity: 0.85;
+`
+
+const RescheduledNotice = styled.p`
+  max-width: 640px;
+  margin: 0;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: #fff7ed;
+  color: #9a3412;
+  font-size: 14px;
+  line-height: 1.5;
+
+  .dark & {
+    background: #431407;
+    color: #fed7aa;
+  }
 `
 
 const CountdownStrip = styled.div`
@@ -432,6 +362,10 @@ const WhyCard = styled.div`
     line-height: 1.5;
     margin: 0;
   }
+
+  .dark & {
+    background: rgba(255, 255, 255, 0.05);
+  }
 `
 
 const PathGrid = styled.div`
@@ -445,7 +379,7 @@ const PathGrid = styled.div`
   }
 `
 
-const PathCard = styled.a<{ $accent: string }>`
+const PathCard = styled.a<{ $accent: string; $accentDark: string }>`
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -465,6 +399,17 @@ const PathCard = styled.a<{ $accent: string }>`
     background: ${({ $accent }) => $accent}12;
     color: inherit;
   }
+
+  .dark & {
+    border-color: ${({ $accentDark }) => $accentDark}33;
+    border-top-color: ${({ $accentDark }) => $accentDark};
+    background: ${({ $accentDark }) => $accentDark}14;
+  }
+
+  .dark &:hover {
+    box-shadow: 0 4px 18px ${({ $accentDark }) => $accentDark}33;
+    background: ${({ $accentDark }) => $accentDark}1f;
+  }
 `
 
 const PathCardName = styled.div`
@@ -472,6 +417,10 @@ const PathCardName = styled.div`
   font-weight: 700;
   color: #111827;
   line-height: 1.3;
+
+  .dark & {
+    color: #f1f5f9;
+  }
 `
 
 const PathCardDesc = styled.div`
@@ -479,6 +428,10 @@ const PathCardDesc = styled.div`
   color: #4b5563;
   line-height: 1.6;
   flex: 1;
+
+  .dark & {
+    color: #cbd5e1;
+  }
 `
 
 const PathCardFooter = styled.div`
@@ -496,6 +449,11 @@ const PathAudienceBadge = styled.span`
   background: rgba(0, 0, 0, 0.06);
   color: #374151;
   font-weight: 500;
+
+  .dark & {
+    background: rgba(255, 255, 255, 0.1);
+    color: #e2e8f0;
+  }
 `
 
 const PathCount = styled.span`
@@ -509,6 +467,10 @@ const PathCardCta = styled.div`
   font-weight: 600;
   color: #6b7280;
   margin-top: 2px;
+
+  .dark & {
+    color: #94a3b8;
+  }
 `
 
 const ScheduleList = styled.ol`
@@ -562,13 +524,24 @@ const FilterChip = styled.button<{ $active: boolean }>`
     border-color: #1677ff;
     color: #1677ff;
   }
+
+  .dark & {
+    border-color: ${({ $active }) => ($active ? '#1677ff' : 'rgba(255, 255, 255, 0.18)')};
+    background: ${({ $active }) => ($active ? 'rgba(22, 119, 255, 0.18)' : 'transparent')};
+    color: ${({ $active }) => ($active ? '#69b1ff' : '#cbd5e1')};
+  }
+
+  .dark &:hover {
+    border-color: #69b1ff;
+    color: #69b1ff;
+  }
 `
 
 const TrackBlock = styled.div<{ $accent: string }>`
   margin-top: 24px;
 `
 
-const TrackHeader = styled.div<{ $accent: string }>`
+const TrackHeader = styled.div<{ $accent: string; $accentDark: string }>`
   padding: 10px 14px;
   border-radius: 8px;
   background: ${({ $accent }) => $accent}12;
@@ -587,6 +560,19 @@ const TrackHeader = styled.div<{ $accent: string }>`
     color: #6b7280;
     line-height: 1.6;
     margin: 6px 0 0;
+  }
+
+  .dark & {
+    background: ${({ $accentDark }) => $accentDark}1f;
+    border-inline-start-color: ${({ $accentDark }) => $accentDark};
+  }
+
+  .dark & h3 {
+    color: ${({ $accentDark }) => $accentDark};
+  }
+
+  .dark & .track-description {
+    color: #cbd5e1;
   }
 `
 
@@ -626,6 +612,15 @@ const MentorCard = styled.div`
   &:hover {
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
   }
+
+  .dark & {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .dark &:hover {
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  }
 `
 
 const MentorEmoji = styled.div`
@@ -637,6 +632,10 @@ const MentorName = styled.div`
   font-size: 15px;
   font-weight: 600;
   color: #111827;
+
+  .dark & {
+    color: #f1f5f9;
+  }
 `
 
 const MentorRole = styled.div`
@@ -644,6 +643,10 @@ const MentorRole = styled.div`
   color: #6b7280;
   line-height: 1.4;
   text-align: center;
+
+  .dark & {
+    color: #94a3b8;
+  }
 `
 
 const NonDevBlock = styled.div`
@@ -716,6 +719,10 @@ const SponsorCallout = styled.div`
     margin: 0;
     line-height: 1.6;
     font-size: 15px;
+  }
+
+  .dark & {
+    border-color: rgba(255, 255, 255, 0.2);
   }
 `
 
