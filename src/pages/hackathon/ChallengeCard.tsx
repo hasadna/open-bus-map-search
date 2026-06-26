@@ -137,6 +137,16 @@ const Card = styled.div<{ $border: string }>`
   &:hover {
     box-shadow: 0 2px 14px rgba(0, 0, 0, 0.07);
   }
+
+  .dark & {
+    background: #1b1d21;
+    border-color: rgba(255, 255, 255, 0.1);
+    border-inline-start-color: ${({ $border }) => $border};
+  }
+
+  .dark &:hover {
+    box-shadow: 0 2px 14px rgba(0, 0, 0, 0.5);
+  }
 `
 
 const Toggle = styled.div`
@@ -188,6 +198,11 @@ const TimePill = styled(PillBase)`
   background: #f3f4f6;
   font-weight: 500;
   margin-inline-start: auto;
+
+  .dark & {
+    color: #cbd5e1;
+    background: rgba(255, 255, 255, 0.08);
+  }
 `
 
 const Chevron = styled.span<{ $open: boolean }>`
@@ -205,6 +220,10 @@ const CardTitle = styled.div`
   color: #111827;
   line-height: 1.4;
   overflow-wrap: break-word;
+
+  .dark & {
+    color: #f1f5f9;
+  }
 `
 
 const OneLiner = styled.div`
@@ -212,6 +231,10 @@ const OneLiner = styled.div`
   color: #6b7280;
   line-height: 1.4;
   overflow-wrap: break-word;
+
+  .dark & {
+    color: #94a3b8;
+  }
 `
 
 const ExpandRegion = styled.div<{ $open: boolean }>`
@@ -243,6 +266,11 @@ const ExpandContent = styled.div<{ $open: boolean }>`
     color: #374151;
     overflow-wrap: break-word;
   }
+
+  .dark & p,
+  .dark & ul {
+    color: #cbd5e1;
+  }
 `
 
 const ShipBox = styled.div`
@@ -251,6 +279,10 @@ const ShipBox = styled.div`
   padding: 10px 13px;
   margin-bottom: 12px;
   border-inline-start: 3px solid #3b82f6;
+
+  .dark & {
+    background: rgba(59, 130, 246, 0.12);
+  }
 `
 
 const ShipMeta = styled.div`
@@ -260,12 +292,20 @@ const ShipMeta = styled.div`
   text-transform: uppercase;
   letter-spacing: 0.06em;
   margin-bottom: 4px;
+
+  .dark & {
+    color: #93c5fd;
+  }
 `
 
 const ShipText = styled.div`
   font-size: 13.5px;
   line-height: 1.55;
   color: #1e40af;
+
+  .dark & {
+    color: #bfdbfe;
+  }
 `
 
 const TwoCol = styled.div`
@@ -294,6 +334,10 @@ const FieldValue = styled.div`
   font-size: 13.5px;
   line-height: 1.5;
   color: #374151;
+
+  .dark & {
+    color: #cbd5e1;
+  }
 `
 
 const TagRow = styled.div`
@@ -309,12 +353,21 @@ const StackTag = styled.span`
   border-radius: 5px;
   color: #374151;
   font-weight: 500;
+
+  .dark & {
+    background: rgba(255, 255, 255, 0.08);
+    color: #cbd5e1;
+  }
 `
 
 const Hr = styled.hr`
   border: none;
   border-top: 1px solid #f3f4f6;
   margin: 0 0 12px;
+
+  .dark & {
+    border-top-color: rgba(255, 255, 255, 0.1);
+  }
 `
 
 const Section = styled.div`
@@ -340,6 +393,10 @@ const ExtLink = styled.a`
   &:hover {
     text-decoration: underline;
   }
+
+  .dark & {
+    color: #69b1ff;
+  }
 `
 
 const DoneList = styled.ul`
@@ -356,6 +413,10 @@ const DoneItem = styled.li`
   color: #374151;
   line-height: 1.55;
   margin-bottom: 4px;
+
+  .dark & {
+    color: #cbd5e1;
+  }
 `
 
 const Check = styled.span`
@@ -372,6 +433,14 @@ const NextBox = styled.div`
   p {
     color: #6b7280;
     font-size: 13px;
+  }
+
+  .dark & {
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .dark & p {
+    color: #94a3b8;
   }
 `
 

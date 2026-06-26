@@ -26,6 +26,15 @@ const TRACK_ACCENT: Record<Track, string> = {
   data: '#1e3a5f',
 }
 
+// Lightened accents for dark mode — the light-theme accents are too dark to
+// read as text or borders against a dark surface.
+const TRACK_ACCENT_DARK: Record<Track, string> = {
+  harness: '#94a3b8',
+  'ai-readiness': '#5eead4',
+  mapping: '#fdba74',
+  data: '#93c5fd',
+}
+
 const MENTORS = [
   { id: 'noam', nameHe: 'נועם', nameEn: 'Noam', emoji: '🧭' },
   { id: 'aviv', nameHe: 'אביב', nameEn: 'Aviv', emoji: '⚡' },
@@ -109,7 +118,11 @@ const Hackathon = () => {
           <p>{t('hackathonPage.paths.intro')}</p>
           <PathGrid>
             {TRACKS.map((track) => (
-              <PathCard key={track} $accent={TRACK_ACCENT[track]} href={`#track-${track}`}>
+              <PathCard
+                key={track}
+                $accent={TRACK_ACCENT[track]}
+                $accentDark={TRACK_ACCENT_DARK[track]}
+                href={`#track-${track}`}>
                 <PathCardName>{tx(`hackathonPage.track.${track}`)}</PathCardName>
                 <PathCardDesc>{tx(`hackathonPage.trackDescription.${track}`)}</PathCardDesc>
                 <PathCardFooter>
@@ -155,7 +168,10 @@ const Hackathon = () => {
           </Filters>
           {challengesByTrack.map(({ track, items }) => (
             <TrackBlock key={track} $accent={TRACK_ACCENT[track]}>
-              <TrackHeader id={`track-${track}`} $accent={TRACK_ACCENT[track]}>
+              <TrackHeader
+                id={`track-${track}`}
+                $accent={TRACK_ACCENT[track]}
+                $accentDark={TRACK_ACCENT_DARK[track]}>
                 <h3>{tx(`hackathonPage.track.${track}`)}</h3>
                 <p className="track-description">{tx(`hackathonPage.trackDescription.${track}`)}</p>
               </TrackHeader>
@@ -346,6 +362,10 @@ const WhyCard = styled.div`
     line-height: 1.5;
     margin: 0;
   }
+
+  .dark & {
+    background: rgba(255, 255, 255, 0.05);
+  }
 `
 
 const PathGrid = styled.div`
@@ -359,7 +379,7 @@ const PathGrid = styled.div`
   }
 `
 
-const PathCard = styled.a<{ $accent: string }>`
+const PathCard = styled.a<{ $accent: string; $accentDark: string }>`
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -379,6 +399,17 @@ const PathCard = styled.a<{ $accent: string }>`
     background: ${({ $accent }) => $accent}12;
     color: inherit;
   }
+
+  .dark & {
+    border-color: ${({ $accentDark }) => $accentDark}33;
+    border-top-color: ${({ $accentDark }) => $accentDark};
+    background: ${({ $accentDark }) => $accentDark}14;
+  }
+
+  .dark &:hover {
+    box-shadow: 0 4px 18px ${({ $accentDark }) => $accentDark}33;
+    background: ${({ $accentDark }) => $accentDark}1f;
+  }
 `
 
 const PathCardName = styled.div`
@@ -386,6 +417,10 @@ const PathCardName = styled.div`
   font-weight: 700;
   color: #111827;
   line-height: 1.3;
+
+  .dark & {
+    color: #f1f5f9;
+  }
 `
 
 const PathCardDesc = styled.div`
@@ -393,6 +428,10 @@ const PathCardDesc = styled.div`
   color: #4b5563;
   line-height: 1.6;
   flex: 1;
+
+  .dark & {
+    color: #cbd5e1;
+  }
 `
 
 const PathCardFooter = styled.div`
@@ -410,6 +449,11 @@ const PathAudienceBadge = styled.span`
   background: rgba(0, 0, 0, 0.06);
   color: #374151;
   font-weight: 500;
+
+  .dark & {
+    background: rgba(255, 255, 255, 0.1);
+    color: #e2e8f0;
+  }
 `
 
 const PathCount = styled.span`
@@ -423,6 +467,10 @@ const PathCardCta = styled.div`
   font-weight: 600;
   color: #6b7280;
   margin-top: 2px;
+
+  .dark & {
+    color: #94a3b8;
+  }
 `
 
 const ScheduleList = styled.ol`
@@ -476,13 +524,24 @@ const FilterChip = styled.button<{ $active: boolean }>`
     border-color: #1677ff;
     color: #1677ff;
   }
+
+  .dark & {
+    border-color: ${({ $active }) => ($active ? '#1677ff' : 'rgba(255, 255, 255, 0.18)')};
+    background: ${({ $active }) => ($active ? 'rgba(22, 119, 255, 0.18)' : 'transparent')};
+    color: ${({ $active }) => ($active ? '#69b1ff' : '#cbd5e1')};
+  }
+
+  .dark &:hover {
+    border-color: #69b1ff;
+    color: #69b1ff;
+  }
 `
 
 const TrackBlock = styled.div<{ $accent: string }>`
   margin-top: 24px;
 `
 
-const TrackHeader = styled.div<{ $accent: string }>`
+const TrackHeader = styled.div<{ $accent: string; $accentDark: string }>`
   padding: 10px 14px;
   border-radius: 8px;
   background: ${({ $accent }) => $accent}12;
@@ -501,6 +560,19 @@ const TrackHeader = styled.div<{ $accent: string }>`
     color: #6b7280;
     line-height: 1.6;
     margin: 6px 0 0;
+  }
+
+  .dark & {
+    background: ${({ $accentDark }) => $accentDark}1f;
+    border-inline-start-color: ${({ $accentDark }) => $accentDark};
+  }
+
+  .dark & h3 {
+    color: ${({ $accentDark }) => $accentDark};
+  }
+
+  .dark & .track-description {
+    color: #cbd5e1;
   }
 `
 
@@ -540,6 +612,15 @@ const MentorCard = styled.div`
   &:hover {
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
   }
+
+  .dark & {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .dark &:hover {
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  }
 `
 
 const MentorEmoji = styled.div`
@@ -551,6 +632,10 @@ const MentorName = styled.div`
   font-size: 15px;
   font-weight: 600;
   color: #111827;
+
+  .dark & {
+    color: #f1f5f9;
+  }
 `
 
 const MentorRole = styled.div`
@@ -558,6 +643,10 @@ const MentorRole = styled.div`
   color: #6b7280;
   line-height: 1.4;
   text-align: center;
+
+  .dark & {
+    color: #94a3b8;
+  }
 `
 
 const NonDevBlock = styled.div`
@@ -630,6 +719,10 @@ const SponsorCallout = styled.div`
     margin: 0;
     line-height: 1.6;
     font-size: 15px;
+  }
+
+  .dark & {
+    border-color: rgba(255, 255, 255, 0.2);
   }
 `
 
