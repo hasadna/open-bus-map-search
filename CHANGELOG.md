@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.6.0](https://github.com/hasadna/open-bus-map-search/compare/v1.5.0...v1.6.0) (2026-06-26)
+
+
+### Features
+
+* add gps coverage chart ([#1678](https://github.com/hasadna/open-bus-map-search/issues/1678)) ([88f0f1a](https://github.com/hasadna/open-bus-map-search/commit/88f0f1aeb594fb4bb35b005f40e147efb6fe0c4d))
+* Add per-page persistent state ([#1578](https://github.com/hasadna/open-bus-map-search/issues/1578)) ([e343db6](https://github.com/hasadna/open-bus-map-search/commit/e343db67c5981e565b7d003405ed5795c25b5d8a))
+* add vehicle page ([#1670](https://github.com/hasadna/open-bus-map-search/issues/1670)) ([8dae1a9](https://github.com/hasadna/open-bus-map-search/commit/8dae1a98f385eb31ba51ac9fa3952e5f75059a84))
+
+
+### Bug Fixes
+
+* singleLineMap support multiple vehicles ([#1571](https://github.com/hasadna/open-bus-map-search/issues/1571)) ([973b330](https://github.com/hasadna/open-bus-map-search/commit/973b330e4767832fe229241192728b51073155a4))
+
 ## [1.5.0](https://github.com/hasadna/open-bus-map-search/compare/v1.4.0...v1.5.0) (2026-06-12)
 
 
