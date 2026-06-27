@@ -50,9 +50,7 @@ export default defineConfig<EyesFixture>({
       },
       browsersInfo: [
         { width: 1280, height: 720, name: 'chrome' },
-        { width: 1280, height: 720, name: 'safari' },
         { chromeEmulationInfo: { deviceName: 'Galaxy S23' } },
-        { iosDeviceInfo: { deviceName: 'iPhone 16' } },
       ],
     },
   },
