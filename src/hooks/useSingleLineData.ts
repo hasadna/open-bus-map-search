@@ -232,9 +232,9 @@ export const useSingleLineData = ({
       if (selectedRoute?.routeIds && selectedRoute.routeIds.length > 0) {
         routeIds = selectedRoute.routeIds
       } else if (scheduledLine && operatorId) {
-        routeIds = (
-          await getRoutesByLineRef(operatorId, scheduledLine, rideStartTime.toDate())
-        ).map((route) => route.id)
+        routeIds = (await getRoutesByLineRef(operatorId, scheduledLine, rideStartTime)).map(
+          (route) => route.id,
+        )
       }
       if (!routeIds || routeIds.length === 0) return []
       return await getStopsForRouteAsync(routeIds, rideStartTime)

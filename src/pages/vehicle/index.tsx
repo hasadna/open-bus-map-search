@@ -91,9 +91,7 @@ const VehiclePage = () => {
     enabled: operatorIds.length > 0,
     queryFn: async ({ signal }) => {
       const routeLists = await Promise.all(
-        operatorIds.map((operatorId) =>
-          getAllRoutesList(operatorId, serviceDayStart.toDate(), signal),
-        ),
+        operatorIds.map((operatorId) => getAllRoutesList(operatorId, serviceDayStart, signal)),
       )
       return routeLists
         .flat()
