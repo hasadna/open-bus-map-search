@@ -13,7 +13,7 @@ export const LineProfileRide = ({ positionGroups }: { positionGroups: PositionGr
     <Widget>
            <TableContainer>
         <Table size="small">
-          <TableHead>
+          <TableHead sx={{ '& .MuiTableCell-root': { pt: 0 } }}>
             <TableRow>
               <TableCell>{t('lineProfile.ride.journey')}</TableCell>
               <TableCell>{t('lineProfile.ride.id')}</TableCell>
