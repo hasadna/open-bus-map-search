@@ -47,7 +47,21 @@ const GapsPage = () => {
         setGaps(
           res.filter((g) => {
             const t = g.plannedStartTime || g.actualStartTime
-            return t && !t.isBefore(start) && t.isBefore(end)
+            if (!t) return false
+            // date_from already excludes pre-service-day rides, so one slipping through
+            // means the API's date filtering regressed. Keep it off-screen, but scream
+            // about it instead of silently masking the upstream bug.
+            if (t.isBefore(start)) {
+              console.error('gaps: ride before service-day start, dropping', {
+                rideStart: t.toISOString(),
+                serviceDayStart: start.toISOString(),
+                gap: g,
+              })
+              return false
+            }
+            // Upper bound is real semantics, not masking: the date-only API over-fetches
+            // all of tomorrow, and this trims it back to the 04:00 service-day cutoff.
+            return t.isBefore(end)
           }),
         ),
       )

@@ -178,8 +178,8 @@ const GapsPatternsPage = () => {
   const loadSearchData = async (signal: AbortSignal | undefined) => {
     setRoutesIsLoading(true)
     const fetchedRoutes = await getRoutesAsync(
-      dayjs(startDate),
-      dayjs(endDate),
+      startDate,
+      endDate,
       operatorId ?? undefined,
       lineNumber ?? undefined,
       signal,

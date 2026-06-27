@@ -22,7 +22,7 @@ export const useAllRoutes = (operatorId?: string, date?: string) => {
     setState({ routes: [], isLoading: true, error: false })
     const controller = new AbortController()
 
-    getAllRoutesList(operatorId, dayjs.tz(date, ISRAEL_TIMEZONE).toDate(), controller.signal)
+    getAllRoutesList(operatorId, dayjs.tz(date, ISRAEL_TIMEZONE), controller.signal)
       .then((routes) => {
         setState({ routes: mapperRoutes(routes), isLoading: false, error: false })
       })

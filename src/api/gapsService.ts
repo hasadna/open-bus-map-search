@@ -1,4 +1,4 @@
-import dayjs from 'src/dayjs'
+import dayjs, { toApiDate } from 'src/dayjs'
 import { USER_CASE_API } from './apiConfig'
 
 export type Gap = {
@@ -22,8 +22,8 @@ export const getGapsAsync = (
   limit = 10000,
 ) => {
   return USER_CASE_API.ridesExecutionListGet({
-    dateFrom: from.toDate(),
-    dateTo: to.toDate(),
+    dateFrom: toApiDate(from),
+    dateTo: toApiDate(to),
     limit,
     lineRef,
     operatorRef: parseInt(operatorId),

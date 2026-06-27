@@ -3,7 +3,7 @@ import {
   GtfsRidesAggGroupByPydanticModel,
 } from '@hasadna/open-bus-api-client'
 import { useQuery } from '@tanstack/react-query'
-import type { Dayjs } from 'src/dayjs'
+import { type Dayjs, toApiDate } from 'src/dayjs'
 import { getAgencyList } from './agencyList'
 import { AGGREGATIONS_API } from './apiConfig'
 
@@ -36,8 +36,8 @@ async function fetchGroupBy({
 
   // example: https://open-bus-stride-api.hasadna.org.il/gtfs_rides_agg/group_by?date_from=2023-01-27&date_to=2023-01-29&group_by=operator_ref
   const data = await AGGREGATIONS_API.byGtfsRidesAggGroupByGet({
-    dateFrom: dateFrom.toDate(),
-    dateTo: dateTo.toDate(),
+    dateFrom: toApiDate(dateFrom),
+    dateTo: toApiDate(dateTo),
     groupBy,
     excludeHoursFrom: 23,
     excludeHoursTo: 2,

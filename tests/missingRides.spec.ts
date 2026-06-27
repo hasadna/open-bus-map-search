@@ -47,7 +47,12 @@ test('should load rides for the full day plus 4 hours', async ({ page }) => {
   const gapsRequest = await gapsRequestPromise
   const gapsUrl = new URL(gapsRequest.url())
 
-  expect(gapsUrl.searchParams.get('date_from')).toBe('2024-02-11')
+  // date_from/date_to filter the ride's GTFS service `date` (calendar day, YYYY-MM-DD),
+  // not the UTC timestamp of its start time. The selected service day is 2024-02-12, so
+  // date_from is that same day. (The previous '2024-02-11' encoded the Israel-midnight
+  // → previous-UTC-day off-by-one that toApiDate fixes.) date_to spills to the next day
+  // because the service window runs to 04:00 the following morning.
+  expect(gapsUrl.searchParams.get('date_from')).toBe('2024-02-12')
   expect(gapsUrl.searchParams.get('date_to')).toBe('2024-02-13')
 
   for (const time of FULL_SERVICE_DAY_TIMES) {

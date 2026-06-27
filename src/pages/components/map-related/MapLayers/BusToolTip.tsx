@@ -29,8 +29,8 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
       (position.point?.siriRouteOperatorRef || 0).toString(),
       (position.point?.siriRouteLineRef || 0).toString(),
       position.point?.siriRideScheduledStartTime
-        ? new Date(position.point?.siriRideScheduledStartTime)
-        : new Date(),
+        ? dayjs(position.point?.siriRideScheduledStartTime)
+        : dayjs(),
     )
       .then((routes) => {
         setRoute(routes[0])
