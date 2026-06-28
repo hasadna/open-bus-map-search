@@ -79,15 +79,18 @@
       "month": "شهرياً",
       "year": "سنوياً"
     },
-    "all_lines": "جميع المسارات",
-    "line": "خط",
+    "all_lines_on_date": "جميع الخطوط في هذا التاريخ",
     "profile": "بروفايل",
     "map": "خريطة",
     "id": "معرّف تقني",
     "origin": "المصدر",
     "destination": "الوجهة",
-    "total": "مجموع المسارات",
-    "statistics": "إحصائيات"
+    "statistics": "إحصائيات",
+    "routes_count": "{{count}} مسارات",
+    "routes_in_lines": "{{routes}} مسارات في {{lines}} خطوط",
+    "search_placeholder": "ابحث عن خط أو مصدر أو وجهة",
+    "no_results": "لا توجد مسارات مطابقة",
+    "clear": "مسح البحث"
   },
   "line_placeholder": "مثال: 17أ",
   "line_not_found": "الخط غير موجود",

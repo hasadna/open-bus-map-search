@@ -91,15 +91,18 @@
       "month": "Monthly",
       "year": "Yearly"
     },
-    "all_lines": "All Routes",
-    "line": "Line",
+    "all_lines_on_date": "All Lines on This Date",
     "profile": "Profile",
     "map": "Map",
     "id": "ID",
     "origin": "Origin",
     "destination": "Destination",
-    "total": "Total Routes",
-    "statistics": "Statistics"
+    "statistics": "Statistics",
+    "routes_count": "{{count}} routes",
+    "routes_in_lines": "{{routes}} routes in {{lines}} lines",
+    "search_placeholder": "Search line, origin or destination",
+    "no_results": "No matching routes",
+    "clear": "Clear search"
   },
   "line_placeholder": "For example: 17a",
   "line_not_found": "The line is not found",
