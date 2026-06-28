@@ -1,21 +1,23 @@
 import { Today } from '@mui/icons-material'
 import { Box, Button, ButtonGroup } from '@mui/material'
 import { useTranslation } from 'react-i18next'
-import dayjs from 'src/dayjs'
+import { clampToToday, shiftIsraelDate, todayIsraelDate } from 'src/dayjs'
 import './DateNavigator.scss'
 
 interface DateNavigatorProps {
-  currentTime: dayjs.Dayjs
-  onChange: (time: dayjs.Dayjs) => void
+  /** The selected civil day as a "YYYY-MM-DD" string. */
+  currentTime: string
+  onChange: (date: string) => void
 }
 
 export const DateNavigator = ({ currentTime, onChange }: DateNavigatorProps) => {
   const { t } = useTranslation()
 
-  const handleChange = (days: number) =>
-    onChange(days > 0 ? currentTime.add(days, 'day') : currentTime.subtract(Math.abs(days), 'day'))
+  // clampToToday keeps forward shifts from running past today, matching the
+  // picker's disableFuture (the navigator has no other future guard).
+  const handleChange = (days: number) => onChange(clampToToday(shiftIsraelDate(currentTime, days)))
 
-  const handleToday = () => onChange(dayjs())
+  const handleToday = () => onChange(todayIsraelDate())
 
   const unit = (count: number) =>
     count === 1 ? t('date_navigator_unit_day') : t('date_navigator_unit_days')

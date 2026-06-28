@@ -4,7 +4,7 @@ import { useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { SIRI_API } from 'src/api/apiConfig'
 import { getAllRoutesList } from 'src/api/gtfsService'
-import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone } from 'src/dayjs'
+import dayjs, { formatIsraelDate, parseIsraelDate, todayIsraelDate } from 'src/dayjs'
 import { fromGtfsRoute } from 'src/model/busRoute'
 import { GlobalSearchContext } from 'src/model/globalState'
 import { InitialUrlParamsContext, PageShareParamsContext } from 'src/model/routeContext'
@@ -45,7 +45,7 @@ const VehiclePage = () => {
   const handleDateChange = (time: dayjs.Dayjs | null) => {
     setSearch((current) => ({
       ...current,
-      date: toIsraelTimezone(time ?? dayjs()).format('YYYY-MM-DD'),
+      date: time ? formatIsraelDate(time) : todayIsraelDate(),
     }))
   }
 
@@ -125,7 +125,7 @@ const VehiclePage = () => {
       <Grid container spacing={2} sx={{ width: '100%', maxWidth: 600, mx: 'auto' }}>
         {/* choose date */}
         <Grid size={{ sm: 6, xs: 12 }}>
-          <DateSelector time={dayjs.tz(date, ISRAEL_TIMEZONE)} onChange={handleDateChange} />
+          <DateSelector time={parseIsraelDate(date)} onChange={handleDateChange} />
         </Grid>
         {/* choose vehicle */}
         <Grid size={{ sm: 6, xs: 12 }}>

@@ -47,8 +47,8 @@ test('should load rides for the full day plus 4 hours', async ({ page }) => {
   const gapsRequest = await gapsRequestPromise
   const gapsUrl = new URL(gapsRequest.url())
 
-  expect(gapsUrl.searchParams.get('date_from')).toBe('2024-02-12')//should be the same day
-  expect(gapsUrl.searchParams.get('date_to')).toBe('2024-02-13')//should be the next day (service-day)
+  expect(gapsUrl.searchParams.get('date_from')).toBe('2024-02-12') //should be the same day
+  expect(gapsUrl.searchParams.get('date_to')).toBe('2024-02-13') //should be the next day (service-day)
 
   for (const time of FULL_SERVICE_DAY_TIMES) {
     await expect(page.getByRole('cell', { name: time }).first()).toBeVisible()

@@ -1,11 +1,11 @@
 import { GTFS_API } from 'src/api/apiConfig'
-import dayjs, { toApiDate, toIsraelTimezone } from 'src/dayjs'
+import dayjs, { apiDateFromString, clampToToday, toApiDate } from 'src/dayjs'
 import { BusRoute, fromGtfsRoute } from 'src/model/busRoute'
 import { BusStop, fromGtfsStop } from 'src/model/busStop'
 
 export async function getRoutesAsync(
-  from: dayjs.Dayjs,
-  to: dayjs.Dayjs,
+  from: string,
+  to: string,
   operatorId?: string,
   lineNumber?: string,
   signal?: AbortSignal,
@@ -14,8 +14,9 @@ export async function getRoutesAsync(
     {
       routeShortName: lineNumber,
       operatorRefs: operatorId,
-      dateFrom: toApiDate(from),
-      dateTo: toApiDate(dayjs.min(to, toIsraelTimezone())),
+      dateFrom: apiDateFromString(from),
+      // Never query past today: clamp the upper bound to today's Israel civil day.
+      dateTo: apiDateFromString(clampToToday(to)),
       limit: 100,
     },
     { signal },

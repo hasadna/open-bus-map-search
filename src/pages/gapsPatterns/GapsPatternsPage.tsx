@@ -14,8 +14,12 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
-import dayjs from 'src/dayjs'
-import { useDate } from 'src/hooks/useDate'
+import dayjs, {
+  formatIsraelDate,
+  parseIsraelDate,
+  shiftIsraelDate,
+  todayIsraelDate,
+} from 'src/dayjs'
 import { GlobalSearchContext } from 'src/model/globalState'
 import { InitialUrlParamsContext, PageShareParamsContext } from 'src/model/routeContext'
 import { INPUT_SIZE } from 'src/resources/sizes'
@@ -42,8 +46,6 @@ interface BusLineStatisticsProps {
   fromDate: dayjs.Dayjs
   toDate: dayjs.Dayjs
 }
-
-const now = dayjs()
 
 const CustomTooltip = ({ active, payload }: TooltipContentProps) => {
   const { t } = useTranslation()
@@ -149,14 +151,17 @@ function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatistic
 
 const GapsPatternsPage = () => {
   const initialUrlParams = useContext(InitialUrlParamsContext)
+  const today = todayIsraelDate()
 
-  const [startDate, setStartDate] = useDate(
+  const [startDate, setStartDate] = useState(
     initialUrlParams.startDate
       ? dayjs(initialUrlParams.startDate)
-      : now.clone().subtract(7, 'days'),
+      : parseIsraelDate(shiftIsraelDate(today, -7)),
   )
-  const [endDate, setEndDate] = useDate(
-    initialUrlParams.endDate ? dayjs(initialUrlParams.endDate) : now.clone().subtract(1, 'day'),
+  const [endDate, setEndDate] = useState(
+    initialUrlParams.endDate
+      ? dayjs(initialUrlParams.endDate)
+      : parseIsraelDate(shiftIsraelDate(today, -1)),
   )
   const { search, setSearch } = useContext(GlobalSearchContext)
   // LEGACY: manual share-param injection — replace with usePageState's per-page
@@ -178,8 +183,8 @@ const GapsPatternsPage = () => {
   const loadSearchData = async (signal: AbortSignal | undefined) => {
     setRoutesIsLoading(true)
     const fetchedRoutes = await getRoutesAsync(
-      startDate,
-      endDate,
+      formatIsraelDate(startDate),
+      formatIsraelDate(endDate),
       operatorId ?? undefined,
       lineNumber ?? undefined,
       signal,
@@ -235,14 +240,14 @@ const GapsPatternsPage = () => {
           <Grid size={{ xs: 6 }}>
             <DateSelector
               time={startDate}
-              onChange={(data) => setStartDate(data)}
+              onChange={(data) => data && setStartDate(data)}
               customLabel={t('start')}
             />
           </Grid>
           <Grid size={{ xs: 6 }}>
             <DateSelector
               time={endDate}
-              onChange={(data) => setEndDate(data)}
+              onChange={(data) => data && setEndDate(data)}
               minDate={startDate}
               customLabel={t('end')}
             />

@@ -1,6 +1,9 @@
 import { createContext, Dispatch } from 'react'
-import dayjs from 'src/dayjs'
-import { toIsraelTimezone } from 'src/dayjs'
+import { todayIsraelDate } from 'src/dayjs'
+
+// isValidSearchDate now lives with the other date helpers in src/dayjs; re-exported
+// here for the existing global-state / routing consumers.
+export { isValidSearchDate } from 'src/dayjs'
 
 /**
  * Global search state shared across all pages via GlobalSearchContext.
@@ -27,18 +30,8 @@ export type GlobalSearchState = {
   stopKey: string | null
 }
 
-/** True if the value is a readable "YYYY-MM-DD" calendar date (the format of
- *  GlobalSearchState.date). Used to drop corrupt dates from shared URLs or
- *  stale session storage instead of letting them break every date consumer.
- *  The round-trip comparison rejects overflow dates like "2026-02-30", which
- *  dayjs silently normalizes to a different day instead of marking invalid. */
-export const isValidSearchDate = (date: unknown): date is string =>
-  typeof date === 'string' &&
-  /^\d{4}-\d{2}-\d{2}$/.test(date) &&
-  dayjs(date).format('YYYY-MM-DD') === date
-
 export const GLOBAL_SEARCH_DEFAULTS: GlobalSearchState = {
-  date: toIsraelTimezone(dayjs()).format('YYYY-MM-DD'),
+  date: todayIsraelDate(),
   operatorId: null,
   lineNumber: null,
   routeKey: null,

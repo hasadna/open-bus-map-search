@@ -1,4 +1,13 @@
-import dayjs, { parseIsraelLocalDatetime, toApiDate } from './dayjs'
+import dayjs, {
+  apiDateFromString,
+  clampToToday,
+  formatIsraelDate,
+  parseIsraelDate,
+  parseIsraelLocalDatetime,
+  shiftIsraelDate,
+  toApiDate,
+  todayIsraelDate,
+} from './dayjs'
 
 describe('toApiDate', () => {
   // The generated API client serializes `format: date` params as
@@ -42,5 +51,78 @@ describe('parseIsraelLocalDatetime', () => {
     expect(parseIsraelLocalDatetime('')).toBeNull()
     expect(parseIsraelLocalDatetime('not-a-date 17:00')).toBeNull()
     expect(parseIsraelLocalDatetime('1699900000000junk')).toBeNull()
+  })
+})
+
+describe('parseIsraelDate', () => {
+  const clientSerialize = (d: Date) => d.toISOString().substring(0, 10)
+
+  it('round-trips with formatIsraelDate', () => {
+    expect(formatIsraelDate(parseIsraelDate('2026-06-28'))).toBe('2026-06-28')
+  })
+
+  it('anchors at Israel noon so the civil day survives UTC truncation (Jest runs in UTC)', () => {
+    const noon = parseIsraelDate('2026-06-28')
+    expect(noon.tz('Asia/Jerusalem').format('HH:mm')).toBe('12:00')
+    // toApiDate reads the calendar day in UTC; the noon anchor must keep it on the 28th.
+    expect(clientSerialize(toApiDate(noon))).toBe('2026-06-28')
+  })
+
+  it('falls back to today on malformed or overflow input', () => {
+    expect(formatIsraelDate(parseIsraelDate('2026-02-30'))).toBe(todayIsraelDate())
+    expect(formatIsraelDate(parseIsraelDate('2026-6-1'))).toBe(todayIsraelDate())
+    expect(formatIsraelDate(parseIsraelDate('garbage'))).toBe(todayIsraelDate())
+    expect(formatIsraelDate(parseIsraelDate(''))).toBe(todayIsraelDate())
+  })
+})
+
+describe('formatIsraelDate', () => {
+  it('reads the Israel calendar day of a real instant', () => {
+    // 22:30 UTC is 01:30 the next day in Israel (DST) — the Israel civil day is the 16th.
+    expect(formatIsraelDate(dayjs('2024-06-15T22:30:00Z'))).toBe('2024-06-16')
+  })
+})
+
+describe('shiftIsraelDate', () => {
+  it('crosses month, year and leap-day boundaries', () => {
+    expect(shiftIsraelDate('2026-06-30', 1)).toBe('2026-07-01')
+    expect(shiftIsraelDate('2026-12-31', 1)).toBe('2027-01-01')
+    expect(shiftIsraelDate('2024-02-28', 1)).toBe('2024-02-29') // leap year
+    expect(shiftIsraelDate('2026-02-28', 1)).toBe('2026-03-01') // non-leap
+  })
+
+  it('shifts backward and by multiple days', () => {
+    expect(shiftIsraelDate('2026-03-01', -1)).toBe('2026-02-28')
+    expect(shiftIsraelDate('2026-06-28', -7)).toBe('2026-06-21')
+    expect(shiftIsraelDate('2026-06-28', 0)).toBe('2026-06-28')
+  })
+})
+
+describe('apiDateFromString', () => {
+  const clientSerialize = (d: Date) => d.toISOString().substring(0, 10)
+
+  it('serializes a civil-day string to the API Date param, UTC-stable (Jest runs in UTC)', () => {
+    expect(clientSerialize(apiDateFromString('2026-06-28'))).toBe('2026-06-28')
+  })
+})
+
+describe('clampToToday', () => {
+  it('caps a future day at today and leaves past/today untouched', () => {
+    expect(clampToToday('2999-12-31')).toBe(todayIsraelDate())
+    expect(clampToToday('2000-01-01')).toBe('2000-01-01')
+    expect(clampToToday(todayIsraelDate())).toBe(todayIsraelDate())
+  })
+})
+
+describe('todayIsraelDate', () => {
+  afterEach(() => jest.useRealTimers())
+
+  it('projects the current instant onto the Israel calendar day', () => {
+    // 20:00 UTC is 23:00 the same day in Israel; 22:30 UTC is 01:30 the next day.
+    jest.useFakeTimers().setSystemTime(new Date('2024-06-15T20:00:00Z'))
+    expect(todayIsraelDate()).toBe('2024-06-15')
+
+    jest.setSystemTime(new Date('2024-06-15T22:30:00Z'))
+    expect(todayIsraelDate()).toBe('2024-06-16')
   })
 })

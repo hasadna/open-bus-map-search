@@ -1,4 +1,4 @@
-import dayjs, { ISRAEL_TIMEZONE } from 'src/dayjs'
+import dayjs, { parseIsraelDate } from 'src/dayjs'
 
 /** The service-day window for a YYYY-MM-DD date: 00:00 Israel time through 04:00 the
  *  next morning. The late-night tail (00:00–04:00 of the following calendar day)
@@ -8,7 +8,7 @@ import dayjs, { ISRAEL_TIMEZONE } from 'src/dayjs'
  *  ride list, and the gaps table's token formatting all derive their bounds from here,
  *  so they can't drift apart. */
 export function serviceDayBounds(date: string): { start: dayjs.Dayjs; end: dayjs.Dayjs } {
-  const start = dayjs.tz(date, ISRAEL_TIMEZONE).startOf('day')
+  const start = parseIsraelDate(date).startOf('day')
   const end = start.add(1, 'day').startOf('day').add(4, 'hours')
   return { start, end }
 }

@@ -8,7 +8,7 @@ import {
   getStopsForRouteAsync,
 } from 'src/api/gtfsService'
 import { getSiriStopHitTimesAsync } from 'src/api/siriService'
-import dayjs, { ISRAEL_TIMEZONE } from 'src/dayjs'
+import dayjs, { formatIsraelDate, parseIsraelDate } from 'src/dayjs'
 import { usePageState } from 'src/hooks/usePageState'
 import { GlobalSearchContext } from 'src/model/globalState'
 import { Label } from 'src/pages/components/Label'
@@ -42,14 +42,14 @@ const TimelinePage = () => {
 
   const time = useMemo(() => {
     const [h, m] = params.time.split(':').map(Number)
-    return dayjs.tz(date, ISRAEL_TIMEZONE).hour(h).minute(m).startOf('minute')
+    return parseIsraelDate(date).hour(h).minute(m).startOf('minute')
   }, [date, params.time])
 
   const routesQuery = useQuery({
     queryFn: async () => {
       if (operatorId && lineNumber) {
         try {
-          return await getRoutesAsync(time, time, operatorId, lineNumber)
+          return await getRoutesAsync(date, date, operatorId, lineNumber)
         } catch (error) {
           console.error(error)
           setSearch((current) => ({ ...current, routeKey: null }))
@@ -119,10 +119,10 @@ const TimelinePage = () => {
         {/* choose date */}
         <Grid size={{ lg: 4, md: 6, xs: 12 }}>
           <DateSelector
-            time={dayjs.tz(date, ISRAEL_TIMEZONE)}
+            time={parseIsraelDate(date)}
             onChange={(ts) => {
               if (!ts) return
-              setSearch((prev) => ({ ...prev, date: ts.format('YYYY-MM-DD') }))
+              setSearch((prev) => ({ ...prev, date: formatIsraelDate(ts) }))
             }}
           />
         </Grid>

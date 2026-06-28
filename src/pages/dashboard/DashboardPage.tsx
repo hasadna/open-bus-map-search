@@ -2,8 +2,7 @@ import { Alert, Grid, Typography } from '@mui/material'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 // Services and libraries
-import dayjs from 'src/dayjs'
-import { useDate } from 'src/hooks/useDate'
+import { parseIsraelDate, shiftIsraelDate, todayIsraelDate } from 'src/dayjs'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
 import { DateSelector } from '../components/DateSelector'
 import { PageContainer } from '../components/PageContainer'
@@ -15,12 +14,12 @@ import WorstLinesChart from './WorstLinesChart/WorstLinesChart'
 // Styling
 import './DashboardPage.scss'
 
-// Declarations
-const now = dayjs()
-
 const DashboardPage = () => {
-  const [startDate, setStartDate] = useDate(now.subtract(7, 'day'))
-  const [endDate, setEndDate] = useDate(now.subtract(1, 'day'))
+  // `today` is read in component scope (per mount), not frozen at module load like the
+  // old `const now`, so the default range can't go stale across midnight.
+  const today = todayIsraelDate()
+  const [startDate, setStartDate] = useState(parseIsraelDate(shiftIsraelDate(today, -7)))
+  const [endDate, setEndDate] = useState(parseIsraelDate(shiftIsraelDate(today, -1)))
   const [operatorId, setOperatorId] = useState('')
   const { t } = useTranslation()
 
@@ -59,14 +58,14 @@ const DashboardPage = () => {
           <Grid size={{ xs: 6 }}>
             <DateSelector
               time={startDate}
-              onChange={(data) => setStartDate(data)}
+              onChange={(data) => data && setStartDate(data)}
               customLabel={t('start')}
             />
           </Grid>
           <Grid size={{ xs: 6 }}>
             <DateSelector
               time={endDate}
-              onChange={(data) => setEndDate(data)}
+              onChange={(data) => data && setEndDate(data)}
               minDate={startDate}
               customLabel={t('end')}
             />

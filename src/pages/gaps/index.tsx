@@ -1,7 +1,7 @@
 import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import dayjs, { ISRAEL_TIMEZONE } from 'src/dayjs'
+import dayjs, { formatIsraelDate, parseIsraelDate } from 'src/dayjs'
 import { GlobalSearchContext } from 'src/model/globalState'
 import { INPUT_SIZE } from 'src/resources/sizes'
 import { Gap, getGapsAsync } from '../../api/gapsService'
@@ -79,7 +79,7 @@ const GapsPage = () => {
 
     const controller = new AbortController()
 
-    getServiceDayRoutes(dayjs.tz(date, ISRAEL_TIMEZONE), operatorId, lineNumber, controller.signal)
+    getServiceDayRoutes(parseIsraelDate(date), operatorId, lineNumber, controller.signal)
       .then((fetchedRoutes) => {
         if (search.lineNumber === lineNumber) {
           setRoutes(fetchedRoutes)
@@ -96,7 +96,7 @@ const GapsPage = () => {
     if (!time) return
     setSearch((current) => ({
       ...current,
-      date: time.format('YYYY-MM-DD'),
+      date: formatIsraelDate(time),
     }))
   }
 
@@ -143,7 +143,7 @@ const GapsPage = () => {
           <Label text={t('choose_date')} />
         </Grid>
         <Grid size={{ xs: 8 }}>
-          <DateSelector time={dayjs.tz(date, ISRAEL_TIMEZONE)} onChange={handleDateChange} />
+          <DateSelector time={parseIsraelDate(date)} onChange={handleDateChange} />
         </Grid>
         {/* choose operator */}
         <Grid size={{ xs: 4 }}>

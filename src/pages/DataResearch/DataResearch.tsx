@@ -11,8 +11,7 @@ import {
   YAxis,
 } from 'recharts'
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
-import dayjs from 'src/dayjs'
-import { useDate } from 'src/hooks/useDate'
+import dayjs, { parseIsraelDate, shiftIsraelDate, todayIsraelDate } from 'src/dayjs'
 import SkeletonLoader from 'src/shared/SkeletonLoader'
 import Widget from 'src/shared/Widget'
 import { DateSelector } from '../components/DateSelector'
@@ -20,8 +19,6 @@ import OperatorSelector from '../components/OperatorSelector'
 import { PageContainer } from '../components/PageContainer'
 import { getColorName } from '../dashboard/AllLineschart/OperatorHbarChart/OperatorHbarChart'
 import './DataResearch.scss'
-
-const now = dayjs()
 
 export const DataResearch = () => {
   const { t } = useTranslation()
@@ -37,8 +34,10 @@ export const DataResearch = () => {
 
 function StackedResearchSection() {
   const { t } = useTranslation()
-  const [startDate, setStartDate] = useDate(now.clone().subtract(7, 'days'))
-  const [endDate, setEndDate] = useDate(now.clone().subtract(1, 'day'))
+  // `today` read per mount (not frozen at module load) so the default range can't go stale.
+  const today = todayIsraelDate()
+  const [startDate, setStartDate] = useState(parseIsraelDate(shiftIsraelDate(today, -7)))
+  const [endDate, setEndDate] = useState(parseIsraelDate(shiftIsraelDate(today, -1)))
   const [operatorId, setOperatorId] = useState('')
   const [groupByHour, setGroupByHour] = useState<boolean>(false)
   const [graphData, loadingGraph] = useGroupBy({
