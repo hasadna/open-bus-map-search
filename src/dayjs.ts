@@ -5,6 +5,8 @@ import minMax from 'dayjs/plugin/minMax.js'
 import timezone from 'dayjs/plugin/timezone.js'
 import utc from 'dayjs/plugin/utc.js'
 
+// ── Setup ───────────────────────────────────────────────────────────────────
+
 // Extend dayjs with all required plugins
 dayjs.extend(utc)
 dayjs.extend(timezone)
@@ -17,28 +19,18 @@ dayjs.tz.setDefault(ISRAEL_TIMEZONE)
 
 export const toIsraelTimezone = (value?: dayjs.ConfigType) => dayjs(value).tz(ISRAEL_TIMEZONE)
 
-/** Convert a Dayjs to the `Date` expected by `format: date` (calendar-day) API params.
- *
- *  The generated API client serializes date-only params with
- *  `value.toISOString().substring(0, 10)`, i.e. it reads the calendar day in **UTC**.
- *  A Date at Israel midnight is 21:00/22:00 UTC of the *previous* day, so the naive
- *  `dayjs.toDate()` truncates to the wrong date. We instead anchor the Israeli calendar
- *  day at **noon UTC**, where the UTC and Israel calendar days always agree — so the
- *  client's UTC truncation yields the correct day on any runtime timezone (browser, SSR,
- *  CI/Jest defaulting to UTC).
- *
- *  Use for every `format: date` param. NEVER for `format: date-time` (real instants):
- *  this throws away the time-of-day. */
-export function toApiDate(value: dayjs.Dayjs): Date {
-  return new Date(`${toIsraelTimezone(value).format('YYYY-MM-DD')}T12:00:00Z`)
-}
-
 // ── Civil calendar days (Israel) ────────────────────────────────────────────
 //
 // A civil date lives at rest as a "YYYY-MM-DD" string (global state, URL, props).
 // It is zone-less and unambiguous. A Dayjs/Date is materialized only transiently —
 // at the MUI picker value, calendar math, and toApiDate boundaries — never stored
 // back. Equality is therefore `===` and chronological compare is lexicographic.
+
+/** Today as an Israel civil-day string "YYYY-MM-DD". The single helper that reads the
+ *  system clock and projects it to Asia/Jerusalem. Call it at the use-site (render,
+ *  query, clamp) — never capture it in a module-level const, which freezes for the
+ *  whole session and goes stale across midnight. */
+export const todayIsraelDate = (): string => toIsraelTimezone(dayjs()).format('YYYY-MM-DD')
 
 /** True if the value is a readable "YYYY-MM-DD" calendar date (the at-rest form of
  *  civil dates in global state and the URL). Used to drop corrupt dates from shared
@@ -49,12 +41,6 @@ export const isValidSearchDate = (date: unknown): date is string =>
   typeof date === 'string' &&
   /^\d{4}-\d{2}-\d{2}$/.test(date) &&
   dayjs(date).format('YYYY-MM-DD') === date
-
-/** Today as an Israel civil-day string "YYYY-MM-DD". The single helper that reads the
- *  system clock and projects it to Asia/Jerusalem. Call it at the use-site (render,
- *  query, clamp) — never capture it in a module-level const, which freezes for the
- *  whole session and goes stale across midnight. */
-export const todayIsraelDate = (): string => toIsraelTimezone(dayjs()).format('YYYY-MM-DD')
 
 /** Parse a "YYYY-MM-DD" civil-day string into an ephemeral Dayjs, anchored at Israel
  *  noon so the calendar day survives a later .toDate()/UTC truncation in any runtime
@@ -86,10 +72,33 @@ export const clampToToday = (date: string): string => {
   return date > today ? today : date
 }
 
+// ── API date params (`format: date`) ─────────────────────────────────────────
+//
+// Convert a civil day to the `Date` the generated client expects for date-only
+// (calendar-day) params. Both helpers anchor at noon UTC; see toApiDate for why.
+
+/** Convert a Dayjs to the `Date` expected by `format: date` (calendar-day) API params.
+ *
+ *  The generated API client serializes date-only params with
+ *  `value.toISOString().substring(0, 10)`, i.e. it reads the calendar day in **UTC**.
+ *  A Date at Israel midnight is 21:00/22:00 UTC of the *previous* day, so the naive
+ *  `dayjs.toDate()` truncates to the wrong date. We instead anchor the Israeli calendar
+ *  day at **noon UTC**, where the UTC and Israel calendar days always agree — so the
+ *  client's UTC truncation yields the correct day on any runtime timezone (browser, SSR,
+ *  CI/Jest defaulting to UTC).
+ *
+ *  Use for every `format: date` param. NEVER for `format: date-time` (real instants):
+ *  this throws away the time-of-day. */
+export function toApiDate(value: dayjs.Dayjs): Date {
+  return new Date(`${toIsraelTimezone(value).format('YYYY-MM-DD')}T12:00:00Z`)
+}
+
 /** "YYYY-MM-DD" civil-day string → the Date a `format: date` API param expects.
  *  Composes parseIsraelDate + toApiDate so callers holding the canonical string form
  *  pass it straight to the client without materializing a Dayjs by hand. */
 export const apiDateFromString = (date: string): Date => toApiDate(parseIsraelDate(date))
+
+// ── Datetime from untrusted input ────────────────────────────────────────────
 
 /** Parse an Israel-local datetime string from untrusted input (e.g. a shared-URL
  *  param) into a Dayjs, or null if unparsable — dayjs.tz throws on bad input
