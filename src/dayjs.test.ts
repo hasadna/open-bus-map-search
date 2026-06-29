@@ -2,6 +2,8 @@ import dayjs, {
   apiDateFromString,
   clampToToday,
   formatIsraelDate,
+  getServiceDayDateBounds,
+  getServiceDayTimeBounds,
   normalizeIsraelDate,
   parseIsraelDate,
   parseIsraelLocalDatetime,
@@ -155,5 +157,29 @@ describe('todayIsraelDate', () => {
 
     jest.setSystemTime(new Date('2024-06-15T22:30:00Z'))
     expect(todayIsraelDate()).toBe('2024-06-16')
+  })
+})
+
+describe('getServiceDayTimeBounds', () => {
+  it('spans 00:00 of the date through 04:00 the next morning', () => {
+    const { start, end } = getServiceDayTimeBounds('2024-02-12')
+    expect(start.format('YYYY-MM-DD HH:mm')).toBe('2024-02-12 00:00')
+    expect(end.format('YYYY-MM-DD HH:mm')).toBe('2024-02-13 04:00')
+  })
+})
+
+describe('getServiceDayDateBounds', () => {
+  it('spans the date itself and the next calendar day, derived from the window', () => {
+    expect(getServiceDayDateBounds('2024-02-12')).toEqual({
+      today: '2024-02-12',
+      tomorrow: '2024-02-13',
+    })
+  })
+
+  it('rolls the month/year over at the boundary', () => {
+    expect(getServiceDayDateBounds('2024-12-31')).toEqual({
+      today: '2024-12-31',
+      tomorrow: '2025-01-01',
+    })
   })
 })

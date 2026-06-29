@@ -1,4 +1,3 @@
-import dayjs from 'src/dayjs'
 import { getServiceDayRoutes } from './serviceDayRoutesService'
 
 jest.mock('src/api/apiConfig', () => ({
@@ -55,47 +54,47 @@ describe('getServiceDayRoutes', () => {
 
   it("returns today's routes", async () => {
     mockApi.gtfsRoutesListGet.mockResolvedValue([makeRoute(1)])
-    const result = await getServiceDayRoutes(dayjs('2024-02-11'))
+    const result = await getServiceDayRoutes('2024-02-11')
     expect(result).toHaveLength(1)
     expect(result[0].routeIds).toContain(1)
   })
 
   it('converts late-night rides into routes', async () => {
     mockApi.gtfsRidesListGet.mockResolvedValue([makeRide(42)])
-    const result = await getServiceDayRoutes(dayjs('2024-02-11'))
+    const result = await getServiceDayRoutes('2024-02-11')
     expect(result).toHaveLength(1)
     expect(result[0].routeIds).toContain(42)
   })
 
   it('merges routes with the same key and accumulates routeIds', async () => {
     mockApi.gtfsRoutesListGet.mockResolvedValue([makeRoute(1), makeRoute(2)])
-    const result = await getServiceDayRoutes(dayjs('2024-02-11'))
+    const result = await getServiceDayRoutes('2024-02-11')
     expect(result).toHaveLength(1)
     expect(result[0].routeIds).toEqual(expect.arrayContaining([1, 2]))
   })
 
   it('deduplicates late-night rides with the same gtfsRouteId', async () => {
     mockApi.gtfsRidesListGet.mockResolvedValue([makeRide(42), makeRide(42)])
-    const result = await getServiceDayRoutes(dayjs('2024-02-11'))
+    const result = await getServiceDayRoutes('2024-02-11')
     expect(result).toHaveLength(1)
   })
 
   it('excludes late-night rides missing required route fields', async () => {
     mockApi.gtfsRidesListGet.mockResolvedValue([{ gtfsRouteId: null }])
-    const result = await getServiceDayRoutes(dayjs('2024-02-11'))
+    const result = await getServiceDayRoutes('2024-02-11')
     expect(result).toHaveLength(0)
   })
 
   it('returns today routes when late-night fetch fails', async () => {
     mockApi.gtfsRoutesListGet.mockResolvedValue([makeRoute(1)])
     mockApi.gtfsRidesListGet.mockRejectedValue(new Error('network error'))
-    const result = await getServiceDayRoutes(dayjs('2024-02-11'))
+    const result = await getServiceDayRoutes('2024-02-11')
     expect(result).toHaveLength(1)
     expect(result[0].routeIds).toContain(1)
   })
 
   it('forwards operatorId and lineNumber to both API calls', async () => {
-    await getServiceDayRoutes(dayjs('2024-02-11'), '97', '16')
+    await getServiceDayRoutes('2024-02-11', '97', '16')
     expect(mockApi.gtfsRoutesListGet).toHaveBeenCalledWith(
       expect.objectContaining({ operatorRefs: '97', routeShortName: '16' }),
       expect.anything(),
@@ -107,7 +106,7 @@ describe('getServiceDayRoutes', () => {
   })
 
   it('omits operator/line filters when not provided', async () => {
-    await getServiceDayRoutes(dayjs('2024-02-11'))
+    await getServiceDayRoutes('2024-02-11')
     expect(mockApi.gtfsRoutesListGet).toHaveBeenCalledWith(
       expect.not.objectContaining({ operatorRefs: expect.anything() }),
       expect.anything(),
@@ -116,13 +115,13 @@ describe('getServiceDayRoutes', () => {
 
   it('passes AbortSignal to both API calls', async () => {
     const signal = new AbortController().signal
-    await getServiceDayRoutes(dayjs('2024-02-11'), undefined, undefined, signal)
+    await getServiceDayRoutes('2024-02-11', undefined, undefined, signal)
     expect(mockApi.gtfsRoutesListGet).toHaveBeenCalledWith(expect.anything(), { signal })
     expect(mockApi.gtfsRidesListGet).toHaveBeenCalledWith(expect.anything(), { signal })
   })
 
   it('uses limit 15000 for both requests', async () => {
-    await getServiceDayRoutes(dayjs('2024-02-11'))
+    await getServiceDayRoutes('2024-02-11')
     expect(mockApi.gtfsRoutesListGet).toHaveBeenCalledWith(
       expect.objectContaining({ limit: 15000 }),
       expect.anything(),

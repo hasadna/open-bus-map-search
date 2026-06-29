@@ -1,7 +1,7 @@
 import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import dayjs, { formatIsraelDate, parseIsraelDate } from 'src/dayjs'
+import dayjs, { formatIsraelDate, getServiceDayTimeBounds, parseIsraelDate } from 'src/dayjs'
 import { GlobalSearchContext } from 'src/model/globalState'
 import { INPUT_SIZE } from 'src/resources/sizes'
 import { Gap, getGapsAsync } from '../../api/gapsService'
@@ -15,7 +15,6 @@ import OperatorSelector from '../components/OperatorSelector'
 import { PageContainer } from '../components/PageContainer'
 import RouteSelector from '../components/RouteSelector'
 import { Row } from '../components/Row'
-import { serviceDayBounds } from '../components/utils/startTimeUtils'
 import GapsTable from './GapsTable'
 
 const GapsPage = () => {
@@ -41,7 +40,7 @@ const GapsPage = () => {
     if (!selectedRoute) return
 
     setGapsIsLoading(true)
-    const { start, end } = serviceDayBounds(date)
+    const { start, end } = getServiceDayTimeBounds(date)
     getGapsAsync(start, end, operatorId, selectedRoute.lineRef)
       .then((res) =>
         setGaps(
@@ -79,7 +78,7 @@ const GapsPage = () => {
 
     const controller = new AbortController()
 
-    getServiceDayRoutes(parseIsraelDate(date), operatorId, lineNumber, controller.signal)
+    getServiceDayRoutes(date, operatorId, lineNumber, controller.signal)
       .then((fetchedRoutes) => {
         if (search.lineNumber === lineNumber) {
           setRoutes(fetchedRoutes)

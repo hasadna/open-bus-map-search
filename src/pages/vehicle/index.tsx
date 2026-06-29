@@ -4,11 +4,15 @@ import { useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { SIRI_API } from 'src/api/apiConfig'
 import { getAllRoutesList } from 'src/api/gtfsService'
-import dayjs, { formatIsraelDate, parseIsraelDate, todayIsraelDate } from 'src/dayjs'
+import dayjs, {
+  formatIsraelDate,
+  getServiceDayTimeBounds,
+  parseIsraelDate,
+  todayIsraelDate,
+} from 'src/dayjs'
 import { fromGtfsRoute } from 'src/model/busRoute'
 import { GlobalSearchContext } from 'src/model/globalState'
 import { InitialUrlParamsContext, PageShareParamsContext } from 'src/model/routeContext'
-import { serviceDayBounds } from 'src/pages/components/utils/startTimeUtils'
 import VehicleSelector, { normalizeVehicleNumber } from 'src/pages/components/VehicleSelector'
 import { DateSelector } from '../components/DateSelector'
 import { NotFound } from '../components/NotFound'
@@ -38,7 +42,7 @@ const VehiclePage = () => {
   }, [vehicleNumber, setParams])
 
   const { start: serviceDayStart, end: serviceDayEnd } = useMemo(
-    () => serviceDayBounds(date),
+    () => getServiceDayTimeBounds(date),
     [date],
   )
 

@@ -5,7 +5,6 @@ import {
   normalizeScheduledTime,
   normalizeStartTimeToken,
   parseStartTimeToken,
-  serviceDayBounds,
   serviceDayTokenToDisplay,
 } from './startTimeUtils'
 
@@ -84,14 +83,6 @@ describe('normalizeScheduledTime', () => {
     [undefined],
   ])('rejects %s', (raw) => {
     expect(normalizeScheduledTime(raw)).toBeUndefined()
-  })
-})
-
-describe('serviceDayBounds', () => {
-  it('spans 00:00 of the date through 04:00 the next morning', () => {
-    const { start, end } = serviceDayBounds('2024-02-12')
-    expect(start.format('YYYY-MM-DD HH:mm')).toBe('2024-02-12 00:00')
-    expect(end.format('YYYY-MM-DD HH:mm')).toBe('2024-02-13 04:00')
   })
 })
 

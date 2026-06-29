@@ -96,7 +96,7 @@ const LineProfile = () => {
     // Service-day aware (and Israel-tz normalized internally), consistent with the
     // gaps page and the single-line ride list.
     getServiceDayRoutes(
-      time,
+      formatIsraelDate(time),
       route?.operatorRef.toString(),
       route?.routeShortName,
       abortController.signal,

@@ -2,14 +2,13 @@ import {
   GtfsRoutePydanticModel,
   SiriRideWithRelatedPydanticModel,
 } from '@hasadna/open-bus-api-client'
-import { ISRAEL_TIMEZONE } from 'src/dayjs'
+import { getServiceDayTimeBounds, ISRAEL_TIMEZONE } from 'src/dayjs'
 import dayjs from 'src/dayjs'
 import { fromGtfsRoute } from 'src/model/busRoute'
-import { serviceDayBounds } from 'src/pages/components/utils/startTimeUtils'
 import { buildVehicleRideRows, ResolvedRoute } from './buildVehicleRideRows'
 
 const DATE = '2024-02-12'
-const { start: serviceDayStart } = serviceDayBounds(DATE)
+const { start: serviceDayStart } = getServiceDayTimeBounds(DATE)
 
 // A GTFS route as the API returns it (camelCase). lineRef is the SIRI rides'
 // join key; routeLongName uses the "<->" separator routeStartEnd splits on.

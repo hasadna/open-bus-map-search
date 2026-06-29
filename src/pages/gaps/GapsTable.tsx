@@ -14,11 +14,10 @@ import React, { memo, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
 import { Gap } from 'src/api/gapsService'
-import dayjs from 'src/dayjs'
+import dayjs, { getServiceDayTimeBounds } from 'src/dayjs'
 import {
   formatServiceDayTime,
   formatStartTimeForQuery,
-  serviceDayBounds,
 } from 'src/pages/components/utils/startTimeUtils'
 import SkeletonLoader from 'src/shared/SkeletonLoader'
 import Widget from 'src/shared/Widget'
@@ -97,7 +96,7 @@ const GapsTable: React.FC<GapsTableProps> = ({
   onStartTimeClick,
 }) => {
   const { t } = useTranslation()
-  const { start: serviceDayStart } = serviceDayBounds(date)
+  const { start: serviceDayStart } = getServiceDayTimeBounds(date)
   const [onlyGapped, setOnlyGapped] = useState(initOnlyGapped)
 
   const filteredGaps: Gap[] = useMemo(() => {

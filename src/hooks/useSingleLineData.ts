@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { SIRI_API } from 'src/api/apiConfig'
 import { getRoutesByLineRef, getStopsForRouteAsync } from 'src/api/gtfsService'
 import { getServiceDayRoutes } from 'src/api/serviceDayRoutesService'
-import { parseIsraelDate, toIsraelTimezone } from 'src/dayjs'
+import { getServiceDayTimeBounds, toIsraelTimezone } from 'src/dayjs'
 import { BusRoute } from 'src/model/busRoute'
 import {
   type PositionGroup,
@@ -16,7 +16,6 @@ import {
   formatServiceDayTime,
   normalizeStartTimeToken,
   parseStartTimeToken,
-  serviceDayBounds,
   serviceDayTokenToDisplay,
 } from 'src/pages/components/utils/startTimeUtils'
 
@@ -75,7 +74,7 @@ export const useSingleLineData = ({
 
     // Service-day aware: includes the next calendar day's late-night routes
     // (00:00–04:00) that belong to this service day, matching the gaps page.
-    getServiceDayRoutes(parseIsraelDate(date), operatorId, lineNumber, controller.signal)
+    getServiceDayRoutes(date, operatorId, lineNumber, controller.signal)
       .then((routes) => {
         setRoutes(routes)
         setError(undefined)
@@ -98,7 +97,7 @@ export const useSingleLineData = ({
   }, [routes, routeKey])
 
   const [serviceDayStart, serviceDayEnd] = useMemo(() => {
-    const { start, end } = serviceDayBounds(date)
+    const { start, end } = getServiceDayTimeBounds(date)
     return [start, end]
   }, [date])
 

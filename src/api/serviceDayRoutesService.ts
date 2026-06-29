@@ -3,7 +3,7 @@ import {
   GtfsRoutePydanticModel,
 } from '@hasadna/open-bus-api-client'
 import { GTFS_API } from 'src/api/apiConfig'
-import dayjs, { toApiDate, toIsraelTimezone } from 'src/dayjs'
+import { apiDateFromString, getServiceDayDateBounds, getServiceDayTimeBounds } from 'src/dayjs'
 import { BusRoute, fromGtfsRoute } from 'src/model/busRoute'
 
 function rideToRoute(ride: GtfsRideWithRelatedPydanticModel): GtfsRoutePydanticModel | null {
@@ -31,8 +31,8 @@ function rideToRoute(ride: GtfsRideWithRelatedPydanticModel): GtfsRoutePydanticM
 }
 
 /**
- * Returns all routes for the given service day:
- * - All GTFS routes whose date equals serviceDate (Israel timezone)
+ * Returns all routes for the given service day (a "YYYY-MM-DD" civil-day string):
+ * - All GTFS routes whose date equals the service day (Israel timezone)
  * - Tomorrow's routes that have at least one planned ride starting between
  *   midnight and 04:00 Israel time (late-night service belonging to this day),
  *   derived directly from the rides response without a separate routes fetch.
@@ -40,18 +40,18 @@ function rideToRoute(ride: GtfsRideWithRelatedPydanticModel): GtfsRoutePydanticM
  * Routes with the same key are merged (routeIds accumulated).
  */
 export async function getServiceDayRoutes(
-  serviceDate: dayjs.Dayjs,
+  date: string,
   operatorId?: string,
   lineNumber?: string,
   signal?: AbortSignal,
 ): Promise<BusRoute[]> {
-  const todayIL = toIsraelTimezone(serviceDate).startOf('day')
-  const tomorrowIL = todayIL.add(1, 'day')
+  const { start, end } = getServiceDayTimeBounds(date)
+  const { today, tomorrow } = getServiceDayDateBounds(date)
 
-  const todayUTC = toApiDate(todayIL)
-  const tomorrowUTC = toApiDate(tomorrowIL)
-  const tomorrowMidnightUTC = tomorrowIL.toDate()
-  const tomorrow04hUTC = tomorrowIL.add(4, 'hours').toDate()
+  const todayUTC = apiDateFromString(today)
+  const tomorrowUTC = apiDateFromString(tomorrow)
+  const tomorrowMidnightUTC = start.add(1, 'day').toDate()
+  const tomorrow04hUTC = end.toDate()
 
   const [todayRaw, ridesInWindow] = await Promise.all([
     // Today's routes
