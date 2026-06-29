@@ -1,4 +1,4 @@
-import dayjs, { toApiDate } from 'src/dayjs'
+import dayjs, { ISRAEL_TIMEZONE, toApiDate } from 'src/dayjs'
 import { USER_CASE_API } from './apiConfig'
 
 export type Gap = {
@@ -9,7 +9,7 @@ export type Gap = {
 
 export function parseTime(time?: dayjs.ConfigType) {
   if (!time) return undefined
-  const utcDayjs = dayjs.utc(time).utcOffset(0, true).tz('Asia/Jerusalem')
+  const utcDayjs = dayjs.utc(time).utcOffset(0, true).tz(ISRAEL_TIMEZONE)
   if (!utcDayjs.isValid()) return undefined
   return utcDayjs
 }
