@@ -661,7 +661,7 @@ export const positionGroups = [{ positions: filteredPositionsRaw, color: ROUTE_C
 
 export const plannedRouteStops: BusStop[] = [
   {
-    date: new Date('2025-04-21T00:00:00.000Z'),
+    date: '2025-04-21',
     key: '3861278487',
     stopId: 33577079,
     routeId: 6803713,
@@ -675,7 +675,7 @@ export const plannedRouteStops: BusStop[] = [
     minutesFromRouteStartTime: 0,
   },
   {
-    date: new Date('2025-04-21T00:00:00.000Z'),
+    date: '2025-04-21',
     key: '3861278488',
     stopId: 33576754,
     routeId: 6803713,
@@ -689,7 +689,7 @@ export const plannedRouteStops: BusStop[] = [
     minutesFromRouteStartTime: 2,
   },
   {
-    date: new Date('2025-04-21T00:00:00.000Z'),
+    date: '2025-04-21',
     key: '3861278489',
     stopId: 33563022,
     routeId: 6803713,
@@ -703,7 +703,7 @@ export const plannedRouteStops: BusStop[] = [
     minutesFromRouteStartTime: 2,
   },
   {
-    date: new Date('2025-04-21T00:00:00.000Z'),
+    date: '2025-04-21',
     key: '3861278490',
     stopId: 33563023,
     routeId: 6803713,
@@ -717,7 +717,7 @@ export const plannedRouteStops: BusStop[] = [
     minutesFromRouteStartTime: 3,
   },
   {
-    date: new Date('2025-04-21T00:00:00.000Z'),
+    date: '2025-04-21',
     key: '3861278491',
     stopId: 33576753,
     routeId: 6803713,
@@ -731,7 +731,7 @@ export const plannedRouteStops: BusStop[] = [
     minutesFromRouteStartTime: 6,
   },
   {
-    date: new Date('2025-04-21T00:00:00.000Z'),
+    date: '2025-04-21',
     key: '3861278492',
     stopId: 33576942,
     routeId: 6803713,
@@ -745,7 +745,7 @@ export const plannedRouteStops: BusStop[] = [
     minutesFromRouteStartTime: 7,
   },
   {
-    date: new Date('2025-04-21T00:00:00.000Z'),
+    date: '2025-04-21',
     key: '3861278493',
     stopId: 33552082,
     routeId: 6803713,
@@ -759,7 +759,7 @@ export const plannedRouteStops: BusStop[] = [
     minutesFromRouteStartTime: 8,
   },
   {
-    date: new Date('2025-04-21T00:00:00.000Z'),
+    date: '2025-04-21',
     key: '3861278494',
     stopId: 33563372,
     routeId: 6803713,
@@ -773,7 +773,7 @@ export const plannedRouteStops: BusStop[] = [
     minutesFromRouteStartTime: 9,
   },
   {
-    date: new Date('2025-04-21T00:00:00.000Z'),
+    date: '2025-04-21',
     key: '3861278495',
     stopId: 33552616,
     routeId: 6803713,
@@ -787,7 +787,7 @@ export const plannedRouteStops: BusStop[] = [
     minutesFromRouteStartTime: 10,
   },
   {
-    date: new Date('2025-04-21T00:00:00.000Z'),
+    date: '2025-04-21',
     key: '3861278496',
     stopId: 33552024,
     routeId: 6803713,
@@ -801,7 +801,7 @@ export const plannedRouteStops: BusStop[] = [
     minutesFromRouteStartTime: 11,
   },
   {
-    date: new Date('2025-04-21T00:00:00.000Z'),
+    date: '2025-04-21',
     key: '3861278497',
     stopId: 33552029,
     routeId: 6803713,
@@ -815,7 +815,7 @@ export const plannedRouteStops: BusStop[] = [
     minutesFromRouteStartTime: 12,
   },
   {
-    date: new Date('2025-04-21T00:00:00.000Z'),
+    date: '2025-04-21',
     key: '3861278498',
     stopId: 33553275,
     routeId: 6803713,
@@ -829,7 +829,7 @@ export const plannedRouteStops: BusStop[] = [
     minutesFromRouteStartTime: 13,
   },
   {
-    date: new Date('2025-04-21T00:00:00.000Z'),
+    date: '2025-04-21',
     key: '3861278499',
     stopId: 33553276,
     routeId: 6803713,
@@ -843,7 +843,7 @@ export const plannedRouteStops: BusStop[] = [
     minutesFromRouteStartTime: 15,
   },
   {
-    date: new Date('2025-04-21T00:00:00.000Z'),
+    date: '2025-04-21',
     key: '3861278500',
     stopId: 33553277,
     routeId: 6803713,
@@ -857,7 +857,7 @@ export const plannedRouteStops: BusStop[] = [
     minutesFromRouteStartTime: 16,
   },
   {
-    date: new Date('2025-04-21T00:00:00.000Z'),
+    date: '2025-04-21',
     key: '3861278501',
     stopId: 33553209,
     routeId: 6803713,
@@ -871,7 +871,7 @@ export const plannedRouteStops: BusStop[] = [
     minutesFromRouteStartTime: 17,
   },
   {
-    date: new Date('2025-04-21T00:00:00.000Z'),
+    date: '2025-04-21',
     key: '3861278502',
     stopId: 33552085,
     routeId: 6803713,
@@ -885,7 +885,7 @@ export const plannedRouteStops: BusStop[] = [
     minutesFromRouteStartTime: 17,
   },
   {
-    date: new Date('2025-04-21T00:00:00.000Z'),
+    date: '2025-04-21',
     key: '3861278503',
     stopId: 33552974,
     routeId: 6803713,
@@ -899,7 +899,7 @@ export const plannedRouteStops: BusStop[] = [
     minutesFromRouteStartTime: 18,
   },
   {
-    date: new Date('2025-04-21T00:00:00.000Z'),
+    date: '2025-04-21',
     key: '3861278504',
     stopId: 33552975,
     routeId: 6803713,
@@ -913,7 +913,7 @@ export const plannedRouteStops: BusStop[] = [
     minutesFromRouteStartTime: 19,
   },
   {
-    date: new Date('2025-04-21T00:00:00.000Z'),
+    date: '2025-04-21',
     key: '3861278505',
     stopId: 33553209,
     routeId: 6803713,
@@ -927,7 +927,7 @@ export const plannedRouteStops: BusStop[] = [
     minutesFromRouteStartTime: 21,
   },
   {
-    date: new Date('2025-04-21T00:00:00.000Z'),
+    date: '2025-04-21',
     key: '3861278506',
     stopId: 33563337,
     routeId: 6803713,
@@ -941,7 +941,7 @@ export const plannedRouteStops: BusStop[] = [
     minutesFromRouteStartTime: 21,
   },
   {
-    date: new Date('2025-04-21T00:00:00.000Z'),
+    date: '2025-04-21',
     key: '3861278507',
     stopId: 33563336,
     routeId: 6803713,
@@ -955,7 +955,7 @@ export const plannedRouteStops: BusStop[] = [
     minutesFromRouteStartTime: 22,
   },
   {
-    date: new Date('2025-04-21T00:00:00.000Z'),
+    date: '2025-04-21',
     key: '3861278508',
     stopId: 33577567,
     routeId: 6803713,
@@ -969,7 +969,7 @@ export const plannedRouteStops: BusStop[] = [
     minutesFromRouteStartTime: 23,
   },
   {
-    date: new Date('2025-04-21T00:00:00.000Z'),
+    date: '2025-04-21',
     key: '3861278509',
     stopId: 33551785,
     routeId: 6803713,
@@ -983,7 +983,7 @@ export const plannedRouteStops: BusStop[] = [
     minutesFromRouteStartTime: 23,
   },
   {
-    date: new Date('2025-04-21T00:00:00.000Z'),
+    date: '2025-04-21',
     key: '3861278510',
     stopId: 33563189,
     routeId: 6803713,
@@ -997,7 +997,7 @@ export const plannedRouteStops: BusStop[] = [
     minutesFromRouteStartTime: 24,
   },
   {
-    date: new Date('2025-04-21T00:00:00.000Z'),
+    date: '2025-04-21',
     key: '3861278511',
     stopId: 33551792,
     routeId: 6803713,
@@ -1011,7 +1011,7 @@ export const plannedRouteStops: BusStop[] = [
     minutesFromRouteStartTime: 25,
   },
   {
-    date: new Date('2025-04-21T00:00:00.000Z'),
+    date: '2025-04-21',
     key: '3861278512',
     stopId: 33553818,
     routeId: 6803713,
@@ -1025,7 +1025,7 @@ export const plannedRouteStops: BusStop[] = [
     minutesFromRouteStartTime: 26,
   },
   {
-    date: new Date('2025-04-21T00:00:00.000Z'),
+    date: '2025-04-21',
     key: '3861278513',
     stopId: 33577916,
     routeId: 6803713,

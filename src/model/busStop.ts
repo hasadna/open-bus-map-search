@@ -3,11 +3,11 @@ import {
   GtfsRideWithRelatedPydanticModel,
   GtfsStopPydanticModel,
 } from '@hasadna/open-bus-api-client'
-import dayjs from 'src/dayjs'
+import dayjs, { formatIsraelDate } from 'src/dayjs'
 import { Coordinates } from 'src/model/location'
 
 export type BusStop = {
-  date: Date
+  date: string
   key: string
   stopId: number
   routeId: number
@@ -28,7 +28,7 @@ export function fromGtfsStop(
     ? dayjs(arrivalTime).diff(ride.startTime, 'minutes')
     : 0
   return {
-    date: gtfsStop.date,
+    date: formatIsraelDate(gtfsStop.date),
     // Key on the stop CODE, not the gtfs_ride_stop id: GTFS is reloaded daily so
     // the row id (and gtfsStopId) change every date, which made a persisted
     // stopKey fail to match after a date change. The code is stable per physical

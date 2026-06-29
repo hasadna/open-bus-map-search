@@ -5,7 +5,7 @@ import { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLoaderData, useNavigate } from 'react-router'
 import { getServiceDayRoutes } from 'src/api/serviceDayRoutesService'
-import dayjs, { formatIsraelDate } from 'src/dayjs'
+import dayjs, { formatIsraelDate, parseIsraelDate } from 'src/dayjs'
 import { useSingleLineData } from 'src/hooks/useSingleLineData'
 import { GLOBAL_SEARCH_DEFAULTS, GlobalSearchContext } from 'src/model/globalState'
 import { InitialUrlParamsContext, PageShareParamsContext } from 'src/model/routeContext'
@@ -145,7 +145,7 @@ const LineProfile = () => {
               setRouteKey={handelRouteChange}
             />
           )}
-          <DateSelector time={dayjs(route?.date.getTime())} onChange={handleDateChange} />
+          <DateSelector time={parseIsraelDate(search.date)} onChange={handleDateChange} />
           <Grid container sx={{ flexWrap: 'nowrap', alignItems: 'center' }}>
             <FilterPositionsByStartTimeSelector
               options={options}

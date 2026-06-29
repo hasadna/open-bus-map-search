@@ -1,7 +1,7 @@
 import { SiriVelocityAggregationPydanticModel } from '@hasadna/open-bus-api-client'
 import { useQuery } from '@tanstack/react-query'
 import { SIRI_API } from 'src/api/apiConfig'
-import dayjs from 'src/dayjs'
+import { parseIsraelDate, shiftIsraelDate, todayIsraelDate } from 'src/dayjs'
 
 export interface VelocityAggregationBounds {
   minLat: number
@@ -14,10 +14,9 @@ const cacheDomain = 'https://docbuvbfdq5r6.cloudfront.net/'
 
 export function useVelocityAggregationData(
   bounds: VelocityAggregationBounds,
-  date: dayjs.Dayjs,
+  date: string,
   zoom: number,
 ) {
-  date = date.startOf('day').add(12, 'hour') // use midday to avoid timezone issues
   const { data, isLoading, error } = useQuery({
     queryFn: queryFn.bind(null, bounds, date, zoom),
     queryKey: [
@@ -27,7 +26,7 @@ export function useVelocityAggregationData(
       bounds.minLat,
       bounds.maxLat,
       zoom,
-      date.toString(),
+      date,
       'v2',
     ],
   })
@@ -44,10 +43,13 @@ function snakeToCamel(o: SiriVelocityAggregationPydanticModel) {
   )
 }
 
-async function loadFromCache(bounds: VelocityAggregationBounds, date: dayjs.Dayjs, zoom: number) {
+async function loadFromCache(bounds: VelocityAggregationBounds, date: string, zoom: number) {
+  // Materialize the civil day to an instant only here, at the fetch border. The midday
+  // anchor (parseIsraelDate) keeps the day on the correct side of the UTC boundary.
+  const recordedFrom = parseIsraelDate(date).toISOString()
   const dataFromCache = await fetch(
     `${cacheDomain}siri_velocity_aggregation/siri_velocity_aggregation?recorded_from=${encodeURIComponent(
-      date.toISOString(),
+      recordedFrom,
     )}&lon_min=${bounds.minLon}&lon_max=${bounds.maxLon}&lat_min=${bounds.minLat}&lat_max=${bounds.maxLat}&rounding_precision=${zoom}`,
   ).then(async (res) => {
     if (!res.ok) {
@@ -60,9 +62,10 @@ async function loadFromCache(bounds: VelocityAggregationBounds, date: dayjs.Dayj
   return dataFromCache
 }
 
-async function queryFn(bounds: VelocityAggregationBounds, date: dayjs.Dayjs, zoom: number) {
-  // only try cached data if date is in the past
-  if (date.isBefore(dayjs('yesterday'))) {
+async function queryFn(bounds: VelocityAggregationBounds, date: string, zoom: number) {
+  // Only hit the precomputed cache for days older than yesterday — more recent days may
+  // not be aggregated yet. Lexicographic compare works on the "YYYY-MM-DD" civil-day form.
+  if (date < shiftIsraelDate(todayIsraelDate(), -1)) {
     try {
       const cachedData = await loadFromCache(bounds, date, zoom)
       if (cachedData) {
@@ -73,7 +76,7 @@ async function queryFn(bounds: VelocityAggregationBounds, date: dayjs.Dayjs, zoo
     }
   }
   const data = await SIRI_API.velocityAggregationSiriVelocityAggregationSiriVelocityAggregationGet({
-    recordedFrom: date.toDate(),
+    recordedFrom: parseIsraelDate(date).toDate(),
     lonMin: bounds.minLon,
     lonMax: bounds.maxLon,
     latMin: bounds.minLat,
