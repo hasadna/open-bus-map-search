@@ -2,7 +2,12 @@ import { Grid, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material
 import { useContext, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
-import dayjs, { formatIsraelDate, parseIsraelDate, todayIsraelDate } from 'src/dayjs'
+import dayjs, {
+  formatIsraelDate,
+  parseIsraelDate,
+  shiftIsraelDate,
+  todayIsraelDate,
+} from 'src/dayjs'
 import { GlobalSearchContext } from 'src/model/globalState'
 import { DateSelector } from '../components/DateSelector'
 import OperatorSelector from '../components/OperatorSelector'
@@ -22,8 +27,6 @@ const OperatorPage = () => {
   const { t } = useTranslation()
 
   const [timeRange, setTimeRange] = useState<(typeof TIME_RANGES)[number]>('day')
-
-  const dateDayjs = parseIsraelDate(date)
 
   const handleOperatorChange = (operatorId: string) => {
     setSearch((current) => ({ ...current, operatorId }))
@@ -48,7 +51,11 @@ const OperatorPage = () => {
         </Grid>
 
         <Grid size={{ sm: 4, xs: 12 }}>
-          <DateSelector time={dateDayjs} disabled={!operatorId} onChange={handleDateChange} />
+          <DateSelector
+            time={parseIsraelDate(date)}
+            disabled={!operatorId}
+            onChange={handleDateChange}
+          />
         </Grid>
 
         <Grid size={{ sm: 4, xs: 12 }}>
@@ -81,8 +88,8 @@ const OperatorPage = () => {
             <ChartWrapper>
               <WorstLinesChart
                 operatorId={operatorId}
-                startDate={dateDayjs.add(-1, timeRange)}
-                endDate={dateDayjs}
+                startDate={shiftIsraelDate(date, -1, timeRange)}
+                endDate={date}
                 alertWorstLineHandling={function (arg: boolean): void {
                   console.log('alertWorstLineHandling', arg)
                 }}

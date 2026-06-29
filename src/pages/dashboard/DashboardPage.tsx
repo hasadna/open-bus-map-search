@@ -2,7 +2,7 @@ import { Alert, Grid, Typography } from '@mui/material'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 // Services and libraries
-import { parseIsraelDate, shiftIsraelDate, todayIsraelDate } from 'src/dayjs'
+import { formatIsraelDate, parseIsraelDate, shiftIsraelDate, todayIsraelDate } from 'src/dayjs'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
 import { DateSelector } from '../components/DateSelector'
 import { PageContainer } from '../components/PageContainer'
@@ -18,8 +18,10 @@ const DashboardPage = () => {
   // `today` is read in component scope (per mount), not frozen at module load like the
   // old `const now`, so the default range can't go stale across midnight.
   const today = todayIsraelDate()
-  const [startDate, setStartDate] = useState(parseIsraelDate(shiftIsraelDate(today, -7)))
-  const [endDate, setEndDate] = useState(parseIsraelDate(shiftIsraelDate(today, -1)))
+  // The range lives as "YYYY-MM-DD" civil-day strings; a Dayjs is materialized inline only
+  // at the MUI pickers below — the charts and useGroupBy take strings.
+  const [startDate, setStartDate] = useState(shiftIsraelDate(today, -7))
+  const [endDate, setEndDate] = useState(shiftIsraelDate(today, -1))
   const [operatorId, setOperatorId] = useState('')
   const { t } = useTranslation()
 
@@ -57,16 +59,16 @@ const DashboardPage = () => {
         <Grid container size={{ xs: 12, lg: 6 }} spacing={2} sx={{ alignItems: 'center' }}>
           <Grid size={{ xs: 6 }}>
             <DateSelector
-              time={startDate}
-              onChange={(data) => data && setStartDate(data)}
+              time={parseIsraelDate(startDate)}
+              onChange={(data) => data && setStartDate(formatIsraelDate(data))}
               customLabel={t('start')}
             />
           </Grid>
           <Grid size={{ xs: 6 }}>
             <DateSelector
-              time={endDate}
-              onChange={(data) => data && setEndDate(data)}
-              minDate={startDate}
+              time={parseIsraelDate(endDate)}
+              onChange={(data) => data && setEndDate(formatIsraelDate(data))}
+              minDate={parseIsraelDate(startDate)}
               customLabel={t('end')}
             />
           </Grid>

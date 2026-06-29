@@ -3,7 +3,7 @@ import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Cell, Pie, PieChart } from 'recharts'
 import { useGroupBy } from 'src/api/groupByService'
-import { parseIsraelDate, todayIsraelDate } from 'src/dayjs'
+import { shiftIsraelDate, todayIsraelDate } from 'src/dayjs'
 import SkeletonLoader from 'src/shared/SkeletonLoader'
 import Widget from 'src/shared/Widget'
 import { InfoItem, InfoTable } from '../components/InfoTable'
@@ -18,10 +18,10 @@ export const OperatorGaps = ({
   timeRange?: 'day' | 'week' | 'month' | 'year'
 }) => {
   const { t, i18n } = useTranslation()
-  const dateDayjs = parseIsraelDate(date ?? todayIsraelDate())
+  const baseDate = date ?? todayIsraelDate()
   const [groupByOperatorData, isLoading] = useGroupBy({
-    dateFrom: dateDayjs.subtract(1, timeRange),
-    dateTo: dateDayjs,
+    dateFrom: shiftIsraelDate(baseDate, -1, timeRange),
+    dateTo: baseDate,
     groupBy: 'operator_ref',
   })
 

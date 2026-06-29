@@ -11,7 +11,12 @@ import {
   YAxis,
 } from 'recharts'
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
-import dayjs, { parseIsraelDate, shiftIsraelDate, todayIsraelDate } from 'src/dayjs'
+import dayjs, {
+  formatIsraelDate,
+  parseIsraelDate,
+  shiftIsraelDate,
+  todayIsraelDate,
+} from 'src/dayjs'
 import SkeletonLoader from 'src/shared/SkeletonLoader'
 import Widget from 'src/shared/Widget'
 import { DateSelector } from '../components/DateSelector'
@@ -36,8 +41,10 @@ function StackedResearchSection() {
   const { t } = useTranslation()
   // `today` read per mount (not frozen at module load) so the default range can't go stale.
   const today = todayIsraelDate()
-  const [startDate, setStartDate] = useState(parseIsraelDate(shiftIsraelDate(today, -7)))
-  const [endDate, setEndDate] = useState(parseIsraelDate(shiftIsraelDate(today, -1)))
+  // The range lives as "YYYY-MM-DD" civil-day strings; a Dayjs is materialized inline only
+  // at the MUI pickers in StackedResearchInputs — useGroupBy takes strings.
+  const [startDate, setStartDate] = useState(shiftIsraelDate(today, -7))
+  const [endDate, setEndDate] = useState(shiftIsraelDate(today, -1))
   const [operatorId, setOperatorId] = useState('')
   const [groupByHour, setGroupByHour] = useState<boolean>(false)
   const [graphData, loadingGraph] = useGroupBy({
@@ -96,10 +103,10 @@ function StackedResearchInputs({
   operatorId,
   setOperatorId,
 }: {
-  startDate: dayjs.Dayjs
-  setStartDate: (date: dayjs.Dayjs) => void
-  endDate: dayjs.Dayjs
-  setEndDate: (date: dayjs.Dayjs) => void
+  startDate: string
+  setStartDate: (date: string) => void
+  endDate: string
+  setEndDate: (date: string) => void
   groupByHour: boolean
   setGroupByHour: (value: boolean) => void
   operatorId: string
@@ -111,15 +118,15 @@ function StackedResearchInputs({
       <Grid container sx={{ gap: 2 }}>
         <Grid size={{ md: 'grow', xs: 12 }}>
           <DateSelector
-            time={startDate}
-            onChange={(data) => data && setStartDate(data)}
+            time={parseIsraelDate(startDate)}
+            onChange={(data) => data && setStartDate(formatIsraelDate(data))}
             customLabel={t('start')}
           />
         </Grid>
         <Grid size={{ md: 'grow', xs: 12 }}>
           <DateSelector
-            time={endDate}
-            onChange={(data) => data && setEndDate(data)}
+            time={parseIsraelDate(endDate)}
+            onChange={(data) => data && setEndDate(formatIsraelDate(data))}
             customLabel={t('end')}
           />
         </Grid>

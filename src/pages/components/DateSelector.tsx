@@ -1,7 +1,7 @@
 import { DatePicker, DateValidationError } from '@mui/x-date-pickers'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import dayjs from 'src/dayjs'
+import dayjs, { parseIsraelDate } from 'src/dayjs'
 
 export type DataSelectorProps = {
   time: dayjs.Dayjs
@@ -21,7 +21,7 @@ const getErrorMessageKey = (error?: DateValidationError) => {
   }
 }
 
-const startOfTime = dayjs('1-1-2023')
+const startOfTime = parseIsraelDate('2023-01-01')
 
 export function DateSelector({
   time,

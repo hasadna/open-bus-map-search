@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { http, HttpResponse } from 'msw'
-import dayjs from 'src/dayjs'
+import dayjs, { formatIsraelDate } from 'src/dayjs'
 import { getPastDate } from '../../../../.storybook/main'
 import WorstLinesChart from './WorstLinesChart'
 
@@ -13,7 +13,7 @@ const meta = {
       description: 'The start date of the chart.',
       table: {
         type: {
-          summary: 'Dayjs',
+          summary: 'string',
         },
       },
     },
@@ -28,8 +28,8 @@ const meta = {
   },
   render: (args) => (
     <WorstLinesChart
-      startDate={dayjs(args.startDate)}
-      endDate={dayjs(args.endDate)}
+      startDate={formatIsraelDate(dayjs(args.startDate))}
+      endDate={formatIsraelDate(dayjs(args.endDate))}
       operatorId={args.operatorId}
       alertWorstLineHandling={function (arg: boolean): void {
         console.log('alertWorstLineHandling', arg)
@@ -57,8 +57,8 @@ export const Default: Story = {
     },
   },
   args: {
-    startDate: dayjs(getPastDate()).subtract(7, 'day'),
-    endDate: dayjs(getPastDate()),
+    startDate: formatIsraelDate(dayjs(getPastDate()).subtract(7, 'day')),
+    endDate: formatIsraelDate(dayjs(getPastDate())),
     operatorId: '3',
     alertWorstLineHandling: (arg: boolean) => {
       console.log('alertWorstLineHandling', arg)

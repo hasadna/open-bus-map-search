@@ -9,6 +9,7 @@ import { SvgIconProps, Tooltip } from '@mui/material'
 import { useContext } from 'react'
 import { useTranslation } from 'react-i18next'
 import { NavLink, To } from 'react-router'
+import { todayIsraelDate } from 'src/dayjs'
 import { LayoutContextInterface, LayoutCtx } from 'src/layout/LayoutContext'
 import busImage from '../../img/busImg.png'
 import './HomePage.scss'
@@ -102,7 +103,7 @@ export const HomePage = () => {
         />
       </section>
 
-      <footer>{`${t('homepage.copyright')} ${new Date().getFullYear()}`}</footer>
+      <footer>{`${t('homepage.copyright')} ${todayIsraelDate().slice(0, 4)}`}</footer>
     </div>
   )
 }

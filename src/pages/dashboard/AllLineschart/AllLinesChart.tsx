@@ -3,7 +3,6 @@ import { Tooltip } from '@mui/material'
 import { FC, Fragment, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
-import { Dayjs } from 'src/dayjs'
 import SkeletonLoader from 'src/shared/SkeletonLoader'
 import Widget from 'src/shared/Widget'
 import OperatorHbarChart from './OperatorHbarChart/OperatorHbarChart'
@@ -18,8 +17,8 @@ const convertToChartCompatibleStruct = (arr: GroupByRes[]) => {
 }
 
 interface AllChartComponentProps {
-  startDate: Dayjs
-  endDate: Dayjs
+  startDate: string
+  endDate: string
   alertAllChartsZeroLinesHandling: (arg: boolean) => void
 }
 

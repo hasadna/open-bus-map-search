@@ -2,6 +2,7 @@ import dayjs, {
   apiDateFromString,
   clampToToday,
   formatIsraelDate,
+  normalizeIsraelDate,
   parseIsraelDate,
   parseIsraelLocalDatetime,
   shiftIsraelDate,
@@ -83,6 +84,26 @@ describe('formatIsraelDate', () => {
   })
 })
 
+describe('normalizeIsraelDate', () => {
+  it('passes a canonical civil-day string through unchanged', () => {
+    expect(normalizeIsraelDate('2026-05-01')).toBe('2026-05-01')
+  })
+
+  it('reads the Israel calendar day off a legacy full ISO datetime (older shared links)', () => {
+    // gaps_patterns used to serialize its range bounds via .toISOString(); 00:00Z is
+    // 02:00/03:00 Israel time — still the 1st.
+    expect(normalizeIsraelDate('2026-05-01T00:00:00.000Z')).toBe('2026-05-01')
+    // 22:30 UTC is past midnight in Israel — the civil day rolls to the next day.
+    expect(normalizeIsraelDate('2024-06-15T22:30:00Z')).toBe('2024-06-16')
+  })
+
+  it('returns undefined for missing or unparsable input (caller supplies its own default)', () => {
+    expect(normalizeIsraelDate(undefined)).toBeUndefined()
+    expect(normalizeIsraelDate('')).toBeUndefined()
+    expect(normalizeIsraelDate('garbage')).toBeUndefined()
+  })
+})
+
 describe('shiftIsraelDate', () => {
   it('crosses month, year and leap-day boundaries', () => {
     expect(shiftIsraelDate('2026-06-30', 1)).toBe('2026-07-01')
@@ -95,6 +116,16 @@ describe('shiftIsraelDate', () => {
     expect(shiftIsraelDate('2026-03-01', -1)).toBe('2026-02-28')
     expect(shiftIsraelDate('2026-06-28', -7)).toBe('2026-06-21')
     expect(shiftIsraelDate('2026-06-28', 0)).toBe('2026-06-28')
+  })
+
+  it('shifts by week/month/year units (operator time-range selector)', () => {
+    expect(shiftIsraelDate('2026-06-28', -1, 'week')).toBe('2026-06-21')
+    expect(shiftIsraelDate('2026-06-28', -1, 'month')).toBe('2026-05-28')
+    expect(shiftIsraelDate('2026-06-28', -1, 'year')).toBe('2025-06-28')
+    // month arithmetic clamps to the shorter month
+    expect(shiftIsraelDate('2026-03-31', -1, 'month')).toBe('2026-02-28')
+    // explicit 'day' matches the default
+    expect(shiftIsraelDate('2026-06-28', -7, 'day')).toBe('2026-06-21')
   })
 })
 

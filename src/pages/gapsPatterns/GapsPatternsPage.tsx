@@ -14,8 +14,9 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
-import dayjs, {
+import {
   formatIsraelDate,
+  normalizeIsraelDate,
   parseIsraelDate,
   shiftIsraelDate,
   todayIsraelDate,
@@ -43,8 +44,8 @@ import './GapsPatternsPage.scss'
 interface BusLineStatisticsProps {
   lineRef: number
   operatorRef: string
-  fromDate: dayjs.Dayjs
-  toDate: dayjs.Dayjs
+  fromDate: string
+  toDate: string
 }
 
 const CustomTooltip = ({ active, payload }: TooltipContentProps) => {
@@ -153,15 +154,14 @@ const GapsPatternsPage = () => {
   const initialUrlParams = useContext(InitialUrlParamsContext)
   const today = todayIsraelDate()
 
-  const [startDate, setStartDate] = useState(
-    initialUrlParams.startDate
-      ? dayjs(initialUrlParams.startDate)
-      : parseIsraelDate(shiftIsraelDate(today, -7)),
+  // The range bounds live as "YYYY-MM-DD" civil-day strings (URL, share params,
+  // getRoutesAsync, GapsByHour) — same canonical form as the global search date. A Dayjs is
+  // materialized inline only at the MUI pickers below.
+  const [startDate, setStartDate] = useState<string>(
+    () => normalizeIsraelDate(initialUrlParams.startDate) ?? shiftIsraelDate(today, -7),
   )
-  const [endDate, setEndDate] = useState(
-    initialUrlParams.endDate
-      ? dayjs(initialUrlParams.endDate)
-      : parseIsraelDate(shiftIsraelDate(today, -1)),
+  const [endDate, setEndDate] = useState<string>(
+    () => normalizeIsraelDate(initialUrlParams.endDate) ?? shiftIsraelDate(today, -1),
   )
   const { search, setSearch } = useContext(GlobalSearchContext)
   // LEGACY: manual share-param injection — replace with usePageState's per-page
@@ -169,10 +169,7 @@ const GapsPatternsPage = () => {
   const { setParams } = useContext(PageShareParamsContext)
 
   useEffect(() => {
-    setParams({
-      startDate: startDate.toISOString(),
-      endDate: endDate.toISOString(),
-    })
+    setParams({ startDate, endDate })
     return () => setParams({})
   }, [startDate, endDate, setParams])
   const { operatorId, lineNumber, routeKey } = search
@@ -183,8 +180,8 @@ const GapsPatternsPage = () => {
   const loadSearchData = async (signal: AbortSignal | undefined) => {
     setRoutesIsLoading(true)
     const fetchedRoutes = await getRoutesAsync(
-      formatIsraelDate(startDate),
-      formatIsraelDate(endDate),
+      startDate,
+      endDate,
       operatorId ?? undefined,
       lineNumber ?? undefined,
       signal,
@@ -239,16 +236,16 @@ const GapsPatternsPage = () => {
           sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
           <Grid size={{ xs: 6 }}>
             <DateSelector
-              time={startDate}
-              onChange={(data) => data && setStartDate(data)}
+              time={parseIsraelDate(startDate)}
+              onChange={(data) => data && setStartDate(formatIsraelDate(data))}
               customLabel={t('start')}
             />
           </Grid>
           <Grid size={{ xs: 6 }}>
             <DateSelector
-              time={endDate}
-              onChange={(data) => data && setEndDate(data)}
-              minDate={startDate}
+              time={parseIsraelDate(endDate)}
+              onChange={(data) => data && setEndDate(formatIsraelDate(data))}
+              minDate={parseIsraelDate(startDate)}
               customLabel={t('end')}
             />
           </Grid>

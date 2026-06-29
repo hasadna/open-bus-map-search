@@ -58,11 +58,16 @@ export const parseIsraelDate = (date: string): dayjs.Dayjs =>
 export const formatIsraelDate = (value: dayjs.Dayjs | Date): string =>
   toIsraelTimezone(value).format('YYYY-MM-DD')
 
-/** Add (or subtract) whole days to a "YYYY-MM-DD" civil-day string, returning a
- *  "YYYY-MM-DD" string. Timezone-neutral: parses and reads in UTC, where every day is
- *  exactly 24h, so month/year/leap rollover is handled with no DST hazard. */
-export const shiftIsraelDate = (date: string, days: number): string =>
-  dayjs.utc(date).add(days, 'day').format('YYYY-MM-DD')
+/** Add (or subtract) calendar units to a "YYYY-MM-DD" civil-day string, returning a
+ *  "YYYY-MM-DD" string. Defaults to days; pass a unit for week/month/year arithmetic
+ *  (e.g. the operator page's time-range selector). Timezone-neutral: parses and reads in
+ *  UTC, where every day is exactly 24h, so month/year/leap rollover is handled with no DST
+ *  hazard. */
+export const shiftIsraelDate = (
+  date: string,
+  amount: number,
+  unit: 'day' | 'week' | 'month' | 'year' = 'day',
+): string => dayjs.utc(date).add(amount, unit).format('YYYY-MM-DD')
 
 /** Clamp a "YYYY-MM-DD" civil day so it is never after today (Israel). Pure lexicographic
  *  min — ISO dates sort chronologically — with the only tz touch isolated in
@@ -70,6 +75,19 @@ export const shiftIsraelDate = (date: string, days: number): string =>
 export const clampToToday = (date: string): string => {
   const today = todayIsraelDate()
   return date > today ? today : date
+}
+
+/** Coerce an untrusted date string to the canonical "YYYY-MM-DD" civil day, or undefined
+ *  if missing/unparsable. Accepts the civil form directly (the at-rest shape in URLs and
+ *  global state) and also tolerates a legacy full datetime (e.g. an older shared link that
+ *  serialized a date via .toISOString()), reading the Israel calendar day off that instant.
+ *  Returns undefined — not a today-fallback — so callers can supply their own default for an
+ *  absent or corrupt value. For an already-validated civil string use parseIsraelDate. */
+export const normalizeIsraelDate = (value?: string): string | undefined => {
+  if (!value) return undefined
+  if (isValidSearchDate(value)) return value
+  const parsed = dayjs(value)
+  return parsed.isValid() ? formatIsraelDate(parsed) : undefined
 }
 
 // ── API date params (`format: date`) ─────────────────────────────────────────
