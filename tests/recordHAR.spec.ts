@@ -69,6 +69,7 @@ test.describe('Record HAR files', () => {
   // Single test records ALL needed entries in one browser context
   test('record timeline.har', async ({ page }) => {
     await setupRecording(page, 'tests/HAR/timeline.har')
+    const settleResponseBodies = trackResponseBodies(page)
     await goToPage(page, '/')
     await goToPage(page, '/timeline')
 
@@ -102,6 +103,12 @@ test.describe('Record HAR files', () => {
 
     // Also test אגד operator without clearing (so duplication test passes)
 
+    // CRITICAL: settle the first-visit bodies (esp. the large siri_vehicle_locations
+    // hits response) BEFORE navigating away below. A response still in-flight when we
+    // leave the page is aborted at the navigation and recorded as a truncated
+    // status:-1 entry that then shadows the good response on replay.
+    await settleResponseBodies()
+
     // Test empty routes: switch to דן בדרום + line 9999
     // First clear the operator by navigating away and back
     await page.goto('/timeline')
@@ -116,12 +123,16 @@ test.describe('Record HAR files', () => {
     } else {
       await page.keyboard.press('Escape')
     }
+
+    // Capture every stride-api response body before the HAR is written at teardown.
+    await settleResponseBodies()
   })
 
   // ---- operator.har -------------------------------------------------------
   // Single test records ALL needed entries in one browser context
   test('record operator.har', async ({ page }) => {
     await setupRecording(page, 'tests/HAR/operator.har')
+    const settleResponseBodies = trackResponseBodies(page)
     await goToPage(page, '/')
     await goToPage(page, '/operator')
 
@@ -132,6 +143,9 @@ test.describe('Record HAR files', () => {
     // Select אגד (triggers group_by × 2 + gtfs_routes/list)
     await page.getByRole('option', { name: 'אגד', exact: true }).click()
     await page.waitForLoadState('networkidle')
+
+    // Capture every stride-api response body before the HAR is written at teardown.
+    await settleResponseBodies()
   })
 
   // ---- singleline.har -----------------------------------------------------
@@ -309,6 +323,7 @@ test.describe('Record HAR files', () => {
   // Single test records ALL needed entries for the gaps page
   test('record missing.har', async ({ page }) => {
     await setupRecording(page, 'tests/HAR/missing.har')
+    const settleResponseBodies = trackResponseBodies(page)
     await goToPage(page, '/')
     await goToPage(page, '/gaps')
 
@@ -342,12 +357,16 @@ test.describe('Record HAR files', () => {
     } else {
       await page.keyboard.press('Escape')
     }
+
+    // Capture every stride-api response body before the HAR is written at teardown.
+    await settleResponseBodies()
   })
 
   // ---- clearbutton.har ----------------------------------------------------
   // Single test records ALL needed entries in one browser context
   test('record clearbutton.har', async ({ page }) => {
     await setupRecording(page, 'tests/HAR/clearbutton.har')
+    const settleResponseBodies = trackResponseBodies(page)
     await goToPage(page, '/')
     await goToPage(page, '/timeline')
 
@@ -366,5 +385,8 @@ test.describe('Record HAR files', () => {
     } else {
       await page.keyboard.press('Escape')
     }
+
+    // Capture every stride-api response body before the HAR is written at teardown.
+    await settleResponseBodies()
   })
 })

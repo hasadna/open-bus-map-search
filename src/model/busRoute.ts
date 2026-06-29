@@ -1,8 +1,9 @@
 import { GtfsRoutePydanticModel } from '@hasadna/open-bus-api-client'
+import { formatIsraelDate } from 'src/dayjs'
 import { routeStartEnd } from 'src/pages/components/utils/rotueUtils'
 
 export type BusRoute = {
-  date: Date
+  date: string
   key: string
   operatorId: string
   lineNumber: string
@@ -19,7 +20,7 @@ export function fromGtfsRoute(gtfsRoute: GtfsRoutePydanticModel): BusRoute {
   const [fromName, toName] = routeStartEnd(gtfsRoute.routeLongName)
 
   return {
-    date: gtfsRoute.date,
+    date: formatIsraelDate(gtfsRoute.date),
     operatorId: gtfsRoute.operatorRef.toString(),
     lineNumber: gtfsRoute.routeShortName!,
     key: `${gtfsRoute.routeMkt}-${gtfsRoute.routeDirection}-${gtfsRoute.routeAlternative}`,

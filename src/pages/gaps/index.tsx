@@ -1,7 +1,7 @@
 import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import dayjs, { ISRAEL_TIMEZONE } from 'src/dayjs'
+import dayjs, { formatIsraelDate, getServiceDayTimeBounds, parseIsraelDate } from 'src/dayjs'
 import { GlobalSearchContext } from 'src/model/globalState'
 import { INPUT_SIZE } from 'src/resources/sizes'
 import { Gap, getGapsAsync } from '../../api/gapsService'
@@ -15,7 +15,6 @@ import OperatorSelector from '../components/OperatorSelector'
 import { PageContainer } from '../components/PageContainer'
 import RouteSelector from '../components/RouteSelector'
 import { Row } from '../components/Row'
-import { serviceDayBounds } from '../components/utils/startTimeUtils'
 import GapsTable from './GapsTable'
 
 const GapsPage = () => {
@@ -41,13 +40,27 @@ const GapsPage = () => {
     if (!selectedRoute) return
 
     setGapsIsLoading(true)
-    const { start, end } = serviceDayBounds(date)
+    const { start, end } = getServiceDayTimeBounds(date)
     getGapsAsync(start, end, operatorId, selectedRoute.lineRef)
       .then((res) =>
         setGaps(
           res.filter((g) => {
             const t = g.plannedStartTime || g.actualStartTime
-            return t && !t.isBefore(start) && t.isBefore(end)
+            if (!t) return false
+            // date_from already excludes pre-service-day rides, so one slipping through
+            // means the API's date filtering regressed. Keep it off-screen, but scream
+            // about it instead of silently masking the upstream bug.
+            if (t.isBefore(start)) {
+              console.error('gaps: ride before service-day start, dropping', {
+                rideStart: t.toISOString(),
+                serviceDayStart: start.toISOString(),
+                gap: g,
+              })
+              return false
+            }
+            // Upper bound is real semantics, not masking: the date-only API over-fetches
+            // all of tomorrow, and this trims it back to the 04:00 service-day cutoff.
+            return t.isBefore(end)
           }),
         ),
       )
@@ -65,7 +78,7 @@ const GapsPage = () => {
 
     const controller = new AbortController()
 
-    getServiceDayRoutes(dayjs.tz(date, ISRAEL_TIMEZONE), operatorId, lineNumber, controller.signal)
+    getServiceDayRoutes(date, operatorId, lineNumber, controller.signal)
       .then((fetchedRoutes) => {
         if (search.lineNumber === lineNumber) {
           setRoutes(fetchedRoutes)
@@ -82,7 +95,7 @@ const GapsPage = () => {
     if (!time) return
     setSearch((current) => ({
       ...current,
-      date: time.format('YYYY-MM-DD'),
+      date: formatIsraelDate(time),
     }))
   }
 
@@ -129,7 +142,7 @@ const GapsPage = () => {
           <Label text={t('choose_date')} />
         </Grid>
         <Grid size={{ xs: 8 }}>
-          <DateSelector time={dayjs.tz(date, ISRAEL_TIMEZONE)} onChange={handleDateChange} />
+          <DateSelector time={parseIsraelDate(date)} onChange={handleDateChange} />
         </Grid>
         {/* choose operator */}
         <Grid size={{ xs: 4 }}>

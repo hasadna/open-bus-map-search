@@ -1,7 +1,7 @@
 import { CircularProgress, Grid, Tooltip, Typography } from '@mui/material'
 import { useCallback, useContext, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone } from 'src/dayjs'
+import dayjs, { formatIsraelDate, parseIsraelDate, todayIsraelDate } from 'src/dayjs'
 import { useSingleLineData } from 'src/hooks/useSingleLineData'
 import { GlobalSearchContext } from 'src/model/globalState'
 import LineNumberSelector from 'src/pages/components/LineSelector'
@@ -62,7 +62,7 @@ const SingleLineMapPage = () => {
   const handleDateChange = (time: dayjs.Dayjs | null) => {
     setSearch((current) => ({
       ...current,
-      date: toIsraelTimezone(time ?? dayjs()).format('YYYY-MM-DD'),
+      date: time ? formatIsraelDate(time) : todayIsraelDate(),
       rideTime: null,
     }))
   }
@@ -93,7 +93,7 @@ const SingleLineMapPage = () => {
         <Grid container spacing={2} size={{ xs: 12 }}>
           {/* choose date*/}
           <Grid size={{ sm: 4, xs: 12 }}>
-            <DateSelector time={dayjs.tz(date, ISRAEL_TIMEZONE)} onChange={handleDateChange} />
+            <DateSelector time={parseIsraelDate(date)} onChange={handleDateChange} />
           </Grid>
           {/* choose operator */}
           <Grid size={{ sm: 4, xs: 12 }}>

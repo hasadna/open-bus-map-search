@@ -1,6 +1,6 @@
 import type { SiriVehicleLocationWithRelatedPydanticModel } from '@hasadna/open-bus-api-client'
 import { useTranslation } from 'react-i18next'
-import dayjs from 'src/dayjs'
+import { formatInstant } from 'src/dayjs'
 import Widget from 'src/shared/Widget'
 import { InfoItem, InfoTable } from '../components/InfoTable'
 import { vehicleIDFormat } from '../components/utils/rotueUtils'
@@ -30,7 +30,7 @@ export const LineProfileRide = ({
           label={t('lineProfile.ride.scheduled')}
           value={
             point?.siriRideScheduledStartTime
-              ? dayjs(point?.siriRideScheduledStartTime).format(t('datetime_format'))
+              ? formatInstant(point.siriRideScheduledStartTime, t('datetime_format'))
               : undefined
           }
         />

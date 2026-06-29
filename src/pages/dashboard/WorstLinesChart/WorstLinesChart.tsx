@@ -1,15 +1,14 @@
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
-import { Dayjs } from 'src/dayjs'
 import { MAJOR_OPERATORS } from 'src/model/operator'
 import SkeletonLoader from 'src/shared/SkeletonLoader'
 import Widget from 'src/shared/Widget'
 import LinesHbarChart, { LineBar } from './LineHbarChart/LinesHbarChart'
 
 interface WorstLinesChartProps {
-  startDate: Dayjs
-  endDate: Dayjs
+  startDate: string
+  endDate: string
   operatorId?: string
   alertWorstLineHandling: (arg: boolean) => void
 }

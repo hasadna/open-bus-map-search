@@ -16,7 +16,7 @@ import { useCallback, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useCopyToClipboard, useLocalStorage } from 'usehooks-ts'
 import { COMPLAINTS_API } from 'src/api/apiConfig'
-import dayjs from 'src/dayjs'
+import dayjs, { toApiDate } from 'src/dayjs'
 import {
   useBoardingStationQuery,
   useBusOperatorQuery,
@@ -150,7 +150,7 @@ const ComplaintModal = ({
           eventHour: eventHour ? eventHour.format('HH:mm') : undefined,
           fromHour: wait?.[0] ? wait[0].format('HH:mm') : undefined,
           toHour: wait?.[1] ? wait[1].format('HH:mm') : undefined,
-          eventDate: eventDate ? eventDate.toDate() : undefined,
+          eventDate: eventDate ? toApiDate(eventDate) : undefined,
           operator: selectOperator
             ? {
                 dataText: selectOperator.dataText,

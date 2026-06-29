@@ -13,7 +13,7 @@ import type { TFunction } from 'i18next'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
-import { toIsraelTimezone } from 'src/dayjs'
+import { formatInstant } from 'src/dayjs'
 import { PositionGroup } from 'src/pages/components/map-related/map-types'
 import {
   distanceMeters,
@@ -57,7 +57,7 @@ const gapColor = (severity: number) => {
   return `rgb(${ch(lo.rgb[0], hi.rgb[0])}, ${ch(lo.rgb[1], hi.rgb[1])}, ${ch(lo.rgb[2], hi.rgb[2])})`
 }
 
-const fmtTime = (ms: number) => toIsraelTimezone(ms).format('HH:mm:ss')
+const fmtTime = (ms: number) => formatInstant(ms, 'HH:mm:ss')
 
 /** Gap length as a zero-padded clock duration, e.g. 143s → "00:02:23". */
 const fmtDuration = (ms: number) => {

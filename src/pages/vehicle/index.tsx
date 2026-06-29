@@ -4,16 +4,21 @@ import { useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { SIRI_API } from 'src/api/apiConfig'
 import { getAllRoutesList } from 'src/api/gtfsService'
-import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone } from 'src/dayjs'
+import dayjs, {
+  formatIsraelDate,
+  getServiceDayTimeBounds,
+  instantToApi,
+  parseIsraelDate,
+  todayIsraelDate,
+} from 'src/dayjs'
 import { fromGtfsRoute } from 'src/model/busRoute'
 import { GlobalSearchContext } from 'src/model/globalState'
 import { InitialUrlParamsContext, PageShareParamsContext } from 'src/model/routeContext'
-import { serviceDayBounds } from 'src/pages/components/utils/startTimeUtils'
 import VehicleSelector, { normalizeVehicleNumber } from 'src/pages/components/VehicleSelector'
 import { DateSelector } from '../components/DateSelector'
 import { NotFound } from '../components/NotFound'
 import { PageContainer } from '../components/PageContainer'
-import { buildVehicleRideRows, VehicleRideRow } from './buildVehicleRideRows'
+import { buildVehicleRideRows, toVehicleRide, VehicleRideRow } from './buildVehicleRideRows'
 import { VehicleTable } from './VehicleTable'
 
 const VehiclePage = () => {
@@ -38,14 +43,14 @@ const VehiclePage = () => {
   }, [vehicleNumber, setParams])
 
   const { start: serviceDayStart, end: serviceDayEnd } = useMemo(
-    () => serviceDayBounds(date),
+    () => getServiceDayTimeBounds(date),
     [date],
   )
 
   const handleDateChange = (time: dayjs.Dayjs | null) => {
     setSearch((current) => ({
       ...current,
-      date: toIsraelTimezone(time ?? dayjs()).format('YYYY-MM-DD'),
+      date: time ? formatIsraelDate(time) : todayIsraelDate(),
     }))
   }
 
@@ -60,13 +65,15 @@ const VehiclePage = () => {
       SIRI_API.siriRidesListGet(
         {
           vehicleRefs: String(vehicleNumber),
-          scheduledStartTimeFrom: serviceDayStart.toDate(),
-          scheduledStartTimeTo: serviceDayEnd.toDate(),
+          scheduledStartTimeFrom: instantToApi(serviceDayStart),
+          scheduledStartTimeTo: instantToApi(serviceDayEnd),
           orderBy: 'scheduled_start_time asc',
           limit: 500,
         },
         { signal },
-      ),
+        // Map to the slim VehicleRide at the cache boundary: scheduledStartTime becomes an
+        // Israel-offset string so the persisted cache holds no raw Date (which would decay).
+      ).then((rides) => rides.map(toVehicleRide)),
   })
 
   // SIRI rides carry only siri_route__line_ref; the human-readable line number and
@@ -91,9 +98,7 @@ const VehiclePage = () => {
     enabled: operatorIds.length > 0,
     queryFn: async ({ signal }) => {
       const routeLists = await Promise.all(
-        operatorIds.map((operatorId) =>
-          getAllRoutesList(operatorId, serviceDayStart.toDate(), signal),
-        ),
+        operatorIds.map((operatorId) => getAllRoutesList(operatorId, serviceDayStart, signal)),
       )
       return routeLists
         .flat()
@@ -127,7 +132,7 @@ const VehiclePage = () => {
       <Grid container spacing={2} sx={{ width: '100%', maxWidth: 600, mx: 'auto' }}>
         {/* choose date */}
         <Grid size={{ sm: 6, xs: 12 }}>
-          <DateSelector time={dayjs.tz(date, ISRAEL_TIMEZONE)} onChange={handleDateChange} />
+          <DateSelector time={parseIsraelDate(date)} onChange={handleDateChange} />
         </Grid>
         {/* choose vehicle */}
         <Grid size={{ sm: 6, xs: 12 }}>

@@ -2,14 +2,13 @@ import {
   GtfsRoutePydanticModel,
   SiriRideWithRelatedPydanticModel,
 } from '@hasadna/open-bus-api-client'
-import { ISRAEL_TIMEZONE } from 'src/dayjs'
+import { getServiceDayTimeBounds, ISRAEL_TIMEZONE } from 'src/dayjs'
 import dayjs from 'src/dayjs'
 import { fromGtfsRoute } from 'src/model/busRoute'
-import { serviceDayBounds } from 'src/pages/components/utils/startTimeUtils'
-import { buildVehicleRideRows, ResolvedRoute } from './buildVehicleRideRows'
+import { buildVehicleRideRows, ResolvedRoute, toVehicleRide } from './buildVehicleRideRows'
 
 const DATE = '2024-02-12'
-const { start: serviceDayStart } = serviceDayBounds(DATE)
+const { start: serviceDayStart } = getServiceDayTimeBounds(DATE)
 
 // A GTFS route as the API returns it (camelCase). lineRef is the SIRI rides'
 // join key; routeLongName uses the "<->" separator routeStartEnd splits on.
@@ -48,7 +47,7 @@ const makeRide = (
 describe('buildVehicleRideRows', () => {
   it('resolves operator, line, origin and destination from the route matched by line ref', () => {
     const rows = buildVehicleRideRows({
-      rides: [makeRide({})],
+      rides: [makeRide({})].map(toVehicleRide),
       routeByLineRef: routeMap([makeRoute({})]),
       serviceDayStart,
       date: DATE,
@@ -67,7 +66,7 @@ describe('buildVehicleRideRows', () => {
 
   it('builds a single-line-map link carrying the route identity and dash-formatted ride time', () => {
     const [row] = buildVehicleRideRows({
-      rides: [makeRide({})],
+      rides: [makeRide({})].map(toVehicleRide),
       routeByLineRef: routeMap([makeRoute({})]),
       serviceDayStart,
       date: DATE,
@@ -94,7 +93,9 @@ describe('buildVehicleRideRows', () => {
   it('marks a past-midnight departure with the moon prefix and wall-clock time', () => {
     const [row] = buildVehicleRideRows({
       // 00:30 Israel time on 2024-02-13 — the late-night tail of the 2024-02-12 service day
-      rides: [makeRide({ scheduledStartTime: new Date('2024-02-12T22:30:00Z') })],
+      rides: [makeRide({ scheduledStartTime: new Date('2024-02-12T22:30:00Z') })].map(
+        toVehicleRide,
+      ),
       routeByLineRef: routeMap([makeRoute({})]),
       serviceDayStart,
       date: DATE,
@@ -107,7 +108,7 @@ describe('buildVehicleRideRows', () => {
 
   it('falls back to dashes and produces no link when the line ref has no matching route', () => {
     const [row] = buildVehicleRideRows({
-      rides: [makeRide({ siriRouteLineRef: 99999, siriRouteOperatorRef: 3 })],
+      rides: [makeRide({ siriRouteLineRef: 99999, siriRouteOperatorRef: 3 })].map(toVehicleRide),
       routeByLineRef: routeMap([makeRoute({})]), // only line ref 28099 is known
       serviceDayStart,
       date: DATE,
@@ -125,7 +126,9 @@ describe('buildVehicleRideRows', () => {
 
   it('resolves the route via gtfsRouteLineRef when siriRouteLineRef is absent', () => {
     const [row] = buildVehicleRideRows({
-      rides: [makeRide({ siriRouteLineRef: undefined, gtfsRouteLineRef: 28099 })],
+      rides: [makeRide({ siriRouteLineRef: undefined, gtfsRouteLineRef: 28099 })].map(
+        toVehicleRide,
+      ),
       routeByLineRef: routeMap([makeRoute({})]),
       serviceDayStart,
       date: DATE,
@@ -137,7 +140,7 @@ describe('buildVehicleRideRows', () => {
 
   it('drops rides without an id (cannot be keyed or selected)', () => {
     const rows = buildVehicleRideRows({
-      rides: [makeRide({ id: undefined }), makeRide({ id: 2 })],
+      rides: [makeRide({ id: undefined }), makeRide({ id: 2 })].map(toVehicleRide),
       routeByLineRef: routeMap([makeRoute({})]),
       serviceDayStart,
       date: DATE,

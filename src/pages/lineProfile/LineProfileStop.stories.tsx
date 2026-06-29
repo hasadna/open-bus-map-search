@@ -26,7 +26,7 @@ type Story = StoryObj<typeof meta>
 export const Default: Story = {
   args: {
     stop: {
-      date: new Date('Mon Feb 12 2024 02:00:00 GMT+0200 (Israel Standard Time)'),
+      date: '2024-02-12',
       key: '2392591700',
       stopId: 21237009,
       routeId: 4335451,

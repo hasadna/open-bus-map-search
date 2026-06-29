@@ -3,17 +3,13 @@ import {
   GtfsRoutePydanticModel,
 } from '@hasadna/open-bus-api-client'
 import { GTFS_API } from 'src/api/apiConfig'
-import dayjs, { toIsraelTimezone } from 'src/dayjs'
+import {
+  apiDateFromString,
+  getServiceDayDateBounds,
+  getServiceDayTimeBounds,
+  instantToApi,
+} from 'src/dayjs'
 import { BusRoute, fromGtfsRoute } from 'src/model/busRoute'
-
-/**
- * Returns a Date at noon UTC for the given YYYY-MM-DD string so that
- * .toISOString().substring(0, 10) always yields the correct date string
- * regardless of local timezone offsets.
- */
-function utcNoonForDateStr(dateStr: string): Date {
-  return new Date(`${dateStr}T12:00:00Z`)
-}
 
 function rideToRoute(ride: GtfsRideWithRelatedPydanticModel): GtfsRoutePydanticModel | null {
   if (
@@ -40,8 +36,8 @@ function rideToRoute(ride: GtfsRideWithRelatedPydanticModel): GtfsRoutePydanticM
 }
 
 /**
- * Returns all routes for the given service day:
- * - All GTFS routes whose date equals serviceDate (Israel timezone)
+ * Returns all routes for the given service day (a "YYYY-MM-DD" civil-day string):
+ * - All GTFS routes whose date equals the service day (Israel timezone)
  * - Tomorrow's routes that have at least one planned ride starting between
  *   midnight and 04:00 Israel time (late-night service belonging to this day),
  *   derived directly from the rides response without a separate routes fetch.
@@ -49,18 +45,18 @@ function rideToRoute(ride: GtfsRideWithRelatedPydanticModel): GtfsRoutePydanticM
  * Routes with the same key are merged (routeIds accumulated).
  */
 export async function getServiceDayRoutes(
-  serviceDate: dayjs.Dayjs,
+  date: string,
   operatorId?: string,
   lineNumber?: string,
   signal?: AbortSignal,
 ): Promise<BusRoute[]> {
-  const todayIL = toIsraelTimezone(serviceDate).startOf('day')
-  const tomorrowIL = todayIL.add(1, 'day')
+  const { start, end } = getServiceDayTimeBounds(date)
+  const { today, tomorrow } = getServiceDayDateBounds(date)
 
-  const todayUTC = utcNoonForDateStr(todayIL.format('YYYY-MM-DD'))
-  const tomorrowUTC = utcNoonForDateStr(tomorrowIL.format('YYYY-MM-DD'))
-  const tomorrowMidnightUTC = tomorrowIL.toDate()
-  const tomorrow04hUTC = tomorrowIL.add(4, 'hours').toDate()
+  const todayUTC = apiDateFromString(today)
+  const tomorrowUTC = apiDateFromString(tomorrow)
+  const tomorrowMidnightUTC = instantToApi(start.add(1, 'day'))
+  const tomorrow04hUTC = instantToApi(end)
 
   const [todayRaw, ridesInWindow] = await Promise.all([
     // Today's routes

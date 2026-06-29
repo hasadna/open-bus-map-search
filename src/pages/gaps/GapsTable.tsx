@@ -14,11 +14,10 @@ import React, { memo, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
 import { Gap } from 'src/api/gapsService'
-import dayjs from 'src/dayjs'
+import { getServiceDayTimeBounds, nowInstant } from 'src/dayjs'
 import {
   formatServiceDayTime,
   formatStartTimeForQuery,
-  serviceDayBounds,
 } from 'src/pages/components/utils/startTimeUtils'
 import SkeletonLoader from 'src/shared/SkeletonLoader'
 import Widget from 'src/shared/Widget'
@@ -51,7 +50,7 @@ const colors = {
 const DATE_TIME_FORMAT = 'DD/MM/YYYY HH:mm'
 
 const formatStatus = (gap: Gap, gaps: Gap[] | undefined): keyof typeof colors => {
-  const currentTime = dayjs()
+  const currentTime = nowInstant()
   if (gap.plannedStartTime?.isAfter(currentTime) && !gap.actualStartTime) return 'ride_in_future'
   if (!gap.actualStartTime && gap.plannedStartTime?.isBefore(currentTime)) return 'ride_missing'
   if (gap.plannedStartTime?.isSame(gap.actualStartTime)) return 'ride_as_planned'
@@ -97,14 +96,16 @@ const GapsTable: React.FC<GapsTableProps> = ({
   onStartTimeClick,
 }) => {
   const { t } = useTranslation()
-  const { start: serviceDayStart } = serviceDayBounds(date)
+  const { start: serviceDayStart } = getServiceDayTimeBounds(date)
   const [onlyGapped, setOnlyGapped] = useState(initOnlyGapped)
 
   const filteredGaps: Gap[] = useMemo(() => {
     if (!gaps) return []
     return gaps
       .filter((gap) =>
-        onlyGapped ? !gap.actualStartTime && gap.plannedStartTime?.isBefore(dayjs()) : getGap(gap),
+        onlyGapped
+          ? !gap.actualStartTime && gap.plannedStartTime?.isBefore(nowInstant())
+          : getGap(gap),
       )
       .sort((a, b) => getGap(a)?.diff(getGap(b)) ?? 0)
   }, [gaps, onlyGapped])
