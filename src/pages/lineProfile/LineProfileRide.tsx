@@ -11,7 +11,7 @@ export const LineProfileRide = ({ positionGroups }: { positionGroups: PositionGr
 
   return (
     <Widget>
-           <TableContainer>
+      <TableContainer>
         <Table size="small">
           <TableHead sx={{ '& .MuiTableCell-root': { pt: 0 } }}>
             <TableRow>
