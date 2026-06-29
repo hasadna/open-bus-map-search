@@ -1,12 +1,20 @@
 import dayjs, {
   apiDateFromString,
+  atTimeOfDay,
   clampToToday,
+  formatInstant,
   formatIsraelDate,
+  formatTimeOfDay,
   getServiceDayDateBounds,
   getServiceDayTimeBounds,
+  instantToApi,
   normalizeIsraelDate,
+  nowInstant,
+  nowIsraelInstant,
+  parseInstant,
   parseIsraelDate,
   parseIsraelLocalDatetime,
+  serializeInstant,
   shiftIsraelDate,
   toApiDate,
   todayIsraelDate,
@@ -181,5 +189,92 @@ describe('getServiceDayDateBounds', () => {
       today: '2024-12-31',
       tomorrow: '2025-01-01',
     })
+  })
+})
+
+describe('parseInstant', () => {
+  it('returns undefined for missing or invalid input', () => {
+    expect(parseInstant(undefined)).toBeUndefined()
+    expect(parseInstant(null)).toBeUndefined()
+    expect(parseInstant('')).toBeUndefined()
+    expect(parseInstant('not-a-date')).toBeUndefined()
+  })
+
+  it('reads a UTC API instant in Israel time (summer, +03:00) — replaces parseTime', () => {
+    // The stride API serializes every datetime as real UTC; 04:24Z is 07:24 in Israel (DST).
+    expect(parseInstant('2026-06-09T04:24:00Z')?.format('HH:mm')).toBe('07:24')
+  })
+
+  it('reads a UTC API instant in Israel time (winter, +02:00)', () => {
+    expect(parseInstant('2026-01-09T04:24:00Z')?.format('HH:mm')).toBe('06:24')
+  })
+
+  it('treats a bare offset-less string as UTC (the API convention)', () => {
+    // Robust even if an endpoint ever drops the +00:00; independent of the runtime zone.
+    expect(parseInstant('2026-06-09T04:24:00')?.format('HH:mm')).toBe('07:24')
+  })
+
+  it('accepts a Date and an epoch-ms number, both as true instants', () => {
+    expect(parseInstant(new Date('2026-06-09T04:24:00Z'))?.format('HH:mm')).toBe('07:24')
+    expect(parseInstant(Date.UTC(2026, 5, 9, 4, 24))?.format('HH:mm')).toBe('07:24')
+  })
+})
+
+describe('serializeInstant', () => {
+  it('emits an ISO-8601 string carrying the Israel offset (+03:00 summer, +02:00 winter)', () => {
+    expect(serializeInstant('2026-06-09T04:24:00Z')).toBe('2026-06-09T07:24:00+03:00')
+    expect(serializeInstant('2026-01-09T04:24:00Z')).toBe('2026-01-09T06:24:00+02:00')
+  })
+
+  it('round-trips through parseInstant to the same instant', () => {
+    const iso = serializeInstant('2026-06-09T04:24:00Z')
+    expect(parseInstant(iso)?.valueOf()).toBe(dayjs('2026-06-09T04:24:00Z').valueOf())
+  })
+})
+
+describe('formatInstant', () => {
+  it('formats in Israel time regardless of the runtime zone (Jest runs in UTC)', () => {
+    // A bare dayjs(x).format() would render 04:24 here; the helper must show Israel 07:24.
+    expect(formatInstant('2026-06-09T04:24:00Z', 'HH:mm')).toBe('07:24')
+    expect(formatInstant(new Date('2026-06-09T22:30:00Z'), 'DD/MM/YYYY HH:mm')).toBe(
+      '10/06/2026 01:30',
+    )
+  })
+})
+
+describe('instantToApi', () => {
+  it('round-trips a materialized instant to a Date losslessly', () => {
+    const instant = parseInstant('2026-06-09T04:24:00Z')!
+    expect(instantToApi(instant).toISOString()).toBe('2026-06-09T04:24:00.000Z')
+  })
+})
+
+describe('nowIsraelInstant / nowInstant', () => {
+  afterEach(() => jest.useRealTimers())
+
+  it('reads the clock straight to the canonical Israel-offset string (like todayIsraelDate)', () => {
+    jest.useFakeTimers().setSystemTime(new Date('2026-06-09T04:24:00Z'))
+    expect(nowIsraelInstant()).toBe('2026-06-09T07:24:00+03:00')
+  })
+
+  it('materializes the same instant as a Dayjs in Israel time', () => {
+    jest.useFakeTimers().setSystemTime(new Date('2026-06-09T04:24:00Z'))
+    expect(nowInstant().format('HH:mm')).toBe('07:24')
+  })
+})
+
+describe('atTimeOfDay', () => {
+  it('applies an Israel wall-clock "HH:mm" to a civil day', () => {
+    expect(atTimeOfDay('2024-02-12', '15:30').format('YYYY-MM-DD HH:mm')).toBe('2024-02-12 15:30')
+  })
+
+  it('falls back to 00:00 on a malformed time', () => {
+    expect(atTimeOfDay('2024-02-12', 'garbage').format('HH:mm')).toBe('00:00')
+  })
+})
+
+describe('formatTimeOfDay', () => {
+  it('reads the Israel "HH:mm" off an instant', () => {
+    expect(formatTimeOfDay('2026-06-09T04:24:00Z')).toBe('07:24')
   })
 })

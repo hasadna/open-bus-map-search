@@ -7,6 +7,7 @@ import { getAllRoutesList } from 'src/api/gtfsService'
 import dayjs, {
   formatIsraelDate,
   getServiceDayTimeBounds,
+  instantToApi,
   parseIsraelDate,
   todayIsraelDate,
 } from 'src/dayjs'
@@ -17,7 +18,7 @@ import VehicleSelector, { normalizeVehicleNumber } from 'src/pages/components/Ve
 import { DateSelector } from '../components/DateSelector'
 import { NotFound } from '../components/NotFound'
 import { PageContainer } from '../components/PageContainer'
-import { buildVehicleRideRows, VehicleRideRow } from './buildVehicleRideRows'
+import { buildVehicleRideRows, toVehicleRide, VehicleRideRow } from './buildVehicleRideRows'
 import { VehicleTable } from './VehicleTable'
 
 const VehiclePage = () => {
@@ -64,13 +65,15 @@ const VehiclePage = () => {
       SIRI_API.siriRidesListGet(
         {
           vehicleRefs: String(vehicleNumber),
-          scheduledStartTimeFrom: serviceDayStart.toDate(),
-          scheduledStartTimeTo: serviceDayEnd.toDate(),
+          scheduledStartTimeFrom: instantToApi(serviceDayStart),
+          scheduledStartTimeTo: instantToApi(serviceDayEnd),
           orderBy: 'scheduled_start_time asc',
           limit: 500,
         },
         { signal },
-      ),
+        // Map to the slim VehicleRide at the cache boundary: scheduledStartTime becomes an
+        // Israel-offset string so the persisted cache holds no raw Date (which would decay).
+      ).then((rides) => rides.map(toVehicleRide)),
   })
 
   // SIRI rides carry only siri_route__line_ref; the human-readable line number and

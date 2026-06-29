@@ -172,8 +172,10 @@ const StackedResearchChart = ({
     const operatorSet = new Set<string>()
 
     for (const record of filteredGraphData) {
+      // gtfsRouteHour/Date are server-side aggregation BUCKETS (UTC date_trunc), not
+      // instants — labelled as-is, deliberately NOT tz-shifted through formatInstant.
       const date = dayjs(record.gtfsRouteDate ?? record.gtfsRouteHour)
-      const formatDate = date.format('hh:mm-DD/MM/YY')
+      const formatDate = date.format('HH:mm-DD/MM/YY') // HH, not hh: 13:00 and 01:00 must differ
       const agencyName = record.operatorRef?.agencyName || 'Unknown'
 
       operatorSet.add(agencyName)

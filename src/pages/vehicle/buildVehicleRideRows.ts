@@ -1,5 +1,5 @@
 import { SiriRideWithRelatedPydanticModel } from '@hasadna/open-bus-api-client'
-import dayjs, { toIsraelTimezone } from 'src/dayjs'
+import dayjs, { serializeInstant, toIsraelTimezone } from 'src/dayjs'
 import { BusRoute } from 'src/model/busRoute'
 import {
   formatServiceDayTime,
@@ -10,6 +10,32 @@ import {
 /** A GTFS route resolved for the vehicle page — a BusRoute plus the agency name
  *  (the latter is not part of the shared BusRoute model). */
 export type ResolvedRoute = BusRoute & { agencyName?: string }
+
+/** A vehicle's SIRI ride, slimmed to the fields the page consumes and made cache-safe.
+ *  `scheduledStartTime` is the Israel-offset ISO string (serializeInstant), not a Date:
+ *  the vehicleRides query cache is persisted to localStorage, where a Date silently decays
+ *  to a UTC string on rehydration. Keeping the at-rest instant a string by construction
+ *  removes that footgun and keeps the stored value Israel-readable. */
+export type VehicleRide = {
+  id?: number
+  siriRouteLineRef?: number
+  gtfsRouteLineRef?: number
+  siriRouteOperatorRef?: number
+  gtfsRouteOperatorRef?: number
+  scheduledStartTime?: string
+}
+
+/** Cache boundary: project an API SIRI ride to the slim, JSON-stable VehicleRide. */
+export const toVehicleRide = (ride: SiriRideWithRelatedPydanticModel): VehicleRide => ({
+  id: ride.id,
+  siriRouteLineRef: ride.siriRouteLineRef,
+  gtfsRouteLineRef: ride.gtfsRouteLineRef,
+  siriRouteOperatorRef: ride.siriRouteOperatorRef,
+  gtfsRouteOperatorRef: ride.gtfsRouteOperatorRef,
+  scheduledStartTime: ride.scheduledStartTime
+    ? serializeInstant(ride.scheduledStartTime)
+    : undefined,
+})
 
 export type VehicleRideRow = {
   id: number
@@ -47,13 +73,13 @@ export function buildVehicleRideRows({
   serviceDayStart,
   date,
 }: {
-  rides: SiriRideWithRelatedPydanticModel[] | undefined
+  rides: VehicleRide[] | undefined
   routeByLineRef: Map<string, ResolvedRoute> | undefined
   serviceDayStart: dayjs.Dayjs
   date: string
 }): VehicleRideRow[] {
   return (rides ?? [])
-    .filter((ride): ride is SiriRideWithRelatedPydanticModel & { id: number } => !!ride.id)
+    .filter((ride): ride is VehicleRide & { id: number } => !!ride.id)
     .map((ride) => {
       // The ride's own gtfs_route fields are frequently null; resolve the route from
       // the operator's GTFS routes via line ref (BusRoute carries the line number,

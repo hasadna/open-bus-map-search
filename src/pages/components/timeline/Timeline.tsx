@@ -4,7 +4,7 @@ import {
 } from '@hasadna/open-bus-api-client'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
-import dayjs from 'src/dayjs'
+import dayjs, { formatInstant } from 'src/dayjs'
 import { Coordinates } from 'src/model/location'
 import { PADDING } from 'src/pages/components/timeline/TimelineBoard'
 import {
@@ -155,7 +155,7 @@ export const Timeline = ({
     const tsKey = dayjs(t).toISOString()
     const naturalY = timestampToTop(dayjs(t))
     const highlighted = hoveredTimestamp !== undefined && tsKey === hoveredTimestamp
-    const timeDisplay = dayjs(t).format('HH:mm:ss')
+    const timeDisplay = formatInstant(t, 'HH:mm:ss')
     return { i, tsKey, naturalY, highlighted, timeDisplay }
   })
 

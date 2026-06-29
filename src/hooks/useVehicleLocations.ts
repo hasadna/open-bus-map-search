@@ -7,7 +7,7 @@ import type { SiriVehicleLocationWithRelatedPydanticModel } from '@hasadna/open-
 import { uniqBy } from 'es-toolkit/compat'
 import { useEffect, useState } from 'react'
 import { SIRI_API } from 'src/api/apiConfig'
-import dayjs from 'src/dayjs'
+import dayjs, { instantToApi } from 'src/dayjs'
 
 const LIMIT = 10000 // the maximum number of vehicles to load in one request
 
@@ -99,8 +99,8 @@ async function fetchWithQueue(
     for (let attempt = 0; attempt < 3; attempt++) {
       try {
         return await SIRI_API.siriVehicleLocationsListGet({
-          recordedAtTimeFrom: dayjs(from).toDate(),
-          recordedAtTimeTo: dayjs(to).toDate(),
+          recordedAtTimeFrom: instantToApi(dayjs(from)),
+          recordedAtTimeTo: instantToApi(dayjs(to)),
           limit: LIMIT,
           offset,
           siriRoutesOperatorRef: operatorRef?.toString(),

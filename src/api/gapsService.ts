@@ -1,17 +1,10 @@
-import dayjs, { ISRAEL_TIMEZONE, toApiDate } from 'src/dayjs'
+import dayjs, { parseInstant, toApiDate } from 'src/dayjs'
 import { USER_CASE_API } from './apiConfig'
 
 export type Gap = {
   plannedStartTime?: dayjs.Dayjs
   actualStartTime?: dayjs.Dayjs
   gtfsRideId?: number
-}
-
-export function parseTime(time?: dayjs.ConfigType) {
-  if (!time) return undefined
-  const utcDayjs = dayjs.utc(time).utcOffset(0, true).tz(ISRAEL_TIMEZONE)
-  if (!utcDayjs.isValid()) return undefined
-  return utcDayjs
 }
 
 export const getGapsAsync = (
@@ -30,8 +23,8 @@ export const getGapsAsync = (
   }).then((gaps) =>
     gaps.map((gap) => {
       return {
-        actualStartTime: parseTime(gap.actualStartTime),
-        plannedStartTime: parseTime(gap.plannedStartTime),
+        actualStartTime: parseInstant(gap.actualStartTime),
+        plannedStartTime: parseInstant(gap.plannedStartTime),
         gtfsRideId: gap.gtfsRideId,
       }
     }),

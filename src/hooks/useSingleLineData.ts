@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { SIRI_API } from 'src/api/apiConfig'
 import { getRoutesByLineRef, getStopsForRouteAsync } from 'src/api/gtfsService'
 import { getServiceDayRoutes } from 'src/api/serviceDayRoutesService'
-import { getServiceDayTimeBounds, toIsraelTimezone } from 'src/dayjs'
+import { getServiceDayTimeBounds, instantToApi, toIsraelTimezone } from 'src/dayjs'
 import { BusRoute } from 'src/model/busRoute'
 import {
   type PositionGroup,
@@ -124,8 +124,8 @@ export const useSingleLineData = ({
       {
         siriRouteLineRefs: selectedRoute?.lineRef?.toString(),
         siriRouteOperatorRefs: operatorId,
-        scheduledStartTimeFrom: serviceDayStart.toDate(),
-        scheduledStartTimeTo: serviceDayEnd.toDate(),
+        scheduledStartTimeFrom: instantToApi(serviceDayStart),
+        scheduledStartTimeTo: instantToApi(serviceDayEnd),
         orderBy: 'scheduled_start_time asc',
         limit: 500,
       },

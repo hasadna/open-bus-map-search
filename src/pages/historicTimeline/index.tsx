@@ -8,7 +8,7 @@ import {
   getStopsForRouteAsync,
 } from 'src/api/gtfsService'
 import { getSiriStopHitTimesAsync } from 'src/api/siriService'
-import dayjs, { formatIsraelDate, parseIsraelDate } from 'src/dayjs'
+import { atTimeOfDay, formatIsraelDate, nowInstant, parseIsraelDate } from 'src/dayjs'
 import { usePageState } from 'src/hooks/usePageState'
 import { GlobalSearchContext } from 'src/model/globalState'
 import { Label } from 'src/pages/components/Label'
@@ -36,14 +36,11 @@ const TimelinePage = () => {
   // time-of-day is page-local: not shared across pages, but is shareable so a
   // link recipient sees the same moment (date comes from global state).
   const { params, setParams } = usePageState('timeline', {
-    params: { time: dayjs().format('HH:mm') },
+    params: { time: nowInstant().format('HH:mm') },
     ui: { scrollPosition: 0 },
   })
 
-  const time = useMemo(() => {
-    const [h, m] = params.time.split(':').map(Number)
-    return parseIsraelDate(date).hour(h).minute(m).startOf('minute')
-  }, [date, params.time])
+  const time = useMemo(() => atTimeOfDay(date, params.time), [date, params.time])
 
   const routesQuery = useQuery({
     queryFn: async () => {

@@ -3,7 +3,12 @@ import {
   GtfsRoutePydanticModel,
 } from '@hasadna/open-bus-api-client'
 import { GTFS_API } from 'src/api/apiConfig'
-import { apiDateFromString, getServiceDayDateBounds, getServiceDayTimeBounds } from 'src/dayjs'
+import {
+  apiDateFromString,
+  getServiceDayDateBounds,
+  getServiceDayTimeBounds,
+  instantToApi,
+} from 'src/dayjs'
 import { BusRoute, fromGtfsRoute } from 'src/model/busRoute'
 
 function rideToRoute(ride: GtfsRideWithRelatedPydanticModel): GtfsRoutePydanticModel | null {
@@ -50,8 +55,8 @@ export async function getServiceDayRoutes(
 
   const todayUTC = apiDateFromString(today)
   const tomorrowUTC = apiDateFromString(tomorrow)
-  const tomorrowMidnightUTC = start.add(1, 'day').toDate()
-  const tomorrow04hUTC = end.toDate()
+  const tomorrowMidnightUTC = instantToApi(start.add(1, 'day'))
+  const tomorrow04hUTC = instantToApi(end)
 
   const [todayRaw, ridesInWindow] = await Promise.all([
     // Today's routes

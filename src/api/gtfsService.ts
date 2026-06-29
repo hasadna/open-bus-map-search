@@ -1,5 +1,5 @@
 import { GTFS_API } from 'src/api/apiConfig'
-import dayjs, { apiDateFromString, clampToToday, toApiDate } from 'src/dayjs'
+import dayjs, { apiDateFromString, clampToToday, instantToApi, toApiDate } from 'src/dayjs'
 import { BusRoute, fromGtfsRoute } from 'src/model/busRoute'
 import { BusStop, fromGtfsStop } from 'src/model/busStop'
 
@@ -50,8 +50,8 @@ export async function getStopsForRouteAsync(
   for (const routeId of routeIds) {
     const rides = await GTFS_API.gtfsRidesListGet({
       gtfsRouteId: routeId,
-      startTimeFrom: time.subtract(1, 'day').second(0).millisecond(0).toDate(),
-      startTimeTo: time.add(1, 'day').second(0).millisecond(0).toDate(),
+      startTimeFrom: instantToApi(time.subtract(1, 'day').second(0).millisecond(0)),
+      startTimeTo: instantToApi(time.add(1, 'day').second(0).millisecond(0)),
       limit: 1,
       orderBy: 'start_time',
     })
@@ -87,8 +87,8 @@ export async function getGtfsStopHitTimesAsync(stop: BusStop, time: dayjs.Dayjs)
     return await GTFS_API.gtfsRideStopsListGet({
       gtfsRideGtfsRouteId: stop.routeId,
       gtfsStopIds: stop.stopId.toString(),
-      arrivalTimeFrom: time.subtract(4, 'hour').toDate(),
-      arrivalTimeTo: time.add(4, 'hour').toDate(),
+      arrivalTimeFrom: instantToApi(time.subtract(4, 'hour')),
+      arrivalTimeTo: instantToApi(time.add(4, 'hour')),
       orderBy: 'arrival_time asc',
     })
   } catch (error) {
