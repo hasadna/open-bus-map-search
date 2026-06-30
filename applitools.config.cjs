@@ -34,7 +34,7 @@ const config = {
   // SDK + browser logs → uncomment both flags below;
   // browser only → uncomment env APPLITOOLS_DEBUG_BROWSER_LOGS=true (validate.yaml);
   showLogs: true, // Applitools SDK logs
-  // showBrowserLogs: true, // browser console (requires showLogs)
+  showBrowserLogs: true, // browser console (requires showLogs)
 }
 
 module.exports = config
