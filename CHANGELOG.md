@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.6.0](https://github.com/hasadna/open-bus-map-search/compare/v1.5.0...v1.6.0) (2026-06-30)
+
+
+### Features
+
+* add gps coverage chart ([#1678](https://github.com/hasadna/open-bus-map-search/issues/1678)) ([88f0f1a](https://github.com/hasadna/open-bus-map-search/commit/88f0f1aeb594fb4bb35b005f40e147efb6fe0c4d))
+* Add per-page persistent state ([#1578](https://github.com/hasadna/open-bus-map-search/issues/1578)) ([e343db6](https://github.com/hasadna/open-bus-map-search/commit/e343db67c5981e565b7d003405ed5795c25b5d8a))
+* add vehicle page ([#1670](https://github.com/hasadna/open-bus-map-search/issues/1670)) ([8dae1a9](https://github.com/hasadna/open-bus-map-search/commit/8dae1a98f385eb31ba51ac9fa3952e5f75059a84))
+* Group routes by line number in operator page ([#1601](https://github.com/hasadna/open-bus-map-search/issues/1601)) ([9f9470c](https://github.com/hasadna/open-bus-map-search/commit/9f9470c6b67aa82aab1fa334683a36a425cc9199))
+
+
+### Bug Fixes
+
+* **ci:** drop Safari visual envs and add concurrency group ([#1684](https://github.com/hasadna/open-bus-map-search/issues/1684)) ([c85d2b3](https://github.com/hasadna/open-bus-map-search/commit/c85d2b31e4c05dda9409e0af39f66ea00490835e))
+* show all vehicles details making the same ride ([#1687](https://github.com/hasadna/open-bus-map-search/issues/1687)) ([f0a2141](https://github.com/hasadna/open-bus-map-search/commit/f0a2141a2dc723a8ee1b528bfb397287c873f556))
+* singleLineMap support multiple vehicles ([#1571](https://github.com/hasadna/open-bus-map-search/issues/1571)) ([973b330](https://github.com/hasadna/open-bus-map-search/commit/973b330e4767832fe229241192728b51073155a4))
+
 ## [1.5.0](https://github.com/hasadna/open-bus-map-search/compare/v1.4.0...v1.5.0) (2026-06-12)
 
 
