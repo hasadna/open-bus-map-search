@@ -29,8 +29,12 @@ const config = {
   },
   // puppeteerOptions: {headless: false, devtools: true},
   puppeteerOptions: { args: ['--lang=he-IL', '--accept-lang=he-IL'] },
-  showBrowserLogs: true,
-  // showLogs: true,// uncomment to see Applitools logs
+  // Browser console is streamed in CI via the DEBUG_BROWSER_LOGS=true env (in validate.yaml) —
+  // it needs no config change and triggers no validator warning.
+  // The two flags below do the same but are noisier, and showBrowserLogs falsely trips the validator's "unrecognized key" warning,
+  // so we keep them off:
+  // showLogs: true, // Applitools SDK logs
+  // showBrowserLogs: true, // also stream the browser console (requires showLogs)
 }
 
 module.exports = config
