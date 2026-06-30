@@ -24,8 +24,7 @@ export const LineProfileRide = ({ positionGroups }: { positionGroups: PositionGr
           <TableBody>
             {positionGroups.map((group, index) => {
               const point = group.positions[0]?.point
-              const plate =
-                group.label ?? vehicleIDFormat(group.vehicleRef ?? point?.siriRideVehicleRef)
+              const plate = vehicleIDFormat(group.vehicleRef ?? point?.siriRideVehicleRef)
 
               return (
                 <TableRow key={point?.siriRideId ?? index}>
