@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { SIRI_API } from 'src/api/apiConfig'
 import { getRoutesByLineRef, getStopsForRouteAsync } from 'src/api/gtfsService'
 import { getServiceDayRoutes } from 'src/api/serviceDayRoutesService'
-import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone } from 'src/dayjs'
+import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone, utcNoonForDateStr } from 'src/dayjs'
 import { BusRoute } from 'src/model/busRoute'
 import {
   type PositionGroup,
@@ -233,7 +233,7 @@ export const useSingleLineData = ({
         routeIds = selectedRoute.routeIds
       } else if (scheduledLine && operatorId) {
         routeIds = (
-          await getRoutesByLineRef(operatorId, scheduledLine, rideStartTime.toDate())
+          await getRoutesByLineRef(operatorId, scheduledLine, utcNoonForDateStr(date))
         ).map((route) => route.id)
       }
       if (!routeIds || routeIds.length === 0) return []
