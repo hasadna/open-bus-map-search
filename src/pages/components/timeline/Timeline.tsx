@@ -4,7 +4,7 @@ import {
 } from '@hasadna/open-bus-api-client'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
-import dayjs, { formatInstant } from 'src/dayjs'
+import { formatInstant, serializeInstant } from 'src/dayjs'
 import { Coordinates } from 'src/model/location'
 import { PADDING } from 'src/pages/components/timeline/TimelineBoard'
 import {
@@ -132,7 +132,7 @@ type TimelineProps = {
     | Date[]
   totalHeight: number
   pointType: PointType
-  timestampToTop: (timestamp: dayjs.Dayjs) => number
+  timestampToTop: (timestamp: string | Date) => number
   hoveredTimestamp?: string
 }
 
@@ -152,8 +152,8 @@ export const Timeline = ({
       (timestamp as GtfsRideStopWithRelatedPydanticModel).arrivalTime ??
       (timestamp as SiriVehicleLocationWithRelatedPydanticModel & Coordinates).recordedAtTime! ??
       (timestamp as Date)
-    const tsKey = dayjs(t).toISOString()
-    const naturalY = timestampToTop(dayjs(t))
+    const tsKey = serializeInstant(t)
+    const naturalY = timestampToTop(t)
     const highlighted = hoveredTimestamp !== undefined && tsKey === hoveredTimestamp
     const timeDisplay = formatInstant(t, 'HH:mm:ss')
     return { i, tsKey, naturalY, highlighted, timeDisplay }

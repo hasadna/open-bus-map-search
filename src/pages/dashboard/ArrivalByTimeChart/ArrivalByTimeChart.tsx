@@ -9,7 +9,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
-import dayjs from 'src/dayjs'
+import { formatInstant } from 'src/dayjs'
 import { InfoItem, InfoTable } from 'src/pages/components/InfoTable'
 import Widget from 'src/shared/Widget'
 import './ArrivalByTimeChats.scss'
@@ -126,7 +126,7 @@ export default function ArrivalByTimeChart({
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis
                 dataKey={'gtfsRouteDate' in operatorData[0] ? 'gtfsRouteDate' : 'gtfsRouteHour'}
-                tickFormatter={(tick: dayjs.ConfigType) => dayjs(tick).format('dddd')}
+                tickFormatter={(tick: string) => formatInstant(tick, 'dddd')}
                 interval={'gtfsRouteHour' in operatorData[0] ? 23 : 0}
               />
               <YAxis domain={[0, 100]} tickMargin={35} unit={'%'} />
@@ -137,12 +137,11 @@ export default function ArrivalByTimeChart({
                       <InfoTable>
                         <InfoItem
                           label={t('sample_time')}
-                          value={dayjs(
+                          value={formatInstant(
                             // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                             payload[0].payload.gtfsRouteHour
                               ? payload[0].payload.gtfsRouteHour
                               : payload[0].payload.gtfsRouteDate,
-                          ).format(
                             payload[0].payload.gtfsRouteHour ? 'HH:mm-DD/MM/YY' : 'DD/MM/YY',
                           )}
                         />

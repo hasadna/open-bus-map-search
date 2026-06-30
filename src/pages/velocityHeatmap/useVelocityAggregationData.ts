@@ -1,7 +1,7 @@
 import { SiriVelocityAggregationPydanticModel } from '@hasadna/open-bus-api-client'
 import { useQuery } from '@tanstack/react-query'
 import { SIRI_API } from 'src/api/apiConfig'
-import { parseIsraelDate, shiftIsraelDate, todayIsraelDate } from 'src/dayjs'
+import { instantToApi, parseIsraelDate, shiftIsraelDate, todayIsraelDate } from 'src/dayjs'
 
 export interface VelocityAggregationBounds {
   minLat: number
@@ -76,7 +76,7 @@ async function queryFn(bounds: VelocityAggregationBounds, date: string, zoom: nu
     }
   }
   const data = await SIRI_API.velocityAggregationSiriVelocityAggregationSiriVelocityAggregationGet({
-    recordedFrom: parseIsraelDate(date).toDate(),
+    recordedFrom: instantToApi(parseIsraelDate(date)),
     lonMin: bounds.minLon,
     lonMax: bounds.maxLon,
     latMin: bounds.minLat,

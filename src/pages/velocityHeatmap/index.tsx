@@ -10,7 +10,7 @@ import {
 import React, { useContext, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { TileLayer } from 'react-leaflet'
-import dayjs, { formatIsraelDate, parseIsraelDate, todayIsraelDate } from 'src/dayjs'
+import { todayIsraelDate } from 'src/dayjs'
 import { GlobalSearchContext } from 'src/model/globalState'
 import { MapShell } from 'src/pages/components/map-related/MapShell'
 import { DateNavigator } from '../components/dateNavigator/DateNavigator'
@@ -35,7 +35,6 @@ const VelocityHeatmapPage: React.FC = () => {
   const stackVisSelector = useMediaQuery(theme.breakpoints.down('sm'))
 
   const { search, setSearch } = useContext(GlobalSearchContext)
-  const dateDayjs = parseIsraelDate(search.date)
 
   const [visMode, setVisMode] = useState<'avg' | 'std' | 'cv'>('avg')
   const [min, setMin] = useState(0)
@@ -43,8 +42,7 @@ const VelocityHeatmapPage: React.FC = () => {
 
   const setDate = (date: string) => setSearch((current) => ({ ...current, date }))
 
-  const handleDateChange = (time: dayjs.Dayjs | null) =>
-    setDate(time ? formatIsraelDate(time) : todayIsraelDate())
+  const handleDateChange = (date: string | null) => setDate(date ?? todayIsraelDate())
 
   const handleVisModeChange = (
     _: React.MouseEvent<HTMLElement>,
@@ -62,7 +60,7 @@ const VelocityHeatmapPage: React.FC = () => {
       {/* choose date + visualization — centered block */}
       <Box sx={{ width: '100%', maxWidth: 520, mx: 'auto' }}>
         <Stack direction="column" spacing={2} sx={{ mb: 2 }}>
-          <DateSelector time={dateDayjs} onChange={handleDateChange} />
+          <DateSelector time={search.date} onChange={handleDateChange} />
           <DateNavigator currentTime={search.date} onChange={setDate} />
         </Stack>
         <ToggleButtonGroup

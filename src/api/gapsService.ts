@@ -1,32 +1,31 @@
-import dayjs, { parseInstant, toApiDate } from 'src/dayjs'
+import { apiDateFromString, serializeInstant } from 'src/dayjs'
 import { USER_CASE_API } from './apiConfig'
 
 export type Gap = {
-  plannedStartTime?: dayjs.Dayjs
-  actualStartTime?: dayjs.Dayjs
+  // Instants at rest: ISO-8601 carrying the Israel offset. parseInstant before comparing.
+  plannedStartTime?: string
+  actualStartTime?: string
   gtfsRideId?: number
 }
 
 export const getGapsAsync = (
-  from: dayjs.Dayjs,
-  to: dayjs.Dayjs,
+  from: string,
+  to: string,
   operatorId: string,
   lineRef: number,
   limit = 10000,
 ) => {
   return USER_CASE_API.ridesExecutionListGet({
-    dateFrom: toApiDate(from),
-    dateTo: toApiDate(to),
+    dateFrom: apiDateFromString(from),
+    dateTo: apiDateFromString(to),
     limit,
     lineRef,
     operatorRef: parseInt(operatorId),
   }).then((gaps) =>
-    gaps.map((gap) => {
-      return {
-        actualStartTime: parseInstant(gap.actualStartTime),
-        plannedStartTime: parseInstant(gap.plannedStartTime),
-        gtfsRideId: gap.gtfsRideId,
-      }
-    }),
+    gaps.map((gap) => ({
+      actualStartTime: gap.actualStartTime ? serializeInstant(gap.actualStartTime) : undefined,
+      plannedStartTime: gap.plannedStartTime ? serializeInstant(gap.plannedStartTime) : undefined,
+      gtfsRideId: gap.gtfsRideId,
+    })),
   )
 }

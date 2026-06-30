@@ -7,11 +7,11 @@ import type { SiriVehicleLocationWithRelatedPydanticModel } from '@hasadna/open-
 import { uniqBy } from 'es-toolkit/compat'
 import { useEffect, useState } from 'react'
 import { SIRI_API } from 'src/api/apiConfig'
-import dayjs, { instantToApi } from 'src/dayjs'
+import { instantToApi, parseInstant, serializeInstant } from 'src/dayjs'
 
 const LIMIT = 10000 // the maximum number of vehicles to load in one request
 
-type Dateable = Date | number | string | dayjs.Dayjs
+type Dateable = Date | number | string
 
 type VehicleLocationQuery = {
   from: Dateable
@@ -22,12 +22,7 @@ type VehicleLocationQuery = {
 }
 
 function formatTime(time: Dateable) {
-  if (dayjs.isDayjs(time)) {
-    return time.toISOString()
-  } else {
-    const date = new Date(time).toISOString()
-    return date
-  }
+  return serializeInstant(time)
 }
 
 const loadedLocations = new Map<
@@ -99,8 +94,8 @@ async function fetchWithQueue(
     for (let attempt = 0; attempt < 3; attempt++) {
       try {
         return await SIRI_API.siriVehicleLocationsListGet({
-          recordedAtTimeFrom: instantToApi(dayjs(from)),
-          recordedAtTimeTo: instantToApi(dayjs(to)),
+          recordedAtTimeFrom: instantToApi(parseInstant(from)!),
+          recordedAtTimeTo: instantToApi(parseInstant(to)!),
           limit: LIMIT,
           offset,
           siriRoutesOperatorRef: operatorRef?.toString(),
@@ -145,13 +140,13 @@ function getLocations(
 }
 
 function getMinutesInRange(from: Dateable, to: Dateable, gap = 1) {
-  const start = dayjs(from).startOf('minute')
-  const end = dayjs(to).startOf('minute')
+  const start = parseInstant(from)!.startOf('minute')
+  const end = parseInstant(to)!.startOf('minute')
 
   // array of minutes to load
   const minutes = Array.from({ length: end.diff(start, 'minutes') / gap }, (_, i) => ({
-    from: start.add(i * gap, 'minutes'),
-    to: start.add((i + 1) * gap, 'minutes'),
+    from: serializeInstant(start.add(i * gap, 'minutes')),
+    to: serializeInstant(start.add((i + 1) * gap, 'minutes')),
   }))
   return minutes
 }
@@ -196,9 +191,7 @@ export default function useVehicleLocations({
             setLocations((prev) =>
               uniqBy<SiriVehicleLocationWithRelatedPydanticModel>(
                 [...prev, ...data].sort(
-                  (a, b) =>
-                    new Date(a.recordedAtTime ?? 0).getTime() -
-                    new Date(b.recordedAtTime ?? 0).getTime(),
+                  (a, b) => (a.recordedAtTime?.getTime() ?? 0) - (b.recordedAtTime?.getTime() ?? 0),
                 ),
                 (loc) => loc.id,
               ),

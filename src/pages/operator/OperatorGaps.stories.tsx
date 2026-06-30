@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { http, HttpResponse } from 'msw'
-import dayjs from 'src/dayjs'
+import { formatIsraelDate } from 'src/dayjs'
 import { getPastDate } from '../../../.storybook/main'
 import { OperatorGaps } from './OperatorGaps'
 
@@ -44,7 +44,7 @@ export const Default: Story = {
   },
   args: {
     operatorId: '3',
-    date: dayjs(getPastDate()).format('YYYY-MM-DD'),
+    date: formatIsraelDate(getPastDate()),
     timeRange: 'day',
   },
 }

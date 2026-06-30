@@ -2,13 +2,10 @@ import {
   GtfsRoutePydanticModel,
   SiriRideWithRelatedPydanticModel,
 } from '@hasadna/open-bus-api-client'
-import { getServiceDayTimeBounds, ISRAEL_TIMEZONE } from 'src/dayjs'
-import dayjs from 'src/dayjs'
 import { fromGtfsRoute } from 'src/model/busRoute'
 import { buildVehicleRideRows, ResolvedRoute, toVehicleRide } from './buildVehicleRideRows'
 
 const DATE = '2024-02-12'
-const { start: serviceDayStart } = getServiceDayTimeBounds(DATE)
 
 // A GTFS route as the API returns it (camelCase). lineRef is the SIRI rides'
 // join key; routeLongName uses the "<->" separator routeStartEnd splits on.
@@ -49,7 +46,6 @@ describe('buildVehicleRideRows', () => {
     const rows = buildVehicleRideRows({
       rides: [makeRide({})].map(toVehicleRide),
       routeByLineRef: routeMap([makeRoute({})]),
-      serviceDayStart,
       date: DATE,
     })
 
@@ -68,7 +64,6 @@ describe('buildVehicleRideRows', () => {
     const [row] = buildVehicleRideRows({
       rides: [makeRide({})].map(toVehicleRide),
       routeByLineRef: routeMap([makeRoute({})]),
-      serviceDayStart,
       date: DATE,
     })
 
@@ -97,7 +92,6 @@ describe('buildVehicleRideRows', () => {
         toVehicleRide,
       ),
       routeByLineRef: routeMap([makeRoute({})]),
-      serviceDayStart,
       date: DATE,
     })
 
@@ -110,7 +104,6 @@ describe('buildVehicleRideRows', () => {
     const [row] = buildVehicleRideRows({
       rides: [makeRide({ siriRouteLineRef: 99999, siriRouteOperatorRef: 3 })].map(toVehicleRide),
       routeByLineRef: routeMap([makeRoute({})]), // only line ref 28099 is known
-      serviceDayStart,
       date: DATE,
     })
 
@@ -130,7 +123,6 @@ describe('buildVehicleRideRows', () => {
         toVehicleRide,
       ),
       routeByLineRef: routeMap([makeRoute({})]),
-      serviceDayStart,
       date: DATE,
     })
 
@@ -142,7 +134,6 @@ describe('buildVehicleRideRows', () => {
     const rows = buildVehicleRideRows({
       rides: [makeRide({ id: undefined }), makeRide({ id: 2 })].map(toVehicleRide),
       routeByLineRef: routeMap([makeRoute({})]),
-      serviceDayStart,
       date: DATE,
     })
 
@@ -154,7 +145,6 @@ describe('buildVehicleRideRows', () => {
       buildVehicleRideRows({
         rides: undefined,
         routeByLineRef: undefined,
-        serviceDayStart: dayjs.tz(DATE, ISRAEL_TIMEZONE).startOf('day'),
         date: DATE,
       }),
     ).toEqual([])

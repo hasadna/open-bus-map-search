@@ -1,6 +1,11 @@
 import { GtfsRoutePydanticModel, RequestSubjectSchema } from '@hasadna/open-bus-api-client'
-import dayjs from 'dayjs'
+import type { Dayjs } from 'src/dayjs'
 import type { Point } from '../map-types'
+
+// NOTE: the date/time fields below are antd-picker *form values* (Dayjs is antd's native
+// picker type), held only for the lifetime of the open modal and serialized to strings at
+// submit (see buildComplaintData / buildComplaintTitle). This is the antd picker border —
+// the same role Dayjs plays inside MUI's DateSelector — not a persisted at-rest model.
 
 // --- Core Types ---
 export interface ComplaintUser {
@@ -16,16 +21,16 @@ export interface ComplaintData {
   applyContent: string
   busOperator?: number
   licenseNum?: string
-  eventDate?: dayjs.Dayjs
+  eventDate?: Dayjs
   lineNumberText?: string
-  eventHour?: dayjs.Dayjs
+  eventHour?: Dayjs
   direction?: number
-  wait?: [dayjs.Dayjs, dayjs.Dayjs]
+  wait?: [Dayjs, Dayjs]
   raisingStation?: number
   raisingStationCity?: string
   destinationStationCity?: string
-  reportdate?: dayjs.Dayjs
-  reportTime?: dayjs.Dayjs
+  reportdate?: Dayjs
+  reportTime?: Dayjs
   busDirectionFrom?: string
   busDirectionTo?: string
   addOrRemoveStation?: '1' | '2'
@@ -114,10 +119,10 @@ export interface FieldConfig {
 
 export interface ComplaintTitleData {
   complaintType: ComplaintType
-  eventDate?: dayjs.Dayjs
-  eventHour?: dayjs.Dayjs
-  reportdate?: dayjs.Dayjs
-  reportTime?: dayjs.Dayjs
+  eventDate?: Dayjs
+  eventHour?: Dayjs
+  reportdate?: Dayjs
+  reportTime?: Dayjs
   lineNumberText?: string
   licenseNum?: string
 }

@@ -4,13 +4,7 @@ import { useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { SIRI_API } from 'src/api/apiConfig'
 import { getAllRoutesList } from 'src/api/gtfsService'
-import dayjs, {
-  formatIsraelDate,
-  getServiceDayTimeBounds,
-  instantToApi,
-  parseIsraelDate,
-  todayIsraelDate,
-} from 'src/dayjs'
+import { getServiceDayTimeBounds, instantToApi, serializeInstant, todayIsraelDate } from 'src/dayjs'
 import { fromGtfsRoute } from 'src/model/busRoute'
 import { GlobalSearchContext } from 'src/model/globalState'
 import { InitialUrlParamsContext, PageShareParamsContext } from 'src/model/routeContext'
@@ -47,10 +41,10 @@ const VehiclePage = () => {
     [date],
   )
 
-  const handleDateChange = (time: dayjs.Dayjs | null) => {
+  const handleDateChange = (date: string | null) => {
     setSearch((current) => ({
       ...current,
-      date: time ? formatIsraelDate(time) : todayIsraelDate(),
+      date: date ?? todayIsraelDate(),
     }))
   }
 
@@ -59,7 +53,12 @@ const VehiclePage = () => {
     isFetching,
     isError,
   } = useQuery({
-    queryKey: ['vehicleRides', vehicleNumber, serviceDayStart.valueOf(), serviceDayEnd.valueOf()],
+    queryKey: [
+      'vehicleRides',
+      vehicleNumber,
+      serializeInstant(serviceDayStart),
+      serializeInstant(serviceDayEnd),
+    ],
     enabled: !!vehicleNumber,
     queryFn: ({ signal }) =>
       SIRI_API.siriRidesListGet(
@@ -94,11 +93,11 @@ const VehiclePage = () => {
   )
 
   const { data: routes } = useQuery({
-    queryKey: ['vehicleRoutes', serviceDayStart.valueOf(), operatorIds],
+    queryKey: ['vehicleRoutes', serializeInstant(serviceDayStart), operatorIds],
     enabled: operatorIds.length > 0,
     queryFn: async ({ signal }) => {
       const routeLists = await Promise.all(
-        operatorIds.map((operatorId) => getAllRoutesList(operatorId, serviceDayStart, signal)),
+        operatorIds.map((operatorId) => getAllRoutesList(operatorId, date, signal)),
       )
       return routeLists
         .flat()
@@ -114,8 +113,8 @@ const VehiclePage = () => {
   )
 
   const rows = useMemo<VehicleRideRow[]>(
-    () => buildVehicleRideRows({ rides, routeByLineRef, serviceDayStart, date }),
-    [rides, serviceDayStart, date, routeByLineRef],
+    () => buildVehicleRideRows({ rides, routeByLineRef, date }),
+    [rides, date, routeByLineRef],
   )
 
   const handleRowClick = (payload: VehicleRideRow['setSearchPayload']) => {
@@ -132,7 +131,7 @@ const VehiclePage = () => {
       <Grid container spacing={2} sx={{ width: '100%', maxWidth: 600, mx: 'auto' }}>
         {/* choose date */}
         <Grid size={{ sm: 6, xs: 12 }}>
-          <DateSelector time={parseIsraelDate(date)} onChange={handleDateChange} />
+          <DateSelector time={date} onChange={handleDateChange} />
         </Grid>
         {/* choose vehicle */}
         <Grid size={{ sm: 6, xs: 12 }}>

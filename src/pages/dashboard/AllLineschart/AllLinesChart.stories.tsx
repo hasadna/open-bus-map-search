@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { http, HttpResponse } from 'msw'
-import dayjs, { formatIsraelDate } from 'src/dayjs'
+import { formatIsraelDate, shiftIsraelDate } from 'src/dayjs'
 import { getPastDate } from '../../../../.storybook/main'
 import AllLinesChart from './AllLinesChart'
 
@@ -25,8 +25,8 @@ const meta = {
   },
   render: (args) => (
     <AllLinesChart
-      startDate={formatIsraelDate(dayjs(args.startDate))}
-      endDate={formatIsraelDate(dayjs(args.endDate))}
+      startDate={args.startDate}
+      endDate={args.endDate}
       alertAllChartsZeroLinesHandling={function (arg: boolean): void {
         console.log('alertAllChartsZeroLinesHandling', arg)
       }}
@@ -53,8 +53,8 @@ export const Default: Story = {
     },
   },
   args: {
-    startDate: formatIsraelDate(dayjs(getPastDate()).subtract(7, 'day')),
-    endDate: formatIsraelDate(dayjs(getPastDate())),
+    startDate: shiftIsraelDate(formatIsraelDate(getPastDate()), -7),
+    endDate: formatIsraelDate(getPastDate()),
     alertAllChartsZeroLinesHandling: (arg: boolean) => {
       console.log('alertAllChartsZeroLinesHandling', arg)
     },

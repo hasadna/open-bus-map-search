@@ -14,7 +14,13 @@ import React, { memo, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
 import { Gap } from 'src/api/gapsService'
-import { getServiceDayTimeBounds, nowInstant } from 'src/dayjs'
+import {
+  formatInstant,
+  formatTimeOfDay,
+  getServiceDayTimeBounds,
+  nowInstant,
+  parseInstant,
+} from 'src/dayjs'
 import {
   formatServiceDayTime,
   formatStartTimeForQuery,
@@ -51,26 +57,29 @@ const DATE_TIME_FORMAT = 'DD/MM/YYYY HH:mm'
 
 const formatStatus = (gap: Gap, gaps: Gap[] | undefined): keyof typeof colors => {
   const currentTime = nowInstant()
-  if (gap.plannedStartTime?.isAfter(currentTime) && !gap.actualStartTime) return 'ride_in_future'
-  if (!gap.actualStartTime && gap.plannedStartTime?.isBefore(currentTime)) return 'ride_missing'
-  if (gap.plannedStartTime?.isSame(gap.actualStartTime)) return 'ride_as_planned'
-  const hasTwinRide = gaps?.some(
-    (g) =>
-      g.plannedStartTime &&
-      g.actualStartTime &&
-      gap.actualStartTime &&
-      g.actualStartTime.isSame(gap.actualStartTime),
-  )
+  const planned = parseInstant(gap.plannedStartTime)
+  const actual = parseInstant(gap.actualStartTime)
+  if (planned?.isAfter(currentTime) && !actual) return 'ride_in_future'
+  if (!actual && planned?.isBefore(currentTime)) return 'ride_missing'
+  if (planned?.isSame(actual)) return 'ride_as_planned'
+  const hasTwinRide = gaps?.some((g) => {
+    const gActual = parseInstant(g.actualStartTime)
+    return Boolean(g.plannedStartTime && gActual && actual && gActual.isSame(actual))
+  })
   return hasTwinRide ? 'ride_duped' : 'ride_extra'
 }
 
 function buildTooltip(gap: Gap, t: TFunction): React.ReactNode {
-  const planned = gap.plannedStartTime?.format(DATE_TIME_FORMAT)
-  const actual = gap.actualStartTime?.format(DATE_TIME_FORMAT)
+  const planned = gap.plannedStartTime
+    ? formatInstant(gap.plannedStartTime, DATE_TIME_FORMAT)
+    : undefined
+  const actual = gap.actualStartTime
+    ? formatInstant(gap.actualStartTime, DATE_TIME_FORMAT)
+    : undefined
+  const plannedInstant = parseInstant(gap.plannedStartTime)
+  const actualInstant = parseInstant(gap.actualStartTime)
   const diffMin =
-    gap.actualStartTime && gap.plannedStartTime
-      ? gap.actualStartTime.diff(gap.plannedStartTime, 'minute')
-      : null
+    actualInstant && plannedInstant ? actualInstant.diff(plannedInstant, 'minute') : null
   return (
     <div style={{ fontSize: '0.85rem', lineHeight: 1.6 }}>
       <div>
@@ -86,6 +95,7 @@ function buildTooltip(gap: Gap, t: TFunction): React.ReactNode {
   )
 }
 const getGap = (gap: Gap) => gap.plannedStartTime || gap.actualStartTime
+const getGapInstant = (gap: Gap) => parseInstant(getGap(gap))
 
 const GapsTable: React.FC<GapsTableProps> = ({
   gaps,
@@ -104,16 +114,21 @@ const GapsTable: React.FC<GapsTableProps> = ({
     return gaps
       .filter((gap) =>
         onlyGapped
-          ? !gap.actualStartTime && gap.plannedStartTime?.isBefore(nowInstant())
+          ? !gap.actualStartTime &&
+            Boolean(parseInstant(gap.plannedStartTime)?.isBefore(nowInstant()))
           : getGap(gap),
       )
-      .sort((a, b) => getGap(a)?.diff(getGap(b)) ?? 0)
+      .sort((a, b) => {
+        const da = getGapInstant(a)
+        const db = getGapInstant(b)
+        return da && db ? da.diff(db) : 0
+      })
   }, [gaps, onlyGapped])
 
   const groupedGaps = useMemo(() => {
     const map: Record<string, { gap: Gap; status: keyof typeof colors }[]> = {}
     for (const gap of filteredGaps) {
-      const hour = getGap(gap)?.startOf('hour').valueOf()
+      const hour = getGapInstant(gap)?.startOf('hour').valueOf()
       if (hour === undefined) continue
       const status = formatStatus(gap, filteredGaps)
       if (!map[hour]) map[hour] = []
@@ -161,9 +176,10 @@ const GapsTable: React.FC<GapsTableProps> = ({
                   // Every cell in an hour-row shares the same calendar day, so the
                   // "next night" marker lives once in a leading column for the whole row
                   // rather than on each time cell.
-                  const rowGapTime =
+                  const rowGapTime = parseInstant(
                     groupedGaps[hour][0]?.gap.plannedStartTime ||
-                    groupedGaps[hour][0]?.gap.actualStartTime
+                      groupedGaps[hour][0]?.gap.actualStartTime,
+                  )
                   const rowIsNextDay = rowGapTime
                     ? !rowGapTime.isSame(serviceDayStart, 'day')
                     : false
@@ -182,10 +198,10 @@ const GapsTable: React.FC<GapsTableProps> = ({
                       </TableCell>
                       {groupedGaps[hour].map(({ gap, status }, j) => {
                         const gapTime = gap.plannedStartTime || gap.actualStartTime
-                        // eslint-disable-next-line i18next/no-literal-string -- dayjs format pattern, not user text
-                        const displayTime = gapTime?.format('HH:mm')
-                        const rideToken = gapTime
-                          ? formatServiceDayTime(gapTime, serviceDayStart)
+                        const gapInstant = parseInstant(gapTime)
+                        const displayTime = gapTime ? formatTimeOfDay(gapTime) : undefined
+                        const rideToken = gapInstant
+                          ? formatServiceDayTime(gapInstant, serviceDayStart)
                           : undefined
                         const hasRide = Boolean(gap.actualStartTime)
                         const startTimeParam = formatStartTimeForQuery(rideToken)

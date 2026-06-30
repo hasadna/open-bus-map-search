@@ -11,12 +11,9 @@ import {
   YAxis,
 } from 'recharts'
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
-import dayjs, {
-  formatIsraelDate,
-  parseIsraelDate,
-  shiftIsraelDate,
-  todayIsraelDate,
-} from 'src/dayjs'
+// `dayjs` is used directly (not the instant helpers) only to label server-side
+// aggregation buckets as-is — see the comment at the use site.
+import dayjs, { shiftIsraelDate, todayIsraelDate } from 'src/dayjs'
 import SkeletonLoader from 'src/shared/SkeletonLoader'
 import Widget from 'src/shared/Widget'
 import { DateSelector } from '../components/DateSelector'
@@ -118,15 +115,15 @@ function StackedResearchInputs({
       <Grid container sx={{ gap: 2 }}>
         <Grid size={{ md: 'grow', xs: 12 }}>
           <DateSelector
-            time={parseIsraelDate(startDate)}
-            onChange={(data) => data && setStartDate(formatIsraelDate(data))}
+            time={startDate}
+            onChange={(data) => data && setStartDate(data)}
             customLabel={t('start')}
           />
         </Grid>
         <Grid size={{ md: 'grow', xs: 12 }}>
           <DateSelector
-            time={parseIsraelDate(endDate)}
-            onChange={(data) => data && setEndDate(formatIsraelDate(data))}
+            time={endDate}
+            onChange={(data) => data && setEndDate(data)}
             customLabel={t('end')}
           />
         </Grid>

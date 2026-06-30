@@ -1,7 +1,8 @@
-import { Dayjs } from 'src/dayjs'
+import { atTimeOfDay, serializeInstant } from 'src/dayjs'
 import { convertGapsToHourlyStruct } from './useGapsList'
 
-const mockTime = (hhmm: string) => ({ format: () => hhmm }) as unknown as Dayjs
+// Build an instant string whose Israel wall-clock is the given "HH:mm" (date arbitrary).
+const mockTime = (hhmm: string) => serializeInstant(atTimeOfDay('2023-10-04', hhmm))
 
 describe('convertGapsToHourlyStruct', () => {
   it('returns an empty array for an empty gaps list', () => {

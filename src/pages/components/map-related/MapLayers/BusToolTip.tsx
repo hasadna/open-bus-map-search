@@ -4,7 +4,7 @@ import { ReactNode, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
 import { getRoutesByLineRef } from 'src/api/gtfsService'
-import { formatInstant, nowInstant, parseInstant } from 'src/dayjs'
+import { formatInstant, formatIsraelDate, nowInstant, parseInstant } from 'src/dayjs'
 import { routeStartEnd, vehicleIDFormat } from 'src/pages/components/utils/rotueUtils'
 import SkeletonLoader from 'src/shared/SkeletonLoader'
 import CustomTreeView from '../../CustomTreeView'
@@ -28,7 +28,7 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
     getRoutesByLineRef(
       (position.point?.siriRouteOperatorRef || 0).toString(),
       (position.point?.siriRouteLineRef || 0).toString(),
-      parseInstant(position.point?.siriRideScheduledStartTime) ?? nowInstant(),
+      formatIsraelDate(parseInstant(position.point?.siriRideScheduledStartTime) ?? nowInstant()),
     )
       .then((routes) => {
         setRoute(routes[0])
@@ -113,7 +113,7 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
                 {`${t('sample_time')}: `}
                 <span>
                   {formatInstant(
-                    position.point!.recordedAtTime || new Date(),
+                    position.point?.recordedAtTime ?? nowInstant(),
                     `l [${t('at_time')}] LT`,
                   )}
                 </span>

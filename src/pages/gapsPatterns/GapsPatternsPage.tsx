@@ -14,13 +14,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
-import {
-  formatIsraelDate,
-  normalizeIsraelDate,
-  parseIsraelDate,
-  shiftIsraelDate,
-  todayIsraelDate,
-} from 'src/dayjs'
+import { normalizeIsraelDate, shiftIsraelDate, todayIsraelDate } from 'src/dayjs'
 import { GlobalSearchContext } from 'src/model/globalState'
 import { InitialUrlParamsContext, PageShareParamsContext } from 'src/model/routeContext'
 import { INPUT_SIZE } from 'src/resources/sizes'
@@ -236,16 +230,16 @@ const GapsPatternsPage = () => {
           sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
           <Grid size={{ xs: 6 }}>
             <DateSelector
-              time={parseIsraelDate(startDate)}
-              onChange={(data) => data && setStartDate(formatIsraelDate(data))}
+              time={startDate}
+              onChange={(data) => data && setStartDate(data)}
               customLabel={t('start')}
             />
           </Grid>
           <Grid size={{ xs: 6 }}>
             <DateSelector
-              time={parseIsraelDate(endDate)}
-              onChange={(data) => data && setEndDate(formatIsraelDate(data))}
-              minDate={parseIsraelDate(startDate)}
+              time={endDate}
+              onChange={(data) => data && setEndDate(data)}
+              minDate={startDate}
               customLabel={t('end')}
             />
           </Grid>

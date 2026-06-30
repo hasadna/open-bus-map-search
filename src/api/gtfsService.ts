@@ -1,5 +1,5 @@
 import { GTFS_API } from 'src/api/apiConfig'
-import dayjs, { apiDateFromString, clampToToday, instantToApi, toApiDate } from 'src/dayjs'
+import { apiDateFromString, clampToToday, instantToApi, parseInstant } from 'src/dayjs'
 import { BusRoute, fromGtfsRoute } from 'src/model/busRoute'
 import { BusStop, fromGtfsStop } from 'src/model/busStop'
 
@@ -41,17 +41,16 @@ export async function getRoutesAsync(
   return routes
 }
 
-export async function getStopsForRouteAsync(
-  routeIds: number[],
-  time: dayjs.Dayjs,
-): Promise<BusStop[]> {
+export async function getStopsForRouteAsync(routeIds: number[], time: string): Promise<BusStop[]> {
   const stops: BusStop[] = []
+  const instant = parseInstant(time)
+  if (!instant) return stops
 
   for (const routeId of routeIds) {
     const rides = await GTFS_API.gtfsRidesListGet({
       gtfsRouteId: routeId,
-      startTimeFrom: instantToApi(time.subtract(1, 'day').second(0).millisecond(0)),
-      startTimeTo: instantToApi(time.add(1, 'day').second(0).millisecond(0)),
+      startTimeFrom: instantToApi(instant.subtract(1, 'day').second(0).millisecond(0)),
+      startTimeTo: instantToApi(instant.add(1, 'day').second(0).millisecond(0)),
       limit: 1,
       orderBy: 'start_time',
     })
@@ -82,13 +81,15 @@ export async function getStopsForRouteAsync(
   )
 }
 
-export async function getGtfsStopHitTimesAsync(stop: BusStop, time: dayjs.Dayjs) {
+export async function getGtfsStopHitTimesAsync(stop: BusStop, time: string) {
+  const instant = parseInstant(time)
+  if (!instant) return []
   try {
     return await GTFS_API.gtfsRideStopsListGet({
       gtfsRideGtfsRouteId: stop.routeId,
       gtfsStopIds: stop.stopId.toString(),
-      arrivalTimeFrom: instantToApi(time.subtract(4, 'hour')),
-      arrivalTimeTo: instantToApi(time.add(4, 'hour')),
+      arrivalTimeFrom: instantToApi(instant.subtract(4, 'hour')),
+      arrivalTimeTo: instantToApi(instant.add(4, 'hour')),
       orderBy: 'arrival_time asc',
     })
   } catch (error) {
@@ -122,12 +123,8 @@ export async function getRouteById(routeId?: string, signal?: AbortSignal) {
   }
 }
 
-export async function getAllRoutesList(
-  operatorId: string,
-  date: dayjs.Dayjs,
-  signal?: AbortSignal,
-) {
-  const apiDate = toApiDate(date)
+export async function getAllRoutesList(operatorId: string, date: string, signal?: AbortSignal) {
+  const apiDate = apiDateFromString(date)
   return await GTFS_API.gtfsRoutesListGet(
     {
       operatorRefs: operatorId,
@@ -143,10 +140,10 @@ export async function getAllRoutesList(
 export async function getRoutesByLineRef(
   operatorId: string,
   lineRefs: string,
-  date: dayjs.Dayjs,
+  date: string,
   signal?: AbortSignal,
 ) {
-  const apiDate = toApiDate(date)
+  const apiDate = apiDateFromString(date)
   return await GTFS_API.gtfsRoutesListGet(
     {
       operatorRefs: operatorId,

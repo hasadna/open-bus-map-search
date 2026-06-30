@@ -5,7 +5,7 @@ import { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLoaderData, useNavigate } from 'react-router'
 import { getServiceDayRoutes } from 'src/api/serviceDayRoutesService'
-import dayjs, { formatIsraelDate, parseIsraelDate } from 'src/dayjs'
+import { formatIsraelDate } from 'src/dayjs'
 import { useSingleLineData } from 'src/hooks/useSingleLineData'
 import { GLOBAL_SEARCH_DEFAULTS, GlobalSearchContext } from 'src/model/globalState'
 import { InitialUrlParamsContext, PageShareParamsContext } from 'src/model/routeContext'
@@ -88,15 +88,15 @@ const LineProfile = () => {
     return () => setParams({})
   }, [startTime, setParams])
 
-  const handleDateChange = (time: dayjs.Dayjs | null) => {
-    if (!time || !route) return
+  const handleDateChange = (date: string | null) => {
+    if (!date || !route) return
     dateChangeAbortRef.current?.abort()
     const abortController = new AbortController()
     dateChangeAbortRef.current = abortController
     // Service-day aware (and Israel-tz normalized internally), consistent with the
     // gaps page and the single-line ride list.
     getServiceDayRoutes(
-      formatIsraelDate(time),
+      date,
       route?.operatorRef.toString(),
       route?.routeShortName,
       abortController.signal,
@@ -145,7 +145,7 @@ const LineProfile = () => {
               setRouteKey={handelRouteChange}
             />
           )}
-          <DateSelector time={parseIsraelDate(search.date)} onChange={handleDateChange} />
+          <DateSelector time={search.date} onChange={handleDateChange} />
           <Grid container sx={{ flexWrap: 'nowrap', alignItems: 'center' }}>
             <FilterPositionsByStartTimeSelector
               options={options}

@@ -8,7 +8,7 @@ import {
   getStopsForRouteAsync,
 } from 'src/api/gtfsService'
 import { getSiriStopHitTimesAsync } from 'src/api/siriService'
-import { atTimeOfDay, formatIsraelDate, nowInstant, parseIsraelDate } from 'src/dayjs'
+import { atTimeOfDay, formatTimeOfDay, nowInstant, serializeInstant } from 'src/dayjs'
 import { usePageState } from 'src/hooks/usePageState'
 import { GlobalSearchContext } from 'src/model/globalState'
 import { Label } from 'src/pages/components/Label'
@@ -36,11 +36,13 @@ const TimelinePage = () => {
   // time-of-day is page-local: not shared across pages, but is shareable so a
   // link recipient sees the same moment (date comes from global state).
   const { params, setParams } = usePageState('timeline', {
-    params: { time: nowInstant().format('HH:mm') },
+    params: { time: formatTimeOfDay(nowInstant()) },
     ui: { scrollPosition: 0 },
   })
 
-  const time = useMemo(() => atTimeOfDay(date, params.time), [date, params.time])
+  // The selected moment as an instant string (at-rest form) — used directly as the
+  // stable query key and passed to the API/timeline borders, which parse as needed.
+  const time = useMemo(() => serializeInstant(atTimeOfDay(date, params.time)), [date, params.time])
 
   const routesQuery = useQuery({
     queryFn: async () => {
@@ -55,7 +57,7 @@ const TimelinePage = () => {
       }
       return null
     },
-    queryKey: ['routes', operatorId, lineNumber, time.valueOf()],
+    queryKey: ['routes', operatorId, lineNumber, time],
   })
 
   const selectedRoute = useMemo(
@@ -75,7 +77,7 @@ const TimelinePage = () => {
       }
       return null
     },
-    queryKey: ['stops', selectedRoute?.lineRef, time.valueOf()],
+    queryKey: ['stops', selectedRoute?.lineRef, time],
   })
 
   const selectedStop = useMemo(
@@ -94,7 +96,7 @@ const TimelinePage = () => {
       }
       return null
     },
-    queryKey: ['hits', selectedRoute?.lineRef, selectedStop?.stopId, time.valueOf()],
+    queryKey: ['hits', selectedRoute?.lineRef, selectedStop?.stopId, time],
   })
 
   return (
@@ -116,20 +118,20 @@ const TimelinePage = () => {
         {/* choose date */}
         <Grid size={{ lg: 4, md: 6, xs: 12 }}>
           <DateSelector
-            time={parseIsraelDate(date)}
-            onChange={(ts) => {
-              if (!ts) return
-              setSearch((prev) => ({ ...prev, date: formatIsraelDate(ts) }))
+            time={date}
+            onChange={(d) => {
+              if (!d) return
+              setSearch((prev) => ({ ...prev, date: d }))
             }}
           />
         </Grid>
         {/* choose time */}
         <Grid size={{ lg: 4, md: 6, xs: 12 }}>
           <TimeSelector
-            time={time}
-            onChange={(ts) => {
-              if (!ts) return
-              setParams((prev) => ({ ...prev, time: ts.format('HH:mm') }))
+            time={params.time}
+            onChange={(t) => {
+              if (!t) return
+              setParams((prev) => ({ ...prev, time: t }))
             }}
           />
         </Grid>

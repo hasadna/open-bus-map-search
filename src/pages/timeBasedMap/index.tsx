@@ -1,9 +1,15 @@
 import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Marker, Popup, TileLayer, useMap } from 'react-leaflet'
 import MarkerClusterGroup from 'react-leaflet-markercluster'
-import dayjs, { ISRAEL_TIMEZONE, parseIsraelLocalDatetime } from 'src/dayjs'
+import {
+  atTimeOfDay,
+  formatIsraelDate,
+  formatTimeOfDay,
+  parseIsraelLocalDatetime,
+  serializeInstant,
+} from 'src/dayjs'
 import { useAgencyList } from 'src/hooks/useAgencyList'
 import useVehicleLocations from 'src/hooks/useVehicleLocations'
 import { InitialUrlParamsContext, PageShareParamsContext } from 'src/model/routeContext'
@@ -17,7 +23,8 @@ import { busIcon, busIconPath } from '../components/utils/BusIcon'
 import createClusterCustomIcon from '../components/utils/customCluster/customCluster'
 import InfoYoutubeModal from '../components/YoutubeModal'
 
-const DEFAULT_TIME = dayjs('2023-03-14T15:00:00Z')
+const DEFAULT_DATE = '2023-03-14'
+const DEFAULT_TIME = '17:00' // 15:00 UTC, i.e. 17:00 in Israel standard time (+02:00)
 const DEFAULT_POSITION: Point = {
   loc: [32.3057988, 34.85478613],
   color: 0,
@@ -25,27 +32,37 @@ const DEFAULT_POSITION: Point = {
 
 export default function TimeBasedMapPage() {
   const initialUrlParams = useContext(InitialUrlParamsContext)
-  const [from, setFrom] = useState(
-    () =>
-      (initialUrlParams.datetime && parseIsraelLocalDatetime(initialUrlParams.datetime)) ||
-      DEFAULT_TIME,
-  )
-  const to = useMemo(() => dayjs(from).add(1, 'minutes'), [from])
-  const { locations, isLoading } = useVehicleLocations({ from, to })
+  // Civil date + time-of-day live at rest as strings; the instant is materialized
+  // transiently (atTimeOfDay) only for the query and the share param.
+  const [date, setDate] = useState(() => {
+    const parsed = initialUrlParams.datetime
+      ? parseIsraelLocalDatetime(initialUrlParams.datetime)
+      : null
+    return parsed ? formatIsraelDate(parsed) : DEFAULT_DATE
+  })
+  const [time, setTime] = useState(() => {
+    const parsed = initialUrlParams.datetime
+      ? parseIsraelLocalDatetime(initialUrlParams.datetime)
+      : null
+    return parsed ? formatTimeOfDay(parsed) : DEFAULT_TIME
+  })
+  const from = useMemo(() => atTimeOfDay(date, time), [date, time])
+  const to = useMemo(() => from.add(1, 'minute'), [from])
+  const { locations, isLoading } = useVehicleLocations({
+    from: serializeInstant(from),
+    to: serializeInstant(to),
+  })
   const { t } = useTranslation()
   const positions = useMemo(() => locations.map(toPoint), [locations])
-  const handleFromChange = useCallback((time: dayjs.Dayjs | null) => {
-    setFrom(time ?? DEFAULT_TIME)
-  }, [])
 
   // LEGACY: manual share-param injection — replace with usePageState's per-page
   // persistent `params` when this page is migrated.
   const { setParams } = useContext(PageShareParamsContext)
   useEffect(() => {
     // Shared as a readable Israel-local datetime, e.g. 2023-03-14T17:00
-    setParams({ datetime: from.tz(ISRAEL_TIMEZONE).format('YYYY-MM-DDTHH:mm') })
+    setParams({ datetime: `${date}T${time}` })
     return () => setParams({})
-  }, [from, setParams])
+  }, [date, time, setParams])
 
   return (
     <PageContainer className="map-container">
@@ -65,10 +82,10 @@ export default function TimeBasedMapPage() {
       <Grid container spacing={2}>
         {/* from date */}
         <Grid size={{ md: 4, sm: 6, xs: 12 }}>
-          <DateSelector time={from} onChange={handleFromChange} />
+          <DateSelector time={date} onChange={(value) => setDate(value ?? DEFAULT_DATE)} />
         </Grid>
         <Grid size={{ md: 4, sm: 6, xs: 12 }}>
-          <TimeSelector time={from} onChange={handleFromChange} />
+          <TimeSelector time={time} onChange={(value) => setTime(value ?? DEFAULT_TIME)} />
         </Grid>
         {/* loaded info */}
         <Grid size={{ xs: 11 }} container sx={{ alignItems: 'center' }}>

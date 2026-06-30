@@ -5,7 +5,7 @@ import {
 import { useCallback, useState } from 'react'
 import styled from 'styled-components'
 import { MAX_HITS_COUNT } from 'src/api/apiConfig'
-import dayjs from 'src/dayjs'
+import { parseInstant, serializeInstant } from 'src/dayjs'
 import { useTheme } from 'src/layout/ThemeContext'
 import { Coordinates } from 'src/model/location'
 import { HorizontalLine } from 'src/pages/components/timeline/HorizontalLine'
@@ -16,7 +16,9 @@ export const PADDING = 10
 const COLUMN_GAP = 32
 
 const getRange = (timestamps: Date[]) =>
-  timestamps.length > 0 ? dayjs(timestamps[timestamps.length - 1]).diff(timestamps[0], 'second') : 0
+  timestamps.length > 0
+    ? (timestamps[timestamps.length - 1].getTime() - timestamps[0].getTime()) / 1000
+    : 0
 
 const minDate = (date1: Date, date2: Date) => (date1 <= date2 ? date1 : date2)
 
@@ -51,7 +53,7 @@ const StyledContainer = styled.div`
 
 type TimelineBoardProps = {
   className?: string
-  target: dayjs.Dayjs
+  target: string // instant (ISO with Israel offset)
   gtfsTimes: GtfsRideStopWithRelatedPydanticModel[]
   siriTimes: (SiriVehicleLocationWithRelatedPydanticModel & Coordinates)[]
 }
@@ -68,11 +70,18 @@ export const TimelineBoard = ({ className, target, gtfsTimes, siriTimes }: Timel
   const totalRange = Math.max(gtfsRange, siriRange)
   const totalHeight = 400 + (Math.max(gtfsTimes.length, siriTimes.length) / MAX_HITS_COUNT) * 400
 
-  const allTimestamps: Set<Date> = new Set([target.toDate(), ...gtfsDates, ...siriDates])
+  // Canonical instant strings so the hover key matches the per-column keys in <Timeline/>.
+  const allTimestamps = new Set<string>([
+    serializeInstant(target),
+    ...gtfsDates.map(serializeInstant),
+    ...siriDates.map(serializeInstant),
+  ])
 
   const timestampToTop = useCallback(
-    (timestamp: dayjs.Dayjs) => {
-      const deltaFromTop = timestamp.diff(lowerBound, 'second')
+    (timestamp: string | Date) => {
+      const instant = parseInstant(timestamp)
+      if (!instant) return PADDING
+      const deltaFromTop = instant.diff(lowerBound, 'second')
       const portionOfHeight = deltaFromTop / totalRange
       return Math.min(PADDING + portionOfHeight * totalHeight, totalHeight)
     },
@@ -105,17 +114,14 @@ export const TimelineBoard = ({ className, target, gtfsTimes, siriTimes }: Timel
             timestampToTop={timestampToTop}
             hoveredTimestamp={hoveredTimestamp}
           />
-          {Array.from(allTimestamps).map((timestamp, index) => {
-            const tsKey = dayjs(timestamp).toISOString()
-            return (
-              <HorizontalLine
-                key={index}
-                top={timestampToTop(dayjs(timestamp))}
-                externalVisible={hoveredTimestamp === tsKey}
-                onHoverChange={(entering) => setHoveredTimestamp(entering ? tsKey : undefined)}
-              />
-            )
-          })}
+          {Array.from(allTimestamps).map((tsKey, index) => (
+            <HorizontalLine
+              key={index}
+              top={timestampToTop(tsKey)}
+              externalVisible={hoveredTimestamp === tsKey}
+              onHoverChange={(entering) => setHoveredTimestamp(entering ? tsKey : undefined)}
+            />
+          ))}
         </Container>
       </StyledContainer>
     </CenteringWrapper>

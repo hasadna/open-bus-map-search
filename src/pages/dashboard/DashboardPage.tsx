@@ -2,7 +2,7 @@ import { Alert, Grid, Typography } from '@mui/material'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 // Services and libraries
-import { formatIsraelDate, parseIsraelDate, shiftIsraelDate, todayIsraelDate } from 'src/dayjs'
+import { shiftIsraelDate, todayIsraelDate } from 'src/dayjs'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
 import { DateSelector } from '../components/DateSelector'
 import { PageContainer } from '../components/PageContainer'
@@ -59,16 +59,16 @@ const DashboardPage = () => {
         <Grid container size={{ xs: 12, lg: 6 }} spacing={2} sx={{ alignItems: 'center' }}>
           <Grid size={{ xs: 6 }}>
             <DateSelector
-              time={parseIsraelDate(startDate)}
-              onChange={(data) => data && setStartDate(formatIsraelDate(data))}
+              time={startDate}
+              onChange={(data) => data && setStartDate(data)}
               customLabel={t('start')}
             />
           </Grid>
           <Grid size={{ xs: 6 }}>
             <DateSelector
-              time={parseIsraelDate(endDate)}
-              onChange={(data) => data && setEndDate(formatIsraelDate(data))}
-              minDate={parseIsraelDate(startDate)}
+              time={endDate}
+              onChange={(data) => data && setEndDate(data)}
+              minDate={startDate}
               customLabel={t('end')}
             />
           </Grid>

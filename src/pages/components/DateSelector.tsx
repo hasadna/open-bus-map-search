@@ -1,14 +1,16 @@
 import { DatePicker, DateValidationError } from '@mui/x-date-pickers'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import dayjs, { parseIsraelDate } from 'src/dayjs'
+import { formatIsraelDate, parseIsraelDate } from 'src/dayjs'
 
 export type DataSelectorProps = {
-  time: dayjs.Dayjs
-  minDate?: dayjs.Dayjs
+  // Civil date "YYYY-MM-DD" — the at-rest form. The Dayjs the MUI picker needs is
+  // materialized here (at the border) and never leaves this component.
+  time: string
+  minDate?: string
   customLabel?: string
   disabled?: boolean
-  onChange: (timeValid: dayjs.Dayjs | null) => void
+  onChange: (date: string | null) => void
 }
 
 const getErrorMessageKey = (error?: DateValidationError) => {
@@ -21,7 +23,7 @@ const getErrorMessageKey = (error?: DateValidationError) => {
   }
 }
 
-const startOfTime = parseIsraelDate('2023-01-01')
+const START_OF_TIME = '2023-01-01'
 
 export function DateSelector({
   time,
@@ -37,12 +39,12 @@ export function DateSelector({
 
   return (
     <DatePicker
-      value={time}
-      onChange={onChange}
+      value={parseIsraelDate(time)}
+      onChange={(value) => onChange(value && value.isValid() ? formatIsraelDate(value) : null)}
       format="DD/MM/YYYY"
       label={customLabel || t('choose_date')}
       disableFuture
-      minDate={minDate || startOfTime}
+      minDate={parseIsraelDate(minDate ?? START_OF_TIME)}
       disabled={disabled}
       onError={(err) => setError(err)}
       slotProps={{

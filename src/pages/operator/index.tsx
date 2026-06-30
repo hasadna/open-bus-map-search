@@ -2,12 +2,7 @@ import { Grid, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material
 import { useContext, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
-import dayjs, {
-  formatIsraelDate,
-  parseIsraelDate,
-  shiftIsraelDate,
-  todayIsraelDate,
-} from 'src/dayjs'
+import { shiftIsraelDate, todayIsraelDate } from 'src/dayjs'
 import { GlobalSearchContext } from 'src/model/globalState'
 import { DateSelector } from '../components/DateSelector'
 import OperatorSelector from '../components/OperatorSelector'
@@ -32,10 +27,10 @@ const OperatorPage = () => {
     setSearch((current) => ({ ...current, operatorId }))
   }
 
-  const handleDateChange = (time: dayjs.Dayjs | null) => {
+  const handleDateChange = (date: string | null) => {
     setSearch((current) => ({
       ...current,
-      date: time ? formatIsraelDate(time) : todayIsraelDate(),
+      date: date ?? todayIsraelDate(),
     }))
   }
 
@@ -51,11 +46,7 @@ const OperatorPage = () => {
         </Grid>
 
         <Grid size={{ sm: 4, xs: 12 }}>
-          <DateSelector
-            time={parseIsraelDate(date)}
-            disabled={!operatorId}
-            onChange={handleDateChange}
-          />
+          <DateSelector time={date} disabled={!operatorId} onChange={handleDateChange} />
         </Grid>
 
         <Grid size={{ sm: 4, xs: 12 }}>

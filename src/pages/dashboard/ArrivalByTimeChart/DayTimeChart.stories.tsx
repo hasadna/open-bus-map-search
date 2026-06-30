@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { http, HttpResponse } from 'msw'
-import dayjs, { formatIsraelDate } from 'src/dayjs'
+import { formatIsraelDate, shiftIsraelDate } from 'src/dayjs'
 import { getPastDate } from '../../../../.storybook/main'
 import DayTimeChart from './DayTimeChart'
 
@@ -31,8 +31,8 @@ const meta = {
   },
   render: (args) => (
     <DayTimeChart
-      startDate={formatIsraelDate(dayjs(args.startDate))}
-      endDate={formatIsraelDate(dayjs(args.endDate))}
+      startDate={args.startDate}
+      endDate={args.endDate}
       operatorId={args.operatorId}
       alertAllDayTimeChartHandling={function (arg: boolean): void {
         console.log('alertAllDayTimeChartHandling', arg)
@@ -60,8 +60,8 @@ export const Default: Story = {
     },
   },
   args: {
-    startDate: formatIsraelDate(dayjs(getPastDate()).subtract(7, 'day')),
-    endDate: formatIsraelDate(dayjs(getPastDate())),
+    startDate: shiftIsraelDate(formatIsraelDate(getPastDate()), -7),
+    endDate: formatIsraelDate(getPastDate()),
     operatorId: '3',
     alertAllDayTimeChartHandling: (arg: boolean) => {
       console.log('alertAllDayTimeChartHandling', arg)

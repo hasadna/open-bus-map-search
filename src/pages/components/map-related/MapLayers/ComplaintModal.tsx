@@ -16,7 +16,7 @@ import { useCallback, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useCopyToClipboard, useLocalStorage } from 'usehooks-ts'
 import { COMPLAINTS_API } from 'src/api/apiConfig'
-import dayjs, { toApiDate } from 'src/dayjs'
+import { parseInstant, toApiDate } from 'src/dayjs'
 import {
   useBoardingStationQuery,
   useBusOperatorQuery,
@@ -336,7 +336,7 @@ const ComplaintModal = ({
   }, [complaintType, handleSelectOptions, allRules, addOrRemoveStation])
 
   const date = useMemo(() => {
-    return position.point?.recordedAtTime ? dayjs(position.point?.recordedAtTime) : undefined
+    return parseInstant(position.point?.recordedAtTime)
   }, [position.point?.recordedAtTime])
 
   return (

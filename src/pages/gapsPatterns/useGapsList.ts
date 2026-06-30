@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { parseIsraelDate } from 'src/dayjs'
+import { formatTimeOfDay } from 'src/dayjs'
 import { Gap, getGapsAsync } from '../../api/gapsService'
 import { HourlyData, sortByMode } from '../components/utils'
 
@@ -13,7 +13,7 @@ export const convertGapsToHourlyStruct = (gapsList: Gap[]): HourlyDataList => {
     if (ride.plannedStartTime === undefined) {
       continue
     }
-    const plannedHour = ride.plannedStartTime.format('HH:mm')
+    const plannedHour = formatTimeOfDay(ride.plannedStartTime)
 
     if (!hourlyMapping[plannedHour]) {
       hourlyMapping[plannedHour] = { planned_rides: 0, actual_rides: 0 }
@@ -44,12 +44,7 @@ export const useGapsList = (
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const gapsList = await getGapsAsync(
-          parseIsraelDate(fromDate),
-          parseIsraelDate(toDate),
-          operatorRef,
-          lineRef,
-        )
+        const gapsList = await getGapsAsync(fromDate, toDate, operatorRef, lineRef)
         const result = convertGapsToHourlyStruct(gapsList)
         setHourlyData(sortByMode(result, sortingMode))
       } catch (error) {

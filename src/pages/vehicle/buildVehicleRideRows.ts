@@ -1,5 +1,5 @@
 import { SiriRideWithRelatedPydanticModel } from '@hasadna/open-bus-api-client'
-import dayjs, { serializeInstant, toIsraelTimezone } from 'src/dayjs'
+import { getServiceDayTimeBounds, serializeInstant, toIsraelTimezone } from 'src/dayjs'
 import { BusRoute } from 'src/model/busRoute'
 import {
   formatServiceDayTime,
@@ -70,14 +70,14 @@ export type VehicleRideRow = {
 export function buildVehicleRideRows({
   rides,
   routeByLineRef,
-  serviceDayStart,
   date,
 }: {
   rides: VehicleRide[] | undefined
   routeByLineRef: Map<string, ResolvedRoute> | undefined
-  serviceDayStart: dayjs.Dayjs
   date: string
 }): VehicleRideRow[] {
+  // Materialize the service-day window from the civil-day string at use (in-flight).
+  const { start: serviceDayStart } = getServiceDayTimeBounds(date)
   return (rides ?? [])
     .filter((ride): ride is VehicleRide & { id: number } => !!ride.id)
     .map((ride) => {

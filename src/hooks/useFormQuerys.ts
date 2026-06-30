@@ -2,7 +2,7 @@ import { LineModel } from '@hasadna/open-bus-api-client'
 import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import { GOVERNMENT_TRANSPORTATION_API } from 'src/api/apiConfig'
-import dayjs from 'src/dayjs'
+import { type Dayjs, parseInstant } from 'src/dayjs'
 
 const STALE_TIME = 5 * 60 * 1000 // 5 minutes
 const GC_TIME = 10 * 60 * 1000 // 10 minutes
@@ -42,7 +42,7 @@ export const useBoardingStationQuery = (line?: LineModel) => {
     return {
       govStationsByLinePostRequest: {
         directions: directionCode,
-        eventDate: dayjs(eventDate).valueOf(),
+        eventDate: parseInstant(eventDate)?.valueOf() ?? 0,
         officelineId: lineCode,
         operatorId: operatorId,
       },
@@ -67,7 +67,7 @@ export const useBoardingStationQuery = (line?: LineModel) => {
   })
 }
 
-export const useLinesQuery = (eventDate?: dayjs.Dayjs, operator?: number, lineNumber?: string) => {
+export const useLinesQuery = (eventDate?: Dayjs, operator?: number, lineNumber?: string) => {
   const linesQuery = useMemo(() => {
     if (!eventDate || !operator || !lineNumber) return null
     return {

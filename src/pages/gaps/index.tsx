@@ -1,7 +1,12 @@
 import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import dayjs, { formatIsraelDate, getServiceDayTimeBounds, parseIsraelDate } from 'src/dayjs'
+import {
+  getServiceDayDateBounds,
+  getServiceDayTimeBounds,
+  parseInstant,
+  serializeInstant,
+} from 'src/dayjs'
 import { GlobalSearchContext } from 'src/model/globalState'
 import { INPUT_SIZE } from 'src/resources/sizes'
 import { Gap, getGapsAsync } from '../../api/gapsService'
@@ -41,19 +46,21 @@ const GapsPage = () => {
 
     setGapsIsLoading(true)
     const { start, end } = getServiceDayTimeBounds(date)
-    getGapsAsync(start, end, operatorId, selectedRoute.lineRef)
+    const { today, tomorrow } = getServiceDayDateBounds(date)
+    getGapsAsync(today, tomorrow, operatorId, selectedRoute.lineRef)
       .then((res) =>
         setGaps(
           res.filter((g) => {
-            const t = g.plannedStartTime || g.actualStartTime
+            const rideTime = g.plannedStartTime || g.actualStartTime
+            const t = parseInstant(rideTime)
             if (!t) return false
             // date_from already excludes pre-service-day rides, so one slipping through
             // means the API's date filtering regressed. Keep it off-screen, but scream
             // about it instead of silently masking the upstream bug.
             if (t.isBefore(start)) {
               console.error('gaps: ride before service-day start, dropping', {
-                rideStart: t.toISOString(),
-                serviceDayStart: start.toISOString(),
+                rideStart: rideTime,
+                serviceDayStart: serializeInstant(start),
                 gap: g,
               })
               return false
@@ -91,11 +98,11 @@ const GapsPage = () => {
     return () => controller.abort()
   }, [operatorId, lineNumber, date, setSearch])
 
-  const handleDateChange = (time: dayjs.Dayjs | null) => {
-    if (!time) return
+  const handleDateChange = (date: string | null) => {
+    if (!date) return
     setSearch((current) => ({
       ...current,
-      date: formatIsraelDate(time),
+      date,
     }))
   }
 
@@ -142,7 +149,7 @@ const GapsPage = () => {
           <Label text={t('choose_date')} />
         </Grid>
         <Grid size={{ xs: 8 }}>
-          <DateSelector time={parseIsraelDate(date)} onChange={handleDateChange} />
+          <DateSelector time={date} onChange={handleDateChange} />
         </Grid>
         {/* choose operator */}
         <Grid size={{ xs: 4 }}>

@@ -1,13 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { delay, http, HttpResponse } from 'msw'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
-import dayjs from 'src/dayjs'
+import { formatIsraelDate } from 'src/dayjs'
 import i18n from 'src/locale/allTranslations'
 import { ISRAEL_TRAIN_ID } from 'src/model/operator'
 import { getPastDate } from '../../../.storybook/main'
 import { OperatorRoutes } from './OperatorRoutes'
 
-const DATE = dayjs(getPastDate()).format('YYYY-MM-DD')
+const DATE = formatIsraelDate(getPastDate())
 
 // MSW matches by pathname (query params are ignored), so a single wildcard
 // handler serves every operatorId/limit/date the component asks for.

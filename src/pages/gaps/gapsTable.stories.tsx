@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Gap } from 'src/api/gapsService'
-import dayjs from 'src/dayjs'
+import { atTimeOfDay, serializeInstant, shiftIsraelDate, todayIsraelDate } from 'src/dayjs'
 import GapsTable from './GapsTable'
 
 const meta = {
@@ -38,26 +38,27 @@ const meta = {
 export default meta
 
 type Story = StoryObj<typeof meta>
-const yesteday = dayjs().startOf('day').subtract(1, 'day')
+const yesterday = shiftIsraelDate(todayIsraelDate(), -1)
+const at = (date: string, time: string) => serializeInstant(atTimeOfDay(date, time))
 const mockGaps: Gap[] = [
   {
-    plannedStartTime: yesteday.set('hour', 13),
-    actualStartTime: yesteday.set('hour', 13),
+    plannedStartTime: at(yesterday, '13:00'),
+    actualStartTime: at(yesterday, '13:00'),
   },
   {
     plannedStartTime: undefined,
-    actualStartTime: yesteday.set('hour', 13),
+    actualStartTime: at(yesterday, '13:00'),
   },
   {
-    plannedStartTime: yesteday.set('hour', 14),
+    plannedStartTime: at(yesterday, '14:00'),
     actualStartTime: undefined,
   },
   {
     plannedStartTime: undefined,
-    actualStartTime: yesteday.set('hour', 14).set('minute', 30),
+    actualStartTime: at(yesterday, '14:30'),
   },
   {
-    plannedStartTime: yesteday.add(2, 'day').set('hour', 15),
+    plannedStartTime: at(shiftIsraelDate(yesterday, 2), '15:00'),
     actualStartTime: undefined,
   },
 ]
@@ -65,7 +66,7 @@ const mockGaps: Gap[] = [
 export const Default: Story = {
   args: {
     gaps: mockGaps,
-    date: dayjs().format('YYYY-MM-DD'),
+    date: todayIsraelDate(),
     singleLineMapBaseHref:
       '/single-line-map?date=2025-01-01&operatorId=3&lineNumber=5&routeKey=10018-2',
   },
@@ -74,7 +75,7 @@ export const Default: Story = {
 export const OnlyGappe: Story = {
   args: {
     gaps: mockGaps,
-    date: dayjs().format('YYYY-MM-DD'),
+    date: todayIsraelDate(),
     initOnlyGapped: true,
     singleLineMapBaseHref:
       '/single-line-map?date=2025-01-01&operatorId=3&lineNumber=5&routeKey=10018-2',

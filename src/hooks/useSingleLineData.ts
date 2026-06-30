@@ -4,7 +4,13 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { SIRI_API } from 'src/api/apiConfig'
 import { getRoutesByLineRef, getStopsForRouteAsync } from 'src/api/gtfsService'
 import { getServiceDayRoutes } from 'src/api/serviceDayRoutesService'
-import { getServiceDayTimeBounds, instantToApi, toIsraelTimezone } from 'src/dayjs'
+import {
+  formatIsraelDate,
+  getServiceDayTimeBounds,
+  instantToApi,
+  serializeInstant,
+  toIsraelTimezone,
+} from 'src/dayjs'
 import { BusRoute } from 'src/model/busRoute'
 import {
   type PositionGroup,
@@ -231,12 +237,12 @@ export const useSingleLineData = ({
       if (selectedRoute?.routeIds && selectedRoute.routeIds.length > 0) {
         routeIds = selectedRoute.routeIds
       } else if (scheduledLine && operatorId) {
-        routeIds = (await getRoutesByLineRef(operatorId, scheduledLine, rideStartTime)).map(
-          (route) => route.id,
-        )
+        routeIds = (
+          await getRoutesByLineRef(operatorId, scheduledLine, formatIsraelDate(rideStartTime))
+        ).map((route) => route.id)
       }
       if (!routeIds || routeIds.length === 0) return []
-      return await getStopsForRouteAsync(routeIds, rideStartTime)
+      return await getStopsForRouteAsync(routeIds, serializeInstant(rideStartTime))
     },
     // Key on the resolved route ids (not the date-stable lineRef): during a date
     // change the previous date's route is briefly still selected, and fetching
@@ -246,7 +252,7 @@ export const useSingleLineData = ({
     queryKey: [
       'stops',
       selectedRoute?.routeIds?.join(','),
-      serviceDayStart.valueOf(),
+      serializeInstant(serviceDayStart),
       parsedStartTime?.scheduledTime,
     ],
     enabled: !!(selectedRoute?.routeIds?.length || parsedStartTime?.lineRef),

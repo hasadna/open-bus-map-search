@@ -20,7 +20,7 @@ import type { Rule } from 'antd/es/form'
 import type { TextAreaProps } from 'antd/es/input'
 import { TFunction } from 'i18next'
 import { useTranslation } from 'react-i18next'
-import dayjs from 'src/dayjs'
+import { type Dayjs, nowInstant, parseInstant } from 'src/dayjs'
 import { useGovTimeQuery } from 'src/hooks/useFormQuerys'
 import { complaintTypeMappings } from './ComplaintModalForms'
 import type { ComplaintTitleData } from './ComplaintModalTypes'
@@ -35,13 +35,10 @@ export const createAllRules = (form: FormInstance, t: TFunction) => ({
     { required: true },
     {
       validator: async (_, value) => {
-        const eventHour = form.getFieldValue('eventHour')
+        const eventHour = form.getFieldValue('eventHour') as Dayjs | undefined
         if (!value || !eventHour) return
-        const wait = value as [string, string]
-        const eventHourDayjs = dayjs(eventHour as dayjs.Dayjs)
-        const start = dayjs(wait[0])
-        const end = dayjs(wait[1])
-        if (eventHourDayjs.isBefore(start) || eventHourDayjs.isAfter(end)) {
+        const [start, end] = value as [Dayjs, Dayjs]
+        if (eventHour.isBefore(start) || eventHour.isAfter(end)) {
           throw new Error(t('complaints.event_hour_between_wait'))
         }
         return Promise.resolve()
@@ -106,7 +103,9 @@ const fieldComponents = {
       <DatePicker
         {...props}
         style={fullWidth}
-        disabledDate={(d) => d.isAfter(dayjs(data).startOf('day').add(1, 'day'))}
+        disabledDate={(d) =>
+          d.isAfter((parseInstant(data) ?? nowInstant()).startOf('day').add(1, 'day'))
+        }
       />
     )
   },

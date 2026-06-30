@@ -4,7 +4,7 @@ import {
 } from '@hasadna/open-bus-api-client'
 import { SIRI_API } from 'src/api/apiConfig'
 import { geoLocationBoundary, nearestLocation } from 'src/api/geoService'
-import dayjs, { instantToApi, parseInstant } from 'src/dayjs'
+import { instantToApi, parseInstant } from 'src/dayjs'
 import { BusRoute } from 'src/model/busRoute'
 import { BusStop } from 'src/model/busStop'
 import { Coordinates } from 'src/model/location'
@@ -26,14 +26,16 @@ export async function getSiriRideWithRelated(
   return gtfs_route_promise[0]
 }
 
-export async function getSiriStopHitTimesAsync(route: BusRoute, stop: BusStop, time: dayjs.Dayjs) {
+export async function getSiriStopHitTimesAsync(route: BusRoute, stop: BusStop, time: string) {
+  const instant = parseInstant(time)
+  if (!instant) return []
   const boundary = geoLocationBoundary(stop.location, LOCATION_DELTA_METERS)
 
   const locations = await SIRI_API.siriVehicleLocationsListGet({
     limit: 1024,
     siriRoutesLineRef: route.lineRef.toString(),
-    recordedAtTimeFrom: instantToApi(time.subtract(4, 'hour')),
-    recordedAtTimeTo: instantToApi(time.add(4, 'hour')),
+    recordedAtTimeFrom: instantToApi(instant.subtract(4, 'hour')),
+    recordedAtTimeTo: instantToApi(instant.add(4, 'hour')),
     latGreaterOrEqual: boundary.lowerBound.latitude,
     latLowerOrEqual: boundary.upperBound.latitude,
     lonGreaterOrEqual: boundary.lowerBound.longitude,
@@ -61,7 +63,7 @@ export async function getSiriStopHitTimesAsync(route: BusRoute, stop: BusStop, t
   )
 
   const diffFromTargetStart = (location: EnrichedLocation): number =>
-    Math.abs(time.diff(parseInstant(location.recordedAtTime), 'second'))
+    Math.abs(instant.diff(parseInstant(location.recordedAtTime), 'second'))
 
   const closestInTimeHits = stopHits.sort((a, b) => diffFromTargetStart(a) - diffFromTargetStart(b))
   return closestInTimeHits.sort((a, b) => a.recordedAtTime!.getTime() - b.recordedAtTime!.getTime())
