@@ -276,6 +276,7 @@ jobs:
         if: env.APPLITOOLS_API_KEY
         env:
           APPLITOOLS_BATCH_NAME: open-bus-map-search/${{ github.ref }}/${{ env.SHORT_SHA }}/storybook
+          # APPLITOOLS_DEBUG_BROWSER_LOGS: true # uncomment to stream browser console only (keep it off by default: it floods log with MSW warnings)
         run: npm run test:storybook -- --storybook-url http://localhost:3000/storybook/index.html
       - name: Upload logs if exists
         if: always()

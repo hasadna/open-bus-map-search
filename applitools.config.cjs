@@ -29,8 +29,12 @@ const config = {
   },
   // puppeteerOptions: {headless: false, devtools: true},
   puppeteerOptions: { args: ['--lang=he-IL', '--accept-lang=he-IL'] },
-  showBrowserLogs: true,
-  // showLogs: true,// uncomment to see Applitools logs
+  // Logging off — it floods the run with MSW "unhandled request" warnings.
+  // To debug:
+  // SDK + browser logs → uncomment both flags below;
+  // browser only → uncomment env APPLITOOLS_DEBUG_BROWSER_LOGS=true (validate.yaml);
+  showLogs: true, // Applitools SDK logs
+  showBrowserLogs: true, // browser console (requires showLogs)
 }
 
 module.exports = config
