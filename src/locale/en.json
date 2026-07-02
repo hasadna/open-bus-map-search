@@ -354,8 +354,7 @@
     "ride": {
       "journey": "Journey ID",
       "id": "Ride ID",
-      "duration": "Ride Duration",
-      "scheduled": "Scheduled Ride"
+      "duration": "Ride Duration"
     },
     "stop": {
       "name": "Stop Name",
