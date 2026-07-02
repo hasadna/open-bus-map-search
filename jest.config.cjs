@@ -3,7 +3,19 @@ module.exports = {
   testEnvironment: 'jest-environment-jsdom',
   transform: {
     '^.+\\.tsx?$': 'ts-jest',
+    // react-router v8 ships ESM-only; transpile it (and any other allowlisted ESM dep)
+    // to CJS for jest, stubbing import.meta which is invalid in CJS
+    '^.+\\.m?jsx?$': [
+      'babel-jest',
+      {
+        plugins: [
+          require.resolve('./jest.stubImportMeta.cjs'),
+          '@babel/plugin-transform-modules-commonjs',
+        ],
+      },
+    ],
   },
+  transformIgnorePatterns: ['/node_modules/(?!(react-router|cookie-es)/)'],
   moduleNameMapper: {
     '\\.(gif|ttf|eot|svg|png)$': '<rootDir>/tests/mocks/fileMock.js',
     '^.+\\.(css|less|scss)$': 'identity-obj-proxy',
