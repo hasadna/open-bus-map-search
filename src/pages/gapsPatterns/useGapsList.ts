@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import type { Dayjs } from 'src/dayjs'
 import { Gap, getGapsAsync } from '../../api/gapsService'
 import { HourlyData, sortByMode } from '../components/utils'
@@ -50,8 +50,7 @@ export const useGapsList = (
     const fetchData = async () => {
       try {
         const gapsList = await getGapsAsync(fromDate, toDate, operatorRef, lineRef)
-        const result = convertGapsToHourlyStruct(gapsList)
-        setHourlyData(sortByMode(result, sortingMode))
+        setHourlyData(convertGapsToHourlyStruct(gapsList))
       } catch (error) {
         console.error('Error fetching data:', error)
       }
@@ -61,6 +60,12 @@ export const useGapsList = (
     return () => {
       setHourlyData([])
     }
-  }, [lineRef, operatorRef, fromKey, toKey, sortingMode])
-  return hourlyData
+    // sortingMode is deliberately NOT a fetch dep — it only reorders rows we
+    // already have (applied at render below), so switching it must never
+    // trigger a refetch (or flash the skeleton via the cleanup above).
+  }, [lineRef, operatorRef, fromKey, toKey])
+
+  // Sort at render time: a pure client-side reorder (sortByMode → toSorted),
+  // recomputed only when the fetched data or the chosen mode changes.
+  return useMemo(() => sortByMode(hourlyData, sortingMode), [hourlyData, sortingMode])
 }
