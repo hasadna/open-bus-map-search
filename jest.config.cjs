@@ -3,7 +3,7 @@ module.exports = {
   testEnvironment: 'jest-environment-jsdom',
   transform: {
     '^.+\\.tsx?$': 'ts-jest',
-    // react-router v8 ships ESM-only; transpile it (and any other allowlisted ESM dep)
+    // react-router v7 ships ESM-only; transpile it (and any other allowlisted ESM dep)
     // to CJS for jest, stubbing import.meta which is invalid in CJS
     '^.+\\.m?jsx?$': [
       'babel-jest',
