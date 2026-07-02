@@ -1,22 +1,20 @@
 import {
-  BarChartOutlined,
-  BugOutlined,
-  CalendarOutlined,
-  DollarOutlined,
-  FieldTimeOutlined,
-  GithubOutlined,
-  HomeOutlined,
-  InfoCircleOutlined,
-  LaptopOutlined,
-  LineChartOutlined,
-  RadarChartOutlined,
-} from '@ant-design/icons'
-import {
+  AccessTimeOutlined,
   AirportShuttle,
+  BarChartOutlined,
+  BugReportOutlined,
+  CalendarMonthOutlined,
   DirectionsBusOutlined,
+  GitHub,
+  HomeOutlined,
+  InfoOutlined,
+  LaptopOutlined,
   MapOutlined,
+  PaidOutlined,
   Psychology,
+  RadarOutlined,
   RouteOutlined,
+  ShowChartOutlined,
 } from '@mui/icons-material'
 import { lazy } from 'react'
 import { createBrowserRouter, createRoutesFromElements, Navigate, Route } from 'react-router'
@@ -55,7 +53,7 @@ export const PAGES = [
     label: 'timeline_page_title',
     path: '/timeline',
     searchParamsRequired: true,
-    icon: <FieldTimeOutlined />,
+    icon: <AccessTimeOutlined />,
     element: <TimelinePage />,
   },
   {
@@ -68,7 +66,7 @@ export const PAGES = [
   {
     label: 'gaps_patterns_page_title',
     path: '/gaps_patterns',
-    icon: <LineChartOutlined />,
+    icon: <ShowChartOutlined />,
     element: <GapsPatternsPage />,
   },
   {
@@ -81,7 +79,7 @@ export const PAGES = [
     label: 'velocity_heatmap_page_title',
     path: '/velocity-heatmap',
     searchParamsRequired: true,
-    icon: <RadarChartOutlined />,
+    icon: <RadarOutlined />,
     element: <VelocityHeatmapPage />,
   },
   {
@@ -108,13 +106,13 @@ export const PAGES = [
   {
     label: 'about_title',
     path: '/about',
-    icon: <InfoCircleOutlined />,
+    icon: <InfoOutlined />,
     element: <About />,
   },
   {
     label: 'donate_title',
     path: '/donate',
-    icon: <DollarOutlined />,
+    icon: <PaidOutlined />,
     element: null, //DonateModal
   },
   {
@@ -126,7 +124,7 @@ export const PAGES = [
   {
     label: 'hackathon_title',
     path: '/hackathon',
-    icon: <CalendarOutlined />,
+    icon: <CalendarMonthOutlined />,
     element: <Hackathon />,
   },
 ] as const
@@ -135,13 +133,13 @@ export const HEADER_LINKS = [
   {
     label: 'report_a_bug_title',
     path: '/report-a-bug',
-    icon: <BugOutlined />,
+    icon: <BugReportOutlined fontSize="inherit" />,
     element: <BugReportForm />,
   },
   {
     label: 'github_link',
     path: 'https://github.com/hasadna/open-bus-map-search',
-    icon: <GithubOutlined />,
+    icon: <GitHub fontSize="inherit" />,
     element: null,
   },
 ] as const
@@ -156,7 +154,7 @@ const HIDDEN_PAGES = [
   {
     label: 'data-research',
     path: '/data-research',
-    icon: <InfoCircleOutlined />,
+    icon: <InfoOutlined />,
     element: <DataResearch />,
   },
 ] as const

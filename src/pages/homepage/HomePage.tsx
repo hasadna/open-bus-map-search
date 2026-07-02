@@ -1,9 +1,11 @@
-import { BarChartOutlined, FieldTimeOutlined, LineChartOutlined } from '@ant-design/icons'
 import {
+  AccessTimeOutlined,
+  BarChartOutlined,
   DirectionsBusOutlined,
   MapOutlined,
   MenuOutlined,
   RouteOutlined,
+  ShowChartOutlined,
 } from '@mui/icons-material'
 import { SvgIconProps, Tooltip } from '@mui/material'
 import { useContext } from 'react'
@@ -66,7 +68,7 @@ export const HomePage = () => {
           to="/single-line-map"
         />
         <PageLink
-          icon={wrapToolTip(<FieldTimeOutlined />, t('timeline_page_description'))}
+          icon={wrapToolTip(<AccessTimeOutlined />, t('timeline_page_description'))}
           label={t('timeline_page_title')}
           to="/timeline"
         />
@@ -76,7 +78,7 @@ export const HomePage = () => {
           to="/gaps"
         />
         <PageLink
-          icon={wrapToolTip(<LineChartOutlined />, t('gaps_patterns_page_description'))}
+          icon={wrapToolTip(<ShowChartOutlined />, t('gaps_patterns_page_description'))}
           label={t('gaps_patterns_page_title')}
           to="/gaps_patterns"
         />

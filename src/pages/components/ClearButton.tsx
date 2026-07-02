@@ -1,4 +1,4 @@
-import { CloseOutlined as ClearIcon } from '@ant-design/icons'
+import { Close as ClearIcon } from '@mui/icons-material'
 import './ClearButton.scss'
 
 const ClearButton = ({ onClearInput }: { onClearInput: () => void }) => {

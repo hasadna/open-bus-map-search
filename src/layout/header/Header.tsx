@@ -1,4 +1,4 @@
-import { MenuOutlined } from '@ant-design/icons'
+import { MenuOutlined } from '@mui/icons-material'
 import { Layout } from 'antd'
 import cn from 'classnames'
 import { useContext } from 'react'
@@ -18,7 +18,11 @@ const MainHeader = () => {
   const { setDrawerOpen } = useContext<LayoutContextInterface>(LayoutCtx)
   return (
     <Header className={cn('main-header', { dark: isDarkTheme })}>
-      <MenuOutlined onClick={() => setDrawerOpen(true)} className="hideOnDesktop" />
+      <MenuOutlined
+        fontSize="inherit"
+        onClick={() => setDrawerOpen(true)}
+        className="hideOnDesktop"
+      />
       <HeaderLinks>
         <ShareButton />
         <LanguageToggleButton />

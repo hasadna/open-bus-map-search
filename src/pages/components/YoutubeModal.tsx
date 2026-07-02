@@ -1,4 +1,4 @@
-import { InfoCircleOutlined } from '@ant-design/icons'
+import { InfoOutlined } from '@mui/icons-material'
 import { Typography } from '@mui/material'
 import { Modal } from 'antd'
 import { useState } from 'react'
@@ -15,11 +15,15 @@ const InfoYoutubeModal = ({ videoUrl, label, title }: InfoYoutubeModalProps) => 
 
   return (
     <>
-      <InfoCircleOutlined
-        onClick={() => setVisible(true)}
-        className="modal-info-ico"
+      {/* span carries the label/click like the old antd icon wrapper, so the
+          aria-labelled element keeps an svg descendant (tests rely on it) */}
+      <span
+        role="img"
         aria-label={label}
-      />
+        className="modal-info-ico"
+        onClick={() => setVisible(true)}>
+        <InfoOutlined fontSize="inherit" />
+      </span>
       <Modal
         width={'1000px'}
         footer={null}
