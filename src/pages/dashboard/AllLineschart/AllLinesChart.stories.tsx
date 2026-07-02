@@ -39,7 +39,7 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 const URL =
-  'https://open-bus-stride-api.hasadna.org.il/gtfs_rides_agg/group_by?date_from=2024-02-05&date_to=2024-02-12&group_by=operator_ref&exclude_hour_from=23&exclude_hour_to=2'
+  'https://open-bus-stride-api.hasadna.org.il/gtfs_rides_agg/group_by?date_from=2024-02-05&date_to=2024-02-12&group_by=operator_ref'
 
 export const Default: Story = {
   parameters: {
