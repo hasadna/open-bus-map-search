@@ -1,11 +1,11 @@
 import {
-  BarChartTwoTone,
   EmojiTransportationTwoTone,
   HistoryTwoTone,
   MapTwoTone,
   MenuTwoTone,
+  NoTransferTwoTone,
+  QueryStatsTwoTone,
   RouteTwoTone,
-  ShowChartTwoTone,
 } from '@mui/icons-material'
 import { SvgIconProps, Tooltip } from '@mui/material'
 import { useContext } from 'react'
@@ -73,12 +73,12 @@ export const HomePage = () => {
           to="/timeline"
         />
         <PageLink
-          icon={wrapToolTip(<BarChartTwoTone />, t('gaps_page_description'))}
+          icon={wrapToolTip(<NoTransferTwoTone />, t('gaps_page_description'))}
           label={t('gaps_page_title')}
           to="/gaps"
         />
         <PageLink
-          icon={wrapToolTip(<ShowChartTwoTone />, t('gaps_patterns_page_description'))}
+          icon={wrapToolTip(<QueryStatsTwoTone />, t('gaps_patterns_page_description'))}
           label={t('gaps_patterns_page_title')}
           to="/gaps_patterns"
         />

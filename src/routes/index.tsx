@@ -1,5 +1,4 @@
 import {
-  BarChartTwoTone,
   BiotechTwoTone,
   DirectionsBusTwoTone,
   EmojiTransportationTwoTone,
@@ -10,12 +9,13 @@ import {
   InfoTwoTone,
   MapTwoTone,
   MonitorTwoTone,
+  NoTransferTwoTone,
   PaidTwoTone,
   PestControlTwoTone,
   PsychologyTwoTone,
+  QueryStatsTwoTone,
   RadarTwoTone,
   RouteTwoTone,
-  ShowChartTwoTone,
 } from '@mui/icons-material'
 import { lazy } from 'react'
 import { createBrowserRouter, createRoutesFromElements, Navigate, Route } from 'react-router'
@@ -61,13 +61,13 @@ export const PAGES = [
     label: 'gaps_page_title',
     path: '/gaps',
     searchParamsRequired: true,
-    icon: <BarChartTwoTone />,
+    icon: <NoTransferTwoTone />,
     element: <GapsPage />,
   },
   {
     label: 'gaps_patterns_page_title',
     path: '/gaps_patterns',
-    icon: <ShowChartTwoTone />,
+    icon: <QueryStatsTwoTone />,
     element: <GapsPatternsPage />,
   },
   {
