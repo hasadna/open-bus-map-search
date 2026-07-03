@@ -2,6 +2,7 @@ import { MenuTwoTone } from '@mui/icons-material'
 import { Layout } from 'antd'
 import cn from 'classnames'
 import { useContext } from 'react'
+import { useTranslation } from 'react-i18next'
 import { LayoutContextInterface, LayoutCtx } from '../LayoutContext'
 import { useTheme } from '../ThemeContext'
 import { DonationButton } from './DonationButton'
@@ -16,13 +17,16 @@ const { Header } = Layout
 const MainHeader = () => {
   const { isDarkTheme, toggleTheme } = useTheme()
   const { setDrawerOpen } = useContext<LayoutContextInterface>(LayoutCtx)
+  const { t } = useTranslation()
   return (
     <Header className={cn('main-header', { dark: isDarkTheme })}>
-      <MenuTwoTone
-        fontSize="inherit"
+      <button
+        className="header-link hamburger"
         onClick={() => setDrawerOpen(true)}
-        className="hideOnDesktop"
-      />
+        aria-label={t('open_menu_description')}
+        title={t('open_menu_description')}>
+        <MenuTwoTone fontSize="inherit" />
+      </button>
       <HeaderLinks>
         <ShareButton />
         <LanguageToggleButton />

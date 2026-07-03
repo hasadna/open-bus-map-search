@@ -1,10 +1,10 @@
 import {
   AccessTimeTwoTone,
   BarChartTwoTone,
-  DirectionsBusOutlined,
-  MapOutlined,
-  MenuOutlined,
-  RouteOutlined,
+  DirectionsBusTwoTone,
+  MapTwoTone,
+  MenuTwoTone,
+  RouteTwoTone,
   ShowChartTwoTone,
 } from '@mui/icons-material'
 import { SvgIconProps, Tooltip } from '@mui/material'
@@ -63,7 +63,7 @@ export const HomePage = () => {
 
       <section className="links hideOnMobile">
         <PageLink
-          icon={wrapToolTip(<RouteOutlined />, t('singleline_map_page_description'))}
+          icon={wrapToolTip(<RouteTwoTone />, t('singleline_map_page_description'))}
           label={t('singleline_map_page_title')}
           to="/single-line-map"
         />
@@ -83,12 +83,12 @@ export const HomePage = () => {
           to="/gaps_patterns"
         />
         <PageLink
-          icon={wrapToolTip(<DirectionsBusOutlined />, t('operator_title'))}
+          icon={wrapToolTip(<DirectionsBusTwoTone />, t('operator_title'))}
           label={t('operator_title')}
           to="/operator"
         />
         <PageLink
-          icon={wrapToolTip(<MapOutlined />, t('time_based_map_page_description'))}
+          icon={wrapToolTip(<MapTwoTone />, t('time_based_map_page_description'))}
           label={t('time_based_map_page_title')}
           to="/map"
         />
@@ -96,7 +96,7 @@ export const HomePage = () => {
 
       <section className="menu-link hideOnDesktop">
         <PageLink
-          icon={wrapToolTip(<MenuOutlined />, t('open_menu_description'))}
+          icon={wrapToolTip(<MenuTwoTone />, t('open_menu_description'))}
           label={t('homepage.open_menu')}
           to={() => {
             setDrawerOpen(true)

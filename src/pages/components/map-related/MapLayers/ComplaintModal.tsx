@@ -1,5 +1,5 @@
 import { ComplaintFormSchemaAnyOf } from '@hasadna/open-bus-api-client'
-import { Close } from '@mui/icons-material'
+import { CloseTwoTone } from '@mui/icons-material'
 import {
   Alert,
   CircularProgress,
@@ -350,7 +350,7 @@ const ComplaintModal = ({
           {t('complaints.complaint')}
         </Typography>
         <IconButton onClick={() => setModalOpen?.(false)}>
-          <Close />
+          <CloseTwoTone />
         </IconButton>
       </DialogTitle>
 

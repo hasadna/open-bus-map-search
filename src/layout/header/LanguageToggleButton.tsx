@@ -41,8 +41,7 @@ export const LanguageToggleButton = () => {
       <button
         className="header-link"
         aria-label={t('change_language')}
-        title={t('change_language')}
-        style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+        title={t('change_language')}>
         <LanguageTwoTone fontSize="inherit" />
       </button>
     </Dropdown>

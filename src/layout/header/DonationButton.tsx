@@ -14,11 +14,11 @@ export const DonationButton = () => {
   return (
     <>
       <button
-        className="theme-icon"
+        className="header-link"
         onClick={onOpen}
         aria-label={tooltip_title}
         title={tooltip_title}>
-        <PaidTwoTone style={{ fontSize: '1.5em' }} />
+        <PaidTwoTone fontSize="inherit" />
       </button>
       <DonateModal isVisible={open} onClose={onClose} />
     </>

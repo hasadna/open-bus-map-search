@@ -46,8 +46,7 @@ export const ShareButton = () => {
       <div
         className="header-link"
         onClick={handleShare}
-        aria-label={copied ? t('link_copied') : t('share_link')}
-        style={{ cursor: 'pointer' }}>
+        aria-label={copied ? t('link_copied') : t('share_link')}>
         {copied ? <CheckTwoTone fontSize="inherit" /> : <LinkTwoTone fontSize="inherit" />}
       </div>
     </Tooltip>

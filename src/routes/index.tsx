@@ -1,19 +1,19 @@
 import {
   AccessTimeTwoTone,
-  AirportShuttle,
+  AirportShuttleTwoTone,
   BarChartTwoTone,
   CalendarTodayTwoTone,
-  DirectionsBusOutlined,
+  DirectionsBusTwoTone,
   GitHub,
   HomeTwoTone,
   InfoTwoTone,
   LaptopTwoTone,
-  MapOutlined,
+  MapTwoTone,
   PaidTwoTone,
   PestControlTwoTone,
-  Psychology,
+  PsychologyTwoTone,
   RadarTwoTone,
-  RouteOutlined,
+  RouteTwoTone,
   ShowChartTwoTone,
 } from '@mui/icons-material'
 import { lazy } from 'react'
@@ -72,7 +72,7 @@ export const PAGES = [
   {
     label: 'time_based_map_page_title',
     path: '/map',
-    icon: <MapOutlined />,
+    icon: <MapTwoTone />,
     element: <TimeBasedMapPage />,
   },
   {
@@ -86,21 +86,21 @@ export const PAGES = [
     label: 'singleline_map_page_title',
     path: '/single-line-map',
     searchParamsRequired: true,
-    icon: <RouteOutlined />,
+    icon: <RouteTwoTone />,
     element: <SingleLineMapPage />,
   },
   {
     label: 'vehicle_page_title',
     path: '/vehicle',
     searchParamsRequired: true,
-    icon: <AirportShuttle />,
+    icon: <AirportShuttleTwoTone />,
     element: <VehiclePage />,
   },
   {
     label: 'operator_title',
     path: '/operator',
     searchParamsRequired: true,
-    icon: <DirectionsBusOutlined />,
+    icon: <DirectionsBusTwoTone />,
     element: <Operator />,
   },
   {
@@ -118,7 +118,7 @@ export const PAGES = [
   {
     label: 'public_appeal_title',
     path: '/public-appeal',
-    icon: <Psychology />,
+    icon: <PsychologyTwoTone />,
     element: <PublicAppeal />,
   },
   {
