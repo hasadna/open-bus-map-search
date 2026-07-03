@@ -21,16 +21,17 @@ test.describe('theme persistence', () => {
     expect(await isDark()).toBe(true)
     expect(await stored()).toBe('true')
 
+    // The one reload that matters: a fresh boot must re-read the preference from
+    // localStorage, not from prefers-color-scheme.
     await page.reload()
     await page.locator('.preloader').waitFor({ state: 'hidden' })
     await expect(page.getByLabel(goLight)).toBeVisible()
     expect(await isDark()).toBe(true)
 
+    // Toggling back writes the opposite value (checked in place, no reboot needed).
     await page.getByLabel(goLight).click()
-    expect(await stored()).toBe('false')
-    await page.reload()
-    await page.locator('.preloader').waitFor({ state: 'hidden' })
     await expect(page.getByLabel(goDark)).toBeVisible()
     expect(await isDark()).toBe(false)
+    expect(await stored()).toBe('false')
   })
 })
