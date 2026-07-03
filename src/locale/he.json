@@ -6,7 +6,8 @@
     "show_button": "הצג",
     "copyright": "© הסדנא לידע ציבורי (ע\"ר)",
     "open_menu": "תתחיל לחקור",
-    "manual": "צפה במדריך"
+    "manual": "צפה במדריך",
+    "bus_illustration_alt": "איור של אוטובוס תחבורה ציבורית"
   },
   "homepage_title": "ראשי",
   "dashboard_page_title": "קיום נסיעות",
@@ -30,8 +31,19 @@
   "singleline_map_page_description": "תצוגה של מסלול קו על מפה ע\"פ נתוני חברת אוטובוסים, מספר רכב, קו, מסלול, תאריך ושעה",
   "singleline_map_page_route": "לפי מסלול",
   "singleline_map_page_vehicle_id": "לפי מספר רכב",
+  "gps_coverage_title": "כיסוי GPS לאורך זמן",
+  "gps_coverage_description": "צפיפות דיווחי GPS לאורך זמן. כל עמודה מייצגת מרווח בין 2 דיווחים עוקבים.",
+  "gps_coverage_tooltip_duration": "{{duration}}",
+  "gps_coverage_tooltip_distance": "{{distance}} הפרש",
+  "gps_coverage_unit_meter": "מטר",
+  "gps_coverage_unit_km": "קילומטר",
+  "gps_coverage_tooltip_focus_start": "המיקום האחרון שדווח",
+  "gps_coverage_vehicle_label": "רכב:",
+  "gps_coverage_no_pings": "לא התקבלו דיווחי GPS עבור רכב זה",
+  "gps_coverage_one_ping": "התקבל דיווח GPS אחד בלבד עבור רכב זה",
   "bus_tooltip_footer_previous_location": "המיקום הקודם",
   "bus_tooltip_footer_next_location": "המיקום הבא",
+  "bus_icon_alt": "סמל אוטובוס",
   "open_menu_description": "תצוגה של שלל אפשרויות ופרמטרים שונים הניתנים לביצוע באפליקצייה",
   "open_video_about_this_page": "לפתוח סרטון על העמוד הזה",
   "choose_datetime": "תאריך ושעה",
@@ -79,21 +91,30 @@
       "month": "חודשית",
       "year": "שנתית"
     },
-    "all_lines": "כל המסלולים",
-    "line": "קו",
+    "all_lines_on_date": "כל הקווים בתאריך זה",
     "profile": "פרופיל",
     "map": "מפה",
     "id": "מזהה טכני",
     "origin": "מוצא",
     "destination": "יעד",
-    "total": "סך כל המסלולים",
-    "statistics": "סטטיסטיקה"
+    "statistics": "סטטיסטיקה",
+    "routes_count": "{{count}} מסלולים",
+    "routes_in_lines": "{{routes}} מסלולים ב-{{lines}} קווים",
+    "search_placeholder": "חיפוש קו, מוצא או יעד",
+    "no_results": "לא נמצאו מסלולים תואמים",
+    "clear": "ניקוי החיפוש"
   },
   "line_placeholder": "לדוגמה: 17א",
   "line_not_found": "הקו לא נמצא",
   "line": "קו",
   "vehicle_placeholder": "לדוגמה: 12345",
   "vehicle_ref": "לוחית רישוי",
+  "vehicle_page_title": "רכב",
+  "vehicle_page_description": "תצוגת כל הנסיעות שביצע רכב מסוים ביום נתון",
+  "vehicle_rides_route": "מסלול",
+  "vehicle_rides_start_time": "שעת יציאה",
+  "vehicle_no_rides": "לא נמצאו נסיעות לרכב זה בתאריך שנבחר",
+  "vehicle_load_error": "טעינת נסיעות הרכב נכשלה",
   "direction_arrow": "⟵",
   "date_format": "YYYY-MM-DD",
   "date_navigator_prev_week": "שבוע אחורה",
@@ -110,6 +131,7 @@
   "loading_hits": "זמני נסיעה בטעינה",
   "loading_times_tooltip_content": "שעות נוספות בטעינה. ניתן להשתמש בשעות הזמינות כבר עכשיו",
   "loading": "טוען...",
+  "loading_error": "שגיאה...",
   "timestamp_gtfs": "🕛 זמן עצירה מתוכנן",
   "timestamp_siri": "🚌 זמן עצירה בפועל",
   "hits_not_found": "לא נמצאו נסיעות מתוכננות או בפועל",
@@ -120,6 +142,10 @@
   "ride_in_future": "נסיעה עתידית 🕛",
   "ride_extra": "נסיעה שלא תוכננה 🧐",
   "ride_duped": "נסיעה כפולה ❇️",
+  "gap_tooltip_planned": "מתוכנן",
+  "gap_tooltip_actual": "בפועל",
+  "gap_tooltip_diff_minutes": "({{diff}} דק')",
+  "after_midnight_indicator": "אחרי חצות",
   "checkbox_only_gaps": "רק פערים",
   "worst_lines_page_title": "הקווים הגרועים ביותר",
   "velocity_heatmap_page_title": "מפת מהירות",
@@ -129,6 +155,14 @@
   "velocity_legend_avg": "מהירות ממוצעת (קמ\"ש)",
   "velocity_legend_std": "סטיית תקן (קמ\"ש)",
   "velocity_legend_cv": "מקדם שונות (ממוצע/סטייה)",
+  "velocity_legend_title": "מקרא עוצמת הצבע",
+  "velocity_popup_avg": "מהירות ממוצעת",
+  "velocity_popup_min": "מהירות מזערית",
+  "velocity_popup_max": "מהירות מרבית",
+  "velocity_popup_stddev": "סטיית תקן",
+  "velocity_popup_samples": "דגימות",
+  "velocity_popup_position": "מיקום",
+  "velocity_popup_color": "צבע",
   "velocity": "מהירות",
   "rides_planned": "נסיעות שתוכננו",
   "rides_history": "היסטוריית נסיעות",
@@ -320,8 +354,7 @@
     "ride": {
       "journey": "מזהה נסיעה",
       "id": "מזהה טכני",
-      "duration": "זמן נסיעה",
-      "scheduled": "זמן מתוכנן"
+      "duration": "זמן נסיעה"
     },
     "stop": {
       "name": "שם תחנה",
@@ -352,7 +385,9 @@
     "contributors": "תורמי קוד",
     "contributions": "תרומות",
     "contributorsText": "דאטאבוס מתאפשרת בין היתר בזכות הרבה אנשים חרוצים שתורמים קוד ומפתחים יחד איתנו. נשמח לראותך מצטרף לצוות!",
-    "contributorsReadMore": "<0>קרא כאן</0> על כיצד ניתן לתרום ולהשתתף בפיתוח"
+    "contributorsReadMore": "<0>קרא כאן</0> על כיצד ניתן לתרום ולהשתתף בפיתוח",
+    "youtubePlayerTitle": "נגן וידאו של YouTube",
+    "fundingApiLinkText": "Open API"
   },
   "order_by_hour": "לפי שעה",
   "order_by_severity": "לפי חומרה",
@@ -363,7 +398,7 @@
     "description": "טופס זה נועד על מנת שנוכל לקבל פידבק ולשפר את האפליקציה. לתשומת לבך - הטופס נשלח לGitHub, והמידע שיצויין בו יהיה ציבורי.",
     "error": "אירעה שגיאה בעת שליחת הדיווח. אנא נסה שוב מאוחר יותר.",
     "success": "תודה על הדיווח!",
-    "viewIssue": "לצפייה בדיווח"
+    "viewIssue": "לצפייה בדיווח (GitHub)"
   },
   "plannedRoute": "מסלול מתוכנן",
   "actualRoute": "מסלול בפועל",
@@ -394,6 +429,7 @@
   "share_link": "העתק קישור",
   "link_copied": "הקישור הועתק!",
   "hackathon_title": "האקטון",
+  "hackathon_days_left_badge": "{{days}}d",
   "hackathonPage": {
     "registrationClosed": "ההרשמה נסגרה",
     "registrationClosedNote": "תודה לכל מי שנרשם! אם רוצים להצטרף לרשימת המתנה, פנו אלינו בוואטסאפ.",
@@ -467,22 +503,18 @@
       "days": "ימים",
       "hours": "שעות",
       "minutes": "דקות",
-      "seconds": "שניות",
-      "postponedNote": "(תאריך לא ידוע)"
+      "seconds": "שניות"
     },
-    "postponementBanner": "🚀 ההאקטון נדחה זמנית בגלל ירי הטילים האיראניים. הוא יתקיים — ברגע שהמצב יירגע. הירשמו מעכשיו ונעדכן אתכם על התאריך החדש.",
     "hero": {
       "title": "האקטון דאטאבוס",
       "subtitle": "ערב אחד, אתגרים בכל הרמות, קוד פתוח לטובת התחבורה הציבורית בישראל.",
       "audience": "מפתחים, מעצבים, אנשי משרד התחבורה, חברות תחבורה, עמותות ומומחי תוכן — כולם מוזמנים",
-      "date": "יום ג', 9 ביוני 2026, 18:00–21:30",
-      "dateTBD": "📅 תאריך בהמתנה — נעדכן ברגע שהשמיים יתפנו 🚀",
+      "date": "יום ג', 21 ביולי 2026, 18:00–21:30",
       "location": "Applitools, One Towers, רמת גן (10 דק' מרכבת סבידור)",
       "partner": "בחסות Applitools",
+      "rescheduledNotice": "תאריך חדש: ההאקתון נקבע מחדש ל-21 ביולי 2026. כבר נרשמתם? אתם מסודרים — אין צורך להירשם שוב, ניצור איתכם קשר. עוד לא נרשמתם? הירשמו למטה.",
       "countdownLabel": "ההרשמה נסגרת בעוד",
-      "countdownLabelPostponed": "סטטוס ספירה לאחור:",
-      "cta": "להרשמה",
-      "ctaPostponed": "הרשמה מוקדמת לתאריך הבא"
+      "cta": "להרשמה"
     },
     "personas": {
       "title": "למי האירוע הזה?",
@@ -719,8 +751,7 @@
     },
     "registration": {
       "title": "הרשמה",
-      "body": "מילוי הטופס הוא חובה להשתתפות. שליחת הטופס לבדה אינה מספיקה — ההרשמה מאושרת רק לאחר קבלת מייל אישור מאיתנו. אנחנו מאשרים הרשמות ידנית כדי לשבץ אתכם לצוות המתאים. ההרשמה נסגרת ב-3 ביוני בחצות.",
-      "bodyPostponed": "השאירו פרטים — ניצור קשר ברגע שהתאריך החדש יאושר."
+      "body": "מילוי הטופס הוא חובה להשתתפות. שליחת הטופס לבדה אינה מספיקה — ההרשמה מאושרת רק לאחר קבלת מייל אישור מאיתנו. אנחנו מאשרים הרשמות ידנית כדי לשבץ אתכם לצוות המתאים. ההרשמה נסגרת ב-20 ביולי בחצות. שימו לב: כבר יש לנו הרבה נרשמים, אז יש סיכוי טוב שניאלץ לדחות הרשמות חדשות. אם חשוב לכם להשתתף, ספרו לנו בטופס למה — כדי שנוכל לתת לכם עדיפות."
     },
     "faq": {
       "title": "שאלות נפוצות",

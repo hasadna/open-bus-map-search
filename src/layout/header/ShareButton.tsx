@@ -4,19 +4,19 @@ import { useCallback, useContext, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLocation } from 'react-router'
 import { GlobalSearchContext } from 'src/model/globalState'
-import { ExtraShareParamsContext } from 'src/model/routeContext'
+import { PageShareParamsContext } from 'src/model/routeContext'
 import { buildShareUrl } from './shareUrl'
 
 export const ShareButton = () => {
   const { search } = useContext(GlobalSearchContext)
-  const { params: extraParams } = useContext(ExtraShareParamsContext)
+  const { params: pageParams } = useContext(PageShareParamsContext)
   const location = useLocation()
   const [copied, setCopied] = useState(false)
   const { t } = useTranslation()
 
   const shareUrl = useMemo(
-    () => buildShareUrl(location.pathname, search, extraParams),
-    [location.pathname, search, extraParams],
+    () => buildShareUrl(location.pathname, search, pageParams),
+    [location.pathname, search, pageParams],
   )
 
   const handleShare = useCallback(() => {

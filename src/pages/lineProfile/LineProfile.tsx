@@ -8,7 +8,7 @@ import { getServiceDayRoutes } from 'src/api/serviceDayRoutesService'
 import dayjs, { toIsraelTimezone } from 'src/dayjs'
 import { useSingleLineData } from 'src/hooks/useSingleLineData'
 import { GLOBAL_SEARCH_DEFAULTS, GlobalSearchContext } from 'src/model/globalState'
-import { ExtraShareParamsContext, InitialUrlParamsContext } from 'src/model/routeContext'
+import { InitialUrlParamsContext, PageShareParamsContext } from 'src/model/routeContext'
 import StopSelector from 'src/pages/components/StopSelector'
 import Widget from 'src/shared/Widget'
 import { DateSelector } from '../components/DateSelector'
@@ -29,7 +29,9 @@ const LineProfile = () => {
   const { search, setSearch } = useContext(GlobalSearchContext)
   const dateChangeAbortRef = useRef<AbortController | null>(null)
   const initialUrlParams = useContext(InitialUrlParamsContext)
-  const { setParams } = useContext(ExtraShareParamsContext)
+  // LEGACY: manual share-param injection — replace with usePageState's per-page
+  // persistent `params` when this page is migrated.
+  const { setParams } = useContext(PageShareParamsContext)
 
   useEffect(() => {
     document.querySelector('main')?.scrollTo(0, 0)
@@ -157,7 +159,7 @@ const LineProfile = () => {
               </Tooltip>
             )}
           </Grid>
-          <LineProfileRide point={positionGroups[0]?.positions[0]?.point} />
+          <LineProfileRide positionGroups={positionGroups} />
           <StopSelector stops={plannedRouteStops} stopKey={stopKey} setStopKey={handelStopChange} />
           <LineProfileStop
             stop={plannedRouteStops.find((s) => s.key === stopKey)}

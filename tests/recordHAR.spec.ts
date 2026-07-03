@@ -207,42 +207,6 @@ test.describe('Record HAR files', () => {
     await page.waitForTimeout(3000)
     await page.waitForLoadState('networkidle')
 
-    // Switch to vehicle-number search and record the requests for vehicle-based start times
-    await page.getByRole('button', { name: 'לפי מספר רכב' }).click()
-    const vehicleRidesPromise = page.waitForResponse(
-      (response) =>
-        response.url().includes('/siri_rides/list') &&
-        response.url().includes('vehicle_refs=7489226'),
-    )
-    await page.getByRole('textbox', { name: 'מספר רכב' }).fill('7489226')
-    await vehicleRidesPromise
-    await page.waitForLoadState('networkidle')
-
-    const vehicleStartTimeDropdown = page.getByLabel('בחירת שעת התחלה')
-    if ((await vehicleStartTimeDropdown.count()) > 0) {
-      await vehicleStartTimeDropdown.click()
-      await page.waitForLoadState('networkidle')
-      const vehicleStartTime = page.getByRole('option', { name: /04:30/ }).first()
-      if ((await vehicleStartTime.count()) > 0) {
-        // Force full body download for both deferred side-effect requests triggered
-        // by selecting 04:30: siri_vehicle_locations (useEffect on rideIds) and
-        // gtfs_routes?line_refs= (React Query stopsQuery using parsedStartTime.lineRef).
-        // waitForResponse alone resolves at headers — .body() blocks until full body arrives.
-        const vehicleLocationsBody = page
-          .waitForResponse((r) => r.url().includes('/siri_vehicle_locations/list'))
-          .then((r) => r.body())
-        const gtfsRoutesByLineRefBody = page
-          .waitForResponse(
-            (r) => r.url().includes('/gtfs_routes/list') && r.url().includes('line_refs='),
-          )
-          .then((r) => r.body())
-        await vehicleStartTime.click()
-        await Promise.all([vehicleLocationsBody, gtfsRoutesByLineRefBody])
-      } else {
-        await page.keyboard.press('Escape')
-      }
-    }
-
     // Drain the planned-stops chain (gtfs_routes?line_refs -> gtfs_rides?limit=1 ->
     // gtfs_ride_stops -> gtfs_stops) so its tail isn't aborted at teardown and
     // recorded as a status:-1 empty entry. Then capture all bodies.

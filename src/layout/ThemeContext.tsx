@@ -98,11 +98,18 @@ export const ThemeProvider = ({ children }: PropsWithChildren) => {
     dayjs.locale(language)
   }, [language, i18n])
 
+  // Expose the active theme as a body-level class so styled-components and
+  // plain CSS can target dark mode via `.dark &` / `.dark .foo` selectors.
+  useEffect(() => {
+    document.body.classList.toggle('dark', !!isDarkTheme)
+  }, [isDarkTheme])
+
   const muiTheme = useMemo(() => {
     const langConfig = {
       he: { direction: 'rtl', muiLocale: heIL, dateLocale: dateHeIL },
       en: { direction: 'ltr', muiLocale: enUS, dateLocale: dateEnUS },
       ru: { direction: 'ltr', muiLocale: ruRU, dateLocale: dateRuRU },
+      // MUI X ships no Arabic date-picker locale, so the pickers fall back to English
       ar: { direction: 'rtl', muiLocale: arEG, dateLocale: dateEnUS },
     } as const
 
