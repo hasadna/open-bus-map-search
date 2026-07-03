@@ -1,5 +1,6 @@
 import {
   BarChartTwoTone,
+  BiotechTwoTone,
   DirectionsBusTwoTone,
   EmojiTransportationTwoTone,
   EventTwoTone,
@@ -7,8 +8,8 @@ import {
   HistoryTwoTone,
   HomeTwoTone,
   InfoTwoTone,
-  LaptopTwoTone,
   MapTwoTone,
+  MonitorTwoTone,
   PaidTwoTone,
   PestControlTwoTone,
   PsychologyTwoTone,
@@ -148,13 +149,13 @@ const HIDDEN_PAGES = [
   {
     label: 'dashboard_page_title',
     path: '/dashboard',
-    icon: <LaptopTwoTone />,
+    icon: <MonitorTwoTone />,
     element: <DashboardPage />,
   },
   {
     label: 'data-research',
     path: '/data-research',
-    icon: <InfoTwoTone />,
+    icon: <BiotechTwoTone />,
     element: <DataResearch />,
   },
 ] as const
