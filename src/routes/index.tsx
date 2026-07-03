@@ -1,20 +1,20 @@
 import {
-  AccessTimeOutlined,
+  AccessTimeTwoTone,
   AirportShuttle,
-  BarChartOutlined,
-  BugReportOutlined,
-  CalendarMonthOutlined,
+  BarChartTwoTone,
+  CalendarTodayTwoTone,
   DirectionsBusOutlined,
   GitHub,
-  HomeOutlined,
-  InfoOutlined,
-  LaptopOutlined,
+  HomeTwoTone,
+  InfoTwoTone,
+  LaptopTwoTone,
   MapOutlined,
-  PaidOutlined,
+  PaidTwoTone,
+  PestControlTwoTone,
   Psychology,
-  RadarOutlined,
+  RadarTwoTone,
   RouteOutlined,
-  ShowChartOutlined,
+  ShowChartTwoTone,
 } from '@mui/icons-material'
 import { lazy } from 'react'
 import { createBrowserRouter, createRoutesFromElements, Navigate, Route } from 'react-router'
@@ -46,27 +46,27 @@ export const PAGES = [
   {
     label: 'homepage_title',
     path: '/',
-    icon: <HomeOutlined />,
+    icon: <HomeTwoTone />,
     element: <HomePage />,
   },
   {
     label: 'timeline_page_title',
     path: '/timeline',
     searchParamsRequired: true,
-    icon: <AccessTimeOutlined />,
+    icon: <AccessTimeTwoTone />,
     element: <TimelinePage />,
   },
   {
     label: 'gaps_page_title',
     path: '/gaps',
     searchParamsRequired: true,
-    icon: <BarChartOutlined />,
+    icon: <BarChartTwoTone />,
     element: <GapsPage />,
   },
   {
     label: 'gaps_patterns_page_title',
     path: '/gaps_patterns',
-    icon: <ShowChartOutlined />,
+    icon: <ShowChartTwoTone />,
     element: <GapsPatternsPage />,
   },
   {
@@ -79,7 +79,7 @@ export const PAGES = [
     label: 'velocity_heatmap_page_title',
     path: '/velocity-heatmap',
     searchParamsRequired: true,
-    icon: <RadarOutlined />,
+    icon: <RadarTwoTone />,
     element: <VelocityHeatmapPage />,
   },
   {
@@ -106,13 +106,13 @@ export const PAGES = [
   {
     label: 'about_title',
     path: '/about',
-    icon: <InfoOutlined />,
+    icon: <InfoTwoTone />,
     element: <About />,
   },
   {
     label: 'donate_title',
     path: '/donate',
-    icon: <PaidOutlined />,
+    icon: <PaidTwoTone />,
     element: null, //DonateModal
   },
   {
@@ -124,7 +124,7 @@ export const PAGES = [
   {
     label: 'hackathon_title',
     path: '/hackathon',
-    icon: <CalendarMonthOutlined />,
+    icon: <CalendarTodayTwoTone />,
     element: <Hackathon />,
   },
 ] as const
@@ -133,7 +133,7 @@ export const HEADER_LINKS = [
   {
     label: 'report_a_bug_title',
     path: '/report-a-bug',
-    icon: <BugReportOutlined fontSize="inherit" />,
+    icon: <PestControlTwoTone fontSize="inherit" />,
     element: <BugReportForm />,
   },
   {
@@ -148,13 +148,13 @@ const HIDDEN_PAGES = [
   {
     label: 'dashboard_page_title',
     path: '/dashboard',
-    icon: <LaptopOutlined />,
+    icon: <LaptopTwoTone />,
     element: <DashboardPage />,
   },
   {
     label: 'data-research',
     path: '/data-research',
-    icon: <InfoOutlined />,
+    icon: <InfoTwoTone />,
     element: <DataResearch />,
   },
 ] as const

@@ -1,4 +1,4 @@
-import { Close as ClearIcon } from '@mui/icons-material'
+import { CloseTwoTone as ClearIcon } from '@mui/icons-material'
 import './ClearButton.scss'
 
 const ClearButton = ({ onClearInput }: { onClearInput: () => void }) => {

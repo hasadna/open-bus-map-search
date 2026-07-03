@@ -1,4 +1,4 @@
-import { InfoOutlined } from '@mui/icons-material'
+import { InfoTwoTone } from '@mui/icons-material'
 import { Typography } from '@mui/material'
 import { Modal } from 'antd'
 import { useState } from 'react'
@@ -22,7 +22,7 @@ const InfoYoutubeModal = ({ videoUrl, label, title }: InfoYoutubeModalProps) => 
         aria-label={label}
         className="modal-info-ico"
         onClick={() => setVisible(true)}>
-        <InfoOutlined fontSize="inherit" />
+        <InfoTwoTone fontSize="inherit" />
       </span>
       <Modal
         width={'1000px'}

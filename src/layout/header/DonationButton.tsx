@@ -1,4 +1,4 @@
-import { PaidOutlined } from '@mui/icons-material'
+import { PaidTwoTone } from '@mui/icons-material'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import DonateModal from 'src/pages/DonateModal/DonateModal'
@@ -18,7 +18,7 @@ export const DonationButton = () => {
         onClick={onOpen}
         aria-label={tooltip_title}
         title={tooltip_title}>
-        <PaidOutlined style={{ fontSize: '1.5em' }} />
+        <PaidTwoTone style={{ fontSize: '1.5em' }} />
       </button>
       <DonateModal isVisible={open} onClose={onClose} />
     </>

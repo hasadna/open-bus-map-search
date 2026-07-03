@@ -1,4 +1,4 @@
-import { LanguageOutlined } from '@mui/icons-material'
+import { LanguageTwoTone } from '@mui/icons-material'
 import { Dropdown, type MenuProps } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '../ThemeContext'
@@ -43,7 +43,7 @@ export const LanguageToggleButton = () => {
         aria-label={t('change_language')}
         title={t('change_language')}
         style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-        <LanguageOutlined fontSize="inherit" />
+        <LanguageTwoTone fontSize="inherit" />
       </button>
     </Dropdown>
   )

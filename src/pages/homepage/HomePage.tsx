@@ -1,11 +1,11 @@
 import {
-  AccessTimeOutlined,
-  BarChartOutlined,
+  AccessTimeTwoTone,
+  BarChartTwoTone,
   DirectionsBusOutlined,
   MapOutlined,
   MenuOutlined,
   RouteOutlined,
-  ShowChartOutlined,
+  ShowChartTwoTone,
 } from '@mui/icons-material'
 import { SvgIconProps, Tooltip } from '@mui/material'
 import { useContext } from 'react'
@@ -68,17 +68,17 @@ export const HomePage = () => {
           to="/single-line-map"
         />
         <PageLink
-          icon={wrapToolTip(<AccessTimeOutlined />, t('timeline_page_description'))}
+          icon={wrapToolTip(<AccessTimeTwoTone />, t('timeline_page_description'))}
           label={t('timeline_page_title')}
           to="/timeline"
         />
         <PageLink
-          icon={wrapToolTip(<BarChartOutlined />, t('gaps_page_description'))}
+          icon={wrapToolTip(<BarChartTwoTone />, t('gaps_page_description'))}
           label={t('gaps_page_title')}
           to="/gaps"
         />
         <PageLink
-          icon={wrapToolTip(<ShowChartOutlined />, t('gaps_patterns_page_description'))}
+          icon={wrapToolTip(<ShowChartTwoTone />, t('gaps_patterns_page_description'))}
           label={t('gaps_patterns_page_title')}
           to="/gaps_patterns"
         />
