@@ -1,10 +1,10 @@
 import {
-  AccessTimeTwoTone,
-  AirportShuttleTwoTone,
   BarChartTwoTone,
-  CalendarTodayTwoTone,
   DirectionsBusTwoTone,
+  EmojiTransportationTwoTone,
+  EventTwoTone,
   GitHub,
+  HistoryTwoTone,
   HomeTwoTone,
   InfoTwoTone,
   LaptopTwoTone,
@@ -53,7 +53,7 @@ export const PAGES = [
     label: 'timeline_page_title',
     path: '/timeline',
     searchParamsRequired: true,
-    icon: <AccessTimeTwoTone />,
+    icon: <HistoryTwoTone />,
     element: <TimelinePage />,
   },
   {
@@ -93,14 +93,14 @@ export const PAGES = [
     label: 'vehicle_page_title',
     path: '/vehicle',
     searchParamsRequired: true,
-    icon: <AirportShuttleTwoTone />,
+    icon: <DirectionsBusTwoTone />,
     element: <VehiclePage />,
   },
   {
     label: 'operator_title',
     path: '/operator',
     searchParamsRequired: true,
-    icon: <DirectionsBusTwoTone />,
+    icon: <EmojiTransportationTwoTone />,
     element: <Operator />,
   },
   {
@@ -124,7 +124,7 @@ export const PAGES = [
   {
     label: 'hackathon_title',
     path: '/hackathon',
-    icon: <CalendarTodayTwoTone />,
+    icon: <EventTwoTone />,
     element: <Hackathon />,
   },
 ] as const

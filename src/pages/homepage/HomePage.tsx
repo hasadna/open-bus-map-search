@@ -1,7 +1,7 @@
 import {
-  AccessTimeTwoTone,
   BarChartTwoTone,
-  DirectionsBusTwoTone,
+  EmojiTransportationTwoTone,
+  HistoryTwoTone,
   MapTwoTone,
   MenuTwoTone,
   RouteTwoTone,
@@ -68,7 +68,7 @@ export const HomePage = () => {
           to="/single-line-map"
         />
         <PageLink
-          icon={wrapToolTip(<AccessTimeTwoTone />, t('timeline_page_description'))}
+          icon={wrapToolTip(<HistoryTwoTone />, t('timeline_page_description'))}
           label={t('timeline_page_title')}
           to="/timeline"
         />
@@ -83,7 +83,7 @@ export const HomePage = () => {
           to="/gaps_patterns"
         />
         <PageLink
-          icon={wrapToolTip(<DirectionsBusTwoTone />, t('operator_title'))}
+          icon={wrapToolTip(<EmojiTransportationTwoTone />, t('operator_title'))}
           label={t('operator_title')}
           to="/operator"
         />
