@@ -1,15 +1,10 @@
 import i18next from 'i18next'
-import { expect, setupTest, test, visitPage } from './utils'
-
-// About's VersionInfo fetches this on mount; abort it so the page settles fast.
-const VERSION_URL = 'https://open-bus-map-search.hasadna.org.il/hash.txt'
+import { expect, setupTest, test } from './utils'
 
 test.describe('theme persistence', () => {
   test('dark mode preference persists across reloads via localStorage', async ({ page }) => {
-    await page.route(VERSION_URL, (route) => route.abort())
+    // setupTest lands on '/', a static page with the theme toggle in the global header.
     await setupTest(page)
-    // The theme toggle lives in the global header; About is a light page to host the check.
-    await visitPage(page, 'about_title')
 
     // The toggle shows "go to dark" while light and "go to light" while dark.
     const goDark = i18next.t('dark_mode_tooltip')
