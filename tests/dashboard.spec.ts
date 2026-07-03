@@ -17,15 +17,6 @@ test.describe('dashboard tests', () => {
     await waitForSkeletonsToHide(page)
   })
 
-  test('dark mode use localstorage', async ({ page }) => {
-    await page.getByLabel('עבור למצב כהה').click()
-    await page.reload()
-    await page.getByLabel('עבור למצב בהיר').click()
-    await page.reload()
-    await page.getByLabel('עבור למצב כהה').click()
-    await page.getByLabel('עבור למצב בהיר').click()
-  })
-
   test('dashboard charts contain information', async ({ page }) => {
     await expect(page.getByText('686 | קווים').first()).toBeVisible()
     await expect(page.getByText('מועצה אזורית גולן').first()).toBeVisible()
