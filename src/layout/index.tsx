@@ -16,13 +16,9 @@ const StyledLayout = styled(Layout)({
   height: '100vh',
   overflow: 'hidden',
 })
-// The scroll container: a flex column holding {content, spacer, footer} so the
-// footer can be pushed to the bottom on short pages and scroll in on tall ones.
 const StyledContent = styled(Content)({
   margin: '24px 16px 0',
   overflow: 'auto',
-  display: 'flex',
-  flexDirection: 'column',
 })
 const StyledBody = styled('div')({
   padding: '0 24px',
