@@ -1,3 +1,4 @@
+import i18next from 'i18next'
 import { expect, setupTest, test } from './utils'
 
 const VIDEO_SRC =
@@ -15,7 +16,7 @@ test('An instruction video for Report a bug', async ({ page }) => {
       body: '<html><body><button aria-label="Play">Play</button></body></html>',
     }),
   )
-  await page.getByLabel('bug').locator('svg').click()
+  await page.getByLabel(i18next.t('report_a_bug_title')).click()
   await page.getByLabel('לפתוח סרטון על העמוד הזה').locator('svg').click()
   const videoFrame = page.locator('iframe')
   expect(videoFrame).toBeVisible()
@@ -31,7 +32,7 @@ test('An instruction video for Report a bug', async ({ page }) => {
 
 test('bug missing field - request type', async ({ page }) => {
   await test.step('Open bug report modal', async () => {
-    await page.getByLabel('bug').locator('svg').click()
+    await page.getByLabel(i18next.t('report_a_bug_title')).click()
   })
 
   await test.step('Fill required fields', async () => {
@@ -80,7 +81,7 @@ test('bug submission success', async ({ page }) => {
   })
 
   await test.step('Open bug report modal', async () => {
-    await page.getByLabel('bug').locator('svg').click()
+    await page.getByLabel(i18next.t('report_a_bug_title')).click()
   })
 
   await test.step('Fill all required fields', async () => {
@@ -115,7 +116,7 @@ test('bug submission server error', async ({ page }) => {
   })
 
   await test.step('Open bug report modal', async () => {
-    await page.getByLabel('bug').locator('svg').click()
+    await page.getByLabel(i18next.t('report_a_bug_title')).click()
   })
 
   await test.step('Fill all required fields', async () => {
