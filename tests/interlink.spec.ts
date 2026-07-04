@@ -28,7 +28,7 @@ const PM_MOON = '🌙' // next-night marker shown beside post-midnight times in 
 async function selectRoute(page: Page) {
   await page.getByLabel('חברה מפעילה').click()
   await page.getByRole('option', { name: OPERATOR, exact: true }).click()
-  await page.getByRole('textbox', { name: 'מספר קו' }).fill(LINE)
+  await page.getByRole('combobox', { name: 'מספר קו' }).fill(LINE)
   // Type-to-filter the route Autocomplete so the target option renders even when
   // the line has many variants (MUI virtualizes long option lists).
   await page.getByLabel(/בחירת מסלול נסיעה/).fill(ROUTE_FILTER)

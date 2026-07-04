@@ -263,6 +263,8 @@ const GapsPatternsPage = () => {
         </Grid>
         <Grid size={{ xs: 12, sm: 8 }}>
           <LineNumberSelector
+            operatorId={operatorId ?? undefined}
+            date={startDate.format('YYYY-MM-DD')}
             lineNumber={lineNumber ?? undefined}
             setLineNumber={(number) => setSearch((current) => ({ ...current, lineNumber: number }))}
           />
