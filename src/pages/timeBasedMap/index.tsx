@@ -17,7 +17,13 @@ import { busIcon, busIconPath } from '../components/utils/BusIcon'
 import createClusterCustomIcon from '../components/utils/customCluster/customCluster'
 import InfoYoutubeModal from '../components/YoutubeModal'
 
-const DEFAULT_TIME = dayjs('2023-03-14T15:00:00Z')
+// Default the map to yesterday at 04:00 Israel time: a quiet, fully-ingested hour, so the
+// initial view is small and fast yet always shows real vehicles. Yesterday (not today) so
+// the one-minute window is never in the future — a pre-dawn visitor would otherwise land
+// on an empty map.
+const getDefaultTime = () =>
+  dayjs().tz(ISRAEL_TIMEZONE).subtract(1, 'day').hour(4).minute(0).second(0).millisecond(0)
+
 const DEFAULT_POSITION: Point = {
   loc: [32.3057988, 34.85478613],
   color: 0,
@@ -28,14 +34,14 @@ export default function TimeBasedMapPage() {
   const [from, setFrom] = useState(
     () =>
       (initialUrlParams.datetime && parseIsraelLocalDatetime(initialUrlParams.datetime)) ||
-      DEFAULT_TIME,
+      getDefaultTime(),
   )
   const to = useMemo(() => dayjs(from).add(1, 'minutes'), [from])
   const { locations, isLoading } = useVehicleLocations({ from, to })
   const { t } = useTranslation()
   const positions = useMemo(() => locations.map(toPoint), [locations])
   const handleFromChange = useCallback((time: dayjs.Dayjs | null) => {
-    setFrom(time ?? DEFAULT_TIME)
+    setFrom(time ?? getDefaultTime())
   }, [])
 
   // LEGACY: manual share-param injection — replace with usePageState's per-page

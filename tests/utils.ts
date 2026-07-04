@@ -202,6 +202,30 @@ export const verifyDateFromParameter = async (page: Page) => {
   expect(daysAgo).toBeLessThanOrEqual(3)
 }
 
+/**
+ * Force every stride-api response body to fully download before a HAR is written.
+ *
+ * routeFromHAR({ updateContent: 'embed' }) only embeds bodies it actually has in
+ * hand; any response still streaming when the context closes is saved truncated or
+ * empty. response.body() blocks until the full body has arrived, so collecting one
+ * per stride-api response and awaiting them all at the end guarantees complete
+ * fixtures — no need to hand-pick individual deferred requests. Errors are
+ * swallowed: an aborted or body-less response must not fail the recording.
+ *
+ * Call before any navigation so no response is missed, then `await settle()` as the
+ * last step of the recording. Only relevant when recording (RECORD_HAR); harmless
+ * otherwise. Shared by tests/recordHAR.spec.ts and tests/realtimemap.spec.ts.
+ */
+export function trackResponseBodies(page: Page): () => Promise<unknown> {
+  const bodies: Promise<unknown>[] = []
+  page.on('response', (response) => {
+    if (/stride-api/.test(response.url())) {
+      bodies.push(response.body().catch(() => undefined))
+    }
+  })
+  return () => Promise.all(bodies)
+}
+
 export const harOptions: RouteFromHAROptions = {
   notFound: 'abort',
   url: /stride-api/,
