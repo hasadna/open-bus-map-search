@@ -17,7 +17,7 @@ const FULL_SERVICE_DAY_TIMES = ['04:30', '17:00', '04:47'] as const
 async function selectGapsRoute(page: import('@playwright/test').Page) {
   await page.getByLabel('חברה מפעילה').click()
   await page.getByRole('option', { name: GAPS_OPERATOR, exact: true }).click()
-  await page.getByRole('textbox', { name: 'מספר קו' }).fill(GAPS_LINE_NUMBER)
+  await page.getByRole('combobox', { name: 'מספר קו' }).fill(GAPS_LINE_NUMBER)
   await page.getByLabel(/בחירת מסלול נסיעה/).click()
   await page.getByRole('option', { name: GAPS_ROUTE }).click()
 }

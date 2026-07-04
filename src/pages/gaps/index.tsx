@@ -147,6 +147,8 @@ const GapsPage = () => {
         </Grid>
         <Grid size={{ xs: 8 }}>
           <LineNumberSelector
+            operatorId={operatorId ?? undefined}
+            date={date}
             lineNumber={lineNumber ?? undefined}
             setLineNumber={handleLineNumberChange}
           />

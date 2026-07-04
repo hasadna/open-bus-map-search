@@ -107,6 +107,8 @@ const SingleLineMapPage = () => {
           <Grid size={{ sm: 4, xs: 12 }}>
             <LineNumberSelector
               disabled={!operatorId}
+              operatorId={operatorId ?? undefined}
+              date={date}
               lineNumber={lineNumber ?? undefined}
               setLineNumber={handleLineNumberChange}
             />

@@ -146,6 +146,8 @@ const TimelinePage = () => {
         {/* choose line */}
         <Grid size={{ lg: 4, md: 6, xs: 12 }}>
           <LineNumberSelector
+            operatorId={operatorId ?? undefined}
+            date={date}
             lineNumber={lineNumber ?? undefined}
             setLineNumber={(number) => setSearch((prev) => ({ ...prev, lineNumber: number }))}
           />
