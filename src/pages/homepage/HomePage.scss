@@ -13,8 +13,9 @@
   align-items: center;
   text-align: center;
 
-  img {
+  > svg {
     height: 15rem;
+    width: auto;
   }
 
   h1 {
