@@ -7,8 +7,7 @@
  *
  * After running, commit the updated HAR files in tests/HAR/.
  *
- * NOTE: realtimemap.har is NOT recorded here — it self-records from its own spec so the recording
- * flow and its drift assertions live in one place (tests/realtimemap.spec.ts):
+ * NOTE: realtimemap.har self-records from its own spec, not here:
  *   RECORD_HAR=1 npx playwright test tests/realtimemap.spec.ts --workers=1
  */
 import { Page, test } from '@playwright/test'
@@ -349,10 +348,6 @@ test.describe('Record HAR files', () => {
     }
   })
 
-  // ---- realtimemap.har ----------------------------------------------------
-  // Recorded by its own spec, not here: tests/realtimemap.spec.ts self-records when RECORD_HAR=1.
-  // Its replay flow and the recording flow are identical (navigate to /map, decluster to the lone
-  // נתיב אקספרס bus, open its tooltip to capture BusToolTip's route fetch), so they live in one
-  // file — and the spec's drift assertions double as validation of the fresh capture. To re-record:
-  //   RECORD_HAR=1 npx playwright test tests/realtimemap.spec.ts --workers=1
+  // realtimemap.har self-records from tests/realtimemap.spec.ts (RECORD_HAR=1), not here — its
+  // replay and record flows are identical, so both live in that one file.
 })

@@ -1,25 +1,30 @@
 import * as fs from 'fs'
 import { Locator, Page } from '@playwright/test'
-import { expect, harOptions, setupTest, test, trackResponseBodies, visitPage } from './utils'
+import {
+  expect,
+  harOptions,
+  setupTest,
+  test,
+  trackResponseBodies,
+  visitPage,
+  waitForMapIdle,
+} from './utils'
 
-// RECORD_HAR=1 re-records the fixture instead of replaying it:
+// RECORD_HAR=1 self-records the fixture instead of replaying it (record and replay share this
+// flow, so the assertions also validate a fresh capture):
 //   RECORD_HAR=1 npx playwright test tests/realtimemap.spec.ts --workers=1
-// Record and replay share this one flow. The clock is frozen to the recorded minute, so the
-// assertions below also validate a fresh capture — a bad recording fails the run, not CI later.
 const RECORDING = !!process.env['RECORD_HAR']
 
 const HAR_PATH = 'tests/HAR/realtimemap.har'
 
-// Bridges beforeEach (arm before the firehose) → test (settle after the tooltip). No-op on replay.
+// Set in beforeEach when recording, awaited at test end so the HAR captures every body. No-op on replay.
 let settleResponseBodies: (() => Promise<unknown>) | undefined
 
-// The frozen clock (2024-02-12) makes the map default to 2024-02-11T04:00 — the recorded minute.
-// If date/timezone handling drifts, the request stops matching the HAR, aborts, and the map shows
-// 0 vehicles: this count catches it. The tooltip's parsed values guard api-client deserialization.
-const VEHICLE_COUNT = 393
+// 90 = the fixture's 393 raw rows after useVehicleLocations dedups per-minute snapshot re-stamps.
+// Exact count guards date/HAR drift: if the frozen-clock request stops matching the HAR the map shows 0.
+const VEHICLE_COUNT = 90
 
-// The lone נתיב אקספרס bus (operator 14) is the only vehicle of its operator this minute, so its
-// marker is unique and safe to single out.
+// The lone נתיב אקספרס bus this minute — unique operator, so safe to single out.
 const BUS = {
   operatorName: 'נתיב אקספרס',
   lineNumber: '967',
@@ -39,11 +44,9 @@ const TOOLTIP_CONTENT_ITEMS = [
 ]
 
 /**
- * At default zoom markercluster merges every vehicle, so no single marker is clickable. The lone
- * נתיב אקספרס bus is the country's northernmost vehicle this minute, so the topmost on-screen
- * cluster always holds it: drill into that cluster until the marker separates out, open its
- * tooltip, and return the popup content locator (resolves once BusToolTip has fetched the route).
- * Lives here, not in utils, because it drives both the replay assertions and the record capture.
+ * Clusters hide every marker at default zoom. The lone נתיב אקספרס bus is the northernmost vehicle,
+ * so the topmost on-screen cluster always holds it: drill in until the marker separates, open its
+ * tooltip, return the popup content locator. Drives both the replay assertions and the record capture.
  */
 const openNorthernmostBus = async (page: Page, operatorName: string): Promise<Locator> => {
   // Expand the map to full height (idempotent) so clusters below the fold become clickable.
@@ -56,9 +59,10 @@ const openNorthernmostBus = async (page: Page, operatorName: string): Promise<Lo
   const height = page.viewportSize()?.height ?? 720
   const clusters = page.locator('.leaflet-marker-pane .leaflet-marker-icon.marker-cluster')
   const button = page.getByRole('button', { name: `${operatorName} ${operatorName}` })
-  // Click the topmost (northernmost) on-screen cluster to zoom in, re-cluster, and repeat until the
-  // marker separates out. Clicking the element (not coordinates) auto-waits for the zoom animation
-  // to settle, so a still-moving cluster can't make the click miss.
+  // Settle the initial recenter pan before reading cluster geometry.
+  await waitForMapIdle(page)
+  // Click the topmost cluster to zoom/re-cluster, repeat until the marker separates. waitForMapIdle
+  // (not a fixed sleep) settles the zoom so the next iteration reads cluster coordinates correctly.
   for (let i = 0; i < 12; i++) {
     if (await button.isVisible().catch(() => false)) break
     const index = await clusters.evaluateAll((els, viewportHeight) => {
@@ -76,7 +80,7 @@ const openNorthernmostBus = async (page: Page, operatorName: string): Promise<Lo
       .nth(index)
       .click({ timeout: 5000 })
       .catch(() => undefined)
-    await page.waitForTimeout(700)
+    await waitForMapIdle(page)
   }
   await expect(button).toBeVisible({ timeout: 5000 })
 
@@ -97,10 +101,8 @@ test.beforeAll(() => {
 test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
   await setupTest(page)
   if (RECORDING) {
-    // setupTest aborts stride-api. routeFromHAR({ update:true }) records passively and registers
-    // NO route (playwright-core returns right after _recordIntoHAR), so unlike the replay handler
-    // it can't override that abort — left in place it kills every request. Unroute it first, then
-    // arm body-tracking before visitPage so no firehose page is missed.
+    // routeFromHAR({ update:true }) records passively without registering a route, so it can't
+    // override setupTest's stride-api abort — unroute that first, then arm body-tracking before visitPage.
     await page.unroute(/stride-api/)
     await page.routeFromHAR(HAR_PATH, {
       url: /stride-api/,
@@ -117,7 +119,7 @@ test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
 
 test('map loads real vehicle data and shows a bus tooltip', async ({ page }) => {
   await test.step('the real snapshot is loaded', async () => {
-    // Exact count ⇒ the app hit the right window (HAR matched) and parsed the whole paginated firehose.
+    // Exact count ⇒ HAR matched and the whole paginated firehose parsed.
     await expect(page.getByText(`${VEHICLE_COUNT} -`, { exact: false })).toBeVisible()
   })
 
@@ -146,12 +148,12 @@ test('map loads real vehicle data and shows a bus tooltip', async ({ page }) => 
     await expect(page.getByRole('link', { name: BUS.lineNumber })).toBeVisible() // line number is in the header link
   })
 
-  // Record only: wait for every stride body (incl. the tooltip's route fetch) before teardown writes the HAR.
+  // Record only: await every stride body before teardown writes the HAR.
   await settleResponseBodies?.()
 })
 
-// Record only: Playwright writes the HAR on one line; re-serialize it pretty for reviewable diffs.
-// afterAll runs after the context teardown that flushes the HAR, so the file is complete here.
+// Record only: re-serialize the one-line HAR pretty for reviewable diffs (afterAll runs after the
+// teardown that flushes it, so the file is complete here).
 test.afterAll(() => {
   if (!RECORDING) return
   const har = JSON.parse(fs.readFileSync(HAR_PATH, 'utf8'))
