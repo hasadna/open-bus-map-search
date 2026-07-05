@@ -44,9 +44,24 @@ const TOOLTIP_CONTENT_ITEMS = [
 ]
 
 /**
+ * Resolve once the Leaflet marker pane's node count holds steady across two samples. Vehicles
+ * stream in as paginated batches that re-cluster the pane, so cluster geometry is only final
+ * after mounting stops.
+ */
+const waitForMarkersSettled = async (page: Page) => {
+  let previousCount = -1
+  await expect(async () => {
+    const count = await page.locator('.leaflet-marker-pane > *').count()
+    const stable = count > 0 && count === previousCount
+    previousCount = count
+    expect(stable).toBe(true)
+  }).toPass({ timeout: 15000, intervals: [500] })
+}
+
+/**
  * Clusters hide every marker at default zoom. The lone נתיב אקספרס bus is the northernmost vehicle,
- * so the topmost on-screen cluster always holds it: drill in until the marker separates, open its
- * tooltip, return the popup content locator. Drives both the replay assertions and the record capture.
+ * so the topmost on-screen cluster always holds it: drill in until it separates, open its tooltip,
+ * return the popup content locator. Drives both replay assertions and the record capture.
  */
 const openNorthernmostBus = async (page: Page, operatorName: string): Promise<Locator> => {
   // Expand the map to full height (idempotent) so clusters below the fold become clickable.
@@ -59,6 +74,12 @@ const openNorthernmostBus = async (page: Page, operatorName: string): Promise<Lo
   const height = page.viewportSize()?.height ?? 720
   const clusters = page.locator('.leaflet-marker-pane .leaflet-marker-icon.marker-cluster')
   const button = page.getByRole('button', { name: `${operatorName} ${operatorName}` })
+  // Deterministic-drill precondition: the topmost-cluster path only reproduces with the full vehicle
+  // set mounted. The "N -" count proves every page fetched+deduped; waitForMarkersSettled proves
+  // clustering finished. Geometry is then a pure function of the fixed dataset, so the loop below walks
+  // the same sequence each run and self-corrects across leaflet/markercluster bumps (vs. baked indices).
+  await expect(page.getByText(`${VEHICLE_COUNT} -`, { exact: false })).toBeVisible()
+  await waitForMarkersSettled(page)
   // Settle the initial recenter pan before reading cluster geometry.
   await waitForMapIdle(page)
   // Click the topmost cluster to zoom/re-cluster, repeat until the marker separates. waitForMapIdle
