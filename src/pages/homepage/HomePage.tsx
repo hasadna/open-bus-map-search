@@ -33,7 +33,9 @@ const PageLink = ({
 
   if (typeof to === 'function') {
     return (
-      <Tooltip title={description} placement="top" followCursor>
+      <Tooltip
+        title={<div style={{ fontSize: 15, textAlign: 'center' }}>{description}</div>}
+        placement="top">
         <button onClick={to} className="page-link" type="button">
           {content}
         </button>
@@ -42,7 +44,9 @@ const PageLink = ({
   }
 
   return (
-    <Tooltip title={description} placement="top" followCursor>
+    <Tooltip
+      title={<div style={{ fontSize: 15, textAlign: 'center' }}>{description}</div>}
+      placement="top">
       <NavLink to={to} className="page-link" style={{ textDecoration: 'none', color: 'inherit' }}>
         {content}
       </NavLink>
