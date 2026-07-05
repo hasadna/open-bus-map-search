@@ -40,7 +40,7 @@ jobs:
             -e VITE_COVERAGE=true \
             -v "$PWD/coverage:/app/coverage" \
             open-bus-offline-test \
-            sh -c "npm test && npx nyc report --reporter=lcovonly"
+            sh -c "npm test && nyc report --reporter=lcovonly"
       - name: Normalize coverage paths to repo-relative
         # lcov is produced with in-container paths (/app/src/...); strip the /app
         # prefix so Coveralls matches them against the repo tree.

@@ -10,12 +10,6 @@ const gitUser = () => {
   }
 }
 
-/* When PLAYWRIGHT_BASE_URL is set (CI runs the suite against the prebuilt nginx
-   production image on an isolated, no-egress Docker network), point the browser
-   at that server and don't start our own. Unset locally and in the offline
-   coverage run → falls back to the Vite dev server on :3000, exactly as before. */
-const externalBaseURL = process.env.PLAYWRIGHT_BASE_URL
-
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
@@ -34,7 +28,7 @@ export default defineConfig<EyesFixture>({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: externalBaseURL ?? 'http://localhost:3000',
+    baseURL: 'http://localhost:3000',
     locale: 'he-IL',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
@@ -71,14 +65,11 @@ export default defineConfig<EyesFixture>({
     },
   ],
 
-  /* Run our own dev server before the tests, unless an external server URL was
-     provided (PLAYWRIGHT_BASE_URL) — then the app is already served elsewhere. */
-  webServer: externalBaseURL
-    ? undefined
-    : {
-        command: 'npm start',
-        reuseExistingServer: true,
-        timeout: 120 * 1000,
-        port: 3000,
-      },
+  /* Run your local dev server before starting the tests */
+  webServer: {
+    command: 'npm start',
+    reuseExistingServer: true,
+    timeout: 120 * 1000,
+    port: 3000,
+  },
 })

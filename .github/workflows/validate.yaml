@@ -168,18 +168,9 @@ jobs:
     name: Application & Playwright Tests
     runs-on: ubuntu-latest
     needs: [build, build-outside-docker]
-    # Flow 1 of the consolidated e2e runs: exercise the real nginx production
-    # image AND prove the suite is fully offline. Both the app (nginx) and the
-    # Playwright runner sit on a Docker `--internal` network, which has no route
-    # to the internet — so any un-mocked external call fails instead of silently
-    # hitting the live API. This replaces the old /etc/hosts host block (which
-    # only covered a hand-listed set of hostnames).
     steps:
       - name: Set timezone
         run: echo "TZ=Asia/Jerusalem" >> $GITHUB_ENV
-      - uses: actions/checkout@v6
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
       - name: Download Docker image artifact
         uses: actions/download-artifact@v8
         with:
@@ -187,61 +178,61 @@ jobs:
           path: /tmp
       - name: Load Docker image
         run: docker load -i /tmp/docker-image.tar
-      - name: Build Playwright runner image
-        run: docker build -t open-bus-offline-test -f scripts/Dockerfile.offline-test .
-      - name: Create isolated (no-egress) network
-        run: docker network create --internal isolated
-      - name: Start application container (nginx production image)
-        run: docker run -d --name app --network isolated ${{ env.DOCKER_APP_IMAGE_NAME }}:${{ env.DOCKER_APP_IMAGE_TAG }}
-      - name: Wait for the app and validate hash.txt endpoint
-        # Doubles as the readiness gate: Playwright's webServer is disabled when
-        # PLAYWRIGHT_BASE_URL is set, so nothing else waits for nginx to come up.
+      - name: Start application container
+        run: docker run -d -p 3000:80 ${{ env.DOCKER_APP_IMAGE_NAME }}:${{ env.DOCKER_APP_IMAGE_TAG }}
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: 'npm'
+      - name: Configure blocked external hosts
+        uses: ./.github/actions/block-network
+      - name: Validate hash.txt endpoint
         run: |
-          docker run --rm --network isolated open-bus-offline-test node -e '
-            const http = require("http")
-            const deadline = Date.now() + 60000
-            const retry = (why) => {
-              if (Date.now() > deadline) {
-                console.error("Error: app not ready: " + why)
-                process.exit(1)
-              }
-              setTimeout(attempt, 1000)
-            }
-            const attempt = () =>
-              http
-                .get("http://app/hash.txt", (res) => {
-                  let body = ""
-                  res.on("data", (chunk) => (body += chunk))
-                  res.on("end", () => {
-                    if (res.statusCode !== 200) return retry("HTTP status " + res.statusCode)
-                    if (body.length >= 100) {
-                      console.error("Error: hash.txt exceeds 100 characters: " + body.length)
-                      process.exit(1)
-                    }
-                    console.log("app ready; hash.txt valid: " + body.trim() + " (" + body.length + " bytes)")
-                  })
-                })
-                .on("error", (err) => retry(err.message))
-            attempt()
-          '
-      - name: Run Playwright tests (offline, against the nginx image)
+          response=$(curl -s -w "%{http_code}" -o /tmp/hash.txt http://localhost:3000/hash.txt)
+          http_code=${response: -3}
+          if [ "$http_code" -ne 200 ]; then
+            echo "Error: HTTP request failed with status code $http_code"
+            exit 1
+          fi
+          mime_type=$(file --mime-type -b /tmp/hash.txt)
+          if [ "$mime_type" != "text/plain" ]; then
+            echo "Error: hash.txt does not have MIME type text/plain. Found: $mime_type"
+            exit 1
+          fi
+          content_length=$(wc -c < /tmp/hash.txt | xargs)
+          if [ "$content_length" -ge 100 ]; then
+            echo "Error: hash.txt content exceeds 100 characters. Length: $content_length"
+            exit 1
+          fi
+          echo "hash.txt is valid with MIME type $mime_type and length $content_length characters."
+      - name: Install Dependencies and Playwright
+        run: npm ci
+      - name: Resolve Playwright cache key inputs
+        id: playwright-version
         run: |
-          mkdir -p playwright-report test-results
-          docker run --rm \
-            --network isolated \
-            -e CI=true \
-            -e TZ=Asia/Jerusalem \
-            -e PLAYWRIGHT_BASE_URL=http://app \
-            -v "$PWD/playwright-report:/app/playwright-report" \
-            -v "$PWD/test-results:/app/test-results" \
-            open-bus-offline-test \
-            npm test
+          echo "version=$(node -p 'require("@playwright/test/package.json").version')" >> "$GITHUB_OUTPUT"
+          echo "imageos=$ImageOS" >> "$GITHUB_OUTPUT"
+      - name: Cache Playwright browsers
+        uses: actions/cache@v5
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-${{ runner.arch }}-${{ steps.playwright-version.outputs.imageos }}-playwright-${{ steps.playwright-version.outputs.version }}
+      - name: Install Playwright browser dependencies
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        timeout-minutes: 15
+        run: npx playwright install chromium
+      - name: Run Playwright tests
+        run: npm test
       - name: Prepare Playwright artifact directory
         if: always()
         run: |
           mkdir -p playwright-artifact
-          if [ -d test-results ]; then cp -r test-results/* playwright-artifact/ 2>/dev/null || true; fi
-          if [ -d playwright-report ]; then cp -r playwright-report/* playwright-artifact/ 2>/dev/null || true; fi
+          if [ -d test-results ]; then cp -r test-results/* playwright-artifact/; fi
+          if [ -d playwright-report ]; then cp -r playwright-report/* playwright-artifact/; fi
           touch playwright-artifact/.keep
       - name: Upload Playwright test artifact
         if: always()
