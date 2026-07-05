@@ -1,5 +1,10 @@
 name: Code coverage
 
+# Flow 2 of the consolidated e2e runs: run the full suite ONCE, fully offline
+# (--network none) AND istanbul-instrumented (VITE_COVERAGE), then report to
+# Coveralls. This single job replaces the old open-network coverage run and, by
+# running under --network none, also absorbs the standalone offline-tests job.
+
 on:
   push:
     branches: [main]
@@ -11,7 +16,6 @@ permissions:
   actions: write
 
 env:
-  VITE_COVERAGE: true
   SHA: ${{ github.event.pull_request.head.sha || github.sha }}
 
 jobs:
@@ -19,21 +23,32 @@ jobs:
     name: Test with Coverage
     runs-on: ubuntu-latest
     steps:
-      - name: Set timezone
-        run: echo "TZ=Asia/Jerusalem" >> $GITHUB_ENV
       - uses: actions/checkout@v6
-      - name: Use Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: 24
-      - name: Run install
-        run: npm ci
-      - name: Install Playwright browser dependencies
-        timeout-minutes: 15
-        run: npx playwright install chromium
-      - name: Run test
-        run: npm test
-      - run: npx nyc report --reporter=lcovonly
+      - name: Build offline test image
+        run: docker build -t open-bus-offline-test -f scripts/Dockerfile.offline-test .
+      - name: Run tests offline, with coverage
+        # Vite dev runs inside the container on :3000 (Playwright's webServer),
+        # instrumented by VITE_COVERAGE; the Playwright collector writes raw
+        # istanbul data to /app/.nyc_output, then nyc emits coverage/lcov.info.
+        # --network none proves every external call is mocked.
+        run: |
+          mkdir -p coverage
+          docker run --rm \
+            --network none \
+            -e CI=true \
+            -e TZ=Asia/Jerusalem \
+            -e VITE_COVERAGE=true \
+            -v "$PWD/coverage:/app/coverage" \
+            open-bus-offline-test \
+            sh -c "npm test && npx nyc report --reporter=lcovonly"
+      - name: Normalize coverage paths to repo-relative
+        # lcov is produced with in-container paths (/app/src/...); strip the /app
+        # prefix so Coveralls matches them against the repo tree.
+        if: always()
+        run: |
+          if [ -f coverage/lcov.info ]; then
+            sed -i 's#SF:/app/#SF:#g' coverage/lcov.info
+          fi
       - name: Upload to Coveralls
         if: always()
         continue-on-error: true
