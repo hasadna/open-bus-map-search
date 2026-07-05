@@ -101,8 +101,6 @@ export const HomePage = () => {
           }}
         />
       </section>
-
-      <footer>{`${t('homepage.copyright')} ${new Date().getFullYear()}`}</footer>
     </div>
   )
 }

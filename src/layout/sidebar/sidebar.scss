@@ -93,19 +93,34 @@
 .ant-layout-sider {
   position: relative;
   z-index: 1;
-  overflow-y: auto;
 
   .ant-layout-sider-trigger {
     border-top: 1px #ccc solid;
+  }
+
+  .sider-inner {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow-y: auto;
+
+    .sider-scroll {
+      flex: 1;
+    }
+
+    .sider-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      padding: 8px;
+      border-top: 1px #ccc solid;
+      flex-shrink: 0;
+    }
   }
 }
 
 .ant-drawer .ant-drawer-header {
   border-bottom: 1px #ccc solid;
-
-  .ant-drawer-header-title {
-    justify-content: end;
-  }
 }
 
 .dark .ant-menu {

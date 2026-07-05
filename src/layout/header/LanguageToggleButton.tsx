@@ -1,4 +1,5 @@
 import { GlobalOutlined } from '@ant-design/icons'
+import IconButton from '@mui/material/IconButton'
 import { Dropdown, type MenuProps } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '../ThemeContext'
@@ -38,13 +39,9 @@ export const LanguageToggleButton = () => {
       }}
       trigger={['click']}
       placement="bottomRight">
-      <button
-        className="header-link"
-        aria-label={t('change_language')}
-        title={t('change_language')}
-        style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+        <IconButton size="small" aria-label={t('change_language')} title={t('change_language')}>
         <GlobalOutlined />
-      </button>
+      </IconButton>
     </Dropdown>
   )
 }

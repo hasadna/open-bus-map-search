@@ -1,4 +1,5 @@
 import { DollarOutlined } from '@ant-design/icons'
+import IconButton from '@mui/material/IconButton'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import DonateModal from 'src/pages/DonateModal/DonateModal'
@@ -13,13 +14,9 @@ export const DonationButton = () => {
   const onClose = () => setOpen(false)
   return (
     <>
-      <button
-        className="theme-icon"
-        onClick={onOpen}
-        aria-label={tooltip_title}
-        title={tooltip_title}>
-        <DollarOutlined style={{ fontSize: '1.5em' }} />
-      </button>
+      <IconButton size="small" onClick={onOpen} aria-label={tooltip_title} title={tooltip_title}>
+        <DollarOutlined />
+      </IconButton>
       <DonateModal isVisible={open} onClose={onClose} />
     </>
   )

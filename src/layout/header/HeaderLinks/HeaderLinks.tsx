@@ -1,8 +1,9 @@
+import Box from '@mui/material/Box'
+import IconButton from '@mui/material/IconButton'
 import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
 import { HEADER_LINKS } from 'src/routes'
-import './HeaderLinks.scss'
 
 type LinkType = Omit<(typeof HEADER_LINKS)[number], 'element'>
 
@@ -12,7 +13,7 @@ type HeaderLinksProps = {
 
 const HeaderLinks: FC<HeaderLinksProps> = ({ children }) => {
   return (
-    <div className="header-links">
+    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
       {children}
       {HEADER_LINKS.map((item) => {
         if (item.element === null) {
@@ -25,19 +26,20 @@ const HeaderLinks: FC<HeaderLinksProps> = ({ children }) => {
           )
         }
       })}
-    </div>
+    </Box>
   )
 }
 
 const ExternalLink = ({ label, path, icon }: LinkType) => {
   const { t } = useTranslation()
-  function handleClick() {
-    window.open(path, '_blank')
-  }
   return (
-    <div className="header-link" aria-label={t(label)} title={t(label)} onClick={handleClick}>
+    <IconButton
+      size="small"
+      aria-label={t(label)}
+      title={t(label)}
+      onClick={() => window.open(path, '_blank')}>
       {icon}
-    </div>
+    </IconButton>
   )
 }
 
@@ -45,15 +47,9 @@ const InternalLink = ({ label, path, icon }: LinkType) => {
   const navigate = useNavigate()
   const { t } = useTranslation()
   return (
-    <div
-      aria-label={t(label)}
-      title={t(label)}
-      className="header-link"
-      onClick={() => {
-        navigate(path)
-      }}>
+    <IconButton size="small" aria-label={t(label)} title={t(label)} onClick={() => navigate(path)}>
       {icon}
-    </div>
+    </IconButton>
   )
 }
 
