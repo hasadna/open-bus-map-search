@@ -47,7 +47,11 @@ const InternalLink = ({ label, path, icon }: LinkType) => {
   const navigate = useNavigate()
   const { t } = useTranslation()
   return (
-    <IconButton size="small" aria-label={t(label)} title={t(label)} onClick={() => void navigate(path)}>
+    <IconButton
+      size="small"
+      aria-label={t(label)}
+      title={t(label)}
+      onClick={() => void navigate(path)}>
       {icon}
     </IconButton>
   )
