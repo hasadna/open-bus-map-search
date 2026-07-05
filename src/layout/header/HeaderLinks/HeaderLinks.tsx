@@ -37,7 +37,7 @@ const ExternalLink = ({ label, path, icon }: LinkType) => {
       size="small"
       aria-label={t(label)}
       title={t(label)}
-      onClick={() => window.open(path, '_blank')}>
+      onClick={() => void window.open(path, '_blank')}>
       {icon}
     </IconButton>
   )
@@ -47,7 +47,7 @@ const InternalLink = ({ label, path, icon }: LinkType) => {
   const navigate = useNavigate()
   const { t } = useTranslation()
   return (
-    <IconButton size="small" aria-label={t(label)} title={t(label)} onClick={() => navigate(path)}>
+    <IconButton size="small" aria-label={t(label)} title={t(label)} onClick={() => void navigate(path)}>
       {icon}
     </IconButton>
   )
