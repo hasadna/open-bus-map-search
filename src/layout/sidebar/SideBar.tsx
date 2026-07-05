@@ -6,11 +6,11 @@ import { useContext, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useNavigate } from 'react-router'
 import { PAGES } from 'src/routes'
-import { LayoutContextInterface, LayoutCtx } from '../LayoutContext'
-import { useTheme } from '../ThemeContext'
 import { LanguageToggleButton } from '../header/LanguageToggleButton'
 import { ShareButton } from '../header/ShareButton'
 import ToggleThemeButton from '../header/ToggleThemeButton'
+import { LayoutContextInterface, LayoutCtx } from '../LayoutContext'
+import { useTheme } from '../ThemeContext'
 import { Logo } from './logo'
 import Menu from './menu/Menu'
 import './sidebar.scss'
@@ -41,10 +41,20 @@ export default function SideBar() {
             <ShareButton />
             <LanguageToggleButton />
             <ToggleThemeButton toggleTheme={toggleTheme} isDarkTheme={isDarkTheme} />
-            <IconButton size="small" aria-label={t('report_a_bug_title')} title={t('report_a_bug_title')} onClick={() => navigate('/report-a-bug')}>
+            <IconButton
+              size="small"
+              aria-label={t('report_a_bug_title')}
+              title={t('report_a_bug_title')}
+              onClick={() => void navigate('/report-a-bug')}>
               <BugOutlined />
             </IconButton>
-            <IconButton size="small" aria-label={t('github_link')} title={t('github_link')} onClick={() => window.open('https://github.com/hasadna/open-bus-map-search', '_blank')}>
+            <IconButton
+              size="small"
+              aria-label={t('github_link')}
+              title={t('github_link')}
+              onClick={() =>
+                void window.open('https://github.com/hasadna/open-bus-map-search', '_blank')
+              }>
               <GithubOutlined />
             </IconButton>
           </div>
@@ -69,7 +79,11 @@ export default function SideBar() {
         <div className="sider-inner">
           <div className="sider-scroll">
             <Link to={`/${currentLanguage}${PAGES[0].path}`} replace>
-              {collapsed ? <CollapsedLogo /> : <Logo title={t('website_name')} dark={isDarkTheme} />}
+              {collapsed ? (
+                <CollapsedLogo />
+              ) : (
+                <Logo title={t('website_name')} dark={isDarkTheme} />
+              )}
             </Link>
             <div className="sidebar-divider" />
             <Menu collapsed={collapsed} />
@@ -83,10 +97,20 @@ export default function SideBar() {
                 <ShareButton />
                 <LanguageToggleButton />
                 <ToggleThemeButton toggleTheme={toggleTheme} isDarkTheme={isDarkTheme} />
-                <IconButton size="small" aria-label={t('report_a_bug_title')} title={t('report_a_bug_title')} onClick={() => navigate('/report-a-bug')}>
+                <IconButton
+                  size="small"
+                  aria-label={t('report_a_bug_title')}
+                  title={t('report_a_bug_title')}
+                  onClick={() => void navigate('/report-a-bug')}>
                   <BugOutlined />
                 </IconButton>
-                <IconButton size="small" aria-label={t('github_link')} title={t('github_link')} onClick={() => window.open('https://github.com/hasadna/open-bus-map-search', '_blank')}>
+                <IconButton
+                  size="small"
+                  aria-label={t('github_link')}
+                  title={t('github_link')}
+                  onClick={() =>
+                    void window.open('https://github.com/hasadna/open-bus-map-search', '_blank')
+                  }>
                   <GithubOutlined />
                 </IconButton>
               </>

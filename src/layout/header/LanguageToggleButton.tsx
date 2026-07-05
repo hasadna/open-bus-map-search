@@ -39,7 +39,7 @@ export const LanguageToggleButton = () => {
       }}
       trigger={['click']}
       placement="bottomRight">
-        <IconButton size="small" aria-label={t('change_language')} title={t('change_language')}>
+      <IconButton size="small" aria-label={t('change_language')} title={t('change_language')}>
         <GlobalOutlined />
       </IconButton>
     </Dropdown>
