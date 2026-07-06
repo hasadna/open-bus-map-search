@@ -23,11 +23,12 @@ test.describe('Base URL configuration tests', () => {
     // Verify that we found asset scripts to test
     expect(assetScripts.length).toBeGreaterThan(0)
 
-    // Verify that asset paths start with / (absolute) and not from current path
+    // Verify asset paths are absolute (from root), not relative to the nested route.
+    // (assetScripts is already filtered to startsWith('/'), so only the negative
+    // "not relative to currentPath" check carries meaning.)
     const currentPath = new URL(page.url()).pathname
     for (const src of assetScripts) {
       if (src) {
-        expect(src.startsWith('/')).toBeTruthy()
         expect(src.startsWith(currentPath + '/')).toBeFalsy()
       }
     }
@@ -67,15 +68,9 @@ test.describe('Base URL configuration tests', () => {
       (src) => src && src.startsWith('/') && !src.startsWith('http'),
     )
 
-    // Verify that we found asset scripts to test
+    // Verify that we found asset scripts loaded from an absolute (root) path
+    // on this top-level route.
     expect(assetScripts.length).toBeGreaterThan(0)
-
-    // Verify that asset paths start with / (absolute)
-    for (const src of assetScripts) {
-      if (src) {
-        expect(src.startsWith('/')).toBeTruthy()
-      }
-    }
   })
 
   test('CSS assets should load from root path on nested routes', async ({ page }) => {
@@ -96,11 +91,11 @@ test.describe('Base URL configuration tests', () => {
 
     // If there are asset links, verify their paths
     if (assetLinks.length > 0) {
-      // Verify that asset paths start with / (absolute) and not from current path
+      // Verify asset paths are absolute (from root), not relative to the nested
+      // route (assetLinks is already filtered to startsWith('/')).
       const currentPath = new URL(page.url()).pathname
       for (const href of assetLinks) {
         if (href) {
-          expect(href.startsWith('/')).toBeTruthy()
           expect(href.startsWith(currentPath + '/')).toBeFalsy()
         }
       }

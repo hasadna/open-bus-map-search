@@ -32,8 +32,8 @@ test.describe('Line Profile', () => {
     expect(internalScripts.length).toBeGreaterThan(0)
 
     for (const src of internalScripts) {
-      // asset paths must be absolute, not relative to /profile/*
-      expect(src!.startsWith('/')).toBeTruthy()
+      // asset paths must be absolute, not relative to /profile/* (internalScripts
+      // is already filtered to startsWith('/'), so only this check carries meaning)
       expect(src!.startsWith('/profile/')).toBeFalsy()
     }
   })

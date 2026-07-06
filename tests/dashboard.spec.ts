@@ -17,14 +17,10 @@ test.describe('dashboard tests', () => {
     await waitForSkeletonsToHide(page)
   })
 
-  test('dark mode use localstorage', async ({ page }) => {
-    await page.getByLabel('עבור למצב כהה').click()
-    await page.reload()
-    await page.getByLabel('עבור למצב בהיר').click()
-    await page.reload()
-    await page.getByLabel('עבור למצב כהה').click()
-    await page.getByLabel('עבור למצב בהיר').click()
-  })
+  // NOTE: the former zero-assertion 'dark mode use localstorage' test was removed
+  // here — theme persistence is being covered properly on the lightweight Home
+  // page (PR #1698's tests/theme.spec.ts), instead of paying the 7.9 MB dashboard
+  // HAR to assert nothing.
 
   test('dashboard charts contain information', async ({ page }) => {
     await expect(page.getByText('686 | קווים').first()).toBeVisible()
@@ -41,7 +37,13 @@ test.describe('dashboard tests', () => {
     await fillDateField(page, 'סיום', '02/6/2024')
     await page.getByLabel('חברה מפעילה').click()
     await page.getByRole('option', { name: 'דן', exact: true }).click()
+
+    // The group-by toggle swaps the chart widget's title between its hour and day
+    // variants (DayTimeChart: title = dashboard_page_graph_title_{hour|day}). Assert
+    // that observable effect — it's driven by UI state, so no fixture magic numbers.
     await page.getByText('קיבוץ לפי שעה').click()
+    await expect(page.getByText('אחוזי יציאה מסך הנסיעות לפי שעה').first()).toBeVisible()
     await page.getByText('קיבוץ לפי יום').click()
+    await expect(page.getByText('אחוזי יציאה מסך הנסיעות לפי יום').first()).toBeVisible()
   })
 })
