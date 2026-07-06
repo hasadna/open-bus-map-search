@@ -1,9 +1,7 @@
 name: Code coverage
 
-# Flow 2 of the consolidated e2e runs: run the full suite ONCE, fully offline
-# (--network none) AND istanbul-instrumented (VITE_COVERAGE), then report to
-# Coveralls. This single job replaces the old open-network coverage run and, by
-# running under --network none, also absorbs the standalone offline-tests job.
+# Runs the full test suite offline (--network none) with istanbul coverage
+# (VITE_COVERAGE) and reports to Coveralls.
 
 on:
   push:

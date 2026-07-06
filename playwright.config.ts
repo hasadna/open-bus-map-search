@@ -28,9 +28,9 @@ export default defineConfig<EyesFixture>({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`.
-       CI flow 1 sets PW_BASE_URL=http://localhost — the prod nginx image reached
-       through a shared network namespace (Chrome never HTTPS-upgrades `localhost`).
-       Locally and in the coverage flow it's the Vite dev server (webServer below). */
+       In CI, PW_BASE_URL points Playwright at the prod nginx image via a shared
+       network namespace; localhost (not a hostname) avoids Chrome's HTTPS upgrade.
+       Otherwise it's the local Vite dev server started by webServer below. */
     baseURL: process.env.PW_BASE_URL || 'http://localhost:3000',
     locale: 'he-IL',
 
@@ -69,7 +69,7 @@ export default defineConfig<EyesFixture>({
   ],
 
   /* Run your local dev server before starting the tests — unless PW_BASE_URL points
-     at an already-running external server (CI flow 1's nginx container), in which
+     at an already-running external server (e.g. the nginx container in CI), in which
      case Playwright must not start (or wait on) a server of its own. */
   webServer: process.env.PW_BASE_URL
     ? undefined

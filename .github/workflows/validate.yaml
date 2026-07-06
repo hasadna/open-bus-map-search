@@ -168,17 +168,12 @@ jobs:
     name: Application & Playwright Tests
     runs-on: ubuntu-latest
     needs: [build, build-outside-docker]
-    # Hard-offline e2e against the production nginx image, enforced by network
-    # topology rather than an /etc/hosts blocklist:
-    #   * the prod image runs on an --internal (no-egress) Docker network;
-    #   * the Playwright container JOINS the app's network namespace
-    #     (--network container:app), so it reaches nginx at http://localhost/.
-    # Chrome never HTTPS-upgrades `localhost` — a bare hostname like http://app/
-    # would be silently upgraded to https://app/ and fail on :443 where nginx
-    # isn't listening. Sharing a no-egress netns means the tests genuinely cannot
-    # reach the internet: any un-mocked external call fails hard (the same
-    # guarantee as flow 2's `--network none`), but exercised against the real
-    # nginx-served production build. No block-network step is needed here.
+    # The Playwright container shares the app container's network namespace
+    # (--network container:app on an --internal, no-egress network), so it reaches
+    # nginx at http://localhost/ and genuinely cannot reach the internet — any
+    # un-mocked external call fails hard, run against the real production build.
+    # Use localhost, not http://app/: Chrome may HTTPS-upgrade a bare hostname to
+    # :443 where nginx isn't listening; localhost is exempt from the upgrade.
     steps:
       - uses: actions/checkout@v6
         with:
