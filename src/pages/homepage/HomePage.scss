@@ -92,12 +92,10 @@
   font-size: 0.875rem;
   font-weight: 600;
   text-align: center;
-  max-width: 120px;
+  width: 9rem;
+  min-height: 2.6em;
   color: #333;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  overflow-wrap: anywhere;
   line-height: 1.3;
   transition: color 0.2s ease;
 }
