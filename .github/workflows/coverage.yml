@@ -1,6 +1,6 @@
 name: Code coverage
 
-# Runs the full test suite offline (--network none) with istanbul coverage
+# Runs the Playwright e2e suite offline (--network none) with istanbul coverage
 # (VITE_COVERAGE) and reports to Coveralls.
 
 on:
@@ -24,7 +24,7 @@ jobs:
       - uses: actions/checkout@v6
       - name: Build offline test image
         run: docker build -t open-bus-offline-test -f scripts/Dockerfile.offline-test .
-      - name: Run tests offline, with coverage
+      - name: Run e2e tests offline, with coverage
         # Vite dev runs inside the container on :3000 (Playwright's webServer),
         # instrumented by VITE_COVERAGE; the Playwright collector writes raw
         # istanbul data to /app/.nyc_output, then nyc emits coverage/lcov.info.
@@ -38,7 +38,7 @@ jobs:
             -e VITE_COVERAGE=true \
             -v "$PWD/coverage:/app/coverage" \
             open-bus-offline-test \
-            sh -c "npm test && nyc report --reporter=lcovonly"
+            sh -c "npx playwright test --grep-invert visual && nyc report --reporter=lcovonly"
       - name: Normalize coverage paths to repo-relative
         # lcov is produced with in-container paths (/app/src/...); strip the /app
         # prefix so Coveralls matches them against the repo tree.
