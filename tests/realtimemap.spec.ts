@@ -1,4 +1,4 @@
-import { expect, getPastDate, harOptions, setupTest, test, visitPage } from './utils'
+import { expect, getPastDate, harOptions, setupTest, test } from './utils'
 
 const TOOLTIP_CONTENT_ITEMS = [
   'שם חברה מפעילה:',
@@ -15,7 +15,8 @@ test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
   await setupTest(page)
   await page.clock.setSystemTime(getPastDate())
   await advancedRouteFromHAR('tests/HAR/realtimemap.har', harOptions)
-  await visitPage(page, 'time_based_map_page_title')
+  await page.goto('/map?datetime=2023-03-14T17:00')
+  await page.locator('.preloader').waitFor({ state: 'hidden' })
 })
 
 test('tooltip appears after clicking on map point', async ({ page }) => {

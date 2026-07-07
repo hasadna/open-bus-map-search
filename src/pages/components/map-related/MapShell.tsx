@@ -16,9 +16,11 @@ import { useTheme } from 'src/layout/ThemeContext'
  * so every map page places and themes its legend the same way — pages provide
  * only the legend content.
  */
-type MapShellProps = PropsWithChildren<MapContainerProps & { legend?: ReactNode }>
+type MapShellProps = PropsWithChildren<
+  MapContainerProps & { controls?: ReactNode; legend?: ReactNode }
+>
 
-export function MapShell({ children, legend, ...mapProps }: MapShellProps) {
+export function MapShell({ children, controls, legend, ...mapProps }: MapShellProps) {
   const [isExpanded, setIsExpanded] = useState<boolean>(false)
   const toggleExpanded = useCallback(() => setIsExpanded((expanded) => !expanded), [])
 
@@ -45,6 +47,7 @@ export function MapShell({ children, legend, ...mapProps }: MapShellProps) {
           <OpenInFullRounded fontSize="large" />
         )}
       </IconButton>
+      {controls && <div className="map-floating-controls">{controls}</div>}
       {legend && <div className="map-legend">{legend}</div>}
       <MapContainer {...mapProps} zoomControl={false} attributionControl={false}>
         <ZoomControl position={isRtl ? 'topleft' : 'topright'} />

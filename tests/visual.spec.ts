@@ -88,7 +88,8 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
 
     test(`Map Page Should Look Good [${mode}]`, async ({ page, advancedRouteFromHAR, eyes }) => {
       await advancedRouteFromHAR('tests/HAR/realtimemap.har', harOptions)
-      await visitPage(page, 'time_based_map_page_title')
+      await page.goto('/map?datetime=2023-03-14T17:00')
+      await page.locator('.preloader').waitFor({ state: 'hidden' })
       await page.locator('.leaflet-marker-icon').first().waitFor({ state: 'visible' })
       await page.locator('.ant-spin-dot').first().waitFor({ state: 'hidden' })
       await eyes.check('map page')
