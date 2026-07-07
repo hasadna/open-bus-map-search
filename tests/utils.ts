@@ -56,6 +56,18 @@ export function getPastDate() {
   return new Date('2024-02-12T15:00:00+00:00')
 }
 
+// An asset path is "internal" (one Vite emits for us) when it is NOT an external
+// URL — i.e. not 'http://…', 'https://…', or protocol-relative '//host/…':
+//   ^          anchored at the start
+//   (https?:)? optional 'http:' or 'https:' scheme
+//   \/\/       the two slashes (protocol-relative URLs have these with no scheme)
+// The base-URL specs filter with this to drop third-party <script>/<link> tags
+// (CDNs, analytics) so their absolute-path assertion judges only our own assets.
+// Written as a type guard so `array.filter(isInternalAssetPath)` narrows
+// (string | null)[] → string[], removing null/'' and the `!` at call sites.
+export const isInternalAssetPath = (path: string | null): path is string =>
+  !!path && !/^(https?:)?\/\//.test(path)
+
 const urlMatcher: Matcher = customMatcher({
   urlComparator(a, b) {
     const paramsToIgnore = new Set(['t', 'limit', 'date_from', 'date_to'])
