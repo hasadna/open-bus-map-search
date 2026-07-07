@@ -26,9 +26,7 @@ test.describe('Line Profile', () => {
       .locator('script[src]')
       .evaluateAll((scripts) => scripts.map((s) => s.getAttribute('src')))
 
-    const internalScripts = scriptSrcs.filter(
-      (src) => src && src.startsWith('/') && !src.startsWith('http'),
-    )
+    const internalScripts = scriptSrcs.filter((src) => src && src.startsWith('/'))
     expect(internalScripts.length).toBeGreaterThan(0)
 
     for (const src of internalScripts) {

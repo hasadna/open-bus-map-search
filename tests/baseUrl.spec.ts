@@ -16,9 +16,7 @@ test.describe('Base URL configuration tests', () => {
     const scriptSources = await Promise.all(scriptTags.map((tag) => tag.getAttribute('src')))
 
     // Filter for internal scripts with absolute paths
-    const assetScripts = scriptSources.filter(
-      (src) => src && src.startsWith('/') && !src.startsWith('http'),
-    )
+    const assetScripts = scriptSources.filter((src) => src && src.startsWith('/'))
 
     // Verify that we found asset scripts to test
     expect(assetScripts.length).toBeGreaterThan(0)
@@ -64,13 +62,19 @@ test.describe('Base URL configuration tests', () => {
     const scriptSources = await Promise.all(scriptTags.map((tag) => tag.getAttribute('src')))
 
     // Filter for internal scripts with absolute paths
-    const assetScripts = scriptSources.filter(
-      (src) => src && src.startsWith('/') && !src.startsWith('http'),
-    )
+    const assetScripts = scriptSources.filter((src) => src && src.startsWith('/'))
 
-    // Verify that we found asset scripts loaded from an absolute (root) path
-    // on this top-level route.
+    // Verify that we found asset scripts to check.
     expect(assetScripts.length).toBeGreaterThan(0)
+
+    // Verify asset paths are absolute (from root), not nested under the route path
+    // — the same base-URL guard as the nested-route test, applied on a top-level route.
+    const currentPath = new URL(page.url()).pathname
+    for (const src of assetScripts) {
+      if (src) {
+        expect(src.startsWith(currentPath + '/')).toBeFalsy()
+      }
+    }
   })
 
   test('CSS assets should load from root path on nested routes', async ({ page }) => {
@@ -85,9 +89,7 @@ test.describe('Base URL configuration tests', () => {
     const linkHrefs = await Promise.all(linkTags.map((tag) => tag.getAttribute('href')))
 
     // Filter for internal links with absolute paths
-    const assetLinks = linkHrefs.filter(
-      (href) => href && href.startsWith('/') && !href.startsWith('http'),
-    )
+    const assetLinks = linkHrefs.filter((href) => href && href.startsWith('/'))
 
     // If there are asset links, verify their paths
     if (assetLinks.length > 0) {
