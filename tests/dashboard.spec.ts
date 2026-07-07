@@ -17,11 +17,6 @@ test.describe('dashboard tests', () => {
     await waitForSkeletonsToHide(page)
   })
 
-  // NOTE: the former zero-assertion 'dark mode use localstorage' test was removed
-  // here — theme persistence is being covered properly on the lightweight Home
-  // page (PR #1698's tests/theme.spec.ts), instead of paying the 7.9 MB dashboard
-  // HAR to assert nothing.
-
   test('dashboard charts contain information', async ({ page }) => {
     await expect(page.getByText('686 | קווים').first()).toBeVisible()
     await expect(page.getByText('מועצה אזורית גולן').first()).toBeVisible()
