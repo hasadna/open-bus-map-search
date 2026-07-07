@@ -102,25 +102,22 @@ export default [
       'react/react-in-jsx-scope': 'off',
     },
   },
-  // Playwright hygiene for e2e specs. Scoped to the high-value rules that catch
-  // no-op / broken assertions (a whole class of silently-passing tests the suite
-  // had accumulated); the full recommended set is a deliberate future tightening.
+  // Playwright hygiene for e2e specs — the high-value rules that catch no-op /
+  // broken assertions, not the full recommended set.
   {
     files: ['tests/**/*.{ts,tsx}'],
     plugins: { playwright: eslintPluginPlaywright },
     rules: {
-      // A web-first assertion left un-awaited never fails the test.
+      // Un-awaited web-first assertions never fail the test.
       'playwright/missing-playwright-await': 'error',
-      // expect() with no matcher, or expect outside a test, asserts nothing.
+      // Matcher-less or out-of-test expect() asserts nothing.
       'playwright/valid-expect': 'error',
       'playwright/no-standalone-expect': 'error',
-      // Ban zero-assertion tests. assertFunctionNames whitelists helpers that
-      // wrap the expect() (so a test delegating its check to one still counts).
+      // Ban zero-assertion tests; assertFunctionNames whitelists expect()-wrapping helpers.
       'playwright/expect-expect': ['error', { assertFunctionNames: ['verifyDateFromParameter'] }],
     },
   },
-  // These two files have no expect() by design — Applitools screenshots and the
-  // HAR recorder respectively — so they are exempt from expect-expect.
+  // No expect() by design: Applitools screenshots / HAR recorder.
   {
     files: ['tests/visual.spec.ts', 'tests/recordHAR.spec.ts'],
     rules: { 'playwright/expect-expect': 'off' },

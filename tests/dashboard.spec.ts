@@ -33,9 +33,7 @@ test.describe('dashboard tests', () => {
     await page.getByLabel('חברה מפעילה').click()
     await page.getByRole('option', { name: 'דן', exact: true }).click()
 
-    // The group-by toggle swaps the chart widget's title between its hour and day
-    // variants (DayTimeChart: title = dashboard_page_graph_title_{hour|day}). Assert
-    // that observable effect — it's driven by UI state, so no fixture magic numbers.
+    // The group-by toggle swaps the chart title between its hour and day variants.
     await page.getByText('קיבוץ לפי שעה').click()
     await expect(page.getByText('אחוזי יציאה מסך הנסיעות לפי שעה').first()).toBeVisible()
     await page.getByText('קיבוץ לפי יום').click()
