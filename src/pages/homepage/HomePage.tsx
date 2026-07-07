@@ -44,7 +44,7 @@ const PageLink = ({
 
   return (
     <Tooltip title={tooltipTitle} placement="top">
-      <NavLink to={to} className="page-link" style={{ textDecoration: 'none', color: 'inherit' }}>
+      <NavLink to={to} className="page-link">
         {content}
       </NavLink>
     </Tooltip>
