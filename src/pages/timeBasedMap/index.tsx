@@ -26,7 +26,7 @@ import { ReactNode, useCallback, useContext, useEffect, useMemo, useState } from
 import { useTranslation } from 'react-i18next'
 import { Marker, Popup, TileLayer, useMap } from 'react-leaflet'
 import MarkerClusterGroup from 'react-leaflet-markercluster'
-import dayjs, { ISRAEL_TIMEZONE, parseIsraelLocalDatetime, toIsraelTimezone } from 'src/dayjs'
+import dayjs, { ISRAEL_TIMEZONE, parseIsraelLocalDatetime } from 'src/dayjs'
 import { useAgencyList } from 'src/hooks/useAgencyList'
 import useVehicleLocations from 'src/hooks/useVehicleLocations'
 import { InitialUrlParamsContext, PageShareParamsContext } from 'src/model/routeContext'
@@ -40,7 +40,7 @@ import { busIcon, busIconPath } from '../components/utils/BusIcon'
 import createClusterCustomIcon from '../components/utils/customCluster/customCluster'
 import InfoYoutubeModal from '../components/YoutubeModal'
 
-const DEFAULT_TIME = () => toIsraelTimezone(dayjs())
+const DEFAULT_TIME = dayjs('2023-03-14T15:00:00Z')
 const DEFAULT_POSITION: Point = {
   loc: [32.3057988, 34.85478613],
   color: 0,
@@ -90,7 +90,7 @@ export default function TimeBasedMapPage() {
   const [from, setFrom] = useState(
     () =>
       (initialUrlParams.datetime && parseIsraelLocalDatetime(initialUrlParams.datetime)) ||
-      DEFAULT_TIME(),
+      DEFAULT_TIME,
   )
   const to = useMemo(() => dayjs(from).add(1, 'minutes'), [from])
   const { locations, isLoading } = useVehicleLocations({ from, to })

@@ -115,7 +115,9 @@ test('tooltip appears after clicking on map point', async ({ page, advancedRoute
   })
 })
 
-test('uses current Israel time by default when no datetime is provided', async ({ page }) => {
+test('uses the stable Pi Day 2023 snapshot by default when no datetime is provided', async ({
+  page,
+}) => {
   await setupTest(page)
   await page.route(/siri_vehicle_locations\/list/, (route) =>
     route.fulfill({ status: 200, contentType: 'application/json', body: '[]' }),
@@ -128,8 +130,8 @@ test('uses current Israel time by default when no datetime is provided', async (
   const request = await requestPromise
   const params = new URL(request.url()).searchParams
 
-  expect(params.get('recorded_at_time_from')).toBe('2024-02-12T15:00:00.000Z')
-  expect(params.get('recorded_at_time_to')).toBe('2024-02-12T15:01:00.000Z')
+  expect(params.get('recorded_at_time_from')).toBe('2023-03-14T15:00:00.000Z')
+  expect(params.get('recorded_at_time_to')).toBe('2023-03-14T15:01:00.000Z')
 })
 
 test('filters map locations by service type and operator', async ({ page }) => {
