@@ -11,15 +11,20 @@ const TOOLTIP_CONTENT_ITEMS = [
   'נ.צ.:',
 ]
 
-test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
+async function setupRealtimeMapFixture(
+  page: Parameters<typeof setupTest>[0],
+  advancedRouteFromHAR: (har: string, options: typeof harOptions) => Promise<void>,
+) {
   await setupTest(page)
   await page.clock.setSystemTime(getPastDate())
   await advancedRouteFromHAR('tests/HAR/realtimemap.har', harOptions)
   await page.goto('/map?datetime=2023-03-14T17:00')
   await page.locator('.preloader').waitFor({ state: 'hidden' })
-})
+}
 
-test('tooltip appears after clicking on map point', async ({ page }) => {
+test('tooltip appears after clicking on map point', async ({ page, advancedRouteFromHAR }) => {
+  await setupRealtimeMapFixture(page, advancedRouteFromHAR)
+
   await test.step('Click on a bus button', async () => {
     const button = page.getByRole('button', { name: 'אגד אגד' })
     await button.click()
@@ -47,6 +52,7 @@ test('tooltip appears after clicking on map point', async ({ page }) => {
 })
 
 test('uses current Israel time by default when no datetime is provided', async ({ page }) => {
+  await setupTest(page)
   await page.route(/siri_vehicle_locations\/list/, (route) =>
     route.fulfill({ status: 200, contentType: 'application/json', body: '[]' }),
   )
