@@ -277,7 +277,7 @@ main > div,
     background: $control-bg;
   }
 
-  @media (max-width: 599.95px) {
+  @media (width <= 599.95px) {
     .map-filter-row {
       flex-direction: column;
       align-items: flex-start;
@@ -594,7 +594,7 @@ main > div,
   text-wrap: pretty;
 }
 
-@media (max-width: 599.95px) {
+@media (width <= 599.95px) {
   .map-speed-summary {
     column-gap: 24px;
   }

@@ -230,6 +230,11 @@ export default function TimeBasedMapPage() {
     setMinSpeed(SPEED_FILTER_MIN)
   }, [])
 
+  const handleSpeedChange = useCallback((_: Event, value: number | number[]) => {
+    const nextValue = Array.isArray(value) ? value[0] : value
+    setMinSpeed(nextValue)
+  }, [])
+
   const speedFilterEnabled = minSpeed > SPEED_FILTER_MIN
 
   const activeFilterCount =
@@ -439,7 +444,7 @@ export default function TimeBasedMapPage() {
                     step={5}
                     value={minSpeed}
                     valueLabelDisplay="auto"
-                    onChange={(_, value) => setMinSpeed(Array.isArray(value) ? value[0] : value)}
+                    onChange={handleSpeedChange}
                   />
                   <div className="map-speed-range">
                     <span>{SPEED_FILTER_MIN}</span>
@@ -637,6 +642,8 @@ function MapFilterControls({
       : t('map_service_type')
   const showFilterTags = !isCompact
   const showCompactFiltersButton = isCompact || allOptionalFiltersActive
+  const mobileDateLabel = from.format('DD/MM/YYYY')
+  const mobileTimeLabel = from.format('HH:mm')
 
   return (
     <div className="map-control-stack">
@@ -644,10 +651,10 @@ function MapFilterControls({
         {isCompact ? (
           <div className="map-datetime-split">
             <button type="button" className="map-control-badge" onClick={onOpenDate}>
-              {from.format('DD/MM/YYYY')}
+              {mobileDateLabel}
             </button>
             <button type="button" className="map-control-badge" onClick={onOpenTime}>
-              {from.format('HH:mm')}
+              {mobileTimeLabel}
             </button>
           </div>
         ) : (
