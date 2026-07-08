@@ -1,4 +1,4 @@
-import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
+import { Alert, CircularProgress, Grid } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
 import { useContext, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -22,6 +22,7 @@ import Widget from 'src/shared/Widget'
 import { DateSelector } from '../components/DateSelector'
 import { NotFound } from '../components/NotFound'
 import { PageContainer } from '../components/PageContainer'
+import { PageHeader, PageHeaderSubtitle, PageHeaderTitle } from '../components/pageHeader'
 import { TimeSelector } from '../components/TimeSelector'
 
 const TimelinePage = () => {
@@ -102,12 +103,10 @@ const TimelinePage = () => {
 
   return (
     <PageContainer>
-      <Typography variant="h4" gutterBottom className="page-title">
-        {t('timeline_page_title')}
-      </Typography>
-      <Alert severity="info" variant="outlined" icon={false}>
-        {t('timeline_page_description')}
-      </Alert>
+      <PageHeader>
+        <PageHeaderTitle>{t('timeline_page_title')}</PageHeaderTitle>
+        <PageHeaderSubtitle>{t('timeline_page_description')}</PageHeaderSubtitle>
+      </PageHeader>
       {hitsQuery.data &&
         hitsQuery.data.gtfsTime.length > 0 &&
         hitsQuery.data.siriTime.length === 0 && (

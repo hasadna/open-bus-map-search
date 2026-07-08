@@ -1,4 +1,4 @@
-import { Grid, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
+import { Grid, ToggleButton, ToggleButtonGroup } from '@mui/material'
 import { useContext, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
@@ -7,6 +7,7 @@ import { GlobalSearchContext } from 'src/model/globalState'
 import { DateSelector } from '../components/DateSelector'
 import OperatorSelector from '../components/OperatorSelector'
 import { PageContainer } from '../components/PageContainer'
+import { PageHeader, PageHeaderTitle } from '../components/pageHeader'
 import WorstLinesChart from '../dashboard/WorstLinesChart/WorstLinesChart'
 import { OperatorGaps } from './OperatorGaps'
 import { OperatorInfo } from './OperatorInfo'
@@ -38,7 +39,9 @@ const OperatorPage = () => {
 
   return (
     <PageContainer>
-      <Typography variant="h4">{t('operator_title')}</Typography>
+      <PageHeader>
+        <PageHeaderTitle>{t('operator_title')}</PageHeaderTitle>
+      </PageHeader>
       <Grid container spacing={2}>
         <Grid size={{ sm: 4, xs: 12 }}>
           <OperatorSelector

@@ -21,11 +21,8 @@ test('An instruction video for Report a bug', async ({ page }) => {
   expect(videoFrame).toBeVisible()
   await expect(videoFrame).toHaveAttribute('src', VIDEO_SRC)
   await videoFrame.contentFrame().getByLabel('Play', { exact: true }).click()
-  // Clicking inside the iframe triggers Ant Design's focus-trap, which briefly
-  // re-renders the modal and replaces DOM nodes. Wait for the zoom animation to
-  // settle before clicking Close, otherwise the modal-wrap intercepts the event.
-  await page.waitForFunction(() => !document.querySelector('[class*="zoom-appear-active"]'))
-  await page.getByLabel('Close', { exact: true }).click()
+  await page.locator('.MuiBackdrop-root').click({ position: { x: 5, y: 5 } })
+  await expect(videoFrame).toBeHidden()
   await page.getByLabel('לפתוח סרטון על העמוד הזה').press('ControlOrMeta+c')
 })
 

@@ -1,6 +1,6 @@
-import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
+import { CircularProgress, Grid } from '@mui/material'
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
-import { useTranslation } from 'react-i18next'
+import { Trans, useTranslation } from 'react-i18next'
 import { Marker, Popup, TileLayer, useMap } from 'react-leaflet'
 import MarkerClusterGroup from 'react-leaflet-markercluster'
 import dayjs, { ISRAEL_TIMEZONE, parseIsraelLocalDatetime } from 'src/dayjs'
@@ -12,10 +12,15 @@ import { BusToolTip } from 'src/pages/components/map-related/MapLayers/BusToolTi
 import { MapShell } from 'src/pages/components/map-related/MapShell'
 import { DateSelector } from '../components/DateSelector'
 import { PageContainer } from '../components/PageContainer'
+import {
+  PageHeader,
+  PageHeaderSubtitle,
+  PageHeaderTitle,
+  PageHeaderVideoTrigger,
+} from '../components/pageHeader'
 import { TimeSelector } from '../components/TimeSelector'
 import { busIcon, busIconPath } from '../components/utils/BusIcon'
 import createClusterCustomIcon from '../components/utils/customCluster/customCluster'
-import InfoYoutubeModal from '../components/YoutubeModal'
 
 const DEFAULT_TIME = dayjs('2023-03-14T15:00:00Z')
 const DEFAULT_POSITION: Point = {
@@ -49,19 +54,24 @@ export default function TimeBasedMapPage() {
 
   return (
     <PageContainer className="map-container">
-      <Typography variant="h4" className="page-title">
-        {t('time_based_map_page_title')}
-        <InfoYoutubeModal
-          label={t('open_video_about_this_page')}
-          title={t('youtube_modal_info_title')}
-          videoUrl="https://www.youtube-nocookie.com/embed/bXg50_j_hTA?si=t8PiTrTA1budRZg-&amp;start=150"
-        />
-      </Typography>
-      <Grid>
-        <Alert severity="info" variant="outlined" icon={false}>
-          {t('time_based_map_page_description')}
-        </Alert>
-      </Grid>
+      <PageHeader>
+        <PageHeaderTitle>{t('time_based_map_page_title')}</PageHeaderTitle>
+        <PageHeaderSubtitle>
+          {t('time_based_map_page_description')}{' '}
+          <Trans
+            i18nKey="page_header_video_guide_inline"
+            components={{
+              video: (
+                <PageHeaderVideoTrigger
+                  title={t('youtube_modal_info_title')}
+                  videoUrl="https://www.youtube-nocookie.com/embed/bXg50_j_hTA?si=t8PiTrTA1budRZg-&start=150">
+                  {null}
+                </PageHeaderVideoTrigger>
+              ),
+            }}
+          />
+        </PageHeaderSubtitle>
+      </PageHeader>
       <Grid container spacing={2}>
         {/* from date */}
         <Grid size={{ md: 4, sm: 6, xs: 12 }}>

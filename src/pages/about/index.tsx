@@ -1,7 +1,8 @@
-import { Stack, Typography } from '@mui/material'
+import { Stack } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
 import { Trans, useTranslation } from 'react-i18next'
 import styled from 'styled-components'
+import { PageHeader, PageHeaderTitle } from 'src/pages/components/pageHeader'
 import Widget from 'src/shared/Widget'
 import SlackIcon from '../../resources/slack-icon.svg'
 import { VersionInfo } from './version/VersionInfo'
@@ -13,9 +14,9 @@ const About = () => {
   return (
     <AboutStyle>
       <Stack spacing={4} sx={{ marginBottom: 3 }}>
-        <Typography variant="h4" gutterBottom className="page-title">
-          {t(`${pageName}.title`)}
-        </Typography>
+        <PageHeader>
+          <PageHeaderTitle>{t(`${pageName}.title`)}</PageHeaderTitle>
+        </PageHeader>
         <WhatIsWebsite />
         <YoutubePlaylist />
         <DiscoveredMistake />
@@ -51,7 +52,7 @@ const YoutubePlaylist = () => {
       width="560"
       height="315"
       style={{ border: 'none' }}
-      src="https://www.youtube.com/embed/videoseries?si=oTULlxq8Is188hPu&amp;list=PL6Rh06rT7uiX1AQE-lm55hy-seL3idx3T"
+      src="https://www.youtube.com/embed/videoseries?si=oTULlxq8Is188hPu&list=PL6Rh06rT7uiX1AQE-lm55hy-seL3idx3T"
       title={t('aboutPage.youtubePlayerTitle')}
       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
       referrerPolicy="strict-origin-when-cross-origin"

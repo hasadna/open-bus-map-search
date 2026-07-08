@@ -1,6 +1,6 @@
-import { CircularProgress, Grid, Tooltip, Typography } from '@mui/material'
+import { CircularProgress, Grid, Tooltip } from '@mui/material'
 import { useCallback, useContext, useRef, useState } from 'react'
-import { useTranslation } from 'react-i18next'
+import { Trans, useTranslation } from 'react-i18next'
 import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone } from 'src/dayjs'
 import { useSingleLineData } from 'src/hooks/useSingleLineData'
 import { GlobalSearchContext } from 'src/model/globalState'
@@ -13,7 +13,12 @@ import type { FocusTarget } from '../components/map-related/map-types'
 import { MapWithLocationsAndPath } from '../components/map-related/MapWithLocationsAndPath'
 import { NotFound } from '../components/NotFound'
 import { PageContainer } from '../components/PageContainer'
-import InfoYoutubeModal from '../components/YoutubeModal'
+import {
+  PageHeader,
+  PageHeaderSubtitle,
+  PageHeaderTitle,
+  PageHeaderVideoTrigger,
+} from '../components/pageHeader'
 import { GpsCoverageStrip } from './GpsCoverageStrip'
 
 const SingleLineMapPage = () => {
@@ -81,14 +86,24 @@ const SingleLineMapPage = () => {
 
   return (
     <PageContainer className="map-container">
-      <Typography className="page-title" variant="h4">
-        {t('singleline_map_page_title')}
-        <InfoYoutubeModal
-          label={t('open_video_about_this_page')}
-          title={t('time_based_map_page_description')}
-          videoUrl="https://www.youtube-nocookie.com/embed/bXg50_j_hTA?si=inyvqDylStvgNRA6&amp;start=93"
-        />
-      </Typography>
+      <PageHeader>
+        <PageHeaderTitle>{t('singleline_map_page_title')}</PageHeaderTitle>
+        <PageHeaderSubtitle>
+          {t('singleline_map_page_description')}{' '}
+          <Trans
+            i18nKey="page_header_video_guide_inline"
+            components={{
+              video: (
+                <PageHeaderVideoTrigger
+                  title={t('youtube_modal_info_title')}
+                  videoUrl="https://www.youtube-nocookie.com/embed/bXg50_j_hTA?si=inyvqDylStvgNRA6&start=93">
+                  {null}
+                </PageHeaderVideoTrigger>
+              ),
+            }}
+          />
+        </PageHeaderSubtitle>
+      </PageHeader>
       <Grid container spacing={2}>
         <Grid container spacing={2} size={{ xs: 12 }}>
           {/* choose date*/}

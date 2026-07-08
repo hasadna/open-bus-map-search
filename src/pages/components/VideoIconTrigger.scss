@@ -1,0 +1,9 @@
+.videoIconTrigger {
+  margin: auto 12px;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid currentcolor;
+    outline-offset: 2px;
+  }
+}

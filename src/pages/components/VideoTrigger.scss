@@ -1,0 +1,60 @@
+.videoTriggerModal {
+  display: grid;
+  place-items: center;
+  padding: 12px;
+}
+
+.videoTriggerModalSurface {
+  position: relative;
+  display: grid;
+  gap: 10px;
+  width: min(1120px, 80vw);
+  outline: none;
+}
+
+.videoTriggerFrameBox {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 16 / 9;
+
+  iframe {
+    display: block;
+    grid-area: 1 / 1;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    border-radius: 4px;
+    box-shadow:
+      0 18px 52px rgb(0 0 0 / 36%),
+      0 0 0 1px rgb(255 255 255 / 10%);
+  }
+}
+
+.videoTriggerFrameBox iframe {
+  opacity: 0;
+  transition-property: opacity;
+  transition-duration: 120ms;
+  transition-timing-function: ease-out;
+
+  &[data-loaded='true'] {
+    opacity: 1;
+  }
+}
+
+.videoTriggerLoader {
+  grid-area: 1 / 1;
+}
+
+.videoTriggerModalHint {
+  margin: 0 !important;
+  color: rgb(255 255 255 / 88%);
+  text-align: center;
+  text-wrap: pretty;
+}
+
+@media (width < 600px) {
+  .videoTriggerModalSurface {
+    width: calc(100vw - 16px);
+  }
+}

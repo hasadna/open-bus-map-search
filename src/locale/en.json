@@ -402,6 +402,10 @@
   "plannedRoute": "Planned Route",
   "actualRoute": "Actual Route",
   "youtube_modal_info_title": "Video tutorial (Hebrew)",
+  "close_video": "Close video",
+  "loading_video": "Loading video",
+  "video_close_hint": "Click outside or press Esc to close the video.",
+  "page_header_video_guide_inline": ". Watch <video>the guide video</video>",
   "publicAppealPage": {
     "title": "Public Appeal",
     "tasks": [
