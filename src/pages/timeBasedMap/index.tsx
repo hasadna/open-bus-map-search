@@ -440,6 +440,7 @@ export default function TimeBasedMapPage() {
                 </div>
                 <div className="map-speed-slider-frame">
                   <Slider
+                    aria-label={t('map_speed_filter')}
                     min={0}
                     max={SPEED_FILTER_MAX}
                     step={5}
