@@ -1,4 +1,4 @@
-import SearchIcon from '@mui/icons-material/Search'
+import BusAlertTwoToneIcon from '@mui/icons-material/BusAlertTwoTone'
 import { Alert, CircularProgress, Grid, Link as MuiLink, Tooltip, Typography } from '@mui/material'
 import { useCallback, useContext, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -107,14 +107,15 @@ const SingleLineMapPage = () => {
         <Alert
           severity="info"
           variant="outlined"
-          icon={<SearchIcon />}
+          icon={<BusAlertTwoToneIcon />}
           onClose={dismissVehicleNotice}
           sx={{
             mb: 2,
             alignItems: 'center',
             borderWidth: 2,
-            fontSize: '0.95rem',
+            fontSize: { xs: '0.8rem', sm: '0.95rem' },
             fontWeight: 700,
+            textAlign: 'justify',
           }}>
           {/* Each half is inline-block so the sentence breaks cleanly between them on
               narrow screens instead of wrapping mid-phrase. */}
