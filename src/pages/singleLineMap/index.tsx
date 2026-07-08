@@ -1,3 +1,4 @@
+import SearchIcon from '@mui/icons-material/Search'
 import { Alert, CircularProgress, Grid, Link as MuiLink, Tooltip, Typography } from '@mui/material'
 import { useCallback, useContext, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -103,11 +104,27 @@ const SingleLineMapPage = () => {
         />
       </Typography>
       {!vehicleNoticeDismissed && (
-        <Alert severity="info" variant="outlined" onClose={dismissVehicleNotice} sx={{ mb: 2 }}>
-          {t('singleline_vehicle_search_moved')}{' '}
-          <MuiLink component={Link} to="/vehicle" underline="hover">
-            {t('singleline_vehicle_search_moved_link')}
-          </MuiLink>
+        <Alert
+          severity="info"
+          variant="outlined"
+          icon={<SearchIcon />}
+          onClose={dismissVehicleNotice}
+          sx={{
+            mb: 2,
+            alignItems: 'center',
+            borderWidth: 2,
+            fontSize: '0.95rem',
+            fontWeight: 700,
+          }}>
+          {/* Each half is inline-block so the sentence breaks cleanly between them on
+              narrow screens instead of wrapping mid-phrase. */}
+          <span style={{ display: 'inline-block' }}>{t('singleline_vehicle_search_moved')}</span>{' '}
+          <span style={{ display: 'inline-block' }}>
+            {t('singleline_vehicle_search_moved_action')}{' '}
+            <MuiLink component={Link} to="/vehicle" underline="hover">
+              {t('singleline_vehicle_search_moved_link')}
+            </MuiLink>
+          </span>
         </Alert>
       )}
       <Grid container spacing={2}>
