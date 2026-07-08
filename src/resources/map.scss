@@ -14,9 +14,9 @@ $legend-bg-dark: rgb(40 40 40 / 92%);
 // Shared frame so the zoom bar and expand button read identically (Leaflet's
 // default heavy shadow + missing border otherwise make them look unequal).
 $button-shadow:
-  0 1px 3px rgb(0 0 0 / 8%),
-  0 6px 16px rgb(0 0 0 / 10%);
-$button-border: 1px solid rgb(0 0 0 / 25%);
+  0 1px 4px rgb(0 0 0 / 14%),
+  0 8px 18px rgb(0 0 0 / 12%);
+$button-border: 1px solid rgb(0 0 0 / 32%);
 $button-border-dark: 1px solid rgb(255 255 255 / 25%);
 
 main,
