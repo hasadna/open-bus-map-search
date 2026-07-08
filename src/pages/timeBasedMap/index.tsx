@@ -22,7 +22,7 @@ import {
   useTheme,
 } from '@mui/material'
 import { DateCalendar, DateField, TimeField } from '@mui/x-date-pickers'
-import { ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Marker, Popup, TileLayer, useMap } from 'react-leaflet'
 import MarkerClusterGroup from 'react-leaflet-markercluster'
@@ -308,14 +308,7 @@ export default function TimeBasedMapPage() {
         <Markers positions={positions} />
       </MapShell>
       {isCompact && (
-        <ResponsiveDialog
-          open={dateTimeDialogOpen}
-          onClose={() => setDateTimeDialogOpen(false)}
-          slotProps={{ paper: { className: 'map-datetime-paper' } }}
-          dialogProps={{
-            fullWidth: false,
-            maxWidth: false,
-          }}>
+        <ResponsiveDialog open={dateTimeDialogOpen} onClose={() => setDateTimeDialogOpen(false)}>
           <DialogTitle className="map-filter-dialog-title">
             {t('map_date_time')}
             <IconButton onClick={() => setDateTimeDialogOpen(false)} size="small">
@@ -467,20 +460,6 @@ export default function TimeBasedMapPage() {
   )
 }
 
-function formatTimeInput(value: string) {
-  const digits = value.replace(/\D/g, '').slice(0, 4)
-  return digits.length > 2 ? `${digits.slice(0, 2)}:${digits.slice(2)}` : digits
-}
-
-function parseTimeInput(value: string) {
-  const match = /^(\d{2}):(\d{2})$/.exec(value)
-  if (!match) return null
-  const hours = Number(match[1])
-  const minutes = Number(match[2])
-  if (hours > 23 || minutes > 59) return null
-  return { hours, minutes }
-}
-
 function MobileTimeInput({
   value,
   onChange,
@@ -489,52 +468,27 @@ function MobileTimeInput({
   onChange: (time: dayjs.Dayjs | null) => void
 }) {
   const { t } = useTranslation()
-  const [inputValue, setInputValue] = useState(value.format('HH:mm'))
-  const inputRef = useRef<HTMLInputElement>(null)
-
-  useEffect(() => {
-    setInputValue(value.format('HH:mm'))
-  }, [value])
-
-  useEffect(() => {
-    inputRef.current?.focus()
-    inputRef.current?.select()
-  }, [])
-
-  const selectInput = useCallback(() => {
-    requestAnimationFrame(() => inputRef.current?.select())
-  }, [])
-
-  const commitValue = useCallback(
-    (nextValue: string) => {
-      const parsed = parseTimeInput(nextValue)
-      if (!parsed) return false
-      onChange(value.hour(parsed.hours).minute(parsed.minutes).second(0).millisecond(0))
-      return true
-    },
-    [onChange, value],
-  )
 
   return (
-    <div className="map-mobile-time-editor">
-      <input
-        ref={inputRef}
-        aria-label={t('choose_time')}
-        inputMode="numeric"
-        pattern="[0-9]*"
-        value={inputValue}
-        onClick={selectInput}
-        onChange={(event) => {
-          const nextValue = formatTimeInput(event.target.value)
-          setInputValue(nextValue)
-          if (nextValue.length === 5) commitValue(nextValue)
-        }}
-        onFocus={selectInput}
-        onBlur={() => {
-          if (!commitValue(inputValue)) setInputValue(value.format('HH:mm'))
-        }}
-      />
-    </div>
+    <TimeField
+      className="map-mobile-time-editor"
+      value={value}
+      onChange={onChange}
+      ampm={false}
+      autoFocus
+      format="HH:mm"
+      variant="standard"
+      slotProps={{
+        textField: {
+          slotProps: {
+            htmlInput: {
+              'aria-label': t('choose_time'),
+              inputMode: 'numeric',
+            },
+          },
+        },
+      }}
+    />
   )
 }
 
@@ -547,11 +501,12 @@ function MapDateCalendar({
 }) {
   return (
     <DateCalendar
+      className="map-date-calendar"
       value={value}
       onChange={onChange}
       disableFuture
       minDate={START_OF_TIME}
-      sx={{ mx: 'auto' }}
+      sx={{ mx: 'auto', width: '100%', maxWidth: 'none' }}
       slotProps={{
         calendarHeader: {
           sx: {
@@ -681,7 +636,7 @@ function MapFilterControls({
       ? t(`operator.type.${selectedServiceTypes[0]}`)
       : t('map_service_type')
   const showFilterTags = !isCompact
-  const showFiltersButton = isCompact || !allOptionalFiltersActive
+  const showCompactFiltersButton = isCompact || allOptionalFiltersActive
 
   return (
     <div className="map-control-stack">
@@ -722,25 +677,23 @@ function MapFilterControls({
             {t('map_min_speed', { speed: minSpeed })}
           </DismissibleMapBadge>
         )}
-        {showFiltersButton && (
-          <button
-            type="button"
-            className="map-control-badge map-filters-button"
-            onClick={onOpenFilters}
-            aria-label={t('map_filters')}>
-            {isCompact ? (
-              <>
-                <FilterAltRounded fontSize="small" />
-                <span>{activeFilterCount}</span>
-              </>
-            ) : (
-              <>
-                <FilterAltRounded fontSize="small" />
-                <span>{t('map_filters_add')}</span>
-              </>
-            )}
-          </button>
-        )}
+        <button
+          type="button"
+          className={`map-control-badge map-filters-button${showCompactFiltersButton ? ' map-filters-button-compact' : ''}`}
+          onClick={onOpenFilters}
+          aria-label={t('map_filters')}>
+          {showCompactFiltersButton ? (
+            <>
+              <FilterAltRounded fontSize="small" />
+              <span>{activeFilterCount}</span>
+            </>
+          ) : (
+            <>
+              <FilterAltRounded fontSize="small" />
+              <span>{t('map_filters_add')}</span>
+            </>
+          )}
+        </button>
       </div>
       {!isCompact && (
         <LocationCountBadge
