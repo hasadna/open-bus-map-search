@@ -56,13 +56,14 @@ main > div,
   .expand-button {
     inset-inline-end: 5px;
     bottom: 5px;
-    color: #1976d2 !important;
+    color: #111;
     position: fixed;
     z-index: 1001;
-    width: 2.6rem;
-    height: 2.6rem;
-    background: $button-bg;
+    width: 2.2rem;
+    height: 2.2rem;
     border: $button-border;
+    border-radius: 2px;
+    background: $button-bg;
     box-shadow: $button-shadow;
 
     &:hover {
@@ -402,6 +403,7 @@ main > div,
   }
 
   .expand-button {
+    color: #fff;
     background: $button-bg-dark;
     border: $button-border-dark;
 
