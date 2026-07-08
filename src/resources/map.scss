@@ -574,50 +574,6 @@ main > div,
   }
 }
 
-.map-filter-drawer {
-  border-start-start-radius: 8px;
-  border-start-end-radius: 8px;
-}
-
-.map-time-popover {
-  .MuiPopover-paper {
-    padding: 16px;
-    min-width: 140px;
-  }
-}
-
-.map-popover-time-editor {
-  display: flex;
-  justify-content: center;
-
-  input {
-    width: 7ch;
-    border: 0;
-    border-bottom: 2px solid rgb(0 0 0 / 20%);
-    background: transparent;
-    color: inherit;
-    direction: ltr;
-    font: inherit;
-    font-size: 24px;
-    font-variant-numeric: tabular-nums;
-    line-height: 1;
-    outline: 0;
-    text-align: center;
-
-    &:focus {
-      border-bottom-color: #1976d2;
-    }
-  }
-}
-
-.dark .map-popover-time-editor input {
-  border-bottom-color: rgb(255 255 255 / 30%);
-
-  &:focus {
-    border-bottom-color: #90caf9;
-  }
-}
-
 pre {
   direction: ltr;
   height: 200px;

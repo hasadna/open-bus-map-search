@@ -45,7 +45,7 @@ const DEFAULT_POSITION: Point = {
   loc: [32.3057988, 34.85478613],
   color: 0,
 }
-const START_OF_TIME = dayjs('1-1-2023')
+const START_OF_TIME = dayjs('2023-01-01')
 const SPEED_FILTER_MIN = 0
 const SPEED_FILTER_MAX = 120
 
@@ -75,10 +75,14 @@ function getSpeedBandKeysFromMin(minSpeed: number) {
   return speedBands.filter((band) => band.max >= minSpeed).map((band) => band.key)
 }
 
-function labelWithCount(label: string, selected: number, available: number, outOfLabel: string) {
-  return selected > 0
-    ? `${label} (${selected} ${outOfLabel} ${available})`
-    : `${label} (${available})`
+function labelWithCount(
+  selected: number,
+  labels: {
+    available: string
+    selected: string
+  },
+) {
+  return selected > 0 ? labels.selected : labels.available
 }
 
 export default function TimeBasedMapPage() {
@@ -122,11 +126,15 @@ export default function TimeBasedMapPage() {
 
   const serviceTypeOptions = useMemo(
     () =>
-      availableServiceTypes.map((type) => ({
-        type,
-        label: t(`operator.type.${type}`),
-      })),
-    [availableServiceTypes, t],
+      serviceTypeOrder
+        .filter(
+          (type) => availableServiceTypes.includes(type) || selectedServiceTypes.includes(type),
+        )
+        .map((type) => ({
+          type,
+          label: t(`operator.type.${type}`),
+        })),
+    [availableServiceTypes, selectedServiceTypes, t],
   )
 
   const availableOperators = useMemo(() => {
@@ -144,6 +152,15 @@ export default function TimeBasedMapPage() {
         label: operatorNameByRef.get(ref) ?? String(ref),
       }))
   }, [locations, operatorNameByRef])
+
+  const operatorOptions = useMemo(() => {
+    const optionByRef = new Map(availableOperators.map((operator) => [operator.ref, operator]))
+    selectedOperatorRefs.forEach((ref) => {
+      if (!optionByRef.has(ref))
+        optionByRef.set(ref, { ref, label: operatorNameByRef.get(ref) ?? String(ref) })
+    })
+    return Array.from(optionByRef.values())
+  }, [availableOperators, operatorNameByRef, selectedOperatorRefs])
 
   const filteredLocations = useMemo(
     () =>
@@ -179,30 +196,32 @@ export default function TimeBasedMapPage() {
     setDateTimeDialogOpen(true)
   }, [])
 
-  const handleDateChange = useCallback(
-    (date: dayjs.Dayjs | null) => {
-      if (!date?.isValid()) return
-      setFrom(from.year(date.year()).month(date.month()).date(date.date()))
-    },
-    [from],
-  )
+  const handleDateChange = useCallback((date: dayjs.Dayjs | null) => {
+    if (!date?.isValid()) return
+    setFrom((current) => current.year(date.year()).month(date.month()).date(date.date()))
+  }, [])
 
-  const handleTimeChange = useCallback(
-    (time: dayjs.Dayjs | null) => {
-      if (!time?.isValid()) return
-      setFrom(from.hour(time.hour()).minute(time.minute()).second(0).millisecond(0))
-    },
-    [from],
-  )
+  const handleTimeChange = useCallback((time: dayjs.Dayjs | null) => {
+    if (!time?.isValid()) return
+    setFrom((current) => current.hour(time.hour()).minute(time.minute()).second(0).millisecond(0))
+  }, [])
 
   const selectedOperators = useMemo(
-    () => availableOperators.filter((operator) => selectedOperatorRefs.includes(operator.ref)),
-    [availableOperators, selectedOperatorRefs],
+    () =>
+      selectedOperatorRefs.map((ref) => ({
+        ref,
+        label: operatorNameByRef.get(ref) ?? String(ref),
+      })),
+    [operatorNameByRef, selectedOperatorRefs],
   )
 
   const selectedServiceTypeOptions = useMemo(
-    () => serviceTypeOptions.filter((option) => selectedServiceTypes.includes(option.type)),
-    [selectedServiceTypes, serviceTypeOptions],
+    () =>
+      selectedServiceTypes.map((type) => ({
+        type,
+        label: t(`operator.type.${type}`),
+      })),
+    [selectedServiceTypes, t],
   )
 
   const clearFilters = useCallback(() => {
@@ -339,12 +358,17 @@ export default function TimeBasedMapPage() {
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  label={labelWithCount(
-                    t('map_service_type'),
-                    selectedServiceTypes.length,
-                    serviceTypeOptions.length,
-                    t('map_count_out_of'),
-                  )}
+                  label={labelWithCount(selectedServiceTypes.length, {
+                    available: t('map_filter_count_available', {
+                      label: t('map_service_type'),
+                      available: availableServiceTypes.length,
+                    }),
+                    selected: t('map_filter_count_selected', {
+                      label: t('map_service_type'),
+                      selected: selectedServiceTypes.length,
+                      available: availableServiceTypes.length,
+                    }),
+                  })}
                 />
               )}
               renderOption={(props, option, { selected }) => (
@@ -356,7 +380,7 @@ export default function TimeBasedMapPage() {
             />
             <Autocomplete
               multiple
-              options={availableOperators}
+              options={operatorOptions}
               value={selectedOperators}
               getOptionLabel={(option) => option.label}
               isOptionEqualToValue={(option, value) => option.ref === value.ref}
@@ -366,12 +390,17 @@ export default function TimeBasedMapPage() {
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  label={labelWithCount(
-                    t('map_operator'),
-                    selectedOperatorRefs.length,
-                    availableOperators.length,
-                    t('map_count_out_of'),
-                  )}
+                  label={labelWithCount(selectedOperatorRefs.length, {
+                    available: t('map_filter_count_available', {
+                      label: t('map_operator'),
+                      available: availableOperators.length,
+                    }),
+                    selected: t('map_filter_count_selected', {
+                      label: t('map_operator'),
+                      selected: selectedOperatorRefs.length,
+                      available: availableOperators.length,
+                    }),
+                  })}
                 />
               )}
               renderOption={(props, option, { selected }) => (
@@ -572,8 +601,6 @@ function DesktopDateControl({
         anchorEl={anchorEl}
         onClose={() => setAnchorEl(null)}
         disableAutoFocus
-        disableEnforceFocus
-        disableRestoreFocus
         anchorOrigin={{ vertical: 'bottom', horizontal: horizontalOrigin }}
         transformOrigin={{ vertical: 'top', horizontal: horizontalOrigin }}
         slotProps={{ paper: { sx: { borderRadius: 2, translate: '0 10px' } } }}>

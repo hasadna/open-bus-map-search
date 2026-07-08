@@ -45,3 +45,19 @@ test('tooltip appears after clicking on map point', async ({ page }) => {
     expect(textList).toEqual(TOOLTIP_CONTENT_ITEMS)
   })
 })
+
+test('uses current Israel time by default when no datetime is provided', async ({ page }) => {
+  await page.route(/siri_vehicle_locations\/list/, (route) =>
+    route.fulfill({ status: 200, contentType: 'application/json', body: '[]' }),
+  )
+  const requestPromise = page.waitForRequest((request) =>
+    request.url().includes('siri_vehicle_locations/list'),
+  )
+
+  await page.goto('/map')
+  const request = await requestPromise
+  const params = new URL(request.url()).searchParams
+
+  expect(params.get('recorded_at_time_from')).toBe('2024-02-12T15:00:00.000Z')
+  expect(params.get('recorded_at_time_to')).toBe('2024-02-12T15:01:00.000Z')
+})
