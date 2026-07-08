@@ -1,6 +1,7 @@
-import { CircularProgress, Grid, Tooltip, Typography } from '@mui/material'
+import { Alert, CircularProgress, Grid, Link as MuiLink, Tooltip, Typography } from '@mui/material'
 import { useCallback, useContext, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router'
 import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone } from 'src/dayjs'
 import { useSingleLineData } from 'src/hooks/useSingleLineData'
 import { GlobalSearchContext } from 'src/model/globalState'
@@ -16,10 +17,22 @@ import { PageContainer } from '../components/PageContainer'
 import InfoYoutubeModal from '../components/YoutubeModal'
 import { GpsCoverageStrip } from './GpsCoverageStrip'
 
+// TEMP (issue #1674): the vehicle-number search moved from this page to /vehicle.
+// This notice redirects users still looking for it here. Remove once it has run its course.
+const VEHICLE_NOTICE_DISMISS_KEY = 'vehicleSearchMovedNoticeDismissed'
+
 const SingleLineMapPage = () => {
   const { search, setSearch } = useContext(GlobalSearchContext)
   const { operatorId, lineNumber, date, routeKey: searchRouteKey, rideTime } = search
   const { t } = useTranslation()
+
+  const [vehicleNoticeDismissed, setVehicleNoticeDismissed] = useState(
+    () => localStorage.getItem(VEHICLE_NOTICE_DISMISS_KEY) === '1',
+  )
+  const dismissVehicleNotice = useCallback(() => {
+    localStorage.setItem(VEHICLE_NOTICE_DISMISS_KEY, '1')
+    setVehicleNoticeDismissed(true)
+  }, [])
 
   const onRouteKeyChange = useCallback(
     (key: string | null) => setSearch((c) => ({ ...c, routeKey: key })),
@@ -89,6 +102,14 @@ const SingleLineMapPage = () => {
           videoUrl="https://www.youtube-nocookie.com/embed/bXg50_j_hTA?si=inyvqDylStvgNRA6&amp;start=93"
         />
       </Typography>
+      {!vehicleNoticeDismissed && (
+        <Alert severity="info" variant="outlined" onClose={dismissVehicleNotice} sx={{ mb: 2 }}>
+          {t('singleline_vehicle_search_moved')}{' '}
+          <MuiLink component={Link} to="/vehicle" underline="hover">
+            {t('singleline_vehicle_search_moved_link')}
+          </MuiLink>
+        </Alert>
+      )}
       <Grid container spacing={2}>
         <Grid container spacing={2} size={{ xs: 12 }}>
           {/* choose date*/}
