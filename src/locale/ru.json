@@ -375,6 +375,10 @@
   "plannedRoute": "Запланированный маршрут",
   "actualRoute": "Фактический маршрут",
   "youtube_modal_info_title": "Видео-урок (иврит)",
+  "close_video": "Закрыть видео",
+  "loading_video": "Загрузка видео",
+  "video_close_hint": "Нажмите вне видео или Esc, чтобы закрыть его.",
+  "page_header_video_guide_inline": ". Посмотрите <video>видео-гид</video>",
   "publicAppealPage": {
     "title": "Общественное обращение",
     "tasks": [

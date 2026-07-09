@@ -25,7 +25,9 @@ test.describe('Operator Page Tests', () => {
   })
 
   test('all inputs should be intractable', async ({ page }) => {
-    await expect(page.locator('h4')).toHaveText(i18next.t('operator_title'))
+    await expect(
+      page.getByRole('heading', { level: 1, name: i18next.t('operator_title') }),
+    ).toBeVisible()
     await page.getByRole('button', { name: 'פתח' }).click()
     await page.getByRole('option', { name: 'אגד', exact: true }).click()
     await fillDateField(page, 'תאריך', '06/05/2024')

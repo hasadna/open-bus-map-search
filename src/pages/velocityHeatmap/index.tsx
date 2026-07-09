@@ -1,12 +1,4 @@
-import {
-  Box,
-  Stack,
-  ToggleButton,
-  ToggleButtonGroup,
-  Typography,
-  useMediaQuery,
-  useTheme,
-} from '@mui/material'
+import { Box, Stack, ToggleButton, ToggleButtonGroup, useMediaQuery, useTheme } from '@mui/material'
 import React, { useContext, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { TileLayer } from 'react-leaflet'
@@ -16,6 +8,7 @@ import { MapShell } from 'src/pages/components/map-related/MapShell'
 import { DateNavigator } from '../components/dateNavigator/DateNavigator'
 import { DateSelector } from '../components/DateSelector'
 import { PageContainer } from '../components/PageContainer'
+import { PageHeader, PageHeaderTitle } from '../components/pageHeader'
 import { VelocityHeatmapLegend } from './components/VelocityHeatmapLegend'
 import { VelocityHeatmapRectangles } from './components/VelocityHeatmapRectangles'
 
@@ -57,9 +50,9 @@ const VelocityHeatmapPage: React.FC = () => {
 
   return (
     <PageContainer>
-      <Typography variant="h4" component="h1" gutterBottom>
-        {t('velocity_heatmap_page_title')}
-      </Typography>
+      <PageHeader>
+        <PageHeaderTitle>{t('velocity_heatmap_page_title')}</PageHeaderTitle>
+      </PageHeader>
 
       {/* choose date + visualization — centered block */}
       <Box sx={{ width: '100%', maxWidth: 520, mx: 'auto' }}>

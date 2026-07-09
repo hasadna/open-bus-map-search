@@ -1,4 +1,4 @@
-import { CircularProgress, Grid, Typography } from '@mui/material'
+import { CircularProgress, Grid } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
 import { useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -13,6 +13,7 @@ import VehicleSelector, { normalizeVehicleNumber } from 'src/pages/components/Ve
 import { DateSelector } from '../components/DateSelector'
 import { NotFound } from '../components/NotFound'
 import { PageContainer } from '../components/PageContainer'
+import { PageHeader, PageHeaderTitle } from '../components/pageHeader'
 import { buildVehicleRideRows, VehicleRideRow } from './buildVehicleRideRows'
 import { VehicleTable } from './VehicleTable'
 
@@ -120,9 +121,9 @@ const VehiclePage = () => {
 
   return (
     <PageContainer>
-      <Typography className="page-title" variant="h4">
-        {t('vehicle_page_title')}
-      </Typography>
+      <PageHeader>
+        <PageHeaderTitle>{t('vehicle_page_title')}</PageHeaderTitle>
+      </PageHeader>
       {/* choose date + vehicle — centered block, like the velocity-heatmap page */}
       <Grid container spacing={2} sx={{ width: '100%', maxWidth: 600, mx: 'auto' }}>
         {/* choose date */}

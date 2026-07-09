@@ -5,10 +5,9 @@ import { useTranslation } from 'react-i18next'
 import dayjs from 'src/dayjs'
 import { useDate } from 'src/hooks/useDate'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
+import { VideoIconTrigger } from 'src/pages/components/VideoIconTrigger'
 import { DateSelector } from '../components/DateSelector'
 import { PageContainer } from '../components/PageContainer'
-// Components
-import InfoYoutubeModal from '../components/YoutubeModal'
 import AllLinesChart from './AllLineschart/AllLinesChart'
 import DayTimeChart from './ArrivalByTimeChart/DayTimeChart'
 import WorstLinesChart from './WorstLinesChart/WorstLinesChart'
@@ -32,7 +31,7 @@ const DashboardPage = () => {
     <PageContainer className="dashboard">
       <Typography className="page-title" variant="h4">
         {t('dashboard_page_title')}
-        <InfoYoutubeModal
+        <VideoIconTrigger
           label={t('open_video_about_this_page')}
           title={t('youtube_modal_info_title')}
           videoUrl="https://www.youtube.com/embed/bXg50_j_hTA?si=4rpSZwMRbMomE4g1"

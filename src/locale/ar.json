@@ -375,6 +375,10 @@
   "plannedRoute": "المسار المخطّط",
   "actualRoute": "المسار الفعلي",
   "youtube_modal_info_title": "فيديو توضيحي",
+  "close_video": "إغلاق الفيديو",
+  "loading_video": "جارٍ تحميل الفيديو",
+  "video_close_hint": "انقروا خارج الفيديو أو اضغطوا Esc لإغلاقه.",
+  "page_header_video_guide_inline": ". شاهدوا <video>فيديو الإرشاد</video>",
   "publicAppealPage": {
     "title": "نداء عام",
     "tasks": [

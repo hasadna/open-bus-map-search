@@ -1,4 +1,4 @@
-import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
+import { CircularProgress, Grid } from '@mui/material'
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import dayjs, { ISRAEL_TIMEZONE } from 'src/dayjs'
@@ -13,6 +13,7 @@ import LineNumberSelector from '../components/LineSelector'
 import { NotFound } from '../components/NotFound'
 import OperatorSelector from '../components/OperatorSelector'
 import { PageContainer } from '../components/PageContainer'
+import { PageHeader, PageHeaderSubtitle, PageHeaderTitle } from '../components/pageHeader'
 import RouteSelector from '../components/RouteSelector'
 import { Row } from '../components/Row'
 import { serviceDayBounds } from '../components/utils/startTimeUtils'
@@ -117,12 +118,10 @@ const GapsPage = () => {
 
   return (
     <PageContainer>
-      <Typography className="page-title" variant="h4">
-        {t('gaps_page_title')}
-      </Typography>
-      <Alert severity="info" variant="outlined" icon={false}>
-        {t('gaps_page_description')}
-      </Alert>
+      <PageHeader>
+        <PageHeaderTitle>{t('gaps_page_title')}</PageHeaderTitle>
+        <PageHeaderSubtitle>{t('gaps_page_description')}</PageHeaderSubtitle>
+      </PageHeader>
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
         {/* choose date */}
         <Grid size={{ xs: 4 }}>

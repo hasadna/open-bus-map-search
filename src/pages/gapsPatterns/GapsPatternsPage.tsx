@@ -1,7 +1,7 @@
-import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
-import { Radio, RadioChangeEvent, Space } from 'antd'
+import { Alert, CircularProgress, Grid } from '@mui/material'
+import { Radio, RadioChangeEvent } from 'antd'
 import { useContext, useEffect, useState } from 'react'
-import { useTranslation } from 'react-i18next'
+import { Trans, useTranslation } from 'react-i18next'
 import {
   Bar,
   CartesianGrid,
@@ -29,10 +29,15 @@ import LineNumberSelector from '../components/LineSelector'
 import { NotFound } from '../components/NotFound'
 import OperatorSelector from '../components/OperatorSelector'
 import { PageContainer } from '../components/PageContainer'
+import {
+  PageHeader,
+  PageHeaderSubtitle,
+  PageHeaderTitle,
+  PageHeaderVideoTrigger,
+} from '../components/pageHeader'
 import RouteSelector from '../components/RouteSelector'
 import { Row } from '../components/Row'
 import { mapColorByExecution } from '../components/utils'
-import InfoYoutubeModal from '../components/YoutubeModal'
 import { useGapsList } from './useGapsList'
 import './GapsPatternsPage.scss'
 
@@ -204,19 +209,24 @@ const GapsPatternsPage = () => {
 
   return (
     <PageContainer>
-      <Typography variant="h4">
-        {t('gaps_patterns_page_title')}
-        <InfoYoutubeModal
-          label={t('open_video_about_this_page')}
-          title={t('youtube_modal_info_title')}
-          videoUrl="https://www.youtube-nocookie.com/embed?v=-C_rZlbHBmk&list=PL6Rh06rT7uiX1AQE-lm55hy-seL3idx3T&index=4"
-        />
-      </Typography>
-      <Space direction="vertical" size="middle" style={{ marginBottom: '22px' }}>
-        <Alert severity="info" variant="outlined" icon={false}>
-          {t('gaps_patterns_page_description')}
-        </Alert>
-      </Space>
+      <PageHeader>
+        <PageHeaderTitle>{t('gaps_patterns_page_title')}</PageHeaderTitle>
+        <PageHeaderSubtitle>
+          {t('gaps_patterns_page_description')}{' '}
+          <Trans
+            i18nKey="page_header_video_guide_inline"
+            components={{
+              video: (
+                <PageHeaderVideoTrigger
+                  title={t('youtube_modal_info_title')}
+                  videoUrl="https://www.youtube-nocookie.com/embed?v=-C_rZlbHBmk&list=PL6Rh06rT7uiX1AQE-lm55hy-seL3idx3T&index=4">
+                  {null}
+                </PageHeaderVideoTrigger>
+              ),
+            }}
+          />
+        </PageHeaderSubtitle>
+      </PageHeader>
       {startDate > endDate ? (
         <Alert severity="error" variant="outlined">
           {t('bug_date_alert')}

@@ -402,6 +402,10 @@
   "plannedRoute": "מסלול מתוכנן",
   "actualRoute": "מסלול בפועל",
   "youtube_modal_info_title": "סרטון הסבר",
+  "close_video": "סגירת הסרטון",
+  "loading_video": "הסרטון נטען",
+  "video_close_hint": "לחצו מחוץ לסרטון או על Esc כדי לסגור אותו.",
+  "page_header_video_guide_inline": ". צפו ב<video>סרטון ההדרכה</video>",
   "publicAppealPage": {
     "title": "קול קורא",
     "tasks": [
