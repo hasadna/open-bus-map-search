@@ -122,6 +122,44 @@ src/
 
 **React Query for Data Fetching**: Server data is cached and synchronized using @tanstack/react-query. See `src/api/useVehicleLocations.ts` for an example custom hook pattern.
 
+**API and Query Organization**: Organize new or migrated request code with a clear boundary between bare API functions and TanStack Query hooks.
+
+Use this structure for domain-level API code:
+
+```
+src/
+├── api/
+│   └── <domain>/
+│       ├── listThings.ts
+│       ├── getThing.ts
+│       ├── createThing.ts
+│       ├── updateThing.ts
+│       └── index.ts
+└── queries/
+    └── <domain>/
+        ├── keys.ts
+        ├── queries/
+        │   ├── useThingsListQuery.ts
+        │   ├── useThingDetailQuery.ts
+        │   └── index.ts
+        ├── mutations/
+        │   ├── useCreateThingMutation.ts
+        │   ├── useUpdateThingMutation.ts
+        │   └── index.ts
+        └── index.ts
+```
+
+- `src/api/<domain>/` contains pure async request functions. These functions must not import React or TanStack Query.
+- `src/queries/<domain>/keys.ts` contains domain query-key factories.
+- `src/queries/<domain>/queries/` contains TanStack Query read hooks, named `useThingQuery`, `useThingsListQuery`, `useThingDetailQuery`, etc.
+- `src/queries/<domain>/mutations/` contains TanStack Query write hooks, named `useCreateThingMutation`, `useUpdateThingMutation`, `useDeleteThingMutation`, etc.
+- Pages and components should import query and mutation hooks from the query-domain barrel, for example `import { useAgencyListQuery } from 'src/queries/agencies'`.
+- Import bare request functions from the API-domain barrel only when a raw request is needed, for example `import { getAgencyList } from 'src/api/agencies'`.
+- Query functions should let request failures throw. UI code should handle `data`, `isPending`, `isError`, and `error` from the query result.
+- Query hooks may accept TanStack Query options for cache/read behavior and data selection, such as `enabled`, `select`, and `staleTime`. Consumer-specific side effects should live in the consuming component or hook.
+- When TanStack Query provides an `AbortSignal`, pass it through to request functions and generated API-client calls where supported.
+- Keep specialized non-query request flows only when they need behavior TanStack Query does not model well. `useVehicleLocations` currently stays custom because it streams chunked, paginated location data through an observable cache.
+
 **Context-Based Theming**: Dark/light mode is managed via `ThemeContext` (MUI) and propagated to Ant Design components. Both systems are synchronized.
 
 **Easter Eggs**: Type "storybook" or "geek" anywhere in the app to unlock hidden features (see `src/pages/EasterEgg/`).
