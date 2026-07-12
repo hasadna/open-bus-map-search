@@ -10,7 +10,7 @@ import { useContext } from 'react'
 import { useTranslation } from 'react-i18next'
 import { NavLink, To } from 'react-router'
 import { LayoutContextInterface, LayoutCtx } from 'src/layout/LayoutContext'
-import busImage from '../../img/busImg.png'
+import { BusImage } from './BusImage'
 import './HomePage.scss'
 
 const PageLink = ({
@@ -57,7 +57,7 @@ export const HomePage = () => {
 
   return (
     <div className="container">
-      <img src={busImage} alt={t('homepage.bus_illustration_alt')} />
+      <BusImage role="img" aria-label={t('homepage.bus_illustration_alt')} />
       <h1>{t('homepage.welcome')}</h1>
       <h2>{t('homepage.databus_definition')}</h2>
       <p>{t('homepage.website_goal')}</p>
