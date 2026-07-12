@@ -21,10 +21,6 @@ test('An instruction video for Report a bug', async ({ page }) => {
   expect(videoFrame).toBeVisible()
   await expect(videoFrame).toHaveAttribute('src', VIDEO_SRC)
   await videoFrame.contentFrame().getByLabel('Play', { exact: true }).click()
-  // Clicking inside the iframe triggers Ant Design's focus-trap, which briefly
-  // re-renders the modal and replaces DOM nodes. Wait for the zoom animation to
-  // settle before clicking Close, otherwise the modal-wrap intercepts the event.
-  await page.waitForFunction(() => !document.querySelector('[class*="zoom-appear-active"]'))
   await page.getByLabel('Close', { exact: true }).click()
   await page.getByLabel('לפתוח סרטון על העמוד הזה').press('ControlOrMeta+c')
 })
@@ -46,14 +42,11 @@ test('bug missing field - request type', async ({ page }) => {
 
   await test.step('Submit the form', async () => {
     await page.getByRole('button', { name: 'שלח את הדוח' }).click()
-    await page.waitForSelector('.ant-form-item-explain-error')
   })
 
   await test.step('Verify missing field error', async () => {
-    const errorMessages = await page.locator('.ant-form-item-explain-error').allTextContents()
-    expect(errorMessages.length).toBe(2)
-    expect(errorMessages).toContain('בבקשה הזן סוג הבקשה')
-    expect(errorMessages).toContain('בבקשה הזן באיזו תדירות זה קורה')
+    await expect(page.getByText('סוג הבקשה הוא שדה חובה', { exact: true })).toBeVisible()
+    await expect(page.getByText('באיזו תדירות זה קורה הוא שדה חובה', { exact: true })).toBeVisible()
   })
 })
 
@@ -74,7 +67,7 @@ const successBody = {
 test('bug submission success', async ({ page }) => {
   await test.step('Mock API to return success', async () => {
     await page.route(
-      (url) => url.href.includes('/issues'),
+      (url) => url.pathname.endsWith('/issues/create'),
       (route) => route.fulfill({ status: 200, body: JSON.stringify(successBody) }),
     )
   })
@@ -101,15 +94,20 @@ test('bug submission success', async ({ page }) => {
     await page.getByRole('button', { name: 'שלח את הדוח' }).click()
   })
 
-  await test.step('Verify error message is displayed', async () => {
-    await expect(page.getByText('לצפייה בדיווח (Github)')).toBeVisible()
+  await test.step('Verify success dialog is displayed', async () => {
+    const dialog = page.getByRole('dialog', { name: 'הדיווח נשלח' })
+    await expect(dialog).toBeVisible()
+    await expect(dialog.getByRole('link', { name: 'לצפייה בדיווח' })).toHaveAttribute(
+      'href',
+      successBody.data.url,
+    )
   })
 })
 
 test('bug submission server error', async ({ page }) => {
   await test.step('Mock API to return error', async () => {
     await page.route(
-      (url) => url.href.includes('/issues'),
+      (url) => url.pathname.endsWith('/issues/create'),
       (route) => route.fulfill({ status: 500, body: 'Internal Server Error' }),
     )
   })

@@ -486,11 +486,12 @@ const BugReportForm = () => {
         <Dialog
           open={successDialogOpen}
           onClose={handleCloseSuccessDialog}
+          fullWidth
+          maxWidth="xs"
           aria-labelledby="bug-report-success-title">
           <DialogTitle id="bug-report-success-title">{t('reportBug.successTitle')}</DialogTitle>
           <DialogContent>{t('reportBug.success')}</DialogContent>
           <DialogActions>
-            <Button onClick={handleCloseSuccessDialog}>{t('reportBug.closeAndReportAgain')}</Button>
             {mutation.data?.data?.url && (
               <Button
                 component="a"

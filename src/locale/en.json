@@ -398,8 +398,7 @@
     "error": "An error occurred while sending the report. Please try again later.",
     "successTitle": "Report sent",
     "success": "The report was sent successfully. Thank you for your help!",
-    "viewIssue": "View issue (GitHub)",
-    "closeAndReportAgain": "Report another issue",
+    "viewIssue": "View report",
     "backToPreviousPage": "Back to the previous page",
     "validation": {
       "required": "{{field}} is required",
