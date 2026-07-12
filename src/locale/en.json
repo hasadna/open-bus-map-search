@@ -400,7 +400,7 @@
     "success": "The report was sent successfully. Thank you for your help!",
     "viewIssue": "View issue (GitHub)",
     "closeAndReportAgain": "Report another issue",
-    "backToPage": "Back to {{page}}",
+    "backToPreviousPage": "Back to the previous page",
     "validation": {
       "required": "{{field}} is required",
       "min": "{{field}} must contain at least {{count}} characters",

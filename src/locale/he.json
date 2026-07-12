@@ -400,7 +400,7 @@
     "success": "תודה על הדיווח!",
     "viewIssue": "לצפייה בדיווח (GitHub)",
     "closeAndReportAgain": "דיווח נוסף",
-    "backToPage": "חזרה אל {{page}}",
+    "backToPreviousPage": "חזרה לעמוד הקודם",
     "validation": {
       "required": "{{field}} הוא שדה חובה",
       "min": "{{field}} חייב להכיל לפחות {{count}} תווים",

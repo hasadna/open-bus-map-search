@@ -75,7 +75,6 @@ const BugReportForm = () => {
   const location = useLocation()
   const [successDialogOpen, setSuccessDialogOpen] = useState(false)
   const previousPage = (location.state as BugReportLocationState)?.from
-  const previousPageTitle = previousPage?.title || t('homepage_title')
 
   const required = (label: string, value: string) =>
     value.trim()
@@ -502,7 +501,7 @@ const BugReportForm = () => {
               </Button>
             )}
             <Button variant="contained" onClick={handleBackToPreviousPage}>
-              {t('reportBug.backToPage', { page: previousPageTitle })}
+              {t('reportBug.backToPreviousPage')}
             </Button>
           </DialogActions>
         </Dialog>

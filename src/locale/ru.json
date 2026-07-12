@@ -373,7 +373,7 @@
     "success": "Отчет был отправлен успешно. Спасибо за вашу помощь!",
     "viewIssue": "Просмотреть проблему (GitHub)",
     "closeAndReportAgain": "Отправить еще один отчет",
-    "backToPage": "Назад к {{page}}",
+    "backToPreviousPage": "Вернуться на предыдущую страницу",
     "validation": {
       "required": "{{field}} обязательно",
       "min": "{{field}} должно содержать не менее {{count}} символов",
