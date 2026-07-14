@@ -15,7 +15,7 @@ test.describe('Homepage', () => {
   })
 
   test('shows bus illustration image', async ({ page }) => {
-    await expect(page.getByAltText('איור של אוטובוס תחבורה ציבורית')).toBeVisible()
+    await expect(page.getByRole('img', { name: 'איור של אוטובוס תחבורה ציבורית' })).toBeVisible()
   })
 
   test('shows links to all main pages', async ({ page }) => {
@@ -29,10 +29,7 @@ test.describe('Homepage', () => {
   })
 
   test('clicking a page link navigates to that page', async ({ page }) => {
-    const singleLineLink = page
-      .locator('.page-link', { hasText: 'מסלול נסיעה' })
-      .getByRole('link', { name: 'הצג' })
-    await singleLineLink.click()
+    await page.locator('.page-link', { hasText: 'מסלול נסיעה' }).click()
     await expect(page).toHaveURL(/single-line-map/)
   })
 
