@@ -14,9 +14,9 @@ $legend-bg-dark: rgb(40 40 40 / 92%);
 // Shared frame so the zoom bar and expand button read identically (Leaflet's
 // default heavy shadow + missing border otherwise make them look unequal).
 $button-shadow:
-  0 1px 3px rgb(0 0 0 / 8%),
-  0 6px 16px rgb(0 0 0 / 10%);
-$button-border: 1px solid rgb(0 0 0 / 25%);
+  0 1px 4px rgb(0 0 0 / 14%),
+  0 8px 18px rgb(0 0 0 / 12%);
+$button-border: 1px solid rgb(0 0 0 / 32%);
 $button-border-dark: 1px solid rgb(255 255 255 / 25%);
 
 main,
@@ -34,6 +34,21 @@ main > div,
   min-height: calc(100vh - 88px);
 }
 
+.map-above-count {
+  display: flex;
+  justify-content: flex-start;
+  margin: 0 0 8px;
+}
+
+.map-location-count-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  line-height: 1.35;
+  font-variant-numeric: tabular-nums;
+}
+
 .map-info {
   position: relative;
   margin-bottom: 1em;
@@ -41,13 +56,14 @@ main > div,
   .expand-button {
     inset-inline-end: 5px;
     bottom: 5px;
-    color: #1976d2 !important;
+    color: #111;
     position: fixed;
-    z-index: 2000;
-    width: 2.6rem;
-    height: 2.6rem;
-    background: $button-bg;
+    z-index: 1001;
+    width: 30px;
+    height: 30px;
     border: $button-border;
+    border-radius: 2px;
+    background: $button-bg;
     box-shadow: $button-shadow;
 
     &:hover {
@@ -75,6 +91,201 @@ main > div,
 
   .leaflet-control-attribution {
     background: $control-bg;
+  }
+
+  .map-floating-controls {
+    position: absolute;
+    top: 10px;
+    inset-inline-start: 10px;
+    z-index: 1000;
+    max-width: min(620px, calc(100% - 20px));
+  }
+
+  .map-control-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .map-filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .map-datetime-split {
+    display: inline-flex;
+
+    .map-control-badge {
+      border-radius: 0;
+
+      &:first-child {
+        border-start-start-radius: 2px;
+        border-end-start-radius: 2px;
+      }
+
+      &:last-child {
+        border-inline-start: 0;
+        border-start-end-radius: 2px;
+        border-end-end-radius: 2px;
+      }
+    }
+  }
+
+  .map-control-badge,
+  .map-count-badge {
+    min-height: 2.2rem;
+    border: $button-border;
+    border-radius: 2px;
+    background: $button-bg;
+    box-shadow: $button-shadow;
+    color: #111;
+    font: inherit;
+    font-size: 13px;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .map-control-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 0 10px;
+    cursor: pointer;
+    transition-property: background, transform;
+    transition-duration: 120ms;
+    transition-timing-function: ease-out;
+
+    &:hover {
+      background: rgb(255 255 255 / 95%);
+    }
+
+    &:active {
+      transform: scale(0.96);
+      background: rgb(255 255 255 / 100%);
+    }
+  }
+
+  .map-filters-button-compact {
+    gap: 5px;
+    padding-inline: 9px;
+
+    .MuiSvgIcon-root {
+      width: 17px;
+      height: 17px;
+    }
+  }
+
+  .map-control-field {
+    display: inline-flex;
+    align-items: center;
+    box-sizing: border-box;
+    height: 2.2rem;
+    min-height: 2.2rem;
+    border: $button-border;
+    border-radius: 2px;
+    background: $button-bg;
+    box-shadow: $button-shadow;
+    color: #111;
+    cursor: text;
+    font: inherit;
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    transition-property: background, transform;
+    transition-duration: 120ms;
+    transition-timing-function: ease-out;
+
+    &:hover,
+    &:focus-within {
+      background: rgb(255 255 255 / 95%);
+    }
+
+    .MuiInputBase-root,
+    .MuiPickersInputBase-root {
+      height: 100%;
+      min-height: 0;
+      border: 0;
+      background: transparent;
+      box-shadow: none;
+      color: #111;
+      font: inherit;
+      font-size: 13px;
+      font-variant-numeric: tabular-nums;
+      line-height: 1;
+
+      &::before,
+      &::after {
+        display: none;
+      }
+    }
+
+    .MuiInputBase-input,
+    .MuiPickersInputBase-sectionsContainer {
+      width: 9ch;
+      box-sizing: content-box;
+      padding: 0 10px;
+      color: inherit;
+      justify-content: center;
+      text-align: center;
+    }
+  }
+
+  .map-control-time-field {
+    .MuiInputBase-input,
+    .MuiPickersInputBase-sectionsContainer {
+      width: 5ch;
+    }
+  }
+
+  .map-control-time-field .MuiInputBase-input {
+    width: 5ch;
+  }
+
+  .map-control-badge-dismissible {
+    padding-inline-end: 4px;
+
+    button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 1.7rem;
+      min-height: 1.7rem;
+      border: 0;
+      border-radius: 3px;
+      background: transparent;
+      color: inherit;
+      cursor: pointer;
+      font: inherit;
+      font-size: 16px;
+      line-height: 1;
+
+      &:hover {
+        background: rgb(0 0 0 / 8%);
+      }
+    }
+  }
+
+  .map-count-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 10px;
+    background: $control-bg;
+  }
+
+  @media (width <= 599.95px) {
+    .map-filter-row {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .map-filters-button {
+      width: auto;
+    }
   }
 
   // Shared legend slot rendered by MapShell's `legend` prop: every map page's
@@ -202,6 +413,7 @@ main > div,
   }
 
   .expand-button {
+    color: #fff;
     background: $button-bg-dark;
     border: $button-border-dark;
 
@@ -212,6 +424,183 @@ main > div,
     &:active {
       background: rgb(40 40 40 / 100%);
     }
+  }
+
+  .map-control-badge,
+  .map-count-badge {
+    border: $button-border-dark;
+    background: $button-bg-dark;
+    color: #fff;
+  }
+
+  .map-control-badge {
+    &:hover {
+      background: rgb(40 40 40 / 95%);
+    }
+
+    &:active {
+      background: rgb(40 40 40 / 100%);
+    }
+  }
+
+  .map-control-field {
+    border: $button-border-dark;
+    background: $button-bg-dark;
+    color: #fff;
+
+    .MuiInputBase-root,
+    .MuiPickersInputBase-root {
+      background: transparent;
+      color: #fff;
+    }
+
+    &:hover,
+    &:focus-within {
+      background: rgb(40 40 40 / 95%);
+    }
+  }
+
+  .map-control-badge-dismissible button:hover {
+    background: rgb(255 255 255 / 12%);
+  }
+
+  .map-count-badge {
+    background: $control-bg-dark;
+  }
+}
+
+.map-date-calendar {
+  .MuiDayCalendar-header,
+  .MuiDayCalendar-weekContainer {
+    justify-content: space-around;
+  }
+}
+
+.map-filter-dialog-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.map-filter-fields {
+  padding-top: 6px;
+}
+
+.map-mobile-time-editor {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin: 0;
+  padding: 24px 0 32px;
+  text-align: center;
+
+  .MuiInputBase-root,
+  .MuiPickersInputBase-root {
+    width: 100%;
+    min-height: 112px;
+    border: 0;
+    background: transparent;
+    justify-content: center;
+
+    &::before,
+    &::after {
+      display: none;
+    }
+  }
+
+  .MuiInputBase-input,
+  .MuiPickersInputBase-sectionsContainer {
+    flex: 0 0 auto;
+    width: auto;
+    min-width: 5ch;
+    color: inherit;
+    direction: ltr;
+    font-size: 56px;
+    font-variant-numeric: tabular-nums;
+    justify-content: center;
+    line-height: 1;
+    padding: 0;
+    text-align: center;
+  }
+}
+
+.map-filter-count,
+.map-speed-value,
+.map-speed-band-group {
+  font-variant-numeric: tabular-nums;
+}
+
+.map-filter-info-icon {
+  color: currentcolor;
+  opacity: 0.58;
+}
+
+.map-speed-band-group {
+  display: inline-flex;
+  flex: 1 1 0;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
+.map-speed-filter-body {
+  margin-top: 10px;
+}
+
+.map-speed-summary,
+.map-speed-range {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.map-speed-summary {
+  flex-wrap: wrap;
+  gap: 8px 50px;
+  margin-bottom: 4px;
+}
+
+.map-speed-value {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  line-height: 1;
+
+  strong {
+    font-size: 24px;
+    font-weight: 600;
+  }
+
+  span {
+    font-size: 12px;
+  }
+}
+
+.map-speed-range {
+  margin-top: -6px;
+  color: currentcolor;
+  font-size: 12px;
+  opacity: 0.62;
+}
+
+.map-speed-band-list {
+  font-size: 12px;
+  font-style: italic;
+  font-weight: 300;
+  opacity: 0.78;
+  text-align: end;
+  text-wrap: pretty;
+}
+
+@media (width <= 599.95px) {
+  .map-speed-summary {
+    column-gap: 24px;
+  }
+
+  .map-speed-band-list {
+    max-width: 100%;
   }
 }
 

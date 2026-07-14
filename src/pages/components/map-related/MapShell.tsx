@@ -1,4 +1,4 @@
-import { CloseFullscreenRounded, OpenInFullRounded } from '@mui/icons-material'
+import { FullscreenExitRounded, FullscreenRounded } from '@mui/icons-material'
 import { IconButton } from '@mui/material'
 import { PropsWithChildren, ReactNode, useCallback, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -16,9 +16,11 @@ import { useTheme } from 'src/layout/ThemeContext'
  * so every map page places and themes its legend the same way — pages provide
  * only the legend content.
  */
-type MapShellProps = PropsWithChildren<MapContainerProps & { legend?: ReactNode }>
+type MapShellProps = PropsWithChildren<
+  MapContainerProps & { controls?: ReactNode; legend?: ReactNode }
+>
 
-export function MapShell({ children, legend, ...mapProps }: MapShellProps) {
+export function MapShell({ children, controls, legend, ...mapProps }: MapShellProps) {
   const [isExpanded, setIsExpanded] = useState<boolean>(false)
   const toggleExpanded = useCallback(() => setIsExpanded((expanded) => !expanded), [])
 
@@ -34,17 +36,10 @@ export function MapShell({ children, legend, ...mapProps }: MapShellProps) {
     <div
       ref={mapContainerRef}
       className={`map-info ${isExpanded ? 'expanded' : 'collapsed'}${isDarkTheme ? ' dark' : ''}`}>
-      <IconButton
-        ref={buttonRef}
-        color="primary"
-        className="expand-button"
-        onClick={toggleExpanded}>
-        {isExpanded ? (
-          <CloseFullscreenRounded fontSize="large" />
-        ) : (
-          <OpenInFullRounded fontSize="large" />
-        )}
+      <IconButton ref={buttonRef} className="expand-button" onClick={toggleExpanded}>
+        {isExpanded ? <FullscreenExitRounded /> : <FullscreenRounded />}
       </IconButton>
+      {controls && <div className="map-floating-controls">{controls}</div>}
       {legend && <div className="map-legend">{legend}</div>}
       <MapContainer {...mapProps} zoomControl={false} attributionControl={false}>
         <ZoomControl position={isRtl ? 'topleft' : 'topright'} />
