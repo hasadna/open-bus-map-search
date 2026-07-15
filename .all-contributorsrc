@@ -471,7 +471,8 @@
       "contributions": [
         "code",
         "security",
-        "review"
+        "review",
+        "mentoring"
       ]
     },
     {
@@ -488,6 +489,15 @@
       "name": "Alon Greenstein",
       "avatar_url": "https://avatars.githubusercontent.com/u/175951799?v=4",
       "profile": "https://github.com/alon-greenshtein",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "LeeSkies",
+      "name": "Lee",
+      "avatar_url": "https://avatars.githubusercontent.com/u/110767210?v=4",
+      "profile": "https://github.com/LeeSkies",
       "contributions": [
         "code"
       ]

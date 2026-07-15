@@ -21,12 +21,14 @@ const VehiclePage = () => {
   const { search, setSearch } = useContext(GlobalSearchContext)
   const { date } = search
   const initialUrlParams = useContext(InitialUrlParamsContext)
+  // LEGACY: manual share-param injection — replace with usePageState's per-page
+  // persistent `params` when this page is migrated.
   const { setParams } = useContext(PageShareParamsContext)
 
   // The vehicle number is page-local — never in GlobalSearchContext. Seeded once on
   // mount from the URL captured at page load (InitialUrlParamsContext), and published
   // to PageShareParamsContext for the Share button — the same page-local-param
-  // pattern as gaps_patterns' start/end dates and timeBasedMap's datetime.
+  // pattern gaps_patterns and timeBasedMap used before their usePageState migration.
   const [vehicleNumber, setVehicleNumber] = useState<number | undefined>(() =>
     normalizeVehicleNumber(initialUrlParams.vehicleNumber ?? ''),
   )
