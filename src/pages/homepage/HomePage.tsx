@@ -10,40 +10,43 @@ import { useContext } from 'react'
 import { useTranslation } from 'react-i18next'
 import { NavLink, To } from 'react-router'
 import { LayoutContextInterface, LayoutCtx } from 'src/layout/LayoutContext'
-import busImage from '../../img/busImg.png'
+import { BusImage } from './BusImage'
 import './HomePage.scss'
 
 const PageLink = ({
   icon,
   label,
   to,
+  description,
 }: {
   icon: React.ReactElement<SvgIconProps>
   label: string
   to: To | (() => void)
+  description: string
 }) => {
-  const { t } = useTranslation()
-
-  return (
-    <div className="page-link">
-      {icon}
-      <span>{label}</span>
-      {typeof to == 'function' ? (
-        <a onClick={to}>{t('homepage.show_button')}</a>
-      ) : (
-        <NavLink to={to}>{t('homepage.show_button')}</NavLink>
-      )}
+  const content = (
+    <div className="page-link-inner">
+      <div className="page-link-circle">{icon}</div>
+      <span className="page-link-label">{label}</span>
     </div>
   )
-}
+  const tooltipTitle = <div style={{ fontSize: 15, textAlign: 'center' }}>{description}</div>
 
-const wrapToolTip = (element: React.ReactElement, description: string) => {
+  if (typeof to === 'function') {
+    return (
+      <Tooltip title={tooltipTitle} placement="top">
+        <button onClick={to} className="page-link" type="button">
+          {content}
+        </button>
+      </Tooltip>
+    )
+  }
+
   return (
-    <Tooltip
-      placement={'top'}
-      title={<div style={{ fontSize: 15, textAlign: 'center' }}>{description}</div>}
-      followCursor={true}>
-      {element}
+    <Tooltip title={tooltipTitle} placement="top">
+      <NavLink to={to} className="page-link">
+        {content}
+      </NavLink>
     </Tooltip>
   )
 }
@@ -54,51 +57,58 @@ export const HomePage = () => {
 
   return (
     <div className="container">
-      <img src={busImage} alt={t('homepage.bus_illustration_alt')} />
+      <BusImage role="img" aria-label={t('homepage.bus_illustration_alt')} />
       <h1>{t('homepage.welcome')}</h1>
       <h2>{t('homepage.databus_definition')}</h2>
       <p>{t('homepage.website_goal')}</p>
 
       <section className="links hideOnMobile">
         <PageLink
-          icon={wrapToolTip(<RouteOutlined />, t('singleline_map_page_description'))}
+          icon={<RouteOutlined />}
           label={t('singleline_map_page_title')}
           to="/single-line-map"
+          description={t('singleline_map_page_description')}
         />
         <PageLink
-          icon={wrapToolTip(<FieldTimeOutlined />, t('timeline_page_description'))}
+          icon={<FieldTimeOutlined />}
           label={t('timeline_page_title')}
           to="/timeline"
+          description={t('timeline_page_description')}
         />
         <PageLink
-          icon={wrapToolTip(<BarChartOutlined />, t('gaps_page_description'))}
+          icon={<BarChartOutlined />}
           label={t('gaps_page_title')}
           to="/gaps"
+          description={t('gaps_page_description')}
         />
         <PageLink
-          icon={wrapToolTip(<LineChartOutlined />, t('gaps_patterns_page_description'))}
+          icon={<LineChartOutlined />}
           label={t('gaps_patterns_page_title')}
           to="/gaps_patterns"
+          description={t('gaps_patterns_page_description')}
         />
         <PageLink
-          icon={wrapToolTip(<DirectionsBusOutlined />, t('operator_title'))}
+          icon={<DirectionsBusOutlined />}
           label={t('operator_title')}
           to="/operator"
+          description={t('operator_title')}
         />
         <PageLink
-          icon={wrapToolTip(<MapOutlined />, t('time_based_map_page_description'))}
+          icon={<MapOutlined />}
           label={t('time_based_map_page_title')}
           to="/map"
+          description={t('time_based_map_page_description')}
         />
       </section>
 
       <section className="menu-link hideOnDesktop">
         <PageLink
-          icon={wrapToolTip(<MenuOutlined />, t('open_menu_description'))}
+          icon={<MenuOutlined />}
           label={t('homepage.open_menu')}
           to={() => {
             setDrawerOpen(true)
           }}
+          description={t('open_menu_description')}
         />
       </section>
 
