@@ -1,6 +1,6 @@
 import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
 import { Radio, RadioChangeEvent, Space } from 'antd'
-import { useContext, useEffect, useState } from 'react'
+import { useCallback, useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   Bar,
@@ -14,10 +14,9 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
-import dayjs from 'src/dayjs'
-import { useDate } from 'src/hooks/useDate'
+import dayjs, { toIsraelTimezone, utcNoonForDateStr } from 'src/dayjs'
+import { usePageState } from 'src/hooks/usePageState'
 import { GlobalSearchContext } from 'src/model/globalState'
-import { InitialUrlParamsContext, PageShareParamsContext } from 'src/model/routeContext'
 import { INPUT_SIZE } from 'src/resources/sizes'
 import SkeletonLoader from 'src/shared/SkeletonLoader'
 import Widget from 'src/shared/Widget'
@@ -36,14 +35,28 @@ import InfoYoutubeModal from '../components/YoutubeModal'
 import { useGapsList } from './useGapsList'
 import './GapsPatternsPage.scss'
 
+type SortingMode = 'hour' | 'severity'
+type GapsParams = { startDate: string; endDate: string }
+type GapsUi = { scrollPosition: number; sortingMode: SortingMode }
+
 interface BusLineStatisticsProps {
   lineRef: number
   operatorRef: string
   fromDate: dayjs.Dayjs
   toDate: dayjs.Dayjs
+  sortingMode: SortingMode
+  setSortingMode: (mode: SortingMode) => void
 }
 
 const now = dayjs()
+// Stored date-only (YYYY-MM-DD) and materialized via utcNoonForDateStr so the
+// calendar date never drifts across the UTC boundary on (de)serialization —
+// getGapsAsync sends these as UTC `date` query params.
+const DEFAULT_START_DATE = toIsraelTimezone(now).subtract(7, 'days').format('YYYY-MM-DD')
+const DEFAULT_END_DATE = toIsraelTimezone(now).subtract(1, 'day').format('YYYY-MM-DD')
+// Materialize a stored date-only string into a noon-UTC-anchored Dayjs, on demand
+// at the few consumers that need one — the params themselves stay plain strings.
+const asDayjs = (dateStr: string) => dayjs(utcNoonForDateStr(dateStr))
 
 const CustomTooltip = ({ active, payload }: TooltipContentProps) => {
   const { t } = useTranslation()
@@ -66,8 +79,14 @@ const CustomTooltip = ({ active, payload }: TooltipContentProps) => {
   return null
 }
 
-function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatisticsProps) {
-  const [sortingMode, setSortingMode] = useState<'hour' | 'severity'>('hour')
+function GapsByHour({
+  lineRef,
+  operatorRef,
+  fromDate,
+  toDate,
+  sortingMode,
+  setSortingMode,
+}: BusLineStatisticsProps) {
   const hourlyData = useGapsList(fromDate, toDate, operatorRef, lineRef, sortingMode)
   const isLoading = !hourlyData.length
   const { t } = useTranslation()
@@ -85,9 +104,7 @@ function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatistic
           <>
             <Radio.Group
               style={{ marginBottom: '10px' }}
-              onChange={(e: RadioChangeEvent) =>
-                setSortingMode(e.target.value as 'hour' | 'severity')
-              }
+              onChange={(e: RadioChangeEvent) => setSortingMode(e.target.value as SortingMode)}
               value={sortingMode}>
               <Radio.Button value="hour">{t('order_by_hour')}</Radio.Button>
               <Radio.Button value="severity">{t('order_by_severity')} </Radio.Button>
@@ -148,28 +165,32 @@ function GapsByHour({ lineRef, operatorRef, fromDate, toDate }: BusLineStatistic
 }
 
 const GapsPatternsPage = () => {
-  const initialUrlParams = useContext(InitialUrlParamsContext)
-
-  const [startDate, setStartDate] = useDate(
-    initialUrlParams.startDate
-      ? dayjs(initialUrlParams.startDate)
-      : now.clone().subtract(7, 'days'),
+  // Page-local shareable params (namespaced `gaps-patterns.<key>` in the share URL):
+  // just the date range. Dates stay YYYY-MM-DD strings, converted to a
+  // noon-UTC-anchored Dayjs ad-hoc (asDayjs) only where a consumer needs one, so
+  // the calendar date can't drift across the UTC boundary.
+  // scrollPosition and the chart sort order are session-only ui — device/session
+  // preferences, restored by usePageState but never put in the share URL.
+  const { params, setParams, ui, setUi } = usePageState<GapsParams, GapsUi>('gaps-patterns', {
+    params: { startDate: DEFAULT_START_DATE, endDate: DEFAULT_END_DATE },
+    ui: { scrollPosition: 0, sortingMode: 'hour' },
+  })
+  const { startDate, endDate } = params
+  const setStartDate = useCallback(
+    (date: dayjs.Dayjs | null) => {
+      if (!date) return
+      setParams((prev) => ({ ...prev, startDate: toIsraelTimezone(date).format('YYYY-MM-DD') }))
+    },
+    [setParams],
   )
-  const [endDate, setEndDate] = useDate(
-    initialUrlParams.endDate ? dayjs(initialUrlParams.endDate) : now.clone().subtract(1, 'day'),
+  const setEndDate = useCallback(
+    (date: dayjs.Dayjs | null) => {
+      if (!date) return
+      setParams((prev) => ({ ...prev, endDate: toIsraelTimezone(date).format('YYYY-MM-DD') }))
+    },
+    [setParams],
   )
   const { search, setSearch } = useContext(GlobalSearchContext)
-  // LEGACY: manual share-param injection — replace with usePageState's per-page
-  // persistent `params` when this page is migrated.
-  const { setParams } = useContext(PageShareParamsContext)
-
-  useEffect(() => {
-    setParams({
-      startDate: startDate.toISOString(),
-      endDate: endDate.toISOString(),
-    })
-    return () => setParams({})
-  }, [startDate, endDate, setParams])
   const { operatorId, lineNumber, routeKey } = search
   const [routes, setRoutes] = useState<BusRoute[] | undefined>()
   const [routesIsLoading, setRoutesIsLoading] = useState(false)
@@ -178,8 +199,8 @@ const GapsPatternsPage = () => {
   const loadSearchData = async (signal: AbortSignal | undefined) => {
     setRoutesIsLoading(true)
     const fetchedRoutes = await getRoutesAsync(
-      dayjs(startDate),
-      dayjs(endDate),
+      asDayjs(startDate),
+      asDayjs(endDate),
       operatorId ?? undefined,
       lineNumber ?? undefined,
       signal,
@@ -234,16 +255,16 @@ const GapsPatternsPage = () => {
           sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
           <Grid size={{ xs: 6 }}>
             <DateSelector
-              time={startDate}
+              time={asDayjs(startDate)}
               onChange={(data) => setStartDate(data)}
               customLabel={t('start')}
             />
           </Grid>
           <Grid size={{ xs: 6 }}>
             <DateSelector
-              time={endDate}
+              time={asDayjs(endDate)}
               onChange={(data) => setEndDate(data)}
-              minDate={startDate}
+              minDate={asDayjs(startDate)}
               customLabel={t('end')}
             />
           </Grid>
@@ -295,8 +316,10 @@ const GapsPatternsPage = () => {
         <GapsByHour
           lineRef={routes?.find((route) => route.key === routeKey)?.lineRef || 0}
           operatorRef={operatorId || ''}
-          fromDate={startDate}
-          toDate={endDate}
+          fromDate={asDayjs(startDate)}
+          toDate={asDayjs(endDate)}
+          sortingMode={ui.sortingMode}
+          setSortingMode={(mode) => setUi((prev) => ({ ...prev, sortingMode: mode }))}
         />
       </Grid>
     </PageContainer>

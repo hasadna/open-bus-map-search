@@ -27,8 +27,11 @@ export default defineConfig<EyesFixture>({
   timeout: 1 * 60 * 1000,
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
-    /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: 'http://localhost:3000',
+    /* Base URL to use in actions like `await page.goto('/')`.
+       In CI, PW_BASE_URL points Playwright at the prod nginx image via a shared
+       network namespace; localhost (not a hostname) avoids Chrome's HTTPS upgrade.
+       Otherwise it's the local Vite dev server started by webServer below. */
+    baseURL: process.env.PW_BASE_URL || 'http://localhost:3000',
     locale: 'he-IL',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
@@ -65,11 +68,15 @@ export default defineConfig<EyesFixture>({
     },
   ],
 
-  /* Run your local dev server before starting the tests */
-  webServer: {
-    command: 'npm start',
-    reuseExistingServer: true,
-    timeout: 120 * 1000,
-    port: 3000,
-  },
+  /* Run your local dev server before starting the tests — unless PW_BASE_URL points
+     at an already-running external server (e.g. the nginx container in CI), in which
+     case Playwright must not start (or wait on) a server of its own. */
+  webServer: process.env.PW_BASE_URL
+    ? undefined
+    : {
+        command: 'npm start',
+        reuseExistingServer: true,
+        timeout: 120 * 1000,
+        port: 3000,
+      },
 })
