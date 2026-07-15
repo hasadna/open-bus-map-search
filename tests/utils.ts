@@ -202,6 +202,22 @@ export const verifyDateFromParameter = async (page: Page) => {
   expect(daysAgo).toBeLessThanOrEqual(3)
 }
 
+/**
+ * Force every stride-api response body to fully download before the HAR is written.
+ * routeFromHAR({ updateContent: 'embed' }) only embeds bodies already in hand, so a still-streaming
+ * response is saved truncated. response.body() blocks until complete; collect one per response and
+ * await them all (settle()) as the recording's last step. Record-only; harmless otherwise.
+ */
+export function trackResponseBodies(page: Page): () => Promise<unknown> {
+  const bodies: Promise<unknown>[] = []
+  page.on('response', (response) => {
+    if (/stride-api/.test(response.url())) {
+      bodies.push(response.body().catch(() => undefined))
+    }
+  })
+  return () => Promise.all(bodies)
+}
+
 export const harOptions: RouteFromHAROptions = {
   notFound: 'abort',
   url: /stride-api/,

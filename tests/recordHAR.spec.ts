@@ -6,9 +6,12 @@
  *   RECORD_HAR=1 npx playwright test tests/recordHAR.spec.ts --workers=1
  *
  * After running, commit the updated HAR files in tests/HAR/.
+ *
+ * NOTE: realtimemap.har self-records from its own spec, not here:
+ *   RECORD_HAR=1 npx playwright test tests/realtimemap.spec.ts --workers=1
  */
 import { Page, test } from '@playwright/test'
-import { getPastDate } from './utils'
+import { getPastDate, trackResponseBodies } from './utils'
 
 test.describe.configure({ mode: 'serial' })
 
@@ -26,29 +29,6 @@ async function setupRecording(page: Page, harFile: string) {
     updateContent: 'embed',
     updateMode: 'full',
   })
-}
-
-/**
- * Force every stride-api response body to fully download before the HAR is written.
- *
- * routeFromHAR({ updateContent: 'embed' }) only embeds bodies it actually has in
- * hand; any response still streaming when the test ends is saved truncated or
- * empty. response.body() blocks until the full body has arrived, so collecting one
- * per stride-api response and awaiting them all at the end guarantees complete
- * fixtures — no need to hand-pick individual deferred requests. Errors are
- * swallowed: an aborted or body-less response must not fail the recording.
- *
- * Call right after setupRecording (before any navigation) so no response is missed,
- * then `await settleResponseBodies()` as the last step of the test.
- */
-function trackResponseBodies(page: Page): () => Promise<unknown> {
-  const bodies: Promise<unknown>[] = []
-  page.on('response', (response) => {
-    if (/stride-api/.test(response.url())) {
-      bodies.push(response.body().catch(() => undefined))
-    }
-  })
-  return () => Promise.all(bodies)
 }
 
 async function goToPage(page: Page, path: string) {
@@ -367,4 +347,7 @@ test.describe('Record HAR files', () => {
       await page.keyboard.press('Escape')
     }
   })
+
+  // realtimemap.har self-records from tests/realtimemap.spec.ts (RECORD_HAR=1), not here — its
+  // replay and record flows are identical, so both live in that one file.
 })

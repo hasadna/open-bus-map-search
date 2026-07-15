@@ -200,7 +200,11 @@ export default function useVehicleLocations({
                     new Date(a.recordedAtTime ?? 0).getTime() -
                     new Date(b.recordedAtTime ?? 0).getTime(),
                 ),
-                (loc) => loc.id,
+                // Dedup by the physical fix, not the DB row: the API re-emits one GPS fix across
+                // consecutive per-minute snapshots (same vehicleRef+time+lat+lon, new `id`), which
+                // keying on `id` never collapsed — stacking identical markers.
+                (loc) =>
+                  `${loc.siriRideVehicleRef}-${new Date(loc.recordedAtTime ?? 0).getTime()}-${loc.lat}-${loc.lon}`,
               ),
             )
           }
