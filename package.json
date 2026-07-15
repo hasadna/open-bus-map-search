@@ -105,7 +105,7 @@
     "cross-env": "^10.1.0",
     "eslint": "^9.39.4",
     "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-i18next": "^6.1.4",
+    "eslint-plugin-i18next": "^6.1.5",
     "eslint-plugin-playwright": "^2.10.5",
     "eslint-plugin-prettier": "^5.5.5",
     "eslint-plugin-react": "^7.37.5",
