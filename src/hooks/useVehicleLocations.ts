@@ -82,6 +82,12 @@ class LocationObservable {
       this.#observers.push(observer)
     }
     observer(this.data)
+    // A late subscriber to an already-finished observable (e.g. a cache hit after
+    // navigating away and back) must be told loading is done — otherwise its
+    // optimistic isLoading flag stays stuck on and the spinner never clears.
+    if (!this.loading) {
+      observer({ finished: true })
+    }
     return () => {
       this.#observers = this.#observers.filter((o) => o !== observer)
     }
