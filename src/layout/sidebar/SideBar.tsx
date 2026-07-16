@@ -1,9 +1,14 @@
+import { BugOutlined, GithubOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons'
+import IconButton from '@mui/material/IconButton'
 import { Drawer, Layout } from 'antd'
 import cn from 'classnames'
 import { useContext, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import { PAGES } from 'src/routes'
+import { LanguageToggleButton } from '../header/LanguageToggleButton'
+import { ShareButton } from '../header/ShareButton'
+import ToggleThemeButton from '../header/ToggleThemeButton'
 import { LayoutContextInterface, LayoutCtx } from '../LayoutContext'
 import { useTheme } from '../ThemeContext'
 import { Logo } from './logo'
@@ -18,7 +23,8 @@ export default function SideBar() {
   const { t, i18n } = useTranslation()
   const { drawerOpen, setDrawerOpen } = useContext<LayoutContextInterface>(LayoutCtx)
   const [collapsed, setCollapsed] = useState(false)
-  const { isDarkTheme, currentLanguage } = useTheme()
+  const { isDarkTheme, currentLanguage, toggleTheme } = useTheme()
+  const navigate = useNavigate()
 
   return (
     <>
@@ -29,7 +35,30 @@ export default function SideBar() {
         onClose={() => setDrawerOpen(false)}
         open={drawerOpen}
         rootClassName={cn('hideOnDesktop', { dark: isDarkTheme })}
-        styles={{ body: { padding: '0' } }}>
+        styles={{ body: { padding: '0' } }}
+        extra={
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <ShareButton />
+            <LanguageToggleButton />
+            <ToggleThemeButton toggleTheme={toggleTheme} isDarkTheme={isDarkTheme} />
+            <IconButton
+              size="small"
+              aria-label={t('report_a_bug_title')}
+              title={t('report_a_bug_title')}
+              onClick={() => void navigate('/report-a-bug')}>
+              <BugOutlined />
+            </IconButton>
+            <IconButton
+              size="small"
+              aria-label={t('github_link')}
+              title={t('github_link')}
+              onClick={() =>
+                void window.open('https://github.com/hasadna/open-bus-map-search', '_blank')
+              }>
+              <GithubOutlined />
+            </IconButton>
+          </div>
+        }>
         <Logo title={t('website_name')} dark={isDarkTheme} />
         <div className="sidebar-divider" />
         <Menu />
@@ -41,17 +70,53 @@ export default function SideBar() {
         width={250}
         collapsible
         collapsed={collapsed}
+        trigger={null}
         style={{
-          marginBottom: '48px',
           boxShadow: isDarkTheme ? '0 0 12px 4px rgba(0,0,0,0.7)' : '0 0 12px 4px rgba(0,0,0,0.12)',
         }}
         onCollapse={setCollapsed}
         className={cn('hideOnMobile', { dark: isDarkTheme })}>
-        <Link to={`/${currentLanguage}${PAGES[0].path}`} replace>
-          {collapsed ? <CollapsedLogo /> : <Logo title={t('website_name')} dark={isDarkTheme} />}
-        </Link>
-        <div className="sidebar-divider" />
-        <Menu collapsed={collapsed} />
+        <div className="sider-inner">
+          <div className="sider-scroll">
+            <Link to={`/${currentLanguage}${PAGES[0].path}`} replace>
+              {collapsed ? (
+                <CollapsedLogo />
+              ) : (
+                <Logo title={t('website_name')} dark={isDarkTheme} />
+              )}
+            </Link>
+            <div className="sidebar-divider" />
+            <Menu collapsed={collapsed} />
+          </div>
+          <div className="sider-footer">
+            <IconButton size="small" onClick={() => setCollapsed(!collapsed)}>
+              {collapsed ? <RightOutlined /> : <LeftOutlined />}
+            </IconButton>
+            {!collapsed && (
+              <>
+                <ShareButton />
+                <LanguageToggleButton />
+                <ToggleThemeButton toggleTheme={toggleTheme} isDarkTheme={isDarkTheme} />
+                <IconButton
+                  size="small"
+                  aria-label={t('report_a_bug_title')}
+                  title={t('report_a_bug_title')}
+                  onClick={() => void navigate('/report-a-bug')}>
+                  <BugOutlined />
+                </IconButton>
+                <IconButton
+                  size="small"
+                  aria-label={t('github_link')}
+                  title={t('github_link')}
+                  onClick={() =>
+                    void window.open('https://github.com/hasadna/open-bus-map-search', '_blank')
+                  }>
+                  <GithubOutlined />
+                </IconButton>
+              </>
+            )}
+          </div>
+        </div>
       </Sider>
     </>
   )

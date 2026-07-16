@@ -1,4 +1,13 @@
-import { expect, getPastDate, harOptions, setupTest, test, visitPage } from './utils'
+import {
+  expect,
+  getPastDate,
+  harOptions,
+  setupTest,
+  test,
+  visitPage,
+  waitForMapIdle,
+  waitForSkeletonsToHide,
+} from './utils'
 
 const TOOLTIP_CONTENT_ITEMS = [
   'שם חברה מפעילה:',
@@ -20,9 +29,12 @@ test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
 
 test('tooltip appears after clicking on map point', async ({ page }) => {
   await test.step('Click on a bus button', async () => {
-    const button = page.getByRole('button', { name: 'אגד אגד' })
-    await button.click()
-    await button.click({ force: true })
+    await waitForMapIdle(page)
+    const marker = page.getByRole('button', { name: 'אגד אגד' }).first()
+    await marker.evaluate((el) => el.scrollIntoView({ block: 'center', behavior: 'instant' }))
+    await marker.click({ force: true })
+    await expect(page.locator('.leaflet-popup-content-wrapper')).toBeAttached({ timeout: 10000 })
+    await waitForSkeletonsToHide(page)
   })
 
   await test.step('Click inside the tooltip', async () => {

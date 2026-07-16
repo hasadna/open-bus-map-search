@@ -23,9 +23,9 @@ test('should display logo and menu items correctly', async ({ page }) => {
   await expect(page.locator('ul > li a')).toContainText(MENU_ITEMS)
 })
 
-test("the main header doesn't show duplicate icons", async ({ page }) => {
-  const headerLocator = page.locator('div.header-links')
-  const svgLocators = headerLocator.locator('svg')
+test("the sidebar footer doesn't show duplicate icons", async ({ page }) => {
+  const footerLocator = page.locator('.sider-footer')
+  const svgLocators = footerLocator.locator('svg')
   const innerHTMLs = await svgLocators.evaluateAll((svgs) => svgs.map((svg) => svg.innerHTML))
   expect(innerHTMLs).not.toHaveDuplications()
   expect(innerHTMLs.length).toBeGreaterThan(0)

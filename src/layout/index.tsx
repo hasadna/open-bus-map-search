@@ -1,13 +1,17 @@
+import { MenuOutlined } from '@ant-design/icons'
+import IconButton from '@mui/material/IconButton'
 import { Layout } from 'antd'
-import { Suspense } from 'react'
+import { Suspense, useContext } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Link, Outlet } from 'react-router'
 import styled from 'styled-components'
 import { EasterEgg } from 'src/pages/components/EasterEgg/EasterEgg'
 import { Envelope } from 'src/pages/components/EasterEgg/Envelope'
 import Preloader from 'src/shared/Preloader'
-import MainHeader from './header/Header'
-import LayoutContext from './LayoutContext'
+import AppFooter from './AppFooter'
+import LayoutContext, { LayoutContextInterface, LayoutCtx } from './LayoutContext'
 import SideBar from './sidebar/SideBar'
+import { useTheme } from './ThemeContext'
 
 const { Content } = Layout
 
@@ -24,13 +28,31 @@ const StyledBody = styled.div`
   min-height: 360px;
 `
 
+const MobileMenuButton = () => {
+  const { setDrawerOpen } = useContext<LayoutContextInterface>(LayoutCtx)
+  const { i18n } = useTranslation()
+  const { currentLanguage } = useTheme()
+  const direction = i18n.dir(currentLanguage)
+
+  return (
+    <IconButton
+      className="hideOnDesktop"
+      dir={direction}
+      onClick={() => setDrawerOpen(true)}
+      sx={{ position: 'fixed', top: 8, insetInlineStart: 8, insetInlineEnd: 'auto', zIndex: 1000 }}
+      size="small">
+      <MenuOutlined />
+    </IconButton>
+  )
+}
+
 export function MainLayout() {
   return (
     <StyledLayout className="main">
       <LayoutContext>
+        <MobileMenuButton />
         <SideBar />
         <Layout>
-          <MainHeader />
           <StyledContent id="main-content">
             <StyledBody>
               <Suspense fallback={<Preloader />}>
@@ -53,6 +75,7 @@ export function MainLayout() {
               </Suspense>
             </StyledBody>
           </StyledContent>
+          <AppFooter />
         </Layout>
       </LayoutContext>
     </StyledLayout>

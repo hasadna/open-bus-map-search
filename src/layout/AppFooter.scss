@@ -1,0 +1,12 @@
+.app-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: transparent !important;
+
+  .footer-copyright {
+    font-size: 0.85rem;
+    white-space: nowrap;
+  }
+}
