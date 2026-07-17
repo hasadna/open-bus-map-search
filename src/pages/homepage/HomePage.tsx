@@ -1,9 +1,11 @@
-import { BarChartOutlined, FieldTimeOutlined, LineChartOutlined } from '@ant-design/icons'
 import {
-  DirectionsBusOutlined,
-  MapOutlined,
-  MenuOutlined,
-  RouteOutlined,
+  EmojiTransportationTwoTone,
+  HistoryTwoTone,
+  MapTwoTone,
+  MenuTwoTone,
+  NoTransferTwoTone,
+  QueryStatsTwoTone,
+  RouteTwoTone,
 } from '@mui/icons-material'
 import { SvgIconProps, Tooltip } from '@mui/material'
 import { useContext } from 'react'
@@ -64,37 +66,37 @@ export const HomePage = () => {
 
       <section className="links hideOnMobile">
         <PageLink
-          icon={<RouteOutlined />}
+          icon={<RouteTwoTone />}
           label={t('singleline_map_page_title')}
           to="/single-line-map"
           description={t('singleline_map_page_description')}
         />
         <PageLink
-          icon={<FieldTimeOutlined />}
+          icon={<HistoryTwoTone />}
           label={t('timeline_page_title')}
           to="/timeline"
           description={t('timeline_page_description')}
         />
         <PageLink
-          icon={<BarChartOutlined />}
+          icon={<NoTransferTwoTone />}
           label={t('gaps_page_title')}
           to="/gaps"
           description={t('gaps_page_description')}
         />
         <PageLink
-          icon={<LineChartOutlined />}
+          icon={<QueryStatsTwoTone />}
           label={t('gaps_patterns_page_title')}
           to="/gaps_patterns"
           description={t('gaps_patterns_page_description')}
         />
         <PageLink
-          icon={<DirectionsBusOutlined />}
+          icon={<EmojiTransportationTwoTone />}
           label={t('operator_title')}
           to="/operator"
           description={t('operator_title')}
         />
         <PageLink
-          icon={<MapOutlined />}
+          icon={<MapTwoTone />}
           label={t('time_based_map_page_title')}
           to="/map"
           description={t('time_based_map_page_description')}
@@ -103,7 +105,7 @@ export const HomePage = () => {
 
       <section className="menu-link hideOnDesktop">
         <PageLink
-          icon={<MenuOutlined />}
+          icon={<MenuTwoTone />}
           label={t('homepage.open_menu')}
           to={() => {
             setDrawerOpen(true)

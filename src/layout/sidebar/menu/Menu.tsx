@@ -1,4 +1,4 @@
-import { CalendarOutlined } from '@ant-design/icons'
+import { EventTwoTone } from '@mui/icons-material'
 import type { MenuProps } from 'antd'
 import { Menu } from 'antd'
 import React, { useContext, useEffect, useState } from 'react'
@@ -84,7 +84,7 @@ const MainMenu = ({ collapsed = false }: MainMenuProps) => {
           )}
         </Link>,
         '/hackathon',
-        <CalendarOutlined />,
+        <EventTwoTone />,
       )
     : null
 

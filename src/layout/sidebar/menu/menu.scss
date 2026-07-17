@@ -32,6 +32,11 @@
     border-radius: 10px;
   }
 
+  /* antd's menu rule caps the MUI icons at the 14px text size; render them larger */
+  .ant-menu-item .ant-menu-item-icon {
+    font-size: 20px;
+  }
+
   .ant-menu-item-selected {
     background-color: $color-active !important;
     color: #1677ff !important;

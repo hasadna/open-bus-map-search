@@ -1,4 +1,10 @@
-import { ArrowBack, ArrowForward, Clear, ExpandMore, Search } from '@mui/icons-material'
+import {
+  ArrowBackTwoTone,
+  ArrowForwardTwoTone,
+  ClearTwoTone,
+  ExpandMoreTwoTone,
+  SearchTwoTone,
+} from '@mui/icons-material'
 import {
   Accordion,
   AccordionDetails,
@@ -96,7 +102,7 @@ export const OperatorRoutes = ({ operatorId, date }: { operatorId?: string; date
             input: {
               startAdornment: (
                 <InputAdornment position="start">
-                  <Search fontSize="small" />
+                  <SearchTwoTone fontSize="small" />
                 </InputAdornment>
               ),
               endAdornment: query ? (
@@ -106,7 +112,7 @@ export const OperatorRoutes = ({ operatorId, date }: { operatorId?: string; date
                     edge="end"
                     aria-label={t('operator.clear')}
                     onClick={() => setQuery('')}>
-                    <Clear fontSize="small" />
+                    <ClearTwoTone fontSize="small" />
                   </IconButton>
                 </InputAdornment>
               ) : undefined,
@@ -134,7 +140,7 @@ const RouteGroup = ({ group, operatorId }: { group: RouteGroup; operatorId?: str
   const { t, i18n } = useTranslation()
   const { setSearch } = useContext(GlobalSearchContext)
   const navigate = useNavigate()
-  const DirectionArrow = i18n.dir() === 'rtl' ? ArrowBack : ArrowForward
+  const DirectionArrow = i18n.dir() === 'rtl' ? ArrowBackTwoTone : ArrowForwardTwoTone
 
   const profileLink = (route: Route) => (
     <Link to={`/profile/${route.id}`}>{t('operator.profile')}</Link>
@@ -166,7 +172,7 @@ const RouteGroup = ({ group, operatorId }: { group: RouteGroup; operatorId?: str
         '&.Mui-expanded + &::before': { display: 'block' },
       }}>
       <AccordionSummary
-        expandIcon={<ExpandMore />}
+        expandIcon={<ExpandMoreTwoTone />}
         sx={{
           flexDirection: 'row-reverse',
           gap: 1,

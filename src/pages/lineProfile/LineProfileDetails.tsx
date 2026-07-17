@@ -1,5 +1,5 @@
 import { GtfsRoutePydanticModel } from '@hasadna/open-bus-api-client'
-import { MultipleStopOutlined } from '@mui/icons-material'
+import { MultipleStopTwoTone } from '@mui/icons-material'
 import { Grid, Typography } from '@mui/material'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
@@ -68,7 +68,7 @@ export const LineProfileDetails = ({
             alignItems: 'center',
             marginBottom: '2.5em',
           }}>
-          {route_start} <MultipleStopOutlined /> {route_end}
+          {route_start} <MultipleStopTwoTone /> {route_end}
         </Grid>
 
         <InfoTable>
