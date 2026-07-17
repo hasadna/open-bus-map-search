@@ -362,6 +362,7 @@ jobs:
           name: playwright-test
           path: test-results
       - name: Publish test results to S3
+        id: s3upload
         if: always() && env.AWS_KEY_ID != ''
         continue-on-error: true
         env:
@@ -383,8 +384,11 @@ jobs:
       # github.run_id — the id the report was actually uploaded under. (deploy-preview
       # can't know this id, which is why its "Test Report" link was always broken.)
       # A hidden marker keeps this comment distinct from deploy-preview's "Preview" one.
+      # Gate on steps.s3upload.outcome so a failed/cancelled run (whose report never
+      # reached S3) can't overwrite the comment with a dead link. outcome is the TRUE
+      # result even though the upload step is continue-on-error.
       - name: Find existing test-report comment
-        if: always() && github.event_name == 'pull_request' && env.AWS_KEY_ID != ''
+        if: always() && github.event_name == 'pull_request' && env.AWS_KEY_ID != '' && steps.s3upload.outcome == 'success'
         uses: peter-evans/find-comment@v4
         id: fc-test-report
         with:
@@ -392,7 +396,7 @@ jobs:
           comment-author: 'github-actions[bot]'
           body-includes: '<!-- test-report-link -->'
       - name: Comment the Playwright report link on the PR
-        if: always() && github.event_name == 'pull_request' && env.AWS_KEY_ID != ''
+        if: always() && github.event_name == 'pull_request' && env.AWS_KEY_ID != '' && steps.s3upload.outcome == 'success'
         continue-on-error: true
         uses: peter-evans/create-or-update-comment@v5
         with:
