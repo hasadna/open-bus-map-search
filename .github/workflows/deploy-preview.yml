@@ -76,8 +76,7 @@ jobs:
         with:
           issue-number: ${{ env.PR_NUMBER }}
           comment-author: 'github-actions[bot]'
-          # Hidden marker so this workflow only ever matches its own preview comment,
-          # never the report comment posted by validate.yaml (which uses its own marker).
+          # Hidden marker to reliably match our own comment (the visible text is a link, not "Preview").
           body-includes: '<!-- preview-links -->'
 
       - name: update comment

@@ -347,12 +347,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: [test]
     if: always() && github.event.repository.fork == false && github.actor != 'dependabot[bot]'
-    # Job-level permissions replace the workflow-level ones, so restate statuses:write
-    # (for the commit status) and add pull-requests:write (to post the report comment).
-    permissions:
-      contents: read
-      statuses: write
-      pull-requests: write
     env:
       AWS_KEY_ID: ${{ secrets.AWS_KEY_ID }}
     steps:
@@ -372,8 +366,8 @@ jobs:
         run: aws s3 cp test-results 's3://noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.event.pull_request.head.sha }}/test-results' --recursive --acl public-read --only-show-errors
       - name: Set commit status for test results
         uses: myrotvorets/set-commit-status-action@master
-        # Same gate as the comment: only link the report when it actually reached S3,
-        # so a failed/cancelled run can't leave a dead "click to see" status.
+        # Only link the report when the upload actually reached S3, so a failed/cancelled
+        # run can't leave a dead "click to see" status.
         if: always() && env.AWS_KEY_ID != '' && steps.s3upload.outcome == 'success'
         with:
           sha: ${{ github.event.pull_request.head.sha }}
@@ -382,32 +376,6 @@ jobs:
           status: ${{needs.test.result}}
           context: 'Test results (click to see!)'
           targetUrl: 'https://s3.amazonaws.com/noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.event.pull_request.head.sha }}/test-results/index.html'
-      # Post the report link as a PR comment too, built from THIS workflow's own
-      # github.run_id — the id the report was actually uploaded under. (deploy-preview
-      # can't know this id, which is why its "Test Report" link was always broken.)
-      # A hidden marker keeps this comment distinct from deploy-preview's "Preview" one.
-      # Gate on steps.s3upload.outcome so a failed/cancelled run (whose report never
-      # reached S3) can't overwrite the comment with a dead link. outcome is the TRUE
-      # result even though the upload step is continue-on-error.
-      - name: Find existing test-report comment
-        if: always() && github.event_name == 'pull_request' && env.AWS_KEY_ID != '' && steps.s3upload.outcome == 'success'
-        uses: peter-evans/find-comment@v4
-        id: fc-test-report
-        with:
-          issue-number: ${{ github.event.pull_request.number }}
-          comment-author: 'github-actions[bot]'
-          body-includes: '<!-- test-report-link -->'
-      - name: Comment the Playwright report link on the PR
-        if: always() && github.event_name == 'pull_request' && env.AWS_KEY_ID != '' && steps.s3upload.outcome == 'success'
-        continue-on-error: true
-        uses: peter-evans/create-or-update-comment@v5
-        with:
-          comment-id: ${{ steps.fc-test-report.outputs.comment-id }}
-          issue-number: ${{ github.event.pull_request.number }}
-          edit-mode: replace
-          body: |
-            <!-- test-report-link -->
-            📊 [Playwright test report with traces](https://s3.amazonaws.com/noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.event.pull_request.head.sha }}/test-results/index.html)
 
   close-visual-batches:
     name: Close Applitools Visual Test Batches
