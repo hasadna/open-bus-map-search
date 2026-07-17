@@ -76,7 +76,9 @@ jobs:
         with:
           issue-number: ${{ env.PR_NUMBER }}
           comment-author: 'github-actions[bot]'
-          body-includes: 'Preview'
+          # Hidden marker so this workflow only ever matches its own preview comment,
+          # never the report comment posted by validate.yaml (which uses its own marker).
+          body-includes: '<!-- preview-links -->'
 
       - name: update comment
         uses: peter-evans/create-or-update-comment@v5
@@ -85,6 +87,7 @@ jobs:
           comment-id: ${{ steps.fc.outputs.comment-id }}
           edit-mode: replace
           body: |
+            <!-- preview-links -->
             Preview: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}/index.html
             Preview Storybook: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}/storybook/index.html
 
@@ -94,5 +97,6 @@ jobs:
         with:
           issue-number: ${{ env.PR_NUMBER }}
           body: |
+            <!-- preview-links -->
             Preview: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}/index.html
             Preview Storybook: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.event.workflow_run.id }}/open-bus/${{ github.event.workflow_run.run_number }}/storybook/index.html
