@@ -356,6 +356,7 @@ jobs:
           name: playwright-test
           path: test-results
       - name: Publish test results to S3
+        id: s3upload
         if: always() && env.AWS_KEY_ID != ''
         continue-on-error: true
         env:
@@ -365,7 +366,9 @@ jobs:
         run: aws s3 cp test-results 's3://noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.event.pull_request.head.sha }}/test-results' --recursive --acl public-read --only-show-errors
       - name: Set commit status for test results
         uses: myrotvorets/set-commit-status-action@master
-        if: always() && env.AWS_KEY_ID != ''
+        # Only link the report when the upload actually reached S3, so a failed/cancelled
+        # run can't leave a dead "click to see" status.
+        if: always() && env.AWS_KEY_ID != '' && steps.s3upload.outcome == 'success'
         with:
           sha: ${{ github.event.pull_request.head.sha }}
           token: ${{ secrets.GITHUB_TOKEN }}
