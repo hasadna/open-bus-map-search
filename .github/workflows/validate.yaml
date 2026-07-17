@@ -403,8 +403,6 @@ jobs:
             <!-- test-report-link -->
             📊 [Playwright test report with traces](https://s3.amazonaws.com/noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.event.pull_request.head.sha }}/test-results/index.html)
 
-            _Uploaded by this run — the bucket auto-deletes it ~7 days later._
-
   close-visual-batches:
     name: Close Applitools Visual Test Batches
     runs-on: ubuntu-latest
