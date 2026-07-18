@@ -63,8 +63,17 @@ jobs:
           # Model + effort pass straight through to the Claude Code CLI.
           # The `opus` alias = latest Opus, automatically upgraded when new opus version is released. `max` effort
           # Needs the --effort flag (settings.json `effortLevel` caps at xhigh);
+          #
+          # --append-system-prompt-file injects, into the API system role (higher
+          # instruction priority than a CLAUDE.md user message — verified: append text
+          # lands in the request `system` field, CLAUDE.md lands in a user message), a
+          # directive to treat CLAUDE.md's "Working guardrails" as hard rules, plus the
+          # CI-only write-gate + diagnosis output contract. The guardrails themselves live
+          # once, in CLAUDE.md — this file does not restate them.
+          # See .github/claude-diagnosis-protocol.md.
           claude_args: >-
             --model opus
             --effort max
+            --append-system-prompt-file .github/claude-diagnosis-protocol.md
             --allowed-tools "Bash,Edit,Write,Read,Glob,Grep,WebFetch,WebSearch,TodoWrite"
             --disallowed-tools "Bash(docker push:*),Bash(docker image push:*),Bash(docker buildx:*),Bash(podman push:*)"
