@@ -7,6 +7,12 @@ import { GlobalSearchContext } from 'src/model/globalState'
 import { PageShareParamsContext } from 'src/model/routeContext'
 import { buildShareUrl } from './shareUrl'
 
+// Vite's base path — '/' in prod, a deep sub-path for the S3 PR previews. A
+// build-time constant, so it's read once at module scope and passed into
+// buildShareUrl (which stays free of import.meta, as it is unit-tested under
+// ts-jest where import.meta is unavailable).
+const BASE_PATH = import.meta.env.BASE_URL
+
 export const ShareButton = () => {
   const { search } = useContext(GlobalSearchContext)
   const { params: pageParams } = useContext(PageShareParamsContext)
@@ -15,7 +21,8 @@ export const ShareButton = () => {
   const { t } = useTranslation()
 
   const shareUrl = useMemo(
-    () => buildShareUrl(location.pathname, search, pageParams),
+    // BASE_PATH is re-added to the router-stripped pathname so preview links resolve.
+    () => buildShareUrl(location.pathname, search, pageParams, window.location.origin, BASE_PATH),
     [location.pathname, search, pageParams],
   )
 

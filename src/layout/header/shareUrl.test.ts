@@ -16,6 +16,15 @@ const fullSearch: GlobalSearchState = {
 const build = (pathname: string, search = fullSearch, pageParams: Record<string, string> = {}) =>
   buildShareUrl(pathname, search, pageParams, ORIGIN)
 
+// The S3 PR previews serve the app from a deep sub-path (Vite's base). The router
+// strips that base from location.pathname, so buildShareUrl must re-add it.
+const PREVIEW_BASE = '/noam-gaash.co.il/123/open-bus/45/'
+const buildPreview = (
+  pathname: string,
+  search = fullSearch,
+  pageParams: Record<string, string> = {},
+) => buildShareUrl(pathname, search, pageParams, ORIGIN, PREVIEW_BASE)
+
 const paramsOf = (url: string) => Object.fromEntries(new URL(url).searchParams)
 
 // ---------------------------------------------------------------------------
@@ -111,6 +120,55 @@ describe('buildShareUrl — /vehicle page', () => {
     for (const keys of Object.values(PAGE_SHARE_PARAMS)) {
       expect(keys as string[]).not.toContain('vehicleNumber')
     }
+  })
+})
+
+// ---------------------------------------------------------------------------
+// buildShareUrl — base path (S3 PR previews)
+// ---------------------------------------------------------------------------
+
+// Production serves from '/', so the default base is a no-op. But the S3 PR
+// previews serve from a deep sub-path; the router strips it from location.pathname,
+// so buildShareUrl must prepend it or the shared link 404s at the S3 root.
+
+describe('buildShareUrl — base path', () => {
+  it('defaults to root — production URLs carry no base prefix', () => {
+    const url = new URL(build('/gaps'))
+    expect(url.origin).toBe(ORIGIN)
+    expect(url.pathname).toBe('/gaps')
+  })
+
+  it('prepends the preview base path between origin and page path', () => {
+    const url = new URL(buildPreview('/timeline'))
+    expect(url.pathname).toBe('/noam-gaash.co.il/123/open-bus/45/timeline')
+    expect(url.origin).toBe(ORIGIN)
+  })
+
+  it('joins the base and page path with a single slash (no // and no missing /)', () => {
+    // base ends with '/', pagePath starts with '/': exactly one slash must remain.
+    expect(buildPreview('/gaps')).toContain('/open-bus/45/gaps')
+    expect(buildPreview('/gaps')).not.toContain('open-bus/45//gaps')
+  })
+
+  it('keeps the base for a lang-prefixed path (after lang stripping)', () => {
+    expect(new URL(buildPreview('/he/operator')).pathname).toBe(
+      '/noam-gaash.co.il/123/open-bus/45/operator',
+    )
+  })
+
+  it('preserves query params after the base-prefixed path', () => {
+    const url = new URL(buildPreview('/gaps'))
+    expect(url.pathname).toBe('/noam-gaash.co.il/123/open-bus/45/gaps')
+    expect(Object.fromEntries(url.searchParams)).toEqual({
+      date: '2026-05-01',
+      operatorId: '3',
+      lineNumber: '64',
+      routeKey: 'route-abc',
+    })
+  })
+
+  it('root page under a preview base yields base + "/" with no trailing garbage', () => {
+    expect(new URL(buildPreview('/')).pathname).toBe('/noam-gaash.co.il/123/open-bus/45/')
   })
 })
 
