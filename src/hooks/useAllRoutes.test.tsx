@@ -34,7 +34,7 @@ describe('useAllRoutes', () => {
 
     await waitFor(() => expect(mockedGetAllRoutesList).toHaveBeenCalled())
 
-    const passedDate = mockedGetAllRoutesList.mock.calls[0][1] as Date
+    const passedDate = mockedGetAllRoutesList.mock.calls[0][1]
 
     expect(passedDate.toISOString()).toBe('2026-06-21T12:00:00.000Z')
     expect(passedDate.toISOString().substring(0, 10)).toBe('2026-06-21')
