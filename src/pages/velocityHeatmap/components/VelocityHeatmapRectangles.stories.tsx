@@ -62,10 +62,7 @@ const parameters = {
     handlers: [
       http.get(
         'https://open-bus-stride-api.hasadna.org.il/siri_velocity_aggregation/siri_velocity_aggregation',
-        async () => {
-          await new Promise((r) => setTimeout(r, 500)) // Simulate network delay
-          return HttpResponse.json(velocityAggregation)
-        },
+        () => HttpResponse.json(velocityAggregation),
       ),
     ],
   },
