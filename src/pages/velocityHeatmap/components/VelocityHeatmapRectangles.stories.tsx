@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { http, HttpResponse } from 'msw'
-import { MapContainer, TileLayer } from 'react-leaflet'
+import { TileLayer } from 'react-leaflet'
+import { MapShell } from 'src/pages/components/map-related/MapShell'
 import { velocityAggregation } from '../../../../.storybook/mockData'
 import { VelocityHeatmapLegend } from './VelocityHeatmapLegend'
 import { VelocityHeatmapRectangles } from './VelocityHeatmapRectangles'
@@ -29,12 +30,22 @@ const meta = {
   decorators: [
     (Story, ctx) => {
       return (
-        <div style={{ height: '500px', width: '100%', margin: '16px 0' }}>
-          <MapContainer
+        // MapShell's `.map-info` is `flex: 1 1 auto`, so it needs a flex-column
+        // parent with a height to fill — otherwise the map collapses to zero height.
+        <div
+          style={{
+            height: '500px',
+            width: '100%',
+            margin: '16px 0',
+            display: 'flex',
+            flexDirection: 'column',
+          }}>
+          <MapShell
             center={[29.57, 34.93]}
             zoom={13}
             scrollWheelZoom={true}
-            style={{ height: '100%', width: '100%' }}>
+            style={{ height: '100%', width: '100%' }}
+            legend={<VelocityHeatmapLegend visMode={ctx.args.visMode} min={0} max={1} />}>
             <TileLayer
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
               url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
@@ -45,8 +56,7 @@ const meta = {
                 setMinMax: () => {},
               }}
             />
-            <VelocityHeatmapLegend visMode={ctx.args.visMode} min={0} max={1} />
-          </MapContainer>
+          </MapShell>
         </div>
       )
     },
