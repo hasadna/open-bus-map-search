@@ -5,12 +5,6 @@ WORKDIR /app
 # Upgrade npm to match the version used to generate the lock file
 RUN npm install -g npm@11
 
-# nyc turns the istanbul data the Playwright coverage collector writes to
-# .nyc_output into coverage/lcov.info. It is NOT a project dependency, so install
-# it globally here (build has network) — the coverage run is fully offline and
-# could not fetch it on demand.
-RUN npm install -g nyc@17
-
 # Install npm dependencies (playwright browsers already in base image)
 COPY package*.json ./
 RUN npm ci

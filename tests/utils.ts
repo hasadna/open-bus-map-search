@@ -1,8 +1,5 @@
 import { exec } from 'child_process'
-import * as crypto from 'crypto'
-import * as fs from 'fs'
-import * as path from 'path'
-import { BrowserContext, Locator, Page } from '@playwright/test'
+import { Locator, Page } from '@playwright/test'
 import i18next from 'i18next'
 import Backend from 'i18next-fs-backend'
 import { test as baseTest, customMatcher, Matcher } from 'playwright-advanced-har'
@@ -13,44 +10,7 @@ import { PAGES } from 'src/routes'
 
 export { expect } from 'playwright-assertions'
 
-type CollectIstanbulCoverageWindow = Window &
-  typeof globalThis & {
-    collectIstanbulCoverage: (coverage: string) => void
-    __coverage__?: Record<string, unknown>
-  }
-
-const istanbulCLIOutput = path.join(process.cwd(), '.nyc_output')
-
-function generateUUID(): string {
-  return crypto.randomBytes(16).toString('hex')
-}
-
-export const test = baseTest.extend<{ context: BrowserContext }>({
-  context: async ({ context }, handle) => {
-    await context.addInitScript(() => {
-      const w = window as CollectIstanbulCoverageWindow
-      w.addEventListener('beforeunload', () => {
-        w.collectIstanbulCoverage(JSON.stringify(w.__coverage__))
-      })
-    })
-    await fs.promises.mkdir(istanbulCLIOutput, { recursive: true })
-    await context.exposeFunction('collectIstanbulCoverage', (coverageJSON: string) => {
-      if (coverageJSON) {
-        fs.writeFileSync(
-          path.join(istanbulCLIOutput, `playwright_coverage_${generateUUID()}.json`),
-          coverageJSON,
-        )
-      }
-    })
-    await handle(context)
-    for (const page of context.pages()) {
-      await page.evaluate(() => {
-        const w = window as CollectIstanbulCoverageWindow
-        w.collectIstanbulCoverage(JSON.stringify(w.__coverage__))
-      })
-    }
-  },
-})
+export const test = baseTest
 
 export function getPastDate() {
   return new Date('2024-02-12T15:00:00+00:00')
