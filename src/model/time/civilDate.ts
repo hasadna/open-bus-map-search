@@ -51,6 +51,8 @@ export function isCivilDate(value: unknown): value is CivilDate {
 export function addDays(date: CivilDate, days: number): CivilDate {
   const [year, month, day] = date.split('-').map(Number)
   const shifted = new Date(Date.UTC(year, month - 1, day + days))
+  // Built with Date.UTC and read back in UTC, so toISOString() can't drift — the
+  // slice IS the shifted day. (A local `new Date(y, m, d)` here would roll back.)
   return civilDate(shifted.toISOString().slice(0, 10))!
 }
 

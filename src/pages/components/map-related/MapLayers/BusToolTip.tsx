@@ -29,6 +29,8 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
     getRoutesByLineRef(
       (position.point?.siriRouteOperatorRef || 0).toString(),
       (position.point?.siriRouteLineRef || 0).toString(),
+      // Date-only lookup: the scheduled instant's only role is to pick the Israel
+      // calendar day the ride runs on; the time itself is never queried.
       toCivilDate(position.point?.siriRideScheduledStartTime || undefined)!,
     )
       .then((routes) => {
