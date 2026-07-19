@@ -66,7 +66,6 @@ class LocationObservable {
 
   #notifyObservers(data: SiriVehicleLocationWithRelatedPydanticModel[] | { finished: true }) {
     const observers = this.#observers
-    console.log('notifying observers', observers.length)
     observers.forEach((observer) => observer(data))
   }
 
@@ -83,6 +82,12 @@ class LocationObservable {
       this.#observers.push(observer)
     }
     observer(this.data)
+    // A late subscriber to an already-finished observable (e.g. a cache hit after
+    // navigating away and back) must be told loading is done — otherwise its
+    // optimistic isLoading flag stays stuck on and the spinner never clears.
+    if (!this.loading) {
+      observer({ finished: true })
+    }
     return () => {
       this.#observers = this.#observers.filter((o) => o !== observer)
     }
@@ -171,6 +176,10 @@ export default function useVehicleLocations({
 }) {
   const [locations, setLocations] = useState<SiriVehicleLocationWithRelatedPydanticModel[]>([])
   const [isLoading, setIsLoading] = useState<boolean[]>([])
+  // Depend on the instants, not object identities — inline-constructed Date/Dayjs
+  // props would otherwise re-run the effect (and refetch) every render.
+  const fromKey = formatTime(from)
+  const toKey = formatTime(to)
   useEffect(() => {
     if (pause) return
     const range = split ? getMinutesInRange(from, to, split) : [{ from, to }]
@@ -209,7 +218,7 @@ export default function useVehicleLocations({
       unmounts.forEach((unmount) => unmount())
       setIsLoading([])
     }
-  }, [from, to, lineRef, vehicleRef, split])
+  }, [fromKey, toKey, lineRef, vehicleRef, split])
   return {
     locations,
     isLoading: isLoading.some((loading) => loading),

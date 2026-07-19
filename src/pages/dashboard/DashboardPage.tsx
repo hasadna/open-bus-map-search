@@ -33,7 +33,7 @@ const DashboardPage = () => {
       <Typography className="page-title" variant="h4">
         {t('dashboard_page_title')}
         <InfoYoutubeModal
-          label="Open video about this page"
+          label={t('open_video_about_this_page')}
           title={t('youtube_modal_info_title')}
           videoUrl="https://www.youtube.com/embed/bXg50_j_hTA?si=4rpSZwMRbMomE4g1"
         />
@@ -54,10 +54,8 @@ const DashboardPage = () => {
       <Grid
         container
         spacing={2}
-        alignItems="center"
-        sx={{ marginTop: '0px' }}
-        justifyContent="space-between">
-        <Grid container size={{ xs: 12, lg: 6 }} spacing={2} alignItems="center">
+        sx={{ marginTop: '0px', alignItems: 'center', justifyContent: 'space-between' }}>
+        <Grid container size={{ xs: 12, lg: 6 }} spacing={2} sx={{ alignItems: 'center' }}>
           <Grid size={{ xs: 6 }}>
             <DateSelector
               time={startDate}
@@ -78,7 +76,7 @@ const DashboardPage = () => {
           <OperatorSelector operatorId={operatorId} setOperatorId={setOperatorId} />
         </Grid>
       </Grid>
-      <Grid container spacing={2} alignItems="flex-start">
+      <Grid container spacing={2} sx={{ alignItems: 'flex-start' }}>
         <Grid size={{ xs: 12, lg: 6 }}>
           <AllLinesChart
             startDate={startDate}

@@ -1,5 +1,5 @@
 import { GtfsRoutePydanticModel } from '@hasadna/open-bus-api-client'
-import { MultipleStopOutlined } from '@mui/icons-material'
+import { MultipleStopTwoTone } from '@mui/icons-material'
 import { Grid, Typography } from '@mui/material'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
@@ -42,7 +42,7 @@ export const LineProfileDetails = ({
   return (
     <Widget
       title={
-        <Grid container alignItems="center" flexDirection="column">
+        <Grid container sx={{ alignItems: 'center', flexDirection: 'column' }}>
           <Link to={'/operator?operatorId=' + operatorRef} style={{ lineHeight: 0 }}>
             <img
               src={`../operators-logos/${operatorRef}.svg`}
@@ -51,7 +51,7 @@ export const LineProfileDetails = ({
             />
           </Link>
           <Link to={'/operator?operatorId=' + operatorRef} style={{ lineHeight: 0 }}>
-            <Typography variant="h6" marginBottom="21.5px">
+            <Typography variant="h6" sx={{ marginBottom: '21.5px' }}>
               {agencyName}
             </Typography>
           </Link>
@@ -59,14 +59,16 @@ export const LineProfileDetails = ({
         </Grid>
       }
       titleSx={{ marginBottom: '21.5px' }}>
-      <Grid container alignItems="center" flexDirection="column">
+      <Grid container sx={{ alignItems: 'center', flexDirection: 'column' }}>
         <Grid
           container
-          flexDirection="column"
-          justifyContent="center"
-          alignItems="center"
-          marginBottom="2.5em">
-          {route_start} <MultipleStopOutlined /> {route_end}
+          sx={{
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            marginBottom: '2.5em',
+          }}>
+          {route_start} <MultipleStopTwoTone /> {route_end}
         </Grid>
 
         <InfoTable>

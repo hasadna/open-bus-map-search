@@ -26,6 +26,15 @@ const TRACK_ACCENT: Record<Track, string> = {
   data: '#1e3a5f',
 }
 
+// Lightened accents for dark mode — the light-theme accents are too dark to
+// read as text or borders against a dark surface.
+const TRACK_ACCENT_DARK: Record<Track, string> = {
+  harness: '#94a3b8',
+  'ai-readiness': '#5eead4',
+  mapping: '#fdba74',
+  data: '#93c5fd',
+}
+
 const MENTORS = [
   { id: 'noam', nameHe: 'נועם', nameEn: 'Noam', emoji: '🧭' },
   { id: 'aviv', nameHe: 'אביב', nameEn: 'Aviv', emoji: '⚡' },
@@ -34,6 +43,9 @@ const MENTORS = [
   { id: 'imri', nameHe: 'אימרי', nameEn: 'Imri', emoji: '✨' },
   { id: 'shay', nameHe: 'שי', nameEn: 'Shay', emoji: '🔩' },
 ] as const
+
+// brand name, not translatable
+const applitoolsLogoText = '🧿 Applitools'
 
 const Hackathon = () => {
   const { t, i18n } = useTranslation()
@@ -63,163 +75,179 @@ const Hackathon = () => {
   const faqKeys = ['bring', 'experience', 'free', 'regulator', 'devenv']
 
   return (
-    <Page>
-      <Hero>
-        <Title>{t('hackathonPage.hero.title')}</Title>
-        <Subtitle>{t('hackathonPage.hero.subtitle')}</Subtitle>
-        <Audience>{t('hackathonPage.hero.audience')}</Audience>
-        <Meta>
-          <span>📅 {t('hackathonPage.hero.date')}</span>
-          <span>📍 {t('hackathonPage.hero.location')}</span>
-          <span>🤝 {t('hackathonPage.hero.partner')}</span>
-        </Meta>
-        <CtaLink href="#register">{t('hackathonPage.hero.cta')}</CtaLink>
-        <CountdownStrip>
-          <span>{t('hackathonPage.hero.countdownLabel')}</span>
-          <Countdown targetIso={REGISTRATION_CLOSE_ISO} variant="compact" />
-        </CountdownStrip>
-      </Hero>
+    <>
+      <Page>
+        <Hero>
+          <Title>{t('hackathonPage.hero.title')}</Title>
+          <Subtitle>{t('hackathonPage.hero.subtitle')}</Subtitle>
+          <Audience>{t('hackathonPage.hero.audience')}</Audience>
+          <Meta>
+            <span>📅 {t('hackathonPage.hero.date')}</span>
+            <span>📍 {t('hackathonPage.hero.location')}</span>
+            <span>🤝 {t('hackathonPage.hero.partner')}</span>
+          </Meta>
+          <RescheduledNotice>{t('hackathonPage.hero.rescheduledNotice')}</RescheduledNotice>
+          <CtaLink href="#register">{t('hackathonPage.hero.cta')}</CtaLink>
+          <CountdownStrip>
+            <span>{t('hackathonPage.hero.countdownLabel')}</span>
+            <Countdown targetIso={REGISTRATION_CLOSE_ISO} variant="compact" />
+          </CountdownStrip>
+        </Hero>
 
-      <Widget title={t('hackathonPage.personas.title')}>
-        <p>{t('hackathonPage.personas.intro')}</p>
-        <PersonaGrid>
-          {PERSONAS.map((p) => (
-            <PersonaCard key={p.id} persona={p} />
+        <Widget title={t('hackathonPage.personas.title')}>
+          <p>{t('hackathonPage.personas.intro')}</p>
+          <PersonaGrid>
+            {PERSONAS.map((p) => (
+              <PersonaCard key={p.id} persona={p} />
+            ))}
+          </PersonaGrid>
+        </Widget>
+
+        <Widget title={t('hackathonPage.whyCome.title')}>
+          <WhyComeGrid>
+            {whyComeKeys.map((k) => (
+              <WhyCard key={k}>
+                <h3>{tx(`hackathonPage.whyCome.${k}.title`)}</h3>
+                <p>{tx(`hackathonPage.whyCome.${k}.body`)}</p>
+              </WhyCard>
+            ))}
+          </WhyComeGrid>
+        </Widget>
+
+        <Widget title={t('hackathonPage.paths.title')}>
+          <p>{t('hackathonPage.paths.intro')}</p>
+          <PathGrid>
+            {TRACKS.map((track) => (
+              <PathCard
+                key={track}
+                $accent={TRACK_ACCENT[track]}
+                $accentDark={TRACK_ACCENT_DARK[track]}
+                href={`#track-${track}`}>
+                <PathCardName>{tx(`hackathonPage.track.${track}`)}</PathCardName>
+                <PathCardDesc>{tx(`hackathonPage.trackDescription.${track}`)}</PathCardDesc>
+                <PathCardFooter>
+                  <PathAudienceBadge>
+                    {tx(`hackathonPage.trackAudience.${track}`)}
+                  </PathAudienceBadge>
+                  <PathCount>
+                    {t('hackathonPage.paths.challengeCount', {
+                      count: challengeCountByTrack[track],
+                    })}
+                  </PathCount>
+                </PathCardFooter>
+                <PathCardCta>{t('hackathonPage.paths.goToChallenges')}</PathCardCta>
+              </PathCard>
+            ))}
+          </PathGrid>
+        </Widget>
+
+        <Widget title={t('hackathonPage.schedule.title')}>
+          <ScheduleList>
+            {scheduleKeys.map((k) => (
+              <li key={k}>
+                <Time>{tx(`hackathonPage.schedule.${k}.time`)}</Time>
+                <span>{tx(`hackathonPage.schedule.${k}.label`)}</span>
+              </li>
+            ))}
+          </ScheduleList>
+        </Widget>
+
+        <Widget title={t('hackathonPage.challenges.title')}>
+          <p>{t('hackathonPage.challenges.intro')}</p>
+          <Filters>
+            {TIERS.map((tier) => (
+              <FilterChip
+                key={tier}
+                $active={tierFilter === tier}
+                onClick={() => setTierFilter(tier)}>
+                {tier === 'all'
+                  ? t('hackathonPage.tier.all')
+                  : `${TIER_EMOJI[tier]} ${tx(`hackathonPage.tier.${tier}`)}`}
+              </FilterChip>
+            ))}
+          </Filters>
+          {challengesByTrack.map(({ track, items }) => (
+            <TrackBlock key={track} $accent={TRACK_ACCENT[track]}>
+              <TrackHeader
+                id={`track-${track}`}
+                $accent={TRACK_ACCENT[track]}
+                $accentDark={TRACK_ACCENT_DARK[track]}>
+                <h3>{tx(`hackathonPage.track.${track}`)}</h3>
+                <p className="track-description">{tx(`hackathonPage.trackDescription.${track}`)}</p>
+              </TrackHeader>
+              {items.length === 0 ? (
+                <EmptyTrack>{t('hackathonPage.noChallengesForFilter')}</EmptyTrack>
+              ) : (
+                items.map((c) => <ChallengeCard key={c.id} challenge={c} />)
+              )}
+            </TrackBlock>
           ))}
-        </PersonaGrid>
-      </Widget>
+          <NonDevBlock>
+            <h3>🤝 {t('hackathonPage.nonDev.title')}</h3>
+            <p>{t('hackathonPage.nonDev.body')}</p>
+          </NonDevBlock>
+        </Widget>
 
-      <Widget title={t('hackathonPage.whyCome.title')}>
-        <WhyComeGrid>
-          {whyComeKeys.map((k) => (
-            <WhyCard key={k}>
-              <h3>{tx(`hackathonPage.whyCome.${k}.title`)}</h3>
-              <p>{tx(`hackathonPage.whyCome.${k}.body`)}</p>
-            </WhyCard>
-          ))}
-        </WhyComeGrid>
-      </Widget>
+        <Widget title={t('hackathonPage.mentors.title')}>
+          <p>{t('hackathonPage.mentors.body')}</p>
+          <MentorGrid>
+            {shuffledMentors.map((m) => (
+              <MentorCard key={m.id}>
+                <MentorEmoji>{m.emoji}</MentorEmoji>
+                <MentorName>{i18n.language === 'en' ? m.nameEn : m.nameHe}</MentorName>
+                <MentorRole>{tx(`hackathonPage.mentors.roles.${m.id}`)}</MentorRole>
+              </MentorCard>
+            ))}
+          </MentorGrid>
+        </Widget>
 
-      <Widget title={t('hackathonPage.paths.title')}>
-        <p>{t('hackathonPage.paths.intro')}</p>
-        <PathGrid>
-          {TRACKS.map((track) => (
-            <PathCard key={track} $accent={TRACK_ACCENT[track]} href={`#track-${track}`}>
-              <PathCardName>{tx(`hackathonPage.track.${track}`)}</PathCardName>
-              <PathCardDesc>{tx(`hackathonPage.trackDescription.${track}`)}</PathCardDesc>
-              <PathCardFooter>
-                <PathAudienceBadge>{tx(`hackathonPage.trackAudience.${track}`)}</PathAudienceBadge>
-                <PathCount>
-                  {tx('hackathonPage.paths.challengeCount', {
-                    count: challengeCountByTrack[track],
-                  })}
-                </PathCount>
-              </PathCardFooter>
-              <PathCardCta>{t('hackathonPage.paths.goToChallenges')}</PathCardCta>
-            </PathCard>
-          ))}
-        </PathGrid>
-      </Widget>
+        <Widget title={t('hackathonPage.sponsors.title')}>
+          <SponsorBlock>
+            <SponsorLogo>{applitoolsLogoText}</SponsorLogo>
+            <p>{t('hackathonPage.sponsors.applitools')}</p>
+          </SponsorBlock>
+          <SponsorCallout>
+            <p>{t('hackathonPage.sponsors.callout')}</p>
+            <SponsorLinks>
+              <SponsorLinkButton onClick={() => setDonateOpen(true)}>
+                {t('hackathonPage.sponsors.donate')}
+              </SponsorLinkButton>
+              <a href="mailto:noam.gaash@gmail.com">{t('hackathonPage.sponsors.contact')}</a>
+            </SponsorLinks>
+          </SponsorCallout>
+          <DonateModal isVisible={donateOpen} onClose={() => setDonateOpen(false)} />
+        </Widget>
 
-      <Widget title={t('hackathonPage.schedule.title')}>
-        <ScheduleList>
-          {scheduleKeys.map((k) => (
-            <li key={k}>
-              <Time>{tx(`hackathonPage.schedule.${k}.time`)}</Time>
-              <span>{tx(`hackathonPage.schedule.${k}.label`)}</span>
-            </li>
-          ))}
-        </ScheduleList>
-      </Widget>
+        <Widget title={t('hackathonPage.registration.title')}>
+          <div id="register" />
+          <p>{t('hackathonPage.registration.body')}</p>
+          <CountdownStrip>
+            <span>{t('hackathonPage.hero.countdownLabel')}</span>
+            <Countdown targetIso={REGISTRATION_CLOSE_ISO} variant="compact" />
+          </CountdownStrip>
+          <RegistrationEmbed />
+        </Widget>
 
-      <Widget title={t('hackathonPage.challenges.title')}>
-        <p>{t('hackathonPage.challenges.intro')}</p>
-        <Filters>
-          {TIERS.map((tier) => (
-            <FilterChip
-              key={tier}
-              $active={tierFilter === tier}
-              onClick={() => setTierFilter(tier)}>
-              {tier === 'all'
-                ? t('hackathonPage.tier.all')
-                : `${TIER_EMOJI[tier]} ${tx(`hackathonPage.tier.${tier}`)}`}
-            </FilterChip>
-          ))}
-        </Filters>
-        {challengesByTrack.map(({ track, items }) => (
-          <TrackBlock key={track} $accent={TRACK_ACCENT[track]}>
-            <TrackHeader id={`track-${track}`} $accent={TRACK_ACCENT[track]}>
-              <h3>{tx(`hackathonPage.track.${track}`)}</h3>
-              <p className="track-description">{tx(`hackathonPage.trackDescription.${track}`)}</p>
-            </TrackHeader>
-            {items.length === 0 ? (
-              <EmptyTrack>{t('hackathonPage.noChallengesForFilter')}</EmptyTrack>
-            ) : (
-              items.map((c) => <ChallengeCard key={c.id} challenge={c} />)
-            )}
-          </TrackBlock>
-        ))}
-        <NonDevBlock>
-          <h3>🤝 {t('hackathonPage.nonDev.title')}</h3>
-          <p>{t('hackathonPage.nonDev.body')}</p>
-        </NonDevBlock>
-      </Widget>
-
-      <Widget title={t('hackathonPage.mentors.title')}>
-        <p>{t('hackathonPage.mentors.body')}</p>
-        <MentorGrid>
-          {shuffledMentors.map((m) => (
-            <MentorCard key={m.id}>
-              <MentorEmoji>{m.emoji}</MentorEmoji>
-              <MentorName>{i18n.language === 'en' ? m.nameEn : m.nameHe}</MentorName>
-              <MentorRole>{tx(`hackathonPage.mentors.roles.${m.id}`)}</MentorRole>
-            </MentorCard>
-          ))}
-        </MentorGrid>
-      </Widget>
-
-      <Widget title={t('hackathonPage.sponsors.title')}>
-        <SponsorBlock>
-          <SponsorLogo>🧿 Applitools</SponsorLogo>
-          <p>{t('hackathonPage.sponsors.applitools')}</p>
-        </SponsorBlock>
-        <SponsorCallout>
-          <p>{t('hackathonPage.sponsors.callout')}</p>
-          <SponsorLinks>
-            <SponsorLinkButton onClick={() => setDonateOpen(true)}>
-              {t('hackathonPage.sponsors.donate')}
-            </SponsorLinkButton>
-            <a href="mailto:noam.gaash@gmail.com">{t('hackathonPage.sponsors.contact')}</a>
-          </SponsorLinks>
-        </SponsorCallout>
-        <DonateModal isVisible={donateOpen} onClose={() => setDonateOpen(false)} />
-      </Widget>
-
-      <Widget title={t('hackathonPage.registration.title')}>
-        <div id="register" />
-        <p>{t('hackathonPage.registration.body')}</p>
-        <CountdownStrip>
-          <span>{t('hackathonPage.hero.countdownLabel')}</span>
-          <Countdown targetIso={REGISTRATION_CLOSE_ISO} variant="compact" />
-        </CountdownStrip>
-        <RegistrationEmbed />
-      </Widget>
-
-      <Widget title={t('hackathonPage.faq.title')}>
-        <dl>
-          {faqKeys.map((k) => (
-            <FaqItem key={k}>
-              <dt>{tx(`hackathonPage.faq.${k}.q`)}</dt>
-              <dd>{tx(`hackathonPage.faq.${k}.a`)}</dd>
-            </FaqItem>
-          ))}
-        </dl>
-      </Widget>
-    </Page>
+        <Widget title={t('hackathonPage.faq.title')}>
+          <dl>
+            {faqKeys.map((k) => (
+              <FaqItem key={k}>
+                <dt>{tx(`hackathonPage.faq.${k}.q`)}</dt>
+                <dd>{tx(`hackathonPage.faq.${k}.a`)}</dd>
+              </FaqItem>
+            ))}
+          </dl>
+        </Widget>
+      </Page>
+    </>
   )
 }
 
+// ─────────────────────────────────────────────────────────────────────────
+
 const Page = styled.div`
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -263,6 +291,22 @@ const Meta = styled.div`
   justify-content: center;
   font-size: 14px;
   opacity: 0.85;
+`
+
+const RescheduledNotice = styled.p`
+  max-width: 640px;
+  margin: 0;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: #fff7ed;
+  color: #9a3412;
+  font-size: 14px;
+  line-height: 1.5;
+
+  .dark & {
+    background: #431407;
+    color: #fed7aa;
+  }
 `
 
 const CountdownStrip = styled.div`
@@ -318,6 +362,10 @@ const WhyCard = styled.div`
     line-height: 1.5;
     margin: 0;
   }
+
+  .dark & {
+    background: rgba(255, 255, 255, 0.05);
+  }
 `
 
 const PathGrid = styled.div`
@@ -331,7 +379,7 @@ const PathGrid = styled.div`
   }
 `
 
-const PathCard = styled.a<{ $accent: string }>`
+const PathCard = styled.a<{ $accent: string; $accentDark: string }>`
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -351,6 +399,17 @@ const PathCard = styled.a<{ $accent: string }>`
     background: ${({ $accent }) => $accent}12;
     color: inherit;
   }
+
+  .dark & {
+    border-color: ${({ $accentDark }) => $accentDark}33;
+    border-top-color: ${({ $accentDark }) => $accentDark};
+    background: ${({ $accentDark }) => $accentDark}14;
+  }
+
+  .dark &:hover {
+    box-shadow: 0 4px 18px ${({ $accentDark }) => $accentDark}33;
+    background: ${({ $accentDark }) => $accentDark}1f;
+  }
 `
 
 const PathCardName = styled.div`
@@ -358,6 +417,10 @@ const PathCardName = styled.div`
   font-weight: 700;
   color: #111827;
   line-height: 1.3;
+
+  .dark & {
+    color: #f1f5f9;
+  }
 `
 
 const PathCardDesc = styled.div`
@@ -365,6 +428,10 @@ const PathCardDesc = styled.div`
   color: #4b5563;
   line-height: 1.6;
   flex: 1;
+
+  .dark & {
+    color: #cbd5e1;
+  }
 `
 
 const PathCardFooter = styled.div`
@@ -382,6 +449,11 @@ const PathAudienceBadge = styled.span`
   background: rgba(0, 0, 0, 0.06);
   color: #374151;
   font-weight: 500;
+
+  .dark & {
+    background: rgba(255, 255, 255, 0.1);
+    color: #e2e8f0;
+  }
 `
 
 const PathCount = styled.span`
@@ -395,6 +467,10 @@ const PathCardCta = styled.div`
   font-weight: 600;
   color: #6b7280;
   margin-top: 2px;
+
+  .dark & {
+    color: #94a3b8;
+  }
 `
 
 const ScheduleList = styled.ol`
@@ -448,13 +524,24 @@ const FilterChip = styled.button<{ $active: boolean }>`
     border-color: #1677ff;
     color: #1677ff;
   }
+
+  .dark & {
+    border-color: ${({ $active }) => ($active ? '#1677ff' : 'rgba(255, 255, 255, 0.18)')};
+    background: ${({ $active }) => ($active ? 'rgba(22, 119, 255, 0.18)' : 'transparent')};
+    color: ${({ $active }) => ($active ? '#69b1ff' : '#cbd5e1')};
+  }
+
+  .dark &:hover {
+    border-color: #69b1ff;
+    color: #69b1ff;
+  }
 `
 
 const TrackBlock = styled.div<{ $accent: string }>`
   margin-top: 24px;
 `
 
-const TrackHeader = styled.div<{ $accent: string }>`
+const TrackHeader = styled.div<{ $accent: string; $accentDark: string }>`
   padding: 10px 14px;
   border-radius: 8px;
   background: ${({ $accent }) => $accent}12;
@@ -473,6 +560,19 @@ const TrackHeader = styled.div<{ $accent: string }>`
     color: #6b7280;
     line-height: 1.6;
     margin: 6px 0 0;
+  }
+
+  .dark & {
+    background: ${({ $accentDark }) => $accentDark}1f;
+    border-inline-start-color: ${({ $accentDark }) => $accentDark};
+  }
+
+  .dark & h3 {
+    color: ${({ $accentDark }) => $accentDark};
+  }
+
+  .dark & .track-description {
+    color: #cbd5e1;
   }
 `
 
@@ -512,6 +612,15 @@ const MentorCard = styled.div`
   &:hover {
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
   }
+
+  .dark & {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .dark &:hover {
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  }
 `
 
 const MentorEmoji = styled.div`
@@ -523,6 +632,10 @@ const MentorName = styled.div`
   font-size: 15px;
   font-weight: 600;
   color: #111827;
+
+  .dark & {
+    color: #f1f5f9;
+  }
 `
 
 const MentorRole = styled.div`
@@ -530,6 +643,10 @@ const MentorRole = styled.div`
   color: #6b7280;
   line-height: 1.4;
   text-align: center;
+
+  .dark & {
+    color: #94a3b8;
+  }
 `
 
 const NonDevBlock = styled.div`
@@ -602,6 +719,10 @@ const SponsorCallout = styled.div`
     margin: 0;
     line-height: 1.6;
     font-size: 15px;
+  }
+
+  .dark & {
+    border-color: rgba(255, 255, 255, 0.2);
   }
 `
 

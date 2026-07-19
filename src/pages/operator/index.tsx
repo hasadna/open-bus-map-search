@@ -19,12 +19,11 @@ const OperatorPage = () => {
     search: { operatorId, date },
     setSearch,
   } = useContext(GlobalSearchContext)
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
 
   const [timeRange, setTimeRange] = useState<(typeof TIME_RANGES)[number]>('day')
 
   const dateDayjs = dayjs.tz(date, ISRAEL_TIMEZONE)
-  const timestamp = dateDayjs.valueOf()
 
   const handleOperatorChange = (operatorId: string) => {
     setSearch((current) => ({ ...current, operatorId }))
@@ -60,11 +59,10 @@ const OperatorPage = () => {
             sx={{ height: 56 }}
             exclusive
             fullWidth
-            dir="rtl"
             onChange={(_, value: (typeof TIME_RANGES)[number]) =>
               value ? setTimeRange(value) : undefined
             }>
-            {(i18n.dir() === 'rtl' ? TIME_RANGES : TIME_RANGES.toReversed()).map((time) => (
+            {TIME_RANGES.map((time) => (
               <ToggleButton key={time} value={time}>
                 {t(`operator.time_range.${time}`)}
               </ToggleButton>
@@ -77,7 +75,7 @@ const OperatorPage = () => {
           <Grid size={{ lg: 6, xs: 12 }}>
             <OperatorInfo operatorId={operatorId} />
             <Spacing />
-            <OperatorGaps operatorId={operatorId} timestamp={timestamp} timeRange={timeRange} />
+            <OperatorGaps operatorId={operatorId} date={date} timeRange={timeRange} />
           </Grid>
           <Grid size={{ lg: 6, xs: 12 }}>
             <ChartWrapper>
@@ -92,7 +90,7 @@ const OperatorPage = () => {
             </ChartWrapper>
           </Grid>
           <Grid size={{ xs: 12 }}>
-            <OperatorRoutes operatorId={operatorId} timestamp={timestamp} />
+            <OperatorRoutes operatorId={operatorId} date={date} />
           </Grid>
         </Grid>
       )}

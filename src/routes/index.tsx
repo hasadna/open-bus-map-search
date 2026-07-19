@@ -1,17 +1,22 @@
 import {
-  BarChartOutlined,
-  BugOutlined,
-  CalendarOutlined,
-  DollarOutlined,
-  FieldTimeOutlined,
-  GithubOutlined,
-  HomeOutlined,
-  InfoCircleOutlined,
-  LaptopOutlined,
-  LineChartOutlined,
-  RadarChartOutlined,
-} from '@ant-design/icons'
-import { DirectionsBusOutlined, MapOutlined, Psychology, RouteOutlined } from '@mui/icons-material'
+  BiotechTwoTone,
+  DirectionsBusTwoTone,
+  EmojiTransportationTwoTone,
+  EventTwoTone,
+  GitHub,
+  HistoryTwoTone,
+  HomeTwoTone,
+  InfoTwoTone,
+  MapTwoTone,
+  MonitorTwoTone,
+  NoTransferTwoTone,
+  PaidTwoTone,
+  PestControlTwoTone,
+  PsychologyTwoTone,
+  QueryStatsTwoTone,
+  RadarTwoTone,
+  RouteTwoTone,
+} from '@mui/icons-material'
 import { lazy } from 'react'
 import { createBrowserRouter, createRoutesFromElements, Navigate, Route } from 'react-router'
 import { getRouteById } from 'src/api/gtfsService'
@@ -30,6 +35,7 @@ const TimelinePage = lazy(() => import('../pages/historicTimeline'))
 const GapsPage = lazy(() => import('../pages/gaps'))
 const TimeBasedMapPage = lazy(() => import('../pages/timeBasedMap'))
 const SingleLineMapPage = lazy(() => import('../pages/singleLineMap'))
+const VehiclePage = lazy(() => import('../pages/vehicle'))
 const About = lazy(() => import('../pages/about'))
 const Operator = lazy(() => import('../pages/operator'))
 const Profile = lazy(() => import('../pages/lineProfile/LineProfile'))
@@ -41,78 +47,85 @@ export const PAGES = [
   {
     label: 'homepage_title',
     path: '/',
-    icon: <HomeOutlined />,
+    icon: <HomeTwoTone />,
     element: <HomePage />,
   },
   {
     label: 'timeline_page_title',
     path: '/timeline',
     searchParamsRequired: true,
-    icon: <FieldTimeOutlined />,
+    icon: <HistoryTwoTone />,
     element: <TimelinePage />,
   },
   {
     label: 'gaps_page_title',
     path: '/gaps',
     searchParamsRequired: true,
-    icon: <BarChartOutlined />,
+    icon: <NoTransferTwoTone />,
     element: <GapsPage />,
   },
   {
     label: 'gaps_patterns_page_title',
     path: '/gaps_patterns',
-    icon: <LineChartOutlined />,
+    icon: <QueryStatsTwoTone />,
     element: <GapsPatternsPage />,
   },
   {
     label: 'time_based_map_page_title',
     path: '/map',
-    icon: <MapOutlined />,
+    icon: <MapTwoTone />,
     element: <TimeBasedMapPage />,
   },
   {
     label: 'velocity_heatmap_page_title',
     path: '/velocity-heatmap',
     searchParamsRequired: true,
-    icon: <RadarChartOutlined />,
+    icon: <RadarTwoTone />,
     element: <VelocityHeatmapPage />,
   },
   {
     label: 'singleline_map_page_title',
     path: '/single-line-map',
     searchParamsRequired: true,
-    icon: <RouteOutlined />,
+    icon: <RouteTwoTone />,
     element: <SingleLineMapPage />,
+  },
+  {
+    label: 'vehicle_page_title',
+    path: '/vehicle',
+    searchParamsRequired: true,
+    icon: <DirectionsBusTwoTone />,
+    element: <VehiclePage />,
   },
   {
     label: 'operator_title',
     path: '/operator',
     searchParamsRequired: true,
-    icon: <DirectionsBusOutlined />,
+    icon: <EmojiTransportationTwoTone />,
     element: <Operator />,
   },
   {
     label: 'about_title',
     path: '/about',
-    icon: <InfoCircleOutlined />,
+    icon: <InfoTwoTone />,
     element: <About />,
   },
   {
     label: 'donate_title',
     path: '/donate',
-    icon: <DollarOutlined />,
+    icon: <PaidTwoTone />,
     element: null, //DonateModal
   },
   {
     label: 'public_appeal_title',
     path: '/public-appeal',
-    icon: <Psychology />,
+    icon: <PsychologyTwoTone />,
     element: <PublicAppeal />,
   },
   {
     label: 'hackathon_title',
     path: '/hackathon',
-    icon: <CalendarOutlined />,
+    icon: <EventTwoTone />,
     element: <Hackathon />,
   },
 ] as const
@@ -121,13 +134,13 @@ export const HEADER_LINKS = [
   {
     label: 'report_a_bug_title',
     path: '/report-a-bug',
-    icon: <BugOutlined />,
+    icon: <PestControlTwoTone fontSize="inherit" />,
     element: <BugReportForm />,
   },
   {
     label: 'github_link',
     path: 'https://github.com/hasadna/open-bus-map-search',
-    icon: <GithubOutlined />,
+    icon: <GitHub fontSize="inherit" />,
     element: null,
   },
 ] as const
@@ -136,13 +149,13 @@ const HIDDEN_PAGES = [
   {
     label: 'dashboard_page_title',
     path: '/dashboard',
-    icon: <LaptopOutlined />,
+    icon: <MonitorTwoTone />,
     element: <DashboardPage />,
   },
   {
     label: 'data-research',
     path: '/data-research',
-    icon: <InfoCircleOutlined />,
+    icon: <BiotechTwoTone />,
     element: <DataResearch />,
   },
 ] as const

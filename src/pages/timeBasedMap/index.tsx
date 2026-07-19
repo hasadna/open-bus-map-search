@@ -1,16 +1,15 @@
-import { OpenInFullRounded } from '@mui/icons-material'
-import { Alert, CircularProgress, Grid, IconButton, Typography } from '@mui/material'
-import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
+import { useCallback, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet'
+import { Marker, Popup, TileLayer, useMap } from 'react-leaflet'
 import MarkerClusterGroup from 'react-leaflet-markercluster'
-import dayjs from 'src/dayjs'
+import dayjs, { ISRAEL_TIMEZONE, parseIsraelLocalDatetime } from 'src/dayjs'
 import { useAgencyList } from 'src/hooks/useAgencyList'
-import { useConstrainedFloatingButton } from 'src/hooks/useConstrainedFloatingButton'
+import { usePageState } from 'src/hooks/usePageState'
 import useVehicleLocations from 'src/hooks/useVehicleLocations'
-import { ExtraShareParamsContext, InitialUrlParamsContext } from 'src/model/routeContext'
 import { type Point, toPoint } from 'src/pages/components/map-related/map-types'
 import { BusToolTip } from 'src/pages/components/map-related/MapLayers/BusToolTip'
+import { MapShell } from 'src/pages/components/map-related/MapShell'
 import { DateSelector } from '../components/DateSelector'
 import { PageContainer } from '../components/PageContainer'
 import { TimeSelector } from '../components/TimeSelector'
@@ -19,37 +18,38 @@ import createClusterCustomIcon from '../components/utils/customCluster/customClu
 import InfoYoutubeModal from '../components/YoutubeModal'
 
 const DEFAULT_TIME = dayjs('2023-03-14T15:00:00Z')
+// Israel-local minute string, e.g. 2023-03-14T17:00 — the shareable form of DEFAULT_TIME.
+const DEFAULT_DATETIME = DEFAULT_TIME.tz(ISRAEL_TIMEZONE).format('YYYY-MM-DDTHH:mm')
 const DEFAULT_POSITION: Point = {
   loc: [32.3057988, 34.85478613],
   color: 0,
 }
 
 export default function TimeBasedMapPage() {
-  const [isExpanded, setIsExpanded] = useState<boolean>(false)
-  const toggleExpanded = useCallback(() => setIsExpanded((expanded) => !expanded), [])
-
-  const mapContainerRef = useRef<HTMLDivElement>(null)
-  const buttonRef = useRef<HTMLButtonElement>(null)
-
-  const initialUrlParams = useContext(InitialUrlParamsContext)
-  const [from, setFrom] = useState(() =>
-    initialUrlParams.timestamp ? dayjs(+initialUrlParams.timestamp) : DEFAULT_TIME,
+  // datetime is page-local and shareable: an Israel-local minute string that
+  // round-trips through the share URL (namespaced as `time-based-map.datetime`).
+  const { params, setParams } = usePageState('time-based-map', {
+    params: { datetime: DEFAULT_DATETIME },
+    ui: { scrollPosition: 0 },
+  })
+  const from = useMemo(
+    () => parseIsraelLocalDatetime(params.datetime) ?? DEFAULT_TIME,
+    [params.datetime],
   )
   const to = useMemo(() => dayjs(from).add(1, 'minutes'), [from])
   const { locations, isLoading } = useVehicleLocations({ from, to })
   const { t } = useTranslation()
   const positions = useMemo(() => locations.map(toPoint), [locations])
-  const handleFromChange = useCallback((timestamp: dayjs.Dayjs | null) => {
-    setFrom(timestamp ?? DEFAULT_TIME)
-  }, [])
-
-  const { setParams } = useContext(ExtraShareParamsContext)
-  useEffect(() => {
-    setParams({ timestamp: from.valueOf().toString() })
-    return () => setParams({})
-  }, [from, setParams])
-
-  useConstrainedFloatingButton(mapContainerRef, buttonRef, isExpanded)
+  const handleFromChange = useCallback(
+    (time: dayjs.Dayjs | null) => {
+      const next = time ?? DEFAULT_TIME
+      setParams((prev) => ({
+        ...prev,
+        datetime: next.tz(ISRAEL_TIMEZONE).format('YYYY-MM-DDTHH:mm'),
+      }))
+    },
+    [setParams],
+  )
 
   return (
     <PageContainer className="map-container">
@@ -75,27 +75,18 @@ export default function TimeBasedMapPage() {
           <TimeSelector time={from} onChange={handleFromChange} />
         </Grid>
         {/* loaded info */}
-        <Grid size={{ xs: 11 }} container alignItems="center">
+        <Grid size={{ xs: 11 }} container sx={{ alignItems: 'center' }}>
           <p>{`${locations.length} - ${t('show_x_bus_locations')}`}</p>
           {isLoading && <CircularProgress size="20px" />}
         </Grid>
       </Grid>
-      <div ref={mapContainerRef} className={`map-info ${isExpanded ? 'expanded' : 'collapsed'}`}>
-        <IconButton
-          ref={buttonRef}
-          color="primary"
-          className="expand-button"
-          onClick={toggleExpanded}>
-          <OpenInFullRounded fontSize="large" />
-        </IconButton>
-        <MapContainer center={DEFAULT_POSITION.loc} zoom={8} scrollWheelZoom={true}>
-          <TileLayer
-            attribution='&copy <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
-          />
-          <Markers positions={positions} />
-        </MapContainer>
-      </div>
+      <MapShell center={DEFAULT_POSITION.loc} zoom={8} scrollWheelZoom={true}>
+        <TileLayer
+          attribution='&copy <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
+        />
+        <Markers positions={positions} />
+      </MapShell>
     </PageContainer>
   )
 }

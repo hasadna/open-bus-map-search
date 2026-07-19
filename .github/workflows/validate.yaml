@@ -10,13 +10,20 @@ permissions:
   contents: read
   statuses: write
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 env:
   DOCKER_APP_IMAGE_NAME: 'ghcr.io/hasadna/open-bus-map-search/open-bus-map-search'
   DOCKER_APP_IMAGE_TAG: 'latest'
   APPLITOOLS_API_KEY: ${{ secrets.APPLITOOLS_API_KEY }}
-  APPLITOOLS_BATCH_ID: ${{ github.event.pull_request.head.sha }}
+  # see: https://applitools.com/docs/eyes/integrations/ci-cd/github-actions#configuring-the-applitools-cicd-integration
+  APPLITOOLS_BATCH_ID: ${{ github.event.pull_request.head.sha || github.sha }}
   APPLITOOLS_LOG_DIR: ./logs
   APPLITOOLS_SHOW_LOGS: true
+  APPLITOOLS_MASK_LOG: true # mask the API key (and tokens) in Applitools logs
+  APPLITOOLS_MASK_VALUES: ${{ secrets.APPLITOOLS_API_KEY }} # seed the mask set at logger startup so the key is hidden even in the early config dump
 
 jobs:
   local-tests:
@@ -50,6 +57,79 @@ jobs:
         run: npm run lint
       - name: Check for circular dependencies
         run: npx madge --extensions js,ts --circular .
+      # Jest gates merges here: this is the only job in CI that runs it.
+      - name: Run unit tests
+        run: npm run test:unit
+
+  # Should block merge (required status check): a PR must not introduce new vulnerable dependencies.
+  dependency-review:
+    name: Dependency Review
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    permissions:
+      contents: read
+      # Needed for comment-summary-in-pr; on fork PRs the token stays read-only
+      # and the action falls back to the job summary instead of a comment.
+      pull-requests: write
+      # deleteComment (the success-path cleanup) is gated on Issues:write even for
+      # comments on a PR; pull-requests:write only covers create/update.
+      issues: write
+    steps:
+      - uses: actions/checkout@v6
+      - name: Review dependency changes introduced by this PR
+        id: review
+        uses: actions/dependency-review-action@v5
+        with:
+          fail-on-severity: low
+          comment-summary-in-pr: on-failure
+          # Exception policy: a GHSA may be allowlisted below only if
+          #   - severity is low or moderate (never high/critical), AND
+          #   - there is no patched version / alternative package, AND
+          #   - the entry has a justification.
+          # allow-ghsas: GHSA-xxxx-xxxx-xxxx # <why it's acceptable>
+      - name: Allowlist help comment
+        # On failure: post a short how-to. On success: delete both this help comment
+        # and the action's own summary, so a fixed PR cleans up after itself.
+        if: always() && github.event_name == 'pull_request'
+        continue-on-error: true # never let the comment housekeeping fail the gate (e.g. read-only token on fork PRs)
+        uses: actions/github-script@v8 # v8 runs on node24 (v7 was node20, deprecated)
+        env:
+          REVIEW_OUTCOME: ${{ steps.review.outcome }}
+        with:
+          script: |
+            const helpMarker = '<!-- dep-review-allowlist-help -->'
+            const reviewMarker = '<!-- dependency-review-pr-comment-marker -->' // the action's own sticky marker
+            const { owner, repo } = context.repo
+            const issue_number = context.issue.number
+            const comments = await github.paginate(github.rest.issues.listComments, { owner, repo, issue_number })
+            const find = (m) => comments.find((c) => c.body && c.body.includes(m))
+
+            if (process.env.REVIEW_OUTCOME === 'failure') {
+              const body = [
+                helpMarker,
+                '### A dependency this PR adds is flagged 🛑',
+                '',
+                'Best fix: bump it to a patched version so the advisory is gone.',
+                '',
+                "If there's no patch and a reviewer approves:",
+                'grab the `GHSA-…` id from the advisory link in the summary above (it only lives there),',
+                'and add it under `allow-ghsas` in `.github/workflows/validate.yaml`, with a reason why it is OK to allow it:',
+                '',
+                '```yaml',
+                '          allow-ghsas: GHSA-xxxx-xxxx-xxxx # why it is OK',
+                '```',
+                '',
+                'On your way, feel free to delete any `allow-ghsas` lines that existed before this PR - (they are only needed on PR merge).',
+              ].join('\n')
+              const existing = find(helpMarker)
+              if (existing) await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body })
+              else await github.rest.issues.createComment({ owner, repo, issue_number, body })
+            } else if (process.env.REVIEW_OUTCOME === 'success') {
+              for (const m of [helpMarker, reviewMarker]) {
+                const c = find(m)
+                if (c) await github.rest.issues.deleteComment({ owner, repo, comment_id: c.id })
+              }
+            }
 
   build:
     name: Docker Build
@@ -59,9 +139,9 @@ jobs:
       - name: Generate hash.txt with commit hash
         run: echo "$(git rev-parse --short HEAD)" >> public/hash.txt
       - name: Setup Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
       - name: Build and export Docker image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           tags: ${{ env.DOCKER_APP_IMAGE_NAME }}:${{ env.DOCKER_APP_IMAGE_TAG }}
@@ -92,80 +172,63 @@ jobs:
     name: Application & Playwright Tests
     runs-on: ubuntu-latest
     needs: [build, build-outside-docker]
+    # The Playwright container shares the app container's network namespace
+    # (--network container:app on an --internal, no-egress network), so it reaches
+    # nginx at http://localhost/ and genuinely cannot reach the internet — any
+    # un-mocked external call fails hard, run against the real production build.
+    # Use localhost, not http://app/: Chrome may HTTPS-upgrade a bare hostname to
+    # :443 where nginx isn't listening; localhost is exempt from the upgrade.
     steps:
-      - name: Set timezone
-        run: echo "TZ=Asia/Jerusalem" >> $GITHUB_ENV
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
       - name: Download Docker image artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: docker-image
           path: /tmp
       - name: Load Docker image
         run: docker load -i /tmp/docker-image.tar
-      - name: Start application container
-        run: docker run -d -p 3000:80 ${{ env.DOCKER_APP_IMAGE_NAME }}:${{ env.DOCKER_APP_IMAGE_TAG }}
-      - uses: actions/checkout@v6
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-      - uses: actions/setup-node@v6
-        with:
-          node-version: 24
-          cache: 'npm'
-      - name: Configure blocked external hosts
-        uses: ./.github/actions/block-network
-      - name: Validate hash.txt endpoint
+      - name: Create isolated no-egress network
+        run: docker network create --internal isolated
+      - name: Start application container (prod nginx image)
+        run: docker run -d --name app --network isolated ${{ env.DOCKER_APP_IMAGE_NAME }}:${{ env.DOCKER_APP_IMAGE_TAG }}
+      - name: Build Playwright runner image
+        run: docker build -t open-bus-offline-test -f scripts/Dockerfile.offline-test .
+      - name: Wait for nginx and validate hash.txt (shared netns)
         run: |
-          response=$(curl -s -w "%{http_code}" -o /tmp/hash.txt http://localhost:3000/hash.txt)
-          http_code=${response: -3}
-          if [ "$http_code" -ne 200 ]; then
-            echo "Error: HTTP request failed with status code $http_code"
-            exit 1
-          fi
-          mime_type=$(file --mime-type -b /tmp/hash.txt)
-          if [ "$mime_type" != "text/plain" ]; then
-            echo "Error: hash.txt does not have MIME type text/plain. Found: $mime_type"
-            exit 1
-          fi
-          content_length=$(wc -c < /tmp/hash.txt | xargs)
-          if [ "$content_length" -ge 100 ]; then
-            echo "Error: hash.txt content exceeds 100 characters. Length: $content_length"
-            exit 1
-          fi
-          echo "hash.txt is valid with MIME type $mime_type and length $content_length characters."
-      - name: Install Dependencies and Playwright
-        run: npm ci
-      - name: Cache Playwright browsers
-        uses: actions/cache@v3
-        id: playwright-cache
-        with:
-          path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
-      - name: Install Playwright browser dependencies
-        if: steps.playwright-cache.outputs.cache-hit != 'true'
-        timeout-minutes: 15
-        run: npx playwright install chromium
-      - name: Run Playwright tests
-        run: npm test
-      - name: Prepare Playwright artifact directory
-        if: always()
+          for i in $(seq 1 20); do
+            if docker run --rm --network container:app open-bus-offline-test \
+              node -e "const http=require('http');http.get('http://localhost/hash.txt',r=>{let b='';r.on('data',d=>b+=d);r.on('end',()=>{const t=r.headers['content-type']||'';if(r.statusCode===200&&/^text\/plain/.test(t)&&b.length<100){console.log('hash.txt OK: 200, '+t+', '+b.length+' bytes');process.exit(0)}console.log('bad: '+r.statusCode+' '+t+' '+b.length);process.exit(1)})}).on('error',e=>{console.log('err '+e.message);process.exit(1)})"; then
+              echo "app is ready"
+              exit 0
+            fi
+            echo "waiting for nginx (#$i)"
+            sleep 1
+          done
+          echo "app did not become ready"
+          docker logs app || true
+          exit 1
+      - name: Run Playwright e2e against prod image (hard offline)
         run: |
           mkdir -p playwright-artifact
-          if [ -d test-results ]; then cp -r test-results/* playwright-artifact/; fi
-          if [ -d playwright-report ]; then cp -r playwright-report/* playwright-artifact/; fi
-          touch playwright-artifact/.keep
+          docker run --rm \
+            --network container:app \
+            -e CI=true \
+            -e TZ=Asia/Jerusalem \
+            -e PW_BASE_URL=http://localhost \
+            -v "$PWD/playwright-artifact:/app/artifact-out" \
+            open-bus-offline-test \
+            sh -c 'npx playwright test --grep-invert visual; code=$?; cp -r test-results/. /app/artifact-out/ 2>/dev/null || true; cp -r playwright-report/. /app/artifact-out/ 2>/dev/null || true; touch /app/artifact-out/.keep; exit $code'
       - name: Upload Playwright test artifact
         if: always()
         uses: actions/upload-artifact@v7
         with:
           name: playwright-test
           path: playwright-artifact
-      - name: Upload logs if exists
-        if: always()
-        uses: actions/upload-artifact@v7
-        with:
-          name: logs-test
-          path: logs
-          if-no-files-found: warn
+      - name: Show app logs on failure
+        if: failure()
+        run: docker logs app || true
 
   storybook-test:
     name: Storybook Visual Tests
@@ -181,7 +244,7 @@ jobs:
         run: |
           echo "SHORT_SHA=$(echo ${{ github.event.pull_request.head.sha }} | cut -c1-7)" >> $GITHUB_ENV
       - name: Download Docker image artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: docker-image
           path: /tmp
@@ -217,18 +280,37 @@ jobs:
       - name: Prepare for Testing
         run: |
           echo "SHORT_SHA=$(echo ${{ github.event.pull_request.head.sha }} | cut -c1-7)" >> $GITHUB_ENV
+      # Visual tests must run against the nginx-served Docker artifact (with the
+      # production CSP/security headers), not the bare Vite dev server. Start the
+      # container on :3000 so Playwright's webServer (reuseExistingServer) reuses
+      # it instead of spinning up `npm start`. Otherwise CSP regressions (e.g. a
+      # missing connect-src breaking MSW-mocked stories) go undetected.
+      - name: Download Docker image artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: docker-image
+          path: /tmp
+      - name: Load Docker image
+        run: docker load -i /tmp/docker-image.tar
+      - name: Start application container
+        run: docker run -d -p 3000:80 ${{ env.DOCKER_APP_IMAGE_NAME }}:${{ env.DOCKER_APP_IMAGE_TAG }}
       - uses: actions/setup-node@v6
         with:
           node-version: 24
           cache: 'npm'
       - name: Install Dependencies and Playwright
         run: npm ci
+      - name: Resolve Playwright cache key inputs
+        id: playwright-version
+        run: |
+          echo "version=$(node -p 'require("@playwright/test/package.json").version')" >> "$GITHUB_OUTPUT"
+          echo "imageos=$ImageOS" >> "$GITHUB_OUTPUT"
       - name: Cache Playwright browsers
-        uses: actions/cache@v3
+        uses: actions/cache@v5
         id: playwright-cache
         with:
           path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
+          key: ${{ runner.os }}-${{ runner.arch }}-${{ steps.playwright-version.outputs.imageos }}-playwright-${{ steps.playwright-version.outputs.version }}
       - name: Install Playwright browser dependencies
         if: steps.playwright-cache.outputs.cache-hit != 'true'
         timeout-minutes: 15
@@ -236,6 +318,7 @@ jobs:
       - name: Run Playwright Visual Tests
         env:
           APPLITOOLS_BATCH_NAME: open-bus-map-search/${{ github.ref }}/${{ env.SHORT_SHA }}/
+          PWTEST_CHILD_PROCESS_TIMEOUT: '1800000' # 30 min; default 300000 force-kills slow UFG result collection → false CI failure
         run: npm run test:e2e:visual
       - name: Prepare Playwright artifact directory
         if: always()
@@ -267,21 +350,18 @@ jobs:
       AWS_KEY_ID: ${{ secrets.AWS_KEY_ID }}
     steps:
       - name: Download Playwright test artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: playwright-test
           path: test-results
       - name: Publish test results to S3
-        uses: shallwefootball/s3-upload-action@master
         if: always() && env.AWS_KEY_ID != ''
-        id: s3-trace
         continue-on-error: true
-        with:
-          aws_key_id: ${{env.AWS_KEY_ID}}
-          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
-          aws_bucket: noam-gaash.co.il
-          source_dir: test-results
-          destination_dir: ${{ github.run_id }}/open-bus/${{ github.event.pull_request.head.sha }}/test-results
+        env:
+          AWS_ACCESS_KEY_ID: ${{ env.AWS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: us-east-1
+        run: aws s3 cp test-results 's3://noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.event.pull_request.head.sha }}/test-results' --recursive --acl public-read --only-show-errors
       - name: Set commit status for test results
         uses: myrotvorets/set-commit-status-action@master
         if: always() && env.AWS_KEY_ID != ''

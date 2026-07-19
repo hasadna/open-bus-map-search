@@ -75,6 +75,8 @@ const Countdown = ({ targetIso, variant = 'large' }: CountdownProps) => {
   )
 }
 
+// ─── Styled components ─────────────────────────────────────────────────────
+
 const Wrapper = styled.div<{ $variant: 'large' | 'compact' }>`
   display: flex;
   align-items: center;

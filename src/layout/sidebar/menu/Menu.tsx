@@ -1,4 +1,4 @@
-import { CalendarOutlined } from '@ant-design/icons'
+import { EventTwoTone } from '@mui/icons-material'
 import type { MenuProps } from 'antd'
 import { Menu } from 'antd'
 import React, { useContext, useEffect, useState } from 'react'
@@ -20,7 +20,7 @@ type MainMenuProps = {
 const MENU_GROUPS = [
   {
     key: 'menu_group_analysis',
-    paths: ['/single-line-map', '/timeline', '/gaps', '/gaps_patterns', '/operator'],
+    paths: ['/single-line-map', '/timeline', '/gaps', '/gaps_patterns', '/operator', '/vehicle'],
   },
   {
     key: 'menu_group_maps',
@@ -78,11 +78,13 @@ const MainMenu = ({ collapsed = false }: MainMenuProps) => {
         <Link to={`/${currentLanguage}/hackathon`} onClick={() => setDrawerOpen(false)}>
           {t('hackathon_title')}
           {hackathonDaysLeft !== null && (
-            <span className="hackathon-badge">{hackathonDaysLeft}d</span>
+            <span className="hackathon-badge">
+              {t('hackathon_days_left_badge', { days: hackathonDaysLeft })}
+            </span>
           )}
         </Link>,
         '/hackathon',
-        <CalendarOutlined />,
+        <EventTwoTone />,
       )
     : null
 

@@ -1,4 +1,4 @@
-import dayjs from 'src/dayjs'
+import dayjs, { ISRAEL_TIMEZONE } from 'src/dayjs'
 import { USER_CASE_API } from './apiConfig'
 
 export type Gap = {
@@ -9,21 +9,21 @@ export type Gap = {
 
 export function parseTime(time?: dayjs.ConfigType) {
   if (!time) return undefined
-  const utcDayjs = dayjs.utc(time).utcOffset(0, true).tz('Asia/Jerusalem')
+  const utcDayjs = dayjs.utc(time).utcOffset(0, true).tz(ISRAEL_TIMEZONE)
   if (!utcDayjs.isValid()) return undefined
   return utcDayjs
 }
 
 export const getGapsAsync = (
-  fromTimestamp: number,
-  toTimestamp: number,
+  from: dayjs.Dayjs,
+  to: dayjs.Dayjs,
   operatorId: string,
   lineRef: number,
   limit = 10000,
 ) => {
   return USER_CASE_API.ridesExecutionListGet({
-    dateFrom: new Date(fromTimestamp),
-    dateTo: new Date(toTimestamp),
+    dateFrom: from.toDate(),
+    dateTo: to.toDate(),
     limit,
     lineRef,
     operatorRef: parseInt(operatorId),

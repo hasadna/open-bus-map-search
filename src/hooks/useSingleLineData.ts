@@ -2,27 +2,27 @@ import { useQuery } from '@tanstack/react-query'
 import { uniqBy } from 'es-toolkit/compat'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { SIRI_API } from 'src/api/apiConfig'
-import { getRoutesAsync, getRoutesByLineRef, getStopsForRouteAsync } from 'src/api/gtfsService'
+import { getRoutesByLineRef, getStopsForRouteAsync } from 'src/api/gtfsService'
+import { getServiceDayRoutes } from 'src/api/serviceDayRoutesService'
 import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone } from 'src/dayjs'
 import { BusRoute } from 'src/model/busRoute'
-import { type Point, toPoint } from 'src/pages/components/map-related/map-types'
+import {
+  type PositionGroup,
+  ROUTE_COLORS,
+  toPoint,
+} from 'src/pages/components/map-related/map-types'
 import { routeStartEnd, vehicleIDFormat } from 'src/pages/components/utils/rotueUtils'
 import {
+  formatServiceDayTime,
   normalizeStartTimeToken,
   parseStartTimeToken,
+  serviceDayBounds,
+  serviceDayTokenToDisplay,
 } from 'src/pages/components/utils/startTimeUtils'
-
-const LIGHT_TRAIN_OPERATORS = new Set(['21', '22'])
-
-const VEHICLE_NUMBER_TEST = {
-  lightTrain: /^\d{1,6}$/,
-  bus: /^\d{7,8}$/,
-} as const
 
 interface UseSingleLineDataOptions {
   operatorId?: string
   lineNumber?: string
-  vehicleNumber?: number
   date: string
   routeKey?: string | null
   rideTime?: string | null
@@ -33,7 +33,6 @@ interface UseSingleLineDataOptions {
 export const useSingleLineData = ({
   operatorId,
   lineNumber,
-  vehicleNumber,
   date,
   routeKey,
   rideTime,
@@ -43,7 +42,8 @@ export const useSingleLineData = ({
   const [routes, setRoutes] = useState<BusRoute[] | undefined>()
   const [options, setOptions] = useState<{ value: string; label: string }[]>([])
   const [rideIdsByToken, setRideIdsByToken] = useState<Map<string, number[]>>(new Map())
-  const [positions, setPositions] = useState<Point[]>([])
+  const [vehicleRefById, setVehicleRefById] = useState<Map<number, string>>(new Map())
+  const [positionGroups, setPositionGroups] = useState<PositionGroup[]>([])
   const [locationsAreLoading, setLocationsAreLoading] = useState(false)
   const [error, setError] = useState<string>()
   const startTime = useMemo(() => normalizeStartTimeToken(rideTime ?? undefined), [rideTime])
@@ -72,15 +72,16 @@ export const useSingleLineData = ({
     }
 
     const controller = new AbortController()
-    const time = dayjs.tz(date, ISRAEL_TIMEZONE)
 
-    getRoutesAsync(time, time, operatorId, lineNumber, controller.signal)
+    // Service-day aware: includes the next calendar day's late-night routes
+    // (00:00–04:00) that belong to this service day, matching the gaps page.
+    getServiceDayRoutes(dayjs.tz(date, ISRAEL_TIMEZONE), operatorId, lineNumber, controller.signal)
       .then((routes) => {
         setRoutes(routes)
         setError(undefined)
       })
-      .catch((err) => {
-        if (err?.cause?.name !== 'AbortError') {
+      .catch((err: unknown) => {
+        if ((err as { cause?: { name?: string } })?.cause?.name !== 'AbortError') {
           setRoutes(undefined)
           onRouteKeyChange?.(null)
           setError(err instanceof Error ? err.message : 'Failed to fetch routes')
@@ -96,22 +97,10 @@ export const useSingleLineData = ({
     return routes?.find((route) => route.key === (routeKey ?? undefined))
   }, [routes, routeKey])
 
-  const [today, tomorrow] = useMemo(() => {
-    const today = dayjs.tz(date, ISRAEL_TIMEZONE).startOf('day')
-    return [today, today.add(1, 'day')]
+  const [serviceDayStart, serviceDayEnd] = useMemo(() => {
+    const { start, end } = serviceDayBounds(date)
+    return [start, end]
   }, [date])
-
-  const validVehicleNumber = useMemo(() => {
-    if (!vehicleNumber) return undefined
-
-    const vehicleNumberText = String(vehicleNumber)
-    const isLightTrain = LIGHT_TRAIN_OPERATORS.has(operatorId ?? '')
-    const vehicleNumberTest = isLightTrain
-      ? VEHICLE_NUMBER_TEST.lightTrain
-      : VEHICLE_NUMBER_TEST.bus
-
-    return vehicleNumberTest.test(vehicleNumberText) ? vehicleNumber : undefined
-  }, [operatorId, vehicleNumber])
 
   const parsedStartTime = useMemo(() => parseStartTimeToken(startTime), [startTime])
 
@@ -122,9 +111,13 @@ export const useSingleLineData = ({
 
   // Fetch departure list for the dropdown, grouping double trips into one entry
   useEffect(() => {
-    if (!selectedRoute?.lineRef && !validVehicleNumber) {
-      setOptions([])
-      setRideIdsByToken(new Map())
+    // Clear the previous day's ride mapping synchronously (before the async
+    // refetch) so the pings effect below can't fire with stale, other-date
+    // siri_ride ids while a ride-time token is still selected across a date change.
+    setOptions([])
+    setRideIdsByToken(new Map())
+    setVehicleRefById(new Map())
+    if (!selectedRoute?.lineRef) {
       return
     }
     const controller = new AbortController()
@@ -132,14 +125,8 @@ export const useSingleLineData = ({
       {
         siriRouteLineRefs: selectedRoute?.lineRef?.toString(),
         siriRouteOperatorRefs: operatorId,
-        vehicleRefs: validVehicleNumber?.toString(),
-        // Primary guard against the midnight SIRI batch: every day at ~00:00 the backend
-        // mass-creates phantom siri_ride records for all tracked vehicles, which can fill the
-        // entire 500-result page leaving no real rides. Skipping to 03:00 avoids them in line
-        // mode. Vehicle mode is exempt — the query already filters to one vehicle so there is
-        // no flood risk, and real early-morning trips (04:00–06:00) must not be hidden.
-        scheduledStartTimeFrom: validVehicleNumber ? today.toDate() : today.add(3, 'hour').toDate(),
-        scheduledStartTimeTo: tomorrow.toDate(),
+        scheduledStartTimeFrom: serviceDayStart.toDate(),
+        scheduledStartTimeTo: serviceDayEnd.toDate(),
         orderBy: 'scheduled_start_time asc',
         limit: 500,
       },
@@ -152,40 +139,39 @@ export const useSingleLineData = ({
         >()
         for (const ride of rides) {
           if (!ride.scheduledStartTime || !ride.vehicleRef || !ride.id) continue
-          const scheduledTime = toIsraelTimezone(ride.scheduledStartTime).format('HH:mm')
-          const key = validVehicleNumber
-            ? `${scheduledTime}|${ride.vehicleRef}|${ride.siriRouteLineRef}`
-            : scheduledTime
+          const key = formatServiceDayTime(
+            toIsraelTimezone(ride.scheduledStartTime),
+            serviceDayStart,
+          )
           if (!byTime.has(key)) byTime.set(key, [])
           byTime.get(key)!.push({ id: ride.id, vehicleRef: ride.vehicleRef, ride })
         }
 
         const idMap = new Map<string, number[]>()
+        const vehMap = new Map<number, string>()
         const opts: { value: string; label: string }[] = []
 
-        // Secondary guard: skip time slots with >4 vehicles at the same scheduled time.
-        // Real double/triple trips have 2–3 vehicles max. >4 means a SIRI batch artifact
-        // slipped past the +3h start-time filter (e.g. the batch ran late, after 03:00 IST).
         byTime.forEach((group, key) => {
-          if (group.length > 4) return
           idMap.set(
             key,
             group.map((g) => g.id),
           )
-          const scheduledTime = toIsraelTimezone(group[0].ride.scheduledStartTime).format('HH:mm')
+          group.forEach((g) => vehMap.set(g.id, g.vehicleRef))
+          // Show the wall-clock time (00:10), not the extended-hour token (24:10),
+          // and flag past-midnight departures with a moon so the next-night rides
+          // are obvious. The extended token stays the option `value` for the URL.
+          const { time: displayTime, nextDay } = serviceDayTokenToDisplay(key)
+          const scheduledTime = nextDay ? `🌙 ${displayTime}` : displayTime
           const routeLongName = group[0].ride.gtfsRouteRouteLongName
           const [start, end] = routeLongName ? routeStartEnd(routeLongName) : []
           const routePart = routeLongName
             ? `${group[0].ride.gtfsRouteRouteShortName} - ${start} ⇄ ${end}`
             : undefined
-          const label = validVehicleNumber
-            ? routePart
-              ? `${scheduledTime} (${routePart})`
-              : scheduledTime
-            : group.length === 1
+          const label =
+            group.length === 1
               ? routePart
-                ? `${scheduledTime} (${routePart}, ${vehicleIDFormat(group[0].vehicleRef)})`
-                : `${scheduledTime} (${vehicleIDFormat(group[0].vehicleRef)})`
+                ? `${scheduledTime} (${routePart})`
+                : scheduledTime
               : routePart
                 ? `${scheduledTime} (${routePart}, ${group.length} vehicles)`
                 : `${scheduledTime} (${group.length} vehicles)`
@@ -194,23 +180,24 @@ export const useSingleLineData = ({
 
         setOptions(opts)
         setRideIdsByToken(idMap)
+        setVehicleRefById(vehMap)
       })
       .catch((err) => {
         if (err?.name !== 'AbortError') console.error(err)
       })
     return () => controller.abort()
-  }, [selectedRoute?.lineRef, operatorId, validVehicleNumber, today, tomorrow])
+  }, [selectedRoute?.lineRef, operatorId, serviceDayStart, serviceDayEnd])
 
-  // Fetch location pings for the selected ride(s)
+  // Fetch location pings for the selected ride(s), one group per vehicle
   useEffect(() => {
     const rideIds = selectedRideIdsKey ? selectedRideIdsKey.split(',').map(Number) : []
     if (!rideIds.length) {
-      setPositions([])
+      setPositionGroups([])
       return
     }
     setLocationsAreLoading(true)
     Promise.all(
-      rideIds.map((rideId) =>
+      rideIds.map((rideId, idx) =>
         SIRI_API.siriVehicleLocationsListGet({
           siriRidesIds: rideId.toString(),
           // Israel bounding box — drops null/zero-coordinate and stray pings at the API level
@@ -221,13 +208,18 @@ export const useSingleLineData = ({
           orderBy: 'recorded_at_time asc',
           limit: 10000,
           getCount: false,
-        }),
+        }).then((data) => ({
+          color: ROUTE_COLORS[idx % ROUTE_COLORS.length],
+          label: vehicleIDFormat(vehicleRefById.get(rideId)) ?? String(idx + 1),
+          vehicleRef: vehicleRefById.get(rideId),
+          positions: uniqBy(data, (l) => l.id).map(toPoint),
+        })),
       ),
     )
-      .then((results) => setPositions(uniqBy(results.flat(), (l) => l.id).map(toPoint)))
+      .then(setPositionGroups)
       .catch(console.error)
       .finally(() => setLocationsAreLoading(false))
-  }, [selectedRideIdsKey])
+  }, [selectedRideIdsKey, vehicleRefById])
 
   // Fetch planned stops for the black polyline
   const stopsQuery = useQuery({
@@ -235,24 +227,34 @@ export const useSingleLineData = ({
       const scheduledTime = parsedStartTime?.scheduledTime
       const scheduledLine = parsedStartTime?.lineRef
       const [hour, minute] = scheduledTime ? scheduledTime.split(':').map(Number) : [0, 0]
-      const startTimeTimestamp = today.hour(hour).minute(minute).second(0).millisecond(0)
+      const rideStartTime = serviceDayStart.hour(hour).minute(minute).second(0).millisecond(0)
       let routeIds: number[] | undefined
       if (selectedRoute?.routeIds && selectedRoute.routeIds.length > 0) {
         routeIds = selectedRoute.routeIds
       } else if (scheduledLine && operatorId) {
         routeIds = (
-          await getRoutesByLineRef(operatorId, scheduledLine, startTimeTimestamp.toDate())
+          await getRoutesByLineRef(operatorId, scheduledLine, rideStartTime.toDate())
         ).map((route) => route.id)
       }
       if (!routeIds || routeIds.length === 0) return []
-      return await getStopsForRouteAsync(routeIds, startTimeTimestamp)
+      return await getStopsForRouteAsync(routeIds, rideStartTime)
     },
-    queryKey: ['stops', selectedRoute?.lineRef, today.valueOf(), parsedStartTime?.scheduledTime],
+    // Key on the resolved route ids (not the date-stable lineRef): during a date
+    // change the previous date's route is briefly still selected, and fetching
+    // stops for it can yield an empty list. Keying on routeIds makes the query
+    // refetch once selectedRoute corrects to the new date's route, instead of
+    // caching that stale empty result under an unchanged key.
+    queryKey: [
+      'stops',
+      selectedRoute?.routeIds?.join(','),
+      serviceDayStart.valueOf(),
+      parsedStartTime?.scheduledTime,
+    ],
     enabled: !!(selectedRoute?.routeIds?.length || parsedStartTime?.lineRef),
   })
 
   return {
-    positions,
+    positionGroups,
     plannedRouteStops: stopsQuery.data ?? [],
     options,
     startTime,

@@ -7,6 +7,7 @@ import {
   test,
   verifyDateFromParameter,
   visitPage,
+  waitForMapIdle,
   waitForSkeletonsToHide,
 } from './utils'
 
@@ -20,10 +21,6 @@ async function selectOperator(page: Page, operatorName = 'אודליה מוני�
 
 async function fillLineNumber(page: Page, lineNumber = '16') {
   await page.getByRole('textbox', { name: 'מספר קו' }).fill(lineNumber)
-}
-
-async function fillVehicleNumber(page: Page, vehicleNumber = '7489226') {
-  await page.getByRole('textbox', { name: 'מספר רכב' }).fill(vehicleNumber)
 }
 
 async function selectRoute(
@@ -81,20 +78,6 @@ test.describe('Single line page tests', () => {
     })
   })
 
-  test('should show vehicle locations after selecting vehicle number', async ({ page }) => {
-    await selectOperator(page)
-    await page.getByRole('button', { name: 'לפי מספר רכב' }).click()
-    await expect(page.getByRole('textbox', { name: 'מספר רכב' })).toBeEditable()
-    await fillVehicleNumber(page)
-    await expect(page.locator('#start-time-select')).toBeEditable({ timeout: 10000 })
-    await selectStartTime(page)
-
-    await expect(async () => {
-      const count = await page.locator(BUS_MARKER_SELECTOR).count()
-      expect(count).toBeGreaterThan(0)
-    }).toPass({ timeout: 10000 })
-  })
-
   test('should show tooltip after clicking on map point in single line map', async ({ page }) => {
     await test.step('Fill line info', async () => {
       await selectOperator(page)
@@ -109,8 +92,13 @@ test.describe('Single line page tests', () => {
     })
 
     await test.step('Click on bus button', async () => {
-      await page.getByText('מסלול בפועלמסלול מתוכנן').click()
-      await page.locator(BUS_MARKER_SELECTOR).nth(2).click({ force: true })
+      await waitForMapIdle(page)
+      const marker = page.locator(BUS_MARKER_SELECTOR).nth(2)
+      // Center the marker first: markers are focused on mousedown (tabindex),
+      // and Chromium auto-scrolls the focused element toward the center - if
+      // that scroll happens between press and release, the click is lost.
+      await marker.evaluate((el) => el.scrollIntoView({ block: 'center', behavior: 'instant' }))
+      await marker.click({ force: true })
       await expect(page.locator('.leaflet-popup-content-wrapper')).toBeAttached({ timeout: 10000 })
       await waitForSkeletonsToHide(page)
     })

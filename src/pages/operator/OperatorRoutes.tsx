@@ -1,85 +1,300 @@
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
-import { Skeleton } from 'antd'
-import { useContext } from 'react'
+import {
+  ArrowBackTwoTone,
+  ArrowForwardTwoTone,
+  ClearTwoTone,
+  ExpandMoreTwoTone,
+  SearchTwoTone,
+} from '@mui/icons-material'
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Box,
+  IconButton,
+  InputAdornment,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  TextField,
+  Typography,
+} from '@mui/material'
+import { alpha, styled } from '@mui/material/styles'
+import { useContext, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useNavigate } from 'react-router'
-import styled from 'styled-components'
+import { useDebounceValue } from 'usehooks-ts'
 import { GlobalSearchContext } from 'src/model/globalState'
 import { ISRAEL_TRAIN_ID } from 'src/model/operator'
+import SkeletonLoader from 'src/shared/SkeletonLoader'
 import Widget from 'src/shared/Widget'
 import { useAllRoutes } from '../../hooks/useAllRoutes'
 
-export const OperatorRoutes = ({
-  operatorId,
-  timestamp,
-}: {
-  operatorId?: string
-  timestamp?: number
-}) => {
-  const { setSearch } = useContext(GlobalSearchContext)
-  const { t } = useTranslation()
-  const { routes, isLoading } = useAllRoutes(operatorId, timestamp)
+type Route = ReturnType<typeof useAllRoutes>['routes'][number]
 
-  const navigate = useNavigate()
+type RouteGroup = {
+  label: string
+  routes: Route[]
+}
+
+export const OperatorRoutes = ({ operatorId, date }: { operatorId?: string; date?: string }) => {
+  const { t } = useTranslation()
+  const { routes, isLoading } = useAllRoutes(operatorId, date)
+  const [query, setQuery] = useState('')
+  // Filter on a debounced copy so each keystroke doesn't re-run the filter and
+  // re-mount expanded groups; the input itself stays bound to `query` (instant).
+  const [debouncedQuery] = useDebounceValue(query, 500)
+
+  const trimmedQuery = debouncedQuery.trim().toLowerCase()
+
+  // Search is line-first: the query matches against the displayed line number,
+  // but also against each route's origin/destination so a place name surfaces
+  // the lines that serve it. A matching route's whole line group stays visible.
+  const groups = useMemo<RouteGroup[]>(() => {
+    const byLine = new Map<string, RouteGroup>()
+    for (const route of routes) {
+      const label = isNaN(route.line) ? '' : route.line + route.suffix
+      if (
+        trimmedQuery &&
+        !label.toLowerCase().includes(trimmedQuery) &&
+        !route.start.toLowerCase().includes(trimmedQuery) &&
+        !route.end.toLowerCase().includes(trimmedQuery)
+      ) {
+        continue
+      }
+      let group = byLine.get(label)
+      if (!group) {
+        group = { label, routes: [] }
+        byLine.set(label, group)
+      }
+      group.routes.push(route)
+    }
+    // routes are already sorted by line/suffix, so insertion order preserves it
+    return [...byLine.values()]
+  }, [routes, trimmedQuery])
+
+  const matchingRoutes = useMemo(() => groups.reduce((n, g) => n + g.routes.length, 0), [groups])
 
   return (
-    <Widget title={t('operator.all_lines')} marginBottom>
-      <TableContainer sx={{ height: 345 }}>
+    <Widget
+      title={
+        <>
+          {t('operator.all_lines_on_date')}
+          {!isLoading && routes.length > 0 && (
+            <TitleCount>
+              {'('}
+              {t('operator.routes_in_lines', { routes: matchingRoutes, lines: groups.length })}
+              {')'}
+            </TitleCount>
+          )}
+        </>
+      }
+      marginBottom>
+      {!isLoading && routes.length > 0 && (
+        <TextField
+          size="small"
+          fullWidth
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder={t('operator.search_placeholder')}
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchTwoTone fontSize="small" />
+                </InputAdornment>
+              ),
+              endAdornment: query ? (
+                <InputAdornment position="end">
+                  <IconButton
+                    size="small"
+                    edge="end"
+                    aria-label={t('operator.clear')}
+                    onClick={() => setQuery('')}>
+                    <ClearTwoTone fontSize="small" />
+                  </IconButton>
+                </InputAdornment>
+              ) : undefined,
+            },
+          }}
+          sx={{ mb: 1 }}
+        />
+      )}
+      <Box sx={{ maxHeight: 345, overflow: 'auto' }}>
         {isLoading ? (
-          <Skeleton active paragraph={{ rows: 8 }} />
+          <SkeletonLoader active rows={8} />
+        ) : groups.length === 0 && trimmedQuery ? (
+          <Typography sx={{ p: 2, opacity: 0.6 }}>{t('operator.no_results')}</Typography>
         ) : (
-          <Table size="small" stickyHeader>
+          groups.map((group) => (
+            <RouteGroup key={group.label || '—'} group={group} operatorId={operatorId} />
+          ))
+        )}
+      </Box>
+    </Widget>
+  )
+}
+
+const RouteGroup = ({ group, operatorId }: { group: RouteGroup; operatorId?: string }) => {
+  const { t, i18n } = useTranslation()
+  const { setSearch } = useContext(GlobalSearchContext)
+  const navigate = useNavigate()
+  const DirectionArrow = i18n.dir() === 'rtl' ? ArrowBackTwoTone : ArrowForwardTwoTone
+
+  const profileLink = (route: Route) => (
+    <Link to={`/profile/${route.id}`}>{t('operator.profile')}</Link>
+  )
+
+  const mapLink = (route: Route) =>
+    operatorId !== ISRAEL_TRAIN_ID && (
+      <Link
+        onClick={(e) => {
+          e.preventDefault()
+          setSearch((current) => ({
+            ...current,
+            lineNumber: route.line + route.suffix,
+            routeKey: route.routeKey,
+          }))
+          navigate('/single-line-map')
+        }}
+        to={`/single-line-map`}>
+        {t('operator.map')}
+      </Link>
+    )
+
+  return (
+    <Accordion
+      disableGutters
+      slotProps={{ transition: { unmountOnExit: true } }}
+      sx={{
+        '&.Mui-expanded::before': { opacity: 1 },
+        '&.Mui-expanded + &::before': { display: 'block' },
+      }}>
+      <AccordionSummary
+        expandIcon={<ExpandMoreTwoTone />}
+        sx={{
+          flexDirection: 'row-reverse',
+          gap: 1,
+          '& .MuiAccordionSummary-content': { alignItems: 'center', gap: 1 },
+        }}>
+        <LineLabel>{group.label}</LineLabel>
+        <RouteCount>{t('operator.routes_count', { count: group.routes.length })}</RouteCount>
+      </AccordionSummary>
+      <AccordionDetails sx={{ p: 0 }}>
+        {/* Both layouts stay in the DOM, toggled by CSS at `sm` (not a JS branch, so no
+            first-render flash and Applitools captures both). Collapsed groups render
+            nothing thanks to the Accordion's unmountOnExit, so the duplication is free. */}
+        <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
+          {group.routes.map((route) => (
+            <StackedRoute key={route.id}>
+              <StackedTable>
+                <tbody>
+                  <tr>
+                    <StackedLabelCell>{t('operator.origin')}:</StackedLabelCell>
+                    <StackedValueCell>{route.start}</StackedValueCell>
+                  </tr>
+                  <tr>
+                    <StackedLabelCell>{t('operator.destination')}:</StackedLabelCell>
+                    <StackedValueCell>{route.end}</StackedValueCell>
+                  </tr>
+                </tbody>
+              </StackedTable>
+              <StackedActions>
+                {profileLink(route)}
+                {mapLink(route)}
+              </StackedActions>
+            </StackedRoute>
+          ))}
+        </Box>
+        <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
+          <Table size="small">
             <TableHead>
               <TableRow>
-                <TableCell>{t('operator.line')}</TableCell>
                 <TableCell>{t('operator.origin')}</TableCell>
+                <TableCell padding="none" />
                 <TableCell>{t('operator.destination')}</TableCell>
-                <TableCell></TableCell>
-                <TableCell></TableCell>
+                <TableCell />
               </TableRow>
             </TableHead>
             <TableBody>
-              {routes.map((route) => (
+              {group.routes.map((route) => (
                 <TableRow key={route.id}>
-                  <TableCell>{isNaN(route.line) ? '' : route.line + route.suffix}</TableCell>
                   <TableCell>{route.start}</TableCell>
+                  <TableCell padding="none">
+                    <DirectionArrow fontSize="inherit" sx={{ opacity: 0.5, display: 'block' }} />
+                  </TableCell>
                   <TableCell>{route.end}</TableCell>
                   <TableCell>
-                    <Link to={`/profile/${route.id}`}>{t('operator.profile')}</Link>
-                  </TableCell>
-                  <TableCell>
-                    {operatorId !== ISRAEL_TRAIN_ID && (
-                      <Link
-                        onClick={(e) => {
-                          e.preventDefault()
-                          setSearch((current) => ({
-                            ...current,
-                            lineNumber: route.line + route.suffix,
-                            routeKey: route.routeKey,
-                          }))
-                          navigate('/single-line-map')
-                        }}
-                        to={`/single-line-map`}>
-                        {t('operator.map')}
-                      </Link>
-                    )}
+                    <Box sx={{ display: 'flex', gap: 2 }}>
+                      {profileLink(route)}
+                      {mapLink(route)}
+                    </Box>
                   </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
-        )}
-      </TableContainer>
-      <StyledCaption>{`${t('operator.total')} ${routes.length}`}</StyledCaption>
-    </Widget>
+        </Box>
+      </AccordionDetails>
+    </Accordion>
   )
 }
 
-const StyledCaption = styled.div`
-  padding: 16px 16px 0 16px;
-  text-align: end;
-  font-weight: bold;
-  font-size: 0.75rem;
-  line-height: 1;
+const StackedRoute = styled('div')(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '0.25rem',
+  padding: '0.6rem 1rem',
+  fontSize: '0.875rem',
+
+  '&:not(:last-child)': {
+    borderBottom: `2px solid ${theme.palette.divider}`,
+  },
+}))
+
+const StackedTable = styled('table')`
+  border-collapse: collapse;
+  width: 100%;
+`
+
+const StackedLabelCell = styled('td')`
+  opacity: 0.6;
+  vertical-align: top;
+  white-space: nowrap;
+  width: 1%;
+  padding-inline-end: 0.5rem;
+`
+
+const StackedValueCell = styled('td')`
+  vertical-align: top;
+`
+
+const StackedActions = styled('div')`
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.15rem;
+`
+
+const LineLabel = styled('strong')`
+  min-width: 3rem;
+  font-size: 1.1rem;
+`
+
+const RouteCount = styled('span')(({ theme }) => ({
+  backgroundColor: alpha(theme.palette.primary.main, 0.12),
+  color: theme.palette.primary.main,
+  borderRadius: 12,
+  padding: '2px 10px',
+  fontSize: '0.75rem',
+  fontWeight: 600,
+  whiteSpace: 'nowrap',
+}))
+
+const TitleCount = styled('span')`
+  display: block;
+  font-size: 0.875rem;
+  font-weight: normal;
+  line-height: 1.2;
   opacity: 0.6;
 `

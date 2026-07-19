@@ -45,13 +45,14 @@ const WhatIsWebsite = () => {
   )
 }
 const YoutubePlaylist = () => {
+  const { t } = useTranslation()
   return (
     <iframe
       width="560"
       height="315"
       style={{ border: 'none' }}
       src="https://www.youtube.com/embed/videoseries?si=oTULlxq8Is188hPu&amp;list=PL6Rh06rT7uiX1AQE-lm55hy-seL3idx3T"
-      title="YouTube video player"
+      title={t('aboutPage.youtubePlayerTitle')}
       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
       referrerPolicy="strict-origin-when-cross-origin"
       allowFullScreen></iframe>
@@ -115,7 +116,7 @@ const Questions = () => {
         <li>
           <a href="https://hasadna.slack.com/join/shared_invite/zt-167h764cg-J18ZcY1odoitq978IyMMig#/shared-invite/email">
             {t(`${linksTextPath}.slack`)}
-            <img src={SlackIcon} alt="Slack icon" />
+            <img src={SlackIcon} alt="" />
           </a>
         </li>
         <li>
@@ -136,7 +137,9 @@ const Funding = () => {
       <div>
         <p>
           {t('funding_paragraph')}&nbsp;
-          <a href="https://open-bus-stride-api.hasadna.org.il/docs">Open API</a>
+          <a href="https://open-bus-stride-api.hasadna.org.il/docs">
+            {t('aboutPage.fundingApiLinkText')}
+          </a>
         </p>
       </div>
       <ul>
@@ -153,6 +156,8 @@ const Funding = () => {
   )
 }
 
+// attribution notices are deliberately kept in English (the section is styled LTR)
+/* eslint-disable i18next/no-literal-string */
 const Attributions = () => {
   return (
     <Widget title="Attributions" sx={{ textAlign: 'right', direction: 'ltr' }}>
@@ -162,7 +167,7 @@ const Attributions = () => {
           for their visual testing tool
         </li>
         <li>
-          Bus ifmage by{' '}
+          Bus image by{' '}
           <a
             href="https://www.freepik.com/free-vector/passengers-waiting-bus-city-queue-town-road-flat-vector-illustration-public-transport-urban-lifestyle_10173277.htm#query=public%20transportation&position=0&from_view=search&track=ais&uuid=70a79b38-20cb-42b8-9dde-b96a68088522"
             target="_blank"
@@ -175,6 +180,7 @@ const Attributions = () => {
     </Widget>
   )
 }
+/* eslint-enable i18next/no-literal-string */
 
 const Contributors = () => {
   const { t } = useTranslation()
@@ -190,8 +196,8 @@ const Contributors = () => {
         </Trans>
       </p>
       <ol className="contributions">
-        {isLoading && <p>Loading&hellip;</p>}
-        {isError && <p>Error&hellip;</p>}
+        {isLoading && <p>{t('loading')}</p>}
+        {isError && <p>{t('loading_error')}</p>}
         {contributors &&
           contributors.map((author) => (
             <li key={author.id}>
