@@ -1,4 +1,20 @@
-import { civilDate, type CivilDate, isCivilDate } from './civilDate'
+import dayjs, { ISRAEL_TIMEZONE } from 'src/dayjs'
+import {
+  civilDate,
+  type CivilDate,
+  civilDateToApiDate,
+  civilDateToDayjs,
+  isCivilDate,
+  toCivilDate,
+  todayCivilDate,
+} from './civilDate'
+
+// Minted through the real constructor so the tests exercise branded values, not casts.
+const asCivilDate = (value: string): CivilDate => {
+  const parsed = civilDate(value)
+  if (parsed === null) throw new Error(`test fixture is not a CivilDate: ${value}`)
+  return parsed
+}
 
 describe('civilDate', () => {
   it('accepts a well-formed calendar day and returns it verbatim', () => {
@@ -53,5 +69,57 @@ describe('isCivilDate', () => {
     expect(isCivilDate(null)).toBe(false)
     expect(isCivilDate(undefined)).toBe(false)
     expect(isCivilDate(new Date())).toBe(false)
+  })
+})
+
+describe('civilDateToApiDate', () => {
+  it('anchors the calendar day at 12:00 UTC so it never drifts to the previous day', () => {
+    const wire = civilDateToApiDate(asCivilDate('2026-06-30'))
+    expect(wire.toISOString()).toBe('2026-06-30T12:00:00.000Z')
+    // the shape the GTFS list endpoints actually serialize
+    expect(wire.toISOString().substring(0, 10)).toBe('2026-06-30')
+  })
+})
+
+describe('civilDateToDayjs', () => {
+  it('materializes the same 12:00 UTC anchor as a Dayjs', () => {
+    const day = civilDateToDayjs(asCivilDate('2026-06-30'))
+    expect(day.toISOString()).toBe('2026-06-30T12:00:00.000Z')
+    expect(day.valueOf()).toBe(civilDateToApiDate(asCivilDate('2026-06-30')).getTime())
+  })
+})
+
+describe('toCivilDate', () => {
+  it('reads the Israel calendar day of a zoned moment', () => {
+    expect(toCivilDate('2026-06-30T23:30:00+03:00')).toBe('2026-06-30')
+  })
+
+  it('maps a just-after-midnight UTC instant to the Israeli next day (summer, +03:00)', () => {
+    // 21:30Z on 2026-06-30 is 00:30 on 2026-07-01 in Israel (IDT)
+    expect(toCivilDate('2026-06-30T21:30:00Z')).toBe('2026-07-01')
+  })
+
+  it('maps a just-after-midnight UTC instant to the Israeli next day (winter, +02:00)', () => {
+    // 22:30Z on 2026-01-15 is 00:30 on 2026-01-16 in Israel (IST)
+    expect(toCivilDate('2026-01-15T22:30:00Z')).toBe('2026-01-16')
+  })
+
+  it('returns null on unparsable input', () => {
+    expect(toCivilDate('garbage')).toBeNull()
+  })
+
+  it('reads the Israel calendar day of a Dayjs regardless of its time-of-day', () => {
+    // A Dayjs carrying a mid-afternoon wall time still maps to that same calendar day.
+    expect(toCivilDate(dayjs.tz('2026-06-30 14:23', ISRAEL_TIMEZONE))).toBe('2026-06-30')
+  })
+
+  it('maps a just-before-midnight Israel Dayjs to that same Israeli day', () => {
+    expect(toCivilDate(dayjs.tz('2026-06-30 23:59', ISRAEL_TIMEZONE))).toBe('2026-06-30')
+  })
+})
+
+describe('todayCivilDate', () => {
+  it('returns a canonical CivilDate for the current Israel day', () => {
+    expect(isCivilDate(todayCivilDate())).toBe(true)
   })
 })

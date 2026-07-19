@@ -4,6 +4,7 @@ import { FC, Fragment, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
 import { Dayjs } from 'src/dayjs'
+import { toCivilDate } from 'src/model/time/civilDate'
 import SkeletonLoader from 'src/shared/SkeletonLoader'
 import Widget from 'src/shared/Widget'
 import OperatorHbarChart from './OperatorHbarChart/OperatorHbarChart'
@@ -29,8 +30,8 @@ export const AllLinesChart: FC<AllChartComponentProps> = ({
   alertAllChartsZeroLinesHandling,
 }) => {
   const [groupByOperatorData, groupByOperatorLoading] = useGroupBy({
-    dateFrom: startDate,
-    dateTo: endDate,
+    dateFrom: toCivilDate(startDate)!,
+    dateTo: toCivilDate(endDate)!,
     groupBy: 'operator_ref',
   })
   const { t } = useTranslation()

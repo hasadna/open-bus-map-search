@@ -11,6 +11,7 @@ import { getSiriStopHitTimesAsync } from 'src/api/siriService'
 import dayjs, { ISRAEL_TIMEZONE } from 'src/dayjs'
 import { usePageState } from 'src/hooks/usePageState'
 import { GlobalSearchContext } from 'src/model/globalState'
+import { toCivilDate } from 'src/model/time/civilDate'
 import { Label } from 'src/pages/components/Label'
 import LineNumberSelector from 'src/pages/components/LineSelector'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
@@ -122,7 +123,7 @@ const TimelinePage = () => {
             time={dayjs.tz(date, ISRAEL_TIMEZONE)}
             onChange={(ts) => {
               if (!ts) return
-              setSearch((prev) => ({ ...prev, date: ts.format('YYYY-MM-DD') }))
+              setSearch((prev) => ({ ...prev, date: toCivilDate(ts)! }))
             }}
           />
         </Grid>

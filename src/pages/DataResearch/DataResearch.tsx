@@ -13,6 +13,7 @@ import {
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
 import dayjs from 'src/dayjs'
 import { useDate } from 'src/hooks/useDate'
+import { toCivilDate } from 'src/model/time/civilDate'
 import SkeletonLoader from 'src/shared/SkeletonLoader'
 import Widget from 'src/shared/Widget'
 import { DateSelector } from '../components/DateSelector'
@@ -42,8 +43,8 @@ function StackedResearchSection() {
   const [operatorId, setOperatorId] = useState('')
   const [groupByHour, setGroupByHour] = useState<boolean>(false)
   const [graphData, loadingGraph] = useGroupBy({
-    dateFrom: startDate,
-    dateTo: endDate,
+    dateFrom: toCivilDate(startDate)!,
+    dateTo: toCivilDate(endDate)!,
     groupBy: groupByHour ? 'operator_ref,gtfs_route_hour' : 'operator_ref,gtfs_route_date',
   })
 

@@ -14,9 +14,10 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
-import dayjs, { toIsraelTimezone, utcNoonForDateStr } from 'src/dayjs'
+import dayjs, { toIsraelTimezone } from 'src/dayjs'
 import { usePageState } from 'src/hooks/usePageState'
 import { GlobalSearchContext } from 'src/model/globalState'
+import { civilDate, civilDateToDayjs } from 'src/model/time/civilDate'
 import { INPUT_SIZE } from 'src/resources/sizes'
 import SkeletonLoader from 'src/shared/SkeletonLoader'
 import Widget from 'src/shared/Widget'
@@ -49,14 +50,13 @@ interface BusLineStatisticsProps {
 }
 
 const now = dayjs()
-// Stored date-only (YYYY-MM-DD) and materialized via utcNoonForDateStr so the
-// calendar date never drifts across the UTC boundary on (de)serialization —
-// getGapsAsync sends these as UTC `date` query params.
+// Stored date-only (YYYY-MM-DD) so the calendar date never drifts across the UTC
+// boundary on (de)serialization — getGapsAsync sends these as UTC `date` query params.
 const DEFAULT_START_DATE = toIsraelTimezone(now).subtract(7, 'days').format('YYYY-MM-DD')
 const DEFAULT_END_DATE = toIsraelTimezone(now).subtract(1, 'day').format('YYYY-MM-DD')
-// Materialize a stored date-only string into a noon-UTC-anchored Dayjs, on demand
-// at the few consumers that need one — the params themselves stay plain strings.
-const asDayjs = (dateStr: string) => dayjs(utcNoonForDateStr(dateStr))
+// Materialize a stored date-only string into a noon-UTC-anchored Dayjs (via the CivilDate
+// representation), on demand at the few consumers that need one — the params stay plain strings.
+const asDayjs = (dateStr: string) => civilDateToDayjs(civilDate(dateStr)!)
 
 const CustomTooltip = ({ active, payload }: TooltipContentProps) => {
   const { t } = useTranslation()

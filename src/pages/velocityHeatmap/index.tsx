@@ -10,8 +10,9 @@ import {
 import React, { useContext, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { TileLayer } from 'react-leaflet'
-import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone } from 'src/dayjs'
+import dayjs, { ISRAEL_TIMEZONE } from 'src/dayjs'
 import { GlobalSearchContext } from 'src/model/globalState'
+import { toCivilDate } from 'src/model/time/civilDate'
 import { MapShell } from 'src/pages/components/map-related/MapShell'
 import { DateNavigator } from '../components/dateNavigator/DateNavigator'
 import { DateSelector } from '../components/DateSelector'
@@ -44,7 +45,7 @@ const VelocityHeatmapPage: React.FC = () => {
   const handleDateChange = (time: dayjs.Dayjs | null) => {
     setSearch((current) => ({
       ...current,
-      date: toIsraelTimezone(time ?? dayjs()).format('YYYY-MM-DD'),
+      date: toCivilDate(time ?? dayjs())!,
     }))
   }
 

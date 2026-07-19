@@ -5,10 +5,11 @@ import { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLoaderData, useNavigate } from 'react-router'
 import { getServiceDayRoutes } from 'src/api/serviceDayRoutesService'
-import dayjs, { toIsraelTimezone } from 'src/dayjs'
+import dayjs from 'src/dayjs'
 import { useSingleLineData } from 'src/hooks/useSingleLineData'
 import { GLOBAL_SEARCH_DEFAULTS, GlobalSearchContext } from 'src/model/globalState'
 import { InitialUrlParamsContext, PageShareParamsContext } from 'src/model/routeContext'
+import { toCivilDate } from 'src/model/time/civilDate'
 import StopSelector from 'src/pages/components/StopSelector'
 import Widget from 'src/shared/Widget'
 import { DateSelector } from '../components/DateSelector'
@@ -45,7 +46,7 @@ const LineProfile = () => {
     const key = `${route.routeMkt}-${route.routeDirection}-${route.routeAlternative}`
     setSearch(() => ({
       ...GLOBAL_SEARCH_DEFAULTS,
-      date: toIsraelTimezone(route.date.getTime()).format('YYYY-MM-DD'),
+      date: toCivilDate(route.date)!,
       operatorId: route.operatorRef.toString(),
       lineNumber: route.routeShortName ?? null,
       routeKey: key,

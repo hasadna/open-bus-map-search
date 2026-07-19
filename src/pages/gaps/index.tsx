@@ -3,6 +3,7 @@ import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import dayjs, { ISRAEL_TIMEZONE } from 'src/dayjs'
 import { GlobalSearchContext } from 'src/model/globalState'
+import { toCivilDate } from 'src/model/time/civilDate'
 import { INPUT_SIZE } from 'src/resources/sizes'
 import { Gap, getGapsAsync } from '../../api/gapsService'
 import { getServiceDayRoutes } from '../../api/serviceDayRoutesService'
@@ -82,7 +83,7 @@ const GapsPage = () => {
     if (!time) return
     setSearch((current) => ({
       ...current,
-      date: time.format('YYYY-MM-DD'),
+      date: toCivilDate(time)!,
     }))
   }
 

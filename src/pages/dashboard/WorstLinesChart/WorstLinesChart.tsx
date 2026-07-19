@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
 import { Dayjs } from 'src/dayjs'
 import { MAJOR_OPERATORS } from 'src/model/operator'
+import { toCivilDate } from 'src/model/time/civilDate'
 import SkeletonLoader from 'src/shared/SkeletonLoader'
 import Widget from 'src/shared/Widget'
 import LinesHbarChart, { LineBar } from './LineHbarChart/LinesHbarChart'
@@ -41,8 +42,8 @@ export const WorstLinesChart = ({
   alertWorstLineHandling,
 }: WorstLinesChartProps) => {
   const [groupByLineData, lineDataLoading] = useGroupBy({
-    dateFrom: startDate,
-    dateTo: endDate,
+    dateFrom: toCivilDate(startDate)!,
+    dateTo: toCivilDate(endDate)!,
     groupBy: 'operator_ref,line_ref',
   })
 
