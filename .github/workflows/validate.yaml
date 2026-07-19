@@ -57,8 +57,7 @@ jobs:
         run: npm run lint
       - name: Check for circular dependencies
         run: npx madge --extensions js,ts --circular .
-      # Jest gates merges here: this is the only required check that runs it.
-      # (sonarcloud.yml also runs jest, for unit coverage, but isn't required.)
+      # Jest gates merges here: this is the only job in CI that runs it.
       - name: Run unit tests
         run: npm run test:unit
 
