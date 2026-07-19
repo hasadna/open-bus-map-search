@@ -12,10 +12,10 @@ import { useTranslation } from 'react-i18next'
 import { TileLayer } from 'react-leaflet'
 import dayjs, { ISRAEL_TIMEZONE } from 'src/dayjs'
 import { GlobalSearchContext } from 'src/model/globalState'
-import { toCivilDate } from 'src/model/time/civilDate'
+import { toCivilDate, todayCivilDate } from 'src/model/time/civilDate'
 import { MapShell } from 'src/pages/components/map-related/MapShell'
+import { CivilDateSelector } from '../components/CivilDateSelector'
 import { DateNavigator } from '../components/dateNavigator/DateNavigator'
-import { DateSelector } from '../components/DateSelector'
 import { PageContainer } from '../components/PageContainer'
 import { VelocityHeatmapLegend } from './components/VelocityHeatmapLegend'
 import { VelocityHeatmapRectangles } from './components/VelocityHeatmapRectangles'
@@ -65,7 +65,10 @@ const VelocityHeatmapPage: React.FC = () => {
       {/* choose date + visualization — centered block */}
       <Box sx={{ width: '100%', maxWidth: 520, mx: 'auto' }}>
         <Stack direction="column" spacing={2} sx={{ mb: 2 }}>
-          <DateSelector time={dateDayjs} onChange={handleDateChange} />
+          <CivilDateSelector
+            value={search.date}
+            onChange={(d) => setSearch((current) => ({ ...current, date: d ?? todayCivilDate() }))}
+          />
           <DateNavigator currentTime={dateDayjs} onChange={handleDateChange} />
         </Stack>
         <ToggleButtonGroup

@@ -3,14 +3,13 @@ import { Alert, CircularProgress, Grid, Link as MuiLink, Tooltip, Typography } f
 import { useCallback, useContext, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
-import dayjs, { ISRAEL_TIMEZONE } from 'src/dayjs'
 import { useSingleLineData } from 'src/hooks/useSingleLineData'
 import { GlobalSearchContext } from 'src/model/globalState'
-import { toCivilDate } from 'src/model/time/civilDate'
+import { type CivilDate, todayCivilDate } from 'src/model/time/civilDate'
 import LineNumberSelector from 'src/pages/components/LineSelector'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
 import RouteSelector from 'src/pages/components/RouteSelector'
-import { DateSelector } from '../components/DateSelector'
+import { CivilDateSelector } from '../components/CivilDateSelector'
 import { FilterPositionsByStartTimeSelector } from '../components/FilterPositionsByStartTimeSelector'
 import type { FocusTarget } from '../components/map-related/map-types'
 import { MapWithLocationsAndPath } from '../components/map-related/MapWithLocationsAndPath'
@@ -74,10 +73,10 @@ const SingleLineMapPage = () => {
     onRideTimeChange,
   })
 
-  const handleDateChange = (time: dayjs.Dayjs | null) => {
+  const handleDateChange = (next: CivilDate | null) => {
     setSearch((current) => ({
       ...current,
-      date: toCivilDate(time ?? dayjs())!,
+      date: next ?? todayCivilDate(),
       rideTime: null,
     }))
   }
@@ -133,7 +132,7 @@ const SingleLineMapPage = () => {
         <Grid container spacing={2} size={{ xs: 12 }}>
           {/* choose date*/}
           <Grid size={{ sm: 4, xs: 12 }}>
-            <DateSelector time={dayjs.tz(date, ISRAEL_TIMEZONE)} onChange={handleDateChange} />
+            <CivilDateSelector value={date} onChange={handleDateChange} />
           </Grid>
           {/* choose operator */}
           <Grid size={{ sm: 4, xs: 12 }}>

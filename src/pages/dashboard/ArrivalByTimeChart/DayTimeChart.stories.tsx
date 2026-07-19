@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { http, HttpResponse } from 'msw'
 import dayjs from 'src/dayjs'
+import { toCivilDate } from 'src/model/time/civilDate'
 import { getPastDate } from '../../../../.storybook/main'
 import DayTimeChart from './DayTimeChart'
 
@@ -12,7 +13,7 @@ const meta = {
       control: 'date',
       description: 'The start date of the chart.',
       table: {
-        type: { summary: 'Dayjs' },
+        type: { summary: 'CivilDate' },
       },
     },
     endDate: {
@@ -20,7 +21,7 @@ const meta = {
       description: 'The end date of the chart.',
       table: {
         type: {
-          summary: 'Dayjs',
+          summary: 'CivilDate',
         },
       },
     },
@@ -31,8 +32,8 @@ const meta = {
   },
   render: (args) => (
     <DayTimeChart
-      startDate={dayjs(args.startDate)}
-      endDate={dayjs(args.endDate)}
+      startDate={toCivilDate(args.startDate)!}
+      endDate={toCivilDate(args.endDate)!}
       operatorId={args.operatorId}
       alertAllDayTimeChartHandling={function (arg: boolean): void {
         console.log('alertAllDayTimeChartHandling', arg)
@@ -60,8 +61,8 @@ export const Default: Story = {
     },
   },
   args: {
-    startDate: dayjs(getPastDate()).subtract(7, 'day'),
-    endDate: dayjs(getPastDate()),
+    startDate: toCivilDate(dayjs(getPastDate()).subtract(7, 'day'))!,
+    endDate: toCivilDate(dayjs(getPastDate()))!,
     operatorId: '3',
     alertAllDayTimeChartHandling: (arg: boolean) => {
       console.log('alertAllDayTimeChartHandling', arg)

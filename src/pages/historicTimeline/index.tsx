@@ -11,7 +11,6 @@ import { getSiriStopHitTimesAsync } from 'src/api/siriService'
 import dayjs, { ISRAEL_TIMEZONE } from 'src/dayjs'
 import { usePageState } from 'src/hooks/usePageState'
 import { GlobalSearchContext } from 'src/model/globalState'
-import { toCivilDate } from 'src/model/time/civilDate'
 import { Label } from 'src/pages/components/Label'
 import LineNumberSelector from 'src/pages/components/LineSelector'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
@@ -20,7 +19,7 @@ import { Row } from 'src/pages/components/Row'
 import StopSelector from 'src/pages/components/StopSelector'
 import { TimelineBoard } from 'src/pages/components/timeline/TimelineBoard'
 import Widget from 'src/shared/Widget'
-import { DateSelector } from '../components/DateSelector'
+import { CivilDateSelector } from '../components/CivilDateSelector'
 import { NotFound } from '../components/NotFound'
 import { PageContainer } from '../components/PageContainer'
 import { TimeSelector } from '../components/TimeSelector'
@@ -119,11 +118,11 @@ const TimelinePage = () => {
       <Grid container spacing={2}>
         {/* choose date */}
         <Grid size={{ lg: 4, md: 6, xs: 12 }}>
-          <DateSelector
-            time={dayjs.tz(date, ISRAEL_TIMEZONE)}
-            onChange={(ts) => {
-              if (!ts) return
-              setSearch((prev) => ({ ...prev, date: toCivilDate(ts)! }))
+          <CivilDateSelector
+            value={date}
+            onChange={(d) => {
+              if (!d) return
+              setSearch((prev) => ({ ...prev, date: d }))
             }}
           />
         </Grid>

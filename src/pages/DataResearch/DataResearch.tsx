@@ -13,16 +13,14 @@ import {
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
 import dayjs from 'src/dayjs'
 import { useDate } from 'src/hooks/useDate'
-import { toCivilDate } from 'src/model/time/civilDate'
+import { addDays, type CivilDate, todayCivilDate } from 'src/model/time/civilDate'
 import SkeletonLoader from 'src/shared/SkeletonLoader'
 import Widget from 'src/shared/Widget'
-import { DateSelector } from '../components/DateSelector'
+import { CivilDateSelector } from '../components/CivilDateSelector'
 import OperatorSelector from '../components/OperatorSelector'
 import { PageContainer } from '../components/PageContainer'
 import { getColorName } from '../dashboard/AllLineschart/OperatorHbarChart/OperatorHbarChart'
 import './DataResearch.scss'
-
-const now = dayjs()
 
 export const DataResearch = () => {
   const { t } = useTranslation()
@@ -38,13 +36,13 @@ export const DataResearch = () => {
 
 function StackedResearchSection() {
   const { t } = useTranslation()
-  const [startDate, setStartDate] = useDate(now.clone().subtract(7, 'days'))
-  const [endDate, setEndDate] = useDate(now.clone().subtract(1, 'day'))
+  const [startDate, setStartDate] = useDate(addDays(todayCivilDate(), -7))
+  const [endDate, setEndDate] = useDate(addDays(todayCivilDate(), -1))
   const [operatorId, setOperatorId] = useState('')
   const [groupByHour, setGroupByHour] = useState<boolean>(false)
   const [graphData, loadingGraph] = useGroupBy({
-    dateFrom: toCivilDate(startDate)!,
-    dateTo: toCivilDate(endDate)!,
+    dateFrom: startDate,
+    dateTo: endDate,
     groupBy: groupByHour ? 'operator_ref,gtfs_route_hour' : 'operator_ref,gtfs_route_date',
   })
 
@@ -98,10 +96,10 @@ function StackedResearchInputs({
   operatorId,
   setOperatorId,
 }: {
-  startDate: dayjs.Dayjs
-  setStartDate: (date: dayjs.Dayjs) => void
-  endDate: dayjs.Dayjs
-  setEndDate: (date: dayjs.Dayjs) => void
+  startDate: CivilDate
+  setStartDate: (date: CivilDate | null) => void
+  endDate: CivilDate
+  setEndDate: (date: CivilDate | null) => void
   groupByHour: boolean
   setGroupByHour: (value: boolean) => void
   operatorId: string
@@ -112,18 +110,10 @@ function StackedResearchInputs({
     <>
       <Grid container sx={{ gap: 2 }}>
         <Grid size={{ md: 'grow', xs: 12 }}>
-          <DateSelector
-            time={startDate}
-            onChange={(data) => data && setStartDate(data)}
-            customLabel={t('start')}
-          />
+          <CivilDateSelector value={startDate} onChange={setStartDate} customLabel={t('start')} />
         </Grid>
         <Grid size={{ md: 'grow', xs: 12 }}>
-          <DateSelector
-            time={endDate}
-            onChange={(data) => data && setEndDate(data)}
-            customLabel={t('end')}
-          />
+          <CivilDateSelector value={endDate} onChange={setEndDate} customLabel={t('end')} />
         </Grid>
         <OperatorSelector operatorId={operatorId} setOperatorId={setOperatorId} />
       </Grid>

@@ -2,8 +2,7 @@ import { Radio, RadioChangeEvent } from 'antd'
 import { FC, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
-import { Dayjs } from 'src/dayjs'
-import { toCivilDate } from 'src/model/time/civilDate'
+import { type CivilDate } from 'src/model/time/civilDate'
 import SkeletonLoader from 'src/shared/SkeletonLoader'
 import Widget from 'src/shared/Widget'
 import ArrivalByTimeChart from './ArrivalByTimeChart'
@@ -23,8 +22,8 @@ const convertToGraphCompatibleStruct = (arr: GroupByRes[]) => {
 }
 
 interface DayTimeChartProps {
-  startDate: Dayjs
-  endDate: Dayjs
+  startDate: CivilDate
+  endDate: CivilDate
   operatorId: string
   alertAllDayTimeChartHandling: (arg: boolean) => void
 }
@@ -39,8 +38,8 @@ const DayTimeChart: FC<DayTimeChartProps> = ({
   const [groupByHour, setGroupByHour] = useState<boolean>(false)
 
   const [data, loadingGraph] = useGroupBy({
-    dateFrom: toCivilDate(startDate)!,
-    dateTo: toCivilDate(endDate)!,
+    dateFrom: startDate,
+    dateTo: endDate,
     groupBy: groupByHour ? 'operator_ref,gtfs_route_hour' : 'operator_ref,gtfs_route_date',
   })
 
