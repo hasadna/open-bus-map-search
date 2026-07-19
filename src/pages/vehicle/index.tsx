@@ -90,13 +90,11 @@ const VehiclePage = () => {
   )
 
   const { data: routes } = useQuery({
-    queryKey: ['vehicleRoutes', serviceDayStart.valueOf(), operatorIds],
+    queryKey: ['vehicleRoutes', date, operatorIds],
     enabled: operatorIds.length > 0,
     queryFn: async ({ signal }) => {
       const routeLists = await Promise.all(
-        operatorIds.map((operatorId) =>
-          getAllRoutesList(operatorId, serviceDayStart.toDate(), signal),
-        ),
+        operatorIds.map((operatorId) => getAllRoutesList(operatorId, date, signal)),
       )
       return routeLists
         .flat()

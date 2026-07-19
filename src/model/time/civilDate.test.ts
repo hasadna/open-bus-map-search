@@ -1,5 +1,6 @@
 import dayjs, { ISRAEL_TIMEZONE } from 'src/dayjs'
 import {
+  addDays,
   civilDate,
   type CivilDate,
   civilDateToApiDate,
@@ -69,6 +70,26 @@ describe('isCivilDate', () => {
     expect(isCivilDate(null)).toBe(false)
     expect(isCivilDate(undefined)).toBe(false)
     expect(isCivilDate(new Date())).toBe(false)
+  })
+})
+
+describe('addDays', () => {
+  it('shifts forward and backward by whole days', () => {
+    expect(addDays(asCivilDate('2026-06-30'), 1)).toBe('2026-07-01')
+    expect(addDays(asCivilDate('2026-06-30'), -1)).toBe('2026-06-29')
+    expect(addDays(asCivilDate('2026-06-30'), 0)).toBe('2026-06-30')
+    expect(addDays(asCivilDate('2026-06-30'), 7)).toBe('2026-07-07')
+  })
+
+  it('crosses month, year and leap-day boundaries correctly', () => {
+    expect(addDays(asCivilDate('2026-12-31'), 1)).toBe('2027-01-01')
+    expect(addDays(asCivilDate('2027-01-01'), -1)).toBe('2026-12-31')
+    expect(addDays(asCivilDate('2024-02-28'), 1)).toBe('2024-02-29') // leap year
+    expect(addDays(asCivilDate('2025-02-28'), 1)).toBe('2025-03-01') // non-leap year
+  })
+
+  it('returns a canonical, branded CivilDate', () => {
+    expect(isCivilDate(addDays(asCivilDate('2026-06-30'), 100))).toBe(true)
   })
 })
 

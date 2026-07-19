@@ -6,6 +6,7 @@ import { getRoutesByLineRef, getStopsForRouteAsync } from 'src/api/gtfsService'
 import { getServiceDayRoutes } from 'src/api/serviceDayRoutesService'
 import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone } from 'src/dayjs'
 import { BusRoute } from 'src/model/busRoute'
+import { toCivilDate } from 'src/model/time/civilDate'
 import {
   type PositionGroup,
   ROUTE_COLORS,
@@ -233,7 +234,7 @@ export const useSingleLineData = ({
         routeIds = selectedRoute.routeIds
       } else if (scheduledLine && operatorId) {
         routeIds = (
-          await getRoutesByLineRef(operatorId, scheduledLine, rideStartTime.toDate())
+          await getRoutesByLineRef(operatorId, scheduledLine, toCivilDate(rideStartTime)!)
         ).map((route) => route.id)
       }
       if (!routeIds || routeIds.length === 0) return []

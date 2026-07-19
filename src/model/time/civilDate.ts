@@ -46,6 +46,14 @@ export function isCivilDate(value: unknown): value is CivilDate {
   return typeof value === 'string' && civilDate(value) === value
 }
 
+/** Shift a CivilDate by whole calendar days. Pure UTC-date arithmetic (no clock,
+ *  no zone), so it can't drift across a DST edge. */
+export function addDays(date: CivilDate, days: number): CivilDate {
+  const [year, month, day] = date.split('-').map(Number)
+  const shifted = new Date(Date.UTC(year, month - 1, day + days))
+  return civilDate(shifted.toISOString().slice(0, 10))!
+}
+
 // ══ Timezone border ═════════════════════════════════════════════════════════
 // The only place a CivilDate is fused with the Israel timezone.
 

@@ -27,6 +27,7 @@ import { Link, useNavigate } from 'react-router'
 import { useDebounceValue } from 'usehooks-ts'
 import { GlobalSearchContext } from 'src/model/globalState'
 import { ISRAEL_TRAIN_ID } from 'src/model/operator'
+import { type CivilDate } from 'src/model/time/civilDate'
 import SkeletonLoader from 'src/shared/SkeletonLoader'
 import Widget from 'src/shared/Widget'
 import { useAllRoutes } from '../../hooks/useAllRoutes'
@@ -38,7 +39,7 @@ type RouteGroup = {
   routes: Route[]
 }
 
-export const OperatorRoutes = ({ operatorId, date }: { operatorId?: string; date?: string }) => {
+export const OperatorRoutes = ({ operatorId, date }: { operatorId?: string; date?: CivilDate }) => {
   const { t } = useTranslation()
   const { routes, isLoading } = useAllRoutes(operatorId, date)
   const [query, setQuery] = useState('')
