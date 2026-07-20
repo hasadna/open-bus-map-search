@@ -3,11 +3,12 @@ import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import dayjs, { ISRAEL_TIMEZONE } from 'src/dayjs'
 import { GlobalSearchContext } from 'src/model/globalState'
+import { type CivilDate } from 'src/model/time/civilDate'
 import { INPUT_SIZE } from 'src/resources/sizes'
 import { Gap, getGapsAsync } from '../../api/gapsService'
 import { getServiceDayRoutes } from '../../api/serviceDayRoutesService'
 import { BusRoute } from '../../model/busRoute'
-import { DateSelector } from '../components/DateSelector'
+import { CivilDateSelector } from '../components/CivilDateSelector'
 import { Label } from '../components/Label'
 import LineNumberSelector from '../components/LineSelector'
 import { NotFound } from '../components/NotFound'
@@ -78,11 +79,11 @@ const GapsPage = () => {
     return () => controller.abort()
   }, [operatorId, lineNumber, date, setSearch])
 
-  const handleDateChange = (time: dayjs.Dayjs | null) => {
-    if (!time) return
+  const handleDateChange = (next: CivilDate | null) => {
+    if (!next) return
     setSearch((current) => ({
       ...current,
-      date: time.format('YYYY-MM-DD'),
+      date: next,
     }))
   }
 
@@ -129,7 +130,7 @@ const GapsPage = () => {
           <Label text={t('choose_date')} />
         </Grid>
         <Grid size={{ xs: 8 }}>
-          <DateSelector time={dayjs.tz(date, ISRAEL_TIMEZONE)} onChange={handleDateChange} />
+          <CivilDateSelector value={date} onChange={handleDateChange} />
         </Grid>
         {/* choose operator */}
         <Grid size={{ xs: 4 }}>

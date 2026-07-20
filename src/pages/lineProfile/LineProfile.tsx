@@ -5,13 +5,13 @@ import { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLoaderData, useNavigate } from 'react-router'
 import { getServiceDayRoutes } from 'src/api/serviceDayRoutesService'
-import dayjs, { toIsraelTimezone } from 'src/dayjs'
 import { useSingleLineData } from 'src/hooks/useSingleLineData'
 import { GLOBAL_SEARCH_DEFAULTS, GlobalSearchContext } from 'src/model/globalState'
 import { InitialUrlParamsContext, PageShareParamsContext } from 'src/model/routeContext'
+import { type CivilDate, civilDateToDayjs, toCivilDate } from 'src/model/time/civilDate'
 import StopSelector from 'src/pages/components/StopSelector'
 import Widget from 'src/shared/Widget'
-import { DateSelector } from '../components/DateSelector'
+import { CivilDateSelector } from '../components/CivilDateSelector'
 import { FilterPositionsByStartTimeSelector } from '../components/FilterPositionsByStartTimeSelector'
 import { MapWithLocationsAndPath } from '../components/map-related/MapWithLocationsAndPath'
 import { NotFound } from '../components/NotFound'
@@ -45,7 +45,7 @@ const LineProfile = () => {
     const key = `${route.routeMkt}-${route.routeDirection}-${route.routeAlternative}`
     setSearch(() => ({
       ...GLOBAL_SEARCH_DEFAULTS,
-      date: toIsraelTimezone(route.date.getTime()).format('YYYY-MM-DD'),
+      date: toCivilDate(route.date)!,
       operatorId: route.operatorRef.toString(),
       lineNumber: route.routeShortName ?? null,
       routeKey: key,
@@ -88,15 +88,15 @@ const LineProfile = () => {
     return () => setParams({})
   }, [startTime, setParams])
 
-  const handleDateChange = (time: dayjs.Dayjs | null) => {
-    if (!time || !route) return
+  const handleDateChange = (next: CivilDate | null) => {
+    if (!next || !route) return
     dateChangeAbortRef.current?.abort()
     const abortController = new AbortController()
     dateChangeAbortRef.current = abortController
     // Service-day aware (and Israel-tz normalized internally), consistent with the
     // gaps page and the single-line ride list.
     getServiceDayRoutes(
-      time,
+      civilDateToDayjs(next),
       route?.operatorRef.toString(),
       route?.routeShortName,
       abortController.signal,
@@ -145,7 +145,7 @@ const LineProfile = () => {
               setRouteKey={handelRouteChange}
             />
           )}
-          <DateSelector time={dayjs(route?.date.getTime())} onChange={handleDateChange} />
+          <CivilDateSelector value={toCivilDate(route.date)!} onChange={handleDateChange} />
           <Grid container sx={{ flexWrap: 'nowrap', alignItems: 'center' }}>
             <FilterPositionsByStartTimeSelector
               options={options}

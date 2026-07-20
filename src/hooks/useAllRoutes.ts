@@ -1,7 +1,7 @@
 import { GtfsRoutePydanticModel } from '@hasadna/open-bus-api-client'
 import { useEffect, useState } from 'react'
 import { getAllRoutesList } from 'src/api/gtfsService'
-import dayjs, { ISRAEL_TIMEZONE } from 'src/dayjs'
+import { type CivilDate } from 'src/model/time/civilDate'
 import { routeStartEnd } from 'src/pages/components/utils/rotueUtils'
 
 type AllRoutesState = {
@@ -10,7 +10,7 @@ type AllRoutesState = {
   error: boolean
 }
 
-export const useAllRoutes = (operatorId?: string, date?: string) => {
+export const useAllRoutes = (operatorId?: string, date?: CivilDate) => {
   const [state, setState] = useState<AllRoutesState>({ routes: [], isLoading: true, error: false })
 
   useEffect(() => {
@@ -22,7 +22,7 @@ export const useAllRoutes = (operatorId?: string, date?: string) => {
     setState({ routes: [], isLoading: true, error: false })
     const controller = new AbortController()
 
-    getAllRoutesList(operatorId, dayjs.tz(date, ISRAEL_TIMEZONE).toDate(), controller.signal)
+    getAllRoutesList(operatorId, date, controller.signal)
       .then((routes) => {
         setState({ routes: mapperRoutes(routes), isLoading: false, error: false })
       })

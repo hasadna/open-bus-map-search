@@ -3,8 +3,9 @@ import {
   GtfsRoutePydanticModel,
 } from '@hasadna/open-bus-api-client'
 import { GTFS_API } from 'src/api/apiConfig'
-import dayjs, { toIsraelTimezone, utcNoonForDateStr } from 'src/dayjs'
+import dayjs, { toIsraelTimezone } from 'src/dayjs'
 import { BusRoute, fromGtfsRoute } from 'src/model/busRoute'
+import { civilDateToApiDate, toCivilDate } from 'src/model/time/civilDate'
 
 function rideToRoute(ride: GtfsRideWithRelatedPydanticModel): GtfsRoutePydanticModel | null {
   if (
@@ -48,8 +49,8 @@ export async function getServiceDayRoutes(
   const todayIL = toIsraelTimezone(serviceDate).startOf('day')
   const tomorrowIL = todayIL.add(1, 'day')
 
-  const todayUTC = utcNoonForDateStr(todayIL.format('YYYY-MM-DD'))
-  const tomorrowUTC = utcNoonForDateStr(tomorrowIL.format('YYYY-MM-DD'))
+  const todayUTC = civilDateToApiDate(toCivilDate(todayIL)!)
+  const tomorrowUTC = civilDateToApiDate(toCivilDate(tomorrowIL)!)
   const tomorrowMidnightUTC = tomorrowIL.toDate()
   const tomorrow04hUTC = tomorrowIL.add(4, 'hours').toDate()
 

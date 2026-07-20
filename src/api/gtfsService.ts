@@ -2,23 +2,26 @@ import { GTFS_API } from 'src/api/apiConfig'
 import dayjs, { toIsraelTimezone } from 'src/dayjs'
 import { BusRoute, fromGtfsRoute } from 'src/model/busRoute'
 import { BusStop, fromGtfsStop } from 'src/model/busStop'
+import { type CivilDate, civilDateToApiDate, todayCivilDate } from 'src/model/time/civilDate'
 
 export async function getRoutesAsync(
-  from: dayjs.Dayjs,
-  to: dayjs.Dayjs,
+  from: CivilDate,
+  to: CivilDate,
   operatorId?: string,
   lineNumber?: string,
   signal?: AbortSignal,
 ): Promise<BusRoute[]> {
-  const fromDate = toIsraelTimezone(from).format('YYYY-MM-DD')
-  const toDate = toIsraelTimezone(to).format('YYYY-MM-DD')
+  // Don't fetch past today: a future `to` would spend the 100-row budget on days
+  // with no data (the [from, to] filter below still bounds the returned routes).
+  const today = todayCivilDate()
+  const cappedTo = to <= today ? to : today
 
   const gtfsRoutes = await GTFS_API.gtfsRoutesListGet(
     {
       routeShortName: lineNumber,
       operatorRefs: operatorId,
-      dateFrom: from.startOf('day').toDate(),
-      dateTo: dayjs.min(to.endOf('day'), toIsraelTimezone()).toDate(),
+      dateFrom: civilDateToApiDate(from),
+      dateTo: civilDateToApiDate(cappedTo),
       limit: 100,
     },
     { signal },
@@ -27,7 +30,7 @@ export async function getRoutesAsync(
     gtfsRoutes
       .filter((route) => {
         const routeDate = toIsraelTimezone(route.date).format('YYYY-MM-DD')
-        return routeDate >= fromDate && routeDate <= toDate
+        return routeDate >= from && routeDate <= to
       })
       .map((route) => fromGtfsRoute(route))
       .reduce(
@@ -128,12 +131,12 @@ export async function getRouteById(routeId?: string, signal?: AbortSignal) {
   }
 }
 
-export async function getAllRoutesList(operatorId: string, date: Date, signal?: AbortSignal) {
+export async function getAllRoutesList(operatorId: string, date: CivilDate, signal?: AbortSignal) {
   return await GTFS_API.gtfsRoutesListGet(
     {
       operatorRefs: operatorId,
-      dateFrom: date,
-      dateTo: date,
+      dateFrom: civilDateToApiDate(date),
+      dateTo: civilDateToApiDate(date),
       orderBy: 'route_long_name asc',
       limit: 15000,
     },
@@ -144,14 +147,14 @@ export async function getAllRoutesList(operatorId: string, date: Date, signal?: 
 export async function getRoutesByLineRef(
   operatorId: string,
   lineRefs: string,
-  date: Date,
+  date: CivilDate,
   signal?: AbortSignal,
 ) {
   return await GTFS_API.gtfsRoutesListGet(
     {
       operatorRefs: operatorId,
-      dateFrom: date,
-      dateTo: date,
+      dateFrom: civilDateToApiDate(date),
+      dateTo: civilDateToApiDate(date),
       lineRefs,
       limit: 1,
     },

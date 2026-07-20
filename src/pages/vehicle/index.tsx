@@ -4,13 +4,13 @@ import { useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { SIRI_API } from 'src/api/apiConfig'
 import { getAllRoutesList } from 'src/api/gtfsService'
-import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone } from 'src/dayjs'
 import { fromGtfsRoute } from 'src/model/busRoute'
 import { GlobalSearchContext } from 'src/model/globalState'
 import { InitialUrlParamsContext, PageShareParamsContext } from 'src/model/routeContext'
+import { type CivilDate, todayCivilDate } from 'src/model/time/civilDate'
 import { serviceDayBounds } from 'src/pages/components/utils/startTimeUtils'
 import VehicleSelector, { normalizeVehicleNumber } from 'src/pages/components/VehicleSelector'
-import { DateSelector } from '../components/DateSelector'
+import { CivilDateSelector } from '../components/CivilDateSelector'
 import { NotFound } from '../components/NotFound'
 import { PageContainer } from '../components/PageContainer'
 import { buildVehicleRideRows, VehicleRideRow } from './buildVehicleRideRows'
@@ -44,10 +44,10 @@ const VehiclePage = () => {
     [date],
   )
 
-  const handleDateChange = (time: dayjs.Dayjs | null) => {
+  const handleDateChange = (next: CivilDate | null) => {
     setSearch((current) => ({
       ...current,
-      date: toIsraelTimezone(time ?? dayjs()).format('YYYY-MM-DD'),
+      date: next ?? todayCivilDate(),
     }))
   }
 
@@ -89,13 +89,11 @@ const VehiclePage = () => {
   )
 
   const { data: routes } = useQuery({
-    queryKey: ['vehicleRoutes', serviceDayStart.valueOf(), operatorIds],
+    queryKey: ['vehicleRoutes', date, operatorIds],
     enabled: operatorIds.length > 0,
     queryFn: async ({ signal }) => {
       const routeLists = await Promise.all(
-        operatorIds.map((operatorId) =>
-          getAllRoutesList(operatorId, serviceDayStart.toDate(), signal),
-        ),
+        operatorIds.map((operatorId) => getAllRoutesList(operatorId, date, signal)),
       )
       return routeLists
         .flat()
@@ -129,7 +127,7 @@ const VehiclePage = () => {
       <Grid container spacing={2} sx={{ width: '100%', maxWidth: 600, mx: 'auto' }}>
         {/* choose date */}
         <Grid size={{ sm: 6, xs: 12 }}>
-          <DateSelector time={dayjs.tz(date, ISRAEL_TIMEZONE)} onChange={handleDateChange} />
+          <CivilDateSelector value={date} onChange={handleDateChange} />
         </Grid>
         {/* choose vehicle */}
         <Grid size={{ sm: 6, xs: 12 }}>

@@ -1,11 +1,12 @@
 import { GLOBAL_SEARCH_DEFAULTS, GlobalSearchState } from 'src/model/globalState'
+import { civilDate, type CivilDate } from 'src/model/time/civilDate'
 import { buildShareUrl, PAGE_SHARE_PARAMS } from './shareUrl'
 import type { ShareableKey } from './shareUrl'
 
 const ORIGIN = 'https://open-bus.example.com'
 
 const fullSearch: GlobalSearchState = {
-  date: '2026-05-01',
+  date: civilDate('2026-05-01')!,
   operatorId: '3',
   lineNumber: '64',
   routeKey: 'route-abc',
@@ -172,7 +173,9 @@ describe('buildShareUrl — edge cases', () => {
   it('a page with all empty/null search values produces no query string', () => {
     const empty: GlobalSearchState = {
       ...GLOBAL_SEARCH_DEFAULTS,
-      date: '',
+      // An empty date can't occur in real state (the CivilDate type + default guarantee a
+      // valid day); the cast simulates it to exercise buildShareUrl's falsy-value skip.
+      date: '' as CivilDate,
       operatorId: null,
       lineNumber: null,
       routeKey: null,

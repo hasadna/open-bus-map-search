@@ -1,6 +1,5 @@
 import { createContext, Dispatch } from 'react'
-import dayjs from 'src/dayjs'
-import { toIsraelTimezone } from 'src/dayjs'
+import { type CivilDate, isCivilDate, todayCivilDate } from 'src/model/time/civilDate'
 
 /**
  * Global search state shared across all pages via GlobalSearchContext.
@@ -12,8 +11,8 @@ import { toIsraelTimezone } from 'src/dayjs'
  * `null` means "not selected". Never use undefined or empty string here.
  */
 export type GlobalSearchState = {
-  /** Selected calendar day as an Israeli date string "YYYY-MM-DD". */
-  date: string
+  /** Selected calendar day, as a CivilDate ("YYYY-MM-DD"). */
+  date: CivilDate
 
   operatorId: string | null
   lineNumber: string | null
@@ -27,18 +26,12 @@ export type GlobalSearchState = {
   stopKey: string | null
 }
 
-/** True if the value is a readable "YYYY-MM-DD" calendar date (the format of
- *  GlobalSearchState.date). Used to drop corrupt dates from shared URLs or
- *  stale session storage instead of letting them break every date consumer.
- *  The round-trip comparison rejects overflow dates like "2026-02-30", which
- *  dayjs silently normalizes to a different day instead of marking invalid. */
-export const isValidSearchDate = (date: unknown): date is string =>
-  typeof date === 'string' &&
-  /^\d{4}-\d{2}-\d{2}$/.test(date) &&
-  dayjs(date).format('YYYY-MM-DD') === date
+/** Guards `date` from corrupt shared URLs / stale session storage. Alias of isCivilDate,
+ *  kept for readability at the call sites in MainRoute. */
+export const isValidSearchDate = (date: unknown): date is CivilDate => isCivilDate(date)
 
 export const GLOBAL_SEARCH_DEFAULTS: GlobalSearchState = {
-  date: toIsraelTimezone(dayjs()).format('YYYY-MM-DD'),
+  date: todayCivilDate(),
   operatorId: null,
   lineNumber: null,
   routeKey: null,
