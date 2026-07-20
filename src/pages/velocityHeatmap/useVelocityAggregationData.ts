@@ -62,7 +62,7 @@ async function loadFromCache(bounds: VelocityAggregationBounds, date: dayjs.Dayj
 
 async function queryFn(bounds: VelocityAggregationBounds, date: dayjs.Dayjs, zoom: number) {
   // only try cached data if date is in the past
-  if (date.isBefore(dayjs('yesterday'))) {
+  if (date.isBefore(dayjs().subtract(1, 'day'))) {
     try {
       const cachedData = await loadFromCache(bounds, date, zoom)
       if (cachedData) {
