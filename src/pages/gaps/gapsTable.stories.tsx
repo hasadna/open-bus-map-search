@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Gap } from 'src/api/gapsService'
+import { Gap, serializeGap } from 'src/api/gapsService'
 import dayjs from 'src/dayjs'
 import GapsTable from './GapsTable'
 
@@ -64,7 +64,7 @@ const mockGaps: Gap[] = [
 
 export const Default: Story = {
   args: {
-    gaps: mockGaps,
+    gaps: mockGaps.map(serializeGap),
     date: dayjs().format('YYYY-MM-DD'),
     singleLineMapBaseHref:
       '/single-line-map?date=2025-01-01&operatorId=3&lineNumber=5&routeKey=10018-2',
@@ -73,7 +73,7 @@ export const Default: Story = {
 
 export const OnlyGappe: Story = {
   args: {
-    gaps: mockGaps,
+    gaps: mockGaps.map(serializeGap),
     date: dayjs().format('YYYY-MM-DD'),
     initOnlyGapped: true,
     singleLineMapBaseHref:

@@ -13,7 +13,7 @@ import type { TFunction } from 'i18next'
 import React, { memo, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
-import { Gap } from 'src/api/gapsService'
+import { Gap, reviveGap, SerializedGap } from 'src/api/gapsService'
 import dayjs from 'src/dayjs'
 import {
   formatServiceDayTime,
@@ -26,7 +26,7 @@ import DisplayGapsPercentage from '../components/DisplayGapsPercentage'
 import { Row } from '../components/Row'
 
 interface GapsTableProps {
-  gaps?: Gap[]
+  gaps?: SerializedGap[]
   loading?: boolean
   initOnlyGapped?: boolean
   onlyGapped?: boolean
@@ -91,7 +91,7 @@ function buildTooltip(gap: Gap, t: TFunction): React.ReactNode {
 const getGap = (gap: Gap) => gap.plannedStartTime || gap.actualStartTime
 
 const GapsTable: React.FC<GapsTableProps> = ({
-  gaps,
+  gaps: rawGaps,
   loading,
   initOnlyGapped = false,
   onlyGapped: onlyGappedProp,
@@ -101,6 +101,9 @@ const GapsTable: React.FC<GapsTableProps> = ({
   onStartTimeClick,
 }) => {
   const { t } = useTranslation()
+  // The gaps cache is persisted as JSON (dayjs → ISO strings). Revive to dayjs here,
+  // at the single consumption edge, so all the comparison/formatting below is unchanged.
+  const gaps = useMemo(() => rawGaps?.map(reviveGap), [rawGaps])
   const { start: serviceDayStart } = serviceDayBounds(date)
   // Controllable: the gaps page owns and persists this via usePageState; the
   // story leaves it uncontrolled and seeds it with initOnlyGapped.

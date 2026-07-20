@@ -2,11 +2,11 @@ import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
 import { useCallback, useContext, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone } from 'src/dayjs'
+import dayjs, { ISRAEL_TIMEZONE } from 'src/dayjs'
 import { usePageState } from 'src/hooks/usePageState'
 import { GlobalSearchContext } from 'src/model/globalState'
 import { INPUT_SIZE } from 'src/resources/sizes'
-import { Gap, getGapsAsync } from '../../api/gapsService'
+import { getGapsAsync, SerializedGap, serializeGap } from '../../api/gapsService'
 import { getServiceDayRoutes } from '../../api/serviceDayRoutesService'
 import { DateSelector } from '../components/DateSelector'
 import { Label } from '../components/Label'
@@ -18,17 +18,6 @@ import RouteSelector from '../components/RouteSelector'
 import { Row } from '../components/Row'
 import { serviceDayBounds } from '../components/utils/startTimeUtils'
 import GapsTable from './GapsTable'
-
-// The React Query cache is persisted to localStorage, where dayjs times serialize
-// to ISO strings. Normalize every gap time back to an Israel-tz dayjs so a reload
-// (rehydrated strings) behaves like a fresh fetch — idempotent for values that are
-// still dayjs in memory.
-const selectGaps = (data: Gap[] | null) =>
-  data?.map((gap) => ({
-    ...gap,
-    plannedStartTime: gap.plannedStartTime ? toIsraelTimezone(gap.plannedStartTime) : undefined,
-    actualStartTime: gap.actualStartTime ? toIsraelTimezone(gap.actualStartTime) : undefined,
-  })) ?? null
 
 const GapsPage = () => {
   const { t } = useTranslation()
@@ -66,17 +55,22 @@ const GapsPage = () => {
   )
 
   const gapsQuery = useQuery({
-    queryFn: async () => {
+    queryFn: async (): Promise<SerializedGap[] | null> => {
       if (!operatorId || !selectedRoute || !date) return null
       const { start, end } = serviceDayBounds(date)
       const res = await getGapsAsync(start, end, operatorId, selectedRoute.lineRef)
-      return res.filter((g) => {
-        const gapTime = g.plannedStartTime || g.actualStartTime
-        return gapTime && !gapTime.isBefore(start) && gapTime.isBefore(end)
-      })
+      return (
+        res
+          .filter((g) => {
+            const gapTime = g.plannedStartTime || g.actualStartTime
+            return gapTime && !gapTime.isBefore(start) && gapTime.isBefore(end)
+          })
+          // Store JSON-serializable strings, not dayjs, so the persisted cache
+          // rehydrates losslessly; GapsTable revives them to dayjs on read.
+          .map(serializeGap)
+      )
     },
     queryKey: ['gaps', operatorId, selectedRoute?.lineRef, date],
-    select: selectGaps,
   })
   const gaps = gapsQuery.data ?? undefined
 
