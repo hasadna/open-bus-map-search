@@ -22,7 +22,7 @@ import {
   TextField,
 } from '@mui/material'
 import { useForm } from '@tanstack/react-form'
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
 import { EasterEgg } from 'src/pages/components/EasterEgg/EasterEgg'
@@ -30,6 +30,14 @@ import InfoYoutubeModal from 'src/pages/components/YoutubeModal'
 import { useCreateIssueMutation } from 'src/queries/issues'
 import Widget from 'src/shared/Widget'
 import './BugReportForm.scss'
+
+interface FormField {
+  name: string
+  state: { value: string; meta: { errors: unknown[] } }
+  handleBlur: () => void
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  handleChange: (value: any) => void
+}
 
 type BugReportFormValues = Omit<CreateIssuePostRequest, 'type' | 'reproducibility'> & {
   type: CreateIssuePostRequestTypeEnum | ''
@@ -60,6 +68,67 @@ function toCreateIssuePayload(values: BugReportFormValues): CreateIssuePostReque
     type: values.type as CreateIssuePostRequestTypeEnum,
     reproducibility: values.reproducibility as CreateIssuePostRequestReproducibilityEnum,
   }
+}
+
+type ValidatedTextFieldProps = {
+  field: FormField
+  label: string
+  type?: string
+  multiline?: boolean
+  minRows?: number
+}
+
+function ValidatedTextField({ field, label, type, multiline, minRows }: ValidatedTextFieldProps) {
+  const error = firstError(field.state.meta.errors)
+  return (
+    <TextField
+      required
+      fullWidth
+      type={type}
+      multiline={multiline}
+      minRows={minRows}
+      id={field.name}
+      name={field.name}
+      label={label}
+      value={field.state.value}
+      error={Boolean(error)}
+      helperText={error}
+      onBlur={field.handleBlur}
+      onChange={(event) => field.handleChange(event.target.value)}
+    />
+  )
+}
+
+type SelectOption = { value: string; label: string }
+
+type ValidatedSelectProps = {
+  field: FormField
+  label: string
+  options: SelectOption[]
+}
+
+function ValidatedSelect({ field, label, options }: ValidatedSelectProps) {
+  const error = firstError(field.state.meta.errors)
+  return (
+    <FormControl fullWidth required error={Boolean(error)}>
+      <InputLabel id={`${field.name}-label`}>{label}</InputLabel>
+      <Select
+        labelId={`${field.name}-label`}
+        id={field.name}
+        name={field.name}
+        value={field.state.value}
+        label={label}
+        onBlur={field.handleBlur}
+        onChange={(event) => field.handleChange(event.target.value as string)}>
+        {options.map((option) => (
+          <MenuItem key={option.value} value={option.value}>
+            {option.label}
+          </MenuItem>
+        ))}
+      </Select>
+      {error && <FormHelperText>{error}</FormHelperText>}
+    </FormControl>
+  )
 }
 
 const BugReportForm = () => {
@@ -124,20 +193,22 @@ const BugReportForm = () => {
 
   const handleBackToPreviousPage = () => {
     handleCloseSuccessDialog()
-    navigate(-1)
+    if (window.history.length > 1) {
+      navigate(-1)
+    } else {
+      navigate('/')
+    }
   }
 
-  const options = useMemo(() => {
-    return [
-      { value: CreateIssuePostRequestReproducibilityEnum.Always, label: t('bug_frequency.always') },
-      {
-        value: CreateIssuePostRequestReproducibilityEnum.Sometimes,
-        label: t('bug_frequency.sometimes'),
-      },
-      { value: CreateIssuePostRequestReproducibilityEnum.Rarely, label: t('bug_frequency.rarely') },
-      { value: CreateIssuePostRequestReproducibilityEnum.Once, label: t('bug_frequency.once') },
-    ]
-  }, [t])
+  const reproducibilityOptions = [
+    { value: CreateIssuePostRequestReproducibilityEnum.Always, label: t('bug_frequency.always') },
+    {
+      value: CreateIssuePostRequestReproducibilityEnum.Sometimes,
+      label: t('bug_frequency.sometimes'),
+    },
+    { value: CreateIssuePostRequestReproducibilityEnum.Rarely, label: t('bug_frequency.rarely') },
+    { value: CreateIssuePostRequestReproducibilityEnum.Once, label: t('bug_frequency.once') },
+  ]
 
   return (
     <Box className="bug-report-page">
@@ -176,34 +247,17 @@ const BugReportForm = () => {
               validators={{
                 onChange: ({ value }) => requiredSelect(t('bug_type'), value),
               }}>
-              {(field) => {
-                const error = firstError(field.state.meta.errors)
-
-                return (
-                  <FormControl fullWidth required error={Boolean(error)}>
-                    <InputLabel id={`${field.name}-label`}>{t('bug_type')}</InputLabel>
-                    <Select
-                      labelId={`${field.name}-label`}
-                      id={field.name}
-                      name={field.name}
-                      value={field.state.value}
-                      label={t('bug_type')}
-                      onBlur={field.handleBlur}
-                      onChange={(event) => field.handleChange(event.target.value)}>
-                      <MenuItem value={CreateIssuePostRequestTypeEnum.Bug}>
-                        {t('bug_type_bug')}
-                      </MenuItem>
-                      <MenuItem value={CreateIssuePostRequestTypeEnum.Feature}>
-                        {t('bug_type_feature')}
-                      </MenuItem>
-                      <MenuItem value={CreateIssuePostRequestTypeEnum.Other}>
-                        {t('bug_type_other')}
-                      </MenuItem>
-                    </Select>
-                    {error && <FormHelperText>{error}</FormHelperText>}
-                  </FormControl>
-                )
-              }}
+              {(field) => (
+                <ValidatedSelect
+                  field={field}
+                  label={t('bug_type')}
+                  options={[
+                    { value: CreateIssuePostRequestTypeEnum.Bug, label: t('bug_type_bug') },
+                    { value: CreateIssuePostRequestTypeEnum.Feature, label: t('bug_type_feature') },
+                    { value: CreateIssuePostRequestTypeEnum.Other, label: t('bug_type_other') },
+                  ]}
+                />
+              )}
             </form.Field>
 
             <form.Field
@@ -214,24 +268,7 @@ const BugReportForm = () => {
                   minLength(t('bug_title'), value, 5) ||
                   maxLength(t('bug_title'), value, 200),
               }}>
-              {(field) => {
-                const error = firstError(field.state.meta.errors)
-
-                return (
-                  <TextField
-                    required
-                    fullWidth
-                    id={field.name}
-                    name={field.name}
-                    label={t('bug_title')}
-                    value={field.state.value}
-                    error={Boolean(error)}
-                    helperText={error}
-                    onBlur={field.handleBlur}
-                    onChange={(event) => field.handleChange(event.target.value)}
-                  />
-                )
-              }}
+              {(field) => <ValidatedTextField field={field} label={t('bug_title')} />}
             </form.Field>
 
             <form.Field
@@ -242,24 +279,7 @@ const BugReportForm = () => {
                   minLength(t('bug_contact_name'), value, 1) ||
                   maxLength(t('bug_contact_name'), value, 100),
               }}>
-              {(field) => {
-                const error = firstError(field.state.meta.errors)
-
-                return (
-                  <TextField
-                    required
-                    fullWidth
-                    id={field.name}
-                    name={field.name}
-                    label={t('bug_contact_name')}
-                    value={field.state.value}
-                    error={Boolean(error)}
-                    helperText={error}
-                    onBlur={field.handleBlur}
-                    onChange={(event) => field.handleChange(event.target.value)}
-                  />
-                )
-              }}
+              {(field) => <ValidatedTextField field={field} label={t('bug_contact_name')} />}
             </form.Field>
 
             <form.Field
@@ -267,25 +287,9 @@ const BugReportForm = () => {
               validators={{
                 onChange: ({ value }) => required(t('bug_contact_email'), value) || email(value),
               }}>
-              {(field) => {
-                const error = firstError(field.state.meta.errors)
-
-                return (
-                  <TextField
-                    required
-                    fullWidth
-                    id={field.name}
-                    name={field.name}
-                    type="email"
-                    label={t('bug_contact_email')}
-                    value={field.state.value}
-                    error={Boolean(error)}
-                    helperText={error}
-                    onBlur={field.handleBlur}
-                    onChange={(event) => field.handleChange(event.target.value)}
-                  />
-                )
-              }}
+              {(field) => (
+                <ValidatedTextField field={field} label={t('bug_contact_email')} type="email" />
+              )}
             </form.Field>
 
             <form.Field
@@ -296,26 +300,14 @@ const BugReportForm = () => {
                   minLength(t('bug_description'), value, 10) ||
                   maxLength(t('bug_description'), value, 5000),
               }}>
-              {(field) => {
-                const error = firstError(field.state.meta.errors)
-
-                return (
-                  <TextField
-                    required
-                    fullWidth
-                    multiline
-                    minRows={4}
-                    id={field.name}
-                    name={field.name}
-                    label={t('bug_description')}
-                    value={field.state.value}
-                    error={Boolean(error)}
-                    helperText={error}
-                    onBlur={field.handleBlur}
-                    onChange={(event) => field.handleChange(event.target.value)}
-                  />
-                )
-              }}
+              {(field) => (
+                <ValidatedTextField
+                  field={field}
+                  label={t('bug_description')}
+                  multiline
+                  minRows={4}
+                />
+              )}
             </form.Field>
 
             <form.Field
@@ -326,24 +318,7 @@ const BugReportForm = () => {
                   minLength(t('bug_environment'), value, 1) ||
                   maxLength(t('bug_environment'), value, 200),
               }}>
-              {(field) => {
-                const error = firstError(field.state.meta.errors)
-
-                return (
-                  <TextField
-                    required
-                    fullWidth
-                    id={field.name}
-                    name={field.name}
-                    label={t('bug_environment')}
-                    value={field.state.value}
-                    error={Boolean(error)}
-                    helperText={error}
-                    onBlur={field.handleBlur}
-                    onChange={(event) => field.handleChange(event.target.value)}
-                  />
-                )
-              }}
+              {(field) => <ValidatedTextField field={field} label={t('bug_environment')} />}
             </form.Field>
 
             <form.Field
@@ -354,26 +329,14 @@ const BugReportForm = () => {
                   minLength(t('bug_expected_behavior'), value, 5) ||
                   maxLength(t('bug_expected_behavior'), value, 1000),
               }}>
-              {(field) => {
-                const error = firstError(field.state.meta.errors)
-
-                return (
-                  <TextField
-                    required
-                    fullWidth
-                    multiline
-                    minRows={4}
-                    id={field.name}
-                    name={field.name}
-                    label={t('bug_expected_behavior')}
-                    value={field.state.value}
-                    error={Boolean(error)}
-                    helperText={error}
-                    onBlur={field.handleBlur}
-                    onChange={(event) => field.handleChange(event.target.value)}
-                  />
-                )
-              }}
+              {(field) => (
+                <ValidatedTextField
+                  field={field}
+                  label={t('bug_expected_behavior')}
+                  multiline
+                  minRows={4}
+                />
+              )}
             </form.Field>
 
             <form.Field
@@ -384,26 +347,14 @@ const BugReportForm = () => {
                   minLength(t('bug_actual_behavior'), value, 5) ||
                   maxLength(t('bug_actual_behavior'), value, 1000),
               }}>
-              {(field) => {
-                const error = firstError(field.state.meta.errors)
-
-                return (
-                  <TextField
-                    required
-                    fullWidth
-                    multiline
-                    minRows={4}
-                    id={field.name}
-                    name={field.name}
-                    label={t('bug_actual_behavior')}
-                    value={field.state.value}
-                    error={Boolean(error)}
-                    helperText={error}
-                    onBlur={field.handleBlur}
-                    onChange={(event) => field.handleChange(event.target.value)}
-                  />
-                )
-              }}
+              {(field) => (
+                <ValidatedTextField
+                  field={field}
+                  label={t('bug_actual_behavior')}
+                  multiline
+                  minRows={4}
+                />
+              )}
             </form.Field>
 
             <form.Field
@@ -411,30 +362,13 @@ const BugReportForm = () => {
               validators={{
                 onChange: ({ value }) => requiredSelect(t('bug_reproducibility'), value),
               }}>
-              {(field) => {
-                const error = firstError(field.state.meta.errors)
-
-                return (
-                  <FormControl fullWidth required error={Boolean(error)}>
-                    <InputLabel id={`${field.name}-label`}>{t('bug_reproducibility')}</InputLabel>
-                    <Select
-                      labelId={`${field.name}-label`}
-                      id={field.name}
-                      name={field.name}
-                      value={field.state.value}
-                      label={t('bug_reproducibility')}
-                      onBlur={field.handleBlur}
-                      onChange={(event) => field.handleChange(event.target.value)}>
-                      {options.map((option) => (
-                        <MenuItem key={option.value} value={option.value}>
-                          {option.label}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                    {error && <FormHelperText>{error}</FormHelperText>}
-                  </FormControl>
-                )
-              }}
+              {(field) => (
+                <ValidatedSelect
+                  field={field}
+                  label={t('bug_reproducibility')}
+                  options={reproducibilityOptions}
+                />
+              )}
             </form.Field>
 
             <EasterEgg
