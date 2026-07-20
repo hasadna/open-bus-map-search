@@ -29,6 +29,8 @@ interface GapsTableProps {
   gaps?: Gap[]
   loading?: boolean
   initOnlyGapped?: boolean
+  onlyGapped?: boolean
+  onOnlyGappedChange?: (value: boolean) => void
   singleLineMapBaseHref: string
   date: string
   onStartTimeClick?: (rideTime: string) => void
@@ -92,13 +94,22 @@ const GapsTable: React.FC<GapsTableProps> = ({
   gaps,
   loading,
   initOnlyGapped = false,
+  onlyGapped: onlyGappedProp,
+  onOnlyGappedChange,
   singleLineMapBaseHref,
   date,
   onStartTimeClick,
 }) => {
   const { t } = useTranslation()
   const { start: serviceDayStart } = serviceDayBounds(date)
-  const [onlyGapped, setOnlyGapped] = useState(initOnlyGapped)
+  // Controllable: the gaps page owns and persists this via usePageState; the
+  // story leaves it uncontrolled and seeds it with initOnlyGapped.
+  const [onlyGappedState, setOnlyGappedState] = useState(initOnlyGapped)
+  const onlyGapped = onlyGappedProp ?? onlyGappedState
+  const setOnlyGapped = (value: boolean) => {
+    setOnlyGappedState(value)
+    onOnlyGappedChange?.(value)
+  }
 
   const filteredGaps: Gap[] = useMemo(() => {
     if (!gaps) return []
@@ -133,7 +144,7 @@ const GapsTable: React.FC<GapsTableProps> = ({
   }, [gaps])
 
   return (
-    <Widget marginBottom sx={{ overflowY: 'none', maxWidth: '600px' }}>
+    <Widget marginBottom sx={{ overflowY: 'none', maxWidth: '600px', mx: 'auto' }}>
       <Row style={{ justifyContent: 'space-between', fontWeight: 500 }}>
         <FormControlLabel
           control={
