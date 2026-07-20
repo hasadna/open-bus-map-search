@@ -24,19 +24,12 @@ import {
 import { useForm } from '@tanstack/react-form'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useLocation, useNavigate } from 'react-router'
+import { useNavigate } from 'react-router'
 import { EasterEgg } from 'src/pages/components/EasterEgg/EasterEgg'
 import InfoYoutubeModal from 'src/pages/components/YoutubeModal'
 import { useCreateIssueMutation } from 'src/queries/issues'
 import Widget from 'src/shared/Widget'
 import './BugReportForm.scss'
-
-type BugReportLocationState = {
-  from?: {
-    path: string
-    title: string
-  }
-} | null
 
 type BugReportFormValues = Omit<CreateIssuePostRequest, 'type' | 'reproducibility'> & {
   type: CreateIssuePostRequestTypeEnum | ''
@@ -72,9 +65,7 @@ function toCreateIssuePayload(values: BugReportFormValues): CreateIssuePostReque
 const BugReportForm = () => {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const location = useLocation()
   const [successDialogOpen, setSuccessDialogOpen] = useState(false)
-  const previousPage = (location.state as BugReportLocationState)?.from
 
   const required = (label: string, value: string) =>
     value.trim()
@@ -133,7 +124,7 @@ const BugReportForm = () => {
 
   const handleBackToPreviousPage = () => {
     handleCloseSuccessDialog()
-    navigate(previousPage?.path || '/')
+    navigate(-1)
   }
 
   const options = useMemo(() => {
