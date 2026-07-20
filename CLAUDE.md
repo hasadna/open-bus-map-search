@@ -179,7 +179,6 @@ no extra setup. Create `.env.local` only to override them locally (git-ignored):
 
 - `VITE_STRIDE_API` - Stride API base URL
 - `VITE_BACKEND_API` - Backend API base URL
-- `VITE_COVERAGE` (optional) - Enable Istanbul coverage plugin
 
 ## Development Workflow
 
