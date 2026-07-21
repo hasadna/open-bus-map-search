@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Databus Hackathon · June 9, 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --yellow: #FFE600;
+    --black: #0A0A0A;
+    --white: #F5F5F0;
+    --orange: #FF5C00;
+    --gray: #1A1A1A;
+    --mid: #2A2A2A;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Heebo', sans-serif;
+    background: var(--black);
+    color: var(--white);
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    user-select: none;
+  }
+
+  .slides { flex: 1; position: relative; overflow: hidden; }
+
+  .slide {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+    padding: 48px;
+    opacity: 0; transform: translateX(60px);
+    transition: opacity 0.45s ease, transform 0.45s ease;
+    pointer-events: none;
+    text-align: center;
+  }
+  .slide.active {
+    opacity: 1; transform: translateX(0);
+    pointer-events: all;
+  }
+  .slide.exit {
+    opacity: 0; transform: translateX(-60px);
+  }
+
+  .nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 32px;
+    background: var(--gray);
+    border-top: 2px solid #333;
+    gap: 16px;
+    flex-shrink: 0;
+  }
+  .nav-btn {
+    background: var(--yellow); color: var(--black);
+    border: none; cursor: pointer;
+    font-family: 'Space Mono', monospace; font-weight: 700; font-size: 13px;
+    padding: 10px 24px; border-radius: 2px;
+    transition: background 0.15s, transform 0.1s;
+    letter-spacing: 0.5px;
+  }
+  .nav-btn:hover { background: #ffe900dd; transform: translateY(-1px); }
+  .nav-btn:disabled { opacity: 0.25; cursor: default; transform: none; }
+
+  .slide-counter {
+    font-family: 'Space Mono', monospace; font-size: 12px;
+    color: #666; letter-spacing: 1px;
+  }
+  .progress-dots { display: flex; gap: 6px; }
+  .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #333; transition: background 0.3s; cursor: pointer;
+  }
+  .dot.active { background: var(--yellow); }
+  .dot.visited { background: #555; }
+
+  /* S1 - TITLE */
+  .s1 { background: var(--black); }
+  .s1 .bus-icon { font-size: 80px; margin-bottom: 16px; animation: bounce 2s ease-in-out infinite; }
+  @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+  .s1 h1 {
+    font-size: clamp(48px, 8vw, 96px); font-weight: 900; line-height: 1;
+    color: var(--yellow); letter-spacing: -2px;
+  }
+  .s1 .sub { font-size: clamp(16px, 2.5vw, 22px); color: #aaa; margin-top: 12px; font-weight: 400; }
+  .s1 .meta { margin-top: 32px; display: flex; gap: 32px; justify-content: center; flex-wrap: wrap; }
+  .s1 .meta-item {
+    display: flex; flex-direction: column; align-items: center;
+    font-family: 'Space Mono', monospace; font-size: 13px; color: #888;
+  }
+  .s1 .meta-item strong { color: var(--white); font-size: 15px; margin-top: 4px; }
+  .stripe {
+    position: absolute; bottom: 0; left: 0; right: 0; height: 6px;
+    background: repeating-linear-gradient(90deg, var(--yellow) 0 40px, var(--black) 40px 60px);
+  }
+
+  .s1-sched {
+    display: flex; gap: 0; margin-top: 28px; border-radius: 4px; overflow: hidden;
+    max-width: 700px; width: 100%;
+  }
+  .s1-sched-item {
+    flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px;
+    padding: 10px 8px; background: #1a1a1a;
+    font-size: 12px; color: #888;
+  }
+  .s1-sched-item .st { font-family: 'Space Mono', monospace; font-size: 11px; color: #555; }
+  .s1-sched-item.hi { background: var(--yellow); }
+  .s1-sched-item.hi, .s1-sched-item.hi .st { color: var(--black); font-weight: 700; }
+
+  /* S2 - AUDIENCE QUESTIONS */
+  .s2 { background: var(--black); }
+  .slide-label {
+    font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 3px;
+    color: var(--orange); text-transform: uppercase; margin-bottom: 24px;
+    border: 1px solid var(--orange); padding: 4px 12px; border-radius: 2px;
+  }
+  .s2 h2 { font-size: clamp(28px, 4.5vw, 56px); font-weight: 900; line-height: 1.25; max-width: 760px; }
+
+  /* S3 - THE BIG QUESTION */
+  .s3 { background: var(--yellow); color: var(--black); }
+  .s3 h2 { font-size: clamp(28px, 5vw, 56px); font-weight: 900; line-height: 1.2; max-width: 760px; }
+  .s3 .hint { margin-top: 24px; font-size: clamp(14px, 1.8vw, 18px); color: #444; max-width: 600px; font-weight: 400; }
+  .s3 .big-arrow { font-size: 80px; margin-bottom: 24px; }
+
+  /* S4 - WHAT IS DATABUS */
+  .s4 { background: var(--black); }
+  .s4 h2 { font-size: clamp(32px, 5vw, 58px); font-weight: 900; margin-bottom: 32px; }
+  .s4 h2 span { color: var(--yellow); }
+  .data-points { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; width: 100%; max-width: 800px; }
+  .data-card {
+    background: var(--mid); padding: 24px 20px; border-radius: 2px;
+    text-align: right; border-top: 3px solid var(--yellow);
+  }
+  .data-card .icon { font-size: 28px; margin-bottom: 8px; }
+  .data-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 6px; color: var(--yellow); }
+  .data-card p { font-size: 14px; color: #aaa; line-height: 1.5; }
+
+  /* S5 - HASADNA */
+  .s5 { background: var(--mid); }
+  .s5 h2 { font-size: clamp(32px, 5vw, 58px); font-weight: 900; margin-bottom: 8px; }
+  .s5 h2 span { color: var(--yellow); }
+  .s5 .dorit-badge {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: var(--yellow); color: var(--black);
+    padding: 8px 20px; border-radius: 2px;
+    font-weight: 900; font-size: 16px; margin: 16px 0 28px;
+  }
+  .s5 p { font-size: clamp(16px, 2vw, 20px); color: #bbb; max-width: 640px; line-height: 1.7; }
+  .timer-chip {
+    margin-top: 28px; font-family: 'Space Mono', monospace;
+    font-size: 13px; color: var(--orange);
+    border: 1px solid var(--orange); padding: 6px 16px; border-radius: 2px; letter-spacing: 1px;
+  }
+
+  /* VIDEO SLIDE */
+  .s-video { background: var(--black); }
+  .s-video h2 { font-size: clamp(18px, 2.8vw, 30px); font-weight: 900; margin-bottom: 6px; }
+  .s-video .vid-credit { font-size: 13px; color: #777; margin-bottom: 16px; font-family: 'Space Mono', monospace; }
+  .s-video video { max-height: 55vh; max-width: 100%; border-radius: 6px; display: block; }
+
+  /* S6 - HACKATHON GOALS */
+  .s6 { background: var(--black); }
+  .s6 h2 { font-size: clamp(28px, 4.5vw, 52px); font-weight: 900; margin-bottom: 32px; }
+  .goals-list { display: flex; flex-direction: column; gap: 14px; width: 100%; max-width: 700px; }
+  .goal-item { display: flex; align-items: flex-start; gap: 16px; background: var(--mid); padding: 18px 20px; border-radius: 2px; text-align: right; }
+  .goal-num { font-family: 'Space Mono', monospace; font-size: 22px; font-weight: 700; color: var(--yellow); flex-shrink: 0; }
+  .goal-text { font-size: clamp(14px, 1.8vw, 17px); line-height: 1.5; color: #ddd; }
+
+  /* S7 - SCHEDULE */
+  .s7 { background: var(--mid); }
+  .s7 h2 { font-size: clamp(28px, 4.5vw, 52px); font-weight: 900; margin-bottom: 28px; }
+  .schedule-list { width: 100%; max-width: 700px; display: flex; flex-direction: column; gap: 2px; }
+  .sched-row { display: flex; align-items: center; background: var(--gray); padding: 14px 20px; gap: 20px; }
+  .sched-row:first-child { border-top-left-radius: 4px; border-top-right-radius: 4px; }
+  .sched-row:last-child { border-bottom-left-radius: 4px; border-bottom-right-radius: 4px; }
+  .sched-time { font-family: 'Space Mono', monospace; font-size: 13px; color: var(--yellow); min-width: 110px; text-align: left; }
+  .sched-label { font-size: 15px; font-weight: 700; text-align: right; flex: 1; }
+  .sched-row.highlight { background: var(--yellow); }
+  .sched-row.highlight .sched-label { color: var(--black); }
+  .sched-row.highlight .sched-time { color: var(--black); }
+
+  /* S8 - CHALLENGES */
+  .s8 { background: var(--black); }
+  .s8 h2 { font-size: clamp(28px, 4.5vw, 52px); font-weight: 900; margin-bottom: 28px; }
+  .tracks { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; width: 100%; max-width: 860px; }
+  .track-card { background: var(--mid); padding: 20px 16px; border-radius: 2px; border-top: 4px solid; text-align: right; }
+  .track-card:nth-child(1) { border-color: #FF5C00; }
+  .track-card:nth-child(2) { border-color: var(--yellow); }
+  .track-card:nth-child(3) { border-color: #00E5FF; }
+  .track-card:nth-child(4) { border-color: #A855F7; }
+  .track-name { font-size: 13px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; }
+  .track-card:nth-child(1) .track-name { color: #FF5C00; }
+  .track-card:nth-child(2) .track-name { color: var(--yellow); }
+  .track-card:nth-child(3) .track-name { color: #00E5FF; }
+  .track-card:nth-child(4) .track-name { color: #A855F7; }
+  .challenge-items { display: flex; flex-direction: column; gap: 6px; }
+  .ch-item { font-size: 13px; color: #bbb; line-height: 1.4; padding: 6px 8px; background: #1a1a1a; border-radius: 2px; }
+
+  /* APPLITOOLS SLIDES */
+  .s-app1, .s-app2, .s-app3 { background: var(--mid); }
+  .s-app1 h2, .s-app2 h2, .s-app3 h2 { font-size: clamp(26px, 4vw, 48px); font-weight: 900; margin-bottom: 10px; }
+  .applitools-badge { background: var(--yellow); color: var(--black); font-size: 24px; font-weight: 900; padding: 12px 36px; border-radius: 2px; margin: 12px 0; }
+  .app-facts { display: flex; flex-direction: column; gap: 8px; margin: 10px 0; }
+  .app-fact { font-size: clamp(14px, 1.8vw, 17px); color: #ddd; }
+  .app-story { background: var(--gray); border-right: 3px solid var(--orange); padding: 14px 20px; border-radius: 4px; max-width: 580px; margin: 12px 0; text-align: right; }
+  .app-story-label { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--orange); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+  .app-story p { font-size: 14px; color: #bbb; line-height: 1.65; }
+  .app-footer { font-size: 13px; color: #777; font-style: italic; margin-top: 10px; max-width: 560px; }
+  .app-two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; max-width: 860px; width: 100%; margin: 16px 0; align-items: center; }
+  .app-col-text { display: flex; flex-direction: column; gap: 11px; text-align: right; }
+  .app-bullet { font-size: clamp(13px, 1.6vw, 16px); color: #ddd; line-height: 1.5; }
+  .app-img-placeholder { background: var(--gray); border: 2px dashed #444; border-radius: 4px; aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center; color: #555; font-size: 12px; font-family: 'Space Mono', monospace; min-height: 140px; }
+  .app-chip { font-family: 'Space Mono', monospace; font-size: 12px; color: var(--yellow); border: 1px solid var(--yellow); padding: 5px 14px; border-radius: 2px; margin-top: 12px; letter-spacing: 0.5px; }
+  .ci-diagram { display: flex; flex-direction: column; gap: 12px; margin: 16px 0; }
+  .ci-row { display: flex; align-items: center; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .ci-box { background: var(--gray); padding: 10px 16px; border-radius: 4px; font-size: 13px; color: #ccc; font-weight: 600; white-space: nowrap; }
+  .ci-box.ci-hl { background: #1a2a3a; color: #60b0ff; border: 1px solid #3b82f6; }
+  .ci-box.ci-eyes { background: #0a1f0a; color: #4ade80; border: 1px solid #22c55e; }
+  .ci-box.ci-pass { background: var(--yellow); color: var(--black); font-weight: 900; }
+  .ci-arr { color: var(--yellow); font-size: 18px; font-weight: 700; }
+  .code-block { background: #111; border-radius: 6px; padding: 18px 24px; font-family: 'Space Mono', monospace; font-size: clamp(11px, 1.3vw, 14px); line-height: 1.8; text-align: left; color: #f8f8f2; border: 1px solid #2a2a2a; margin-top: 14px; direction: ltr; }
+  .code-block .kw  { color: #66d9e8; font-weight: 700; }
+  .code-block .str { color: #e6db74; }
+  .code-block .fn  { color: #a6e22e; }
+  .code-block .cm  { color: #75715e; font-style: italic; }
+
+  /* S14 - GROUPS + RESOURCES */
+  .s10 { background: var(--black); }
+  .s10 h2 { font-size: clamp(22px, 3.5vw, 40px); font-weight: 900; margin-bottom: 10px; }
+  .groups-strip { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; justify-content: center; }
+  .group-mini { display: flex; flex-direction: column; align-items: center; gap: 3px; background: var(--mid); padding: 8px 16px; border-radius: 2px; font-size: 13px; font-weight: 700; border-top: 3px solid; min-width: 140px; }
+  .group-mini span { font-size: 10px; color: #666; font-weight: 400; font-family: 'Space Mono', monospace; }
+  .group-mini.g1 { border-color: #FF5C00; color: #FF5C00; }
+  .group-mini.g2 { border-color: var(--yellow); color: var(--yellow); }
+  .group-mini.g3 { border-color: #00E5FF; color: #00E5FF; }
+  .group-mini.g4 { border-color: #A855F7; color: #A855F7; }
+  .res-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; width: 100%; max-width: 840px; }
+  .res-item { background: var(--gray); padding: 9px 14px; border-radius: 2px; font-size: 11.5px; color: #aaa; border: 1px solid #2a2a2a; text-align: right; text-decoration: none; word-break: break-all; transition: background 0.15s, color 0.15s; font-family: 'Space Mono', monospace; display: block; line-height: 1.4; }
+  .res-item:hover { background: #222; color: var(--yellow); }
+  .res-item .res-label { font-size: 10px; color: var(--orange); display: block; margin-bottom: 2px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; }
+</style>
+</head>
+<body>
+
+<div class="slides">
+
+  <!-- S1: TITLE -->
+  <div class="slide s1 active" data-index="0">
+    <div class="bus-icon">🚌</div>
+    <h1>Databus Hackathon</h1>
+    <p class="sub">ערב אחד. נתונים אמיתיים. קוד פתוח לתחב"צ ישראלי.</p>
+    <div class="meta">
+      <div class="meta-item">📅<strong>יום שלישי, 9.6.2026</strong></div>
+      <div class="meta-item">🕕<strong>18:00–21:30</strong></div>
+      <div class="meta-item">📍<strong>Applitools, One Towers, רמת גן</strong></div>
+    </div>
+    <div class="s1-sched">
+      <div class="s1-sched-item"><span class="st">18:00</span>🥂 מינגלינג</div>
+      <div class="s1-sched-item"><span class="st">18:30</span>🎤 הרצאות</div>
+      <div class="s1-sched-item hi"><span class="st">19:00</span>💻 עבודה!</div>
+      <div class="s1-sched-item"><span class="st">21:00</span>🎯 Demos</div>
+      <div class="s1-sched-item"><span class="st">21:30</span>🎉 סיכום</div>
+    </div>
+    <div class="stripe"></div>
+  </div>
+
+  <!-- S2a: QUESTION 1 -->
+  <div class="slide s2" data-index="1">
+    <div class="slide-label">🙋 שאלה לקהל</div>
+    <h2>🛣️ מי חושב שצריך נת"צ לאורך כל ציר איילון?</h2>
+  </div>
+
+  <!-- S2b: QUESTION 2 -->
+  <div class="slide s2" data-index="2">
+    <div class="slide-label">🙋 שאלה לקהל</div>
+    <h2>🌙 מי חושב שצריך אוטובוסים גם ב-3 לפנות בוקר — אפילו אם זה אומר להסיע אוטובוס ריק?</h2>
+  </div>
+
+  <!-- S2c: QUESTION 3 -->
+  <div class="slide s2" data-index="3">
+    <div class="slide-label">🙋 שאלה לקהל</div>
+    <h2>🔄 יותר קווים ישירים, או יותר קווים מאספים?</h2>
+  </div>
+
+  <!-- S3: THE BIG QUESTION -->
+  <div class="slide s3" data-index="2">
+    <div class="big-arrow">🤔</div>
+    <h2>מי שהצביע — על סמך מה גיבשתם את הדעה שלכם?</h2>
+    <p class="hint">איך אתם יודעים אם שינוי בתחב"צ הוא חיובי או שלילי?<br>על אילו נתונים מסתכלים? מי בכלל מפרסם אותם?</p>
+  </div>
+
+  <!-- S3b: KOBI PADWA VIDEO -->
+  <div class="slide s-video" data-index="4">
+    <div class="slide-label">קול מהשטח</div>
+    <h2>קובי פדוה — סגן ראש עיר כפר-סבא</h2>
+    <p class="vid-credit">מחזיק תיק תחבורה</p>
+    <video controls preload="metadata" src="./kobi-padwa.mp4"></video>
+  </div>
+
+  <!-- S4: WHAT IS DATABUS -->
+  <div class="slide s4" data-index="3">
+    <div class="slide-label">הפתרון</div>
+    <h2>מה זה <span>דאטאבוס</span>?</h2>
+    <div class="data-points">
+      <div class="data-card">
+        <div class="icon">📋</div>
+        <h3>GTFS — תכנון</h3>
+        <p>מידע תכנוני יומי: קווים, תחנות, זמני מעבר — מה <em>אמור</em> לצאת</p>
+      </div>
+      <div class="data-card">
+        <div class="icon">📡</div>
+        <h3>SIRI — ביצוע</h3>
+        <p>GPS בכל אוטובוס. מדווח מיקום כל כמה שניות — מה <em>יצא בפועל</em></p>
+      </div>
+      <div class="data-card">
+        <div class="icon">📰</div>
+        <h3>למי זה שימושי?</h3>
+        <p>עיתונאים, אזרחים, חברות תחבורה, ורגולטורים — כולם יכולים לעשות שימוש</p>
+      </div>
+      <div class="data-card">
+        <div class="icon">🔓</div>
+        <h3>קוד פתוח לגמרי</h3>
+        <p>הכל ב-GitHub. תרומות קוד מתקבלות בברכה</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- S5: HASADNA -->
+  <div class="slide s5" data-index="4">
+    <div class="slide-label">מי אנחנו</div>
+    <h2>הסדנה ל<span>ידע ציבורי</span></h2>
+    <div class="dorit-badge">🎤 דורית — 5 דקות</div>
+    <p>הסדנא לידע ציבורי היא ארגון ללא מטרות רווח, מבוסס מתנדבים, הפועל לקידום שקיפות שלטונית, מעורבות אזרחית ושיח ציבורי מבוסס נתונים. הסדנא עושה זאת על ידי פיתוח כלים טכנולוגיים בקוד פתוח — אתרים ואפליקציות — לפתיחה והנגשה של מידע המצוי ברשותם של מוסדות ציבוריים.</p>
+    <p style="margin-top:10px;font-size:clamp(13px,1.5vw,16px);color:#888">כנסת פתוחה · תקציב המדינה · תאונות דרכים · תחבורה ציבורית · מידע תכנוני · פנסיה ועוד</p>
+    <div class="timer-chip"></div>
+  </div>
+
+  <!-- S6: HACKATHON GOALS -->
+  <div class="slide s6" data-index="5">
+    <div class="slide-label">מטרות הערב</div>
+    <h2>למה אנחנו כאן הלילה?</h2>
+    <div class="goals-list">
+      <div class="goal-item">
+        <div class="goal-num">01</div>
+        <div class="goal-text">לדחוף קוד אמיתי — PR פתוח, פרוטוטייפ עובד, או doc שממשיכים ממנו</div>
+      </div>
+      <div class="goal-item">
+        <div class="goal-num">02</div>
+        <div class="goal-text">לחבר מפתחים עם אנשי דומיין — מי שמכיר את הנתונים עם מי שיודע לבנות</div>
+      </div>
+      <div class="goal-item">
+        <div class="goal-num">03</div>
+        <div class="goal-text">לחזק את הקהילה סביב תחב"צ פתוח — אולי נצליח לגייס עוד משתתפים</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S7: SCHEDULE -->
+  <div class="slide s7" data-index="6">
+    <div class="slide-label">לוח זמנים</div>
+    <h2>סדר הערב</h2>
+    <div class="schedule-list">
+      <div class="sched-row">
+        <span class="sched-time">18:00–18:30</span>
+        <span class="sched-label">🥂 מינגלינג והיכרויות</span>
+      </div>
+      <div class="sched-row">
+        <span class="sched-time">18:30–19:00</span>
+        <span class="sched-label">🎤 הרצאות פתיחה: הסדנה, דאטאבוס, Applitools</span>
+      </div>
+      <div class="sched-row highlight">
+        <span class="sched-time">19:00–21:00</span>
+        <span class="sched-label">💻 עבודה בקבוצות — הביאו לפטופ</span>
+      </div>
+      <div class="sched-row">
+        <span class="sched-time">21:00–21:30</span>
+        <span class="sched-label">🎯 Demos של הקבוצות</span>
+      </div>
+      <div class="sched-row">
+        <span class="sched-time">21:30–22:00</span>
+        <span class="sched-label">🧹 סיכום וסגירה</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- S8: CHALLENGES -->
+  <div class="slide s8" data-index="7">
+    <div class="slide-label">אתגרי הערב</div>
+    <h2>על מה נעבוד?</h2>
+    <div class="tracks">
+      <div class="track-card">
+        <div class="track-name">🤖 AI Harness</div>
+        <div class="challenge-items">
+          <div class="ch-item">כתיבת טסטים + CI לסוכן AI</div>
+          <div class="ch-item">יצירת סביבת פיתוח לכל ה-repos - devenv? Docker Swarm?</div>
+          <div class="ch-item">Hooks שעוצרים קוד שבור לפני push</div>
+          <div class="ch-item">Custom skills, commands, agents and context engineering</div>
+        </div>
+      </div>
+      <div class="track-card">
+        <div class="track-name">✨ AI Features</div>
+        <div class="challenge-items">
+          <div class="ch-item">הוספת llms.txt לדאטאבוס</div>
+          <div class="ch-item">Markdown export לדף פרופיל הקו ואחרים</div>
+          <div class="ch-item">MCP server לדאטאבוס</div>
+          <div class="ch-item">Skills, bots, agents שעובדים עם דאטאבוס</div>
+        </div>
+      </div>
+      <div class="track-card">
+        <div class="track-name">📊 Data & Algo</div>
+        <div class="challenge-items">
+          <div class="ch-item">זיהוי bus bunching</div>
+          <div class="ch-item">זיהוי פערים - אי הגעה, איחור, אנומליות, סטייה מהמסלול, אגרגציה וניקוי נתונים</div>
+          <div class="ch-item">מיפוי הנחות סמויות בבסיס הקוד מול הנתונים בפועל (כמה שעות יש ביממה, מה ההבדל בין route, line וride וכו')</div>
+        </div>
+      </div>
+      <div class="track-card">
+        <div class="track-name">🧹 Good First Issues</div>
+        <div class="challenge-items">
+          <div class="ch-item">להחיות יוזמות ישנות - PRs ישנים, מחברות פייטון</div>
+          <div class="ch-item">באגים קלים מה-GitHub issues</div>
+          <div class="ch-item">תיעוד ותיקון markdowns ישנים שזקוקים לעדכון</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S9: APPLITOOLS — THANKS -->
+  <div class="slide s-app1" data-index="10">
+    <div class="slide-label">מארחים</div>
+    <h2>
+      תודה ל-Applitools
+      <svg
+        viewBox="0 0 256 350" version="1.1" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid"
+        style="vertical-align: middle;height:1.4em;"
+      >
+          <title>Applitools</title>
+          <g>
+              <path
+                d="M195.725388,174.716429 C195.725388,191.583884 193.942968,208.01884 190.600932,223.890237 C168.766293,210.273076 139.880612,193.90365 101.781396,174.716429 C139.880612,155.516101 168.753187,139.146675 190.600932,125.529514 C193.942968,141.400911 195.712282,157.848974 195.712282,174.716429 M256,74.2456356 L256,21.4938821 C237.62413,37.7533364 218.669298,53.346484 199.172273,68.2430758 C178.844827,37.221113 152.868684,15.320944 118.701275,0 C145.476885,23.7481186 163.877745,50.510623 177.770133,84.0882609 C70.1172375,161.32207 0,174.716429 0,174.716429 C0,174.716429 70.1172375,188.097681 177.770133,265.344596 C163.877745,298.93534 145.489991,325.671633 118.701275,349.419751 C152.868684,334.098807 178.844827,312.198638 199.172273,281.176675 C218.670122,296.076793 237.624985,311.674337 256,327.938975 L256,275.187222 C256,275.187222 249.551835,264.440281 218.700251,242.527006 C226.563866,221.413198 230.888855,198.569395 230.888855,174.716429 C230.905056,151.566666 226.777083,128.600933 218.700251,106.905852 C249.551835,84.9794706 256,74.2456356 256,74.2456356"
+                fill="#ffffff"
+              ></path>
+          </g>
+      </svg>
+    </h2>
+    <!-- <div class="applitools-badge">Applitools</div> -->
+    <div class="app-facts">
+      <div class="app-fact">🏠 מארחים אותנו במשרד שלהם (נשמור על הנקיון)</div>
+      <div class="app-fact">🎁 תורמים לנו רישיון ל-Eyes (כחלק ממדיניות תמיכה בקוד פתוח)</div>
+    </div>
+    <div class="app-story">
+      <div class="app-story-label">⚡ מה זה אומר בפועל — <a href="https://github.com/hasadna/open-bus-map-search/pull/1613" target="_blank" rel="noopener" style="color:var(--orange);text-decoration:underline">דוגמה - PR #1613</a></div>
+      <p>אנחנו מקבלים עשרות PRs בחודש. הפרוייקט מופעל על ידי מתנדבים.</p>
+      <p>עם Applitools Eyes, כל PR עובר בדיקת regression ויזואלית.</p>
+      <ul>
+        <li>פידבק מיידי</li>
+        <li>פחות שחיקה של מתנדבים</li>
+      </ul>
+    </div>
+    <p class="app-footer">Eyes = velocity</p>
+  </div>
+
+  <!-- S10: APPLITOOLS — STORYBOOK -->
+  <div class="slide s-app2" data-index="11">
+    <div class="slide-label">visual regression — Storybook</div>
+    <h2>בדיקת קומפוננטות אוטומטית 🎨</h2>
+    <div class="app-two-col">
+      <div class="app-col-text">
+        <div class="app-bullet">📸 Eyes מצלם כל Storybook story</div>
+        <div class="app-bullet">🔍 משווה אוטומטית לריצות קודמות (baseline)</div>
+      </div>
+      <img src="./applitools-diff.png" alt="Applitools Eyes dashboard — side-by-side diff" style="max-height:42vh;max-width:100%;border-radius:6px;border:1px solid #333;object-fit:contain">
+    </div>
+    <div class="app-chip">npx @applitools/eyes-storybook@latest</div>
+  </div>
+
+  <!-- S11: APPLITOOLS — PLAYWRIGHT -->
+  <div class="slide s-app3" data-index="12">
+    <div class="slide-label">visual regression — E2E</div>
+    <h2>תהליך הבדיקות (בפרונט) 🧪</h2>
+    <img src="./ci-diagram.png" alt="CI pipeline diagram" style="max-height:38vh;max-width:100%;border-radius:6px;object-fit:contain;margin-bottom:4px">
+    <pre class="code-block"><code><span class="fn">test</span>(<span class="str">`Gaps Page Should Look Good`</span>, <span class="kw">async</span> ({ page, eyes }) => {
+  <span class="kw">await</span> page.<span class="fn">goto</span>(<span class="str">'/gaps'</span>)
+  <span class="kw">await</span> eyes.<span class="fn">check</span>(<span class="str">'gaps page'</span>)
+})</code></pre>
+  </div>
+
+  <!-- S14: GROUPS + RESOURCES -->
+  <div class="slide s10" data-index="13">
+    <div class="slide-label">יאללה מתחילים</div>
+    <h2>קבוצות ומשאבים</h2>
+    <div class="groups-strip">
+      <div class="group-mini g1">🤖 AI Harness</div>
+      <div class="group-mini g2">✨ AI Features</div>
+      <div class="group-mini g3">📊 Data & Algo</div>
+      <div class="group-mini g4">🧹 Good First</div>
+    </div>
+    <div class="res-grid">
+      <a class="res-item" href="https://github.com/hasadna/open-bus-map-search" target="_blank"><span class="res-label">Main Repo</span>hasadna/open-bus-map-search</a>
+      <a class="res-item" href="https://github.com/hasadna/open-bus-stride-client/tree/main/notebooks" target="_blank"><span class="res-label">Notebooks</span>stride-client/notebooks</a>
+      <a class="res-item" href="https://open-bus-stride-api.hasadna.org.il/docs" target="_blank"><span class="res-label">Swagger</span>open-bus-stride-api…/docs</a>
+      <a class="res-item" href="https://github.com/hasadna/open-bus-pipelines" target="_blank"><span class="res-label">Pipelines</span>hasadna/open-bus-pipelines</a>
+      <a class="res-item" href="https://github.com/hasadna/open-bus-backend" target="_blank"><span class="res-label">Backend</span>hasadna/open-bus-backend</a>
+      <a class="res-item" href="https://github.com/NoamGaash/open-bus-mcp" target="_blank"><span class="res-label">MCP</span>NoamGaash/open-bus-mcp</a>
+      <a class="res-item" href="https://agentskills.co.il/en/mcp/openbus" target="_blank"><span class="res-label">MCP Hosted</span>agentskills.co.il/mcp/openbus</a>
+      <a class="res-item" href="https://gitpod.io/#github.com/hasadna/open-bus-map-search" target="_blank"><span class="res-label">Dev Environment</span>Gitpod — פתיחה בדפדפן</a>
+      <div class="res-item"><span class="res-label">Figma</span>בקשו מנועם</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- NAV -->
+<div class="nav">
+  <button class="nav-btn" id="prev" onclick="navigate(-1)" disabled>→ הקודם</button>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+    <div class="progress-dots" id="dots"></div>
+    <div class="slide-counter" id="counter">1 / 10</div>
+  </div>
+  <button class="nav-btn" id="next" onclick="navigate(1)">הבא ←</button>
+</div>
+
+<script>
+  let current = 0;
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  const dotsEl = document.getElementById('dots');
+  const counterEl = document.getElementById('counter');
+  const prevBtn = document.getElementById('prev');
+  const nextBtn = document.getElementById('next');
+
+  for (let i = 0; i < total; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.onclick = () => goTo(i);
+    dotsEl.appendChild(d);
+  }
+
+  function goTo(idx) {
+    if (idx < 0 || idx >= total) return;
+    slides[current].classList.remove('active');
+    slides[current].classList.add('exit');
+    setTimeout(() => slides[current].classList.remove('exit'), 450);
+    current = idx;
+    slides[current].classList.add('active');
+    updateUI();
+  }
+
+  function navigate(dir) { goTo(current + dir); }
+
+  function updateUI() {
+    document.querySelectorAll('.dot').forEach((d, i) => {
+      d.className = 'dot' + (i === current ? ' active' : i < current ? ' visited' : '');
+    });
+    counterEl.textContent = (current + 1) + ' / ' + total;
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current === total - 1;
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') navigate(-1);
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === ' ') { e.preventDefault(); navigate(1); }
+  });
+
+  updateUI();
+</script>
+</body>
+</html>
