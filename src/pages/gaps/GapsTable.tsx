@@ -13,7 +13,7 @@ import type { TFunction } from 'i18next'
 import React, { memo, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
-import { Gap } from 'src/api/gapsService'
+import { Gap, reviveGap, SerializedGap } from 'src/api/gapsService'
 import dayjs from 'src/dayjs'
 import {
   formatServiceDayTime,
@@ -26,9 +26,11 @@ import DisplayGapsPercentage from '../components/DisplayGapsPercentage'
 import { Row } from '../components/Row'
 
 interface GapsTableProps {
-  gaps?: Gap[]
+  gaps?: SerializedGap[]
   loading?: boolean
   initOnlyGapped?: boolean
+  onlyGapped?: boolean
+  onOnlyGappedChange?: (value: boolean) => void
   singleLineMapBaseHref: string
   date: string
   onStartTimeClick?: (rideTime: string) => void
@@ -89,16 +91,28 @@ function buildTooltip(gap: Gap, t: TFunction): React.ReactNode {
 const getGap = (gap: Gap) => gap.plannedStartTime || gap.actualStartTime
 
 const GapsTable: React.FC<GapsTableProps> = ({
-  gaps,
+  gaps: rawGaps,
   loading,
   initOnlyGapped = false,
+  onlyGapped: onlyGappedProp,
+  onOnlyGappedChange,
   singleLineMapBaseHref,
   date,
   onStartTimeClick,
 }) => {
   const { t } = useTranslation()
+  // The gaps cache is persisted as JSON (dayjs → ISO strings). Revive to dayjs here,
+  // at the single consumption edge, so all the comparison/formatting below is unchanged.
+  const gaps = useMemo(() => rawGaps?.map(reviveGap), [rawGaps])
   const { start: serviceDayStart } = serviceDayBounds(date)
-  const [onlyGapped, setOnlyGapped] = useState(initOnlyGapped)
+  // Controllable: the gaps page owns and persists this via usePageState; the
+  // story leaves it uncontrolled and seeds it with initOnlyGapped.
+  const [onlyGappedState, setOnlyGappedState] = useState(initOnlyGapped)
+  const onlyGapped = onlyGappedProp ?? onlyGappedState
+  const setOnlyGapped = (value: boolean) => {
+    setOnlyGappedState(value)
+    onOnlyGappedChange?.(value)
+  }
 
   const filteredGaps: Gap[] = useMemo(() => {
     if (!gaps) return []
@@ -133,7 +147,7 @@ const GapsTable: React.FC<GapsTableProps> = ({
   }, [gaps])
 
   return (
-    <Widget marginBottom sx={{ overflowY: 'none', maxWidth: '600px' }}>
+    <Widget marginBottom sx={{ overflowY: 'none', maxWidth: '600px', mx: 'auto' }}>
       <Row style={{ justifyContent: 'space-between', fontWeight: 500 }}>
         <FormControlLabel
           control={

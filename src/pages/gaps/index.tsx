@@ -1,12 +1,13 @@
 import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { useCallback, useContext, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import dayjs, { ISRAEL_TIMEZONE } from 'src/dayjs'
+import { usePageState } from 'src/hooks/usePageState'
 import { GlobalSearchContext } from 'src/model/globalState'
 import { INPUT_SIZE } from 'src/resources/sizes'
-import { Gap, getGapsAsync } from '../../api/gapsService'
+import { getGapsAsync, SerializedGap, serializeGap } from '../../api/gapsService'
 import { getServiceDayRoutes } from '../../api/serviceDayRoutesService'
-import { BusRoute } from '../../model/busRoute'
 import { DateSelector } from '../components/DateSelector'
 import { Label } from '../components/Label'
 import LineNumberSelector from '../components/LineSelector'
@@ -22,9 +23,13 @@ const GapsPage = () => {
   const { t } = useTranslation()
   const { search, setSearch } = useContext(GlobalSearchContext)
   const { operatorId, lineNumber, date, routeKey } = search
-  const [routes, setRoutes] = useState<BusRoute[] | undefined>()
-  const [gaps, setGaps] = useState<Gap[]>()
-  const [gapsIsLoading, setGapsIsLoading] = useState(false)
+
+  // scrollPosition (auto-restored by usePageState) and the "only gaps" toggle are
+  // device-local UI state, kept out of the shareable params.
+  const { ui, setUi } = usePageState('gaps', {
+    params: {},
+    ui: { scrollPosition: 0, gapsOnly: false },
+  })
 
   const singleLineMapBaseHref = useMemo(() => {
     const params = new URLSearchParams()
@@ -35,48 +40,39 @@ const GapsPage = () => {
     return `/single-line-map?${params.toString()}`
   }, [search.date, search.lineNumber, search.operatorId, search.routeKey])
 
-  useEffect(() => {
-    if (!(operatorId && routes && routeKey && date)) return
-    const selectedRoute = routes.find((route) => route.key === routeKey)
-    if (!selectedRoute) return
+  const routesQuery = useQuery({
+    queryFn: ({ signal }) => {
+      if (!operatorId || !lineNumber) return null
+      return getServiceDayRoutes(dayjs.tz(date, ISRAEL_TIMEZONE), operatorId, lineNumber, signal)
+    },
+    queryKey: ['gapsRoutes', operatorId, lineNumber, date],
+  })
+  const routes = routesQuery.data ?? undefined
 
-    setGapsIsLoading(true)
-    const { start, end } = serviceDayBounds(date)
-    getGapsAsync(start, end, operatorId, selectedRoute.lineRef)
-      .then((res) =>
-        setGaps(
-          res.filter((g) => {
-            const t = g.plannedStartTime || g.actualStartTime
-            return t && !t.isBefore(start) && t.isBefore(end)
-          }),
-        ),
+  const selectedRoute = useMemo(
+    () => routes?.find((route) => route.key === routeKey),
+    [routes, routeKey],
+  )
+
+  const gapsQuery = useQuery({
+    queryFn: async (): Promise<SerializedGap[] | null> => {
+      if (!operatorId || !selectedRoute || !date) return null
+      const { start, end } = serviceDayBounds(date)
+      const res = await getGapsAsync(start, end, operatorId, selectedRoute.lineRef)
+      return (
+        res
+          .filter((g) => {
+            const gapTime = g.plannedStartTime || g.actualStartTime
+            return gapTime && !gapTime.isBefore(start) && gapTime.isBefore(end)
+          })
+          // Store JSON-serializable strings, not dayjs, so the persisted cache
+          // rehydrates losslessly; GapsTable revives them to dayjs on read.
+          .map(serializeGap)
       )
-      .catch((err) => {
-        console.error('Failed to fetch gaps:', err.message)
-        setGaps(undefined)
-      })
-      .finally(() => setGapsIsLoading(false))
-  }, [operatorId, routes, routeKey, date])
-
-  useEffect(() => {
-    if (!operatorId || !lineNumber) {
-      return
-    }
-
-    const controller = new AbortController()
-
-    getServiceDayRoutes(dayjs.tz(date, ISRAEL_TIMEZONE), operatorId, lineNumber, controller.signal)
-      .then((fetchedRoutes) => {
-        if (search.lineNumber === lineNumber) {
-          setRoutes(fetchedRoutes)
-        }
-      })
-      .catch((err) => {
-        console.error('Failed to fetch routes:', err.message)
-      })
-
-    return () => controller.abort()
-  }, [operatorId, lineNumber, date, setSearch])
+    },
+    queryKey: ['gaps', operatorId, selectedRoute?.lineRef, date],
+  })
+  const gaps = gapsQuery.data ?? undefined
 
   const handleDateChange = (time: dayjs.Dayjs | null) => {
     if (!time) return
@@ -87,7 +83,9 @@ const GapsPage = () => {
   }
 
   const handleOperatorChange = (operatorId: string) => {
-    setSearch((current) => ({ ...current, operatorId }))
+    // Changing/clearing the operator invalidates the chosen route (routes are
+    // per operator+line), so reset it to close the stale results table.
+    setSearch((current) => ({ ...current, operatorId, routeKey: null }))
   }
 
   const handleLineNumberChange = (lineNumber: string) => {
@@ -96,9 +94,6 @@ const GapsPage = () => {
         ? { ...current }
         : { ...current, lineNumber, routeKey: null },
     )
-    if (lineNumber !== search.lineNumber) {
-      setRoutes(undefined)
-    }
   }
 
   const handleRouteKeyChange = (routeKey?: string) => {
@@ -123,36 +118,28 @@ const GapsPage = () => {
       <Alert severity="info" variant="outlined" icon={false}>
         {t('gaps_page_description')}
       </Alert>
-      <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
+      <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE, width: '100%', mx: 'auto' }}>
         {/* choose date */}
-        <Grid size={{ xs: 4 }}>
-          <Label text={t('choose_date')} />
-        </Grid>
-        <Grid size={{ xs: 8 }}>
+        <Grid size={{ sm: 6, xs: 12 }}>
           <DateSelector time={dayjs.tz(date, ISRAEL_TIMEZONE)} onChange={handleDateChange} />
         </Grid>
         {/* choose operator */}
-        <Grid size={{ xs: 4 }}>
-          <Label text={t('choose_operator')} />
-        </Grid>
-        <Grid size={{ xs: 8 }}>
+        <Grid size={{ sm: 6, xs: 12 }}>
           <OperatorSelector
             operatorId={operatorId ?? undefined}
             setOperatorId={handleOperatorChange}
           />
         </Grid>
         {/* choose line */}
-        <Grid size={{ xs: 4 }}>
-          <Label text={t('choose_line')} />
-        </Grid>
-        <Grid size={{ xs: 8 }}>
+        <Grid size={{ sm: 6, xs: 12 }}>
           <LineNumberSelector
+            disabled={!operatorId}
             lineNumber={lineNumber ?? undefined}
             setLineNumber={handleLineNumberChange}
           />
         </Grid>
-        {/* choose routes */}
-        <Grid size={{ xs: 12 }}>
+        {/* choose route */}
+        <Grid size={{ sm: 6, xs: 12 }}>
           {routes?.length === 0 ? (
             <NotFound>{t('line_not_found')}</NotFound>
           ) : (
@@ -164,22 +151,24 @@ const GapsPage = () => {
             />
           )}
         </Grid>
-        <Grid size={{ xs: 12 }}>
-          {gapsIsLoading && (
+        {gapsQuery.isLoading && (
+          <Grid size={{ xs: 12 }}>
             <Row>
               <Label text={t('loading_gaps')} />
               <CircularProgress />
             </Row>
-          )}
-        </Grid>
+          </Grid>
+        )}
       </Grid>
-      {routeKey && routeKey !== '' && (
+      {selectedRoute && (
         <GapsTable
-          loading={gapsIsLoading}
+          loading={gapsQuery.isLoading}
           gaps={gaps}
           date={date}
           singleLineMapBaseHref={singleLineMapBaseHref}
           onStartTimeClick={handleStartTimeClick}
+          onlyGapped={ui.gapsOnly}
+          onOnlyGappedChange={(value) => setUi((prev) => ({ ...prev, gapsOnly: value }))}
         />
       )}
     </PageContainer>
