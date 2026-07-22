@@ -20,11 +20,11 @@ function StationDot({
   cx = 0,
   cy = 0,
   payload,
-}: {
+}: Readonly<{
   cx?: number
   cy?: number
   payload?: StationChartPoint
-}) {
+}>) {
   if (!payload) return null
 
   return (
@@ -42,25 +42,26 @@ function StationDot({
   )
 }
 
-export function TrainRideTimeline({ ride }: { ride: TrainRideData }) {
+export function TrainRideTimeline({ ride }: Readonly<{ ride: TrainRideData }>) {
   const { t, i18n } = useTranslation()
   const theme = useTheme()
   const direction = i18n.dir()
   const points = getTrainStationTimings(ride.stops, ride.locations).map((station) => {
-    const color =
-      station.status === 'out-of-range'
-        ? theme.palette.error.main
-        : station.status === 'no-data'
-          ? theme.palette.text.disabled
-          : theme.palette.text.primary
+    let color = theme.palette.text.primary
+    if (station.status === 'out-of-range') {
+      color = theme.palette.error.main
+    } else if (station.status === 'no-data') {
+      color = theme.palette.text.disabled
+    }
     const plannedTime = station.plannedTime
       ? toIsraelTimezone(station.plannedTime).format('HH:mm')
       : '-'
     const delay = station.delayMinutes
-    const delayText =
-      delay === undefined
-        ? ''
-        : ` (${delay >= 0 ? '+' : ''}${delay.toFixed(1)} ${t('train_minutes_short')})`
+    let delayText = ''
+    if (delay !== undefined) {
+      const sign = delay >= 0 ? '+' : ''
+      delayText = ` (${sign}${delay.toFixed(1)} ${t('train_minutes_short')})`
+    }
 
     return {
       chartIndex: 0,

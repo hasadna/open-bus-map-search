@@ -240,6 +240,9 @@ export function groupTrainRides(
       (gtfsRideId !== undefined ? stopsByRideId.get(gtfsRideId) : undefined) ??
       (fallbackKey ? stopsByLineAndStartTime.get(fallbackKey) : undefined) ??
       []
+    rideLocations.sort(
+      (a, b) => (getTimestamp(a.recordedAtTime) ?? 0) - (getTimestamp(b.recordedAtTime) ?? 0),
+    )
 
     return {
       rideId,
@@ -247,9 +250,7 @@ export function groupTrainRides(
       scheduledStartTime: firstLocation.siriRideScheduledStartTime,
       vehicleRef: firstLocation.siriRideVehicleRef,
       gtfsRideId,
-      locations: rideLocations.sort(
-        (a, b) => (getTimestamp(a.recordedAtTime) ?? 0) - (getTimestamp(b.recordedAtTime) ?? 0),
-      ),
+      locations: rideLocations,
       stops: rideStops,
     }
   }).sort(

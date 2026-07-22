@@ -6,7 +6,9 @@ import type { TrainStationAverageDelay } from './trainData'
 const STATION_WIDTH = 180
 const CHART_HEIGHT = 300
 
-export function TrainAverageDelayChart({ averages }: { averages: TrainStationAverageDelay[] }) {
+export function TrainAverageDelayChart({
+  averages,
+}: Readonly<{ averages: TrainStationAverageDelay[] }>) {
   const { t, i18n } = useTranslation()
   const theme = useTheme()
   const direction = i18n.dir()
