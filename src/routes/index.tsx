@@ -28,6 +28,7 @@ import { DataResearch } from 'src/pages/DataResearch/DataResearch'
 import { ErrorPage } from 'src/pages/ErrorPage'
 import GapsPatternsPage from 'src/pages/gapsPatterns'
 import VelocityHeatmapPage from 'src/pages/velocityHeatmap'
+import { LegacyLangRedirect } from './LegacyLangRedirect'
 import { MainRoute } from './MainRoute'
 
 const HomePage = lazy(() => import('../pages/homepage/HomePage'))
@@ -165,35 +166,37 @@ const RedirectToHomepage = <Navigate to={routesList[0].path} replace />
 
 export const getRoutesList = () => {
   return (
-    <Route path="/:lang?">
-      <Route element={<MainRoute />}>
-        {routesList.map(({ path, element }) => (
-          <Route
-            key={path}
-            path={path === '/' ? undefined : path.replace(/^\//, '')}
-            index={path === '/'}
-            element={element}
-            ErrorBoundary={ErrorPage}
-          />
-        ))}
+    <Route element={<MainRoute />}>
+      {routesList.map(({ path, element }) => (
         <Route
-          path="profile/:gtfsRideGtfsRouteId"
-          element={<Profile />}
+          key={path}
+          path={path === '/' ? undefined : path.replace(/^\//, '')}
+          index={path === '/'}
+          element={element}
           ErrorBoundary={ErrorPage}
-          loader={async ({ params }) => {
-            try {
-              const route = await getRouteById(params?.gtfsRideGtfsRouteId)
-              return { route }
-            } catch (error) {
-              return {
-                route: null,
-                message: (error as Error).message,
-              }
-            }
-          }}
         />
-        <Route path="*" element={RedirectToHomepage} key="back" />
-      </Route>
+      ))}
+      <Route
+        path="profile/:gtfsRideGtfsRouteId"
+        element={<Profile />}
+        ErrorBoundary={ErrorPage}
+        loader={async ({ params }) => {
+          try {
+            const route = await getRouteById(params?.gtfsRideGtfsRouteId)
+            return { route }
+          } catch (error) {
+            return {
+              route: null,
+              message: (error as Error).message,
+            }
+          }
+        }}
+      />
+      {/* Backward-compat: old links carried a language prefix (/he, /en, /ru, /ar).
+          Strip it, apply the language, and redirect to the clean path.
+          Remove this route (and LegacyLangRedirect) once such links have aged out. */}
+      <Route path=":lang/*" element={<LegacyLangRedirect />} />
+      <Route path="*" element={RedirectToHomepage} key="back" />
     </Route>
   )
 }
@@ -204,7 +207,8 @@ window.addEventListener('vite:preloadError', () => {
 
 const routes = createRoutesFromElements(getRoutesList())
 
-// If the URL doesn't have a language prefix, we will use the saved language or default to Hebrew
+// The URL carries no language segment; the language is resolved from
+// localStorage / the browser locale (see getLang in allTranslations.ts).
 const router = createBrowserRouter(routes, {
   basename: import.meta.env.VITE_BASE_PATH || '/',
 })
