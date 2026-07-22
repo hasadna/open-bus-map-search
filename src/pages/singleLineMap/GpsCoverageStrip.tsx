@@ -1,4 +1,9 @@
-import { ExpandMore, HourglassBottom, Place, SquareFoot } from '@mui/icons-material'
+import {
+  ExpandMoreTwoTone,
+  HourglassBottomTwoTone,
+  PlaceTwoTone,
+  SquareFootTwoTone,
+} from '@mui/icons-material'
 import {
   Accordion,
   AccordionDetails,
@@ -98,13 +103,13 @@ const GapTooltip = ({
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 13 }}>
       <span style={tooltipRowStyle}>
-        <HourglassBottom fontSize="small" />
+        <HourglassBottomTwoTone fontSize="small" />
         {t('gps_coverage_tooltip_duration', {
           duration: fmtDuration(gap.gapMs),
         })}
       </span>
       <span style={tooltipRowStyle}>
-        <SquareFoot fontSize="small" />
+        <SquareFootTwoTone fontSize="small" />
         {t('gps_coverage_tooltip_distance', {
           distance: fmtDistance(distanceMeters(gap.startLoc, gap.endLoc), t),
         })}
@@ -124,7 +129,7 @@ const GapTooltip = ({
             textDecoration: 'none',
             cursor: 'pointer',
           }}>
-          <Place fontSize="small" />
+          <PlaceTwoTone fontSize="small" />
           {t('gps_coverage_tooltip_focus_start')}
         </button>
       )}
@@ -185,7 +190,7 @@ export const GpsCoverageStrip = ({
         '&::before': { display: 'none' }, // drop MUI's default top divider line
       }}>
       <AccordionSummary
-        expandIcon={<ExpandMore />}
+        expandIcon={<ExpandMoreTwoTone />}
         sx={{
           // Make the disclosure header read as a distinct, tappable bar rather than
           // plain text: tinted background, accent leading bar, and a bolder title.

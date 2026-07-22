@@ -30,6 +30,9 @@
   "singleline_map_page_description": "Display of bus route on map by user-given bus operator, vehicle number, route number, route, date & time",
   "singleline_map_page_route": "By Route",
   "singleline_map_page_vehicle_id": "By Vehicle ID",
+  "singleline_vehicle_search_moved": "Looking to search trips by vehicle number?",
+  "singleline_vehicle_search_moved_action": "We moved it",
+  "singleline_vehicle_search_moved_link": "here",
   "gps_coverage_title": "GPS coverage over time",
   "gps_coverage_description": "Density of GPS reports over time. Each column is the gap between two consecutive reports.",
   "gps_coverage_tooltip_duration": "{{duration}}",
@@ -109,6 +112,7 @@
   "vehicle_placeholder": "For example: 12345",
   "vehicle_ref": "vehicle plate",
   "vehicle_page_title": "Vehicle",
+  "go_to_vehicle_page": "Go to the vehicle page",
   "vehicle_page_description": "All the rides a specific vehicle performed on a given day",
   "vehicle_rides_route": "Route",
   "vehicle_rides_start_time": "Departure",
@@ -762,7 +766,7 @@
     },
     "registration": {
       "title": "Registration",
-      "body": "Filling in the form below is mandatory to participate. Submitting the form is not enough — your registration is only confirmed once you receive an approval email from us. We confirm registrations manually so we can assign you to the right team. Registration closes July 20 at midnight. Heads up: we already have many registrants, so there's a good chance we'll have to turn down new registrations. If it's important to you to take part, tell us why in the form so we can prioritize you."
+      "body": "Filling in the form below is mandatory to participate. Submitting the form is not enough — your registration is only confirmed once you receive an approval email from us. We confirm registrations manually so we can assign you to the right team. Registration closes at midnight on the night of July 13–14. Heads up: we already have many registrants, so there's a good chance we'll have to turn down new registrations. If it's important to you to take part, tell us why in the form so we can prioritize you."
     },
     "faq": {
       "title": "FAQ",
