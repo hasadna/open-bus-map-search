@@ -8,7 +8,7 @@ import { getServiceDayRoutes } from 'src/api/serviceDayRoutesService'
 import { useSingleLineData } from 'src/hooks/useSingleLineData'
 import { GLOBAL_SEARCH_DEFAULTS, GlobalSearchContext } from 'src/model/globalState'
 import { InitialUrlParamsContext, PageShareParamsContext } from 'src/model/routeContext'
-import { type CivilDate, civilDateToDayjs, toCivilDate } from 'src/model/time/civilDate'
+import { type CivilDate, toCivilDate } from 'src/model/time/civilDate'
 import StopSelector from 'src/pages/components/StopSelector'
 import Widget from 'src/shared/Widget'
 import { CivilDateSelector } from '../components/CivilDateSelector'
@@ -45,7 +45,7 @@ const LineProfile = () => {
     const key = `${route.routeMkt}-${route.routeDirection}-${route.routeAlternative}`
     setSearch(() => ({
       ...GLOBAL_SEARCH_DEFAULTS,
-      date: toCivilDate(route.date)!,
+      date: toCivilDate(route.date) ?? GLOBAL_SEARCH_DEFAULTS.date,
       operatorId: route.operatorRef.toString(),
       lineNumber: route.routeShortName ?? null,
       routeKey: key,
@@ -96,7 +96,7 @@ const LineProfile = () => {
     // Service-day aware (and Israel-tz normalized internally), consistent with the
     // gaps page and the single-line ride list.
     getServiceDayRoutes(
-      civilDateToDayjs(next),
+      next,
       route?.operatorRef.toString(),
       route?.routeShortName,
       abortController.signal,
@@ -145,7 +145,10 @@ const LineProfile = () => {
               setRouteKey={handelRouteChange}
             />
           )}
-          <CivilDateSelector value={toCivilDate(route.date)!} onChange={handleDateChange} />
+          <CivilDateSelector
+            value={toCivilDate(route.date) ?? GLOBAL_SEARCH_DEFAULTS.date}
+            onChange={handleDateChange}
+          />
           <Grid container sx={{ flexWrap: 'nowrap', alignItems: 'center' }}>
             <FilterPositionsByStartTimeSelector
               options={options}

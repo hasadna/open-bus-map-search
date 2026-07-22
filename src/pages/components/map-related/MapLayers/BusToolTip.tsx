@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
 import { getRoutesByLineRef } from 'src/api/gtfsService'
 import dayjs, { ISRAEL_TIMEZONE } from 'src/dayjs'
-import { toCivilDate } from 'src/model/time/civilDate'
+import { toCivilDate, todayCivilDate } from 'src/model/time/civilDate'
 import { routeStartEnd, vehicleIDFormat } from 'src/pages/components/utils/rotueUtils'
 import SkeletonLoader from 'src/shared/SkeletonLoader'
 import CustomTreeView from '../../CustomTreeView'
@@ -26,12 +26,20 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
   useEffect(() => {
     if (!position.point?.id) return
     setIsLoading(true)
+    // Date-only lookup: the timestamp's only role is to pick the Israel calendar day the ride
+    // runs on; the time itself is never queried. Prefer the scheduled start — its day is the
+    // GTFS service date — and fall back to the ping's own recorded time, which is always present
+    // but can sit a day off for rides around midnight. Coalesce the raw values first: an absent
+    // scheduled start is `undefined`, which toCivilDate would resolve straight to *today*, so a
+    // `toCivilDate(a) ?? toCivilDate(b)` chain would never reach the recorded time. Today is the
+    // last resort, for the (practically unreachable) unparseable case.
+    const serviceDay =
+      toCivilDate(position.point?.siriRideScheduledStartTime ?? position.point?.recordedAtTime) ??
+      todayCivilDate()
     getRoutesByLineRef(
       (position.point?.siriRouteOperatorRef || 0).toString(),
       (position.point?.siriRouteLineRef || 0).toString(),
-      // Date-only lookup: the scheduled instant's only role is to pick the Israel
-      // calendar day the ride runs on; the time itself is never queried.
-      toCivilDate(position.point?.siriRideScheduledStartTime || undefined)!,
+      serviceDay,
     )
       .then((routes) => {
         setRoute(routes[0])

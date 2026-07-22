@@ -6,6 +6,7 @@ import {
   civilDateToApiDate,
   civilDateToDayjs,
   isCivilDate,
+  shiftCivilDate,
   toCivilDate,
   todayCivilDate,
 } from './civilDate'
@@ -90,6 +91,25 @@ describe('addDays', () => {
 
   it('returns a canonical, branded CivilDate', () => {
     expect(isCivilDate(addDays(asCivilDate('2026-06-30'), 100))).toBe(true)
+  })
+})
+
+describe('shiftCivilDate', () => {
+  it('shifts by weeks and months in both directions', () => {
+    expect(shiftCivilDate(asCivilDate('2026-06-30'), -1, 'week')).toBe('2026-06-23')
+    expect(shiftCivilDate(asCivilDate('2026-06-30'), 1, 'week')).toBe('2026-07-07')
+    expect(shiftCivilDate(asCivilDate('2026-06-30'), -1, 'month')).toBe('2026-05-30')
+    expect(shiftCivilDate(asCivilDate('2026-06-30'), 1, 'month')).toBe('2026-07-30')
+  })
+
+  it('clamps to the target month end and respects leap years', () => {
+    // one month before 2024-03-31 is Feb, which has no 31st → clamps to the 29th (leap)
+    expect(shiftCivilDate(asCivilDate('2024-03-31'), -1, 'month')).toBe('2024-02-29')
+    expect(shiftCivilDate(asCivilDate('2025-03-31'), -1, 'month')).toBe('2025-02-28')
+  })
+
+  it('returns a canonical, branded CivilDate', () => {
+    expect(isCivilDate(shiftCivilDate(asCivilDate('2026-06-30'), -1, 'month'))).toBe(true)
   })
 })
 

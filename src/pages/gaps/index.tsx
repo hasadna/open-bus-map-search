@@ -1,7 +1,6 @@
 import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import dayjs, { ISRAEL_TIMEZONE } from 'src/dayjs'
 import { GlobalSearchContext } from 'src/model/globalState'
 import { type CivilDate } from 'src/model/time/civilDate'
 import { INPUT_SIZE } from 'src/resources/sizes'
@@ -66,7 +65,7 @@ const GapsPage = () => {
 
     const controller = new AbortController()
 
-    getServiceDayRoutes(dayjs.tz(date, ISRAEL_TIMEZONE), operatorId, lineNumber, controller.signal)
+    getServiceDayRoutes(date, operatorId, lineNumber, controller.signal)
       .then((fetchedRoutes) => {
         if (search.lineNumber === lineNumber) {
           setRoutes(fetchedRoutes)

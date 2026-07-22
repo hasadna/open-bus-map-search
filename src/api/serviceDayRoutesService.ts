@@ -3,9 +3,9 @@ import {
   GtfsRoutePydanticModel,
 } from '@hasadna/open-bus-api-client'
 import { GTFS_API } from 'src/api/apiConfig'
-import dayjs, { toIsraelTimezone } from 'src/dayjs'
+import dayjs, { ISRAEL_TIMEZONE } from 'src/dayjs'
 import { BusRoute, fromGtfsRoute } from 'src/model/busRoute'
-import { civilDateToApiDate, toCivilDate } from 'src/model/time/civilDate'
+import { addDays, type CivilDate, civilDateToApiDate } from 'src/model/time/civilDate'
 
 function rideToRoute(ride: GtfsRideWithRelatedPydanticModel): GtfsRoutePydanticModel | null {
   if (
@@ -33,7 +33,7 @@ function rideToRoute(ride: GtfsRideWithRelatedPydanticModel): GtfsRoutePydanticM
 
 /**
  * Returns all routes for the given service day:
- * - All GTFS routes whose date equals serviceDate (Israel timezone)
+ * - All GTFS routes whose date equals serviceDate
  * - Tomorrow's routes that have at least one planned ride starting between
  *   midnight and 04:00 Israel time (late-night service belonging to this day),
  *   derived directly from the rides response without a separate routes fetch.
@@ -41,18 +41,19 @@ function rideToRoute(ride: GtfsRideWithRelatedPydanticModel): GtfsRoutePydanticM
  * Routes with the same key are merged (routeIds accumulated).
  */
 export async function getServiceDayRoutes(
-  serviceDate: dayjs.Dayjs,
+  serviceDate: CivilDate,
   operatorId?: string,
   lineNumber?: string,
   signal?: AbortSignal,
 ): Promise<BusRoute[]> {
-  const todayIL = toIsraelTimezone(serviceDate).startOf('day')
-  const tomorrowIL = todayIL.add(1, 'day')
+  const tomorrow = addDays(serviceDate, 1)
 
-  const todayUTC = civilDateToApiDate(toCivilDate(todayIL)!)
-  const tomorrowUTC = civilDateToApiDate(toCivilDate(tomorrowIL)!)
-  const tomorrowMidnightUTC = tomorrowIL.toDate()
-  const tomorrow04hUTC = tomorrowIL.add(4, 'hours').toDate()
+  const todayUTC = civilDateToApiDate(serviceDate)
+  const tomorrowUTC = civilDateToApiDate(tomorrow)
+  // Late-night window: tomorrow's rides between 00:00 and 04:00 Israel time, as real instants.
+  const tomorrowMidnightIL = dayjs.tz(tomorrow, ISRAEL_TIMEZONE)
+  const tomorrowMidnightUTC = tomorrowMidnightIL.toDate()
+  const tomorrow04hUTC = tomorrowMidnightIL.add(4, 'hours').toDate()
 
   const [todayRaw, ridesInWindow] = await Promise.all([
     // Today's routes

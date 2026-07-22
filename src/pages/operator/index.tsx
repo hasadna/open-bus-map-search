@@ -2,9 +2,8 @@ import { Grid, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material
 import { useContext, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
-import dayjs, { ISRAEL_TIMEZONE } from 'src/dayjs'
 import { GlobalSearchContext } from 'src/model/globalState'
-import { type CivilDate, toCivilDate, todayCivilDate } from 'src/model/time/civilDate'
+import { type CivilDate, shiftCivilDate, todayCivilDate } from 'src/model/time/civilDate'
 import { CivilDateSelector } from '../components/CivilDateSelector'
 import OperatorSelector from '../components/OperatorSelector'
 import { PageContainer } from '../components/PageContainer'
@@ -23,8 +22,6 @@ const OperatorPage = () => {
   const { t } = useTranslation()
 
   const [timeRange, setTimeRange] = useState<(typeof TIME_RANGES)[number]>('day')
-
-  const dateDayjs = dayjs.tz(date, ISRAEL_TIMEZONE)
 
   const handleOperatorChange = (operatorId: string) => {
     setSearch((current) => ({ ...current, operatorId }))
@@ -82,7 +79,7 @@ const OperatorPage = () => {
             <ChartWrapper>
               <WorstLinesChart
                 operatorId={operatorId}
-                startDate={toCivilDate(dateDayjs.add(-1, timeRange))!}
+                startDate={shiftCivilDate(date, -1, timeRange)}
                 endDate={date}
                 alertWorstLineHandling={function (arg: boolean): void {
                   console.log('alertWorstLineHandling', arg)

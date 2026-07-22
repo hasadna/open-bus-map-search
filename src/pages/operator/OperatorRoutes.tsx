@@ -39,7 +39,7 @@ type RouteGroup = {
   routes: Route[]
 }
 
-export const OperatorRoutes = ({ operatorId, date }: { operatorId?: string; date?: CivilDate }) => {
+export const OperatorRoutes = ({ operatorId, date }: { operatorId?: string; date: CivilDate }) => {
   const { t } = useTranslation()
   const { routes, isLoading } = useAllRoutes(operatorId, date)
   const [query, setQuery] = useState('')

@@ -10,11 +10,11 @@ type AllRoutesState = {
   error: boolean
 }
 
-export const useAllRoutes = (operatorId?: string, date?: CivilDate) => {
+export const useAllRoutes = (operatorId: string | undefined, date: CivilDate) => {
   const [state, setState] = useState<AllRoutesState>({ routes: [], isLoading: true, error: false })
 
   useEffect(() => {
-    if (!operatorId || !date) {
+    if (!operatorId) {
       setState({ routes: [], isLoading: false, error: false })
       return
     }

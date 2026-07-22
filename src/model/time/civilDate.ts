@@ -75,3 +75,15 @@ export const civilDateToApiDate = (date: CivilDate): Date => new Date(`${date}T1
 
 /** CivilDate → a Dayjs on the same 12:00-UTC anchor, for frontend compute/display. */
 export const civilDateToDayjs = (date: CivilDate): Dayjs => dayjs(civilDateToApiDate(date))
+
+/** Shift a CivilDate by whole calendar units (week, month, …), via the 12:00-UTC anchor
+ *  so month-ends and DST can't drift the day. `addDays` covers the pure-day case; this
+ *  covers units that need real calendar arithmetic. The `!` is sound: a valid CivilDate
+ *  shifted by whole units is still a valid moment. */
+export function shiftCivilDate(
+  date: CivilDate,
+  amount: number,
+  unit: dayjs.ManipulateType,
+): CivilDate {
+  return toCivilDate(civilDateToDayjs(date).add(amount, unit))!
+}

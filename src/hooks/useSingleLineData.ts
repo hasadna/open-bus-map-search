@@ -4,9 +4,9 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { SIRI_API } from 'src/api/apiConfig'
 import { getRoutesByLineRef, getStopsForRouteAsync } from 'src/api/gtfsService'
 import { getServiceDayRoutes } from 'src/api/serviceDayRoutesService'
-import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone } from 'src/dayjs'
+import { toIsraelTimezone } from 'src/dayjs'
 import { BusRoute } from 'src/model/busRoute'
-import { toCivilDate } from 'src/model/time/civilDate'
+import { type CivilDate, toCivilDate } from 'src/model/time/civilDate'
 import {
   type PositionGroup,
   ROUTE_COLORS,
@@ -24,7 +24,7 @@ import {
 interface UseSingleLineDataOptions {
   operatorId?: string
   lineNumber?: string
-  date: string
+  date: CivilDate
   routeKey?: string | null
   rideTime?: string | null
   onRouteKeyChange?: (routeKey: string | null) => void
@@ -76,7 +76,7 @@ export const useSingleLineData = ({
 
     // Service-day aware: includes the next calendar day's late-night routes
     // (00:00–04:00) that belong to this service day, matching the gaps page.
-    getServiceDayRoutes(dayjs.tz(date, ISRAEL_TIMEZONE), operatorId, lineNumber, controller.signal)
+    getServiceDayRoutes(date, operatorId, lineNumber, controller.signal)
       .then((routes) => {
         setRoutes(routes)
         setError(undefined)
@@ -233,9 +233,12 @@ export const useSingleLineData = ({
       if (selectedRoute?.routeIds && selectedRoute.routeIds.length > 0) {
         routeIds = selectedRoute.routeIds
       } else if (scheduledLine && operatorId) {
-        routeIds = (
-          await getRoutesByLineRef(operatorId, scheduledLine, toCivilDate(rideStartTime)!)
-        ).map((route) => route.id)
+        const rideDay = toCivilDate(rideStartTime)
+        if (rideDay) {
+          routeIds = (await getRoutesByLineRef(operatorId, scheduledLine, rideDay)).map(
+            (route) => route.id,
+          )
+        }
       }
       if (!routeIds || routeIds.length === 0) return []
       return await getStopsForRouteAsync(routeIds, rideStartTime)
