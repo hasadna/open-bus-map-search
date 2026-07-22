@@ -103,11 +103,14 @@ export function getTrainStationTimings(
       nearestDistance + STATION_DISTANCE_BUFFER_METERS,
       MAX_STATION_DISTANCE_METERS,
     )
-    const latest = candidates
-      .filter((candidate) => candidate.distance <= adaptiveDistance)
-      .reduce((current, candidate) =>
+    const nearbyCandidates = candidates.filter(
+      (candidate) => candidate.distance <= adaptiveDistance,
+    )
+    const latest = nearbyCandidates.reduce(
+      (current, candidate) =>
         candidate.recordedTimestamp > current.recordedTimestamp ? candidate : current,
-      )
+      nearbyCandidates[0],
+    )
 
     const delayMinutes = (latest.recordedTimestamp - plannedTimestamp) / 60_000
     const status =
