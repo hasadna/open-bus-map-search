@@ -63,7 +63,7 @@ async function loadFromCache(bounds: VelocityAggregationBounds, date: dayjs.Dayj
 // Past dates come from the pre-aggregated CDN cache, recent dates from the live API;
 // both return the same shape (loadFromCache camel-cases the raw JSON), so the caller
 // filters and validates once regardless of source.
-async function fetchAggregation(
+export async function fetchAggregation(
   bounds: VelocityAggregationBounds,
   date: dayjs.Dayjs,
   zoom: number,
@@ -86,7 +86,7 @@ async function fetchAggregation(
   })
 }
 
-async function queryFn(bounds: VelocityAggregationBounds, date: dayjs.Dayjs, zoom: number) {
+export async function queryFn(bounds: VelocityAggregationBounds, date: dayjs.Dayjs, zoom: number) {
   const data = (await fetchAggregation(bounds, date, zoom)).filter((p) => p.totalSampleCount > 4)
 
   if (data.length === 0) {
