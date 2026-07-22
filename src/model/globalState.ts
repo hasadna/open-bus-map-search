@@ -1,5 +1,5 @@
 import { createContext, Dispatch } from 'react'
-import { type CivilDate, isCivilDate, todayCivilDate } from 'src/model/time/civilDate'
+import { type CivilDate, todayCivilDate } from 'src/model/time/civilDate'
 
 /**
  * Global search state shared across all pages via GlobalSearchContext.
@@ -25,10 +25,6 @@ export type GlobalSearchState = {
   /** Selected stop key — shared across /timeline, /single-line-map, /line-profile. */
   stopKey: string | null
 }
-
-/** Guards `date` from corrupt shared URLs / stale session storage. Alias of isCivilDate,
- *  kept for readability at the call sites in MainRoute. */
-export const isValidSearchDate = (date: unknown): date is CivilDate => isCivilDate(date)
 
 export const GLOBAL_SEARCH_DEFAULTS: GlobalSearchState = {
   date: todayCivilDate(),

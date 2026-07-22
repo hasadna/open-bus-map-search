@@ -2,13 +2,13 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import ReactGAImport from 'react-ga4'
 import { useLocation, useSearchParams } from 'react-router'
 import { useSessionStorage } from 'usehooks-ts'
+import { isCivilDate } from 'src/model/time/civilDate'
 import { MainLayout } from '../layout'
 import { ThemeProvider } from '../layout/ThemeContext'
 import {
   GLOBAL_SEARCH_DEFAULTS,
   GlobalSearchContext,
   GlobalSearchState,
-  isValidSearchDate,
 } from '../model/globalState'
 import { InitialUrlParamsContext, PageShareParamsContext } from '../model/routeContext'
 
@@ -48,7 +48,7 @@ export const MainRoute = () => {
     // exceed 23 for past-midnight rides) — unrelated to the retired epoch 'timestamp' param.
     const rideTime = p.rideTime ?? p.startTime ?? undefined
     return {
-      ...(isValidSearchDate(p.date) ? { date: p.date } : {}),
+      ...(isCivilDate(p.date) ? { date: p.date } : {}),
       ...(p.operatorId ? { operatorId: p.operatorId } : {}),
       ...(p.lineNumber ? { lineNumber: p.lineNumber } : {}),
       ...(p.routeKey ? { routeKey: p.routeKey } : {}),
@@ -58,7 +58,7 @@ export const MainRoute = () => {
   }, [])
 
   // A pre-migration 'search' entry stored `timestamp: number` and no `date`, so the
-  // isValidSearchDate fallback below resets its date — reusing the key is safe.
+  // isCivilDate fallback below resets its date — reusing the key is safe.
   const [storedSearch, setSearch] = useSessionStorage<GlobalSearchState>('search', {
     ...GLOBAL_SEARCH_DEFAULTS,
     ...urlState,
@@ -68,7 +68,7 @@ export const MainRoute = () => {
   // to the default day instead of propagating an invalid date to every page.
   const search = useMemo<GlobalSearchState>(
     () =>
-      isValidSearchDate(storedSearch.date)
+      isCivilDate(storedSearch.date)
         ? storedSearch
         : { ...storedSearch, date: GLOBAL_SEARCH_DEFAULTS.date },
     [storedSearch],
@@ -79,11 +79,9 @@ export const MainRoute = () => {
   // Only `date` is touched (functional update) so this can't clobber the
   // urlState effect below regardless of effect ordering.
   useEffect(() => {
-    if (!isValidSearchDate(storedSearch.date)) {
+    if (!isCivilDate(storedSearch.date)) {
       setSearch((current) =>
-        isValidSearchDate(current.date)
-          ? current
-          : { ...current, date: GLOBAL_SEARCH_DEFAULTS.date },
+        isCivilDate(current.date) ? current : { ...current, date: GLOBAL_SEARCH_DEFAULTS.date },
       )
     }
   }, [storedSearch.date])
