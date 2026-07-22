@@ -6,6 +6,7 @@ import dayjs from 'src/dayjs'
 export type DataSelectorProps = {
   time: dayjs.Dayjs
   minDate?: dayjs.Dayjs
+  maxDate?: dayjs.Dayjs
   customLabel?: string
   disabled?: boolean
   onChange: (timeValid: dayjs.Dayjs | null) => void
@@ -28,6 +29,7 @@ export function DateSelector({
   onChange,
   customLabel,
   minDate,
+  maxDate,
   disabled,
 }: DataSelectorProps) {
   const [error, setError] = useState<DateValidationError>()
@@ -43,6 +45,7 @@ export function DateSelector({
       label={customLabel || t('choose_date')}
       disableFuture
       minDate={minDate || startOfTime}
+      maxDate={maxDate}
       disabled={disabled}
       onError={(err) => setError(err)}
       slotProps={{

@@ -13,6 +13,7 @@ import {
 } from '@mui/material'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
+import { ISRAEL_TRAIN_ID } from 'src/model/operator'
 import { VehicleRideRow } from './buildVehicleRideRows'
 
 interface VehicleTableProps {
@@ -30,14 +31,15 @@ function RideTime({
   onRowClick: VehicleTableProps['onRowClick']
 }) {
   if (!row.href) return <>{row.displayTime}</>
+  const isTrain = row.setSearchPayload?.operatorId === ISRAEL_TRAIN_ID
   return (
     <MuiLink
       component={Link}
-      to={row.href}
+      to={isTrain && row.lineRef ? `/train?route=${row.lineRef}` : row.href}
       underline="hover"
       // a deeper blue + medium weight so the linked time reads as clickable
       sx={{ color: 'primary.dark', fontWeight: 500 }}
-      onClick={() => onRowClick(row.setSearchPayload)}>
+      onClick={() => !isTrain && onRowClick(row.setSearchPayload)}>
       {row.displayTime}
     </MuiLink>
   )

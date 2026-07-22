@@ -17,6 +17,7 @@ export type VehicleRideRow = {
   lineNumber: string
   origin: string
   destination: string
+  lineRef?: number
   displayTime: string
   /** Present only when the ride can be fully reconstructed for single-line-map. */
   href?: string
@@ -94,6 +95,7 @@ export function buildVehicleRideRows({
         lineNumber: lineNumber ?? '—',
         origin: route?.fromName || '—',
         destination: route?.toName || '—',
+        lineRef: route?.lineRef,
         displayTime: nextDay ? `🌙 ${time}` : time,
         href,
         setSearchPayload,

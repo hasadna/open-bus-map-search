@@ -146,8 +146,12 @@ const RouteGroup = ({ group, operatorId }: { group: RouteGroup; operatorId?: str
     <Link to={`/profile/${route.id}`}>{t('operator.profile')}</Link>
   )
 
-  const mapLink = (route: Route) =>
-    operatorId !== ISRAEL_TRAIN_ID && (
+  const mapLink = (route: Route) => {
+    if (operatorId === ISRAEL_TRAIN_ID) {
+      return <Link to={`/train?route=${route.lineRef}`}>{t('operator.map')}</Link>
+    }
+
+    return (
       <Link
         onClick={(e) => {
           e.preventDefault()
@@ -158,10 +162,11 @@ const RouteGroup = ({ group, operatorId }: { group: RouteGroup; operatorId?: str
           }))
           navigate('/single-line-map')
         }}
-        to={`/single-line-map`}>
+        to="/single-line-map">
         {t('operator.map')}
       </Link>
     )
+  }
 
   return (
     <Accordion

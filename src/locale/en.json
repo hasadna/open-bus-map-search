@@ -784,6 +784,14 @@
       }
     }
   },
+  "train_page_title": "Israel Railways",
+  "train_choose_route": "Choose route",
+  "train_no_rides": "No actual rides were found for the selected route and date",
+  "train_ride_summary": "Ride {{lineRef}} · Scheduled time {{scheduledTime}} · Train number {{trainNumber}} · Location Points {{points}}· Stops {{stops}}",
+  "train_minutes_short": "min",
+  "train_average_delay_title": "Average delay per station",
+  "train_average_delay": "Average delay",
+  "train_average_delay_axis": "Average delay (min)",
   "dataResearch": {
     "title": "Research",
     "intro": "If you have an interesting idea about why things are happening here, talk to us on Slack!",
