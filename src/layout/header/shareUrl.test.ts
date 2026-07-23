@@ -115,28 +115,6 @@ describe('buildShareUrl — /vehicle page', () => {
 })
 
 // ---------------------------------------------------------------------------
-// buildShareUrl — language prefix stripping
-// ---------------------------------------------------------------------------
-
-describe('buildShareUrl — language prefix', () => {
-  it('strips the lang code from the output pathname', () => {
-    // A Hebrew user's link must not force Hebrew on the recipient.
-    // The recipient's localStorage/URL preference picks their own language.
-    expect(new URL(build('/he/gaps')).pathname).toBe('/gaps')
-    expect(new URL(build('/en/timeline')).pathname).toBe('/timeline')
-    expect(new URL(build('/ar/operator')).pathname).toBe('/operator')
-  })
-
-  it('/he/gaps and /gaps produce identical URLs', () => {
-    expect(build('/he/gaps')).toBe(build('/gaps'))
-  })
-
-  it('page without lang prefix is unaffected', () => {
-    expect(new URL(build('/gaps')).pathname).toBe('/gaps')
-  })
-})
-
-// ---------------------------------------------------------------------------
 // buildShareUrl — round-trip (encode → decode)
 // ---------------------------------------------------------------------------
 

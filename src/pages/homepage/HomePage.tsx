@@ -113,8 +113,6 @@ export const HomePage = () => {
           description={t('open_menu_description')}
         />
       </section>
-
-      <footer>{`${t('homepage.copyright')} ${new Date().getFullYear()}`}</footer>
     </div>
   )
 }
