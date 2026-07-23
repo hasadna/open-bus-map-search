@@ -1,4 +1,3 @@
-import { getPathWithoutLang } from 'src/locale/allTranslations'
 import { GlobalSearchState } from 'src/model/globalState'
 
 export type ShareableKey = keyof GlobalSearchState
@@ -31,7 +30,7 @@ export const buildShareUrl = (
   pageParams: Record<string, string>,
   origin = window.location.origin,
 ): string => {
-  const pagePath = getPathWithoutLang(pathname)
+  const pagePath = pathname
   const relevantKeys = PAGE_SHARE_PARAMS[pagePath] ?? []
 
   const params = new URLSearchParams()
@@ -44,7 +43,7 @@ export const buildShareUrl = (
   Object.entries(pageParams).forEach(([key, value]) => params.set(key, value))
 
   const query = params.toString()
-  // Use the lang-stripped path so shared links are language-agnostic.
-  // The recipient's language preference (localStorage) picks their own lang.
+  // The URL carries no language segment, so shared links are language-agnostic —
+  // the recipient's stored language preference (localStorage) picks their own lang.
   return `${origin}${pagePath}${query ? `?${query}` : ''}`
 }
