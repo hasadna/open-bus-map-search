@@ -780,6 +780,14 @@
       }
     }
   },
+  "train_page_title": "רכבת ישראל",
+  "train_choose_route": "בחירת מסלול",
+  "train_no_rides": "לא נמצאו נסיעות בפועל למסלול ולתאריך שנבחרו",
+  "train_ride_summary": "נסיעה {{lineRef}} · שעה מתוכננת {{scheduledTime}} · מספר רכבת {{trainNumber}} · נקודות מיקום {{points}} · תחנות {{stops}}",
+  "train_minutes_short": "דק׳",
+  "train_average_delay_title": "איחור ממוצע לפי תחנה",
+  "train_average_delay": "איחור ממוצע",
+  "train_average_delay_axis": "איחור ממוצע (דק׳)",
   "dataResearch": {
     "title": "מחקרים",
     "intro": "אם יש לכם רעיון מעניין למה קורים פה דברים, דברו איתנו בסלאק!",

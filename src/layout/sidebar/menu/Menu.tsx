@@ -18,7 +18,15 @@ type MainMenuProps = {
 const MENU_GROUPS = [
   {
     key: 'menu_group_analysis',
-    paths: ['/single-line-map', '/timeline', '/gaps', '/gaps_patterns', '/operator', '/vehicle'],
+    paths: [
+      '/single-line-map',
+      '/timeline',
+      '/gaps',
+      '/gaps_patterns',
+      '/operator',
+      '/vehicle',
+      '/train',
+    ],
   },
   {
     key: 'menu_group_maps',

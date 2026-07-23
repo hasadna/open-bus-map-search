@@ -277,6 +277,7 @@ const GapsPatternsPage = () => {
           <OperatorSelector
             operatorId={operatorId ?? undefined}
             setOperatorId={(id) => setSearch((current) => ({ ...current, operatorId: id }))}
+            excludeIsraelRailways
           />
         </Grid>
         <Grid size={{ xs: 12, sm: 4 }} className="hideOnMobile">

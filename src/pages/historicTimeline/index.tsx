@@ -141,6 +141,7 @@ const TimelinePage = () => {
           <OperatorSelector
             operatorId={operatorId ?? undefined}
             setOperatorId={(id) => setSearch((prev) => ({ ...prev, operatorId: id }))}
+            excludeIsraelRailways
           />
         </Grid>
         {/* choose line */}
