@@ -60,26 +60,34 @@ async function loadFromCache(bounds: VelocityAggregationBounds, date: dayjs.Dayj
   return dataFromCache
 }
 
-async function queryFn(bounds: VelocityAggregationBounds, date: dayjs.Dayjs, zoom: number) {
+// Past dates come from the pre-aggregated CDN cache, recent dates from the live API;
+// both return the same shape (loadFromCache camel-cases the raw JSON), so the caller
+// filters and validates once regardless of source.
+export async function fetchAggregation(
+  bounds: VelocityAggregationBounds,
+  date: dayjs.Dayjs,
+  zoom: number,
+): Promise<SiriVelocityAggregationPydanticModel[]> {
   // only try cached data if date is in the past
-  if (date.isBefore(dayjs('yesterday'))) {
+  if (date.isBefore(dayjs().subtract(1, 'day'))) {
     try {
-      const cachedData = await loadFromCache(bounds, date, zoom)
-      if (cachedData) {
-        return cachedData
-      }
+      return await loadFromCache(bounds, date, zoom)
     } catch (e) {
       console.warn('Failed to load cached velocity aggregation data', e)
     }
   }
-  const data = await SIRI_API.velocityAggregationSiriVelocityAggregationSiriVelocityAggregationGet({
+  return SIRI_API.velocityAggregationSiriVelocityAggregationSiriVelocityAggregationGet({
     recordedFrom: date.toDate(),
     lonMin: bounds.minLon,
     lonMax: bounds.maxLon,
     latMin: bounds.minLat,
     latMax: bounds.maxLat,
     roundingPrecision: zoom,
-  }).then((data) => data.filter((p) => p.totalSampleCount > 4))
+  })
+}
+
+export async function queryFn(bounds: VelocityAggregationBounds, date: dayjs.Dayjs, zoom: number) {
+  const data = (await fetchAggregation(bounds, date, zoom)).filter((p) => p.totalSampleCount > 4)
 
   if (data.length === 0) {
     throw new Error(

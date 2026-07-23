@@ -5,8 +5,6 @@ import React, { useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useLocation } from 'react-router'
 import { LayoutContextInterface, LayoutCtx } from 'src/layout/LayoutContext'
-import { useTheme } from 'src/layout/ThemeContext'
-import { getPathWithoutLang } from 'src/locale/allTranslations'
 import DonateModal from 'src/pages/DonateModal/DonateModal'
 import { EVENT_DATE_ISO, REGISTRATION_CLOSE_ISO } from 'src/pages/hackathon/challenges'
 import { PAGES } from 'src/routes'
@@ -61,7 +59,6 @@ const HACKATHON_MENU_HIDE_MS = HACKATHON_EVENT_MS + 3 * 24 * 60 * 60 * 1000 // h
 
 const MainMenu = ({ collapsed = false }: MainMenuProps) => {
   const { t } = useTranslation()
-  const { currentLanguage } = useTheme()
   const { setDrawerOpen } = useContext<LayoutContextInterface>(LayoutCtx)
   const [isDonateModalVisible, setDonateModalVisible] = useState(false)
 
@@ -75,7 +72,7 @@ const MainMenu = ({ collapsed = false }: MainMenuProps) => {
 
   const hackathonItem = showHackathon
     ? getItem(
-        <Link to={`/${currentLanguage}/hackathon`} onClick={() => setDrawerOpen(false)}>
+        <Link to="/hackathon" onClick={() => setDrawerOpen(false)}>
           {t('hackathon_title')}
           {hackathonDaysLeft !== null && (
             <span className="hackathon-badge">
@@ -105,7 +102,7 @@ const MainMenu = ({ collapsed = false }: MainMenuProps) => {
             itm.icon,
           )
         : getItem(
-            <Link to={`/${currentLanguage}${itm.path}`} onClick={() => setDrawerOpen(false)}>
+            <Link to={itm.path} onClick={() => setDrawerOpen(false)}>
               {t(itm.label)}
             </Link>,
             itm.path,
@@ -135,10 +132,10 @@ const MainMenu = ({ collapsed = false }: MainMenuProps) => {
   const items = collapsed ? flatItems : groupedItems
 
   const { pathname } = useLocation()
-  const [current, setCurrent] = useState(getPathWithoutLang(pathname) || '/')
+  const [current, setCurrent] = useState(pathname || '/')
 
   useEffect(() => {
-    const nextPath = getPathWithoutLang(pathname) || '/'
+    const nextPath = pathname || '/'
 
     if (current !== nextPath) {
       setCurrent(nextPath)
