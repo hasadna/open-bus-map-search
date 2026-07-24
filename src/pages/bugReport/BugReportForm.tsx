@@ -1,188 +1,438 @@
-import { CreateIssuePostRequest } from '@hasadna/open-bus-api-client'
-import { Alert } from '@mui/material'
-import { useMutation } from '@tanstack/react-query'
-import { Button, Checkbox, Form, Input, Select } from 'antd'
-import { useMemo } from 'react'
+import {
+  CreateIssuePostRequest,
+  CreateIssuePostRequestReproducibilityEnum,
+  CreateIssuePostRequestTypeEnum,
+} from '@hasadna/open-bus-api-client'
+import {
+  Alert,
+  Box,
+  Button,
+  Checkbox,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  FormControl,
+  FormControlLabel,
+  FormHelperText,
+  InputLabel,
+  MenuItem,
+  Select,
+  Stack,
+  TextField,
+} from '@mui/material'
+import { useForm } from '@tanstack/react-form'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ISSUES_API } from 'src/api/apiConfig'
+import { useNavigate } from 'react-router'
 import { EasterEgg } from 'src/pages/components/EasterEgg/EasterEgg'
 import InfoYoutubeModal from 'src/pages/components/YoutubeModal'
+import { useCreateIssueMutation } from 'src/queries/issues'
 import Widget from 'src/shared/Widget'
 import './BugReportForm.scss'
 
-// File upload is disabled until the server-side implementation is complete.
-const BugReportForm = () => {
-  const { t, i18n } = useTranslation()
-  const [form] = Form.useForm<CreateIssuePostRequest>()
-  // const [fileList, setFileList] = useState<UploadFile[]>([])
+interface FormField {
+  name: string
+  state: { value: string; meta: { errors: unknown[] } }
+  handleBlur: () => void
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  handleChange: (value: any) => void
+}
 
-  const mutation = useMutation({
-    mutationFn: (values: CreateIssuePostRequest) =>
-      ISSUES_API.issuesCreatePost({ createIssuePostRequest: values }),
-    onSuccess: (response) => {
-      if (response.data?.state === 'open') {
-        form.resetFields()
-        // setFileList([])
-      }
-    },
-    onError: (error) => {
-      console.error('Error submitting bug report:', error)
+type BugReportFormValues = Omit<CreateIssuePostRequest, 'type' | 'reproducibility'> & {
+  type: CreateIssuePostRequestTypeEnum | ''
+  reproducibility: CreateIssuePostRequestReproducibilityEnum | ''
+  debug: boolean
+}
+
+const DEFAULT_VALUES: BugReportFormValues = {
+  type: '',
+  title: '',
+  contactName: '',
+  contactEmail: '',
+  description: '',
+  environment: '',
+  expectedBehavior: '',
+  actualBehavior: '',
+  reproducibility: '',
+  debug: false,
+}
+
+function firstError(errors: unknown[]) {
+  return errors.length > 0 ? String(errors[0]) : undefined
+}
+
+function toCreateIssuePayload(values: BugReportFormValues): CreateIssuePostRequest {
+  return {
+    ...values,
+    type: values.type as CreateIssuePostRequestTypeEnum,
+    reproducibility: values.reproducibility as CreateIssuePostRequestReproducibilityEnum,
+  }
+}
+
+type ValidatedTextFieldProps = {
+  field: FormField
+  label: string
+  type?: string
+  multiline?: boolean
+  minRows?: number
+}
+
+function ValidatedTextField({ field, label, type, multiline, minRows }: ValidatedTextFieldProps) {
+  const error = firstError(field.state.meta.errors)
+  return (
+    <TextField
+      required
+      fullWidth
+      type={type}
+      multiline={multiline}
+      minRows={minRows}
+      id={field.name}
+      name={field.name}
+      label={label}
+      value={field.state.value}
+      error={Boolean(error)}
+      helperText={error}
+      onBlur={field.handleBlur}
+      onChange={(event) => field.handleChange(event.target.value)}
+    />
+  )
+}
+
+type SelectOption = { value: string; label: string }
+
+type ValidatedSelectProps = {
+  field: FormField
+  label: string
+  options: SelectOption[]
+}
+
+function ValidatedSelect({ field, label, options }: ValidatedSelectProps) {
+  const error = firstError(field.state.meta.errors)
+  return (
+    <FormControl fullWidth required error={Boolean(error)}>
+      <InputLabel id={`${field.name}-label`}>{label}</InputLabel>
+      <Select
+        labelId={`${field.name}-label`}
+        id={field.name}
+        name={field.name}
+        value={field.state.value}
+        label={label}
+        onBlur={field.handleBlur}
+        onChange={(event) => field.handleChange(event.target.value as string)}>
+        {options.map((option) => (
+          <MenuItem key={option.value} value={option.value}>
+            {option.label}
+          </MenuItem>
+        ))}
+      </Select>
+      {error && <FormHelperText>{error}</FormHelperText>}
+    </FormControl>
+  )
+}
+
+const BugReportForm = () => {
+  const { t } = useTranslation()
+  const navigate = useNavigate()
+  const [successDialogOpen, setSuccessDialogOpen] = useState(false)
+
+  const required = (label: string, value: string) =>
+    value.trim()
+      ? undefined
+      : t('reportBug.validation.required', {
+          field: label,
+          interpolation: { escapeValue: false },
+        })
+  const minLength = (label: string, value: string, min: number) =>
+    value.trim().length >= min
+      ? undefined
+      : t('reportBug.validation.min', {
+          field: label,
+          count: min,
+          interpolation: { escapeValue: false },
+        })
+  const maxLength = (label: string, value: string, max: number) =>
+    value.length <= max
+      ? undefined
+      : t('reportBug.validation.max', {
+          field: label,
+          count: max,
+          interpolation: { escapeValue: false },
+        })
+  const requiredSelect = (label: string, value: string) =>
+    value
+      ? undefined
+      : t('reportBug.validation.required', {
+          field: label,
+          interpolation: { escapeValue: false },
+        })
+  const email = (value: string) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/u.test(value) ? undefined : t('reportBug.validation.email')
+
+  const mutation = useCreateIssueMutation()
+
+  const form = useForm({
+    defaultValues: DEFAULT_VALUES,
+    onSubmit: ({ value }) => {
+      mutation.reset()
+      mutation.mutate(toCreateIssuePayload(value), {
+        onSuccess: (response) => {
+          if (response.data?.state === 'open') {
+            form.reset(DEFAULT_VALUES)
+            setSuccessDialogOpen(true)
+          }
+        },
+      })
     },
   })
 
-  const onFinish = (values: CreateIssuePostRequest) => {
+  const handleCloseSuccessDialog = () => {
+    setSuccessDialogOpen(false)
     mutation.reset()
-    mutation.mutate(values)
   }
 
-  // const onFileChange = (info: UploadChangeParam) => {
-  //   setFileList(info.fileList)
-  // }
+  const handleBackToPreviousPage = () => {
+    handleCloseSuccessDialog()
+    if (window.history.length > 1) {
+      navigate(-1)
+    } else {
+      navigate('/')
+    }
+  }
 
-  const options = useMemo(() => {
-    return [
-      { value: 'always', label: t('bug_frequency.always') },
-      { value: 'sometimes', label: t('bug_frequency.sometimes') },
-      { value: 'rarely', label: t('bug_frequency.rarely') },
-      { value: 'once', label: t('bug_frequency.once') },
-    ]
-  }, [t])
+  const reproducibilityOptions = [
+    { value: CreateIssuePostRequestReproducibilityEnum.Always, label: t('bug_frequency.always') },
+    {
+      value: CreateIssuePostRequestReproducibilityEnum.Sometimes,
+      label: t('bug_frequency.sometimes'),
+    },
+    { value: CreateIssuePostRequestReproducibilityEnum.Rarely, label: t('bug_frequency.rarely') },
+    { value: CreateIssuePostRequestReproducibilityEnum.Once, label: t('bug_frequency.once') },
+  ]
 
   return (
-    <Widget
-      className="bug-report-form-container"
-      title={
-        <p className="logo">
-          {t('website_name')}
-          <InfoYoutubeModal
-            label={t('open_video_about_this_page')}
-            title={t('youtube_modal_info_title')}
-            videoUrl="https://www.youtube-nocookie.com/embed?v=F6sD9Bz4Xj0&list=PL6Rh06rT7uiX1AQE-lm55hy-seL3idx3T&index=11"
-          />
-        </p>
-      }>
-      <span>{t('reportBug.description')}</span>
-      {mutation.isSuccess && mutation.data?.data && (
-        <Alert severity="success" sx={{ marginBottom: 2 }}>
-          <a href={mutation.data.data.url} target="_blank" rel="noopener noreferrer">
-            {t('reportBug.viewIssue')}
-          </a>
-        </Alert>
-      )}
+    <Box className="bug-report-page">
+      <Widget
+        className="bug-report-form-container"
+        title={
+          <p className="logo">
+            {t('website_name')}
+            <InfoYoutubeModal
+              label={t('open_video_about_this_page')}
+              title={t('youtube_modal_info_title')}
+              videoUrl="https://www.youtube-nocookie.com/embed?v=F6sD9Bz4Xj0&list=PL6Rh06rT7uiX1AQE-lm55hy-seL3idx3T&index=11"
+            />
+          </p>
+        }>
+        <span>{t('reportBug.description')}</span>
 
-      {mutation.isError && (
-        <Alert severity="error" onClose={mutation.reset} sx={{ marginBottom: 2 }}>
-          {t('reportBug.error')}
-        </Alert>
-      )}
+        {mutation.isError && (
+          <Alert severity="error" onClose={mutation.reset} sx={{ marginBottom: 2 }}>
+            {t('reportBug.error')}
+          </Alert>
+        )}
 
-      <Form
-        form={form}
-        name="bug-report"
-        onFinish={(values) => {
-          onFinish(values)
-        }}
-        // onFinishFailed={onFinishFailed}
-        labelCol={{ span: 6 }}
-        wrapperCol={{ span: 18 }}>
-        <Form.Item label={t('bug_type')} name="type" rules={[{ required: true }]}>
-          <Select>
-            <Select.Option value="bug">{t('bug_type_bug')}</Select.Option>
-            <Select.Option value="feature">{t('bug_type_feature')}</Select.Option>
-            <Select.Option value="other">{t('bug_type_other')}</Select.Option>
-          </Select>
-        </Form.Item>
+        <Box
+          component="form"
+          className="bug-report-form"
+          noValidate
+          onSubmit={(event) => {
+            event.preventDefault()
+            event.stopPropagation()
+            void form.handleSubmit()
+          }}>
+          <Stack spacing={2.5}>
+            <form.Field
+              name="type"
+              validators={{
+                onChange: ({ value }) => requiredSelect(t('bug_type'), value),
+              }}>
+              {(field) => (
+                <ValidatedSelect
+                  field={field}
+                  label={t('bug_type')}
+                  options={[
+                    { value: CreateIssuePostRequestTypeEnum.Bug, label: t('bug_type_bug') },
+                    { value: CreateIssuePostRequestTypeEnum.Feature, label: t('bug_type_feature') },
+                    { value: CreateIssuePostRequestTypeEnum.Other, label: t('bug_type_other') },
+                  ]}
+                />
+              )}
+            </form.Field>
 
-        <Form.Item
-          label={t('bug_title')}
-          name="title"
-          rules={[{ required: true, min: 5, max: 200 }]}>
-          <Input />
-        </Form.Item>
+            <form.Field
+              name="title"
+              validators={{
+                onChange: ({ value }) =>
+                  required(t('bug_title'), value) ||
+                  minLength(t('bug_title'), value, 5) ||
+                  maxLength(t('bug_title'), value, 200),
+              }}>
+              {(field) => <ValidatedTextField field={field} label={t('bug_title')} />}
+            </form.Field>
 
-        <Form.Item
-          label={t('bug_contact_name')}
-          name="contactName"
-          rules={[{ required: true, min: 1, max: 100 }]}>
-          <Input />
-        </Form.Item>
+            <form.Field
+              name="contactName"
+              validators={{
+                onChange: ({ value }) =>
+                  required(t('bug_contact_name'), value) ||
+                  minLength(t('bug_contact_name'), value, 1) ||
+                  maxLength(t('bug_contact_name'), value, 100),
+              }}>
+              {(field) => <ValidatedTextField field={field} label={t('bug_contact_name')} />}
+            </form.Field>
 
-        <Form.Item
-          label={t('bug_contact_email')}
-          name="contactEmail"
-          rules={[{ required: true, type: 'email' }]}>
-          <Input />
-        </Form.Item>
+            <form.Field
+              name="contactEmail"
+              validators={{
+                onChange: ({ value }) => required(t('bug_contact_email'), value) || email(value),
+              }}>
+              {(field) => (
+                <ValidatedTextField field={field} label={t('bug_contact_email')} type="email" />
+              )}
+            </form.Field>
 
-        <Form.Item
-          label={t('bug_description')}
-          name="description"
-          rules={[{ required: true, min: 10, max: 5000 }]}>
-          <Input.TextArea rows={4} />
-        </Form.Item>
+            <form.Field
+              name="description"
+              validators={{
+                onChange: ({ value }) =>
+                  required(t('bug_description'), value) ||
+                  minLength(t('bug_description'), value, 10) ||
+                  maxLength(t('bug_description'), value, 5000),
+              }}>
+              {(field) => (
+                <ValidatedTextField
+                  field={field}
+                  label={t('bug_description')}
+                  multiline
+                  minRows={4}
+                />
+              )}
+            </form.Field>
 
-        <Form.Item
-          label={t('bug_environment')}
-          name="environment"
-          rules={[{ required: true, min: 1, max: 200 }]}>
-          <Input />
-        </Form.Item>
+            <form.Field
+              name="environment"
+              validators={{
+                onChange: ({ value }) =>
+                  required(t('bug_environment'), value) ||
+                  minLength(t('bug_environment'), value, 1) ||
+                  maxLength(t('bug_environment'), value, 200),
+              }}>
+              {(field) => <ValidatedTextField field={field} label={t('bug_environment')} />}
+            </form.Field>
 
-        <Form.Item
-          label={t('bug_expected_behavior')}
-          name="expectedBehavior"
-          rules={[{ required: true, min: 5, max: 1000 }]}>
-          <Input.TextArea rows={4} />
-        </Form.Item>
+            <form.Field
+              name="expectedBehavior"
+              validators={{
+                onChange: ({ value }) =>
+                  required(t('bug_expected_behavior'), value) ||
+                  minLength(t('bug_expected_behavior'), value, 5) ||
+                  maxLength(t('bug_expected_behavior'), value, 1000),
+              }}>
+              {(field) => (
+                <ValidatedTextField
+                  field={field}
+                  label={t('bug_expected_behavior')}
+                  multiline
+                  minRows={4}
+                />
+              )}
+            </form.Field>
 
-        <Form.Item
-          label={t('bug_actual_behavior')}
-          name="actualBehavior"
-          rules={[{ required: true, min: 5, max: 1000 }]}>
-          <Input.TextArea rows={4} />
-        </Form.Item>
+            <form.Field
+              name="actualBehavior"
+              validators={{
+                onChange: ({ value }) =>
+                  required(t('bug_actual_behavior'), value) ||
+                  minLength(t('bug_actual_behavior'), value, 5) ||
+                  maxLength(t('bug_actual_behavior'), value, 1000),
+              }}>
+              {(field) => (
+                <ValidatedTextField
+                  field={field}
+                  label={t('bug_actual_behavior')}
+                  multiline
+                  minRows={4}
+                />
+              )}
+            </form.Field>
 
-        <Form.Item
-          label={t('bug_reproducibility')}
-          name="reproducibility"
-          rules={[{ required: true, min: 1, max: 100 }]}>
-          <Select>
-            {options.map((option) => (
-              <Select.Option key={option.value} value={option.value}>
-                {option.label}
-              </Select.Option>
-            ))}
-          </Select>
-        </Form.Item>
+            <form.Field
+              name="reproducibility"
+              validators={{
+                onChange: ({ value }) => requiredSelect(t('bug_reproducibility'), value),
+              }}>
+              {(field) => (
+                <ValidatedSelect
+                  field={field}
+                  label={t('bug_reproducibility')}
+                  options={reproducibilityOptions}
+                />
+              )}
+            </form.Field>
 
-        <EasterEgg code="debug" autohide={false} onShow={() => form.setFieldValue('debug', true)}>
-          {/* eslint-disable-next-line i18next/no-literal-string -- hidden developer toggle */}
-          <Form.Item label="debug" name="debug" valuePropName="checked">
-            <Checkbox />
-          </Form.Item>
-        </EasterEgg>
+            <EasterEgg
+              code="debug"
+              autohide={false}
+              onShow={() => form.setFieldValue('debug', true)}>
+              <form.Field name="debug">
+                {(field) => (
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        name={field.name}
+                        checked={field.state.value}
+                        onBlur={field.handleBlur}
+                        onChange={(event) => field.handleChange(event.target.checked)}
+                      />
+                    }
+                    // eslint-disable-next-line i18next/no-literal-string -- hidden developer toggle
+                    label="debug"
+                  />
+                )}
+              </form.Field>
+            </EasterEgg>
 
-        {/* <Form.Item label={t('bug_attachments')} name="attachments">
-          <Upload
-            multiple
-            maxCount={10}
-            beforeUpload={() => false}
-            listType="picture"
-            fileList={fileList}
-            onChange={onFileChange}>
-            <Button icon={<FileUploadOutlined fontSize="small" />}>
-              {t('bug_attachments_upload_button')}
+            <Box className="bug-report-form-actions">
+              <form.Subscribe selector={(state) => state.canSubmit}>
+                {(canSubmit) => (
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    disabled={!canSubmit || mutation.isPending}
+                    loading={mutation.isPending}>
+                    {t('bug_submit')}
+                  </Button>
+                )}
+              </form.Subscribe>
+            </Box>
+          </Stack>
+        </Box>
+        <Dialog
+          open={successDialogOpen}
+          onClose={handleCloseSuccessDialog}
+          fullWidth
+          maxWidth="xs"
+          aria-labelledby="bug-report-success-title">
+          <DialogTitle id="bug-report-success-title">{t('reportBug.successTitle')}</DialogTitle>
+          <DialogContent>{t('reportBug.success')}</DialogContent>
+          <DialogActions>
+            {mutation.data?.data?.url && (
+              <Button
+                component="a"
+                href={mutation.data.data.url}
+                target="_blank"
+                rel="noopener noreferrer">
+                {t('reportBug.viewIssue')}
+              </Button>
+            )}
+            <Button variant="contained" onClick={handleBackToPreviousPage}>
+              {t('reportBug.backToPreviousPage')}
             </Button>
-          </Upload>
-        </Form.Item> */}
-
-        <Form.Item>
-          <Button type="primary" htmlType="submit" loading={mutation.isPending} dir={i18n.dir()}>
-            {t('bug_submit')}
-          </Button>
-        </Form.Item>
-      </Form>
-    </Widget>
+          </DialogActions>
+        </Dialog>
+      </Widget>
+    </Box>
   )
 }
 

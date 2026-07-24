@@ -44,14 +44,13 @@ const ExternalLink = ({ label, path, icon }: LinkType) => {
 const InternalLink = ({ label, path, icon }: LinkType) => {
   const navigate = useNavigate()
   const { t } = useTranslation()
+
   return (
     <div
       aria-label={t(label)}
       title={t(label)}
       className="header-link"
-      onClick={() => {
-        navigate(path)
-      }}>
+      onClick={() => void navigate(path)}>
       {icon}
     </div>
   )

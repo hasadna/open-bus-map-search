@@ -9,15 +9,11 @@ const SVG_LOCATOR = 'svg'
 const IFRAME_LOCATOR = 'iframe'
 const CLOSE_BUTTON_LABEL = 'Close'
 const SRC_ATTRIBUTE = 'src'
-const FORM_ERROR_SELECTOR = '.ant-form-item-explain-error'
 
 // Route matchers for hermetic network mocking.
 const YOUTUBE_EMBED_PATTERN = /youtube-nocookie\.com/
-const ISSUES_URL_FRAGMENT = '/issues'
+const ISSUES_CREATE_PATH = '/issues/create'
 const SERVER_ERROR_BODY = 'Internal Server Error'
-
-// antd's he_IL "required" message is `בבקשה הזן ${label}`; only the label is ours.
-const REQUIRED_FIELD_PREFIX = 'בבקשה הזן '
 
 // Contact details reused across every bug-report submission.
 const CONTACT = {
@@ -86,14 +82,18 @@ test('bug missing field - request type', async ({ page }) => {
 
   await test.step('Submit the form', async () => {
     await page.getByRole('button', { name: i18next.t('bug_submit') }).click()
-    await page.waitForSelector(FORM_ERROR_SELECTOR)
   })
 
   await test.step('Verify missing field error', async () => {
-    const errorMessages = await page.locator(FORM_ERROR_SELECTOR).allTextContents()
-    expect(errorMessages.length).toBe(2)
-    expect(errorMessages).toContain(`${REQUIRED_FIELD_PREFIX}${i18next.t('bug_type')}`)
-    expect(errorMessages).toContain(`${REQUIRED_FIELD_PREFIX}${i18next.t('bug_reproducibility')}`)
+    const typeRequired = i18next.t('reportBug.validation.required', {
+      field: i18next.t('bug_type'),
+    })
+    const reproducibilityRequired = i18next.t('reportBug.validation.required', {
+      field: i18next.t('bug_reproducibility'),
+    })
+
+    await expect(page.getByText(typeRequired, { exact: true })).toBeVisible()
+    await expect(page.getByText(reproducibilityRequired, { exact: true })).toBeVisible()
   })
 })
 
@@ -114,7 +114,7 @@ const successBody = {
 test('bug submission success', async ({ page }) => {
   await test.step('Mock API to return success', async () => {
     await page.route(
-      (url) => url.href.includes(ISSUES_URL_FRAGMENT),
+      (url) => url.pathname.endsWith(ISSUES_CREATE_PATH),
       (route) => route.fulfill({ status: 200, body: JSON.stringify(successBody) }),
     )
   })
@@ -143,15 +143,19 @@ test('bug submission success', async ({ page }) => {
     await page.getByRole('button', { name: i18next.t('bug_submit') }).click()
   })
 
-  await test.step('Verify success message is displayed', async () => {
-    await expect(page.getByText(i18next.t('reportBug.viewIssue'))).toBeVisible()
+  await test.step('Verify success dialog is displayed', async () => {
+    const dialog = page.getByRole('dialog', { name: i18next.t('reportBug.successTitle') })
+    await expect(dialog).toBeVisible()
+    await expect(
+      dialog.getByRole('link', { name: i18next.t('reportBug.viewIssue') }),
+    ).toHaveAttribute('href', successBody.data.url)
   })
 })
 
 test('bug submission server error', async ({ page }) => {
   await test.step('Mock API to return error', async () => {
     await page.route(
-      (url) => url.href.includes(ISSUES_URL_FRAGMENT),
+      (url) => url.pathname.endsWith(ISSUES_CREATE_PATH),
       (route) => route.fulfill({ status: 500, body: SERVER_ERROR_BODY }),
     )
   })

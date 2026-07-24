@@ -400,8 +400,16 @@
   "reportBug": {
     "description": "This form is designed so that we can receive feedback and improve the application. Please be aware that the submitted information will be available to the public.",
     "error": "An error occurred while sending the report. Please try again later.",
+    "successTitle": "Report sent",
     "success": "The report was sent successfully. Thank you for your help!",
-    "viewIssue": "View issue (GitHub)"
+    "viewIssue": "View report",
+    "backToPreviousPage": "Back to the previous page",
+    "validation": {
+      "required": "{{field}} is required",
+      "min": "{{field}} must contain at least {{count}} characters",
+      "max": "{{field}} can contain up to {{count}} characters",
+      "email": "Enter a valid email address"
+    }
   },
   "plannedRoute": "Planned Route",
   "actualRoute": "Actual Route",
