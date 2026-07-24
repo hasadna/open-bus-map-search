@@ -1,5 +1,33 @@
 # Changelog
 
+## [1.6.0](https://github.com/hasadna/open-bus-map-search/compare/v1.5.0...v1.6.0) (2026-07-24)
+
+
+### Features
+
+* add gps coverage chart ([#1678](https://github.com/hasadna/open-bus-map-search/issues/1678)) ([88f0f1a](https://github.com/hasadna/open-bus-map-search/commit/88f0f1aeb594fb4bb35b005f40e147efb6fe0c4d))
+* Add notice about the new vehicle page ([#1714](https://github.com/hasadna/open-bus-map-search/issues/1714)) ([ab63b56](https://github.com/hasadna/open-bus-map-search/commit/ab63b56946b686c601c9efeb7465e123ab8a5ceb))
+* Add per-page persistent state ([#1578](https://github.com/hasadna/open-bus-map-search/issues/1578)) ([e343db6](https://github.com/hasadna/open-bus-map-search/commit/e343db67c5981e565b7d003405ed5795c25b5d8a))
+* add vehicle page ([#1670](https://github.com/hasadna/open-bus-map-search/issues/1670)) ([8dae1a9](https://github.com/hasadna/open-bus-map-search/commit/8dae1a98f385eb31ba51ac9fa3952e5f75059a84))
+* close hackathon registration the night of July 13–14 ([#1688](https://github.com/hasadna/open-bus-map-search/issues/1688)) ([62e09c2](https://github.com/hasadna/open-bus-map-search/commit/62e09c2502d2f9822a5c280dc2f0347313edd674))
+* Gaps page UI/UX ([#1741](https://github.com/hasadna/open-bus-map-search/issues/1741)) ([902d14c](https://github.com/hasadna/open-bus-map-search/commit/902d14c4e376022bb7380871d839c543153ccb10))
+* Group routes by line number in operator page ([#1601](https://github.com/hasadna/open-bus-map-search/issues/1601)) ([9f9470c](https://github.com/hasadna/open-bus-map-search/commit/9f9470c6b67aa82aab1fa334683a36a425cc9199))
+* Migrate map and gaps_patterns pages to use page state ([#1695](https://github.com/hasadna/open-bus-map-search/issues/1695)) ([8f945ea](https://github.com/hasadna/open-bus-map-search/commit/8f945ea527a418f9de381d3a51837441a90f999b))
+* redesigned homepage navigation cards ([#1708](https://github.com/hasadna/open-bus-map-search/issues/1708)) ([1bbf4aa](https://github.com/hasadna/open-bus-map-search/commit/1bbf4aa151ab2d956ba63de92e635184f0451950))
+* remove language prefix from URL ([#1749](https://github.com/hasadna/open-bus-map-search/issues/1749)) ([dfc4046](https://github.com/hasadna/open-bus-map-search/commit/dfc4046a2caff4e2d271baf4e892f050e3f8bcfe))
+* Replace antd icons with mui ([#1697](https://github.com/hasadna/open-bus-map-search/issues/1697)) ([bb88a87](https://github.com/hasadna/open-bus-map-search/commit/bb88a87769e24b8608b722ed703097b65e662e24))
+* replace bus PNG with theme-aware SVG asset ([#1705](https://github.com/hasadna/open-bus-map-search/issues/1705)) ([0bf30ba](https://github.com/hasadna/open-bus-map-search/commit/0bf30ba2f6daefd5d4e6defe6b534d08b58acc93))
+
+
+### Bug Fixes
+
+* blank trip data for lines inactive previous day ([#1680](https://github.com/hasadna/open-bus-map-search/issues/1680)) ([#1689](https://github.com/hasadna/open-bus-map-search/issues/1689)) ([0ccccbd](https://github.com/hasadna/open-bus-map-search/commit/0ccccbd759b54c1473fa974c542ef3568241b463))
+* **ci:** drop Safari visual envs and add concurrency group ([#1684](https://github.com/hasadna/open-bus-map-search/issues/1684)) ([c85d2b3](https://github.com/hasadna/open-bus-map-search/commit/c85d2b31e4c05dda9409e0af39f66ea00490835e))
+* Colors on homepage bus SVG ([#1732](https://github.com/hasadna/open-bus-map-search/issues/1732)) ([539972d](https://github.com/hasadna/open-bus-map-search/commit/539972d8b586d6559bf6569a61bf11a4edc71a18))
+* show all vehicles details making the same ride ([#1687](https://github.com/hasadna/open-bus-map-search/issues/1687)) ([f0a2141](https://github.com/hasadna/open-bus-map-search/commit/f0a2141a2dc723a8ee1b528bfb397287c873f556))
+* singleLineMap support multiple vehicles ([#1571](https://github.com/hasadna/open-bus-map-search/issues/1571)) ([973b330](https://github.com/hasadna/open-bus-map-search/commit/973b330e4767832fe229241192728b51073155a4))
+* velocity-heatmap CDN cache ([#1742](https://github.com/hasadna/open-bus-map-search/issues/1742)) ([ac5f2bc](https://github.com/hasadna/open-bus-map-search/commit/ac5f2bc90c2f788c32c5dccb41b944a6ebafdac3))
+
 ## [1.5.0](https://github.com/hasadna/open-bus-map-search/compare/v1.4.0...v1.5.0) (2026-06-12)
 
 
