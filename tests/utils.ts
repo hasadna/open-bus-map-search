@@ -7,13 +7,35 @@ import { RouteFromHAROptions } from 'playwright-advanced-har/lib/utils/types'
 import { expect } from 'playwright-assertions'
 import dayjs from 'src/dayjs'
 import { PAGES } from 'src/routes'
+import { FIXTURE_DATE } from './fixtures/date'
+import { takeServiceMisses } from './fixtures/mockRouter'
 
 export { expect } from 'playwright-assertions'
 
-export const test = baseTest
+// Every spec imports `test` from here, so this auto fixture makes mandatory full-URL
+// matching universal: routeService (bound per backend as routeStride, and later a backend
+// router) records any request whose exact URL matched no stub, and this teardown fails the
+// test with the offending URL(s). (A throw inside a route handler is swallowed by Playwright
+// — this teardown assert is what makes it loud.) HAR-based specs never call routeService, so
+// their miss list is empty and this passes trivially until they are converted.
+export const test = baseTest.extend<{ serviceContract: void }>({
+  serviceContract: [
+    async ({ page }, use) => {
+      await use()
+      const misses = takeServiceMisses(page)
+      expect(
+        misses,
+        `unmocked request(s) — every request must match a fixture stub exactly:\n${misses.join('\n')}`,
+      ).toEqual([])
+    },
+    { auto: true },
+  ],
+})
 
 export function getPastDate() {
-  return new Date('2024-02-12T15:00:00+00:00')
+  // 15:00 UTC = 17:00 Israel on the fixture service-day: mid-day in both zones, so the UTC
+  // and Israel calendar dates coincide. Sourced from FIXTURE_DATE — the one date knob.
+  return new Date(`${FIXTURE_DATE}T15:00:00+00:00`)
 }
 
 const urlMatcher: Matcher = customMatcher({
