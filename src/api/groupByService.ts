@@ -32,7 +32,7 @@ async function fetchGroupBy({
   dateFrom: Dayjs
   groupBy: groupByFields
 }): Promise<GroupByRes[]> {
-  const agencies = await getAgencyList()
+  const agencies = await getAgencyList(dateFrom.toDate(), dateTo.toDate())
 
   // example: https://open-bus-stride-api.hasadna.org.il/gtfs_rides_agg/group_by?date_from=2023-01-27&date_to=2023-01-29&group_by=operator_ref
   const data = await AGGREGATIONS_API.byGtfsRidesAggGroupByGet({

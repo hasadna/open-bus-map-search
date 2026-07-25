@@ -1,6 +1,7 @@
 import { Autocomplete, TextField } from '@mui/material'
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { GlobalSearchContext } from 'src/model/globalState'
 import { getOperators, ISRAEL_TRAIN_ID, Operator } from 'src/model/operator'
 
 type OperatorSelectorProps = {
@@ -19,17 +20,20 @@ export default function OperatorSelector({
   excludeIsraelRailways,
 }: OperatorSelectorProps) {
   const { t } = useTranslation()
+  const {
+    search: { date },
+  } = useContext(GlobalSearchContext)
   const [operators, setOperators] = useState<Operator[]>([])
 
   useEffect(() => {
-    getOperators(filter).then((operators) =>
+    getOperators(new Date(date), filter).then((operators) =>
       setOperators(
         excludeIsraelRailways
           ? operators.filter((operator) => operator.id !== ISRAEL_TRAIN_ID)
           : operators,
       ),
     )
-  }, [filter, excludeIsraelRailways])
+  }, [filter, excludeIsraelRailways, date])
 
   const value = operators.find((operator) => operator.id === operatorId) || null
 

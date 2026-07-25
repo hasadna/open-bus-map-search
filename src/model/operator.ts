@@ -10,11 +10,12 @@ export const ISRAEL_TRAIN_ID = '2'
 
 /**
  * Get operators list, based on agencies fetched from MOT api
+ * @param date Day to fetch the operators for
  * @param filter Operator ID list
  * @returns List of operators
  */
-export async function getOperators(filter?: Set<string>): Promise<Operator[]> {
-  const agencies = await getAgencyList()
+export async function getOperators(date: Date, filter?: Set<string>): Promise<Operator[]> {
+  const agencies = await getAgencyList(date, date)
   const operators = new Map<string, Operator>()
 
   for (const agency of agencies) {
