@@ -32,14 +32,15 @@ function RideTime({
 }) {
   if (!row.href) return <>{row.displayTime}</>
   const isTrain = row.setSearchPayload?.operatorId === ISRAEL_TRAIN_ID
+  const hasTrainRoute = isTrain && row.lineRef !== undefined
   return (
     <MuiLink
       component={Link}
-      to={isTrain && row.lineRef ? `/train?route=${row.lineRef}` : row.href}
+      to={hasTrainRoute ? `/train?route=${row.lineRef}` : row.href}
       underline="hover"
       // a deeper blue + medium weight so the linked time reads as clickable
       sx={{ color: 'primary.dark', fontWeight: 500 }}
-      onClick={() => !isTrain && onRowClick(row.setSearchPayload)}>
+      onClick={() => !hasTrainRoute && onRowClick(row.setSearchPayload)}>
       {row.displayTime}
     </MuiLink>
   )

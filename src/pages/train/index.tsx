@@ -28,7 +28,7 @@ export default function TrainPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const routeParam = searchParams.get('route')
   const [selectedRouteName, setSelectedRouteName] = useState('')
-  const maxDate = toIsraelTimezone().subtract(1, 'day').startOf('day')
+  const maxDate = useMemo(() => toIsraelTimezone().subtract(1, 'day').startOf('day'), [])
   const routesQuery = useTrainRoutes(search.date)
   useEffect(() => {
     if (!routeParam || !routesQuery.data) return
