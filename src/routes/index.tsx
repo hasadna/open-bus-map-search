@@ -42,7 +42,6 @@ const Operator = lazy(() => import('../pages/operator'))
 const Profile = lazy(() => import('../pages/lineProfile/LineProfile'))
 const BugReportForm = lazy(() => import('../pages/bugReport/BugReportForm'))
 const PublicAppeal = lazy(() => import('../pages/publicAppeal'))
-const Hackathon = lazy(() => import('../pages/hackathon/Hackathon'))
 
 export const PAGES = [
   {
@@ -122,12 +121,6 @@ export const PAGES = [
     path: '/public-appeal',
     icon: <PsychologyTwoTone />,
     element: <PublicAppeal />,
-  },
-  {
-    label: 'hackathon_title',
-    path: '/hackathon',
-    icon: <EventTwoTone />,
-    element: <Hackathon />,
   },
 ] as const
 
