@@ -3,7 +3,6 @@ import { mergeTests } from '@playwright/test'
 import i18next from 'i18next'
 import {
   test as baseTest,
-  getPastDate,
   getPastTrainDate,
   harOptions,
   setupTest,

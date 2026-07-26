@@ -92,7 +92,6 @@ export default function TrainPage() {
             maxDate={maxDate}
             onChange={(date) => {
               if (!date) return
-              setSelectedLineRef('')
               setSearch((current) => ({
                 ...current,
                 date: toIsraelTimezone(date).format('YYYY-MM-DD'),
