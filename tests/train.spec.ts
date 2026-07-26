@@ -1,15 +1,16 @@
 import i18next from 'i18next'
-import { expect, getPastDate, harOptions, setupTest, test } from './utils'
+import { expect, getPastTrainDate, harOptions, setupTest, test } from './utils'
 
 const TRAIN_ROUTE = 'באר שבע מרכז-באר שבע<->תל אביב מרכז-תל אביב יפו'
 
-const TRAIN_TEST_DATE = new Date(getPastDate().getTime() - 24 * 60 * 60 * 1000)
+const TRAIN_TEST_DATE = new Date(getPastTrainDate().getTime() - 24 * 60 * 60 * 1000)
   .toISOString()
   .slice(0, 10)
 
 test.describe('Train page', () => {
   test('loads a selected route and opens its ride map', async ({ page, advancedRouteFromHAR }) => {
     await setupTest(page)
+    await page.clock.setSystemTime(getPastTrainDate())
     await advancedRouteFromHAR('tests/HAR/train.har', harOptions)
     await page.goto(`/train?date=${TRAIN_TEST_DATE}`)
     await page.locator('.preloader').waitFor({ state: 'hidden' })
@@ -19,17 +20,20 @@ test.describe('Train page', () => {
     await page.getByRole('option', { name: TRAIN_ROUTE }).click()
 
     await expect(routeSelect).toContainText(TRAIN_ROUTE)
-    await expect(page.getByText(/נסיעה 30086 · שעה מתוכננת 08:41 · מספר רכבת 28/)).toBeVisible()
-    await expect(
-      page.locator('.recharts-wrapper').getByText('באר שבע מרכז', { exact: true }),
-    ).toBeVisible()
+    const rideHeading = page.getByRole('heading', {
+      name: /נסיעה 30093 · שעה מתוכננת 11:41 · מספר רכבת 34 · נקודות מיקום 102 · תחנות 11/,
+    })
+    await expect(rideHeading).toBeVisible()
+    const averageDelayWidget = page
+      .getByRole('heading', { name: i18next.t('train_average_delay_title') })
+      .locator('..')
+    await expect(averageDelayWidget.getByText('באר שבע מרכז', { exact: true })).toBeVisible()
 
-    const showMap = page.getByRole('button', { name: i18next.t('train_show_ride_map') })
-    await showMap.click()
-
+    const rideWidget = rideHeading.locator('..')
+    await rideWidget.getByRole('button', { name: i18next.t('train_show_ride_map') }).click()
     await expect(
-      page.getByRole('button', { name: i18next.t('train_hide_ride_map') }),
+      rideWidget.getByRole('button', { name: i18next.t('train_hide_ride_map') }),
     ).toHaveAttribute('aria-expanded', 'true')
-    await expect(page.locator('.leaflet-container')).toBeVisible()
+    await expect(rideWidget.locator('.leaflet-container')).toBeVisible()
   })
 })
