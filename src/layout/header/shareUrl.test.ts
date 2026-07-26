@@ -114,6 +114,14 @@ describe('buildShareUrl — /vehicle page', () => {
   })
 })
 
+describe('buildShareUrl — /train page', () => {
+  it('shares the global date and page-local route', () => {
+    const p = paramsOf(build('/train', fullSearch, { route: '30867' }))
+
+    expect(p).toEqual({ date: fullSearch.date, route: '30867' })
+  })
+})
+
 // ---------------------------------------------------------------------------
 // buildShareUrl — language prefix stripping
 // ---------------------------------------------------------------------------

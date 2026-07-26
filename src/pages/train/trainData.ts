@@ -172,7 +172,7 @@ export function getTrainStationAverageDelays(rides: TrainRideData[]): TrainStati
 
 export function getTrainDateRange(date: string) {
   const start = dayjs.tz(date, ISRAEL_TIMEZONE).startOf('day')
-  const nextDate = start.add(1, 'day')
+  const nextDate = dayjs.tz(start.add(1, 'day').format('YYYY-MM-DD'), ISRAEL_TIMEZONE)
 
   return {
     dateFrom: utcNoonForDateStr(start.format('YYYY-MM-DD')),

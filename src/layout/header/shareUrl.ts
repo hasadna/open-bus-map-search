@@ -16,6 +16,7 @@ export const PAGE_SHARE_PARAMS: Partial<Record<string, ShareableKey[]>> = {
   // via PageShareParamsContext (like gaps_patterns' start/end dates).
   '/vehicle': ['date'],
   '/operator': ['operatorId', 'date'],
+  '/train': ['date'],
 }
 
 /**

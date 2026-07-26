@@ -16,6 +16,7 @@ import { useTranslation } from 'react-i18next'
 import { useSearchParams } from 'react-router'
 import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone } from 'src/dayjs'
 import { GlobalSearchContext } from 'src/model/globalState'
+import { InitialUrlParamsContext, PageShareParamsContext } from 'src/model/routeContext'
 import { DateSelector } from 'src/pages/components/DateSelector'
 import { PageContainer } from 'src/pages/components/PageContainer'
 import Widget from 'src/shared/Widget'
@@ -28,17 +29,22 @@ import { useTrainRideStops, useTrainRoutes, useTrainVehicleLocations } from './u
 export default function TrainPage() {
   const { t } = useTranslation()
   const { search, setSearch } = useContext(GlobalSearchContext)
-  const [searchParams, setSearchParams] = useSearchParams()
-  const routeParam = searchParams.get('route')
-  const [selectedRouteName, setSelectedRouteName] = useState('')
+  const [searchParams] = useSearchParams()
+  const initialUrlParams = useContext(InitialUrlParamsContext)
+  const { setParams: setPageShareParams } = useContext(PageShareParamsContext)
+  const [selectedLineRef, setSelectedLineRef] = useState(
+    () => searchParams.get('route') ?? initialUrlParams.route ?? '',
+  )
+  useEffect(() => {
+    delete initialUrlParams.route
+  }, [initialUrlParams])
+
   const maxDate = useMemo(() => toIsraelTimezone().subtract(1, 'day').startOf('day'), [])
   const routesQuery = useTrainRoutes(search.date)
-  useEffect(() => {
-    if (!routeParam || !routesQuery.data) return
-    const route = routesQuery.data.find((option) => option.lineRefs.includes(Number(routeParam)))
-    setSelectedRouteName(route?.routeLongName ?? '')
-  }, [routeParam, routesQuery.data])
-  const selectedRoute = routesQuery.data?.find((route) => route.routeLongName === selectedRouteName)
+  const selectedRoute = routesQuery.data?.find((route) =>
+    route.lineRefs.includes(Number(selectedLineRef)),
+  )
+  const selectedRouteName = selectedRoute?.routeLongName ?? ''
   const lineRefs = selectedRoute?.lineRefs ?? []
   const stopsQuery = useTrainRideStops(search.date, lineRefs)
   const locationsQuery = useTrainVehicleLocations(search.date, lineRefs)
@@ -52,14 +58,15 @@ export default function TrainPage() {
   }, [maxDate, search.date, setSearch])
 
   useEffect(() => {
-    if (
-      selectedRouteName &&
-      routesQuery.data &&
-      !routesQuery.data.some((route) => route.routeLongName === selectedRouteName)
-    ) {
-      setSelectedRouteName('')
+    if (selectedLineRef && routesQuery.data && !selectedRoute) {
+      setSelectedLineRef('')
     }
-  }, [routesQuery.data, selectedRouteName])
+  }, [routesQuery.data, selectedLineRef, selectedRoute])
+
+  useEffect(() => {
+    setPageShareParams(selectedLineRef ? { route: selectedLineRef } : {})
+    return () => setPageShareParams({})
+  }, [selectedLineRef, setPageShareParams])
 
   const rides = useMemo(
     () => groupTrainRides(locationsQuery.data ?? [], stopsQuery.data ?? []),
@@ -85,7 +92,7 @@ export default function TrainPage() {
             maxDate={maxDate}
             onChange={(date) => {
               if (!date) return
-              setSelectedRouteName('')
+              setSelectedLineRef('')
               setSearch((current) => ({
                 ...current,
                 date: toIsraelTimezone(date).format('YYYY-MM-DD'),
@@ -102,13 +109,7 @@ export default function TrainPage() {
             onChange={(event) => {
               const routeName = event.target.value
               const route = routesQuery.data?.find((option) => option.routeLongName === routeName)
-              setSelectedRouteName(routeName)
-              setSearchParams((current) => {
-                const next = new URLSearchParams(current)
-                if (route) next.set('route', String(route.lineRefs[0]))
-                else next.delete('route')
-                return next
-              })
+              setSelectedLineRef(route ? String(route.lineRefs[0]) : '')
             }}>
             {(routesQuery.data ?? []).map((route) => (
               <MenuItem key={route.routeLongName} value={route.routeLongName}>

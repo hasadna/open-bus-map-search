@@ -22,6 +22,16 @@ describe('train data', () => {
     expect(range.timeTo.toISOString()).toBe('2026-07-20T21:00:00.000Z')
   })
 
+  it.each([
+    ['2026-03-27', '2026-03-26T22:00:00.000Z', '2026-03-27T21:00:00.000Z'],
+    ['2026-10-25', '2026-10-24T21:00:00.000Z', '2026-10-25T22:00:00.000Z'],
+  ])('ends %s at the next Israel-local midnight across DST', (date, expectedFrom, expectedTo) => {
+    const range = getTrainDateRange(date)
+
+    expect(range.timeFrom.toISOString()).toBe(expectedFrom)
+    expect(range.timeTo.toISOString()).toBe(expectedTo)
+  })
+
   it('groups route names and deduplicates line refs', () => {
     const route = (lineRef: number, routeLongName: string): GtfsRoutePydanticModel => ({
       id: lineRef,
