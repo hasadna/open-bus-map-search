@@ -1,6 +1,8 @@
+import { MapTwoTone } from '@mui/icons-material'
 import {
   Alert,
   Box,
+  Button,
   CircularProgress,
   FormControl,
   InputLabel,
@@ -18,7 +20,8 @@ import { DateSelector } from 'src/pages/components/DateSelector'
 import { PageContainer } from 'src/pages/components/PageContainer'
 import Widget from 'src/shared/Widget'
 import { TrainAverageDelayChart } from './TrainAverageDelayChart'
-import { getTrainStationAverageDelays, groupTrainRides } from './trainData'
+import { getTrainStationAverageDelays, groupTrainRides, type TrainRideData } from './trainData'
+import { TrainRideMap } from './TrainRideMap'
 import { TrainRideTimeline } from './TrainRideTimeline'
 import { useTrainRideStops, useTrainRoutes, useTrainVehicleLocations } from './useTrainData'
 
@@ -129,22 +132,43 @@ export default function TrainPage() {
       )}
 
       {rides.map((ride) => (
-        <Widget
-          key={ride.rideId}
-          marginBottom
-          title={t('train_ride_summary', {
-            lineRef: ride.lineRef ?? '-',
-            scheduledTime: ride.scheduledStartTime
-              ? toIsraelTimezone(ride.scheduledStartTime).format('HH:mm')
-              : '-',
-            trainNumber: ride.vehicleRef ?? '-',
-            points: ride.locations.length,
-            stops: ride.stops.length,
-          })}
-          titleSx={{ fontSize: '1rem' }}>
-          <TrainRideTimeline ride={ride} />
-        </Widget>
+        <TrainRideCard key={ride.rideId} ride={ride} />
       ))}
     </PageContainer>
+  )
+}
+
+export function TrainRideCard({ ride }: Readonly<{ ride: TrainRideData }>) {
+  const { t } = useTranslation()
+  const [isOpen, setIsOpen] = useState(false)
+  const title = t('train_ride_summary', {
+    lineRef: ride.lineRef ?? '-',
+    scheduledTime: ride.scheduledStartTime
+      ? toIsraelTimezone(ride.scheduledStartTime).format('HH:mm')
+      : '-',
+    trainNumber: ride.vehicleRef ?? '-',
+    points: ride.locations.length,
+    stops: ride.stops.length,
+  })
+
+  return (
+    <Widget
+      marginBottom
+      title={
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          {title}
+          <Button
+            variant="outlined"
+            startIcon={<MapTwoTone />}
+            aria-expanded={isOpen}
+            onClick={() => setIsOpen((open) => !open)}>
+            {t(isOpen ? 'train_hide_ride_map' : 'train_show_ride_map')}
+          </Button>
+        </Box>
+      }
+      titleSx={{ fontSize: '1rem' }}>
+      <TrainRideTimeline ride={ride} />
+      {isOpen && <TrainRideMap ride={ride} />}
+    </Widget>
   )
 }
