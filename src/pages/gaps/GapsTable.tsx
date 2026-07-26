@@ -14,6 +14,7 @@ import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
 import { Gap, reviveGap, SerializedGap } from 'src/api/gapsService'
 import dayjs from 'src/dayjs'
+import { AfterMidnightHint } from 'src/pages/components/AfterMidnightHint'
 import { formatStartTimeForQuery } from 'src/pages/components/utils/startTimeUtils'
 import SkeletonLoader from 'src/shared/SkeletonLoader'
 import Widget from 'src/shared/Widget'
@@ -27,6 +28,8 @@ interface GapsTableProps {
   onlyGapped?: boolean
   onOnlyGappedChange?: (value: boolean) => void
   singleLineMapBaseHref: string
+  date: string
+  onDateChange: (time: dayjs.Dayjs) => void
   onStartTimeClick?: (rideTime: string) => void
 }
 
@@ -91,6 +94,8 @@ const GapsTable: React.FC<GapsTableProps> = ({
   onlyGapped: onlyGappedProp,
   onOnlyGappedChange,
   singleLineMapBaseHref,
+  date,
+  onDateChange,
   onStartTimeClick,
 }) => {
   const { t } = useTranslation()
@@ -209,6 +214,8 @@ const GapsTable: React.FC<GapsTableProps> = ({
           </Table>
         )}
       </TableContainer>
+
+      {!loading && <AfterMidnightHint date={date} onDateChange={onDateChange} />}
 
       {/* Legend */}
       <TableContainer>

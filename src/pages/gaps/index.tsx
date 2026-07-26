@@ -165,6 +165,8 @@ const GapsPage = () => {
         <GapsTable
           loading={gapsQuery.isLoading}
           gaps={gaps}
+          date={date}
+          onDateChange={handleDateChange}
           singleLineMapBaseHref={singleLineMapBaseHref}
           onStartTimeClick={handleStartTimeClick}
           onlyGapped={ui.gapsOnly}

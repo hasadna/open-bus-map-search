@@ -128,19 +128,23 @@ export async function getRouteById(routeId?: string, signal?: AbortSignal) {
   }
 }
 
-/** Every GTFS route running on one calendar date ("YYYY-MM-DD", Israel time),
- *  merged by route key so a line's variants collapse into one entry with all its
- *  routeIds. Used by the pages that let the user pick a route for a chosen day. */
+/** An operator's GTFS routes on one calendar date ("YYYY-MM-DD", Israel time), for
+ *  the pages that let the user pick a route for a chosen day. `lineNumber` narrows
+ *  to a single line; omit it (lineProfile does, when the route carries no short
+ *  name) to get the operator's whole list.
+ *
+ *  No merge-by-key: a route key (mkt-direction-alternative) is unique within a date,
+ *  so each row is already one selector option. */
 export async function getRoutesForDate(
   date: string,
-  operatorId?: string,
+  operatorId: string,
   lineNumber?: string,
   signal?: AbortSignal,
 ): Promise<BusRoute[]> {
   const dateUTC = utcNoonForDateStr(date)
   const routes = await GTFS_API.gtfsRoutesListGet(
     {
-      ...(operatorId && { operatorRefs: operatorId }),
+      operatorRefs: operatorId,
       ...(lineNumber && { routeShortName: lineNumber }),
       dateFrom: dateUTC,
       dateTo: dateUTC,
@@ -148,16 +152,7 @@ export async function getRoutesForDate(
     },
     { signal },
   )
-  return Object.values(
-    routes.map(fromGtfsRoute).reduce(
-      (agg, route) => {
-        const prev = agg[route.key] || { routeIds: [] as number[] }
-        agg[route.key] = { ...route, ...prev, routeIds: [...prev.routeIds, ...route.routeIds] }
-        return agg
-      },
-      {} as Record<string, BusRoute>,
-    ),
-  )
+  return routes.map(fromGtfsRoute)
 }
 
 export async function getAllRoutesList(operatorId: string, date: Date, signal?: AbortSignal) {
