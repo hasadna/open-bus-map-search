@@ -1,4 +1,4 @@
-import { parseIsraelLocalDatetime, utcNoonForDateStr } from './dayjs'
+import { israelDayBounds, parseIsraelLocalDatetime, utcNoonForDateStr } from './dayjs'
 
 describe('parseIsraelLocalDatetime', () => {
   it('parses a shared-URL datetime as Israel-local time', () => {
@@ -18,6 +18,28 @@ describe('parseIsraelLocalDatetime', () => {
     expect(parseIsraelLocalDatetime('')).toBeNull()
     expect(parseIsraelLocalDatetime('not-a-date 17:00')).toBeNull()
     expect(parseIsraelLocalDatetime('1699900000000junk')).toBeNull()
+  })
+})
+
+describe('israelDayBounds', () => {
+  // Both ends are wall-clock midnights, so the window follows Israel's DST
+  // transitions instead of a fixed 24h offset. CI runs in UTC, so these also
+  // guard against the bounds being resolved in the runner's zone.
+  it.each([
+    ['a normal day', '2024-02-12', '2024-02-13', 24],
+    ['the spring-forward day (23h)', '2024-03-29', '2024-03-30', 23],
+    ['the fall-back day (25h)', '2024-10-27', '2024-10-28', 25],
+  ])('spans %s from 00:00 to the next 00:00', (_label, date, nextDate, hours) => {
+    const { start, end } = israelDayBounds(date)
+    expect(start.format('YYYY-MM-DD HH:mm')).toBe(`${date} 00:00`)
+    expect(end.format('YYYY-MM-DD HH:mm')).toBe(`${nextDate} 00:00`)
+    expect(end.diff(start, 'hour')).toBe(hours)
+  })
+
+  it('reconstructs a departure instant from an HH:mm token', () => {
+    // Mirrors the stops-query reconstruction in useSingleLineData.
+    const { start } = israelDayBounds('2024-10-27')
+    expect(start.hour(3).minute(30).format('YYYY-MM-DD HH:mm')).toBe('2024-10-27 03:30')
   })
 })
 

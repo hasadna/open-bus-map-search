@@ -1,5 +1,4 @@
 import {
-  Box,
   FormControlLabel,
   Switch,
   Table,
@@ -15,11 +14,7 @@ import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
 import { Gap, reviveGap, SerializedGap } from 'src/api/gapsService'
 import dayjs from 'src/dayjs'
-import {
-  formatServiceDayTime,
-  formatStartTimeForQuery,
-  serviceDayBounds,
-} from 'src/pages/components/utils/startTimeUtils'
+import { formatStartTimeForQuery } from 'src/pages/components/utils/startTimeUtils'
 import SkeletonLoader from 'src/shared/SkeletonLoader'
 import Widget from 'src/shared/Widget'
 import DisplayGapsPercentage from '../components/DisplayGapsPercentage'
@@ -32,7 +27,6 @@ interface GapsTableProps {
   onlyGapped?: boolean
   onOnlyGappedChange?: (value: boolean) => void
   singleLineMapBaseHref: string
-  date: string
   onStartTimeClick?: (rideTime: string) => void
 }
 
@@ -97,14 +91,12 @@ const GapsTable: React.FC<GapsTableProps> = ({
   onlyGapped: onlyGappedProp,
   onOnlyGappedChange,
   singleLineMapBaseHref,
-  date,
   onStartTimeClick,
 }) => {
   const { t } = useTranslation()
   // The gaps cache is persisted as JSON (dayjs → ISO strings). Revive to dayjs here,
   // at the single consumption edge, so all the comparison/formatting below is unchanged.
   const gaps = useMemo(() => rawGaps?.map(reviveGap), [rawGaps])
-  const { start: serviceDayStart } = serviceDayBounds(date)
   // Controllable: the gaps page owns and persists this via usePageState; the
   // story leaves it uncontrolled and seeds it with initOnlyGapped.
   const [onlyGappedState, setOnlyGappedState] = useState(initOnlyGapped)
@@ -171,37 +163,14 @@ const GapsTable: React.FC<GapsTableProps> = ({
               {Object.keys(groupedGaps)
                 .sort((a, b) => Number(a) - Number(b))
                 .map((hour) => {
-                  // Every cell in an hour-row shares the same calendar day, so the
-                  // "next night" marker lives once in a leading column for the whole row
-                  // rather than on each time cell.
-                  const rowGapTime =
-                    groupedGaps[hour][0]?.gap.plannedStartTime ||
-                    groupedGaps[hour][0]?.gap.actualStartTime
-                  const rowIsNextDay = rowGapTime
-                    ? !rowGapTime.isSame(serviceDayStart, 'day')
-                    : false
                   return (
                     <TableRow key={hour}>
-                      <TableCell
-                        sx={{ ...cellStyle, padding: '0 4px', width: '1em', border: 'none' }}>
-                        {rowIsNextDay && (
-                          <Box
-                            component="span"
-                            role="img"
-                            aria-label={t('after_midnight_indicator')}>
-                            🌙
-                          </Box>
-                        )}
-                      </TableCell>
                       {groupedGaps[hour].map(({ gap, status }, j) => {
                         const gapTime = gap.plannedStartTime || gap.actualStartTime
                         // eslint-disable-next-line i18next/no-literal-string -- dayjs format pattern, not user text
                         const displayTime = gapTime?.format('HH:mm')
-                        const rideToken = gapTime
-                          ? formatServiceDayTime(gapTime, serviceDayStart)
-                          : undefined
                         const hasRide = Boolean(gap.actualStartTime)
-                        const startTimeParam = formatStartTimeForQuery(rideToken)
+                        const startTimeParam = formatStartTimeForQuery(displayTime)
                         const cellHref = `${singleLineMapBaseHref}&rideTime=${startTimeParam}`
                         return (
                           <Tooltip

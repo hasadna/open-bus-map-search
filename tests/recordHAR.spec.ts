@@ -237,12 +237,11 @@ test.describe('Record HAR files', () => {
   })
 
   // ---- interlink.har ------------------------------------------------------
-  // Covers the gaps -> single-line interlink for a line with POST-MIDNIGHT service
-  // (Egged line 402, operator_ref=3, line_ref=33267 — the '...הורדה...' direction —
-  // on 2024-02-12). This 24/7 line has actual rides just past midnight the next
-  // calendar day (extended-hour token 24:30) with vehicle locations, so the
-  // destination page can surface and select them. Records BOTH pages in one context:
-  //   * /gaps:            rides_execution for the route (the clickable post-midnight cells)
+  // Covers the gaps -> single-line interlink (Egged line 402, operator_ref=3,
+  // line_ref=33267 — the '...הורדה...' direction — on 2024-02-12). This 24/7 line
+  // has a dense timetable with vehicle locations, so the destination page can
+  // surface and select a departure. Records BOTH pages in one context:
+  //   * /gaps:            rides_execution for the route (the clickable ride cells)
   //   * /single-line-map: gtfs_routes + siri_rides + siri_vehicle_locations + planned stops
   test('record interlink.har', async ({ page }) => {
     await setupRecording(page, 'tests/HAR/interlink.har')
@@ -270,11 +269,11 @@ test.describe('Record HAR files', () => {
     // The final settleResponseBodies() runs only at test end — after this navigation —
     // and any gaps body still streaming when we leave the page is dropped from the HAR
     // (recorded empty, with no status:-1 to flag it). That empties the rides_execution
-    // payload, so the replayed gaps table has no post-midnight cells. Settling here
+    // payload, so the replayed gaps table has no clickable cells. Settling here
     // forces rides_execution (and the route lists) to fully download first.
     await settleResponseBodies()
 
-    // -- single-line side: same route, then select the post-midnight (24:30) ride --
+    // -- single-line side: same route, then select the 00:30 ride --
     await goToPage(page, '/single-line-map')
     await page.getByLabel('חברה מפעילה').click()
     await page.getByRole('option', { name: 'אגד', exact: true }).click()
@@ -287,9 +286,9 @@ test.describe('Record HAR files', () => {
     const startTime = page.getByLabel('בחירת שעת התחלה')
     if ((await startTime.count()) > 0) {
       // Type-to-filter the start-time Autocomplete too (~100 options on this line).
-      await startTime.fill('24:30')
+      await startTime.fill('00:30')
       await page.waitForLoadState('networkidle')
-      const pm = page.getByRole('option', { name: /24:30/ }).first()
+      const pm = page.getByRole('option', { name: /00:30/ }).first()
       if ((await pm.count()) > 0) {
         const locations = page
           .waitForResponse((r) => r.url().includes('/siri_vehicle_locations/list'))

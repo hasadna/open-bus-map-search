@@ -148,7 +148,6 @@
   "gap_tooltip_planned": "מתוכנן",
   "gap_tooltip_actual": "בפועל",
   "gap_tooltip_diff_minutes": "({{diff}} דק')",
-  "after_midnight_indicator": "אחרי חצות",
   "checkbox_only_gaps": "רק פערים",
   "worst_lines_page_title": "הקווים הגרועים ביותר",
   "velocity_heatmap_page_title": "מפת מהירות",

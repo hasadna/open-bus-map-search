@@ -1,5 +1,5 @@
 import { GTFS_API } from 'src/api/apiConfig'
-import dayjs, { toIsraelTimezone } from 'src/dayjs'
+import dayjs, { toIsraelTimezone, utcNoonForDateStr } from 'src/dayjs'
 import { BusRoute, fromGtfsRoute } from 'src/model/busRoute'
 import { BusStop, fromGtfsStop } from 'src/model/busStop'
 
@@ -126,6 +126,38 @@ export async function getRouteById(routeId?: string, signal?: AbortSignal) {
     console.error(`Failed to get route ${routeId}:`, errorMessage)
     throw new Error(errorMessage)
   }
+}
+
+/** Every GTFS route running on one calendar date ("YYYY-MM-DD", Israel time),
+ *  merged by route key so a line's variants collapse into one entry with all its
+ *  routeIds. Used by the pages that let the user pick a route for a chosen day. */
+export async function getRoutesForDate(
+  date: string,
+  operatorId?: string,
+  lineNumber?: string,
+  signal?: AbortSignal,
+): Promise<BusRoute[]> {
+  const dateUTC = utcNoonForDateStr(date)
+  const routes = await GTFS_API.gtfsRoutesListGet(
+    {
+      ...(operatorId && { operatorRefs: operatorId }),
+      ...(lineNumber && { routeShortName: lineNumber }),
+      dateFrom: dateUTC,
+      dateTo: dateUTC,
+      limit: 15000,
+    },
+    { signal },
+  )
+  return Object.values(
+    routes.map(fromGtfsRoute).reduce(
+      (agg, route) => {
+        const prev = agg[route.key] || { routeIds: [] as number[] }
+        agg[route.key] = { ...route, ...prev, routeIds: [...prev.routeIds, ...route.routeIds] }
+        return agg
+      },
+      {} as Record<string, BusRoute>,
+    ),
+  )
 }
 
 export async function getAllRoutesList(operatorId: string, date: Date, signal?: AbortSignal) {

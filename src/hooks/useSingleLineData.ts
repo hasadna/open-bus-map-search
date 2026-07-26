@@ -2,9 +2,8 @@ import { useQuery } from '@tanstack/react-query'
 import { uniqBy } from 'es-toolkit/compat'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { SIRI_API } from 'src/api/apiConfig'
-import { getRoutesByLineRef, getStopsForRouteAsync } from 'src/api/gtfsService'
-import { getServiceDayRoutes } from 'src/api/serviceDayRoutesService'
-import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone, utcNoonForDateStr } from 'src/dayjs'
+import { getRoutesByLineRef, getRoutesForDate, getStopsForRouteAsync } from 'src/api/gtfsService'
+import { israelDayBounds, toIsraelTimezone, utcNoonForDateStr } from 'src/dayjs'
 import { BusRoute } from 'src/model/busRoute'
 import {
   type PositionGroup,
@@ -13,11 +12,8 @@ import {
 } from 'src/pages/components/map-related/map-types'
 import { routeStartEnd, vehicleIDFormat } from 'src/pages/components/utils/rotueUtils'
 import {
-  formatServiceDayTime,
   normalizeStartTimeToken,
   parseStartTimeToken,
-  serviceDayBounds,
-  serviceDayTokenToDisplay,
 } from 'src/pages/components/utils/startTimeUtils'
 
 interface UseSingleLineDataOptions {
@@ -73,9 +69,7 @@ export const useSingleLineData = ({
 
     const controller = new AbortController()
 
-    // Service-day aware: includes the next calendar day's late-night routes
-    // (00:00–04:00) that belong to this service day, matching the gaps page.
-    getServiceDayRoutes(dayjs.tz(date, ISRAEL_TIMEZONE), operatorId, lineNumber, controller.signal)
+    getRoutesForDate(date, operatorId, lineNumber, controller.signal)
       .then((routes) => {
         setRoutes(routes)
         setError(undefined)
@@ -97,8 +91,8 @@ export const useSingleLineData = ({
     return routes?.find((route) => route.key === (routeKey ?? undefined))
   }, [routes, routeKey])
 
-  const [serviceDayStart, serviceDayEnd] = useMemo(() => {
-    const { start, end } = serviceDayBounds(date)
+  const [dayStart, dayEnd] = useMemo(() => {
+    const { start, end } = israelDayBounds(date)
     return [start, end]
   }, [date])
 
@@ -125,8 +119,10 @@ export const useSingleLineData = ({
       {
         siriRouteLineRefs: selectedRoute?.lineRef?.toString(),
         siriRouteOperatorRefs: operatorId,
-        scheduledStartTimeFrom: serviceDayStart.toDate(),
-        scheduledStartTimeTo: serviceDayEnd.toDate(),
+        scheduledStartTimeFrom: dayStart.toDate(),
+        // ...to is inclusive server-side (field <= value), so step back off the
+        // exclusive day end — otherwise the next day's 00:00 departure comes too.
+        scheduledStartTimeTo: dayEnd.subtract(1, 'millisecond').toDate(),
         orderBy: 'scheduled_start_time asc',
         limit: 500,
       },
@@ -139,10 +135,7 @@ export const useSingleLineData = ({
         >()
         for (const ride of rides) {
           if (!ride.scheduledStartTime || !ride.vehicleRef || !ride.id) continue
-          const key = formatServiceDayTime(
-            toIsraelTimezone(ride.scheduledStartTime),
-            serviceDayStart,
-          )
+          const key = toIsraelTimezone(ride.scheduledStartTime).format('HH:mm')
           if (!byTime.has(key)) byTime.set(key, [])
           byTime.get(key)!.push({ id: ride.id, vehicleRef: ride.vehicleRef, ride })
         }
@@ -157,11 +150,6 @@ export const useSingleLineData = ({
             group.map((g) => g.id),
           )
           group.forEach((g) => vehMap.set(g.id, g.vehicleRef))
-          // Show the wall-clock time (00:10), not the extended-hour token (24:10),
-          // and flag past-midnight departures with a moon so the next-night rides
-          // are obvious. The extended token stays the option `value` for the URL.
-          const { time: displayTime, nextDay } = serviceDayTokenToDisplay(key)
-          const scheduledTime = nextDay ? `🌙 ${displayTime}` : displayTime
           const routeLongName = group[0].ride.gtfsRouteRouteLongName
           const [start, end] = routeLongName ? routeStartEnd(routeLongName) : []
           const routePart = routeLongName
@@ -170,11 +158,11 @@ export const useSingleLineData = ({
           const label =
             group.length === 1
               ? routePart
-                ? `${scheduledTime} (${routePart})`
-                : scheduledTime
+                ? `${key} (${routePart})`
+                : key
               : routePart
-                ? `${scheduledTime} (${routePart}, ${group.length} vehicles)`
-                : `${scheduledTime} (${group.length} vehicles)`
+                ? `${key} (${routePart}, ${group.length} vehicles)`
+                : `${key} (${group.length} vehicles)`
           opts.push({ value: key, label })
         })
 
@@ -186,7 +174,7 @@ export const useSingleLineData = ({
         if (err?.name !== 'AbortError') console.error(err)
       })
     return () => controller.abort()
-  }, [selectedRoute?.lineRef, operatorId, serviceDayStart, serviceDayEnd])
+  }, [selectedRoute?.lineRef, operatorId, dayStart, dayEnd])
 
   // Fetch location pings for the selected ride(s), one group per vehicle
   useEffect(() => {
@@ -227,7 +215,7 @@ export const useSingleLineData = ({
       const scheduledTime = parsedStartTime?.scheduledTime
       const scheduledLine = parsedStartTime?.lineRef
       const [hour, minute] = scheduledTime ? scheduledTime.split(':').map(Number) : [0, 0]
-      const rideStartTime = serviceDayStart.hour(hour).minute(minute).second(0).millisecond(0)
+      const rideStartTime = dayStart.hour(hour).minute(minute).second(0).millisecond(0)
       let routeIds: number[] | undefined
       if (selectedRoute?.routeIds && selectedRoute.routeIds.length > 0) {
         routeIds = selectedRoute.routeIds
@@ -247,7 +235,7 @@ export const useSingleLineData = ({
     queryKey: [
       'stops',
       selectedRoute?.routeIds?.join(','),
-      serviceDayStart.valueOf(),
+      dayStart.valueOf(),
       parsedStartTime?.scheduledTime,
     ],
     enabled: !!(selectedRoute?.routeIds?.length || parsedStartTime?.lineRef),

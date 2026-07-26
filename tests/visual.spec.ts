@@ -111,8 +111,8 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
       // full navigation so MainRoute seeds the vehicle number from the URL
       await page.goto(`/vehicle?vehicleNumber=${VEHICLE_NUMBER}`)
       await page.locator('.preloader').waitFor({ state: 'hidden' })
-      // wait for the resolved rides table (incl. the post-midnight 🌙 row) before snapping
-      await page.getByRole('row').filter({ hasText: '🌙 00:30' }).waitFor()
+      // wait for the resolved rides table (incl. the last, 23:30 row) before snapping
+      await page.getByRole('row').filter({ hasText: '23:30' }).waitFor()
       await waitForSkeletonsToHide(page)
       await eyes.check('vehicle page', { fully: true })
     })

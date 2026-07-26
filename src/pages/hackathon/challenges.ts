@@ -27,7 +27,7 @@ export const CHALLENGES: Challenge[] = [
     startingPoints: [
       {
         labelKey: 'links.existing_tests',
-        href: 'https://github.com/hasadna/open-bus-map-search/blob/main/src/api/serviceDayRoutesService.test.ts',
+        href: 'https://github.com/hasadna/open-bus-map-search/blob/main/src/pages/components/utils/startTimeUtils.test.ts',
       },
       {
         labelKey: 'links.offline_tests_workflow',

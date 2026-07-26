@@ -1,11 +1,7 @@
 import { SiriRideWithRelatedPydanticModel } from '@hasadna/open-bus-api-client'
-import dayjs, { toIsraelTimezone } from 'src/dayjs'
+import { toIsraelTimezone } from 'src/dayjs'
 import { BusRoute } from 'src/model/busRoute'
-import {
-  formatServiceDayTime,
-  formatStartTimeForQuery,
-  serviceDayTokenToDisplay,
-} from 'src/pages/components/utils/startTimeUtils'
+import { formatStartTimeForQuery } from 'src/pages/components/utils/startTimeUtils'
 
 /** A GTFS route resolved for the vehicle page — a BusRoute plus the agency name
  *  (the latter is not part of the shared BusRoute model). */
@@ -34,9 +30,9 @@ export type VehicleRideRow = {
  *
  * SIRI rides carry only `siri_route__line_ref`; the human-readable line number and
  * route names (gtfs_route__*) are frequently null on the ride. They are resolved
- * from `routeByLineRef` — the operator's GTFS routes for the service day, keyed by
- * line ref. A ride is linkable to single-line-map only when its route identity
- * (operator + line + GTFS route key) and departure token can be fully reconstructed.
+ * from `routeByLineRef` — the operator's GTFS routes for the day, keyed by line ref.
+ * A ride is linkable to single-line-map only when its route identity (operator +
+ * line + GTFS route key) and departure token can be fully reconstructed.
  *
  * Pure: no React, no fetching — every input is passed in so the mapping can be
  * unit-tested directly.
@@ -44,12 +40,10 @@ export type VehicleRideRow = {
 export function buildVehicleRideRows({
   rides,
   routeByLineRef,
-  serviceDayStart,
   date,
 }: {
   rides: SiriRideWithRelatedPydanticModel[] | undefined
   routeByLineRef: Map<string, ResolvedRoute> | undefined
-  serviceDayStart: dayjs.Dayjs
   date: string
 }): VehicleRideRow[] {
   return (rides ?? [])
@@ -64,11 +58,8 @@ export function buildVehicleRideRows({
       const operatorId = route?.operatorId ?? ride.siriRouteOperatorRef?.toString()
       const lineNumber = route?.lineNumber
       const token = ride.scheduledStartTime
-        ? formatServiceDayTime(toIsraelTimezone(ride.scheduledStartTime), serviceDayStart)
+        ? toIsraelTimezone(ride.scheduledStartTime).format('HH:mm')
         : undefined
-      const { time, nextDay } = token
-        ? serviceDayTokenToDisplay(token)
-        : { time: '—', nextDay: false }
 
       // A ride is linkable to single-line-map only if we can fully reconstruct its
       // route identity (operator + line + GTFS route key) and departure token.
@@ -94,7 +85,7 @@ export function buildVehicleRideRows({
         lineNumber: lineNumber ?? '—',
         origin: route?.fromName || '—',
         destination: route?.toName || '—',
-        displayTime: nextDay ? `🌙 ${time}` : time,
+        displayTime: token ?? '—',
         href,
         setSearchPayload,
       }

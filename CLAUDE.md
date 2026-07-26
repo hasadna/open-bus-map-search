@@ -94,7 +94,6 @@ src/
 │   ├── siriService.ts      # Real-time vehicle data
 │   ├── gapsService.ts      # Service gap analysis
 │   ├── groupByService.ts   # Aggregation helpers
-│   ├── serviceDayRoutesService.ts  # Routes for a given service day
 │   ├── agencyList.ts       # Operator/agency lookups
 │   └── geoService.ts       # Geo helpers
 ├── pages/                  # Route components (lazy-loaded)
