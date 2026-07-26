@@ -1,8 +1,14 @@
 import { test as eyesTest } from '@applitools/eyes-playwright/fixture'
 import { mergeTests } from '@playwright/test'
 import i18next from 'i18next'
-import { TRAIN_TEST_DATE } from './train.spec'
-import { test as baseTest, harOptions, setupTest, visitPage, waitForSkeletonsToHide } from './utils'
+import {
+  test as baseTest,
+  getPastDate,
+  harOptions,
+  setupTest,
+  visitPage,
+  waitForSkeletonsToHide,
+} from './utils'
 import { mockVehicleApi, VEHICLE_NUMBER } from './vehicleMocks'
 
 const test = mergeTests(baseTest, eyesTest)
@@ -119,6 +125,9 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
     })
 
     test(`Train Page Should Look Good [${mode}]`, async ({ page, advancedRouteFromHAR, eyes }) => {
+      const TRAIN_TEST_DATE = new Date(getPastDate().getTime() - 24 * 60 * 60 * 1000)
+        .toISOString()
+        .slice(0, 10)
       await advancedRouteFromHAR('tests/HAR/train.har', harOptions)
       await page.goto(`/train?date=${TRAIN_TEST_DATE}&route=30086`)
       await page.locator('.preloader').waitFor({ state: 'hidden' })

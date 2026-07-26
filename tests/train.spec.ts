@@ -1,9 +1,9 @@
 import i18next from 'i18next'
 import { expect, getPastDate, harOptions, setupTest, test } from './utils'
 
-export const TRAIN_ROUTE = 'באר שבע מרכז-באר שבע<->תל אביב מרכז-תל אביב יפו'
+const TRAIN_ROUTE = 'באר שבע מרכז-באר שבע<->תל אביב מרכז-תל אביב יפו'
 
-export const TRAIN_TEST_DATE = new Date(getPastDate().getTime() - 24 * 60 * 60 * 1000)
+const TRAIN_TEST_DATE = new Date(getPastDate().getTime() - 24 * 60 * 60 * 1000)
   .toISOString()
   .slice(0, 10)
 

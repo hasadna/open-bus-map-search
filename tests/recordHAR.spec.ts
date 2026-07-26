@@ -8,7 +8,6 @@
  * After running, commit the updated HAR files in tests/HAR/.
  */
 import { Page, test } from '@playwright/test'
-import { TRAIN_ROUTE, TRAIN_TEST_DATE } from './train.spec'
 import { getPastDate } from './utils'
 
 test.describe.configure({ mode: 'serial' })
@@ -68,6 +67,11 @@ test.describe('Record HAR files', () => {
 
   // ---- train.har ----------------------------------------------------------
   test('record train.har', async ({ page }) => {
+    const TRAIN_ROUTE = 'באר שבע מרכז-באר שבע<->תל אביב מרכז-תל אביב יפו'
+    const TRAIN_TEST_DATE = new Date(getPastDate().getTime() - 24 * 60 * 60 * 1000)
+      .toISOString()
+      .slice(0, 10)
+
     await setupRecording(page, 'tests/HAR/train.har')
     const settleResponseBodies = trackResponseBodies(page)
     await goToPage(page, `/train?date=${TRAIN_TEST_DATE}`)
