@@ -49,7 +49,7 @@ const TimelinePage = () => {
     queryFn: async () => {
       if (operatorId && lineNumber) {
         try {
-          return await getRoutesAsync(time, time, operatorId, lineNumber)
+          return await getRoutesAsync(date, date, operatorId, lineNumber)
         } catch (error) {
           console.error(error)
           setSearch((current) => ({ ...current, routeKey: null }))

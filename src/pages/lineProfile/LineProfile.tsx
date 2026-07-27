@@ -4,7 +4,7 @@ import { Tooltip } from 'antd'
 import { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLoaderData, useNavigate } from 'react-router'
-import { getRoutesForDate } from 'src/api/gtfsService'
+import { getRoutesAsync } from 'src/api/gtfsService'
 import dayjs, { toIsraelTimezone } from 'src/dayjs'
 import { useSingleLineData } from 'src/hooks/useSingleLineData'
 import { GLOBAL_SEARCH_DEFAULTS, GlobalSearchContext } from 'src/model/globalState'
@@ -93,8 +93,10 @@ const LineProfile = () => {
     dateChangeAbortRef.current?.abort()
     const abortController = new AbortController()
     dateChangeAbortRef.current = abortController
-    getRoutesForDate(
-      toIsraelTimezone(time).format('YYYY-MM-DD'),
+    const dateStr = toIsraelTimezone(time).format('YYYY-MM-DD')
+    getRoutesAsync(
+      dateStr,
+      dateStr,
       route?.operatorRef.toString(),
       route?.routeShortName,
       abortController.signal,

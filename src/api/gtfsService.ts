@@ -1,29 +1,29 @@
 import { GTFS_API } from 'src/api/apiConfig'
-import dayjs, { toIsraelTimezone, utcNoonForDateStr } from 'src/dayjs'
+import dayjs, { utcNoonForDateStr } from 'src/dayjs'
 import { BusRoute, fromGtfsRoute } from 'src/model/busRoute'
 import { BusStop, fromGtfsStop } from 'src/model/busStop'
 
+/** GTFS routes running between two calendar dates ("YYYY-MM-DD", Israel time,
+ *  both inclusive), merged by route key so a line's variants collapse into one
+ *  entry carrying all its routeIds. Pass the same date twice for a single day.
+ *
+ *  Dates, not instants: `date_from`/`date_to` are date-granular and serialized as
+ *  UTC dates, so an instant would have to be converted here anyway — and an
+ *  Israel-midnight one serializes to the previous day, silently widening the range. */
 export async function getRoutesAsync(
-  from: dayjs.Dayjs,
-  to: dayjs.Dayjs,
+  fromDate: string,
+  toDate: string,
   operatorId?: string,
   lineNumber?: string,
   signal?: AbortSignal,
 ): Promise<BusRoute[]> {
-  // date_from/date_to are date-granular and serialized as UTC dates, so the bounds
-  // are anchored to the Israel calendar date via utcNoonForDateStr — passing an
-  // instant (Israel midnight is 21:00Z the day before) would ask for an extra
-  // leading day and need trimming back on the client.
-  const fromDate = toIsraelTimezone(from).format('YYYY-MM-DD')
-  const toDate = toIsraelTimezone(to).format('YYYY-MM-DD')
-
   const gtfsRoutes = await GTFS_API.gtfsRoutesListGet(
     {
       routeShortName: lineNumber,
       operatorRefs: operatorId,
       dateFrom: utcNoonForDateStr(fromDate),
       dateTo: utcNoonForDateStr(toDate),
-      limit: 100,
+      limit: 15000,
     },
     { signal },
   )
@@ -126,33 +126,6 @@ export async function getRouteById(routeId?: string, signal?: AbortSignal) {
     console.error(`Failed to get route ${routeId}:`, errorMessage)
     throw new Error(errorMessage)
   }
-}
-
-/** An operator's GTFS routes on one calendar date ("YYYY-MM-DD", Israel time), for
- *  the pages that let the user pick a route for a chosen day. `lineNumber` narrows
- *  to a single line; omit it (lineProfile does, when the route carries no short
- *  name) to get the operator's whole list.
- *
- *  No merge-by-key: a route key (mkt-direction-alternative) is unique within a date,
- *  so each row is already one selector option. */
-export async function getRoutesForDate(
-  date: string,
-  operatorId: string,
-  lineNumber?: string,
-  signal?: AbortSignal,
-): Promise<BusRoute[]> {
-  const dateUTC = utcNoonForDateStr(date)
-  const routes = await GTFS_API.gtfsRoutesListGet(
-    {
-      operatorRefs: operatorId,
-      ...(lineNumber && { routeShortName: lineNumber }),
-      dateFrom: dateUTC,
-      dateTo: dateUTC,
-      limit: 15000,
-    },
-    { signal },
-  )
-  return routes.map(fromGtfsRoute)
 }
 
 export async function getAllRoutesList(operatorId: string, date: Date, signal?: AbortSignal) {

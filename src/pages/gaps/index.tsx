@@ -7,7 +7,7 @@ import { usePageState } from 'src/hooks/usePageState'
 import { GlobalSearchContext } from 'src/model/globalState'
 import { INPUT_SIZE } from 'src/resources/sizes'
 import { getGapsAsync, SerializedGap, serializeGap } from '../../api/gapsService'
-import { getRoutesForDate } from '../../api/gtfsService'
+import { getRoutesAsync } from '../../api/gtfsService'
 import { DateSelector } from '../components/DateSelector'
 import { Label } from '../components/Label'
 import LineNumberSelector from '../components/LineSelector'
@@ -42,7 +42,7 @@ const GapsPage = () => {
   const routesQuery = useQuery({
     queryFn: ({ signal }) => {
       if (!operatorId || !lineNumber) return null
-      return getRoutesForDate(date, operatorId, lineNumber, signal)
+      return getRoutesAsync(date, date, operatorId, lineNumber, signal)
     },
     queryKey: ['gapsRoutes', operatorId, lineNumber, date],
   })

@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { uniqBy } from 'es-toolkit/compat'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { SIRI_API } from 'src/api/apiConfig'
-import { getRoutesByLineRef, getRoutesForDate, getStopsForRouteAsync } from 'src/api/gtfsService'
+import { getRoutesAsync, getRoutesByLineRef, getStopsForRouteAsync } from 'src/api/gtfsService'
 import { israelDayBounds, toIsraelTimezone, utcNoonForDateStr } from 'src/dayjs'
 import { BusRoute } from 'src/model/busRoute'
 import {
@@ -69,7 +69,7 @@ export const useSingleLineData = ({
 
     const controller = new AbortController()
 
-    getRoutesForDate(date, operatorId, lineNumber, controller.signal)
+    getRoutesAsync(date, date, operatorId, lineNumber, controller.signal)
       .then((routes) => {
         setRoutes(routes)
         setError(undefined)
