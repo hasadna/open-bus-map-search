@@ -148,7 +148,7 @@
   "gap_tooltip_planned": "planned",
   "gap_tooltip_actual": "actual",
   "gap_tooltip_diff_minutes": "({{diff}} min)",
-  "after_midnight_hint": "🌙 Rides after midnight are listed under the next day",
+  "after_midnight_hint": "🌙 Rides after midnight are listed under the next day 🌙",
   "checkbox_only_gaps": "Only gaps",
   "worst_lines_page_title": "Least Efficient Lines",
   "velocity_heatmap_page_title": "Velocity Heatmap",

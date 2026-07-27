@@ -25,15 +25,23 @@ export const toIsraelTimezone = (value?: dayjs.ConfigType) => dayjs(value).tz(IS
 export const utcNoonForDateStr = (dateStr: string): Date => new Date(`${dateStr}T12:00:00Z`)
 
 /** The Israel-local calendar day for a "YYYY-MM-DD" date: 00:00 through 00:00 the
- *  next morning, `end` exclusive. Both ends are wall-clock midnights, so the window
- *  is 23h or 25h on the two DST-transition days rather than a fixed 24h offset.
+ *  next morning, `end` exclusive. The window is 23h or 25h on Israel's two
+ *  DST-transition days, not a fixed 24h.
+ *
+ *  Each bound is built from its own date string. Do NOT "tidy" this into
+ *  `dayjs.tz(dateStr, tz).startOf('day').add(1, 'day')`: `dayjs.tz()` already
+ *  returns midnight in the zone, and chaining `startOf`/`add` re-resolves the offset
+ *  against the *browser's* zone — which picks the wrong side of a DST transition for
+ *  anyone not browsing from Israel, moving the bound an hour on those dates.
+ *  Next-date arithmetic goes through `dayjs.utc` for the same reason: plain `dayjs()`
+ *  would trip over a transition in the browser's own zone.
  *
  *  Single source of truth for the day window — the gaps fetch, the single-line ride
  *  list and the vehicle page all derive their bounds from here so they can't drift. */
-export const israelDayBounds = (dateStr: string): { start: dayjs.Dayjs; end: dayjs.Dayjs } => {
-  const start = dayjs.tz(dateStr, ISRAEL_TIMEZONE).startOf('day')
-  return { start, end: start.add(1, 'day').startOf('day') }
-}
+export const israelDayBounds = (dateStr: string): { start: dayjs.Dayjs; end: dayjs.Dayjs } => ({
+  start: dayjs.tz(dateStr, ISRAEL_TIMEZONE),
+  end: dayjs.tz(dayjs.utc(dateStr).add(1, 'day').format('YYYY-MM-DD'), ISRAEL_TIMEZONE),
+})
 
 /** Parse an Israel-local datetime string from untrusted input (e.g. a shared-URL
  *  param) into a Dayjs, or null if unparsable — dayjs.tz throws on bad input

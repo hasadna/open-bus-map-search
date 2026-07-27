@@ -22,17 +22,28 @@ describe('parseIsraelLocalDatetime', () => {
 })
 
 describe('israelDayBounds', () => {
-  // Both ends are wall-clock midnights, so the window follows Israel's DST
-  // transitions instead of a fixed 24h offset. CI runs in UTC, so these also
-  // guard against the bounds being resolved in the runner's zone.
+  // Asserted as absolute instants, not formatted strings: a bound resolved against
+  // the wrong side of a DST transition still *formats* as "00:00" (it renders through
+  // the same wrong offset), so only the instant catches it. Israel switches at 02:00,
+  // hence the 23h/25h windows. CI runs in UTC while dev machines run in Israel time,
+  // so this is exactly the case that has to hold in both.
   it.each([
-    ['a normal day', '2024-02-12', '2024-02-13', 24],
-    ['the spring-forward day (23h)', '2024-03-29', '2024-03-30', 23],
-    ['the fall-back day (25h)', '2024-10-27', '2024-10-28', 25],
-  ])('spans %s from 00:00 to the next 00:00', (_label, date, nextDate, hours) => {
+    ['a normal day', '2024-02-12', '2024-02-11T22:00:00.000Z', '2024-02-12T22:00:00.000Z', 24],
+    ['spring forward', '2024-03-29', '2024-03-28T22:00:00.000Z', '2024-03-29T21:00:00.000Z', 23],
+    ['fall back', '2024-10-27', '2024-10-26T21:00:00.000Z', '2024-10-27T22:00:00.000Z', 25],
+    // the day *after* each transition, where the new offset is in force all day
+    [
+      'post spring forward',
+      '2024-03-30',
+      '2024-03-29T21:00:00.000Z',
+      '2024-03-30T21:00:00.000Z',
+      24,
+    ],
+    ['post fall back', '2024-10-28', '2024-10-27T22:00:00.000Z', '2024-10-28T22:00:00.000Z', 24],
+  ])('spans %s as Israel midnight to Israel midnight', (_label, date, startISO, endISO, hours) => {
     const { start, end } = israelDayBounds(date)
-    expect(start.format('YYYY-MM-DD HH:mm')).toBe(`${date} 00:00`)
-    expect(end.format('YYYY-MM-DD HH:mm')).toBe(`${nextDate} 00:00`)
+    expect(start.toISOString()).toBe(startISO)
+    expect(end.toISOString()).toBe(endISO)
     expect(end.diff(start, 'hour')).toBe(hours)
   })
 
