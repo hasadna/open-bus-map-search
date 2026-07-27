@@ -139,10 +139,17 @@ export const visitPage = async (page: Page, label: (typeof PAGES)[number]['label
   const navigationPromise = href
     ? page.waitForURL((url) => url.pathname === href)
     : Promise.resolve()
+  const mainBefore = await page.getByRole('main').innerText()
   await link.click()
   await navigationPromise
-  await page.waitForTimeout(500)
   await page.locator('.preloader').waitFor({ state: 'hidden' })
+  // waitForURL resolves on pushState, which is synchronous — it says nothing about
+  // whether React has *committed* the new route. Lazy pages (routes/index.tsx) render
+  // some frames later, and the .preloader wait above is a no-op while the Suspense
+  // fallback has yet to mount. Callers would then act on a tree still holding the
+  // previous route — e.g. ShareButton's useLocation copying the old page's URL.
+  // Waiting for <main> to actually change ties this to the render, not to a stopwatch.
+  await expect.poll(() => page.getByRole('main').innerText()).not.toBe(mainBefore)
   await page.waitForLoadState('networkidle')
 }
 
