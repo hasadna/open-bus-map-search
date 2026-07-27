@@ -9,7 +9,6 @@ import { GlobalSearchContext } from 'src/model/globalState'
 import LineNumberSelector from 'src/pages/components/LineSelector'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
 import RouteSelector from 'src/pages/components/RouteSelector'
-import { AfterMidnightHint } from '../components/AfterMidnightHint'
 import { DateSelector } from '../components/DateSelector'
 import { FilterPositionsByStartTimeSelector } from '../components/FilterPositionsByStartTimeSelector'
 import type { FocusTarget } from '../components/map-related/map-types'
@@ -192,11 +191,6 @@ const SingleLineMapPage = () => {
             )}
           </Grid>
         </Grid>
-        {routeKey && (
-          <Grid size={12}>
-            <AfterMidnightHint date={date} onDateChange={handleDateChange} />
-          </Grid>
-        )}
       </Grid>
       <MapWithLocationsAndPath
         positionGroups={positionGroups}
