@@ -10,6 +10,10 @@ export async function getRoutesAsync(
   lineNumber?: string,
   signal?: AbortSignal,
 ): Promise<BusRoute[]> {
+  // date_from/date_to are date-granular and serialized as UTC dates, so the bounds
+  // are anchored to the Israel calendar date via utcNoonForDateStr — passing an
+  // instant (Israel midnight is 21:00Z the day before) would ask for an extra
+  // leading day and need trimming back on the client.
   const fromDate = toIsraelTimezone(from).format('YYYY-MM-DD')
   const toDate = toIsraelTimezone(to).format('YYYY-MM-DD')
 
@@ -17,18 +21,14 @@ export async function getRoutesAsync(
     {
       routeShortName: lineNumber,
       operatorRefs: operatorId,
-      dateFrom: from.startOf('day').toDate(),
-      dateTo: dayjs.min(to.endOf('day'), toIsraelTimezone()).toDate(),
+      dateFrom: utcNoonForDateStr(fromDate),
+      dateTo: utcNoonForDateStr(toDate),
       limit: 100,
     },
     { signal },
   )
   const routes = Object.values(
     gtfsRoutes
-      .filter((route) => {
-        const routeDate = toIsraelTimezone(route.date).format('YYYY-MM-DD')
-        return routeDate >= fromDate && routeDate <= toDate
-      })
       .map((route) => fromGtfsRoute(route))
       .reduce(
         (agg, line) => {

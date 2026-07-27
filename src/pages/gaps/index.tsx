@@ -2,7 +2,7 @@ import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
 import { useCallback, useContext, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import dayjs, { ISRAEL_TIMEZONE, israelDayBounds } from 'src/dayjs'
+import dayjs, { ISRAEL_TIMEZONE, utcNoonForDateStr } from 'src/dayjs'
 import { usePageState } from 'src/hooks/usePageState'
 import { GlobalSearchContext } from 'src/model/globalState'
 import { INPUT_SIZE } from 'src/resources/sizes'
@@ -56,21 +56,14 @@ const GapsPage = () => {
   const gapsQuery = useQuery({
     queryFn: async (): Promise<SerializedGap[] | null> => {
       if (!operatorId || !selectedRoute || !date) return null
-      const { start, end } = israelDayBounds(date)
-      const res = await getGapsAsync(start, end, operatorId, selectedRoute.lineRef)
-      return (
-        res
-          // The endpoint's date_from/date_to are date-granular and serialized as UTC
-          // dates, so an Israel-midnight bound widens the query to the adjacent day.
-          // Trim to the requested day here.
-          .filter((g) => {
-            const gapTime = g.plannedStartTime || g.actualStartTime
-            return gapTime && !gapTime.isBefore(start) && gapTime.isBefore(end)
-          })
-          // Store JSON-serializable strings, not dayjs, so the persisted cache
-          // rehydrates losslessly; GapsTable revives them to dayjs on read.
-          .map(serializeGap)
-      )
+      // date_from/date_to are date-granular and serialized as UTC dates; anchoring to
+      // noon UTC keeps the calendar date intact, so the endpoint returns exactly this
+      // Israel-local day (it groups by `date_trunc('day', … AT TIME ZONE Asia/Jerusalem)`).
+      const day = dayjs(utcNoonForDateStr(date))
+      const res = await getGapsAsync(day, day, operatorId, selectedRoute.lineRef)
+      // Store JSON-serializable strings, not dayjs, so the persisted cache
+      // rehydrates losslessly; GapsTable revives them to dayjs on read.
+      return res.map(serializeGap)
     },
     queryKey: ['gaps', operatorId, selectedRoute?.lineRef, date],
   })
