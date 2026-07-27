@@ -30,8 +30,6 @@ const meta = {
   decorators: [
     (Story, ctx) => {
       return (
-        // MapShell's `.map-info` is `flex: 1 1 auto`, so it needs a flex-column
-        // parent with a height to fill — otherwise the map collapses to zero height.
         <div
           style={{
             height: '500px',
@@ -77,9 +75,6 @@ const parameters = {
     ],
   },
   eyes: {
-    // Wait for the rectangles to actually render (eyes-storybook turns this selector
-    // into page.waitForSelector) rather than a fixed delay that could snapshot the map
-    // before the async mock data arrived.
     waitBeforeCapture: '.leaflet-overlay-pane path',
   },
 }
