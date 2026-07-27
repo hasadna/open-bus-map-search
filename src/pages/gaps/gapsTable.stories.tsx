@@ -76,8 +76,6 @@ const mockGaps: Gap[] = [
 export const Default: Story = {
   args: {
     gaps: mockGaps.map(serializeGap),
-    date: day.format('YYYY-MM-DD'),
-    onDateChange: () => {},
     singleLineMapBaseHref:
       '/single-line-map?date=2025-01-01&operatorId=3&lineNumber=5&routeKey=10018-2',
   },
@@ -86,8 +84,6 @@ export const Default: Story = {
 export const OnlyGappe: Story = {
   args: {
     gaps: mockGaps.map(serializeGap),
-    date: day.format('YYYY-MM-DD'),
-    onDateChange: () => {},
     initOnlyGapped: true,
     singleLineMapBaseHref:
       '/single-line-map?date=2025-01-01&operatorId=3&lineNumber=5&routeKey=10018-2',

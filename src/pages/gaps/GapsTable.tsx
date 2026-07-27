@@ -28,8 +28,6 @@ interface GapsTableProps {
   onlyGapped?: boolean
   onOnlyGappedChange?: (value: boolean) => void
   singleLineMapBaseHref: string
-  date: string
-  onDateChange: (time: dayjs.Dayjs) => void
   onStartTimeClick?: (rideTime: string) => void
 }
 
@@ -94,8 +92,6 @@ const GapsTable: React.FC<GapsTableProps> = ({
   onlyGapped: onlyGappedProp,
   onOnlyGappedChange,
   singleLineMapBaseHref,
-  date,
-  onDateChange,
   onStartTimeClick,
 }) => {
   const { t } = useTranslation()
@@ -215,7 +211,7 @@ const GapsTable: React.FC<GapsTableProps> = ({
         )}
       </TableContainer>
 
-      {!loading && <AfterMidnightHint date={date} onDateChange={onDateChange} />}
+      {!loading && <AfterMidnightHint />}
 
       {/* Legend */}
       <TableContainer>
