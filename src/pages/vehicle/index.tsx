@@ -4,7 +4,7 @@ import { useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { SIRI_API } from 'src/api/apiConfig'
 import { getAllRoutesList } from 'src/api/gtfsService'
-import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone } from 'src/dayjs'
+import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone, utcNoonForDateStr } from 'src/dayjs'
 import { fromGtfsRoute } from 'src/model/busRoute'
 import { GlobalSearchContext } from 'src/model/globalState'
 import { InitialUrlParamsContext, PageShareParamsContext } from 'src/model/routeContext'
@@ -89,12 +89,12 @@ const VehiclePage = () => {
   )
 
   const { data: routes } = useQuery({
-    queryKey: ['vehicleRoutes', serviceDayStart.valueOf(), operatorIds],
+    queryKey: ['vehicleRoutes', date, operatorIds],
     enabled: operatorIds.length > 0,
     queryFn: async ({ signal }) => {
       const routeLists = await Promise.all(
         operatorIds.map((operatorId) =>
-          getAllRoutesList(operatorId, serviceDayStart.toDate(), signal),
+          getAllRoutesList(operatorId, utcNoonForDateStr(date), signal),
         ),
       )
       return routeLists
