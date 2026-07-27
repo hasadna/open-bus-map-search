@@ -2,7 +2,6 @@ import {
   BiotechTwoTone,
   DirectionsBusTwoTone,
   EmojiTransportationTwoTone,
-  EventTwoTone,
   GitHub,
   HistoryTwoTone,
   HomeTwoTone,

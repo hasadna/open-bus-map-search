@@ -56,8 +56,6 @@ const MainMenu = ({ collapsed = false }: MainMenuProps) => {
   const { setDrawerOpen } = useContext<LayoutContextInterface>(LayoutCtx)
   const [isDonateModalVisible, setDonateModalVisible] = useState(false)
 
-  const now = Date.now()
-
   const handleDonateClick = (e: React.MouseEvent) => {
     e.preventDefault()
     setDonateModalVisible(true)
