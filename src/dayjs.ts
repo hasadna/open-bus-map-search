@@ -36,8 +36,10 @@ export const utcNoonForDateStr = (dateStr: string): Date => new Date(`${dateStr}
  *  Next-date arithmetic goes through `dayjs.utc` for the same reason: plain `dayjs()`
  *  would trip over a transition in the browser's own zone.
  *
- *  Single source of truth for the day window — the gaps fetch, the single-line ride
- *  list and the vehicle page all derive their bounds from here so they can't drift. */
+ *  For endpoints that take INSTANTS (the single-line ride list, the vehicle page).
+ *  Date-granular endpoints take `utcNoonForDateStr` instead: they serialize a Date to
+ *  its UTC calendar day, and `start` here is 22:00 UTC the evening before — which
+ *  would ask for the previous day as well. */
 export const israelDayBounds = (dateStr: string): { start: dayjs.Dayjs; end: dayjs.Dayjs } => ({
   start: dayjs.tz(dateStr, ISRAEL_TIMEZONE),
   end: dayjs.tz(dayjs.utc(dateStr).add(1, 'day').format('YYYY-MM-DD'), ISRAEL_TIMEZONE),
