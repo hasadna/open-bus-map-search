@@ -58,7 +58,7 @@ const TimelinePage = () => {
       }
       return null
     },
-    queryKey: ['routes', operatorId, lineNumber, time.valueOf()],
+    queryKey: ['routes', operatorId, lineNumber, date],
   })
 
   const selectedRoute = useMemo(
