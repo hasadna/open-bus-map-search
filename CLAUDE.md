@@ -135,7 +135,7 @@ src/
 ├── test_pages/             # Playwright page objects
 ├── img/                    # Static images
 ├── App.tsx                 # Root component with router
-├── dayjs.ts                # Day.js setup (plugins, locale)
+├── dayjs.ts                # Day.js setup (plugins, locale) + Israel date/time helpers
 └── index.tsx               # App entry point
 ```
 
@@ -150,6 +150,8 @@ src/
 **Easter Eggs**: Type "storybook" or "geek" anywhere in the app to unlock hidden features (see `src/pages/components/EasterEgg/`).
 
 **API Path Aliasing**: Use `src/*` imports (configured in `tsconfig.json` and `vite.config.ts`) instead of relative paths.
+
+**Dates are calendar days, Israel time**: A ride belongs to the calendar day it departs on, exactly as the backend files it — there is no extended ">24h service day". A 00:30 departure sits on the next date rather than on the previous evening, and `AfterMidnightHint` says so in the UI. Don't reintroduce extended-hour tokens (`25:30`) or a 28-hour window. The two helpers in `src/dayjs.ts` cover the API boundary: date-granular params take `utcNoonForDateStr(dateStr)` — never `.toISOString()` on a local midnight, which drifts a day — and instant-granular ones take `israelDayBounds(dateStr)`, whose day is 23h or 25h across Israel's two DST transitions.
 
 ### Testing Strategy
 
