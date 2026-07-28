@@ -7,8 +7,8 @@
  *
  * After running, commit the updated HAR files in tests/HAR/.
  */
-import { Page, test } from '@playwright/test'
-import { getPastDate } from './utils'
+import { Locator, Page, test } from '@playwright/test'
+import { getPastDate, waitForMapIdle, waitForSkeletonsToHide } from './utils'
 
 test.describe.configure({ mode: 'serial' })
 
@@ -62,6 +62,31 @@ async function openDropdownAndWait(page: Page, selector: string) {
   await page.waitForLoadState('networkidle')
 }
 
+/**
+ * Wait for something that only exists once a fetch has resolved AND React has
+ * re-rendered — a dropdown option, a map marker.
+ *
+ * Every step here must use this (or another auto-waiting API) rather than
+ * `if ((await locator.count()) > 0)`. `count()` resolves immediately, and
+ * `networkidle` is reached before the effect that turns the response into options
+ * runs, so the guard read 0 and silently skipped the interaction — together with
+ * every request that interaction would have recorded. That is how singleline.har
+ * lost its /siri_vehicle_locations/list entry (and the whole tail after it) while
+ * the recording still reported PASS.
+ *
+ * waitFor() auto-waits and throws on a genuine miss, so a recording that cannot
+ * reach the data the tests need fails loudly instead of writing a fixture with
+ * holes in it.
+ */
+async function waitForReady(locator: Locator) {
+  await locator.waitFor({ timeout: 30000 })
+}
+
+async function clickWhenReady(locator: Locator, options?: Parameters<Locator['click']>[0]) {
+  await waitForReady(locator)
+  await locator.click(options)
+}
+
 test.describe('Record HAR files', () => {
   test.skip(!process.env['RECORD_HAR'], 'Set RECORD_HAR=1 to update HAR files')
 
@@ -83,22 +108,12 @@ test.describe('Record HAR files', () => {
     // Select route used for timeline hits test
     await openDropdownAndWait(page, '#route-select')
     const routeWithHits = 'שדרות מנחם בגין/כביש 7-גדרה ⟵ שדרות מנחם בגין/כביש 7-גדרה'
-    const hitsRouteExists = await page.getByRole('option', { name: routeWithHits }).count()
-    if (hitsRouteExists > 0) {
-      await page.getByRole('option', { name: routeWithHits, exact: true }).click()
-      await page.waitForLoadState('networkidle')
-      await openDropdownAndWait(page, '#stop-select')
-      const stopOption = page.getByRole('option', { name: 'חיים הרצוג/שדרות מנחם בגין (גדרה)' })
-      if ((await stopOption.count()) > 0) {
-        await stopOption.click()
-        await page.locator('.MuiCircularProgress-svg').waitFor({ state: 'hidden' })
-        await page.waitForLoadState('networkidle')
-      } else {
-        await page.keyboard.press('Escape')
-      }
-    } else {
-      await page.keyboard.press('Escape')
-    }
+    await clickWhenReady(page.getByRole('option', { name: routeWithHits, exact: true }))
+    await page.waitForLoadState('networkidle')
+    await openDropdownAndWait(page, '#stop-select')
+    await clickWhenReady(page.getByRole('option', { name: 'חיים הרצוג/שדרות מנחם בגין (גדרה)' }))
+    await page.locator('.MuiCircularProgress-svg').waitFor({ state: 'hidden' })
+    await page.waitForLoadState('networkidle')
 
     // Also test אגד operator without clearing (so duplication test passes)
 
@@ -107,15 +122,10 @@ test.describe('Record HAR files', () => {
     await page.goto('/timeline')
     await page.locator('.preloader').waitFor({ state: 'hidden' })
     await openDropdownAndWait(page, '#operator-select')
-    const danBaDarom = page.getByRole('option', { name: 'דן בדרום', exact: true })
-    if ((await danBaDarom.count()) > 0) {
-      await danBaDarom.click()
-      await page.getByPlaceholder('לדוגמה: 17א').fill('9999')
-      await page.waitForLoadState('networkidle')
-      await page.getByText('הקו לא נמצא').waitFor({ state: 'visible' })
-    } else {
-      await page.keyboard.press('Escape')
-    }
+    await clickWhenReady(page.getByRole('option', { name: 'דן בדרום', exact: true }))
+    await page.getByPlaceholder('לדוגמה: 17א').fill('9999')
+    await page.waitForLoadState('networkidle')
+    await page.getByText('הקו לא נמצא').waitFor({ state: 'visible' })
   })
 
   // ---- operator.har -------------------------------------------------------
@@ -147,60 +157,49 @@ test.describe('Record HAR files', () => {
     await page.waitForLoadState('networkidle')
 
     // Select אודליה מוניות בעמ (operator_ref=97)
-    const operator = page.getByRole('option', { name: 'אודליה מוניות בעמ', exact: true })
-    if ((await operator.count()) > 0) {
-      await operator.click()
-    } else {
-      await page.keyboard.press('Escape')
-    }
+    await clickWhenReady(page.getByRole('option', { name: 'אודליה מוניות בעמ', exact: true }))
 
     // Fill line 16 (triggers gtfs_routes/list with route_short_name=16)
     await page.getByRole('textbox', { name: 'מספר קו' }).fill('16')
     await page.waitForLoadState('networkidle')
 
     // Select a route (triggers gtfs_rides/list, gtfs_ride_stops/list, gtfs_stops/get, siri data)
-    const routeDropdown = page.getByLabel(/בחירת מסלול נסיעה/)
-    if ((await routeDropdown.count()) > 0) {
-      await routeDropdown.click()
-      await page.waitForLoadState('networkidle')
-      const firstRoute = page.getByRole('option').first()
-      if ((await firstRoute.count()) > 0) {
-        await firstRoute.click()
-        await page.waitForLoadState('networkidle')
-      } else {
-        await page.keyboard.press('Escape')
-      }
-    }
+    await clickWhenReady(page.getByLabel(/בחירת מסלול נסיעה/))
+    await clickWhenReady(page.getByRole('option').first())
+    await page.waitForLoadState('networkidle')
 
     // Select start time to trigger siri data fetch (including siri_vehicle_locations/list)
-    const startTimeDropdown = page.getByLabel('בחירת שעת התחלה')
-    if ((await startTimeDropdown.count()) > 0) {
-      await startTimeDropdown.click()
-      await page.waitForLoadState('networkidle')
-      const firstTime = page.getByRole('option').first()
-      if ((await firstTime.count()) > 0) {
-        // Register before click to avoid missing the response
-        const lineLocationsPromise = page.waitForResponse(
-          (response) => response.url().includes('/siri_vehicle_locations/list'),
-          { timeout: 30000 },
-        )
-        await firstTime.click()
-        await lineLocationsPromise
-        await page.waitForLoadState('networkidle')
-      } else {
-        await page.keyboard.press('Escape')
-      }
-    }
+    await clickWhenReady(page.getByLabel('בחירת שעת התחלה'))
+    const firstTime = page.getByRole('option').first()
+    await waitForReady(firstTime)
+    // Register before click to avoid missing the response
+    const lineLocationsPromise = page.waitForResponse(
+      (response) => response.url().includes('/siri_vehicle_locations/list'),
+      { timeout: 30000 },
+    )
+    await firstTime.click()
+    await lineLocationsPromise
+    await page.waitForLoadState('networkidle')
 
     // Click a bus marker to record BusToolTip's gtfs_routes/list?line_refs=... call.
-    // networkidle waits for all in-flight requests (including BusToolTip's fetch) to complete
-    // before pressing Escape, ensuring the response body is captured in the HAR.
-    const busMarkers = page.locator('.leaflet-marker-pane > img[src$="marker-dot.png"]')
-    if ((await busMarkers.count()) > 2) {
-      await busMarkers.nth(2).click({ force: true })
-      await page.waitForLoadState('networkidle')
-      await page.keyboard.press('Escape')
-    }
+    // Wait on the tooltip's own skeleton rather than networkidle: the fetch is kicked
+    // off by an effect that runs after the popup mounts, so the page is briefly idle
+    // with nothing in flight and Escape would unmount the tooltip mid-request.
+    const thirdBusMarker = page.locator('.leaflet-marker-pane > img[src$="marker-dot.png"]').nth(2)
+    await waitForReady(thirdBusMarker)
+    await waitForMapIdle(page)
+    // Center the marker first, exactly as singlelineTest.spec.ts does: markers are
+    // focused on mousedown (tabindex), and Chromium auto-scrolls the focused element
+    // toward the center — if that scroll lands between press and release the click
+    // is swallowed and no popup opens.
+    await thirdBusMarker.evaluate((el) =>
+      el.scrollIntoView({ block: 'center', behavior: 'instant' }),
+    )
+    await thirdBusMarker.click({ force: true })
+    await waitForReady(page.locator('.leaflet-popup-content-wrapper'))
+    await waitForSkeletonsToHide(page)
+    await page.waitForLoadState('networkidle')
+    await page.keyboard.press('Escape')
 
     // Fill line 9999 to record the empty routes response
     await page.getByRole('textbox', { name: 'מספר קו' }).fill('9999')
@@ -284,21 +283,17 @@ test.describe('Record HAR files', () => {
     await page.getByRole('option', { name: /הורדה/ }).first().click()
     await page.waitForLoadState('networkidle')
     const startTime = page.getByLabel('בחירת שעת התחלה')
-    if ((await startTime.count()) > 0) {
-      // Type-to-filter the start-time Autocomplete too (~100 options on this line).
-      await startTime.fill('00:30')
-      await page.waitForLoadState('networkidle')
-      const pm = page.getByRole('option', { name: /00:30/ }).first()
-      if ((await pm.count()) > 0) {
-        const locations = page
-          .waitForResponse((r) => r.url().includes('/siri_vehicle_locations/list'))
-          .then((r) => r.body())
-        await pm.click()
-        await locations
-      } else {
-        await page.keyboard.press('Escape')
-      }
-    }
+    await waitForReady(startTime)
+    // Type-to-filter the start-time Autocomplete too (~100 options on this line).
+    await startTime.fill('00:30')
+    await page.waitForLoadState('networkidle')
+    const pm = page.getByRole('option', { name: /00:30/ }).first()
+    await waitForReady(pm)
+    const locations = page
+      .waitForResponse((r) => r.url().includes('/siri_vehicle_locations/list'))
+      .then((r) => r.body())
+    await pm.click()
+    await locations
 
     await page.waitForLoadState('networkidle')
     await settleResponseBodies()
@@ -314,13 +309,7 @@ test.describe('Record HAR files', () => {
     await page.getByLabel('חברה מפעילה').click()
     await page.waitForLoadState('networkidle')
 
-    const operator = page.getByRole('option', { name: 'אודליה מוניות בעמ', exact: true })
-    if ((await operator.count()) > 0) {
-      await operator.click()
-    } else {
-      await page.keyboard.press('Escape')
-      return
-    }
+    await clickWhenReady(page.getByRole('option', { name: 'אודליה מוניות בעמ', exact: true }))
 
     await page.getByRole('textbox', { name: 'מספר קו' }).fill('16')
     await page.waitForLoadState('networkidle')
@@ -331,16 +320,13 @@ test.describe('Record HAR files', () => {
     const route =
       'תחנת מוניות רמת גן דרך הטייסים-תל אביב יפו ⟵ תחנת מוניות תל אביב הכובשים-תל אביב יפו'
     const routeOption = page.getByRole('option', { name: route })
-    if ((await routeOption.count()) > 0) {
-      const waitForGaps = page.waitForResponse((response) =>
-        response.url().includes('/rides_execution/list'),
-      )
-      await routeOption.click()
-      await waitForGaps
-      await page.waitForLoadState('networkidle')
-    } else {
-      await page.keyboard.press('Escape')
-    }
+    await waitForReady(routeOption)
+    const waitForGaps = page.waitForResponse((response) =>
+      response.url().includes('/rides_execution/list'),
+    )
+    await routeOption.click()
+    await waitForGaps
+    await page.waitForLoadState('networkidle')
   })
 
   // ---- clearbutton.har ----------------------------------------------------
@@ -354,16 +340,11 @@ test.describe('Record HAR files', () => {
     await openDropdownAndWait(page, '#operator-select')
 
     // Select אלקטרה אפיקים and fill line 64
-    const elktraOption = page.getByRole('option', { name: 'אלקטרה אפיקים', exact: true })
-    if ((await elktraOption.count()) > 0) {
-      await elktraOption.click()
-      await page.getByPlaceholder('לדוגמה: 17א').fill('64')
-      await page.waitForLoadState('networkidle')
-      // Open route dropdown to ensure routes are fetched
-      await openDropdownAndWait(page, '#route-select')
-      await page.keyboard.press('Escape')
-    } else {
-      await page.keyboard.press('Escape')
-    }
+    await clickWhenReady(page.getByRole('option', { name: 'אלקטרה אפיקים', exact: true }))
+    await page.getByPlaceholder('לדוגמה: 17א').fill('64')
+    await page.waitForLoadState('networkidle')
+    // Open route dropdown to ensure routes are fetched
+    await openDropdownAndWait(page, '#route-select')
+    await page.keyboard.press('Escape')
   })
 })
