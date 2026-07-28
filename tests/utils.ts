@@ -16,6 +16,10 @@ export function getPastDate() {
   return new Date('2024-02-12T15:00:00+00:00')
 }
 
+export function getPastTrainDate() {
+  return new Date('2026-02-12T15:00:00+00:00')
+}
+
 const urlMatcher: Matcher = customMatcher({
   urlComparator(a, b) {
     const paramsToIgnore = new Set(['t', 'limit', 'date_from', 'date_to'])
