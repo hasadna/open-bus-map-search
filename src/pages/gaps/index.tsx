@@ -128,6 +128,7 @@ const GapsPage = () => {
           <OperatorSelector
             operatorId={operatorId ?? undefined}
             setOperatorId={handleOperatorChange}
+            excludeIsraelRailways
           />
         </Grid>
         {/* choose line */}

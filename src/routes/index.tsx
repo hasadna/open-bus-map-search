@@ -15,6 +15,7 @@ import {
   QueryStatsTwoTone,
   RadarTwoTone,
   RouteTwoTone,
+  TrainTwoTone,
 } from '@mui/icons-material'
 import { lazy } from 'react'
 import { createBrowserRouter, createRoutesFromElements, Navigate, Route } from 'react-router'
@@ -41,6 +42,7 @@ const Operator = lazy(() => import('../pages/operator'))
 const Profile = lazy(() => import('../pages/lineProfile/LineProfile'))
 const BugReportForm = lazy(() => import('../pages/bugReport/BugReportForm'))
 const PublicAppeal = lazy(() => import('../pages/publicAppeal'))
+const TrainPage = lazy(() => import('../pages/train'))
 
 export const PAGES = [
   {
@@ -102,6 +104,12 @@ export const PAGES = [
     searchParamsRequired: true,
     icon: <EmojiTransportationTwoTone />,
     element: <Operator />,
+  },
+  {
+    label: 'train_page_title',
+    path: '/train',
+    icon: <TrainTwoTone />,
+    element: <TrainPage />,
   },
   {
     label: 'about_title',
