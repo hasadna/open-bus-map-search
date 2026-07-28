@@ -7,15 +7,13 @@ import translationsRU from './ru.json'
 
 export const SUPPORTED_LANGUAGES = ['en', 'ru', 'he', 'ar']
 
-// Resolve the language from localStorage, then the browser locale, defaulting
-// to 'he'. The URL no longer carries a language prefix; legacy prefixed links
-// are handled by LegacyLangRedirect, which persists the language here.
+// Prefer the user's saved choice, then the browser locale, and finally Hebrew.
 export const getLang = (): string => {
-  return (
-    localStorage.getItem('language') ||
-    SUPPORTED_LANGUAGES.find((l) => new Intl.Locale(navigator.language).language === l) ||
-    'he'
-  )
+  const savedLanguage = localStorage.getItem('language')
+  if (savedLanguage && SUPPORTED_LANGUAGES.includes(savedLanguage)) return savedLanguage
+
+  const browserLanguage = new Intl.Locale(navigator.language).language
+  return SUPPORTED_LANGUAGES.find((language) => language === browserLanguage) || 'he'
 }
 
 const initialLang = getLang()

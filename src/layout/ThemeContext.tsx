@@ -66,8 +66,7 @@ export const ThemeProvider = ({ children }: PropsWithChildren) => {
 
   const emotionCache = RTL_LANGUAGES.includes(language) ? cacheRtl : cacheLtr
 
-  // The URL no longer encodes the language, so switching is just a state update:
-  // the effect below syncs i18n, document direction/title and dayjs.
+  // The effect below syncs i18n, document direction/title and dayjs.
   const changeLanguage = useCallback(
     (newLanguage: string) => {
       setLanguage(newLanguage)

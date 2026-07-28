@@ -28,7 +28,6 @@ import { DataResearch } from 'src/pages/DataResearch/DataResearch'
 import { ErrorPage } from 'src/pages/ErrorPage'
 import GapsPatternsPage from 'src/pages/gapsPatterns'
 import VelocityHeatmapPage from 'src/pages/velocityHeatmap'
-import { LegacyLangRedirect } from './LegacyLangRedirect'
 import { MainRoute } from './MainRoute'
 
 const HomePage = lazy(() => import('../pages/homepage/HomePage'))
@@ -192,10 +191,6 @@ export const getRoutesList = () => {
           }
         }}
       />
-      {/* Backward-compat: old links carried a language prefix (/he, /en, /ru, /ar).
-          Strip it, apply the language, and redirect to the clean path.
-          Remove this route (and LegacyLangRedirect) once such links have aged out. */}
-      <Route path=":lang/*" element={<LegacyLangRedirect />} />
       <Route path="*" element={RedirectToHomepage} key="back" />
     </Route>
   )
@@ -207,8 +202,6 @@ window.addEventListener('vite:preloadError', () => {
 
 const routes = createRoutesFromElements(getRoutesList())
 
-// The URL carries no language segment; the language is resolved from
-// localStorage / the browser locale (see getLang in allTranslations.ts).
 const router = createBrowserRouter(routes, {
   basename: import.meta.env.VITE_BASE_PATH || '/',
 })

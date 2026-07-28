@@ -116,7 +116,7 @@ test.describe('Share URL feature', () => {
     expect(params.get('date')).toMatch(/^\d{4}-\d{2}-\d{2}$/)
   })
 
-  test('share URL pathname has no language prefix', async ({ page }) => {
+  test('share URL uses the current route pathname', async ({ page }) => {
     await visitPage(page, 'gaps_page_title')
     await page.locator('[aria-label="העתק קישור"]').click()
     const clipUrl = await getClipboard(page)
