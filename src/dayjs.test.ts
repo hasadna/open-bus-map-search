@@ -22,11 +22,8 @@ describe('parseIsraelLocalDatetime', () => {
 })
 
 describe('israelDayBounds', () => {
-  // Asserted as absolute instants, not formatted strings: a bound resolved against
-  // the wrong side of a DST transition still *formats* as "00:00" (it renders through
-  // the same wrong offset), so only the instant catches it. Israel switches at 02:00,
-  // hence the 23h/25h windows. CI runs in UTC while dev machines run in Israel time,
-  // so this is exactly the case that has to hold in both.
+  // Asserted as instants, not formatted strings: a bound resolved on the wrong side of
+  // a DST transition still *formats* as "00:00", so only the instant catches it.
   it.each([
     ['a normal day', '2024-02-12', '2024-02-11T22:00:00.000Z', '2024-02-12T22:00:00.000Z', 24],
     ['spring forward', '2024-03-29', '2024-03-28T22:00:00.000Z', '2024-03-29T21:00:00.000Z', 23],

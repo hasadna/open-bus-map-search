@@ -3,13 +3,9 @@ import dayjs, { utcNoonForDateStr } from 'src/dayjs'
 import { BusRoute, fromGtfsRoute } from 'src/model/busRoute'
 import { BusStop, fromGtfsStop } from 'src/model/busStop'
 
-/** GTFS routes running between two calendar dates ("YYYY-MM-DD", Israel time,
- *  both inclusive), merged by route key so a line's variants collapse into one
- *  entry carrying all its routeIds. Pass the same date twice for a single day.
- *
- *  Dates, not instants: `date_from`/`date_to` are date-granular and serialized as
- *  UTC dates, so an instant would have to be converted here anyway — and an
- *  Israel-midnight one serializes to the previous day, silently widening the range. */
+/** GTFS routes running between two calendar dates ("YYYY-MM-DD", Israel time, both
+ *  inclusive), merged by route key so a line's variants collapse into one entry
+ *  carrying all its routeIds. Pass the same date twice for a single day. */
 export async function getRoutesAsync(
   fromDate: string,
   toDate: string,

@@ -56,9 +56,7 @@ const GapsPage = () => {
   const gapsQuery = useQuery({
     queryFn: async (): Promise<SerializedGap[] | null> => {
       if (!operatorId || !selectedRoute || !date) return null
-      // date_from/date_to are date-granular and serialized as UTC dates; anchoring to
-      // noon UTC keeps the calendar date intact, so the endpoint returns exactly this
-      // Israel-local day (it groups by `date_trunc('day', … AT TIME ZONE Asia/Jerusalem)`).
+      // The endpoint groups by Israel-local day, so asking for this one date is exact.
       const day = dayjs(utcNoonForDateStr(date))
       const res = await getGapsAsync(day, day, operatorId, selectedRoute.lineRef)
       // Store JSON-serializable strings, not dayjs, so the persisted cache

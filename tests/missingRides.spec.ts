@@ -47,9 +47,6 @@ test('should load rides for the selected calendar day', async ({ page }) => {
   const gapsRequest = await gapsRequestPromise
   const gapsUrl = new URL(gapsRequest.url())
 
-  // date_from/date_to are date-granular and serialized as UTC dates, so the page
-  // anchors them to noon UTC — the query asks for exactly the selected day and
-  // needs no client-side trimming.
   expect(gapsUrl.searchParams.get('date_from')).toBe('2024-02-12')
   expect(gapsUrl.searchParams.get('date_to')).toBe('2024-02-12')
 

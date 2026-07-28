@@ -24,22 +24,14 @@ export const toIsraelTimezone = (value?: dayjs.ConfigType) => dayjs(value).tz(IS
  *  that previous day. Anchoring to UTC noon makes the serialized date always correct. */
 export const utcNoonForDateStr = (dateStr: string): Date => new Date(`${dateStr}T12:00:00Z`)
 
-/** The Israel-local calendar day for a "YYYY-MM-DD" date: 00:00 through 00:00 the
- *  next morning, `end` exclusive. The window is 23h or 25h on Israel's two
- *  DST-transition days, not a fixed 24h.
+/** The Israel-local calendar day for a "YYYY-MM-DD" date, `end` exclusive — 23h or 25h
+ *  on the two DST-transition days, not a fixed 24h. For endpoints taking instants;
+ *  date-granular ones take `utcNoonForDateStr` above.
  *
- *  Each bound is built from its own date string. Do NOT "tidy" this into
- *  `dayjs.tz(dateStr, tz).startOf('day').add(1, 'day')`: `dayjs.tz()` already
- *  returns midnight in the zone, and chaining `startOf`/`add` re-resolves the offset
- *  against the *browser's* zone — which picks the wrong side of a DST transition for
- *  anyone not browsing from Israel, moving the bound an hour on those dates.
- *  Next-date arithmetic goes through `dayjs.utc` for the same reason: plain `dayjs()`
- *  would trip over a transition in the browser's own zone.
- *
- *  For endpoints that take INSTANTS (the single-line ride list, the vehicle page).
- *  Date-granular endpoints take `utcNoonForDateStr` instead: they serialize a Date to
- *  its UTC calendar day, and `start` here is 22:00 UTC the evening before — which
- *  would ask for the previous day as well. */
+ *  Each bound is built from its own date string on purpose. Do NOT "tidy" this into
+ *  `dayjs.tz(dateStr, tz).startOf('day').add(1, 'day')` — `startOf`/`add`/plain `dayjs()`
+ *  re-resolve the offset against the *browser's* zone, landing on the wrong side of a
+ *  transition for anyone not browsing from Israel. */
 export const israelDayBounds = (dateStr: string): { start: dayjs.Dayjs; end: dayjs.Dayjs } => ({
   start: dayjs.tz(dateStr, ISRAEL_TIMEZONE),
   end: dayjs.tz(dayjs.utc(dateStr).add(1, 'day').format('YYYY-MM-DD'), ISRAEL_TIMEZONE),

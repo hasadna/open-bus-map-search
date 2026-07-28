@@ -120,8 +120,7 @@ export const useSingleLineData = ({
         siriRouteLineRefs: selectedRoute?.lineRef?.toString(),
         siriRouteOperatorRefs: operatorId,
         scheduledStartTimeFrom: dayStart.toDate(),
-        // ...to is inclusive server-side (field <= value), so step back off the
-        // exclusive day end — otherwise the next day's 00:00 departure comes too.
+        // ...To is inclusive server-side, so step back off the exclusive day end.
         scheduledStartTimeTo: dayEnd.subtract(1, 'millisecond').toDate(),
         orderBy: 'scheduled_start_time asc',
         limit: 500,

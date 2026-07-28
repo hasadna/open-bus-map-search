@@ -4,12 +4,7 @@ import { useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { SIRI_API } from 'src/api/apiConfig'
 import { getAllRoutesList } from 'src/api/gtfsService'
-import dayjs, {
-  ISRAEL_TIMEZONE,
-  israelDayBounds,
-  toIsraelTimezone,
-  utcNoonForDateStr,
-} from 'src/dayjs'
+import dayjs, { israelDayBounds, toIsraelTimezone, utcNoonForDateStr } from 'src/dayjs'
 import { fromGtfsRoute } from 'src/model/busRoute'
 import { GlobalSearchContext } from 'src/model/globalState'
 import { InitialUrlParamsContext, PageShareParamsContext } from 'src/model/routeContext'
@@ -64,8 +59,7 @@ const VehiclePage = () => {
         {
           vehicleRefs: String(vehicleNumber),
           scheduledStartTimeFrom: dayStart.toDate(),
-          // ...to is inclusive server-side (field <= value), so step back off the
-          // exclusive day end — otherwise the next day's 00:00 departure comes too.
+          // ...To is inclusive server-side, so step back off the exclusive day end.
           scheduledStartTimeTo: dayEnd.subtract(1, 'millisecond').toDate(),
           orderBy: 'scheduled_start_time asc',
           limit: 500,
@@ -132,7 +126,7 @@ const VehiclePage = () => {
       <Grid container spacing={2} sx={{ width: '100%', maxWidth: 600, mx: 'auto' }}>
         {/* choose date */}
         <Grid size={{ sm: 6, xs: 12 }}>
-          <DateSelector time={dayjs.tz(date, ISRAEL_TIMEZONE)} onChange={handleDateChange} />
+          <DateSelector time={dayStart} onChange={handleDateChange} />
         </Grid>
         {/* choose vehicle */}
         <Grid size={{ sm: 6, xs: 12 }}>
