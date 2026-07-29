@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { FIXTURE_DATE, gtfsDay, israelServiceTime, siriWindow } from './date'
+import { FIXTURE_DATE, israelServiceTime, siriWindow, utcDayBeforeClock } from './date'
 
 // Anchor for the FIXTURE_DATE-derived stride dates: pins each helper to a value captured from a
 // real vehicle-page run. A drifted derivation fails here pointing straight at the helper — a
@@ -14,7 +14,7 @@ test('fixture date derivation is anchored to captured reference values', () => {
     from: '2024-02-11T22:00:00.000Z',
     to: '2024-02-13T02:00:00.000Z',
   })
-  expect(gtfsDay()).toBe('2024-02-11')
+  expect([utcDayBeforeClock(1), utcDayBeforeClock(7)]).toEqual(['2024-02-11', '2024-02-05'])
   expect(israelServiceTime(4, 30).toISOString()).toBe('2024-02-12T02:30:00.000Z')
   expect(israelServiceTime(8, 0).toISOString()).toBe('2024-02-12T06:00:00.000Z')
   expect(israelServiceTime(0, 30, { nextDay: true }).toISOString()).toBe('2024-02-12T22:30:00.000Z')

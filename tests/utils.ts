@@ -7,8 +7,9 @@ import { RouteFromHAROptions } from 'playwright-advanced-har/lib/utils/types'
 import { expect } from 'playwright-assertions'
 import dayjs from 'src/dayjs'
 import { PAGES } from 'src/routes'
-import { FIXTURE_DATE } from './fixtures/date'
+import { FIXTURE_CLOCK } from './fixtures/date'
 import { takeServiceMisses } from './fixtures/mockRouter'
+import { routeStride, StrideStub } from './fixtures/stride'
 
 export { expect } from 'playwright-assertions'
 
@@ -33,9 +34,11 @@ export const test = baseTest.extend<{ serviceContract: void }>({
 })
 
 export function getPastDate() {
-  // 15:00 UTC = 17:00 Israel on the fixture service-day: mid-day in both zones, so the UTC
-  // and Israel calendar dates coincide. Sourced from FIXTURE_DATE — the one date knob.
-  return new Date(`${FIXTURE_DATE}T15:00:00+00:00`)
+  return new Date(FIXTURE_CLOCK)
+}
+
+export function getPastTrainDate() {
+  return new Date('2026-02-12T15:00:00+00:00')
 }
 
 export function getPastTrainDate() {
@@ -142,7 +145,7 @@ export const clearInputField = async (input: Locator) => {
   await clearIndicator.click()
 }
 
-export const setupTest = async (page: Page, lng: string = 'he') => {
+export const setupTest = async (page: Page, lng: string = 'he', stride?: StrideStub[]) => {
   await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
   await page.route(/api\.github\.com/, (route) => route.abort())
   await page.route(/open-bus-backend\.k8s\.hasadna\.org\.il/, (route) => route.abort())
@@ -151,6 +154,12 @@ export const setupTest = async (page: Page, lng: string = 'he') => {
   // should call advancedRouteFromHAR AFTER setupTest - the HAR route handler takes precedence
   // over this abort route (Playwright evaluates routes in reverse registration order).
   await page.route(/stride-api/, (route) => route.abort())
+  // Opt-in, one spec at a time, until the HAR specs are converted: passing `stride` installs
+  // the fixture router (shadowing the abort above) with a default stub per URL — typically
+  // strideDefaults(), tests/fixtures/defaults.ts — BEFORE the first navigation. Later
+  // routeStride calls merge into the same registry, so a scenario or a single test can layer
+  // on top and override one URL without restating the rest.
+  if (stride) await routeStride(page, stride)
   await page.clock.setSystemTime(getPastDate())
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await i18next.use(Backend).init({ lng, backend: { loadPath: 'src/locale/{{lng}}.json' } })

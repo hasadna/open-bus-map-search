@@ -1,4 +1,9 @@
-import { GtfsRoutePydanticModel, GtfsRoutePydanticModelToJSON } from '@hasadna/open-bus-api-client'
+import {
+  GtfsAgencyPydanticModel,
+  GtfsAgencyPydanticModelToJSON,
+  GtfsRoutePydanticModel,
+  GtfsRoutePydanticModelToJSON,
+} from '@hasadna/open-bus-api-client'
 import { FIXTURE_DATE } from './date'
 
 /**
@@ -19,3 +24,15 @@ export const gtfsRoute = (
 
 export const gtfsRoutesWire = (routes: GtfsRoutePydanticModel[]): unknown[] =>
   routes.map(GtfsRoutePydanticModelToJSON)
+
+export const gtfsAgency = (
+  overrides: Partial<GtfsAgencyPydanticModel> = {},
+): GtfsAgencyPydanticModel => ({
+  date: new Date(`${FIXTURE_DATE}T00:00:00Z`),
+  operatorRef: 0,
+  agencyName: 'מפעיל',
+  ...overrides,
+})
+
+export const gtfsAgenciesWire = (agencies: GtfsAgencyPydanticModel[]): unknown[] =>
+  agencies.map(GtfsAgencyPydanticModelToJSON)

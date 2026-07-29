@@ -1,9 +1,8 @@
-import { SiriRideWithRelatedPydanticModel } from '@hasadna/open-bus-api-client'
 import { Page } from '@playwright/test'
-import { gtfsDay, israelServiceTime, siriWindow } from './fixtures/date'
+import { FIXTURE_DATE, israelServiceTime, siriWindow } from './fixtures/date'
 import { gtfsRoute, gtfsRoutesWire } from './fixtures/gtfs'
 import { siriRide, siriRidesWire } from './fixtures/siri'
-import { errorStub, okStub, routeStride } from './fixtures/stride'
+import { okStub, routeStride } from './fixtures/stride'
 
 export const VEHICLE_NUMBER = '7489226'
 
@@ -12,20 +11,31 @@ export const VEHICLE_NUMBER = '7489226'
 // date.ts) so it stays the one knob. Full-URL matching is mandatory (tests/fixtures/stride.ts),
 // so these are exact: if the page's request changes (wrong date window, limit, order, operator)
 // the stub stops matching and the test fails loudly instead of silently passing.
+//
+// Exported because a URL is the handle a test overrides a stub by: `vehicleUrls.rides` is what
+// the empty-state and load-error tests re-stub, leaving every other stub in place.
 const { from: siriFrom, to: siriTo } = siriWindow()
-const SIRI_RIDES_URL =
-  `/siri_rides/list?limit=500&vehicle_refs=${VEHICLE_NUMBER}` +
-  `&scheduled_start_time_from=${siriFrom}` +
-  `&scheduled_start_time_to=${siriTo}` +
-  '&order_by=scheduled_start_time asc'
 
 // The page fetches GTFS routes once per DISTINCT operator in the rides (97 and 3) — two
-// separate requests the old fuzzy matcher served the same body. Each gets its own. (gtfsDay
-// is FIXTURE_DATE minus one — the vehicle page's service-day-start Date serializes to the
-// previous UTC calendar date; see tests/fixtures/date.ts.)
+// separate requests the old fuzzy matcher served the same body. Each gets its own.
+//
+// The date is FIXTURE_DATE itself, NOT the day before: the page anchors the service-day date at
+// UTC noon (`utcNoonForDateStr`, src/dayjs.ts) before the gtfs client serializes it as a UTC
+// calendar date, so it survives intact. Anchoring at Israel-midnight instead serializes to
+// 22:00Z the previous day and queries the wrong GTFS day — the bug #1689 fixed, and the
+// off-by-one this fixture carried until it was caught by an unmocked-request failure.
 const gtfsRoutesUrl = (operatorRef: number) =>
-  `/gtfs_routes/list?limit=15000&date_from=${gtfsDay()}&date_to=${gtfsDay()}` +
+  `/gtfs_routes/list?limit=15000&date_from=${FIXTURE_DATE}&date_to=${FIXTURE_DATE}` +
   `&operator_refs=${operatorRef}&order_by=route_long_name asc`
+
+export const vehicleUrls = {
+  rides:
+    `/siri_rides/list?limit=500&vehicle_refs=${VEHICLE_NUMBER}` +
+    `&scheduled_start_time_from=${siriFrom}` +
+    `&scheduled_start_time_to=${siriTo}` +
+    '&order_by=scheduled_start_time asc',
+  gtfsRoutes: gtfsRoutesUrl,
+}
 
 /**
  * The designed /vehicle scenario. The rides intentionally carry NO gtfs_route__* fields —
@@ -90,18 +100,15 @@ const OPERATOR_97_ROUTES = [
 ]
 
 /**
- * Stub the stride endpoints the vehicle page calls. `rides`/`ridesStatus` let a test swap
- * in an empty list or an error to exercise the not-found and load-error states.
+ * The /vehicle scenario: one stub per URL the page calls, layered over the defaults. A test
+ * that needs a different response for one of them re-stubs that URL by itself — see the
+ * empty-state and load-error tests in vehicle.spec.ts — so this stays a plain description of
+ * the happy path with no per-variation options bag.
  */
-export async function mockVehicleApi(
-  page: Page,
-  opts: { rides?: SiriRideWithRelatedPydanticModel[]; ridesStatus?: number } = {},
-) {
+export async function mockVehicleApi(page: Page) {
   await routeStride(page, [
-    opts.ridesStatus && opts.ridesStatus >= 400
-      ? errorStub(SIRI_RIDES_URL, opts.ridesStatus)
-      : okStub(SIRI_RIDES_URL, siriRidesWire(opts.rides ?? SIRI_RIDES)),
-    okStub(gtfsRoutesUrl(97), gtfsRoutesWire(OPERATOR_97_ROUTES)),
-    okStub(gtfsRoutesUrl(3), gtfsRoutesWire([])),
+    okStub(vehicleUrls.rides, siriRidesWire(SIRI_RIDES)),
+    okStub(vehicleUrls.gtfsRoutes(97), gtfsRoutesWire(OPERATOR_97_ROUTES)),
+    okStub(vehicleUrls.gtfsRoutes(3), gtfsRoutesWire([])),
   ])
 }
