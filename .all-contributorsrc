@@ -502,6 +502,15 @@
         "code",
         "review"
       ]
+    },
+    {
+      "login": "Bellavely",
+      "name": "Bella Vayzburg",
+      "avatar_url": "https://avatars.githubusercontent.com/u/90250915?v=4",
+      "profile": "https://github.com/Bellavely",
+      "contributions": [
+        "code"
+      ]
     }
   ]
 }
