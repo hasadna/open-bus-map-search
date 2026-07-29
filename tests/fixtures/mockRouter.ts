@@ -22,18 +22,33 @@ import { Page } from '@playwright/test'
  * were made in. (Registering a second `page.route` per pattern would instead shadow the first
  * entirely: Playwright evaluates handlers in reverse registration order and ours always
  * fulfills, never falls through. The registry is what replaces that broken layering.)
+ *
+ * The contract is enforced in BOTH directions, and the pair is what makes a URL drift readable:
+ * a request with no stub is a miss, a stub with no request is unclaimed, and a wrong date or
+ * limit produces one of each — the actual URL next to the expected one. Only an `optional`
+ * stub may go unclaimed; that flag is what a default catalogue marks itself with.
  */
 export type RouteStub = {
   /** Exact expected request — pathname + full query (order-independent, nothing ignored). */
   url: string
   body?: unknown
   status?: number
+  /** Allowed to go unrequested. Defaults only — a scenario stub must be claimed. */
+  optional?: boolean
 }
 
 export const okStub = (url: string, body: unknown): RouteStub => ({ url, body })
 
 /** An error response for an exact URL (exercises react-query retry / load-error paths). */
 export const errorStub = (url: string, status = 500): RouteStub => ({ url, status })
+
+/**
+ * Exempt a stub from the must-be-claimed rule. Reserved for a default catalogue, whose whole
+ * job is to cover endpoints no single test is about — most of them go unused in any given test,
+ * and that is the intended shape. A scenario stub must NOT use this: an unclaimed scenario stub
+ * means the page stopped asking for that URL, which is exactly what the check exists to catch.
+ */
+export const optionalStub = (stub: RouteStub): RouteStub => ({ ...stub, optional: true })
 
 /** Canonical form for comparison: pathname + params sorted, NOTHING dropped. */
 const canon = (url: string): string => {
@@ -45,7 +60,14 @@ const canon = (url: string): string => {
   return `${u.pathname}?${params}`
 }
 
-type ServiceState = { stubs: Map<string, RouteStub>; misses: string[]; installed: boolean }
+type ServiceState = {
+  stubs: Map<string, RouteStub>
+  misses: string[]
+  /** Stubs that answered at least one request, tracked by identity so that re-stubbing a URL
+   *  starts it over — the replacement has to earn its own claim. */
+  claimed: Set<RouteStub>
+  installed: boolean
+}
 
 /** Per page, per service pattern. WeakMap so a closed page's state cannot outlive it. */
 const servicesByPage = new WeakMap<Page, Map<string, ServiceState>>()
@@ -58,7 +80,7 @@ const stateFor = (page: Page, pattern: RegExp): ServiceState => {
   }
   let state = services.get(pattern.source)
   if (!state) {
-    state = { stubs: new Map(), misses: [], installed: false }
+    state = { stubs: new Map(), misses: [], claimed: new Set(), installed: false }
     services.set(pattern.source, state)
   }
   return state
@@ -71,6 +93,24 @@ export const takeServiceMisses = (page: Page): string[] => {
   const misses = [...services.values()].flatMap((state) => state.misses)
   services.forEach((state) => (state.misses.length = 0))
   return misses
+}
+
+/**
+ * The registered-but-never-requested stubs for this page (canonical URLs, `optional` ones
+ * excluded). Read at teardown by the shared `test` fixture: a stub nobody asked for means the
+ * scenario has drifted from the page — either the request changed shape (paired with a miss
+ * naming the URL actually sent) or it is gone and the stub is dead weight. Unrouted stubs are
+ * not reported: removing one is a deliberate "must not be requested" assertion, and it is the
+ * miss list that enforces it.
+ */
+export const unclaimedStubs = (page: Page): string[] => {
+  const services = servicesByPage.get(page)
+  if (!services) return []
+  return [...services.values()].flatMap(({ stubs, claimed }) =>
+    [...stubs.entries()]
+      .filter(([, stub]) => !stub.optional && !claimed.has(stub))
+      .map(([url]) => url),
+  )
 }
 
 /**
@@ -90,6 +130,7 @@ export async function routeService(page: Page, pattern: RegExp, stubs: RouteStub
 
   await page.route(pattern, (route) => {
     const stub = state.stubs.get(canon(route.request().url()))
+    if (stub) state.claimed.add(stub)
     if (!stub) {
       state.misses.push(route.request().url())
       return route.fulfill({

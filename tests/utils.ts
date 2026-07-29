@@ -8,25 +8,34 @@ import { expect } from 'playwright-assertions'
 import dayjs from 'src/dayjs'
 import { PAGES } from 'src/routes'
 import { FIXTURE_CLOCK } from './fixtures/date'
-import { takeServiceMisses } from './fixtures/mockRouter'
+import { takeServiceMisses, unclaimedStubs } from './fixtures/mockRouter'
 import { routeStride, StrideStub } from './fixtures/stride'
 
 export { expect } from 'playwright-assertions'
 
-// Every spec imports `test` from here, so this auto fixture makes mandatory full-URL
-// matching universal: routeService (bound per backend as routeStride, and later a backend
-// router) records any request whose exact URL matched no stub, and this teardown fails the
-// test with the offending URL(s). (A throw inside a route handler is swallowed by Playwright
-// — this teardown assert is what makes it loud.) HAR-based specs never call routeService, so
-// their miss list is empty and this passes trivially until they are converted.
+// Every spec imports `test` from here, so this auto fixture makes the stride contract universal:
+// routeService (bound per backend as routeStride, and later a backend router) records every
+// request whose exact URL matched no stub and every non-optional stub nothing requested, and
+// this teardown fails the test with both lists. (A throw inside a route handler is swallowed by
+// Playwright — this teardown assert is what makes it loud.) Reporting them TOGETHER is what
+// makes a drifted URL readable: a changed date window or limit shows up as the sent URL and the
+// expected one side by side, instead of one half of the story. HAR-based specs never call
+// routeService, so both lists are empty and this passes trivially until they are converted.
 export const test = baseTest.extend<{ serviceContract: void }>({
   serviceContract: [
     async ({ page }, use) => {
       await use()
-      const misses = takeServiceMisses(page)
+      // Deduped: react-query retries a failed request several times, so one drifted URL would
+      // otherwise be listed once per attempt and bury the stub it should be compared against.
+      const violations = [
+        ...new Set([
+          ...takeServiceMisses(page).map((url) => `  requested, no stub matched: ${url}`),
+          ...unclaimedStubs(page).map((url) => `  stubbed, never requested:   ${url}`),
+        ]),
+      ]
       expect(
-        misses,
-        `unmocked request(s) — every request must match a fixture stub exactly:\n${misses.join('\n')}`,
+        violations,
+        `stride stub contract violated — every request must match a stub exactly, and every\nnon-optional stub must be requested:\n${violations.join('\n')}`,
       ).toEqual([])
     },
     { auto: true },
@@ -35,10 +44,6 @@ export const test = baseTest.extend<{ serviceContract: void }>({
 
 export function getPastDate() {
   return new Date(FIXTURE_CLOCK)
-}
-
-export function getPastTrainDate() {
-  return new Date('2026-02-12T15:00:00+00:00')
 }
 
 export function getPastTrainDate() {

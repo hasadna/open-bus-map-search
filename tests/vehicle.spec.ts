@@ -89,6 +89,10 @@ test.describe('Vehicle page', () => {
 
   test('shows an error message when the rides request fails', async ({ page }) => {
     await routeStride(page, [errorStub(vehicleUrls.rides, 500)])
+    // A failed rides request yields no operator to resolve, so dropping the scenario's GTFS
+    // stubs asserts the page does not look routes up anyway — and keeps the two it would
+    // otherwise leave unrequested from tripping the unclaimed-stub check.
+    unrouteStride(page, [vehicleUrls.gtfsRoutes(97), vehicleUrls.gtfsRoutes(3)])
     await gotoSeededVehiclePage(page)
 
     // react-query retries the failed request with backoff before surfacing isError
