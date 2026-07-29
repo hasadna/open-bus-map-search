@@ -120,6 +120,34 @@ export const clearInputField = async (input: Locator) => {
   await clearIndicator.click()
 }
 
+/**
+ * Let the document itself grow to the full content height, so a full-page capture
+ * really covers the whole page.
+ *
+ * The app shell pins the layout to the viewport and scrolls inside `#main-content`
+ * (`.main` and `#main-content` in src/layout/index.tsx), so `documentElement.scrollHeight`
+ * always equals the viewport height — and a full-page capture is therefore identical to a
+ * viewport one. Applitools' `scrollRootElement` does not help: the Ultrafast Grid forwards
+ * it for native devices only, so a web render always measures the document.
+ *
+ * Must be registered before the first navigation — the style is re-applied on every one.
+ */
+export const unlockFullPageScroll = async (page: Page) => {
+  await page.addInitScript(() => {
+    const style = document.createElement('style')
+    style.textContent = `
+      .main { height: auto !important; overflow: visible !important; }
+      #main-content { overflow: visible !important; }
+    `
+    const attach = () => document.head.appendChild(style)
+    if (document.head) {
+      attach()
+    } else {
+      document.addEventListener('DOMContentLoaded', attach)
+    }
+  })
+}
+
 export const setupTest = async (page: Page, lng: string = 'he') => {
   await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
   await page.route(/api\.github\.com/, (route) => route.abort())
