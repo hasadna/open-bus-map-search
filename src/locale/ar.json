@@ -200,6 +200,7 @@
   "bug_title": "العنوان/الملخّص",
   "bug_description": "الوصف",
   "bug_environment": "البيئة (المتصفّح، النظام)",
+  "bug_debug_context": "معلومات للمطورين",
   "bug_expected_behavior": "السلوك المتوقّع",
   "bug_actual_behavior": "السلوك الحالي",
   "bug_reproducibility": "كم مرّة يحصل هذا",

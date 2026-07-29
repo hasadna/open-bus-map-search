@@ -229,6 +229,7 @@
   "bug_title": "Title/Summary",
   "bug_description": "Description",
   "bug_environment": "Environment",
+  "bug_debug_context": "Information for Developers",
   "bug_expected_behavior": "Expected Behavior",
   "bug_actual_behavior": "Actual Behavior",
   "bug_reproducibility": "How often does it happen",

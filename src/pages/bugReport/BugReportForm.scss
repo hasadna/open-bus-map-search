@@ -85,6 +85,11 @@ main:has(> div > .bug-report-form-container) {
     width: 100%;
   }
 
+  .debug-context-value {
+    display: block;
+    direction: ltr;
+  }
+
   .ant-btn-primary {
     background-color: #1890ff;
     border-color: #1890ff;

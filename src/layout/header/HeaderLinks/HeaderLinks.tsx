@@ -1,6 +1,9 @@
-import { FC } from 'react'
+import { FC, useContext } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router'
+import { useLocation, useNavigate } from 'react-router'
+import { buildShareUrl } from 'src/layout/header/shareUrl'
+import { GlobalSearchContext } from 'src/model/globalState'
+import { PageShareParamsContext } from 'src/model/routeContext'
 import { HEADER_LINKS } from 'src/routes'
 import './HeaderLinks.scss'
 
@@ -44,14 +47,22 @@ const ExternalLink = ({ label, path, icon }: LinkType) => {
 const InternalLink = ({ label, path, icon }: LinkType) => {
   const navigate = useNavigate()
   const { t } = useTranslation()
+  const location = useLocation()
+  const { search } = useContext(GlobalSearchContext)
+  const { params: pageParams } = useContext(PageShareParamsContext)
+
+  const handleClick = () => {
+    // Before navigation to the "report-a-bug" page, get the page state as a shareable link
+    if (path === '/report-a-bug') {
+      const contextUrl = buildShareUrl(location.pathname, search, pageParams)
+      navigate(`${path}?context=${encodeURIComponent(contextUrl)}`)
+      return
+    }
+    navigate(path)
+  }
+
   return (
-    <div
-      aria-label={t(label)}
-      title={t(label)}
-      className="header-link"
-      onClick={() => {
-        navigate(path)
-      }}>
+    <div aria-label={t(label)} title={t(label)} className="header-link" onClick={handleClick}>
       {icon}
     </div>
   )
