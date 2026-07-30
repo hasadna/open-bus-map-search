@@ -164,7 +164,9 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
       await page.getByLabel(i18next.t('donate_title')).first().click()
       await page.locator('.MuiTypography-root').first().waitFor()
       await eyes.check('donation modal', {
-        region: page.getByRole('dialog').first(),
+        // the modal itself, not the viewport-sized backdrop container that wraps it
+        region: page.locator(`.MuiModal-root[role='dialog'] > .MuiBox-root`).first(),
+        fully: true,
       })
     })
 
