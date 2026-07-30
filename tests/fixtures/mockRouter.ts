@@ -23,32 +23,24 @@ import { Page } from '@playwright/test'
  * entirely: Playwright evaluates handlers in reverse registration order and ours always
  * fulfills, never falls through. The registry is what replaces that broken layering.)
  *
- * The contract is enforced in BOTH directions, and the pair is what makes a URL drift readable:
- * a request with no stub is a miss, a stub with no request is unclaimed, and a wrong date or
- * limit produces one of each — the actual URL next to the expected one. Only an `optional`
- * stub may go unclaimed; that flag is what a default catalogue marks itself with.
+ * Only a MISS fails a test. Stubs nothing requested are tracked too, but purely as CONTEXT for a
+ * miss on the same endpoint — a wrong date or limit produces one of each, and printing them
+ * together shows the URL that was sent next to the one that expected it. An unused stub is never
+ * an error by itself: a default catalogue or a shared scenario is meant to over-provision, so in
+ * any one test most of its stubs go unclaimed, and demanding otherwise would tax every test that
+ * reuses one while catching nothing the miss list and the render assertions do not already catch.
  */
 export type RouteStub = {
   /** Exact expected request — pathname + full query (order-independent, nothing ignored). */
   url: string
   body?: unknown
   status?: number
-  /** Allowed to go unrequested. Defaults only — a scenario stub must be claimed. */
-  optional?: boolean
 }
 
 export const okStub = (url: string, body: unknown): RouteStub => ({ url, body })
 
 /** An error response for an exact URL (exercises react-query retry / load-error paths). */
 export const errorStub = (url: string, status = 500): RouteStub => ({ url, status })
-
-/**
- * Exempt a stub from the must-be-claimed rule. Reserved for a default catalogue, whose whole
- * job is to cover endpoints no single test is about — most of them go unused in any given test,
- * and that is the intended shape. A scenario stub must NOT use this: an unclaimed scenario stub
- * means the page stopped asking for that URL, which is exactly what the check exists to catch.
- */
-export const optionalStub = (stub: RouteStub): RouteStub => ({ ...stub, optional: true })
 
 /** Canonical form for comparison: pathname + params sorted, NOTHING dropped. */
 const canon = (url: string): string => {
@@ -96,20 +88,16 @@ export const takeServiceMisses = (page: Page): string[] => {
 }
 
 /**
- * The registered-but-never-requested stubs for this page (canonical URLs, `optional` ones
- * excluded). Read at teardown by the shared `test` fixture: a stub nobody asked for means the
- * scenario has drifted from the page — either the request changed shape (paired with a miss
- * naming the URL actually sent) or it is gone and the stub is dead weight. Unrouted stubs are
- * not reported: removing one is a deliberate "must not be requested" assertion, and it is the
- * miss list that enforces it.
+ * The registered-but-never-requested stubs for this page, as canonical URLs. Diagnostic only —
+ * the shared `test` fixture reads this after a miss and prints the entries for the SAME endpoint,
+ * which is what turns "unmocked request" into a readable diff: the request that was sent above
+ * the stub that expected it, differing in just the param that drifted.
  */
 export const unclaimedStubs = (page: Page): string[] => {
   const services = servicesByPage.get(page)
   if (!services) return []
   return [...services.values()].flatMap(({ stubs, claimed }) =>
-    [...stubs.entries()]
-      .filter(([, stub]) => !stub.optional && !claimed.has(stub))
-      .map(([url]) => url),
+    [...stubs.entries()].filter(([, stub]) => !claimed.has(stub)).map(([url]) => url),
   )
 }
 

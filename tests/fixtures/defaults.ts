@@ -1,6 +1,6 @@
 import { utcDayBeforeClock } from './date'
 import { gtfsAgenciesWire, gtfsAgency } from './gtfs'
-import { okStub, optionalStub, StrideStub } from './stride'
+import { okStub, StrideStub } from './stride'
 
 /**
  * The DEFAULT stride world: the endpoints the app asks for on its own, on many pages, that no
@@ -11,11 +11,10 @@ import { okStub, optionalStub, StrideStub } from './stride'
  * A default is still an exact-URL link from one request to one built fixture — nothing here
  * relaxes matching. That is what makes the agency list expressible despite its retry loop.
  *
- * Every stub here is `optionalStub`: covering an endpoint a page MIGHT ask for is the point, so
- * going unrequested is normal and must not fail the test. The re-stub a test makes is a plain
- * `okStub`, which does have to be claimed — opting out of the exemption exactly when the test
- * is about that URL. This is why installing the whole catalogue on a page that uses none of it
- * (e.g. /vehicle, which never calls getAgencyList) is free.
+ * Covering an endpoint a page MIGHT ask for is the point, so a default going unrequested is
+ * normal and costs nothing: only an unmatched REQUEST fails a test (tests/fixtures/mockRouter.ts),
+ * never an unused stub. Installing the whole catalogue on a page that uses none of it — /vehicle,
+ * which never calls getAgencyList — is therefore free.
  */
 
 /**
@@ -47,4 +46,4 @@ export const DEFAULT_AGENCIES = [
 ]
 
 export const strideDefaults = (): StrideStub[] =>
-  agencyListUrls.map((url) => optionalStub(okStub(url, gtfsAgenciesWire(DEFAULT_AGENCIES))))
+  agencyListUrls.map((url) => okStub(url, gtfsAgenciesWire(DEFAULT_AGENCIES)))
