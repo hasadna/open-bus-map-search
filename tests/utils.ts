@@ -7,13 +7,49 @@ import { RouteFromHAROptions } from 'playwright-advanced-har/lib/utils/types'
 import { expect } from 'playwright-assertions'
 import dayjs from 'src/dayjs'
 import { PAGES } from 'src/routes'
+import { FIXTURE_CLOCK } from './fixtures/date'
+import { takeServiceMisses, unclaimedStubs } from './fixtures/mockRouter'
+import { routeStride, StrideStub } from './fixtures/stride'
 
 export { expect } from 'playwright-assertions'
 
-export const test = baseTest
+// Every spec imports `test` from here, so this auto fixture makes mandatory full-URL matching
+// universal: routeService (bound per backend as routeStride, and later a backend router) records
+// any request whose exact URL matched no stub, and this teardown fails the test with the
+// offending URL(s). (A throw inside a route handler is swallowed by Playwright — this teardown
+// assert is what makes it loud.) HAR-based specs never call routeService, so their miss list is
+// empty and this passes trivially until they are converted.
+export const test = baseTest.extend<{ serviceContract: void }>({
+  serviceContract: [
+    async ({ page }, use) => {
+      await use()
+      // Deduped: react-query retries a failed request several times, so one drifted URL would
+      // otherwise be listed once per attempt and bury the stub it should be compared against.
+      const misses = [...new Set(takeServiceMisses(page))]
+      if (!misses.length) return
+      // Unused stubs are NOT a failure — a shared scenario is meant to over-provision. They are
+      // printed only for the endpoints that actually missed, where the pairing is the diagnosis:
+      // a drifted date or limit shows the URL sent above the stub that expected it. Stubs for
+      // other endpoints are noise here and stay out.
+      const missedPaths = new Set(misses.map((url) => new URL(url).pathname))
+      const expected = unclaimedStubs(page).filter((url) =>
+        missedPaths.has(new URL(url, 'http://mock').pathname),
+      )
+      const detail = [
+        ...misses.map((url) => `  sent, no stub matched:  ${url}`),
+        ...expected.map((url) => `  stubbed, not requested: ${url}`),
+      ]
+      expect(
+        misses,
+        `unmocked request(s) — every request must match a fixture stub exactly:\n${detail.join('\n')}`,
+      ).toEqual([])
+    },
+    { auto: true },
+  ],
+})
 
 export function getPastDate() {
-  return new Date('2024-02-12T15:00:00+00:00')
+  return new Date(FIXTURE_CLOCK)
 }
 
 export function getPastTrainDate() {
@@ -120,7 +156,7 @@ export const clearInputField = async (input: Locator) => {
   await clearIndicator.click()
 }
 
-export const setupTest = async (page: Page, lng: string = 'he') => {
+export const setupTest = async (page: Page, lng: string = 'he', stride?: StrideStub[]) => {
   await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
   await page.route(/api\.github\.com/, (route) => route.abort())
   await page.route(/open-bus-backend\.k8s\.hasadna\.org\.il/, (route) => route.abort())
@@ -129,6 +165,12 @@ export const setupTest = async (page: Page, lng: string = 'he') => {
   // should call advancedRouteFromHAR AFTER setupTest - the HAR route handler takes precedence
   // over this abort route (Playwright evaluates routes in reverse registration order).
   await page.route(/stride-api/, (route) => route.abort())
+  // Opt-in, one spec at a time, until the HAR specs are converted: passing `stride` installs
+  // the fixture router (shadowing the abort above) with a default stub per URL — typically
+  // strideDefaults(), tests/fixtures/defaults.ts — BEFORE the first navigation. Later
+  // routeStride calls merge into the same registry, so a scenario or a single test can layer
+  // on top and override one URL without restating the rest.
+  if (stride) await routeStride(page, stride)
   await page.clock.setSystemTime(getPastDate())
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await i18next.use(Backend).init({ lng, backend: { loadPath: 'src/locale/{{lng}}.json' } })
