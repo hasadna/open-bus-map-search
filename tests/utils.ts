@@ -130,12 +130,6 @@ export const clearInputField = async (input: Locator) => {
  * viewport one. Applitools' `scrollRootElement` does not help: the Ultrafast Grid forwards
  * it for native devices only, so a web render always measures the document.
  *
- * Two elements opt out of the document's height and need pinning down as well: the map's
- * expand button is viewport-`fixed`, so in a full-page render — where the viewport *is* the
- * whole page — it drops onto the page's bottom edge, far below its map; and the donate
- * modal's body scrolls inside its own `max-height: calc(100vh - 210px)`
- * (src/pages/DonateModal/DonateModal.tsx), which hides 525px of it on the phone render.
- *
  * Must be registered before the first navigation — the style is re-applied on every one.
  */
 export const unlockFullPageScroll = async (page: Page) => {
@@ -144,25 +138,6 @@ export const unlockFullPageScroll = async (page: Page) => {
     style.textContent = `
       .main { height: auto !important; overflow: visible !important; }
       #main-content { overflow: visible !important; }
-
-      .map-info .expand-button {
-        position: absolute !important;
-        top: auto !important;
-        left: auto !important;
-        right: auto !important;
-        bottom: 5px !important;
-        inset-inline-end: 5px !important;
-      }
-
-      .MuiModal-root[role='dialog'] > .MuiBox-root {
-        position: static !important;
-        transform: none !important;
-        margin: 0 auto !important;
-      }
-      .MuiModal-root[role='dialog'] .MuiBox-root {
-        max-height: none !important;
-        overflow: visible !important;
-      }
     `
     const attach = () => document.head.appendChild(style)
     if (document.head) {

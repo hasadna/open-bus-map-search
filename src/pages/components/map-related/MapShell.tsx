@@ -1,9 +1,8 @@
 import { CloseFullscreenTwoTone, OpenInFullTwoTone } from '@mui/icons-material'
 import { IconButton } from '@mui/material'
-import { PropsWithChildren, ReactNode, useCallback, useRef, useState } from 'react'
+import { PropsWithChildren, ReactNode, useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { AttributionControl, MapContainer, MapContainerProps, ZoomControl } from 'react-leaflet'
-import { useConstrainedFloatingButton } from 'src/hooks/useConstrainedFloatingButton'
 import { useTheme } from 'src/layout/ThemeContext'
 
 /**
@@ -22,23 +21,14 @@ export function MapShell({ children, legend, ...mapProps }: MapShellProps) {
   const [isExpanded, setIsExpanded] = useState<boolean>(false)
   const toggleExpanded = useCallback(() => setIsExpanded((expanded) => !expanded), [])
 
-  const mapContainerRef = useRef<HTMLDivElement>(null)
-  const buttonRef = useRef<HTMLButtonElement>(null)
-  useConstrainedFloatingButton(mapContainerRef, buttonRef, isExpanded)
-
   const { isDarkTheme } = useTheme()
   const { i18n } = useTranslation()
   const isRtl = i18n.dir() === 'rtl'
 
   return (
     <div
-      ref={mapContainerRef}
       className={`map-info ${isExpanded ? 'expanded' : 'collapsed'}${isDarkTheme ? ' dark' : ''}`}>
-      <IconButton
-        ref={buttonRef}
-        color="primary"
-        className="expand-button"
-        onClick={toggleExpanded}>
+      <IconButton color="primary" className="expand-button" onClick={toggleExpanded}>
         {isExpanded ? (
           <CloseFullscreenTwoTone fontSize="large" />
         ) : (

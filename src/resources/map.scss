@@ -39,10 +39,18 @@ main > div,
   margin-bottom: 1em;
 
   .expand-button {
-    inset-inline-end: 5px;
+    // Sticky, not fixed: the button follows the viewport while the map is on
+    // screen but can never leave the map, because a sticky box is clamped to its
+    // containing block. `order` puts it after the map and the negative margin
+    // cancels the row it would otherwise take in the column, so it overlays.
+    position: sticky;
+    order: 1;
+    align-self: flex-end;
     bottom: 5px;
+    margin-top: calc(-2.6rem - 5px);
+    margin-bottom: 5px;
+    margin-inline-end: 5px;
     color: #1976d2 !important;
-    position: fixed;
     z-index: 2000;
     width: 2.6rem;
     height: 2.6rem;
