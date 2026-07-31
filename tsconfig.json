@@ -25,6 +25,8 @@
     "src",
     "vite-env.d.ts",
     "vite.config.ts",
+    "csp.ts",
+    "csp.test.ts",
     "tests",
     "setupTests.ts",
     "playwright.config.ts",
