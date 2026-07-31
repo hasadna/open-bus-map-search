@@ -27,9 +27,14 @@ export type Density = 'gap' | 'sparse' | 'ok'
  * Sorted, valid (positive-timestamp) pings for a ride, collapsing pings that share a
  * `recordedAtTime`. Re-ingested copies of one observation are already gone by here — upstream
  * dedups on `locationFixKey` — but rows sharing a timestamp while *disagreeing* on position
- * survive that key, which cannot know which position is the true one. Gaps are measured in
- * time, so those are collapsed here too (a zero-length gap is meaningless); where positions
- * conflict, the first is kept arbitrarily.
+ * survive that key, because nothing in the data says which of the two positions is the real
+ * one. Gaps are measured in time, so they are collapsed here regardless (a zero-length gap is
+ * meaningless) and the first row wins, arbitrarily.
+ *
+ * That arbitrary pick reaches the UI: the surviving row becomes a gap's `startLoc`/`endLoc`,
+ * which feed the strip's distance tooltip and its fly-to-ping target. Conflicting pairs have
+ * been observed kilometres apart, so for such a gap the distance shown can be measured from
+ * the wrong end. Fixing it needs a rule for which row wins — one the SIRI data doesn't give us.
  */
 function sortedTimedPings(positions: Point[]): { t: number; loc: [number, number] }[] {
   const sorted = positions
