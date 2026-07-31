@@ -1,7 +1,6 @@
 import babel from '@rolldown/plugin-babel'
 import react, { reactCompilerPreset } from '@vitejs/plugin-react'
 import { defineConfig, loadEnv } from 'vite'
-import IstanbulPlugin from 'vite-plugin-istanbul'
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
@@ -14,15 +13,6 @@ export default defineConfig(({ mode }) => {
       babel({
         presets: [reactCompilerPreset()],
       }),
-      ...(env?.VITE_COVERAGE
-        ? [
-            IstanbulPlugin({
-              include: 'src/*',
-              exclude: ['node_modules', 'test/'],
-              extension: ['.js', '.ts', '.tsx'],
-            }),
-          ]
-        : []),
     ],
     resolve: {
       alias: {

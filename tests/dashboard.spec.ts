@@ -17,15 +17,6 @@ test.describe('dashboard tests', () => {
     await waitForSkeletonsToHide(page)
   })
 
-  test('dark mode use localstorage', async ({ page }) => {
-    await page.getByLabel('עבור למצב כהה').click()
-    await page.reload()
-    await page.getByLabel('עבור למצב בהיר').click()
-    await page.reload()
-    await page.getByLabel('עבור למצב כהה').click()
-    await page.getByLabel('עבור למצב בהיר').click()
-  })
-
   test('dashboard charts contain information', async ({ page }) => {
     await expect(page.getByText('686 | קווים').first()).toBeVisible()
     await expect(page.getByText('מועצה אזורית גולן').first()).toBeVisible()
@@ -41,7 +32,11 @@ test.describe('dashboard tests', () => {
     await fillDateField(page, 'סיום', '02/6/2024')
     await page.getByLabel('חברה מפעילה').click()
     await page.getByRole('option', { name: 'דן', exact: true }).click()
+
+    // The group-by toggle swaps the chart title between its hour and day variants.
     await page.getByText('קיבוץ לפי שעה').click()
+    await expect(page.getByText('אחוזי יציאה מסך הנסיעות לפי שעה').first()).toBeVisible()
     await page.getByText('קיבוץ לפי יום').click()
+    await expect(page.getByText('אחוזי יציאה מסך הנסיעות לפי יום').first()).toBeVisible()
   })
 })

@@ -19,6 +19,12 @@
   border-radius: 0 0 0 32px;
 }
 
+/* mobile-only drawer opener; .hideOnDesktop can't be used here because its
+   `display: block !important` would defeat .header-link's flex centering */
+.main-header .hamburger {
+  display: none;
+}
+
 @media only screen and (width < 768px) {
   .main-header {
     justify-content: space-between;
@@ -27,17 +33,10 @@
   .main-header.dark {
     justify-content: space-between;
   }
-}
 
-.theme-icon {
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  transition: all 0.1s;
-}
-
-.theme-icon:hover {
-  transform: scale(1.1);
+  .main-header .hamburger {
+    display: flex;
+  }
 }
 
 .theme-icon-dark {

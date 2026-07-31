@@ -11,7 +11,7 @@
  *   RECORD_HAR=1 npx playwright test tests/realtimemap.spec.ts --workers=1
  */
 import { Page, test } from '@playwright/test'
-import { getPastDate, trackResponseBodies } from './utils'
+import { getPastDate, getPastTrainDate, trackResponseBodies } from './utils'
 
 test.describe.configure({ mode: 'serial' })
 
@@ -44,6 +44,36 @@ async function openDropdownAndWait(page: Page, selector: string) {
 
 test.describe('Record HAR files', () => {
   test.skip(!process.env['RECORD_HAR'], 'Set RECORD_HAR=1 to update HAR files')
+
+  // ---- train.har ----------------------------------------------------------
+  test('record train.har', async ({ page }) => {
+    const TRAIN_ROUTE = 'באר שבע מרכז-באר שבע<->תל אביב מרכז-תל אביב יפו'
+    const TRAIN_TEST_DATE = new Date(getPastTrainDate().getTime() - 24 * 60 * 60 * 1000)
+      .toISOString()
+      .slice(0, 10)
+
+    await setupRecording(page, 'tests/HAR/train.har')
+    await page.clock.setSystemTime(getPastTrainDate())
+    const settleResponseBodies = trackResponseBodies(page)
+    await goToPage(page, `/train?date=${TRAIN_TEST_DATE}`)
+
+    await page.getByRole('combobox', { name: 'בחירת מסלול' }).click()
+    const rideStopsLoaded = page
+      .waitForResponse((response) => response.url().includes('/gtfs_ride_stops/list'), {
+        timeout: 120000,
+      })
+      .then((response) => response.body())
+    const locationsLoaded = page
+      .waitForResponse((response) => response.url().includes('/siri_vehicle_locations/list'), {
+        timeout: 120000,
+      })
+      .then((response) => response.body())
+    await page.getByRole('option', { name: TRAIN_ROUTE }).click()
+    await Promise.all([rideStopsLoaded, locationsLoaded])
+    await page.waitForLoadState('networkidle')
+    await page.getByRole('progressbar').waitFor({ state: 'hidden' })
+    await settleResponseBodies()
+  })
 
   // ---- timeline.har -------------------------------------------------------
   // Single test records ALL needed entries in one browser context

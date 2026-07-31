@@ -1,4 +1,4 @@
-import { CloseFullscreenRounded, OpenInFullRounded } from '@mui/icons-material'
+import { CloseFullscreenTwoTone, OpenInFullTwoTone } from '@mui/icons-material'
 import { IconButton } from '@mui/material'
 import { PropsWithChildren, ReactNode, useCallback, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -40,9 +40,9 @@ export function MapShell({ children, legend, ...mapProps }: MapShellProps) {
         className="expand-button"
         onClick={toggleExpanded}>
         {isExpanded ? (
-          <CloseFullscreenRounded fontSize="large" />
+          <CloseFullscreenTwoTone fontSize="large" />
         ) : (
-          <OpenInFullRounded fontSize="large" />
+          <OpenInFullTwoTone fontSize="large" />
         )}
       </IconButton>
       {legend && <div className="map-legend">{legend}</div>}

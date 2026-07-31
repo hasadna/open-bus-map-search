@@ -1,4 +1,4 @@
-import { InfoCircleOutlined } from '@ant-design/icons'
+import { HelpTwoTone } from '@mui/icons-material'
 import { Tooltip } from '@mui/material'
 import { FC, Fragment, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -54,7 +54,7 @@ export const AllLinesChart: FC<AllChartComponentProps> = ({
             title={convertLineFeedToHtmlTags(t('dashboard_tooltip_content'))}
             placement="left"
             arrow>
-            <InfoCircleOutlined style={{ marginRight: '12px' }} />
+            <HelpTwoTone fontSize="inherit" style={{ marginRight: '12px' }} />
           </Tooltip>
         </>
       }>

@@ -4,7 +4,7 @@ import { useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { SIRI_API } from 'src/api/apiConfig'
 import { getAllRoutesList } from 'src/api/gtfsService'
-import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone } from 'src/dayjs'
+import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone, utcNoonForDateStr } from 'src/dayjs'
 import { fromGtfsRoute } from 'src/model/busRoute'
 import { GlobalSearchContext } from 'src/model/globalState'
 import { InitialUrlParamsContext, PageShareParamsContext } from 'src/model/routeContext'
@@ -21,12 +21,14 @@ const VehiclePage = () => {
   const { search, setSearch } = useContext(GlobalSearchContext)
   const { date } = search
   const initialUrlParams = useContext(InitialUrlParamsContext)
+  // LEGACY: manual share-param injection — replace with usePageState's per-page
+  // persistent `params` when this page is migrated.
   const { setParams } = useContext(PageShareParamsContext)
 
   // The vehicle number is page-local — never in GlobalSearchContext. Seeded once on
   // mount from the URL captured at page load (InitialUrlParamsContext), and published
   // to PageShareParamsContext for the Share button — the same page-local-param
-  // pattern as gaps_patterns' start/end dates and timeBasedMap's datetime.
+  // pattern gaps_patterns and timeBasedMap used before their usePageState migration.
   const [vehicleNumber, setVehicleNumber] = useState<number | undefined>(() =>
     normalizeVehicleNumber(initialUrlParams.vehicleNumber ?? ''),
   )
@@ -87,12 +89,12 @@ const VehiclePage = () => {
   )
 
   const { data: routes } = useQuery({
-    queryKey: ['vehicleRoutes', serviceDayStart.valueOf(), operatorIds],
+    queryKey: ['vehicleRoutes', date, operatorIds],
     enabled: operatorIds.length > 0,
     queryFn: async ({ signal }) => {
       const routeLists = await Promise.all(
         operatorIds.map((operatorId) =>
-          getAllRoutesList(operatorId, serviceDayStart.toDate(), signal),
+          getAllRoutesList(operatorId, utcNoonForDateStr(date), signal),
         ),
       )
       return routeLists
