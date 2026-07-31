@@ -41,7 +41,7 @@ const loadedLocations = new Map<
  * it also caches the data, so if the same interval is requested again, it will not load it again.
  */
 class LocationObservable {
-  #key: string
+  readonly #key: string
 
   constructor(query: VehicleLocationQuery, key: string) {
     this.#key = key
