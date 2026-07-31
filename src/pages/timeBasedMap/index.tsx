@@ -17,17 +17,9 @@ import { busIcon, busIconPath } from '../components/utils/BusIcon'
 import createClusterCustomIcon from '../components/utils/customCluster/customCluster'
 import InfoYoutubeModal from '../components/YoutubeModal'
 
-// Default the map to yesterday at 04:00 Israel time: a quiet, fully-ingested hour, so the
-// initial view is small and fast yet always shows real vehicles. Yesterday (not today) so
-// the one-minute window is never in the future — a pre-dawn visitor would otherwise land
-// on an empty map.
-const getDefaultTime = () =>
-  dayjs().tz(ISRAEL_TIMEZONE).subtract(1, 'day').hour(4).minute(0).second(0).millisecond(0)
-
-// Israel-local minute string, e.g. 2023-03-14T04:00 — the shareable form of the default time.
-// getDefaultTime() is already in ISRAEL_TIMEZONE, so formatting it yields the local minute.
-const getDefaultDatetime = () => getDefaultTime().format('YYYY-MM-DDTHH:mm')
-
+const DEFAULT_TIME = dayjs('2023-03-14T15:00:00Z')
+// Israel-local minute string, e.g. 2023-03-14T17:00 — the shareable form of DEFAULT_TIME.
+const DEFAULT_DATETIME = DEFAULT_TIME.tz(ISRAEL_TIMEZONE).format('YYYY-MM-DDTHH:mm')
 const DEFAULT_POSITION: Point = {
   loc: [32.3057988, 34.85478613],
   color: 0,
@@ -37,11 +29,11 @@ export default function TimeBasedMapPage() {
   // datetime is page-local and shareable: an Israel-local minute string that
   // round-trips through the share URL (namespaced as `time-based-map.datetime`).
   const { params, setParams } = usePageState('time-based-map', {
-    params: { datetime: getDefaultDatetime() },
+    params: { datetime: DEFAULT_DATETIME },
     ui: { scrollPosition: 0 },
   })
   const from = useMemo(
-    () => parseIsraelLocalDatetime(params.datetime) ?? getDefaultTime(),
+    () => parseIsraelLocalDatetime(params.datetime) ?? DEFAULT_TIME,
     [params.datetime],
   )
   const to = useMemo(() => dayjs(from).add(1, 'minutes'), [from])
@@ -50,7 +42,7 @@ export default function TimeBasedMapPage() {
   const positions = useMemo(() => locations.map(toPoint), [locations])
   const handleFromChange = useCallback(
     (time: dayjs.Dayjs | null) => {
-      const next = time ?? getDefaultTime()
+      const next = time ?? DEFAULT_TIME
       setParams((prev) => ({
         ...prev,
         datetime: next.tz(ISRAEL_TIMEZONE).format('YYYY-MM-DDTHH:mm'),
