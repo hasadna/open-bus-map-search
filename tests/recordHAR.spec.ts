@@ -8,7 +8,7 @@
  * After running, commit the updated HAR files in tests/HAR/.
  */
 import { Page, test } from '@playwright/test'
-import { getPastDate } from './utils'
+import { getPastDate, getPastTrainDate } from './utils'
 
 test.describe.configure({ mode: 'serial' })
 
@@ -64,6 +64,36 @@ async function openDropdownAndWait(page: Page, selector: string) {
 
 test.describe('Record HAR files', () => {
   test.skip(!process.env['RECORD_HAR'], 'Set RECORD_HAR=1 to update HAR files')
+
+  // ---- train.har ----------------------------------------------------------
+  test('record train.har', async ({ page }) => {
+    const TRAIN_ROUTE = 'באר שבע מרכז-באר שבע<->תל אביב מרכז-תל אביב יפו'
+    const TRAIN_TEST_DATE = new Date(getPastTrainDate().getTime() - 24 * 60 * 60 * 1000)
+      .toISOString()
+      .slice(0, 10)
+
+    await setupRecording(page, 'tests/HAR/train.har')
+    await page.clock.setSystemTime(getPastTrainDate())
+    const settleResponseBodies = trackResponseBodies(page)
+    await goToPage(page, `/train?date=${TRAIN_TEST_DATE}`)
+
+    await page.getByRole('combobox', { name: 'בחירת מסלול' }).click()
+    const rideStopsLoaded = page
+      .waitForResponse((response) => response.url().includes('/gtfs_ride_stops/list'), {
+        timeout: 120000,
+      })
+      .then((response) => response.body())
+    const locationsLoaded = page
+      .waitForResponse((response) => response.url().includes('/siri_vehicle_locations/list'), {
+        timeout: 120000,
+      })
+      .then((response) => response.body())
+    await page.getByRole('option', { name: TRAIN_ROUTE }).click()
+    await Promise.all([rideStopsLoaded, locationsLoaded])
+    await page.waitForLoadState('networkidle')
+    await page.getByRole('progressbar').waitFor({ state: 'hidden' })
+    await settleResponseBodies()
+  })
 
   // ---- timeline.har -------------------------------------------------------
   // Single test records ALL needed entries in one browser context
@@ -206,42 +236,6 @@ test.describe('Record HAR files', () => {
     await page.getByRole('textbox', { name: 'מספר קו' }).fill('9999')
     await page.waitForTimeout(3000)
     await page.waitForLoadState('networkidle')
-
-    // Switch to vehicle-number search and record the requests for vehicle-based start times
-    await page.getByRole('button', { name: 'לפי מספר רכב' }).click()
-    const vehicleRidesPromise = page.waitForResponse(
-      (response) =>
-        response.url().includes('/siri_rides/list') &&
-        response.url().includes('vehicle_refs=7489226'),
-    )
-    await page.getByRole('textbox', { name: 'מספר רכב' }).fill('7489226')
-    await vehicleRidesPromise
-    await page.waitForLoadState('networkidle')
-
-    const vehicleStartTimeDropdown = page.getByLabel('בחירת שעת התחלה')
-    if ((await vehicleStartTimeDropdown.count()) > 0) {
-      await vehicleStartTimeDropdown.click()
-      await page.waitForLoadState('networkidle')
-      const vehicleStartTime = page.getByRole('option', { name: /04:30/ }).first()
-      if ((await vehicleStartTime.count()) > 0) {
-        // Force full body download for both deferred side-effect requests triggered
-        // by selecting 04:30: siri_vehicle_locations (useEffect on rideIds) and
-        // gtfs_routes?line_refs= (React Query stopsQuery using parsedStartTime.lineRef).
-        // waitForResponse alone resolves at headers — .body() blocks until full body arrives.
-        const vehicleLocationsBody = page
-          .waitForResponse((r) => r.url().includes('/siri_vehicle_locations/list'))
-          .then((r) => r.body())
-        const gtfsRoutesByLineRefBody = page
-          .waitForResponse(
-            (r) => r.url().includes('/gtfs_routes/list') && r.url().includes('line_refs='),
-          )
-          .then((r) => r.body())
-        await vehicleStartTime.click()
-        await Promise.all([vehicleLocationsBody, gtfsRoutesByLineRefBody])
-      } else {
-        await page.keyboard.press('Escape')
-      }
-    }
 
     // Drain the planned-stops chain (gtfs_routes?line_refs -> gtfs_rides?limit=1 ->
     // gtfs_ride_stops -> gtfs_stops) so its tail isn't aborted at teardown and

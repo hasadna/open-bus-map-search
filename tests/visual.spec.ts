@@ -1,7 +1,15 @@
 import { test as eyesTest } from '@applitools/eyes-playwright/fixture'
 import { mergeTests } from '@playwright/test'
 import i18next from 'i18next'
-import { test as baseTest, harOptions, setupTest, visitPage, waitForSkeletonsToHide } from './utils'
+import {
+  test as baseTest,
+  getPastTrainDate,
+  harOptions,
+  setupTest,
+  visitPage,
+  waitForSkeletonsToHide,
+} from './utils'
+import { mockVehicleApi, VEHICLE_NUMBER } from './vehicleMocks'
 
 const test = mergeTests(baseTest, eyesTest)
 
@@ -95,16 +103,40 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
 
     test(`Single Line Map Page Should Look Good [${mode}]`, async ({ page, eyes }) => {
       await visitPage(page, 'singleline_map_page_title')
-      // wait for the mode-selector toggle — a stale dir="rtl" workaround rendered it
-      // wrong in LTR once the direction-aware emotion cache made it redundant
-      await page
-        .getByText(i18next.t('singleline_map_page_route'), { exact: true })
-        .first()
-        .waitFor()
+      // The by-route/by-vehicle toggle was removed (vehicle search moved to /vehicle);
+      // wait for the operator selector, which always renders the page's filter form.
+      await page.getByLabel(i18next.t('choose_operator')).first().waitFor()
       await waitForSkeletonsToHide(page)
       await eyes.check('single line map page', {
         // map tiles are aborted/blank in tests — compare layout, not pixels
         layoutRegions: ['.leaflet-container'],
+      })
+    })
+
+    test(`Vehicle Page Should Look Good [${mode}]`, async ({ page, eyes }) => {
+      await mockVehicleApi(page)
+      // full navigation so MainRoute seeds the vehicle number from the URL
+      await page.goto(`/vehicle?vehicleNumber=${VEHICLE_NUMBER}`)
+      await page.locator('.preloader').waitFor({ state: 'hidden' })
+      // wait for the resolved rides table (incl. the post-midnight 🌙 row) before snapping
+      await page.getByRole('row').filter({ hasText: '🌙 00:30' }).waitFor()
+      await waitForSkeletonsToHide(page)
+      await eyes.check('vehicle page', { fully: true })
+    })
+
+    test(`Train Page Should Look Good [${mode}]`, async ({ page, advancedRouteFromHAR, eyes }) => {
+      await page.clock.setSystemTime(getPastTrainDate())
+      const TRAIN_TEST_DATE = new Date(getPastTrainDate().getTime() - 24 * 60 * 60 * 1000)
+        .toISOString()
+        .slice(0, 10)
+      await advancedRouteFromHAR('tests/HAR/train.har', harOptions)
+      await page.goto(`/train?date=${TRAIN_TEST_DATE}&route=30086`)
+      await page.locator('.preloader').waitFor({ state: 'hidden' })
+      await page.getByText(/30086/).first().waitFor()
+      await page.getByRole('progressbar').waitFor({ state: 'hidden' })
+      await eyes.check('train page', {
+        fully: true,
+        layoutRegions: ['.recharts-wrapper'],
       })
     })
 

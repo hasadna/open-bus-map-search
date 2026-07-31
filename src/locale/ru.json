@@ -3,7 +3,6 @@
     "welcome": "Добро пожаловать в Databus",
     "databus_definition": "Открытая платформа для реальных данных о качестве линий общественного транспорта в Израиле",
     "website_goal": "Цель сайта - улучшить качество общественного транспорта в Израиле, предоставляя надежную информацию журналистам, гражданам, транспортным компаниям и государственным служащим в Израиле.",
-    "show_button": "Показать",
     "copyright": "© Мастерская общественных знаний",
     "open_menu": "Начать исследование",
     "manual": "Посмотреть руководство"
@@ -79,21 +78,30 @@
       "month": "Ежемесячно",
       "year": "Ежегодно"
     },
-    "all_lines": "Все маршруты",
-    "line": "Линия",
+    "all_lines_on_date": "Все линии на эту дату",
     "profile": "Профиль",
     "map": "Карта",
     "id": "ID",
-    "origin": "Происхождение",
-    "destination": "Назначение",
-    "total": "Всего маршрутов",
-    "statistics": "Статистика"
+    "origin": "Пункт отправления",
+    "destination": "Пункт назначения",
+    "statistics": "Статистика",
+    "routes_count": "{{count}} маршрутов",
+    "routes_in_lines": "{{routes}} маршрутов в {{lines}} линиях",
+    "search_placeholder": "Поиск по линии, пункту отправления или назначения",
+    "no_results": "Нет подходящих маршрутов",
+    "clear": "Очистить поиск"
   },
   "line_placeholder": "Например: 17a",
   "line_not_found": "Линия не найдена",
   "line": "Маршрут",
   "vehicle_placeholder": "Например: 12345",
   "vehicle_ref": "номерной знак транспортного средства",
+  "vehicle_page_title": "Транспортное средство",
+  "vehicle_page_description": "Все рейсы выбранного транспортного средства за указанный день",
+  "vehicle_rides_route": "Маршрут",
+  "vehicle_rides_start_time": "Время отправления",
+  "vehicle_no_rides": "За выбранную дату рейсов этого транспортного средства не найдено",
+  "vehicle_load_error": "Не удалось загрузить данные о рейсах транспортного средства",
   "direction_arrow": "⟵",
   "date_format": "YYYY-MM-DD",
   "date_navigator_prev_week": "Неделя назад",
@@ -320,8 +328,7 @@
     "ride": {
       "journey": "ID рейса",
       "id": "ID поездки",
-      "duration": "Продолжительность поездки",
-      "scheduled": "Запланированная поездка"
+      "duration": "Продолжительность поездки"
     },
     "stop": {
       "name": "Название остановки",
@@ -363,7 +370,7 @@
     "description": "Эта форма предназначена для того, чтобы мы могли получать обратную связь и улучшать приложение. Пожалуйста, имейте в виду, что отправленная информация будет доступна общественности.",
     "error": "Произошла ошибка при отправке отчета. Пожалуйста, попробуйте позже.",
     "success": "Отчет был отправлен успешно. Спасибо за вашу помощь!",
-    "viewIssue": "Просмотреть проблему"
+    "viewIssue": "Просмотреть проблему (GitHub)"
   },
   "plannedRoute": "Запланированный маршрут",
   "actualRoute": "Фактический маршрут",
@@ -393,6 +400,16 @@
   "failedToFetchVersion": "Не удалось получить идентификатор текущей версии",
   "share_link": "Копировать ссылку",
   "link_copied": "Ссылка скопирована!",
+  "train_page_title": "Israel Railways",
+  "train_choose_route": "Choose route",
+  "train_no_rides": "No actual rides were found for the selected route and date",
+  "train_ride_summary": "Ride {{lineRef}} · Scheduled time {{scheduledTime}} · Train number {{trainNumber}} · Location Points {{points}} · Stops {{stops}}",
+  "train_show_ride_map": "Show ride map",
+  "train_hide_ride_map": "Hide ride map",
+  "train_minutes_short": "min",
+  "train_average_delay_title": "Average delay per station",
+  "train_average_delay": "Average delay",
+  "train_average_delay_axis": "Average delay (min)",
   "dataResearch": {
     "title": "Исследования",
     "intro": "Если у вас есть интересная идея о том, почему здесь происходят те или иные вещи, напишите нам в Slack!",

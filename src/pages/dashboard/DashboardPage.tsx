@@ -33,7 +33,7 @@ const DashboardPage = () => {
       <Typography className="page-title" variant="h4">
         {t('dashboard_page_title')}
         <InfoYoutubeModal
-          label="Open video about this page"
+          label={t('open_video_about_this_page')}
           title={t('youtube_modal_info_title')}
           videoUrl="https://www.youtube.com/embed/bXg50_j_hTA?si=4rpSZwMRbMomE4g1"
         />

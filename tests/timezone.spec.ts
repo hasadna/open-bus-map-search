@@ -3,13 +3,13 @@ import { expect, harOptions, setupTest, test, visitPage } from './utils'
 const TIMEZONES = ['Asia/Jerusalem', 'America/New_York', 'Europe/London', 'Asia/Tokyo'] as const
 
 const SINGLE_LINE_START_TIMES = [
-  '04:30 (74-892-26)',
-  '04:47 (61-265-26)',
-  '05:00 (74-891-26)',
-  '05:23 (74-899-26)',
-  '05:33 (60-860-26)',
-  '05:44 (74-893-26)',
-  '05:54 (74-895-26)',
+  '04:30',
+  '04:47',
+  '05:00',
+  '05:23',
+  '05:33',
+  '05:44',
+  '05:54',
 ] as const
 
 const SINGLE_LINE_ROUTES = [
@@ -20,8 +20,6 @@ const SINGLE_LINE_ROUTES = [
 const GAPS_ROUTE =
   'תחנת מוניות רמת גן דרך הטייסים-תל אביב יפו ⟵ תחנת מוניות תל אביב הכובשים-תל אביב יפו'
 const GAPS_TIMES = ['04:30'] as const
-const VEHICLE_NUMBER = '7489226'
-const VEHICLE_START_TIME = /^04:30\b/
 
 for (const timezone of TIMEZONES) {
   test.describe(`Timezone: ${timezone}`, () => {
@@ -60,25 +58,6 @@ for (const timezone of TIMEZONES) {
       await expect(page.getByRole('option', { name: SINGLE_LINE_START_TIMES[0] })).toBeVisible()
 
       await expect(page.getByRole('option')).toContainText(SINGLE_LINE_START_TIMES)
-    })
-
-    test(`single line map page vehicle number start time uses Israel timezone (${timezone})`, async ({
-      page,
-      advancedRouteFromHAR,
-    }) => {
-      await setupTest(page)
-      await advancedRouteFromHAR('tests/HAR/singleline.har', harOptions)
-      await visitPage(page, 'singleline_map_page_title')
-
-      await page.getByLabel('חברה מפעילה').click()
-      await page.getByRole('option', { name: 'אודליה מוניות בעמ', exact: true }).click()
-      await page.getByRole('button', { name: 'לפי מספר רכב' }).click()
-      await page.getByRole('textbox', { name: 'מספר רכב' }).fill(VEHICLE_NUMBER)
-
-      await expect(page.locator('#start-time-select')).toBeEditable({ timeout: 10000 })
-      await page.getByLabel('בחירת שעת התחלה').click()
-
-      await expect(page.getByRole('option', { name: VEHICLE_START_TIME })).toBeVisible()
     })
 
     test(`gaps page table uses Israel timezone (${timezone})`, async ({

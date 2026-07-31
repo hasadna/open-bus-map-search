@@ -47,9 +47,8 @@ test.describe('About Page Tests', () => {
   })
 
   test('the YouTube modal in "about" is visible and have the correct src', async ({ page }) => {
-    const iframeElement = await page.waitForSelector('iframe')
-    expect(iframeElement.isVisible())
     const videoSrc = page.locator('iframe')
+    await expect(videoSrc).toBeVisible()
     await expect(videoSrc).toHaveAttribute(
       'src',
       'https://www.youtube.com/embed/videoseries?si=oTULlxq8Is188hPu&list=PL6Rh06rT7uiX1AQE-lm55hy-seL3idx3T',

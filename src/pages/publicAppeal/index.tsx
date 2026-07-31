@@ -6,6 +6,8 @@ import './PublicAppeal.scss'
 
 const { Title } = Typography
 const pageName = 'publicAppealPage'
+// product name, not translatable
+const strideApiLinkText = 'Open Bus Stride API'
 const PublicAppeal = () => {
   const { t } = useTranslation()
   const tasks = t(`${pageName}.tasks`, { returnObjects: true })
@@ -34,7 +36,7 @@ const Task = ({ title, description, marginBottom }: TaskDetails) => {
   return (
     <Widget title={title} marginBottom={marginBottom}>
       <p>{description}</p>
-      <a href="https://open-bus-stride-api.hasadna.org.il/docs">Open Bus Stride API</a>
+      <a href="https://open-bus-stride-api.hasadna.org.il/docs">{strideApiLinkText}</a>
     </Widget>
   )
 }

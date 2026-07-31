@@ -15,7 +15,6 @@ module.exports = {
     '!**/src/{test_pages,complaint}/**',
     '!**/src/pages/DataResearch/**',
     '!**/src/pages/homepage/**',
-    '!**/src/**/{setupProxy,log}.{ts,tsx}',
     '!**/*.{test,spec,config,stories}.*',
   ],
   modulePaths: ['<rootDir>'],

@@ -9,10 +9,11 @@ import {
   TableRow,
   Tooltip,
 } from '@mui/material'
+import type { TFunction } from 'i18next'
 import React, { memo, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
-import { Gap } from 'src/api/gapsService'
+import { Gap, reviveGap, SerializedGap } from 'src/api/gapsService'
 import dayjs from 'src/dayjs'
 import {
   formatServiceDayTime,
@@ -25,9 +26,11 @@ import DisplayGapsPercentage from '../components/DisplayGapsPercentage'
 import { Row } from '../components/Row'
 
 interface GapsTableProps {
-  gaps?: Gap[]
+  gaps?: SerializedGap[]
   loading?: boolean
   initOnlyGapped?: boolean
+  onlyGapped?: boolean
+  onOnlyGappedChange?: (value: boolean) => void
   singleLineMapBaseHref: string
   date: string
   onStartTimeClick?: (rideTime: string) => void
@@ -64,7 +67,7 @@ const formatStatus = (gap: Gap, gaps: Gap[] | undefined): keyof typeof colors =>
   return hasTwinRide ? 'ride_duped' : 'ride_extra'
 }
 
-function buildTooltip(gap: Gap): React.ReactNode {
+function buildTooltip(gap: Gap, t: TFunction): React.ReactNode {
   const planned = gap.plannedStartTime?.format(DATE_TIME_FORMAT)
   const actual = gap.actualStartTime?.format(DATE_TIME_FORMAT)
   const diffMin =
@@ -73,10 +76,14 @@ function buildTooltip(gap: Gap): React.ReactNode {
       : null
   return (
     <div style={{ fontSize: '0.85rem', lineHeight: 1.6 }}>
-      <div>planned: {planned ?? '—'}</div>
-      <div>actual: {actual ?? '—'}</div>
+      <div>
+        {t('gap_tooltip_planned')}: {planned ?? '—'}
+      </div>
+      <div>
+        {t('gap_tooltip_actual')}: {actual ?? '—'}
+      </div>
       {diffMin !== null && diffMin !== 0 && (
-        <div>({diffMin > 0 ? `+${diffMin}` : diffMin} min)</div>
+        <div>{t('gap_tooltip_diff_minutes', { diff: diffMin > 0 ? `+${diffMin}` : diffMin })}</div>
       )}
     </div>
   )
@@ -84,16 +91,28 @@ function buildTooltip(gap: Gap): React.ReactNode {
 const getGap = (gap: Gap) => gap.plannedStartTime || gap.actualStartTime
 
 const GapsTable: React.FC<GapsTableProps> = ({
-  gaps,
+  gaps: rawGaps,
   loading,
   initOnlyGapped = false,
+  onlyGapped: onlyGappedProp,
+  onOnlyGappedChange,
   singleLineMapBaseHref,
   date,
   onStartTimeClick,
 }) => {
   const { t } = useTranslation()
+  // The gaps cache is persisted as JSON (dayjs → ISO strings). Revive to dayjs here,
+  // at the single consumption edge, so all the comparison/formatting below is unchanged.
+  const gaps = useMemo(() => rawGaps?.map(reviveGap), [rawGaps])
   const { start: serviceDayStart } = serviceDayBounds(date)
-  const [onlyGapped, setOnlyGapped] = useState(initOnlyGapped)
+  // Controllable: the gaps page owns and persists this via usePageState; the
+  // story leaves it uncontrolled and seeds it with initOnlyGapped.
+  const [onlyGappedState, setOnlyGappedState] = useState(initOnlyGapped)
+  const onlyGapped = onlyGappedProp ?? onlyGappedState
+  const setOnlyGapped = (value: boolean) => {
+    setOnlyGappedState(value)
+    onOnlyGappedChange?.(value)
+  }
 
   const filteredGaps: Gap[] = useMemo(() => {
     if (!gaps) return []
@@ -128,7 +147,7 @@ const GapsTable: React.FC<GapsTableProps> = ({
   }, [gaps])
 
   return (
-    <Widget marginBottom sx={{ overflowY: 'none', maxWidth: '600px' }}>
+    <Widget marginBottom sx={{ overflowY: 'none', maxWidth: '600px', mx: 'auto' }}>
       <Row style={{ justifyContent: 'space-between', fontWeight: 500 }}>
         <FormControlLabel
           control={
@@ -166,13 +185,17 @@ const GapsTable: React.FC<GapsTableProps> = ({
                       <TableCell
                         sx={{ ...cellStyle, padding: '0 4px', width: '1em', border: 'none' }}>
                         {rowIsNextDay && (
-                          <Box component="span" role="img" aria-label="next night">
+                          <Box
+                            component="span"
+                            role="img"
+                            aria-label={t('after_midnight_indicator')}>
                             🌙
                           </Box>
                         )}
                       </TableCell>
                       {groupedGaps[hour].map(({ gap, status }, j) => {
                         const gapTime = gap.plannedStartTime || gap.actualStartTime
+                        // eslint-disable-next-line i18next/no-literal-string -- dayjs format pattern, not user text
                         const displayTime = gapTime?.format('HH:mm')
                         const rideToken = gapTime
                           ? formatServiceDayTime(gapTime, serviceDayStart)
@@ -183,7 +206,7 @@ const GapsTable: React.FC<GapsTableProps> = ({
                         return (
                           <Tooltip
                             key={`${hour}-${j}-${displayTime}`}
-                            title={buildTooltip(gap)}
+                            title={buildTooltip(gap, t)}
                             arrow>
                             <TableCell
                               sx={{

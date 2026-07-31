@@ -18,7 +18,7 @@ export default function SideBar() {
   const { t, i18n } = useTranslation()
   const { drawerOpen, setDrawerOpen } = useContext<LayoutContextInterface>(LayoutCtx)
   const [collapsed, setCollapsed] = useState(false)
-  const { isDarkTheme, currentLanguage } = useTheme()
+  const { isDarkTheme } = useTheme()
 
   return (
     <>
@@ -47,7 +47,7 @@ export default function SideBar() {
         }}
         onCollapse={setCollapsed}
         className={cn('hideOnMobile', { dark: isDarkTheme })}>
-        <Link to={`/${currentLanguage}${PAGES[0].path}`} replace>
+        <Link to={PAGES[0].path} replace>
           {collapsed ? <CollapsedLogo /> : <Logo title={t('website_name')} dark={isDarkTheme} />}
         </Link>
         <div className="sidebar-divider" />

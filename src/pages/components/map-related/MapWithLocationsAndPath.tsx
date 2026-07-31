@@ -10,20 +10,24 @@ const position: Point = {
 }
 
 export function MapWithLocationsAndPath({
-  positions,
+  positionGroups,
   plannedRouteStops,
   showNavigationButtons,
+  focusTarget,
 }: MapProps) {
   return (
     <MapShell
       center={position.loc}
       zoom={13}
       scrollWheelZoom={true}
-      legend={<MapIndexLayer showPlannedRoute={!!plannedRouteStops} />}>
+      legend={
+        <MapIndexLayer showPlannedRoute={!!plannedRouteStops} positionGroups={positionGroups} />
+      }>
       <MapContent
-        positions={positions}
+        positionGroups={positionGroups}
         plannedRouteStops={plannedRouteStops}
         showNavigationButtons={showNavigationButtons}
+        focusTarget={focusTarget}
       />
     </MapShell>
   )

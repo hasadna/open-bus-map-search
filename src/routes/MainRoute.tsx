@@ -10,7 +10,7 @@ import {
   GlobalSearchState,
   isValidSearchDate,
 } from '../model/globalState'
-import { ExtraShareParamsContext, InitialUrlParamsContext } from '../model/routeContext'
+import { InitialUrlParamsContext, PageShareParamsContext } from '../model/routeContext'
 
 // react-ga4's default export is nested under `.default` under some CJS/ESM interop
 // (e.g. Vite/Rolldown), so unwrap it to keep the shared singleton.
@@ -51,7 +51,6 @@ export const MainRoute = () => {
       ...(isValidSearchDate(p.date) ? { date: p.date } : {}),
       ...(p.operatorId ? { operatorId: p.operatorId } : {}),
       ...(p.lineNumber ? { lineNumber: p.lineNumber } : {}),
-      ...(p.vehicleNumber ? { vehicleNumber: Number(p.vehicleNumber) } : {}),
       ...(p.routeKey ? { routeKey: p.routeKey } : {}),
       ...(rideTime ? { rideTime } : {}),
       ...(p.stopKey ? { stopKey: p.stopKey } : {}),
@@ -105,7 +104,7 @@ export const MainRoute = () => {
     }
   }, [locationParams, setSearchParams])
 
-  const [extraShareParams, setExtraShareParams] = useState<Record<string, string>>({})
+  const [pageShareParams, setPageShareParams] = useState<Record<string, string>>({})
 
   const safeSetSearch = useCallback(
     (mutate: (prevState: GlobalSearchState) => GlobalSearchState) => {
@@ -114,20 +113,20 @@ export const MainRoute = () => {
     [],
   )
 
-  const setExtraShareParamsStable = useCallback((params: Record<string, string>) => {
-    setExtraShareParams(params)
+  const setPageShareParamsStable = useCallback((params: Record<string, string>) => {
+    setPageShareParams(params)
   }, [])
 
   return (
     <InitialUrlParamsContext.Provider value={initialUrlParams}>
-      <ExtraShareParamsContext.Provider
-        value={{ params: extraShareParams, setParams: setExtraShareParamsStable }}>
+      <PageShareParamsContext.Provider
+        value={{ params: pageShareParams, setParams: setPageShareParamsStable }}>
         <GlobalSearchContext.Provider value={{ search, setSearch: safeSetSearch }}>
           <ThemeProvider>
             <MainLayout />
           </ThemeProvider>
         </GlobalSearchContext.Provider>
-      </ExtraShareParamsContext.Provider>
+      </PageShareParamsContext.Provider>
     </InitialUrlParamsContext.Provider>
   )
 }

@@ -3,17 +3,8 @@ import {
   GtfsRoutePydanticModel,
 } from '@hasadna/open-bus-api-client'
 import { GTFS_API } from 'src/api/apiConfig'
-import dayjs, { toIsraelTimezone } from 'src/dayjs'
+import dayjs, { toIsraelTimezone, utcNoonForDateStr } from 'src/dayjs'
 import { BusRoute, fromGtfsRoute } from 'src/model/busRoute'
-
-/**
- * Returns a Date at noon UTC for the given YYYY-MM-DD string so that
- * .toISOString().substring(0, 10) always yields the correct date string
- * regardless of local timezone offsets.
- */
-function utcNoonForDateStr(dateStr: string): Date {
-  return new Date(`${dateStr}T12:00:00Z`)
-}
 
 function rideToRoute(ride: GtfsRideWithRelatedPydanticModel): GtfsRoutePydanticModel | null {
   if (

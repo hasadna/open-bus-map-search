@@ -20,11 +20,10 @@ import {
   useMemo,
 } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useLocation, useNavigate } from 'react-router'
 import { prefixer } from 'stylis'
 import { useLocalStorage } from 'usehooks-ts'
 import dayjs from 'src/dayjs'
-import { getLang, getPathWithoutLang } from 'src/locale/allTranslations'
+import { getLang } from 'src/locale/allTranslations'
 
 // Direction-aware emotion caches: the RTL cache runs the vendor prefixer and then
 // flips physical CSS (left↔right); the LTR cache uses emotion's default (prefixer
@@ -62,21 +61,18 @@ export const ThemeProvider = ({ children }: PropsWithChildren) => {
   })
 
   const { i18n } = useTranslation()
-  const navigate = useNavigate()
 
   const toggleTheme = useCallback(() => setIsDarkTheme((prev) => !prev), [setIsDarkTheme])
 
   const emotionCache = RTL_LANGUAGES.includes(language) ? cacheRtl : cacheLtr
 
-  const location = useLocation()
-
+  // The URL no longer encodes the language, so switching is just a state update:
+  // the effect below syncs i18n, document direction/title and dayjs.
   const changeLanguage = useCallback(
     (newLanguage: string) => {
       setLanguage(newLanguage)
-      const pathWithoutLang = getPathWithoutLang(location.pathname)
-      void navigate(`/${newLanguage}${pathWithoutLang}`)
     },
-    [setLanguage, navigate, location],
+    [setLanguage],
   )
 
   const contextValue = useMemo(
@@ -98,11 +94,18 @@ export const ThemeProvider = ({ children }: PropsWithChildren) => {
     dayjs.locale(language)
   }, [language, i18n])
 
+  // Expose the active theme as a body-level class so styled-components and
+  // plain CSS can target dark mode via `.dark &` / `.dark .foo` selectors.
+  useEffect(() => {
+    document.body.classList.toggle('dark', !!isDarkTheme)
+  }, [isDarkTheme])
+
   const muiTheme = useMemo(() => {
     const langConfig = {
       he: { direction: 'rtl', muiLocale: heIL, dateLocale: dateHeIL },
       en: { direction: 'ltr', muiLocale: enUS, dateLocale: dateEnUS },
       ru: { direction: 'ltr', muiLocale: ruRU, dateLocale: dateRuRU },
+      // MUI X ships no Arabic date-picker locale, so the pickers fall back to English
       ar: { direction: 'rtl', muiLocale: arEG, dateLocale: dateEnUS },
     } as const
 

@@ -1,7 +1,8 @@
 import { BusStop } from 'src/model/busStop'
+import { ROUTE_COLORS } from './map-types'
 import type { Point } from './map-types'
 
-export const filteredPositions: Point[] = [
+const filteredPositionsRaw: Point[] = [
   {
     loc: [32.431606, 34.886517],
     color: 0,
@@ -654,6 +655,10 @@ export const filteredPositions: Point[] = [
     },
   },
 ]
+
+export const filteredPositions = filteredPositionsRaw
+export const positionGroups = [{ positions: filteredPositionsRaw, color: ROUTE_COLORS[0] }]
+
 export const plannedRouteStops: BusStop[] = [
   {
     date: new Date('2025-04-21T00:00:00.000Z'),

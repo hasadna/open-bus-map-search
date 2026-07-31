@@ -18,7 +18,6 @@ export type GlobalSearchState = {
   operatorId: string | null
   lineNumber: string | null
   routeKey: string | null
-  vehicleNumber: number | null
 
   /** A specific ride's departure time token (e.g. "14:30").
    *  Set by /gaps when the user clicks a row; consumed by /single-line-map. */
@@ -43,7 +42,6 @@ export const GLOBAL_SEARCH_DEFAULTS: GlobalSearchState = {
   operatorId: null,
   lineNumber: null,
   routeKey: null,
-  vehicleNumber: null,
   rideTime: null,
   stopKey: null,
 }
