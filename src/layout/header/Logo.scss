@@ -1,0 +1,64 @@
+@use '../../resources/variables' as vars;
+
+.header-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: black;
+  text-decoration: none;
+
+  &:hover {
+    color: black;
+  }
+
+  svg {
+    // the artwork is line art authored for a ~215px wide render; the stroke has to
+    // grow proportionally to stay visible at header size
+    height: 36px;
+    width: auto;
+    flex-shrink: 0;
+
+    .st0 {
+      fill: none;
+      stroke: #000;
+      stroke-width: 70;
+      stroke-miterlimit: 10;
+    }
+  }
+}
+
+.header-logo-name {
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.header-logo.dark {
+  color: white;
+
+  &:hover {
+    color: white;
+  }
+
+  svg {
+    circle {
+      fill: white;
+    }
+
+    .st0 {
+      stroke: white;
+    }
+  }
+}
+
+@media only screen and (width < vars.$mobile-max-width) {
+  /* the action icons already fill a phone-width header — keep the mark, drop the wordmark */
+  .header-logo-name {
+    display: none;
+  }
+
+  .header-logo svg {
+    height: 28px;
+  }
+}

@@ -1,9 +1,16 @@
 import cn from 'classnames'
+import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router'
+import { PAGES } from 'src/routes'
+import './Logo.scss'
 
-export function Logo({ title, dark }: { title?: string; dark?: boolean }) {
+export function Logo({ dark }: { dark?: boolean }) {
+  const { t } = useTranslation()
+  const title = t('website_name')
+
   return (
-    <h1 className={cn('sidebar-logo', { dark })}>
-      <svg viewBox="450 900 3200 1730" xmlSpace="preserve">
+    <Link to={PAGES[0].path} replace className={cn('header-logo', { dark })} title={title}>
+      <svg viewBox="450 900 3200 1730" xmlSpace="preserve" aria-hidden="true">
         <circle cx="930.32" cy="2390.95" r="121.59" />
         <circle cx="2412.32" cy="2390.95" r="121.59" />
         <path
@@ -35,7 +42,7 @@ export function Logo({ title, dark }: { title?: string; dark?: boolean }) {
         <circle className="st0" cx="3442.6" cy="1960.6" r="65.8" />
         <circle className="st0" cx="3223.9" cy="2225.35" r="65.8" />
       </svg>
-      <span>{title}</span>
-    </h1>
+      <span className="header-logo-name">{title}</span>
+    </Link>
   )
 }

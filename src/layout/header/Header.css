@@ -1,9 +1,16 @@
 .main-header {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
   background: #fff;
   box-shadow: 0 4px 12px rgb(0 0 0 / 12%) !important;
+}
+
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
 }
 
 .main-header.dark {
@@ -26,16 +33,18 @@
 }
 
 @media only screen and (width < 768px) {
+  /* antd's 50px inline padding leaves no room for the brand next to the header icons */
   .main-header {
-    justify-content: space-between;
-  }
-
-  .main-header.dark {
-    justify-content: space-between;
+    padding-inline: 16px !important;
   }
 
   .main-header .hamburger {
     display: flex;
+  }
+
+  /* tighten the action icons so the brand fits alongside them on a phone */
+  .main-header .header-link {
+    padding-inline: 2px;
   }
 }
 
