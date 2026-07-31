@@ -25,10 +25,11 @@ export type Density = 'gap' | 'sparse' | 'ok'
 
 /**
  * Sorted, valid (positive-timestamp) pings for a ride, collapsing pings that share a
- * `recordedAtTime`. The SIRI pipeline re-ingests the same observation across snapshots, so a
- * ride routinely carries rows with identical `recordedAtTime` (and lat/lon) but distinct ids
- * that survive the upstream `uniqBy(id)`. Same time means same position, so keeping the first
- * row per timestamp is lossless and avoids meaningless zero-length gaps.
+ * `recordedAtTime`. Re-ingested copies of one observation are already gone by here — upstream
+ * dedups on `locationFixKey` — but rows sharing a timestamp while *disagreeing* on position
+ * survive that key, which cannot know which position is the true one. Gaps are measured in
+ * time, so those are collapsed here too (a zero-length gap is meaningless); where positions
+ * conflict, the first is kept arbitrarily.
  */
 function sortedTimedPings(positions: Point[]): { t: number; loc: [number, number] }[] {
   const sorted = positions
