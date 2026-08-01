@@ -160,7 +160,7 @@ const RouteGroup = ({ group, operatorId }: { group: RouteGroup; operatorId?: str
             lineNumber: route.line + route.suffix,
             routeKey: route.routeKey,
           }))
-          navigate('/single-line-map')
+          void navigate('/single-line-map')
         }}
         to="/single-line-map">
         {t('operator.map')}
