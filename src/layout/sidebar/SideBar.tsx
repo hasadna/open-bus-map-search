@@ -2,23 +2,18 @@ import { Drawer, Layout } from 'antd'
 import cn from 'classnames'
 import { useContext, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router'
-import { PAGES } from 'src/routes'
 import { LayoutContextInterface, LayoutCtx } from '../LayoutContext'
 import { useTheme } from '../ThemeContext'
-import { Logo } from './logo'
 import Menu from './menu/Menu'
 import './sidebar.scss'
 
 const { Sider } = Layout
 
-const CollapsedLogo = () => <h1 className={'sidebar-logo-collapsed'}>🚌</h1>
-
 export default function SideBar() {
-  const { t, i18n } = useTranslation()
+  const { i18n } = useTranslation()
   const { drawerOpen, setDrawerOpen } = useContext<LayoutContextInterface>(LayoutCtx)
   const [collapsed, setCollapsed] = useState(false)
-  const { isDarkTheme, currentLanguage } = useTheme()
+  const { isDarkTheme } = useTheme()
 
   return (
     <>
@@ -30,8 +25,6 @@ export default function SideBar() {
         open={drawerOpen}
         rootClassName={cn('hideOnDesktop', { dark: isDarkTheme })}
         styles={{ body: { padding: '0' } }}>
-        <Logo title={t('website_name')} dark={isDarkTheme} />
-        <div className="sidebar-divider" />
         <Menu />
       </Drawer>
       <Sider
@@ -47,10 +40,6 @@ export default function SideBar() {
         }}
         onCollapse={setCollapsed}
         className={cn('hideOnMobile', { dark: isDarkTheme })}>
-        <Link to={`/${currentLanguage}${PAGES[0].path}`} replace>
-          {collapsed ? <CollapsedLogo /> : <Logo title={t('website_name')} dark={isDarkTheme} />}
-        </Link>
-        <div className="sidebar-divider" />
         <Menu collapsed={collapsed} />
       </Sider>
     </>

@@ -8,6 +8,7 @@ import { useTheme } from '../ThemeContext'
 import { DonationButton } from './DonationButton'
 import HeaderLinks from './HeaderLinks/HeaderLinks'
 import { LanguageToggleButton } from './LanguageToggleButton'
+import { Logo } from './Logo'
 import { ShareButton } from './ShareButton'
 import ToggleThemeButton from './ToggleThemeButton'
 import './Header.css'
@@ -20,13 +21,16 @@ const MainHeader = () => {
   const { t } = useTranslation()
   return (
     <Header className={cn('main-header', { dark: isDarkTheme })}>
-      <button
-        className="header-link hamburger"
-        onClick={() => setDrawerOpen(true)}
-        aria-label={t('open_menu_description')}
-        title={t('open_menu_description')}>
-        <MenuTwoTone fontSize="inherit" />
-      </button>
+      <div className="header-brand">
+        <button
+          className="header-link hamburger"
+          onClick={() => setDrawerOpen(true)}
+          aria-label={t('open_menu_description')}
+          title={t('open_menu_description')}>
+          <MenuTwoTone fontSize="inherit" />
+        </button>
+        <Logo />
+      </div>
       <HeaderLinks>
         <ShareButton />
         <LanguageToggleButton />
