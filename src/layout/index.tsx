@@ -15,6 +15,14 @@ const { Content } = Layout
 const StyledLayout = styled(Layout)({
   height: '100vh',
   overflow: 'hidden',
+  flexDirection: 'column',
+})
+// antd only sets `flex-direction: row` when it finds a Sider among its direct children;
+// SideBar wraps its Sider in a fragment, so the row direction has to be stated here.
+const StyledMainSection = styled(Layout)({
+  flexDirection: 'row',
+  flex: 1,
+  minHeight: 0,
 })
 const StyledContent = styled(Content)({
   margin: '24px 16px 0',
@@ -32,9 +40,9 @@ export function MainLayout() {
   return (
     <StyledLayout className="main">
       <LayoutContext>
-        <SideBar />
-        <Layout>
-          <MainHeader />
+        <MainHeader />
+        <StyledMainSection>
+          <SideBar />
           <StyledContent id="main-content">
             <StyledBody>
               <Suspense fallback={<Preloader />}>
@@ -58,7 +66,7 @@ export function MainLayout() {
             </StyledBody>
             <AppFooter />
           </StyledContent>
-        </Layout>
+        </StyledMainSection>
       </LayoutContext>
     </StyledLayout>
   )
