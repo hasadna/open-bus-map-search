@@ -13,7 +13,7 @@
 
     .st0 {
       fill: none;
-      stroke: vars.$color-primary;
+      stroke: currentcolor;
       stroke-width: 70;
       stroke-miterlimit: 10;
     }
@@ -25,16 +25,16 @@
       stroke-width: 46;
     }
 
+    // only the wheels are solid — the connector dots keep .st0's `fill: none`. Stated
+    // as :not(.st0) rather than leaning on selector specificity to override it.
+    circle:not(.st0) {
+      fill: currentcolor;
+    }
+
     path {
       stroke-dasharray: 1720;
       stroke-dashoffset: 1720;
       animation: dash 0.8s linear forwards;
-    }
-
-    // only the wheels are solid — the connector dots keep .st0's `fill: none`. Stated
-    // as :not(.st0) rather than leaning on selector specificity to override it.
-    circle:not(.st0) {
-      fill: vars.$color-primary;
     }
 
     circle {
@@ -50,18 +50,6 @@
   @keyframes dash {
     to {
       stroke-dashoffset: 0;
-    }
-  }
-}
-
-.header-logo.dark {
-  svg {
-    circle:not(.st0) {
-      fill: vars.$color-primary-dark;
-    }
-
-    .st0 {
-      stroke: vars.$color-primary-dark;
     }
   }
 }

@@ -29,7 +29,7 @@ const MainHeader = () => {
           title={t('open_menu_description')}>
           <MenuTwoTone fontSize="inherit" />
         </button>
-        <Logo dark={isDarkTheme} />
+        <Logo />
       </div>
       <HeaderLinks>
         <ShareButton />

@@ -1,21 +1,22 @@
-import cn from 'classnames'
+import { styled } from '@mui/material/styles'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
 import { PAGES } from 'src/routes'
 import './Logo.scss'
 
-export function Logo({ dark }: { dark?: boolean }) {
+// the mark's strokes are `currentcolor`, so the palette drives it and follows the
+// theme mode on its own — no dark-mode variant to keep in sync
+const BrandLink = styled(Link)(({ theme }) => ({
+  color: theme.palette.primary.main,
+}))
+
+export function Logo() {
   const { t } = useTranslation()
   const title = t('website_name')
 
   return (
     // the mark carries no visible text, so the link needs an explicit accessible name
-    <Link
-      to={PAGES[0].path}
-      replace
-      className={cn('header-logo', { dark })}
-      aria-label={title}
-      title={title}>
+    <BrandLink to={PAGES[0].path} replace className="header-logo" aria-label={title} title={title}>
       <svg viewBox="450 900 3200 1730" xmlSpace="preserve" aria-hidden="true">
         <circle cx="930.32" cy="2390.95" r="121.59" />
         <circle cx="2412.32" cy="2390.95" r="121.59" />
@@ -48,6 +49,6 @@ export function Logo({ dark }: { dark?: boolean }) {
         <circle className="st0" cx="3442.6" cy="1960.6" r="90" />
         <circle className="st0" cx="3223.9" cy="2225.35" r="90" />
       </svg>
-    </Link>
+    </BrandLink>
   )
 }
