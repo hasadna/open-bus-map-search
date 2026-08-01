@@ -22,13 +22,26 @@ export default function OperatorSelector({
   const [operators, setOperators] = useState<Operator[]>([])
 
   useEffect(() => {
-    getOperators(filter).then((operators) =>
-      setOperators(
-        excludeIsraelRailways
-          ? operators.filter((operator) => operator.id !== ISRAEL_TRAIN_ID)
-          : operators,
-      ),
-    )
+    if (excludeIsraelRailways && operatorId === ISRAEL_TRAIN_ID) {
+      setOperatorId('')
+    }
+  }, [excludeIsraelRailways, operatorId, setOperatorId])
+
+  useEffect(() => {
+    void getOperators(filter)
+      .then((operators) =>
+        setOperators(
+          excludeIsraelRailways
+            ? operators.filter((operator) => operator.id !== ISRAEL_TRAIN_ID)
+            : operators,
+        ),
+      )
+      .catch((err) => {
+        console.error('Failed to load operators:', err)
+        // This effect has no cleanup, so a failed refetch would otherwise leave
+        // the previous filter's operators listed as if they matched the new one.
+        setOperators([])
+      })
   }, [filter, excludeIsraelRailways])
 
   const value = operators.find((operator) => operator.id === operatorId) || null
