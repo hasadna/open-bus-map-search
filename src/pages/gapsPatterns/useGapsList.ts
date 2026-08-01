@@ -55,7 +55,7 @@ export const useGapsList = (
         console.error('Error fetching data:', error)
       }
     }
-    fetchData()
+    void fetchData()
 
     return () => {
       setHourlyData([])
