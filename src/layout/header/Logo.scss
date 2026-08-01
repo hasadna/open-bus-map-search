@@ -3,13 +3,6 @@
 .header-logo {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  color: black;
-  text-decoration: none;
-
-  &:hover {
-    color: black;
-  }
 
   svg {
     // the artwork is line art authored for a ~215px wide render; the stroke has to
@@ -20,44 +13,46 @@
 
     .st0 {
       fill: none;
-      stroke: #000;
+      stroke: vars.$color-primary;
       stroke-width: 70;
       stroke-miterlimit: 10;
     }
-  }
-}
 
-.header-logo-name {
-  font-size: 20px;
-  font-weight: 500;
-  line-height: 1;
-  white-space: nowrap;
+    path {
+      stroke-dasharray: 1720;
+      stroke-dashoffset: 1720;
+      animation: dash 0.8s linear forwards;
+    }
+
+    circle {
+      fill: vars.$color-primary;
+      stroke-dasharray: 420;
+      stroke-dashoffset: 420;
+      animation: dash 1s linear forwards;
+      animation-delay: 0.5s;
+    }
+  }
+
+  @keyframes dash {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
 }
 
 .header-logo.dark {
-  color: white;
-
-  &:hover {
-    color: white;
-  }
-
   svg {
     circle {
-      fill: white;
+      fill: vars.$color-primary-dark;
     }
 
     .st0 {
-      stroke: white;
+      stroke: vars.$color-primary-dark;
     }
   }
 }
 
 @media only screen and (width < vars.$mobile-max-width) {
-  /* the action icons already fill a phone-width header — keep the mark, drop the wordmark */
-  .header-logo-name {
-    display: none;
-  }
-
   .header-logo svg {
     height: 28px;
   }

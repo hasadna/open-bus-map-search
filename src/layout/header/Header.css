@@ -3,7 +3,12 @@
   justify-content: space-between;
   align-items: center;
   background: #fff;
-  box-shadow: 0 4px 12px rgb(0 0 0 / 12%) !important;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 6%) !important;
+
+  /* the header spans the full width above the sider, so its shadow has to win
+     against the sider's own z-index: 1 */
+  z-index: 2;
+  padding-inline: 24px !important;
 }
 
 .header-brand {
@@ -15,15 +20,7 @@
 
 .main-header.dark {
   background: #303230;
-  box-shadow: 0 4px 12px rgb(0 0 0 / 70%) !important;
-}
-
-.main-header:dir(ltr) {
-  border-radius: 0 0 32px;
-}
-
-.main-header:dir(rtl) {
-  border-radius: 0 0 0 32px;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 35%) !important;
 }
 
 /* mobile-only drawer opener; .hideOnDesktop can't be used here because its

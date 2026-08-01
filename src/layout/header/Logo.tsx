@@ -9,7 +9,13 @@ export function Logo({ dark }: { dark?: boolean }) {
   const title = t('website_name')
 
   return (
-    <Link to={PAGES[0].path} replace className={cn('header-logo', { dark })} title={title}>
+    // the mark carries no visible text, so the link needs an explicit accessible name
+    <Link
+      to={PAGES[0].path}
+      replace
+      className={cn('header-logo', { dark })}
+      aria-label={title}
+      title={title}>
       <svg viewBox="450 900 3200 1730" xmlSpace="preserve" aria-hidden="true">
         <circle cx="930.32" cy="2390.95" r="121.59" />
         <circle cx="2412.32" cy="2390.95" r="121.59" />
@@ -42,7 +48,6 @@ export function Logo({ dark }: { dark?: boolean }) {
         <circle className="st0" cx="3442.6" cy="1960.6" r="65.8" />
         <circle className="st0" cx="3223.9" cy="2225.35" r="65.8" />
       </svg>
-      <span className="header-logo-name">{title}</span>
     </Link>
   )
 }
