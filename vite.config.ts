@@ -1,6 +1,7 @@
 import babel from '@rolldown/plugin-babel'
 import react, { reactCompilerPreset } from '@vitejs/plugin-react'
 import { defineConfig, loadEnv } from 'vite'
+import { cspHeader, DEV_ONLY_DIRECTIVES } from './csp'
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
@@ -28,6 +29,10 @@ export default defineConfig(({ mode }) => {
     },
     server: {
       port: 3000,
+      headers: { 'Content-Security-Policy': cspHeader(DEV_ONLY_DIRECTIVES) },
+    },
+    preview: {
+      headers: { 'Content-Security-Policy': cspHeader() },
     },
     test: {
       environment: 'jsdom',
