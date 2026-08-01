@@ -43,10 +43,10 @@ export function Logo({ dark }: { dark?: boolean }) {
         <path className="st0" d="M2744.43,2225.35c137.1-0.23,274.2-0.45,411.3-0.68" />
         <path className="st0" d="M2292.4,1612c0-136.8,0-273.6,0-410.4" />
         <path className="st0" d="M2281.4,1212.4c255-0.6,510-1.2,765-1.8" />
-        <circle className="st0" cx="3112.2" cy="1212.4" r="65.8" />
-        <circle className="st0" cx="2792.71" cy="1438.12" r="65.8" />
-        <circle className="st0" cx="3442.6" cy="1960.6" r="65.8" />
-        <circle className="st0" cx="3223.9" cy="2225.35" r="65.8" />
+        <circle className="st0" cx="3112.2" cy="1212.4" r="90" />
+        <circle className="st0" cx="2792.71" cy="1438.12" r="90" />
+        <circle className="st0" cx="3442.6" cy="1960.6" r="90" />
+        <circle className="st0" cx="3223.9" cy="2225.35" r="90" />
       </svg>
     </Link>
   )

@@ -18,16 +18,30 @@
       stroke-miterlimit: 10;
     }
 
+    // A stroke eats half its width inward, so a 70-wide one on the connector dots
+    // closes their ring into a solid blob. They carry a wider radius (in Logo.tsx)
+    // and a lighter stroke so the ring still reads at header size.
+    circle.st0 {
+      stroke-width: 46;
+    }
+
     path {
       stroke-dasharray: 1720;
       stroke-dashoffset: 1720;
       animation: dash 0.8s linear forwards;
     }
 
-    circle {
+    // only the wheels are solid — the connector dots keep .st0's `fill: none`. Stated
+    // as :not(.st0) rather than leaning on selector specificity to override it.
+    circle:not(.st0) {
       fill: vars.$color-primary;
-      stroke-dasharray: 420;
-      stroke-dashoffset: 420;
+    }
+
+    circle {
+      // must clear the widest stroked circumference (2πr, r = 90 → 566) or the dash
+      // stops short and the ring is left open
+      stroke-dasharray: 600;
+      stroke-dashoffset: 600;
       animation: dash 1s linear forwards;
       animation-delay: 0.5s;
     }
@@ -42,7 +56,7 @@
 
 .header-logo.dark {
   svg {
-    circle {
+    circle:not(.st0) {
       fill: vars.$color-primary-dark;
     }
 
