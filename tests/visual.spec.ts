@@ -6,6 +6,7 @@ import {
   getPastTrainDate,
   harOptions,
   setupTest,
+  unlockFullPageScroll,
   visitPage,
   waitForSkeletonsToHide,
 } from './utils'
@@ -25,6 +26,7 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
     test.describe.configure({ retries: 0 })
 
     test.beforeEach(async ({ page }) => {
+      await unlockFullPageScroll(page)
       await page.route(/.*youtube*/, (route) => route.abort())
       await setupTest(page, mode === 'LTR' ? 'en' : 'he')
       if (mode === 'Dark') {
