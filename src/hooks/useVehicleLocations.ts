@@ -8,6 +8,7 @@ import { uniqBy } from 'es-toolkit/compat'
 import { useEffect, useState } from 'react'
 import { SIRI_API } from 'src/api/apiConfig'
 import dayjs from 'src/dayjs'
+import { locationFixKey } from 'src/pages/components/map-related/map-types'
 
 const LIMIT = 10000 // the maximum number of vehicles to load in one request
 
@@ -180,6 +181,11 @@ function getMinutesInRange(from: Dateable, to: Dateable, gap = 1) {
   return minutes
 }
 
+const byRecordedAtTime = (
+  a: SiriVehicleLocationWithRelatedPydanticModel,
+  b: SiriVehicleLocationWithRelatedPydanticModel,
+) => new Date(a.recordedAtTime ?? 0).getTime() - new Date(b.recordedAtTime ?? 0).getTime()
+
 export default function useVehicleLocations({
   from,
   to,
@@ -219,12 +225,8 @@ export default function useVehicleLocations({
           } else {
             setLocations((prev) =>
               uniqBy<SiriVehicleLocationWithRelatedPydanticModel>(
-                [...prev, ...data].sort(
-                  (a, b) =>
-                    new Date(a.recordedAtTime ?? 0).getTime() -
-                    new Date(b.recordedAtTime ?? 0).getTime(),
-                ),
-                (loc) => loc.id,
+                [...prev, ...data].sort(byRecordedAtTime),
+                locationFixKey,
               ),
             )
           }
