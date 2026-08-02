@@ -1,13 +1,20 @@
-FROM mcr.microsoft.com/playwright:v1.63.0-alpha-2026-08-02-noble
+# MCR publishes no image for the 1.63 alpha pinned in package.json, and the browsers
+# baked into any released image are the wrong revision for it, so this image only
+# borrows the OS-level browser dependencies from the base.
+FROM mcr.microsoft.com/playwright:v1.62.1-noble
 
 WORKDIR /app
 
 # Upgrade npm to match the version used to generate the lock file
 RUN npm install -g npm@11
 
-# Install npm dependencies (playwright browsers already in base image)
+# Install npm dependencies
 COPY package*.json ./
 RUN npm ci
+
+# The test run itself is offline, so the browser matching the installed
+# playwright-core has to be fetched here, at build time
+RUN npx playwright install chromium
 
 COPY . .
 
