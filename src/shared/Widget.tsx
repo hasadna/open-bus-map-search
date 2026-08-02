@@ -15,6 +15,8 @@ const Widget = ({ marginBottom, children, className, sx, title, titleSx }: Widge
       sx={{
         ...(sx || {}),
         marginBottom: marginBottom ? 2 : undefined,
+        // EXPERIMENT ONLY — delete with the branch, never merge to main
+        border: '3px solid #ff00ff',
       }}
       className={className}>
       <CardContent>
