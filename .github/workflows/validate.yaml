@@ -239,14 +239,15 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
       # A push-triggered build has no pull_request for Eyes to correlate it with, so the
-      # commit must be announced explicitly or it is never tied to the repo's branch —
-      # see the Applitools GitHub Actions docs, "Preparing For Commit Push Action".
-      # BranchName is owner/repo/ref by their convention, not the bare ref.
+      # commit must be announced explicitly — see the Applitools GitHub Actions docs,
+      # "Preparing For Commit Push Action". Their example passes owner/repo/ref as
+      # BranchName; we pass the bare ref instead, because that is the branch every test
+      # in this account is actually filed under (the SDK derives it from GITHUB_REF).
       - name: Notify Applitools of the commit push
         if: github.event_name == 'push' && env.APPLITOOLS_API_KEY
         run: |
           curl -sS -L -d '' -X POST \
-            "https://eyesapi.applitools.com/api/externals/github/push?apiKey=$APPLITOOLS_API_KEY&CommitSha=$APPLITOOLS_BATCH_ID&BranchName=$GITHUB_REPOSITORY/$GITHUB_REF_NAME" \
+            "https://eyesapi.applitools.com/api/externals/github/push?apiKey=$APPLITOOLS_API_KEY&CommitSha=$APPLITOOLS_BATCH_ID&BranchName=$GITHUB_REF_NAME" \
             -o /dev/null -w 'push-notify HTTP %{http_code}\n'
       - name: Configure blocked external hosts
         uses: ./.github/actions/block-network
@@ -286,14 +287,15 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
       # A push-triggered build has no pull_request for Eyes to correlate it with, so the
-      # commit must be announced explicitly or it is never tied to the repo's branch —
-      # see the Applitools GitHub Actions docs, "Preparing For Commit Push Action".
-      # BranchName is owner/repo/ref by their convention, not the bare ref.
+      # commit must be announced explicitly — see the Applitools GitHub Actions docs,
+      # "Preparing For Commit Push Action". Their example passes owner/repo/ref as
+      # BranchName; we pass the bare ref instead, because that is the branch every test
+      # in this account is actually filed under (the SDK derives it from GITHUB_REF).
       - name: Notify Applitools of the commit push
         if: github.event_name == 'push' && env.APPLITOOLS_API_KEY
         run: |
           curl -sS -L -d '' -X POST \
-            "https://eyesapi.applitools.com/api/externals/github/push?apiKey=$APPLITOOLS_API_KEY&CommitSha=$APPLITOOLS_BATCH_ID&BranchName=$GITHUB_REPOSITORY/$GITHUB_REF_NAME" \
+            "https://eyesapi.applitools.com/api/externals/github/push?apiKey=$APPLITOOLS_API_KEY&CommitSha=$APPLITOOLS_BATCH_ID&BranchName=$GITHUB_REF_NAME" \
             -o /dev/null -w 'push-notify HTTP %{http_code}\n'
       - name: Configure blocked external hosts
         uses: ./.github/actions/block-network
