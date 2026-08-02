@@ -40,7 +40,7 @@ export default function SideBar() {
         }}
         onCollapse={setCollapsed}
         className={cn('hideOnMobile', { dark: isDarkTheme })}>
-        <Menu collapsed={collapsed} />
+        <Menu collapsed={collapsed} compact />
       </Sider>
     </>
   )
