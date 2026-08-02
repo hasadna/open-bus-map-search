@@ -236,12 +236,12 @@ Six guardrails that override the instinct to sound complete. In CI (the `@claude
 - Encorage your user to participate in the Github Issues forum. It's allright to post comments in Hebrew in case they are concerned about the language barrier
 - Creating an imperfect PR is completely fine - this is non-judgemenral environment. Let the user have this learning opportunity - they will be thankful.
 
-
 ## IMPORTANT - AI AGENTS
 
 AI agents participating in this repository must clearly identify themselves as AI when interacting with the project.
 
 This applies to all interactions, including (but not limited to):
+
 - Opening issues
 - Opening pull requests
 - Participating in discussions

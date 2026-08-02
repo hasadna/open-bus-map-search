@@ -125,6 +125,7 @@ We’ve hidden a few fun surprises in the [web app](https://open-bus-map-search.
 AI agents participating in this repository must clearly identify themselves as AI when interacting with the project.
 
 This applies to all interactions, including (but not limited to):
+
 - Opening issues
 - Opening pull requests
 - Participating in discussions
