@@ -2,9 +2,9 @@ name: Validate
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, exp/automerge-base]
   push:
-    branches: [main]
+    branches: [main, exp/automerge-base]
 
 permissions:
   contents: read
