@@ -57,7 +57,7 @@ jobs:
         run: npm run lint
       - name: Check for circular dependencies
         run: npx madge --extensions js,ts --circular .
-      # Jest gates merges here: this is the only job in CI that runs it.
+      # Vitest gates merges here: this is the only job in CI that runs it.
       - name: Run unit tests
         run: npm run test:unit
 
@@ -318,6 +318,7 @@ jobs:
       - name: Run Playwright Visual Tests
         env:
           APPLITOOLS_BATCH_NAME: open-bus-map-search/${{ github.ref }}/${{ env.SHORT_SHA }}/
+          PWTEST_CHILD_PROCESS_TIMEOUT: '1800000' # 30 min; default 300000 force-kills slow UFG result collection → false CI failure
         run: npm run test:e2e:visual
       - name: Prepare Playwright artifact directory
         if: always()
