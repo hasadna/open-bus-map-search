@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [main, exp/automerge-base]
   push:
-    branches: [main, exp/automerge-base]
+    branches: [main]
 
 permissions:
   contents: read
