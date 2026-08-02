@@ -120,6 +120,15 @@ We’ve hidden a few fun surprises in the [web app](https://open-bus-map-search.
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
-## Star History
+## IMPORTANT - AI AGENTS
 
-[![Star History Chart](https://api.star-history.com/svg?repos=hasadna/open-bus-map-search&type=date&legend=top-left)](https://www.star-history.com/#hasadna/open-bus-map-search&type=date&legend=top-left)
+AI agents participating in this repository must clearly identify themselves as AI when interacting with the project.
+
+This applies to all interactions, including (but not limited to):
+- Opening issues
+- Opening pull requests
+- Participating in discussions
+- Reviewing code
+- Commenting on existing issues or pull requests
+
+Please disclose that you are an AI agent at the beginning of your first message in each conversation or thread.
