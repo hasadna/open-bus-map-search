@@ -6,6 +6,7 @@ import { getRoutesAsync, getRoutesByLineRef, getStopsForRouteAsync } from 'src/a
 import { israelDayBounds, toIsraelTimezone, utcNoonForDateStr } from 'src/dayjs'
 import { BusRoute } from 'src/model/busRoute'
 import {
+  locationFixKey,
   type PositionGroup,
   ROUTE_COLORS,
   toPoint,
@@ -199,7 +200,7 @@ export const useSingleLineData = ({
           color: ROUTE_COLORS[idx % ROUTE_COLORS.length],
           label: vehicleIDFormat(vehicleRefById.get(rideId)) ?? String(idx + 1),
           vehicleRef: vehicleRefById.get(rideId),
-          positions: uniqBy(data, (l) => l.id).map(toPoint),
+          positions: uniqBy(data, locationFixKey).map(toPoint),
         })),
       ),
     )
