@@ -22,7 +22,7 @@
     "babel-plugin-react-compiler": "^1.0.0",
     "classnames": "^2.5.1",
     "dayjs": "^1.11.20",
-    "es-toolkit": "^1.46.0",
+    "es-toolkit": "^1.50.0",
     "geolib": "^3.3.4",
     "i18next": "^26.3.6",
     "i18next-fs-backend": "^2.6.5",
