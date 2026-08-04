@@ -22,7 +22,7 @@
     "babel-plugin-react-compiler": "^1.0.0",
     "classnames": "^2.5.1",
     "dayjs": "^1.11.20",
-    "es-toolkit": "^1.46.0",
+    "es-toolkit": "^1.50.0",
     "geolib": "^3.3.4",
     "i18next": "^26.3.6",
     "i18next-fs-backend": "^2.6.5",
@@ -84,7 +84,7 @@
     ]
   },
   "devDependencies": {
-    "@applitools/eyes-playwright": "^1.47.9",
+    "@applitools/eyes-playwright": "^1.47.15",
     "@applitools/eyes-storybook": "^3.67.1",
     "@eslint/eslintrc": "^3.3.6",
     "@eslint/js": "^9.39.4",
@@ -112,7 +112,7 @@
     "eslint-plugin-prettier": "^5.5.5",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
-    "eslint-plugin-storybook": "^10.5.0",
+    "eslint-plugin-storybook": "^10.5.5",
     "globals": "^17.8.0",
     "jsdom": "^30.0.1",
     "lightningcss": "^1.32.0",
