@@ -56,7 +56,7 @@ export default [
         sourceType: 'module',
         project: './tsconfig.json',
       },
-      globals: { ...globals.browser, ...globals.jest },
+      globals: { ...globals.browser, ...globals.vitest },
     },
   },
   {

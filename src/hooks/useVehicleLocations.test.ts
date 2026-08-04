@@ -1,18 +1,14 @@
 import { renderHook, waitFor } from '@testing-library/react'
-import { SIRI_API } from 'src/api/apiConfig'
 import useVehicleLocations from 'src/hooks/useVehicleLocations'
 
 // Exercises the fix: a failed LocationObservable load must NOT be cached as a
 // completed one. The failed entry is evicted from the module-level cache so a
 // later request for the same range refetches instead of replaying empty data.
-jest.mock('src/api/apiConfig', () => ({
-  SIRI_API: { siriVehicleLocationsListGet: jest.fn() },
-}))
+const apiMock = vi.hoisted(() => vi.fn())
 
-// SIRI_API.siriVehicleLocationsListGet is a jest.fn() from the mock factory
-// above, not a real bound method - unbound-method is a false positive here.
-// eslint-disable-next-line @typescript-eslint/unbound-method
-const apiMock = SIRI_API.siriVehicleLocationsListGet as jest.Mock
+vi.mock('src/api/apiConfig', () => ({
+  SIRI_API: { siriVehicleLocationsListGet: apiMock },
+}))
 
 describe('useVehicleLocations - failed load is not cached as success', () => {
   beforeEach(() => {
