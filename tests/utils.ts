@@ -165,7 +165,11 @@ export const setupTest = async (page: Page, lng: string = 'he') => {
 }
 
 export const visitPage = async (page: Page, label: (typeof PAGES)[number]['label']) => {
-  const link = page.getByText(i18next.t(label), { exact: true }).and(page.getByRole('link'))
+  // Scoped to the nav: the homepage repeats several of these labels on its own link
+  // cards, so an unscoped name match would resolve to two elements.
+  const link = page
+    .locator('.sidebar-menu')
+    .getByRole('link', { name: i18next.t(label), exact: true })
   const href = await link.getAttribute('href')
   // Register waitForURL before clicking to avoid missing fast client-side navigations
   const navigationPromise = href
