@@ -1,13 +1,11 @@
 import type { SiriVelocityAggregationPydanticModel } from '@hasadna/open-bus-api-client'
 import { useContext, useEffect } from 'react'
-import { useTranslation } from 'react-i18next'
 import { Popup, Rectangle } from 'react-leaflet'
 import dayjs, { ISRAEL_TIMEZONE } from 'src/dayjs'
 import { GlobalSearchContext } from 'src/model/globalState'
 import { useVelocityAggregationData } from '../useVelocityAggregationData'
 import { VelocityHeatmapPopup } from './VelocityHeatmapPopup'
 import { useZoomLevel } from './ZoomComponent'
-import './VelocityHeatmapRectangles.scss'
 
 type VisMode = 'avg' | 'std' | 'cv'
 
@@ -35,6 +33,7 @@ function getRedOpacityColor(value: number, minV = 0, maxV = 1): string {
 interface VelocityHeatmapRectanglesProps {
   visMode: VisMode
   setMinMax?: (min: number, max: number) => void
+  setStatus?: (loading: boolean, hasError: boolean) => void
 }
 
 const DEFAULT_BOUNDS = {
@@ -47,8 +46,8 @@ const DEFAULT_BOUNDS = {
 export const VelocityHeatmapRectangles = ({
   visMode,
   setMinMax,
+  setStatus,
 }: VelocityHeatmapRectanglesProps) => {
-  const { t } = useTranslation()
   const { search } = useContext(GlobalSearchContext)
   const zoom = useZoomLevel()
   const { data, loading, error, currZoom } = useVelocityAggregationData(
@@ -85,14 +84,15 @@ export const VelocityHeatmapRectangles = ({
     setMinMax?.(minV, maxV)
   }, [minV, maxV, setMinMax])
 
+  // Pass loading/error status to parent - a plain element rendered here would
+  // be a child of react-leaflet's MapContainer, which only knows how to
+  // position actual map layers, so it would never appear on screen.
+  useEffect(() => {
+    setStatus?.(loading, !!error)
+  }, [loading, error, setStatus])
+
   return (
     <>
-      {error || loading ? (
-        <div className="err">
-          {error ? t('loading_error') : null}
-          {loading ? t('loading') : null}
-        </div>
-      ) : null}
       {data?.map((point, idx) => {
         const bounds: [[number, number], [number, number]] = [
           [point.roundedLat - half, point.roundedLon - half],
