@@ -240,7 +240,7 @@ const GapsPatternsPage = () => {
 
   return (
     <PageContainer>
-      <Typography variant="h4">
+      <Typography className="page-title" variant="h4">
         {t('gaps_patterns_page_title')}
         <InfoYoutubeModal
           label={t('open_video_about_this_page')}

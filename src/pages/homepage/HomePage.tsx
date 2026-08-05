@@ -60,7 +60,7 @@ export const HomePage = () => {
   return (
     <div className="container">
       <BusImage role="img" aria-label={t('homepage.bus_illustration_alt')} />
-      <h1>{t('homepage.welcome')}</h1>
+      <h1 className="page-title">{t('homepage.welcome')}</h1>
       <h2>{t('homepage.databus_definition')}</h2>
       <p>{t('homepage.website_goal')}</p>
 

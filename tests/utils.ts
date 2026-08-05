@@ -136,6 +136,17 @@ export const setupTest = async (page: Page, lng: string = 'he') => {
   await page.locator('.preloader').waitFor({ state: 'hidden' })
 }
 
+// Every page heads itself with its nav label, except these few, which show a fuller
+// heading under a different key.
+const PAGE_HEADING_KEYS = {
+  homepage_title: 'homepage.welcome',
+  about_title: 'aboutPage.title',
+  public_appeal_title: 'publicAppealPage.title',
+} as const satisfies Partial<Record<(typeof PAGES)[number]['label'], string>>
+
+const headingKey = (label: (typeof PAGES)[number]['label']) =>
+  label in PAGE_HEADING_KEYS ? PAGE_HEADING_KEYS[label as keyof typeof PAGE_HEADING_KEYS] : label
+
 export const visitPage = async (page: Page, label: (typeof PAGES)[number]['label']) => {
   const link = page.getByText(i18next.t(label), { exact: true }).and(page.getByRole('link'))
   const href = await link.getAttribute('href')
@@ -143,17 +154,19 @@ export const visitPage = async (page: Page, label: (typeof PAGES)[number]['label
   const navigationPromise = href
     ? page.waitForURL((url) => url.pathname === href)
     : Promise.resolve()
-  const mainBefore = await page.getByRole('main').innerText()
   await link.click()
   await navigationPromise
-  await page.locator('.preloader').waitFor({ state: 'hidden' })
   // waitForURL resolves on pushState, which is synchronous — it says nothing about
   // whether React has *committed* the new route. Lazy pages (routes/index.tsx) render
-  // some frames later, and the .preloader wait above is a no-op while the Suspense
-  // fallback has yet to mount. Callers would then act on a tree still holding the
-  // previous route — e.g. ShareButton's useLocation copying the old page's URL.
-  // Waiting for <main> to actually change ties this to the render, not to a stopwatch.
-  await expect.poll(() => page.getByRole('main').innerText()).not.toBe(mainBefore)
+  // some frames later, so callers would act on a tree still holding the previous route
+  // — e.g. ShareButton's useLocation copying the old page's URL. Waiting for the
+  // destination's own heading ties this to that render: unlike "the page text changed",
+  // it cannot be satisfied by the Suspense fallback or by the previous page's late
+  // data, and it still holds when we land where we already were (re-click, reload).
+  await expect(page.locator('.page-title')).toContainText(i18next.t(headingKey(label)), {
+    // A cold lazy chunk can take longer than the 5s default expect timeout.
+    timeout: 15000,
+  })
   await page.waitForLoadState('networkidle')
 }
 
