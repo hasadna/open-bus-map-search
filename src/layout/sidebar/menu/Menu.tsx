@@ -17,8 +17,10 @@ import { PAGES } from 'src/routes'
 
 type MainMenuProps = {
   collapsed?: boolean
-  /* The desktop sider has a single screen to fit the whole menu in, so its rows are
-     tighter; the mobile drawer scrolls the full viewport and keeps touch-sized rows. */
+  /* Density only — both the sider and the drawer fit themselves to the space they get
+     (see NavList). The sider is driven by a mouse and shares its screen with the page, so
+     it starts tighter; the drawer owns the whole viewport and is touched, so it starts
+     roomy. */
   compact?: boolean
 }
 
@@ -51,47 +53,79 @@ const SELECTED_COLORS = {
   dark: { backgroundColor: '#1668dc', color: '#fff' },
 }
 
+const ROW_HEIGHT = { compact: 36, roomy: 44 }
+/* WCAG 2.5.8 puts the floor for a pointer target at 24px. The sider is driven by a mouse
+   so it can approach that; the drawer is touched, so it keeps a larger floor and lets the
+   drawer scroll rather than shrink past it. */
+const MIN_ROW_HEIGHT = { compact: 28, roomy: 32 }
+
+/**
+ * Auto-fit: the list is a flex column sized to whatever holds it — the sider on desktop,
+ * the drawer body on mobile — so the rows absorb the available height and shrink from
+ * ROW_HEIGHT toward MIN_ROW_HEIGHT on a short viewport instead of overflowing. Past that
+ * floor the container's own overflow scrolls.
+ *
+ * Every row is a flex item of this one container — the group headings are siblings rather
+ * than nested lists — so all rows carry the same shrink weight and stay the same height as
+ * each other. Spacing is `gap`, not margins: margins don't shrink, and would pin the rows
+ * above their flex basis.
+ */
 const NavList = styled(List, {
   shouldForwardProp: (prop) => prop !== 'compact' && prop !== 'collapsed',
-})<MainMenuProps>(({ theme, compact, collapsed }) => ({
-  padding: compact ? '4px 8px 8px' : '8px 10px 12px',
+})<MainMenuProps>(({ theme, compact, collapsed }) => {
+  const density = compact ? 'compact' : 'roomy'
 
-  '& .menu-group': {
-    marginBottom: compact ? 4 : 10,
-  },
+  return {
+    padding: compact ? '4px 8px 8px' : '8px 10px 12px',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 2,
+    height: '100%',
+    boxSizing: 'border-box',
 
-  '& .MuiListSubheader-root': {
-    padding: compact ? '6px 12px 2px' : '8px 12px 6px',
-    backgroundColor: 'transparent',
-    fontSize: 11,
-    fontWeight: 700,
-    lineHeight: 1.6,
-    letterSpacing: '0.08em',
-    textTransform: 'uppercase',
-    color: theme.palette.text.secondary,
-  },
+    '& .MuiListSubheader-root': {
+      // Fixed overhead — only the rows shrink, so the headings stay lean: on a phone three
+      // roomy headings cost more than a whole row of the height they're competing for.
+      flex: '0 0 auto',
+      padding: '6px 12px 2px',
+      marginBlockStart: compact ? 4 : 8,
+      backgroundColor: 'transparent',
+      fontSize: 11,
+      fontWeight: 700,
+      lineHeight: 1.6,
+      letterSpacing: '0.08em',
+      textTransform: 'uppercase',
+      color: theme.palette.text.secondary,
+    },
 
-  '& .MuiListItemButton-root': {
-    minHeight: compact ? 36 : 44,
-    marginBottom: compact ? 2 : 4,
-    paddingBlock: 0,
-    paddingInline: collapsed ? 0 : 12,
-    justifyContent: collapsed ? 'center' : undefined,
-    borderRadius: compact ? 8 : 10,
-    '&.Mui-selected, &.Mui-selected:hover': SELECTED_COLORS[theme.palette.mode],
-  },
+    '& .MuiListItem-root': {
+      flex: `0 1 ${ROW_HEIGHT[density]}px`,
+      minHeight: MIN_ROW_HEIGHT[density],
+    },
 
-  '& .MuiListItemIcon-root': {
-    minWidth: 0,
-    marginInlineEnd: collapsed ? 0 : 10,
-    color: 'inherit',
-    '& .MuiSvgIcon-root': { fontSize: 20 },
-  },
+    '& .MuiListItemButton-root': {
+      // The row's height comes from its flex item; the button only fills it.
+      height: '100%',
+      minHeight: 0,
+      paddingBlock: 0,
+      paddingInline: collapsed ? 0 : 12,
+      justifyContent: collapsed ? 'center' : undefined,
+      borderRadius: compact ? 8 : 10,
+      '&.Mui-selected, &.Mui-selected:hover': SELECTED_COLORS[theme.palette.mode],
+    },
 
-  '& .MuiListItemText-primary': {
-    fontSize: 14,
-  },
-}))
+    '& .MuiListItemIcon-root': {
+      minWidth: 0,
+      marginInlineEnd: collapsed ? 0 : 10,
+      color: 'inherit',
+      '& .MuiSvgIcon-root': { fontSize: 20 },
+    },
+
+    '& .MuiListItemText-primary': {
+      fontSize: 14,
+    },
+  }
+})
 
 const MainMenu = ({ collapsed = false, compact = false }: MainMenuProps) => {
   const { t, i18n } = useTranslation()
@@ -161,17 +195,14 @@ const MainMenu = ({ collapsed = false, compact = false }: MainMenuProps) => {
     <>
       <NavList className="sidebar-menu" compact={compact} collapsed={collapsed}>
         {renderItem('/')}
-        {collapsed
-          ? MENU_GROUPS.flatMap(({ paths }) => paths.map((path) => renderItem(path)))
-          : MENU_GROUPS.map(({ key, paths }) => (
-              <li key={key} className="menu-group">
-                <List
-                  disablePadding
-                  subheader={<ListSubheader disableSticky>{t(key)}</ListSubheader>}>
-                  {paths.map((path) => renderItem(path))}
-                </List>
-              </li>
-            ))}
+        {MENU_GROUPS.flatMap(({ key, paths }) => [
+          collapsed ? null : (
+            <ListSubheader key={key} disableSticky>
+              {t(key)}
+            </ListSubheader>
+          ),
+          ...paths.map((path) => renderItem(path)),
+        ])}
       </NavList>
       <DonateModal isVisible={isDonateModalVisible} onClose={() => setDonateModalVisible(false)} />
     </>

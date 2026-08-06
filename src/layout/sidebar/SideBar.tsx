@@ -35,7 +35,8 @@ export default function SideBar() {
         collapsible
         collapsed={collapsed}
         style={{
-          marginBottom: '48px',
+          // No bottom margin for the fixed trigger: antd already reserves its 48px as
+          // padding on the sider, and reserving it twice cost the menu a row of height.
           boxShadow: isDarkTheme ? '0 0 12px 4px rgba(0,0,0,0.7)' : '0 0 12px 4px rgba(0,0,0,0.12)',
         }}
         onCollapse={setCollapsed}
