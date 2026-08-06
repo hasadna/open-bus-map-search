@@ -74,7 +74,8 @@ test.describe('Share URL feature', () => {
     await page.locator('[aria-label="העתק קישור"]').click()
 
     const clipUrl = await getClipboard(page)
-    const params = new URL(clipUrl).searchParams
+    const { pathname, searchParams: params } = new URL(clipUrl)
+    expect(pathname).toBe('/gaps')
     expect(params.get('date')).toBe('2024-02-12')
     expect(params.get('operatorId')).toBe('3')
     expect(params.get('lineNumber')).toBe('64')
@@ -114,14 +115,6 @@ test.describe('Share URL feature', () => {
     const params = new URL(clipUrl).searchParams
     expect(params.has('date')).toBe(true)
     expect(params.get('date')).toMatch(/^\d{4}-\d{2}-\d{2}$/)
-  })
-
-  test('share URL pathname has no language prefix', async ({ page }) => {
-    await visitPage(page, 'gaps_page_title')
-    await page.locator('[aria-label="העתק קישור"]').click()
-    const clipUrl = await getClipboard(page)
-    const { pathname } = new URL(clipUrl)
-    expect(pathname).toBe('/gaps')
   })
 
   // -------------------------------------------------------------------------

@@ -57,7 +57,7 @@ const VelocityHeatmapPage: React.FC = () => {
 
   return (
     <PageContainer>
-      <Typography variant="h4" component="h1" gutterBottom>
+      <Typography className="page-title" variant="h4" component="h1" gutterBottom>
         {t('velocity_heatmap_page_title')}
       </Typography>
 

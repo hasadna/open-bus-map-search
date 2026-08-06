@@ -38,7 +38,9 @@ const OperatorPage = () => {
 
   return (
     <PageContainer>
-      <Typography variant="h4">{t('operator_title')}</Typography>
+      <Typography className="page-title" variant="h4">
+        {t('operator_title')}
+      </Typography>
       <Grid container spacing={2}>
         <Grid size={{ sm: 4, xs: 12 }}>
           <OperatorSelector
