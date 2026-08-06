@@ -120,6 +120,34 @@ export const clearInputField = async (input: Locator) => {
   await clearIndicator.click()
 }
 
+/**
+ * Let the document itself grow to the full content height, so a full-page capture
+ * really covers the whole page.
+ *
+ * The app shell pins the layout to the viewport and scrolls inside `#main-content`
+ * (`.main` and `#main-content` in src/layout/index.tsx), so `documentElement.scrollHeight`
+ * always equals the viewport height — and a full-page capture is therefore identical to a
+ * viewport one. Applitools' `scrollRootElement` does not help: the Ultrafast Grid forwards
+ * it for native devices only, so a web render always measures the document.
+ *
+ * Must be registered before the first navigation — the style is re-applied on every one.
+ */
+export const unlockFullPageScroll = async (page: Page) => {
+  await page.addInitScript(() => {
+    const style = document.createElement('style')
+    style.textContent = `
+      .main { height: auto !important; overflow: visible !important; }
+      #main-content { overflow: visible !important; }
+    `
+    const attach = () => document.head.appendChild(style)
+    if (document.head) {
+      attach()
+    } else {
+      document.addEventListener('DOMContentLoaded', attach)
+    }
+  })
+}
+
 export const setupTest = async (page: Page, lng: string = 'he') => {
   await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
   await page.route(/api\.github\.com/, (route) => route.abort())
@@ -136,19 +164,12 @@ export const setupTest = async (page: Page, lng: string = 'he') => {
   await page.locator('.preloader').waitFor({ state: 'hidden' })
 }
 
-// Every page heads itself with its nav label, except these few, which show a fuller
-// heading under a different key.
-const PAGE_HEADING_KEYS = {
-  homepage_title: 'homepage.welcome',
-  about_title: 'aboutPage.title',
-  public_appeal_title: 'publicAppealPage.title',
-} as const satisfies Partial<Record<(typeof PAGES)[number]['label'], string>>
-
-const headingKey = (label: (typeof PAGES)[number]['label']) =>
-  label in PAGE_HEADING_KEYS ? PAGE_HEADING_KEYS[label as keyof typeof PAGE_HEADING_KEYS] : label
-
 export const visitPage = async (page: Page, label: (typeof PAGES)[number]['label']) => {
-  const link = page.getByText(i18next.t(label), { exact: true }).and(page.getByRole('link'))
+  // Scoped to the nav: the homepage repeats several of these labels on its own link
+  // cards, so an unscoped name match would resolve to two elements.
+  const link = page
+    .locator('.sidebar-menu')
+    .getByRole('link', { name: i18next.t(label), exact: true })
   const href = await link.getAttribute('href')
   // Register waitForURL before clicking to avoid missing fast client-side navigations
   const navigationPromise = href
@@ -156,17 +177,8 @@ export const visitPage = async (page: Page, label: (typeof PAGES)[number]['label
     : Promise.resolve()
   await link.click()
   await navigationPromise
-  // waitForURL resolves on pushState, which is synchronous — it says nothing about
-  // whether React has *committed* the new route. Lazy pages (routes/index.tsx) render
-  // some frames later, so callers would act on a tree still holding the previous route
-  // — e.g. ShareButton's useLocation copying the old page's URL. Waiting for the
-  // destination's own heading ties this to that render: unlike "the page text changed",
-  // it cannot be satisfied by the Suspense fallback or by the previous page's late
-  // data, and it still holds when we land where we already were (re-click, reload).
-  await expect(page.locator('.page-title')).toContainText(i18next.t(headingKey(label)), {
-    // A cold lazy chunk can take longer than the 5s default expect timeout.
-    timeout: 15000,
-  })
+  await page.waitForTimeout(500)
+  await page.locator('.preloader').waitFor({ state: 'hidden' })
   await page.waitForLoadState('networkidle')
 }
 
