@@ -1,6 +1,6 @@
 import { FC, useContext } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useLocation, useNavigate } from 'react-router'
+import { Link, useLocation } from 'react-router'
 import { buildShareUrl } from 'src/layout/header/shareUrl'
 import { GlobalSearchContext } from 'src/model/globalState'
 import { PageShareParamsContext } from 'src/model/routeContext'
@@ -34,37 +34,35 @@ const HeaderLinks: FC<HeaderLinksProps> = ({ children }) => {
 
 const ExternalLink = ({ label, path, icon }: LinkType) => {
   const { t } = useTranslation()
-  function handleClick() {
-    window.open(path, '_blank')
-  }
   return (
-    <div className="header-link" aria-label={t(label)} title={t(label)} onClick={handleClick}>
+    <a
+      className="header-link"
+      aria-label={t(label)}
+      title={t(label)}
+      href={path}
+      target="_blank"
+      rel="noopener noreferrer">
       {icon}
-    </div>
+    </a>
   )
 }
 
 const InternalLink = ({ label, path, icon }: LinkType) => {
-  const navigate = useNavigate()
   const { t } = useTranslation()
   const location = useLocation()
   const { search } = useContext(GlobalSearchContext)
   const { params: pageParams } = useContext(PageShareParamsContext)
 
-  const handleClick = () => {
-    // Before navigation to the "report-a-bug" page, get the page state as a shareable link
-    if (path === '/report-a-bug') {
-      const contextUrl = buildShareUrl(location.pathname, search, pageParams)
-      navigate(`${path}?context=${encodeURIComponent(contextUrl)}`)
-      return
-    }
-    navigate(path)
-  }
+  // Before navigation to the "report-a-bug" page, attach the page state as a shareable link
+  const to =
+    path === '/report-a-bug'
+      ? `${path}?context=${encodeURIComponent(buildShareUrl(location.pathname, search, pageParams))}`
+      : path
 
   return (
-    <div aria-label={t(label)} title={t(label)} className="header-link" onClick={handleClick}>
+    <Link aria-label={t(label)} title={t(label)} className="header-link" to={to}>
       {icon}
-    </div>
+    </Link>
   )
 }
 
