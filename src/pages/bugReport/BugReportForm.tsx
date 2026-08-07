@@ -6,7 +6,6 @@ import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSearchParams } from 'react-router'
 import { ISSUES_API } from 'src/api/apiConfig'
-import { detectUserEnvironment } from 'src/pages/bugReport/detectUserEnvironment'
 import { EasterEgg } from 'src/pages/components/EasterEgg/EasterEgg'
 import InfoYoutubeModal from 'src/pages/components/YoutubeModal'
 import Widget from 'src/shared/Widget'
@@ -159,14 +158,15 @@ const BugReportForm = () => {
         <Form.Item
           label={t('bug_environment')}
           name="environment"
-          initialValue={detectUserEnvironment()}
+          initialValue={navigator.userAgent}
+          extra={t('bug_environment_notice')}
           rules={[{ required: true, min: 1, max: 200 }]}>
           <Input />
         </Form.Item>
 
         {contextUrl && (
           <Form.Item label={t('bug_debug_context')}>
-            <span className="debug-context-value">{contextUrl}</span>
+            <Input value={contextUrl} disabled />
           </Form.Item>
         )}
 

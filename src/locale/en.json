@@ -229,6 +229,7 @@
   "bug_title": "Title/Summary",
   "bug_description": "Description",
   "bug_environment": "Environment",
+  "bug_environment_notice": "The following field contains automatically collected technical information (such as browser and operating system type and version). This information can help us diagnose the problem, and can be edited if you wish to remove details.",
   "bug_debug_context": "Information for Developers",
   "bug_expected_behavior": "Expected Behavior",
   "bug_actual_behavior": "Actual Behavior",
