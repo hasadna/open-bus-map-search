@@ -19,12 +19,14 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "types": ["vite/client", "node"]
+    "types": ["vite/client", "node", "vitest/globals"]
   },
   "include": [
     "src",
     "vite-env.d.ts",
     "vite.config.ts",
+    "csp.ts",
+    "csp.test.ts",
     "tests",
     "setupTests.ts",
     "playwright.config.ts",

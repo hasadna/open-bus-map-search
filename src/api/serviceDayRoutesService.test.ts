@@ -1,16 +1,14 @@
 import dayjs from 'src/dayjs'
 import { getServiceDayRoutes } from './serviceDayRoutesService'
 
-jest.mock('src/api/apiConfig', () => ({
-  GTFS_API: {
-    gtfsRoutesListGet: jest.fn(),
-    gtfsRidesListGet: jest.fn(),
-  },
+// vi.mock factories are hoisted above the imports, so a handle shared between
+// the factory and the tests must be created with vi.hoisted to exist in time.
+const mockApi = vi.hoisted(() => ({
+  gtfsRoutesListGet: vi.fn(),
+  gtfsRidesListGet: vi.fn(),
 }))
 
-const mockApi = jest.requireMock<{
-  GTFS_API: { gtfsRoutesListGet: jest.Mock; gtfsRidesListGet: jest.Mock }
-}>('src/api/apiConfig').GTFS_API
+vi.mock('src/api/apiConfig', () => ({ GTFS_API: mockApi }))
 
 function makeRoute(id: number, overrides: Record<string, unknown> = {}) {
   return {
@@ -48,7 +46,7 @@ function makeRide(gtfsRouteId: number, overrides: Record<string, unknown> = {}) 
 
 describe('getServiceDayRoutes', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockApi.gtfsRoutesListGet.mockResolvedValue([])
     mockApi.gtfsRidesListGet.mockResolvedValue([])
   })

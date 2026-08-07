@@ -253,7 +253,10 @@ pre {
 }
 
 .expanded {
-  position: absolute;
+  // Fixed, not absolute: `absolute` resolves against the nearest positioned
+  // ancestor, so any layout wrapper that happens to be positioned would shrink
+  // the expanded map to that wrapper instead of the screen.
+  position: fixed;
   inset: 0;
   margin-bottom: 0;
 
