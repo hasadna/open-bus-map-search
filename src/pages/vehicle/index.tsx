@@ -4,11 +4,10 @@ import { useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { SIRI_API } from 'src/api/apiConfig'
 import { getAllRoutesList } from 'src/api/gtfsService'
-import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone, utcNoonForDateStr } from 'src/dayjs'
+import dayjs, { israelDayBounds, toIsraelTimezone, utcNoonForDateStr } from 'src/dayjs'
 import { fromGtfsRoute } from 'src/model/busRoute'
 import { GlobalSearchContext } from 'src/model/globalState'
 import { InitialUrlParamsContext, PageShareParamsContext } from 'src/model/routeContext'
-import { serviceDayBounds } from 'src/pages/components/utils/startTimeUtils'
 import VehicleSelector, { normalizeVehicleNumber } from 'src/pages/components/VehicleSelector'
 import { DateSelector } from '../components/DateSelector'
 import { NotFound } from '../components/NotFound'
@@ -39,10 +38,7 @@ const VehiclePage = () => {
     return () => setParams({})
   }, [vehicleNumber, setParams])
 
-  const { start: serviceDayStart, end: serviceDayEnd } = useMemo(
-    () => serviceDayBounds(date),
-    [date],
-  )
+  const { start: dayStart, end: dayEnd } = useMemo(() => israelDayBounds(date), [date])
 
   const handleDateChange = (time: dayjs.Dayjs | null) => {
     setSearch((current) => ({
@@ -56,14 +52,15 @@ const VehiclePage = () => {
     isFetching,
     isError,
   } = useQuery({
-    queryKey: ['vehicleRides', vehicleNumber, serviceDayStart.valueOf(), serviceDayEnd.valueOf()],
+    queryKey: ['vehicleRides', vehicleNumber, dayStart.valueOf(), dayEnd.valueOf()],
     enabled: !!vehicleNumber,
     queryFn: ({ signal }) =>
       SIRI_API.siriRidesListGet(
         {
           vehicleRefs: String(vehicleNumber),
-          scheduledStartTimeFrom: serviceDayStart.toDate(),
-          scheduledStartTimeTo: serviceDayEnd.toDate(),
+          scheduledStartTimeFrom: dayStart.toDate(),
+          // ...To is inclusive server-side, so step back off the exclusive day end.
+          scheduledStartTimeTo: dayEnd.subtract(1, 'millisecond').toDate(),
           orderBy: 'scheduled_start_time asc',
           limit: 500,
         },
@@ -73,8 +70,8 @@ const VehiclePage = () => {
 
   // SIRI rides carry only siri_route__line_ref; the human-readable line number and
   // route names (gtfs_route__*) are frequently null on the ride. Resolve them from
-  // the operator's GTFS routes for the service day — same source the operator page
-  // uses (getAllRoutesList) — and key by line ref to match each ride.
+  // the operator's GTFS routes for the day — same source the operator page uses
+  // (getAllRoutesList) — and key by line ref to match each ride.
   const operatorIds = useMemo(
     () =>
       Array.from(
@@ -111,8 +108,8 @@ const VehiclePage = () => {
   )
 
   const rows = useMemo<VehicleRideRow[]>(
-    () => buildVehicleRideRows({ rides, routeByLineRef, serviceDayStart, date }),
-    [rides, serviceDayStart, date, routeByLineRef],
+    () => buildVehicleRideRows({ rides, routeByLineRef, date }),
+    [rides, date, routeByLineRef],
   )
 
   const handleRowClick = (payload: VehicleRideRow['setSearchPayload']) => {
@@ -129,7 +126,7 @@ const VehiclePage = () => {
       <Grid container spacing={2} sx={{ width: '100%', maxWidth: 600, mx: 'auto' }}>
         {/* choose date */}
         <Grid size={{ sm: 6, xs: 12 }}>
-          <DateSelector time={dayjs.tz(date, ISRAEL_TIMEZONE)} onChange={handleDateChange} />
+          <DateSelector time={dayStart} onChange={handleDateChange} />
         </Grid>
         {/* choose vehicle */}
         <Grid size={{ sm: 6, xs: 12 }}>
