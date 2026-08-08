@@ -57,7 +57,7 @@ jobs:
         run: npm run lint
       - name: Check for circular dependencies
         run: npx madge --extensions js,ts --circular .
-      # Jest gates merges here: this is the only job in CI that runs it.
+      # Vitest gates merges here: this is the only job in CI that runs it.
       - name: Run unit tests
         run: npm run test:unit
 

@@ -2,20 +2,20 @@ import { renderHook, waitFor } from '@testing-library/react'
 import { getAllRoutesList } from 'src/api/gtfsService'
 import { useAllRoutes } from './useAllRoutes'
 
-jest.mock('src/api/gtfsService', () => ({
-  getAllRoutesList: jest.fn(),
+vi.mock('src/api/gtfsService', () => ({
+  getAllRoutesList: vi.fn(),
 }))
 
-const mockedGetAllRoutesList = getAllRoutesList as jest.MockedFunction<typeof getAllRoutesList>
+const mockedGetAllRoutesList = vi.mocked(getAllRoutesList)
 
 beforeEach(() => {
-  jest.clearAllMocks()
+  vi.clearAllMocks()
   mockedGetAllRoutesList.mockResolvedValue([])
-  jest.spyOn(console, 'error').mockImplementation(() => {})
+  vi.spyOn(console, 'error').mockImplementation(() => {})
 })
 
 afterEach(() => {
-  jest.restoreAllMocks()
+  vi.restoreAllMocks()
 })
 
 describe('useAllRoutes', () => {

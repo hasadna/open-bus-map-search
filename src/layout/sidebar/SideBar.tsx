@@ -1,5 +1,4 @@
 import { Drawer, Layout } from 'antd'
-import cn from 'classnames'
 import { useContext, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { LayoutContextInterface, LayoutCtx } from '../LayoutContext'
@@ -23,7 +22,7 @@ export default function SideBar() {
         size={280}
         onClose={() => setDrawerOpen(false)}
         open={drawerOpen}
-        rootClassName={cn('hideOnDesktop', { dark: isDarkTheme })}
+        rootClassName="hideOnDesktop"
         styles={{ body: { padding: '0' } }}>
         <Menu />
       </Drawer>
@@ -35,12 +34,13 @@ export default function SideBar() {
         collapsible
         collapsed={collapsed}
         style={{
-          marginBottom: '48px',
+          // No bottom margin for the fixed trigger: antd already reserves its 48px as
+          // padding on the sider, and reserving it twice cost the menu a row of height.
           boxShadow: isDarkTheme ? '0 0 12px 4px rgba(0,0,0,0.7)' : '0 0 12px 4px rgba(0,0,0,0.12)',
         }}
         onCollapse={setCollapsed}
-        className={cn('hideOnMobile', { dark: isDarkTheme })}>
-        <Menu collapsed={collapsed} />
+        className="hideOnMobile">
+        <Menu collapsed={collapsed} compact />
       </Sider>
     </>
   )

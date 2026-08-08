@@ -21,9 +21,10 @@ npm run lint:fix         # Auto-fix linting issues
 ### Testing
 
 ```bash
-npm test                 # Run all tests (Jest + Playwright, excluding visual)
-npm run test:unit        # Run Jest unit tests only
-npm run test:unit:ci     # Run Jest with coverage report
+npm test                 # Run all tests (Vitest + Playwright, excluding visual)
+npm run test:unit        # Run Vitest unit tests only
+npm run test:unit:watch  # Run Vitest unit tests in watch mode
+npm run test:unit:ci     # Run Vitest with coverage report
 npm run test:e2e         # Run Playwright e2e tests
 npm run test:e2e:ui      # Run Playwright with interactive UI
 npm run test:e2e:visual  # Run visual regression tests (Applitools)
@@ -39,9 +40,9 @@ npm run build-storybook  # Build static Storybook
 ### Running Single Tests
 
 ```bash
-# Jest (unit tests)
-npx jest path/to/test.test.ts
-npx jest --testNamePattern="test name pattern"
+# Vitest (unit tests)
+npx vitest run path/to/test.test.ts
+npx vitest run --testNamePattern="test name pattern"
 
 # Playwright (e2e tests)
 npx playwright test path/to/test.spec.ts
@@ -155,14 +156,14 @@ src/
 
 ### Testing Strategy
 
-- **Unit Tests**: Jest + Testing Library for components and utilities
+- **Unit Tests**: Vitest + Testing Library for components and utilities
 - **E2E Tests**: Playwright for user flows
 - **Visual Regression**: Applitools integration for Storybook and Playwright
 - **Mock Service Worker**: MSW for API mocking in Storybook (see `.storybook/preview.tsx`)
 
 Test files are co-located with source code:
 
-- `*.test.ts(x)` for Jest
+- `*.test.ts(x)` for Vitest
 - `*.spec.ts` for Playwright
 - `*.stories.tsx` for Storybook
 
@@ -190,7 +191,7 @@ no extra setup. Create `.env.local` only to override them locally (git-ignored):
 3. All CI checks must pass:
    - Linting (ESLint, Stylelint, Prettier)
    - Type checking (TypeScript)
-   - Unit tests (Jest with coverage)
+   - Unit tests (Vitest with coverage)
    - Build succeeds
 4. PR title must follow conventional commit format
 
@@ -237,3 +238,17 @@ Six guardrails that override the instinct to sound complete. In CI (the `@claude
 - Always test (including lint) before commiting anything
 - Encorage your user to participate in the Github Issues forum. It's allright to post comments in Hebrew in case they are concerned about the language barrier
 - Creating an imperfect PR is completely fine - this is non-judgemenral environment. Let the user have this learning opportunity - they will be thankful.
+
+## IMPORTANT - AI AGENTS
+
+AI agents participating in this repository must clearly identify themselves as AI when interacting with the project.
+
+This applies to all interactions, including (but not limited to):
+
+- Opening issues
+- Opening pull requests
+- Participating in discussions
+- Reviewing code
+- Commenting on existing issues or pull requests
+
+Please disclose that you are an AI agent at the beginning of your first message in each conversation or thread.
