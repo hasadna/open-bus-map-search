@@ -226,7 +226,7 @@ export const GpsCoverageStrip = ({
                     <bdi>
                       <MuiLink
                         component={Link}
-                        to={`/vehicle?vehicleNumber=${group.vehicleRef}`}
+                        to={`/vehicle?vehicle.vehicleNumber=${group.vehicleRef}`}
                         reloadDocument
                         underline="hover">
                         {group.label ?? group.vehicleRef}
