@@ -19,7 +19,7 @@ test.beforeEach(async ({ page }) => {
 })
 
 test('should display logo and menu items correctly', async ({ page }) => {
-  await expect(page.locator('h1.sidebar-logo')).toContainText('דאטאבוס')
+  await expect(page.locator('.main-header .header-logo')).toHaveAccessibleName('דאטאבוס')
   await expect(page.locator('ul > li a')).toContainText(MENU_ITEMS)
 })
 

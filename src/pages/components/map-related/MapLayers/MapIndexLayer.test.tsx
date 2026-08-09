@@ -3,9 +3,9 @@ import { MemoryRouter } from 'react-router'
 import type { PositionGroup } from '../map-types'
 import { MapIndexLayer } from './MapIndexLayer'
 
-// MapContent computes marker paths from import.meta.env, which ts-jest can't parse.
-// MapIndexLayer only needs the path/color constants, so stub them.
-jest.mock('../MapContent', () => ({
+// MapIndexLayer only needs the path/color constants out of MapContent, so stub
+// them instead of pulling the whole leaflet map module into the test.
+vi.mock('../MapContent', () => ({
   actualRouteStopMarkerPath: 'actual-marker.png',
   plannedRouteStopMarkerPath: 'planned-marker.png',
   plannedRouteLineColor: 'black',

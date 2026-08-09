@@ -44,6 +44,9 @@ export default defineConfig<EyesFixture>({
     serviceWorkers: 'block',
 
     eyesConfig: {
+      // Pin the Applitools app explicitly: unset, the fixture silently defaults to
+      // 'My App', which strands every baseline in a shared junk-drawer app.
+      appName: 'OpenBus',
       type: 'ufg',
       isDisabled: !process.env.APPLITOOLS_API_KEY,
       failTestsOnDiff: false,

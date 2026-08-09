@@ -1,21 +1,15 @@
 import { Drawer, Layout } from 'antd'
-import cn from 'classnames'
 import { useContext, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router'
-import { PAGES } from 'src/routes'
 import { LayoutContextInterface, LayoutCtx } from '../LayoutContext'
 import { useTheme } from '../ThemeContext'
-import { Logo } from './logo'
 import Menu from './menu/Menu'
 import './sidebar.scss'
 
 const { Sider } = Layout
 
-const CollapsedLogo = () => <h1 className={'sidebar-logo-collapsed'}>🚌</h1>
-
 export default function SideBar() {
-  const { t, i18n } = useTranslation()
+  const { i18n } = useTranslation()
   const { drawerOpen, setDrawerOpen } = useContext<LayoutContextInterface>(LayoutCtx)
   const [collapsed, setCollapsed] = useState(false)
   const { isDarkTheme } = useTheme()
@@ -28,10 +22,8 @@ export default function SideBar() {
         size={280}
         onClose={() => setDrawerOpen(false)}
         open={drawerOpen}
-        rootClassName={cn('hideOnDesktop', { dark: isDarkTheme })}
+        rootClassName="hideOnDesktop"
         styles={{ body: { padding: '0' } }}>
-        <Logo title={t('website_name')} dark={isDarkTheme} />
-        <div className="sidebar-divider" />
         <Menu />
       </Drawer>
       <Sider
@@ -42,16 +34,13 @@ export default function SideBar() {
         collapsible
         collapsed={collapsed}
         style={{
-          marginBottom: '48px',
+          // No bottom margin for the fixed trigger: antd already reserves its 48px as
+          // padding on the sider, and reserving it twice cost the menu a row of height.
           boxShadow: isDarkTheme ? '0 0 12px 4px rgba(0,0,0,0.7)' : '0 0 12px 4px rgba(0,0,0,0.12)',
         }}
         onCollapse={setCollapsed}
-        className={cn('hideOnMobile', { dark: isDarkTheme })}>
-        <Link to={PAGES[0].path} replace>
-          {collapsed ? <CollapsedLogo /> : <Logo title={t('website_name')} dark={isDarkTheme} />}
-        </Link>
-        <div className="sidebar-divider" />
-        <Menu collapsed={collapsed} />
+        className="hideOnMobile">
+        <Menu collapsed={collapsed} compact />
       </Sider>
     </>
   )

@@ -4,7 +4,9 @@ import type {
   SiriVehicleLocationWithRelatedPydanticModel,
 } from '@hasadna/open-bus-api-client'
 import { useQuery } from '@tanstack/react-query'
+import { uniqBy } from 'es-toolkit/compat'
 import { GTFS_API, SIRI_API } from 'src/api/apiConfig'
+import { locationFixKey } from 'src/pages/components/map-related/map-types'
 import { API_PAGE_SIZE, getTrainDateRange, groupTrainRoutes, TRAIN_OPERATOR_REF } from './trainData'
 
 async function fetchAllPages<T>(fetchPage: (offset: number) => Promise<T[]>) {
@@ -97,7 +99,7 @@ export function useTrainVehicleLocations(date: string, lineRefs: number[]) {
           ),
         ),
       )
-      return locationsByLine.flat()
+      return uniqBy(locationsByLine.flat(), locationFixKey)
     },
   })
 }

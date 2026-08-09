@@ -1,9 +1,23 @@
-import cn from 'classnames'
+import { styled } from '@mui/material/styles'
+import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router'
+import { PAGES } from 'src/routes'
+import './Logo.scss'
 
-export function Logo({ title, dark }: { title?: string; dark?: boolean }) {
+// the mark's strokes are `currentcolor`, so the palette drives it and follows the
+// theme mode on its own — no dark-mode variant to keep in sync
+const BrandLink = styled(Link)(({ theme }) => ({
+  color: theme.palette.primary.main,
+}))
+
+export function Logo() {
+  const { t } = useTranslation()
+  const title = t('website_name')
+
   return (
-    <h1 className={cn('sidebar-logo', { dark })}>
-      <svg viewBox="450 900 3200 1730" xmlSpace="preserve">
+    // the mark carries no visible text, so the link needs an explicit accessible name
+    <BrandLink to={PAGES[0].path} replace className="header-logo" aria-label={title} title={title}>
+      <svg viewBox="450 900 3200 1730" xmlSpace="preserve" aria-hidden="true">
         <circle cx="930.32" cy="2390.95" r="121.59" />
         <circle cx="2412.32" cy="2390.95" r="121.59" />
         <path
@@ -30,12 +44,11 @@ export function Logo({ title, dark }: { title?: string; dark?: boolean }) {
         <path className="st0" d="M2744.43,2225.35c137.1-0.23,274.2-0.45,411.3-0.68" />
         <path className="st0" d="M2292.4,1612c0-136.8,0-273.6,0-410.4" />
         <path className="st0" d="M2281.4,1212.4c255-0.6,510-1.2,765-1.8" />
-        <circle className="st0" cx="3112.2" cy="1212.4" r="65.8" />
-        <circle className="st0" cx="2792.71" cy="1438.12" r="65.8" />
-        <circle className="st0" cx="3442.6" cy="1960.6" r="65.8" />
-        <circle className="st0" cx="3223.9" cy="2225.35" r="65.8" />
+        <circle className="st0" cx="3112.2" cy="1212.4" r="90" />
+        <circle className="st0" cx="2792.71" cy="1438.12" r="90" />
+        <circle className="st0" cx="3442.6" cy="1960.6" r="90" />
+        <circle className="st0" cx="3223.9" cy="2225.35" r="90" />
       </svg>
-      <span>{title}</span>
-    </h1>
+    </BrandLink>
   )
 }
