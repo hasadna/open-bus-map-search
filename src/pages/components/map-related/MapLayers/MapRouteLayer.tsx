@@ -3,8 +3,8 @@ import { Fragment, useCallback, useRef } from 'react'
 import { Marker, Polyline, Popup } from 'react-leaflet'
 import { useAgencyList } from 'src/hooks/useAgencyList'
 import { busIcon, busIconPath } from '../../utils/BusIcon'
-import type { PositionGroup } from '../map-types'
-import { actualRouteStopMarker } from '../MapContent'
+import type { Point, PositionGroup } from '../map-types'
+import { actualRouteStopMarker, vehicleBearingMarker } from '../MapContent'
 import { BusToolTip } from './BusToolTip'
 import BusToolTipFooter from './BusToolTipFooter'
 
@@ -12,6 +12,19 @@ interface MapRouteLayerProps {
   positionGroups: PositionGroup[]
   showNavigationButtons?: boolean
   navigateMarkers: (groupIndex: number, id: number, marker: Layer) => void
+}
+
+/**
+ * A moving ping becomes an arrow pointing along its bearing; a standing one keeps the plain
+ * dot, since SIRI reports bearing 0 for a stopped vehicle whichever way it actually faces —
+ * an arrow there would claim a heading of due north that the data doesn't support.
+ *
+ * (`Point.color` holds the ping's velocity, not a colour — see `toPoint`.)
+ */
+function pingIcon({ bearing, color: velocity }: Point) {
+  return velocity > 0 && bearing !== undefined
+    ? vehicleBearingMarker(bearing)
+    : actualRouteStopMarker
 }
 
 export function MapRouteLayer({
@@ -50,7 +63,7 @@ export function MapRouteLayer({
                       name: agencyList.find((agency) => agency.operatorRef === pos.operator)
                         ?.agencyName,
                     })
-                  : actualRouteStopMarker
+                  : pingIcon(pos)
               return (
                 <Marker
                   ref={(ref) => {

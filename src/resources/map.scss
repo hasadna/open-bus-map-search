@@ -227,6 +227,13 @@ pre {
   margin-top: 10px;
 }
 
+// The rotation is inline on the img (Leaflet drives the wrapper's own transform); this only
+// stretches the arrow over the icon box, past the asset's own 24x24 intrinsic size.
+.vehicle-bearing-marker > img {
+  width: 100%;
+  height: 100%;
+}
+
 .bus-icon-container {
   display: flex;
   flex-direction: column;

@@ -11,7 +11,9 @@ import {
   waitForSkeletonsToHide,
 } from './utils'
 
-const BUS_MARKER_SELECTOR = '.leaflet-marker-pane > img[src$="marker-dot.png"]'
+// A ping is a dot when the vehicle was standing and a rotated arrow when it was moving, so
+// match the class both shapes share rather than either one's asset.
+const BUS_MARKER_SELECTOR = '.leaflet-marker-pane > .vehicle-ping-marker'
 const STATION_MARKER_SELECTOR = '.leaflet-marker-pane > img[src$="marker-bus-stop.png"]'
 
 async function selectOperator(page: Page, operatorName = 'אודליה מוניות בעמ') {

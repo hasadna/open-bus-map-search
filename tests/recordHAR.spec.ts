@@ -225,7 +225,7 @@ test.describe('Record HAR files', () => {
     // Click a bus marker to record BusToolTip's gtfs_routes/list?line_refs=... call.
     // networkidle waits for all in-flight requests (including BusToolTip's fetch) to complete
     // before pressing Escape, ensuring the response body is captured in the HAR.
-    const busMarkers = page.locator('.leaflet-marker-pane > img[src$="marker-dot.png"]')
+    const busMarkers = page.locator('.leaflet-marker-pane > .vehicle-ping-marker')
     if ((await busMarkers.count()) > 2) {
       await busMarkers.nth(2).click({ force: true })
       await page.waitForLoadState('networkidle')

@@ -6,9 +6,9 @@ import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
 import type { PositionGroup } from '../map-types'
 import {
-  actualRouteStopMarkerPath,
   plannedRouteLineColor,
   plannedRouteStopMarkerPath,
+  vehicleBearingMarkerPath,
 } from '../MapContent'
 import { MapIndex } from '../MapIndex'
 
@@ -61,7 +61,7 @@ export function MapIndexLayer({ showPlannedRoute, positionGroups = [] }: MapInde
         <MapIndex
           key={idx}
           lineColor={group.color}
-          imgSrc={actualRouteStopMarkerPath}
+          imgSrc={vehicleBearingMarkerPath}
           title={t('actualRoute')}
           subtitle={vehicleSubtitle(group, t)}
         />

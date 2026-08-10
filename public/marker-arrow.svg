@@ -1,0 +1,15 @@
+<!-- The arrow is MUI's `Navigation` icon (@mui/icons-material/Navigation) as a static asset:
+     Leaflet builds marker icons from an HTML string, so rendering the React component here
+     would mean pulling react-dom/server into the bundle for one glyph. Shipping it as a file
+     also lets the map legend reuse the very same image via <img src>.
+     The white outline is the only addition — it keeps the black glyph legible over dark map tiles. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+  <path
+    d="M12 2 4.5 20.29l.71.71L12 18l6.79 3 .71-.71z"
+    fill="#000"
+    stroke="#fff"
+    stroke-width="1.2"
+    stroke-linejoin="round"
+    paint-order="stroke"
+  />
+</svg>

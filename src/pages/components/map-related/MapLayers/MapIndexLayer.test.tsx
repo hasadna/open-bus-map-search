@@ -6,7 +6,7 @@ import { MapIndexLayer } from './MapIndexLayer'
 // MapIndexLayer only needs the path/color constants out of MapContent, so stub
 // them instead of pulling the whole leaflet map module into the test.
 vi.mock('../MapContent', () => ({
-  actualRouteStopMarkerPath: 'actual-marker.png',
+  vehicleBearingMarkerPath: 'actual-marker.svg',
   plannedRouteStopMarkerPath: 'planned-marker.png',
   plannedRouteLineColor: 'black',
 }))
