@@ -80,6 +80,27 @@ test.describe('Single line page tests', () => {
     })
   })
 
+  // Guards the rendered rotation, not just the markup: `style-src` in csp.ts omits
+  // 'unsafe-inline', so expressing the turn as a style attribute leaves every arrow pointing
+  // north while the DOM still reads correct. Only a computed style catches that.
+  test('should point each ping arrow along the vehicle bearing', async ({ page }) => {
+    await selectOperator(page)
+    await fillLineNumber(page)
+    await selectRoute(page)
+    await selectStartTime(page)
+
+    const arrows = page.locator('.vehicle-bearing-marker > svg > path')
+    await expect(async () => {
+      expect(await arrows.count()).toBeGreaterThan(5)
+    }).toPass({ timeout: 10000 })
+
+    const rotations = await arrows.evaluateAll((paths) =>
+      paths.map((path) => getComputedStyle(path).transform),
+    )
+    expect(rotations).not.toContain('none')
+    expect(new Set(rotations).size).toBeGreaterThan(1)
+  })
+
   test('should show tooltip after clicking on map point in single line map', async ({ page }) => {
     await test.step('Fill line info', async () => {
       await selectOperator(page)
