@@ -22,7 +22,7 @@ function vehicleSubtitle(group: PositionGroup, t: TFunction): ReactNode {
   const number = group.vehicleRef ? (
     <MuiLink
       component={Link}
-      to={`/vehicle?vehicleNumber=${group.vehicleRef}`}
+      to={`/vehicle?vehicle.vehicleNumber=${group.vehicleRef}`}
       reloadDocument
       underline="hover"
       title={t('go_to_vehicle_page')}
