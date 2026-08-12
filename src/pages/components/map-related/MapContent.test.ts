@@ -86,8 +86,17 @@ describe('rideEndMarker', () => {
   const html = rideEndMarker.options.html as string
 
   it('is chequered — alternating cells, not a solid block', () => {
-    // a 3x3 chequer fills 5 cells; a solid block would fill 9, an empty one none
-    expect(html.match(/ping-badge-mark/g)).toHaveLength(5)
+    // a 4x4 chequer inks 8 cells; a solid block would ink 16, an empty one none
+    expect(html.match(/ping-badge-mark/g)).toHaveLength(8)
+  })
+
+  it('clips the chequer to the badge, so it runs to the edge without escaping the disc', () => {
+    const clipId = /<clipPath id="([^"]+)">/.exec(html)![1]
+    expect(html).toContain(`clip-path="url(#${clipId})"`)
+    // the clip circle is the badge, a hair smaller so the rim survives on top of the cells
+    const clipR = Number(/<clipPath[^>]*><circle[^>]*r="([\d.]+)"/.exec(html)![1])
+    const discR = Number(/<circle class="ping-badge"[^>]*r="([\d.]+)"/.exec(html)![1])
+    expect(clipR).toBeLessThan(discR)
   })
 
   it('sits in the same disc the ride-start marker uses, and leaves its colours to the sheet', () => {

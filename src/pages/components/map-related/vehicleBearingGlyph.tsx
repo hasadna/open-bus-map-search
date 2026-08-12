@@ -27,10 +27,10 @@ export const isStanding = (kmh: number) => kmh === 0
 
 /**
  * Upper bound (km/h) of every speed band but the last, which is open-ended. Set against a live
- * 3000-ping sample, where they split the moving pings 17 / 31 / 31 / 21 percent — so every step
- * of the ramp earns its place.
+ * 4000-ping sample (2026-08-10, 08:00-08:03), where they split the moving pings
+ * 17 / 23 / 17 / 16 / 10 / 17 percent — so every step of the ramp earns its place.
  */
-export const SPEED_BAND_MAX = [15, 30, 50]
+export const SPEED_BAND_MAX = [15, 25, 35, 45, 60]
 
 /** Bands, slowest (0) to fastest. */
 export const SPEED_BANDS = SPEED_BAND_MAX.map((_, band) => band).concat(SPEED_BAND_MAX.length)
@@ -50,22 +50,26 @@ export function speedBandLabel(band: number): string {
 /** What the standing glyph covers — the one exact value the arrows can never take. */
 export const STANDING_LABEL = '0'
 
-/** How the arrow grows across the bands, as a factor of the glyph. The top band stays inside
- * the viewBox's inscribed circle, so no bearing clips a corner off the fastest arrow. */
-const BAND_SCALE = [0.54, 0.68, 0.82, 0.96]
+/** How the arrow grows across the bands, as a factor of the glyph: evenly spaced, so adding a
+ * band re-spaces the ramp instead of squeezing it in at one end. The top of the range keeps the
+ * fastest arrow inside the viewBox's inscribed circle, so no bearing clips a corner off it. */
+const BAND_SCALE_MIN = 0.46
+const BAND_SCALE_MAX = 0.96
+const bandScale = (band: number) =>
+  BAND_SCALE_MIN + ((BAND_SCALE_MAX - BAND_SCALE_MIN) * band) / (SPEED_BANDS.length - 1)
 
 /**
- * Speed only survives at ~12px if more than the size carries it, so the slow half of the bands
- * is drawn as an outline and the fast half solid — one ramp, stated twice. The colours live in
- * `map.scss` (which lets dark mode swap them); the markup carries geometry alone.
+ * Size alone can't carry six bands at ~14px, so the slow half of them is drawn as an outline and
+ * the fast half solid: the fill splits the ramp in two, and the size then places an arrow within
+ * its half. The colours live in `map.scss`; the markup carries geometry alone.
  */
 const bandClass = (band: number) =>
-  `ping-arrow${band < BAND_SCALE.length / 2 ? ' ping-arrow--outline' : ''}`
+  `ping-arrow${band < SPEED_BANDS.length / 2 ? ' ping-arrow--outline' : ''}`
 
 const rotate = (deg: number) => `rotate(${deg} 12 12)`
 
 const bandTransform = (deg: number, band: number) =>
-  `${rotate(deg)} translate(12 12) scale(${BAND_SCALE[band]}) translate(-12 -12)`
+  `${rotate(deg)} translate(12 12) scale(${bandScale(band).toFixed(2)}) translate(-12 -12)`
 
 /**
  * The standing badge: a compass needle inside the ride-start marker's white disc. The disc is
@@ -81,7 +85,13 @@ const STANDING_NEEDLE = 'M12 6 16 16 12 13.9 8 16Z'
  * cells fall below a pixel at marker size and it stopped reading as chequered at all.
  */
 const RIDE_END_DISC = { cx: 12, cy: 12, r: 10.6 }
-const RIDE_END_CELLS = 3
+const RIDE_END_CELLS = 4
+
+/** The chequer runs to the disc's inner edge, stopping just short of the rim so the badge keeps
+ * an unbroken outline. Half of `.ping-badge`'s stroke-width in `map.scss`, which straddles the
+ * circle it is drawn on. */
+const RIDE_END_RIM = 0.9
+const RIDE_END_CLIP_ID = 'ride-end-badge-clip'
 
 /**
  * SVG markup for Leaflet's `DivIcon` (which builds from an HTML string).
@@ -110,14 +120,14 @@ export const standingSvgMarkup = (deg?: number) =>
   `</svg>`
 
 /**
- * The chequer cells, laid over the largest square that fits the badge, alternating from the
- * top-left corner in. Built rather than hand-drawn so the grid stays square if the cell count
- * or the disc changes.
+ * The chequer cells, laid over the whole badge and clipped back to it, so the pattern runs to
+ * the edge the way a flag's does rather than sitting in the middle as a smaller square. Built
+ * rather than hand-drawn so the grid stays square if the cell count or the disc changes.
  */
 const chequerMarkup = () => {
-  const side = RIDE_END_DISC.r * Math.SQRT2
-  const cell = side / RIDE_END_CELLS
-  const origin = RIDE_END_DISC.cx - side / 2
+  const clipR = RIDE_END_DISC.r - RIDE_END_RIM
+  const cell = (2 * clipR) / RIDE_END_CELLS
+  const origin = RIDE_END_DISC.cx - clipR
   const cells = []
   for (let row = 0; row < RIDE_END_CELLS; row++) {
     for (let col = 0; col < RIDE_END_CELLS; col++) {
@@ -129,7 +139,12 @@ const chequerMarkup = () => {
       )
     }
   }
-  return cells.join('')
+  return (
+    `<clipPath id="${RIDE_END_CLIP_ID}">` +
+    `<circle cx="${RIDE_END_DISC.cx}" cy="${RIDE_END_DISC.cy}" r="${clipR}"/>` +
+    `</clipPath>` +
+    `<g clip-path="url(#${RIDE_END_CLIP_ID})">${cells.join('')}</g>`
+  )
 }
 
 /**
@@ -149,13 +164,15 @@ export const rideEndSvgMarkup = () =>
  * 1000 clears many times over.
  *
  * The bookends win outright — they are the two markers you go looking for. Under them the pings
- * stack smallest-first, the inverse of {@link BAND_SCALE}: zoomed out a whole ride collapses
- * into a few pixels, and left to the default order the fast arrows would simply cover the slow
- * ones, which are exactly the pings worth seeing.
+ * stack smallest-first, the inverse of {@link bandScale}: zoomed out a whole ride collapses into
+ * a few pixels, and left to the default order the fast arrows would simply cover the slow ones,
+ * which are exactly the pings worth seeing. One step per band, so a band added to the ramp gets
+ * a layer of its own rather than sharing one.
  */
-export const BOOKEND_Z_INDEX = 10000
-export const STANDING_Z_INDEX = 5000
-export const bearingZIndex = (band: number) => (SPEED_BANDS.length - band) * 1000
+const Z_STEP = 1000
+export const bearingZIndex = (band: number) => (SPEED_BANDS.length - band) * Z_STEP
+export const STANDING_Z_INDEX = (SPEED_BANDS.length + 1) * Z_STEP
+export const BOOKEND_Z_INDEX = (SPEED_BANDS.length + 2) * Z_STEP
 
 /** The arrow as an element, for the legend — where an `<img src="data:…">` would seal the glyph
  * off from the stylesheet that paints it. */

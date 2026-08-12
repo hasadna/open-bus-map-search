@@ -197,6 +197,7 @@ main > div,
 
       &-bands {
         display: flex;
+        flex-wrap: wrap;
         gap: 6px;
         align-items: end;
       }
@@ -229,21 +230,17 @@ main > div,
     color: #fff;
   }
 
-  // Swap the arrow's two colours rather than keeping them: black-on-dark is the *lighter*
-  // looking of the pair, which would put the solid fast arrows below the outlined slow ones
-  // and invert the whole ramp.
-  .ping-arrow {
-    fill: #fff;
-    stroke: #000;
-
-    &--outline {
-      fill: #1c1d1c;
-      stroke: #fff;
-    }
-  }
-
   .map-speed-index {
     border-top-color: rgb(255 255 255 / 25%);
+
+    // The markers themselves never change with the theme — the basemap tiles under them stay
+    // light — so the key shows them on a light chip. Left on the dark panel they would read the
+    // ramp backwards: the outlined slow arrows come out solid against it, and the solid fast
+    // ones hollow.
+    &-band svg {
+      border-radius: 3px;
+      background: rgb(255 255 255 / 88%);
+    }
   }
 
   .leaflet-popup-content-wrapper,
@@ -333,9 +330,9 @@ pre {
   fill: #000;
 }
 
-// Paint for the bearing arrow, on the map and in the legend alike. It is deliberately not in
-// the markup: keeping it here is what lets dark mode swap the two colours, so "solid" stays
-// the heavier of the pair against a dark basemap instead of inverting into the lighter one.
+// Paint for the bearing arrow, on the map and in the legend alike, and the same in both themes:
+// the dark theme darkens the app's chrome but not the basemap under it, so an arrow that
+// inverted with the theme would end up white on the very same light tiles.
 .ping-arrow {
   fill: #000;
   stroke: #fff;
