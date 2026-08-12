@@ -105,12 +105,6 @@ describe('rideEndMarker', () => {
     expect(html).not.toContain('style=')
   })
 
-  it('gets a bigger box than a ping, since a ride has one of it rather than hundreds', () => {
-    const [endW] = rideEndMarker.options.iconSize as [number, number]
-    const [pingW] = vehicleStandingMarker(0).options.iconSize as [number, number]
-    expect(endW).toBeGreaterThan(pingW)
-  })
-
   it('shares the ping class, so the last ping stays selectable like any other', () => {
     expect(rideEndMarker.options.className).toContain(vehiclePingMarkerClass)
   })

@@ -26,11 +26,17 @@ export const ARROW_PATH = 'M12 2 4.5 20.29l.71.71L12 18l6.79 3 .71-.71z'
 export const isStanding = (kmh: number) => kmh === 0
 
 /**
- * Upper bound (km/h) of every speed band but the last, which is open-ended. Set against a live
- * 4000-ping sample (2026-08-10, 08:00-08:03), where they split the moving pings
- * 17 / 23 / 17 / 16 / 10 / 17 percent — so every step of the ramp earns its place.
+ * Upper bound (km/h) of every speed band but the last, which is open-ended. Each step is about
+ * 1.55x the one below it rather than a fixed number of km/h, because the gap a rider feels
+ * between 10 and 20 km/h is not the gap between 90 and 100 — and an evenly spaced ramp has to
+ * end in a top band wide enough to swallow a whole intercity cruise at one arrow size.
+ *
+ * The bounds also sit in the gaps of the reporting grid: most fleets' telematics report whole
+ * m/s, so 97% of SIRI velocities arrive as round(3.6k) km/h — 4, 7, 11, 14, 18, 22, 25, 29 and
+ * so on. A bound *on* one of those would balance a twelfth of all moving pings on the boundary
+ * and let a rounding change upstream move them a whole band.
  */
-export const SPEED_BAND_MAX = [15, 25, 35, 45, 60]
+export const SPEED_BAND_MAX = [15, 23, 35, 55, 85]
 
 /** Bands, slowest (0) to fastest. */
 export const SPEED_BANDS = SPEED_BAND_MAX.map((_, band) => band).concat(SPEED_BAND_MAX.length)

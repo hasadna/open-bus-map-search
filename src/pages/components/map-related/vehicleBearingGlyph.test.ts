@@ -42,22 +42,22 @@ describe('speedBand', () => {
     expect(speedBand(SPEED_BAND_MAX[TOP - 1] + 1)).toBe(TOP)
     expect(speedBand(500)).toBe(TOP)
   })
-
-  it('covers every band it advertises', () => {
-    expect(SPEED_BANDS).toEqual([...SPEED_BAND_MAX.map((_, i) => i), TOP])
-  })
 })
 
 describe('speedBandLabel', () => {
-  it('reads as the km/h range the band covers', () => {
-    expect(speedBandLabel(0)).toBe(`1-${SPEED_BAND_MAX[0]}`)
-    expect(speedBandLabel(1)).toBe(`${SPEED_BAND_MAX[0] + 1}-${SPEED_BAND_MAX[1]}`)
-    expect(speedBandLabel(TOP)).toBe(`${SPEED_BAND_MAX[TOP - 1] + 1}+`)
-  })
-
-  it('picks up at 1, right where the standing glyph leaves off', () => {
+  // Spelled out rather than rebuilt from SPEED_BAND_MAX: a change to the ramp then has to be
+  // read back off the legend it produces, and the standing glyph's 0 has to still meet the
+  // first band's 1 with no km/h left unaccounted for between any two rungs.
+  it('spells each band out as its km/h range, the last one open-ended', () => {
     expect(STANDING_LABEL).toBe('0')
-    expect(speedBandLabel(0).startsWith('1')).toBe(true)
+    expect(SPEED_BANDS.map(speedBandLabel)).toEqual([
+      '1-15',
+      '16-23',
+      '24-35',
+      '36-55',
+      '56-85',
+      '86+',
+    ])
   })
 })
 
