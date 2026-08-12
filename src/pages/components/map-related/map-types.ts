@@ -42,6 +42,23 @@ export interface MapProps {
   focusTarget?: FocusTarget | null
 }
 
+/**
+ * Identity of a physical GPS fix, for deduplication.
+ *
+ * The API re-emits one fix across consecutive per-minute snapshots — same vehicle, time and
+ * position, but a fresh row `id` every time — so keying on `id` collapses nothing. Rows sharing
+ * a timestamp but holding *different* positions are deliberately kept: the key cannot know
+ * which of them is the true position.
+ */
+export function locationFixKey({
+  siriRideVehicleRef,
+  recordedAtTime,
+  lat,
+  lon,
+}: SiriVehicleLocationWithRelatedPydanticModel) {
+  return `${siriRideVehicleRef}-${new Date(recordedAtTime ?? 0).getTime()}-${lat}-${lon}`
+}
+
 export function toPoint(location: SiriVehicleLocationWithRelatedPydanticModel): Point {
   return {
     loc: [location.lat ?? 0, location.lon ?? 0],

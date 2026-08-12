@@ -1,7 +1,7 @@
 import { GtfsRoutePydanticModel } from '@hasadna/open-bus-api-client'
 import { useEffect, useState } from 'react'
 import { getAllRoutesList } from 'src/api/gtfsService'
-import dayjs, { ISRAEL_TIMEZONE } from 'src/dayjs'
+import { utcNoonForDateStr } from 'src/dayjs'
 import { routeStartEnd } from 'src/pages/components/utils/rotueUtils'
 
 type AllRoutesState = {
@@ -22,7 +22,7 @@ export const useAllRoutes = (operatorId?: string, date?: string) => {
     setState({ routes: [], isLoading: true, error: false })
     const controller = new AbortController()
 
-    getAllRoutesList(operatorId, dayjs.tz(date, ISRAEL_TIMEZONE).toDate(), controller.signal)
+    getAllRoutesList(operatorId, utcNoonForDateStr(date), controller.signal)
       .then((routes) => {
         setState({ routes: mapperRoutes(routes), isLoading: false, error: false })
       })
@@ -39,6 +39,7 @@ export const useAllRoutes = (operatorId?: string, date?: string) => {
 
 type RouteItem = {
   id: number
+  lineRef: number
   line: number
   suffix: string
   start: string
@@ -48,13 +49,23 @@ type RouteItem = {
 
 function mapperRoutes(routes: GtfsRoutePydanticModel[]) {
   return routes
-    .map(({ id, routeShortName, routeLongName, routeMkt, routeDirection, routeAlternative }) => {
-      const [start, end] = routeStartEnd(routeLongName)
-      const [, routeLine, routeSuffix] = routeShortName?.match(/^(\d+)(.*)$/) ?? []
-      const line = Number(routeLine)
-      const suffix = line && routeSuffix ? routeSuffix : ''
-      const routeKey = `${routeMkt}-${routeDirection}-${routeAlternative}`
-      return { id, line, suffix, start, end, routeKey }
-    })
+    .map(
+      ({
+        id,
+        lineRef,
+        routeShortName,
+        routeLongName,
+        routeMkt,
+        routeDirection,
+        routeAlternative,
+      }) => {
+        const [start, end] = routeStartEnd(routeLongName)
+        const [, routeLine, routeSuffix] = routeShortName?.match(/^(\d+)(.*)$/) ?? []
+        const line = Number(routeLine)
+        const suffix = line && routeSuffix ? routeSuffix : ''
+        const routeKey = `${routeMkt}-${routeDirection}-${routeAlternative}`
+        return { id, lineRef, line, suffix, start, end, routeKey }
+      },
+    )
     .sort((a, b) => a.line - b.line || a.suffix.localeCompare(b.suffix, 'he'))
 }

@@ -4,7 +4,7 @@ import { ReactNode, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
 import { getRoutesByLineRef } from 'src/api/gtfsService'
-import dayjs, { ISRAEL_TIMEZONE } from 'src/dayjs'
+import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone, utcNoonForDateStr } from 'src/dayjs'
 import { routeStartEnd, vehicleIDFormat } from 'src/pages/components/utils/rotueUtils'
 import SkeletonLoader from 'src/shared/SkeletonLoader'
 import CustomTreeView from '../../CustomTreeView'
@@ -28,9 +28,11 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
     getRoutesByLineRef(
       (position.point?.siriRouteOperatorRef || 0).toString(),
       (position.point?.siriRouteLineRef || 0).toString(),
-      position.point?.siriRideScheduledStartTime
-        ? new Date(position.point?.siriRideScheduledStartTime)
-        : new Date(),
+      utcNoonForDateStr(
+        toIsraelTimezone(position.point?.siriRideScheduledStartTime ?? undefined).format(
+          'YYYY-MM-DD',
+        ),
+      ),
     )
       .then((routes) => {
         setRoute(routes[0])

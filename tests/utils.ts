@@ -1,8 +1,5 @@
 import { exec } from 'child_process'
-import * as crypto from 'crypto'
-import * as fs from 'fs'
-import * as path from 'path'
-import { BrowserContext, Locator, Page } from '@playwright/test'
+import { Locator, Page } from '@playwright/test'
 import i18next from 'i18next'
 import Backend from 'i18next-fs-backend'
 import { test as baseTest, customMatcher, Matcher } from 'playwright-advanced-har'
@@ -13,47 +10,14 @@ import { PAGES } from 'src/routes'
 
 export { expect } from 'playwright-assertions'
 
-type CollectIstanbulCoverageWindow = Window &
-  typeof globalThis & {
-    collectIstanbulCoverage: (coverage: string) => void
-    __coverage__?: Record<string, unknown>
-  }
-
-const istanbulCLIOutput = path.join(process.cwd(), '.nyc_output')
-
-function generateUUID(): string {
-  return crypto.randomBytes(16).toString('hex')
-}
-
-export const test = baseTest.extend<{ context: BrowserContext }>({
-  context: async ({ context }, handle) => {
-    await context.addInitScript(() => {
-      const w = window as CollectIstanbulCoverageWindow
-      w.addEventListener('beforeunload', () => {
-        w.collectIstanbulCoverage(JSON.stringify(w.__coverage__))
-      })
-    })
-    await fs.promises.mkdir(istanbulCLIOutput, { recursive: true })
-    await context.exposeFunction('collectIstanbulCoverage', (coverageJSON: string) => {
-      if (coverageJSON) {
-        fs.writeFileSync(
-          path.join(istanbulCLIOutput, `playwright_coverage_${generateUUID()}.json`),
-          coverageJSON,
-        )
-      }
-    })
-    await handle(context)
-    for (const page of context.pages()) {
-      await page.evaluate(() => {
-        const w = window as CollectIstanbulCoverageWindow
-        w.collectIstanbulCoverage(JSON.stringify(w.__coverage__))
-      })
-    }
-  },
-})
+export const test = baseTest
 
 export function getPastDate() {
   return new Date('2024-02-12T15:00:00+00:00')
+}
+
+export function getPastTrainDate() {
+  return new Date('2026-02-12T15:00:00+00:00')
 }
 
 const urlMatcher: Matcher = customMatcher({
@@ -156,6 +120,34 @@ export const clearInputField = async (input: Locator) => {
   await clearIndicator.click()
 }
 
+/**
+ * Let the document itself grow to the full content height, so a full-page capture
+ * really covers the whole page.
+ *
+ * The app shell pins the layout to the viewport and scrolls inside `#main-content`
+ * (`.main` and `#main-content` in src/layout/index.tsx), so `documentElement.scrollHeight`
+ * always equals the viewport height — and a full-page capture is therefore identical to a
+ * viewport one. Applitools' `scrollRootElement` does not help: the Ultrafast Grid forwards
+ * it for native devices only, so a web render always measures the document.
+ *
+ * Must be registered before the first navigation — the style is re-applied on every one.
+ */
+export const unlockFullPageScroll = async (page: Page) => {
+  await page.addInitScript(() => {
+    const style = document.createElement('style')
+    style.textContent = `
+      .main { height: auto !important; overflow: visible !important; }
+      #main-content { overflow: visible !important; }
+    `
+    const attach = () => document.head.appendChild(style)
+    if (document.head) {
+      attach()
+    } else {
+      document.addEventListener('DOMContentLoaded', attach)
+    }
+  })
+}
+
 export const setupTest = async (page: Page, lng: string = 'he') => {
   await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
   await page.route(/api\.github\.com/, (route) => route.abort())
@@ -173,7 +165,11 @@ export const setupTest = async (page: Page, lng: string = 'he') => {
 }
 
 export const visitPage = async (page: Page, label: (typeof PAGES)[number]['label']) => {
-  const link = page.getByText(i18next.t(label), { exact: true }).and(page.getByRole('link'))
+  // Scoped to the nav: the homepage repeats several of these labels on its own link
+  // cards, so an unscoped name match would resolve to two elements.
+  const link = page
+    .locator('.sidebar-menu')
+    .getByRole('link', { name: i18next.t(label), exact: true })
   const href = await link.getAttribute('href')
   // Register waitForURL before clicking to avoid missing fast client-side navigations
   const navigationPromise = href
