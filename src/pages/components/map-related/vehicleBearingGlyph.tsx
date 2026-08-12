@@ -3,9 +3,9 @@
  * was going, a compass badge for a bus reported stationary — which still faces the way the bus
  * did — and the chequered badge that closes the ride off.
  *
- * The two badges borrow the ride-start marker's styling (`.bus-icon-circle`: a white disc
- * holding a dark glyph, in both themes), so the things that bookend or interrupt a ride read as
- * one family and the arrows stay the only bare shapes on the map.
+ * The two badges share the ride-start marker's styling (`.bus-icon-circle`: a white disc in a
+ * primary-coloured rim, the same in both themes), so the things that bookend or interrupt a ride
+ * read as one family and the arrows stay the only bare shapes on the map.
  *
  * They live apart from `MapContent` so the legend can render them without pulling Leaflet in,
  * and so both renderings — Leaflet's HTML string and the legend's element — come off one set of

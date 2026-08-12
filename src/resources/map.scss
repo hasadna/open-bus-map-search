@@ -1,3 +1,8 @@
+// MUI's default primary, which is what the theme resolves to (ThemeContext sets only
+// `palette.mode`). The map's own chrome — the expand button, the marker rims — can't reach the
+// theme from a stylesheet, so it comes from here.
+$primary: #1976d2;
+
 // Shared translucency for map overlay controls so they read consistently across
 // both themes. The attribution is more see-through; interactive buttons (zoom,
 // expand) are more opaque for a clearer hit target.
@@ -80,7 +85,7 @@ main > div,
     border: none;
     border-radius: 0 0 4px 4px;
     background: $button-bg;
-    color: #1976d2 !important;
+    color: $primary !important;
 
     &:hover {
       background: rgb(255 255 255 / 95%);
@@ -318,11 +323,10 @@ pre {
 
 // The disc behind the standing badge and the ride-end one, and the dark glyph it holds. Both
 // keep these colours in either theme, exactly as .bus-icon-circle does at the ride's start: the
-// white disc is what carries them over a dark basemap, so swapping it would cost the contrast
-// that makes the badge a badge.
+// white disc is what carries them over the basemap, which the dark theme leaves light.
 .ping-badge {
   fill: #fff;
-  stroke: #000;
+  stroke: $primary;
   stroke-width: 1.8;
 }
 
@@ -358,10 +362,15 @@ pre {
   align-items: center;
   justify-content: center;
 
+  // The ride's start marker, and the rim that makes it one of the badge family: same size, same
+  // ring. border-box keeps the disc 30px across whatever the rim costs it, so it still lines up
+  // with the ride-end badge drawn at the same 30.
   > .bus-icon-circle {
+    box-sizing: border-box;
     width: 30px;
     height: 30px;
-    padding: 5px;
+    padding: 4px;
+    border: 2px solid $primary;
     border-radius: 50%;
     background-color: white;
 
