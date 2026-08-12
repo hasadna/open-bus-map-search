@@ -118,7 +118,7 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
     test(`Vehicle Page Should Look Good [${mode}]`, async ({ page, eyes }) => {
       await mockVehicleApi(page)
       // full navigation so MainRoute seeds the vehicle number from the URL
-      await page.goto(`/vehicle?vehicleNumber=${VEHICLE_NUMBER}`)
+      await page.goto(`/vehicle?vehicle.vehicleNumber=${VEHICLE_NUMBER}`)
       await page.locator('.preloader').waitFor({ state: 'hidden' })
       // wait for the resolved rides table (incl. the last, 23:30 row) before snapping
       await page.getByRole('row').filter({ hasText: '23:30' }).waitFor()

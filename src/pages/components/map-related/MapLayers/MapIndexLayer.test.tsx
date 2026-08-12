@@ -32,7 +32,7 @@ describe('MapIndexLayer', () => {
     })
 
     const link = screen.getByRole('link', { name: '12-345-67' })
-    expect(link).toHaveAttribute('href', '/vehicle?vehicleNumber=1234567')
+    expect(link).toHaveAttribute('href', '/vehicle?vehicle.vehicleNumber=1234567')
     // the number stays bracketed in the legend
     expect(link.closest('bdi')).toHaveTextContent('(12-345-67)')
   })
@@ -59,11 +59,11 @@ describe('MapIndexLayer', () => {
     expect(container.querySelectorAll('.map-index-item')).toHaveLength(2)
     expect(screen.getByRole('link', { name: '12-345-67' })).toHaveAttribute(
       'href',
-      '/vehicle?vehicleNumber=1234567',
+      '/vehicle?vehicle.vehicleNumber=1234567',
     )
     expect(screen.getByRole('link', { name: '76-543-21' })).toHaveAttribute(
       'href',
-      '/vehicle?vehicleNumber=7654321',
+      '/vehicle?vehicle.vehicleNumber=7654321',
     )
   })
 

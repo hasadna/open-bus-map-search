@@ -19,6 +19,12 @@ $button-shadow:
 $button-border: 1px solid rgb(0 0 0 / 25%);
 $button-border-dark: 1px solid rgb(255 255 255 / 25%);
 
+// Divider between the segments of the zoom bar (+ / − / expand). Deliberately
+// stronger than the frame: Leaflet's own #ccc all but disappears against the
+// button background, which made the three segments read as one blank slab.
+$bar-divider: rgb(0 0 0 / 40%);
+$bar-divider-dark: rgb(255 255 255 / 40%);
+
 main,
 main > div,
 .map-container,
@@ -38,17 +44,43 @@ main > div,
   position: relative;
   margin-bottom: 1em;
 
-  .expand-button {
-    inset-inline-end: 5px;
-    bottom: 5px;
-    color: #1976d2 !important;
-    position: fixed;
-    z-index: 2000;
-    width: 2.6rem;
-    height: 2.6rem;
-    background: $button-bg;
+  // The slot MapZoomBar appends into the zoom bar must not generate a box of
+  // its own, or the button would be nested one level deeper than the zoom
+  // links and stop lining up with them.
+  .map-zoom-bar-slot {
+    display: contents;
+  }
+
+  .leaflet-control-zoom.leaflet-bar {
     border: $button-border;
     box-shadow: $button-shadow;
+  }
+
+  .leaflet-control-zoom a {
+    background: $button-bg;
+    border-bottom-color: $bar-divider;
+
+    &:hover {
+      background: rgb(255 255 255 / 95%);
+    }
+  }
+
+  // The expand button is the bar's bottom segment, so it drops every MUI
+  // button default (round, padded, its own frame) and takes the zoom links'
+  // box instead: same size, same background, square but for the bar's bottom
+  // corners. The separator above it is the zoom-out link's own bottom border,
+  // which Leaflet only removes while that link is the bar's :last-child.
+  .leaflet-control-zoom .expand-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    border: none;
+    border-radius: 0 0 4px 4px;
+    background: $button-bg;
+    color: #1976d2 !important;
 
     &:hover {
       background: rgb(255 255 255 / 95%);
@@ -57,20 +89,17 @@ main > div,
     &:active {
       background: rgb(255 255 255 / 100%);
     }
-  }
 
-  // Match the expand button's frame so both buttons read with equal weight.
-  .leaflet-control-zoom.leaflet-bar {
-    border: $button-border;
-    box-shadow: $button-shadow;
-  }
-
-  .leaflet-control-zoom a {
-    background: $button-bg;
-
-    &:hover {
-      background: rgb(255 255 255 / 95%);
+    svg {
+      font-size: 16px;
     }
+  }
+
+  // Leaflet grows its bar buttons on touch-capable displays; track it so the
+  // expand button never ends up a different size from the zoom links.
+  .leaflet-touch .leaflet-control-zoom .expand-button {
+    width: 30px;
+    height: 30px;
   }
 
   .leaflet-control-attribution {
@@ -185,7 +214,7 @@ main > div,
   .leaflet-control-zoom a {
     background: $button-bg-dark;
     color: #fff;
-    border-color: #444;
+    border-bottom-color: $bar-divider-dark;
 
     &:hover {
       background: rgb(40 40 40 / 100%);
@@ -201,9 +230,10 @@ main > div,
     }
   }
 
-  .expand-button {
+  // Background only — the accent color, frame and divider are all inherited
+  // from the light rules, which already hold in both themes.
+  .leaflet-control-zoom .expand-button {
     background: $button-bg-dark;
-    border: $button-border-dark;
 
     &:hover {
       background: rgb(40 40 40 / 95%);

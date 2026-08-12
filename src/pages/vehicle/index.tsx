@@ -1,13 +1,13 @@
 import { CircularProgress, Grid, Typography } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
-import { useContext, useEffect, useMemo, useState } from 'react'
+import { useCallback, useContext, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { SIRI_API } from 'src/api/apiConfig'
 import { getAllRoutesList } from 'src/api/gtfsService'
 import dayjs, { israelDayBounds, toIsraelTimezone, utcNoonForDateStr } from 'src/dayjs'
+import { usePageState } from 'src/hooks/usePageState'
 import { fromGtfsRoute } from 'src/model/busRoute'
 import { GlobalSearchContext } from 'src/model/globalState'
-import { InitialUrlParamsContext, PageShareParamsContext } from 'src/model/routeContext'
 import VehicleSelector, { normalizeVehicleNumber } from 'src/pages/components/VehicleSelector'
 import { DateSelector } from '../components/DateSelector'
 import { NotFound } from '../components/NotFound'
@@ -15,28 +15,33 @@ import { PageContainer } from '../components/PageContainer'
 import { buildVehicleRideRows, VehicleRideRow } from './buildVehicleRideRows'
 import { VehicleTable } from './VehicleTable'
 
+// null, not '', is the "no vehicle chosen" value: usePageState omits null params
+// from the share URL, so an unset page still produces a clean link.
+type VehicleParams = { vehicleNumber: string | null }
+type VehicleUi = { scrollPosition: number }
+
 const VehiclePage = () => {
   const { t } = useTranslation()
   const { search, setSearch } = useContext(GlobalSearchContext)
   const { date } = search
-  const initialUrlParams = useContext(InitialUrlParamsContext)
-  // LEGACY: manual share-param injection — replace with usePageState's per-page
-  // persistent `params` when this page is migrated.
-  const { setParams } = useContext(PageShareParamsContext)
 
-  // The vehicle number is page-local — never in GlobalSearchContext. Seeded once on
-  // mount from the URL captured at page load (InitialUrlParamsContext), and published
-  // to PageShareParamsContext for the Share button — the same page-local-param
-  // pattern gaps_patterns and timeBasedMap used before their usePageState migration.
-  const [vehicleNumber, setVehicleNumber] = useState<number | undefined>(() =>
-    normalizeVehicleNumber(initialUrlParams.vehicleNumber ?? ''),
+  // The vehicle number is page-local — never in GlobalSearchContext. usePageState
+  // persists it for the session, seeds it from `vehicle.vehicleNumber` in an
+  // incoming URL, and publishes it to the Share button.
+  const { params, setParams } = usePageState<VehicleParams, VehicleUi>('vehicle', {
+    params: { vehicleNumber: null },
+    ui: { scrollPosition: 0 },
+  })
+  const vehicleNumber = useMemo(
+    () => normalizeVehicleNumber(params.vehicleNumber ?? ''),
+    [params.vehicleNumber],
   )
-
-  useEffect(() => {
-    if (vehicleNumber) setParams({ vehicleNumber: String(vehicleNumber) })
-    else setParams({})
-    return () => setParams({})
-  }, [vehicleNumber, setParams])
+  const setVehicleNumber = useCallback(
+    (value: number) => {
+      setParams((prev) => ({ ...prev, vehicleNumber: value ? String(value) : null }))
+    },
+    [setParams],
+  )
 
   const { start: dayStart, end: dayEnd } = useMemo(() => israelDayBounds(date), [date])
 
@@ -130,10 +135,7 @@ const VehiclePage = () => {
         </Grid>
         {/* choose vehicle */}
         <Grid size={{ sm: 6, xs: 12 }}>
-          <VehicleSelector
-            vehicleNumber={vehicleNumber}
-            setVehicleNumber={(value) => setVehicleNumber(value || undefined)}
-          />
+          <VehicleSelector vehicleNumber={vehicleNumber} setVehicleNumber={setVehicleNumber} />
         </Grid>
       </Grid>
 
