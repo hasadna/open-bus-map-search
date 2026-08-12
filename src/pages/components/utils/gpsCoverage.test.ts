@@ -5,6 +5,7 @@ import {
   gapSeverity,
   medianPingInterval,
   pingGaps,
+  pingSpeedsKmh,
 } from './gpsCoverage'
 
 /**
@@ -175,5 +176,70 @@ describe('gapSeverity', () => {
 
   it('ramps linearly between the median and the dropout threshold', () => {
     expect(gapSeverity(37_500, median)).toBeCloseTo(0.5) // ratio 2.5, halfway from 1× to 4×
+  })
+})
+
+describe('pingSpeedsKmh', () => {
+  // 0.009 degrees of latitude is ~1 km, so a minute between pings along it is ~60 km/h.
+  const KM = 0.009
+  const at = (t: number, north: number): Point => ({
+    loc: [north * KM, 0],
+    color: 0,
+    recordedAtTime: t,
+  })
+
+  it('has nothing to say about a ride with fewer than two timed pings', () => {
+    expect(pingSpeedsKmh([])).toEqual([])
+    expect(pingSpeedsKmh([at(base, 0)])).toEqual([undefined])
+  })
+
+  it('measures the ground the ride covered, ignoring what the ping itself reported', () => {
+    // every ping claims velocity 0 (the `color` field) while plainly covering a km a minute
+    const speeds = pingSpeedsKmh([at(base, 0), at(base + MIN, 1), at(base + 2 * MIN, 2)])
+
+    expect(speeds[0]).toBeCloseTo(60, 0)
+    expect(speeds[1]).toBeCloseTo(60, 0)
+  })
+
+  it('gives each ping the segment leaving it, so the figure faces the way the bearing does', () => {
+    const speeds = pingSpeedsKmh([at(base, 0), at(base + MIN, 1), at(base + 2 * MIN, 3)])
+
+    expect(speeds[0]).toBeCloseTo(60, 0)
+    expect(speeds[1]).toBeCloseTo(120, 0)
+    // the last ping has no segment leaving it, and falls back to the one arriving
+    expect(speeds[2]).toBeCloseTo(120, 0)
+  })
+
+  it('reads zero for a bus that sat still between two fixes', () => {
+    expect(pingSpeedsKmh([at(base, 0), at(base + MIN, 0)])[0]).toBe(0)
+  })
+
+  it('sorts the ride by time but answers in the order it was handed', () => {
+    const speeds = pingSpeedsKmh([at(base + MIN, 1), at(base, 0)])
+
+    expect(speeds[1]).toBeCloseTo(60, 0)
+  })
+
+  it('leaves a frozen clock undefined rather than dividing by no elapsed time', () => {
+    expect(pingSpeedsKmh([at(base, 0), at(base, 1)])).toEqual([undefined, undefined])
+  })
+
+  it('ignores pings without a usable timestamp', () => {
+    expect(pingSpeedsKmh([{ loc: [0, 0], color: 0 }, at(base, 0)])).toEqual([undefined, undefined])
+  })
+
+  it('refuses to average across a reporting dropout, where the figure would be a fiction', () => {
+    // a minute apart, then an hour of silence — the bus drove that hour, it did not crawl it
+    const speeds = pingSpeedsKmh([
+      at(base, 0),
+      at(base + MIN, 1),
+      at(base + 2 * MIN, 2),
+      at(base + 62 * MIN, 40),
+    ])
+
+    expect(speeds[0]).toBeCloseTo(60, 0)
+    expect(speeds[1]).toBeCloseTo(60, 0)
+    expect(speeds[2]).toBeUndefined()
+    expect(speeds[3]).toBeUndefined()
   })
 })

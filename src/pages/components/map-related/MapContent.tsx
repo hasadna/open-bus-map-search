@@ -6,6 +6,7 @@ import { MapProps } from './map-types'
 import { MapPlannedRouteLayer } from './MapLayers/MapPlannedRouteLayer'
 import { MapRouteLayer } from './MapLayers/MapRouteLayer'
 import { useRecenterOnDataChange } from './useRecenterOnDataChange'
+import { arrowSvgMarkup, speedBand } from './vehicleBearingGlyph'
 
 const getIcon = (
   path: string,
@@ -33,48 +34,34 @@ export const actualRouteStopMarker = getIcon(
   vehiclePingMarkerClass,
 )
 
-/** MUI's `Navigation` glyph (@mui/icons-material/Navigation), on its native 24x24 viewBox.
- * Inlined rather than imported because Leaflet builds icons from an HTML string, so the React
- * component would mean pulling react-dom/server into the bundle for one arrow. */
-const ARROW_PATH = 'M12 2 4.5 20.29l.71.71L12 18l6.79 3 .71-.71z'
+/** Leaflet's box for the arrow, in px. It stays the same across the speed bands so the click
+ * target doesn't shrink with the speed, and so the icon keeps centring on its ping without
+ * per-band anchor arithmetic. */
+const ARROW_ICON_PX = 28
 
-/**
- * The arrow as standalone SVG markup, turned `deg` clockwise from north.
- *
- * The rotation is an SVG *presentation attribute*, deliberately not a `style` attribute:
- * `style-src` in `csp.ts` omits `'unsafe-inline'`, so an inline style would be dropped by the
- * browser and every arrow would render pointing north. Presentation attributes aren't inline
- * CSS and are unaffected. The white outline keeps the black glyph legible over dark tiles.
- */
-const arrowSvg = (deg: number) =>
-  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">` +
-  `<path d="${ARROW_PATH}" transform="rotate(${deg} 12 12)" fill="#000" stroke="#fff"` +
-  ` stroke-width="1.2" stroke-linejoin="round" paint-order="stroke"/></svg>`
-
-/** The unrotated arrow, for the map legend's plain `<img>`. A data URI keeps the glyph defined
- * in exactly one place; `img-src` in `csp.ts` allows `data:`. */
-export const vehicleBearingMarkerPath = `data:image/svg+xml,${encodeURIComponent(arrowSvg(0))}`
-
-const bearingMarkers = new Map<number, DivIcon>()
+const bearingMarkers = new Map<string, DivIcon>()
 
 /**
  * Arrow marker pointing where the vehicle was heading, from the ping's SIRI bearing
- * (0 = north, clockwise — the same convention SVG `rotate()` uses).
+ * (0 = north, clockwise — the same convention SVG `rotate()` uses), grown and filled in by how
+ * fast it was travelling (see {@link speedBand}).
  *
- * Instances are cached per whole degree so a ride's hundreds of pings share at most 360 icons,
- * and re-renders reuse the same object.
+ * Instances are cached per whole degree and band, so a ride's hundreds of pings share at most
+ * 360 × 4 icons and re-renders reuse the same object.
  */
-export const vehicleBearingMarker = (bearing: number): DivIcon => {
+export const vehicleBearingMarker = (bearing: number, speedKmh: number): DivIcon => {
   const deg = ((Math.round(bearing) % 360) + 360) % 360
-  const cached = bearingMarkers.get(deg)
+  const band = speedBand(speedKmh)
+  const key = `${deg}-${band}`
+  const cached = bearingMarkers.get(key)
   if (cached) return cached
 
   const icon = new DivIcon({
     className: `${vehiclePingMarkerClass} vehicle-bearing-marker`,
-    iconSize: [20, 20],
-    html: arrowSvg(deg),
+    iconSize: [ARROW_ICON_PX, ARROW_ICON_PX],
+    html: arrowSvgMarkup(deg, band),
   })
-  bearingMarkers.set(deg, icon)
+  bearingMarkers.set(key, icon)
   return icon
 }
 

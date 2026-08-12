@@ -1,10 +1,12 @@
 import type { Layer } from 'leaflet'
-import { Fragment, useCallback, useRef } from 'react'
+import { Fragment, useCallback, useMemo, useRef } from 'react'
 import { Marker, Polyline, Popup } from 'react-leaflet'
 import { useAgencyList } from 'src/hooks/useAgencyList'
 import { busIcon, busIconPath } from '../../utils/BusIcon'
+import { pingSpeedsKmh } from '../../utils/gpsCoverage'
 import type { Point, PositionGroup } from '../map-types'
 import { actualRouteStopMarker, vehicleBearingMarker } from '../MapContent'
+import { STANDING_KMH } from '../vehicleBearingGlyph'
 import { BusToolTip } from './BusToolTip'
 import BusToolTipFooter from './BusToolTipFooter'
 
@@ -15,15 +17,21 @@ interface MapRouteLayerProps {
 }
 
 /**
- * A moving ping becomes an arrow pointing along its bearing; a standing one keeps the plain
- * dot, since SIRI reports bearing 0 for a stopped vehicle whichever way it actually faces —
- * an arrow there would claim a heading of due north that the data doesn't support.
+ * A moving ping becomes an arrow pointing along its bearing, grown and filled in by how fast
+ * the bus was going; a standing one keeps the ring, since a parked vehicle has no direction of
+ * travel to point at.
  *
- * (`Point.color` holds the ping's velocity, not a colour — see `toPoint`.)
+ * Speed is the ground the ride actually covered to its next fix, not the ping's own SIRI
+ * reading: that reading is a spot measurement, and it says 0 for a bus merely caught between
+ * stops (see {@link pingSpeedsKmh}). Where the timing can't support a derived figure — a lone
+ * ping, a frozen clock, a reporting dropout — the reading is all there is, so it stands in.
+ *
+ * (`Point.color` holds that reading, not a colour — see `toPoint`.)
  */
-function pingIcon({ bearing, color: velocity }: Point) {
-  return velocity > 0 && bearing !== undefined
-    ? vehicleBearingMarker(bearing)
+function pingIcon({ bearing, color: reportedKmh }: Point, derivedKmh?: number) {
+  const kmh = derivedKmh ?? reportedKmh
+  return kmh >= STANDING_KMH && bearing !== undefined
+    ? vehicleBearingMarker(bearing, kmh)
     : actualRouteStopMarker
 }
 
@@ -34,6 +42,13 @@ export function MapRouteLayer({
 }: MapRouteLayerProps) {
   const markerRef = useRef<{ [key: string]: Layer | null }>({})
   const agencyList = useAgencyList()
+
+  // Derived per group, not per ping: the speed at a ping is a property of the pair it forms
+  // with its neighbour, so it needs the whole ride to hand.
+  const groupSpeeds = useMemo(
+    () => positionGroups.map((group) => pingSpeedsKmh(group.positions)),
+    [positionGroups],
+  )
 
   const navigateToMarker = useCallback(
     (groupIndex: number, id: number) => {
@@ -63,7 +78,7 @@ export function MapRouteLayer({
                       name: agencyList.find((agency) => agency.operatorRef === pos.operator)
                         ?.agencyName,
                     })
-                  : pingIcon(pos)
+                  : pingIcon(pos, groupSpeeds[groupIndex][i])
               return (
                 <Marker
                   ref={(ref) => {
