@@ -1,15 +1,15 @@
 import { useTranslation } from 'react-i18next'
-import { actualRouteStopMarkerPath } from './MapContent'
 import {
   SPEED_BANDS,
   speedBandLabel,
   STANDING_LABEL,
   VehicleBearingGlyph,
+  VehicleStandingGlyph,
 } from './vehicleBearingGlyph'
 
 /**
- * Key to the ping markers' speed ramp: a ring while the bus is standing, then an arrow per
- * band, growing and filling in as it goes faster.
+ * Key to the ping markers' speed ramp: the compass badge for a bus reported standing, then an
+ * arrow per band, growing and filling in as it goes faster.
  *
  * Speed is deliberately not a colour. The legend above it already spends colour on telling one
  * ride's line from another, so a second meaning on the same channel would be ambiguous — and
@@ -24,7 +24,7 @@ export function MapSpeedIndex() {
       <div className="map-speed-index-title">{`${t('velocity')} (${t('kmh')})`}</div>
       <div className="map-speed-index-bands">
         <div className="map-speed-index-band">
-          <img src={actualRouteStopMarkerPath} alt="" />
+          <VehicleStandingGlyph />
           <bdi>{STANDING_LABEL}</bdi>
         </div>
         {SPEED_BANDS.map((band) => (

@@ -4,10 +4,9 @@ import type { PositionGroup } from '../map-types'
 import { SPEED_BANDS } from '../vehicleBearingGlyph'
 import { MapIndexLayer } from './MapIndexLayer'
 
-// MapIndexLayer (and the speed key under it) only needs the path/color constants out of
-// MapContent, so stub them instead of pulling the whole leaflet map module into the test.
+// MapIndexLayer only needs the path/color constants out of MapContent, so stub them instead
+// of pulling the whole leaflet map module into the test.
 vi.mock('../MapContent', () => ({
-  actualRouteStopMarkerPath: 'actual-marker.svg',
   plannedRouteStopMarkerPath: 'planned-marker.png',
   plannedRouteLineColor: 'black',
 }))
@@ -106,7 +105,7 @@ describe('MapIndexLayer', () => {
     )
     const key = container.querySelector('.map-speed-index')!
     expect(key).toBeInTheDocument()
-    // the standing ring plus one arrow per speed band
+    // the standing glyph plus one arrow per speed band
     expect(key.querySelectorAll('.map-speed-index-band')).toHaveLength(SPEED_BANDS.length + 1)
   })
 })

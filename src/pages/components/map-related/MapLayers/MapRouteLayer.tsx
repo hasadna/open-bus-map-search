@@ -1,12 +1,17 @@
 import type { Layer } from 'leaflet'
-import { Fragment, useCallback, useMemo, useRef } from 'react'
+import { Fragment, useCallback, useRef } from 'react'
 import { Marker, Polyline, Popup } from 'react-leaflet'
 import { useAgencyList } from 'src/hooks/useAgencyList'
 import { busIcon, busIconPath } from '../../utils/BusIcon'
-import { pingSpeedsKmh } from '../../utils/gpsCoverage'
 import type { Point, PositionGroup } from '../map-types'
-import { actualRouteStopMarker, vehicleBearingMarker } from '../MapContent'
-import { STANDING_KMH } from '../vehicleBearingGlyph'
+import { rideEndMarker, vehicleBearingMarker, vehicleStandingMarker } from '../MapContent'
+import {
+  bearingZIndex,
+  BOOKEND_Z_INDEX,
+  isStanding,
+  speedBand,
+  STANDING_Z_INDEX,
+} from '../vehicleBearingGlyph'
 import { BusToolTip } from './BusToolTip'
 import BusToolTipFooter from './BusToolTipFooter'
 
@@ -17,22 +22,23 @@ interface MapRouteLayerProps {
 }
 
 /**
- * A moving ping becomes an arrow pointing along its bearing, grown and filled in by how fast
- * the bus was going; a standing one keeps the ring, since a parked vehicle has no direction of
- * travel to point at.
+ * A ping the vehicle reported moving becomes an arrow along its bearing, grown and filled in by
+ * how fast; one it reported standing at (velocity exactly 0) becomes the compass badge, which
+ * still faces the way the bus did. Both read the same `velocity` the tooltip prints, so the
+ * shape can never contradict the number behind it — and both carry the stacking order that
+ * keeps the small glyphs on top of the big ones.
  *
- * Speed is the ground the ride actually covered to its next fix, not the ping's own SIRI
- * reading: that reading is a spot measurement, and it says 0 for a bus merely caught between
- * stops (see {@link pingSpeedsKmh}). Where the timing can't support a derived figure — a lone
- * ping, a frozen clock, a reporting dropout — the reading is all there is, so it stands in.
- *
- * (`Point.color` holds that reading, not a colour — see `toPoint`.)
+ * (`Point.color` holds that velocity, not a colour — see `toPoint`.)
  */
-function pingIcon({ bearing, color: reportedKmh }: Point, derivedKmh?: number) {
-  const kmh = derivedKmh ?? reportedKmh
-  return kmh >= STANDING_KMH && bearing !== undefined
-    ? vehicleBearingMarker(bearing, kmh)
-    : actualRouteStopMarker
+function pingMarker({ bearing, color: velocity }: Point) {
+  // Only the standing badge can say "heading unknown" (it drops its needle); a moving ping has
+  // to point somewhere, and `toPoint` has already defaulted a missing SIRI bearing to 0 anyway.
+  return isStanding(velocity)
+    ? { icon: vehicleStandingMarker(bearing), zIndexOffset: STANDING_Z_INDEX }
+    : {
+        icon: vehicleBearingMarker(bearing ?? 0, velocity),
+        zIndexOffset: bearingZIndex(speedBand(velocity)),
+      }
 }
 
 export function MapRouteLayer({
@@ -42,13 +48,6 @@ export function MapRouteLayer({
 }: MapRouteLayerProps) {
   const markerRef = useRef<{ [key: string]: Layer | null }>({})
   const agencyList = useAgencyList()
-
-  // Derived per group, not per ping: the speed at a ping is a property of the pair it forms
-  // with its neighbour, so it needs the whole ride to hand.
-  const groupSpeeds = useMemo(
-    () => positionGroups.map((group) => pingSpeedsKmh(group.positions)),
-    [positionGroups],
-  )
 
   const navigateToMarker = useCallback(
     (groupIndex: number, id: number) => {
@@ -70,15 +69,22 @@ export function MapRouteLayer({
             />
             {group.positions.map((pos, i) => {
               const markerKey = `${groupIndex}-${i}`
-              const icon =
+              // The ride is bookended: its operator's logo where it started, a chequered disc
+              // where it was last seen. A one-ping ride keeps the logo — it never got to finish.
+              const { icon, zIndexOffset } =
                 i === 0
-                  ? busIcon({
-                      // eslint-disable-next-line i18next/no-literal-string -- icon lookup key, not user text
-                      operator_id: pos.operator?.toString() || 'default',
-                      name: agencyList.find((agency) => agency.operatorRef === pos.operator)
-                        ?.agencyName,
-                    })
-                  : pingIcon(pos, groupSpeeds[groupIndex][i])
+                  ? {
+                      icon: busIcon({
+                        // eslint-disable-next-line i18next/no-literal-string -- icon lookup key, not user text
+                        operator_id: pos.operator?.toString() || 'default',
+                        name: agencyList.find((agency) => agency.operatorRef === pos.operator)
+                          ?.agencyName,
+                      }),
+                      zIndexOffset: BOOKEND_Z_INDEX,
+                    }
+                  : i === group.positions.length - 1
+                    ? { icon: rideEndMarker, zIndexOffset: BOOKEND_Z_INDEX }
+                    : pingMarker(pos)
               return (
                 <Marker
                   ref={(ref) => {
@@ -86,6 +92,7 @@ export function MapRouteLayer({
                   }}
                   position={pos.loc}
                   icon={icon}
+                  zIndexOffset={zIndexOffset}
                   key={markerKey}>
                   <Popup minWidth={300} maxWidth={700}>
                     <BusToolTip position={pos} icon={busIconPath(pos.operator!)}>

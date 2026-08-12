@@ -6,7 +6,12 @@ import { MapProps } from './map-types'
 import { MapPlannedRouteLayer } from './MapLayers/MapPlannedRouteLayer'
 import { MapRouteLayer } from './MapLayers/MapRouteLayer'
 import { useRecenterOnDataChange } from './useRecenterOnDataChange'
-import { arrowSvgMarkup, speedBand } from './vehicleBearingGlyph'
+import {
+  arrowSvgMarkup,
+  rideEndSvgMarkup,
+  speedBand,
+  standingSvgMarkup,
+} from './vehicleBearingGlyph'
 
 const getIcon = (
   path: string,
@@ -21,25 +26,32 @@ const getIcon = (
   })
 }
 
-/** Carried by both vehicle-ping shapes (dot and bearing arrow) so a ping can be selected
- * without knowing which of the two it got. */
+/** Carried by both vehicle-ping shapes (standing ring and bearing arrow) so a ping can be
+ * selected without knowing which of the two it got. */
 export const vehiclePingMarkerClass = 'vehicle-ping-marker'
 
 export const actualRouteLineColor = 'orange'
-export const actualRouteStopMarkerPath = `${import.meta.env.BASE_URL}marker-dot.svg`
-export const actualRouteStopMarker = getIcon(
-  actualRouteStopMarkerPath,
-  20,
-  20,
-  vehiclePingMarkerClass,
-)
 
-/** Leaflet's box for the arrow, in px. It stays the same across the speed bands so the click
- * target doesn't shrink with the speed, and so the icon keeps centring on its ping without
- * per-band anchor arithmetic. */
-const ARROW_ICON_PX = 28
+/** Leaflet's box for a ping glyph, in px. It stays the same across every speed band and the
+ * standing glyph too, so the click target doesn't shrink with the speed and the icon keeps
+ * centring on its ping without per-band anchor arithmetic. */
+const PING_ICON_PX = 28
+
+/** The ride-end badge gets the ride-start circle's 30px instead, so a ride's two ends are the
+ * same size — and its chequer gets the pixels it needs to read as one. */
+const RIDE_END_ICON_PX = 30
+
+const pingIconOptions = (className: string, html: string, px: number = PING_ICON_PX) => ({
+  className: `${vehiclePingMarkerClass} ${className}`,
+  iconSize: [px, px] as [number, number],
+  html,
+})
 
 const bearingMarkers = new Map<string, DivIcon>()
+const standingMarkers = new Map<string, DivIcon>()
+
+/** Onto 0-359, the convention SVG `rotate()` shares with SIRI (0 = north, clockwise). */
+const normalizeBearing = (bearing: number) => ((Math.round(bearing) % 360) + 360) % 360
 
 /**
  * Arrow marker pointing where the vehicle was heading, from the ping's SIRI bearing
@@ -50,20 +62,42 @@ const bearingMarkers = new Map<string, DivIcon>()
  * 360 × 4 icons and re-renders reuse the same object.
  */
 export const vehicleBearingMarker = (bearing: number, speedKmh: number): DivIcon => {
-  const deg = ((Math.round(bearing) % 360) + 360) % 360
+  const deg = normalizeBearing(bearing)
   const band = speedBand(speedKmh)
   const key = `${deg}-${band}`
   const cached = bearingMarkers.get(key)
   if (cached) return cached
 
-  const icon = new DivIcon({
-    className: `${vehiclePingMarkerClass} vehicle-bearing-marker`,
-    iconSize: [ARROW_ICON_PX, ARROW_ICON_PX],
-    html: arrowSvgMarkup(deg, band),
-  })
+  const icon = new DivIcon(pingIconOptions('vehicle-bearing-marker', arrowSvgMarkup(deg, band)))
   bearingMarkers.set(key, icon)
   return icon
 }
+
+/**
+ * Marker for a ping the vehicle reported standing at: the ride-start marker's white disc, with a
+ * compass needle inside showing the way it was facing. Nothing else on the map is a disc this
+ * size, so the one exact reading the arrows can never carry — velocity 0 — keeps its own shape.
+ *
+ * A bearing of `undefined` drops the needle rather than inventing a heading.
+ */
+export const vehicleStandingMarker = (bearing?: number): DivIcon => {
+  const deg = bearing === undefined ? undefined : normalizeBearing(bearing)
+  const key = `${deg}`
+  const cached = standingMarkers.get(key)
+  if (cached) return cached
+
+  const icon = new DivIcon(pingIconOptions('vehicle-standing-marker', standingSvgMarkup(deg)))
+  standingMarkers.set(key, icon)
+  return icon
+}
+
+/**
+ * Marker for the ride's last ping: a chequered disc, the finish line to the operator's logo at
+ * the start. One per ride, so it is built once rather than cached per bearing.
+ */
+export const rideEndMarker = new DivIcon(
+  pingIconOptions('vehicle-ride-end-marker', rideEndSvgMarkup(), RIDE_END_ICON_PX),
+)
 
 export const plannedRouteLineColor = 'black'
 export const plannedRouteStopMarkerPath = `${import.meta.env.BASE_URL}marker-bus-stop.png`

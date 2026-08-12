@@ -1,4 +1,9 @@
-import { vehicleBearingMarker, vehiclePingMarkerClass } from './MapContent'
+import {
+  rideEndMarker,
+  vehicleBearingMarker,
+  vehiclePingMarkerClass,
+  vehicleStandingMarker,
+} from './MapContent'
 import { SPEED_BAND_MAX } from './vehicleBearingGlyph'
 
 const FAST = SPEED_BAND_MAX[SPEED_BAND_MAX.length - 1] + 20
@@ -42,7 +47,7 @@ describe('vehicleBearingMarker', () => {
     expect(scale * cornerRadius).toBeLessThanOrEqual(12)
   })
 
-  it('tags the arrow with the shared ping class, like the dot it replaces', () => {
+  it('tags the arrow with the shared ping class, like the standing glyph', () => {
     expect(vehicleBearingMarker(45, FAST).options.className).toContain(vehiclePingMarkerClass)
   })
 
@@ -50,5 +55,54 @@ describe('vehicleBearingMarker', () => {
   // is silently dropped by the browser and every arrow points north. Keep it out of the markup.
   it('carries no inline style attribute, which the app CSP would refuse to apply', () => {
     expect(html(45)).not.toContain('style=')
+  })
+})
+
+describe('vehicleStandingMarker', () => {
+  const html = (bearing?: number) => vehicleStandingMarker(bearing).options.html as string
+
+  it('faces the needle the way the bus did, which a plain dot could not', () => {
+    expect(html(90)).toContain('rotate(90 12 12)')
+    expect(html(-90)).toContain('rotate(270 12 12)')
+  })
+
+  it('reuses one icon per degree, and keeps the bearing-less one apart from north', () => {
+    expect(vehicleStandingMarker(30)).toBe(vehicleStandingMarker(30))
+    expect(vehicleStandingMarker(undefined)).not.toBe(vehicleStandingMarker(0))
+  })
+
+  it('shares the ping class with the arrow, so either shape can be selected the same way', () => {
+    expect(vehicleStandingMarker(0).options.className).toContain(vehiclePingMarkerClass)
+  })
+
+  it('gets the same box as the arrows, so the click target does not change with the shape', () => {
+    expect(vehicleStandingMarker(0).options.iconSize).toEqual(
+      vehicleBearingMarker(0, FAST).options.iconSize,
+    )
+  })
+})
+
+describe('rideEndMarker', () => {
+  const html = rideEndMarker.options.html as string
+
+  it('is chequered — alternating cells, not a solid block', () => {
+    // a 3x3 chequer fills 5 cells; a solid block would fill 9, an empty one none
+    expect(html.match(/ping-badge-mark/g)).toHaveLength(5)
+  })
+
+  it('sits in the same disc the ride-start marker uses, and leaves its colours to the sheet', () => {
+    expect(html).toContain('class="ping-badge"')
+    expect(html).not.toContain('fill=')
+    expect(html).not.toContain('style=')
+  })
+
+  it('gets a bigger box than a ping, since a ride has one of it rather than hundreds', () => {
+    const [endW] = rideEndMarker.options.iconSize as [number, number]
+    const [pingW] = vehicleStandingMarker(0).options.iconSize as [number, number]
+    expect(endW).toBeGreaterThan(pingW)
+  })
+
+  it('shares the ping class, so the last ping stays selectable like any other', () => {
+    expect(rideEndMarker.options.className).toContain(vehiclePingMarkerClass)
   })
 })

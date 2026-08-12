@@ -93,39 +93,6 @@ export function distanceMeters(a: [number, number], b: [number, number]): number
 }
 
 /**
- * Ground speed (km/h) at each ping, from the distance the ride actually covered to its next
- * fix. Indexed like `positions`; `undefined` where the timing can't support a figure.
- *
- * SIRI's own `velocity` is a spot reading taken at the instant of the fix, which is a poor
- * answer to the question a map asks — how fast was the bus *through here*. Sampled against the
- * live API, 88% of the fixes reporting velocity 0 had covered more than 5 km/h worth of ground
- * by the next fix a minute later; reported and derived speed correlate only r≈0.76.
- *
- * A ping takes the speed of the segment *leaving* it, so the figure pairs with the bearing,
- * which also points forward; the last ping takes the segment arriving at it. Segments spanning
- * a coverage dropout ({@link GAP_FACTOR}× the ride's cadence) are left undefined: averaging
- * across an hour of silence would report a crawl for a bus that drove the whole way.
- */
-export function pingSpeedsKmh(positions: Point[]): (number | undefined)[] {
-  const speeds = new Array<number | undefined>(positions.length).fill(undefined)
-  const timed = positions
-    .map((p, index) => ({ index, t: p.recordedAtTime ?? 0, loc: p.loc }))
-    .filter((p) => p.t > 0)
-    .sort((a, b) => a.t - b.t)
-  const dropoutMs = medianPingInterval(positions) * GAP_FACTOR
-
-  for (let i = 1; i < timed.length; i++) {
-    const gapMs = timed[i].t - timed[i - 1].t
-    // gapMs 0 is a frozen clock (two fixes, one timestamp) — there is no elapsed time to divide by.
-    if (gapMs <= 0 || (dropoutMs > 0 && gapMs > dropoutMs)) continue
-    const kmh = (distanceMeters(timed[i - 1].loc, timed[i].loc) / (gapMs / 1000)) * 3.6
-    speeds[timed[i - 1].index] = kmh
-    if (i === timed.length - 1) speeds[timed[i].index] = kmh
-  }
-  return speeds
-}
-
-/**
  * Classify a single inter-ping gap relative to the ride's median cadence:
  *  - `ok`     — within {@link SPARSE_FACTOR}× the median (normal jitter)
  *  - `sparse` — between {@link SPARSE_FACTOR}× and {@link GAP_FACTOR}× (degraded)

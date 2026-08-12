@@ -310,11 +310,27 @@ pre {
   margin-top: 10px;
 }
 
-// The arrow's rotation and size live on the SVG itself; this only stretches it over the icon
+// The glyph's rotation and size live on the SVG itself; this only stretches it over the icon
 // box, since the inlined markup declares a viewBox but no width/height.
-.vehicle-bearing-marker > svg {
+.vehicle-bearing-marker > svg,
+.vehicle-standing-marker > svg,
+.vehicle-ride-end-marker > svg {
   width: 100%;
   height: 100%;
+}
+
+// The disc behind the standing badge and the ride-end one, and the dark glyph it holds. Both
+// keep these colours in either theme, exactly as .bus-icon-circle does at the ride's start: the
+// white disc is what carries them over a dark basemap, so swapping it would cost the contrast
+// that makes the badge a badge.
+.ping-badge {
+  fill: #fff;
+  stroke: #000;
+  stroke-width: 1.8;
+}
+
+.ping-badge-mark {
+  fill: #000;
 }
 
 // Paint for the bearing arrow, on the map and in the legend alike. It is deliberately not in
