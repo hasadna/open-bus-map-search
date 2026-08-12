@@ -1,12 +1,12 @@
 import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Marker, Popup, TileLayer, useMap } from 'react-leaflet'
 import MarkerClusterGroup from 'react-leaflet-markercluster'
 import dayjs, { ISRAEL_TIMEZONE, parseIsraelLocalDatetime } from 'src/dayjs'
 import { useAgencyList } from 'src/hooks/useAgencyList'
+import { usePageState } from 'src/hooks/usePageState'
 import useVehicleLocations from 'src/hooks/useVehicleLocations'
-import { InitialUrlParamsContext, PageShareParamsContext } from 'src/model/routeContext'
 import { type Point, toPoint } from 'src/pages/components/map-related/map-types'
 import { BusToolTip } from 'src/pages/components/map-related/MapLayers/BusToolTip'
 import { MapShell } from 'src/pages/components/map-related/MapShell'
@@ -18,34 +18,38 @@ import createClusterCustomIcon from '../components/utils/customCluster/customClu
 import InfoYoutubeModal from '../components/YoutubeModal'
 
 const DEFAULT_TIME = dayjs('2023-03-14T15:00:00Z')
+// Israel-local minute string, e.g. 2023-03-14T17:00 — the shareable form of DEFAULT_TIME.
+const DEFAULT_DATETIME = DEFAULT_TIME.tz(ISRAEL_TIMEZONE).format('YYYY-MM-DDTHH:mm')
 const DEFAULT_POSITION: Point = {
   loc: [32.3057988, 34.85478613],
   color: 0,
 }
 
 export default function TimeBasedMapPage() {
-  const initialUrlParams = useContext(InitialUrlParamsContext)
-  const [from, setFrom] = useState(
-    () =>
-      (initialUrlParams.datetime && parseIsraelLocalDatetime(initialUrlParams.datetime)) ||
-      DEFAULT_TIME,
+  // datetime is page-local and shareable: an Israel-local minute string that
+  // round-trips through the share URL (namespaced as `time-based-map.datetime`).
+  const { params, setParams } = usePageState('time-based-map', {
+    params: { datetime: DEFAULT_DATETIME },
+    ui: { scrollPosition: 0 },
+  })
+  const from = useMemo(
+    () => parseIsraelLocalDatetime(params.datetime) ?? DEFAULT_TIME,
+    [params.datetime],
   )
   const to = useMemo(() => dayjs(from).add(1, 'minutes'), [from])
   const { locations, isLoading } = useVehicleLocations({ from, to })
   const { t } = useTranslation()
   const positions = useMemo(() => locations.map(toPoint), [locations])
-  const handleFromChange = useCallback((time: dayjs.Dayjs | null) => {
-    setFrom(time ?? DEFAULT_TIME)
-  }, [])
-
-  // LEGACY: manual share-param injection — replace with usePageState's per-page
-  // persistent `params` when this page is migrated.
-  const { setParams } = useContext(PageShareParamsContext)
-  useEffect(() => {
-    // Shared as a readable Israel-local datetime, e.g. 2023-03-14T17:00
-    setParams({ datetime: from.tz(ISRAEL_TIMEZONE).format('YYYY-MM-DDTHH:mm') })
-    return () => setParams({})
-  }, [from, setParams])
+  const handleFromChange = useCallback(
+    (time: dayjs.Dayjs | null) => {
+      const next = time ?? DEFAULT_TIME
+      setParams((prev) => ({
+        ...prev,
+        datetime: next.tz(ISRAEL_TIMEZONE).format('YYYY-MM-DDTHH:mm'),
+      }))
+    },
+    [setParams],
+  )
 
   return (
     <PageContainer className="map-container">

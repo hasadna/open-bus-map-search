@@ -4,6 +4,10 @@
  * @type {import('@applitools/eyes-storybook').ApplitoolsConfig}
  */
 const config = {
+  // Pin the Applitools app explicitly: unset, eyes-storybook falls back to the
+  // package.json name, putting the story baselines in a different app than the
+  // Playwright ones.
+  appName: 'OpenBus',
   testConcurrency: 20,
   dontCloseBatches: true,
   // 'nodiffs': visual diffs don't fail the job (the github integration reports them via a separate

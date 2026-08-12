@@ -1,7 +1,15 @@
 import { test as eyesTest } from '@applitools/eyes-playwright/fixture'
 import { mergeTests } from '@playwright/test'
 import i18next from 'i18next'
-import { test as baseTest, harOptions, setupTest, visitPage, waitForSkeletonsToHide } from './utils'
+import {
+  test as baseTest,
+  getPastTrainDate,
+  harOptions,
+  setupTest,
+  unlockFullPageScroll,
+  visitPage,
+  waitForSkeletonsToHide,
+} from './utils'
 import { mockVehicleApi, VEHICLE_NUMBER } from './vehicleMocks'
 
 const test = mergeTests(baseTest, eyesTest)
@@ -18,6 +26,7 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
     test.describe.configure({ retries: 0 })
 
     test.beforeEach(async ({ page }) => {
+      await unlockFullPageScroll(page)
       await page.route(/.*youtube*/, (route) => route.abort())
       await setupTest(page, mode === 'LTR' ? 'en' : 'he')
       if (mode === 'Dark') {
@@ -109,12 +118,28 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
     test(`Vehicle Page Should Look Good [${mode}]`, async ({ page, eyes }) => {
       await mockVehicleApi(page)
       // full navigation so MainRoute seeds the vehicle number from the URL
-      await page.goto(`/vehicle?vehicleNumber=${VEHICLE_NUMBER}`)
+      await page.goto(`/vehicle?vehicle.vehicleNumber=${VEHICLE_NUMBER}`)
       await page.locator('.preloader').waitFor({ state: 'hidden' })
       // wait for the resolved rides table (incl. the post-midnight 🌙 row) before snapping
       await page.getByRole('row').filter({ hasText: '🌙 00:30' }).waitFor()
       await waitForSkeletonsToHide(page)
       await eyes.check('vehicle page', { fully: true })
+    })
+
+    test(`Train Page Should Look Good [${mode}]`, async ({ page, advancedRouteFromHAR, eyes }) => {
+      await page.clock.setSystemTime(getPastTrainDate())
+      const TRAIN_TEST_DATE = new Date(getPastTrainDate().getTime() - 24 * 60 * 60 * 1000)
+        .toISOString()
+        .slice(0, 10)
+      await advancedRouteFromHAR('tests/HAR/train.har', harOptions)
+      await page.goto(`/train?date=${TRAIN_TEST_DATE}&route=30086`)
+      await page.locator('.preloader').waitFor({ state: 'hidden' })
+      await page.getByText(/30086/).first().waitFor()
+      await page.getByRole('progressbar').waitFor({ state: 'hidden' })
+      await eyes.check('train page', {
+        fully: true,
+        layoutRegions: ['.recharts-wrapper'],
+      })
     })
 
     test(`Operator Page Should Look Good [${mode}]`, async ({

@@ -1,4 +1,4 @@
-import { Today } from '@mui/icons-material'
+import { TodayTwoTone } from '@mui/icons-material'
 import { Box, Button, ButtonGroup } from '@mui/material'
 import { useTranslation } from 'react-i18next'
 import dayjs from 'src/dayjs'
@@ -55,7 +55,7 @@ export const DateNavigator = ({ currentTime, onChange }: DateNavigatorProps) => 
           onClick={handleToday}
           title={t('date_navigator_today')}
           aria-label={t('date_navigator_today')}>
-          <Today className="nav-btn-icon" />
+          <TodayTwoTone className="nav-btn-icon" />
           <span className="nav-btn-unit">{t('date_navigator_today')}</span>
         </Button>
         <Button
