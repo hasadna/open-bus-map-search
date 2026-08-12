@@ -25,7 +25,7 @@ const getIcon = (
 export const vehiclePingMarkerClass = 'vehicle-ping-marker'
 
 export const actualRouteLineColor = 'orange'
-export const actualRouteStopMarkerPath = `${import.meta.env.BASE_URL}marker-dot.png`
+export const actualRouteStopMarkerPath = `${import.meta.env.BASE_URL}marker-dot.svg`
 export const actualRouteStopMarker = getIcon(
   actualRouteStopMarkerPath,
   20,

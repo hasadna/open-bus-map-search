@@ -1,0 +1,6 @@
+<!-- Marker for a standing ping. The band is drawn as a stroke rather than a fill, so `r` is the
+     band's centre line and `stroke-width` its thickness: the ring spans r=6.8 to r=10, i.e. it
+     fills the icon's whole 20x20 box and leaves the hole in the middle open. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width="20" height="20">
+  <circle cx="10" cy="10" r="8.4" fill="none" stroke="#000" stroke-width="3.2" />
+</svg>
