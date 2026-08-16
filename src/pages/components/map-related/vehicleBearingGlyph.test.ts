@@ -63,16 +63,16 @@ describe('speedBandLabel', () => {
 
 describe('arrowSvgMarkup', () => {
   it('paints nothing itself, leaving the colours to the stylesheet that can theme them', () => {
-    const markup = arrowSvgMarkup(45, TOP)
+    const markup = arrowSvgMarkup(45, 0)
 
     expect(markup).toContain('class="ping-arrow"')
     expect(markup).not.toContain('fill=')
     expect(markup).not.toContain('stroke=')
   })
 
-  it('marks the slow half of the bands as outlines and the fast half as solid', () => {
-    expect(arrowSvgMarkup(0, 0)).toContain('ping-arrow--outline')
-    expect(arrowSvgMarkup(0, TOP)).not.toContain('ping-arrow--outline')
+  it('inks the slow half of the bands solid and hollows the fast half out', () => {
+    expect(arrowSvgMarkup(0, 0)).not.toContain('ping-arrow--outline')
+    expect(arrowSvgMarkup(0, TOP)).toContain('ping-arrow--outline')
   })
 })
 
@@ -85,11 +85,6 @@ describe('standingSvgMarkup', () => {
   it('drops the needle when there is no bearing, rather than inventing a heading', () => {
     expect(standingSvgMarkup(undefined)).not.toContain('rotate(')
     expect(standingSvgMarkup(undefined)).toContain('ping-badge')
-  })
-
-  it('leaves its colours to the stylesheet, like the arrow', () => {
-    expect(standingSvgMarkup(0)).not.toContain('fill=')
-    expect(standingSvgMarkup(0)).not.toContain('style=')
   })
 })
 

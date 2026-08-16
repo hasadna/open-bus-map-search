@@ -65,12 +65,14 @@ const bandScale = (band: number) =>
   BAND_SCALE_MIN + ((BAND_SCALE_MAX - BAND_SCALE_MIN) * band) / (SPEED_BANDS.length - 1)
 
 /**
- * Size alone can't carry six bands at ~14px, so the slow half of them is drawn as an outline and
- * the fast half solid: the fill splits the ramp in two, and the size then places an arrow within
- * its half. The colours live in `map.scss`; the markup carries geometry alone.
+ * Size alone can't carry six bands at ~14px, so the fill splits the ramp in two and the size
+ * places an arrow within its half. Solid is the *slow* half and outline the fast one, so ink
+ * falls away as speed rises: the standing badge is the heaviest mark on the map, the crawl below
+ * it nearly so, and a bus at 90 fades to a hollow shape. The colours live in `map.scss`; the
+ * markup carries geometry alone.
  */
 const bandClass = (band: number) =>
-  `ping-arrow${band < SPEED_BANDS.length / 2 ? ' ping-arrow--outline' : ''}`
+  `ping-arrow${band >= SPEED_BANDS.length / 2 ? ' ping-arrow--outline' : ''}`
 
 const rotate = (deg: number) => `rotate(${deg} 12 12)`
 

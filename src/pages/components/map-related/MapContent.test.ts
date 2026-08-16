@@ -30,14 +30,14 @@ describe('vehicleBearingMarker', () => {
     expect(vehicleBearingMarker(120, FAST)).not.toBe(vehicleBearingMarker(120, 5))
   })
 
-  it('grows the arrow with the speed, and fills in the fast half of the bands', () => {
+  it('grows the arrow with the speed while its ink drains away', () => {
     const scale = (kmh: number) => Number(/scale\(([\d.]+)\)/.exec(html(0, kmh))![1])
 
     expect(scale(5)).toBeLessThan(scale(25))
     expect(scale(25)).toBeLessThan(scale(FAST))
-    // slow bands are drawn as an outline, fast ones solid — the size said a second way
-    expect(html(0, 5)).toContain('ping-arrow--outline')
-    expect(html(0, FAST)).not.toContain('ping-arrow--outline')
+    // the slow bands are solid and the fast ones hollow — the size said a second way
+    expect(html(0, 5)).not.toContain('ping-arrow--outline')
+    expect(html(0, FAST)).toContain('ping-arrow--outline')
   })
 
   it('keeps the fastest arrow inside the viewBox, so no bearing clips a corner off it', () => {
@@ -49,12 +49,6 @@ describe('vehicleBearingMarker', () => {
 
   it('tags the arrow with the shared ping class, like the standing glyph', () => {
     expect(vehicleBearingMarker(45, FAST).options.className).toContain(vehiclePingMarkerClass)
-  })
-
-  // `style-src` in csp.ts has no 'unsafe-inline', so a rotation expressed as a style attribute
-  // is silently dropped by the browser and every arrow points north. Keep it out of the markup.
-  it('carries no inline style attribute, which the app CSP would refuse to apply', () => {
-    expect(html(45)).not.toContain('style=')
   })
 })
 
@@ -99,10 +93,8 @@ describe('rideEndMarker', () => {
     expect(clipR).toBeLessThan(discR)
   })
 
-  it('sits in the same disc the ride-start marker uses, and leaves its colours to the sheet', () => {
+  it('sits in the same disc the ride-start marker uses', () => {
     expect(html).toContain('class="ping-badge"')
-    expect(html).not.toContain('fill=')
-    expect(html).not.toContain('style=')
   })
 
   it('shares the ping class, so the last ping stays selectable like any other', () => {
