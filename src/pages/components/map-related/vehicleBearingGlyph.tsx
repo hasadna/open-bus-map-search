@@ -5,9 +5,8 @@
  *
  * The two badges take the ride-start marker's shape (`.bus-icon-circle`: a white disc in a
  * coloured rim, the same in both themes), so the things that bookend or interrupt a ride read as
- * one family and the arrows stay the only bare shapes on the map. Only the rim colour separates
- * them: the ride-end badge keeps the primary rim, while the standing badge takes the slow arrows'
- * red, because a parked bus is a speed reading and the end of a ride is not.
+ * one family. Only the rim colour separates them — the standing badge takes the slow arrows' red,
+ * the ride-end badge keeps the primary rim.
  *
  * They live apart from `MapContent` so the legend can render them without pulling Leaflet in,
  * and so both renderings — Leaflet's HTML string and the legend's element — come off one set of
@@ -61,8 +60,8 @@ export const STANDING_LABEL = '0'
 /** How the arrow grows across the bands, as a factor of the glyph: evenly spaced, so adding a
  * band re-spaces the ramp instead of squeezing it in at one end. The top of the range keeps the
  * fastest arrow inside the viewBox's inscribed circle, so no bearing clips a corner off it. The
- * bottom is a legibility floor rather than a ramp choice: the ramp would happily start lower,
- * but at 0.46 the slowest arrow came out ~8px across and was lost among the pings either side. */
+ * bottom is a legibility floor, not a ramp choice: at 0.46 the slowest arrow was ~8px across and
+ * lost among the pings either side of it. */
 const BAND_SCALE_MIN = 0.62
 const BAND_SCALE_MAX = 0.96
 const bandScale = (band: number) =>
@@ -70,14 +69,8 @@ const bandScale = (band: number) =>
 
 /**
  * Size alone can't carry six bands at ~14px, so colour splits the ramp in two and the size then
- * places an arrow within its half. The slow half is red — what a bad result is painted
- * everywhere else in the app — and the fast half stays the map's default ink.
- *
- * Colour rather than fill, because size runs against the point of the map here: a bus stuck in
- * traffic is the ping worth finding and also the one drawn smallest, and stacking it on top
- * ({@link bearingZIndex}) only stops it being covered, it does not make it easier to spot.
- * Colour is the one channel that doesn't shrink with the arrow.
- *
+ * places an arrow within its half. Colour rather than fill because it is the one channel that
+ * doesn't shrink with the arrow, and the slow half — the pings worth finding — is the small end.
  * The colours live in `map.scss`; the markup carries geometry alone.
  */
 const bandClass = (band: number) =>
@@ -123,10 +116,8 @@ export const arrowSvgMarkup = (deg: number, band: number) =>
   `<path class="${bandClass(band)}" d="${ARROW_PATH}" transform="${bandTransform(deg, band)}"/>` +
   `</svg>`
 
-/** The standing badge's rim wears the slow ramp's red, so a parked bus reads as part of the same
- * family as the crawling arrows. The ride-end badge keeps the plain rim — it bookends the ride
- * rather than reporting a speed — which is why this is a modifier and not a change to
- * `.ping-badge`. Named here so the legend's element and Leaflet's markup can't drift apart. */
+/** A modifier rather than a change to `.ping-badge`, which the ride-end badge shares. Named so
+ * the legend's element and Leaflet's markup can't drift apart. */
 const STANDING_DISC_CLASS = 'ping-badge ping-badge--standing'
 
 const discMarkup = (

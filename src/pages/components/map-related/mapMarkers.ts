@@ -1,11 +1,9 @@
 /**
  * Every Leaflet icon and line colour the map draws with, and nothing that renders.
  *
- * They live here rather than in `MapContent` because the layers `MapContent` renders need them
- * too: with the definitions in `MapContent`, `MapContent → MapLayers/* → MapContent` was an
- * import cycle (two of them, which `madge --circular` fails CI on). A module of leaf values that
- * imports no component breaks it — the layers and `MapContent` both depend on this, and it
- * depends on neither.
+ * Apart from `MapContent` because the layers it renders need these too, which made
+ * `MapContent → MapLayers/* → MapContent` an import cycle — `madge --circular` fails CI on it.
+ * Keep this module free of component imports.
  */
 import { DivIcon, Icon, IconOptions } from 'leaflet'
 import {

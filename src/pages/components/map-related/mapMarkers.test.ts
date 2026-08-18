@@ -35,7 +35,6 @@ describe('vehicleBearingMarker', () => {
 
     expect(scale(5)).toBeLessThan(scale(25))
     expect(scale(25)).toBeLessThan(scale(FAST))
-    // colour says it a second way, and the only way that does not shrink with the arrow
     expect(html(0, 5)).toContain('ping-arrow--slow')
     expect(html(0, FAST)).not.toContain('ping-arrow--slow')
   })

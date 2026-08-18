@@ -76,8 +76,6 @@ describe('arrowSvgMarkup', () => {
     expect(arrowSvgMarkup(0, TOP)).not.toContain('ping-arrow--slow')
   })
 
-  // The regression this ramp's floor exists to prevent: the slowest band is both the smallest
-  // arrow and the one worth finding, and below ~0.6 it is a speck between its neighbours.
   it('keeps the slowest arrow big enough to find, not merely big enough to draw', () => {
     const scale = Number(/scale\(([\d.]+)\)/.exec(arrowSvgMarkup(0, 0))![1])
 
@@ -96,7 +94,6 @@ describe('standingSvgMarkup', () => {
     expect(standingSvgMarkup(undefined)).toContain('ping-badge')
   })
 
-  // A parked bus is a speed reading and joins the red family; the end of a ride is not.
   it('rims the parked bus in the slow ramp colour, which the ride-end badge must not take', () => {
     expect(standingSvgMarkup(0)).toContain('ping-badge--standing')
     expect(rideEndSvgMarkup()).not.toContain('ping-badge--standing')
