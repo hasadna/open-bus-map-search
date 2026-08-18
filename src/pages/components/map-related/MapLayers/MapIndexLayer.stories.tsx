@@ -10,6 +10,20 @@ const meta = {
   title: 'Map/Layers/MapIndexLayer',
   component: MapIndexLayer,
   parameters: { layout: 'centered' },
+  // Every legend rule in map.scss is nested under `.map-info` — the wrapper MapShell puts round
+  // a map page — and the box chrome comes from the `.map-legend` slot inside it. Mounted bare,
+  // the legend gets none of it: the grid never applies and the glyphs render at their intrinsic
+  // size rather than 20px. So the decorator reproduces MapShell's two levels, and the wrapper is
+  // given a map-sized box because `.map-legend` is absolutely positioned within it.
+  decorators: [
+    (Story) => (
+      <div className="map-info" style={{ width: 340, height: 210 }}>
+        <div className="map-legend">
+          <Story />
+        </div>
+      </div>
+    ),
+  ],
 } satisfies Meta<typeof MapIndexLayer>
 
 export default meta
