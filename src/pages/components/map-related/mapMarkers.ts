@@ -32,8 +32,6 @@ const getIcon = (
  * selected without knowing which of the two it got. */
 export const vehiclePingMarkerClass = 'vehicle-ping-marker'
 
-export const actualRouteLineColor = 'orange'
-
 /** Leaflet's box for a ping glyph, in px. It stays the same across every speed band and the
  * standing glyph too, so the click target doesn't shrink with the speed and the icon keeps
  * centring on its ping without per-band anchor arithmetic. */
