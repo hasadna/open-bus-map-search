@@ -9,12 +9,12 @@ import {
 
 /**
  * Key to the ping markers' speed ramp: the compass badge for a bus reported standing, then an
- * arrow per band, growing and filling in as it goes faster.
+ * arrow per band, growing as it goes faster.
  *
- * Speed is deliberately not a colour. The legend above it already spends colour on telling one
- * ride's line from another, so a second meaning on the same channel would be ambiguous — and
- * unreadable for the colour blind on top of that. Size and fill say it twice instead, which is
- * what keeps the bands apart at a marker's ~12px.
+ * Size carries the ramp rung by rung, but it can only run one way — the pings a rider cares
+ * about, the slow ones, come out the smallest marks on the map. So colour splits the ramp in
+ * half against the grain: red on the slow bands and on the standing badge's rim, the app's
+ * colour for a bad result, leaving the fast half in plain ink to recede.
  */
 export function MapSpeedIndex() {
   const { t } = useTranslation()

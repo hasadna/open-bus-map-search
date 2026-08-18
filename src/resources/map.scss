@@ -3,6 +3,11 @@
 // theme from a stylesheet, so it comes from here.
 $primary: #1976d2;
 
+// The speed ramp's red, worn by the slow arrows and by the standing badge's rim. Red is what the
+// app paints a bad result everywhere else ($terrible-result, the far end of GpsCoverageStrip's
+// gap ramp), and ROUTE_COLORS deliberately holds none, so it can't be read as a ride's own line.
+$slow-ping: #c1121f;
+
 // Shared translucency for map overlay controls so they read consistently across
 // both themes. The attribution is more see-through; interactive buttons (zoom,
 // expand) are more opaque for a clearer hit target.
@@ -328,6 +333,12 @@ pre {
   fill: #fff;
   stroke: $primary;
   stroke-width: 1.8;
+
+  // A parked bus is the slowest reading on the ramp, so its rim joins the slow arrows' red. The
+  // ride-end badge keeps the primary rim: it bookends the ride rather than reporting a speed.
+  &--standing {
+    stroke: $slow-ping;
+  }
 }
 
 .ping-badge-mark {
@@ -344,15 +355,14 @@ pre {
   stroke-linejoin: round;
   paint-order: stroke;
 
-  // The band scale is applied to the path, so without this the outline would thin out on the
-  // slow arrows exactly where they are already hardest to see.
+  // The band scale is applied to the path, so without this the halo would thin out on the slow
+  // arrows exactly where they are already hardest to see.
   vector-effect: non-scaling-stroke;
 
-  &--outline {
-    fill: #fff;
-    stroke: #000;
-    stroke-width: 1.9;
-    paint-order: normal;
+  // Every arrow is solid; only the fill colour changes across the ramp, so the slow half is the
+  // one that catches the eye and the fast half recedes into the same ink as the map's own labels.
+  &--slow {
+    fill: $slow-ping;
   }
 }
 

@@ -4,9 +4,9 @@ import type { PositionGroup } from '../map-types'
 import { SPEED_BANDS } from '../vehicleBearingGlyph'
 import { MapIndexLayer } from './MapIndexLayer'
 
-// MapIndexLayer only needs the path/color constants out of MapContent, so stub them instead
-// of pulling the whole leaflet map module into the test.
-vi.mock('../MapContent', () => ({
+// MapIndexLayer only needs the path/color constants out of mapMarkers, so stub them instead
+// of pulling leaflet into the test.
+vi.mock('../mapMarkers', () => ({
   plannedRouteStopMarkerPath: 'planned-marker.png',
   plannedRouteLineColor: 'black',
 }))

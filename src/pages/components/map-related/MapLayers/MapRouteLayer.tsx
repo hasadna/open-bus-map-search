@@ -4,7 +4,7 @@ import { Marker, Polyline, Popup } from 'react-leaflet'
 import { useAgencyList } from 'src/hooks/useAgencyList'
 import { busIcon, busIconPath } from '../../utils/BusIcon'
 import type { Point, PositionGroup } from '../map-types'
-import { rideEndMarker, vehicleBearingMarker, vehicleStandingMarker } from '../MapContent'
+import { rideEndMarker, vehicleBearingMarker, vehicleStandingMarker } from '../mapMarkers'
 import {
   bearingZIndex,
   BOOKEND_Z_INDEX,

@@ -3,7 +3,7 @@ import {
   vehicleBearingMarker,
   vehiclePingMarkerClass,
   vehicleStandingMarker,
-} from './MapContent'
+} from './mapMarkers'
 import { SPEED_BAND_MAX } from './vehicleBearingGlyph'
 
 const FAST = SPEED_BAND_MAX[SPEED_BAND_MAX.length - 1] + 20
@@ -30,14 +30,14 @@ describe('vehicleBearingMarker', () => {
     expect(vehicleBearingMarker(120, FAST)).not.toBe(vehicleBearingMarker(120, 5))
   })
 
-  it('grows the arrow with the speed while its ink drains away', () => {
+  it('grows the arrow with the speed, and reddens the slow half of the ramp', () => {
     const scale = (kmh: number) => Number(/scale\(([\d.]+)\)/.exec(html(0, kmh))![1])
 
     expect(scale(5)).toBeLessThan(scale(25))
     expect(scale(25)).toBeLessThan(scale(FAST))
-    // the slow bands are solid and the fast ones hollow — the size said a second way
-    expect(html(0, 5)).not.toContain('ping-arrow--outline')
-    expect(html(0, FAST)).toContain('ping-arrow--outline')
+    // colour says it a second way, and the only way that does not shrink with the arrow
+    expect(html(0, 5)).toContain('ping-arrow--slow')
+    expect(html(0, FAST)).not.toContain('ping-arrow--slow')
   })
 
   it('keeps the fastest arrow inside the viewBox, so no bearing clips a corner off it', () => {

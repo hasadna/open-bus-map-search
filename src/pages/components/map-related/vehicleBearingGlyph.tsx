@@ -3,9 +3,11 @@
  * was going, a compass badge for a bus reported stationary — which still faces the way the bus
  * did — and the chequered badge that closes the ride off.
  *
- * The two badges share the ride-start marker's styling (`.bus-icon-circle`: a white disc in a
- * primary-coloured rim, the same in both themes), so the things that bookend or interrupt a ride
- * read as one family and the arrows stay the only bare shapes on the map.
+ * The two badges take the ride-start marker's shape (`.bus-icon-circle`: a white disc in a
+ * coloured rim, the same in both themes), so the things that bookend or interrupt a ride read as
+ * one family and the arrows stay the only bare shapes on the map. Only the rim colour separates
+ * them: the ride-end badge keeps the primary rim, while the standing badge takes the slow arrows'
+ * red, because a parked bus is a speed reading and the end of a ride is not.
  *
  * They live apart from `MapContent` so the legend can render them without pulling Leaflet in,
  * and so both renderings — Leaflet's HTML string and the legend's element — come off one set of
@@ -58,21 +60,28 @@ export const STANDING_LABEL = '0'
 
 /** How the arrow grows across the bands, as a factor of the glyph: evenly spaced, so adding a
  * band re-spaces the ramp instead of squeezing it in at one end. The top of the range keeps the
- * fastest arrow inside the viewBox's inscribed circle, so no bearing clips a corner off it. */
-const BAND_SCALE_MIN = 0.46
+ * fastest arrow inside the viewBox's inscribed circle, so no bearing clips a corner off it. The
+ * bottom is a legibility floor rather than a ramp choice: the ramp would happily start lower,
+ * but at 0.46 the slowest arrow came out ~8px across and was lost among the pings either side. */
+const BAND_SCALE_MIN = 0.62
 const BAND_SCALE_MAX = 0.96
 const bandScale = (band: number) =>
   BAND_SCALE_MIN + ((BAND_SCALE_MAX - BAND_SCALE_MIN) * band) / (SPEED_BANDS.length - 1)
 
 /**
- * Size alone can't carry six bands at ~14px, so the fill splits the ramp in two and the size
- * places an arrow within its half. Solid is the *slow* half and outline the fast one, so ink
- * falls away as speed rises: the standing badge is the heaviest mark on the map, the crawl below
- * it nearly so, and a bus at 90 fades to a hollow shape. The colours live in `map.scss`; the
- * markup carries geometry alone.
+ * Size alone can't carry six bands at ~14px, so colour splits the ramp in two and the size then
+ * places an arrow within its half. The slow half is red — what a bad result is painted
+ * everywhere else in the app — and the fast half stays the map's default ink.
+ *
+ * Colour rather than fill, because size runs against the point of the map here: a bus stuck in
+ * traffic is the ping worth finding and also the one drawn smallest, and stacking it on top
+ * ({@link bearingZIndex}) only stops it being covered, it does not make it easier to spot.
+ * Colour is the one channel that doesn't shrink with the arrow.
+ *
+ * The colours live in `map.scss`; the markup carries geometry alone.
  */
 const bandClass = (band: number) =>
-  `ping-arrow${band >= SPEED_BANDS.length / 2 ? ' ping-arrow--outline' : ''}`
+  `ping-arrow${band < SPEED_BANDS.length / 2 ? ' ping-arrow--slow' : ''}`
 
 const rotate = (deg: number) => `rotate(${deg} 12 12)`
 
@@ -114,14 +123,22 @@ export const arrowSvgMarkup = (deg: number, band: number) =>
   `<path class="${bandClass(band)}" d="${ARROW_PATH}" transform="${bandTransform(deg, band)}"/>` +
   `</svg>`
 
-const discMarkup = ({ cx, cy, r }: { cx: number; cy: number; r: number }) =>
-  `<circle class="ping-badge" cx="${cx}" cy="${cy}" r="${r}"/>`
+/** The standing badge's rim wears the slow ramp's red, so a parked bus reads as part of the same
+ * family as the crawling arrows. The ride-end badge keeps the plain rim — it bookends the ride
+ * rather than reporting a speed — which is why this is a modifier and not a change to
+ * `.ping-badge`. Named here so the legend's element and Leaflet's markup can't drift apart. */
+const STANDING_DISC_CLASS = 'ping-badge ping-badge--standing'
+
+const discMarkup = (
+  { cx, cy, r }: { cx: number; cy: number; r: number },
+  className = 'ping-badge',
+) => `<circle class="${className}" cx="${cx}" cy="${cy}" r="${r}"/>`
 
 /** The standing badge, needle and all. A bearing of `undefined` leaves the needle off rather
  * than inventing a heading — the bare disc then reads as "stopped, facing unknown". */
 export const standingSvgMarkup = (deg?: number) =>
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">` +
-  discMarkup(STANDING_DISC) +
+  discMarkup(STANDING_DISC, STANDING_DISC_CLASS) +
   (deg === undefined
     ? ''
     : `<path class="ping-badge-mark" d="${STANDING_NEEDLE}" transform="${rotate(deg)}"/>`) +
@@ -196,7 +213,7 @@ export function VehicleBearingGlyph({ band, bearing = 0 }: { band: number; beari
 export function VehicleStandingGlyph({ bearing = 0 }: { bearing?: number }) {
   return (
     <svg viewBox="0 0 24 24" className="vehicle-bearing-glyph" aria-hidden>
-      <circle className="ping-badge" {...STANDING_DISC} />
+      <circle className={STANDING_DISC_CLASS} {...STANDING_DISC} />
       <path className="ping-badge-mark" d={STANDING_NEEDLE} transform={rotate(bearing)} />
     </svg>
   )
