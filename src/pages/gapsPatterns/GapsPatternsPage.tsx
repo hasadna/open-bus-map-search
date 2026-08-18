@@ -200,8 +200,8 @@ const GapsPatternsPage = () => {
     setRoutesIsLoading(true)
     try {
       const fetchedRoutes = await getRoutesAsync(
-        asDayjs(startDate),
-        asDayjs(endDate),
+        startDate,
+        endDate,
         operatorId ?? undefined,
         lineNumber ?? undefined,
         signal,
