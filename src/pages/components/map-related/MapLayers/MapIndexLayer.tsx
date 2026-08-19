@@ -59,8 +59,7 @@ export function MapIndexLayer({ showPlannedRoute, positionGroups = [] }: MapInde
         <MapIndex
           key={idx}
           lineColor={group.color}
-          // A mid-ramp arrow stands for the whole family here; MapSpeedIndex below spells the
-          // bands out.
+          // A mid-ramp arrow stands for the whole family; MapSpeedIndex below spells the bands out.
           icon={<VehicleBearingGlyph band={SPEED_BANDS[SPEED_BANDS.length - 2]} />}
           title={t('actualRoute')}
           subtitle={vehicleSubtitle(group, t)}

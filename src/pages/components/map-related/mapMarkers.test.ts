@@ -86,7 +86,7 @@ describe('rideEndMarker', () => {
   it('clips the chequer to the badge, so it runs to the edge without escaping the disc', () => {
     const clipId = /<clipPath id="([^"]+)">/.exec(html)![1]
     expect(html).toContain(`clip-path="url(#${clipId})"`)
-    // the clip circle is the badge, a hair smaller so the rim survives on top of the cells
+    // a hair smaller than the disc, so the rim survives on top of the cells
     const clipR = Number(/<clipPath[^>]*><circle[^>]*r="([\d.]+)"/.exec(html)![1])
     const discR = Number(/<circle class="ping-badge"[^>]*r="([\d.]+)"/.exec(html)![1])
     expect(clipR).toBeLessThan(discR)

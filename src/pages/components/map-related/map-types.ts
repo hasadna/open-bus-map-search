@@ -1,8 +1,8 @@
 import type { SiriVehicleLocationWithRelatedPydanticModel } from '@hasadna/open-bus-api-client'
 import { BusStop } from 'src/model/busStop'
 
-/** One per concurrent ride on the map, cycled. Deliberately no red — that belongs to the ping
- * speed ramp (`.ping-arrow--slow`), and red arrows over a red line read as neither. */
+/** Deliberately no red — that belongs to the ping speed ramp (`.ping-arrow--slow`), and red
+ * arrows over a red line read as neither. */
 export const ROUTE_COLORS = ['#f97316', '#3b82f6', '#22c55e', '#a855f7', '#0891b2']
 
 export interface Point {

@@ -7,10 +7,6 @@ import {
   VehicleStandingGlyph,
 } from './vehicleBearingGlyph'
 
-/**
- * Key to the ping markers' speed ramp: the compass badge for a bus reported standing, then an
- * arrow per band, growing as it goes faster and red across the slow half.
- */
 export function MapSpeedIndex() {
   const { t } = useTranslation()
 

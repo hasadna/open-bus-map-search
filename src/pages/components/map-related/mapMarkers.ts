@@ -1,7 +1,6 @@
 /**
- * Every Leaflet icon and line colour the map draws with, and nothing that renders.
- *
- * Apart from `MapContent` because the layers it renders need these too, which made
+ * Every Leaflet icon and line colour the map draws with, and nothing that renders. Apart from
+ * `MapContent` because the layers it renders need these too, which made
  * `MapContent → MapLayers/* → MapContent` an import cycle — `madge --circular` fails CI on it.
  * Keep this module free of component imports.
  */
@@ -26,17 +25,14 @@ const getIcon = (
   })
 }
 
-/** Carried by both vehicle-ping shapes (standing ring and bearing arrow) so a ping can be
- * selected without knowing which of the two it got. */
+/** Carried by every ping shape, so a ping can be selected without knowing which one it got. */
 export const vehiclePingMarkerClass = 'vehicle-ping-marker'
 
-/** Leaflet's box for a ping glyph, in px. It stays the same across every speed band and the
- * standing glyph too, so the click target doesn't shrink with the speed and the icon keeps
- * centring on its ping without per-band anchor arithmetic. */
+/** One box for every speed band and the standing glyph alike, so the click target doesn't shrink
+ * with the speed and the icon centres on its ping without per-band anchor arithmetic. */
 const PING_ICON_PX = 28
 
-/** The ride-end badge gets the ride-start circle's 30px instead, so a ride's two ends are the
- * same size — and its chequer gets the pixels it needs to read as one. */
+/** The ride-start circle's 30px in `map.scss`, so a ride's two ends are the same size. */
 const RIDE_END_ICON_PX = 30
 
 const pingIconOptions = (className: string, html: string, px: number = PING_ICON_PX) => ({
@@ -51,14 +47,8 @@ const standingMarkers = new Map<string, DivIcon>()
 /** Onto 0-359, the convention SVG `rotate()` shares with SIRI (0 = north, clockwise). */
 const normalizeBearing = (bearing: number) => ((Math.round(bearing) % 360) + 360) % 360
 
-/**
- * Arrow marker pointing where the vehicle was heading, from the ping's SIRI bearing
- * (0 = north, clockwise — the same convention SVG `rotate()` uses), grown by how fast it was
- * travelling and reddened if that was slow (see {@link speedBand}).
- *
- * Instances are cached per whole degree and band, so a ride's hundreds of pings share at most
- * 360 × 4 icons and re-renders reuse the same object.
- */
+/** Cached per whole degree and band, so a ride's hundreds of pings share at most 360 × 6 icons
+ * and re-renders hand Leaflet the same object back. */
 export const vehicleBearingMarker = (bearing: number, speedKmh: number): DivIcon => {
   const deg = normalizeBearing(bearing)
   const band = speedBand(speedKmh)
@@ -71,13 +61,6 @@ export const vehicleBearingMarker = (bearing: number, speedKmh: number): DivIcon
   return icon
 }
 
-/**
- * Marker for a ping the vehicle reported standing at: the ride-start marker's white disc, with a
- * compass needle inside showing the way it was facing. Nothing else on the map is a disc this
- * size, so the one exact reading the arrows can never carry — velocity 0 — keeps its own shape.
- *
- * A bearing of `undefined` drops the needle rather than inventing a heading.
- */
 export const vehicleStandingMarker = (bearing?: number): DivIcon => {
   const deg = bearing === undefined ? undefined : normalizeBearing(bearing)
   const key = `${deg}`
@@ -89,10 +72,6 @@ export const vehicleStandingMarker = (bearing?: number): DivIcon => {
   return icon
 }
 
-/**
- * Marker for the ride's last ping: a chequered disc, the finish line to the operator's logo at
- * the start. One per ride, so it is built once rather than cached per bearing.
- */
 export const rideEndMarker = new DivIcon(
   pingIconOptions('vehicle-ride-end-marker', rideEndSvgMarkup(), RIDE_END_ICON_PX),
 )

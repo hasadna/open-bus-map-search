@@ -11,8 +11,7 @@ import {
   waitForSkeletonsToHide,
 } from './utils'
 
-// A ping is a dot when the vehicle was standing and a rotated arrow when it was moving, so
-// match the class both shapes share rather than either one's asset.
+// A ping renders as one of several shapes, so match the class they share, not one shape's asset.
 const BUS_MARKER_SELECTOR = '.leaflet-marker-pane > .vehicle-ping-marker'
 const STATION_MARKER_SELECTOR = '.leaflet-marker-pane > img[src$="marker-bus-stop.png"]'
 
@@ -80,9 +79,9 @@ test.describe('Single line page tests', () => {
     })
   })
 
-  // Guards the rendered rotation, not just the markup: `style-src` in csp.ts omits
-  // 'unsafe-inline', so expressing the turn as a style attribute leaves every arrow pointing
-  // north while the DOM still reads correct. Only a computed style catches that.
+  // Asserts on the computed style, not the markup: `style-src` in csp.ts omits 'unsafe-inline',
+  // so expressing the turn as a style attribute would leave every arrow pointing north while the
+  // DOM still read correct.
   test('should point each ping arrow along the vehicle bearing', async ({ page }) => {
     await selectOperator(page)
     await fillLineNumber(page)

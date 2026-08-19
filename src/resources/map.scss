@@ -1,10 +1,9 @@
 // MUI's default primary, which is what the theme resolves to (ThemeContext sets only
-// `palette.mode`). The map's own chrome — the expand button, the marker rims — can't reach the
-// theme from a stylesheet, so it comes from here.
+// `palette.mode`). A stylesheet can't reach the theme, so the map's chrome copies it here.
 $primary: #1976d2;
 
-// The speed ramp's red, worn by the slow arrows and the standing badge's rim. ROUTE_COLORS
-// deliberately holds no red, so it can't be read as a ride's own line colour.
+// The speed ramp's red. ROUTE_COLORS deliberately holds no red, so this can't be mistaken for
+// a ride's own line colour.
 $slow-ping: #c1121f;
 
 // Shared translucency for map overlay controls so they read consistently across
@@ -191,8 +190,8 @@ main > div,
       }
     }
 
-    // The speed key spans the whole legend instead of sitting in the icon/text columns: it is
-    // a key to the markers, not another one of them.
+    // Spans the whole legend rather than sitting in its icon/text columns: it is a key to the
+    // markers, not another one of them.
     .map-speed-index {
       grid-column: 1 / -1;
       margin-top: 2px;
@@ -217,8 +216,7 @@ main > div,
         align-items: center;
         font-size: 10px;
 
-        // One box per band, so the arrows share a baseline and the size difference between
-        // them is the only thing that moves.
+        // One box per band, so the arrows share a baseline and only their own scale differs.
         img,
         svg {
           width: 22px;
@@ -242,10 +240,9 @@ main > div,
   .map-speed-index {
     border-top-color: rgb(255 255 255 / 25%);
 
-    // The markers themselves never change with the theme — the basemap tiles under them stay
-    // light — so the key shows them on a light chip. Left on the dark panel they would read the
-    // ramp backwards: the outlined slow arrows come out solid against it, and the solid fast
-    // ones hollow.
+    // The markers never change with the theme (the basemap under them stays light), so the key
+    // shows them on a light chip. On the dark panel they read the ramp backwards: the outlined
+    // slow arrows come out solid against it, and the solid fast ones hollow.
     &-band svg {
       border-radius: 3px;
       background: rgb(255 255 255 / 88%);
@@ -316,8 +313,8 @@ pre {
   margin-top: 10px;
 }
 
-// The glyph's rotation and size live on the SVG itself; this only stretches it over the icon
-// box, since the inlined markup declares a viewBox but no width/height.
+// The inlined markup declares a viewBox but no width/height, so it needs stretching over the
+// icon box. Rotation and band scale live on the SVG itself.
 .vehicle-bearing-marker > svg,
 .vehicle-standing-marker > svg,
 .vehicle-ride-end-marker > svg {
@@ -325,15 +322,14 @@ pre {
   height: 100%;
 }
 
-// The disc behind the standing badge and the ride-end one, and the dark glyph it holds. Both
-// keep these colours in either theme, exactly as .bus-icon-circle does at the ride's start: the
-// white disc is what carries them over the basemap, which the dark theme leaves light.
+// Every ping glyph keeps its colours in either theme, exactly as .bus-icon-circle does at the
+// ride's start: the dark theme darkens the app's chrome but not the basemap tiles under the
+// markers, so a glyph that inverted with it would end up white on the very same light tiles.
 .ping-badge {
   fill: #fff;
   stroke: $primary;
   stroke-width: 1.8;
 
-  // Only the standing badge: the ride-end badge shares `.ping-badge` and keeps the primary rim.
   &--standing {
     stroke: $slow-ping;
   }
@@ -343,9 +339,6 @@ pre {
   fill: #000;
 }
 
-// Paint for the bearing arrow, on the map and in the legend alike, and the same in both themes:
-// the dark theme darkens the app's chrome but not the basemap under it, so an arrow that
-// inverted with the theme would end up white on the very same light tiles.
 .ping-arrow {
   fill: #000;
   stroke: #fff;
@@ -354,7 +347,7 @@ pre {
   paint-order: stroke;
 
   // The band scale is applied to the path, so without this the halo would thin out on the slow
-  // arrows exactly where they are already hardest to see.
+  // arrows, exactly where they are already hardest to see.
   vector-effect: non-scaling-stroke;
 
   &--slow {
@@ -368,8 +361,7 @@ pre {
   align-items: center;
   justify-content: center;
 
-  // The ride's start marker, and the rim that makes it one of the badge family: same size, same
-  // ring. border-box keeps the disc 30px across whatever the rim costs it, so it still lines up
+  // border-box keeps the disc 30px across whatever the new rim costs it, so it still lines up
   // with the ride-end badge drawn at the same 30.
   > .bus-icon-circle {
     box-sizing: border-box;

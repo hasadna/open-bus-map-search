@@ -13,17 +13,9 @@ import {
   standingSvgMarkup,
 } from './vehicleBearingGlyph'
 
-/**
- * The speed ramp the ping arrows are drawn from. Bands are a deliberate quantisation, not a
- * rounding artefact: they keep the marker cache to a few hundred icons, and they give the
- * legend something finite to spell out.
- */
-
 const TOP = SPEED_BAND_MAX.length
 
 describe('isStanding', () => {
-  // The whole point of the standing glyph is that it means one exact reading, so that the
-  // marker can never say "stopped" over a tooltip that says 3 km/h.
   it('is the exact zero the vehicle reported, with no tolerance band under it', () => {
     expect(isStanding(0)).toBe(true)
     expect(isStanding(1)).toBe(false)
@@ -46,9 +38,8 @@ describe('speedBand', () => {
 })
 
 describe('speedBandLabel', () => {
-  // Spelled out rather than rebuilt from SPEED_BAND_MAX: a change to the ramp then has to be
-  // read back off the legend it produces, and the standing glyph's 0 has to still meet the
-  // first band's 1 with no km/h left unaccounted for between any two rungs.
+  // Spelled out rather than rebuilt from SPEED_BAND_MAX, so a change to the ramp has to be read
+  // back off the legend it produces — with no km/h unaccounted for between any two rungs.
   it('spells each band out as its km/h range, the last one open-ended', () => {
     expect(STANDING_LABEL).toBe('0')
     expect(SPEED_BANDS.map(speedBandLabel)).toEqual([
@@ -101,13 +92,12 @@ describe('standingSvgMarkup', () => {
 })
 
 describe('marker stacking', () => {
-  // Zoomed out, a ride is a handful of pixels: whatever sits lowest here is what gets buried.
   it('puts the ride bookends over every ping, and the smaller pings over the bigger ones', () => {
     const bands = SPEED_BANDS.map(bearingZIndex)
 
     expect(BOOKEND_Z_INDEX).toBeGreaterThan(STANDING_Z_INDEX)
     expect(STANDING_Z_INDEX).toBeGreaterThan(Math.max(...bands))
-    // strictly descending: band 0 is the smallest arrow and stays on top of the rest
+    // strictly descending: band 0 is the smallest arrow and stays on top
     expect(bands).toEqual([...bands].sort((a, b) => b - a))
     expect(new Set(bands).size).toBe(bands.length)
   })

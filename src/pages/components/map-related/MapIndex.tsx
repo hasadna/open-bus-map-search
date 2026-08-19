@@ -7,8 +7,6 @@ export function MapIndex({
   subtitle,
 }: {
   lineColor: string
-  /** The marker as it appears on the map. An element rather than a URL, so a glyph drawn inline
-   * (the bearing arrow) can be painted by the same stylesheet as its counterpart on the map. */
   icon: ReactNode
   title: string
   subtitle?: ReactNode
