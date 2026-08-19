@@ -11,8 +11,8 @@ export const PAGE_SHARE_PARAMS: Partial<Record<string, ShareableKey[]>> = {
   '/map': [],
   '/velocity-heatmap': ['date'],
   '/single-line-map': ['date', 'operatorId', 'lineNumber', 'routeKey', 'rideTime'],
-  // /vehicle shares the global date here; its page-local vehicleNumber is appended
-  // via PageShareParamsContext (like gaps_patterns' start/end dates).
+  // /vehicle shares the global date here; its page-local vehicle.vehicleNumber is
+  // appended via PageShareParamsContext (like gaps_patterns' start/end dates).
   '/vehicle': ['date'],
   '/operator': ['operatorId', 'date'],
   '/train': ['date'],

@@ -1,5 +1,6 @@
 import {
   Box,
+  CircularProgress,
   Stack,
   ToggleButton,
   ToggleButtonGroup,
@@ -40,6 +41,8 @@ const VelocityHeatmapPage: React.FC = () => {
   const [visMode, setVisMode] = useState<'avg' | 'std' | 'cv'>('avg')
   const [min, setMin] = useState(0)
   const [max, setMax] = useState(1)
+  const [loading, setLoading] = useState(false)
+  const [hasError, setHasError] = useState(false)
 
   const handleDateChange = (time: dayjs.Dayjs | null) => {
     setSearch((current) => ({
@@ -83,24 +86,56 @@ const VelocityHeatmapPage: React.FC = () => {
         </ToggleButtonGroup>
       </Box>
 
-      <MapShell
-        center={[29.65, 34.6]}
-        zoom={DEFAULT_ZOOM_LEVEL}
-        scrollWheelZoom={true}
-        style={{ height: '100%', width: '100%' }}
-        legend={<VelocityHeatmapLegend visMode={visMode} min={min} max={max} />}>
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
-        />
-        <VelocityHeatmapRectangles
-          visMode={visMode}
-          setMinMax={(min, max) => {
-            setMin(min)
-            setMax(max)
-          }}
-        />
-      </MapShell>
+      <Box sx={{ position: 'relative', height: '100%', width: '100%' }}>
+        {(loading || hasError) && (
+          <Box
+            sx={{
+              position: 'absolute',
+              inset: 0,
+              zIndex: 1000,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 1,
+              pointerEvents: 'none',
+              backgroundColor:
+                theme.palette.mode === 'dark'
+                  ? 'rgba(40, 40, 40, 0.92)'
+                  : 'rgba(255, 255, 255, 0.9)',
+            }}>
+            {loading && <CircularProgress />}
+            <Typography
+              variant="h6"
+              component="span"
+              sx={{ color: theme.palette.mode === 'dark' ? '#fff' : '#000' }}>
+              {hasError ? t('loading_error') : t('loading')}
+            </Typography>
+          </Box>
+        )}
+        <MapShell
+          center={[29.65, 34.6]}
+          zoom={DEFAULT_ZOOM_LEVEL}
+          scrollWheelZoom={true}
+          style={{ height: '100%', width: '100%' }}
+          legend={<VelocityHeatmapLegend visMode={visMode} min={min} max={max} />}>
+          <TileLayer
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
+          />
+          <VelocityHeatmapRectangles
+            visMode={visMode}
+            setMinMax={(min, max) => {
+              setMin(min)
+              setMax(max)
+            }}
+            setStatus={(loading, hasError) => {
+              setLoading(loading)
+              setHasError(hasError)
+            }}
+          />
+        </MapShell>
+      </Box>
     </PageContainer>
   )
 }

@@ -1,14 +1,13 @@
 import { CircularProgress, Grid, Typography } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
-import { useContext, useEffect, useMemo, useState } from 'react'
+import { useCallback, useContext, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { SIRI_API } from 'src/api/apiConfig'
 import { getAllRoutesList } from 'src/api/gtfsService'
-import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone, utcNoonForDateStr } from 'src/dayjs'
+import dayjs, { israelDayBounds, toIsraelTimezone, utcNoonForDateStr } from 'src/dayjs'
+import { usePageState } from 'src/hooks/usePageState'
 import { fromGtfsRoute } from 'src/model/busRoute'
 import { GlobalSearchContext } from 'src/model/globalState'
-import { InitialUrlParamsContext, PageShareParamsContext } from 'src/model/routeContext'
-import { serviceDayBounds } from 'src/pages/components/utils/startTimeUtils'
 import VehicleSelector, { normalizeVehicleNumber } from 'src/pages/components/VehicleSelector'
 import { DateSelector } from '../components/DateSelector'
 import { NotFound } from '../components/NotFound'
@@ -16,33 +15,35 @@ import { PageContainer } from '../components/PageContainer'
 import { buildVehicleRideRows, VehicleRideRow } from './buildVehicleRideRows'
 import { VehicleTable } from './VehicleTable'
 
+// null, not '', is the "no vehicle chosen" value: usePageState omits null params
+// from the share URL, so an unset page still produces a clean link.
+type VehicleParams = { vehicleNumber: string | null }
+type VehicleUi = { scrollPosition: number }
+
 const VehiclePage = () => {
   const { t } = useTranslation()
   const { search, setSearch } = useContext(GlobalSearchContext)
   const { date } = search
-  const initialUrlParams = useContext(InitialUrlParamsContext)
-  // LEGACY: manual share-param injection — replace with usePageState's per-page
-  // persistent `params` when this page is migrated.
-  const { setParams } = useContext(PageShareParamsContext)
 
-  // The vehicle number is page-local — never in GlobalSearchContext. Seeded once on
-  // mount from the URL captured at page load (InitialUrlParamsContext), and published
-  // to PageShareParamsContext for the Share button — the same page-local-param
-  // pattern gaps_patterns and timeBasedMap used before their usePageState migration.
-  const [vehicleNumber, setVehicleNumber] = useState<number | undefined>(() =>
-    normalizeVehicleNumber(initialUrlParams.vehicleNumber ?? ''),
+  // The vehicle number is page-local — never in GlobalSearchContext. usePageState
+  // persists it for the session, seeds it from `vehicle.vehicleNumber` in an
+  // incoming URL, and publishes it to the Share button.
+  const { params, setParams } = usePageState<VehicleParams, VehicleUi>('vehicle', {
+    params: { vehicleNumber: null },
+    ui: { scrollPosition: 0 },
+  })
+  const vehicleNumber = useMemo(
+    () => normalizeVehicleNumber(params.vehicleNumber ?? ''),
+    [params.vehicleNumber],
+  )
+  const setVehicleNumber = useCallback(
+    (value: number) => {
+      setParams((prev) => ({ ...prev, vehicleNumber: value ? String(value) : null }))
+    },
+    [setParams],
   )
 
-  useEffect(() => {
-    if (vehicleNumber) setParams({ vehicleNumber: String(vehicleNumber) })
-    else setParams({})
-    return () => setParams({})
-  }, [vehicleNumber, setParams])
-
-  const { start: serviceDayStart, end: serviceDayEnd } = useMemo(
-    () => serviceDayBounds(date),
-    [date],
-  )
+  const { start: dayStart, end: dayEnd } = useMemo(() => israelDayBounds(date), [date])
 
   const handleDateChange = (time: dayjs.Dayjs | null) => {
     setSearch((current) => ({
@@ -56,14 +57,15 @@ const VehiclePage = () => {
     isFetching,
     isError,
   } = useQuery({
-    queryKey: ['vehicleRides', vehicleNumber, serviceDayStart.valueOf(), serviceDayEnd.valueOf()],
+    queryKey: ['vehicleRides', vehicleNumber, dayStart.valueOf(), dayEnd.valueOf()],
     enabled: !!vehicleNumber,
     queryFn: ({ signal }) =>
       SIRI_API.siriRidesListGet(
         {
           vehicleRefs: String(vehicleNumber),
-          scheduledStartTimeFrom: serviceDayStart.toDate(),
-          scheduledStartTimeTo: serviceDayEnd.toDate(),
+          scheduledStartTimeFrom: dayStart.toDate(),
+          // ...To is inclusive server-side, so step back off the exclusive day end.
+          scheduledStartTimeTo: dayEnd.subtract(1, 'millisecond').toDate(),
           orderBy: 'scheduled_start_time asc',
           limit: 500,
         },
@@ -73,8 +75,8 @@ const VehiclePage = () => {
 
   // SIRI rides carry only siri_route__line_ref; the human-readable line number and
   // route names (gtfs_route__*) are frequently null on the ride. Resolve them from
-  // the operator's GTFS routes for the service day — same source the operator page
-  // uses (getAllRoutesList) — and key by line ref to match each ride.
+  // the operator's GTFS routes for the day — same source the operator page uses
+  // (getAllRoutesList) — and key by line ref to match each ride.
   const operatorIds = useMemo(
     () =>
       Array.from(
@@ -111,8 +113,8 @@ const VehiclePage = () => {
   )
 
   const rows = useMemo<VehicleRideRow[]>(
-    () => buildVehicleRideRows({ rides, routeByLineRef, serviceDayStart, date }),
-    [rides, serviceDayStart, date, routeByLineRef],
+    () => buildVehicleRideRows({ rides, routeByLineRef, date }),
+    [rides, date, routeByLineRef],
   )
 
   const handleRowClick = (payload: VehicleRideRow['setSearchPayload']) => {
@@ -129,14 +131,11 @@ const VehiclePage = () => {
       <Grid container spacing={2} sx={{ width: '100%', maxWidth: 600, mx: 'auto' }}>
         {/* choose date */}
         <Grid size={{ sm: 6, xs: 12 }}>
-          <DateSelector time={dayjs.tz(date, ISRAEL_TIMEZONE)} onChange={handleDateChange} />
+          <DateSelector time={dayStart} onChange={handleDateChange} />
         </Grid>
         {/* choose vehicle */}
         <Grid size={{ sm: 6, xs: 12 }}>
-          <VehicleSelector
-            vehicleNumber={vehicleNumber}
-            setVehicleNumber={(value) => setVehicleNumber(value || undefined)}
-          />
+          <VehicleSelector vehicleNumber={vehicleNumber} setVehicleNumber={setVehicleNumber} />
         </Grid>
       </Grid>
 
