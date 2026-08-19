@@ -1,3 +1,11 @@
+// MUI's default primary, which is what the theme resolves to (ThemeContext sets only
+// `palette.mode`). A stylesheet can't reach the theme, so the map's chrome copies it here.
+$primary: #1976d2;
+
+// The speed ramp's red. ROUTE_COLORS deliberately holds no red, so this can't be mistaken for
+// a ride's own line colour.
+$slow-ping: #c1121f;
+
 // Shared translucency for map overlay controls so they read consistently across
 // both themes. The attribution is more see-through; interactive buttons (zoom,
 // expand) are more opaque for a clearer hit target.
@@ -80,7 +88,7 @@ main > div,
     border: none;
     border-radius: 0 0 4px 4px;
     background: $button-bg;
-    color: #1976d2 !important;
+    color: $primary !important;
 
     &:hover {
       background: rgb(255 255 255 / 95%);
@@ -155,7 +163,8 @@ main > div,
       &-icon {
         display: flex;
 
-        img {
+        img,
+        svg {
           width: 20px;
           height: 20px;
         }
@@ -180,6 +189,41 @@ main > div,
         }
       }
     }
+
+    // Spans the whole legend rather than sitting in its icon/text columns: it is a key to the
+    // markers, not another one of them.
+    .map-speed-index {
+      grid-column: 1 / -1;
+      margin-top: 2px;
+      border-top: 1px solid rgb(0 0 0 / 20%);
+      padding-top: 4px;
+
+      &-title {
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      &-bands {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        align-items: end;
+      }
+
+      &-band {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-size: 10px;
+
+        // One box per band, so the arrows share a baseline and only their own scale differs.
+        img,
+        svg {
+          width: 22px;
+          height: 22px;
+        }
+      }
+    }
   }
 }
 
@@ -191,6 +235,18 @@ main > div,
     background-color: $legend-bg-dark;
     border-color: #fff;
     color: #fff;
+  }
+
+  .map-speed-index {
+    border-top-color: rgb(255 255 255 / 25%);
+
+    // The markers never change with the theme (the basemap under them stays light), so the key
+    // shows them on a light chip. On the dark panel they read the ramp backwards: the outlined
+    // slow arrows come out solid against it, and the solid fast ones hollow.
+    &-band svg {
+      border-radius: 3px;
+      background: rgb(255 255 255 / 88%);
+    }
   }
 
   .leaflet-popup-content-wrapper,
@@ -257,16 +313,62 @@ pre {
   margin-top: 10px;
 }
 
+// The inlined markup declares a viewBox but no width/height, so it needs stretching over the
+// icon box. Rotation and band scale live on the SVG itself.
+.vehicle-bearing-marker > svg,
+.vehicle-standing-marker > svg,
+.vehicle-ride-end-marker > svg {
+  width: 100%;
+  height: 100%;
+}
+
+// Every ping glyph keeps its colours in either theme, exactly as .bus-icon-circle does at the
+// ride's start: the dark theme darkens the app's chrome but not the basemap tiles under the
+// markers, so a glyph that inverted with it would end up white on the very same light tiles.
+.ping-badge {
+  fill: #fff;
+  stroke: $primary;
+  stroke-width: 1.8;
+
+  &--standing {
+    stroke: $slow-ping;
+  }
+}
+
+.ping-badge-mark {
+  fill: #000;
+}
+
+.ping-arrow {
+  fill: #000;
+  stroke: #fff;
+  stroke-width: 1.3;
+  stroke-linejoin: round;
+  paint-order: stroke;
+
+  // The band scale is applied to the path, so without this the halo would thin out on the slow
+  // arrows, exactly where they are already hardest to see.
+  vector-effect: non-scaling-stroke;
+
+  &--slow {
+    fill: $slow-ping;
+  }
+}
+
 .bus-icon-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
 
+  // border-box keeps the disc 30px across whatever the new rim costs it, so it still lines up
+  // with the ride-end badge drawn at the same 30.
   > .bus-icon-circle {
+    box-sizing: border-box;
     width: 30px;
     height: 30px;
-    padding: 5px;
+    padding: 4px;
+    border: 2px solid $primary;
     border-radius: 50%;
     background-color: white;
 

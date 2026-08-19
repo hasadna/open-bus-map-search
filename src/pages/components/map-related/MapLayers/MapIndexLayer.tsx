@@ -5,12 +5,10 @@ import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
 import type { PositionGroup } from '../map-types'
-import {
-  actualRouteStopMarkerPath,
-  plannedRouteLineColor,
-  plannedRouteStopMarkerPath,
-} from '../MapContent'
 import { MapIndex } from '../MapIndex'
+import { plannedRouteLineColor, plannedRouteStopMarkerPath } from '../mapMarkers'
+import { MapSpeedIndex } from '../MapSpeedIndex'
+import { SPEED_BANDS, VehicleBearingGlyph } from '../vehicleBearingGlyph'
 
 interface MapIndexLayerProps {
   showPlannedRoute?: boolean
@@ -51,7 +49,7 @@ export function MapIndexLayer({ showPlannedRoute, positionGroups = [] }: MapInde
       {showPlannedRoute && (
         <MapIndex
           lineColor={plannedRouteLineColor}
-          imgSrc={plannedRouteStopMarkerPath}
+          icon={<img src={plannedRouteStopMarkerPath} alt="" />}
           title={t('plannedRoute')}
         />
       )}
@@ -61,11 +59,13 @@ export function MapIndexLayer({ showPlannedRoute, positionGroups = [] }: MapInde
         <MapIndex
           key={idx}
           lineColor={group.color}
-          imgSrc={actualRouteStopMarkerPath}
+          // A mid-ramp arrow stands for the whole family; MapSpeedIndex below spells the bands out.
+          icon={<VehicleBearingGlyph band={SPEED_BANDS[SPEED_BANDS.length - 2]} />}
           title={t('actualRoute')}
           subtitle={vehicleSubtitle(group, t)}
         />
       ))}
+      {positionGroups.length > 0 && <MapSpeedIndex />}
     </div>
   )
 }
