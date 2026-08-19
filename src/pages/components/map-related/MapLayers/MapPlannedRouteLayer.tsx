@@ -1,6 +1,6 @@
 import { Marker, Polyline } from 'react-leaflet'
 import type { BusStop } from 'src/model/busStop'
-import { plannedRouteLineColor, plannedRouteStopMarker } from '../MapContent'
+import { plannedRouteLineColor, plannedRouteStopMarker } from '../mapMarkers'
 
 interface MapPlannedRouteLayerProps {
   plannedRouteStops?: BusStop[]
