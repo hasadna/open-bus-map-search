@@ -1,9 +1,13 @@
 import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
-import { useContext, useEffect, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { useCallback, useContext, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Gap, getGapsAsync } from '../../api/gapsService'
+import dayjs, { ISRAEL_TIMEZONE, utcNoonForDateStr } from 'src/dayjs'
+import { usePageState } from 'src/hooks/usePageState'
+import { GlobalSearchContext } from 'src/model/globalState'
+import { INPUT_SIZE } from 'src/resources/sizes'
+import { getGapsAsync, SerializedGap, serializeGap } from '../../api/gapsService'
 import { getRoutesAsync } from '../../api/gtfsService'
-import { SearchContext } from '../../model/pageState'
 import { DateSelector } from '../components/DateSelector'
 import { Label } from '../components/Label'
 import LineNumberSelector from '../components/LineSelector'
@@ -13,70 +17,90 @@ import { PageContainer } from '../components/PageContainer'
 import RouteSelector from '../components/RouteSelector'
 import { Row } from '../components/Row'
 import GapsTable from './GapsTable'
-import dayjs from 'src/dayjs'
-import { INPUT_SIZE } from 'src/resources/sizes'
 
 const GapsPage = () => {
   const { t } = useTranslation()
-  const { search, setSearch } = useContext(SearchContext)
-  const { operatorId, lineNumber, timestamp, routes, routeKey } = search
-  const [gaps, setGaps] = useState<Gap[]>()
-  const [gapsIsLoading, setGapsIsLoading] = useState(false)
+  const { search, setSearch } = useContext(GlobalSearchContext)
+  const { operatorId, lineNumber, date, routeKey } = search
 
-  useEffect(() => {
-    if (!(operatorId && routes && routeKey && timestamp)) return
-    const selectedRoute = routes.find((route) => route.key === routeKey)
-    if (!selectedRoute) return
+  // scrollPosition (auto-restored by usePageState) and the "only gaps" toggle are
+  // device-local UI state, kept out of the shareable params.
+  const { ui, setUi } = usePageState('gaps', {
+    params: {},
+    ui: { scrollPosition: 0, gapsOnly: false },
+  })
 
-    setGapsIsLoading(true)
-    getGapsAsync(timestamp, timestamp, operatorId, selectedRoute.lineRef)
-      .then(setGaps)
-      .catch((err) => {
-        console.error('Failed to fetch gaps:', err.message)
-        setGaps(undefined)
-      })
-      .finally(() => setGapsIsLoading(false))
-  }, [operatorId, routes, routeKey, timestamp])
+  const singleLineMapBaseHref = useMemo(() => {
+    const params = new URLSearchParams()
+    params.set('date', search.date || '')
+    params.set('operatorId', search.operatorId || '')
+    params.set('lineNumber', search.lineNumber || '')
+    params.set('routeKey', search.routeKey || '')
+    return `/single-line-map?${params.toString()}`
+  }, [search.date, search.lineNumber, search.operatorId, search.routeKey])
 
-  useEffect(() => {
-    if (!operatorId || !lineNumber) {
-      return
-    }
+  const routesQuery = useQuery({
+    queryFn: ({ signal }) => {
+      if (!operatorId || !lineNumber) return null
+      return getRoutesAsync(date, date, operatorId, lineNumber, signal)
+    },
+    queryKey: ['gapsRoutes', operatorId, lineNumber, date],
+  })
+  const routes = routesQuery.data ?? undefined
 
-    const controller = new AbortController()
+  const selectedRoute = useMemo(
+    () => routes?.find((route) => route.key === routeKey),
+    [routes, routeKey],
+  )
 
-    getRoutesAsync(dayjs(timestamp), dayjs(timestamp), operatorId, lineNumber, controller.signal)
-      .then((fetchedRoutes) => {
-        setSearch((current) =>
-          search.lineNumber === lineNumber ? { ...current, routes: fetchedRoutes } : current,
-        )
-      })
-      .catch((err) => {
-        console.error('Failed to fetch routes:', err.message)
-      })
+  const gapsQuery = useQuery({
+    queryFn: async (): Promise<SerializedGap[] | null> => {
+      if (!operatorId || !selectedRoute || !date) return null
+      // The endpoint groups by Israel-local day, so asking for this one date is exact.
+      const day = dayjs(utcNoonForDateStr(date))
+      const res = await getGapsAsync(day, day, operatorId, selectedRoute.lineRef)
+      // Store JSON-serializable strings, not dayjs, so the persisted cache
+      // rehydrates losslessly; GapsTable revives them to dayjs on read.
+      return res.map(serializeGap)
+    },
+    queryKey: ['gaps', operatorId, selectedRoute?.lineRef, date],
+  })
+  const gaps = gapsQuery.data ?? undefined
 
-    return () => controller.abort()
-  }, [operatorId, lineNumber, timestamp, setSearch])
-
-  const handleTimestampChange = (time: dayjs.Dayjs | null) => {
-    setSearch((current) => ({ ...current, timestamp: time?.valueOf() ?? Date.now() }))
+  const handleDateChange = (time: dayjs.Dayjs | null) => {
+    if (!time) return
+    setSearch((current) => ({
+      ...current,
+      date: time.format('YYYY-MM-DD'),
+    }))
   }
 
   const handleOperatorChange = (operatorId: string) => {
-    setSearch((current) => ({ ...current, operatorId }))
+    // Changing/clearing the operator invalidates the chosen route (routes are
+    // per operator+line), so reset it to close the stale results table.
+    setSearch((current) => ({ ...current, operatorId, routeKey: null }))
   }
 
   const handleLineNumberChange = (lineNumber: string) => {
     setSearch((current) =>
       lineNumber === current.lineNumber
         ? { ...current }
-        : { ...current, lineNumber, routes: undefined, routeKey: undefined },
+        : { ...current, lineNumber, routeKey: null },
     )
   }
 
   const handleRouteKeyChange = (routeKey?: string) => {
-    setSearch((current) => ({ ...current, routeKey }))
+    setSearch((current) => ({ ...current, routeKey: routeKey ?? null }))
   }
+
+  // On gap row click: only set rideTime — the date stays as the day the user was
+  // browsing, so single-line-map opens on the same day's departure.
+  const handleStartTimeClick = useCallback(
+    (rideTime: string) => {
+      setSearch((current) => ({ ...current, rideTime }))
+    },
+    [setSearch],
+  )
 
   return (
     <PageContainer>
@@ -86,51 +110,59 @@ const GapsPage = () => {
       <Alert severity="info" variant="outlined" icon={false}>
         {t('gaps_page_description')}
       </Alert>
-      <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE }}>
+      <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE, width: '100%', mx: 'auto' }}>
         {/* choose date */}
-        <Grid size={{ xs: 4 }}>
-          <Label text={t('choose_date')} />
-        </Grid>
-        <Grid size={{ xs: 8 }}>
-          <DateSelector time={dayjs(timestamp)} onChange={handleTimestampChange} />
+        <Grid size={{ sm: 6, xs: 12 }}>
+          <DateSelector time={dayjs.tz(date, ISRAEL_TIMEZONE)} onChange={handleDateChange} />
         </Grid>
         {/* choose operator */}
-        <Grid size={{ xs: 4 }}>
-          <Label text={t('choose_operator')} />
-        </Grid>
-        <Grid size={{ xs: 8 }}>
-          <OperatorSelector operatorId={operatorId} setOperatorId={handleOperatorChange} />
+        <Grid size={{ sm: 6, xs: 12 }}>
+          <OperatorSelector
+            operatorId={operatorId ?? undefined}
+            setOperatorId={handleOperatorChange}
+            excludeIsraelRailways
+          />
         </Grid>
         {/* choose line */}
-        <Grid size={{ xs: 4 }}>
-          <Label text={t('choose_line')} />
+        <Grid size={{ sm: 6, xs: 12 }}>
+          <LineNumberSelector
+            disabled={!operatorId}
+            lineNumber={lineNumber ?? undefined}
+            setLineNumber={handleLineNumberChange}
+          />
         </Grid>
-        <Grid size={{ xs: 8 }}>
-          <LineNumberSelector lineNumber={lineNumber} setLineNumber={handleLineNumberChange} />
-        </Grid>
-        {/* choose routes */}
-        <Grid size={{ xs: 12 }}>
+        {/* choose route */}
+        <Grid size={{ sm: 6, xs: 12 }}>
           {routes?.length === 0 ? (
             <NotFound>{t('line_not_found')}</NotFound>
           ) : (
             <RouteSelector
               routes={routes || []}
               disabled={!routes}
-              routeKey={routeKey}
+              routeKey={routeKey ?? undefined}
               setRouteKey={handleRouteKeyChange}
             />
           )}
         </Grid>
-        <Grid size={{ xs: 12 }}>
-          {gapsIsLoading && (
+        {gapsQuery.isLoading && (
+          <Grid size={{ xs: 12 }}>
             <Row>
               <Label text={t('loading_gaps')} />
               <CircularProgress />
             </Row>
-          )}
-        </Grid>
+          </Grid>
+        )}
       </Grid>
-      {routeKey && routeKey !== '' && <GapsTable loading={gapsIsLoading} gaps={gaps} />}
+      {selectedRoute && (
+        <GapsTable
+          loading={gapsQuery.isLoading}
+          gaps={gaps}
+          singleLineMapBaseHref={singleLineMapBaseHref}
+          onStartTimeClick={handleStartTimeClick}
+          onlyGapped={ui.gapsOnly}
+          onOnlyGappedChange={(value) => setUi((prev) => ({ ...prev, gapsOnly: value }))}
+        />
+      )}
     </PageContainer>
   )
 }

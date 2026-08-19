@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
-import './DisplayGapsPercentage.scss'
 import { Row } from './Row'
+import './DisplayGapsPercentage.scss'
 
 function getStatus(percentage: number, decentPercentage: number, terriblePercentage: number) {
   const moreThanOneHundredPercent = 101

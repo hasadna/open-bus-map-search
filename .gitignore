@@ -5,7 +5,6 @@
 
 # testing
 /coverage
-.nyc_output
 
 # production
 /dist
@@ -31,3 +30,5 @@ npm-debug.log*
 storybook-static
 
 .nx
+.envrc
+*.local.*

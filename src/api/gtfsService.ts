@@ -1,26 +1,14 @@
-import axios from 'axios'
-import {
-  GtfsRideStopPydanticModel,
-  GtfsRideWithRelatedPydanticModel,
-} from '@hasadna/open-bus-api-client'
-import dayjs from 'src/dayjs'
-import { GTFS_API, MAX_HITS_COUNT, STRIDE_API_BASE_PATH } from 'src/api/apiConfig'
+import { GTFS_API } from 'src/api/apiConfig'
+import dayjs, { utcNoonForDateStr } from 'src/dayjs'
 import { BusRoute, fromGtfsRoute } from 'src/model/busRoute'
 import { BusStop, fromGtfsStop } from 'src/model/busStop'
 
-const JOIN_SEPARATOR = ','
-const SEARCH_MARGIN_HOURS = 4
-
-type StopHitsPayLoadType = {
-  gtfsRideIds: string
-  gtfsStopIds: string
-  arrival_time_to: number
-  arrival_time_from: number
-}
-
+/** GTFS routes running between two calendar dates ("YYYY-MM-DD", Israel time, both
+ *  inclusive), merged by route key so a line's variants collapse into one entry
+ *  carrying all its routeIds. Pass the same date twice for a single day. */
 export async function getRoutesAsync(
-  fromTimestamp: dayjs.Dayjs,
-  toTimestamp: dayjs.Dayjs,
+  fromDate: string,
+  toDate: string,
   operatorId?: string,
   lineNumber?: string,
   signal?: AbortSignal,
@@ -29,19 +17,14 @@ export async function getRoutesAsync(
     {
       routeShortName: lineNumber,
       operatorRefs: operatorId,
-      dateFrom: fromTimestamp.startOf('day').toDate(),
-      dateTo: dayjs.min(toTimestamp.endOf('day'), dayjs()).toDate(),
-      limit: 100,
+      dateFrom: utcNoonForDateStr(fromDate),
+      dateTo: utcNoonForDateStr(toDate),
+      limit: 15000,
     },
     { signal },
   )
   const routes = Object.values(
     gtfsRoutes
-      .filter(
-        (route) =>
-          route.date.getDate() >= fromTimestamp.date() &&
-          route.date.getDate() <= toTimestamp.date(),
-      )
       .map((route) => fromGtfsRoute(route))
       .reduce(
         (agg, line) => {
@@ -62,15 +45,15 @@ export async function getRoutesAsync(
 
 export async function getStopsForRouteAsync(
   routeIds: number[],
-  timestamp: dayjs.Dayjs,
+  time: dayjs.Dayjs,
 ): Promise<BusStop[]> {
   const stops: BusStop[] = []
 
   for (const routeId of routeIds) {
     const rides = await GTFS_API.gtfsRidesListGet({
       gtfsRouteId: routeId,
-      startTimeFrom: timestamp.subtract(1, 'day').second(0).millisecond(0).toDate(),
-      startTimeTo: timestamp.add(1, 'day').second(0).millisecond(0).toDate(),
+      startTimeFrom: time.subtract(1, 'day').second(0).millisecond(0).toDate(),
+      startTimeTo: time.add(1, 'day').second(0).millisecond(0).toDate(),
       limit: 1,
       orderBy: 'start_time',
     })
@@ -83,9 +66,14 @@ export async function getStopsForRouteAsync(
     })
     await Promise.all(
       rideStops.map(async (rideStop) => {
-        if (!rideStop.gtfsStopId) return
+        if (
+          !rideStop.gtfsStopId ||
+          stops.find((b) => b.code === rideStop.gtfsStopCode?.toString())
+        ) {
+          return
+        }
         const stop = await GTFS_API.gtfsStopsGetGet({ id: rideStop.gtfsStopId })
-        stops.push(fromGtfsStop(rideStop as GtfsRideStopPydanticModel, stop, rideRepresentative))
+        stops.push(fromGtfsStop(rideStop, stop, rideRepresentative))
       }),
     )
   }
@@ -96,68 +84,17 @@ export async function getStopsForRouteAsync(
   )
 }
 
-export async function getGtfsStopHitTimesAsync(stop: BusStop, timestamp: dayjs.Dayjs) {
-  const targetStartTime = timestamp.subtract(stop.minutesFromRouteStartTime, 'minute')
-
-  const rides = await GTFS_API.gtfsRidesListGet({
-    gtfsRouteId: stop.routeId,
-    startTimeFrom: targetStartTime
-      .subtract(SEARCH_MARGIN_HOURS, 'hour')
-      .second(0)
-      .millisecond(0)
-      .toDate(),
-    startTimeTo: targetStartTime.add(SEARCH_MARGIN_HOURS, 'hour').second(0).millisecond(0).toDate(),
-    limit: 1024,
-    orderBy: 'start_time asc',
-  })
-
-  if (rides.length === 0) {
-    return []
-  }
-
-  const diffFromTargetStart = (ride: GtfsRideWithRelatedPydanticModel): number =>
-    Math.abs(timestamp.diff(ride.startTime, 'second'))
-
-  const closestInTimeRides = rides
-    .sort((a, b) => diffFromTargetStart(a) - diffFromTargetStart(b))
-    .slice(0, MAX_HITS_COUNT)
-
-  const rideIds = closestInTimeRides.map((ride) => ride.id).join(JOIN_SEPARATOR)
-
-  const minStartTime = Math.min(...rides.map((ride) => Number(ride.startTime)))
-  const maxEndTime = Math.max(...rides.map((ride) => Number(ride.endTime)))
-
-  /* Fix StopHits bugs next steps TODO:
-  1. Add a test to ensure this feature is working correctly.
-  2. Optimize the axios request to minimize latency. - Currently takes forever.
-  3. Fix any on this- define the hit type
-  */
-
+export async function getGtfsStopHitTimesAsync(stop: BusStop, time: dayjs.Dayjs) {
   try {
-    const stopHitsRequestPayLoad: StopHitsPayLoadType = {
-      gtfsRideIds: rideIds,
+    return await GTFS_API.gtfsRideStopsListGet({
+      gtfsRideGtfsRouteId: stop.routeId,
       gtfsStopIds: stop.stopId.toString(),
-      arrival_time_from: minStartTime,
-      arrival_time_to: maxEndTime,
-    }
-
-    const stopHitsRes = await axios.get(`${STRIDE_API_BASE_PATH}/gtfs_ride_stops/list`, {
-      params: stopHitsRequestPayLoad,
+      arrivalTimeFrom: time.subtract(4, 'hour').toDate(),
+      arrivalTimeTo: time.add(4, 'hour').toDate(),
+      orderBy: 'arrival_time asc',
     })
-
-    if (stopHitsRes.status !== 200) {
-      throw new Error(`Error fetching stop hits: ${stopHitsRes.statusText}`)
-    }
-
-    if (stopHitsRes.data.length === 0) {
-      throw new Error(`No stop hits found`)
-    }
-
-    const stopHits: GtfsRideStopPydanticModel[] = stopHitsRes.data
-
-    return stopHits.sort((hit1, hit2) => +hit1.arrivalTime! - +hit2.arrivalTime!)
   } catch (error) {
-    console.error(`Error fetching stop hits:`, error)
+    console.error(`Error fetching stop hits for stop ${stop.stopId}:`, error)
     return []
   }
 }
@@ -194,7 +131,7 @@ export async function getAllRoutesList(operatorId: string, date: Date, signal?: 
       dateFrom: date,
       dateTo: date,
       orderBy: 'route_long_name asc',
-      limit: -1,
+      limit: 15000,
     },
     { signal },
   )

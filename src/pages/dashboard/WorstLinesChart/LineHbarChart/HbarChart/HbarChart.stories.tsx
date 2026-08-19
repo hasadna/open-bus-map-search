@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { HbarChart, Entry } from './HbarChart'
+import { Entry, HbarChart } from './HbarChart'
 
 const meta = {
   title: 'Pages/Dashboard/Bar/HbarChart',

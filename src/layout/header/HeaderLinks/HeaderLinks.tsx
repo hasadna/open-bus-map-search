@@ -1,9 +1,8 @@
 import { FC } from 'react'
-import { useNavigate } from 'react-router'
 import { useTranslation } from 'react-i18next'
-
-import './HeaderLinks.scss'
+import { useNavigate } from 'react-router'
 import { HEADER_LINKS } from 'src/routes'
+import './HeaderLinks.scss'
 
 type LinkType = Omit<(typeof HEADER_LINKS)[number], 'element'>
 
@@ -51,7 +50,7 @@ const InternalLink = ({ label, path, icon }: LinkType) => {
       title={t(label)}
       className="header-link"
       onClick={() => {
-        navigate(path)
+        void navigate(path)
       }}>
       {icon}
     </div>

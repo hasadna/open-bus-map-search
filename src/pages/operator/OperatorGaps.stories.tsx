@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { http, HttpResponse } from 'msw'
+import dayjs from 'src/dayjs'
 import { getPastDate } from '../../../.storybook/main'
 import { OperatorGaps } from './OperatorGaps'
 
@@ -11,9 +12,9 @@ const meta = {
       control: 'text',
       description: 'The operator id of the chart.',
     },
-    timestamp: {
-      control: 'date',
-      description: 'The timestamp of the chart.',
+    date: {
+      control: 'text',
+      description: 'The date of the chart (YYYY-MM-DD).',
     },
     timeRange: {
       control: 'select',
@@ -43,7 +44,7 @@ export const Default: Story = {
   },
   args: {
     operatorId: '3',
-    timestamp: getPastDate().getTime(),
+    date: dayjs(getPastDate()).format('YYYY-MM-DD'),
     timeRange: 'day',
   },
 }

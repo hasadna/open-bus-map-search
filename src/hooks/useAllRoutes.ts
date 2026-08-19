@@ -1,6 +1,7 @@
 import { GtfsRoutePydanticModel } from '@hasadna/open-bus-api-client'
 import { useEffect, useState } from 'react'
 import { getAllRoutesList } from 'src/api/gtfsService'
+import { utcNoonForDateStr } from 'src/dayjs'
 import { routeStartEnd } from 'src/pages/components/utils/rotueUtils'
 
 type AllRoutesState = {
@@ -9,20 +10,19 @@ type AllRoutesState = {
   error: boolean
 }
 
-export const useAllRoutes = (operatorId?: string, timestamp?: number) => {
+export const useAllRoutes = (operatorId?: string, date?: string) => {
   const [state, setState] = useState<AllRoutesState>({ routes: [], isLoading: true, error: false })
 
   useEffect(() => {
-    if (!operatorId || !timestamp) {
+    if (!operatorId || !date) {
       setState({ routes: [], isLoading: false, error: false })
       return
     }
 
     setState({ routes: [], isLoading: true, error: false })
     const controller = new AbortController()
-    const date = new Date(timestamp)
 
-    getAllRoutesList(operatorId, date, controller.signal)
+    getAllRoutesList(operatorId, utcNoonForDateStr(date), controller.signal)
       .then((routes) => {
         setState({ routes: mapperRoutes(routes), isLoading: false, error: false })
       })
@@ -32,13 +32,14 @@ export const useAllRoutes = (operatorId?: string, timestamp?: number) => {
       })
 
     return () => controller.abort()
-  }, [operatorId, timestamp])
+  }, [operatorId, date])
 
   return state
 }
 
 type RouteItem = {
   id: number
+  lineRef: number
   line: number
   suffix: string
   start: string
@@ -48,12 +49,23 @@ type RouteItem = {
 
 function mapperRoutes(routes: GtfsRoutePydanticModel[]) {
   return routes
-    .map(({ id, routeShortName, routeLongName }) => {
-      const [start, end] = routeStartEnd(routeLongName)
-      const [, routeLine, routeSuffix] = routeShortName?.match(/^(\d+)(.*)$/) ?? []
-      const line = Number(routeLine)
-      const suffix = line && routeSuffix ? routeSuffix : ''
-      return { id, line, suffix, start, end, routeKey: routeLongName || '' } as RouteItem
-    })
+    .map(
+      ({
+        id,
+        lineRef,
+        routeShortName,
+        routeLongName,
+        routeMkt,
+        routeDirection,
+        routeAlternative,
+      }) => {
+        const [start, end] = routeStartEnd(routeLongName)
+        const [, routeLine, routeSuffix] = routeShortName?.match(/^(\d+)(.*)$/) ?? []
+        const line = Number(routeLine)
+        const suffix = line && routeSuffix ? routeSuffix : ''
+        const routeKey = `${routeMkt}-${routeDirection}-${routeAlternative}`
+        return { id, lineRef, line, suffix, start, end, routeKey }
+      },
+    )
     .sort((a, b) => a.line - b.line || a.suffix.localeCompare(b.suffix, 'he'))
 }

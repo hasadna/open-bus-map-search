@@ -1,5 +1,101 @@
 # Changelog
 
+## [1.5.0](https://github.com/hasadna/open-bus-map-search/compare/v1.4.0...v1.5.0) (2026-06-12)
+
+
+### Features
+
+* Add copy link button and remove all params from url bar ([#1572](https://github.com/hasadna/open-bus-map-search/issues/1572)) ([264d40b](https://github.com/hasadna/open-bus-map-search/commit/264d40bb51e6823d20942c989feb81bca014fc71))
+* Add date picker, so when a new date is selected the map will be updated ([#1332](https://github.com/hasadna/open-bus-map-search/issues/1332)) ([d215e65](https://github.com/hasadna/open-bus-map-search/commit/d215e65d2d190c0bbac2f841f8289061b7d1c428))
+* add funding to github ([#1416](https://github.com/hasadna/open-bus-map-search/issues/1416)) ([b30d47f](https://github.com/hasadna/open-bus-map-search/commit/b30d47fb8e1c27d2d207fdb20459f0d4f557f396))
+* Add hackathon landing page at /hackathon ([#1576](https://github.com/hasadna/open-bus-map-search/issues/1576)) ([037bc44](https://github.com/hasadna/open-bus-map-search/commit/037bc447269da2add36ec19f42976c2526b3bd6d))
+* add Russian translation and improve language selection UX ([#1278](https://github.com/hasadna/open-bus-map-search/issues/1278)) ([ce4ffdf](https://github.com/hasadna/open-bus-map-search/commit/ce4ffdf084da5003f0af5ef05491eb246b30534f))
+* add Shay Harel as hackathon mentor ([#1603](https://github.com/hasadna/open-bus-map-search/issues/1603)) ([ec2da3e](https://github.com/hasadna/open-bus-map-search/commit/ec2da3e3dc5fffbfff609bc1f2188874af4b160a))
+* add start time to shared link via query parameters ([#1385](https://github.com/hasadna/open-bus-map-search/issues/1385)) ([7ac9a5f](https://github.com/hasadna/open-bus-map-search/commit/7ac9a5f90c0e976304b38fbb1f1352c9c82be7ba))
+* Add tooltip to GapsTable ride cells showing full Israel datetime ([#1544](https://github.com/hasadna/open-bus-map-search/issues/1544)) ([a47e05b](https://github.com/hasadna/open-bus-map-search/commit/a47e05b330708de4d63225cbc7d6dcf61adeb98c))
+* added translation for arabic ([#1301](https://github.com/hasadna/open-bus-map-search/issues/1301)) ([483f322](https://github.com/hasadna/open-bus-map-search/commit/483f322a60107b0ea849cd968f3787a75a1028eb))
+* Auto-clean non-numeric characters from vehicle number input ([#1553](https://github.com/hasadna/open-bus-map-search/issues/1553)) ([12e0848](https://github.com/hasadna/open-bus-map-search/commit/12e0848f38df472d42638fe9941d96a15a860b66))
+* Auto-detect local language ([#1558](https://github.com/hasadna/open-bus-map-search/issues/1558)) ([6a14a98](https://github.com/hasadna/open-bus-map-search/commit/6a14a98f71e47e25654ae53853efe6ab1ccc47d7))
+* Click on gap cells to open single-line map for ride ([#1448](https://github.com/hasadna/open-bus-map-search/issues/1448)) ([6324c10](https://github.com/hasadna/open-bus-map-search/commit/6324c104b469da6e4046209fdc4c6bbcb9db90ca))
+* enhance bug report alert messages ([#1398](https://github.com/hasadna/open-bus-map-search/issues/1398)) ([8a88826](https://github.com/hasadna/open-bus-map-search/commit/8a888268e86b95176dfb998ae69d6b4a622f8def))
+* enhance compliant form ([#1300](https://github.com/hasadna/open-bus-map-search/issues/1300)) ([025b568](https://github.com/hasadna/open-bus-map-search/commit/025b5681077195276292697b0f861bfefe687cee))
+* introduce velocity aggregation heatmap page ([#1293](https://github.com/hasadna/open-bus-map-search/issues/1293)) ([18c0eb5](https://github.com/hasadna/open-bus-map-search/commit/18c0eb58b0e20f4fbab558c0ce281641c5c490c2))
+* Make service-day more consistent ([#1619](https://github.com/hasadna/open-bus-map-search/issues/1619)) ([5132e78](https://github.com/hasadna/open-bus-map-search/commit/5132e783c8367680919da47bf5af56d08562df6b))
+* postpone hackathon with glitched countdown and re-open registration ([#1630](https://github.com/hasadna/open-bus-map-search/issues/1630)) ([50e3a6d](https://github.com/hasadna/open-bus-map-search/commit/50e3a6d82bac4d49023e11f9c50adfcbf1262d70))
+* reorganize navigation and homepage links ([#1481](https://github.com/hasadna/open-bus-map-search/issues/1481)) ([0bb0e58](https://github.com/hasadna/open-bus-map-search/commit/0bb0e588cb08294f7859b9966e2029e92cb7be94))
+* restyle velocity heatmap page (legend card, MUI controls, i18n) ([#1526](https://github.com/hasadna/open-bus-map-search/issues/1526)) ([3c79ee9](https://github.com/hasadna/open-bus-map-search/commit/3c79ee9bdc9f32f2983ba838e96f10d02f071503))
+* Schedule View - Gaps Page ([#1225](https://github.com/hasadna/open-bus-map-search/issues/1225)) ([517d11b](https://github.com/hasadna/open-bus-map-search/commit/517d11b5d1cd73fd6dd6f45f50dea4ad0c0850c4))
+* **service-worker:** enhance caching and activation logic ([#1329](https://github.com/hasadna/open-bus-map-search/issues/1329)) ([762e9f8](https://github.com/hasadna/open-bus-map-search/commit/762e9f8c7d3140c62946365201af70b9fd38e2f3))
+* shuffle mentor order on each page load ([#1606](https://github.com/hasadna/open-bus-map-search/issues/1606)) ([b4f74e2](https://github.com/hasadna/open-bus-map-search/commit/b4f74e2b7246a2910a6c22ad59437f04049dfd62))
+* support hotlinking a specific language via URL ([#1517](https://github.com/hasadna/open-bus-map-search/issues/1517)) ([b7470f3](https://github.com/hasadna/open-bus-map-search/commit/b7470f3ecd6ca16eaa0acf970b94c36ac3e5d182))
+* Use moon-sun icons for theme switch ([#1596](https://github.com/hasadna/open-bus-map-search/issues/1596)) ([b14faf6](https://github.com/hasadna/open-bus-map-search/commit/b14faf6c09e7a4bc3dc21db2b1a3c8b43bd6e38d))
+* Velocity page zoom levels ([#1334](https://github.com/hasadna/open-bus-map-search/issues/1334)) ([17aaee5](https://github.com/hasadna/open-bus-map-search/commit/17aaee5b3779c586d382e06e2f0b7f985121166c))
+* **widget:** enhance Widget component ([#1211](https://github.com/hasadna/open-bus-map-search/issues/1211)) ([21a7fe5](https://github.com/hasadna/open-bus-map-search/commit/21a7fe5ed086b93566a1fcf342d3dfdc3f4218ad))
+
+
+### Bug Fixes
+
+* 2 minor errors in browser console ([#1622](https://github.com/hasadna/open-bus-map-search/issues/1622)) ([484a8d1](https://github.com/hasadna/open-bus-map-search/commit/484a8d114ca8c5306ccbf004f22933f4d22c5378))
+* add release-please manifest to anchor version at 1.4.0 ([#1643](https://github.com/hasadna/open-bus-map-search/issues/1643)) ([65bdb3a](https://github.com/hasadna/open-bus-map-search/commit/65bdb3a0487bd32c3e3ce065d3280435d552ceef))
+* Added helper that merge late night routes into today routes ([#1567](https://github.com/hasadna/open-bus-map-search/issues/1567)) ([dae658e](https://github.com/hasadna/open-bus-map-search/commit/dae658e44029425c4061ba106accde817331cdfd))
+* anchor release-please baseline to v1.4.0 with bootstrap-sha ([#1648](https://github.com/hasadna/open-bus-map-search/issues/1648)) ([79915d0](https://github.com/hasadna/open-bus-map-search/commit/79915d0129d7fc20f0cf418916987539931ee8e6))
+* Applitools per-branch baseline ([#1573](https://github.com/hasadna/open-bus-map-search/issues/1573)) ([dce08dc](https://github.com/hasadna/open-bus-map-search/commit/dce08dc841a2c99c999935278e438554f731a4cd))
+* bump vite to 8.0.10 (CVE-2026-39364) ([#1532](https://github.com/hasadna/open-bus-map-search/issues/1532)) ([79c8ecc](https://github.com/hasadna/open-bus-map-search/commit/79c8ecc0f13da6849cce6081ee26ecea58ed7c28))
+* bus tooltip buttons style  ([#1444](https://github.com/hasadna/open-bus-map-search/issues/1444)) ([4ebd718](https://github.com/hasadna/open-bus-map-search/commit/4ebd71870a6c333f9d498a6eaf1098fa22cf4f80))
+* Chromium cache in CI ([#1592](https://github.com/hasadna/open-bus-map-search/issues/1592)) ([73275ff](https://github.com/hasadna/open-bus-map-search/commit/73275fff85a0e330c340f7e310d5565f8cc89e6d))
+* **ci:** Playwright stuck during browser installation ([#1545](https://github.com/hasadna/open-bus-map-search/issues/1545)) ([fe2b626](https://github.com/hasadna/open-bus-map-search/commit/fe2b62633ec6210faa9573e66dc1c59f51942a13))
+* COF formula ([#1342](https://github.com/hasadna/open-bus-map-search/issues/1342)) ([4c26c06](https://github.com/hasadna/open-bus-map-search/commit/4c26c06439d4fb774c47de50c0ba409375314bb0))
+* configure release-please manifest mode with empty component ([#1654](https://github.com/hasadna/open-bus-map-search/issues/1654)) ([18d8a96](https://github.com/hasadna/open-bus-map-search/commit/18d8a96b7f112ad97f55d6d006139c46cd245ea6))
+* date selector styles in dark mode ([#1417](https://github.com/hasadna/open-bus-map-search/issues/1417)) ([cd6bc62](https://github.com/hasadna/open-bus-map-search/commit/cd6bc62326c4179bb0b6cd820a2069d71fc4f7dc))
+* **deps:** bump @mui/icons-material from 7.3.9 to 7.3.11 ([#1559](https://github.com/hasadna/open-bus-map-search/issues/1559)) ([3419ba2](https://github.com/hasadna/open-bus-map-search/commit/3419ba2a1c80cf1244e0aa51b1c0bd5a26888557))
+* Exclude Israel Railways from single-line map ([#1577](https://github.com/hasadna/open-bus-map-search/issues/1577)) ([fda8d57](https://github.com/hasadna/open-bus-map-search/commit/fda8d5765c5d3ae7ccd9714bbb118cd5d0ef8204))
+* gaps page ([#1539](https://github.com/hasadna/open-bus-map-search/issues/1539)) ([7ed3c3d](https://github.com/hasadna/open-bus-map-search/commit/7ed3c3d87d5480d741154e5c6ee2f056eb139a5a))
+* Google analytics now works ([#1621](https://github.com/hasadna/open-bus-map-search/issues/1621)) ([0ee4646](https://github.com/hasadna/open-bus-map-search/commit/0ee46464592591cbf4a86b7772390b24d8f2b1b7))
+* handle rides that continue past midnight (service day) ([#1516](https://github.com/hasadna/open-bus-map-search/issues/1516)) ([9c31a59](https://github.com/hasadna/open-bus-map-search/commit/9c31a5956540a028f11fd47f9be545065d2c1231))
+* hide dashboard menu item behind easter egg ([#1480](https://github.com/hasadna/open-bus-map-search/issues/1480)) ([ac6bb52](https://github.com/hasadna/open-bus-map-search/commit/ac6bb5233fea37cf9990e1a40b15e2b595a5b147))
+* include routeAlternative in route groupBy key ([#1495](https://github.com/hasadna/open-bus-map-search/issues/1495)) ([3e88694](https://github.com/hasadna/open-bus-map-search/commit/3e886943f7270a08bff5c2f57e4ceba1720a9418))
+* increase release-please commit-search-depth to 500 ([#1639](https://github.com/hasadna/open-bus-map-search/issues/1639)) ([d4964f0](https://github.com/hasadna/open-bus-map-search/commit/d4964f0871936507bdf4b29fc058d9efbf8ba421))
+* Line-Profile page input fields ([#1589](https://github.com/hasadna/open-bus-map-search/issues/1589)) ([893a37a](https://github.com/hasadna/open-bus-map-search/commit/893a37a856371946a52c67cc976f19e24d99efe0))
+* LineProfile page respect user selections ([#1608](https://github.com/hasadna/open-bus-map-search/issues/1608)) ([f72a4a2](https://github.com/hasadna/open-bus-map-search/commit/f72a4a2eea5f7ff2bc8ce36a7f20335a06d1b8b8))
+* make CacheProvider language aware ([#1613](https://github.com/hasadna/open-bus-map-search/issues/1613)) ([d370be7](https://github.com/hasadna/open-bus-map-search/commit/d370be74521a70effbba52cb13c22c0e2c489583))
+* make Coveralls upload optional to tolerate server outages ([#1449](https://github.com/hasadna/open-bus-map-search/issues/1449)) ([d663550](https://github.com/hasadna/open-bus-map-search/commit/d6635502454b891589aec5868b443833a1cab672))
+* make GTFS sort rides by stop-arrival times ([#1593](https://github.com/hasadna/open-bus-map-search/issues/1593)) ([560c6e2](https://github.com/hasadna/open-bus-map-search/commit/560c6e2786411a56ac72787b19631104a3b16788))
+* order GPS pings by time, fetch ride times list directly ([#1581](https://github.com/hasadna/open-bus-map-search/issues/1581)) ([d75e664](https://github.com/hasadna/open-bus-map-search/commit/d75e664d8e095af3abec3798f1ceb159bc586fc7))
+* point hackathon starting-point links to live databus domain ([#1636](https://github.com/hasadna/open-bus-map-search/issues/1636)) ([c7bc855](https://github.com/hasadna/open-bus-map-search/commit/c7bc85575132ef2917c2be754924d0844b43832c))
+* prevent horizontal scroll on hackathon page mobile ([#1579](https://github.com/hasadna/open-bus-map-search/issues/1579)) ([a9e4ef3](https://github.com/hasadna/open-bus-map-search/commit/a9e4ef32fe839263ad2387a5d03effcd5fda97e0))
+* prevent horizontal scroll on hackathon page mobile ([#1604](https://github.com/hasadna/open-bus-map-search/issues/1604)) ([1d736bf](https://github.com/hasadna/open-bus-map-search/commit/1d736bf95c8e2d21e647450eccd5691cc1c65dec))
+* re-style the expend-collapse button ([#1424](https://github.com/hasadna/open-bus-map-search/issues/1424)) ([f24971a](https://github.com/hasadna/open-bus-map-search/commit/f24971a759ebe2dcfb6342bb4ffe60446416ea2f))
+* Remove parentBranchName from playwright.config.ts ([#1607](https://github.com/hasadna/open-bus-map-search/issues/1607)) ([9fcd86b](https://github.com/hasadna/open-bus-map-search/commit/9fcd86b362befceed07208656ed3eaf2aad1cc31))
+* replace hardcoded Hebrew text with i18n translations in DateNavigator and charts ([#1457](https://github.com/hasadna/open-bus-map-search/issues/1457)) ([7b52258](https://github.com/hasadna/open-bus-map-search/commit/7b522587c26aa980bdf9397ddd555ca5b19634ff))
+* Restore timestamp param on gaps page. ([#1556](https://github.com/hasadna/open-bus-map-search/issues/1556)) ([28f6a7a](https://github.com/hasadna/open-bus-map-search/commit/28f6a7a2882e06dae851fb63b14a6d22b35e9153))
+* **rides:** filter out future rides from gap list ([#1192](https://github.com/hasadna/open-bus-map-search/issues/1192)) ([e692faf](https://github.com/hasadna/open-bus-map-search/commit/e692faf3debe89f3384009154b223b669f4fc16b))
+* search params  use `routeMkt-routeDirection` for routeKey instead of `routeLongName` ([#1396](https://github.com/hasadna/open-bus-map-search/issues/1396)) ([87dc607](https://github.com/hasadna/open-bus-map-search/commit/87dc6077470ad62b2534b467c9dcf793ade18647))
+* set base URL to '/' and add comprehensive tests ([#1393](https://github.com/hasadna/open-bus-map-search/issues/1393)) ([4ddeef6](https://github.com/hasadna/open-bus-map-search/commit/4ddeef61685539e3e09755ea4317ef3dc2ccb12b))
+* single line map timezone handling ([#1536](https://github.com/hasadna/open-bus-map-search/issues/1536)) ([d69374f](https://github.com/hasadna/open-bus-map-search/commit/d69374f2c532b0a14e9ef7c9efcb19acedbcbd63))
+* singleLineMap mode selector LTR ([#1623](https://github.com/hasadna/open-bus-map-search/issues/1623)) ([8f99525](https://github.com/hasadna/open-bus-map-search/commit/8f9952586907784386cf091625ce39458ff88c01))
+* stabilize timeline HAR and timestamp tests ([#1562](https://github.com/hasadna/open-bus-map-search/issues/1562)) ([aa1058d](https://github.com/hasadna/open-bus-map-search/commit/aa1058d23754470b09c4cf0f3a8d0288ed1168a8))
+* Styling BusToolTip ([#1644](https://github.com/hasadna/open-bus-map-search/issues/1644)) ([5818ad0](https://github.com/hasadna/open-bus-map-search/commit/5818ad0eb0d53e8a758833e0016155346aeb1994))
+* timeline (Trips History) not showing Actual stop time ([e05a68d](https://github.com/hasadna/open-bus-map-search/commit/e05a68da216240f78ddf210658a80f0211726725))
+* Timeline page UI ([#1563](https://github.com/hasadna/open-bus-map-search/issues/1563)) ([212b07f](https://github.com/hasadna/open-bus-map-search/commit/212b07ff451171bbf3471c0da2196f554aaf02b7))
+* Translate the data-research page ([#1617](https://github.com/hasadna/open-bus-map-search/issues/1617)) ([8894dcc](https://github.com/hasadna/open-bus-map-search/commit/8894dcc1ac9e8c1c187877272fcb03081f0b4f3b))
+* trips history page not show timeline ([#1410](https://github.com/hasadna/open-bus-map-search/issues/1410)) ([bf4a4a6](https://github.com/hasadna/open-bus-map-search/commit/bf4a4a6c9cca26b90099671eeb03d6d5c6c70fe6))
+* upgrade Storybook to v10 and fix missing await in play function ([#1452](https://github.com/hasadna/open-bus-map-search/issues/1452)) ([fa35d04](https://github.com/hasadna/open-bus-map-search/commit/fa35d04864a9f4e39ae32cf1d3f40f1ccc24b54c))
+* use actual v1.4.0 commit SHA for bootstrap-sha ([#1650](https://github.com/hasadna/open-bus-map-search/issues/1650)) ([ba222c3](https://github.com/hasadna/open-bus-map-search/commit/ba222c35b403de680de51183f4c075da354338ec))
+* use pathname-based URL matching in visitPage to handle search params ([#1470](https://github.com/hasadna/open-bus-map-search/issues/1470)) ([6118a50](https://github.com/hasadna/open-bus-map-search/commit/6118a50129e165cdba08b1d87aa59156b692cf67))
+* use reachable bootstrap-sha for release-please baseline ([#1649](https://github.com/hasadna/open-bus-map-search/issues/1649)) ([25f2147](https://github.com/hasadna/open-bus-map-search/commit/25f2147a97b71fa5b89f97dc9080c3273c1d49b0))
+* Velocity-Heatmap - DateNavigator label overflow and layout ([#1575](https://github.com/hasadna/open-bus-map-search/issues/1575)) ([eb4f761](https://github.com/hasadna/open-bus-map-search/commit/eb4f761a560f6a1c2594c4a03dc03403583f40bb))
+
+
+### Performance Improvements
+
+* improve cache by using midday for velocity things ([#1415](https://github.com/hasadna/open-bus-map-search/issues/1415)) ([005a883](https://github.com/hasadna/open-bus-map-search/commit/005a883bc1a7588e0696bf5c672dde462f078419))
+* use cache to fetch historical velocity aggregation data ([#1411](https://github.com/hasadna/open-bus-map-search/issues/1411)) ([e1a1e12](https://github.com/hasadna/open-bus-map-search/commit/e1a1e1283f3c03b27f59ab3e840ad0fae295b059))
+
+
+### Reverts
+
+* prevent horizontal scroll on hackathon page mobile ([#1579](https://github.com/hasadna/open-bus-map-search/issues/1579)) ([#1587](https://github.com/hasadna/open-bus-map-search/issues/1587)) ([4363f28](https://github.com/hasadna/open-bus-map-search/commit/4363f2828607cd63f831d76bf4141c701042dfb5))
+
 ## [1.4.0](https://github.com/hasadna/open-bus-map-search/compare/v1.3.0...v1.4.0) (2025-07-14)
 
 

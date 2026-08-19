@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { http, HttpResponse } from 'msw'
+import dayjs from 'src/dayjs'
 import { getPastDate } from '../../../../.storybook/main'
 import WorstLinesChart from './WorstLinesChart'
-import dayjs from 'src/dayjs'
 
 const meta = {
   component: WorstLinesChart,

@@ -1,21 +1,24 @@
-import { Radio, RadioChangeEvent, Skeleton } from 'antd'
+import { Radio, RadioChangeEvent } from 'antd'
 import { FC, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import ArrivalByTimeChart from './ArrivalByTimeChart'
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
-import Widget from 'src/shared/Widget'
 import { Dayjs } from 'src/dayjs'
+import SkeletonLoader from 'src/shared/SkeletonLoader'
+import Widget from 'src/shared/Widget'
+import ArrivalByTimeChart from './ArrivalByTimeChart'
 
 const convertToGraphCompatibleStruct = (arr: GroupByRes[]) => {
-  return arr.map((item: GroupByRes) => ({
-    id: item.operator_ref?.operatorRef.toString() || 'Unknown',
-    name: item.operator_ref?.agencyName || 'Unknown',
-    current: item.total_actual_rides,
-    max: item.total_planned_rides,
-    percent: (item.total_actual_rides / item.total_planned_rides) * 100,
-    gtfs_route_date: item.gtfs_route_date,
-    gtfs_route_hour: item.gtfs_route_hour,
-  }))
+  return arr.map((item) => {
+    return {
+      operatorId: item.operatorRef?.operatorRef.toString() || 'Unknown',
+      name: item.operatorRef?.agencyName || 'Unknown',
+      current: item.totalActualRides,
+      max: item.totalPlannedRides,
+      percent: (item.totalActualRides / item.totalPlannedRides) * 100,
+      gtfsRouteDate: item.gtfsRouteDate ? new Date(item.gtfsRouteDate) : undefined,
+      gtfsRouteHour: item.gtfsRouteHour ? new Date(item.gtfsRouteHour) : undefined,
+    }
+  })
 }
 
 interface DayTimeChartProps {
@@ -35,8 +38,8 @@ const DayTimeChart: FC<DayTimeChartProps> = ({
   const [groupByHour, setGroupByHour] = useState<boolean>(false)
 
   const [data, loadingGraph] = useGroupBy({
-    dateTo: endDate,
     dateFrom: startDate,
+    dateTo: endDate,
     groupBy: groupByHour ? 'operator_ref,gtfs_route_hour' : 'operator_ref,gtfs_route_date',
   })
 
@@ -47,7 +50,7 @@ const DayTimeChart: FC<DayTimeChartProps> = ({
 
   useEffect(() => {
     const totalElements = data.length
-    const totalZeroElements = data.filter((el) => el.total_actual_rides === 0).length
+    const totalZeroElements = data.filter((el) => el.totalActualRides === 0).length
     if (totalElements === 0 || totalZeroElements === totalElements) {
       alertAllDayTimeChartHandling(true)
     } else {
@@ -65,7 +68,7 @@ const DayTimeChart: FC<DayTimeChartProps> = ({
         <Radio.Button value="byHour">{t('group_by_hour_tooltip_content')}</Radio.Button>
       </Radio.Group>
       {loadingGraph ? (
-        <Skeleton active />
+        <SkeletonLoader active />
       ) : (
         <ArrivalByTimeChart data={graphData} operatorId={operatorId} />
       )}

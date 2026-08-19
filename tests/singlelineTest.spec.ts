@@ -1,45 +1,53 @@
 import type { Page } from '@playwright/test'
-import { expect, getPastDate, test, urlMatcher, waitForSkeletonsToHide } from './utils'
-import dayjs from 'src/dayjs'
+import {
+  clearInputField,
+  expect,
+  harOptions,
+  setupTest,
+  test,
+  verifyDateFromParameter,
+  visitPage,
+  waitForMapIdle,
+  waitForSkeletonsToHide,
+} from './utils'
 
-async function selectOperator(page: Page, operatorName = 'דן') {
+// A ping renders as one of several shapes, so match the class they share, not one shape's asset.
+const BUS_MARKER_SELECTOR = '.leaflet-marker-pane > .vehicle-ping-marker'
+const STATION_MARKER_SELECTOR = '.leaflet-marker-pane > img[src$="marker-bus-stop.png"]'
+
+async function selectOperator(page: Page, operatorName = 'אודליה מוניות בעמ') {
   await page.getByLabel('חברה מפעילה').click()
   await page.getByRole('option', { name: operatorName, exact: true }).click()
 }
 
-async function fillLineNumber(page: Page, lineNumber = '67') {
+async function fillLineNumber(page: Page, lineNumber = '16') {
   await page.getByRole('textbox', { name: 'מספר קו' }).fill(lineNumber)
 }
 
-async function selectRoute(page: Page, routeName = 'קניון איילון-רמת גן ⟵ איצטדיון וינטר-רמת גן') {
+async function selectRoute(
+  page: Page,
+  routeName = 'תחנת מוניות רמת גן דרך הטייסים-תל אביב יפו ⟵ תחנת מוניות תל אביב הכובשים-תל אביב יפו',
+) {
   await page.getByLabel(/בחירת מסלול נסיעה/).click()
   await page.getByRole('option', { name: routeName }).click()
 }
 
-async function selectStartTime(page: Page, time = '05:45') {
+async function selectStartTime(page: Page, time = '04:30') {
   await page.getByLabel('בחירת שעת התחלה').click()
   await page.getByRole('option', { name: time }).click()
 }
 
 test.describe('Single line page tests', () => {
   test.beforeEach(async ({ page, advancedRouteFromHAR }) => {
-    await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
-    await page.clock.setSystemTime(getPastDate())
-    advancedRouteFromHAR('tests/HAR/singleline.har', {
-      updateContent: 'embed',
-      update: false,
-      notFound: 'fallback',
-      url: /stride-api/,
-      matcher: urlMatcher,
-    })
-    await page.goto('/')
-    await page.getByText('מפה לפי קו').click()
+    await setupTest(page)
+    await advancedRouteFromHAR('tests/HAR/singleline.har', harOptions)
+    await visitPage(page, 'singleline_map_page_title')
   })
 
   test('should allow selecting operator company options', async ({ page }) => {
     await expect(page.getByRole('textbox', { name: 'מספר קו' })).not.toBeEditable()
     await selectOperator(page)
-    await expect(page.getByLabel('חברה מפעילה')).toHaveValue('דן')
+    await expect(page.getByLabel('חברה מפעילה')).toHaveValue('אודליה מוניות בעמ')
     await expect(page.getByRole('textbox', { name: 'מספר קו' })).toBeEditable()
   })
 
@@ -55,7 +63,7 @@ test.describe('Single line page tests', () => {
     await expect(page.locator('#route-select')).not.toBeEditable()
     await fillLineNumber(page)
     await expect(page.locator('#route-select')).toBeEditable()
-    await page.locator("span[aria-label='close']").click()
+    await clearInputField(page.getByRole('textbox', { name: 'מספר קו' }))
     await expect(page.locator('#route-select')).not.toBeEditable()
   })
 
@@ -64,44 +72,56 @@ test.describe('Single line page tests', () => {
     await fillLineNumber(page)
     await expect(page.locator('#route-select')).toBeEditable()
     await selectRoute(page)
-    await expect(page.getByLabel(/בחירת מסלול נסיעה/)).toHaveValue(/קניון איילון/)
-  })
-
-  test('should display route after selecting route', async ({ page }) => {
-    await test.step('Fill line info', async () => {
-      await selectOperator(page)
-      await fillLineNumber(page)
-      await selectRoute(page)
-    })
+    await expect(page.getByLabel(/בחירת מסלול נסיעה/)).toHaveValue(/תחנת מוניות תל אביב הכובשים/)
 
     await test.step('Verify bus stop marker is in the page', async () => {
-      const stopMarkers = page.locator('.leaflet-marker-pane > img[src$="marker-bus-stop.png"]')
-      await page.waitForTimeout(5000)
-      const count = await stopMarkers.count()
-      expect(count).toBeGreaterThan(0)
+      await expect(page.locator(STATION_MARKER_SELECTOR)).toHaveCount(2, { timeout: 10000 })
     })
+  })
+
+  // Asserts on the computed style, not the markup: `style-src` in csp.ts omits 'unsafe-inline',
+  // so expressing the turn as a style attribute would leave every arrow pointing north while the
+  // DOM still read correct.
+  test('should point each ping arrow along the vehicle bearing', async ({ page }) => {
+    await selectOperator(page)
+    await fillLineNumber(page)
+    await selectRoute(page)
+    await selectStartTime(page)
+
+    const arrows = page.locator('.vehicle-bearing-marker > svg > path')
+    await expect(async () => {
+      expect(await arrows.count()).toBeGreaterThan(5)
+    }).toPass({ timeout: 10000 })
+
+    const rotations = await arrows.evaluateAll((paths) =>
+      paths.map((path) => getComputedStyle(path).transform),
+    )
+    expect(rotations).not.toContain('none')
+    expect(new Set(rotations).size).toBeGreaterThan(1)
   })
 
   test('should show tooltip after clicking on map point in single line map', async ({ page }) => {
-    await page.emulateMedia({ reducedMotion: 'reduce' })
-
     await test.step('Fill line info', async () => {
       await selectOperator(page)
       await fillLineNumber(page)
       await selectRoute(page)
+      await expect(page.locator(STATION_MARKER_SELECTOR)).toHaveCount(2, { timeout: 10000 })
       await selectStartTime(page)
-      await page.waitForTimeout(5000)
+      await expect(async () => {
+        const count = await page.locator(BUS_MARKER_SELECTOR).count()
+        expect(count).toBeGreaterThan(20)
+      }).toPass({ timeout: 10000 })
     })
 
     await test.step('Click on bus button', async () => {
-      await page.locator('.leaflet-container').click()
-      await page.waitForTimeout(5000)
-      await page
-        .locator('.leaflet-marker-pane > img[src$="marker-dot.png"]')
-        .nth(6)
-        .click({ force: true })
-      await page.waitForTimeout(500)
-      await expect(page.locator('.leaflet-popup-content-wrapper')).toBeAttached()
+      await waitForMapIdle(page)
+      const marker = page.locator(BUS_MARKER_SELECTOR).nth(2)
+      // Center the marker first: markers are focused on mousedown (tabindex),
+      // and Chromium auto-scrolls the focused element toward the center - if
+      // that scroll happens between press and release, the click is lost.
+      await marker.evaluate((el) => el.scrollIntoView({ block: 'center', behavior: 'instant' }))
+      await marker.click({ force: true })
+      await expect(page.locator('.leaflet-popup-content-wrapper')).toBeAttached({ timeout: 10000 })
       await waitForSkeletonsToHide(page)
     })
 
@@ -145,38 +165,58 @@ test.describe('Single line page tests', () => {
     await fillLineNumber(page, '9999')
     await expect(page.getByText('הקו לא נמצא')).toBeAttached()
   })
-})
 
-test('verify API call to gtfs_agencies/list - "Map by line"', async ({ page }) => {
-  await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
-
-  let apiCallMade = false
-  page.on('request', (request) => {
-    if (request.url().includes('gtfs_agencies/list')) {
-      apiCallMade = true
-    }
+  test('Verify date_from parameter from - "Map by line"', async ({ page }) => {
+    await verifyDateFromParameter(page)
   })
 
-  await page.goto('/')
-  await page.getByRole('link', { name: 'מפה לפי קו' }).click()
-  await page.getByLabel('חברה מפעילה').click()
-  expect(apiCallMade).toBeTruthy()
-})
+  // Anti-regression for the route-key + start-time refactor on
+  // fix-line-profile-page-route-selection:
+  //
+  //   1. start-time options must come from a single /siri_rides/list query —
+  //      the old code paged through /siri_vehicle_locations/list to discover
+  //      departure times, which was slow and prone to truncation.
+  //   2. once a start time is picked, /siri_vehicle_locations/list must be
+  //      requested with order_by=recorded_at_time asc, because primary-key
+  //      order in the DB is *not* time-ordered (commit d75e664) and the map
+  //      polyline was previously zig-zagging.
+  test('fills all input fields and fetches start-time options via a single SIRI rides query', async ({
+    page,
+  }) => {
+    const requests: string[] = []
+    page.on('request', (req) => {
+      const url = req.url()
+      if (/\/siri_(rides|vehicle_locations)\/list/.test(url)) requests.push(url)
+    })
 
-test('Verify date_from parameter from "Map by line"', async ({ page }) => {
-  await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
+    await selectOperator(page)
+    await fillLineNumber(page)
+    await selectRoute(page)
 
-  const apiRequest = page.waitForRequest((request) => request.url().includes('gtfs_agencies/list'))
+    // The dropdown is enabled as soon as siri_rides/list resolves — if the old
+    // useVehicleLocations path comes back, this would only flip after many
+    // siri_vehicle_locations/list pages have loaded.
+    await expect(page.locator('#start-time-select')).toBeEditable({ timeout: 10000 })
 
-  await page.goto('/')
-  await page.getByRole('link', { name: 'מפה לפי קו' }).click()
+    const ridesCalls = requests.filter((u) => u.includes('/siri_rides/list'))
+    const vehicleLocationsBefore = requests.filter((u) =>
+      u.includes('/siri_vehicle_locations/list'),
+    )
+    expect(ridesCalls).toHaveLength(1)
+    expect(vehicleLocationsBefore).toHaveLength(0)
+    expect(ridesCalls[0]).toContain('order_by=scheduled_start_time')
 
-  const request = await apiRequest
-  const url = new URL(request.url())
-  const dateFromParam = url.searchParams.get('date_from')
-  const dateFrom = dayjs(dateFromParam)
-  const daysAgo = dayjs().diff(dateFrom, 'days')
+    // Sanity check that the dropdown actually got populated.
+    await page.getByLabel('בחירת שעת התחלה').click()
+    expect(await page.getByRole('option').count()).toBeGreaterThan(0)
 
-  expect(daysAgo).toBeGreaterThanOrEqual(0)
-  expect(daysAgo).toBeLessThanOrEqual(3)
+    const locationsResponse = page.waitForResponse((r) =>
+      r.url().includes('/siri_vehicle_locations/list'),
+    )
+    await page.getByRole('option').first().click()
+    const response = await locationsResponse
+
+    // Anti-regression: GPS pings must be ordered by recorded_at_time, not id.
+    expect(response.url()).toContain('order_by=recorded_at_time')
+  })
 })

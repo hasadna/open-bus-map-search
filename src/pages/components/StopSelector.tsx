@@ -4,18 +4,21 @@ import { formatted } from 'src/locale/utils'
 import { BusStop } from 'src/model/busStop'
 
 type StopSelectorProps = {
+  disabled?: boolean
   stops: BusStop[]
   stopKey: string | undefined
   setStopKey: (stopId: string) => void
 }
 
-const StopSelector = ({ stops, stopKey, setStopKey }: StopSelectorProps) => {
+const StopSelector = ({ disabled, stops, stopKey, setStopKey }: StopSelectorProps) => {
   const value = stops.find((stop) => stop.key === stopKey) || null
   const { t } = useTranslation()
 
   return (
     <Autocomplete
+      disabled={disabled}
       disablePortal
+      fullWidth
       value={value}
       onChange={(e, value) => setStopKey(value ? value.key : '')}
       id="stop-select"

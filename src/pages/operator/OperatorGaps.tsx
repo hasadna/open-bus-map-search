@@ -1,43 +1,44 @@
 import { Stack } from '@mui/material'
-import { Skeleton } from 'antd'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Cell, Pie, PieChart } from 'recharts'
-import { InfoItem, InfoTable } from '../components/InfoTable'
 import { useGroupBy } from 'src/api/groupByService'
+import dayjs, { ISRAEL_TIMEZONE } from 'src/dayjs'
+import SkeletonLoader from 'src/shared/SkeletonLoader'
 import Widget from 'src/shared/Widget'
-import dayjs from 'src/dayjs'
+import { InfoItem, InfoTable } from '../components/InfoTable'
 
 export const OperatorGaps = ({
   operatorId,
-  timestamp,
+  date,
   timeRange = 'day',
 }: {
   operatorId?: string
-  timestamp?: number
+  date?: string
   timeRange?: 'day' | 'week' | 'month' | 'year'
 }) => {
   const { t, i18n } = useTranslation()
+  const dateDayjs = date ? dayjs.tz(date, ISRAEL_TIMEZONE) : dayjs()
   const [groupByOperatorData, isLoading] = useGroupBy({
-    dateFrom: dayjs(timestamp).add(-1, timeRange),
-    dateTo: dayjs(timestamp),
+    dateFrom: dateDayjs.subtract(1, timeRange),
+    dateTo: dateDayjs,
     groupBy: 'operator_ref',
   })
 
   const data = useMemo(() => {
     const operator = groupByOperatorData?.find(
-      (d) => d.operator_ref?.operatorRef.toString() === operatorId,
+      (d) => d.operatorRef?.operatorRef.toString() === operatorId,
     )
     if (!operator) return []
 
-    const missing = operator?.total_planned_rides - operator?.total_actual_rides
+    const missing = operator?.totalPlannedRides - operator?.totalActualRides
     return [
-      { name: t('rides_planned'), value: operator?.total_planned_rides },
-      { name: t('rides_actual'), value: operator?.total_actual_rides, color: '#00C49F' },
+      { name: t('rides_planned'), value: operator?.totalPlannedRides },
+      { name: t('rides_actual'), value: operator?.totalActualRides, color: '#00C49F' },
       { name: t('rides_missing'), value: missing, color: '#FF4040' },
       // { name: t('ride_extra'), value: 0, color: '#FFBB28' },
     ]
-  }, [operatorId, timestamp, groupByOperatorData, i18n.language])
+  }, [operatorId, date, groupByOperatorData, i18n.language])
 
   const prefersReducedMotion = useMemo(() => {
     return window?.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -46,9 +47,9 @@ export const OperatorGaps = ({
   return (
     <Widget title={`${t('operator.statistics')} ${t(`operator.time_range.${timeRange}`)}`}>
       {isLoading ? (
-        <Skeleton active paragraph={{ rows: 2 }} />
+        <SkeletonLoader active rows={2} />
       ) : (
-        <Stack flexDirection="row" justifyContent="space-between">
+        <Stack sx={{ flexDirection: 'row', justifyContent: 'space-between' }}>
           <div>
             <InfoTable>
               {data.map((d) => (

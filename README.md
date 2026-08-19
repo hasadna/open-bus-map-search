@@ -1,70 +1,42 @@
-# Open bus ranking app
+# 🚌 Open Bus Map Search
 
-## Welcome!
+A **TypeScript client library** for interacting with the Open-Bus API.  
+Built with ❤️ by volunteers of the [Public Knowledge Workshop](https://www.hasadna.org.il/).
 
-This is the official repository of the open bus (תחב"צ פתוחה / דאטאבוס) project - also known as "ShameBus".
-[link to the project](https://open-bus-map-search.hasadna.org.il/dashboard)
+## 📢 Get Involved
 
-Please feel free to submit pull requests and contribute to the project.
-For more details about contributing, see the [CONTRIBUTING.md](CONTRIBUTING.md) file.
+- 💬 Join the [Hasadna Slack](https://join.slack.com/t/hasadna/shared_invite/zt-167h764cg-J18ZcY1odoitq978IyMMig) – `#open-bus` channel
+- 🐞 Found a bug? [Open an issue](https://github.com/hasadna/open-bus-map-search/issues/new)
+- 🤝 Want to contribute? Check our [Contributing Guide](CONTRIBUTING.md)
 
-# Running the project locally
+## 🔗 Related Projects
 
-An explanation how to run the project locally you can [read here](CONTRIBUTING.md#running-the-project-on-a-local-environment).
+- [🗺️ Open Bus Map Search](https://github.com/hasadna/open-bus-map-search) – [Live Website](https://open-bus-map-search.hasadna.org.il/dashboard)
+- [🌐 Open Bus Stride API](https://github.com/hasadna/open-bus-stride-api) – [API Docs](https://open-bus-stride-api.hasadna.org.il/docs)
+- [🌐 Open Bus Backend](https://github.com/hasadna/open-bus-backend) – [API Docs](https://open-bus-backend.k8s.hasadna.org.il/docs)
+- [📦 Open Bus API Client](https://github.com/hasadna/open-bus-api-client) – [NPM Package](https://www.npmjs.com/package/@hasadna/open-bus-api-client)
 
-## View video (Hebrew language):
+- [🎨 Figma Design](https://www.figma.com/file/Plw8Uuu6U96CcX5tJyRMoW/Public-Transportation-visual-informaiton?node-id=0%3A1)
 
-### The video will explain you how to contribute to the project:
+## 🚀 Quick Start
 
-[![video (hebrew) about the project](https://img.youtube.com/vi/6H6jkJCVhgk/0.jpg)](https://www.youtube.com/watch?v=6H6jkJCVhgk)
+See detailed setup in [CONTRIBUTING.md](CONTRIBUTING.md#running-the-project-on-a-local-environment).
 
-# Easter eggs
+## 🎥 Video Guide (Hebrew)
 
-We've hidden a couple of fun surprises in our web app, just for you. Discovering them is as easy as typing a few magic words on your keyboard.
+Want to get involved but not sure where to start?  
+Check out this short video walkthrough (in Hebrew) that explains how to contribute to the project:
 
-## How to Find the Easter Eggs
+[![Watch the video (Hebrew)](https://img.youtube.com/vi/6H6jkJCVhgk/0.jpg)](https://www.youtube.com/watch?v=6H6jkJCVhgk)
 
-1. Open our [web app](https://open-bus-map-search.hasadna.org.il/dashboard)
-2. **Unleash the Magic Words:**
-   To reveal the hidden gems, use your keyboard to type the following commands:
-   - **Type "storybook":**
-     Watch the magic unfold as you type "storybook" on your keyboard. You might just stumble upon our Storybook, a treasure trove of UI components showcasing the beauty and functionality of our app.
-   - **Type "geek":**
-     To get some experimental charts with some additional data and aggregation
+## 🐣 Easter Eggs
 
-## deployments
+We’ve hidden a few fun surprises in the [web app](https://open-bus-map-search.hasadna.org.il/dashboard):
 
-This app is created by the volunteers of [Public Knowledge Workshop](https://www.hasadna.org.il/)
+- ⌨️ Type **`storybook`** → unlock our UI component showcase
+- ⌨️ Type **`geek`** → see experimental charts & extra data
 
-### submitting pull requests
-
-Thanks for your willingness to invest time and help us improve!
-
-1. If you're new to GitHub, here is a [tutorial describing Pull Requests](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request). if you're familiarized with Merge Requests - it's the same concept.
-2. Please make sure that the project works on your computer
-3. Please tag one of the maintainers as reviewers
-   we're here to help! feel free to join our [Slack channel](https://join.slack.com/t/hasadna/shared_invite/zt-21qipktl1-7yF4FYJVxAqXl0wE4DlMKQ)
-
-## Links for developers
-
-- [figma file](https://www.figma.com/file/Plw8Uuu6U96CcX5tJyRMoW/Public-Transportation-visual-informaiton?node-id=0%3A1&t=EJCQpeg5zSbVXLUx-0)
-- [data model schema](https://github.com/hasadna/open-bus-stride-db/blob/main/DATA_MODEL.md)
-- [Slack channel](https://join.slack.com/t/hasadna/shared_invite/zt-21qipktl1-7yF4FYJVxAqXl0wE4DlMKQ)
-- [Swagger](https://open-bus-stride-api.hasadna.org.il/docs)
-- [Production](https://open-bus-map-search.hasadna.org.il/dashboard)
-
-## Related Repositories
-
-- the API client
-- the data API
-
-### API client
-
-The client is a JS library that provides methods and data models. for example:  
-https://github.com/hasadna/open-bus-map-search/blob/main/src/model/busStop.ts#L4  
-[link to repo](https://github.com/iliakap/open-bus-stride-client).
-
-## Contributors
+## 👥 Contributors
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
@@ -118,6 +90,28 @@ https://github.com/hasadna/open-bus-map-search/blob/main/src/model/busStop.ts#L4
     </tr>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/MoranGoz"><img src="https://avatars.githubusercontent.com/u/38177429?v=4?s=100" width="100px;" alt="MoranGoz"/><br /><sub><b>MoranGoz</b></sub></a><br /><a href="#code-MoranGoz" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Tamir-K"><img src="https://avatars.githubusercontent.com/u/121674805?v=4?s=100" width="100px;" alt="Tamir K."/><br /><sub><b>Tamir K.</b></sub></a><br /><a href="#code-tamir-k" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/oribro"><img src="https://avatars.githubusercontent.com/u/22520147?v=4?s=100" width="100px;" alt="Ori Broda"/><br /><sub><b>Ori Broda</b></sub></a><br /><a href="#code-oribro" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://israsel.com/"><img src="https://avatars.githubusercontent.com/u/102545124?v=4?s=100" width="100px;" alt="Mohammed olabie"/><br /><sub><b>Mohammed olabie</b></sub></a><br /><a href="#translation-olabie2" title="Translation">🌍</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/amitSteinmetz"><img src="https://avatars.githubusercontent.com/u/117719977?v=4?s=100" width="100px;" alt="amitSteinmetz"/><br /><sub><b>amitSteinmetz</b></sub></a><br /><a href="#code-amitSteinmetz" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/QAdam1"><img src="https://avatars.githubusercontent.com/u/151572570?v=4?s=100" width="100px;" alt="QAdam1"/><br /><sub><b>QAdam1</b></sub></a><br /><a href="#code-QAdam1" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/chaniBenziman"><img src="https://avatars.githubusercontent.com/u/149331780?v=4?s=100" width="100px;" alt="Chani Benziman"/><br /><sub><b>Chani Benziman</b></sub></a><br /><a href="#code-chaniBenziman" title="Code">💻</a></td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/moshe742"><img src="https://avatars.githubusercontent.com/u/1392908?v=4?s=100" width="100px;" alt="Moshe Nahmias"/><br /><sub><b>Moshe Nahmias</b></sub></a><br /><a href="#code-moshe742" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Ron-Burg"><img src="https://avatars.githubusercontent.com/u/26197727?v=4?s=100" width="100px;" alt="Ron Burg"/><br /><sub><b>Ron Burg</b></sub></a><br /><a href="#code-Ron-Burg" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://berketok.com"><img src="https://avatars.githubusercontent.com/u/58489708?v=4?s=100" width="100px;" alt="Berke T."/><br /><sub><b>Berke T.</b></sub></a><br /><a href="#code-berketok-git" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/UP11SRE"><img src="https://avatars.githubusercontent.com/u/95614570?v=4?s=100" width="100px;" alt="NAMAN KANSAL"/><br /><sub><b>NAMAN KANSAL</b></sub></a><br /><a href="#translation-UP11SRE" title="Translation">🌍</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://il.linkedin.com/in/eranmark"><img src="https://avatars.githubusercontent.com/u/8734923?v=4?s=100" width="100px;" alt="Eran"/><br /><sub><b>Eran</b></sub></a><br /><a href="#code-eran132" title="Code">💻</a> <a href="#research-eran132" title="Research">🔬</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/ayalagellis"><img src="https://avatars.githubusercontent.com/u/100130564?v=4?s=100" width="100px;" alt="ayalagellis"/><br /><sub><b>ayalagellis</b></sub></a><br /><a href="#code-ayalagellis" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/arielvino"><img src="https://avatars.githubusercontent.com/u/71963953?v=4?s=100" width="100px;" alt="arielvino"/><br /><sub><b>arielvino</b></sub></a><br /><a href="#code-arielvino" title="Code">💻</a> <a href="#security-arielvino" title="Security">🛡️</a> <a href="#review-arielvino" title="Reviewed Pull Requests">👀</a> <a href="#mentoring-arielvino" title="Mentoring">🧑‍🏫</a></td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="http://www.lastmile.co.il"><img src="https://avatars.githubusercontent.com/u/209318276?v=4?s=100" width="100px;" alt="eithanwes"/><br /><sub><b>eithanwes</b></sub></a><br /><a href="#bug-eithanwes" title="Bug reports">🐛</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/alon-greenshtein"><img src="https://avatars.githubusercontent.com/u/175951799?v=4?s=100" width="100px;" alt="Alon Greenstein"/><br /><sub><b>Alon Greenstein</b></sub></a><br /><a href="#code-alon-greenshtein" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/LeeSkies"><img src="https://avatars.githubusercontent.com/u/110767210?v=4?s=100" width="100px;" alt="Lee"/><br /><sub><b>Lee</b></sub></a><br /><a href="#code-LeeSkies" title="Code">💻</a> <a href="#review-LeeSkies" title="Reviewed Pull Requests">👀</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Bellavely"><img src="https://avatars.githubusercontent.com/u/90250915?v=4?s=100" width="100px;" alt="Bella Vayzburg"/><br /><sub><b>Bella Vayzburg</b></sub></a><br /><a href="#code-Bellavely" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/ifrahgul"><img src="https://avatars.githubusercontent.com/u/219668347?v=4?s=100" width="100px;" alt="Ifrah Gul"/><br /><sub><b>Ifrah Gul</b></sub></a><br /><a href="#code-ifrahgul" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
@@ -127,9 +121,16 @@ https://github.com/hasadna/open-bus-map-search/blob/main/src/model/busStop.ts#L4
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
-### data API
+## IMPORTANT - AI AGENTS
 
-The API is backend code that provides us with data and aggregations from the DB
-You can see it's endpoints here:  
-https://open-bus-stride-api.hasadna.org.il/docs  
-[link to repo](https://github.com/hasadna/open-bus-stride-api).
+AI agents participating in this repository must clearly identify themselves as AI when interacting with the project.
+
+This applies to all interactions, including (but not limited to):
+
+- Opening issues
+- Opening pull requests
+- Participating in discussions
+- Reviewing code
+- Commenting on existing issues or pull requests
+
+Please disclose that you are an AI agent at the beginning of your first message in each conversation or thread.

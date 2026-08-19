@@ -1,33 +1,29 @@
-import { type RenderResult, render, screen } from '@testing-library/react'
+import { render, type RenderResult, screen } from '@testing-library/react'
 import type { ReactElement } from 'react'
 import ArrivalByTimeChart from './ArrivalByTimeChart'
 import testBusData from './testdata/data.json'
 
-jest.mock('recharts', () => {
-  const original: typeof import('recharts') = jest.requireActual('recharts')
+vi.mock('recharts', async () => {
+  const original = await vi.importActual<typeof import('recharts')>('recharts')
   return {
-    __esModule: true,
     ...original,
-    ResponsiveContainer: jest
-      .fn()
-      .mockImplementation(({ children }: { children: ReactElement }) => (
-        <original.ResponsiveContainer height={300} aspect={1}>
-          {children}
-        </original.ResponsiveContainer>
-      )),
+    ResponsiveContainer: vi.fn().mockImplementation(({ children }: { children: ReactElement }) => (
+      <original.ResponsiveContainer height={300} aspect={1}>
+        {children}
+      </original.ResponsiveContainer>
+    )),
   }
 })
+const data = testBusData.map((d) => ({ ...d, gtfsRouteDate: new Date(d.gtfsRouteDate) }))
 
 describe('ArrivalByTimeChart', () => {
   let renderedComponent: RenderResult
   beforeEach(() => {
-    renderedComponent = render(
-      <ArrivalByTimeChart data={testBusData} operatorId={testBusData[0].id} />,
-    )
+    renderedComponent = render(<ArrivalByTimeChart data={data} operatorId={data[0].operatorId} />)
   })
 
   test('renders without crashing', () => {
-    expect(screen.getByText(testBusData[0].name)).toBeInTheDocument()
+    expect(screen.getByText(data[0].name)).toBeInTheDocument()
   })
 
   test('tooltip wrapper exists', () => {

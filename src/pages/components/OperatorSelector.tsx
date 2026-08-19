@@ -1,13 +1,14 @@
+import { Autocomplete, TextField } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Autocomplete, TextField } from '@mui/material'
-import { Operator, getOperators } from 'src/model/operator'
+import { getOperators, ISRAEL_TRAIN_ID, Operator } from 'src/model/operator'
 
 type OperatorSelectorProps = {
   operatorId?: string
   setOperatorId: (operatorId: string) => void
   disabled?: boolean
-  filter?: string[]
+  filter?: Set<string>
+  excludeIsraelRailways?: boolean
 }
 
 export default function OperatorSelector({
@@ -15,13 +16,33 @@ export default function OperatorSelector({
   setOperatorId,
   disabled,
   filter,
+  excludeIsraelRailways,
 }: OperatorSelectorProps) {
   const { t } = useTranslation()
   const [operators, setOperators] = useState<Operator[]>([])
 
   useEffect(() => {
-    getOperators(filter).then(setOperators)
-  }, [filter])
+    if (excludeIsraelRailways && operatorId === ISRAEL_TRAIN_ID) {
+      setOperatorId('')
+    }
+  }, [excludeIsraelRailways, operatorId, setOperatorId])
+
+  useEffect(() => {
+    void getOperators(filter)
+      .then((operators) =>
+        setOperators(
+          excludeIsraelRailways
+            ? operators.filter((operator) => operator.id !== ISRAEL_TRAIN_ID)
+            : operators,
+        ),
+      )
+      .catch((err) => {
+        console.error('Failed to load operators:', err)
+        // This effect has no cleanup, so a failed refetch would otherwise leave
+        // the previous filter's operators listed as if they matched the new one.
+        setOperators([])
+      })
+  }, [filter, excludeIsraelRailways])
 
   const value = operators.find((operator) => operator.id === operatorId) || null
 

@@ -7,26 +7,28 @@ permissions:
   issues: write
 
 env:
-  VITE_MSW_S3_URL: https://s3.amazonaws.com/noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.run_number }}/storybook/mockServiceWorker.js
+  VITE_BASE_PATH: /noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.run_number }}/
 
 jobs:
   build:
     name: Build Application
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
-          node-version: latest
+          node-version: 24
           cache: 'npm'
       - name: Get Commit Hash and generate Version File
         run: echo "${{ github.event.pull_request.head.sha }}" >> public/hash.txt
       - name: Run install
         run: npm ci
       - name: Build
+        env:
+          VITE_BASE_PATH: ${{ env.VITE_BASE_PATH }}
         run: npm run build
       - name: Upload artifact (build)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: dist-build
           path: dist
@@ -35,17 +37,19 @@ jobs:
     name: Build Storybook
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
-          node-version: latest
+          node-version: 24
           cache: 'npm'
       - name: Run install
         run: npm ci
       - name: Build Storybook
+        env:
+          VITE_BASE_PATH: ${{ env.VITE_BASE_PATH }}
         run: npm run build-storybook -- -o dist/storybook
       - name: Upload artifact (storybook)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: dist-storybook
           path: dist/storybook
@@ -56,7 +60,7 @@ jobs:
         run: |
           mkdir -p ./pr
           echo $PR_NUMBER > ./pr/pr_number
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: pr_number
           path: pr/

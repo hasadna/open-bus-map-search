@@ -1,4 +1,5 @@
 {
+  "plugins": ["@trivago/prettier-plugin-sort-imports"],
   "semi": false,
   "tabWidth": 2,
   "printWidth": 100,
@@ -6,5 +7,16 @@
   "trailingComma": "all",
   "bracketSameLine": true,
   "jsxSingleQuote": false,
-  "endOfLine": "auto"
+  "endOfLine": "auto",
+  "importOrder": [
+    "^(assert|buffer|child_process|cluster|console|constants|crypto|dgram|dns|domain|events|fs|http|http2|https|module|net|os|path|perf_hooks|process|punycode|querystring|readline|repl|stream|string_decoder|timers|tls|tty|url|util|v8|vm|zlib)(/.*)?$",
+    "<THIRD_PARTY_MODULES>",
+    "^src/(?!.*\\.(css|scss)$)",
+    "^[./](?!.*\\.(css|scss)$)",
+    "^(?![./]).+\\.(scss|css)$",
+    "^src/.+\\.(scss|css)$",
+    "^[./].+\\.(scss|css)$"
+  ],
+  "importOrderCaseInsensitive": true,
+  "importOrderSortSpecifiers": true
 }

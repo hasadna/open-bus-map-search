@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState } from 'react'
-import OperatorSelector from './OperatorSelector'
 import { MAJOR_OPERATORS } from 'src/model/operator'
+import OperatorSelector from './OperatorSelector'
 
 const meta = {
   title: 'Components/OperatorSelector',
@@ -33,7 +33,7 @@ const meta = {
       description: 'Filter function or criteria for the list of operators.',
       control: { type: 'object' },
       table: {
-        type: { summary: ' string[]' },
+        type: { summary: 'Set<string>' },
         defaultValue: { summary: 'undefined' },
       },
     },

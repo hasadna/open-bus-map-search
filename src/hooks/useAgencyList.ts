@@ -1,5 +1,5 @@
 import { GtfsAgencyPydanticModel } from '@hasadna/open-bus-api-client'
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { getAgencyList } from 'src/api/agencyList'
 
 export function useAgencyList() {

@@ -22,7 +22,7 @@ jobs:
     environment: production
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Get Commit Hash and generate Version File
         run: echo "$(git rev-parse --short HEAD)" >> public/hash.txt
       - env:

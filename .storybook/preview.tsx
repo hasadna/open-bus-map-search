@@ -1,13 +1,11 @@
 import type { Preview } from '@storybook/react-vite'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { initialize, mswLoader } from 'msw-storybook-addon'
 import { Suspense, useEffect } from 'react'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { BrowserRouter } from 'react-router'
 import { ThemeProvider, useTheme } from 'src/layout/ThemeContext'
 import i18n from 'src/locale/allTranslations'
-import 'src/index.css'
-import 'src/App.scss'
-import 'leaflet/dist/leaflet.css'
+import 'src/index.scss'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -67,6 +65,10 @@ const preview: Preview = {
   tags: ['autodocs'],
 }
 
+export const initialGlobals = {
+  locale: 'he',
+}
+
 export const globalTypes = {
   locale: {
     name: 'Locale',
@@ -77,6 +79,8 @@ export const globalTypes = {
       items: [
         { value: 'he', title: 'עברית' },
         { value: 'en', title: 'English' },
+        { value: 'ru', title: 'Русский' },
+        { value: 'ar', title: 'العربية' },
       ],
       showName: true,
     },
@@ -114,7 +118,7 @@ const StoryBookWrapper = ({
   }, [darkMode, isDarkTheme, toggleTheme])
 
   useEffect(() => {
-    i18n.changeLanguage(locale)
+    void i18n.changeLanguage(locale)
   }, [locale])
 
   return children

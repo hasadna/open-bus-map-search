@@ -1,32 +1,37 @@
+import { GtfsRoutePydanticModel } from '@hasadna/open-bus-api-client'
 import { CircularProgress, Grid } from '@mui/material'
 import { Tooltip } from 'antd'
-import { GtfsRoutePydanticModel } from '@hasadna/open-bus-api-client'
-import { useContext, useEffect, useState } from 'react'
+import { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLoaderData, useNavigate } from 'react-router'
+import { getRoutesAsync } from 'src/api/gtfsService'
+import dayjs, { toIsraelTimezone } from 'src/dayjs'
+import { useSingleLineData } from 'src/hooks/useSingleLineData'
+import { GLOBAL_SEARCH_DEFAULTS, GlobalSearchContext } from 'src/model/globalState'
+import { InitialUrlParamsContext, PageShareParamsContext } from 'src/model/routeContext'
+import StopSelector from 'src/pages/components/StopSelector'
+import Widget from 'src/shared/Widget'
 import { DateSelector } from '../components/DateSelector'
 import { FilterPositionsByStartTimeSelector } from '../components/FilterPositionsByStartTimeSelector'
+import { MapWithLocationsAndPath } from '../components/map-related/MapWithLocationsAndPath'
 import { NotFound } from '../components/NotFound'
 import { PageContainer } from '../components/PageContainer'
 import RouteSelector from '../components/RouteSelector'
-import { MapWithLocationsAndPath } from '../components/map-related/MapWithLocationsAndPath'
 import { LineProfileDetails } from './LineProfileDetails'
 import { LineProfileRide } from './LineProfileRide'
 import { LineProfileStop } from './LineProfileStop'
-import { getRoutesAsync } from 'src/api/gtfsService'
-import { useSingleLineData } from 'src/hooks/useSingleLineData'
-import { SearchContext } from 'src/model/pageState'
-import StopSelector from 'src/pages/components/StopSelector'
-import Widget from 'src/shared/Widget'
-import dayjs from 'src/dayjs'
-import './LineProfile.scss'
 
 const LineProfile = () => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { route, message } = useLoaderData<{ route?: GtfsRoutePydanticModel; message?: string }>()
   const [stopKey, setState] = useState<string>()
-  const { setSearch } = useContext(SearchContext)
+  const { search, setSearch } = useContext(GlobalSearchContext)
+  const dateChangeAbortRef = useRef<AbortController | null>(null)
+  const initialUrlParams = useContext(InitialUrlParamsContext)
+  // LEGACY: manual share-param injection — replace with usePageState's per-page
+  // persistent `params` when this page is migrated.
+  const { setParams } = useContext(PageShareParamsContext)
 
   useEffect(() => {
     document.querySelector('main')?.scrollTo(0, 0)
@@ -37,53 +42,81 @@ const LineProfile = () => {
     if (!route?.id) {
       return
     }
+    const key = `${route.routeMkt}-${route.routeDirection}-${route.routeAlternative}`
     setSearch(() => ({
-      timestamp: route.date.getTime(),
+      ...GLOBAL_SEARCH_DEFAULTS,
+      date: toIsraelTimezone(route.date.getTime()).format('YYYY-MM-DD'),
       operatorId: route.operatorRef.toString(),
-      lineNumber: route.routeShortName,
-      routes,
-      routeKey: route.routeLongName,
+      lineNumber: route.routeShortName ?? null,
+      routeKey: key,
+      rideTime: initialUrlParams.rideTime ?? initialUrlParams.startTime ?? null,
     }))
-    setRouteKey(route.routeLongName)
   }, [route?.id])
 
+  const onRouteKeyChange = useCallback(
+    (key: string | null) => setSearch((c) => ({ ...c, routeKey: key })),
+    [setSearch],
+  )
+  const onRideTimeChange = useCallback(
+    (time: string | null) => setSearch((c) => ({ ...c, rideTime: time })),
+    [setSearch],
+  )
+
   const {
-    positions,
+    positionGroups,
     locationsAreLoading,
     options,
     plannedRouteStops,
     startTime,
     routes,
     routeKey,
+    error,
     setStartTime,
-    setRouteKey,
-  } = useSingleLineData(route?.operatorRef.toString(), route?.routeShortName)
+  } = useSingleLineData({
+    operatorId: route?.operatorRef.toString(),
+    lineNumber: route?.routeShortName,
+    date: search.date,
+    routeKey: search.routeKey,
+    rideTime: search.rideTime,
+    onRouteKeyChange,
+    onRideTimeChange,
+  })
 
-  const handleTimestampChange = (time: dayjs.Dayjs | null) => {
+  useEffect(() => {
+    if (startTime) setParams({ startTime })
+    else setParams({})
+    return () => setParams({})
+  }, [startTime, setParams])
+
+  const handleDateChange = (time: dayjs.Dayjs | null) => {
     if (!time || !route) return
-
+    dateChangeAbortRef.current?.abort()
     const abortController = new AbortController()
+    dateChangeAbortRef.current = abortController
+    const dateStr = toIsraelTimezone(time).format('YYYY-MM-DD')
     getRoutesAsync(
-      time,
-      time,
+      dateStr,
+      dateStr,
       route?.operatorRef.toString(),
       route?.routeShortName,
       abortController.signal,
     )
       .then((routes) => {
-        const newRoute = routes?.find((r) => r.key === route.routeLongName)
+        const newRoute = routes?.find(
+          (r) => r.key === `${route.routeMkt}-${route.routeDirection}-${route.routeAlternative}`,
+        )
         if (newRoute?.routeIds?.[0]) {
-          navigate(`/profile/${newRoute.routeIds[0]}`)
+          void navigate(`/profile/${newRoute.routeIds[0]}`)
         }
       })
-      .catch((error) => console.error(error))
+      .catch((err) => console.error(err))
   }
 
   const handelRouteChange = (key?: string) => {
     if (!key || !routes) return
     const newRoute = routes?.find((route) => route.key === key)
     if (newRoute?.routeIds?.[0]) {
-      navigate(`/profile/${newRoute.routeIds[0]}`)
+      void navigate(`/profile/${newRoute.routeIds[0]}`)
     }
   }
 
@@ -97,21 +130,26 @@ const LineProfile = () => {
   }
 
   return (
-    <PageContainer className="line-profile-container">
+    <PageContainer className="map-container">
       <Grid container spacing={2} sx={{ marginTop: '0.5rem' }}>
-        <Grid size={{ xs: 12, lg: 7 }} container spacing={2} flexDirection="column">
+        <Grid size={{ xs: 12, lg: 7 }} container spacing={2} sx={{ flexDirection: 'column' }}>
           <LineProfileDetails {...route} />
         </Grid>
-        <Grid size={{ xs: 12, lg: 5 }} container spacing={2} flexDirection="column">
-          <RouteSelector
-            routes={routes ?? []}
-            routeKey={routeKey}
-            setRouteKey={handelRouteChange}
-          />
-          <DateSelector time={dayjs(route?.date.getTime())} onChange={handleTimestampChange} />
-          <Grid container flexWrap="nowrap" alignItems="center">
+        <Grid size={{ xs: 12, lg: 5 }} container spacing={2} sx={{ flexDirection: 'column' }}>
+          {error ? (
+            <NotFound>{error}</NotFound>
+          ) : (
+            <RouteSelector
+              routes={routes ?? []}
+              routeKey={routeKey}
+              setRouteKey={handelRouteChange}
+            />
+          )}
+          <DateSelector time={dayjs(route?.date.getTime())} onChange={handleDateChange} />
+          <Grid container sx={{ flexWrap: 'nowrap', alignItems: 'center' }}>
             <FilterPositionsByStartTimeSelector
               options={options}
+              disabled={options.length === 0}
               startTime={startTime}
               setStartTime={setStartTime}
             />
@@ -121,7 +159,7 @@ const LineProfile = () => {
               </Tooltip>
             )}
           </Grid>
-          <LineProfileRide point={positions[0]?.point} />
+          <LineProfileRide positionGroups={positionGroups} />
           <StopSelector stops={plannedRouteStops} stopKey={stopKey} setStopKey={handelStopChange} />
           <LineProfileStop
             stop={plannedRouteStops.find((s) => s.key === stopKey)}
@@ -129,7 +167,10 @@ const LineProfile = () => {
           />
         </Grid>
       </Grid>
-      <MapWithLocationsAndPath positions={positions} plannedRouteStops={plannedRouteStops} />
+      <MapWithLocationsAndPath
+        positionGroups={positionGroups}
+        plannedRouteStops={plannedRouteStops}
+      />
     </PageContainer>
   )
 }

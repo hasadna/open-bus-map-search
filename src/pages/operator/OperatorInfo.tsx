@@ -1,9 +1,9 @@
 import { Stack } from '@mui/material'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
+import Widget from 'src/shared/Widget'
 import { InfoItem, InfoTable } from '../components/InfoTable'
 import { operatorList } from './data'
-import Widget from 'src/shared/Widget'
 
 export const OperatorInfo = ({ operatorId }: { operatorId?: string }) => {
   const { t, i18n } = useTranslation()
@@ -12,7 +12,7 @@ export const OperatorInfo = ({ operatorId }: { operatorId?: string }) => {
 
   return (
     <Widget title={i18n.language === 'en' ? operator?.eng_name : operator?.name}>
-      <Stack justifyContent="space-between" flexDirection="row">
+      <Stack sx={{ justifyContent: 'space-between', flexDirection: 'row' }}>
         <InfoTable>
           <InfoItem label={t('operator.ref')} value={operator?.ref} />
           <InfoItem label={t('operator.founded')} value={operator?.founded} />
@@ -35,7 +35,11 @@ export const OperatorInfo = ({ operatorId }: { operatorId?: string }) => {
             }
           />
         </InfoTable>
-        <img src={`../operators-logos/${operator?.ref}.svg`} height={96} />
+        <img
+          src={`../operators-logos/${operator?.ref}.svg`}
+          alt={`logo of operator ${operator?.eng_name}`}
+          height={96}
+        />
       </Stack>
     </Widget>
   )

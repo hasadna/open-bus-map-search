@@ -1,0 +1,50 @@
+import { GlobalSearchState } from 'src/model/globalState'
+
+export type ShareableKey = keyof GlobalSearchState
+
+// Only include params that are actually used on each page.
+// Pages absent from this map (homepage, about, donate, etc.) get no params.
+export const PAGE_SHARE_PARAMS: Partial<Record<string, ShareableKey[]>> = {
+  '/timeline': ['date', 'operatorId', 'lineNumber', 'routeKey', 'stopKey'],
+  '/gaps': ['date', 'operatorId', 'lineNumber', 'routeKey'],
+  '/gaps_patterns': ['operatorId', 'lineNumber', 'routeKey'],
+  '/map': [],
+  '/velocity-heatmap': ['date'],
+  '/single-line-map': ['date', 'operatorId', 'lineNumber', 'routeKey', 'rideTime'],
+  // /vehicle shares the global date here; its page-local vehicle.vehicleNumber is
+  // appended via PageShareParamsContext (like gaps_patterns' start/end dates).
+  '/vehicle': ['date'],
+  '/operator': ['operatorId', 'date'],
+  '/train': ['date'],
+}
+
+/**
+ * Build a shareable URL for the given page.
+ *
+ * Only the params relevant to that page are included (see PAGE_SHARE_PARAMS).
+ * Page params (e.g. page-local state registered via PageShareParamsContext)
+ * are appended last and override any GlobalSearchContext param with the same key.
+ */
+export const buildShareUrl = (
+  pathname: string,
+  search: GlobalSearchState,
+  pageParams: Record<string, string>,
+  origin = window.location.origin,
+): string => {
+  const pagePath = pathname
+  const relevantKeys = PAGE_SHARE_PARAMS[pagePath] ?? []
+
+  const params = new URLSearchParams()
+
+  for (const key of relevantKeys) {
+    const value = search[key]
+    if (value) params.set(key, String(value))
+  }
+
+  Object.entries(pageParams).forEach(([key, value]) => params.set(key, value))
+
+  const query = params.toString()
+  // The URL carries no language segment, so shared links are language-agnostic —
+  // the recipient's stored language preference (localStorage) picks their own lang.
+  return `${origin}${pagePath}${query ? `?${query}` : ''}`
+}

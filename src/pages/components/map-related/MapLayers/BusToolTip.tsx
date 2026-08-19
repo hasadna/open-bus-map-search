@@ -1,17 +1,16 @@
-import { Button, CircularProgress } from '@mui/material'
-import { Skeleton } from 'antd'
-import cn from 'classnames'
 import { GtfsRoutePydanticModel } from '@hasadna/open-bus-api-client'
+import { Button, CircularProgress } from '@mui/material'
 import { ReactNode, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
-import { EasterEgg } from '../../../EasterEgg/EasterEgg'
-import CustomTreeView from '../../CustomTreeView'
-import ComplaintModal from './ComplaintModal'
 import { getRoutesByLineRef } from 'src/api/gtfsService'
+import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone, utcNoonForDateStr } from 'src/dayjs'
 import { routeStartEnd, vehicleIDFormat } from 'src/pages/components/utils/rotueUtils'
-import type { Point } from 'src/pages/timeBasedMap'
-import dayjs from 'src/dayjs'
+import SkeletonLoader from 'src/shared/SkeletonLoader'
+import CustomTreeView from '../../CustomTreeView'
+import { EasterEgg } from '../../EasterEgg/EasterEgg'
+import type { Point } from '../map-types'
+import ComplaintModal from './ComplaintModal'
 import './BusToolTip.scss'
 
 export type BusToolTipProps = { position: Point; icon: string; children?: ReactNode }
@@ -27,9 +26,13 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
     if (!position.point?.id) return
     setIsLoading(true)
     getRoutesByLineRef(
-      position.point?.siri_route__operator_ref.toString(),
-      position.point?.siri_route__line_ref.toString(),
-      new Date(position.point?.siri_ride__scheduled_start_time),
+      (position.point?.siriRouteOperatorRef || 0).toString(),
+      (position.point?.siriRouteLineRef || 0).toString(),
+      utcNoonForDateStr(
+        toIsraelTimezone(position.point?.siriRideScheduledStartTime ?? undefined).format(
+          'YYYY-MM-DD',
+        ),
+      ),
     )
       .then((routes) => {
         setRoute(routes[0])
@@ -64,14 +67,14 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
   const [from, destination] = routeStartEnd(route?.routeLongName)
 
   return (
-    <div className={cn('bus-tooltip', { hebrew: i18n.language === 'he' })}>
+    <div className="bus-tooltip" dir={i18n.dir()}>
       {isLoading || !route ? (
         <div>
           <h1 className="loading title">
             <span>{t('loading_routes')}</span>
             <CircularProgress />
           </h1>
-          <Skeleton title={false} paragraph={{ rows: 7 }} />
+          <SkeletonLoader active={false} title={false} rows={7} />
         </div>
       ) : (
         <>
@@ -79,11 +82,12 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
             <h1 className="title">
               {`${t('line')}: `}
               <span>
+                {/* eslint-disable-next-line i18next/no-literal-string -- fallback for a missing route number */}
                 <Link to={`/profile/${route.id}`}>{route?.routeShortName || 'NaN'}</Link>
               </span>
             </h1>
-            <Link to={`/operator?operatorId=${position.point?.siri_route__operator_ref}`}>
-              <img src={icon} alt="bus icon" className="bus-icon" />
+            <Link to={`/operator?operatorId=${position.point?.siriRouteOperatorRef}`}>
+              <img src={icon} alt={t('bus_icon_alt')} className="bus-icon" />
             </Link>
           </header>
           <div className="content">
@@ -92,7 +96,7 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
                 {`${t('lineProfile.agencyName')}: `}
 
                 <span>
-                  <Link to={`/operator?operatorId=${position.point?.siri_route__operator_ref}`}>
+                  <Link to={`/operator?operatorId=${position.point?.siriRouteOperatorRef}`}>
                     {route.agencyName}
                   </Link>
                 </span>
@@ -112,14 +116,14 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
               <li>
                 {`${t('sample_time')}: `}
                 <span>
-                  {dayjs(position.point!.recorded_at_time)
-                    .tz('Israel')
+                  {dayjs(position.point!.recordedAtTime || new Date())
+                    .tz(ISRAEL_TIMEZONE)
                     .format(`l [${t('at_time')}] LT`)}
                 </span>
               </li>
               <li>
                 {`${t('vehicle_ref')}: `}
-                <span>{vehicleIDFormat(position.point?.siri_ride__vehicle_ref)}</span>
+                <span>{vehicleIDFormat(position.point?.siriRideVehicleRef)}</span>
               </li>
               <li>
                 {`${t('drive_direction')}: `}
@@ -137,8 +141,26 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
                 <span>{position.loc.join(' ,')}</span>
               </li>
             </ul>
+            {route.routeType === '3' && ( // Bus Only
+              <EasterEgg code="complaint" autohide={false}>
+                <Button
+                  variant="contained"
+                  color="success"
+                  onClick={() => setModalOpen((prev) => !prev)}
+                  style={{ borderRadius: '50px' }}>
+                  {t('complaints.open_complaint')}
+                </Button>
+                <ComplaintModal
+                  modalOpen={modalOpen}
+                  setModalOpen={setModalOpen}
+                  position={position}
+                  route={route}
+                />
+              </EasterEgg>
+            )}
+            <br />
             <Button
-              href="https://www.gov.il/BlobFolder/generalpage/gtfs_general_transit_feed_specifications/he/GTFS_Developer_Information_2024.11.21b.pdf"
+              href="https://www.gov.il/BlobFolder/generalpage/gtfs_general_transit_feed_specifications/he/Gtfs%20Documentation%20v3.pdf"
               target="_blank"
               rel="noopener noreferrer"
               sx={{ marginTop: '2px' }}>
@@ -148,22 +170,8 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
             <Button sx={{ margin: '2px 0' }} onClick={() => setShowJson((showJson) => !showJson)}>
               {showJson ? t('hide_document') : t('show_document')}
             </Button>
-            {/* Open Complaint Button */}
-            <EasterEgg code="complaint">
-              <Button
-                variant="contained"
-                color="success"
-                onClick={() => setModalOpen((prev) => !prev)}
-                style={{ borderRadius: '50px' }}>
-                {t('open_complaint')}
-              </Button>
-            </EasterEgg>
-
-            {/* Complaint Modal */}
-            <ComplaintModal modalOpen={modalOpen} setModalOpen={setModalOpen} position={position} />
-
             {showJson && (
-              <div dir={i18n.language === 'en' ? 'rtl' : 'ltr'}>
+              <div dir="ltr">
                 <CustomTreeView<Point>
                   id={`${position.point?.id}`}
                   data={position}

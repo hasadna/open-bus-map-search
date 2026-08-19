@@ -1,12 +1,12 @@
-import { MultipleStopOutlined } from '@mui/icons-material'
-import { Grid, Typography } from '@mui/material'
 import { GtfsRoutePydanticModel } from '@hasadna/open-bus-api-client'
+import { MultipleStopTwoTone } from '@mui/icons-material'
+import { Grid, Typography } from '@mui/material'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
+import dayjs from 'src/dayjs'
+import Widget from 'src/shared/Widget'
 import { InfoItem, InfoTable } from '../components/InfoTable'
 import { routeStartEnd } from '../components/utils/rotueUtils'
-import Widget from 'src/shared/Widget'
-import dayjs from 'src/dayjs'
 
 export const LineProfileDetails = ({
   id,
@@ -42,12 +42,16 @@ export const LineProfileDetails = ({
   return (
     <Widget
       title={
-        <Grid container alignItems="center" flexDirection="column">
+        <Grid container sx={{ alignItems: 'center', flexDirection: 'column' }}>
           <Link to={'/operator?operatorId=' + operatorRef} style={{ lineHeight: 0 }}>
-            <img src={`../operators-logos/${operatorRef}.svg`} height={60} />
+            <img
+              src={`../operators-logos/${operatorRef}.svg`}
+              alt={`logo of operator ${agencyName}`}
+              height={60}
+            />
           </Link>
           <Link to={'/operator?operatorId=' + operatorRef} style={{ lineHeight: 0 }}>
-            <Typography variant="h6" marginBottom="21.5px">
+            <Typography variant="h6" sx={{ marginBottom: '21.5px' }}>
               {agencyName}
             </Typography>
           </Link>
@@ -55,14 +59,16 @@ export const LineProfileDetails = ({
         </Grid>
       }
       titleSx={{ marginBottom: '21.5px' }}>
-      <Grid container alignItems="center" flexDirection="column">
+      <Grid container sx={{ alignItems: 'center', flexDirection: 'column' }}>
         <Grid
           container
-          flexDirection="column"
-          justifyContent="center"
-          alignItems="center"
-          marginBottom="2.5em">
-          {route_start} <MultipleStopOutlined /> {route_end}
+          sx={{
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            marginBottom: '2.5em',
+          }}>
+          {route_start} <MultipleStopTwoTone /> {route_end}
         </Grid>
 
         <InfoTable>

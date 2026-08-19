@@ -1,7 +1,7 @@
 import {
-  GtfsRideStopPydanticModel,
-  GtfsStopPydanticModel,
+  GtfsRideStopWithRelatedPydanticModel,
   GtfsRideWithRelatedPydanticModel,
+  GtfsStopPydanticModel,
 } from '@hasadna/open-bus-api-client'
 import dayjs from 'src/dayjs'
 import { Coordinates } from 'src/model/location'
@@ -19,7 +19,7 @@ export type BusStop = {
 }
 
 export function fromGtfsStop(
-  gtfsRideStop: GtfsRideStopPydanticModel,
+  gtfsRideStop: GtfsRideStopWithRelatedPydanticModel,
   gtfsStop: GtfsStopPydanticModel,
   ride: GtfsRideWithRelatedPydanticModel,
 ): BusStop {
@@ -29,8 +29,12 @@ export function fromGtfsStop(
     : 0
   return {
     date: gtfsStop.date,
-    key: gtfsRideStop.id.toString(),
-    stopId: gtfsRideStop.gtfsStopId,
+    // Key on the stop CODE, not the gtfs_ride_stop id: GTFS is reloaded daily so
+    // the row id (and gtfsStopId) change every date, which made a persisted
+    // stopKey fail to match after a date change. The code is stable per physical
+    // stop across dates and is shared by all lines that serve it.
+    key: gtfsStop.code.toString(),
+    stopId: gtfsRideStop.gtfsStopId!,
     routeId: ride.gtfsRouteId || 0,
     stopSequence: gtfsRideStop.stopSequence || 0,
     name: `${gtfsStop.name} (${gtfsStop.city})`,
