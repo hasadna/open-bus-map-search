@@ -72,10 +72,27 @@ const sectionOfPath = (pathname: string): ParseKeys | undefined =>
   MENU_SECTIONS.find((section) => section.groups.some((group) => group.paths.includes(pathname)))
     ?.key
 
-// antd's menu blues, kept as they were so the selected row survives the port unchanged
+/* antd's menu blues, rebalanced so the two modes carry the same weight: they used to be a
+   near-white tint with blue text in light (too faint) against a solid fill with white text
+   in dark (too loud, and it rivalled the section chip). Both are now a tinted ground with
+   saturated text, which keeps the solid chip above them in the hierarchy either way. */
 const SELECTED_COLORS = {
-  light: { backgroundColor: '#e6f4ff', color: '#1677ff' },
-  dark: { backgroundColor: '#1668dc', color: '#fff' },
+  light: { backgroundColor: '#bae0ff', color: '#0958d9' },
+  dark: { backgroundColor: 'rgba(22,119,255,0.26)', color: '#69b1ff' },
+}
+
+/* The segmented control, keyed by mode like SELECTED_COLORS above.
+
+   The chip carries the brand blue on purpose: the strip outranks the list it controls, so
+   a neutral grey chip left it quieter than the selected row below and the whole strip got
+   overlooked. What keeps it from reading as just another row is the track — a recessed
+   well, which no row ever sits in — not the absence of colour.
+
+   Track is a black alpha rather than a fixed grey so the well works against whichever
+   background the sider happens to have. */
+const SEGMENTED = {
+  light: { track: 'rgba(0,0,0,0.10)', chip: '#1677ff', chipShadow: '0 3px 6px rgba(0,0,0,0.28)' },
+  dark: { track: 'rgba(0,0,0,0.40)', chip: '#1677ff', chipShadow: '0 3px 6px rgba(0,0,0,0.6)' },
 }
 
 const ROW_HEIGHT = { compact: 36, roomy: 44 }
@@ -96,30 +113,56 @@ const MenuShell = styled('div', {
   padding: compact ? '4px 8px 8px' : '8px 10px 12px',
 }))
 
-/* Deliberately NOT the rows' selected treatment: a tab picks which list you are looking
-   at, a row picks which page is open. Giving both the same filled pill made the strip read
-   as two more menu rows, so the tabs take the conventional underline instead, over a rule
-   that reads as the top edge of the list they control. The accent is the theme's primary
-   rather than the rows' antd blue, which keeps the two states visibly different. */
+/* A segmented control, not an underline: the recessed track is what advertises that there
+   is a second option at all — an underline only marks the active one, leaving the other as
+   inert-looking text that is easy to miss. The indicator is stretched to fill its slot so
+   it reads as a raised chip sliding between two visible slots.
+
+   It must also not borrow the rows' selected colours: a tab picks which list you are
+   looking at, a row picks which page is open, and giving both the same blue fill made the
+   strip read as two more menu rows. */
 const SectionTabs = styled(Tabs, {
   shouldForwardProp: (prop) => prop !== 'compact',
 })<Pick<MainMenuProps, 'compact'>>(({ theme, compact }) => ({
   flex: '0 0 auto',
   minHeight: 0,
-  marginBottom: compact ? 6 : 8,
-  borderBottom: `1px solid ${theme.palette.divider}`,
-  '& .MuiTabs-indicator': { height: 2 },
+  marginBottom: compact ? 6 : 10,
+  padding: 3,
+  borderRadius: 10,
+  backgroundColor: SEGMENTED[theme.palette.mode].track,
+  /* The chip is exactly the scroller's box, so every edge of its shadow that touches the
+     scroller gets clipped — all of them but the one facing the strip's centre, which is
+     what made the shadow look half-drawn. `!important` is needed because Tabs sets
+     `overflow: hidden` as an INLINE style on the scroller (Tabs.js: `overflow:
+     scrollerStyle.overflow`); a class rule cannot beat it. Safe here: with two fullWidth
+     tabs there is nothing to scroll. */
+  overflow: 'visible',
+  '& .MuiTabs-scroller': { overflow: 'visible !important' },
+  '& .MuiTabs-indicator': {
+    height: '100%',
+    borderRadius: 7,
+    backgroundColor: SEGMENTED[theme.palette.mode].chip,
+    boxShadow: SEGMENTED[theme.palette.mode].chipShadow,
+    zIndex: 0,
+  },
   '& .MuiTab-root': {
+    // the indicator is a later sibling, so without this it paints over the label
+    position: 'relative',
+    zIndex: 1,
     flex: 1,
     minWidth: 0,
-    minHeight: compact ? 34 : 40,
-    padding: '4px 8px',
+    minHeight: compact ? 32 : 36,
+    padding: '4px 6px',
+    gap: 6,
+    // the press/hover fill is clipped to the tab's own box, so without this it lands as a
+    // sharp-cornered rectangle inside the rounded track
+    borderRadius: 7,
     fontSize: 13,
-    fontWeight: 500,
+    fontWeight: 600,
     textTransform: 'none',
     color: theme.palette.text.secondary,
-    '& .MuiSvgIcon-root': { fontSize: 20 },
-    '&.Mui-selected': { color: theme.palette.primary.main, fontWeight: 700 },
+    '& .MuiSvgIcon-root': { fontSize: 18 },
+    '&.Mui-selected': { color: '#fff' },
   },
 }))
 
@@ -285,7 +328,7 @@ const MainMenu = ({ collapsed = false, compact = false }: MainMenuProps) => {
             collapsed ? (
               <Tab key={key} value={key} icon={icon} aria-label={t(key)} title={t(key)} />
             ) : (
-              <Tab key={key} value={key} label={t(key)} />
+              <Tab key={key} value={key} icon={icon} iconPosition="start" label={t(key)} />
             ),
           )}
         </SectionTabs>
