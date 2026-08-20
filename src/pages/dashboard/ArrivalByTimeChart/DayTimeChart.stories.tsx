@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { http, HttpResponse } from 'msw'
+import { mocked } from 'storybook/test'
+import { useGroupBy } from 'src/api/groupByService'
 import dayjs from 'src/dayjs'
 import { getPastDate } from '../../../../.storybook/main'
 import DayTimeChart from './DayTimeChart'
@@ -45,19 +46,25 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-const URL =
-  'https://open-bus-stride-api.hasadna.org.il/gtfs_rides_agg/group_by?date_from=2024-02-05&date_to=2024-02-12&group_by=operator_ref,gtfs_route_date&exclude_hour_from=23&exclude_hour_to=2'
-
 export const Default: Story = {
-  parameters: {
-    msw: {
-      handlers: [
-        http.get(URL, async () => {
-          const { arrivalByTimeChart } = await import('../../../../.storybook/mockData')
-          return HttpResponse.json(arrivalByTimeChart)
-        }),
+  beforeEach: () => {
+    mocked(useGroupBy).mockReturnValue([
+      [
+        {
+          gtfsRouteDate: new Date('2024-02-11'),
+          totalRoutes: 20235,
+          totalPlannedRides: 47824,
+          totalActualRides: 46939,
+          operatorRef: {
+            date: new Date('2024-02-11'),
+            operatorRef: 3,
+            agencyName: 'אגד',
+          },
+        },
       ],
-    },
+      false,
+      null,
+    ])
   },
   args: {
     startDate: dayjs(getPastDate()).subtract(7, 'day'),
