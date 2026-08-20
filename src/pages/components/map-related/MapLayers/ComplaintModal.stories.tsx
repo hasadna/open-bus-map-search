@@ -1,8 +1,8 @@
 import type { GtfsRoutePydanticModel } from '@hasadna/open-bus-api-client'
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { http, HttpResponse } from 'msw'
 import { useState } from 'react'
-import { busToolTipMockedSiriRides } from '../../../../../.storybook/mockData'
+import { mocked } from 'storybook/test'
+import { useBusOperatorQuery, useCitiesQuery } from 'src/hooks/useFormQuerys'
 import type { BusToolTipProps } from './BusToolTip'
 import ComplaintModal from './ComplaintModal'
 
@@ -63,32 +63,6 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-const siriRidesHandler = http.get(
-  (info) => new URL(info.request.url).pathname === '/siri_rides/list',
-  ({ request }) => {
-    const { searchParams } = new URL(request.url)
-    const matchesRouteId = searchParams.get('siri_route_ids') === '973'
-    const matchesLineRef = searchParams.get('siri_route__line_refs') === '2974'
-    const matchesVehicleRef = searchParams.get('vehicle_refs') === '23321002'
-
-    if (!matchesRouteId || !matchesLineRef || !matchesVehicleRef) {
-      return HttpResponse.json([])
-    }
-
-    return HttpResponse.json(busToolTipMockedSiriRides)
-  },
-)
-
-const operatorsHandler = http.get(
-  (info) => new URL(info.request.url).pathname === '/gov/operators',
-  () => HttpResponse.json({ success: true, data: [{ dataText: 'אגד', dataCode: 3 }] }),
-)
-
-const citiesHandler = http.get(
-  (info) => new URL(info.request.url).pathname === '/gov/cities',
-  () => HttpResponse.json({ success: true, data: [{ dataText: 'גדרה', dataCode: 2550 }] }),
-)
-
 const defaultArgs: BusToolTipProps & { route: GtfsRoutePydanticModel } = {
   position: {
     loc: [31.799982, 34.786926],
@@ -138,10 +112,19 @@ const defaultArgs: BusToolTipProps & { route: GtfsRoutePydanticModel } = {
 }
 
 export const Default: Story = {
-  parameters: {
-    msw: {
-      handlers: [siriRidesHandler, operatorsHandler, citiesHandler],
-    },
+  beforeEach: () => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- partial UseQueryResult mock
+    mocked(useBusOperatorQuery).mockReturnValue({
+      data: [{ dataText: 'אגד', dataCode: 3 }],
+      isLoading: false,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } as any)
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- partial UseQueryResult mock
+    mocked(useCitiesQuery).mockReturnValue({
+      data: [{ dataText: 'גדרה', dataCode: 2550 }],
+      isLoading: false,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } as any)
   },
   args: {
     position: defaultArgs.position,
