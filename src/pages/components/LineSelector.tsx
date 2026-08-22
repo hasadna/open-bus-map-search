@@ -28,8 +28,7 @@ const LineSelector = ({
     setValue(lineNumber ?? '')
   }, [])
 
-  // Distinct line numbers running for the selected operator + date. `routes` is
-  // already sorted by line number in useAllRoutes, so a Set preserves that order.
+  // `routes` is already sorted by line number in useAllRoutes, so a Set preserves that order.
   const options = useMemo(() => {
     const seen = new Set<string>()
     const result: string[] = []
@@ -53,9 +52,8 @@ const LineSelector = ({
       disabled={disabled}
       loading={isLoading}
       options={options}
-      // Tag MUI's built-in clear button with the repo-wide `clear-indicator`
-      // class (the same hook VehicleSelector's ClearButton and Selector.scss use)
-      // so the e2e `clearInputField` helper can find it.
+      // The e2e `clearInputField` helper finds the clear button by the repo-wide
+      // `clear-indicator` class, which MUI's built-in one doesn't carry.
       slotProps={{ clearIndicator: { className: 'clear-indicator' } }}
       inputValue={value}
       onInputChange={(_event, newValue, reason) => {

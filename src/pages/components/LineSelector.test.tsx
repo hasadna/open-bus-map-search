@@ -3,8 +3,6 @@ import { useAllRoutes } from 'src/hooks/useAllRoutes'
 import i18n from 'src/locale/allTranslations'
 import LineSelector from './LineSelector'
 
-// Keep the real API client / gtfsService out of the test: LineSelector only
-// reads `line` and `suffix` off each route, so a mocked hook is enough.
 vi.mock('src/hooks/useAllRoutes', () => ({ useAllRoutes: vi.fn() }))
 const mockUseAllRoutes = vi.mocked(useAllRoutes)
 
@@ -26,7 +24,6 @@ const route = (line: number, suffix = ''): RouteItem => ({
   routeKey: `${line}${suffix}-key`,
 })
 
-// useAllRoutes already returns routes sorted by line number; mirror that here.
 const setRoutes = (routes: RouteItem[], isLoading = false) =>
   mockUseAllRoutes.mockReturnValue({ routes, isLoading, error: false })
 
@@ -80,7 +77,7 @@ describe('LineSelector', () => {
     fireEvent.change(screen.getByRole('combobox', { name: LINE_LABEL }), {
       target: { value: '42' },
     })
-    expect(setLineNumber).not.toHaveBeenCalled() // debounced, not immediate
+    expect(setLineNumber).not.toHaveBeenCalled()
 
     act(() => {
       vi.advanceTimersByTime(DEBOUNCE_MS)
@@ -92,10 +89,7 @@ describe('LineSelector', () => {
     setRoutes([route(1)])
     renderSelector()
 
-    // `MuiAutocomplete-inputRoot` carries the compact vertical padding that keeps
-    // this field the same height as the other selectors — its absence was the
-    // 74px-vs-56px regression. `forcePopupIcon` keeps the dropdown arrow so it
-    // looks like OperatorSelector / RouteSelector rather than a bare text field.
+    // `MuiAutocomplete-inputRoot` keeps this field the same height as the other selectors.
     expect(
       screen.getByRole('combobox', { name: LINE_LABEL }).closest(AUTOCOMPLETE_INPUT_ROOT),
     ).not.toBeNull()
@@ -103,9 +97,7 @@ describe('LineSelector', () => {
   })
 
   it('tags the clear button with the `clear-indicator` class the e2e helper relies on', () => {
-    // The `clearInputField` Playwright helper (clearButton.spec.ts) finds the
-    // clear button by the repo-wide `.clear-indicator` class. MUI's built-in
-    // clear indicator only renders once the field has a value to clear.
+    // MUI only renders its clear indicator once the field has a value to clear.
     setRoutes([route(5)])
     renderSelector({ lineNumber: '5' })
 
