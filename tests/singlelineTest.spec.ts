@@ -21,7 +21,7 @@ async function selectOperator(page: Page, operatorName = 'אודליה מוני�
 }
 
 async function fillLineNumber(page: Page, lineNumber = '16') {
-  await page.getByRole('textbox', { name: 'מספר קו' }).fill(lineNumber)
+  await page.getByRole('combobox', { name: 'מספר קו' }).fill(lineNumber)
 }
 
 async function selectRoute(
@@ -45,10 +45,10 @@ test.describe('Single line page tests', () => {
   })
 
   test('should allow selecting operator company options', async ({ page }) => {
-    await expect(page.getByRole('textbox', { name: 'מספר קו' })).not.toBeEditable()
+    await expect(page.getByRole('combobox', { name: 'מספר קו' })).not.toBeEditable()
     await selectOperator(page)
     await expect(page.getByLabel('חברה מפעילה')).toHaveValue('אודליה מוניות בעמ')
-    await expect(page.getByRole('textbox', { name: 'מספר קו' })).toBeEditable()
+    await expect(page.getByRole('combobox', { name: 'מספר קו' })).toBeEditable()
   })
 
   test('should show and enable "choose route" dropdown after selecting line', async ({ page }) => {
@@ -63,7 +63,7 @@ test.describe('Single line page tests', () => {
     await expect(page.locator('#route-select')).not.toBeEditable()
     await fillLineNumber(page)
     await expect(page.locator('#route-select')).toBeEditable()
-    await clearInputField(page.getByRole('textbox', { name: 'מספר קו' }))
+    await clearInputField(page.getByRole('combobox', { name: 'מספר קו' }))
     await expect(page.locator('#route-select')).not.toBeEditable()
   })
 
