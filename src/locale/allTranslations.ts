@@ -7,22 +7,10 @@ import translationsRU from './ru.json'
 
 export const SUPPORTED_LANGUAGES = ['en', 'ru', 'he', 'ar']
 
-// Get the path without the language prefix, if present
-export const getPathWithoutLang = (pathname: string): string => {
-  const parts = pathname.split('/').filter(Boolean)
-  if (!SUPPORTED_LANGUAGES.includes(parts[0])) return pathname
-  const rest = parts.slice(1).join('/')
-  return rest ? `/${rest}` : '/'
-}
-
-// Get saved language from URL or localStorage, default to 'he' if not found
+// Resolve the language from localStorage, then the browser locale, defaulting
+// to 'he'. The URL no longer carries a language prefix; legacy prefixed links
+// are handled by LegacyLangRedirect, which persists the language here.
 export const getLang = (): string => {
-  const parts = window.location.pathname.split('/').filter(Boolean)
-  const langPart = parts.find((part) => SUPPORTED_LANGUAGES.includes(part))
-  if (langPart) {
-    localStorage.setItem('language', langPart)
-    return langPart
-  }
   return (
     localStorage.getItem('language') ||
     SUPPORTED_LANGUAGES.find((l) => new Intl.Locale(navigator.language).language === l) ||
@@ -32,7 +20,7 @@ export const getLang = (): string => {
 
 const initialLang = getLang()
 
-i18n.use(initReactI18next).init({
+void i18n.use(initReactI18next).init({
   resources: {
     ar: { translation: translationsAR },
     he: { translation: translationsHE },

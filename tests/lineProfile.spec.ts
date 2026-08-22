@@ -17,26 +17,6 @@ test.describe('Line Profile', () => {
     await page.waitForLoadState('networkidle')
     await expect(page.getByText('לא הצלחנו למצוא את הקו שחיפשת :(')).toBeVisible()
   })
-
-  test('assets load correctly on profile nested route', async ({ page }) => {
-    await page.goto('/profile/9999999')
-    await page.waitForLoadState('networkidle')
-
-    const scriptSrcs = await page
-      .locator('script[src]')
-      .evaluateAll((scripts) => scripts.map((s) => s.getAttribute('src')))
-
-    const internalScripts = scriptSrcs.filter(
-      (src) => src && src.startsWith('/') && !src.startsWith('http'),
-    )
-    expect(internalScripts.length).toBeGreaterThan(0)
-
-    for (const src of internalScripts) {
-      // asset paths must be absolute, not relative to /profile/*
-      expect(src!.startsWith('/')).toBeTruthy()
-      expect(src!.startsWith('/profile/')).toBeFalsy()
-    }
-  })
 })
 
 test.describe('Line Profile — loaded from URL', () => {

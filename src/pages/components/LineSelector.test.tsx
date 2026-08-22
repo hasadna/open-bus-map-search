@@ -5,8 +5,8 @@ import LineSelector from './LineSelector'
 
 // Keep the real API client / gtfsService out of the test: LineSelector only
 // reads `line` and `suffix` off each route, so a mocked hook is enough.
-jest.mock('src/hooks/useAllRoutes')
-const mockUseAllRoutes = jest.mocked(useAllRoutes)
+vi.mock('src/hooks/useAllRoutes', () => ({ useAllRoutes: vi.fn() }))
+const mockUseAllRoutes = vi.mocked(useAllRoutes)
 
 const LINE_LABEL = i18n.t('choose_line')
 const OPEN_BUTTON = /open/i
@@ -18,6 +18,7 @@ type RouteItem = ReturnType<typeof useAllRoutes>['routes'][number]
 
 const route = (line: number, suffix = ''): RouteItem => ({
   id: line,
+  lineRef: line,
   line,
   suffix,
   start: 'start',
@@ -35,7 +36,7 @@ const renderSelector = (props: Partial<React.ComponentProps<typeof LineSelector>
       operatorId="3"
       date="2026-07-01"
       lineNumber={undefined}
-      setLineNumber={jest.fn()}
+      setLineNumber={vi.fn()}
       {...props}
     />,
   )
@@ -45,7 +46,7 @@ beforeEach(() => {
 })
 
 afterEach(() => {
-  jest.useRealTimers()
+  vi.useRealTimers()
 })
 
 describe('LineSelector', () => {
@@ -61,7 +62,7 @@ describe('LineSelector', () => {
 
   it('commits the line number when an option is picked', () => {
     setRoutes([route(18), route(18, 'א'), route(480)])
-    const setLineNumber = jest.fn()
+    const setLineNumber = vi.fn()
     renderSelector({ setLineNumber })
 
     fireEvent.click(screen.getByRole('button', { name: OPEN_BUTTON }))
@@ -71,8 +72,8 @@ describe('LineSelector', () => {
   })
 
   it('commits a freely typed line number after the debounce (does not restrict to options)', () => {
-    jest.useFakeTimers()
-    const setLineNumber = jest.fn()
+    vi.useFakeTimers()
+    const setLineNumber = vi.fn()
     setRoutes([route(1)])
     renderSelector({ setLineNumber })
 
@@ -82,7 +83,7 @@ describe('LineSelector', () => {
     expect(setLineNumber).not.toHaveBeenCalled() // debounced, not immediate
 
     act(() => {
-      jest.advanceTimersByTime(DEBOUNCE_MS)
+      vi.advanceTimersByTime(DEBOUNCE_MS)
     })
     expect(setLineNumber).toHaveBeenCalledWith('42')
   })

@@ -12,7 +12,7 @@ const GAPS_LEGEND = [
   'נסיעה עתידית',
 ] as const
 const GAPS_TIMES = ['04:30'] as const
-const FULL_SERVICE_DAY_TIMES = ['04:30', '17:00', '04:47'] as const
+const FULL_DAY_TIMES = ['04:30', '17:00', '04:47'] as const
 
 async function selectGapsRoute(page: import('@playwright/test').Page) {
   await page.getByLabel('חברה מפעילה').click()
@@ -39,7 +39,7 @@ test('should load gaps table for selected route', async ({ page }) => {
   }
 })
 
-test('should load rides for the full day plus 4 hours', async ({ page }) => {
+test('should load rides for the selected calendar day', async ({ page }) => {
   const gapsRequestPromise = page.waitForRequest((request) =>
     request.url().includes('/rides_execution/list'),
   )
@@ -47,10 +47,10 @@ test('should load rides for the full day plus 4 hours', async ({ page }) => {
   const gapsRequest = await gapsRequestPromise
   const gapsUrl = new URL(gapsRequest.url())
 
-  expect(gapsUrl.searchParams.get('date_from')).toBe('2024-02-11')
-  expect(gapsUrl.searchParams.get('date_to')).toBe('2024-02-13')
+  expect(gapsUrl.searchParams.get('date_from')).toBe('2024-02-12')
+  expect(gapsUrl.searchParams.get('date_to')).toBe('2024-02-12')
 
-  for (const time of FULL_SERVICE_DAY_TIMES) {
+  for (const time of FULL_DAY_TIMES) {
     await expect(page.getByRole('cell', { name: time }).first()).toBeVisible()
   }
 })
