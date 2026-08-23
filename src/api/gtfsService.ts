@@ -1,9 +1,12 @@
 import { GTFS_API } from 'src/api/apiConfig'
-import dayjs, { toIsraelTimezone } from 'src/dayjs'
+import dayjs from 'src/dayjs'
 import { BusRoute, fromGtfsRoute } from 'src/model/busRoute'
 import { BusStop, fromGtfsStop } from 'src/model/busStop'
-import { type CivilDate, civilDateToApiDate, todayCivilDate } from 'src/model/time/civilDate'
+import { type CivilDate, civilDateToApiDate } from 'src/model/time/civilDate'
 
+/** GTFS routes running between two calendar days (both inclusive), merged by route key
+ *  so a line's variants collapse into one entry carrying all its routeIds. Pass the same
+ *  date twice for a single day. */
 export async function getRoutesAsync(
   from: CivilDate,
   to: CivilDate,
@@ -11,27 +14,18 @@ export async function getRoutesAsync(
   lineNumber?: string,
   signal?: AbortSignal,
 ): Promise<BusRoute[]> {
-  // Don't fetch past today: a future `to` would spend the 100-row budget on days
-  // with no data (the [from, to] filter below still bounds the returned routes).
-  const today = todayCivilDate()
-  const cappedTo = to <= today ? to : today
-
   const gtfsRoutes = await GTFS_API.gtfsRoutesListGet(
     {
       routeShortName: lineNumber,
       operatorRefs: operatorId,
       dateFrom: civilDateToApiDate(from),
-      dateTo: civilDateToApiDate(cappedTo),
-      limit: 100,
+      dateTo: civilDateToApiDate(to),
+      limit: 15000,
     },
     { signal },
   )
   const routes = Object.values(
     gtfsRoutes
-      .filter((route) => {
-        const routeDate = toIsraelTimezone(route.date).format('YYYY-MM-DD')
-        return routeDate >= from && routeDate <= to
-      })
       .map((route) => fromGtfsRoute(route))
       .reduce(
         (agg, line) => {

@@ -120,6 +120,12 @@ describe('civilDateToApiDate', () => {
     // the shape the GTFS list endpoints actually serialize
     expect(wire.toISOString().substring(0, 10)).toBe('2026-06-30')
   })
+
+  it('serializes back to the same calendar date year-round, DST edges included (#1680)', () => {
+    for (const date of ['2026-01-01', '2026-03-27', '2026-03-28', '2026-10-25', '2026-12-31']) {
+      expect(civilDateToApiDate(asCivilDate(date)).toISOString().substring(0, 10)).toBe(date)
+    }
+  })
 })
 
 describe('civilDateToDayjs', () => {

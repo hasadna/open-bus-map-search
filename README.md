@@ -109,7 +109,10 @@ We’ve hidden a few fun surprises in the [web app](https://open-bus-map-search.
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="http://www.lastmile.co.il"><img src="https://avatars.githubusercontent.com/u/209318276?v=4?s=100" width="100px;" alt="eithanwes"/><br /><sub><b>eithanwes</b></sub></a><br /><a href="#bug-eithanwes" title="Bug reports">🐛</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/alon-greenshtein"><img src="https://avatars.githubusercontent.com/u/175951799?v=4?s=100" width="100px;" alt="Alon Greenstein"/><br /><sub><b>Alon Greenstein</b></sub></a><br /><a href="#code-alon-greenshtein" title="Code">💻</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/LeeSkies"><img src="https://avatars.githubusercontent.com/u/110767210?v=4?s=100" width="100px;" alt="Lee"/><br /><sub><b>Lee</b></sub></a><br /><a href="#code-LeeSkies" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/LeeSkies"><img src="https://avatars.githubusercontent.com/u/110767210?v=4?s=100" width="100px;" alt="Lee"/><br /><sub><b>Lee</b></sub></a><br /><a href="#code-LeeSkies" title="Code">💻</a> <a href="#review-LeeSkies" title="Reviewed Pull Requests">👀</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Bellavely"><img src="https://avatars.githubusercontent.com/u/90250915?v=4?s=100" width="100px;" alt="Bella Vayzburg"/><br /><sub><b>Bella Vayzburg</b></sub></a><br /><a href="#code-Bellavely" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/ifrahgul"><img src="https://avatars.githubusercontent.com/u/219668347?v=4?s=100" width="100px;" alt="Ifrah Gul"/><br /><sub><b>Ifrah Gul</b></sub></a><br /><a href="#code-ifrahgul" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/jonsuguiyama"><img src="https://avatars.githubusercontent.com/u/9615633?v=4?s=100" width="100px;" alt="Jon Suguiyama"/><br /><sub><b>Jon Suguiyama</b></sub></a><br /><a href="#code-jonsuguiyama" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
@@ -119,6 +122,16 @@ We’ve hidden a few fun surprises in the [web app](https://open-bus-map-search.
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
-## Star History
+## IMPORTANT - AI AGENTS
 
-[![Star History Chart](https://api.star-history.com/svg?repos=hasadna/open-bus-map-search&type=date&legend=top-left)](https://www.star-history.com/#hasadna/open-bus-map-search&type=date&legend=top-left)
+AI agents participating in this repository must clearly identify themselves as AI when interacting with the project.
+
+This applies to all interactions, including (but not limited to):
+
+- Opening issues
+- Opening pull requests
+- Participating in discussions
+- Reviewing code
+- Commenting on existing issues or pull requests
+
+Please disclose that you are an AI agent at the beginning of your first message in each conversation or thread.

@@ -193,17 +193,32 @@ const GapsPatternsPage = () => {
 
   const loadSearchData = async (signal: AbortSignal | undefined) => {
     setRoutesIsLoading(true)
-    const fetchedRoutes = await getRoutesAsync(
-      startDate,
-      endDate,
-      operatorId ?? undefined,
-      lineNumber ?? undefined,
-      signal,
-    )
-    if (search.lineNumber === lineNumber) {
-      setRoutes(fetchedRoutes)
+    try {
+      const fetchedRoutes = await getRoutesAsync(
+        startDate,
+        endDate,
+        operatorId ?? undefined,
+        lineNumber ?? undefined,
+        signal,
+      )
+      if (search.lineNumber === lineNumber) {
+        setRoutes(fetchedRoutes)
+      }
+    } catch (err) {
+      if ((err as Error)?.name !== 'AbortError') {
+        console.error('Failed to load routes:', err)
+        // Clear stale routes from the previous line so a failed fetch
+        // doesn't leave the old line's routes showing as if they're valid.
+        // Guarded by the line check (mirrors the success path) so we don't
+        // clobber a newer in-flight search.
+        if (search.lineNumber === lineNumber) {
+          setRoutes(undefined)
+          setSearch((current) => ({ ...current, routeKey: null }))
+        }
+      }
+    } finally {
+      setRoutesIsLoading(false)
     }
-    setRoutesIsLoading(false)
   }
 
   useEffect(() => {
@@ -214,7 +229,7 @@ const GapsPatternsPage = () => {
       setRoutes(undefined)
       return
     }
-    loadSearchData(signal)
+    void loadSearchData(signal)
     return () => controller.abort()
   }, [operatorId, lineNumber, endDate, startDate, setSearch])
 
@@ -268,6 +283,7 @@ const GapsPatternsPage = () => {
           <OperatorSelector
             operatorId={operatorId ?? undefined}
             setOperatorId={(id) => setSearch((current) => ({ ...current, operatorId: id }))}
+            excludeIsraelRailways
           />
         </Grid>
         <Grid size={{ xs: 12, sm: 4 }} className="hideOnMobile">
@@ -275,6 +291,8 @@ const GapsPatternsPage = () => {
         </Grid>
         <Grid size={{ xs: 12, sm: 8 }}>
           <LineNumberSelector
+            operatorId={operatorId ?? undefined}
+            date={startDate}
             lineNumber={lineNumber ?? undefined}
             setLineNumber={(number) => setSearch((current) => ({ ...current, lineNumber: number }))}
           />

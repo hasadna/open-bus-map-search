@@ -33,13 +33,13 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
     // scheduled start is `undefined`, which toCivilDate would resolve straight to *today*, so a
     // `toCivilDate(a) ?? toCivilDate(b)` chain would never reach the recorded time. Today is the
     // last resort, for the (practically unreachable) unparseable case.
-    const serviceDay =
+    const rideDay =
       toCivilDate(position.point?.siriRideScheduledStartTime ?? position.point?.recordedAtTime) ??
       todayCivilDate()
     getRoutesByLineRef(
       (position.point?.siriRouteOperatorRef || 0).toString(),
       (position.point?.siriRouteLineRef || 0).toString(),
-      serviceDay,
+      rideDay,
     )
       .then((routes) => {
         setRoute(routes[0])

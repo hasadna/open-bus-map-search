@@ -192,10 +192,10 @@ export const SearchByCity: Story = {
     const canvas = within(canvasElement)
     const search = await waitFor(() => canvas.getByRole('textbox'))
     await userEvent.type(search, 'קרית שמונה')
-    await waitFor(() => {
+    await waitFor(async () => {
       const labels = groupLabels(canvasElement)
-      expect(labels.length).toBeGreaterThan(0)
-      expect(labels.length).toBeLessThan(354)
+      await expect(labels.length).toBeGreaterThan(0)
+      await expect(labels.length).toBeLessThan(354)
     })
   },
 }
@@ -232,6 +232,6 @@ export const TrainOperator: Story = {
     await waitFor(() =>
       expect(canvas.getAllByText(i18n.t('operator.profile')).length).toBeGreaterThan(0),
     )
-    expect(canvas.queryByText(i18n.t('operator.map'))).toBeNull()
+    await expect(canvas.queryByText(i18n.t('operator.map'))).toBeNull()
   },
 }

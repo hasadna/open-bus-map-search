@@ -118,7 +118,7 @@ const StoryBookWrapper = ({
   }, [darkMode, isDarkTheme, toggleTheme])
 
   useEffect(() => {
-    i18n.changeLanguage(locale)
+    void i18n.changeLanguage(locale)
   }, [locale])
 
   return children

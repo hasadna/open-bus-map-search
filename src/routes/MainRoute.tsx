@@ -37,6 +37,12 @@ export const MainRoute = () => {
     new URLSearchParams(window.location.search).forEach((v, k) => {
       result[k] = v
     })
+    // Accept a bare 'vehicleNumber' (old shared links, pre-usePageState) as the
+    // /vehicle page's namespaced param. Page params are namespaced `<page>.<key>`
+    // so they can't collide with a global search key.
+    if (result.vehicleNumber && !result['vehicle.vehicleNumber']) {
+      result['vehicle.vehicleNumber'] = result.vehicleNumber
+    }
     return result
   }, [])
 
