@@ -2,6 +2,7 @@ import {
   GtfsRideStopWithRelatedPydanticModel,
   SiriVehicleLocationWithRelatedPydanticModel,
 } from '@hasadna/open-bus-api-client'
+import { NorthEast } from '@mui/icons-material'
 import { Link as MuiLink } from '@mui/material'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
@@ -219,7 +220,10 @@ export const Timeline = ({
         </AxisArea>
 
         <LabelArea>
-          <WidthAnchor aria-hidden>00:00:00</WidthAnchor>
+          <WidthAnchor aria-hidden>
+            00:00:00
+            {linkFor && <NorthEast sx={{ fontSize: '1em' }} />}
+          </WidthAnchor>
           {items.map((item) => (
             <Label
               key={`${item.i}_label`}
@@ -233,9 +237,10 @@ export const Timeline = ({
                   reloadDocument
                   title={item.link.title}
                   underline="hover"
-                  color="inherit"
-                  sx={{ cursor: 'pointer' }}>
+                  sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.25 }}>
                   {item.timeDisplay}
+                  {/* arrow hints the time is a link to the ride on the map; decorative for a11y */}
+                  <NorthEast aria-hidden sx={{ fontSize: '1em' }} />
                 </MuiLink>
               ) : (
                 item.timeDisplay
