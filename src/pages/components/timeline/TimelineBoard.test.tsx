@@ -56,16 +56,30 @@ describe('TimelineBoard actual-time links', () => {
     expect(screen.getByText(ACTUAL_LATE)).toBeInTheDocument()
   })
 
-  it('links the label of every actual time, and nothing else', () => {
+  it('links every actual time by its icon, leaving the time itself plain text', () => {
     renderBoard(linkFor)
 
-    // one link per SIRI hit — its label; the planned column stays plain text
-    expect(screen.getAllByRole('link')).toHaveLength(1)
-    expect(screen.getByRole('link', { name: ACTUAL_LATE })).toHaveAttribute(
-      'href',
-      linkFor(SIRI[0]).to,
-    )
-    expect(screen.getByRole('link', { name: ACTUAL_LATE })).toHaveStyle({ cursor: 'pointer' })
+    // one link per SIRI hit — its icon; the planned column stays plain text
+    const [link, ...rest] = screen.getAllByRole('link')
+    expect(rest).toHaveLength(0)
+    expect(link).toHaveAttribute('href', linkFor(SIRI[0]).to)
+    // the icon has no text, so the title is the whole accessible name
+    expect(link).toHaveAccessibleName(linkFor(SIRI[0]).title)
+    // the time sits beside the link rather than inside it, and so stays plain text
+    expect(link).not.toHaveTextContent(ACTUAL_LATE)
+    expect(screen.getByText(ACTUAL_LATE)).toBeInTheDocument()
+  })
+
+  it('explains the icon with a tooltip, and no native title to draw a second one', async () => {
+    renderBoard(linkFor)
+
+    const link = screen.getByRole('link', { name: linkFor(SIRI[0]).title })
+    // A title on the link or on any ancestor would show a browser tooltip behind the MUI one
+    expect(link.closest('[title]')).toBeNull()
+
+    fireEvent.mouseOver(link)
+
+    expect(await screen.findByRole('tooltip')).toHaveTextContent(linkFor(SIRI[0]).title)
   })
 
   it('leaves the dots unlinked, since several can land on one pixel', () => {
@@ -81,7 +95,7 @@ describe('TimelineBoard actual-time links', () => {
   it('navigates for real instead of client-side, so the query string is actually read', () => {
     renderBoard(linkFor)
 
-    const link = screen.getByRole('link', { name: ACTUAL_LATE })
+    const link = screen.getByRole('link', { name: linkFor(SIRI[0]).title })
     const click = createEvent.click(link)
     fireEvent(link, click)
 
@@ -92,7 +106,7 @@ describe('TimelineBoard actual-time links', () => {
 // Line 70א at stop 36090 on 2026-06-11 had three actual times within four seconds. The
 // axis spans hours, so their dots land on top of each other however the scale is computed
 // — which is why a dot can never say which ride a click meant. Labels escape it through
-// resolveCollisions, so they, and only they, are links.
+// resolveCollisions, so the link lives on the icon in the label, and nowhere else.
 describe('TimelineBoard overlapping dots', () => {
   const secondsApart = [
     { ...SIRI[0], recordedAtTime: new Date('2026-08-20T05:32:00Z') },

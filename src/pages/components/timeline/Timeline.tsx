@@ -2,8 +2,8 @@ import {
   GtfsRideStopWithRelatedPydanticModel,
   SiriVehicleLocationWithRelatedPydanticModel,
 } from '@hasadna/open-bus-api-client'
-import { NorthEast } from '@mui/icons-material'
-import { Link as MuiLink } from '@mui/material'
+import { Map as MapIcon } from '@mui/icons-material'
+import { Link as MuiLink, Tooltip } from '@mui/material'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
 import styled from 'styled-components'
@@ -21,6 +21,9 @@ import {
 
 const LABEL_HEIGHT = 18
 const LABEL_GAP = 3
+const LABEL_ICON_GAP = 2
+// Keeps the icon inside LABEL_HEIGHT, so neighbouring labels can't touch.
+const LABEL_ICON_SIZE = '1.1em'
 const LABEL_OFFSET = 20 // gap between axis and label area
 const CONNECTOR_HORIZ = 8
 const DOT_CENTER_X = 2 + 3 - POINT_SIZE / 2 // = 1
@@ -70,7 +73,9 @@ const LabelArea = styled.div`
 `
 
 const WidthAnchor = styled.span`
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: ${LABEL_ICON_GAP}px;
   visibility: hidden;
   pointer-events: none;
   white-space: nowrap;
@@ -81,6 +86,9 @@ const Label = styled.div<{ $top: number; $highlighted?: boolean }>`
   top: ${({ $top }) => $top - POINT_SIZE + 1}px;
   inset-inline-start: 0;
   z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: ${LABEL_ICON_GAP}px;
   white-space: nowrap;
   font-weight: ${({ $highlighted }) => ($highlighted ? 'bold' : 'normal')};
 `
@@ -222,28 +230,30 @@ export const Timeline = ({
         <LabelArea>
           <WidthAnchor aria-hidden>
             00:00:00
-            {linkFor && <NorthEast sx={{ fontSize: '1em' }} />}
+            {linkFor && <MapIcon sx={{ fontSize: LABEL_ICON_SIZE }} />}
           </WidthAnchor>
           {items.map((item) => (
             <Label
               key={`${item.i}_label`}
               $top={resolvedYs[item.i]}
               $highlighted={item.highlighted}
+              // A linked label leaves this off: the icon's tooltip is the only one wanted,
+              // and a native title here would surface a second one behind it.
               title={item.link ? undefined : item.timeDisplay}>
-              {item.link ? (
-                <MuiLink
-                  component={Link}
-                  to={item.link.to}
-                  reloadDocument
-                  title={item.link.title}
-                  underline="hover"
-                  sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.25 }}>
-                  {item.timeDisplay}
-                  {/* arrow hints the time is a link to the ride on the map; decorative for a11y */}
-                  <NorthEast aria-hidden sx={{ fontSize: '1em' }} />
-                </MuiLink>
-              ) : (
-                item.timeDisplay
+              {item.timeDisplay}
+              {/* The icon, not the time, is the link — so the time stays selectable text.
+                  It carries the whole accessible name, having no text of its own. */}
+              {item.link && (
+                <Tooltip title={item.link.title}>
+                  <MuiLink
+                    component={Link}
+                    to={item.link.to}
+                    reloadDocument
+                    aria-label={item.link.title}
+                    sx={{ display: 'inline-flex' }}>
+                    <MapIcon sx={{ fontSize: LABEL_ICON_SIZE }} />
+                  </MuiLink>
+                </Tooltip>
               )}
             </Label>
           ))}
