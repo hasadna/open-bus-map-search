@@ -40,7 +40,13 @@ export function DateSelector({
   return (
     <DatePicker
       value={time}
-      onChange={onChange}
+      onChange={(value, context) => {
+        // The field fires on every keystroke, so a half-typed date arrives
+        // here as an invalid one, and a date outside minDate/maxDate arrives
+        // as-is. Forwarding those overwrites whatever the user is typing.
+        if (context.validationError) return
+        onChange(value)
+      }}
       format="DD/MM/YYYY"
       label={customLabel || t('choose_date')}
       disableFuture
