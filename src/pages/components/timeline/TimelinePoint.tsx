@@ -2,10 +2,6 @@ import styled from 'styled-components'
 
 export const POINT_SIZE = 8
 
-/** The cross / question mark standing in for a dot that never came. */
-export const ABSENT_MARK_SIZE = 22
-export const ABSENT_COLOR = 'rgb(var(--timeline-late))'
-
 export const NEUTRAL_COLOR = 'var(--timeline-neutral, #7393B3)'
 const GTFS_COLOR = '#1890ff'
 const SIRI_COLOR = '#eb2f96'
