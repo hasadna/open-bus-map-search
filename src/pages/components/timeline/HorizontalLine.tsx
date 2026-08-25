@@ -1,50 +1,28 @@
-import { useRef } from 'react'
-import styled, { css } from 'styled-components'
-import { useHover } from 'usehooks-ts'
+import styled from 'styled-components'
 import { NEUTRAL_COLOR } from 'src/pages/components/timeline/TimelinePoint'
 
 type HorizontalLineProps = {
+  /** The y of the instant itself — see `instantY`, not a dot's top edge. */
   top: number
-  externalVisible?: boolean
-  onHoverChange?: (entering: boolean) => void
+  /** The moment the page is centred on — drawn dashed, and always visible. */
+  isTarget?: boolean
+  /** Edge of a deviation band; matches the fill so the two read as one shape. */
+  color?: string
 }
 
-const LineStyle = css<HorizontalLineProps>`
+const StyledLine = styled.div<{ $top: number; $dashed?: boolean; $color: string }>`
   position: absolute;
   left: 0;
   width: 100%;
+  top: ${({ $top }) => $top}px;
+  height: 0;
+  /* 1px: these only bound the fill, which is what carries the meaning */
+  border-top: 1px ${({ $dashed }) => ($dashed ? 'dashed' : 'solid')} ${({ $color }) => $color};
+  opacity: ${({ $dashed }) => ($dashed ? 0.55 : 0.75)};
   user-select: none;
+  pointer-events: none;
 `
 
-const StyledLine = styled.div<HorizontalLineProps & { visible: boolean }>`
-  ${LineStyle};
-  top: ${({ top }) => top + 3}px;
-  height: 2px;
-  background-color: ${NEUTRAL_COLOR};
-  opacity: ${({ visible }) => (visible ? 0.4 : 0)};
-`
-
-const HoverTarget = styled.div<HorizontalLineProps>`
-  ${LineStyle};
-  top: ${({ top }) => top - 1}px;
-  height: 3px;
-  background-color: red;
-  opacity: 0;
-  z-index: 5;
-`
-
-export const HorizontalLine = ({ top, externalVisible, onHoverChange }: HorizontalLineProps) => {
-  const hoverRef = useRef<HTMLDivElement>(null!)
-  const isHovering = useHover(hoverRef)
-  return (
-    <>
-      <StyledLine top={top} visible={isHovering || !!externalVisible} />
-      <HoverTarget
-        ref={hoverRef}
-        top={top}
-        onMouseEnter={() => onHoverChange?.(true)}
-        onMouseLeave={() => onHoverChange?.(false)}
-      />
-    </>
-  )
-}
+export const HorizontalLine = ({ top, isTarget, color }: HorizontalLineProps) => (
+  <StyledLine $top={top} $dashed={isTarget} $color={color ?? NEUTRAL_COLOR} />
+)
