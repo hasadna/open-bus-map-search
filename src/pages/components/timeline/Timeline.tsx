@@ -1,15 +1,15 @@
-import CloseIcon from '@mui/icons-material/Close'
-import QuestionMarkIcon from '@mui/icons-material/QuestionMark'
+import {
+  GtfsRideStopWithRelatedPydanticModel,
+  SiriVehicleLocationWithRelatedPydanticModel,
+} from '@hasadna/open-bus-api-client'
 import { Link as MuiLink } from '@mui/material'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
 import styled from 'styled-components'
 import dayjs from 'src/dayjs'
+import { Coordinates } from 'src/model/location'
 import { PADDING } from 'src/pages/components/timeline/TimelineBoard'
-import { hitTime, instantY, type TimelineHit } from 'src/pages/components/timeline/timelinePairing'
 import {
-  ABSENT_COLOR,
-  ABSENT_MARK_SIZE,
   NEUTRAL_COLOR,
   Point,
   POINT_SIZE,
@@ -94,46 +94,16 @@ const ConnectorSvg = styled.svg`
   overflow: visible;
 `
 
-/** Stands in for a dot that never came, in the label lane at the y of the dot the ride
- *  does have on the other axis. A filled disc, so it reads over a band fill. */
-const AbsentMark = styled.span<{ $top: number; $highlighted?: boolean }>`
-  position: absolute;
-  top: ${({ $top }) => $top - POINT_SIZE + 1}px;
-  inset-inline-start: 0;
-  box-sizing: border-box;
-  width: ${ABSENT_MARK_SIZE}px;
-  height: ${ABSENT_MARK_SIZE}px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background-color: var(--timeline-surface, #fff);
-  border: 1px solid rgb(var(--timeline-late) / 60%);
-  color: ${ABSENT_COLOR};
-  transform: ${({ $highlighted }) => ($highlighted ? 'scale(1.2)' : 'scale(1)')};
-  transition: transform 0.15s ease;
-  z-index: 3;
-
-  svg {
-    font-size: ${ABSENT_MARK_SIZE - 6}px;
-  }
-`
-
-/**
- * Nudges labels apart so none covers another, then lets the connectors show where each
- * really belongs. Boxes share a top edge, so two are clear of each other once they sit
- * the upper one's own height apart — which is why the gap is read off the earlier item.
- */
-function resolveCollisions(ys: number[], heights: number[]): number[] {
+function resolveCollisions(ys: number[]): number[] {
   if (ys.length <= 1) return [...ys]
+  const minSpacing = LABEL_HEIGHT + LABEL_GAP
   const indexed = ys.map((y, i) => ({ y, i })).sort((a, b) => a.y - b.y)
-  const spacingAfter = (j: number) => heights[indexed[j].i] + LABEL_GAP
   for (let j = 1; j < indexed.length; j++) {
-    const minY = indexed[j - 1].y + spacingAfter(j - 1)
+    const minY = indexed[j - 1].y + minSpacing
     if (indexed[j].y < minY) indexed[j] = { ...indexed[j], y: minY }
   }
   for (let j = indexed.length - 2; j >= 0; j--) {
-    const maxY = indexed[j + 1].y - spacingAfter(j)
+    const maxY = indexed[j + 1].y - minSpacing
     if (indexed[j].y > maxY) indexed[j] = { ...indexed[j], y: maxY }
   }
   const result = new Array<number>(ys.length)
@@ -165,16 +135,14 @@ export type TimelineLink = { to: string; title: string }
 
 type TimelineProps = {
   className?: string
-  timestamps: TimelineHit[]
+  timestamps:
+    | GtfsRideStopWithRelatedPydanticModel[]
+    | (SiriVehicleLocationWithRelatedPydanticModel & Coordinates)[]
+    | Date[]
   totalHeight: number
   pointType: PointType
   timestampToTop: (timestamp: dayjs.Dayjs) => number
-  /** Which band each timestamp belongs to — parallel to `timestamps`. Both columns share a
-   *  band key when their rides share a scheduled departure, which is what pairs them. */
-  bandKeys?: string[]
-  hoveredBand?: string
-  /** Rides whose counterpart is missing from THIS column, at the y of the dot they do have. */
-  absentMarks?: { key: string; top: number }[]
+  hoveredTimestamp?: string
   linkFor?: (index: number) => TimelineLink | undefined
 }
 
@@ -184,50 +152,25 @@ export const Timeline = ({
   totalHeight,
   pointType,
   timestampToTop,
-  bandKeys,
-  hoveredBand,
-  absentMarks,
+  hoveredTimestamp,
   linkFor,
 }: TimelineProps) => {
-  const { i18n, t } = useTranslation()
+  const { i18n } = useTranslation()
   const isRtl = i18n.dir() === 'rtl'
 
-  // A cross on the actual column means the ride never reported; a question mark on the
-  // planned column means it ran with no schedule to compare against.
-  const isActualColumn = pointType === PointType.SIRI
-  const AbsentIcon = isActualColumn ? CloseIcon : QuestionMarkIcon
-  const absentLabel = t(isActualColumn ? 'timeline_no_actual_ride' : 'timeline_unscheduled_ride')
-
-  // Times and absent markers share the label lane, so they are laid out as one list —
-  // a marker that dodged only the other markers could still land on a time.
-  const timeItems = timestamps.map((timestamp, i) => {
-    const t = hitTime(timestamp)
+  const items = timestamps.map((timestamp, i) => {
+    const t =
+      (timestamp as GtfsRideStopWithRelatedPydanticModel).arrivalTime ??
+      (timestamp as SiriVehicleLocationWithRelatedPydanticModel & Coordinates).recordedAtTime! ??
+      (timestamp as Date)
+    const tsKey = dayjs(t).toISOString()
     const naturalY = timestampToTop(dayjs(t))
-    const highlighted = hoveredBand !== undefined && bandKeys?.[i] === hoveredBand
-    return {
-      key: `time_${i}`,
-      naturalY,
-      height: LABEL_HEIGHT,
-      absent: false,
-      highlighted,
-      timeDisplay: dayjs(t).format('HH:mm:ss'),
-      link: linkFor?.(i),
-    }
+    const highlighted = hoveredTimestamp !== undefined && tsKey === hoveredTimestamp
+    const timeDisplay = dayjs(t).format('HH:mm:ss')
+    return { i, tsKey, naturalY, highlighted, timeDisplay, link: linkFor?.(i) }
   })
 
-  const markItems = (absentMarks ?? []).map((mark) => ({
-    key: `absent_${mark.key}`,
-    naturalY: mark.top,
-    height: ABSENT_MARK_SIZE,
-    absent: true,
-    highlighted: hoveredBand === mark.key,
-  }))
-
-  const items = [...timeItems, ...markItems]
-  const resolvedYs = resolveCollisions(
-    items.map((item) => item.naturalY),
-    items.map((item) => item.height),
-  )
+  const resolvedYs = resolveCollisions(items.map((item) => item.naturalY))
 
   return (
     <Wrapper className={className}>
@@ -238,26 +181,19 @@ export const Timeline = ({
           <BoundaryTick top={totalHeight + PADDING * 3 - 1} />
 
           <ConnectorSvg>
-            {items.map((item, index) => {
-              const resolvedY = resolvedYs[index]
-              const { absent } = item
-              // A marker has no dot of its own, so its leader line is the only thing naming
-              // the instant it belongs to — draw it even when nothing pushed it aside.
-              if (!absent && Math.abs(resolvedY - item.naturalY) < 1) return null
-              const axisY = instantY(item.naturalY)
-              const labelY = resolvedY - POINT_SIZE + 1 + item.height / 2
-              const color = absent
-                ? ABSENT_COLOR
-                : item.highlighted
-                  ? pointTypeToColor[pointType]
-                  : NEUTRAL_COLOR
-              const opacity = item.highlighted ? 0.9 : absent ? 0.7 : 0.5
+            {items.map((item) => {
+              const resolvedY = resolvedYs[item.i]
+              if (Math.abs(resolvedY - item.naturalY) < 1) return null
+              const dotY = item.naturalY + POINT_SIZE / 2
+              const labelY = resolvedY - POINT_SIZE + 1 + LABEL_HEIGHT / 2
+              const color = item.highlighted ? pointTypeToColor[pointType] : NEUTRAL_COLOR
+              const opacity = item.highlighted ? 0.9 : 0.5
               const labelEdgeX = isRtl ? -LABEL_OFFSET : 2 + LABEL_OFFSET
               const horizEndX = isRtl ? labelEdgeX + CONNECTOR_HORIZ : labelEdgeX - CONNECTOR_HORIZ
               return (
                 <path
-                  key={`${item.key}_conn`}
-                  d={`M ${labelEdgeX} ${labelY} L ${horizEndX} ${labelY} L ${DOT_CENTER_X} ${axisY}`}
+                  key={`${item.i}_conn`}
+                  d={`M ${labelEdgeX} ${labelY} L ${horizEndX} ${labelY} L ${DOT_CENTER_X} ${dotY}`}
                   stroke={color}
                   strokeWidth={1}
                   fill="none"
@@ -271,9 +207,9 @@ export const Timeline = ({
               several can land on the same pixel (rides seconds apart, or clamped to the
               bottom of the axis) and a click could not say which ride it meant. The labels
               are collision-resolved, so each is an unambiguous target. */}
-          {timeItems.map((item) => (
+          {items.map((item) => (
             <Point
-              key={`${item.key}_dot`}
+              key={`${item.i}_dot`}
               top={item.naturalY}
               type={pointType}
               $highlighted={item.highlighted}
@@ -284,10 +220,10 @@ export const Timeline = ({
 
         <LabelArea>
           <WidthAnchor aria-hidden>00:00:00</WidthAnchor>
-          {timeItems.map((item, index) => (
+          {items.map((item) => (
             <Label
-              key={`${item.key}_label`}
-              $top={resolvedYs[index]}
+              key={`${item.i}_label`}
+              $top={resolvedYs[item.i]}
               $highlighted={item.highlighted}
               title={item.link ? undefined : item.timeDisplay}>
               {item.link ? (
@@ -305,16 +241,6 @@ export const Timeline = ({
                 item.timeDisplay
               )}
             </Label>
-          ))}
-          {markItems.map((item, index) => (
-            <AbsentMark
-              key={item.key}
-              $top={resolvedYs[timeItems.length + index]}
-              $highlighted={item.highlighted}
-              title={absentLabel}
-              aria-label={absentLabel}>
-              <AbsentIcon fontSize="inherit" />
-            </AbsentMark>
           ))}
         </LabelArea>
       </Container>

@@ -138,8 +138,6 @@
   "timestamp_gtfs": "🕛 Planned stop time",
   "timestamp_siri": "🚌 Actual stop time",
   "timeline_show_ride_on_map": "Show this ride on the map, at this GPS location",
-  "timeline_no_actual_ride": "No actual ride was recorded for this scheduled departure",
-  "timeline_unscheduled_ride": "This ride does not appear in the schedule",
   "hits_not_found": "No planned or actual trips found",
   "planned_time": "Scheduled time",
   "planned_status": "status",
