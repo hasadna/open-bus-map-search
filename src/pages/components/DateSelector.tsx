@@ -41,9 +41,9 @@ export function DateSelector({
     <DatePicker
       value={time}
       onChange={(value, context) => {
-        // The field fires on every keystroke, so a half-typed date arrives
-        // here as an invalid one, and a date outside minDate/maxDate arrives
-        // as-is. Forwarding those overwrites whatever the user is typing.
+        // The field fires on every keystroke, so a half-typed date arrives here
+        // as invalid. Forwarding it overwrites the sections the user is still
+        // editing, and on the dashboard it reaches groupByService and throws.
         if (context.validationError) return
         onChange(value)
       }}
