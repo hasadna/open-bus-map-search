@@ -28,8 +28,8 @@ export const pointTypeToDescription = {
 } as const
 
 type PointProps = {
-  top: number
-  type?: PointType
+  $top: number
+  $type?: PointType
   $highlighted?: boolean
 }
 
@@ -40,9 +40,9 @@ export const Point = styled.div<PointProps>`
   box-shadow: 0 0 0 2px
     ${({ $highlighted }) =>
       $highlighted ? 'var(--timeline-highlight-ring, white)' : NEUTRAL_COLOR};
-  background-color: ${({ type }) => pointTypeToColor[type || PointType.BOUNDARY]};
+  background-color: ${({ $type }) => pointTypeToColor[$type || PointType.BOUNDARY]};
   position: absolute;
-  top: ${({ top }) => top}px;
+  top: ${({ $top }) => $top}px;
   right: -3px;
   transform: ${({ $highlighted }) => ($highlighted ? 'scale(2)' : 'scale(1)')};
   transition:

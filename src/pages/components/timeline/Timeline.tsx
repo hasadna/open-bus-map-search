@@ -22,18 +22,18 @@ const LABEL_OFFSET = 20 // gap between axis and label area
 const CONNECTOR_HORIZ = 8
 const DOT_CENTER_X = 2 + 3 - POINT_SIZE / 2 // = 1
 
-const Line = styled.div<{ totalHeight: number }>`
-  height: ${({ totalHeight }) => totalHeight + PADDING * 3}px;
+const Line = styled.div<{ $totalHeight: number }>`
+  height: ${({ $totalHeight }) => $totalHeight + PADDING * 3}px;
   width: 2px;
   background-color: ${NEUTRAL_COLOR};
 `
 
-const BoundaryTick = styled.div.withConfig({ componentId: 'sc-boundary-tick' })<{ top: number }>`
+const BoundaryTick = styled.div.withConfig({ componentId: 'sc-boundary-tick' })<{ $top: number }>`
   width: 12px;
   height: 2px;
   background-color: ${NEUTRAL_COLOR};
   position: absolute;
-  top: ${({ top }) => top}px;
+  top: ${({ $top }) => $top}px;
   right: -5px;
 `
 
@@ -43,9 +43,9 @@ const Wrapper = styled.div`
   align-items: center;
 `
 
-const Title = styled.span<{ pointType: PointType }>`
+const Title = styled.span<{ $pointType: PointType }>`
   font-weight: bold;
-  background-color: ${({ pointType }) => pointTypeToColor[pointType]};
+  background-color: ${({ $pointType }) => pointTypeToColor[$pointType]};
   padding: 2px 8px;
   white-space: nowrap;
   font-size: clamp(8px, 2.5vw, 16px);
@@ -112,8 +112,14 @@ const AbsentMark = styled.span<{ $top: number; $highlighted?: boolean }>`
   transition: transform 0.15s ease;
   z-index: 3;
 
+  /* MUI ships a single filled weight, so stroking the glyph's own outline is what gives it
+     enough body to read at this size against the ring. */
   svg {
     font-size: ${ABSENT_MARK_SIZE - 6}px;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linejoin: round;
+    stroke-linecap: round;
   }
 `
 
@@ -155,7 +161,7 @@ export const TimelineTitle = ({
 }) => {
   const { t } = useTranslation()
   return (
-    <Title pointType={pointType} className={className}>
+    <Title $pointType={pointType} className={className}>
       {t(pointTypeToDescription[pointType]!)}
     </Title>
   )
@@ -225,9 +231,9 @@ export const Timeline = ({
     <Wrapper className={className}>
       <Container>
         <AxisArea>
-          <Line totalHeight={totalHeight} />
-          <BoundaryTick top={-1} />
-          <BoundaryTick top={totalHeight + PADDING * 3 - 1} />
+          <Line $totalHeight={totalHeight} />
+          <BoundaryTick $top={-1} />
+          <BoundaryTick $top={totalHeight + PADDING * 3 - 1} />
 
           <ConnectorSvg>
             {items.map((item, index) => {
@@ -258,8 +264,8 @@ export const Timeline = ({
           {timeItems.map((item) => (
             <Point
               key={`${item.key}_dot`}
-              top={item.naturalY}
-              type={pointType}
+              $top={item.naturalY}
+              $type={pointType}
               $highlighted={item.highlighted}
               title={item.timeDisplay}
             />
