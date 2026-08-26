@@ -45,7 +45,7 @@ export const Point = styled.div<PointProps>`
   position: absolute;
   top: ${({ top }) => top}px;
   right: -3px;
-  transform: ${({ $highlighted }) => ($highlighted ? 'scale(1.5)' : 'scale(1)')};
+  transform: ${({ $highlighted }) => ($highlighted ? 'scale(2)' : 'scale(1)')};
   transition:
     transform 0.15s ease,
     box-shadow 0.15s ease;

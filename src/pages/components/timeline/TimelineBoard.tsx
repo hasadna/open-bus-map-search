@@ -165,7 +165,7 @@ export const TimelineBoard = ({ className, target, gtfsTimes, siriTimes }: Timel
           '--timeline-neutral': isDarkTheme ? '#8c8c8c' : '#bfbfbf',
           '--timeline-neutral-rgb': isDarkTheme ? '140 140 140' : '191 191 191',
           '--timeline-highlight-ring': isDarkTheme ? 'white' : '#333',
-          '--timeline-surface': isDarkTheme ? '#1f1f1f' : '#fff',
+          '--timeline-absent-fill': isDarkTheme ? '#fff' : '#000',
           '--timeline-late': isDarkTheme ? '255 77 79' : '245 34 45',
           '--timeline-early': isDarkTheme ? '255 169 64' : '250 140 22',
         }}>

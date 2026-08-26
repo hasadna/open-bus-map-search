@@ -93,7 +93,7 @@ const ConnectorSvg = styled.svg`
 `
 
 /** Stands in for a dot that never came, in the label lane at the y of the dot the ride
- *  does have on the other axis. A filled disc, so it reads over a band fill. */
+ *  does have on the other axis. Filled against the theme, so it reads over a band fill. */
 const AbsentMark = styled.span<{ $top: number; $highlighted?: boolean }>`
   position: absolute;
   top: ${({ $top }) => $top - POINT_SIZE + 1}px;
@@ -105,10 +105,10 @@ const AbsentMark = styled.span<{ $top: number; $highlighted?: boolean }>`
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background-color: var(--timeline-surface, #fff);
-  border: 1px solid rgb(var(--timeline-late) / 60%);
+  background-color: var(--timeline-absent-fill, #000);
+  border: 2px solid rgb(var(--timeline-late));
   color: ${ABSENT_COLOR};
-  transform: ${({ $highlighted }) => ($highlighted ? 'scale(1.2)' : 'scale(1)')};
+  transform: ${({ $highlighted }) => ($highlighted ? 'scale(1.5)' : 'scale(1)')};
   transition: transform 0.15s ease;
   z-index: 3;
 
