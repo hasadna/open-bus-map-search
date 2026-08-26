@@ -241,8 +241,6 @@ export const Timeline = ({
               // and a native title here would surface a second one behind it.
               title={item.link ? undefined : item.timeDisplay}>
               {item.timeDisplay}
-              {/* The icon, not the time, is the link — so the time stays selectable text.
-                  It carries the whole accessible name, having no text of its own. */}
               {item.link && (
                 <Tooltip title={item.link.title}>
                   <MuiLink

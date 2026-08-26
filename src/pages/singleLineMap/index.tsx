@@ -33,10 +33,6 @@ const SingleLineMapPage = () => {
   const { operatorId, lineNumber, date, routeKey: searchRouteKey, rideTime } = search
   const { t } = useTranslation()
 
-  // The focused ping means nothing on any other page, so it is page-local. usePageState
-  // seeds it from `single-line-map.focusPing` in an incoming URL, keeps it for the
-  // session, and publishes it to the Share button; /timeline sets it through
-  // seedPageParams when linking here from a click.
   const { params: pageParams, setParams: setPageParams } = usePageState<
     SingleLineMapParams,
     SingleLineMapUi

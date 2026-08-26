@@ -59,13 +59,10 @@ describe('TimelineBoard actual-time links', () => {
   it('links every actual time by its icon, leaving the time itself plain text', () => {
     renderBoard(linkFor)
 
-    // one link per SIRI hit — its icon; the planned column stays plain text
     const [link, ...rest] = screen.getAllByRole('link')
     expect(rest).toHaveLength(0)
     expect(link).toHaveAttribute('href', linkFor(SIRI[0]).to)
-    // the icon has no text, so the title is the whole accessible name
     expect(link).toHaveAccessibleName(linkFor(SIRI[0]).title)
-    // the time sits beside the link rather than inside it, and so stays plain text
     expect(link).not.toHaveTextContent(ACTUAL_LATE)
     expect(screen.getByText(ACTUAL_LATE)).toBeInTheDocument()
   })
@@ -132,7 +129,6 @@ describe('TimelineBoard overlapping dots', () => {
 
     expect(time(secondsApart[1].recordedAtTime)).not.toBe(time(secondsApart[2].recordedAtTime))
     expect(Math.abs(first - second)).toBeLessThan(POINT_SIZE)
-    // ...while each label stays its own target
     expect(screen.getAllByRole('link')).toHaveLength(secondsApart.length)
   })
 })
