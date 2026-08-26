@@ -68,9 +68,6 @@ describe('TimelineBoard deviation colouring', () => {
     })
   })
 
-  // Its bounding rules are this element's own borders, so they cannot drift off its edges
-  // the way separately positioned lines did — what has to hold is that the element covers
-  // exactly the planned instant down to the actual one.
   it('covers exactly the planned instant down to the actual one', () => {
     renderBoard()
     hoverAt(LATE_BAND.top + 1)
@@ -80,7 +77,6 @@ describe('TimelineBoard deviation colouring', () => {
     expect(parseFloat(band.top) + parseFloat(band.height)).toBe(instantY(100))
   })
 
-  // A departure run by two vehicles used to colour only one of them.
   it('splits a double trip that missed in both directions, at the scheduled instant', () => {
     render(
       <TimelineBoard

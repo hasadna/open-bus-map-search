@@ -9,8 +9,7 @@ import { POINT_SIZE } from 'src/pages/components/timeline/TimelinePoint'
 export type SiriHit = SiriVehicleLocationWithRelatedPydanticModel & Coordinates
 export type TimelineHit = GtfsRideStopWithRelatedPydanticModel | SiriHit | Date
 
-/** The vertical span a pair of dots covers, and the instants that bound it.
- *  `top`/`bottom` include the dots themselves, so a lone dot still has a hoverable band. */
+/** `top`/`bottom` include the dots themselves, so a lone dot still has a hoverable band. */
 export type TimelineBand = {
   key: string
   top: number
@@ -23,12 +22,9 @@ export type TimelineBand = {
   pairable: boolean
 }
 
-/** What the gap between a ride's two dots means. */
 export type BandDeviation = 'late' | 'early' | 'on-time' | 'no-show' | 'unscheduled' | 'unknown'
 
 /**
- * The two dots whose distance is the ride's deviation.
- *
  * A departure minute can hold several actual records — genuinely two vehicles on one
  * departure, or one bus filed under duplicate siri_ride ids. Spanning all of them would
  * measure how far apart the *records* are, not how far off the ride ran, so the planned
@@ -62,13 +58,9 @@ export const instantY = (dotTop: number) => dotTop + POINT_SIZE / 2
 export type DeviationSpan = { top: number; bottom: number; deviation: BandDeviation }
 
 /**
- * How far off the schedule the departure ran, as at most two blocks meeting at the
- * scheduled instant: one reaching the earliest vehicle, one reaching the latest. Several
- * vehicles on one departure therefore colour how bad the worst of them was in each
- * direction — the dots and their labels are what still name each vehicle.
- *
- * Measured centre to centre, so a block's height is exactly the delay: a ride that ran to
- * plan spans nothing, and the bounding rules land on its edges rather than inside them.
+ * At most two blocks, one reaching the earliest vehicle and one the latest, meeting at the
+ * scheduled instant so they never overlap. Measured centre to centre, so a block's height is
+ * exactly the delay and a ride that ran to plan spans nothing.
  */
 export function deviationSpans(band: TimelineBand): DeviationSpan[] {
   if (!band.plannedTops.length || !band.actualTops.length) return []
@@ -87,7 +79,6 @@ export function deviationSpans(band: TimelineBand): DeviationSpan[] {
   return spans
 }
 
-/** How far outside a band the pointer may sit and still count as hovering it. */
 export const BAND_HOVER_SLACK = 6
 
 export function hitTime(hit: TimelineHit): Date {
@@ -107,10 +98,9 @@ export function hitTime(hit: TimelineHit): Date {
  * `journey_ref` schemes are unrelated formats. Departures are unique to the minute within
  * a route, so exact-minute equality pairs without ambiguity.
  *
- * The field is typed `Date` but is a string whenever the hit came out of the persisted
- * react-query cache, which round-trips it through JSON — hence dayjs rather than
- * `.getTime()`. An unparseable value yields no key at all, so those hits stay unpaired
- * instead of all colliding on one bogus key.
+ * dayjs rather than `.getTime()` because the field is typed `Date` but is a string whenever
+ * the hit came out of the persisted query cache. An unparseable value yields no key at all,
+ * so those hits stay unpaired instead of all colliding on one bogus key.
  */
 export function departureKey(hit: TimelineHit): string | undefined {
   const departure =
@@ -123,10 +113,8 @@ export function departureKey(hit: TimelineHit): string | undefined {
 }
 
 /**
- * Group both columns' hits into bands, one per scheduled departure.
- *
- * A hit whose ride has no departure time gets a band of its own, keyed per column so it
- * can never pair with anything — an unpairable dot stays hoverable instead of going dead.
+ * A hit whose ride has no departure time gets a band of its own, keyed per column so it can
+ * never pair with anything — an unpairable dot stays hoverable instead of going dead.
  */
 export function pairTimelineHits(
   gtfsTimes: GtfsRideStopWithRelatedPydanticModel[],
@@ -169,10 +157,8 @@ export function pairTimelineHits(
   return { gtfsKeys, siriKeys, bands }
 }
 
-/**
- * The band the pointer is over: the narrowest one containing it, so a short band nested
- * inside a long one still wins. Failing that, the nearest band within `BAND_HOVER_SLACK`.
- */
+/** The narrowest band containing the pointer, so a short band nested inside a long one still
+ *  wins; failing that, the nearest band within `BAND_HOVER_SLACK`. */
 export function pickBandKey(bands: TimelineBand[], y: number): string | undefined {
   let best: TimelineBand | undefined
   let bestSpan = Infinity

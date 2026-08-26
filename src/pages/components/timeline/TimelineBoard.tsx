@@ -21,11 +21,8 @@ import { PointType } from 'src/pages/components/timeline/TimelinePoint'
 export const PADDING = 10
 const COLUMN_GAP = 32
 
-/** The window both columns are drawn against.
- *
- *  It spans every hit on the board, planned and actual alike. Measuring each column's own
- *  range instead let an actual time fall outside the scale — every one past it collapsed
- *  onto the bottom pixel, so rides seconds apart shared a dot. */
+/** Spans every hit on the board, both columns. Scaling each column to its own range lets the
+ *  other column's later hits fall past the bottom and collapse onto one pixel. */
 const boardWindow = (timestamps: Date[]) => {
   const instants = timestamps.map((t) => dayjs(t).valueOf()).filter(Number.isFinite)
   if (instants.length === 0) return { lowerBound: Date.now(), rangeSeconds: 0 }
@@ -53,12 +50,9 @@ const Container = styled.div`
 `
 
 /**
- * One ride's deviation: height IS the delay, so the worse it ran the more coloured surface
- * it puts on screen. The bounding rules are this element's own borders, which is what keeps
- * them exactly on its edges.
- *
- * Early and late blocks meet at the scheduled instant and so never overlap — stacking
- * translucent fills would darken into a severity nobody claimed.
+ * One ride's deviation: height IS the delay, so the worse it ran the more coloured surface it
+ * puts on screen. Early and late blocks meet at the scheduled instant and so never overlap —
+ * stacking translucent fills would darken into a severity nobody claimed.
  */
 const Band = styled.div<{
   $top: number
@@ -80,8 +74,6 @@ const Band = styled.div<{
   pointer-events: none;
 `
 
-/** Red for late, amber for early — both are deviations, so neither gets a "good" colour.
- *  A ride that ran to plan keeps the neutral wash. */
 const deviationRgb = (deviation: BandDeviation) => {
   if (deviation === 'late') return 'var(--timeline-late)'
   if (deviation === 'early') return 'var(--timeline-early)'
@@ -118,8 +110,7 @@ export const TimelineBoard = ({ className, target, gtfsTimes, siriTimes }: Timel
 
   const timestampToTop = useCallback(
     (timestamp: dayjs.Dayjs) => {
-      // A board whose hits all share one instant has no scale — put them on one line
-      // rather than dividing by zero into NaN.
+      // A board whose hits all share one instant has no scale — one line, not NaN.
       const portionOfHeight =
         rangeSeconds > 0 ? timestamp.diff(lowerBound, 'second') / rangeSeconds : 0
       return PADDING + portionOfHeight * totalHeight
@@ -135,9 +126,9 @@ export const TimelineBoard = ({ className, target, gtfsTimes, siriTimes }: Timel
   const activeBand = bands.find((band) => band.key === hoveredBand)
   const activeSpans = activeBand ? deviationSpans(activeBand) : []
 
-  // A ride with only one of its two dots gets a marker on the axis it is missing from,
-  // at the y of the dot it does have — permanent, because an absent counterpart is a fact
-  // about the data rather than something you should have to hover to discover.
+  // The marker goes on the column the ride is missing FROM, at the y of the dot it does have.
+  // Permanent, because an absent counterpart is a fact about the data rather than something
+  // you should have to hover to discover.
   const absentMarks = useMemo(
     () =>
       bands.flatMap((band) => {

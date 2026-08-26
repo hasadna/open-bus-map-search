@@ -92,8 +92,8 @@ const ConnectorSvg = styled.svg`
   overflow: visible;
 `
 
-/** Stands in for a dot that never came, in the label lane at the y of the dot the ride
- *  does have on the other axis. Filled against the theme, so it reads over a band fill. */
+/** Stands in for a dot that never came, in the label lane at the y of the dot the ride does
+ *  have on the other axis. */
 const AbsentMark = styled.span<{ $top: number; $highlighted?: boolean }>`
   position: absolute;
   top: ${({ $top }) => $top - POINT_SIZE + 1}px;
@@ -128,9 +128,9 @@ const connectorOpacity = (absent: boolean, highlighted: boolean) => {
 }
 
 /**
- * Nudges labels apart so none covers another, then lets the connectors show where each
- * really belongs. Boxes share a top edge, so two are clear of each other once they sit
- * the upper one's own height apart — which is why the gap is read off the earlier item.
+ * Nudges labels apart so none covers another. Boxes share a top edge, so two are clear of
+ * each other once they sit the upper one's own height apart — which is why the gap is read
+ * off the earlier item.
  */
 function resolveCollisions(ys: number[], heights: number[]): number[] {
   if (ys.length <= 1) return [...ys]
@@ -170,8 +170,7 @@ type TimelineProps = {
   totalHeight: number
   pointType: PointType
   timestampToTop: (timestamp: dayjs.Dayjs) => number
-  /** Which band each timestamp belongs to — parallel to `timestamps`. Both columns share a
-   *  band key when their rides share a scheduled departure, which is what pairs them. */
+  /** Which band each timestamp belongs to — parallel to `timestamps`. */
   bandKeys?: string[]
   hoveredBand?: string
   /** Rides whose counterpart is missing from THIS column, at the y of the dot they do have. */
@@ -191,8 +190,6 @@ export const Timeline = ({
   const { i18n, t } = useTranslation()
   const isRtl = i18n.dir() === 'rtl'
 
-  // A cross on the actual column means the ride never reported; a question mark on the
-  // planned column means it ran with no schedule to compare against.
   const isActualColumn = pointType === PointType.SIRI
   const AbsentIcon = isActualColumn ? CloseIcon : QuestionMarkIcon
   const absentLabel = t(isActualColumn ? 'timeline_no_actual_ride' : 'timeline_unscheduled_ride')
