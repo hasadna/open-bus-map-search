@@ -21,8 +21,8 @@ import { PointType } from 'src/pages/components/timeline/TimelinePoint'
 export const PADDING = 10
 const COLUMN_GAP = 32
 
-/** Spans every hit on the board, both columns. Scaling each column to its own range lets the
- *  other column's later hits fall past the bottom and collapse onto one pixel. */
+/** Both columns share one scale: per-column ranges let the other column's later hits fall
+ *  past the bottom and collapse onto a single pixel. */
 const boardWindow = (timestamps: Date[]) => {
   const instants = timestamps.map((t) => dayjs(t).valueOf()).filter(Number.isFinite)
   if (instants.length === 0) return { lowerBound: Date.now(), rangeSeconds: 0 }
@@ -49,11 +49,9 @@ const Container = styled.div`
   column-gap: ${COLUMN_GAP}px;
 `
 
-/**
- * One ride's deviation: height IS the delay, so the worse it ran the more coloured surface it
- * puts on screen. Early and late blocks meet at the scheduled instant and so never overlap —
- * stacking translucent fills would darken into a severity nobody claimed.
- */
+/** Height IS the delay, so the worse a ride ran the more coloured surface it puts on screen.
+ *  The fill is translucent, which is why early and late blocks must abut rather than overlap —
+ *  stacked, they would darken into a severity nobody claimed. */
 const Band = styled.div<{
   $top: number
   $height: number
@@ -127,8 +125,8 @@ export const TimelineBoard = ({ className, target, gtfsTimes, siriTimes }: Timel
   const activeSpans = activeBand ? deviationSpans(activeBand) : []
 
   // The marker goes on the column the ride is missing FROM, at the y of the dot it does have.
-  // Permanent, because an absent counterpart is a fact about the data rather than something
-  // you should have to hover to discover.
+  // Permanent, unlike the bands — an absent counterpart is a fact about the data, not
+  // something you should have to hover to discover.
   const absentMarks = useMemo(
     () =>
       bands.flatMap((band) => {

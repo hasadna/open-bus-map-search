@@ -127,11 +127,8 @@ const connectorOpacity = (absent: boolean, highlighted: boolean) => {
   return absent ? 0.7 : 0.5
 }
 
-/**
- * Nudges labels apart so none covers another. Boxes share a top edge, so two are clear of
- * each other once they sit the upper one's own height apart — which is why the gap is read
- * off the earlier item.
- */
+/** Boxes share a top edge, so two are clear of each other once they sit the upper one's own
+ *  height apart — which is why the gap is read off the earlier item. */
 function resolveCollisions(ys: number[], heights: number[]): number[] {
   if (ys.length <= 1) return [...ys]
   const indexed = ys.map((y, i) => ({ y, i })).sort((a, b) => a.y - b.y)

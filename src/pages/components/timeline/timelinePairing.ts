@@ -52,20 +52,15 @@ export function bandDeviation(band: TimelineBand): BandDeviation {
   return band.plannedTops.length ? 'no-show' : 'unscheduled'
 }
 
-/** The y a dot's instant sits at — its centre, not its top edge. */
 export const instantY = (dotTop: number) => dotTop + POINT_SIZE / 2
 
 export type DeviationSpan = { top: number; bottom: number; deviation: BandDeviation }
 
-/**
- * At most two blocks, one reaching the earliest vehicle and one the latest, meeting at the
- * scheduled instant so they never overlap. Measured centre to centre, so a block's height is
- * exactly the delay and a ride that ran to plan spans nothing.
- */
+/** The early and late blocks meet at the scheduled instant rather than overlapping. Measured
+ *  centre to centre, so a block's height is exactly the delay. */
 export function deviationSpans(band: TimelineBand): DeviationSpan[] {
   if (!band.plannedTops.length || !band.actualTops.length) return []
   const planned = Math.min(...band.plannedTops)
-  // y grows with time, so the lowest actual dot is the latest arrival
   const earliest = Math.min(...band.actualTops)
   const latest = Math.max(...band.actualTops)
 
@@ -91,16 +86,14 @@ export function hitTime(hit: TimelineHit): Date {
 }
 
 /**
- * The scheduled departure a hit's ride belongs to, as an epoch-minute string.
+ * The only field that actually pairs the two columns: `siri_ride.gtfs_ride_id` is null
+ * throughout the DB (verified across routes and dates, back to 2025), and the two
+ * `journey_ref` schemes are unrelated formats. Departures are unique to the minute within a
+ * route, so exact-minute equality pairs without ambiguity.
  *
- * This is the only key that actually pairs the two columns: `siri_ride.gtfs_ride_id` is
- * null throughout the DB (verified across routes and dates, back to 2025), and the two
- * `journey_ref` schemes are unrelated formats. Departures are unique to the minute within
- * a route, so exact-minute equality pairs without ambiguity.
- *
- * dayjs rather than `.getTime()` because the field is typed `Date` but is a string whenever
- * the hit came out of the persisted query cache. An unparseable value yields no key at all,
- * so those hits stay unpaired instead of all colliding on one bogus key.
+ * dayjs, not `.getTime()` — the field is a string after a cache round-trip (see `hitTime`).
+ * An unparseable value yields no key at all, so those hits stay unpaired instead of all
+ * colliding on one bogus key.
  */
 export function departureKey(hit: TimelineHit): string | undefined {
   const departure =
@@ -157,8 +150,7 @@ export function pairTimelineHits(
   return { gtfsKeys, siriKeys, bands }
 }
 
-/** The narrowest band containing the pointer, so a short band nested inside a long one still
- *  wins; failing that, the nearest band within `BAND_HOVER_SLACK`. */
+/** Narrowest match wins, so a short band nested inside a long one is still reachable. */
 export function pickBandKey(bands: TimelineBand[], y: number): string | undefined {
   let best: TimelineBand | undefined
   let bestSpan = Infinity
