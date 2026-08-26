@@ -117,6 +117,16 @@ const AbsentMark = styled.span<{ $top: number; $highlighted?: boolean }>`
   }
 `
 
+const connectorColor = (absent: boolean, highlighted: boolean, pointType: PointType) => {
+  if (absent) return ABSENT_COLOR
+  return highlighted ? pointTypeToColor[pointType] : NEUTRAL_COLOR
+}
+
+const connectorOpacity = (absent: boolean, highlighted: boolean) => {
+  if (highlighted) return 0.9
+  return absent ? 0.7 : 0.5
+}
+
 /**
  * Nudges labels apart so none covers another, then lets the connectors show where each
  * really belongs. Boxes share a top edge, so two are clear of each other once they sit
@@ -234,12 +244,8 @@ export const Timeline = ({
               if (!absent && Math.abs(resolvedY - item.naturalY) < 1) return null
               const axisY = instantY(item.naturalY)
               const labelY = resolvedY - POINT_SIZE + 1 + item.height / 2
-              const color = absent
-                ? ABSENT_COLOR
-                : item.highlighted
-                  ? pointTypeToColor[pointType]
-                  : NEUTRAL_COLOR
-              const opacity = item.highlighted ? 0.9 : absent ? 0.7 : 0.5
+              const color = connectorColor(absent, item.highlighted, pointType)
+              const opacity = connectorOpacity(absent, item.highlighted)
               const labelEdgeX = isRtl ? -LABEL_OFFSET : 2 + LABEL_OFFSET
               const horizEndX = isRtl ? labelEdgeX + CONNECTOR_HORIZ : labelEdgeX - CONNECTOR_HORIZ
               return (

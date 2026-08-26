@@ -37,8 +37,9 @@ export type BandDeviation = 'late' | 'early' | 'on-time' | 'no-show' | 'unschedu
 export function deviationPair(band: TimelineBand): { planned: number; actual: number } | undefined {
   if (!band.plannedTops.length || !band.actualTops.length) return undefined
   const planned = Math.min(...band.plannedTops)
-  const actual = band.actualTops.reduce((closest, top) =>
-    Math.abs(top - planned) < Math.abs(closest - planned) ? top : closest,
+  const actual = band.actualTops.reduce(
+    (closest, top) => (Math.abs(top - planned) < Math.abs(closest - planned) ? top : closest),
+    band.actualTops[0],
   )
   return { planned, actual }
 }
@@ -46,8 +47,11 @@ export function deviationPair(band: TimelineBand): { planned: number; actual: nu
 export function bandDeviation(band: TimelineBand): BandDeviation {
   const pair = deviationPair(band)
   // y grows with time, so a lower actual dot is a later arrival
-  if (pair)
-    return pair.actual > pair.planned ? 'late' : pair.actual < pair.planned ? 'early' : 'on-time'
+  if (pair) {
+    if (pair.actual > pair.planned) return 'late'
+    if (pair.actual < pair.planned) return 'early'
+    return 'on-time'
+  }
   if (!band.pairable) return 'unknown'
   return band.plannedTops.length ? 'no-show' : 'unscheduled'
 }

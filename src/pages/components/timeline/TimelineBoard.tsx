@@ -82,12 +82,12 @@ const Band = styled.div<{
 
 /** Red for late, amber for early — both are deviations, so neither gets a "good" colour.
  *  A ride that ran to plan keeps the neutral wash. */
-const deviationRgb = (deviation: BandDeviation) =>
-  deviation === 'late'
-    ? 'var(--timeline-late)'
-    : deviation === 'early'
-      ? 'var(--timeline-early)'
-      : 'var(--timeline-neutral-rgb)'
+const deviationRgb = (deviation: BandDeviation) => {
+  if (deviation === 'late') return 'var(--timeline-late)'
+  if (deviation === 'early') return 'var(--timeline-early)'
+  return 'var(--timeline-neutral-rgb)'
+}
+
 const CenteringWrapper = styled.div`
   display: flex;
   justify-content: center;
