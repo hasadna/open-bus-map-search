@@ -5,7 +5,7 @@ import { MAX_HITS_COUNT } from 'src/api/apiConfig'
 import dayjs from 'src/dayjs'
 import { useTheme } from 'src/layout/ThemeContext'
 import { HorizontalLine } from 'src/pages/components/timeline/HorizontalLine'
-import { Timeline, TimelineTitle } from 'src/pages/components/timeline/Timeline'
+import { Timeline, type TimelineLink, TimelineTitle } from 'src/pages/components/timeline/Timeline'
 import {
   type BandDeviation,
   bandDeviation,
@@ -94,9 +94,17 @@ type TimelineBoardProps = {
   target: dayjs.Dayjs
   gtfsTimes: GtfsRideStopWithRelatedPydanticModel[]
   siriTimes: SiriHit[]
+  /** Deep-links each actual (SIRI) time to the ride it belongs to. */
+  siriLinkFor?: (siriTime: SiriHit) => TimelineLink | undefined
 }
 
-export const TimelineBoard = ({ className, target, gtfsTimes, siriTimes }: TimelineBoardProps) => {
+export const TimelineBoard = ({
+  className,
+  target,
+  gtfsTimes,
+  siriTimes,
+  siriLinkFor,
+}: TimelineBoardProps) => {
   const { isDarkTheme } = useTheme()
   const [hoveredBand, setHoveredBand] = useState<string | undefined>(undefined)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -194,6 +202,7 @@ export const TimelineBoard = ({ className, target, gtfsTimes, siriTimes }: Timel
             bandKeys={siriKeys}
             hoveredBand={hoveredBand}
             absentMarks={absentMarks.filter((mark) => mark.column === PointType.SIRI)}
+            linkFor={siriLinkFor && ((index) => siriLinkFor(siriTimes[index]))}
           />
         </Container>
       </StyledContainer>

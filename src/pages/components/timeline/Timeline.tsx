@@ -1,6 +1,9 @@
 import CloseIcon from '@mui/icons-material/Close'
+import MapIcon from '@mui/icons-material/Map'
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark'
+import { Link as MuiLink, Tooltip } from '@mui/material'
 import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router'
 import styled from 'styled-components'
 import dayjs from 'src/dayjs'
 import { PADDING } from 'src/pages/components/timeline/TimelineBoard'
@@ -18,6 +21,9 @@ import {
 
 const LABEL_HEIGHT = 18
 const LABEL_GAP = 3
+const LABEL_ICON_GAP = 2
+// Keeps the icon inside LABEL_HEIGHT, so neighbouring labels can't touch.
+const LABEL_ICON_SIZE = '1.1em'
 const LABEL_OFFSET = 20 // gap between axis and label area
 const CONNECTOR_HORIZ = 8
 const DOT_CENTER_X = 2 + 3 - POINT_SIZE / 2 // = 1
@@ -67,7 +73,9 @@ const LabelArea = styled.div`
 `
 
 const WidthAnchor = styled.span`
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: ${LABEL_ICON_GAP}px;
   visibility: hidden;
   pointer-events: none;
   white-space: nowrap;
@@ -78,6 +86,9 @@ const Label = styled.div<{ $top: number; $highlighted?: boolean }>`
   top: ${({ $top }) => $top - POINT_SIZE + 1}px;
   inset-inline-start: 0;
   z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: ${LABEL_ICON_GAP}px;
   white-space: nowrap;
   font-weight: ${({ $highlighted }) => ($highlighted ? 'bold' : 'normal')};
 `
@@ -167,6 +178,13 @@ export const TimelineTitle = ({
   )
 }
 
+/** Turns a timestamp into a link — used by the SIRI column to open the ride it came from
+ *  on the map. Returning undefined leaves that timestamp as plain text.
+ *
+ *  Followed as a real document navigation: the target reads its state out of the query
+ *  string, which only happens on a fresh app mount. */
+export type TimelineLink = { to: string; title: string }
+
 type TimelineProps = {
   className?: string
   timestamps: TimelineHit[]
@@ -178,6 +196,7 @@ type TimelineProps = {
   hoveredBand?: string
   /** Rides whose counterpart is missing from THIS column, at the y of the dot they do have. */
   absentMarks?: { key: string; top: number }[]
+  linkFor?: (index: number) => TimelineLink | undefined
 }
 
 export const Timeline = ({
@@ -189,6 +208,7 @@ export const Timeline = ({
   bandKeys,
   hoveredBand,
   absentMarks,
+  linkFor,
 }: TimelineProps) => {
   const { i18n, t } = useTranslation()
   const isRtl = i18n.dir() === 'rtl'
@@ -210,6 +230,7 @@ export const Timeline = ({
       absent: false,
       highlighted,
       timeDisplay: dayjs(t).format('HH:mm:ss'),
+      link: linkFor?.(i),
     }
   })
 
@@ -261,6 +282,10 @@ export const Timeline = ({
             })}
           </ConnectorSvg>
 
+          {/* Deliberately not links, unlike the labels: dots sit at their natural y, so
+              several can land on the same pixel (rides seconds apart, or clamped to the
+              bottom of the axis) and a click could not say which ride it meant. The labels
+              are collision-resolved, so each is an unambiguous target. */}
           {timeItems.map((item) => (
             <Point
               key={`${item.key}_dot`}
@@ -273,14 +298,31 @@ export const Timeline = ({
         </AxisArea>
 
         <LabelArea>
-          <WidthAnchor aria-hidden>00:00:00</WidthAnchor>
+          <WidthAnchor aria-hidden>
+            00:00:00
+            {linkFor && <MapIcon sx={{ fontSize: LABEL_ICON_SIZE }} />}
+          </WidthAnchor>
           {timeItems.map((item, index) => (
             <Label
               key={`${item.key}_label`}
               $top={resolvedYs[index]}
               $highlighted={item.highlighted}
-              title={item.timeDisplay}>
+              // A linked label leaves this off: the icon's tooltip is the only one wanted,
+              // and a native title here would surface a second one behind it.
+              title={item.link ? undefined : item.timeDisplay}>
               {item.timeDisplay}
+              {item.link && (
+                <Tooltip title={item.link.title}>
+                  <MuiLink
+                    component={Link}
+                    to={item.link.to}
+                    reloadDocument
+                    aria-label={item.link.title}
+                    sx={{ display: 'inline-flex' }}>
+                    <MapIcon sx={{ fontSize: LABEL_ICON_SIZE }} />
+                  </MuiLink>
+                </Tooltip>
+              )}
             </Label>
           ))}
           {markItems.map((item, index) => (
