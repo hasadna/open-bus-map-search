@@ -212,7 +212,7 @@ export const NoResults: Story = {
 /**
  * Train operator (id 2) with real רכבת ישראל routes. Trains have no line number,
  * so they all fall under one blank-labelled group; it's expanded here to show the
- * route rows have a "profile" link but no "map" link.
+ * route rows send trains to /train rather than to /single-line-map.
  */
 export const TrainOperator: Story = {
   args: {
@@ -228,9 +228,8 @@ export const TrainOperator: Story = {
       canvasElement.querySelector<HTMLElement>('.MuiAccordionSummary-root'),
     )
     await userEvent.click(firstGroup!)
-    await waitFor(() =>
-      expect(canvas.getAllByText(i18n.t('operator.profile')).length).toBeGreaterThan(0),
-    )
-    await expect(canvas.queryByText(i18n.t('operator.map'))).toBeNull()
+    const links = await waitFor(() => canvas.getAllByText(i18n.t('operator.map')))
+    await expect(links.length).toBeGreaterThan(0)
+    await expect(links[0].getAttribute('href')).toContain('/train')
   },
 }

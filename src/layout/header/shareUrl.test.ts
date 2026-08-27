@@ -206,32 +206,3 @@ describe('buildShareUrl — per-page param contracts', () => {
     })
   }
 })
-
-// ---------------------------------------------------------------------------
-// buildShareUrl — dynamic profile path
-// ---------------------------------------------------------------------------
-
-// /profile/:id is not in PAGE_SHARE_PARAMS. The route ID is already in the
-// path, so GlobalSearchContext params must not leak into the URL — only explicit
-// page params (e.g. rideTime) registered via PageShareParamsContext appear.
-
-describe('buildShareUrl — dynamic profile path', () => {
-  it('no GlobalSearchContext params leak into the URL', () => {
-    const p = paramsOf(build('/profile/12345', fullSearch))
-    expect(p.operatorId).toBeUndefined()
-    expect(p.lineNumber).toBeUndefined()
-    expect(p.date).toBeUndefined()
-    expect(p.routeKey).toBeUndefined()
-    expect(p.rideTime).toBeUndefined()
-  })
-
-  it('page params (rideTime) are included', () => {
-    const p = paramsOf(build('/profile/12345', fullSearch, { rideTime: '08:30:00' }))
-    expect(p.rideTime).toBe('08:30:00')
-  })
-
-  it('profile id is preserved in the pathname', () => {
-    const url = new URL(build('/profile/12345', fullSearch, { rideTime: '08:30:00' }))
-    expect(url.pathname).toBe('/profile/12345')
-  })
-})

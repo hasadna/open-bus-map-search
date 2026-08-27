@@ -1,10 +1,11 @@
 import { GtfsRoutePydanticModel } from '@hasadna/open-bus-api-client'
 import { Button, CircularProgress } from '@mui/material'
-import { ReactNode, useEffect, useState } from 'react'
+import { ReactNode, useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import { getRoutesByLineRef } from 'src/api/gtfsService'
 import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone, utcNoonForDateStr } from 'src/dayjs'
+import { GlobalSearchContext } from 'src/model/globalState'
 import { routeStartEnd, vehicleIDFormat } from 'src/pages/components/utils/rotueUtils'
 import SkeletonLoader from 'src/shared/SkeletonLoader'
 import CustomTreeView from '../../CustomTreeView'
@@ -13,14 +14,23 @@ import type { Point } from '../map-types'
 import ComplaintModal from './ComplaintModal'
 import './BusToolTip.scss'
 
-export type BusToolTipProps = { position: Point; icon: string; children?: ReactNode }
+export type BusToolTipProps = {
+  position: Point
+  icon: string
+  children?: ReactNode
+  /** Turn the line number into a link to /single-line-map. Off by default: the
+   *  line-specific maps that render this tooltip are already showing that line. */
+  linkToLineMap?: boolean
+}
 
-export function BusToolTip({ position, icon, children }: BusToolTipProps) {
+export function BusToolTip({ position, icon, children, linkToLineMap }: BusToolTipProps) {
   const [route, setRoute] = useState<GtfsRoutePydanticModel>()
   const [isLoading, setIsLoading] = useState(false)
   const [showJson, setShowJson] = useState(false)
   const { t, i18n } = useTranslation()
   const [modalOpen, setModalOpen] = useState(false)
+  const { setSearch } = useContext(GlobalSearchContext)
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (!position.point?.id) return
@@ -65,6 +75,18 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
   }
 
   const [from, destination] = routeStartEnd(route?.routeLongName)
+  const lineLabel = route?.routeShortName || 'NaN' // 'NaN' is the fallback for a missing route number
+
+  const showOnLineMap = (route: GtfsRoutePydanticModel) => {
+    setSearch((current) => ({
+      ...current,
+      date: toIsraelTimezone(route.date.getTime()).format('YYYY-MM-DD'),
+      operatorId: route.operatorRef.toString(),
+      lineNumber: route.routeShortName ?? null,
+      routeKey: `${route.routeMkt}-${route.routeDirection}-${route.routeAlternative}`,
+    }))
+    void navigate('/single-line-map')
+  }
 
   return (
     <div className="bus-tooltip" dir={i18n.dir()}>
@@ -82,8 +104,18 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
             <h1 className="title">
               {`${t('line')}: `}
               <span>
-                {/* eslint-disable-next-line i18next/no-literal-string -- fallback for a missing route number */}
-                <Link to={`/profile/${route.id}`}>{route?.routeShortName || 'NaN'}</Link>
+                {linkToLineMap ? (
+                  <Link
+                    to="/single-line-map"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      showOnLineMap(route)
+                    }}>
+                    {lineLabel}
+                  </Link>
+                ) : (
+                  lineLabel
+                )}
               </span>
             </h1>
             <Link to={`/operator?operatorId=${position.point?.siriRouteOperatorRef}`}>
@@ -93,7 +125,7 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
           <div className="content">
             <ul>
               <li>
-                {`${t('lineProfile.agencyName')}: `}
+                {`${t('agency_name')}: `}
 
                 <span>
                   <Link to={`/operator?operatorId=${position.point?.siriRouteOperatorRef}`}>

@@ -102,7 +102,6 @@ src/
 │   ├── gaps/               # Service gap visualization
 │   ├── gapsPatterns/       # Gap-patterns analysis
 │   ├── historicTimeline/   # Historic timeline view
-│   ├── lineProfile/        # Individual line details
 │   ├── operator/           # Operator performance
 │   ├── singleLineMap/      # Single line on the map
 │   ├── timeBasedMap/       # Map with time controls

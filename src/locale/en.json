@@ -94,7 +94,6 @@
       "year": "Yearly"
     },
     "all_lines_on_date": "All Lines on This Date",
-    "profile": "Profile",
     "map": "Map",
     "id": "ID",
     "origin": "Origin",
@@ -257,6 +256,7 @@
   "from": "from",
   "destination": "destination",
   "kmh": "kmh",
+  "agency_name": "Agency Name",
   "sample_time": "sample time",
   "at_time": "at",
   "drive_direction": "drive direction",
@@ -336,38 +336,6 @@
     "report_time": "Ticket Time",
     "complaint_details_required": "In order for us to check your request, please specify in the request which modes of transportation you wish to match, line numbers, operator names, station SKU, and relevant times.",
     "new_complaint": "New Complaint"
-  },
-  "lineProfile": {
-    "title": "Profile for Line",
-    "notFound": "We couldn't find the line you were looking for :(",
-    "id": "ID",
-    "date": "Date",
-    "lineReference": "Line Reference",
-    "operatorReference": "Operator Reference",
-    "agencyName": "Agency Name",
-    "route": {
-      "shortName": "Route Short Name",
-      "start": "Start",
-      "end": "End",
-      "mkt": "Route MKT",
-      "direction": "Route Direction",
-      "direction_forth": "Forward",
-      "direction_back": "Backward",
-      "alternative": "Route Alternative",
-      "type": "Route Type"
-    },
-    "ride": {
-      "journey": "Journey ID",
-      "id": "Ride ID",
-      "duration": "Ride Duration"
-    },
-    "stop": {
-      "name": "Stop Name",
-      "code": "Stop ID",
-      "route": "Stop Route",
-      "of": "of",
-      "location": "Stop Location"
-    }
   },
   "errorPage": {
     "title": "Oops, something went wrong",

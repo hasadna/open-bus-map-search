@@ -94,7 +94,6 @@
       "year": "שנתית"
     },
     "all_lines_on_date": "כל הקווים בתאריך זה",
-    "profile": "פרופיל",
     "map": "מפה",
     "id": "מזהה טכני",
     "origin": "מוצא",
@@ -257,6 +256,7 @@
   "from": "מוצא",
   "destination": "יעד",
   "kmh": "קמ״ש",
+  "agency_name": "שם חברה מפעילה",
   "sample_time": "זמן דגימה",
   "at_time": "בשעה",
   "drive_direction": "כיוון נסיעה",
@@ -336,38 +336,6 @@
     "report_time": "שעת מתן הדוח",
     "complaint_details_required": "על מנת שנוכל לבדוק בקשתך, יש לפרט במסגרת הבקשה בין אילו אמצעי תחבורה ברצונך להתאים, מספרי קווים, שמות מפעילים, מק\"ט תחנה ושעות רלוונטיות.",
     "new_complaint": "תלונה חדשה"
-  },
-  "lineProfile": {
-    "title": "פרופיל קו",
-    "notFound": "לא הצלחנו למצוא את הקו שחיפשת :(",
-    "id": "מזהה טכני",
-    "date": "תאריך",
-    "lineReference": "מזהה קו",
-    "operatorReference": "מזהה חברה מפעילה",
-    "agencyName": "שם חברה מפעילה",
-    "route": {
-      "shortName": "מס' קו",
-      "start": "מוצא",
-      "end": "יעד",
-      "mkt": "מק\"ט קו",
-      "direction": "כיוון קו",
-      "direction_forth": "הלוך",
-      "direction_back": "חזור",
-      "alternative": "חלופה מס'",
-      "type": "סוג קו"
-    },
-    "ride": {
-      "journey": "מזהה נסיעה",
-      "id": "מזהה טכני",
-      "duration": "זמן נסיעה"
-    },
-    "stop": {
-      "name": "שם תחנה",
-      "code": "מספר תחנה",
-      "route": "מסלול תחנה",
-      "of": "מתוך",
-      "location": "נ\"צ"
-    }
   },
   "errorPage": {
     "title": "אופס, משהו השתבש",
