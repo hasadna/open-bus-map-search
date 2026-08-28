@@ -1,4 +1,4 @@
-import { Add, Remove } from '@mui/icons-material'
+import { AddTwoTone, RemoveTwoTone } from '@mui/icons-material'
 import { Box, IconButton, Tooltip, Typography } from '@mui/material'
 import { useTranslation } from 'react-i18next'
 
@@ -35,7 +35,7 @@ function BusToolTipFooter({
             aria-label={t('bus_tooltip_footer_previous_location')}
             disabled={!prevEnable}
             onClick={() => navigateMarkers(prevStep)}>
-            <Remove />
+            <RemoveTwoTone />
           </IconButton>
         </span>
       </Tooltip>
@@ -51,7 +51,7 @@ function BusToolTipFooter({
             aria-label={t('bus_tooltip_footer_next_location')}
             disabled={!nextEnable}
             onClick={() => navigateMarkers(nextStep)}>
-            <Add />
+            <AddTwoTone />
           </IconButton>
         </span>
       </Tooltip>

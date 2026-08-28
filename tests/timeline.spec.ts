@@ -1,5 +1,5 @@
 import { expect, test } from 'src/test_pages/TimelinePage'
-import { harOptions, setupTest, verifyDateFromParameter, visitPage } from './utils'
+import { clearInputField, harOptions, setupTest, verifyDateFromParameter, visitPage } from './utils'
 
 const ROUTE = 'שדרות מנחם בגין/כביש 7-גדרה ⟵ שדרות מנחם בגין/כביש 7-גדרה'
 const STATION = 'חיים הרצוג/שדרות מנחם בגין (גדרה)'
@@ -22,7 +22,7 @@ test.describe('Timeline Page Tests', () => {
       await timelinePage.selectOperator('אגד')
       await timelinePage.lineNumberField.fill('1')
       await expect(timelinePage.routeSelect).toBeEnabled()
-      await timelinePage.closeButton.click()
+      await clearInputField(timelinePage.lineNumberField)
       await expect(timelinePage.lineNumberField).toBeEmpty()
       await expect(timelinePage.routeSelect).toBeDisabled()
     })

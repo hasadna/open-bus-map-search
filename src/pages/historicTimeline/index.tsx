@@ -1,6 +1,7 @@
+import { SiriVehicleLocationWithRelatedPydanticModel } from '@hasadna/open-bus-api-client'
 import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
-import { useContext, useMemo } from 'react'
+import { useCallback, useContext, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   getGtfsStopHitTimesAsync,
@@ -23,6 +24,7 @@ import { DateSelector } from '../components/DateSelector'
 import { NotFound } from '../components/NotFound'
 import { PageContainer } from '../components/PageContainer'
 import { TimeSelector } from '../components/TimeSelector'
+import { buildSingleLineMapRideLink } from './singleLineMapRideLink'
 
 const TimelinePage = () => {
   const { t } = useTranslation()
@@ -49,7 +51,7 @@ const TimelinePage = () => {
     queryFn: async () => {
       if (operatorId && lineNumber) {
         try {
-          return await getRoutesAsync(time, time, operatorId, lineNumber)
+          return await getRoutesAsync(date, date, operatorId, lineNumber)
         } catch (error) {
           console.error(error)
           setSearch((current) => ({ ...current, routeKey: null }))
@@ -58,7 +60,7 @@ const TimelinePage = () => {
       }
       return null
     },
-    queryKey: ['routes', operatorId, lineNumber, time.valueOf()],
+    queryKey: ['routes', operatorId, lineNumber, date],
   })
 
   const selectedRoute = useMemo(
@@ -84,6 +86,15 @@ const TimelinePage = () => {
   const selectedStop = useMemo(
     () => stopsQuery.data?.find((stop) => stop.key === stopKey),
     [stopsQuery.data, stopKey],
+  )
+
+  const siriLinkFor = useCallback(
+    (hit: SiriVehicleLocationWithRelatedPydanticModel) => {
+      if (!operatorId || !lineNumber || !routeKey) return undefined
+      const to = buildSingleLineMapRideLink(hit, { operatorId, lineNumber, routeKey })
+      return to ? { to, title: t('timeline_show_ride_on_map') } : undefined
+    },
+    [operatorId, lineNumber, routeKey, t],
   )
 
   const hitsQuery = useQuery({
@@ -141,11 +152,14 @@ const TimelinePage = () => {
           <OperatorSelector
             operatorId={operatorId ?? undefined}
             setOperatorId={(id) => setSearch((prev) => ({ ...prev, operatorId: id }))}
+            excludeIsraelRailways
           />
         </Grid>
         {/* choose line */}
         <Grid size={{ lg: 4, md: 6, xs: 12 }}>
           <LineNumberSelector
+            operatorId={operatorId ?? undefined}
+            date={date}
             lineNumber={lineNumber ?? undefined}
             setLineNumber={(number) => setSearch((prev) => ({ ...prev, lineNumber: number }))}
           />
@@ -199,6 +213,7 @@ const TimelinePage = () => {
                     target={time}
                     gtfsTimes={hitsQuery.data.gtfsTime}
                     siriTimes={hitsQuery.data.siriTime}
+                    siriLinkFor={siriLinkFor}
                   />
                 ) : (
                   <NotFound>{t('hits_not_found')}</NotFound>

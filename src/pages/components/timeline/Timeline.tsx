@@ -2,7 +2,10 @@ import {
   GtfsRideStopWithRelatedPydanticModel,
   SiriVehicleLocationWithRelatedPydanticModel,
 } from '@hasadna/open-bus-api-client'
+import { Map as MapIcon } from '@mui/icons-material'
+import { Link as MuiLink, Tooltip } from '@mui/material'
 import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router'
 import styled from 'styled-components'
 import dayjs from 'src/dayjs'
 import { Coordinates } from 'src/model/location'
@@ -18,6 +21,9 @@ import {
 
 const LABEL_HEIGHT = 18
 const LABEL_GAP = 3
+const LABEL_ICON_GAP = 2
+// Keeps the icon inside LABEL_HEIGHT, so neighbouring labels can't touch.
+const LABEL_ICON_SIZE = '1.1em'
 const LABEL_OFFSET = 20 // gap between axis and label area
 const CONNECTOR_HORIZ = 8
 const DOT_CENTER_X = 2 + 3 - POINT_SIZE / 2 // = 1
@@ -67,7 +73,9 @@ const LabelArea = styled.div`
 `
 
 const WidthAnchor = styled.span`
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: ${LABEL_ICON_GAP}px;
   visibility: hidden;
   pointer-events: none;
   white-space: nowrap;
@@ -78,6 +86,9 @@ const Label = styled.div<{ $top: number; $highlighted?: boolean }>`
   top: ${({ $top }) => $top - POINT_SIZE + 1}px;
   inset-inline-start: 0;
   z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: ${LABEL_ICON_GAP}px;
   white-space: nowrap;
   font-weight: ${({ $highlighted }) => ($highlighted ? 'bold' : 'normal')};
 `
@@ -124,6 +135,13 @@ export const TimelineTitle = ({
   )
 }
 
+/** Turns a timestamp into a link — used by the SIRI column to open the ride it came from
+ *  on the map. Returning undefined leaves that timestamp as plain text.
+ *
+ *  Followed as a real document navigation: the target reads its state out of the query
+ *  string, which only happens on a fresh app mount. */
+export type TimelineLink = { to: string; title: string }
+
 type TimelineProps = {
   className?: string
   timestamps:
@@ -134,6 +152,7 @@ type TimelineProps = {
   pointType: PointType
   timestampToTop: (timestamp: dayjs.Dayjs) => number
   hoveredTimestamp?: string
+  linkFor?: (index: number) => TimelineLink | undefined
 }
 
 export const Timeline = ({
@@ -143,6 +162,7 @@ export const Timeline = ({
   pointType,
   timestampToTop,
   hoveredTimestamp,
+  linkFor,
 }: TimelineProps) => {
   const { i18n } = useTranslation()
   const isRtl = i18n.dir() === 'rtl'
@@ -156,7 +176,7 @@ export const Timeline = ({
     const naturalY = timestampToTop(dayjs(t))
     const highlighted = hoveredTimestamp !== undefined && tsKey === hoveredTimestamp
     const timeDisplay = dayjs(t).format('HH:mm:ss')
-    return { i, tsKey, naturalY, highlighted, timeDisplay }
+    return { i, tsKey, naturalY, highlighted, timeDisplay, link: linkFor?.(i) }
   })
 
   const resolvedYs = resolveCollisions(items.map((item) => item.naturalY))
@@ -192,6 +212,10 @@ export const Timeline = ({
             })}
           </ConnectorSvg>
 
+          {/* Deliberately not links, unlike the labels: dots sit at their natural y, so
+              several can land on the same pixel (rides seconds apart, or clamped to the
+              bottom of the axis) and a click could not say which ride it meant. The labels
+              are collision-resolved, so each is an unambiguous target. */}
           {items.map((item) => (
             <Point
               key={`${item.i}_dot`}
@@ -204,14 +228,31 @@ export const Timeline = ({
         </AxisArea>
 
         <LabelArea>
-          <WidthAnchor aria-hidden>00:00:00</WidthAnchor>
+          <WidthAnchor aria-hidden>
+            00:00:00
+            {linkFor && <MapIcon sx={{ fontSize: LABEL_ICON_SIZE }} />}
+          </WidthAnchor>
           {items.map((item) => (
             <Label
               key={`${item.i}_label`}
               $top={resolvedYs[item.i]}
               $highlighted={item.highlighted}
-              title={item.timeDisplay}>
+              // A linked label leaves this off: the icon's tooltip is the only one wanted,
+              // and a native title here would surface a second one behind it.
+              title={item.link ? undefined : item.timeDisplay}>
               {item.timeDisplay}
+              {item.link && (
+                <Tooltip title={item.link.title}>
+                  <MuiLink
+                    component={Link}
+                    to={item.link.to}
+                    reloadDocument
+                    aria-label={item.link.title}
+                    sx={{ display: 'inline-flex' }}>
+                    <MapIcon sx={{ fontSize: LABEL_ICON_SIZE }} />
+                  </MuiLink>
+                </Tooltip>
+              )}
             </Label>
           ))}
         </LabelArea>

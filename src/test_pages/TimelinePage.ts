@@ -49,10 +49,6 @@ class TimelinePage extends BasePage {
   public get stationList() {
     return this.page.locator('ul#stop-select-listbox')
   }
-  get closeButton() {
-    return this.page.locator("span[aria-label='סגור'], span[aria-label='close']")
-  }
-
   get lineNumberField() {
     return this.page.locator("//input[@placeholder='לדוגמה: 17א']")
   }

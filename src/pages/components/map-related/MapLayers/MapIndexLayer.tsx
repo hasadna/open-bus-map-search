@@ -1,29 +1,33 @@
+import { NorthEast } from '@mui/icons-material'
 import { Link as MuiLink } from '@mui/material'
+import type { TFunction } from 'i18next'
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
 import type { PositionGroup } from '../map-types'
-import {
-  actualRouteStopMarkerPath,
-  plannedRouteLineColor,
-  plannedRouteStopMarkerPath,
-} from '../MapContent'
 import { MapIndex } from '../MapIndex'
+import { plannedRouteLineColor, plannedRouteStopMarkerPath } from '../mapMarkers'
+import { MapSpeedIndex } from '../MapSpeedIndex'
+import { SPEED_BANDS, VehicleBearingGlyph } from '../vehicleBearingGlyph'
 
 interface MapIndexLayerProps {
   showPlannedRoute?: boolean
   positionGroups?: PositionGroup[]
 }
 
-function vehicleSubtitle(group: PositionGroup): ReactNode {
+function vehicleSubtitle(group: PositionGroup, t: TFunction): ReactNode {
   if (!group.label) return undefined
   const number = group.vehicleRef ? (
     <MuiLink
       component={Link}
-      to={`/vehicle?vehicleNumber=${group.vehicleRef}`}
+      to={`/vehicle?vehicle.vehicleNumber=${group.vehicleRef}`}
       reloadDocument
-      underline="hover">
+      underline="hover"
+      title={t('go_to_vehicle_page')}
+      sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.25 }}>
       {group.label}
+      {/* arrow hints the number is a link to the vehicle page; decorative for a11y */}
+      <NorthEast aria-hidden sx={{ fontSize: '1em' }} />
     </MuiLink>
   ) : (
     group.label
@@ -45,7 +49,7 @@ export function MapIndexLayer({ showPlannedRoute, positionGroups = [] }: MapInde
       {showPlannedRoute && (
         <MapIndex
           lineColor={plannedRouteLineColor}
-          imgSrc={plannedRouteStopMarkerPath}
+          icon={<img src={plannedRouteStopMarkerPath} alt="" />}
           title={t('plannedRoute')}
         />
       )}
@@ -55,11 +59,13 @@ export function MapIndexLayer({ showPlannedRoute, positionGroups = [] }: MapInde
         <MapIndex
           key={idx}
           lineColor={group.color}
-          imgSrc={actualRouteStopMarkerPath}
+          // A mid-ramp arrow stands for the whole family; MapSpeedIndex below spells the bands out.
+          icon={<VehicleBearingGlyph band={SPEED_BANDS[SPEED_BANDS.length - 2]} />}
           title={t('actualRoute')}
-          subtitle={vehicleSubtitle(group)}
+          subtitle={vehicleSubtitle(group, t)}
         />
       ))}
+      {positionGroups.length > 0 && <MapSpeedIndex />}
     </div>
   )
 }
