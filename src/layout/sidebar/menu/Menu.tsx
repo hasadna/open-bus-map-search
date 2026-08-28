@@ -29,7 +29,7 @@ const MENU_GROUPS = [
     key: 'menu_group_analysis',
     paths: [
       '/single-line-map',
-      '/timeline',
+      '/station-stops',
       '/gaps',
       '/gaps_patterns',
       '/operator',

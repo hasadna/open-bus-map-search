@@ -1,9 +1,9 @@
 import {
   BiotechTwoTone,
+  DepartureBoardTwoTone,
   DirectionsBusTwoTone,
   EmojiTransportationTwoTone,
   GitHub,
-  HistoryTwoTone,
   HomeTwoTone,
   InfoTwoTone,
   MapTwoTone,
@@ -29,10 +29,11 @@ import { ErrorPage } from 'src/pages/ErrorPage'
 import GapsPatternsPage from 'src/pages/gapsPatterns'
 import VelocityHeatmapPage from 'src/pages/velocityHeatmap'
 import { LegacyLangRedirect } from './LegacyLangRedirect'
+import { LegacyPathRedirect } from './LegacyPathRedirect'
 import { MainRoute } from './MainRoute'
 
 const HomePage = lazy(() => import('../pages/homepage/HomePage'))
-const TimelinePage = lazy(() => import('../pages/historicTimeline'))
+const StationStopsPage = lazy(() => import('../pages/stationStops'))
 const GapsPage = lazy(() => import('../pages/gaps'))
 const TimeBasedMapPage = lazy(() => import('../pages/timeBasedMap'))
 const SingleLineMapPage = lazy(() => import('../pages/singleLineMap'))
@@ -52,11 +53,11 @@ export const PAGES = [
     element: <HomePage />,
   },
   {
-    label: 'timeline_page_title',
-    path: '/timeline',
+    label: 'station_stops_page_title',
+    path: '/station-stops',
     searchParamsRequired: true,
-    icon: <HistoryTwoTone />,
-    element: <TimelinePage />,
+    icon: <DepartureBoardTwoTone />,
+    element: <StationStopsPage />,
   },
   {
     label: 'gaps_page_title',
@@ -166,38 +167,46 @@ const RedirectToHomepage = <Navigate to={routesList[0].path} replace />
 
 export const getRoutesList = () => {
   return (
-    <Route element={<MainRoute />}>
-      {routesList.map(({ path, element }) => (
+    <>
+      {/* Backward-compat: this page was served from /timeline until it was renamed.
+          Sits outside MainRoute so the redirect resolves before the layout mounts —
+          inside it, MainRoute would seed and strip the shared params on the old path
+          while this route was still redirecting off it.
+          Remove this route once such links have aged out. */}
+      <Route path="timeline" element={<LegacyPathRedirect to="/station-stops" />} />
+      <Route element={<MainRoute />}>
+        {routesList.map(({ path, element }) => (
+          <Route
+            key={path}
+            path={path === '/' ? undefined : path.replace(/^\//, '')}
+            index={path === '/'}
+            element={element}
+            ErrorBoundary={ErrorPage}
+          />
+        ))}
         <Route
-          key={path}
-          path={path === '/' ? undefined : path.replace(/^\//, '')}
-          index={path === '/'}
-          element={element}
+          path="profile/:gtfsRideGtfsRouteId"
+          element={<Profile />}
           ErrorBoundary={ErrorPage}
-        />
-      ))}
-      <Route
-        path="profile/:gtfsRideGtfsRouteId"
-        element={<Profile />}
-        ErrorBoundary={ErrorPage}
-        loader={async ({ params }) => {
-          try {
-            const route = await getRouteById(params?.gtfsRideGtfsRouteId)
-            return { route }
-          } catch (error) {
-            return {
-              route: null,
-              message: (error as Error).message,
+          loader={async ({ params }) => {
+            try {
+              const route = await getRouteById(params?.gtfsRideGtfsRouteId)
+              return { route }
+            } catch (error) {
+              return {
+                route: null,
+                message: (error as Error).message,
+              }
             }
-          }
-        }}
-      />
-      {/* Backward-compat: old links carried a language prefix (/he, /en, /ru, /ar).
-          Strip it, apply the language, and redirect to the clean path.
-          Remove this route (and LegacyLangRedirect) once such links have aged out. */}
-      <Route path=":lang/*" element={<LegacyLangRedirect />} />
-      <Route path="*" element={RedirectToHomepage} key="back" />
-    </Route>
+          }}
+        />
+        {/* Backward-compat: old links carried a language prefix (/he, /en, /ru, /ar).
+            Strip it, apply the language, and redirect to the clean path.
+            Remove this route (and LegacyLangRedirect) once such links have aged out. */}
+        <Route path=":lang/*" element={<LegacyLangRedirect />} />
+        <Route path="*" element={RedirectToHomepage} key="back" />
+      </Route>
+    </>
   )
 }
 

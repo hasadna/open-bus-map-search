@@ -101,10 +101,10 @@ src/
 │   ├── dashboard/          # Analytics dashboard with charts
 │   ├── gaps/               # Service gap visualization
 │   ├── gapsPatterns/       # Gap-patterns analysis
-│   ├── historicTimeline/   # Historic timeline view
 │   ├── lineProfile/        # Individual line details
 │   ├── operator/           # Operator performance
 │   ├── singleLineMap/      # Single line on the map
+│   ├── stationStops/       # Planned vs. actual stop times at one stop
 │   ├── timeBasedMap/       # Map with time controls
 │   ├── velocityHeatmap/    # Speed heatmap
 │   ├── vehicle/            # Vehicle detail view

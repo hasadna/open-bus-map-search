@@ -36,7 +36,7 @@ describe('buildSingleLineMapRideLink', () => {
   })
 
   it('files a past-midnight departure under the day it departs on, not the day browsed', () => {
-    // 00:30 Israel on the 20th — the timeline reaches it while browsing the 19th.
+    // 00:30 Israel on the 20th — the page reaches it while browsing the 19th.
     const href = buildSingleLineMapRideLink(
       hit({ siriRideScheduledStartTime: new Date('2026-08-19T21:30:00Z') }),
       LINE,

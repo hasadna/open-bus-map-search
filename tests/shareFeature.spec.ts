@@ -52,9 +52,9 @@ test.describe('Share URL feature', () => {
   })
 
   test('address bar shows clean path after loading with params', async ({ page }) => {
-    await page.goto('/timeline?date=2024-02-12&operatorId=5&lineNumber=18')
+    await page.goto('/station-stops?date=2024-02-12&operatorId=5&lineNumber=18')
     await page.waitForURL((url) => !url.search)
-    expect(new URL(page.url()).pathname).toMatch(/\/timeline$/)
+    expect(new URL(page.url()).pathname).toMatch(/\/station-stops$/)
     expect(new URL(page.url()).search).toBe('')
   })
 
@@ -80,10 +80,10 @@ test.describe('Share URL feature', () => {
     expect(params.get('lineNumber')).toBe('64')
   })
 
-  test('round-trip: timeline page share button writes correct URL to clipboard', async ({
+  test('round-trip: station-stops page share button writes correct URL to clipboard', async ({
     page,
   }) => {
-    await page.goto('/timeline?date=2024-02-12&operatorId=5&lineNumber=18')
+    await page.goto('/station-stops?date=2024-02-12&operatorId=5&lineNumber=18')
     await page.waitForURL((url) => !url.search)
     await page.locator('.preloader').waitFor({ state: 'hidden' })
 
@@ -94,6 +94,25 @@ test.describe('Share URL feature', () => {
     expect(params.get('date')).toBe('2024-02-12')
     expect(params.get('operatorId')).toBe('5')
     expect(params.get('lineNumber')).toBe('18')
+  })
+
+  // The station-stops page was served from /timeline, which also namespaced its
+  // page-local params under that old key. A link shared back then has to survive
+  // both the path redirect and the param rename.
+  test('legacy /timeline link lands on /station-stops with its params intact', async ({ page }) => {
+    await page.goto('/timeline?date=2024-02-12&operatorId=5&lineNumber=18&timeline.time=17:30')
+    await page.waitForURL((url) => url.pathname === '/station-stops' && !url.search)
+    await page.locator('.preloader').waitFor({ state: 'hidden' })
+
+    await page.locator('[aria-label="העתק קישור"]').click()
+
+    const clipUrl = await getClipboard(page)
+    expect(new URL(clipUrl).pathname).toBe('/station-stops')
+    const params = new URL(clipUrl).searchParams
+    expect(params.get('date')).toBe('2024-02-12')
+    expect(params.get('operatorId')).toBe('5')
+    expect(params.get('lineNumber')).toBe('18')
+    expect(params.get('station-stops.time')).toBe('17:30')
   })
 
   // -------------------------------------------------------------------------
