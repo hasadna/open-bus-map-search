@@ -11,7 +11,7 @@ import {
   todayCivilDate,
 } from './civilDate'
 
-// Minted through the real constructor so the tests exercise branded values, not casts.
+// Through the real constructor, so the tests exercise branded values rather than casts.
 const asCivilDate = (value: string): CivilDate => {
   const parsed = civilDate(value)
   if (parsed === null) throw new Error(`test fixture is not a CivilDate: ${value}`)
@@ -103,7 +103,6 @@ describe('shiftCivilDate', () => {
   })
 
   it('clamps to the target month end and respects leap years', () => {
-    // one month before 2024-03-31 is Feb, which has no 31st → clamps to the 29th (leap)
     expect(shiftCivilDate(asCivilDate('2024-03-31'), -1, 'month')).toBe('2024-02-29')
     expect(shiftCivilDate(asCivilDate('2025-03-31'), -1, 'month')).toBe('2025-02-28')
   })
@@ -135,9 +134,8 @@ describe('civilDateToDayjs', () => {
     expect(day.valueOf()).toBe(civilDateToApiDate(asCivilDate('2026-06-30')).getTime())
   })
 
-  // Asserted as a wall time, not a date: a zone-less Dayjs formats in whatever zone the
-  // runner sits in, and from UTC+12 eastward noon UTC is already tomorrow — which is what
-  // the MUI picker would then show. Pinning the hour pins the zone.
+  // The wall time is what pins the zone: a date assertion passes under a zone-less Dayjs
+  // too, on any runner west of UTC+12.
   it.each([
     ['summer (IDT, +03:00)', '2026-06-30', '2026-06-30 15:00'],
     ['winter (IST, +02:00)', '2026-01-15', '2026-01-15 14:00'],
@@ -166,7 +164,6 @@ describe('toCivilDate', () => {
   })
 
   it('reads the Israel calendar day of a Dayjs regardless of its time-of-day', () => {
-    // A Dayjs carrying a mid-afternoon wall time still maps to that same calendar day.
     expect(toCivilDate(dayjs.tz('2026-06-30 14:23', ISRAEL_TIMEZONE))).toBe('2026-06-30')
   })
 

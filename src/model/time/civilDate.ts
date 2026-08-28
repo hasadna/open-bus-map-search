@@ -1,27 +1,19 @@
 /**
  * CivilDate — an Israel-local calendar day, as a branded "YYYY-MM-DD" string.
  *
- * Kept as a string (not a Dayjs/Date) so it survives JSON / storage / URL round-trips and
- * compares by value (`===`, React deps, query keys), and can't silently decay into a
- * moment that drifts to a neighbouring UTC day. The brand is a compile-time-only phantom —
- * at runtime it IS a plain string — that stops a bare string, clock time, or instant being
- * used where a calendar day is meant. `civilDate()` is the only way to mint one.
- *
- * Pure core first (shape only, no clock/zone), then the timezone border.
+ * A string, not a Dayjs/Date, so it survives JSON / storage / URL round-trips and compares
+ * by value (`===`, React deps, query keys) instead of decaying into a moment that drifts to
+ * a neighbouring UTC day. The brand is erased at runtime; `civilDate()` is the only way to
+ * mint one.
  */
 import dayjs, { type Dayjs, toIsraelTimezone } from 'src/dayjs'
 
-// ══ Pure core ═══════════════════════════════════════════════════════════════
-
 declare const brand: unique symbol
 
-/** An Israel-local calendar day, "YYYY-MM-DD". Zone-less, time-less. */
 export type CivilDate = string & { readonly [brand]: 'CivilDate' }
 
 const CIVIL_DATE_RE = /^(\d{4})-(\d{2})-(\d{2})$/
 
-/** Parse a "YYYY-MM-DD" string into a CivilDate, or `null`. Returns valid input verbatim
- *  (the regex already requires the canonical form). */
 export function civilDate(value: string): CivilDate | null {
   const match = CIVIL_DATE_RE.exec(value)
   if (!match) return null
@@ -40,50 +32,41 @@ export function civilDate(value: string): CivilDate | null {
   return value as CivilDate
 }
 
-/** True if `value` is already a canonical CivilDate string. Narrows untrusted
- *  `unknown` / `string` (URL params, cache reads, props). */
 export function isCivilDate(value: unknown): value is CivilDate {
   return typeof value === 'string' && civilDate(value) === value
 }
 
-/** Shift a CivilDate by whole calendar days. Pure UTC-date arithmetic (no clock,
- *  no zone), so it can't drift across a DST edge. */
 export function addDays(date: CivilDate, days: number): CivilDate {
   const [year, month, day] = date.split('-').map(Number)
   const shifted = new Date(Date.UTC(year, month - 1, day + days))
-  // Built with Date.UTC and read back in UTC, so toISOString() can't drift — the
-  // slice IS the shifted day. (A local `new Date(y, m, d)` here would roll back.)
+  // Built and read back in UTC, so the slice IS the shifted day — a local
+  // `new Date(y, m, d)` here would roll back across the date line.
   return civilDate(shifted.toISOString().slice(0, 10))!
 }
 
-// ══ Timezone border ═════════════════════════════════════════════════════════
-// The only place a CivilDate is fused with the Israel timezone.
+// Below this line is the only place a CivilDate is fused with the Israel timezone.
 
-/** The Israel calendar day `value` falls on, or null if unparsable. Reads any moment
- *  (Dayjs / Date / instant string) in the Israel zone — so an instant just after midnight
- *  UTC maps to the Israeli "tomorrow". A caller sure its input is valid uses `toCivilDate(x)!`. */
+/** Reads `value` in the Israel zone, so an instant just after midnight UTC maps to the
+ *  Israeli "tomorrow". */
 export const toCivilDate = (value?: dayjs.ConfigType): CivilDate | null =>
   civilDate(toIsraelTimezone(value).format('YYYY-MM-DD'))
 
-/** Today's Israel calendar day. The `!` is sound: the clock is always a valid moment. */
+/** The `!` is sound: the clock is always a valid moment. */
 export const todayCivilDate = (): CivilDate => toCivilDate()!
 
-/** CivilDate → the `Date` handed to the api-client for a date-only param, anchored at
- *  12:00 UTC. The noon anchor is load-bearing: an Israel-midnight Date is 21:00–22:00Z of
- *  the *previous* day, so it would serialize a day back and drop the intended day's rows. */
+/** For the api-client's date-only params. The noon anchor is load-bearing: the client
+ *  serializes these as a UTC date, and an Israel-midnight Date is 21:00–22:00Z of the
+ *  *previous* day — it would ask for the wrong day's rows. */
 export const civilDateToApiDate = (date: CivilDate): Date => new Date(`${date}T12:00:00Z`)
 
-/** CivilDate → the same 12:00-UTC anchor as a Dayjs, for frontend compute/display. The
- *  Israel zone is carried on purpose: a zone-less Dayjs renders in the *browser's* zone,
- *  where noon UTC is already the next day from UTC+12 eastward — the picker would show
- *  tomorrow. Zoned, it reads back as this calendar day everywhere. */
+/** The Israel zone is carried on purpose: a zone-less Dayjs renders in the *browser's*
+ *  zone, where noon UTC is already tomorrow from UTC+12 eastward. */
 export const civilDateToDayjs = (date: CivilDate): Dayjs =>
   toIsraelTimezone(civilDateToApiDate(date))
 
-/** Shift a CivilDate by whole calendar units (week, month, …), via the 12:00-UTC anchor
- *  so month-ends and DST can't drift the day. `addDays` covers the pure-day case; this
- *  covers units that need real calendar arithmetic. The `!` is sound: a valid CivilDate
- *  shifted by whole units is still a valid moment. */
+/** For units `addDays` can't do — going through the noon anchor keeps month-ends and DST
+ *  from drifting the day. The `!` is sound: a valid CivilDate shifted by whole units is
+ *  still a valid moment. */
 export function shiftCivilDate(
   date: CivilDate,
   amount: number,

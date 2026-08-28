@@ -11,11 +11,8 @@ export type CivilDateSelectorProps = {
 }
 
 /**
- * The single ingress/egress seam between the app's CivilDate model and the MUI
- * DatePicker (which speaks Dayjs). Ingress materializes the day via civilDateToDayjs,
- * whose Israel zone is what the picker reads the day off — so it shows the same day for
- * a visitor in any zone; egress reads the picked Dayjs back with toCivilDate. Pages hold
- * a CivilDate and never touch the conversion, so the footgun can't reappear at a call site.
+ * The one place CivilDate meets the Dayjs-speaking MUI DatePicker. Keep it that way: pages
+ * that convert at the call site are how the Israel-midnight drift got in.
  */
 export function CivilDateSelector({
   value,

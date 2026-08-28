@@ -4,8 +4,7 @@ import isoWeek from 'dayjs/plugin/isoWeek.js'
 import minMax from 'dayjs/plugin/minMax.js'
 import timezone from 'dayjs/plugin/timezone.js'
 import utc from 'dayjs/plugin/utc.js'
-// Type-only: civilDate.ts imports this module back, and a type import is erased, so the
-// cycle never exists at runtime.
+// civilDate.ts imports this module back; a type import is erased, so no runtime cycle.
 import type { CivilDate } from 'src/model/time/civilDate'
 
 // Extend dayjs with all required plugins

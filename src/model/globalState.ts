@@ -11,7 +11,6 @@ import { type CivilDate, todayCivilDate } from 'src/model/time/civilDate'
  * `null` means "not selected". Never use undefined or empty string here.
  */
 export type GlobalSearchState = {
-  /** Selected calendar day, as a CivilDate ("YYYY-MM-DD"). */
   date: CivilDate
 
   operatorId: string | null

@@ -26,13 +26,10 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
   useEffect(() => {
     if (!position.point?.id) return
     setIsLoading(true)
-    // Date-only lookup: the timestamp's only role is to pick the Israel calendar day the ride
-    // runs on; the time itself is never queried. Prefer the scheduled start — its day is the
-    // GTFS service date — and fall back to the ping's own recorded time, which is always present
-    // but can sit a day off for rides around midnight. Coalesce the raw values first: an absent
-    // scheduled start is `undefined`, which toCivilDate would resolve straight to *today*, so a
-    // `toCivilDate(a) ?? toCivilDate(b)` chain would never reach the recorded time. Today is the
-    // last resort, for the (practically unreachable) unparseable case.
+    // Prefer the scheduled start: its day is the GTFS service date, where the recorded time
+    // can sit a day off around midnight. The raw values coalesce before toCivilDate because
+    // toCivilDate(undefined) resolves to *today* — a `toCivilDate(a) ?? toCivilDate(b)` chain
+    // would never reach the recorded time.
     const rideDay =
       toCivilDate(position.point?.siriRideScheduledStartTime ?? position.point?.recordedAtTime) ??
       todayCivilDate()

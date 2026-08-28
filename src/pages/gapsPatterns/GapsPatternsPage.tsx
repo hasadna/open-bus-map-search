@@ -49,9 +49,6 @@ interface BusLineStatisticsProps {
   setSortingMode: (mode: SortingMode) => void
 }
 
-// The date range is stored as CivilDate so it survives the share-URL / session round-trip
-// and can't drift across the UTC boundary. The gaps chart needs a Dayjs; it calls the
-// noon-anchored civilDateToDayjs on demand.
 const DEFAULT_START_DATE = addDays(todayCivilDate(), -7)
 const DEFAULT_END_DATE = addDays(todayCivilDate(), -1)
 
@@ -162,10 +159,6 @@ function GapsByHour({
 }
 
 const GapsPatternsPage = () => {
-  // Page-local shareable params (namespaced `gaps-patterns.<key>` in the share URL):
-  // just the date range, held as CivilDate. scrollPosition and the chart sort order
-  // are session-only ui — device/session preferences, restored by usePageState but
-  // never put in the share URL.
   const { params, setParams, ui, setUi } = usePageState<GapsParams, GapsUi>('gaps-patterns', {
     params: { startDate: DEFAULT_START_DATE, endDate: DEFAULT_END_DATE },
     ui: { scrollPosition: 0, sortingMode: 'hour' },

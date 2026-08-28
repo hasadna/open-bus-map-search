@@ -160,8 +160,7 @@ describe('buildShareUrl — edge cases', () => {
   it('a page with all empty/null search values produces no query string', () => {
     const empty: GlobalSearchState = {
       ...GLOBAL_SEARCH_DEFAULTS,
-      // An empty date can't occur in real state (the CivilDate type + default guarantee a
-      // valid day); the cast simulates it to exercise buildShareUrl's falsy-value skip.
+      // Unreachable in real state; cast to exercise buildShareUrl's falsy-value skip.
       date: '' as CivilDate,
       operatorId: null,
       lineNumber: null,

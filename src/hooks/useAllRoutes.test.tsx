@@ -35,8 +35,6 @@ describe('useAllRoutes', () => {
 
     await waitFor(() => expect(mockedGetAllRoutesList).toHaveBeenCalled())
 
-    // The UTC-noon anchoring that keeps the serialized date from drifting a day (#1680)
-    // now lives in civilDateToApiDate, where civilDate.test.ts covers it.
     expect(mockedGetAllRoutesList).toHaveBeenCalledWith('3', '2026-06-21', expect.any(AbortSignal))
   })
 
