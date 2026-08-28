@@ -164,12 +164,29 @@ export const setupTest = async (page: Page, lng: string = 'he') => {
   await page.locator('.preloader').waitFor({ state: 'hidden' })
 }
 
+/**
+ * The sidebar splits its pages across data/community tabs, so a page's link is only in
+ * the DOM while its own tab is selected. Rather than mirror the section table here (which
+ * would need updating every time a page moves between tabs), try each tab until the link
+ * appears.
+ */
+const openSidebarSectionOf = async (page: Page, link: Locator) => {
+  if (await link.count()) return
+  // `:visible` because the sider and the mobile drawer each render a menu, and only one
+  // of them is on screen at a time.
+  for (const tab of await page.locator('.sidebar-menu:visible').getByRole('tab').all()) {
+    await tab.click()
+    if (await link.count()) return
+  }
+}
+
 export const visitPage = async (page: Page, label: (typeof PAGES)[number]['label']) => {
   // Scoped to the nav: the homepage repeats several of these labels on its own link
   // cards, so an unscoped name match would resolve to two elements.
   const link = page
     .locator('.sidebar-menu')
     .getByRole('link', { name: i18next.t(label), exact: true })
+  await openSidebarSectionOf(page, link)
   const href = await link.getAttribute('href')
   // Register waitForURL before clicking to avoid missing fast client-side navigations
   const navigationPromise = href
