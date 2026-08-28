@@ -9,6 +9,7 @@ import dayjs from 'src/dayjs'
 import { useTheme } from 'src/layout/ThemeContext'
 import { Coordinates } from 'src/model/location'
 import { HorizontalLine } from 'src/pages/components/timeline/HorizontalLine'
+import { hasRideDetails, RideDetails } from 'src/pages/components/timeline/RideDetails'
 import { Timeline, type TimelineLink, TimelineTitle } from 'src/pages/components/timeline/Timeline'
 import { PointType } from 'src/pages/components/timeline/TimelinePoint'
 
@@ -115,6 +116,9 @@ export const TimelineBoard = ({
             timestampToTop={timestampToTop}
             hoveredTimestamp={hoveredTimestamp}
             linkFor={siriLinkFor && ((index) => siriLinkFor(siriTimes[index]))}
+            detailsFor={(index) =>
+              hasRideDetails(siriTimes[index]) ? <RideDetails hit={siriTimes[index]} /> : undefined
+            }
           />
           {Array.from(allTimestamps).map((timestamp, index) => {
             const tsKey = dayjs(timestamp).toISOString()

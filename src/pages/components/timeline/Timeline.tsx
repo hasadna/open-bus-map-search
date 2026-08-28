@@ -4,6 +4,7 @@ import {
 } from '@hasadna/open-bus-api-client'
 import { Map as MapIcon } from '@mui/icons-material'
 import { Link as MuiLink, Tooltip } from '@mui/material'
+import { type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
 import styled from 'styled-components'
@@ -153,6 +154,9 @@ type TimelineProps = {
   timestampToTop: (timestamp: dayjs.Dayjs) => number
   hoveredTimestamp?: string
   linkFor?: (index: number) => TimelineLink | undefined
+  /** Tooltip content identifying the ride a timestamp came from. Undefined leaves the
+   *  time with nothing but its own native title. */
+  detailsFor?: (index: number) => ReactNode | undefined
 }
 
 export const Timeline = ({
@@ -163,6 +167,7 @@ export const Timeline = ({
   timestampToTop,
   hoveredTimestamp,
   linkFor,
+  detailsFor,
 }: TimelineProps) => {
   const { i18n } = useTranslation()
   const isRtl = i18n.dir() === 'rtl'
@@ -176,7 +181,15 @@ export const Timeline = ({
     const naturalY = timestampToTop(dayjs(t))
     const highlighted = hoveredTimestamp !== undefined && tsKey === hoveredTimestamp
     const timeDisplay = dayjs(t).format('HH:mm:ss')
-    return { i, tsKey, naturalY, highlighted, timeDisplay, link: linkFor?.(i) }
+    return {
+      i,
+      tsKey,
+      naturalY,
+      highlighted,
+      timeDisplay,
+      link: linkFor?.(i),
+      details: detailsFor?.(i),
+    }
   })
 
   const resolvedYs = resolveCollisions(items.map((item) => item.naturalY))
@@ -237,10 +250,16 @@ export const Timeline = ({
               key={`${item.i}_label`}
               $top={resolvedYs[item.i]}
               $highlighted={item.highlighted}
-              // A linked label leaves this off: the icon's tooltip is the only one wanted,
-              // and a native title here would surface a second one behind it.
-              title={item.link ? undefined : item.timeDisplay}>
-              {item.timeDisplay}
+              // A label that carries a tooltip of its own leaves this off: a native title
+              // here would surface a second tooltip behind it.
+              title={item.link || item.details ? undefined : item.timeDisplay}>
+              {item.details ? (
+                <Tooltip title={item.details}>
+                  <span>{item.timeDisplay}</span>
+                </Tooltip>
+              ) : (
+                item.timeDisplay
+              )}
               {item.link && (
                 <Tooltip title={item.link.title}>
                   <MuiLink

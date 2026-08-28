@@ -138,6 +138,7 @@
   "timestamp_gtfs": "🕛 זמן עצירה מתוכנן",
   "timestamp_siri": "🚌 זמן עצירה בפועל",
   "timeline_show_ride_on_map": "הצגה במפה",
+  "timeline_ride_scheduled_start": "יציאה מתוכננת",
   "hits_not_found": "לא נמצאו נסיעות מתוכננות או בפועל",
   "planned_time": "שעה מתוכננת",
   "planned_status": "סטטוס",

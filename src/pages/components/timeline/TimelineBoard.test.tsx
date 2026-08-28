@@ -1,5 +1,5 @@
 import type { GtfsRideStopWithRelatedPydanticModel } from '@hasadna/open-bus-api-client'
-import { createEvent, fireEvent, render, screen } from '@testing-library/react'
+import { createEvent, fireEvent, render, screen, within } from '@testing-library/react'
 import { MemoryRouter } from 'react-router'
 import dayjs from 'src/dayjs'
 import { TimelineBoard } from './TimelineBoard'
@@ -97,6 +97,50 @@ describe('TimelineBoard actual-time links', () => {
     fireEvent(link, click)
 
     expect(click.defaultPrevented).toBe(false)
+  })
+})
+
+// Issue #1728: a rider who left something on the bus knows the minute he got off, and needs
+// the plate to tell the operator which bus it was.
+describe('TimelineBoard ride details', () => {
+  it('names the departure and the bus behind every actual time', async () => {
+    renderBoard(linkFor)
+
+    fireEvent.mouseOver(screen.getByText(ACTUAL_LATE))
+
+    const tooltip = await screen.findByRole('tooltip')
+    // the schedule is written in Israel time, where 05:00Z is 08:00
+    expect(within(tooltip).getByText('08:00')).toBeInTheDocument()
+    expect(within(tooltip).getByText('170-84-504')).toBeInTheDocument()
+  })
+
+  it('drops the native title, so no browser tooltip shows up behind it', () => {
+    renderBoard(linkFor)
+
+    expect(screen.getByText(ACTUAL_LATE).closest('[title]')).toBeNull()
+  })
+
+  it('leaves a hit that knows neither field as a plain time', () => {
+    render(
+      <MemoryRouter>
+        <TimelineBoard
+          target={dayjs('2026-08-20T05:33:00Z')}
+          gtfsTimes={GTFS}
+          siriTimes={[
+            { ...SIRI[0], siriRideScheduledStartTime: undefined, siriRideVehicleRef: undefined },
+          ]}
+        />
+      </MemoryRouter>,
+    )
+
+    expect(screen.getByText(ACTUAL_LATE)).toHaveAttribute('title', ACTUAL_LATE)
+  })
+
+  it('leaves the planned times alone — a planned stop belongs to no bus yet', () => {
+    renderBoard(linkFor)
+
+    const planned = time(GTFS[0].arrivalTime!)
+    expect(screen.getByText(planned)).toHaveAttribute('title', planned)
   })
 })
 
