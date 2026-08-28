@@ -61,6 +61,7 @@ export function MapContent({
         positionGroups={positionGroups}
         showNavigationButtons={showNavigationButtons}
         navigateMarkers={navigateMarkers}
+        focusTarget={focusTarget}
       />
       <MapPlannedRouteLayer plannedRouteStops={plannedRouteStops} />
     </>
