@@ -73,8 +73,12 @@ export const todayCivilDate = (): CivilDate => toCivilDate()!
  *  the *previous* day, so it would serialize a day back and drop the intended day's rows. */
 export const civilDateToApiDate = (date: CivilDate): Date => new Date(`${date}T12:00:00Z`)
 
-/** CivilDate → a Dayjs on the same 12:00-UTC anchor, for frontend compute/display. */
-export const civilDateToDayjs = (date: CivilDate): Dayjs => dayjs(civilDateToApiDate(date))
+/** CivilDate → the same 12:00-UTC anchor as a Dayjs, for frontend compute/display. The
+ *  Israel zone is carried on purpose: a zone-less Dayjs renders in the *browser's* zone,
+ *  where noon UTC is already the next day from UTC+12 eastward — the picker would show
+ *  tomorrow. Zoned, it reads back as this calendar day everywhere. */
+export const civilDateToDayjs = (date: CivilDate): Dayjs =>
+  toIsraelTimezone(civilDateToApiDate(date))
 
 /** Shift a CivilDate by whole calendar units (week, month, …), via the 12:00-UTC anchor
  *  so month-ends and DST can't drift the day. `addDays` covers the pure-day case; this

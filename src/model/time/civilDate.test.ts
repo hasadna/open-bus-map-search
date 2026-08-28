@@ -134,6 +134,16 @@ describe('civilDateToDayjs', () => {
     expect(day.toISOString()).toBe('2026-06-30T12:00:00.000Z')
     expect(day.valueOf()).toBe(civilDateToApiDate(asCivilDate('2026-06-30')).getTime())
   })
+
+  // Asserted as a wall time, not a date: a zone-less Dayjs formats in whatever zone the
+  // runner sits in, and from UTC+12 eastward noon UTC is already tomorrow — which is what
+  // the MUI picker would then show. Pinning the hour pins the zone.
+  it.each([
+    ['summer (IDT, +03:00)', '2026-06-30', '2026-06-30 15:00'],
+    ['winter (IST, +02:00)', '2026-01-15', '2026-01-15 14:00'],
+  ])('reads back as the same day in Israel time — %s', (_label, date, expected) => {
+    expect(civilDateToDayjs(asCivilDate(date)).format('YYYY-MM-DD HH:mm')).toBe(expected)
+  })
 })
 
 describe('toCivilDate', () => {

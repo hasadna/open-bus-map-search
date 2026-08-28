@@ -1,3 +1,4 @@
+import { civilDate } from 'src/model/time/civilDate'
 import { israelDayBounds, parseIsraelLocalDatetime } from './dayjs'
 
 describe('parseIsraelLocalDatetime', () => {
@@ -38,7 +39,7 @@ describe('israelDayBounds', () => {
     ],
     ['post fall back', '2024-10-28', '2024-10-27T22:00:00.000Z', '2024-10-28T22:00:00.000Z', 24],
   ])('spans %s as Israel midnight to Israel midnight', (_label, date, startISO, endISO, hours) => {
-    const { start, end } = israelDayBounds(date)
+    const { start, end } = israelDayBounds(civilDate(date)!)
     expect(start.toISOString()).toBe(startISO)
     expect(end.toISOString()).toBe(endISO)
     expect(end.diff(start, 'hour')).toBe(hours)
@@ -46,7 +47,7 @@ describe('israelDayBounds', () => {
 
   it('reconstructs a departure instant from an HH:mm token', () => {
     // Mirrors the stops-query reconstruction in useSingleLineData.
-    const { start } = israelDayBounds('2024-10-27')
+    const { start } = israelDayBounds(civilDate('2024-10-27')!)
     expect(start.hour(3).minute(30).format('YYYY-MM-DD HH:mm')).toBe('2024-10-27 03:30')
   })
 })
