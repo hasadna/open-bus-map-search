@@ -43,11 +43,6 @@ export const MainRoute = () => {
     if (result.vehicleNumber && !result['vehicle.vehicleNumber']) {
       result['vehicle.vehicleNumber'] = result.vehicleNumber
     }
-    // The station-stops page was served from /timeline (see LegacyPathRedirect), so
-    // links shared back then namespaced its params under the old page key.
-    if (result['timeline.time'] && !result['station-stops.time']) {
-      result['station-stops.time'] = result['timeline.time']
-    }
     return result
   }, [])
 
