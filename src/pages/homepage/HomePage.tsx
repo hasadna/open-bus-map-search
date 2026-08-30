@@ -1,6 +1,6 @@
 import {
-  DepartureBoardRounded,
   EmojiTransportationTwoTone,
+  HailRounded,
   MapTwoTone,
   MenuTwoTone,
   NoTransferTwoTone,
@@ -72,7 +72,7 @@ export const HomePage = () => {
           description={t('singleline_map_page_description')}
         />
         <PageLink
-          icon={<DepartureBoardRounded />}
+          icon={<HailRounded />}
           label={t('station_stops_page_title')}
           to="/station-stops"
           description={t('station_stops_page_description')}

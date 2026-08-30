@@ -1,9 +1,9 @@
 import {
   BiotechTwoTone,
-  DepartureBoardRounded,
   DirectionsBusTwoTone,
   EmojiTransportationTwoTone,
   GitHub,
+  HailRounded,
   HomeTwoTone,
   InfoTwoTone,
   MapTwoTone,
@@ -55,7 +55,7 @@ export const PAGES = [
     label: 'station_stops_page_title',
     path: '/station-stops',
     searchParamsRequired: true,
-    icon: <DepartureBoardRounded />,
+    icon: <HailRounded />,
     element: <StationStopsPage />,
   },
   {
