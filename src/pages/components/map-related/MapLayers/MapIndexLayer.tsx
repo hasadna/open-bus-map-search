@@ -1,9 +1,9 @@
+import { NorthEast } from '@mui/icons-material'
 import { Link as MuiLink } from '@mui/material'
 import type { TFunction } from 'i18next'
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
-import { OutboundArrow } from 'src/pages/components/OutboundArrow'
 import type { PositionGroup } from '../map-types'
 import { MapIndex } from '../MapIndex'
 import { plannedRouteLineColor, plannedRouteStopMarkerPath } from '../mapMarkers'
@@ -26,7 +26,8 @@ function vehicleSubtitle(group: PositionGroup, t: TFunction): ReactNode {
       title={t('go_to_vehicle_page')}
       sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.25 }}>
       {group.label}
-      <OutboundArrow />
+      {/* arrow hints the number is a link to the vehicle page; decorative for a11y */}
+      <NorthEast aria-hidden sx={{ fontSize: '1em' }} />
     </MuiLink>
   ) : (
     group.label
