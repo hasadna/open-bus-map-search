@@ -230,6 +230,8 @@
   "bug_title": "כותרת/סיכום",
   "bug_description": "תיאור",
   "bug_environment": "סביבה (דפדפן, מערכת)",
+  "bug_environment_notice": "השדה הבא מכיל מידע טכני שנאסף אוטומטית (כמו סוג וגרסת הדפדפן ומערכת ההפעלה). מידע זה יכול לעזור לנו לאתר את הבעיה, ניתן לערוך אותו אם תרצו להסיר פרטים.",
+  "bug_debug_context": "מידע למפתחים",
   "bug_expected_behavior": "התנהגות צפויה",
   "bug_actual_behavior": "התנהגות נוכחית",
   "bug_reproducibility": "באיזו תדירות זה קורה",

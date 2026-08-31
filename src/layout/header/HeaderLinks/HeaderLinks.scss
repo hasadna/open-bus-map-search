@@ -9,10 +9,19 @@
   align-items: center;
   background: transparent;
   border: none;
+  color: inherit;
   font-size: 1.75em;
   padding-inline: 5px;
   cursor: pointer;
+  text-decoration: none;
   transition: all 0.1s;
+
+  &:link,
+  &:visited,
+  &:hover,
+  &:active {
+    color: inherit;
+  }
 
   &:hover {
     transform: scale(1.1);
