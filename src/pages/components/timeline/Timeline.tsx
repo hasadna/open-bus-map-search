@@ -96,8 +96,6 @@ const WidthAnchor = styled.span<{ $card?: boolean }>`
     `}
 `
 
-/* A card is left transparent on purpose: the deviation bands that tie the two columns
-   together run behind the labels, and a filled card would blank them out. */
 const Label = styled.div<{ $top: number; $highlighted?: boolean; $card?: boolean }>`
   position: absolute;
   top: ${({ $top }) => $top - POINT_SIZE + 1}px;
@@ -116,10 +114,18 @@ const Label = styled.div<{ $top: number; $highlighted?: boolean; $card?: boolean
       /* The column already reserves room for the widest card, so filling it keeps every
          card the same width instead of leaving a ragged edge down the timeline. */
       inset-inline-end: 0;
+      /* The deviation fills run the width of the whole board, so a card needs ground of
+         its own to stay legible over one. They still read either side of the column. */
+      background-color: var(--timeline-card-bg, #fff);
       padding: ${CARD_PADDING_Y}px ${CARD_PADDING_X}px;
       border: 1px solid ${$highlighted ? 'var(--timeline-highlight-ring, #333)' : NEUTRAL_COLOR};
+      /* A ring rather than a thicker border: cardHeight lays the column out from
+         CARD_BORDER, so growing the border itself would shift every card below it. */
+      box-shadow: ${$highlighted ? '0 0 0 1px var(--timeline-highlight-ring, #333)' : 'none'};
       border-radius: 4px;
-      transition: border-color 0.15s ease;
+      transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
     `}
 `
 
@@ -200,6 +206,10 @@ const connectorOpacity = (absent: boolean, highlighted: boolean) => {
   if (highlighted) return 1
   return absent ? 0.9 : 0.8
 }
+
+/** Matches the ring the highlighted card puts on, so the label and the line that leads to
+ *  it thicken together. */
+const connectorWidth = (highlighted: boolean) => (highlighted ? 2 : 1)
 
 /** Boxes share a top edge, so two are clear of each other once they sit the upper one's own
  *  height apart — which is why the gap is read off the earlier item. `bottom` is the last y
@@ -361,7 +371,7 @@ export const Timeline = ({
                   key={`${item.key}_conn`}
                   d={`M ${labelEdgeX} ${labelY} L ${horizEndX} ${labelY} L ${DOT_CENTER_X} ${axisY}`}
                   stroke={color}
-                  strokeWidth={1}
+                  strokeWidth={connectorWidth(item.highlighted)}
                   fill="none"
                   opacity={opacity}
                 />

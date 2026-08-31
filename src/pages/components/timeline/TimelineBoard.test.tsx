@@ -243,6 +243,24 @@ describe('TimelineBoard hover emphasis', () => {
     expect(untouched).toBe(faint)
   })
 
+  /** The connector layer only — the icons inside the cards are SVG paths of their own. */
+  const connectorWidths = () =>
+    Array.from(document.querySelectorAll('svg:not(.MuiSvgIcon-root) > path')).map((path) =>
+      path.getAttribute('stroke-width'),
+    )
+
+  it('thickens the card and the line leading to it, for that ride alone', () => {
+    renderBoard(linkFor)
+    expect(getComputedStyle(cardAt(ACTUAL_LATE)).boxShadow).toBe('none')
+
+    hoverAt(LATE_BAND.top + LATE_BAND.height / 2)
+
+    expect(getComputedStyle(cardAt(ACTUAL_LATE)).boxShadow).toContain('--timeline-highlight-ring')
+    // the planned and actual cards of the hovered ride, out of the four the board draws
+    expect(connectorWidths().filter((width) => width === '2')).toHaveLength(2)
+    expect(connectorWidths().filter((width) => width === '1')).toHaveLength(2)
+  })
+
   it('fades the ride back once the pointer leaves the board', () => {
     renderTwoLateRides()
     const [faint] = alphas()
@@ -467,6 +485,17 @@ describe('TimelineBoard ride cards', () => {
     expect(cardAt(ACTUAL_LATE)).toHaveTextContent(ACTUAL_LATE)
   })
 
+  // The fills span the whole board, so a see-through card would read its text over one.
+  it('stands each card on ground of its own, themed with the board', () => {
+    renderBoard(linkFor)
+
+    expect(getComputedStyle(cardAt(ACTUAL_LATE)).backgroundColor).toContain('--timeline-card-bg')
+    expect(screen.getByTestId('timeline-board').parentElement!.style).toHaveProperty(
+      'cssText',
+      expect.stringContaining('--timeline-card-bg:'),
+    )
+  })
+
   it('cards the planned column too, with no bus of its own to name', () => {
     renderBoard(linkFor)
 
@@ -497,15 +526,24 @@ describe('TimelineBoard card stacking', () => {
     recordedAtTime: new Date(Date.UTC(2026, 7, 20, 5, i * 2)),
   }))
 
-  const renderBusyStop = () =>
+  const renderBusyStop = (gtfsTimes: GtfsRideStopWithRelatedPydanticModel[] = []) =>
     routed(
       <TimelineBoard
         target={dayjs('2026-08-20T05:33:00Z')}
-        gtfsTimes={[]}
+        gtfsTimes={gtfsTimes}
         siriTimes={busyStop}
         siriLinkFor={linkFor}
       />,
     )
+
+  /** The ticks capping the two axes, offset by 1 because each is a 2px bar straddling the
+   *  end of its axis rather than sitting on it. */
+  const axisBounds = () => {
+    const ticks = Array.from(document.querySelectorAll('.sc-boundary-tick'))
+      .map((tick) => parseFloat(getComputedStyle(tick).top) + 1)
+      .sort((a, b) => a - b)
+    return { start: ticks[0], end: ticks.at(-1)! }
+  }
 
   const cardTops = () =>
     busyStop
@@ -525,15 +563,22 @@ describe('TimelineBoard card stacking', () => {
   it('grows the axis so the last card still lands on it', () => {
     renderBusyStop()
 
-    // the lowest of the ticks capping the two axes, offset by 1 because each is a 2px bar
-    // straddling the end of its axis rather than sitting on it
-    const axisEnd =
-      Array.from(document.querySelectorAll('.sc-boundary-tick'))
-        .map((tick) => parseFloat(getComputedStyle(tick).top))
-        .sort((a, b) => a - b)
-        .at(-1)! + 1
+    expect(cardTops().at(-1)! + CARD_HEIGHT).toBeLessThanOrEqual(axisBounds().end)
+  })
 
-    expect(cardTops().at(-1)! + CARD_HEIGHT).toBeLessThanOrEqual(axisEnd)
+  // Four scheduled departures that never reported: their ✕ markers stand in the actual
+  // column's label lane, competing with its cards for the same axis.
+  const neverRan: GtfsRideStopWithRelatedPydanticModel[] = Array.from({ length: 4 }, (_, i) => ({
+    id: 200 + i,
+    arrivalTime: new Date(Date.UTC(2026, 7, 20, 5, i * 8 + 1)),
+    gtfsRideStartTime: new Date(Date.UTC(2026, 7, 20, 4, i)),
+  }))
+
+  it('grows it for the absent markers too, so the first card is not pushed off the top', () => {
+    renderBusyStop(neverRan)
+
+    expect(screen.getAllByTestId('CloseIcon')).toHaveLength(neverRan.length)
+    expect(cardTops()[0]).toBeGreaterThanOrEqual(axisBounds().start)
   })
 })
 

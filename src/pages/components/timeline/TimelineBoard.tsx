@@ -11,18 +11,36 @@ import { Timeline, type TimelineLink, TimelineTitle } from 'src/pages/components
 import {
   type BandDeviation,
   bandDeviation,
+  departureKey,
   deviationSpans,
   hitTime,
   instantY,
   pairTimelineHits,
   pickBandKey,
   type SiriHit,
+  type TimelineHit,
 } from 'src/pages/components/timeline/timelinePairing'
-import { PointType } from 'src/pages/components/timeline/TimelinePoint'
+import { ABSENT_MARK_SIZE, PointType } from 'src/pages/components/timeline/TimelinePoint'
 
 const COLUMN_GAP = 32
 /** A planned stop has nothing under its time to show. */
 const PLANNED_CARD_HEIGHT = cardHeight(0)
+/** What a ✕ or ? costs the label lane it stands in. */
+const MARK_SLOT = ABSENT_MARK_SIZE + LABEL_GAP
+
+/** How many markers a column will carry: one per departure the other column knows and this
+ *  one does not. Bands pair on the departure minute alone, so this is settled before any
+ *  geometry is — which is what lets the axis be sized off it. */
+const unpairedDepartures = (hits: TimelineHit[], counterparts: TimelineHit[]) => {
+  const paired = new Set(counterparts.map(departureKey))
+  const unpaired = new Set<string>()
+  for (const hit of hits) {
+    const key = departureKey(hit)
+    // A hit with no departure time could never have paired, so it says nothing is missing.
+    if (key !== undefined && !paired.has(key)) unpaired.add(key)
+  }
+  return unpaired.size
+}
 
 /** Both columns share one scale: per-column ranges let the other column's later hits fall
  *  past the bottom and collapse onto a single pixel. */
@@ -130,10 +148,14 @@ export const TimelineBoard = ({
     ...siriTimes.map((t) => hitTime(t)),
   ])
   // Labels are pushed apart until none overlap, so the axis has to be at least as tall as a
-  // column's worth of them — otherwise a busy stop stacks its cards off the bottom of it.
+  // column's worth of them — its cards AND the markers standing in for the rides missing
+  // from it, which share the one label lane. Short of that the resolver, which pins the
+  // lowest label to the end of the axis, drives the surplus off the top.
   const stackHeight = Math.max(
-    gtfsTimes.length * (PLANNED_CARD_HEIGHT + LABEL_GAP),
-    siriTimes.length * (actualCardHeight + LABEL_GAP),
+    gtfsTimes.length * (PLANNED_CARD_HEIGHT + LABEL_GAP) +
+      unpairedDepartures(siriTimes, gtfsTimes) * MARK_SLOT,
+    siriTimes.length * (actualCardHeight + LABEL_GAP) +
+      unpairedDepartures(gtfsTimes, siriTimes) * MARK_SLOT,
   )
   const totalHeight = Math.max(
     400 + (Math.max(gtfsTimes.length, siriTimes.length) / MAX_HITS_COUNT) * 400,
@@ -189,6 +211,7 @@ export const TimelineBoard = ({
           '--timeline-neutral': isDarkTheme ? '#8c8c8c' : '#bfbfbf',
           '--timeline-neutral-rgb': isDarkTheme ? '140 140 140' : '191 191 191',
           '--timeline-highlight-ring': isDarkTheme ? 'white' : '#333',
+          '--timeline-card-bg': isDarkTheme ? '#1c1d1c' : '#fff',
           '--timeline-absent-fill': isDarkTheme ? '#fff' : '#000',
           '--timeline-late': isDarkTheme ? '255 77 79' : '245 34 45',
           '--timeline-early': isDarkTheme ? '255 169 64' : '250 140 22',
