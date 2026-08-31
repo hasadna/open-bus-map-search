@@ -32,9 +32,12 @@ export async function fetchRepoContributors(repo: string): Promise<Author[]> {
 
   while (url) {
     const res: Response = await fetch(url)
-    // an unhandled 403 (the 60/hour unauthenticated rate limit) parses as a plain error
-    // object, which would silently drop the whole repo from the totals
-    if (!res.ok) throw new Error(`GitHub responded ${res.status} for ${repo}`)
+    // failing the whole query rather than skipping the repo is deliberate: a resolved
+    // partial result is cached as a success and persisted, freezing wrong totals for days
+    if (!res.ok) {
+      console.error(`GitHub responded ${res.status} for ${repo}`, await res.text())
+      throw new Error(`GitHub responded ${res.status} for ${repo}`)
+    }
     // 204 = a repo nobody has contributed to yet, and it carries no body to parse
     if (res.status === 204) break
     contributors.push(...((await res.json()) as Author[]))

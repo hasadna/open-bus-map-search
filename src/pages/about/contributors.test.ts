@@ -71,13 +71,18 @@ describe('fetchRepoContributors', () => {
   // a rate-limited repo answers 403 with an error object, which used to pass through the
   // pipeline as zero contributors — the section silently shrank instead of reporting failure
   it('rejects on the rate-limit response instead of returning nothing', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {})
     vi.mocked(global.fetch).mockResolvedValue({
       ok: false,
       status: 403,
-      json: () => Promise.resolve({ message: 'API rate limit exceeded' }),
+      text: () => Promise.resolve('{"message":"API rate limit exceeded"}'),
     } as never)
 
     await expect(fetchRepoContributors('open-bus-map-search')).rejects.toThrow('403')
+    expect(console.error).toHaveBeenCalledWith(
+      'GitHub responded 403 for open-bus-map-search',
+      '{"message":"API rate limit exceeded"}',
+    )
   })
 
   it('treats a repo with no contributors as empty rather than a parse error', async () => {
