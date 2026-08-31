@@ -9,7 +9,7 @@ import dayjs from 'src/dayjs'
 import { useTheme } from 'src/layout/ThemeContext'
 import { Coordinates } from 'src/model/location'
 import { HorizontalLine } from 'src/pages/components/timeline/HorizontalLine'
-import { Timeline, TimelineTitle } from 'src/pages/components/timeline/Timeline'
+import { Timeline, type TimelineLink, TimelineTitle } from 'src/pages/components/timeline/Timeline'
 import { PointType } from 'src/pages/components/timeline/TimelinePoint'
 
 export const PADDING = 10
@@ -54,9 +54,19 @@ type TimelineBoardProps = {
   target: dayjs.Dayjs
   gtfsTimes: GtfsRideStopWithRelatedPydanticModel[]
   siriTimes: (SiriVehicleLocationWithRelatedPydanticModel & Coordinates)[]
+  /** Deep-links each actual (SIRI) time to the ride it belongs to. */
+  siriLinkFor?: (
+    siriTime: SiriVehicleLocationWithRelatedPydanticModel & Coordinates,
+  ) => TimelineLink | undefined
 }
 
-export const TimelineBoard = ({ className, target, gtfsTimes, siriTimes }: TimelineBoardProps) => {
+export const TimelineBoard = ({
+  className,
+  target,
+  gtfsTimes,
+  siriTimes,
+  siriLinkFor,
+}: TimelineBoardProps) => {
   const { isDarkTheme } = useTheme()
   const [hoveredTimestamp, setHoveredTimestamp] = useState<string | undefined>(undefined)
   const gtfsDates = gtfsTimes.map((t) => t.arrivalTime!)
@@ -104,6 +114,7 @@ export const TimelineBoard = ({ className, target, gtfsTimes, siriTimes }: Timel
             pointType={PointType.SIRI}
             timestampToTop={timestampToTop}
             hoveredTimestamp={hoveredTimestamp}
+            linkFor={siriLinkFor && ((index) => siriLinkFor(siriTimes[index]))}
           />
           {Array.from(allTimestamps).map((timestamp, index) => {
             const tsKey = dayjs(timestamp).toISOString()
