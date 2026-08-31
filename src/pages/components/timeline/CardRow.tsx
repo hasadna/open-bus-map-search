@@ -18,12 +18,9 @@ export const CARD_DETAILS_SX = {
 }
 
 /**
- * One labelled row: what the ride offers, and the link that follows it.
- *
- * The two cells go straight into the grid above rather than into a wrapper of their own —
- * a row nested in its own box could not align its column with the row beside it. Both rows
- * a card can carry are built from this, though they are assembled in different files (the
- * map link in Timeline, the plate in RideVehicle).
+ * One labelled row: what the ride offers, and the link that follows it. The two cells go
+ * straight into the grid above — a row nested in a box of its own could not align its
+ * column with the row beside it.
  */
 export const CardRow = ({ label, children }: { label: string; children: ReactNode }) => (
   <>

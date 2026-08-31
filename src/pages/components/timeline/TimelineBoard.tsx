@@ -132,7 +132,7 @@ export const TimelineBoard = ({
             linkFor={siriLinkFor && ((index) => siriLinkFor(siriTimes[index]))}
             cards={{
               height: actualCardHeight,
-              contentFor: (index) => <RideVehicle hit={siriTimes[index]} />,
+              content: siriTimes.map((hit) => <RideVehicle key={hit.id} hit={hit} />),
               widest: <RideVehicle hit={WIDEST_VEHICLE} />,
             }}
           />

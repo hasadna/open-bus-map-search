@@ -13,10 +13,8 @@ export const WIDEST_VEHICLE: SiriVehicleLocationWithRelatedPydanticModel = {
 }
 
 /**
- * Where the vehicle page should open for a stop-hit: on the bus that drove the ride, on the
- * day the ride departed rather than the day being browsed. The timeline searches ±4h, so a
- * hit near midnight can belong to the neighbouring day — the same reason
- * `buildSingleLineMapRideLink` dates its link off the departure.
+ * Dated off the departure, not the day being browsed: the timeline searches ±4h, so a hit
+ * near midnight can belong to the neighbouring day.
  */
 const vehiclePageLink = (hit: SiriVehicleLocationWithRelatedPydanticModel) => {
   const params = new URLSearchParams({ 'vehicle.vehicleNumber': hit.siriRideVehicleRef! })
@@ -26,13 +24,6 @@ const vehiclePageLink = (hit: SiriVehicleLocationWithRelatedPydanticModel) => {
   return `/vehicle?${params.toString()}`
 }
 
-/**
- * The plate of the bus that drove this ride — issue #1728, so a rider who left something on
- * board can tell the operator which bus it was.
- *
- * It rides along on the vehicle-location record, so it costs no extra request. A record
- * without one renders nothing, leaving the card as a bare time.
- */
 export const RideVehicle = ({ hit }: { hit: SiriVehicleLocationWithRelatedPydanticModel }) => {
   const { t } = useTranslation()
   const plate = vehicleIDFormat(hit.siriRideVehicleRef)
@@ -40,8 +31,8 @@ export const RideVehicle = ({ hit }: { hit: SiriVehicleLocationWithRelatedPydant
 
   return (
     <CardRow label={t('vehicle_ref')}>
-      {/* Followed as a real navigation: the vehicle page reads its number out of the query
-          string, which only happens on a fresh app mount. */}
+      {/* A real navigation: the vehicle page reads its number out of the query string,
+          which only happens on a fresh app mount. */}
       <MuiLink
         component={Link}
         to={vehiclePageLink(hit)}

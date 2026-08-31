@@ -128,9 +128,8 @@ const CARD_TIME_ROW_SX = {
   lineHeight: `${CARD_TIME_HEIGHT}px`,
 }
 
-/** The inside of a card: the time it marks on the axis, then a labelled row per thing the
- *  ride links out to. The width anchor renders this too, so the two can't drift apart and
- *  mis-reserve the column's width. */
+/** The inside of a card. The width anchor renders this too, so the two can't drift apart
+ *  and mis-reserve the column's width. */
 const CardBody = ({
   time,
   mapLink,
@@ -215,12 +214,13 @@ type TimelineProps = {
   timestampToTop: (timestamp: dayjs.Dayjs) => number
   hoveredTimestamp?: string
   linkFor?: (index: number) => TimelineLink | undefined
-  /** Draws every label in this column as a bordered card. Without `contentFor` a card holds
+  /** Draws every label in this column as a bordered card. Without `content` a card holds
    *  nothing but its time — which is how the two columns stay symmetrical. */
   cards?: {
     /** Laid-out height of one card — see `cardHeight`. */
     height: number
-    contentFor?: (index: number) => ReactNode
+    /** What each card carries under its time, in `timestamps` order. */
+    content?: ReactNode[]
     /** The widest content there can be. Labels are absolutely positioned, so this is what
      *  reserves the column's width and keeps it centred under its title. */
     widest?: ReactNode
@@ -256,7 +256,7 @@ export const Timeline = ({
       highlighted,
       timeDisplay,
       link: linkFor?.(i),
-      details: cards?.contentFor?.(i),
+      details: cards?.content?.[i],
     }
   })
 
@@ -284,14 +284,12 @@ export const Timeline = ({
 
           <ConnectorSvg>
             {/* Every label gets one, displaced or not: a card sits well clear of its axis,
-                so without a leader line even an undisplaced one reads as unattached. */}
+                so even an undisplaced one reads as unattached without a leader line. */}
             {items.map((item) => {
               const resolvedY = resolvedYs[item.i]
               const dotY = item.naturalY + POINT_SIZE / 2
               const labelY = resolvedY - POINT_SIZE + 1 + labelHeight / 2
               const color = item.highlighted ? pointTypeToColor[pointType] : NEUTRAL_COLOR
-              // Near full strength: a leader line only does its job if it reads as attached
-              // to the axis, and at half opacity a short undisplaced one vanishes entirely.
               const opacity = item.highlighted ? 1 : 0.8
               const labelEdgeX = isRtl ? -LABEL_OFFSET : 2 + LABEL_OFFSET
               const horizEndX = isRtl ? labelEdgeX + CONNECTOR_HORIZ : labelEdgeX - CONNECTOR_HORIZ
@@ -356,8 +354,8 @@ export const Timeline = ({
                 <MapIcon sx={{ fontSize: LABEL_ICON_SIZE }} />
               </MuiLink>
             )
-            // On a card the row's own label already names the destination, so the tooltip
-            // that used to explain the bare icon would only repeat it.
+            // On a card the row's own label already names the destination, so a tooltip
+            // would only repeat it.
             const mapLink =
               link &&
               (cards ? (

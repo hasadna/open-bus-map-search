@@ -110,8 +110,6 @@ describe('TimelineBoard actual-time links', () => {
   })
 })
 
-// Issue #1728: a rider who left something on the bus knows the minute he got off, and needs
-// the plate to tell the operator which bus it was — without hunting for it.
 describe('TimelineBoard ride cards', () => {
   const boardOf = (hits: SiriHit[]) =>
     render(
@@ -136,8 +134,7 @@ describe('TimelineBoard ride cards', () => {
 
     const [timeRow, details] = Array.from(cardAt(ACTUAL_LATE).children) as HTMLElement[]
     expect(timeRow).toHaveTextContent(ACTUAL_LATE)
-    // both rows share one 2x2 grid, so their links line up under each other rather than
-    // starting wherever each label happened to end
+    // both rows share one 2x2 grid, so their links line up under each other
     const [mapLabel, mapValue, plateLabel, plateValue] = Array.from(
       details.children,
     ) as HTMLElement[]
@@ -171,8 +168,6 @@ describe('TimelineBoard ride cards', () => {
     expect(within(planned).queryByRole('link')).toBeNull()
   })
 
-  // Cards sit well clear of their axis, so an undisplaced one still needs a leader line —
-  // otherwise it reads as belonging to nothing.
   it('draws a connector from every card, displaced or not', () => {
     renderBoard(linkFor)
 
@@ -183,7 +178,7 @@ describe('TimelineBoard ride cards', () => {
 })
 
 // A card is three times the height of the bare time it replaced, so a busy stop has far more
-// label than axis to hang it on. Both of these failed before the axis learned to grow.
+// label than axis to hang it on.
 describe('TimelineBoard card stacking', () => {
   // time, the map-link row and the plate row
   const CARD_HEIGHT = cardHeight(2)

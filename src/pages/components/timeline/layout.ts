@@ -1,9 +1,6 @@
 /**
- * Geometry shared by the axis and the labels hanging off it.
- *
- * It lives apart from both components because they would otherwise have to import each
- * other, and that cycle only resolved when TimelineBoard happened to be the module loaded
- * first — importing Timeline first left TimelineBoard reading a half-built namespace.
+ * Geometry shared by the axis and the labels hanging off it. It lives apart from both
+ * components because they would otherwise have to import each other.
  */
 
 /** Breathing room above the first timestamp and below the last. */
@@ -13,7 +10,6 @@ export const PADDING = 10
 export const LABEL_HEIGHT = 18
 export const LABEL_GAP = 3
 
-/** A card leads with its time, a step up from the label rows listed under it. */
 export const CARD_TIME_HEIGHT = 18
 export const CARD_TIME_FONT_SIZE = '0.875rem'
 export const CARD_ROW_HEIGHT = 16
@@ -23,7 +19,7 @@ export const CARD_PADDING_Y = 4
 export const CARD_PADDING_X = 6
 const CARD_BORDER = 1
 
-/** How tall a card carrying `rows` label rows under its time lays out. Collision resolution
- *  works off this number, so it has to match what the card's CSS actually produces. */
+/** How tall a card carrying `rows` label rows lays out. Collision resolution works off this
+ *  number, so it has to match what the card's CSS actually produces. */
 export const cardHeight = (rows: number) =>
   CARD_TIME_HEIGHT + rows * CARD_ROW_HEIGHT + CARD_PADDING_Y * 2 + CARD_BORDER * 2
