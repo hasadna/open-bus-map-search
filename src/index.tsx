@@ -23,8 +23,10 @@ const queryClient = new QueryClient({
       gcTime: Infinity,
       // An empty result is the one answer that must never be trusted for long: it is what
       // the API returns for a date its ETL has not loaded yet, so it stops being true
-      // without anything in the app noticing. Real data is worth keeping for a while.
-      staleTime: (query) => (isEmptyResult(query.state.data) ? 0 : 1000 * 60 * 30),
+      // without anything in the app noticing. A minute is still long enough to absorb
+      // navigating back and forth, and far below the hours such a gap lasts. Real data
+      // does not go quietly out of date like that, so it is worth keeping longer.
+      staleTime: (query) => (isEmptyResult(query.state.data) ? 1000 * 60 : 1000 * 60 * 30),
       refetchOnWindowFocus: false,
     },
   },
