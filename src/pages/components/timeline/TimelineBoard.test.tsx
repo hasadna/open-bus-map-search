@@ -1,7 +1,9 @@
 import type { GtfsRideStopWithRelatedPydanticModel } from '@hasadna/open-bus-api-client'
-import { createEvent, fireEvent, render, screen } from '@testing-library/react'
+import { createEvent, fireEvent, render, screen, within } from '@testing-library/react'
 import { MemoryRouter } from 'react-router'
+import { MAX_HITS_COUNT } from 'src/api/apiConfig'
 import dayjs from 'src/dayjs'
+import { cardHeight } from './layout'
 import { TimelineBoard } from './TimelineBoard'
 import { POINT_SIZE } from './TimelinePoint'
 
@@ -48,18 +50,29 @@ const renderBoard = (siriLinkFor?: (hit: SiriHit) => ReturnType<typeof linkFor>)
 const dotAt = (at: string) =>
   Array.from(document.querySelectorAll(`[title="${at}"]`)).find((el) => !el.textContent)!
 
+/** Walks out of a card's inner columns to the positioned card itself, so the helper
+ *  survives the layout being reshuffled inside it. */
+const cardAt = (at: string) => {
+  let el: HTMLElement | null = screen.getByText(at)
+  while (el && getComputedStyle(el).position !== 'absolute') el = el.parentElement
+  return el!
+}
+
+/** Every card also links its plate to the vehicle page, so links have to be told apart. */
+const mapLinks = () => screen.queryAllByRole('link', { name: linkFor(SIRI[0]).title })
+
 describe('TimelineBoard actual-time links', () => {
   it('renders plain, unlinked times when no link builder is given', () => {
     renderBoard()
 
-    expect(screen.queryAllByRole('link')).toHaveLength(0)
+    expect(mapLinks()).toHaveLength(0)
     expect(screen.getByText(ACTUAL_LATE)).toBeInTheDocument()
   })
 
   it('links every actual time by its icon, leaving the time itself plain text', () => {
     renderBoard(linkFor)
 
-    const [link, ...rest] = screen.getAllByRole('link')
+    const [link, ...rest] = mapLinks()
     expect(rest).toHaveLength(0)
     expect(link).toHaveAttribute('href', linkFor(SIRI[0]).to)
     expect(link).toHaveAccessibleName(linkFor(SIRI[0]).title)
@@ -67,16 +80,13 @@ describe('TimelineBoard actual-time links', () => {
     expect(screen.getByText(ACTUAL_LATE)).toBeInTheDocument()
   })
 
-  it('explains the icon with a tooltip, and no native title to draw a second one', async () => {
+  it('names the map link in its row, so no tooltip has to explain the icon', () => {
     renderBoard(linkFor)
 
     const link = screen.getByRole('link', { name: linkFor(SIRI[0]).title })
-    // A title on the link or on any ancestor would show a browser tooltip behind the MUI one
+    expect(cardAt(ACTUAL_LATE)).toHaveTextContent(linkFor(SIRI[0]).title)
+    // A title on the link or on any ancestor would draw a browser tooltip over the row
     expect(link.closest('[title]')).toBeNull()
-
-    fireEvent.mouseOver(link)
-
-    expect(await screen.findByRole('tooltip')).toHaveTextContent(linkFor(SIRI[0]).title)
   })
 
   it('leaves the dots unlinked, since several can land on one pixel', () => {
@@ -97,6 +107,128 @@ describe('TimelineBoard actual-time links', () => {
     fireEvent(link, click)
 
     expect(click.defaultPrevented).toBe(false)
+  })
+})
+
+describe('TimelineBoard ride cards', () => {
+  const boardOf = (hits: SiriHit[]) =>
+    render(
+      <MemoryRouter>
+        <TimelineBoard
+          target={dayjs('2026-08-20T05:33:00Z')}
+          gtfsTimes={GTFS}
+          siriTimes={hits}
+          siriLinkFor={linkFor}
+        />
+      </MemoryRouter>,
+    )
+
+  it('names the bus without waiting for a hover', () => {
+    renderBoard(linkFor)
+
+    expect(within(cardAt(ACTUAL_LATE)).getByText('170-84-504')).toBeInTheDocument()
+  })
+
+  it('stacks the time over a grid of one labelled row per link the ride offers', () => {
+    renderBoard(linkFor)
+
+    const [timeRow, details] = Array.from(cardAt(ACTUAL_LATE).children) as HTMLElement[]
+    expect(timeRow).toHaveTextContent(ACTUAL_LATE)
+    // both rows share one 2x2 grid, so their links line up under each other
+    const [mapLabel, mapValue, plateLabel, plateValue] = Array.from(
+      details.children,
+    ) as HTMLElement[]
+    expect(mapLabel).toHaveTextContent(linkFor(SIRI[0]).title)
+    expect(within(mapValue).getByRole('link')).toHaveAttribute('href', linkFor(SIRI[0]).to)
+    expect(plateLabel).toHaveTextContent('vehicle plate')
+    expect(within(plateValue).getByRole('link')).toHaveTextContent('170-84-504')
+  })
+
+  it('opens the vehicle page on the day the ride departed, not the day being browsed', () => {
+    renderBoard(linkFor)
+
+    const plate = screen.getByRole('link', { name: /170-84-504/ })
+    // the timeline searches ±4h, so a hit can belong to the neighbouring day; 05:00Z
+    // departs on the 20th in Israel time
+    expect(plate).toHaveAttribute('href', '/vehicle?vehicle.vehicleNumber=17084504&date=2026-08-20')
+  })
+
+  it('leaves a hit with no plate as a card holding just its time', () => {
+    boardOf([{ ...SIRI[0], siriRideVehicleRef: undefined }])
+
+    expect(screen.queryByRole('link', { name: /\d{2}-\d{3}-\d{2}/ })).toBeNull()
+    expect(cardAt(ACTUAL_LATE)).toHaveTextContent(ACTUAL_LATE)
+  })
+
+  it('cards the planned column too, with no bus of its own to name', () => {
+    renderBoard(linkFor)
+
+    const planned = cardAt(time(GTFS[0].arrivalTime!))
+    expect(planned).toHaveTextContent(time(GTFS[0].arrivalTime!))
+    expect(within(planned).queryByRole('link')).toBeNull()
+  })
+
+  it('draws a connector from every card, displaced or not', () => {
+    renderBoard(linkFor)
+
+    // the icons in the cards are SVG paths of their own — only the connector layer counts
+    const connectors = document.querySelectorAll('svg:not(.MuiSvgIcon-root) > path')
+    expect(connectors).toHaveLength(GTFS.length + SIRI.length)
+  })
+})
+
+// A card is three times the height of the bare time it replaced, so a busy stop has far more
+// label than axis to hang it on.
+describe('TimelineBoard card stacking', () => {
+  // time, the map-link row and the plate row
+  const CARD_HEIGHT = cardHeight(2)
+  // one every two minutes — dense enough that the natural positions all collide
+  const busyStop: SiriHit[] = Array.from({ length: MAX_HITS_COUNT }, (_, i) => ({
+    ...SIRI[0],
+    id: 100 + i,
+    recordedAtTime: new Date(Date.UTC(2026, 7, 20, 5, i * 2)),
+  }))
+
+  const renderBusyStop = () =>
+    render(
+      <MemoryRouter>
+        <TimelineBoard
+          target={dayjs('2026-08-20T05:33:00Z')}
+          gtfsTimes={[]}
+          siriTimes={busyStop}
+          siriLinkFor={linkFor}
+        />
+      </MemoryRouter>,
+    )
+
+  const cardTops = () =>
+    busyStop
+      .map((hit) => cardAt(time(hit.recordedAtTime!)))
+      .map((card) => parseFloat(getComputedStyle(card).top))
+      .sort((a, b) => a - b)
+
+  it('never lets two cards overlap', () => {
+    renderBusyStop()
+
+    const gaps = cardTops()
+      .slice(1)
+      .map((top, i) => top - cardTops()[i])
+
+    expect(Math.min(...gaps)).toBeGreaterThanOrEqual(CARD_HEIGHT)
+  })
+
+  it('grows the axis so the last card still lands on it', () => {
+    renderBusyStop()
+
+    // the lowest of the ticks capping the two axes, offset by 1 because each is a 2px bar
+    // straddling the end of its axis rather than sitting on it
+    const axisEnd =
+      Array.from(document.querySelectorAll('.sc-boundary-tick'))
+        .map((tick) => parseFloat(getComputedStyle(tick).top))
+        .sort((a, b) => a - b)
+        .at(-1)! + 1
+
+    expect(cardTops().at(-1)! + CARD_HEIGHT).toBeLessThanOrEqual(axisEnd)
   })
 })
 
@@ -129,6 +261,6 @@ describe('TimelineBoard overlapping dots', () => {
 
     expect(time(secondsApart[1].recordedAtTime)).not.toBe(time(secondsApart[2].recordedAtTime))
     expect(Math.abs(first - second)).toBeLessThan(POINT_SIZE)
-    expect(screen.getAllByRole('link')).toHaveLength(secondsApart.length)
+    expect(mapLinks()).toHaveLength(secondsApart.length)
   })
 })
