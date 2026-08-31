@@ -64,7 +64,7 @@ export function locationFixKey({
 }
 
 /**
- * Find a ping by its `locationFixKey` — how a deep link (e.g. from /timeline) names one
+ * Find a ping by its `locationFixKey` — how a deep link (e.g. from /station-stops) names one
  * specific GPS fix of a ride.
  *
  * The fix key, not the row `id`, is the identity that survives the trip: the API re-emits

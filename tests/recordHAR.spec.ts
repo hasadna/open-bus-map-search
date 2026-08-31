@@ -95,12 +95,12 @@ test.describe('Record HAR files', () => {
     await settleResponseBodies()
   })
 
-  // ---- timeline.har -------------------------------------------------------
+  // ---- stationStops.har -------------------------------------------------------
   // Single test records ALL needed entries in one browser context
-  test('record timeline.har', async ({ page }) => {
-    await setupRecording(page, 'tests/HAR/timeline.har')
+  test('record stationStops.har', async ({ page }) => {
+    await setupRecording(page, 'tests/HAR/stationStops.har')
     await goToPage(page, '/')
-    await goToPage(page, '/timeline')
+    await goToPage(page, '/station-stops')
 
     // Trigger agencies list by opening operator dropdown
     await openDropdownAndWait(page, '#operator-select')
@@ -110,7 +110,7 @@ test.describe('Record HAR files', () => {
     await page.getByPlaceholder('לדוגמה: 17א').fill('1')
     await page.waitForLoadState('networkidle')
 
-    // Select route used for timeline hits test
+    // Select route used for station-stops hits test
     await openDropdownAndWait(page, '#route-select')
     const routeWithHits = 'שדרות מנחם בגין/כביש 7-גדרה ⟵ שדרות מנחם בגין/כביש 7-גדרה'
     const hitsRouteExists = await page.getByRole('option', { name: routeWithHits }).count()
@@ -134,7 +134,7 @@ test.describe('Record HAR files', () => {
 
     // Test empty routes: switch to דן בדרום + line 9999
     // First clear the operator by navigating away and back
-    await page.goto('/timeline')
+    await page.goto('/station-stops')
     await page.locator('.preloader').waitFor({ state: 'hidden' })
     await openDropdownAndWait(page, '#operator-select')
     const danBaDarom = page.getByRole('option', { name: 'דן בדרום', exact: true })
@@ -378,7 +378,7 @@ test.describe('Record HAR files', () => {
   test('record clearbutton.har', async ({ page }) => {
     await setupRecording(page, 'tests/HAR/clearbutton.har')
     await goToPage(page, '/')
-    await goToPage(page, '/timeline')
+    await goToPage(page, '/station-stops')
 
     // Trigger agencies list
     await openDropdownAndWait(page, '#operator-select')
