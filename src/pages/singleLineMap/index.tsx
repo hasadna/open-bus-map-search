@@ -1,9 +1,10 @@
 import BusAlertTwoToneIcon from '@mui/icons-material/BusAlertTwoTone'
 import { Alert, CircularProgress, Grid, Link as MuiLink, Tooltip, Typography } from '@mui/material'
-import { useCallback, useContext, useRef, useState } from 'react'
+import { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
 import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone } from 'src/dayjs'
+import { usePageState } from 'src/hooks/usePageState'
 import { useSingleLineData } from 'src/hooks/useSingleLineData'
 import { GlobalSearchContext } from 'src/model/globalState'
 import LineNumberSelector from 'src/pages/components/LineSelector'
@@ -11,7 +12,7 @@ import OperatorSelector from 'src/pages/components/OperatorSelector'
 import RouteSelector from 'src/pages/components/RouteSelector'
 import { DateSelector } from '../components/DateSelector'
 import { FilterPositionsByStartTimeSelector } from '../components/FilterPositionsByStartTimeSelector'
-import type { FocusTarget } from '../components/map-related/map-types'
+import { findPositionByFixKey, type FocusTarget } from '../components/map-related/map-types'
 import { MapWithLocationsAndPath } from '../components/map-related/MapWithLocationsAndPath'
 import { NotFound } from '../components/NotFound'
 import { PageContainer } from '../components/PageContainer'
@@ -22,10 +23,28 @@ import { GpsCoverageStrip } from './GpsCoverageStrip'
 // This notice redirects users still looking for it here. Remove once it has run its course.
 const VEHICLE_NOTICE_DISMISS_KEY = 'vehicleSearchMovedNoticeDismissed'
 
+// null, not '', is the "no ping chosen" value: usePageState omits null params from the
+// share URL, so a page reached without a deep link still produces a clean link.
+type SingleLineMapParams = { focusPing: string | null }
+type SingleLineMapUi = { scrollPosition: number }
+
 const SingleLineMapPage = () => {
   const { search, setSearch } = useContext(GlobalSearchContext)
   const { operatorId, lineNumber, date, routeKey: searchRouteKey, rideTime } = search
   const { t } = useTranslation()
+
+  const { params: pageParams, setParams: setPageParams } = usePageState<
+    SingleLineMapParams,
+    SingleLineMapUi
+  >('single-line-map', {
+    params: { focusPing: null },
+    ui: { scrollPosition: 0 },
+  })
+  const focusPing = pageParams.focusPing
+  const clearFocusPing = useCallback(
+    () => setPageParams((prev) => ({ ...prev, focusPing: null })),
+    [setPageParams],
+  )
 
   const [vehicleNoticeDismissed, setVehicleNoticeDismissed] = useState(
     () => localStorage.getItem(VEHICLE_NOTICE_DISMISS_KEY) === '1',
@@ -48,7 +67,7 @@ const SingleLineMapPage = () => {
   // counter makes repeated clicks on the same ping re-trigger the fly-to.
   const [focusTarget, setFocusTarget] = useState<FocusTarget | null>(null)
   const focusSeq = useRef(0)
-  const focusPing = useCallback((loc: [number, number]) => {
+  const focusLocation = useCallback((loc: [number, number]) => {
     focusSeq.current += 1
     setFocusTarget({ loc, seq: focusSeq.current })
   }, [])
@@ -73,25 +92,53 @@ const SingleLineMapPage = () => {
     onRideTimeChange,
   })
 
+  // A ping belongs to one ride, so every selector that changes which ride is shown
+  // drops it — otherwise it lingers in the share URL long after its ride is gone.
   const handleDateChange = (time: dayjs.Dayjs | null) => {
     setSearch((current) => ({
       ...current,
       date: toIsraelTimezone(time ?? dayjs()).format('YYYY-MM-DD'),
       rideTime: null,
     }))
+    clearFocusPing()
   }
 
   const handleOperatorChange = (operatorId: string) => {
     setSearch((current) => ({ ...current, operatorId, rideTime: null }))
+    clearFocusPing()
   }
 
   const handleLineNumberChange = (lineNumber: string) => {
     setSearch((current) => ({ ...current, lineNumber, rideTime: null }))
+    clearFocusPing()
   }
 
   const handleRouteKeyChange = (routeKey?: string) => {
     setSearch((current) => ({ ...current, routeKey: routeKey ?? null, rideTime: null }))
+    clearFocusPing()
   }
+
+  const handleStartTimeChange = (time?: string) => {
+    clearFocusPing()
+    setStartTime(time)
+  }
+
+  // Resolve an incoming deep link (from /timeline) once its ride's pings have loaded.
+  // Guarded by a ref rather than by clearing focusPing, so the key survives into the
+  // share URL and a reload lands on the same ping.
+  const focusedPingRef = useRef<string | null>(null)
+  useEffect(() => {
+    if (!focusPing || focusedPingRef.current === focusPing) return
+    const found = findPositionByFixKey(positionGroups, focusPing)
+    if (!found) return
+    focusedPingRef.current = focusPing
+    focusSeq.current += 1
+    setFocusTarget({
+      loc: found.loc,
+      seq: focusSeq.current,
+      marker: { groupIndex: found.groupIndex, positionIndex: found.positionIndex },
+    })
+  }, [focusPing, positionGroups])
 
   return (
     <PageContainer className="map-container">
@@ -146,6 +193,8 @@ const SingleLineMapPage = () => {
           <Grid size={{ sm: 4, xs: 12 }}>
             <LineNumberSelector
               disabled={!operatorId}
+              operatorId={operatorId ?? undefined}
+              date={date}
               lineNumber={lineNumber ?? undefined}
               setLineNumber={handleLineNumberChange}
             />
@@ -182,7 +231,7 @@ const SingleLineMapPage = () => {
               options={options}
               disabled={!routeKey}
               startTime={startTime}
-              setStartTime={setStartTime}
+              setStartTime={handleStartTimeChange}
             />
             {locationsAreLoading && (
               <Tooltip title={t('loading_times_tooltip_content')}>
@@ -198,7 +247,7 @@ const SingleLineMapPage = () => {
         showNavigationButtons
         focusTarget={focusTarget}
       />
-      <GpsCoverageStrip positionGroups={positionGroups} onFocusPing={focusPing} />
+      <GpsCoverageStrip positionGroups={positionGroups} onFocusPing={focusLocation} />
     </PageContainer>
   )
 }

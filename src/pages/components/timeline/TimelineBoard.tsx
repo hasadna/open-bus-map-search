@@ -9,11 +9,14 @@ import dayjs from 'src/dayjs'
 import { useTheme } from 'src/layout/ThemeContext'
 import { Coordinates } from 'src/model/location'
 import { HorizontalLine } from 'src/pages/components/timeline/HorizontalLine'
-import { Timeline, TimelineTitle } from 'src/pages/components/timeline/Timeline'
+import { cardHeight, LABEL_GAP, PADDING } from 'src/pages/components/timeline/layout'
+import { RideVehicle, WIDEST_VEHICLE } from 'src/pages/components/timeline/RideVehicle'
+import { Timeline, type TimelineLink, TimelineTitle } from 'src/pages/components/timeline/Timeline'
 import { PointType } from 'src/pages/components/timeline/TimelinePoint'
 
-export const PADDING = 10
 const COLUMN_GAP = 32
+/** A planned stop has nothing under its time to show. */
+const PLANNED_CARD_HEIGHT = cardHeight(0)
 
 const getRange = (timestamps: Date[]) =>
   timestamps.length > 0 ? dayjs(timestamps[timestamps.length - 1]).diff(timestamps[0], 'second') : 0
@@ -54,10 +57,22 @@ type TimelineBoardProps = {
   target: dayjs.Dayjs
   gtfsTimes: GtfsRideStopWithRelatedPydanticModel[]
   siriTimes: (SiriVehicleLocationWithRelatedPydanticModel & Coordinates)[]
+  /** Deep-links each actual (SIRI) time to the ride it belongs to. */
+  siriLinkFor?: (
+    siriTime: SiriVehicleLocationWithRelatedPydanticModel & Coordinates,
+  ) => TimelineLink | undefined
 }
 
-export const TimelineBoard = ({ className, target, gtfsTimes, siriTimes }: TimelineBoardProps) => {
+export const TimelineBoard = ({
+  className,
+  target,
+  gtfsTimes,
+  siriTimes,
+  siriLinkFor,
+}: TimelineBoardProps) => {
   const { isDarkTheme } = useTheme()
+  // The plate row, plus the map row Timeline adds for a column that links out.
+  const actualCardHeight = cardHeight(siriLinkFor ? 2 : 1)
   const [hoveredTimestamp, setHoveredTimestamp] = useState<string | undefined>(undefined)
   const gtfsDates = gtfsTimes.map((t) => t.arrivalTime!)
   const siriDates = siriTimes.map((t) => t.recordedAtTime!)
@@ -66,7 +81,16 @@ export const TimelineBoard = ({ className, target, gtfsTimes, siriTimes }: Timel
 
   const lowerBound = minDate(gtfsDates[0] ?? Date.now(), siriDates[0] ?? Date.now())
   const totalRange = Math.max(gtfsRange, siriRange)
-  const totalHeight = 400 + (Math.max(gtfsTimes.length, siriTimes.length) / MAX_HITS_COUNT) * 400
+  // Labels are pushed apart until none overlap, so the axis has to be at least as tall as a
+  // column's worth of them — otherwise a busy stop stacks its cards off the bottom of it.
+  const stackHeight = Math.max(
+    gtfsTimes.length * (PLANNED_CARD_HEIGHT + LABEL_GAP),
+    siriTimes.length * (actualCardHeight + LABEL_GAP),
+  )
+  const totalHeight = Math.max(
+    400 + (Math.max(gtfsTimes.length, siriTimes.length) / MAX_HITS_COUNT) * 400,
+    stackHeight,
+  )
 
   const allTimestamps: Set<Date> = new Set([target.toDate(), ...gtfsDates, ...siriDates])
 
@@ -97,6 +121,7 @@ export const TimelineBoard = ({ className, target, gtfsTimes, siriTimes }: Timel
             pointType={PointType.GTFS}
             timestampToTop={timestampToTop}
             hoveredTimestamp={hoveredTimestamp}
+            cards={{ height: PLANNED_CARD_HEIGHT }}
           />
           <Timeline
             timestamps={siriTimes}
@@ -104,6 +129,12 @@ export const TimelineBoard = ({ className, target, gtfsTimes, siriTimes }: Timel
             pointType={PointType.SIRI}
             timestampToTop={timestampToTop}
             hoveredTimestamp={hoveredTimestamp}
+            linkFor={siriLinkFor && ((index) => siriLinkFor(siriTimes[index]))}
+            cards={{
+              height: actualCardHeight,
+              content: siriTimes.map((hit) => <RideVehicle key={hit.id} hit={hit} />),
+              widest: <RideVehicle hit={WIDEST_VEHICLE} />,
+            }}
           />
           {Array.from(allTimestamps).map((timestamp, index) => {
             const tsKey = dayjs(timestamp).toISOString()

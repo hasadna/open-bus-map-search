@@ -185,7 +185,7 @@ test.describe('Record HAR files', () => {
     }
 
     // Fill line 16 (triggers gtfs_routes/list with route_short_name=16)
-    await page.getByRole('textbox', { name: 'מספר קו' }).fill('16')
+    await page.getByRole('combobox', { name: 'מספר קו' }).fill('16')
     await page.waitForLoadState('networkidle')
 
     // Select a route (triggers gtfs_rides/list, gtfs_ride_stops/list, gtfs_stops/get, siri data)
@@ -225,7 +225,7 @@ test.describe('Record HAR files', () => {
     // Click a bus marker to record BusToolTip's gtfs_routes/list?line_refs=... call.
     // networkidle waits for all in-flight requests (including BusToolTip's fetch) to complete
     // before pressing Escape, ensuring the response body is captured in the HAR.
-    const busMarkers = page.locator('.leaflet-marker-pane > img[src$="marker-dot.png"]')
+    const busMarkers = page.locator('.leaflet-marker-pane > .vehicle-ping-marker')
     if ((await busMarkers.count()) > 2) {
       await busMarkers.nth(2).click({ force: true })
       await page.waitForLoadState('networkidle')
@@ -233,7 +233,7 @@ test.describe('Record HAR files', () => {
     }
 
     // Fill line 9999 to record the empty routes response
-    await page.getByRole('textbox', { name: 'מספר קו' }).fill('9999')
+    await page.getByRole('combobox', { name: 'מספר קו' }).fill('9999')
     await page.waitForTimeout(3000)
     await page.waitForLoadState('networkidle')
 
@@ -282,7 +282,7 @@ test.describe('Record HAR files', () => {
     await goToPage(page, '/gaps')
     await page.getByLabel('חברה מפעילה').click()
     await page.getByRole('option', { name: 'אגד', exact: true }).click()
-    await page.getByRole('textbox', { name: 'מספר קו' }).fill('402')
+    await page.getByRole('combobox', { name: 'מספר קו' }).fill('402')
     await page.waitForLoadState('networkidle')
     // Type-to-filter the route Autocomplete (defeats option virtualization on lines
     // with many variants), then pick the line_ref 33267 direction ('...הורדה...').
@@ -307,7 +307,7 @@ test.describe('Record HAR files', () => {
     await goToPage(page, '/single-line-map')
     await page.getByLabel('חברה מפעילה').click()
     await page.getByRole('option', { name: 'אגד', exact: true }).click()
-    await page.getByRole('textbox', { name: 'מספר קו' }).fill('402')
+    await page.getByRole('combobox', { name: 'מספר קו' }).fill('402')
     await page.waitForLoadState('networkidle')
     await page.getByLabel(/בחירת מסלול נסיעה/).fill('הורדה')
     await page.waitForLoadState('networkidle')
@@ -352,7 +352,7 @@ test.describe('Record HAR files', () => {
       return
     }
 
-    await page.getByRole('textbox', { name: 'מספר קו' }).fill('16')
+    await page.getByRole('combobox', { name: 'מספר קו' }).fill('16')
     await page.waitForLoadState('networkidle')
 
     await page.getByLabel(/בחירת מסלול נסיעה/).click()
