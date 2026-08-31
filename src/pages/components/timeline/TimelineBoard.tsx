@@ -5,6 +5,8 @@ import { MAX_HITS_COUNT } from 'src/api/apiConfig'
 import dayjs from 'src/dayjs'
 import { useTheme } from 'src/layout/ThemeContext'
 import { HorizontalLine } from 'src/pages/components/timeline/HorizontalLine'
+import { cardHeight, LABEL_GAP, PADDING } from 'src/pages/components/timeline/layout'
+import { RideVehicle, WIDEST_VEHICLE } from 'src/pages/components/timeline/RideVehicle'
 import { Timeline, type TimelineLink, TimelineTitle } from 'src/pages/components/timeline/Timeline'
 import {
   type BandDeviation,
@@ -18,8 +20,9 @@ import {
 } from 'src/pages/components/timeline/timelinePairing'
 import { PointType } from 'src/pages/components/timeline/TimelinePoint'
 
-export const PADDING = 10
 const COLUMN_GAP = 32
+/** A planned stop has nothing under its time to show. */
+const PLANNED_CARD_HEIGHT = cardHeight(0)
 
 /** Both columns share one scale: per-column ranges let the other column's later hits fall
  *  past the bottom and collapse onto a single pixel. */
@@ -49,13 +52,22 @@ const Container = styled.div`
   column-gap: ${COLUMN_GAP}px;
 `
 
+/** Faint when idle, deep under the pointer. */
+const alpha =
+  (idle: number, hovered: number) =>
+  ({ $highlighted }: { $highlighted: boolean }) =>
+    `${$highlighted ? hovered : idle}%`
+
 /** Height IS the delay, so the worse a ride ran the more coloured surface it puts on screen.
- *  The fill is translucent, which is why early and late blocks must abut rather than overlap —
- *  stacked, they would darken into a severity nobody claimed. */
+ *  Every ride is drawn, not just the hovered one, and the fills are faint enough to compound:
+ *  where several rides ran off schedule over the same minutes the overlap darkens, and that
+ *  darkness is the honest reading — a whole window of buses missed, not one. (Within a single
+ *  band early and late still abut at the scheduled instant, so no ride doubles its own colour.) */
 const Band = styled.div<{
   $top: number
   $height: number
   $rgb: string
+  $highlighted: boolean
 }>`
   position: absolute;
   left: 0;
@@ -64,12 +76,15 @@ const Band = styled.div<{
   height: ${({ $height }) => $height}px;
   min-height: 2px;
   box-sizing: border-box;
-  background-color: rgb(${({ $rgb }) => $rgb} / 30%);
-  border-top: 1px solid rgb(${({ $rgb }) => $rgb} / 85%);
-  border-bottom: 1px solid rgb(${({ $rgb }) => $rgb} / 85%);
+  background-color: rgb(${({ $rgb }) => $rgb} / ${alpha(12, 40)});
+  border-top: 1px solid rgb(${({ $rgb }) => $rgb} / ${alpha(25, 90)});
+  border-bottom: 1px solid rgb(${({ $rgb }) => $rgb} / ${alpha(25, 90)});
   border-radius: 3px;
   user-select: none;
   pointer-events: none;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
 `
 
 const deviationRgb = (deviation: BandDeviation) => {
@@ -106,13 +121,24 @@ export const TimelineBoard = ({
   siriLinkFor,
 }: TimelineBoardProps) => {
   const { isDarkTheme } = useTheme()
+  // The plate row, plus the map row Timeline adds for a column that links out.
+  const actualCardHeight = cardHeight(siriLinkFor ? 2 : 1)
   const [hoveredBand, setHoveredBand] = useState<string | undefined>(undefined)
   const containerRef = useRef<HTMLDivElement>(null)
   const { lowerBound, rangeSeconds } = boardWindow([
     ...gtfsTimes.map((t) => hitTime(t)),
     ...siriTimes.map((t) => hitTime(t)),
   ])
-  const totalHeight = 400 + (Math.max(gtfsTimes.length, siriTimes.length) / MAX_HITS_COUNT) * 400
+  // Labels are pushed apart until none overlap, so the axis has to be at least as tall as a
+  // column's worth of them — otherwise a busy stop stacks its cards off the bottom of it.
+  const stackHeight = Math.max(
+    gtfsTimes.length * (PLANNED_CARD_HEIGHT + LABEL_GAP),
+    siriTimes.length * (actualCardHeight + LABEL_GAP),
+  )
+  const totalHeight = Math.max(
+    400 + (Math.max(gtfsTimes.length, siriTimes.length) / MAX_HITS_COUNT) * 400,
+    stackHeight,
+  )
 
   const timestampToTop = useCallback(
     (timestamp: dayjs.Dayjs) => {
@@ -129,12 +155,13 @@ export const TimelineBoard = ({
     [gtfsTimes, siriTimes, timestampToTop],
   )
 
-  const activeBand = bands.find((band) => band.key === hoveredBand)
-  const activeSpans = activeBand ? deviationSpans(activeBand) : []
+  const spans = useMemo(
+    () =>
+      bands.flatMap((band) => deviationSpans(band).map((span) => ({ ...span, bandKey: band.key }))),
+    [bands],
+  )
 
   // The marker goes on the column the ride is missing FROM, at the y of the dot it does have.
-  // Permanent, unlike the bands — an absent counterpart is a fact about the data, not
-  // something you should have to hover to discover.
   const absentMarks = useMemo(
     () =>
       bands.flatMap((band) => {
@@ -175,13 +202,14 @@ export const TimelineBoard = ({
           ref={containerRef}
           onMouseMove={trackPointer}
           onMouseLeave={() => setHoveredBand(undefined)}>
-          {activeSpans.map((span) => (
+          {spans.map((span) => (
             <Band
-              key={span.deviation}
+              key={`${span.bandKey}_${span.deviation}`}
               data-testid="timeline-band"
               $top={span.top}
               $height={span.bottom - span.top}
               $rgb={deviationRgb(span.deviation)}
+              $highlighted={span.bandKey === hoveredBand}
             />
           ))}
           <HorizontalLine top={instantY(timestampToTop(target))} isTarget />
@@ -193,6 +221,7 @@ export const TimelineBoard = ({
             bandKeys={gtfsKeys}
             hoveredBand={hoveredBand}
             absentMarks={absentMarks.filter((mark) => mark.column === PointType.GTFS)}
+            cards={{ height: PLANNED_CARD_HEIGHT }}
           />
           <Timeline
             timestamps={siriTimes}
@@ -203,6 +232,11 @@ export const TimelineBoard = ({
             hoveredBand={hoveredBand}
             absentMarks={absentMarks.filter((mark) => mark.column === PointType.SIRI)}
             linkFor={siriLinkFor && ((index) => siriLinkFor(siriTimes[index]))}
+            cards={{
+              height: actualCardHeight,
+              content: siriTimes.map((hit) => <RideVehicle key={hit.id} hit={hit} />),
+              widest: <RideVehicle hit={WIDEST_VEHICLE} />,
+            }}
           />
         </Container>
       </StyledContainer>

@@ -26,7 +26,7 @@ import { PageContainer } from '../components/PageContainer'
 import { TimeSelector } from '../components/TimeSelector'
 import { buildSingleLineMapRideLink } from './singleLineMapRideLink'
 
-const TimelinePage = () => {
+const StationStopsPage = () => {
   const { t } = useTranslation()
   const { search, setSearch } = useContext(GlobalSearchContext)
   const { operatorId, lineNumber, date, routeKey } = search
@@ -37,7 +37,7 @@ const TimelinePage = () => {
 
   // time-of-day is page-local: not shared across pages, but is shareable so a
   // link recipient sees the same moment (date comes from global state).
-  const { params, setParams } = usePageState('timeline', {
+  const { params, setParams } = usePageState('station-stops', {
     params: { time: dayjs().format('HH:mm') },
     ui: { scrollPosition: 0 },
   })
@@ -92,7 +92,7 @@ const TimelinePage = () => {
     (hit: SiriVehicleLocationWithRelatedPydanticModel) => {
       if (!operatorId || !lineNumber || !routeKey) return undefined
       const to = buildSingleLineMapRideLink(hit, { operatorId, lineNumber, routeKey })
-      return to ? { to, title: t('timeline_show_ride_on_map') } : undefined
+      return to ? { to, title: t('station_stops_show_ride_on_map') } : undefined
     },
     [operatorId, lineNumber, routeKey, t],
   )
@@ -114,10 +114,10 @@ const TimelinePage = () => {
   return (
     <PageContainer>
       <Typography variant="h4" gutterBottom className="page-title">
-        {t('timeline_page_title')}
+        {t('station_stops_page_title')}
       </Typography>
       <Alert severity="info" variant="outlined" icon={false}>
-        {t('timeline_page_description')}
+        {t('station_stops_page_description')}
       </Alert>
       {hitsQuery.data &&
         hitsQuery.data.gtfsTime.length > 0 &&
@@ -226,4 +226,4 @@ const TimelinePage = () => {
   )
 }
 
-export default TimelinePage
+export default StationStopsPage
