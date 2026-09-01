@@ -23,7 +23,7 @@ export type GlobalSearchState = {
    *  Set by /gaps when the user clicks a row; consumed by /single-line-map. */
   rideTime: string | null
 
-  /** Selected stop key — shared across /timeline and /single-line-map. */
+  /** Selected stop key — shared across /station-stops, /single-line-map. */
   stopKey: string | null
 }
 

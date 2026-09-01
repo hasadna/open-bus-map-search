@@ -3,7 +3,7 @@ import {
   DirectionsBusTwoTone,
   EmojiTransportationTwoTone,
   GitHub,
-  HistoryTwoTone,
+  HailRounded,
   HomeTwoTone,
   InfoTwoTone,
   MapTwoTone,
@@ -31,7 +31,7 @@ import { LegacyLangRedirect } from './LegacyLangRedirect'
 import { MainRoute } from './MainRoute'
 
 const HomePage = lazy(() => import('../pages/homepage/HomePage'))
-const TimelinePage = lazy(() => import('../pages/historicTimeline'))
+const StationStopsPage = lazy(() => import('../pages/stationStops'))
 const GapsPage = lazy(() => import('../pages/gaps'))
 const TimeBasedMapPage = lazy(() => import('../pages/timeBasedMap'))
 const SingleLineMapPage = lazy(() => import('../pages/singleLineMap'))
@@ -50,11 +50,11 @@ export const PAGES = [
     element: <HomePage />,
   },
   {
-    label: 'timeline_page_title',
-    path: '/timeline',
+    label: 'station_stops_page_title',
+    path: '/station-stops',
     searchParamsRequired: true,
-    icon: <HistoryTwoTone />,
-    element: <TimelinePage />,
+    icon: <HailRounded />,
+    element: <StationStopsPage />,
   },
   {
     label: 'gaps_page_title',

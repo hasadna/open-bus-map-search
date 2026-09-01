@@ -2,6 +2,9 @@ import styled from 'styled-components'
 
 export const POINT_SIZE = 8
 
+export const ABSENT_MARK_SIZE = 22
+export const ABSENT_COLOR = 'rgb(var(--timeline-late))'
+
 export const NEUTRAL_COLOR = 'var(--timeline-neutral, #7393B3)'
 const GTFS_COLOR = '#1890ff'
 const SIRI_COLOR = '#eb2f96'
@@ -25,8 +28,8 @@ export const pointTypeToDescription = {
 } as const
 
 type PointProps = {
-  top: number
-  type?: PointType
+  $top: number
+  $type?: PointType
   $highlighted?: boolean
 }
 
@@ -37,11 +40,11 @@ export const Point = styled.div<PointProps>`
   box-shadow: 0 0 0 2px
     ${({ $highlighted }) =>
       $highlighted ? 'var(--timeline-highlight-ring, white)' : NEUTRAL_COLOR};
-  background-color: ${({ type }) => pointTypeToColor[type || PointType.BOUNDARY]};
+  background-color: ${({ $type }) => pointTypeToColor[$type || PointType.BOUNDARY]};
   position: absolute;
-  top: ${({ top }) => top}px;
+  top: ${({ $top }) => $top}px;
   right: -3px;
-  transform: ${({ $highlighted }) => ($highlighted ? 'scale(1.5)' : 'scale(1)')};
+  transform: ${({ $highlighted }) => ($highlighted ? 'scale(2)' : 'scale(1)')};
   transition:
     transform 0.15s ease,
     box-shadow 0.15s ease;
