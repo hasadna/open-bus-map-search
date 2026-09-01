@@ -156,6 +156,22 @@ const CardBody = ({
   </>
 )
 
+/** The icon that opens one hit's ride, named by its column's single link title. On a card the
+ *  name is printed beside the icon, so a tooltip there would only repeat it. */
+const MapLink = ({ title, href, card }: { title: string; href: string; card?: boolean }) => {
+  const icon = (
+    <MuiLink
+      component={Link}
+      to={href}
+      reloadDocument
+      aria-label={title}
+      sx={{ display: 'inline-flex' }}>
+      <MapIcon sx={{ fontSize: LABEL_ICON_SIZE }} />
+    </MuiLink>
+  )
+  return card ? <CardRow label={title}>{icon}</CardRow> : <Tooltip title={title}>{icon}</Tooltip>
+}
+
 const ConnectorSvg = styled.svg`
   position: absolute;
   top: 0;
@@ -252,12 +268,21 @@ export const TimelineTitle = ({
   )
 }
 
-/** Turns a timestamp into a link — used by the SIRI column to open the ride it came from
- *  on the map. Returning undefined leaves that timestamp as plain text.
+/** Where a column's times link to — used by the SIRI column to open the ride each time came
+ *  from on the map.
+ *
+ *  One `title` for the whole column, not one per link: they all lead to the same kind of
+ *  page, and the hidden width anchor has to print that title to reserve the row it occupies.
+ *  Reading it off a sample hit instead would tie the column's width to whether that
+ *  particular hit exists and happens to have a link.
  *
  *  Followed as a real document navigation: the target reads its state out of the query
  *  string, which only happens on a fresh app mount. */
-export type TimelineLink = { to: string; title: string }
+export type TimelineColumnLink = {
+  title: string
+  /** The href for the hit at this index, or undefined to leave it as plain text. */
+  hrefFor: (index: number) => string | undefined
+}
 
 type TimelineProps = {
   className?: string
@@ -270,7 +295,7 @@ type TimelineProps = {
   hoveredBand?: string
   /** Rides whose counterpart is missing from THIS column, at the y of the dot they do have. */
   absentMarks?: { key: string; top: number }[]
-  linkFor?: (index: number) => TimelineLink | undefined
+  link?: TimelineColumnLink
   /** Draws every label in this column as a bordered card. Without `content` a card holds
    *  nothing but its time — which is how the two columns stay symmetrical. */
   cards?: {
@@ -293,7 +318,7 @@ export const Timeline = ({
   bandKeys,
   hoveredBand,
   absentMarks,
-  linkFor,
+  link,
   cards,
 }: TimelineProps) => {
   const { i18n, t } = useTranslation()
@@ -318,7 +343,7 @@ export const Timeline = ({
       absent: false,
       highlighted,
       timeDisplay: dayjs(t).format('HH:mm:ss'),
-      link: linkFor?.(i),
+      href: link?.hrefFor(i),
       details: cards?.content?.[i],
     }
   })
@@ -330,10 +355,6 @@ export const Timeline = ({
     absent: true,
     highlighted: hoveredBand === mark.key,
   }))
-
-  // Every link in a column shares one title, so the first stands in for all of them when
-  // reserving the column's width.
-  const anchorLink = linkFor?.(0)
 
   const items = [...timeItems, ...markItems]
   const resolvedYs = resolveCollisions(
@@ -400,8 +421,8 @@ export const Timeline = ({
               <CardBody
                 time="00:00:00"
                 mapLink={
-                  anchorLink && (
-                    <CardRow label={anchorLink.title}>
+                  link && (
+                    <CardRow label={link.title}>
                       <MapIcon sx={{ fontSize: LABEL_ICON_SIZE }} />
                     </CardRow>
                   )
@@ -411,31 +432,14 @@ export const Timeline = ({
             ) : (
               <>
                 00:00:00
-                {linkFor && <MapIcon sx={{ fontSize: LABEL_ICON_SIZE }} />}
+                {link && <MapIcon sx={{ fontSize: LABEL_ICON_SIZE }} />}
               </>
             )}
           </WidthAnchor>
           {timeItems.map((item, index) => {
-            const link = item.link
-            const icon = link && (
-              <MuiLink
-                component={Link}
-                to={link.to}
-                reloadDocument
-                aria-label={link.title}
-                sx={{ display: 'inline-flex' }}>
-                <MapIcon sx={{ fontSize: LABEL_ICON_SIZE }} />
-              </MuiLink>
+            const mapLink = link && item.href && (
+              <MapLink title={link.title} href={item.href} card={!!cards} />
             )
-            // On a card the row's own label already names the destination, so a tooltip
-            // would only repeat it.
-            const mapLink =
-              link &&
-              (cards ? (
-                <CardRow label={link.title}>{icon}</CardRow>
-              ) : (
-                <Tooltip title={link.title}>{icon!}</Tooltip>
-              ))
             return (
               <Label
                 key={`${item.key}_label`}
@@ -444,7 +448,7 @@ export const Timeline = ({
                 $card={!!cards}
                 // A linked label leaves this off: the icon's tooltip is the only one wanted,
                 // and a native title here would surface a second one behind it.
-                title={item.link ? undefined : item.timeDisplay}>
+                title={item.href ? undefined : item.timeDisplay}>
                 {cards ? (
                   <CardBody time={item.timeDisplay} mapLink={mapLink} details={item.details} />
                 ) : (

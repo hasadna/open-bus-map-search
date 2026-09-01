@@ -5,7 +5,7 @@ import { MemoryRouter } from 'react-router'
 import { MAX_HITS_COUNT } from 'src/api/apiConfig'
 import dayjs from 'src/dayjs'
 import { cardHeight } from './layout'
-import { TimelineBoard } from './TimelineBoard'
+import { type SiriLink, TimelineBoard } from './TimelineBoard'
 import { instantY, type SiriHit } from './timelinePairing'
 import { ABSENT_MARK_SIZE, POINT_SIZE } from './TimelinePoint'
 
@@ -46,21 +46,22 @@ const PLANNED_LATE = time(GTFS[0].arrivalTime!)
 const PLANNED_MISSING = time(GTFS[1].arrivalTime!)
 const ACTUAL_LATE = time(SIRI[0].recordedAtTime!)
 
-const linkFor = (hit: SiriHit) => ({
-  to: `/single-line-map?focusPing=${hit.siriRideVehicleRef}-${hit.recordedAtTime!.getTime()}`,
+const siriLink: SiriLink = {
   title: 'show on map',
-})
+  to: (hit) =>
+    `/single-line-map?focusPing=${hit.siriRideVehicleRef}-${hit.recordedAtTime!.getTime()}`,
+}
 
 /** Every card links its bus to the vehicle page, so a board only renders under a router. */
 const routed = (board: ReactElement) => render(<MemoryRouter>{board}</MemoryRouter>)
 
-const renderBoard = (siriLinkFor?: (hit: SiriHit) => ReturnType<typeof linkFor>) =>
+const renderBoard = (link?: SiriLink) =>
   routed(
     <TimelineBoard
       target={dayjs('2026-08-20T05:33:00Z')}
       gtfsTimes={GTFS}
       siriTimes={SIRI}
-      siriLinkFor={siriLinkFor}
+      siriLink={link}
     />,
   )
 
@@ -80,7 +81,7 @@ const cardAt = (at: string) => {
 }
 
 /** Every card also links its plate to the vehicle page, so links have to be told apart. */
-const mapLinks = () => screen.queryAllByRole('link', { name: linkFor(SIRI[0]).title })
+const mapLinks = () => screen.queryAllByRole('link', { name: siriLink.title })
 
 const hoverAt = (clientY: number) =>
   fireEvent.mouseMove(screen.getByTestId('timeline-board'), { clientY })
@@ -239,7 +240,9 @@ describe('TimelineBoard hover emphasis', () => {
     hoverAt(50) // between the first ride's planned and actual dots
 
     const [hovered, untouched] = alphas()
-    expect(hovered).toBeGreaterThan(faint)
+    // Idle fills stack up over a busy board, so the one being read has to stand well clear of
+    // that wash rather than merely beat it.
+    expect(hovered / faint).toBeGreaterThanOrEqual(4)
     expect(untouched).toBe(faint)
   })
 
@@ -250,7 +253,7 @@ describe('TimelineBoard hover emphasis', () => {
     )
 
   it('thickens the card and the line leading to it, for that ride alone', () => {
-    renderBoard(linkFor)
+    renderBoard(siriLink)
     expect(getComputedStyle(cardAt(ACTUAL_LATE)).boxShadow).toBe('none')
 
     hoverAt(LATE_BAND.top + LATE_BAND.height / 2)
@@ -397,27 +400,27 @@ describe('TimelineBoard actual-time links', () => {
   })
 
   it('links every actual time by its icon, leaving the time itself plain text', () => {
-    renderBoard(linkFor)
+    renderBoard(siriLink)
 
     const [link, ...rest] = mapLinks()
     expect(rest).toHaveLength(0)
-    expect(link).toHaveAttribute('href', linkFor(SIRI[0]).to)
-    expect(link).toHaveAccessibleName(linkFor(SIRI[0]).title)
+    expect(link).toHaveAttribute('href', siriLink.to(SIRI[0]))
+    expect(link).toHaveAccessibleName(siriLink.title)
     expect(link).not.toHaveTextContent(ACTUAL_LATE)
     expect(screen.getByText(ACTUAL_LATE)).toBeInTheDocument()
   })
 
   it('names the map link in its row, so no tooltip has to explain the icon', () => {
-    renderBoard(linkFor)
+    renderBoard(siriLink)
 
-    const link = screen.getByRole('link', { name: linkFor(SIRI[0]).title })
-    expect(cardAt(ACTUAL_LATE)).toHaveTextContent(linkFor(SIRI[0]).title)
+    const link = screen.getByRole('link', { name: siriLink.title })
+    expect(cardAt(ACTUAL_LATE)).toHaveTextContent(siriLink.title)
     // A title on the link or on any ancestor would draw a browser tooltip over the row
     expect(link.closest('[title]')).toBeNull()
   })
 
   it('leaves the dots unlinked, since several can land on one pixel', () => {
-    renderBoard(linkFor)
+    renderBoard(siriLink)
 
     expect(dotAt(ACTUAL_LATE).tagName).toBe('DIV')
     expect(dotAt(ACTUAL_LATE)).not.toHaveAttribute('href')
@@ -427,13 +430,60 @@ describe('TimelineBoard actual-time links', () => {
   // at app mount — so this must be a real navigation. A client-side Link would call
   // preventDefault here and the ping would never arrive.
   it('navigates for real instead of client-side, so the query string is actually read', () => {
-    renderBoard(linkFor)
+    renderBoard(siriLink)
 
-    const link = screen.getByRole('link', { name: linkFor(SIRI[0]).title })
+    const link = screen.getByRole('link', { name: siriLink.title })
     const click = createEvent.click(link)
     fireEvent(link, click)
 
     expect(click.defaultPrevented).toBe(false)
+  })
+})
+
+// Cards are absolutely positioned, so a hidden copy of the widest one is the only thing
+// holding the column open — and the map row is part of that width. The row is named from the
+// column's own title, never from a sample hit: which hits exist, and whether they link
+// anywhere, is not what the column should be measured by.
+describe('TimelineBoard column width anchor', () => {
+  /** The hidden cards the two columns are sized from, planned first. */
+  const widthAnchors = () =>
+    Array.from(document.querySelectorAll('[aria-hidden="true"]')).filter((el) =>
+      el.textContent?.startsWith('00:00:00'),
+    )
+
+  it('draws a board whose actual column is empty, with no hit to take a link from', () => {
+    routed(
+      <TimelineBoard
+        target={dayjs('2026-08-20T05:33:00Z')}
+        gtfsTimes={GTFS}
+        siriTimes={[]}
+        siriLink={siriLink}
+      />,
+    )
+
+    expect(screen.getAllByTestId('CloseIcon')).toHaveLength(GTFS.length)
+    expect(mapLinks()).toHaveLength(0)
+    expect(widthAnchors().at(-1)).toHaveTextContent(siriLink.title)
+  })
+
+  it('holds the map row open even when not one ride has a link', () => {
+    routed(
+      <TimelineBoard
+        target={dayjs('2026-08-20T05:33:00Z')}
+        gtfsTimes={GTFS}
+        siriTimes={SIRI}
+        siriLink={{ ...siriLink, to: () => undefined }}
+      />,
+    )
+
+    expect(mapLinks()).toHaveLength(0)
+    expect(widthAnchors().at(-1)).toHaveTextContent(siriLink.title)
+  })
+
+  it('leaves the row out of a column that links nowhere', () => {
+    renderBoard()
+
+    expect(widthAnchors().at(-1)).not.toHaveTextContent(siriLink.title)
   })
 })
 
@@ -444,18 +494,18 @@ describe('TimelineBoard ride cards', () => {
         target={dayjs('2026-08-20T05:33:00Z')}
         gtfsTimes={GTFS}
         siriTimes={hits}
-        siriLinkFor={linkFor}
+        siriLink={siriLink}
       />,
     )
 
   it('names the bus without waiting for a hover', () => {
-    renderBoard(linkFor)
+    renderBoard(siriLink)
 
     expect(within(cardAt(ACTUAL_LATE)).getByText('170-84-504')).toBeInTheDocument()
   })
 
   it('stacks the time over a grid of one labelled row per link the ride offers', () => {
-    renderBoard(linkFor)
+    renderBoard(siriLink)
 
     const [timeRow, details] = Array.from(cardAt(ACTUAL_LATE).children) as HTMLElement[]
     expect(timeRow).toHaveTextContent(ACTUAL_LATE)
@@ -463,14 +513,14 @@ describe('TimelineBoard ride cards', () => {
     const [mapLabel, mapValue, plateLabel, plateValue] = Array.from(
       details.children,
     ) as HTMLElement[]
-    expect(mapLabel).toHaveTextContent(linkFor(SIRI[0]).title)
-    expect(within(mapValue).getByRole('link')).toHaveAttribute('href', linkFor(SIRI[0]).to)
+    expect(mapLabel).toHaveTextContent(siriLink.title)
+    expect(within(mapValue).getByRole('link')).toHaveAttribute('href', siriLink.to(SIRI[0]))
     expect(plateLabel).toHaveTextContent('vehicle plate')
     expect(within(plateValue).getByRole('link')).toHaveTextContent('170-84-504')
   })
 
   it('opens the vehicle page on the day the ride departed, not the day being browsed', () => {
-    renderBoard(linkFor)
+    renderBoard(siriLink)
 
     const plate = screen.getByRole('link', { name: /170-84-504/ })
     // the timeline searches ±4h, so a hit can belong to the neighbouring day; 05:00Z
@@ -487,7 +537,7 @@ describe('TimelineBoard ride cards', () => {
 
   // The fills span the whole board, so a see-through card would read its text over one.
   it('stands each card on ground of its own, themed with the board', () => {
-    renderBoard(linkFor)
+    renderBoard(siriLink)
 
     expect(getComputedStyle(cardAt(ACTUAL_LATE)).backgroundColor).toContain('--timeline-card-bg')
     expect(screen.getByTestId('timeline-board').parentElement!.style).toHaveProperty(
@@ -497,7 +547,7 @@ describe('TimelineBoard ride cards', () => {
   })
 
   it('cards the planned column too, with no bus of its own to name', () => {
-    renderBoard(linkFor)
+    renderBoard(siriLink)
 
     const planned = cardAt(time(GTFS[0].arrivalTime!))
     expect(planned).toHaveTextContent(time(GTFS[0].arrivalTime!))
@@ -505,7 +555,7 @@ describe('TimelineBoard ride cards', () => {
   })
 
   it('draws a connector from every card, and from the marker standing in for a missing one', () => {
-    renderBoard(linkFor)
+    renderBoard(siriLink)
 
     // the icons in the cards are SVG paths of their own — only the connector layer counts
     const connectors = document.querySelectorAll('svg:not(.MuiSvgIcon-root) > path')
@@ -532,7 +582,7 @@ describe('TimelineBoard card stacking', () => {
         target={dayjs('2026-08-20T05:33:00Z')}
         gtfsTimes={gtfsTimes}
         siriTimes={busyStop}
-        siriLinkFor={linkFor}
+        siriLink={siriLink}
       />,
     )
 
@@ -599,7 +649,7 @@ describe('TimelineBoard overlapping dots', () => {
         target={dayjs('2026-08-20T05:33:00Z')}
         gtfsTimes={GTFS}
         siriTimes={secondsApart}
-        siriLinkFor={linkFor}
+        siriLink={siriLink}
       />,
     )
 
