@@ -3,16 +3,9 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { initialize, mswLoader } from 'msw-storybook-addon'
 import { Suspense, useEffect } from 'react'
 import { BrowserRouter } from 'react-router'
-import { sb } from 'storybook/test'
 import { ThemeProvider, useTheme } from 'src/layout/ThemeContext'
 import i18n from 'src/locale/allTranslations'
 import 'src/index.scss'
-
-sb.mock(import('../src/api/groupByService.ts'))
-sb.mock(import('../src/api/gtfsService.ts'))
-sb.mock(import('../src/hooks/useFormQuerys.ts'))
-sb.mock(import('../src/api/agencyList.ts'))
-sb.mock(import('../src/pages/velocityHeatmap/useVelocityAggregationData.ts'))
 
 const queryClient = new QueryClient({
   defaultOptions: {
