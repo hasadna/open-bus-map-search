@@ -137,6 +137,8 @@
   "loading_error": "שגיאה...",
   "timestamp_gtfs": "🕛 זמן עצירה מתוכנן",
   "timestamp_siri": "🚌 זמן עצירה בפועל",
+  "station_stops_no_actual_ride": "לא נרשמה נסיעה בפועל ליציאה המתוכננת הזו",
+  "station_stops_unscheduled_ride": "הנסיעה הזו לא מופיעה בלוח הזמנים",
   "station_stops_show_ride_on_map": "הצגה במפה",
   "hits_not_found": "לא נמצאו נסיעות מתוכננות או בפועל",
   "planned_time": "שעה מתוכננת",
