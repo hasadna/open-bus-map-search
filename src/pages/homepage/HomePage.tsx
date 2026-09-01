@@ -1,6 +1,6 @@
 import {
   EmojiTransportationTwoTone,
-  HistoryTwoTone,
+  HailRounded,
   MapTwoTone,
   MenuTwoTone,
   NoTransferTwoTone,
@@ -72,10 +72,10 @@ export const HomePage = () => {
           description={t('singleline_map_page_description')}
         />
         <PageLink
-          icon={<HistoryTwoTone />}
-          label={t('timeline_page_title')}
-          to="/timeline"
-          description={t('timeline_page_description')}
+          icon={<HailRounded />}
+          label={t('station_stops_page_title')}
+          to="/station-stops"
+          description={t('station_stops_page_description')}
         />
         <PageLink
           icon={<NoTransferTwoTone />}

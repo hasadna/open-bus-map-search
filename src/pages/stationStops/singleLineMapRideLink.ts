@@ -15,10 +15,10 @@ type SelectedLine = { operatorId: string; lineNumber: string; routeKey: string }
  * /single-line-map works the same way.
  *
  * The ping is namespaced `single-line-map.focusPing` because it is a param of that page
- * alone, not a global search key — /timeline has no use for it.
+ * alone, not a global search key — /station-stops has no use for it.
  *
  * The date comes from the ride's own scheduled departure rather than the day being
- * browsed: the timeline searches ±4h, so a hit near midnight can belong to the
+ * browsed: the station-stops page searches ±4h, so a hit near midnight can belong to the
  * neighbouring day, and that is the day whose departure list holds it.
  */
 export function buildSingleLineMapRideLink(

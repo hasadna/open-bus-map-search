@@ -123,7 +123,7 @@ const SingleLineMapPage = () => {
     setStartTime(time)
   }
 
-  // Resolve an incoming deep link (from /timeline) once its ride's pings have loaded.
+  // Resolve an incoming deep link (from /station-stops) once its ride's pings have loaded.
   // Guarded by a ref rather than by clearing focusPing, so the key survives into the
   // share URL and a reload lands on the same ping.
   const focusedPingRef = useRef<string | null>(null)
