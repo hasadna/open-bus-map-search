@@ -1,6 +1,7 @@
+import { GtfsRoutePydanticModelFromJSON } from '@hasadna/open-bus-api-client'
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { delay, http, HttpResponse } from 'msw'
-import { expect, userEvent, waitFor, within } from 'storybook/test'
+import { expect, mocked, userEvent, waitFor, within } from 'storybook/test'
+import { getAllRoutesList } from 'src/api/gtfsService'
 import dayjs from 'src/dayjs'
 import i18n from 'src/locale/allTranslations'
 import { ISRAEL_TRAIN_ID } from 'src/model/operator'
@@ -9,17 +10,14 @@ import { OperatorRoutes } from './OperatorRoutes'
 
 const DATE = dayjs(getPastDate()).format('YYYY-MM-DD')
 
-// MSW matches by pathname (query params are ignored), so a single wildcard
-// handler serves every operatorId/limit/date the component asks for.
-const routesHandler = (resolver: Parameters<typeof http.get>[1]) =>
-  http.get('*/gtfs_routes/list', resolver)
-
 // The mock dataset is the full אגד route list (1243 routes → 354 line groups),
 // shared with the e2e HAR, so the line/city assertions below stay in sync.
-const withRoutes = routesHandler(async () => {
+const mockWithRoutes = async () => {
   const { operatorRoutes } = await import('../../../.storybook/mockData')
-  return HttpResponse.json(operatorRoutes)
-})
+  mocked(getAllRoutesList).mockResolvedValue(
+    operatorRoutes.map((route) => GtfsRoutePydanticModelFromJSON(route)),
+  )
+}
 
 // Real רכבת ישראל (operator 2) routes, fetched verbatim from the Stride API
 // (gtfs_routes/list?operator_refs=2) for 2024-02-12 — the same date the rest of
@@ -94,7 +92,11 @@ const trainRoutes = [
   },
 ]
 
-const withTrainRoutes = routesHandler(() => HttpResponse.json(trainRoutes))
+const mockWithTrainRoutes = () => {
+  mocked(getAllRoutesList).mockResolvedValue(
+    trainRoutes.map((route) => GtfsRoutePydanticModelFromJSON(route)),
+  )
+}
 
 // Read the line labels rendered in the (collapsed) accordion headers.
 const groupLabels = (canvasElement: HTMLElement) =>
@@ -119,9 +121,7 @@ const meta = {
     operatorId: '3',
     date: DATE,
   },
-  parameters: {
-    msw: { handlers: [withRoutes] },
-  },
+  beforeEach: mockWithRoutes,
   decorators: [
     (Story) => (
       <div style={{ minWidth: 700 }}>
@@ -140,22 +140,15 @@ export const Default: Story = {}
 
 /** Skeleton placeholder while the routes request is in flight. */
 export const Loading: Story = {
-  parameters: {
-    msw: {
-      handlers: [
-        routesHandler(async () => {
-          await delay('infinite')
-          return HttpResponse.json([])
-        }),
-      ],
-    },
+  beforeEach: () => {
+    mocked(getAllRoutesList).mockImplementation(() => new Promise(() => {}))
   },
 }
 
 /** Operator with no routes for the selected date — no search box, no list. */
 export const Empty: Story = {
-  parameters: {
-    msw: { handlers: [routesHandler(() => HttpResponse.json([]))] },
+  beforeEach: () => {
+    mocked(getAllRoutesList).mockResolvedValue([])
   },
 }
 
@@ -219,9 +212,7 @@ export const TrainOperator: Story = {
     operatorId: ISRAEL_TRAIN_ID,
     date: DATE,
   },
-  parameters: {
-    msw: { handlers: [withTrainRoutes] },
-  },
+  beforeEach: mockWithTrainRoutes,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     const firstGroup = await waitFor(() =>
