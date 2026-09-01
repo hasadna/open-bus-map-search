@@ -1,7 +1,7 @@
 import { SiriVehicleLocationWithRelatedPydanticModel } from '@hasadna/open-bus-api-client'
 import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
-import { useCallback, useContext, useMemo } from 'react'
+import { useContext, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   getGtfsStopHitTimesAsync,
@@ -88,12 +88,14 @@ const StationStopsPage = () => {
     [stopsQuery.data, stopKey],
   )
 
-  const siriLinkFor = useCallback(
-    (hit: SiriVehicleLocationWithRelatedPydanticModel) => {
-      if (!operatorId || !lineNumber || !routeKey) return undefined
-      const to = buildSingleLineMapRideLink(hit, { operatorId, lineNumber, routeKey })
-      return to ? { to, title: t('station_stops_show_ride_on_map') } : undefined
-    },
+  const siriLink = useMemo(
+    () => ({
+      title: t('station_stops_show_ride_on_map'),
+      to: (hit: SiriVehicleLocationWithRelatedPydanticModel) =>
+        operatorId && lineNumber && routeKey
+          ? buildSingleLineMapRideLink(hit, { operatorId, lineNumber, routeKey })
+          : undefined,
+    }),
     [operatorId, lineNumber, routeKey, t],
   )
 
@@ -213,7 +215,7 @@ const StationStopsPage = () => {
                     target={time}
                     gtfsTimes={hitsQuery.data.gtfsTime}
                     siriTimes={hitsQuery.data.siriTime}
-                    siriLinkFor={siriLinkFor}
+                    siriLink={siriLink}
                   />
                 ) : (
                   <NotFound>{t('hits_not_found')}</NotFound>
