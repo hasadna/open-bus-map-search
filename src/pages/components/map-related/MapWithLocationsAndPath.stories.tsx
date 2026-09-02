@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { mocked } from 'storybook/test'
-import { getAgencyList } from 'src/api/agencyList'
+import { http, HttpResponse } from 'msw'
 import { plannedRouteStops, positionGroups } from './mapStorybookData'
 import { MapWithLocationsAndPath } from './MapWithLocationsAndPath'
 
@@ -43,12 +42,18 @@ type Story = StoryObj<typeof meta>
 export const Default: Story = {}
 
 export const WhitData: Story = {
-  beforeEach: () => {
-    mocked(getAgencyList).mockResolvedValue([
-      { date: new Date('2024-02-11'), operatorRef: 3, agencyName: 'אגד' },
-      { date: new Date('2024-02-11'), operatorRef: 5, agencyName: 'דן' },
-      { date: new Date('2024-02-11'), operatorRef: 18, agencyName: 'קווים' },
-    ])
+  parameters: {
+    msw: {
+      handlers: [
+        http.get(
+          (info) => new URL(info.request.url).pathname === '/gtfs_agencies/list',
+          async () => {
+            const { agencies } = await import('../../../../.storybook/mockData')
+            return HttpResponse.json(agencies)
+          },
+        ),
+      ],
+    },
   },
   args: {
     plannedRouteStops: plannedRouteStops,

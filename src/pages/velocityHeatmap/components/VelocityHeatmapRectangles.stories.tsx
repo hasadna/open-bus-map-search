@@ -1,10 +1,8 @@
-import { SiriVelocityAggregationPydanticModelFromJSON } from '@hasadna/open-bus-api-client'
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { http, HttpResponse } from 'msw'
 import { TileLayer } from 'react-leaflet'
-import { mocked } from 'storybook/test'
 import { MapShell } from 'src/pages/components/map-related/MapShell'
 import { velocityAggregation } from '../../../../.storybook/mockData'
-import { useVelocityAggregationData } from '../useVelocityAggregationData'
 import { VelocityHeatmapLegend } from './VelocityHeatmapLegend'
 import { VelocityHeatmapRectangles } from './VelocityHeatmapRectangles'
 
@@ -68,31 +66,27 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 const parameters = {
+  msw: {
+    handlers: [
+      http.get(
+        'https://open-bus-stride-api.hasadna.org.il/siri_velocity_aggregation/siri_velocity_aggregation',
+        () => HttpResponse.json(velocityAggregation),
+      ),
+    ],
+  },
   eyes: {
     waitBeforeCapture: '.leaflet-overlay-pane path',
   },
 }
 
-const mockVelocityData = () => {
-  const data = velocityAggregation.map((row) => SiriVelocityAggregationPydanticModelFromJSON(row))
-  mocked(useVelocityAggregationData).mockReturnValue({
-    data,
-    loading: false,
-    error: null,
-    currZoom: 13,
-  })
-}
-
-export const Default: Story = { parameters, beforeEach: mockVelocityData }
+export const Default: Story = { parameters }
 
 export const StdDev: Story = {
   args: { visMode: 'std' },
   parameters,
-  beforeEach: mockVelocityData,
 }
 
 export const CoeffOfVar: Story = {
   args: { visMode: 'cv' },
   parameters,
-  beforeEach: mockVelocityData,
 }
