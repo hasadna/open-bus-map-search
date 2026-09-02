@@ -120,6 +120,18 @@ export const rideEndSvgMarkup = () =>
   chequerMarkup() +
   `</svg>`
 
+const ARTIFACT_DISC = { cx: 12, cy: 12, r: 7.3 }
+const ARTIFACT_DISC_CLASS = 'ping-badge ping-badge--artifact'
+const ARTIFACT_SLASH = 'M7.05 15.54 15.54 7.05l1.41 1.41-8.49 8.49z'
+
+/** The badge for a fix whose coordinates fall outside the country: struck through, because the
+ * vehicle did report — it is the position that is not real. */
+export const gpsArtifactSvgMarkup = () =>
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">` +
+  discMarkup(ARTIFACT_DISC, ARTIFACT_DISC_CLASS) +
+  `<path class="ping-badge-mark" d="${ARTIFACT_SLASH}"/>` +
+  `</svg>`
+
 /**
  * Leaflet adds these to the marker's own y-derived z-index, so a step has to outweigh the
  * vertical gap between two markers close enough to hide one another — which 1000 clears many
@@ -133,6 +145,10 @@ const Z_STEP = 1000
 export const bearingZIndex = (band: number) => (SPEED_BANDS.length - band) * Z_STEP
 export const STANDING_Z_INDEX = (SPEED_BANDS.length + 1) * Z_STEP
 export const BOOKEND_Z_INDEX = (SPEED_BANDS.length + 2) * Z_STEP
+
+/** Above the bookends: a spoofed fix lands hundreds of kilometres from the ride, where nothing
+ * else competes for the spot, but it must never end up under a ride it does not belong to. */
+export const ARTIFACT_Z_INDEX = (SPEED_BANDS.length + 3) * Z_STEP
 
 /** For the legend: an element rather than an `<img src="data:…">`, which would seal the glyph
  * off from the stylesheet that paints it. */

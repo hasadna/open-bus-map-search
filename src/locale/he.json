@@ -43,6 +43,8 @@
   "gps_coverage_vehicle_label": "רכב:",
   "gps_coverage_no_pings": "לא התקבלו דיווחי GPS עבור רכב זה",
   "gps_coverage_one_ping": "התקבל דיווח GPS אחד בלבד עבור רכב זה",
+  "gps_coverage_tooltip_artifact": "המיקום שדווח נמצא מחוץ לישראל (שיבוש GPS)",
+  "gps_coverage_artifact_note": "עמודות מתחת לקו הן דיווחים שהקואורדינטות שלהם נמצאות מחוץ לישראל — הרכב המשיך לדווח, אך המיקום אינו אמיתי ולכן הוא אינו נכלל במסלול המצויר.",
   "bus_tooltip_footer_previous_location": "המיקום הקודם",
   "bus_tooltip_footer_next_location": "המיקום הבא",
   "bus_icon_alt": "סמל אוטובוס",

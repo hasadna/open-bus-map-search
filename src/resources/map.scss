@@ -6,6 +6,11 @@ $primary: #1976d2;
 // a ride's own line colour.
 $slow-ping: #c1121f;
 
+// Fixes that fall outside the country. Kept off the speed ramp so "the position is not real"
+// never reads as a speed; must match ARTIFACT_COLOR in GpsCoverageStrip, which grades the same
+// fixes on the coverage strip.
+$gps-artifact: #8b5cf6;
+
 // Shared translucency for map overlay controls so they read consistently across
 // both themes. The attribution is more see-through; interactive buttons (zoom,
 // expand) are more opaque for a clearer hit target.
@@ -317,7 +322,8 @@ pre {
 // icon box. Rotation and band scale live on the SVG itself.
 .vehicle-bearing-marker > svg,
 .vehicle-standing-marker > svg,
-.vehicle-ride-end-marker > svg {
+.vehicle-ride-end-marker > svg,
+.vehicle-gps-artifact-marker > svg {
   width: 100%;
   height: 100%;
 }
@@ -332,6 +338,10 @@ pre {
 
   &--standing {
     stroke: $slow-ping;
+  }
+
+  &--artifact {
+    stroke: $gps-artifact;
   }
 }
 

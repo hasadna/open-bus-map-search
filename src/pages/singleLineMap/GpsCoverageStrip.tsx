@@ -3,6 +3,7 @@ import {
   HourglassBottomTwoTone,
   PlaceTwoTone,
   SquareFootTwoTone,
+  WrongLocationTwoTone,
 } from '@mui/icons-material'
 import {
   Accordion,
@@ -28,11 +29,19 @@ import {
   PingGap,
   pingGaps,
 } from 'src/pages/components/utils/gpsCoverage'
+import { isPlausibleLocation } from 'src/pages/components/utils/gpsIntegrity'
 
-/** Height of the coverage strip, px. Pauses rise from the bottom as columns. */
+/** Height of each half of the coverage strip, px. Columns grow away from a central axis. */
 const STRIP_HEIGHT = 48
 /** Shortest column as a fraction of full height, so on-cadence pings stay visible. */
 const MIN_BAR_FRACTION = 0.08
+
+/**
+ * Colour of the columns that hang below the axis. Deliberately outside the green→red cadence
+ * ramp above it: those columns grade how *long* the bus went quiet, these say the bus was
+ * reporting on time and the coordinates were not real. Same axis, different question.
+ */
+const ARTIFACT_COLOR = '#8b5cf6'
 
 /**
  * Color stops the gap severity (0–1) is mapped onto: green on cadence → orange stretched
@@ -93,15 +102,23 @@ const tooltipRowStyle = { display: 'flex', alignItems: 'center', gap: 6 } as con
  */
 const GapTooltip = ({
   gap,
+  isArtifact,
   onFocusPing,
 }: {
   gap: PingGap
+  isArtifact: boolean
   onFocusPing?: (loc: [number, number]) => void
 }) => {
   const { t } = useTranslation()
   const theme = useTheme()
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 13 }}>
+      {isArtifact && (
+        <span style={{ ...tooltipRowStyle, color: ARTIFACT_COLOR, fontWeight: 600 }}>
+          <WrongLocationTwoTone fontSize="small" />
+          {t('gps_coverage_tooltip_artifact')}
+        </span>
+      )}
       <span style={tooltipRowStyle}>
         <HourglassBottomTwoTone fontSize="small" />
         {t('gps_coverage_tooltip_duration', {
@@ -205,6 +222,13 @@ export const GpsCoverageStrip = ({
         <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1 }}>
           {t('gps_coverage_description')}
         </Typography>
+        {positionGroups.some((group) =>
+          group.positions.some((position) => !isPlausibleLocation(position.loc)),
+        ) && (
+          <Typography variant="body2" sx={{ color: ARTIFACT_COLOR, mb: 1 }}>
+            {t('gps_coverage_artifact_note')}
+          </Typography>
+        )}
 
         {positionGroups.map((group, idx) => {
           const gaps = pingGaps(group.positions)
@@ -258,10 +282,18 @@ export const GpsCoverageStrip = ({
                       direction: 'ltr',
                       position: 'relative',
                       display: 'flex',
-                      alignItems: 'flex-end',
-                      height: STRIP_HEIGHT,
+                      alignItems: 'stretch',
+                      height: STRIP_HEIGHT * 2,
                       width: '100%',
                     }}>
+                    <div
+                      style={{
+                        position: 'absolute',
+                        insetInline: 0,
+                        top: '50%',
+                        borderTop: `1px solid ${theme.palette.divider}`,
+                      }}
+                    />
                     {gaps.map((gap) => {
                       // Height is driven by the same gapSeverity the color uses, lifted onto a
                       // MIN_BAR_FRACTION floor so on-cadence gaps stay a visible baseline. Both
@@ -269,6 +301,10 @@ export const GpsCoverageStrip = ({
                       // GAP_FACTOR× dropout threshold, while absolute duration is carried by width.
                       const heightFraction =
                         MIN_BAR_FRACTION + (1 - MIN_BAR_FRACTION) * gapSeverity(gap.gapMs, median)
+                      // An interval is "claimed" when the fix that opens it is not a position the
+                      // bus could hold. It hangs below the axis because the vehicle *did* report
+                      // across it, which the same column drawn upwards would deny.
+                      const isArtifact = !isPlausibleLocation(gap.startLoc)
                       const key = String(gap.startMs)
                       const isHovered = hoveredKey === key
                       return (
@@ -294,27 +330,48 @@ export const GpsCoverageStrip = ({
                             },
                             arrow: { sx: { color: tooltipBg } },
                           }}
-                          title={<GapTooltip gap={gap} onFocusPing={onFocusPing} />}>
+                          title={
+                            <GapTooltip
+                              gap={gap}
+                              isArtifact={isArtifact}
+                              onFocusPing={onFocusPing}
+                            />
+                          }>
                           <div
                             style={{
                               flexGrow: gap.gapMs,
                               flexBasis: 0,
                               minWidth: 0,
-                              height: `${heightFraction * 100}%`,
-                              // Soften just the top corners so columns read as rounded bars
-                              // rising from a flat baseline.
-                              borderRadius: '3px 3px 0 0',
-                              background: gapColor(gapSeverity(gap.gapMs, median)),
-                              // Blue border as an inset ring (not outline) so it stays inside the
-                              // column and isn't painted over by the next; thicker/lighter on hover.
-                              position: 'relative',
-                              zIndex: isHovered ? 2 : undefined,
-                              boxShadow: isHovered
-                                ? `inset 0 0 0 2px ${theme.palette.primary.light}`
-                                : `inset 0 0 0 1px ${theme.palette.primary.main}`,
+                              display: 'flex',
+                              flexDirection: 'column',
+                              justifyContent: isArtifact ? 'flex-start' : 'flex-end',
+                              // The half the column does not occupy, so every column spans the
+                              // full strip and the hover target never shrinks with the bar.
+                              paddingBlock: isArtifact
+                                ? `${STRIP_HEIGHT}px 0`
+                                : `0 ${STRIP_HEIGHT}px`,
+                              boxSizing: 'border-box',
                               cursor: 'pointer',
-                            }}
-                          />
+                            }}>
+                            <div
+                              style={{
+                                height: `${heightFraction * 100}%`,
+                                // Soften only the corners away from the axis, so columns read as
+                                // rounded bars growing off a flat baseline in either direction.
+                                borderRadius: isArtifact ? '0 0 3px 3px' : '3px 3px 0 0',
+                                background: isArtifact
+                                  ? ARTIFACT_COLOR
+                                  : gapColor(gapSeverity(gap.gapMs, median)),
+                                // Blue border as an inset ring (not outline) so it stays inside the
+                                // column and isn't painted over by the next; thicker/lighter on hover.
+                                position: 'relative',
+                                zIndex: isHovered ? 2 : undefined,
+                                boxShadow: isHovered
+                                  ? `inset 0 0 0 2px ${theme.palette.primary.light}`
+                                  : `inset 0 0 0 1px ${theme.palette.primary.main}`,
+                              }}
+                            />
+                          </div>
                         </Tooltip>
                       )
                     })}

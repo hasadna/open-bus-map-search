@@ -44,6 +44,11 @@ export interface MapProps {
   showNavigationButtons?: boolean
   /** When set/changed, the map flies to this location (e.g. a coverage-gap ping). */
   focusTarget?: FocusTarget | null
+  /**
+   * Draw fixes whose coordinates fall outside Israel apart from the route rather than as part
+   * of it. Opt-in: only pages that fetch a ride's pings unfiltered have such fixes to separate.
+   */
+  flagGpsArtifacts?: boolean
 }
 
 /**

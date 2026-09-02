@@ -7,6 +7,7 @@
 import { DivIcon, Icon, IconOptions } from 'leaflet'
 import {
   arrowSvgMarkup,
+  gpsArtifactSvgMarkup,
   rideEndSvgMarkup,
   speedBand,
   standingSvgMarkup,
@@ -75,6 +76,15 @@ export const vehicleStandingMarker = (bearing?: number): DivIcon => {
 export const rideEndMarker = new DivIcon(
   pingIconOptions('vehicle-ride-end-marker', rideEndSvgMarkup(), RIDE_END_ICON_PX),
 )
+
+export const gpsArtifactMarker = new DivIcon(
+  pingIconOptions('vehicle-gps-artifact-marker', gpsArtifactSvgMarkup()),
+)
+
+/** Sparse dots for the route as *claimed* — deliberately fainter than the impossible-movement
+ * dashes, since none of the positions it joins is real. */
+export const claimedRouteDashArray = '1 9'
+export const implausibleSegmentDashArray = '9 7'
 
 export const plannedRouteLineColor = 'black'
 export const plannedRouteStopMarkerPath = `${import.meta.env.BASE_URL}marker-bus-stop.png`

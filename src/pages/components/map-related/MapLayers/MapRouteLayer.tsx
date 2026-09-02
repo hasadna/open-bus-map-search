@@ -1,11 +1,21 @@
 import type { Layer } from 'leaflet'
-import { Fragment, useCallback, useEffect, useRef } from 'react'
+import { Fragment, useCallback, useEffect, useMemo, useRef } from 'react'
 import { Marker, Polyline, Popup } from 'react-leaflet'
 import { useAgencyList } from 'src/hooks/useAgencyList'
 import { busIcon, busIconPath } from '../../utils/BusIcon'
+import { isPlausibleLocation } from '../../utils/gpsIntegrity'
 import type { FocusTarget, Point, PositionGroup } from '../map-types'
-import { rideEndMarker, vehicleBearingMarker, vehicleStandingMarker } from '../mapMarkers'
 import {
+  claimedRouteDashArray,
+  gpsArtifactMarker,
+  implausibleSegmentDashArray,
+  rideEndMarker,
+  vehicleBearingMarker,
+  vehicleStandingMarker,
+} from '../mapMarkers'
+import { buildRoutePolylines } from '../routePolylines'
+import {
+  ARTIFACT_Z_INDEX,
   bearingZIndex,
   BOOKEND_Z_INDEX,
   isStanding,
@@ -20,6 +30,7 @@ interface MapRouteLayerProps {
   showNavigationButtons?: boolean
   navigateMarkers: (groupIndex: number, id: number, marker: Layer) => void
   focusTarget?: FocusTarget | null
+  flagGpsArtifacts?: boolean
 }
 
 /** `Point.color` holds the ping's velocity, not a colour — see `toPoint`. */
@@ -39,9 +50,15 @@ export function MapRouteLayer({
   showNavigationButtons,
   navigateMarkers,
   focusTarget,
+  flagGpsArtifacts,
 }: MapRouteLayerProps) {
   const markerRef = useRef<{ [key: string]: Layer | null }>({})
   const agencyList = useAgencyList()
+  const polylinesByGroup = useMemo(
+    () =>
+      flagGpsArtifacts ? positionGroups.map((group) => buildRoutePolylines(group.positions)) : null,
+    [flagGpsArtifacts, positionGroups],
+  )
 
   const navigateToMarker = useCallback(
     (groupIndex: number, id: number) => {
@@ -63,29 +80,61 @@ export function MapRouteLayer({
     <>
       {positionGroups.map((group, groupIndex) => {
         const markerIds = group.positions.map((_, i) => i)
+        const polylines = polylinesByGroup?.[groupIndex]
+        // The operator's logo and the chequered flag belong to the ride, so they go on its real
+        // ends — a spoofed fix must not carry them off to Beirut.
+        const routeIndexes = group.positions
+          .map((pos, i) => (polylines && !isPlausibleLocation(pos.loc) ? -1 : i))
+          .filter((i) => i >= 0)
+        const firstIndex = routeIndexes[0]
+        const lastIndex = routeIndexes.at(-1)
         return (
           <Fragment key={groupIndex}>
-            <Polyline
-              pathOptions={{ color: group.color }}
-              positions={group.positions.map((p) => p.loc)}
-            />
+            {polylines ? (
+              <>
+                {polylines.route.map((path, i) => (
+                  <Polyline
+                    key={`route-${i}`}
+                    pathOptions={{
+                      color: group.color,
+                      dashArray: path.dashed ? implausibleSegmentDashArray : undefined,
+                    }}
+                    positions={path.positions}
+                  />
+                ))}
+                {polylines.claimed.map((path, i) => (
+                  <Polyline
+                    key={`claimed-${i}`}
+                    pathOptions={{ color: group.color, dashArray: claimedRouteDashArray }}
+                    positions={path}
+                  />
+                ))}
+              </>
+            ) : (
+              <Polyline
+                pathOptions={{ color: group.color }}
+                positions={group.positions.map((p) => p.loc)}
+              />
+            )}
             {group.positions.map((pos, i) => {
               const markerKey = `${groupIndex}-${i}`
               // A one-ping ride keeps the operator's logo — it never got to finish.
               const { icon, zIndexOffset } =
-                i === 0
-                  ? {
-                      icon: busIcon({
-                        // eslint-disable-next-line i18next/no-literal-string -- icon lookup key, not user text
-                        operator_id: pos.operator?.toString() || 'default',
-                        name: agencyList.find((agency) => agency.operatorRef === pos.operator)
-                          ?.agencyName,
-                      }),
-                      zIndexOffset: BOOKEND_Z_INDEX,
-                    }
-                  : i === group.positions.length - 1
-                    ? { icon: rideEndMarker, zIndexOffset: BOOKEND_Z_INDEX }
-                    : pingMarker(pos)
+                polylines && !isPlausibleLocation(pos.loc)
+                  ? { icon: gpsArtifactMarker, zIndexOffset: ARTIFACT_Z_INDEX }
+                  : i === firstIndex
+                    ? {
+                        icon: busIcon({
+                          // eslint-disable-next-line i18next/no-literal-string -- icon lookup key, not user text
+                          operator_id: pos.operator?.toString() || 'default',
+                          name: agencyList.find((agency) => agency.operatorRef === pos.operator)
+                            ?.agencyName,
+                        }),
+                        zIndexOffset: BOOKEND_Z_INDEX,
+                      }
+                    : i === lastIndex
+                      ? { icon: rideEndMarker, zIndexOffset: BOOKEND_Z_INDEX }
+                      : pingMarker(pos)
               return (
                 <Marker
                   ref={(ref) => {
