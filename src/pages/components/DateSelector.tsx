@@ -40,7 +40,13 @@ export function DateSelector({
   return (
     <DatePicker
       value={time}
-      onChange={onChange}
+      onChange={(value, context) => {
+        // The field fires on every keystroke, so a half-typed date arrives here
+        // as invalid. Forwarding it overwrites the sections the user is still
+        // editing, and on the dashboard it reaches groupByService and throws.
+        if (context.validationError) return
+        onChange(value)
+      }}
       format="DD/MM/YYYY"
       label={customLabel || t('choose_date')}
       disableFuture
