@@ -12,22 +12,21 @@ const persister = createAsyncStoragePersister({
   storage: window.localStorage,
 })
 
-/** An answer with nothing in it — `[]`, `null`, or the `null` a page returns instead of
- *  rethrowing. "There is genuinely nothing" and "this date is not ingested yet" look
- *  identical from here, which is why neither is worth keeping. */
+/** An answer with nothing in it — `[]`, or the `null` a page returns instead of rethrowing.
+ *  "There is genuinely nothing" and "this date is not ingested yet" look identical from
+ *  here, which is why neither is worth keeping. */
 const isEmptyResult = (data: unknown) => data == null || (Array.isArray(data) && data.length === 0)
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       gcTime: Infinity,
-      // An empty result is the one answer that must never be trusted for long: it is what
-      // the API returns for a date its ETL has not loaded yet, so it stops being true
-      // without anything in the app noticing. A minute is still long enough to absorb
-      // navigating back and forth, and far below the hours such a gap lasts. Real data
-      // does not go quietly out of date like that, so it is worth keeping longer.
-      staleTime: (query) => (isEmptyResult(query.state.data) ? 1000 * 60 : 1000 * 60 * 30),
+      staleTime: 1000 * 60 * 60 * 24, // 24 hours
+      // Keeping an empty result for a day would outlive the ingestion gap that produced it,
+      // and the service worker declining to store one cannot help while nothing re-asks.
+      refetchOnMount: (query) => (isEmptyResult(query.state.data) ? 'always' : false),
       refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
     },
   },
 })
