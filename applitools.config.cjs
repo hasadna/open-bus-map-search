@@ -1,8 +1,5 @@
 // @ts-check
 
-/**
- * @type {import('@applitools/eyes-storybook').ApplitoolsConfig}
- */
 const config = {
   // Pin the Applitools app explicitly: unset, eyes-storybook falls back to the
   // package.json name, putting the story baselines in a different app than the
@@ -12,8 +9,8 @@ const config = {
   dontCloseBatches: true,
   // 'nodiffs': visual diffs don't fail the job (the github integration reports them via a separate
   // commit status), but real errors (stories failed to load/render) still exit non-zero.
-  // The value is undocumented (typed as boolean) but supported — see eyes-storybook src/processResults.js.
-  exitcode: /** @type {boolean} */ (/** @type {unknown} */ ('nodiffs')),
+  // Undocumented — the published types declare boolean — but supported; see eyes-storybook src/processResults.js.
+  exitcode: 'nodiffs',
   waitBeforeCapture: async () => {
     const startTime = Date.now()
     const timeout = 60 * 1000
