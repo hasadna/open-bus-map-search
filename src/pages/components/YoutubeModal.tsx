@@ -15,15 +15,13 @@ const InfoYoutubeModal = ({ videoUrl, label, title }: InfoYoutubeModalProps) => 
 
   return (
     <>
-      {/* span carries the label/click like the old antd icon wrapper, so the
-          aria-labelled element keeps an svg descendant (tests rely on it) */}
-      <span
-        role="img"
+      <button
+        type="button"
         aria-label={label}
         className="modal-info-ico"
         onClick={() => setVisible(true)}>
         <HelpTwoTone fontSize="inherit" />
-      </span>
+      </button>
       <Modal
         width={'1000px'}
         footer={null}
