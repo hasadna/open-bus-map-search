@@ -1,24 +1,55 @@
-import {
-  GtfsRideStopWithRelatedPydanticModel,
-  SiriVehicleLocationWithRelatedPydanticModel,
-} from '@hasadna/open-bus-api-client'
-import { useCallback, useState } from 'react'
+import { GtfsRideStopWithRelatedPydanticModel } from '@hasadna/open-bus-api-client'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import styled from 'styled-components'
 import { MAX_HITS_COUNT } from 'src/api/apiConfig'
 import dayjs from 'src/dayjs'
 import { useTheme } from 'src/layout/ThemeContext'
-import { Coordinates } from 'src/model/location'
 import { HorizontalLine } from 'src/pages/components/timeline/HorizontalLine'
+import { cardHeight, LABEL_GAP, PADDING } from 'src/pages/components/timeline/layout'
+import { RideVehicle, WIDEST_VEHICLE } from 'src/pages/components/timeline/RideVehicle'
 import { Timeline, TimelineTitle } from 'src/pages/components/timeline/Timeline'
-import { PointType } from 'src/pages/components/timeline/TimelinePoint'
+import {
+  type BandDeviation,
+  bandDeviation,
+  departureKey,
+  deviationSpans,
+  hitTime,
+  instantY,
+  pairTimelineHits,
+  pickBandKey,
+  type SiriHit,
+  type TimelineHit,
+} from 'src/pages/components/timeline/timelinePairing'
+import { ABSENT_MARK_SIZE, PointType } from 'src/pages/components/timeline/TimelinePoint'
 
-export const PADDING = 10
 const COLUMN_GAP = 32
+/** A planned stop has nothing under its time to show. */
+const PLANNED_CARD_HEIGHT = cardHeight(0)
+/** What a ✕ or ? costs the label lane it stands in. */
+const MARK_SLOT = ABSENT_MARK_SIZE + LABEL_GAP
 
-const getRange = (timestamps: Date[]) =>
-  timestamps.length > 0 ? dayjs(timestamps[timestamps.length - 1]).diff(timestamps[0], 'second') : 0
+/** How many markers a column will carry: one per departure the other column knows and this
+ *  one does not. Bands pair on the departure minute alone, so this is settled before any
+ *  geometry is — which is what lets the axis be sized off it. */
+const unpairedDepartures = (hits: TimelineHit[], counterparts: TimelineHit[]) => {
+  const paired = new Set(counterparts.map(departureKey))
+  const unpaired = new Set<string>()
+  for (const hit of hits) {
+    const key = departureKey(hit)
+    // A hit with no departure time could never have paired, so it says nothing is missing.
+    if (key !== undefined && !paired.has(key)) unpaired.add(key)
+  }
+  return unpaired.size
+}
 
-const minDate = (date1: Date, date2: Date) => (date1 <= date2 ? date1 : date2)
+/** Both columns share one scale: per-column ranges let the other column's later hits fall
+ *  past the bottom and collapse onto a single pixel. */
+const boardWindow = (timestamps: Date[]) => {
+  const instants = timestamps.map((t) => dayjs(t).valueOf()).filter(Number.isFinite)
+  if (instants.length === 0) return { lowerBound: Date.now(), rangeSeconds: 0 }
+  const lowerBound = Math.min(...instants)
+  return { lowerBound, rangeSeconds: (Math.max(...instants) - lowerBound) / 1000 }
+}
 
 const TitleRow = styled.div`
   display: grid;
@@ -38,6 +69,60 @@ const Container = styled.div`
   grid-template-columns: 1fr 1fr;
   column-gap: ${COLUMN_GAP}px;
 `
+
+/**
+ * How much colour a resting fill lays down, per theme. On white a fill is a small darkening
+ * the eye passes over; on a near-black board the same alpha is light added where there was
+ * none, and a screenful of them reads as noise rather than as a wash — so dark mode gets
+ * well under half. Measured on the two boards: at 5% the fill lifts the dark background's
+ * luminance by 32% but drops white's by only 8%.
+ */
+const IDLE_ALPHA = { light: 5, dark: 2 }
+
+type BandTint = { $highlighted: boolean; $idle: number }
+
+/** Faint when idle, deep under the pointer. */
+const fillAlpha = ({ $highlighted, $idle }: BandTint) => `${$highlighted ? 40 : $idle}%`
+
+/** Twice the fill it bounds, so a band keeps its edges as it fades. */
+const edgeAlpha = ({ $highlighted, $idle }: BandTint) => `${$highlighted ? 90 : $idle * 2}%`
+
+/** Height IS the delay, so the worse a ride ran the more coloured surface it puts on screen.
+ *  Every ride is drawn, not just the hovered one, and the fills are faint enough to compound:
+ *  where several rides ran off schedule over the same minutes the overlap darkens, and that
+ *  darkness is the honest reading — a whole window of buses missed, not one. (Within a single
+ *  band early and late still abut at the scheduled instant, so no ride doubles its own colour.) */
+const Band = styled.div<
+  BandTint & {
+    $top: number
+    $height: number
+    $rgb: string
+  }
+>`
+  position: absolute;
+  left: 0;
+  width: 100%;
+  top: ${({ $top }) => $top}px;
+  height: ${({ $height }) => $height}px;
+  min-height: 2px;
+  box-sizing: border-box;
+  background-color: rgb(${({ $rgb }) => $rgb} / ${fillAlpha});
+  border-top: 1px solid rgb(${({ $rgb }) => $rgb} / ${edgeAlpha});
+  border-bottom: 1px solid rgb(${({ $rgb }) => $rgb} / ${edgeAlpha});
+  border-radius: 3px;
+  user-select: none;
+  pointer-events: none;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+`
+
+const deviationRgb = (deviation: BandDeviation) => {
+  if (deviation === 'late') return 'var(--timeline-late)'
+  if (deviation === 'early') return 'var(--timeline-early)'
+  return 'var(--timeline-neutral-rgb)'
+}
+
 const CenteringWrapper = styled.div`
   display: flex;
   justify-content: center;
@@ -53,69 +138,151 @@ type TimelineBoardProps = {
   className?: string
   target: dayjs.Dayjs
   gtfsTimes: GtfsRideStopWithRelatedPydanticModel[]
-  siriTimes: (SiriVehicleLocationWithRelatedPydanticModel & Coordinates)[]
+  siriTimes: SiriHit[]
+  /** Deep-links each actual (SIRI) time to the ride it belongs to. */
+  siriLink?: SiriLink
 }
 
-export const TimelineBoard = ({ className, target, gtfsTimes, siriTimes }: TimelineBoardProps) => {
+/** One title for the whole actual column — every one of its links opens the same kind of
+ *  page, and the column is sized off that title rather than off any one hit's link. */
+export type SiriLink = { title: string; to: (siriTime: SiriHit) => string | undefined }
+
+export const TimelineBoard = ({
+  className,
+  target,
+  gtfsTimes,
+  siriTimes,
+  siriLink,
+}: TimelineBoardProps) => {
   const { isDarkTheme } = useTheme()
-  const [hoveredTimestamp, setHoveredTimestamp] = useState<string | undefined>(undefined)
-  const gtfsDates = gtfsTimes.map((t) => t.arrivalTime!)
-  const siriDates = siriTimes.map((t) => t.recordedAtTime!)
-  const gtfsRange = getRange(gtfsDates)
-  const siriRange = getRange(siriDates)
-
-  const lowerBound = minDate(gtfsDates[0] ?? Date.now(), siriDates[0] ?? Date.now())
-  const totalRange = Math.max(gtfsRange, siriRange)
-  const totalHeight = 400 + (Math.max(gtfsTimes.length, siriTimes.length) / MAX_HITS_COUNT) * 400
-
-  const allTimestamps: Set<Date> = new Set([target.toDate(), ...gtfsDates, ...siriDates])
+  // The plate row, plus the map row Timeline adds for a column that links out.
+  const actualCardHeight = cardHeight(siriLink ? 2 : 1)
+  const [hoveredBand, setHoveredBand] = useState<string | undefined>(undefined)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const { lowerBound, rangeSeconds } = boardWindow([
+    ...gtfsTimes.map((t) => hitTime(t)),
+    ...siriTimes.map((t) => hitTime(t)),
+  ])
+  // Labels are pushed apart until none overlap, so the axis has to be at least as tall as a
+  // column's worth of them — its cards AND the markers standing in for the rides missing
+  // from it, which share the one label lane. Short of that the resolver, which pins the
+  // lowest label to the end of the axis, drives the surplus off the top.
+  const stackHeight = Math.max(
+    gtfsTimes.length * (PLANNED_CARD_HEIGHT + LABEL_GAP) +
+      unpairedDepartures(siriTimes, gtfsTimes) * MARK_SLOT,
+    siriTimes.length * (actualCardHeight + LABEL_GAP) +
+      unpairedDepartures(gtfsTimes, siriTimes) * MARK_SLOT,
+  )
+  const totalHeight = Math.max(
+    400 + (Math.max(gtfsTimes.length, siriTimes.length) / MAX_HITS_COUNT) * 400,
+    stackHeight,
+  )
 
   const timestampToTop = useCallback(
     (timestamp: dayjs.Dayjs) => {
-      const deltaFromTop = timestamp.diff(lowerBound, 'second')
-      const portionOfHeight = deltaFromTop / totalRange
-      return Math.min(PADDING + portionOfHeight * totalHeight, totalHeight)
+      // A board whose hits all share one instant has no scale — one line, not NaN.
+      const portionOfHeight =
+        rangeSeconds > 0 ? timestamp.diff(lowerBound, 'second') / rangeSeconds : 0
+      return PADDING + portionOfHeight * totalHeight
     },
-    [lowerBound, totalRange, totalHeight],
+    [lowerBound, rangeSeconds, totalHeight],
   )
+
+  const { gtfsKeys, siriKeys, bands } = useMemo(
+    () => pairTimelineHits(gtfsTimes, siriTimes, (hit) => timestampToTop(dayjs(hitTime(hit)))),
+    [gtfsTimes, siriTimes, timestampToTop],
+  )
+
+  const spans = useMemo(
+    () =>
+      bands.flatMap((band) => deviationSpans(band).map((span) => ({ ...span, bandKey: band.key }))),
+    [bands],
+  )
+
+  // The marker goes on the column the ride is missing FROM, at the y of the dot it does have.
+  const absentMarks = useMemo(
+    () =>
+      bands.flatMap((band) => {
+        const deviation = bandDeviation(band)
+        if (deviation === 'no-show')
+          return [{ key: band.key, top: Math.min(...band.plannedTops), column: PointType.SIRI }]
+        if (deviation === 'unscheduled')
+          return [{ key: band.key, top: Math.min(...band.actualTops), column: PointType.GTFS }]
+        return []
+      }),
+    [bands],
+  )
+
+  const trackPointer = (event: React.MouseEvent<HTMLDivElement>) => {
+    const bounds = containerRef.current?.getBoundingClientRect()
+    if (bounds) setHoveredBand(pickBandKey(bands, event.clientY - bounds.top))
+  }
 
   return (
     <CenteringWrapper className={className}>
       <StyledContainer
+        // deviation colours are rgb triplets, so a fill and its edge rule can share one
+        // element at different alphas
         style={{
           '--timeline-neutral': isDarkTheme ? '#8c8c8c' : '#bfbfbf',
+          '--timeline-neutral-rgb': isDarkTheme ? '140 140 140' : '191 191 191',
           '--timeline-highlight-ring': isDarkTheme ? 'white' : '#333',
+          '--timeline-card-bg': isDarkTheme ? '#1c1d1c' : '#fff',
+          '--timeline-absent-fill': isDarkTheme ? '#fff' : '#000',
+          '--timeline-late': isDarkTheme ? '255 77 79' : '245 34 45',
+          '--timeline-early': isDarkTheme ? '255 169 64' : '250 140 22',
         }}>
         <TitleRow>
           <StyledTimelineTitle pointType={PointType.GTFS} />
           <StyledTimelineTitle pointType={PointType.SIRI} />
         </TitleRow>
-        <Container>
+        <Container
+          data-testid="timeline-board"
+          ref={containerRef}
+          onMouseMove={trackPointer}
+          onMouseLeave={() => setHoveredBand(undefined)}>
+          {spans.map((span) => (
+            <Band
+              key={`${span.bandKey}_${span.deviation}`}
+              data-testid="timeline-band"
+              $top={span.top}
+              $height={span.bottom - span.top}
+              $rgb={deviationRgb(span.deviation)}
+              $idle={isDarkTheme ? IDLE_ALPHA.dark : IDLE_ALPHA.light}
+              $highlighted={span.bandKey === hoveredBand}
+            />
+          ))}
+          <HorizontalLine top={instantY(timestampToTop(target))} isTarget />
           <Timeline
             timestamps={gtfsTimes}
             totalHeight={totalHeight}
             pointType={PointType.GTFS}
             timestampToTop={timestampToTop}
-            hoveredTimestamp={hoveredTimestamp}
+            bandKeys={gtfsKeys}
+            hoveredBand={hoveredBand}
+            absentMarks={absentMarks.filter((mark) => mark.column === PointType.GTFS)}
+            cards={{ height: PLANNED_CARD_HEIGHT }}
           />
           <Timeline
             timestamps={siriTimes}
             totalHeight={totalHeight}
             pointType={PointType.SIRI}
             timestampToTop={timestampToTop}
-            hoveredTimestamp={hoveredTimestamp}
+            bandKeys={siriKeys}
+            hoveredBand={hoveredBand}
+            absentMarks={absentMarks.filter((mark) => mark.column === PointType.SIRI)}
+            link={
+              siriLink && {
+                title: siriLink.title,
+                hrefFor: (index) => siriLink.to(siriTimes[index]),
+              }
+            }
+            cards={{
+              height: actualCardHeight,
+              content: siriTimes.map((hit) => <RideVehicle key={hit.id} hit={hit} />),
+              widest: <RideVehicle hit={WIDEST_VEHICLE} />,
+            }}
           />
-          {Array.from(allTimestamps).map((timestamp, index) => {
-            const tsKey = dayjs(timestamp).toISOString()
-            return (
-              <HorizontalLine
-                key={index}
-                top={timestampToTop(dayjs(timestamp))}
-                externalVisible={hoveredTimestamp === tsKey}
-                onHoverChange={(entering) => setHoveredTimestamp(entering ? tsKey : undefined)}
-              />
-            )
-          })}
         </Container>
       </StyledContainer>
     </CenteringWrapper>

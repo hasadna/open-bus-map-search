@@ -66,15 +66,15 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
       await eyes.check('about page')
     })
 
-    test(`Timeline Page Should Look Good [${mode}]`, async ({
+    test(`Station Stops Page Should Look Good [${mode}]`, async ({
       page,
       advancedRouteFromHAR,
       eyes,
     }) => {
-      await advancedRouteFromHAR('tests/HAR/timeline.har', harOptions)
-      await visitPage(page, 'timeline_page_title')
+      await advancedRouteFromHAR('tests/HAR/stationStops.har', harOptions)
+      await visitPage(page, 'station_stops_page_title')
       await page.locator('.page-title').waitFor()
-      await eyes.check('timeline page')
+      await eyes.check('station stops page')
     })
 
     test(`Gaps Page Should Look Good [${mode}]`, async ({ page, advancedRouteFromHAR, eyes }) => {
@@ -120,8 +120,8 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
       // full navigation so MainRoute seeds the vehicle number from the URL
       await page.goto(`/vehicle?vehicle.vehicleNumber=${VEHICLE_NUMBER}`)
       await page.locator('.preloader').waitFor({ state: 'hidden' })
-      // wait for the resolved rides table (incl. the post-midnight 🌙 row) before snapping
-      await page.getByRole('row').filter({ hasText: '🌙 00:30' }).waitFor()
+      // wait for the resolved rides table (incl. the last, 23:30 row) before snapping
+      await page.getByRole('row').filter({ hasText: '23:30' }).waitFor()
       await waitForSkeletonsToHide(page)
       await eyes.check('vehicle page', { fully: true })
     })

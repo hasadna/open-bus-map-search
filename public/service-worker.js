@@ -1,9 +1,7 @@
-const CACHE_NAME = 'get-requests-cache-v2'
+const CACHE_NAME = 'get-requests-cache-v3'
 const CACHE_URLS = ['open-bus-stride-api']
 
-// Install event: cache basic URLs (optional)
-self.addEventListener('install', (event) => {
-  event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(CACHE_URLS)))
+self.addEventListener('install', () => {
   self.skipWaiting()
 })
 
@@ -32,22 +30,29 @@ self.addEventListener('fetch', (event) => {
     !event.request.url.includes(today) &&
     CACHE_URLS.some((url) => event.request.url.includes(url))
   ) {
-    event.respondWith(
-      caches.match(event.request).then((cachedResponse) => {
-        // Return cached response if available
-        if (cachedResponse) return cachedResponse
-
-        // Otherwise, fetch from network and cache the response
-        return fetch(event.request).then((response) => {
-          if (response.ok) {
-            const responseClone = response.clone()
-            caches.open(CACHE_NAME).then((cache) => {
-              cache.put(event.request, responseClone)
-            })
-          }
-          return response
-        })
-      }),
-    )
+    event.respondWith(cacheFirst(event))
   }
 })
+
+async function cacheFirst(event) {
+  const cachedResponse = await caches.match(event.request)
+  if (cachedResponse) return cachedResponse
+
+  const response = await fetch(event.request)
+  if (response.ok) {
+    event.waitUntil(cacheUnlessEmpty(event.request, response.clone()))
+  }
+  return response
+}
+
+// An empty list is a moment in time, not an answer: it is what the API returns for a date
+// its ETL has not loaded yet. Nothing in this cache ever expires, so storing one would keep
+// hiding data that has since arrived, for as long as the browser keeps the cache.
+async function cacheUnlessEmpty(request, response) {
+  if (isEmptyBody(await response.clone().text())) return
+
+  const cache = await caches.open(CACHE_NAME)
+  await cache.put(request, response)
+}
+
+const isEmptyBody = (body) => body.length <= 8 && ['', '[]', '{}', 'null'].includes(body.trim())
