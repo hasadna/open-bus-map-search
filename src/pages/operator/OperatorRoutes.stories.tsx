@@ -141,6 +141,8 @@ export const Default: Story = {}
 /** Skeleton placeholder while the routes request is in flight. */
 export const Loading: Story = {
   parameters: {
+    // The skeleton never resolves here, so opt out of the global wait-for-skeletons capture hook.
+    eyes: { waitBeforeCapture: 100 },
     msw: {
       handlers: [
         routesHandler(async () => {
