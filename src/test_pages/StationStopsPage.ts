@@ -4,7 +4,7 @@ import { BasePage } from './BasePage'
 
 export { expect } from 'tests/utils'
 
-class TimelinePage extends BasePage {
+class StationStopsPage extends BasePage {
   constructor(page: Page) {
     super(page)
   }
@@ -49,17 +49,13 @@ class TimelinePage extends BasePage {
   public get stationList() {
     return this.page.locator('ul#stop-select-listbox')
   }
-  get closeButton() {
-    return this.page.locator('svg.clear-indicator')
-  }
-
   get lineNumberField() {
     return this.page.locator("//input[@placeholder='לדוגמה: 17א']")
   }
 }
 
-export const test = base.extend<{ timelinePage: TimelinePage }>({
-  timelinePage: async ({ page }, handle) => {
-    await handle(new TimelinePage(page))
+export const test = base.extend<{ stationStopsPage: StationStopsPage }>({
+  stationStopsPage: async ({ page }, handle) => {
+    await handle(new StationStopsPage(page))
   },
 })

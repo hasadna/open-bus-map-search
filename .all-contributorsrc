@@ -502,6 +502,34 @@
         "code",
         "review"
       ]
+    },
+    {
+      "login": "Bellavely",
+      "name": "Bella Vayzburg",
+      "avatar_url": "https://avatars.githubusercontent.com/u/90250915?v=4",
+      "profile": "https://github.com/Bellavely",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "ifrahgul",
+      "name": "Ifrah Gul",
+      "avatar_url": "https://avatars.githubusercontent.com/u/219668347?v=4",
+      "profile": "https://github.com/ifrahgul",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "jonsuguiyama",
+      "name": "Jon Suguiyama",
+      "avatar_url": "https://avatars.githubusercontent.com/u/9615633?v=4",
+      "profile": "https://github.com/jonsuguiyama",
+      "contributions": [
+        "code",
+        "bug"
+      ]
     }
   ]
 }

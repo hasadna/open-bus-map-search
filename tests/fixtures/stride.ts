@@ -11,7 +11,7 @@ import { routeService, RouteStub, unrouteStubs } from './mockRouter'
  */
 export type StrideStub = RouteStub
 
-export { okStub, errorStub, optionalStub } from './mockRouter'
+export { okStub, errorStub } from './mockRouter'
 
 const STRIDE = /stride-api/
 

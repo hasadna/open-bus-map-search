@@ -30,11 +30,11 @@ test.describe('clearButton functionality', () => {
     await advancedRouteFromHAR('tests/HAR/clearbutton.har', harOptions)
   })
 
-  test.describe('clearButton functionality at TimeLinePage', () => {
+  test.describe('clearButton functionality at StationStopsPage', () => {
     test('after clear `line-number` value - should hide `stop` & `route` inputs', async ({
       page,
     }) => {
-      await visitPage(page, 'timeline_page_title')
+      await visitPage(page, 'station_stops_page_title')
       await fillDateField(page, 'תאריך')
       const { operator, lineNumber, route, stop } = new Selectors(page)
 
@@ -48,7 +48,7 @@ test.describe('clearButton functionality', () => {
     })
 
     test('after clear `route` input value - should hide `stop` input', async ({ page }) => {
-      await visitPage(page, 'timeline_page_title')
+      await visitPage(page, 'station_stops_page_title')
       const { operator, lineNumber, route, stop } = new Selectors(page)
       await fillDateField(page, 'תאריך')
       await operator.click()

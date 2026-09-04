@@ -12,12 +12,19 @@ const persister = createAsyncStoragePersister({
   storage: window.localStorage,
 })
 
+/** An answer with nothing in it — `[]`, or the `null` a page returns instead of rethrowing.
+ *  "There is genuinely nothing" and "this date is not ingested yet" look identical from
+ *  here, which is why neither is worth keeping. */
+const isEmptyResult = (data: unknown) => data == null || (Array.isArray(data) && data.length === 0)
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       gcTime: Infinity,
       staleTime: 1000 * 60 * 60 * 24, // 24 hours
-      refetchOnMount: false,
+      // Keeping an empty result for a day would outlive the ingestion gap that produced it,
+      // and the service worker declining to store one cannot help while nothing re-asks.
+      refetchOnMount: (query) => (isEmptyResult(query.state.data) ? 'always' : false),
       refetchOnWindowFocus: false,
       refetchOnReconnect: false,
     },

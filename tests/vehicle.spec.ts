@@ -1,5 +1,5 @@
 import i18next from 'i18next'
-import { israelServiceTime } from './fixtures/date'
+import { israelTime } from './fixtures/date'
 import { strideDefaults } from './fixtures/defaults'
 import { siriRide, siriRidesWire } from './fixtures/siri'
 import { errorStub, okStub, routeStride, unrouteStride } from './fixtures/stride'
@@ -9,8 +9,11 @@ import { mockVehicleApi, VEHICLE_NUMBER, vehicleUrls } from './vehicleMocks'
 // Land directly on /vehicle with the number in the URL: a full navigation makes
 // MainRoute capture it into InitialUrlParamsContext, which is how the page seeds
 // its number (the same path the map legend's deep-link relies on).
-const gotoSeededVehiclePage = async (page: Parameters<typeof setupTest>[0]) => {
-  await page.goto(`/vehicle?vehicleNumber=${VEHICLE_NUMBER}`)
+const gotoSeededVehiclePage = async (
+  page: Parameters<typeof setupTest>[0],
+  key = 'vehicle.vehicleNumber',
+) => {
+  await page.goto(`/vehicle?${key}=${VEHICLE_NUMBER}`)
   await page.locator('.preloader').waitFor({ state: 'hidden' })
 }
 
@@ -25,8 +28,8 @@ test.describe('Vehicle page', () => {
     await mockVehicleApi(page)
   })
 
-  // The per-field resolution (operator/line/origin/destination, moon prefix, no-route
-  // dashes, exact link payload) is exhaustively covered in buildVehicleRideRows.test.ts.
+  // The per-field resolution (operator/line/origin/destination, no-route dashes, exact
+  // link payload) is exhaustively covered in buildVehicleRideRows.test.ts.
   // This smoke only verifies the page wires that transform up: it renders the seeded
   // vehicle's rides and a resolvable ride navigates to single-line-map.
   test('renders the seeded vehicle rides and links a resolvable ride to single-line-map', async ({
@@ -41,6 +44,15 @@ test.describe('Vehicle page', () => {
 
     await rideRow(page, '04:30').getByRole('link').click()
     await page.waitForURL((u) => u.pathname === '/single-line-map')
+  })
+
+  test('still seeds from a pre-namespace link carrying a bare vehicleNumber', async ({ page }) => {
+    await gotoSeededVehiclePage(page, 'vehicleNumber')
+
+    await expect(rideRow(page, '04:30')).toBeVisible()
+    await expect(page.getByRole('textbox', { name: i18next.t('choose_vehicle') })).toHaveValue(
+      VEHICLE_NUMBER,
+    )
   })
 
   test('typing a vehicle number in the selector loads that vehicle rides', async ({ page }) => {
@@ -66,7 +78,7 @@ test.describe('Vehicle page', () => {
       vehicleRef: VEHICLE_NUMBER,
       siriRouteLineRef: 28099,
       siriRouteOperatorRef: 97,
-      scheduledStartTime: israelServiceTime(4, 30),
+      scheduledStartTime: israelTime(4, 30),
     })
     await routeStride(page, [okStub(vehicleUrls.rides, siriRidesWire([oneRide]))])
     unrouteStride(page, [vehicleUrls.gtfsRoutes(3)]) // no operator-3 ride left to resolve

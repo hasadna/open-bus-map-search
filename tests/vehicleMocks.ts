@@ -1,5 +1,5 @@
 import { Page } from '@playwright/test'
-import { FIXTURE_DATE, israelServiceTime, siriWindow } from './fixtures/date'
+import { FIXTURE_DATE, israelTime, siriWindow } from './fixtures/date'
 import { gtfsRoute, gtfsRoutesWire } from './fixtures/gtfs'
 import { siriRide, siriRidesWire } from './fixtures/siri'
 import { okStub, routeStride } from './fixtures/stride'
@@ -19,7 +19,7 @@ const { from: siriFrom, to: siriTo } = siriWindow()
 // The page fetches GTFS routes once per DISTINCT operator in the rides (97 and 3) — two
 // separate requests the old fuzzy matcher served the same body. Each gets its own.
 //
-// The date is FIXTURE_DATE itself, NOT the day before: the page anchors the service-day date at
+// The date is FIXTURE_DATE itself, NOT the day before: the page anchors the selected date at
 // UTC noon (`utcNoonForDateStr`, src/dayjs.ts) before the gtfs client serializes it as a UTC
 // calendar date, so it survives intact. Anchoring at Israel-midnight instead serializes to
 // 22:00Z the previous day and queries the wrong GTFS day — the bug #1689 fixed, and the
@@ -49,7 +49,7 @@ const SIRI_RIDES = [
     vehicleRef: VEHICLE_NUMBER,
     siriRouteLineRef: 28099,
     siriRouteOperatorRef: 97,
-    scheduledStartTime: israelServiceTime(4, 30),
+    scheduledStartTime: israelTime(4, 30),
   }),
   // line ref 99999 has no matching GTFS route — must render as dashes, no link (operator 3)
   siriRide({
@@ -57,16 +57,15 @@ const SIRI_RIDES = [
     vehicleRef: VEHICLE_NUMBER,
     siriRouteLineRef: 99999,
     siriRouteOperatorRef: 3,
-    scheduledStartTime: israelServiceTime(8, 0),
+    scheduledStartTime: israelTime(8, 0),
   }),
-  // line 17, 00:30 Israel time the NEXT calendar day — the post-midnight tail of this
-  // service day, must show the moon prefix (operator 97)
+  // line 17, 23:30 Israel time — the last departure of the day (operator 97)
   siriRide({
     id: 62029003,
     vehicleRef: VEHICLE_NUMBER,
     siriRouteLineRef: 28100,
     siriRouteOperatorRef: 97,
-    scheduledStartTime: israelServiceTime(0, 30, { nextDay: true }),
+    scheduledStartTime: israelTime(23, 30),
   }),
 ]
 

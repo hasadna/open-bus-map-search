@@ -4,7 +4,7 @@ import { Tooltip } from 'antd'
 import { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLoaderData, useNavigate } from 'react-router'
-import { getServiceDayRoutes } from 'src/api/serviceDayRoutesService'
+import { getRoutesAsync } from 'src/api/gtfsService'
 import dayjs, { toIsraelTimezone } from 'src/dayjs'
 import { useSingleLineData } from 'src/hooks/useSingleLineData'
 import { GLOBAL_SEARCH_DEFAULTS, GlobalSearchContext } from 'src/model/globalState'
@@ -93,10 +93,10 @@ const LineProfile = () => {
     dateChangeAbortRef.current?.abort()
     const abortController = new AbortController()
     dateChangeAbortRef.current = abortController
-    // Service-day aware (and Israel-tz normalized internally), consistent with the
-    // gaps page and the single-line ride list.
-    getServiceDayRoutes(
-      time,
+    const dateStr = toIsraelTimezone(time).format('YYYY-MM-DD')
+    getRoutesAsync(
+      dateStr,
+      dateStr,
       route?.operatorRef.toString(),
       route?.routeShortName,
       abortController.signal,
@@ -106,7 +106,7 @@ const LineProfile = () => {
           (r) => r.key === `${route.routeMkt}-${route.routeDirection}-${route.routeAlternative}`,
         )
         if (newRoute?.routeIds?.[0]) {
-          navigate(`/profile/${newRoute.routeIds[0]}`)
+          void navigate(`/profile/${newRoute.routeIds[0]}`)
         }
       })
       .catch((err) => console.error(err))
@@ -116,7 +116,7 @@ const LineProfile = () => {
     if (!key || !routes) return
     const newRoute = routes?.find((route) => route.key === key)
     if (newRoute?.routeIds?.[0]) {
-      navigate(`/profile/${newRoute.routeIds[0]}`)
+      void navigate(`/profile/${newRoute.routeIds[0]}`)
     }
   }
 

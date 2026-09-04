@@ -1,3 +1,4 @@
+import { SiriVehicleLocationWithRelatedPydanticModel } from '@hasadna/open-bus-api-client'
 import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
 import { useContext, useMemo } from 'react'
@@ -23,8 +24,9 @@ import { DateSelector } from '../components/DateSelector'
 import { NotFound } from '../components/NotFound'
 import { PageContainer } from '../components/PageContainer'
 import { TimeSelector } from '../components/TimeSelector'
+import { buildSingleLineMapRideLink } from './singleLineMapRideLink'
 
-const TimelinePage = () => {
+const StationStopsPage = () => {
   const { t } = useTranslation()
   const { search, setSearch } = useContext(GlobalSearchContext)
   const { operatorId, lineNumber, date, routeKey } = search
@@ -35,7 +37,7 @@ const TimelinePage = () => {
 
   // time-of-day is page-local: not shared across pages, but is shareable so a
   // link recipient sees the same moment (date comes from global state).
-  const { params, setParams } = usePageState('timeline', {
+  const { params, setParams } = usePageState('station-stops', {
     params: { time: dayjs().format('HH:mm') },
     ui: { scrollPosition: 0 },
   })
@@ -49,7 +51,7 @@ const TimelinePage = () => {
     queryFn: async () => {
       if (operatorId && lineNumber) {
         try {
-          return await getRoutesAsync(time, time, operatorId, lineNumber)
+          return await getRoutesAsync(date, date, operatorId, lineNumber)
         } catch (error) {
           console.error(error)
           setSearch((current) => ({ ...current, routeKey: null }))
@@ -58,7 +60,7 @@ const TimelinePage = () => {
       }
       return null
     },
-    queryKey: ['routes', operatorId, lineNumber, time.valueOf()],
+    queryKey: ['routes', operatorId, lineNumber, date],
   })
 
   const selectedRoute = useMemo(
@@ -86,6 +88,17 @@ const TimelinePage = () => {
     [stopsQuery.data, stopKey],
   )
 
+  const siriLink = useMemo(
+    () => ({
+      title: t('station_stops_show_ride_on_map'),
+      to: (hit: SiriVehicleLocationWithRelatedPydanticModel) =>
+        operatorId && lineNumber && routeKey
+          ? buildSingleLineMapRideLink(hit, { operatorId, lineNumber, routeKey })
+          : undefined,
+    }),
+    [operatorId, lineNumber, routeKey, t],
+  )
+
   const hitsQuery = useQuery({
     queryFn: async () => {
       if (selectedStop && selectedRoute) {
@@ -103,10 +116,10 @@ const TimelinePage = () => {
   return (
     <PageContainer>
       <Typography variant="h4" gutterBottom className="page-title">
-        {t('timeline_page_title')}
+        {t('station_stops_page_title')}
       </Typography>
       <Alert severity="info" variant="outlined" icon={false}>
-        {t('timeline_page_description')}
+        {t('station_stops_page_description')}
       </Alert>
       {hitsQuery.data &&
         hitsQuery.data.gtfsTime.length > 0 &&
@@ -147,6 +160,8 @@ const TimelinePage = () => {
         {/* choose line */}
         <Grid size={{ lg: 4, md: 6, xs: 12 }}>
           <LineNumberSelector
+            operatorId={operatorId ?? undefined}
+            date={date}
             lineNumber={lineNumber ?? undefined}
             setLineNumber={(number) => setSearch((prev) => ({ ...prev, lineNumber: number }))}
           />
@@ -200,6 +215,7 @@ const TimelinePage = () => {
                     target={time}
                     gtfsTimes={hitsQuery.data.gtfsTime}
                     siriTimes={hitsQuery.data.siriTime}
+                    siriLink={siriLink}
                   />
                 ) : (
                   <NotFound>{t('hits_not_found')}</NotFound>
@@ -212,4 +228,4 @@ const TimelinePage = () => {
   )
 }
 
-export default TimelinePage
+export default StationStopsPage
