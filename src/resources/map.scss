@@ -340,16 +340,17 @@ pre {
   }
 }
 
-// Struck over a ping the vehicle could not have been at. Only the strike is recoloured: the
-// arrow keeps its speed-band fill and its rotation, so a spoofed fix still reads as "reported
-// heading 142 at 0 km/h" rather than losing the one part of the report that survived.
-.ping-artifact-strike {
-  fill: $gps-artifact;
-  stroke: #fff;
-  stroke-width: 1.3;
-  stroke-linejoin: round;
-  paint-order: stroke;
-  vector-effect: non-scaling-stroke;
+// Rings a ping the vehicle could not have been at, rather than marking the glyph inside it:
+// the arrow keeps its speed-band fill and its rotation, so a spoofed fix still reads as
+// "heading 142 at 0 km/h". Losing the bearing is what ruled out drawing over it.
+// Dashed, so the flag survives on a colourless print or for a viewer who cannot separate the
+// violet from the arrow's own red — and so it reads as an annotation rather than another glyph.
+// Same violet ring the coverage strip puts round its below-axis columns.
+.ping-artifact-ring {
+  fill: none;
+  stroke: $gps-artifact;
+  stroke-width: 1.2;
+  stroke-dasharray: 3 2.5;
 }
 
 .ping-badge-mark {

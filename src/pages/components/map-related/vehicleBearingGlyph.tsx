@@ -63,15 +63,22 @@ const RIDE_END_RIM = 0.9
 const RIDE_END_CLIP_ID = 'ride-end-badge-clip'
 
 /**
- * Struck over a ping whose coordinates fall outside the service area. It marks the *position*
- * as unreal and nothing else — the glyph underneath still carries the reported bearing and
- * speed band, which are the receiver's own readings and survive the spoofing: across 2026-06-14,
- * 94-96% of spoofed fixes carry a non-zero bearing over ~250 distinct values.
+ * Ring flagging a ping whose coordinates fall outside the service area. It marks the *position*
+ * as unreal and nothing else — the glyph keeps the reported bearing and speed band, which are the
+ * receiver's own readings and survive the spoofing (94-96% of spoofed fixes on 2026-06-14 carry a
+ * non-zero bearing over ~250 distinct values), so nothing may be drawn over them.
+ *
+ * Hence a ring rather than a mark on the glyph, and this radius rather than a corner: the arrow
+ * rotates, so its tip sweeps every direction at r≈10.8 ({@link BAND_SCALE_MAX} keeps it inside the
+ * inscribed circle) and any badge inside that reach would cover the tip at some bearing. Stroked
+ * at 11.4 it rides the boundary — clear of the arrow, and just inside the viewBox at 12.
  */
-const ARTIFACT_STRIKE = 'M4.6 17.99 17.99 4.6l1.41 1.41L6.01 19.4z'
+const ARTIFACT_RING = { cx: 12, cy: 12, r: 11.4 }
 
-const strikeMarkup = (artifact: boolean) =>
-  artifact ? `<path class="ping-artifact-strike" d="${ARTIFACT_STRIKE}"/>` : ''
+const artifactRingMarkup = (artifact: boolean) =>
+  artifact
+    ? `<circle class="ping-artifact-ring" cx="${ARTIFACT_RING.cx}" cy="${ARTIFACT_RING.cy}" r="${ARTIFACT_RING.r}"/>`
+    : ''
 
 /**
  * The rotation is an SVG *presentation attribute*, deliberately not a `style` attribute:
@@ -82,7 +89,7 @@ const strikeMarkup = (artifact: boolean) =>
 export const arrowSvgMarkup = (deg: number, band: number, artifact = false) =>
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">` +
   `<path class="${bandClass(band)}" d="${ARROW_PATH}" transform="${bandTransform(deg, band)}"/>` +
-  strikeMarkup(artifact) +
+  artifactRingMarkup(artifact) +
   `</svg>`
 
 const STANDING_DISC_CLASS = 'ping-badge ping-badge--standing'
@@ -99,7 +106,7 @@ export const standingSvgMarkup = (deg?: number, artifact = false) =>
   (deg === undefined
     ? ''
     : `<path class="ping-badge-mark" d="${STANDING_NEEDLE}" transform="${rotate(deg)}"/>`) +
-  strikeMarkup(artifact) +
+  artifactRingMarkup(artifact) +
   `</svg>`
 
 /** Cells laid over the whole badge and clipped back to it, so the chequer runs to the edge the
