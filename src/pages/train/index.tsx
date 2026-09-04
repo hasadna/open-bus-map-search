@@ -14,10 +14,11 @@ import {
 import { useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSearchParams } from 'react-router'
-import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone } from 'src/dayjs'
+import { toIsraelTimezone } from 'src/dayjs'
 import { GlobalSearchContext } from 'src/model/globalState'
 import { InitialUrlParamsContext, PageShareParamsContext } from 'src/model/routeContext'
-import { DateSelector } from 'src/pages/components/DateSelector'
+import { addDays, todayCivilDate } from 'src/model/time/civilDate'
+import { CivilDateSelector } from 'src/pages/components/CivilDateSelector'
 import { PageContainer } from 'src/pages/components/PageContainer'
 import Widget from 'src/shared/Widget'
 import { TrainAverageDelayChart } from './TrainAverageDelayChart'
@@ -39,7 +40,8 @@ export default function TrainPage() {
     delete initialUrlParams.route
   }, [initialUrlParams])
 
-  const maxDate = useMemo(() => toIsraelTimezone().subtract(1, 'day').startOf('day'), [])
+  // Yesterday: the day's SIRI data is only complete once the day is over.
+  const maxDate = useMemo(() => addDays(todayCivilDate(), -1), [])
   const routesQuery = useTrainRoutes(search.date)
   const selectedRoute = routesQuery.data?.find((route) =>
     route.lineRefs.includes(Number(selectedLineRef)),
@@ -49,11 +51,8 @@ export default function TrainPage() {
   const stopsQuery = useTrainRideStops(search.date, lineRefs)
   const locationsQuery = useTrainVehicleLocations(search.date, lineRefs)
   useEffect(() => {
-    if (dayjs.tz(search.date, ISRAEL_TIMEZONE).isAfter(maxDate)) {
-      setSearch((current) => ({
-        ...current,
-        date: maxDate.format('YYYY-MM-DD'),
-      }))
+    if (search.date > maxDate) {
+      setSearch((current) => ({ ...current, date: maxDate }))
     }
   }, [maxDate, search.date, setSearch])
 
@@ -87,15 +86,12 @@ export default function TrainPage() {
       </Typography>
       <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
         <Box sx={{ flex: 1 }}>
-          <DateSelector
-            time={dayjs.tz(search.date, ISRAEL_TIMEZONE)}
+          <CivilDateSelector
+            value={search.date}
             maxDate={maxDate}
             onChange={(date) => {
               if (!date) return
-              setSearch((current) => ({
-                ...current,
-                date: toIsraelTimezone(date).format('YYYY-MM-DD'),
-              }))
+              setSearch((current) => ({ ...current, date }))
             }}
           />
         </Box>

@@ -1,9 +1,9 @@
 import { useCallback, useState } from 'react'
-import { Dayjs } from 'src/dayjs'
+import { type CivilDate } from 'src/model/time/civilDate'
 
-export function useDate(initialValue: Dayjs) {
-  const [date, setDate] = useState<Dayjs>(initialValue)
-  const onChange = useCallback((date: Dayjs | null) => {
+export function useDate(initialValue: CivilDate) {
+  const [date, setDate] = useState<CivilDate>(initialValue)
+  const onChange = useCallback((date: CivilDate | null) => {
     if (date) {
       setDate(date)
     }

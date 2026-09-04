@@ -11,11 +11,11 @@ import {
 import React, { useContext, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { TileLayer } from 'react-leaflet'
-import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone } from 'src/dayjs'
 import { GlobalSearchContext } from 'src/model/globalState'
+import { type CivilDate, todayCivilDate } from 'src/model/time/civilDate'
 import { MapShell } from 'src/pages/components/map-related/MapShell'
+import { CivilDateSelector } from '../components/CivilDateSelector'
 import { DateNavigator } from '../components/dateNavigator/DateNavigator'
-import { DateSelector } from '../components/DateSelector'
 import { PageContainer } from '../components/PageContainer'
 import { VelocityHeatmapLegend } from './components/VelocityHeatmapLegend'
 import { VelocityHeatmapRectangles } from './components/VelocityHeatmapRectangles'
@@ -36,7 +36,6 @@ const VelocityHeatmapPage: React.FC = () => {
   const stackVisSelector = useMediaQuery(theme.breakpoints.down('sm'))
 
   const { search, setSearch } = useContext(GlobalSearchContext)
-  const dateDayjs = dayjs.tz(search.date, ISRAEL_TIMEZONE)
 
   const [visMode, setVisMode] = useState<'avg' | 'std' | 'cv'>('avg')
   const [min, setMin] = useState(0)
@@ -44,10 +43,10 @@ const VelocityHeatmapPage: React.FC = () => {
   const [loading, setLoading] = useState(false)
   const [hasError, setHasError] = useState(false)
 
-  const handleDateChange = (time: dayjs.Dayjs | null) => {
+  const handleDateChange = (next: CivilDate | null) => {
     setSearch((current) => ({
       ...current,
-      date: toIsraelTimezone(time ?? dayjs()).format('YYYY-MM-DD'),
+      date: next ?? todayCivilDate(),
     }))
   }
 
@@ -67,8 +66,8 @@ const VelocityHeatmapPage: React.FC = () => {
       {/* choose date + visualization — centered block */}
       <Box sx={{ width: '100%', maxWidth: 520, mx: 'auto' }}>
         <Stack direction="column" spacing={2} sx={{ mb: 2 }}>
-          <DateSelector time={dateDayjs} onChange={handleDateChange} />
-          <DateNavigator currentTime={dateDayjs} onChange={handleDateChange} />
+          <CivilDateSelector value={search.date} onChange={handleDateChange} />
+          <DateNavigator currentDate={search.date} onChange={handleDateChange} />
         </Stack>
         <ToggleButtonGroup
           value={visMode}

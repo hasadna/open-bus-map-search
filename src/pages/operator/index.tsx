@@ -2,9 +2,9 @@ import { Grid, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material
 import { useContext, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
-import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone } from 'src/dayjs'
 import { GlobalSearchContext } from 'src/model/globalState'
-import { DateSelector } from '../components/DateSelector'
+import { type CivilDate, shiftCivilDate, todayCivilDate } from 'src/model/time/civilDate'
+import { CivilDateSelector } from '../components/CivilDateSelector'
 import OperatorSelector from '../components/OperatorSelector'
 import { PageContainer } from '../components/PageContainer'
 import WorstLinesChart from '../dashboard/WorstLinesChart/WorstLinesChart'
@@ -23,16 +23,14 @@ const OperatorPage = () => {
 
   const [timeRange, setTimeRange] = useState<(typeof TIME_RANGES)[number]>('day')
 
-  const dateDayjs = dayjs.tz(date, ISRAEL_TIMEZONE)
-
   const handleOperatorChange = (operatorId: string) => {
     setSearch((current) => ({ ...current, operatorId }))
   }
 
-  const handleDateChange = (time: dayjs.Dayjs | null) => {
+  const handleDateChange = (next: CivilDate | null) => {
     setSearch((current) => ({
       ...current,
-      date: toIsraelTimezone(time ?? dayjs()).format('YYYY-MM-DD'),
+      date: next ?? todayCivilDate(),
     }))
   }
 
@@ -48,7 +46,7 @@ const OperatorPage = () => {
         </Grid>
 
         <Grid size={{ sm: 4, xs: 12 }}>
-          <DateSelector time={dateDayjs} disabled={!operatorId} onChange={handleDateChange} />
+          <CivilDateSelector value={date} disabled={!operatorId} onChange={handleDateChange} />
         </Grid>
 
         <Grid size={{ sm: 4, xs: 12 }}>
@@ -81,8 +79,8 @@ const OperatorPage = () => {
             <ChartWrapper>
               <WorstLinesChart
                 operatorId={operatorId}
-                startDate={dateDayjs.add(-1, timeRange)}
-                endDate={dateDayjs}
+                startDate={shiftCivilDate(date, -1, timeRange)}
+                endDate={date}
                 alertWorstLineHandling={function (arg: boolean): void {
                   console.log('alertWorstLineHandling', arg)
                 }}

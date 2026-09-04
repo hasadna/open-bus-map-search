@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { http, HttpResponse } from 'msw'
 import dayjs from 'src/dayjs'
+import { toCivilDate } from 'src/model/time/civilDate'
 import { getPastDate } from '../../../../.storybook/main'
 import WorstLinesChart from './WorstLinesChart'
 
@@ -13,7 +14,7 @@ const meta = {
       description: 'The start date of the chart.',
       table: {
         type: {
-          summary: 'Dayjs',
+          summary: 'CivilDate',
         },
       },
     },
@@ -28,8 +29,8 @@ const meta = {
   },
   render: (args) => (
     <WorstLinesChart
-      startDate={dayjs(args.startDate)}
-      endDate={dayjs(args.endDate)}
+      startDate={toCivilDate(args.startDate)!}
+      endDate={toCivilDate(args.endDate)!}
       operatorId={args.operatorId}
       alertWorstLineHandling={function (arg: boolean): void {
         console.log('alertWorstLineHandling', arg)
@@ -57,8 +58,8 @@ export const Default: Story = {
     },
   },
   args: {
-    startDate: dayjs(getPastDate()).subtract(7, 'day'),
-    endDate: dayjs(getPastDate()),
+    startDate: toCivilDate(dayjs(getPastDate()).subtract(7, 'day'))!,
+    endDate: toCivilDate(dayjs(getPastDate()))!,
     operatorId: '3',
     alertWorstLineHandling: (arg: boolean) => {
       console.log('alertWorstLineHandling', arg)

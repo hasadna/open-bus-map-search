@@ -1,6 +1,7 @@
 import { act, fireEvent, render, screen } from '@testing-library/react'
 import { useAllRoutes } from 'src/hooks/useAllRoutes'
 import i18n from 'src/locale/allTranslations'
+import { civilDate } from 'src/model/time/civilDate'
 import LineSelector from './LineSelector'
 
 vi.mock('src/hooks/useAllRoutes', () => ({ useAllRoutes: vi.fn() }))
@@ -31,7 +32,7 @@ const renderSelector = (props: Partial<React.ComponentProps<typeof LineSelector>
   render(
     <LineSelector
       operatorId="3"
-      date="2026-07-01"
+      date={civilDate('2026-07-01')!}
       lineNumber={undefined}
       setLineNumber={vi.fn()}
       {...props}
