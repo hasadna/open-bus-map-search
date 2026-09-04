@@ -20,7 +20,7 @@ const InfoYoutubeModal = ({ videoUrl, label, title }: InfoYoutubeModalProps) => 
         aria-label={label}
         className="modal-info-ico"
         onClick={() => setVisible(true)}>
-        <HelpTwoTone fontSize="inherit" color="primary" />
+        <HelpTwoTone fontSize="inherit" />
       </button>
       <Modal
         width={'1000px'}
