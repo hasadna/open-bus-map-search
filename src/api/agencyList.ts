@@ -10,8 +10,6 @@ const LIMIT = 100000
 
 const FALLBACK_DAYS = 7
 
-const DAY_IN_MS = 1000 * 60 * 60 * 24
-
 /**
  * One row per operator, carrying the agency name from the latest date it appears on.
  *
@@ -42,22 +40,11 @@ export async function fetchAgencyList(
   return mergeAgencies(agencies.filter(Boolean))
 }
 
-function agencyQueryOptions(queryKey: string[], queryFn: () => Promise<GtfsAgencyPydanticModel[]>) {
-  return queryOptions({
-    queryKey,
-    queryFn,
-    // An empty answer means the day is not ingested yet, not that no operator ran. The
-    // app-wide 24h staleTime and its localStorage persistence would keep that blank list
-    // for a day, so an empty result is refetched on the next mount instead.
-    staleTime: (query) => (query.state.data?.length ? DAY_IN_MS : 0),
-    refetchOnMount: (query) => !query.state.data?.length,
-  })
-}
-
 export function agencyListQueryOptions(dateFrom: string, dateTo: string) {
-  return agencyQueryOptions(['agencyList', dateFrom, dateTo], () =>
-    fetchAgencyList(dateFrom, dateTo),
-  )
+  return queryOptions({
+    queryKey: ['agencyList', dateFrom, dateTo],
+    queryFn: () => fetchAgencyList(dateFrom, dateTo),
+  })
 }
 
 /**
@@ -66,9 +53,12 @@ export function agencyListQueryOptions(dateFrom: string, dateTo: string) {
  * operator list is worse than one a few days old.
  */
 export function agencyListForDateQueryOptions(date: string) {
-  return agencyQueryOptions(['agencyList', 'day', date], async () => {
-    const agencies = await fetchAgencyList(date, date)
-    if (agencies.length) return agencies
-    return fetchAgencyList(dayjs(date).subtract(FALLBACK_DAYS, 'day').format('YYYY-MM-DD'), date)
+  return queryOptions({
+    queryKey: ['agencyList', 'day', date],
+    queryFn: async () => {
+      const agencies = await fetchAgencyList(date, date)
+      if (agencies.length) return agencies
+      return fetchAgencyList(dayjs(date).subtract(FALLBACK_DAYS, 'day').format('YYYY-MM-DD'), date)
+    },
   })
 }

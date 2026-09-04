@@ -1,5 +1,5 @@
 import { GtfsAgencyPydanticModel } from '@hasadna/open-bus-api-client'
-import { Query, QueryClient } from '@tanstack/react-query'
+import { QueryClient } from '@tanstack/react-query'
 import type { GTFS_API } from 'src/api/apiConfig'
 import {
   agencyListForDateQueryOptions,
@@ -95,20 +95,14 @@ describe('agencyListForDateQueryOptions', () => {
   })
 })
 
-describe('caching of an empty list', () => {
-  const staleTimeFor = (data: GtfsAgencyPydanticModel[]) => {
-    const { staleTime } = agencyListQueryOptions('2026-08-29', '2026-08-29')
-    const query = { state: { data } } as Query<
-      GtfsAgencyPydanticModel[],
-      Error,
-      GtfsAgencyPydanticModel[],
-      string[]
-    >
-    return typeof staleTime === 'function' ? staleTime(query) : staleTime
-  }
+describe('agencyListQueryOptions', () => {
+  it('asks for the requested range only - an explicit range is never widened', async () => {
+    agenciesListGet.mockResolvedValue([])
 
-  it('is immediately stale, so a data hole is not frozen for the app-wide 24 hours', () => {
-    expect(staleTimeFor([])).toBe(0)
-    expect(staleTimeFor([agency('2026-08-29', 3)])).toBeGreaterThan(0)
+    await newQueryClient().fetchQuery(agencyListQueryOptions('2026-08-27', '2026-09-03'))
+
+    expect(agenciesListGet).toHaveBeenCalledTimes(1)
+    expect(requestOf(0).dateFrom).toEqual(new Date('2026-08-27T12:00:00Z'))
+    expect(requestOf(0).dateTo).toEqual(new Date('2026-09-03T12:00:00Z'))
   })
 })
