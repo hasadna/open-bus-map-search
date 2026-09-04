@@ -2,11 +2,18 @@ import { getDistance } from 'geolib'
 import { Point } from 'src/pages/components/map-related/map-types'
 
 /**
- * Israel and its immediate approaches. A SIRI fix outside this is not a position the vehicle
- * could hold: the dominant value by far is Beirut airport (33.8186, 35.4963), the standard
- * GPS-spoofing target, which on a bad day carries hundreds of a ride's pings.
+ * Where Israeli public transport actually runs — a service envelope, not a border. A SIRI fix
+ * outside it is not a position the vehicle could hold; spoofing parks vehicles on international
+ * airports, and the two that matter are Beirut (33.8186, 35.4963) and **Amman Queen Alia**
+ * (31.7226, 35.9932).
+ *
+ * `maxLon` is the load-bearing edge and is deliberately tight. Amman sits at lon ~35.99, so the
+ * once-generous 36.3 admitted it as real route: over 120k fixes sampled across 2026-06-08/10/14
+ * it drew 1,803 spoofed fixes (1.5%) for 226 rides and 215 vehicles across 8 operators as
+ * genuine track. Real service runs no further east than **35.836** (upper Golan) while the
+ * Amman cluster starts at **35.984**, so any cutoff in between separates them; 35.9 splits it.
  */
-export const ISRAEL_BOUNDS = { minLat: 29.0, maxLat: 33.5, minLon: 34.0, maxLon: 36.3 }
+export const ISRAEL_BOUNDS = { minLat: 29.0, maxLat: 33.5, minLon: 34.0, maxLon: 35.9 }
 
 /**
  * Ground speed (km/h) past which a pair of fixes describes a reporting artifact rather than
@@ -77,4 +84,26 @@ export function partitionByPlausibility(positions: Point[]) {
     ;(isPlausibleLocation(position.loc) ? plausible : implausible).push(position)
   }
   return { plausible, implausible }
+}
+
+/**
+ * The fixes that form the ride itself: the largest group whose members are joined to one
+ * another by movement the vehicle could actually have made.
+ *
+ * Trust does not survive an impossible jump. A cluster on the far side of one holds positions
+ * inside the bounds that look perfectly ordinary among themselves — spoofing that lands in
+ * Jordan reports a stationary vehicle quite happily — but nothing except the report says the
+ * vehicle was ever there, so it is not the route and must not carry the ride's start or end.
+ * Ties keep the earlier group, so a ride is never re-anchored onto a later cluster of equal size.
+ */
+export function rideBody(positions: Point[]): Point[] {
+  const groups: Point[][] = []
+  for (const position of positions) {
+    if (!isPlausibleLocation(position.loc)) continue
+    const open = groups.at(-1)
+    if (open && classifyMovement(open[open.length - 1], position) !== 'impossible')
+      open.push(position)
+    else groups.push([position])
+  }
+  return groups.reduce<Point[]>((best, group) => (group.length > best.length ? group : best), [])
 }
