@@ -1,8 +1,8 @@
 import { Autocomplete, TextField } from '@mui/material'
-import { useContext, useEffect, useState } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { GlobalSearchContext } from 'src/model/globalState'
-import { getOperators, ISRAEL_TRAIN_ID, Operator } from 'src/model/operator'
+import { useAgencyList } from 'src/hooks/useAgencyList'
+import { ISRAEL_TRAIN_ID, toOperators } from 'src/model/operator'
 
 type OperatorSelectorProps = {
   operatorId?: string
@@ -20,20 +20,20 @@ export default function OperatorSelector({
   excludeIsraelRailways,
 }: OperatorSelectorProps) {
   const { t } = useTranslation()
-  const {
-    search: { date },
-  } = useContext(GlobalSearchContext)
-  const [operators, setOperators] = useState<Operator[]>([])
+  const agencies = useAgencyList()
+
+  const operators = useMemo(() => {
+    const operators = toOperators(agencies, filter)
+    return excludeIsraelRailways
+      ? operators.filter((operator) => operator.id !== ISRAEL_TRAIN_ID)
+      : operators
+  }, [agencies, filter, excludeIsraelRailways])
 
   useEffect(() => {
-    getOperators(new Date(date), filter).then((operators) =>
-      setOperators(
-        excludeIsraelRailways
-          ? operators.filter((operator) => operator.id !== ISRAEL_TRAIN_ID)
-          : operators,
-      ),
-    )
-  }, [filter, excludeIsraelRailways, date])
+    if (excludeIsraelRailways && operatorId === ISRAEL_TRAIN_ID) {
+      setOperatorId('')
+    }
+  }, [excludeIsraelRailways, operatorId, setOperatorId])
 
   const value = operators.find((operator) => operator.id === operatorId) || null
 

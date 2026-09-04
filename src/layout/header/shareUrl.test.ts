@@ -92,9 +92,10 @@ describe('buildShareUrl — page params', () => {
 // ---------------------------------------------------------------------------
 
 // vehicleNumber is no longer a GlobalSearchState field; the /vehicle page keeps
-// it page-local and appends it through PageShareParamsContext, sharing only the
-// global `date`. These guard that contract (and that the page never leaks the
-// operator/line/route global state a vehicle link must not carry).
+// it page-local (usePageState, namespaced `vehicle.vehicleNumber`) and appends it
+// through PageShareParamsContext, sharing only the global `date`. These guard that
+// contract (and that the page never leaks the operator/line/route global state a
+// vehicle link must not carry).
 
 describe('buildShareUrl — /vehicle page', () => {
   it('shares only the global date — not operator/line/route', () => {
@@ -102,15 +103,23 @@ describe('buildShareUrl — /vehicle page', () => {
     expect(p).toEqual({ date: fullSearch.date })
   })
 
-  it('appends the page-local vehicleNumber via extra params', () => {
-    const p = paramsOf(build('/vehicle', fullSearch, { vehicleNumber: '7489226' }))
-    expect(p).toEqual({ date: fullSearch.date, vehicleNumber: '7489226' })
+  it('appends the page-local vehicle.vehicleNumber via extra params', () => {
+    const p = paramsOf(build('/vehicle', fullSearch, { 'vehicle.vehicleNumber': '7489226' }))
+    expect(p).toEqual({ date: fullSearch.date, 'vehicle.vehicleNumber': '7489226' })
   })
 
   it('vehicleNumber is no longer a shareable global key on any page', () => {
     for (const keys of Object.values(PAGE_SHARE_PARAMS)) {
       expect(keys as string[]).not.toContain('vehicleNumber')
     }
+  })
+})
+
+describe('buildShareUrl — /train page', () => {
+  it('shares the global date and page-local route', () => {
+    const p = paramsOf(build('/train', fullSearch, { route: '30867' }))
+
+    expect(p).toEqual({ date: fullSearch.date, route: '30867' })
   })
 })
 

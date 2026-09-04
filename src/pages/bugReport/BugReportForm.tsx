@@ -2,8 +2,9 @@ import { CreateIssuePostRequest } from '@hasadna/open-bus-api-client'
 import { Alert } from '@mui/material'
 import { useMutation } from '@tanstack/react-query'
 import { Button, Checkbox, Form, Input, Select } from 'antd'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useSearchParams } from 'react-router'
 import { ISSUES_API } from 'src/api/apiConfig'
 import { EasterEgg } from 'src/pages/components/EasterEgg/EasterEgg'
 import InfoYoutubeModal from 'src/pages/components/YoutubeModal'
@@ -15,6 +16,9 @@ const BugReportForm = () => {
   const { t, i18n } = useTranslation()
   const [form] = Form.useForm<CreateIssuePostRequest>()
   // const [fileList, setFileList] = useState<UploadFile[]>([])
+
+  const [searchParams] = useSearchParams()
+  const [contextUrl] = useState(() => searchParams.get('context'))
 
   const mutation = useMutation({
     mutationFn: (values: CreateIssuePostRequest) =>
@@ -32,7 +36,10 @@ const BugReportForm = () => {
 
   const onFinish = (values: CreateIssuePostRequest) => {
     mutation.reset()
-    mutation.mutate(values)
+    mutation.mutate({
+      ...values,
+      ...(contextUrl ? { debugContext: contextUrl } : {}),
+    })
   }
 
   // const onFileChange = (info: UploadChangeParam) => {
@@ -122,13 +129,6 @@ const BugReportForm = () => {
         </Form.Item>
 
         <Form.Item
-          label={t('bug_environment')}
-          name="environment"
-          rules={[{ required: true, min: 1, max: 200 }]}>
-          <Input />
-        </Form.Item>
-
-        <Form.Item
           label={t('bug_expected_behavior')}
           name="expectedBehavior"
           rules={[{ required: true, min: 5, max: 1000 }]}>
@@ -154,6 +154,21 @@ const BugReportForm = () => {
             ))}
           </Select>
         </Form.Item>
+
+        <Form.Item
+          label={t('bug_environment')}
+          name="environment"
+          initialValue={navigator.userAgent}
+          extra={t('bug_environment_notice')}
+          rules={[{ required: true, min: 1, max: 200 }]}>
+          <Input />
+        </Form.Item>
+
+        {contextUrl && (
+          <Form.Item label={t('bug_debug_context')}>
+            <Input value={contextUrl} disabled />
+          </Form.Item>
+        )}
 
         <EasterEgg code="debug" autohide={false} onShow={() => form.setFieldValue('debug', true)}>
           {/* eslint-disable-next-line i18next/no-literal-string -- hidden developer toggle */}

@@ -8,7 +8,7 @@
  * After running, commit the updated HAR files in tests/HAR/.
  */
 import { Page, test } from '@playwright/test'
-import { getPastDate } from './utils'
+import { getPastDate, getPastTrainDate } from './utils'
 
 test.describe.configure({ mode: 'serial' })
 
@@ -65,12 +65,42 @@ async function openDropdownAndWait(page: Page, selector: string) {
 test.describe('Record HAR files', () => {
   test.skip(!process.env['RECORD_HAR'], 'Set RECORD_HAR=1 to update HAR files')
 
-  // ---- timeline.har -------------------------------------------------------
+  // ---- train.har ----------------------------------------------------------
+  test('record train.har', async ({ page }) => {
+    const TRAIN_ROUTE = 'באר שבע מרכז-באר שבע<->תל אביב מרכז-תל אביב יפו'
+    const TRAIN_TEST_DATE = new Date(getPastTrainDate().getTime() - 24 * 60 * 60 * 1000)
+      .toISOString()
+      .slice(0, 10)
+
+    await setupRecording(page, 'tests/HAR/train.har')
+    await page.clock.setSystemTime(getPastTrainDate())
+    const settleResponseBodies = trackResponseBodies(page)
+    await goToPage(page, `/train?date=${TRAIN_TEST_DATE}`)
+
+    await page.getByRole('combobox', { name: 'בחירת מסלול' }).click()
+    const rideStopsLoaded = page
+      .waitForResponse((response) => response.url().includes('/gtfs_ride_stops/list'), {
+        timeout: 120000,
+      })
+      .then((response) => response.body())
+    const locationsLoaded = page
+      .waitForResponse((response) => response.url().includes('/siri_vehicle_locations/list'), {
+        timeout: 120000,
+      })
+      .then((response) => response.body())
+    await page.getByRole('option', { name: TRAIN_ROUTE }).click()
+    await Promise.all([rideStopsLoaded, locationsLoaded])
+    await page.waitForLoadState('networkidle')
+    await page.getByRole('progressbar').waitFor({ state: 'hidden' })
+    await settleResponseBodies()
+  })
+
+  // ---- stationStops.har -------------------------------------------------------
   // Single test records ALL needed entries in one browser context
-  test('record timeline.har', async ({ page }) => {
-    await setupRecording(page, 'tests/HAR/timeline.har')
+  test('record stationStops.har', async ({ page }) => {
+    await setupRecording(page, 'tests/HAR/stationStops.har')
     await goToPage(page, '/')
-    await goToPage(page, '/timeline')
+    await goToPage(page, '/station-stops')
 
     // Trigger agencies list by opening operator dropdown
     await openDropdownAndWait(page, '#operator-select')
@@ -80,7 +110,7 @@ test.describe('Record HAR files', () => {
     await page.getByPlaceholder('לדוגמה: 17א').fill('1')
     await page.waitForLoadState('networkidle')
 
-    // Select route used for timeline hits test
+    // Select route used for station-stops hits test
     await openDropdownAndWait(page, '#route-select')
     const routeWithHits = 'שדרות מנחם בגין/כביש 7-גדרה ⟵ שדרות מנחם בגין/כביש 7-גדרה'
     const hitsRouteExists = await page.getByRole('option', { name: routeWithHits }).count()
@@ -104,7 +134,7 @@ test.describe('Record HAR files', () => {
 
     // Test empty routes: switch to דן בדרום + line 9999
     // First clear the operator by navigating away and back
-    await page.goto('/timeline')
+    await page.goto('/station-stops')
     await page.locator('.preloader').waitFor({ state: 'hidden' })
     await openDropdownAndWait(page, '#operator-select')
     const danBaDarom = page.getByRole('option', { name: 'דן בדרום', exact: true })
@@ -155,7 +185,7 @@ test.describe('Record HAR files', () => {
     }
 
     // Fill line 16 (triggers gtfs_routes/list with route_short_name=16)
-    await page.getByRole('textbox', { name: 'מספר קו' }).fill('16')
+    await page.getByRole('combobox', { name: 'מספר קו' }).fill('16')
     await page.waitForLoadState('networkidle')
 
     // Select a route (triggers gtfs_rides/list, gtfs_ride_stops/list, gtfs_stops/get, siri data)
@@ -195,7 +225,7 @@ test.describe('Record HAR files', () => {
     // Click a bus marker to record BusToolTip's gtfs_routes/list?line_refs=... call.
     // networkidle waits for all in-flight requests (including BusToolTip's fetch) to complete
     // before pressing Escape, ensuring the response body is captured in the HAR.
-    const busMarkers = page.locator('.leaflet-marker-pane > img[src$="marker-dot.png"]')
+    const busMarkers = page.locator('.leaflet-marker-pane > .vehicle-ping-marker')
     if ((await busMarkers.count()) > 2) {
       await busMarkers.nth(2).click({ force: true })
       await page.waitForLoadState('networkidle')
@@ -203,7 +233,7 @@ test.describe('Record HAR files', () => {
     }
 
     // Fill line 9999 to record the empty routes response
-    await page.getByRole('textbox', { name: 'מספר קו' }).fill('9999')
+    await page.getByRole('combobox', { name: 'מספר קו' }).fill('9999')
     await page.waitForTimeout(3000)
     await page.waitForLoadState('networkidle')
 
@@ -237,12 +267,11 @@ test.describe('Record HAR files', () => {
   })
 
   // ---- interlink.har ------------------------------------------------------
-  // Covers the gaps -> single-line interlink for a line with POST-MIDNIGHT service
-  // (Egged line 402, operator_ref=3, line_ref=33267 — the '...הורדה...' direction —
-  // on 2024-02-12). This 24/7 line has actual rides just past midnight the next
-  // calendar day (extended-hour token 24:30) with vehicle locations, so the
-  // destination page can surface and select them. Records BOTH pages in one context:
-  //   * /gaps:            rides_execution for the route (the clickable post-midnight cells)
+  // Covers the gaps -> single-line interlink (Egged line 402, operator_ref=3,
+  // line_ref=33267 — the '...הורדה...' direction — on 2024-02-12). This 24/7 line
+  // has a dense timetable with vehicle locations, so the destination page can
+  // surface and select a departure. Records BOTH pages in one context:
+  //   * /gaps:            rides_execution for the route (the clickable ride cells)
   //   * /single-line-map: gtfs_routes + siri_rides + siri_vehicle_locations + planned stops
   test('record interlink.har', async ({ page }) => {
     await setupRecording(page, 'tests/HAR/interlink.har')
@@ -253,7 +282,7 @@ test.describe('Record HAR files', () => {
     await goToPage(page, '/gaps')
     await page.getByLabel('חברה מפעילה').click()
     await page.getByRole('option', { name: 'אגד', exact: true }).click()
-    await page.getByRole('textbox', { name: 'מספר קו' }).fill('402')
+    await page.getByRole('combobox', { name: 'מספר קו' }).fill('402')
     await page.waitForLoadState('networkidle')
     // Type-to-filter the route Autocomplete (defeats option virtualization on lines
     // with many variants), then pick the line_ref 33267 direction ('...הורדה...').
@@ -270,15 +299,15 @@ test.describe('Record HAR files', () => {
     // The final settleResponseBodies() runs only at test end — after this navigation —
     // and any gaps body still streaming when we leave the page is dropped from the HAR
     // (recorded empty, with no status:-1 to flag it). That empties the rides_execution
-    // payload, so the replayed gaps table has no post-midnight cells. Settling here
+    // payload, so the replayed gaps table has no clickable cells. Settling here
     // forces rides_execution (and the route lists) to fully download first.
     await settleResponseBodies()
 
-    // -- single-line side: same route, then select the post-midnight (24:30) ride --
+    // -- single-line side: same route, then select the 00:30 ride --
     await goToPage(page, '/single-line-map')
     await page.getByLabel('חברה מפעילה').click()
     await page.getByRole('option', { name: 'אגד', exact: true }).click()
-    await page.getByRole('textbox', { name: 'מספר קו' }).fill('402')
+    await page.getByRole('combobox', { name: 'מספר קו' }).fill('402')
     await page.waitForLoadState('networkidle')
     await page.getByLabel(/בחירת מסלול נסיעה/).fill('הורדה')
     await page.waitForLoadState('networkidle')
@@ -287,9 +316,9 @@ test.describe('Record HAR files', () => {
     const startTime = page.getByLabel('בחירת שעת התחלה')
     if ((await startTime.count()) > 0) {
       // Type-to-filter the start-time Autocomplete too (~100 options on this line).
-      await startTime.fill('24:30')
+      await startTime.fill('00:30')
       await page.waitForLoadState('networkidle')
-      const pm = page.getByRole('option', { name: /24:30/ }).first()
+      const pm = page.getByRole('option', { name: /00:30/ }).first()
       if ((await pm.count()) > 0) {
         const locations = page
           .waitForResponse((r) => r.url().includes('/siri_vehicle_locations/list'))
@@ -323,7 +352,7 @@ test.describe('Record HAR files', () => {
       return
     }
 
-    await page.getByRole('textbox', { name: 'מספר קו' }).fill('16')
+    await page.getByRole('combobox', { name: 'מספר קו' }).fill('16')
     await page.waitForLoadState('networkidle')
 
     await page.getByLabel(/בחירת מסלול נסיעה/).click()
@@ -349,7 +378,7 @@ test.describe('Record HAR files', () => {
   test('record clearbutton.har', async ({ page }) => {
     await setupRecording(page, 'tests/HAR/clearbutton.har')
     await goToPage(page, '/')
-    await goToPage(page, '/timeline')
+    await goToPage(page, '/station-stops')
 
     // Trigger agencies list
     await openDropdownAndWait(page, '#operator-select')

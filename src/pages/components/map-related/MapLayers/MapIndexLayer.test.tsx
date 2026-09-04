@@ -1,12 +1,12 @@
 import { render, screen, within } from '@testing-library/react'
 import { MemoryRouter } from 'react-router'
 import type { PositionGroup } from '../map-types'
+import { SPEED_BANDS } from '../vehicleBearingGlyph'
 import { MapIndexLayer } from './MapIndexLayer'
 
-// MapContent computes marker paths from import.meta.env, which ts-jest can't parse.
-// MapIndexLayer only needs the path/color constants, so stub them.
-jest.mock('../MapContent', () => ({
-  actualRouteStopMarkerPath: 'actual-marker.png',
+// MapIndexLayer only needs the path/color constants out of mapMarkers, so stub them instead
+// of pulling leaflet into the test.
+vi.mock('../mapMarkers', () => ({
   plannedRouteStopMarkerPath: 'planned-marker.png',
   plannedRouteLineColor: 'black',
 }))
@@ -32,7 +32,7 @@ describe('MapIndexLayer', () => {
     })
 
     const link = screen.getByRole('link', { name: '12-345-67' })
-    expect(link).toHaveAttribute('href', '/vehicle?vehicleNumber=1234567')
+    expect(link).toHaveAttribute('href', '/vehicle?vehicle.vehicleNumber=1234567')
     // the number stays bracketed in the legend
     expect(link.closest('bdi')).toHaveTextContent('(12-345-67)')
   })
@@ -44,7 +44,9 @@ describe('MapIndexLayer', () => {
     })
 
     expect(screen.queryByRole('link')).not.toBeInTheDocument()
-    expect(screen.getByText('(', { exact: false }).closest('bdi')).toHaveTextContent('(99)')
+    // scoped to the row: the speed key's own title is parenthesised too
+    const item = document.querySelector('.map-index-item') as HTMLElement
+    expect(within(item).getByText('(', { exact: false }).closest('bdi')).toHaveTextContent('(99)')
   })
 
   it('renders one actual-route legend row per position group', () => {
@@ -59,11 +61,11 @@ describe('MapIndexLayer', () => {
     expect(container.querySelectorAll('.map-index-item')).toHaveLength(2)
     expect(screen.getByRole('link', { name: '12-345-67' })).toHaveAttribute(
       'href',
-      '/vehicle?vehicleNumber=1234567',
+      '/vehicle?vehicle.vehicleNumber=1234567',
     )
     expect(screen.getByRole('link', { name: '76-543-21' })).toHaveAttribute(
       'href',
-      '/vehicle?vehicleNumber=7654321',
+      '/vehicle?vehicle.vehicleNumber=7654321',
     )
   })
 
@@ -90,5 +92,20 @@ describe('MapIndexLayer', () => {
     const item = document.querySelector('.map-index-item')!
     // title present, but no parenthesised subtitle span
     expect(within(item as HTMLElement).queryByText('(', { exact: false })).not.toBeInTheDocument()
+  })
+
+  it('keys the speed ramp only once a ride is on the map to use it on', () => {
+    const { container, rerender } = renderLayer({ showPlannedRoute: true, positionGroups: [] })
+    expect(container.querySelector('.map-speed-index')).not.toBeInTheDocument()
+
+    rerender(
+      <MemoryRouter>
+        <MapIndexLayer showPlannedRoute positionGroups={[group({ label: '12-345-67' })]} />
+      </MemoryRouter>,
+    )
+    const key = container.querySelector('.map-speed-index')!
+    expect(key).toBeInTheDocument()
+    // the standing glyph plus one arrow per speed band
+    expect(key.querySelectorAll('.map-speed-index-band')).toHaveLength(SPEED_BANDS.length + 1)
   })
 })

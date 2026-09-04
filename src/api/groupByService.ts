@@ -3,8 +3,10 @@ import {
   GtfsRidesAggGroupByPydanticModel,
 } from '@hasadna/open-bus-api-client'
 import { useQuery } from '@tanstack/react-query'
+import { useMemo } from 'react'
 import type { Dayjs } from 'src/dayjs'
-import { getAgencyList } from './agencyList'
+import { utcNoonForDateStr } from 'src/dayjs'
+import { agencyListQueryOptions } from './agencyList'
 import { AGGREGATIONS_API } from './apiConfig'
 
 type groupByField =
@@ -23,33 +25,6 @@ export type GroupByRes = Omit<GtfsRidesAggGroupByPydanticModel, 'operatorRef'> &
   operatorRef: GtfsAgencyPydanticModel | undefined
 }
 
-async function fetchGroupBy({
-  dateTo,
-  dateFrom,
-  groupBy,
-}: {
-  dateTo: Dayjs
-  dateFrom: Dayjs
-  groupBy: groupByFields
-}): Promise<GroupByRes[]> {
-  const agencies = await getAgencyList(dateFrom.toDate(), dateTo.toDate())
-
-  // example: https://open-bus-stride-api.hasadna.org.il/gtfs_rides_agg/group_by?date_from=2023-01-27&date_to=2023-01-29&group_by=operator_ref
-  const data = await AGGREGATIONS_API.byGtfsRidesAggGroupByGet({
-    dateFrom: dateFrom.toDate(),
-    dateTo: dateTo.toDate(),
-    groupBy,
-    excludeHoursFrom: 23,
-    excludeHoursTo: 2,
-  })
-
-  return data
-    .map((data) => {
-      const operatorRef = agencies.find((agency) => agency.operatorRef === data.operatorRef)
-      return { ...data, operatorRef }
-    })
-    .filter((data) => data.operatorRef !== undefined)
-}
 export function useGroupBy({
   dateFrom,
   dateTo,
@@ -59,10 +34,39 @@ export function useGroupBy({
   dateFrom: Dayjs
   groupBy: groupByFields
 }) {
-  const { isLoading, isError, data, error } = useQuery({
-    queryKey: ['groupBy', dateFrom.toISOString(), dateTo.toISOString(), groupBy],
-    queryFn: () => fetchGroupBy({ dateFrom, dateTo, groupBy }),
+  const from = dateFrom.format('YYYY-MM-DD')
+  const to = dateTo.format('YYYY-MM-DD')
+
+  // Both operators and rides are asked for the same range, so an operator that stopped
+  // running mid-range still gets a name instead of dropping out of the chart.
+  const agenciesQuery = useQuery(agencyListQueryOptions(from, to))
+  const ridesQuery = useQuery({
+    // example: https://open-bus-stride-api.hasadna.org.il/gtfs_rides_agg/group_by?date_from=2023-01-27&date_to=2023-01-29&group_by=operator_ref
+    queryKey: ['gtfsRidesAggGroupBy', from, to, groupBy],
+    queryFn: () =>
+      AGGREGATIONS_API.byGtfsRidesAggGroupByGet({
+        dateFrom: utcNoonForDateStr(from),
+        dateTo: utcNoonForDateStr(to),
+        groupBy,
+        excludeHoursFrom: 23,
+        excludeHoursTo: 2,
+      }),
   })
 
-  return [data ? data : [], isLoading, isError ? error : null] as const
+  const data = useMemo<GroupByRes[]>(() => {
+    const agencies = agenciesQuery.data
+    if (!agencies || !ridesQuery.data) return []
+    const agencyByOperatorRef = new Map<number | undefined, GtfsAgencyPydanticModel>(
+      agencies.map((agency) => [agency.operatorRef, agency]),
+    )
+
+    return ridesQuery.data
+      .map((ride) => ({ ...ride, operatorRef: agencyByOperatorRef.get(ride.operatorRef) }))
+      .filter((ride) => ride.operatorRef !== undefined)
+  }, [ridesQuery.data, agenciesQuery.data])
+
+  const isLoading = ridesQuery.isLoading || agenciesQuery.isLoading
+  const error = ridesQuery.error ?? agenciesQuery.error
+
+  return [data, isLoading, error] as const
 }

@@ -5,7 +5,7 @@ import Backend from 'i18next-fs-backend'
 import { test as baseTest, customMatcher, Matcher } from 'playwright-advanced-har'
 import { RouteFromHAROptions } from 'playwright-advanced-har/lib/utils/types'
 import { expect } from 'playwright-assertions'
-import dayjs from 'src/dayjs'
+import { toIsraelTimezone } from 'src/dayjs'
 import { PAGES } from 'src/routes'
 
 export { expect } from 'playwright-assertions'
@@ -14,6 +14,10 @@ export const test = baseTest
 
 export function getPastDate() {
   return new Date('2024-02-12T15:00:00+00:00')
+}
+
+export function getPastTrainDate() {
+  return new Date('2026-02-12T15:00:00+00:00')
 }
 
 const urlMatcher: Matcher = customMatcher({
@@ -116,6 +120,34 @@ export const clearInputField = async (input: Locator) => {
   await clearIndicator.click()
 }
 
+/**
+ * Let the document itself grow to the full content height, so a full-page capture
+ * really covers the whole page.
+ *
+ * The app shell pins the layout to the viewport and scrolls inside `#main-content`
+ * (`.main` and `#main-content` in src/layout/index.tsx), so `documentElement.scrollHeight`
+ * always equals the viewport height — and a full-page capture is therefore identical to a
+ * viewport one. Applitools' `scrollRootElement` does not help: the Ultrafast Grid forwards
+ * it for native devices only, so a web render always measures the document.
+ *
+ * Must be registered before the first navigation — the style is re-applied on every one.
+ */
+export const unlockFullPageScroll = async (page: Page) => {
+  await page.addInitScript(() => {
+    const style = document.createElement('style')
+    style.textContent = `
+      .main { height: auto !important; overflow: visible !important; }
+      #main-content { overflow: visible !important; }
+    `
+    const attach = () => document.head.appendChild(style)
+    if (document.head) {
+      attach()
+    } else {
+      document.addEventListener('DOMContentLoaded', attach)
+    }
+  })
+}
+
 export const setupTest = async (page: Page, lng: string = 'he') => {
   await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
   await page.route(/api\.github\.com/, (route) => route.abort())
@@ -133,7 +165,11 @@ export const setupTest = async (page: Page, lng: string = 'he') => {
 }
 
 export const visitPage = async (page: Page, label: (typeof PAGES)[number]['label']) => {
-  const link = page.getByText(i18next.t(label), { exact: true }).and(page.getByRole('link'))
+  // Scoped to the nav: the homepage repeats several of these labels on its own link
+  // cards, so an unscoped name match would resolve to two elements.
+  const link = page
+    .locator('.sidebar-menu')
+    .getByRole('link', { name: i18next.t(label), exact: true })
   const href = await link.getAttribute('href')
   // Register waitForURL before clicking to avoid missing fast client-side navigations
   const navigationPromise = href
@@ -146,7 +182,12 @@ export const visitPage = async (page: Page, label: (typeof PAGES)[number]['label
   await page.waitForLoadState('networkidle')
 }
 
+/** The operator list must describe the day being analyzed, not the day the browser is on. */
 export const verifyDateFromParameter = async (page: Page) => {
+  // The agency list is a react-query query persisted to localStorage, so a reload can be
+  // answered from that cache without ever reaching the network.
+  await page.evaluate(() => window.localStorage.removeItem('REACT_QUERY_OFFLINE_CACHE'))
+
   const requestPromise = page.waitForRequest((request) =>
     request.url().includes('gtfs_agencies/list'),
   )
@@ -155,11 +196,11 @@ export const verifyDateFromParameter = async (page: Page) => {
   await page.getByLabel('חברה מפעילה').click()
   const request = await requestPromise
 
-  const dateFrom = dayjs(new URL(request.url()).searchParams.get('date_from'))
-  const daysAgo = dayjs(getPastDate()).diff(dateFrom, 'days')
+  const params = new URL(request.url()).searchParams
+  const selectedDate = toIsraelTimezone(getPastDate()).format('YYYY-MM-DD')
 
-  expect(daysAgo).toBeGreaterThanOrEqual(0)
-  expect(daysAgo).toBeLessThanOrEqual(3)
+  expect(params.get('date_from')).toBe(selectedDate)
+  expect(params.get('date_to')).toBe(selectedDate)
 }
 
 export const harOptions: RouteFromHAROptions = {

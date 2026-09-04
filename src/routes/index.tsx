@@ -2,9 +2,8 @@ import {
   BiotechTwoTone,
   DirectionsBusTwoTone,
   EmojiTransportationTwoTone,
-  EventTwoTone,
   GitHub,
-  HistoryTwoTone,
+  HailRounded,
   HomeTwoTone,
   InfoTwoTone,
   MapTwoTone,
@@ -16,6 +15,7 @@ import {
   QueryStatsTwoTone,
   RadarTwoTone,
   RouteTwoTone,
+  TrainTwoTone,
 } from '@mui/icons-material'
 import { lazy } from 'react'
 import { createBrowserRouter, createRoutesFromElements, Navigate, Route } from 'react-router'
@@ -32,7 +32,7 @@ import { LegacyLangRedirect } from './LegacyLangRedirect'
 import { MainRoute } from './MainRoute'
 
 const HomePage = lazy(() => import('../pages/homepage/HomePage'))
-const TimelinePage = lazy(() => import('../pages/historicTimeline'))
+const StationStopsPage = lazy(() => import('../pages/stationStops'))
 const GapsPage = lazy(() => import('../pages/gaps'))
 const TimeBasedMapPage = lazy(() => import('../pages/timeBasedMap'))
 const SingleLineMapPage = lazy(() => import('../pages/singleLineMap'))
@@ -42,7 +42,7 @@ const Operator = lazy(() => import('../pages/operator'))
 const Profile = lazy(() => import('../pages/lineProfile/LineProfile'))
 const BugReportForm = lazy(() => import('../pages/bugReport/BugReportForm'))
 const PublicAppeal = lazy(() => import('../pages/publicAppeal'))
-const Hackathon = lazy(() => import('../pages/hackathon/Hackathon'))
+const TrainPage = lazy(() => import('../pages/train'))
 
 export const PAGES = [
   {
@@ -52,11 +52,11 @@ export const PAGES = [
     element: <HomePage />,
   },
   {
-    label: 'timeline_page_title',
-    path: '/timeline',
+    label: 'station_stops_page_title',
+    path: '/station-stops',
     searchParamsRequired: true,
-    icon: <HistoryTwoTone />,
-    element: <TimelinePage />,
+    icon: <HailRounded />,
+    element: <StationStopsPage />,
   },
   {
     label: 'gaps_page_title',
@@ -106,6 +106,12 @@ export const PAGES = [
     element: <Operator />,
   },
   {
+    label: 'train_page_title',
+    path: '/train',
+    icon: <TrainTwoTone />,
+    element: <TrainPage />,
+  },
+  {
     label: 'about_title',
     path: '/about',
     icon: <InfoTwoTone />,
@@ -122,12 +128,6 @@ export const PAGES = [
     path: '/public-appeal',
     icon: <PsychologyTwoTone />,
     element: <PublicAppeal />,
-  },
-  {
-    label: 'hackathon_title',
-    path: '/hackathon',
-    icon: <EventTwoTone />,
-    element: <Hackathon />,
   },
 ] as const
 
