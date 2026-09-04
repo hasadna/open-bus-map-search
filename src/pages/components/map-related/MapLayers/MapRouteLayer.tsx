@@ -7,7 +7,6 @@ import { isPlausibleLocation } from '../../utils/gpsIntegrity'
 import type { FocusTarget, Point, PositionGroup } from '../map-types'
 import {
   claimedRouteDashArray,
-  gpsArtifactMarker,
   implausibleSegmentDashArray,
   rideEndMarker,
   vehicleBearingMarker,
@@ -15,7 +14,6 @@ import {
 } from '../mapMarkers'
 import { buildRoutePolylines } from '../routePolylines'
 import {
-  ARTIFACT_Z_INDEX,
   bearingZIndex,
   BOOKEND_Z_INDEX,
   isStanding,
@@ -34,13 +32,13 @@ interface MapRouteLayerProps {
 }
 
 /** `Point.color` holds the ping's velocity, not a colour — see `toPoint`. */
-function pingMarker({ bearing, color: velocity }: Point) {
+function pingMarker({ bearing, color: velocity }: Point, artifact = false) {
   // Only the standing badge can say "heading unknown" (it drops its needle); a moving ping has
   // to point somewhere, and `toPoint` has already defaulted a missing SIRI bearing to 0 anyway.
   return isStanding(velocity)
-    ? { icon: vehicleStandingMarker(bearing), zIndexOffset: STANDING_Z_INDEX }
+    ? { icon: vehicleStandingMarker(bearing, artifact), zIndexOffset: STANDING_Z_INDEX }
     : {
-        icon: vehicleBearingMarker(bearing ?? 0, velocity),
+        icon: vehicleBearingMarker(bearing ?? 0, velocity, artifact),
         zIndexOffset: bearingZIndex(speedBand(velocity)),
       }
 }
@@ -123,7 +121,7 @@ export function MapRouteLayer({
               // A one-ping ride keeps the operator's logo — it never got to finish.
               const { icon, zIndexOffset } =
                 polylines && !isPlausibleLocation(pos.loc)
-                  ? { icon: gpsArtifactMarker, zIndexOffset: ARTIFACT_Z_INDEX }
+                  ? pingMarker(pos, true)
                   : i === firstIndex
                     ? {
                         icon: busIcon({

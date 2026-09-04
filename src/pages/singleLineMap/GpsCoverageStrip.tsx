@@ -37,9 +37,12 @@ const STRIP_HEIGHT = 48
 const MIN_BAR_FRACTION = 0.08
 
 /**
- * Colour of the columns that hang below the axis. Deliberately outside the green→red cadence
- * ramp above it: those columns grade how *long* the bus went quiet, these say the bus was
- * reporting on time and the coordinates were not real. Same axis, different question.
+ * Ring around the columns that hang below the axis, and the colour of the note explaining them.
+ *
+ * Only the *ring*: the fill stays on the green→red cadence ramp in both halves, so a column's
+ * colour and height always answer "how long since the previous report" wherever it sits. Which
+ * side of the axis it grows from is the separate question of whether the position was real, and
+ * loading that onto the fill as well would have cost the cadence reading on every spoofed fix.
  */
 const ARTIFACT_COLOR = '#8b5cf6'
 
@@ -359,16 +362,20 @@ export const GpsCoverageStrip = ({
                                 // Soften only the corners away from the axis, so columns read as
                                 // rounded bars growing off a flat baseline in either direction.
                                 borderRadius: isArtifact ? '0 0 3px 3px' : '3px 3px 0 0',
-                                background: isArtifact
-                                  ? ARTIFACT_COLOR
-                                  : gapColor(gapSeverity(gap.gapMs, median)),
-                                // Blue border as an inset ring (not outline) so it stays inside the
-                                // column and isn't painted over by the next; thicker/lighter on hover.
+                                background: gapColor(gapSeverity(gap.gapMs, median)),
+                                // Border as an inset ring (not outline) so it stays inside the
+                                // column and isn't painted over by the next; thicker on hover.
+                                // Violet below the axis, which is what marks those columns now
+                                // that the fill is carrying the gap length in both halves.
                                 position: 'relative',
                                 zIndex: isHovered ? 2 : undefined,
-                                boxShadow: isHovered
-                                  ? `inset 0 0 0 2px ${theme.palette.primary.light}`
-                                  : `inset 0 0 0 1px ${theme.palette.primary.main}`,
+                                boxShadow: `inset 0 0 0 ${isHovered ? 2 : 1}px ${
+                                  isArtifact
+                                    ? ARTIFACT_COLOR
+                                    : isHovered
+                                      ? theme.palette.primary.light
+                                      : theme.palette.primary.main
+                                }`,
                               }}
                             />
                           </div>

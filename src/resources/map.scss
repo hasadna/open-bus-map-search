@@ -322,8 +322,7 @@ pre {
 // icon box. Rotation and band scale live on the SVG itself.
 .vehicle-bearing-marker > svg,
 .vehicle-standing-marker > svg,
-.vehicle-ride-end-marker > svg,
-.vehicle-gps-artifact-marker > svg {
+.vehicle-ride-end-marker > svg {
   width: 100%;
   height: 100%;
 }
@@ -339,10 +338,18 @@ pre {
   &--standing {
     stroke: $slow-ping;
   }
+}
 
-  &--artifact {
-    stroke: $gps-artifact;
-  }
+// Struck over a ping the vehicle could not have been at. Only the strike is recoloured: the
+// arrow keeps its speed-band fill and its rotation, so a spoofed fix still reads as "reported
+// heading 142 at 0 km/h" rather than losing the one part of the report that survived.
+.ping-artifact-strike {
+  fill: $gps-artifact;
+  stroke: #fff;
+  stroke-width: 1.3;
+  stroke-linejoin: round;
+  paint-order: stroke;
+  vector-effect: non-scaling-stroke;
 }
 
 .ping-badge-mark {
