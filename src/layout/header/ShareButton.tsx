@@ -43,12 +43,13 @@ export const ShareButton = () => {
 
   return (
     <Tooltip title={tooltipTitle} open={copied || undefined} placement="bottomRight">
-      <div
+      <button
+        type="button"
         className="header-link"
         onClick={handleShare}
         aria-label={copied ? t('link_copied') : t('share_link')}>
         {copied ? <CheckTwoTone fontSize="inherit" /> : <LinkTwoTone fontSize="inherit" />}
-      </div>
+      </button>
     </Tooltip>
   )
 }
