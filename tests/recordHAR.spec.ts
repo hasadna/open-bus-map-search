@@ -244,28 +244,6 @@ test.describe('Record HAR files', () => {
     await settleResponseBodies()
   })
 
-  // ---- lineprofile.har ----------------------------------------------------
-  // Records the queries fired by navigating directly to /profile/{id}:
-  //   * gtfs_routes/get?id=... (loader)
-  //   * gtfs_routes/list?route_short_name=... (useSingleLineData routes for line)
-  //   * siri_rides/list?... (start-time options)
-  // Route id 4339841 is the operator 97 / line 16 route for 2024-02-12 used by the
-  // single-line tests; it is stable for the frozen test date.
-  test('record lineprofile.har', async ({ page }) => {
-    await setupRecording(page, 'tests/HAR/lineprofile.har')
-    const settleResponseBodies = trackResponseBodies(page)
-    await goToPage(page, '/')
-    await goToPage(page, '/profile/4339841')
-    // Wait for the SIRI rides response so start-time options are populated in the HAR.
-    await page
-      .waitForResponse((r) => r.url().includes('/siri_rides/list'), { timeout: 30000 })
-      .catch(() => undefined)
-    await page.waitForLoadState('networkidle')
-
-    // Ensure every stride-api response body is fully captured in the HAR.
-    await settleResponseBodies()
-  })
-
   // ---- interlink.har ------------------------------------------------------
   // Covers the gaps -> single-line interlink (Egged line 402, operator_ref=3,
   // line_ref=33267 — the '...הורדה...' direction — on 2024-02-12). This 24/7 line

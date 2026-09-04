@@ -142,10 +142,6 @@ const RouteGroup = ({ group, operatorId }: { group: RouteGroup; operatorId?: str
   const navigate = useNavigate()
   const DirectionArrow = i18n.dir() === 'rtl' ? ArrowBackTwoTone : ArrowForwardTwoTone
 
-  const profileLink = (route: Route) => (
-    <Link to={`/profile/${route.id}`}>{t('operator.profile')}</Link>
-  )
-
   const mapLink = (route: Route) => {
     if (operatorId === ISRAEL_TRAIN_ID) {
       return <Link to={`/train?route=${route.lineRef}`}>{t('operator.map')}</Link>
@@ -205,10 +201,7 @@ const RouteGroup = ({ group, operatorId }: { group: RouteGroup; operatorId?: str
                   </tr>
                 </tbody>
               </StackedTable>
-              <StackedActions>
-                {profileLink(route)}
-                {mapLink(route)}
-              </StackedActions>
+              <StackedActions>{mapLink(route)}</StackedActions>
             </StackedRoute>
           ))}
         </Box>
@@ -231,10 +224,7 @@ const RouteGroup = ({ group, operatorId }: { group: RouteGroup; operatorId?: str
                   </TableCell>
                   <TableCell>{route.end}</TableCell>
                   <TableCell>
-                    <Box sx={{ display: 'flex', gap: 2 }}>
-                      {profileLink(route)}
-                      {mapLink(route)}
-                    </Box>
+                    <Box sx={{ display: 'flex', gap: 2 }}>{mapLink(route)}</Box>
                   </TableCell>
                 </TableRow>
               ))}
