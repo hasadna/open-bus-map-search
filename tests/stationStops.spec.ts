@@ -1,4 +1,4 @@
-import { expect, test } from 'src/test_pages/StationStopsPage'
+import { expect, test } from './test_pages/StationStopsPage'
 import { clearInputField, harOptions, setupTest, verifyDateFromParameter, visitPage } from './utils'
 
 const ROUTE = 'שדרות מנחם בגין/כביש 7-גדרה ⟵ שדרות מנחם בגין/כביש 7-גדרה'

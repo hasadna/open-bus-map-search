@@ -79,7 +79,7 @@ export default [
   // User-visible strings must go through i18next, so every language gets them
   {
     files: ['src/**/*.{ts,tsx}'],
-    ignores: ['src/**/*.test.{ts,tsx}', 'src/**/*.stories.{ts,tsx}', 'src/test_pages/**'],
+    ignores: ['src/**/*.test.{ts,tsx}', 'src/**/*.stories.{ts,tsx}'],
     plugins: { i18next: eslintPluginI18next },
     rules: {
       'i18next/no-literal-string': [
@@ -93,9 +93,9 @@ export default [
       ],
     },
   },
-  // Disable React rules in tests and test_pages folders
+  // Disable React rules in the tests folder
   {
-    files: ['tests/**/*.{ts,tsx}', 'src/test_pages/**/*.{ts,tsx}'],
+    files: ['tests/**/*.{ts,tsx}'],
     rules: {
       'react-hooks/rules-of-hooks': 'off',
       'react/jsx-filename-extension': 'off',
