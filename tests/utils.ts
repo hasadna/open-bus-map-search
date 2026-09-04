@@ -5,7 +5,7 @@ import Backend from 'i18next-fs-backend'
 import { test as baseTest, customMatcher, Matcher } from 'playwright-advanced-har'
 import { RouteFromHAROptions } from 'playwright-advanced-har/lib/utils/types'
 import { expect } from 'playwright-assertions'
-import dayjs from 'src/dayjs'
+import { toIsraelTimezone } from 'src/dayjs'
 import { PAGES } from 'src/routes'
 
 export { expect } from 'playwright-assertions'
@@ -182,7 +182,12 @@ export const visitPage = async (page: Page, label: (typeof PAGES)[number]['label
   await page.waitForLoadState('networkidle')
 }
 
+/** The operator list must describe the day being analyzed, not the day the browser is on. */
 export const verifyDateFromParameter = async (page: Page) => {
+  // The agency list is a react-query query persisted to localStorage, so a reload can be
+  // answered from that cache without ever reaching the network.
+  await page.evaluate(() => window.localStorage.removeItem('REACT_QUERY_OFFLINE_CACHE'))
+
   const requestPromise = page.waitForRequest((request) =>
     request.url().includes('gtfs_agencies/list'),
   )
@@ -191,11 +196,11 @@ export const verifyDateFromParameter = async (page: Page) => {
   await page.getByLabel('חברה מפעילה').click()
   const request = await requestPromise
 
-  const dateFrom = dayjs(new URL(request.url()).searchParams.get('date_from'))
-  const daysAgo = dayjs(getPastDate()).diff(dateFrom, 'days')
+  const params = new URL(request.url()).searchParams
+  const selectedDate = toIsraelTimezone(getPastDate()).format('YYYY-MM-DD')
 
-  expect(daysAgo).toBeGreaterThanOrEqual(0)
-  expect(daysAgo).toBeLessThanOrEqual(3)
+  expect(params.get('date_from')).toBe(selectedDate)
+  expect(params.get('date_to')).toBe(selectedDate)
 }
 
 export const harOptions: RouteFromHAROptions = {
