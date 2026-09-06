@@ -85,25 +85,3 @@ export function partitionByPlausibility(positions: Point[]) {
   }
   return { plausible, implausible }
 }
-
-/**
- * The fixes that form the ride itself: the largest group whose members are joined to one
- * another by movement the vehicle could actually have made.
- *
- * Trust does not survive an impossible jump. A cluster on the far side of one holds positions
- * inside the bounds that look perfectly ordinary among themselves — spoofing that lands in
- * Jordan reports a stationary vehicle quite happily — but nothing except the report says the
- * vehicle was ever there, so it is not the route and must not carry the ride's start or end.
- * Ties keep the earlier group, so a ride is never re-anchored onto a later cluster of equal size.
- */
-export function rideBody(positions: Point[]): Point[] {
-  const groups: Point[][] = []
-  for (const position of positions) {
-    if (!isPlausibleLocation(position.loc)) continue
-    const open = groups.at(-1)
-    if (open && classifyMovement(open[open.length - 1], position) !== 'impossible')
-      open.push(position)
-    else groups.push([position])
-  }
-  return groups.reduce<Point[]>((best, group) => (group.length > best.length ? group : best), [])
-}

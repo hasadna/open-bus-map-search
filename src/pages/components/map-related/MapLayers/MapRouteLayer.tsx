@@ -79,12 +79,10 @@ export function MapRouteLayer({
       {positionGroups.map((group, groupIndex) => {
         const markerIds = group.positions.map((_, i) => i)
         const polylines = polylinesByGroup?.[groupIndex]
-        // The operator's logo and the chequered flag mark where the ride began and ended, so
-        // they belong to the fixes drawn solid — never to a spoofed one, and never to a cluster
-        // the ride could not have driven to.
-        const body = polylines && new Set(polylines.body)
+        // The operator's logo and the chequered flag mark where the ride began and ended, so a
+        // fix the vehicle could not have held must not carry them off to Beirut.
         const routeIndexes = group.positions
-          .map((pos, i) => (body && !body.has(pos) ? -1 : i))
+          .map((pos, i) => (polylines && !isPlausibleLocation(pos.loc) ? -1 : i))
           .filter((i) => i >= 0)
         const firstIndex = routeIndexes[0]
         const lastIndex = routeIndexes.at(-1)

@@ -3,7 +3,7 @@
  * is this a position the vehicle could hold, could it have moved between these two — belong to
  * `utils/gpsIntegrity`; this module only decides what gets drawn, and how.
  */
-import { classifyMovement, isPlausibleLocation, rideBody } from '../utils/gpsIntegrity'
+import { classifyMovement, isPlausibleLocation } from '../utils/gpsIntegrity'
 import type { Point } from './map-types'
 
 export interface RoutePath {
@@ -17,20 +17,16 @@ export interface RoutePolylines {
   route: RoutePath[]
   /** One path per run of excluded fixes, anchored to the fix either side — the route as claimed. */
   claimed: [number, number][][]
-  /** From {@link rideBody}, so callers place the ride's bookends on the same fixes drawn solid. */
-  body: Point[]
 }
 
-function toRoute(plausible: Point[], body: ReadonlySet<Point>): RoutePath[] {
+function toRoute(plausible: Point[]): RoutePath[] {
   const route: RoutePath[] = []
   for (let i = 1; i < plausible.length; i++) {
-    // Solid needs both a movement the data supports and two fixes that belong to the ride:
-    // `impossible`/`unverifiable` cannot carry a line, and neither can a stretch of a cluster
-    // that only an impossible jump reaches, however placid it looks from the inside.
-    const dashed =
-      classifyMovement(plausible[i - 1], plausible[i]) !== 'plausible' ||
-      !body.has(plausible[i - 1]) ||
-      !body.has(plausible[i])
+    // Only a movement the data supports gets a solid line; `impossible` and `unverifiable` alike
+    // mean the pair cannot carry one. The judgement stays on the *pair*: a stale fix released
+    // late makes one step of a real route look impossible, and condemning everything past it
+    // would dash the rest of an ordinary ride.
+    const dashed = classifyMovement(plausible[i - 1], plausible[i]) !== 'plausible'
     const open = route.at(-1)
     if (open?.dashed === dashed) open.positions.push(plausible[i].loc)
     else route.push({ dashed, positions: [plausible[i - 1].loc, plausible[i].loc] })
@@ -66,13 +62,8 @@ function toClaimed(positions: Point[]): [number, number][][] {
 }
 
 export function buildRoutePolylines(positions: Point[]): RoutePolylines {
-  const body = rideBody(positions)
   return {
-    route: toRoute(
-      positions.filter((point) => isPlausibleLocation(point.loc)),
-      new Set(body),
-    ),
+    route: toRoute(positions.filter((point) => isPlausibleLocation(point.loc))),
     claimed: toClaimed(positions),
-    body,
   }
 }

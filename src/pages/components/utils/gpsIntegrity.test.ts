@@ -5,7 +5,6 @@ import {
   isNoFixLocation,
   isPlausibleLocation,
   partitionByPlausibility,
-  rideBody,
 } from './gpsIntegrity'
 
 // Offset off the epoch: `toPoint` defaults a missing recordedAtTime to 0, so 0 means
@@ -90,30 +89,6 @@ describe('classifyMovement', () => {
   it('reports an unclocked pair as unverifiable rather than folding it in with plausible', () => {
     expect(classifyMovement({ loc: GOLAN_A, color: 0 }, at(GOLAN_B, 60))).toBe('unverifiable')
     expect(classifyMovement(at(GOLAN_A, 60), at(GOLAN_B, 0))).toBe('unverifiable')
-  })
-})
-
-describe('rideBody', () => {
-  it('is the whole ride when nothing impossible happens', () => {
-    const fixes = [at(GOLAN_A, 0), at(GOLAN_B, 360)]
-    expect(rideBody(fixes)).toEqual(fixes)
-  })
-
-  it('drops a cluster that only an impossible jump reaches, however placid it looks', () => {
-    const golan = [at(GOLAN_A, 0), at(GOLAN_B, 360), at([32.82, 35.7], 700)]
-    const stranded = [at(EILAT, 1900), at([29.5582, 34.9483], 2000), at(EILAT, 2100)]
-    expect(rideBody([...golan, ...stranded])).toEqual(golan)
-  })
-
-  it('ignores excluded fixes rather than letting them split the ride', () => {
-    const fixes = [at(GOLAN_A, 0), at(BEIRUT, 300), at(GOLAN_B, 600)]
-    expect(rideBody(fixes)).toEqual([fixes[0], fixes[2]])
-  })
-
-  it('keeps the earlier group when two are the same size', () => {
-    const first = [at(GOLAN_A, 0), at(GOLAN_B, 360)]
-    const second = [at(EILAT, 1900), at(EILAT, 2000)]
-    expect(rideBody([...first, ...second])).toEqual(first)
   })
 })
 

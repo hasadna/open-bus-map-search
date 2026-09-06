@@ -67,41 +67,22 @@ describe('buildRoutePolylines', () => {
     expect(route.map((path) => path.dashed)).toEqual([false, true, false])
   })
 
-  it('keeps the ride solid when the junk is on both sides of it', () => {
+  it('dashes only the impossible pair, not the rest of a real route past it', () => {
+    // A stale fix released late makes one step of siri_ride 138790572 (line 262, Haifa-Karmiel)
+    // look impossible. Condemning the fixes beyond it dashed 35 of that ride's 78 real ones.
     const { route } = buildRoutePolylines([
-      at(EILAT, 0),
-      at(EILAT, 60),
-      at(GOLAN_A, 1000),
-      at(GOLAN_B, 1400),
-      at([32.82, 35.7], 1700),
-      at(EILAT, 2000),
-      at(EILAT, 2100),
+      at(GOLAN_A, 0),
+      at(GOLAN_B, 360),
+      at(EILAT, 600),
+      at([29.5582, 34.9483], 1200),
+      at([29.5601, 34.9502], 1800),
     ])
-    expect(route.map((path) => path.dashed)).toEqual([true, false, true])
+    expect(route.map((path) => path.dashed)).toEqual([false, true, false])
   })
 
   it('leaves a fully spoofed ride with no route at all', () => {
     const { route, claimed } = buildRoutePolylines([at(BEIRUT, 0), at(BEIRUT, 60)])
     expect(route).toHaveLength(0)
     expect(claimed).toEqual([[BEIRUT, BEIRUT]])
-  })
-})
-
-describe('an in-bounds cluster beyond an impossible jump', () => {
-  // The backstop for a spoofing target the bounds do not catch: the fixes look ordinary among
-  // themselves, but nothing except the report says the vehicle was ever there.
-  const golan = [at(GOLAN_A, 0), at(GOLAN_B, 360), at([32.82, 35.7], 700)]
-  const stranded = [at(EILAT, 1900), at([29.5582, 34.9483], 2000), at(EILAT, 2100)]
-
-  it('is dashed throughout, not just on the jump that reaches it', () => {
-    const { route } = buildRoutePolylines([...golan, ...stranded])
-    expect(route.map((path) => path.dashed)).toEqual([false, true])
-    // everything from the last real fix onwards is one dashed run
-    expect(route[1].positions[0]).toEqual([32.82, 35.7])
-    expect(route[1].positions.at(-1)).toEqual(EILAT)
-  })
-
-  it('is left out of the ride body, so the bookends stay on the route', () => {
-    expect(buildRoutePolylines([...golan, ...stranded]).body).toEqual(golan)
   })
 })
