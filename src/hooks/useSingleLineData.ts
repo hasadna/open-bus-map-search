@@ -11,6 +11,7 @@ import {
   ROUTE_COLORS,
   toPoint,
 } from 'src/pages/components/map-related/map-types'
+import { isNoFixLocation } from 'src/pages/components/utils/gpsIntegrity'
 import { routeStartEnd, vehicleIDFormat } from 'src/pages/components/utils/rotueUtils'
 import {
   normalizeStartTimeToken,
@@ -188,11 +189,6 @@ export const useSingleLineData = ({
       rideIds.map((rideId, idx) =>
         SIRI_API.siriVehicleLocationsListGet({
           siriRidesIds: rideId.toString(),
-          // Israel bounding box — drops null/zero-coordinate and stray pings at the API level
-          latGreaterOrEqual: 29.0,
-          latLowerOrEqual: 33.5,
-          lonGreaterOrEqual: 34.0,
-          lonLowerOrEqual: 36.3,
           orderBy: 'recorded_at_time asc',
           limit: 10000,
           getCount: false,
@@ -200,7 +196,12 @@ export const useSingleLineData = ({
           color: ROUTE_COLORS[idx % ROUTE_COLORS.length],
           label: vehicleIDFormat(vehicleRefById.get(rideId)) ?? String(idx + 1),
           vehicleRef: vehicleRefById.get(rideId),
-          positions: uniqBy(data, locationFixKey).map(toPoint),
+          // Out-of-country fixes are kept — the map draws them apart from the route, and a
+          // coverage gap that is really a jammed receiver should read as one. (-1, -1) is not
+          // a fix at all but MOT's scheduler announcing a due trip, so it is dropped here.
+          positions: uniqBy(data, locationFixKey)
+            .map(toPoint)
+            .filter((point) => !isNoFixLocation(point.loc)),
         })),
       ),
     )

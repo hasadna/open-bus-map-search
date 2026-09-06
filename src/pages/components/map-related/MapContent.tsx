@@ -12,6 +12,7 @@ export function MapContent({
   plannedRouteStops,
   showNavigationButtons,
   focusTarget,
+  flagGpsArtifacts,
 }: MapProps) {
   const [tileUrl, setTileUrl] = useState('https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png')
   const map = useMap()
@@ -62,6 +63,7 @@ export function MapContent({
         showNavigationButtons={showNavigationButtons}
         navigateMarkers={navigateMarkers}
         focusTarget={focusTarget}
+        flagGpsArtifacts={flagGpsArtifacts}
       />
       <MapPlannedRouteLayer plannedRouteStops={plannedRouteStops} />
     </>
