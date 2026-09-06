@@ -19,11 +19,7 @@ const config = {
   waitBeforeCapture: async () => {
     const startTime = Date.now()
     const timeout = 60 * 1000
-    while (
-      document.querySelector(
-        '.ant-skeleton, .ant-skeleton-content, [data-testid="skeleton-loader"]',
-      )
-    ) {
+    while (document.querySelector('[data-testid="skeleton-loader"]')) {
       await new Promise((resolve) => setTimeout(resolve, 100))
       const duration = Date.now() - startTime
       const isTimeout = duration > timeout
