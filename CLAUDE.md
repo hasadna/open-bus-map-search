@@ -133,7 +133,6 @@ src/
 ├── locale/                 # i18n translations (he, en, ar, ru) + helpers
 ├── resources/              # Shared SCSS (map, variables) + assets
 ├── shared/                 # Reusable components (Widget, Preloader, SkeletonLoader)
-├── test_pages/             # Playwright page objects
 ├── img/                    # Static images
 ├── App.tsx                 # Root component with router
 ├── dayjs.ts                # Day.js setup (plugins, locale) + Israel date/time helpers
@@ -161,11 +160,13 @@ src/
 - **Visual Regression**: Applitools integration for Storybook and Playwright
 - **Mock Service Worker**: MSW for API mocking in Storybook (see `.storybook/preview.tsx`)
 
-Test files are co-located with source code:
+Vitest and Storybook files are co-located with the source they cover, under `src/`:
 
 - `*.test.ts(x)` for Vitest
-- `*.spec.ts` for Playwright
 - `*.stories.tsx` for Storybook
+
+Everything Playwright lives under `tests/` — `*.spec.ts` specs alongside their helpers
+(`utils.ts`, `SelectorsModel.ts`), page objects (`test_pages/`), and HAR fixtures.
 
 ### Internationalization (i18n)
 
