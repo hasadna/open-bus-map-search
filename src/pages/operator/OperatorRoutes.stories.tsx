@@ -4,10 +4,11 @@ import { expect, userEvent, waitFor, within } from 'storybook/test'
 import dayjs from 'src/dayjs'
 import i18n from 'src/locale/allTranslations'
 import { ISRAEL_TRAIN_ID } from 'src/model/operator'
+import { civilDate } from 'src/model/time/civilDate'
 import { getPastDate } from '../../../.storybook/main'
 import { OperatorRoutes } from './OperatorRoutes'
 
-const DATE = dayjs(getPastDate()).format('YYYY-MM-DD')
+const DATE = civilDate(dayjs(getPastDate()).format('YYYY-MM-DD'))!
 
 // MSW matches by pathname (query params are ignored), so a single wildcard
 // handler serves every operatorId/limit/date the component asks for.

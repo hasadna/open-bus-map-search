@@ -4,6 +4,7 @@ import type {
   SiriVehicleLocationWithRelatedPydanticModel,
 } from '@hasadna/open-bus-api-client'
 import { computeDestinationPoint } from 'geolib'
+import { civilDate } from 'src/model/time/civilDate'
 import {
   getTrainDateRange,
   getTrainStationAverageDelays,
@@ -14,7 +15,7 @@ import {
 
 describe('train data', () => {
   it('builds a one-day Israel-local range and safe GTFS dates', () => {
-    const range = getTrainDateRange('2026-07-20')
+    const range = getTrainDateRange(civilDate('2026-07-20')!)
 
     expect(range.dateFrom.toISOString()).toBe('2026-07-20T12:00:00.000Z')
     expect(range.dateTo.toISOString()).toBe('2026-07-20T12:00:00.000Z')
@@ -26,7 +27,7 @@ describe('train data', () => {
     ['2026-03-27', '2026-03-26T22:00:00.000Z', '2026-03-27T21:00:00.000Z'],
     ['2026-10-25', '2026-10-24T21:00:00.000Z', '2026-10-25T22:00:00.000Z'],
   ])('ends %s at the next Israel-local midnight across DST', (date, expectedFrom, expectedTo) => {
-    const range = getTrainDateRange(date)
+    const range = getTrainDateRange(civilDate(date)!)
 
     expect(range.timeFrom.toISOString()).toBe(expectedFrom)
     expect(range.timeTo.toISOString()).toBe(expectedTo)
