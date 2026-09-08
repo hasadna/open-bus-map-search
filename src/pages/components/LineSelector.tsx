@@ -3,11 +3,12 @@ import { debounce } from 'es-toolkit/compat'
 import { useCallback, useLayoutEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAllRoutes } from 'src/hooks/useAllRoutes'
+import { type CivilDate } from 'src/model/time/civilDate'
 
 type LineSelectorProps = {
   disabled?: boolean
   operatorId?: string
-  date?: string
+  date?: CivilDate
   lineNumber: string | undefined
   setLineNumber: (lineNumber: string) => void
 }

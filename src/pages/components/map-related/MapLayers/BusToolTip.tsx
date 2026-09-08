@@ -4,8 +4,9 @@ import { ReactNode, useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useNavigate } from 'react-router'
 import { getRoutesByLineRef } from 'src/api/gtfsService'
-import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone, utcNoonForDateStr } from 'src/dayjs'
+import dayjs, { ISRAEL_TIMEZONE } from 'src/dayjs'
 import { GlobalSearchContext } from 'src/model/globalState'
+import { toCivilDate, todayCivilDate } from 'src/model/time/civilDate'
 import { routeStartEnd, vehicleIDFormat } from 'src/pages/components/utils/rotueUtils'
 import SkeletonLoader from 'src/shared/SkeletonLoader'
 import CustomTreeView from '../../CustomTreeView'
@@ -35,14 +36,17 @@ export function BusToolTip({ position, icon, children, linkToLineMap }: BusToolT
   useEffect(() => {
     if (!position.point?.id) return
     setIsLoading(true)
+    // Prefer the scheduled start: its day is the GTFS service date, where the recorded time
+    // can sit a day off around midnight. The raw values coalesce before toCivilDate because
+    // toCivilDate(undefined) resolves to *today* — a `toCivilDate(a) ?? toCivilDate(b)` chain
+    // would never reach the recorded time.
+    const rideDay =
+      toCivilDate(position.point?.siriRideScheduledStartTime ?? position.point?.recordedAtTime) ??
+      todayCivilDate()
     getRoutesByLineRef(
       (position.point?.siriRouteOperatorRef || 0).toString(),
       (position.point?.siriRouteLineRef || 0).toString(),
-      utcNoonForDateStr(
-        toIsraelTimezone(position.point?.siriRideScheduledStartTime ?? undefined).format(
-          'YYYY-MM-DD',
-        ),
-      ),
+      rideDay,
     )
       .then((routes) => {
         setRoute(routes[0])
@@ -80,7 +84,7 @@ export function BusToolTip({ position, icon, children, linkToLineMap }: BusToolT
   const showOnLineMap = (route: GtfsRoutePydanticModel) => {
     setSearch((current) => ({
       ...current,
-      date: toIsraelTimezone(route.date.getTime()).format('YYYY-MM-DD'),
+      date: toCivilDate(route.date) ?? current.date,
       operatorId: route.operatorRef.toString(),
       lineNumber: route.routeShortName ?? null,
       routeKey: `${route.routeMkt}-${route.routeDirection}-${route.routeAlternative}`,

@@ -2,10 +2,10 @@ import { Alert, Grid, Typography } from '@mui/material'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 // Services and libraries
-import dayjs from 'src/dayjs'
 import { useDate } from 'src/hooks/useDate'
+import { addDays, todayCivilDate } from 'src/model/time/civilDate'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
-import { DateSelector } from '../components/DateSelector'
+import { CivilDateSelector } from '../components/CivilDateSelector'
 import { PageContainer } from '../components/PageContainer'
 // Components
 import InfoYoutubeModal from '../components/YoutubeModal'
@@ -15,12 +15,9 @@ import WorstLinesChart from './WorstLinesChart/WorstLinesChart'
 // Styling
 import './DashboardPage.scss'
 
-// Declarations
-const now = dayjs()
-
 const DashboardPage = () => {
-  const [startDate, setStartDate] = useDate(now.subtract(7, 'day'))
-  const [endDate, setEndDate] = useDate(now.subtract(1, 'day'))
+  const [startDate, setStartDate] = useDate(addDays(todayCivilDate(), -7))
+  const [endDate, setEndDate] = useDate(addDays(todayCivilDate(), -1))
   const [operatorId, setOperatorId] = useState('')
   const { t } = useTranslation()
 
@@ -57,16 +54,12 @@ const DashboardPage = () => {
         sx={{ marginTop: '0px', alignItems: 'center', justifyContent: 'space-between' }}>
         <Grid container size={{ xs: 12, lg: 6 }} spacing={2} sx={{ alignItems: 'center' }}>
           <Grid size={{ xs: 6 }}>
-            <DateSelector
-              time={startDate}
-              onChange={(data) => setStartDate(data)}
-              customLabel={t('start')}
-            />
+            <CivilDateSelector value={startDate} onChange={setStartDate} customLabel={t('start')} />
           </Grid>
           <Grid size={{ xs: 6 }}>
-            <DateSelector
-              time={endDate}
-              onChange={(data) => setEndDate(data)}
+            <CivilDateSelector
+              value={endDate}
+              onChange={setEndDate}
               minDate={startDate}
               customLabel={t('end')}
             />

@@ -20,7 +20,7 @@ import { Row } from 'src/pages/components/Row'
 import StopSelector from 'src/pages/components/StopSelector'
 import { TimelineBoard } from 'src/pages/components/timeline/TimelineBoard'
 import Widget from 'src/shared/Widget'
-import { DateSelector } from '../components/DateSelector'
+import { CivilDateSelector } from '../components/CivilDateSelector'
 import { NotFound } from '../components/NotFound'
 import { PageContainer } from '../components/PageContainer'
 import { TimeSelector } from '../components/TimeSelector'
@@ -131,11 +131,11 @@ const StationStopsPage = () => {
       <Grid container spacing={2}>
         {/* choose date */}
         <Grid size={{ lg: 4, md: 6, xs: 12 }}>
-          <DateSelector
-            time={dayjs.tz(date, ISRAEL_TIMEZONE)}
-            onChange={(ts) => {
-              if (!ts) return
-              setSearch((prev) => ({ ...prev, date: ts.format('YYYY-MM-DD') }))
+          <CivilDateSelector
+            value={date}
+            onChange={(d) => {
+              if (!d) return
+              setSearch((prev) => ({ ...prev, date: d }))
             }}
           />
         </Grid>
