@@ -19,7 +19,6 @@ import {
 } from '@mui/icons-material'
 import { lazy } from 'react'
 import { createBrowserRouter, createRoutesFromElements, Navigate, Route } from 'react-router'
-import { getRouteById } from 'src/api/gtfsService'
 // Eager-imported [DashboardPage, GapsPatternsPage, DataResearch] to merge their recharts/CJS modules into the main chunk and
 // avoid a rolldown OXC-minifier codegen bug that produces `var X=X()` self-calls
 // in the lazy chunks (vite:preloadError -> reload loop). See rolldown-vite #595.
@@ -39,7 +38,6 @@ const SingleLineMapPage = lazy(() => import('../pages/singleLineMap'))
 const VehiclePage = lazy(() => import('../pages/vehicle'))
 const About = lazy(() => import('../pages/about'))
 const Operator = lazy(() => import('../pages/operator'))
-const Profile = lazy(() => import('../pages/lineProfile/LineProfile'))
 const BugReportForm = lazy(() => import('../pages/bugReport/BugReportForm'))
 const PublicAppeal = lazy(() => import('../pages/publicAppeal'))
 const TrainPage = lazy(() => import('../pages/train'))
@@ -176,22 +174,6 @@ export const getRoutesList = () => {
           ErrorBoundary={ErrorPage}
         />
       ))}
-      <Route
-        path="profile/:gtfsRideGtfsRouteId"
-        element={<Profile />}
-        ErrorBoundary={ErrorPage}
-        loader={async ({ params }) => {
-          try {
-            const route = await getRouteById(params?.gtfsRideGtfsRouteId)
-            return { route }
-          } catch (error) {
-            return {
-              route: null,
-              message: (error as Error).message,
-            }
-          }
-        }}
-      />
       {/* Backward-compat: old links carried a language prefix (/he, /en, /ru, /ar).
           Strip it, apply the language, and redirect to the clean path.
           Remove this route (and LegacyLangRedirect) once such links have aged out. */}
