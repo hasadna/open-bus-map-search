@@ -4,6 +4,7 @@ import { PropsWithChildren, ReactNode, useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { AttributionControl, MapContainer, MapContainerProps } from 'react-leaflet'
 import { useTheme } from 'src/layout/ThemeContext'
+import { MapAutoResize } from './MapAutoResize'
 import { MapZoomBar } from './MapZoomBar'
 
 /**
@@ -31,6 +32,7 @@ export function MapShell({ children, legend, ...mapProps }: MapShellProps) {
       className={`map-info ${isExpanded ? 'expanded' : 'collapsed'}${isDarkTheme ? ' dark' : ''}`}>
       {legend && <div className="map-legend">{legend}</div>}
       <MapContainer {...mapProps} zoomControl={false} attributionControl={false}>
+        <MapAutoResize />
         <MapZoomBar position={isRtl ? 'topleft' : 'topright'}>
           <IconButton className="expand-button" onClick={toggleExpanded}>
             {isExpanded ? (
