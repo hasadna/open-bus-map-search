@@ -1,7 +1,6 @@
-# MCR publishes no image for the 1.63 alpha pinned in package.json, and the browsers
-# baked into any released image are the wrong revision for it, so this image only
-# borrows the OS-level browser dependencies from the base.
-FROM mcr.microsoft.com/playwright:v1.62.1-noble
+# Keep this tag in step with the @playwright/test pin in package.json: the browsers baked
+# into the image have to be the revision playwright-core expects.
+FROM mcr.microsoft.com/playwright:v1.63.0-noble
 
 WORKDIR /app
 
@@ -12,8 +11,8 @@ RUN npm install -g npm@11
 COPY package*.json ./
 RUN npm ci
 
-# The test run itself is offline, so the browser matching the installed
-# playwright-core has to be fetched here, at build time
+# A no-op while the base tag matches the pin above, and the thing that keeps the image
+# working if they ever drift: the test run itself is offline and cannot fetch a browser.
 RUN npx playwright install chromium
 
 COPY . .
