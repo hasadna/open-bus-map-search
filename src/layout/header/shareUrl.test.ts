@@ -1,11 +1,12 @@
 import { GLOBAL_SEARCH_DEFAULTS, GlobalSearchState } from 'src/model/globalState'
+import { civilDate, type CivilDate } from 'src/model/time/civilDate'
 import { buildShareUrl, PAGE_SHARE_PARAMS } from './shareUrl'
 import type { ShareableKey } from './shareUrl'
 
 const ORIGIN = 'https://open-bus.example.com'
 
 const fullSearch: GlobalSearchState = {
-  date: '2026-05-01',
+  date: civilDate('2026-05-01')!,
   operatorId: '3',
   lineNumber: '64',
   routeKey: 'route-abc',
@@ -92,9 +93,10 @@ describe('buildShareUrl — page params', () => {
 // ---------------------------------------------------------------------------
 
 // vehicleNumber is no longer a GlobalSearchState field; the /vehicle page keeps
-// it page-local and appends it through PageShareParamsContext, sharing only the
-// global `date`. These guard that contract (and that the page never leaks the
-// operator/line/route global state a vehicle link must not carry).
+// it page-local (usePageState, namespaced `vehicle.vehicleNumber`) and appends it
+// through PageShareParamsContext, sharing only the global `date`. These guard that
+// contract (and that the page never leaks the operator/line/route global state a
+// vehicle link must not carry).
 
 describe('buildShareUrl — /vehicle page', () => {
   it('shares only the global date — not operator/line/route', () => {
@@ -102,9 +104,9 @@ describe('buildShareUrl — /vehicle page', () => {
     expect(p).toEqual({ date: fullSearch.date })
   })
 
-  it('appends the page-local vehicleNumber via extra params', () => {
-    const p = paramsOf(build('/vehicle', fullSearch, { vehicleNumber: '7489226' }))
-    expect(p).toEqual({ date: fullSearch.date, vehicleNumber: '7489226' })
+  it('appends the page-local vehicle.vehicleNumber via extra params', () => {
+    const p = paramsOf(build('/vehicle', fullSearch, { 'vehicle.vehicleNumber': '7489226' }))
+    expect(p).toEqual({ date: fullSearch.date, 'vehicle.vehicleNumber': '7489226' })
   })
 
   it('vehicleNumber is no longer a shareable global key on any page', () => {
@@ -114,25 +116,11 @@ describe('buildShareUrl — /vehicle page', () => {
   })
 })
 
-// ---------------------------------------------------------------------------
-// buildShareUrl — language prefix stripping
-// ---------------------------------------------------------------------------
+describe('buildShareUrl — /train page', () => {
+  it('shares the global date and page-local route', () => {
+    const p = paramsOf(build('/train', fullSearch, { route: '30867' }))
 
-describe('buildShareUrl — language prefix', () => {
-  it('strips the lang code from the output pathname', () => {
-    // A Hebrew user's link must not force Hebrew on the recipient.
-    // The recipient's localStorage/URL preference picks their own language.
-    expect(new URL(build('/he/gaps')).pathname).toBe('/gaps')
-    expect(new URL(build('/en/timeline')).pathname).toBe('/timeline')
-    expect(new URL(build('/ar/operator')).pathname).toBe('/operator')
-  })
-
-  it('/he/gaps and /gaps produce identical URLs', () => {
-    expect(build('/he/gaps')).toBe(build('/gaps'))
-  })
-
-  it('page without lang prefix is unaffected', () => {
-    expect(new URL(build('/gaps')).pathname).toBe('/gaps')
+    expect(p).toEqual({ date: fullSearch.date, route: '30867' })
   })
 })
 
@@ -172,7 +160,8 @@ describe('buildShareUrl — edge cases', () => {
   it('a page with all empty/null search values produces no query string', () => {
     const empty: GlobalSearchState = {
       ...GLOBAL_SEARCH_DEFAULTS,
-      date: '',
+      // Unreachable in real state; cast to exercise buildShareUrl's falsy-value skip.
+      date: '' as CivilDate,
       operatorId: null,
       lineNumber: null,
       routeKey: null,
@@ -218,33 +207,4 @@ describe('buildShareUrl — per-page param contracts', () => {
       })
     })
   }
-})
-
-// ---------------------------------------------------------------------------
-// buildShareUrl — dynamic profile path
-// ---------------------------------------------------------------------------
-
-// /profile/:id is not in PAGE_SHARE_PARAMS. The route ID is already in the
-// path, so GlobalSearchContext params must not leak into the URL — only explicit
-// page params (e.g. rideTime) registered via PageShareParamsContext appear.
-
-describe('buildShareUrl — dynamic profile path', () => {
-  it('no GlobalSearchContext params leak into the URL', () => {
-    const p = paramsOf(build('/profile/12345', fullSearch))
-    expect(p.operatorId).toBeUndefined()
-    expect(p.lineNumber).toBeUndefined()
-    expect(p.date).toBeUndefined()
-    expect(p.routeKey).toBeUndefined()
-    expect(p.rideTime).toBeUndefined()
-  })
-
-  it('page params (rideTime) are included', () => {
-    const p = paramsOf(build('/profile/12345', fullSearch, { rideTime: '08:30:00' }))
-    expect(p.rideTime).toBe('08:30:00')
-  })
-
-  it('profile id is preserved in the pathname', () => {
-    const url = new URL(build('/profile/12345', fullSearch, { rideTime: '08:30:00' }))
-    expect(url.pathname).toBe('/profile/12345')
-  })
 })

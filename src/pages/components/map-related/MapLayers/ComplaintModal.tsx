@@ -1,5 +1,5 @@
 import { ComplaintFormSchemaAnyOf } from '@hasadna/open-bus-api-client'
-import { Close } from '@mui/icons-material'
+import { CloseTwoTone } from '@mui/icons-material'
 import {
   Alert,
   CircularProgress,
@@ -195,7 +195,7 @@ const ComplaintModal = ({
       }
 
       if ('eventHour' in changedValues) {
-        form.validateFields(['wait'])
+        void form.validateFields(['wait'])
       }
 
       if (Object.keys(changedValues).some((key) => USER_KEYS.has(key))) {
@@ -350,7 +350,7 @@ const ComplaintModal = ({
           {t('complaints.complaint')}
         </Typography>
         <IconButton onClick={() => setModalOpen?.(false)}>
-          <Close />
+          <CloseTwoTone />
         </IconButton>
       </DialogTitle>
 
@@ -388,7 +388,7 @@ const ComplaintModal = ({
                   cursor: 'pointer',
                 }}
                 onClick={() => {
-                  copy(submitMutation?.data?.referenceNumber || '')
+                  void copy(submitMutation?.data?.referenceNumber || '')
                 }}>
                 {t('complaints.complaint_number')}
                 <br />

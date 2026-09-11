@@ -1,9 +1,9 @@
-import { InfoCircleOutlined } from '@ant-design/icons'
+import { HelpTwoTone } from '@mui/icons-material'
 import { Tooltip } from '@mui/material'
 import { FC, Fragment, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
-import { Dayjs } from 'src/dayjs'
+import { type CivilDate } from 'src/model/time/civilDate'
 import SkeletonLoader from 'src/shared/SkeletonLoader'
 import Widget from 'src/shared/Widget'
 import OperatorHbarChart from './OperatorHbarChart/OperatorHbarChart'
@@ -18,8 +18,8 @@ const convertToChartCompatibleStruct = (arr: GroupByRes[]) => {
 }
 
 interface AllChartComponentProps {
-  startDate: Dayjs
-  endDate: Dayjs
+  startDate: CivilDate
+  endDate: CivilDate
   alertAllChartsZeroLinesHandling: (arg: boolean) => void
 }
 
@@ -54,7 +54,7 @@ export const AllLinesChart: FC<AllChartComponentProps> = ({
             title={convertLineFeedToHtmlTags(t('dashboard_tooltip_content'))}
             placement="left"
             arrow>
-            <InfoCircleOutlined style={{ marginRight: '12px' }} />
+            <HelpTwoTone fontSize="inherit" style={{ marginRight: '12px' }} />
           </Tooltip>
         </>
       }>

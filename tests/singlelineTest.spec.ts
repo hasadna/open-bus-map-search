@@ -11,7 +11,8 @@ import {
   waitForSkeletonsToHide,
 } from './utils'
 
-const BUS_MARKER_SELECTOR = '.leaflet-marker-pane > img[src$="marker-dot.png"]'
+// A ping renders as one of several shapes, so match the class they share, not one shape's asset.
+const BUS_MARKER_SELECTOR = '.leaflet-marker-pane > .vehicle-ping-marker'
 const STATION_MARKER_SELECTOR = '.leaflet-marker-pane > img[src$="marker-bus-stop.png"]'
 
 async function selectOperator(page: Page, operatorName = 'אודליה מוניות בעמ') {
@@ -20,7 +21,7 @@ async function selectOperator(page: Page, operatorName = 'אודליה מוני�
 }
 
 async function fillLineNumber(page: Page, lineNumber = '16') {
-  await page.getByRole('textbox', { name: 'מספר קו' }).fill(lineNumber)
+  await page.getByRole('combobox', { name: 'מספר קו' }).fill(lineNumber)
 }
 
 async function selectRoute(
@@ -44,10 +45,10 @@ test.describe('Single line page tests', () => {
   })
 
   test('should allow selecting operator company options', async ({ page }) => {
-    await expect(page.getByRole('textbox', { name: 'מספר קו' })).not.toBeEditable()
+    await expect(page.getByRole('combobox', { name: 'מספר קו' })).not.toBeEditable()
     await selectOperator(page)
     await expect(page.getByLabel('חברה מפעילה')).toHaveValue('אודליה מוניות בעמ')
-    await expect(page.getByRole('textbox', { name: 'מספר קו' })).toBeEditable()
+    await expect(page.getByRole('combobox', { name: 'מספר קו' })).toBeEditable()
   })
 
   test('should show and enable "choose route" dropdown after selecting line', async ({ page }) => {
@@ -62,7 +63,7 @@ test.describe('Single line page tests', () => {
     await expect(page.locator('#route-select')).not.toBeEditable()
     await fillLineNumber(page)
     await expect(page.locator('#route-select')).toBeEditable()
-    await clearInputField(page.getByRole('textbox', { name: 'מספר קו' }))
+    await clearInputField(page.getByRole('combobox', { name: 'מספר קו' }))
     await expect(page.locator('#route-select')).not.toBeEditable()
   })
 
@@ -76,6 +77,27 @@ test.describe('Single line page tests', () => {
     await test.step('Verify bus stop marker is in the page', async () => {
       await expect(page.locator(STATION_MARKER_SELECTOR)).toHaveCount(2, { timeout: 10000 })
     })
+  })
+
+  // Asserts on the computed style, not the markup: `style-src` in csp.ts omits 'unsafe-inline',
+  // so expressing the turn as a style attribute would leave every arrow pointing north while the
+  // DOM still read correct.
+  test('should point each ping arrow along the vehicle bearing', async ({ page }) => {
+    await selectOperator(page)
+    await fillLineNumber(page)
+    await selectRoute(page)
+    await selectStartTime(page)
+
+    const arrows = page.locator('.vehicle-bearing-marker > svg > path')
+    await expect(async () => {
+      expect(await arrows.count()).toBeGreaterThan(5)
+    }).toPass({ timeout: 10000 })
+
+    const rotations = await arrows.evaluateAll((paths) =>
+      paths.map((path) => getComputedStyle(path).transform),
+    )
+    expect(rotations).not.toContain('none')
+    expect(new Set(rotations).size).toBeGreaterThan(1)
   })
 
   test('should show tooltip after clicking on map point in single line map', async ({ page }) => {

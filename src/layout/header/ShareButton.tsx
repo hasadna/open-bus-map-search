@@ -1,4 +1,4 @@
-import { CheckOutlined, LinkOutlined } from '@ant-design/icons'
+import { CheckTwoTone, LinkTwoTone } from '@mui/icons-material'
 import { Tooltip } from 'antd'
 import { useCallback, useContext, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -43,13 +43,13 @@ export const ShareButton = () => {
 
   return (
     <Tooltip title={tooltipTitle} open={copied || undefined} placement="bottomRight">
-      <div
+      <button
+        type="button"
         className="header-link"
         onClick={handleShare}
-        aria-label={copied ? t('link_copied') : t('share_link')}
-        style={{ cursor: 'pointer' }}>
-        {copied ? <CheckOutlined /> : <LinkOutlined />}
-      </div>
+        aria-label={copied ? t('link_copied') : t('share_link')}>
+        {copied ? <CheckTwoTone fontSize="inherit" /> : <LinkTwoTone fontSize="inherit" />}
+      </button>
     </Tooltip>
   )
 }

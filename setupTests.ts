@@ -1,6 +1,6 @@
 import { TextDecoder, TextEncoder } from 'util'
 import { ResizeObserver } from '@juggle/resize-observer'
-import '@testing-library/jest-dom'
+import '@testing-library/jest-dom/vitest'
 import { cleanup } from '@testing-library/react'
 import './src/locale/allTranslations'
 

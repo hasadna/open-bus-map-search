@@ -1,0 +1,61 @@
+@use '../../resources/variables' as vars;
+
+.header-logo {
+  display: inline-flex;
+  align-items: center;
+
+  svg {
+    // the artwork is line art authored for a ~215px wide render; the stroke has to
+    // grow proportionally to stay visible at header size
+    height: 36px;
+    width: auto;
+    flex-shrink: 0;
+
+    .st0 {
+      fill: none;
+      stroke: currentcolor;
+      stroke-width: 70;
+      stroke-miterlimit: 10;
+    }
+
+    // A stroke eats half its width inward, so a 70-wide one on the connector dots
+    // closes their ring into a solid blob. They carry a wider radius (in Logo.tsx)
+    // and a lighter stroke so the ring still reads at header size.
+    circle.st0 {
+      stroke-width: 46;
+    }
+
+    // only the wheels are solid — the connector dots keep .st0's `fill: none`. Stated
+    // as :not(.st0) rather than leaning on selector specificity to override it.
+    circle:not(.st0) {
+      fill: currentcolor;
+    }
+
+    path {
+      stroke-dasharray: 1720;
+      stroke-dashoffset: 1720;
+      animation: dash 0.8s linear forwards;
+    }
+
+    circle {
+      // must clear the widest stroked circumference (2πr, r = 90 → 566) or the dash
+      // stops short and the ring is left open
+      stroke-dasharray: 600;
+      stroke-dashoffset: 600;
+      animation: dash 1s linear forwards;
+      animation-delay: 0.5s;
+    }
+  }
+
+  @keyframes dash {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+}
+
+@media only screen and (width < vars.$mobile-max-width) {
+  .header-logo svg {
+    height: 28px;
+  }
+}

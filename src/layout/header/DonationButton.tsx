@@ -1,4 +1,4 @@
-import { DollarOutlined } from '@ant-design/icons'
+import { PaidTwoTone } from '@mui/icons-material'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import DonateModal from 'src/pages/DonateModal/DonateModal'
@@ -14,11 +14,11 @@ export const DonationButton = () => {
   return (
     <>
       <button
-        className="theme-icon"
+        className="header-link"
         onClick={onOpen}
         aria-label={tooltip_title}
         title={tooltip_title}>
-        <DollarOutlined style={{ fontSize: '1.5em' }} />
+        <PaidTwoTone fontSize="inherit" />
       </button>
       <DonateModal isVisible={open} onClose={onClose} />
     </>

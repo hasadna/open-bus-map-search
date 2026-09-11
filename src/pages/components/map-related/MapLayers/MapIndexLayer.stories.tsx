@@ -10,6 +10,18 @@ const meta = {
   title: 'Map/Layers/MapIndexLayer',
   component: MapIndexLayer,
   parameters: { layout: 'centered' },
+  // Every legend rule in map.scss is nested under `.map-info` and its `.map-legend` slot, so
+  // mounted bare the legend gets no grid and glyphs at their intrinsic size. The outer size is
+  // needed because `.map-legend` is absolutely positioned within it.
+  decorators: [
+    (Story) => (
+      <div className="map-info" style={{ width: 340, height: 210 }}>
+        <div className="map-legend">
+          <Story />
+        </div>
+      </div>
+    ),
+  ],
 } satisfies Meta<typeof MapIndexLayer>
 
 export default meta

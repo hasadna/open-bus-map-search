@@ -1,4 +1,4 @@
-import { Icon, IconOptions, Layer } from 'leaflet'
+import { Layer } from 'leaflet'
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { TileLayer, useMap } from 'react-leaflet'
@@ -6,21 +6,6 @@ import { MapProps } from './map-types'
 import { MapPlannedRouteLayer } from './MapLayers/MapPlannedRouteLayer'
 import { MapRouteLayer } from './MapLayers/MapRouteLayer'
 import { useRecenterOnDataChange } from './useRecenterOnDataChange'
-
-const getIcon = (path: string, width: number = 10, height: number = 10): Icon<IconOptions> => {
-  return new Icon<IconOptions>({
-    iconUrl: path,
-    iconSize: [width, height],
-  })
-}
-
-export const actualRouteLineColor = 'orange'
-export const actualRouteStopMarkerPath = `${import.meta.env.BASE_URL}marker-dot.png`
-export const actualRouteStopMarker = getIcon(actualRouteStopMarkerPath, 20, 20)
-
-export const plannedRouteLineColor = 'black'
-export const plannedRouteStopMarkerPath = `${import.meta.env.BASE_URL}marker-bus-stop.png`
-export const plannedRouteStopMarker = getIcon(plannedRouteStopMarkerPath, 20, 25)
 
 export function MapContent({
   positionGroups,
@@ -76,6 +61,7 @@ export function MapContent({
         positionGroups={positionGroups}
         showNavigationButtons={showNavigationButtons}
         navigateMarkers={navigateMarkers}
+        focusTarget={focusTarget}
       />
       <MapPlannedRouteLayer plannedRouteStops={plannedRouteStops} />
     </>

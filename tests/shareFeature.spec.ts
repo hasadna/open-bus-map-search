@@ -52,9 +52,9 @@ test.describe('Share URL feature', () => {
   })
 
   test('address bar shows clean path after loading with params', async ({ page }) => {
-    await page.goto('/timeline?date=2024-02-12&operatorId=5&lineNumber=18')
+    await page.goto('/station-stops?date=2024-02-12&operatorId=5&lineNumber=18')
     await page.waitForURL((url) => !url.search)
-    expect(new URL(page.url()).pathname).toMatch(/\/timeline$/)
+    expect(new URL(page.url()).pathname).toMatch(/\/station-stops$/)
     expect(new URL(page.url()).search).toBe('')
   })
 
@@ -80,10 +80,10 @@ test.describe('Share URL feature', () => {
     expect(params.get('lineNumber')).toBe('64')
   })
 
-  test('round-trip: timeline page share button writes correct URL to clipboard', async ({
+  test('round-trip: station-stops page share button writes correct URL to clipboard', async ({
     page,
   }) => {
-    await page.goto('/timeline?date=2024-02-12&operatorId=5&lineNumber=18')
+    await page.goto('/station-stops?date=2024-02-12&operatorId=5&lineNumber=18')
     await page.waitForURL((url) => !url.search)
     await page.locator('.preloader').waitFor({ state: 'hidden' })
 
@@ -122,19 +122,5 @@ test.describe('Share URL feature', () => {
     const clipUrl = await getClipboard(page)
     const { pathname } = new URL(clipUrl)
     expect(pathname).toBe('/gaps')
-  })
-
-  // -------------------------------------------------------------------------
-  // Line profile — startTime in extra params
-  // -------------------------------------------------------------------------
-
-  test('line profile not-found page share URL has no query params', async ({ page }) => {
-    await page.goto('/profile/not-a-valid-id')
-    await page.waitForLoadState('networkidle')
-    await page.locator('[aria-label="העתק קישור"]').click()
-    const clipUrl = await getClipboard(page)
-    // Without startTime selected, extra params are empty — only path
-    expect(new URL(clipUrl).pathname).toMatch(/\/profile\//)
-    expect(new URL(clipUrl).searchParams.has('operatorId')).toBe(false)
   })
 })

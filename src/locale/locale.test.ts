@@ -79,7 +79,7 @@ const codeFrame = (lang: string, keyPath: string, note: string, context = 2): st
 
 const banner = (label: string): string => `──────────────── ${label} ────────────────`
 
-// throw without a stack trace, so jest prints only the code frames of the
+// throw without a stack trace, so vitest prints only the code frames of the
 // locale files instead of a useless frame of this test file
 const failWith = (message: string): never => {
   const error = new Error(`${banner('✖ ERROR')}\n${message}`)
@@ -223,7 +223,7 @@ describe('locale files are in sync', () => {
           ([label, keys]) =>
             `  • missing from ${label} — ${keys.length} key(s): ${summarize(keys)}`,
         )
-      // not console.warn — jest decorates intercepted console calls with a
+      // not console.warn — vitest decorates intercepted console calls with a
       // useless code frame of this test file
       process.stderr.write(
         `\n${banner('⚠ WARNING')}\n${awaitingTranslation.length} keys exist in en+he but lack a ru/ar translation:\n${lines.join('\n')}\n\n`,

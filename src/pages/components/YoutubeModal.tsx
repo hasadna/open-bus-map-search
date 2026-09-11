@@ -1,4 +1,4 @@
-import { InfoCircleOutlined } from '@ant-design/icons'
+import { HelpTwoTone } from '@mui/icons-material'
 import { Typography } from '@mui/material'
 import { Modal } from 'antd'
 import { useState } from 'react'
@@ -15,11 +15,13 @@ const InfoYoutubeModal = ({ videoUrl, label, title }: InfoYoutubeModalProps) => 
 
   return (
     <>
-      <InfoCircleOutlined
-        onClick={() => setVisible(true)}
-        className="modal-info-ico"
+      <button
+        type="button"
         aria-label={label}
-      />
+        className="modal-info-ico"
+        onClick={() => setVisible(true)}>
+        <HelpTwoTone fontSize="inherit" />
+      </button>
       <Modal
         width={'1000px'}
         footer={null}

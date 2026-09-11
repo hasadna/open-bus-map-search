@@ -5,7 +5,7 @@ import { VehicleRidesCards, VehicleTable } from './VehicleTable'
 // The vehicle page's rides table. Rows are pre-resolved by buildVehicleRideRows, so
 // these stories hand the component fixed rows to pin its three render branches:
 // a fully-resolved linkable ride, an unresolved ride (no matching GTFS route → dashes,
-// raw operator ref, no link), and a past-midnight ride (🌙 + wall-clock time).
+// raw operator ref, no link), and a second resolved ride later in the day.
 const meta = {
   title: 'Vehicle/VehicleTable',
   component: VehicleTable,
@@ -44,25 +44,25 @@ const unresolvedRow: VehicleRideRow = {
   displayTime: '08:00',
 }
 
-// Past-midnight tail of the service day: wall-clock time prefixed with a moon.
-const pastMidnightRow: VehicleRideRow = {
+// A second resolved ride, on another line late in the evening.
+const lateEveningRow: VehicleRideRow = {
   id: 3,
   operator: 'אגד',
   lineNumber: '17',
   origin: 'חיפה',
   destination: 'אילת',
-  displayTime: '🌙 00:30',
-  href: '/single-line-map?date=2024-02-12&operatorId=97&lineNumber=17&routeKey=52017-2-%23&rideTime=24-30',
+  displayTime: '23:30',
+  href: '/single-line-map?date=2024-02-12&operatorId=97&lineNumber=17&routeKey=52017-2-%23&rideTime=23-30',
   setSearchPayload: {
     operatorId: '97',
     lineNumber: '17',
     routeKey: '52017-2-#',
-    rideTime: '24-30',
+    rideTime: '23-30',
   },
 }
 
 export const AllRowTypes: Story = {
-  args: { rows: [resolvedRow, unresolvedRow, pastMidnightRow] },
+  args: { rows: [resolvedRow, unresolvedRow, lateEveningRow] },
 }
 
 export const SingleResolvedRide: Story = {
@@ -76,6 +76,6 @@ export const UnresolvedRideOnly: Story = {
 // The narrow-screen card layout, rendered directly so it's pinned regardless of the
 // Storybook viewport (VehicleTable itself switches to this below the `sm` breakpoint).
 export const MobileCards: Story = {
-  args: { rows: [resolvedRow, unresolvedRow, pastMidnightRow] },
+  args: { rows: [resolvedRow, unresolvedRow, lateEveningRow] },
   render: (args) => <VehicleRidesCards {...args} />,
 }

@@ -1,9 +1,11 @@
 import { Stack, Typography } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
+import { useMemo } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import Widget from 'src/shared/Widget'
 import SlackIcon from '../../resources/slack-icon.svg'
+import { combineContributions, CONTRIBUTOR_REPOS, fetchRepoContributors } from './contributors'
 import { VersionInfo } from './version/VersionInfo'
 import './About.scss'
 
@@ -198,18 +200,17 @@ const Contributors = () => {
       <ol className="contributions">
         {isLoading && <p>{t('loading')}</p>}
         {isError && <p>{t('loading_error')}</p>}
-        {contributors &&
-          contributors.map((author) => (
-            <li key={author.id}>
-              <a href={author.html_url}>
-                <h2>{author.login}</h2>
-                <img src={author.avatar_url} alt={author.login} />
-                <p>
-                  {author.contributions} {t('aboutPage.contributions')}
-                </p>
-              </a>
-            </li>
-          ))}
+        {contributors.map((author) => (
+          <li key={author.id}>
+            <a href={author.html_url}>
+              <h2>{author.login}</h2>
+              <img src={author.avatar_url} alt={author.login} />
+              <p>
+                {author.contributions} {t('aboutPage.contributions')}
+              </p>
+            </a>
+          </li>
+        ))}
       </ol>
     </Widget>
   )
@@ -228,31 +229,11 @@ const AboutStyle = styled.div`
   }
 `
 function useContributions() {
-  const owner = 'hasadna'
-  const repos = [
-    'open-bus-map-search',
-    'open-bus-stride-api',
-    'open-bus-backend',
-    'open-bus-pipelines',
-    'open-bus-siri-requester',
-    'open-bus-gtfs-etl',
-    'open-bus-stride-etl',
-  ]
-
-  const apis = repos.map(
-    (repo) => `https://api.github.com/repos/${owner}/${repo}/contributors?order=desc`,
-  )
-
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['contributors'],
-    queryFn: () =>
-      Promise.all(
-        apis.map((api) =>
-          fetch(api)
-            .then((res) => res.json())
-            .catch(() => ({})),
-        ),
-      ),
+    // the repo list is part of the result's identity — and keying on it retires the
+    // inflated totals that earlier versions of this page persisted to localStorage
+    queryKey: ['contributors', CONTRIBUTOR_REPOS],
+    queryFn: () => Promise.all(CONTRIBUTOR_REPOS.map(fetchRepoContributors)),
     gcTime: Infinity,
     staleTime: 3 * 24 * 60 * 60 * 1000, // refresh the cached data every 3 days
     refetchOnWindowFocus: false,
@@ -261,48 +242,9 @@ function useContributions() {
     networkMode: 'offlineFirst',
   })
 
-  try {
-    const contributors = (data?.flat() as Author[])
-      // filter repos with no contributors
-      .filter(Boolean)
-      // filter out bots
-      .filter((a) => a.type === 'User')
-      // sort by contributions
-      .sort((a: Author, b: Author) => b.contributions - a.contributions)
-      .reduce(combineAuthor, [] as Author[])
-    return { contributors, isLoading, isError }
-  } catch (error) {
-    console.error(error)
-    return { contributors: [] as const, isLoading: false, isError: true }
-  }
-}
+  const contributors = useMemo(() => combineContributions(data ?? []), [data])
 
-// sum contributions of the same user
-function combineAuthor(authors: Author[], author: Author) {
-  const sameUser = authors.find((a) => a.login === author.login)
-  if (!sameUser) {
-    authors.push(author)
-  } else {
-    sameUser.contributions += author.contributions
-  }
-  return authors
-}
-
-type Author = {
-  avatar_url: string
-  contributions: number
-  html_url: string
-  id: number
-  login: string
-  node_id: string
-  organizations_url: string
-  received_events_url: string
-  repos_url: string
-  site_admin: boolean
-  starred_url: string
-  subscriptions_url: string
-  type: string
-  url: string
+  return { contributors, isLoading, isError }
 }
 
 export default About

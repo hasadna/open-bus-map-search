@@ -1,21 +1,20 @@
-import { Today } from '@mui/icons-material'
+import { TodayTwoTone } from '@mui/icons-material'
 import { Box, Button, ButtonGroup } from '@mui/material'
 import { useTranslation } from 'react-i18next'
-import dayjs from 'src/dayjs'
+import { addDays, type CivilDate, todayCivilDate } from 'src/model/time/civilDate'
 import './DateNavigator.scss'
 
 interface DateNavigatorProps {
-  currentTime: dayjs.Dayjs
-  onChange: (time: dayjs.Dayjs) => void
+  currentDate: CivilDate
+  onChange: (date: CivilDate) => void
 }
 
-export const DateNavigator = ({ currentTime, onChange }: DateNavigatorProps) => {
+export const DateNavigator = ({ currentDate, onChange }: DateNavigatorProps) => {
   const { t } = useTranslation()
 
-  const handleChange = (days: number) =>
-    onChange(days > 0 ? currentTime.add(days, 'day') : currentTime.subtract(Math.abs(days), 'day'))
+  const handleChange = (days: number) => onChange(addDays(currentDate, days))
 
-  const handleToday = () => onChange(dayjs())
+  const handleToday = () => onChange(todayCivilDate())
 
   const unit = (count: number) =>
     count === 1 ? t('date_navigator_unit_day') : t('date_navigator_unit_days')
@@ -55,7 +54,7 @@ export const DateNavigator = ({ currentTime, onChange }: DateNavigatorProps) => 
           onClick={handleToday}
           title={t('date_navigator_today')}
           aria-label={t('date_navigator_today')}>
-          <Today className="nav-btn-icon" />
+          <TodayTwoTone className="nav-btn-icon" />
           <span className="nav-btn-unit">{t('date_navigator_today')}</span>
         </Button>
         <Button

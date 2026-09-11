@@ -7,7 +7,7 @@ import { usePageState } from './usePageState'
 // Helpers
 // ---------------------------------------------------------------------------
 
-function makeWrapper(initialUrlParams: Record<string, string> = {}, setShareParams = jest.fn()) {
+function makeWrapper(initialUrlParams: Record<string, string> = {}, setShareParams = vi.fn()) {
   const Wrapper = ({ children }: { children: React.ReactNode }) => (
     <InitialUrlParamsContext.Provider value={initialUrlParams}>
       <PageShareParamsContext.Provider value={{ params: {}, setParams: setShareParams }}>
@@ -18,7 +18,7 @@ function makeWrapper(initialUrlParams: Record<string, string> = {}, setSharePara
   return { Wrapper, setShareParams }
 }
 
-// The timeline page is the real consumer: a single shareable string param
+// The station-stops page is the real consumer: a single shareable string param
 // (time-of-day) plus session-only scroll position.
 const DEFAULTS = {
   params: { time: '08:30' },
@@ -238,14 +238,14 @@ describe('usePageState — URL param seeding', () => {
 
 describe('usePageState — PageShareParamsContext sync', () => {
   it('registers namespaced serialized params into PageShareParamsContext on mount', () => {
-    const setShareParams = jest.fn()
+    const setShareParams = vi.fn()
     const { Wrapper } = makeWrapper({}, setShareParams)
     renderHook(() => usePageState('test', DEFAULTS), { wrapper: Wrapper })
     expect(setShareParams).toHaveBeenCalledWith(expect.objectContaining({ 'test.time': '08:30' }))
   })
 
   it('updates PageShareParamsContext when params change', () => {
-    const setShareParams = jest.fn()
+    const setShareParams = vi.fn()
     const { Wrapper } = makeWrapper({}, setShareParams)
     const { result } = renderHook(() => usePageState('test', DEFAULTS), { wrapper: Wrapper })
     setShareParams.mockClear()
@@ -256,7 +256,7 @@ describe('usePageState — PageShareParamsContext sync', () => {
   })
 
   it('omits null param values from the share context', () => {
-    const setShareParams = jest.fn()
+    const setShareParams = vi.fn()
     const defaults = {
       params: { time: '08:30', note: null as string | null },
       ui: { scrollPosition: 0 },
@@ -269,7 +269,7 @@ describe('usePageState — PageShareParamsContext sync', () => {
   })
 
   it('clears PageShareParamsContext on unmount', () => {
-    const setShareParams = jest.fn()
+    const setShareParams = vi.fn()
     const { Wrapper } = makeWrapper({}, setShareParams)
     const { unmount } = renderHook(() => usePageState('test', DEFAULTS), { wrapper: Wrapper })
     setShareParams.mockClear()

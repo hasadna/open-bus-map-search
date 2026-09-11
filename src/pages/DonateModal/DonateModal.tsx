@@ -1,4 +1,4 @@
-import { ArrowBackIosNewRounded, CloseRounded } from '@mui/icons-material'
+import { ArrowBackIosNewTwoTone, CloseTwoTone } from '@mui/icons-material'
 import { Box, Button, Grid, Modal, Typography } from '@mui/material'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
@@ -89,7 +89,7 @@ const DonateModal = ({ isVisible, onClose }: DonateModalProps) => {
             color="inherit"
             sx={{ borderRadius: 1000, minWidth: 32, width: 32, height: 32, padding: '4px' }}
             onClick={onClose}>
-            <CloseRounded sx={{ height: '100%', width: '100%' }} />
+            <CloseTwoTone sx={{ height: '100%', width: '100%' }} />
           </Button>
         </Typography>
         <Box sx={{ padding: 2, overflow: 'auto', maxHeight: 'calc(100vh - 210px)' }}>
@@ -117,7 +117,7 @@ const DonateModal = ({ isVisible, onClose }: DonateModalProps) => {
                 rel="noreferrer">
                 <ButtonDonateText>{t('donate')}</ButtonDonateText>
                 <ButtonDonateIcon>
-                  <ArrowBackIosNewRounded sx={{ fontSize: 32 }} />
+                  <ArrowBackIosNewTwoTone sx={{ fontSize: 32 }} />
                 </ButtonDonateIcon>
               </ButtonDonate>
             </Grid>
