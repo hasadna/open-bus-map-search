@@ -35,7 +35,7 @@ export default defineConfig<EyesFixture>({
     locale: 'he-IL',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    trace: process.env.CI ? 'on' : 'on-all-retries',
+    trace: process.env.CI ? 'on-first-retry' : 'on-all-retries',
 
     timezoneId: 'Asia/Jerusalem',
 
