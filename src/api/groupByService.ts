@@ -39,8 +39,6 @@ async function fetchGroupBy({
     dateFrom: civilDateToApiDate(dateFrom),
     dateTo: civilDateToApiDate(dateTo),
     groupBy,
-    excludeHoursFrom: 23,
-    excludeHoursTo: 2,
   })
 
   return data
