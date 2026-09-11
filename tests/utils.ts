@@ -89,8 +89,7 @@ export const waitForMapIdle = async (page: Page) => {
 }
 
 export const waitForSkeletonsToHide = async (page: Page) => {
-  // matches both the legacy antd skeleton and the MUI-based SkeletonLoader
-  const skeletons = page.locator('.ant-skeleton-content, [data-testid="skeleton-loader"]')
+  const skeletons = page.locator('[data-testid="skeleton-loader"]')
   while ((await skeletons.count()) > 0) {
     await skeletons.last().waitFor({ state: 'hidden' })
   }

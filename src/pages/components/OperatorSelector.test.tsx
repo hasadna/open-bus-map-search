@@ -8,6 +8,7 @@ import {
   GlobalSearchContext,
   type GlobalSearchState,
 } from 'src/model/globalState'
+import { civilDate } from 'src/model/time/civilDate'
 import OperatorSelector from './OperatorSelector'
 
 const agenciesListGet = vi.hoisted(() => vi.fn<typeof GTFS_API.gtfsAgenciesListGet>())
@@ -26,8 +27,8 @@ const agency = (
   agencyName,
 })
 
-const SHABBAT = '2026-08-29'
-const WEEKDAY = '2026-08-30'
+const SHABBAT = civilDate('2026-08-29')!
+const WEEKDAY = civilDate('2026-08-30')!
 
 function Harness() {
   const [search, setSearch] = useState<GlobalSearchState>({

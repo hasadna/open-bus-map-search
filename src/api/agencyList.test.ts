@@ -1,6 +1,7 @@
 import { GtfsAgencyPydanticModel } from '@hasadna/open-bus-api-client'
 import { QueryClient } from '@tanstack/react-query'
 import type { GTFS_API } from 'src/api/apiConfig'
+import { civilDate } from 'src/model/time/civilDate'
 import {
   agencyListForDateQueryOptions,
   agencyListQueryOptions,
@@ -54,7 +55,7 @@ describe('fetchAgencyList', () => {
   it('asks for the requested range at noon UTC, and for more than the API default of 100 rows', async () => {
     agenciesListGet.mockResolvedValue([])
 
-    await fetchAgencyList('2026-08-27', '2026-09-03')
+    await fetchAgencyList(civilDate('2026-08-27')!, civilDate('2026-09-03')!)
 
     expect(requestOf(0).dateFrom).toEqual(new Date('2026-08-27T12:00:00Z'))
     expect(requestOf(0).dateTo).toEqual(new Date('2026-09-03T12:00:00Z'))
@@ -66,9 +67,9 @@ describe('fetchAgencyList', () => {
   it('merges the per-date rows a range answers with', async () => {
     agenciesListGet.mockResolvedValue([agency('2026-08-27', 3), agency('2026-09-03', 3)])
 
-    await expect(fetchAgencyList('2026-08-27', '2026-09-03')).resolves.toEqual([
-      agency('2026-09-03', 3),
-    ])
+    await expect(
+      fetchAgencyList(civilDate('2026-08-27')!, civilDate('2026-09-03')!),
+    ).resolves.toEqual([agency('2026-09-03', 3)])
   })
 })
 
@@ -77,7 +78,7 @@ describe('agencyListForDateQueryOptions', () => {
     agenciesListGet.mockResolvedValue([agency('2026-08-29', 3)])
 
     await expect(
-      newQueryClient().fetchQuery(agencyListForDateQueryOptions('2026-08-29')),
+      newQueryClient().fetchQuery(agencyListForDateQueryOptions(civilDate('2026-08-29')!)),
     ).resolves.toEqual([agency('2026-08-29', 3)])
     expect(agenciesListGet).toHaveBeenCalledTimes(1)
     expect(requestOf(0).dateFrom).toEqual(new Date('2026-08-29T12:00:00Z'))
@@ -88,7 +89,7 @@ describe('agencyListForDateQueryOptions', () => {
     agenciesListGet.mockResolvedValueOnce([]).mockResolvedValueOnce([agency('2026-08-28', 5)])
 
     await expect(
-      newQueryClient().fetchQuery(agencyListForDateQueryOptions('2026-08-29')),
+      newQueryClient().fetchQuery(agencyListForDateQueryOptions(civilDate('2026-08-29')!)),
     ).resolves.toEqual([agency('2026-08-28', 5)])
     expect(requestOf(1).dateFrom).toEqual(new Date('2026-08-22T12:00:00Z'))
     expect(requestOf(1).dateTo).toEqual(new Date('2026-08-29T12:00:00Z'))
@@ -99,7 +100,9 @@ describe('agencyListQueryOptions', () => {
   it('asks for the requested range only - an explicit range is never widened', async () => {
     agenciesListGet.mockResolvedValue([])
 
-    await newQueryClient().fetchQuery(agencyListQueryOptions('2026-08-27', '2026-09-03'))
+    await newQueryClient().fetchQuery(
+      agencyListQueryOptions(civilDate('2026-08-27')!, civilDate('2026-09-03')!),
+    )
 
     expect(agenciesListGet).toHaveBeenCalledTimes(1)
     expect(requestOf(0).dateFrom).toEqual(new Date('2026-08-27T12:00:00Z'))

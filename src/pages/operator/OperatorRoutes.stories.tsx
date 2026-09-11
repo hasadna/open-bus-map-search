@@ -4,10 +4,11 @@ import { expect, userEvent, waitFor, within } from 'storybook/test'
 import dayjs from 'src/dayjs'
 import i18n from 'src/locale/allTranslations'
 import { ISRAEL_TRAIN_ID } from 'src/model/operator'
+import { civilDate } from 'src/model/time/civilDate'
 import { getPastDate } from '../../../.storybook/main'
 import { OperatorRoutes } from './OperatorRoutes'
 
-const DATE = dayjs(getPastDate()).format('YYYY-MM-DD')
+const DATE = civilDate(dayjs(getPastDate()).format('YYYY-MM-DD'))!
 
 // MSW matches by pathname (query params are ignored), so a single wildcard
 // handler serves every operatorId/limit/date the component asks for.
@@ -141,6 +142,8 @@ export const Default: Story = {}
 /** Skeleton placeholder while the routes request is in flight. */
 export const Loading: Story = {
   parameters: {
+    // The skeleton never resolves here, so opt out of the global wait-for-skeletons capture hook.
+    eyes: { waitBeforeCapture: 100 },
     msw: {
       handlers: [
         routesHandler(async () => {
@@ -212,7 +215,7 @@ export const NoResults: Story = {
 /**
  * Train operator (id 2) with real רכבת ישראל routes. Trains have no line number,
  * so they all fall under one blank-labelled group; it's expanded here to show the
- * route rows have a "profile" link but no "map" link.
+ * route rows send trains to /train rather than to /single-line-map.
  */
 export const TrainOperator: Story = {
   args: {
@@ -228,9 +231,8 @@ export const TrainOperator: Story = {
       canvasElement.querySelector<HTMLElement>('.MuiAccordionSummary-root'),
     )
     await userEvent.click(firstGroup!)
-    await waitFor(() =>
-      expect(canvas.getAllByText(i18n.t('operator.profile')).length).toBeGreaterThan(0),
-    )
-    await expect(canvas.queryByText(i18n.t('operator.map'))).toBeNull()
+    const links = await waitFor(() => canvas.getAllByText(i18n.t('operator.map')))
+    await expect(links.length).toBeGreaterThan(0)
+    await expect(links[0].getAttribute('href')).toContain('/train')
   },
 }

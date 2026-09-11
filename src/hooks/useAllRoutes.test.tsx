@@ -1,5 +1,6 @@
 import { renderHook, waitFor } from '@testing-library/react'
 import { getAllRoutesList } from 'src/api/gtfsService'
+import { civilDate } from 'src/model/time/civilDate'
 import { useAllRoutes } from './useAllRoutes'
 
 vi.mock('src/api/gtfsService', () => ({
@@ -20,7 +21,7 @@ afterEach(() => {
 
 describe('useAllRoutes', () => {
   it('does not fetch when operatorId or date is missing', () => {
-    const first = renderHook(() => useAllRoutes(undefined, '2026-06-21'))
+    const first = renderHook(() => useAllRoutes(undefined, civilDate('2026-06-21')!))
     first.unmount()
 
     const second = renderHook(() => useAllRoutes('3', undefined))
@@ -29,26 +30,18 @@ describe('useAllRoutes', () => {
     expect(mockedGetAllRoutesList).not.toHaveBeenCalled()
   })
 
-  it('passes a Date anchored to UTC noon, so the serialized date matches the input (#1680)', async () => {
-    renderHook(() => useAllRoutes('3', '2026-06-21'))
+  it('passes the calendar day through verbatim, leaving the wire encoding to the api layer', async () => {
+    renderHook(() => useAllRoutes('3', civilDate('2026-06-21')!))
 
     await waitFor(() => expect(mockedGetAllRoutesList).toHaveBeenCalled())
 
-    const passedDate = mockedGetAllRoutesList.mock.calls[0][1]
-
-    expect(passedDate.toISOString()).toBe('2026-06-21T12:00:00.000Z')
-    expect(passedDate.toISOString().substring(0, 10)).toBe('2026-06-21')
-    expect(mockedGetAllRoutesList).toHaveBeenCalledWith(
-      '3',
-      expect.any(Date),
-      expect.any(AbortSignal),
-    )
+    expect(mockedGetAllRoutesList).toHaveBeenCalledWith('3', '2026-06-21', expect.any(AbortSignal))
   })
 
   it('sets error state and clears loading when the fetch rejects', async () => {
     mockedGetAllRoutesList.mockRejectedValue(new Error('network'))
 
-    const { result } = renderHook(() => useAllRoutes('3', '2026-06-21'))
+    const { result } = renderHook(() => useAllRoutes('3', civilDate('2026-06-21')!))
 
     await waitFor(() => expect(result.current.error).toBe(true))
 

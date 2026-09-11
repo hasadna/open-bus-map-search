@@ -4,8 +4,7 @@ import {
 } from '@hasadna/open-bus-api-client'
 import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
-import type { Dayjs } from 'src/dayjs'
-import { utcNoonForDateStr } from 'src/dayjs'
+import { type CivilDate, civilDateToApiDate } from 'src/model/time/civilDate'
 import { agencyListQueryOptions } from './agencyList'
 import { AGGREGATIONS_API } from './apiConfig'
 
@@ -30,23 +29,20 @@ export function useGroupBy({
   dateTo,
   groupBy,
 }: {
-  dateTo: Dayjs
-  dateFrom: Dayjs
+  dateTo: CivilDate
+  dateFrom: CivilDate
   groupBy: groupByFields
 }) {
-  const from = dateFrom.format('YYYY-MM-DD')
-  const to = dateTo.format('YYYY-MM-DD')
-
   // Both operators and rides are asked for the same range, so an operator that stopped
   // running mid-range still gets a name instead of dropping out of the chart.
-  const agenciesQuery = useQuery(agencyListQueryOptions(from, to))
+  const agenciesQuery = useQuery(agencyListQueryOptions(dateFrom, dateTo))
   const ridesQuery = useQuery({
     // example: https://open-bus-stride-api.hasadna.org.il/gtfs_rides_agg/group_by?date_from=2023-01-27&date_to=2023-01-29&group_by=operator_ref
-    queryKey: ['gtfsRidesAggGroupBy', from, to, groupBy],
+    queryKey: ['gtfsRidesAggGroupBy', dateFrom, dateTo, groupBy],
     queryFn: () =>
       AGGREGATIONS_API.byGtfsRidesAggGroupByGet({
-        dateFrom: utcNoonForDateStr(from),
-        dateTo: utcNoonForDateStr(to),
+        dateFrom: civilDateToApiDate(dateFrom),
+        dateTo: civilDateToApiDate(dateTo),
         groupBy,
         excludeHoursFrom: 23,
         excludeHoursTo: 2,

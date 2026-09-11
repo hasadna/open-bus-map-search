@@ -14,13 +14,12 @@ const config = {
   // commit status), but real errors (stories failed to load/render) still exit non-zero.
   // The value is undocumented (typed as boolean) but supported — see eyes-storybook src/processResults.js.
   exitcode: /** @type {boolean} */ (/** @type {unknown} */ ('nodiffs')),
+  // A story that is meant to stay in its loading state opts out with
+  // `parameters: { eyes: { waitBeforeCapture: <ms> } }`, which takes precedence over this.
   waitBeforeCapture: async () => {
     const startTime = Date.now()
     const timeout = 60 * 1000
-    while (
-      document.querySelector('.ant-skeleton-content') ||
-      document.querySelector('.ant-skeleton')
-    ) {
+    while (document.querySelector('[data-testid="skeleton-loader"]')) {
       await new Promise((resolve) => setTimeout(resolve, 100))
       const duration = Date.now() - startTime
       const isTimeout = duration > timeout

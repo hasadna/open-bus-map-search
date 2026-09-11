@@ -2,13 +2,13 @@ import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
 import { useCallback, useContext, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import dayjs, { ISRAEL_TIMEZONE, utcNoonForDateStr } from 'src/dayjs'
 import { usePageState } from 'src/hooks/usePageState'
 import { GlobalSearchContext } from 'src/model/globalState'
+import { type CivilDate, civilDateToDayjs } from 'src/model/time/civilDate'
 import { INPUT_SIZE } from 'src/resources/sizes'
 import { getGapsAsync, SerializedGap, serializeGap } from '../../api/gapsService'
 import { getRoutesAsync } from '../../api/gtfsService'
-import { DateSelector } from '../components/DateSelector'
+import { CivilDateSelector } from '../components/CivilDateSelector'
 import { Label } from '../components/Label'
 import LineNumberSelector from '../components/LineSelector'
 import { NotFound } from '../components/NotFound'
@@ -57,7 +57,7 @@ const GapsPage = () => {
     queryFn: async (): Promise<SerializedGap[] | null> => {
       if (!operatorId || !selectedRoute || !date) return null
       // The endpoint groups by Israel-local day, so asking for this one date is exact.
-      const day = dayjs(utcNoonForDateStr(date))
+      const day = civilDateToDayjs(date)
       const res = await getGapsAsync(day, day, operatorId, selectedRoute.lineRef)
       // Store JSON-serializable strings, not dayjs, so the persisted cache
       // rehydrates losslessly; GapsTable revives them to dayjs on read.
@@ -67,11 +67,11 @@ const GapsPage = () => {
   })
   const gaps = gapsQuery.data ?? undefined
 
-  const handleDateChange = (time: dayjs.Dayjs | null) => {
-    if (!time) return
+  const handleDateChange = (next: CivilDate | null) => {
+    if (!next) return
     setSearch((current) => ({
       ...current,
-      date: time.format('YYYY-MM-DD'),
+      date: next,
     }))
   }
 
@@ -113,7 +113,7 @@ const GapsPage = () => {
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE, width: '100%', mx: 'auto' }}>
         {/* choose date */}
         <Grid size={{ sm: 6, xs: 12 }}>
-          <DateSelector time={dayjs.tz(date, ISRAEL_TIMEZONE)} onChange={handleDateChange} />
+          <CivilDateSelector value={date} onChange={handleDateChange} />
         </Grid>
         {/* choose operator */}
         <Grid size={{ sm: 6, xs: 12 }}>

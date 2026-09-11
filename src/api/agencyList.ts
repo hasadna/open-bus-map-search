@@ -1,6 +1,6 @@
 import { GtfsAgencyPydanticModel } from '@hasadna/open-bus-api-client'
 import { queryOptions } from '@tanstack/react-query'
-import dayjs, { utcNoonForDateStr } from 'src/dayjs'
+import { addDays, type CivilDate, civilDateToApiDate } from 'src/model/time/civilDate'
 import { GTFS_API } from './apiConfig'
 
 // The endpoint answers one row per operator per date and caps the result at 100 rows when
@@ -27,20 +27,20 @@ export function mergeAgencies(agencies: GtfsAgencyPydanticModel[]): GtfsAgencyPy
   return Array.from(latestPerOperator.values())
 }
 
-/** Agencies that ran between two "YYYY-MM-DD" dates (inclusive), one row per operator. */
+/** Agencies that ran between two dates (inclusive), one row per operator. */
 export async function fetchAgencyList(
-  dateFrom: string,
-  dateTo: string,
+  dateFrom: CivilDate,
+  dateTo: CivilDate,
 ): Promise<GtfsAgencyPydanticModel[]> {
   const agencies = await GTFS_API.gtfsAgenciesListGet({
-    dateFrom: utcNoonForDateStr(dateFrom),
-    dateTo: utcNoonForDateStr(dateTo),
+    dateFrom: civilDateToApiDate(dateFrom),
+    dateTo: civilDateToApiDate(dateTo),
     limit: LIMIT,
   })
   return mergeAgencies(agencies.filter(Boolean))
 }
 
-export function agencyListQueryOptions(dateFrom: string, dateTo: string) {
+export function agencyListQueryOptions(dateFrom: CivilDate, dateTo: CivilDate) {
   return queryOptions({
     queryKey: ['agencyList', dateFrom, dateTo],
     queryFn: () => fetchAgencyList(dateFrom, dateTo),
@@ -48,17 +48,17 @@ export function agencyListQueryOptions(dateFrom: string, dateTo: string) {
 }
 
 /**
- * Agencies of a single "YYYY-MM-DD" day, widening to the preceding week when that day holds
- * no data yet - GTFS for the current day is published only later in the day, and an empty
- * operator list is worse than one a few days old.
+ * Agencies of a single day, widening to the preceding week when that day holds no data yet
+ * - GTFS for the current day is published only later in the day, and an empty operator list
+ * is worse than one a few days old.
  */
-export function agencyListForDateQueryOptions(date: string) {
+export function agencyListForDateQueryOptions(date: CivilDate) {
   return queryOptions({
     queryKey: ['agencyList', 'day', date],
     queryFn: async () => {
       const agencies = await fetchAgencyList(date, date)
       if (agencies.length) return agencies
-      return fetchAgencyList(dayjs(date).subtract(FALLBACK_DAYS, 'day').format('YYYY-MM-DD'), date)
+      return fetchAgencyList(addDays(date, -FALLBACK_DAYS), date)
     },
   })
 }

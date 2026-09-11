@@ -6,6 +6,7 @@ import type {
 import { useQuery } from '@tanstack/react-query'
 import { uniqBy } from 'es-toolkit/compat'
 import { GTFS_API, SIRI_API } from 'src/api/apiConfig'
+import { type CivilDate } from 'src/model/time/civilDate'
 import { locationFixKey } from 'src/pages/components/map-related/map-types'
 import { API_PAGE_SIZE, getTrainDateRange, groupTrainRoutes, TRAIN_OPERATOR_REF } from './trainData'
 
@@ -19,7 +20,7 @@ async function fetchAllPages<T>(fetchPage: (offset: number) => Promise<T[]>) {
   }
 }
 
-export function useTrainRoutes(date: string) {
+export function useTrainRoutes(date: CivilDate) {
   return useQuery({
     queryKey: ['train', 'routes', date],
     queryFn: async ({ signal }) => {
@@ -43,7 +44,7 @@ export function useTrainRoutes(date: string) {
   })
 }
 
-export function useTrainRideStops(date: string, lineRefs: number[]) {
+export function useTrainRideStops(date: CivilDate, lineRefs: number[]) {
   const lineRefsKey = lineRefs.join(',')
 
   return useQuery({
@@ -72,7 +73,7 @@ export function useTrainRideStops(date: string, lineRefs: number[]) {
   })
 }
 
-export function useTrainVehicleLocations(date: string, lineRefs: number[]) {
+export function useTrainVehicleLocations(date: CivilDate, lineRefs: number[]) {
   const lineRefsKey = lineRefs.join(',')
 
   return useQuery({

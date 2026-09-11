@@ -4,12 +4,13 @@ import { useCallback, useContext, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { SIRI_API } from 'src/api/apiConfig'
 import { getAllRoutesList } from 'src/api/gtfsService'
-import dayjs, { israelDayBounds, toIsraelTimezone, utcNoonForDateStr } from 'src/dayjs'
+import { israelDayBounds } from 'src/dayjs'
 import { usePageState } from 'src/hooks/usePageState'
 import { fromGtfsRoute } from 'src/model/busRoute'
 import { GlobalSearchContext } from 'src/model/globalState'
+import { type CivilDate, todayCivilDate } from 'src/model/time/civilDate'
 import VehicleSelector, { normalizeVehicleNumber } from 'src/pages/components/VehicleSelector'
-import { DateSelector } from '../components/DateSelector'
+import { CivilDateSelector } from '../components/CivilDateSelector'
 import { NotFound } from '../components/NotFound'
 import { PageContainer } from '../components/PageContainer'
 import { buildVehicleRideRows, VehicleRideRow } from './buildVehicleRideRows'
@@ -45,10 +46,10 @@ const VehiclePage = () => {
 
   const { start: dayStart, end: dayEnd } = useMemo(() => israelDayBounds(date), [date])
 
-  const handleDateChange = (time: dayjs.Dayjs | null) => {
+  const handleDateChange = (next: CivilDate | null) => {
     setSearch((current) => ({
       ...current,
-      date: toIsraelTimezone(time ?? dayjs()).format('YYYY-MM-DD'),
+      date: next ?? todayCivilDate(),
     }))
   }
 
@@ -95,9 +96,7 @@ const VehiclePage = () => {
     enabled: operatorIds.length > 0,
     queryFn: async ({ signal }) => {
       const routeLists = await Promise.all(
-        operatorIds.map((operatorId) =>
-          getAllRoutesList(operatorId, utcNoonForDateStr(date), signal),
-        ),
+        operatorIds.map((operatorId) => getAllRoutesList(operatorId, date, signal)),
       )
       return routeLists
         .flat()
@@ -131,7 +130,7 @@ const VehiclePage = () => {
       <Grid container spacing={2} sx={{ width: '100%', maxWidth: 600, mx: 'auto' }}>
         {/* choose date */}
         <Grid size={{ sm: 6, xs: 12 }}>
-          <DateSelector time={dayStart} onChange={handleDateChange} />
+          <CivilDateSelector value={date} onChange={handleDateChange} />
         </Grid>
         {/* choose vehicle */}
         <Grid size={{ sm: 6, xs: 12 }}>
