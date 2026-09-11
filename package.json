@@ -44,11 +44,6 @@
   "resolutions": {
     "autoprefixer": "10.4.5"
   },
-  "overrides": {
-    "@playwright/test": "1.63.0",
-    "playwright": "1.63.0",
-    "playwright-core": "1.63.0"
-  },
   "engines": {
     "node": ">=22.12.0"
   },
