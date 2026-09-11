@@ -148,6 +148,13 @@ jobs:
           context: .
           tags: ${{ env.DOCKER_APP_IMAGE_NAME }}:${{ env.DOCKER_APP_IMAGE_TAG }}
           outputs: type=docker, dest=/tmp/docker-image.tar
+          # mode=max so the builder stage's `npm ci` layer is cached too - it is not part
+          # of the exported nginx image, and it is the 46s this is here to skip.
+          # Scoped, because every cache in the repo shares one 10GB budget and an
+          # unscoped Docker cache would evict the rest. ignore-error because a fork PR
+          # cannot write the base repo's cache and this job is a merge gate.
+          cache-from: type=gha,scope=app
+          cache-to: type=gha,mode=max,scope=app,ignore-error=true
       - name: Upload Docker image artifact
         uses: actions/upload-artifact@v7
         with:
