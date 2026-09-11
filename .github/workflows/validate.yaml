@@ -195,8 +195,22 @@ jobs:
         run: docker network create --internal isolated
       - name: Start application container (prod nginx image)
         run: docker run -d --name app --network isolated ${{ env.DOCKER_APP_IMAGE_NAME }}:${{ env.DOCKER_APP_IMAGE_TAG }}
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v4
       - name: Build Playwright runner image
-        run: docker build -t open-bus-offline-test -f scripts/Dockerfile.offline-test .
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: scripts/Dockerfile.offline-test
+          tags: open-bus-offline-test:latest
+          # Buildx builds in its own container, so the result reaches the daemon that the
+          # steps below `docker run` only via load.
+          load: true
+          # Scoped apart from the app image: both caches share one 10GB repo budget and
+          # would otherwise evict each other. ignore-error because a fork PR cannot write
+          # the base repo's cache scope, and this job is a merge gate.
+          cache-from: type=gha,scope=offline-test
+          cache-to: type=gha,mode=max,scope=offline-test,ignore-error=true
       - name: Wait for nginx and validate hash.txt (shared netns)
         run: |
           for i in $(seq 1 20); do
