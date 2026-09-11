@@ -1,7 +1,11 @@
-# MCR publishes no image for the 1.63 alpha pinned in package.json, and the browsers
-# baked into any released image are the wrong revision for it, so this image only
-# borrows the OS-level browser dependencies from the base.
-FROM mcr.microsoft.com/playwright:v1.62.1-noble
+# CI publishes the `deps` stage to GHCR keyed on package-lock.json, and passes the
+# published ref back in, so a PR that changes no dependency skips straight to copying its
+# own source in. Defaults to building `deps` here, which is what a local run does.
+ARG RUNNER_BASE=deps
+
+# Matching the @playwright/test pin in package.json means the install step below finds
+# its browser already baked in. Drift is survivable, it just costs a ~150MB download.
+FROM mcr.microsoft.com/playwright:v1.63.0-noble AS deps
 
 WORKDIR /app
 
@@ -12,9 +16,12 @@ RUN npm install -g npm@11
 COPY package*.json ./
 RUN npm ci
 
-# The test run itself is offline, so the browser matching the installed
-# playwright-core has to be fetched here, at build time
+# The test run has no network, so the browser must already be in the image.
 RUN npx playwright install chromium
+
+FROM ${RUNNER_BASE} AS test
+
+WORKDIR /app
 
 COPY . .
 
