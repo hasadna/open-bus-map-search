@@ -1,5 +1,5 @@
-# Keep this tag in step with the @playwright/test pin in package.json: the browsers baked
-# into the image have to be the revision playwright-core expects.
+# Matching the @playwright/test pin in package.json means the install step below finds
+# its browser already baked in. Drift is survivable, it just costs a ~150MB download.
 FROM mcr.microsoft.com/playwright:v1.63.0-noble
 
 WORKDIR /app
@@ -11,8 +11,7 @@ RUN npm install -g npm@11
 COPY package*.json ./
 RUN npm ci
 
-# A no-op while the base tag matches the pin above, and the thing that keeps the image
-# working if they ever drift: the test run itself is offline and cannot fetch a browser.
+# The test run has no network, so the browser must already be in the image.
 RUN npx playwright install chromium
 
 COPY . .
