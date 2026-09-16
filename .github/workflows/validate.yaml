@@ -9,6 +9,7 @@ on:
 permissions:
   contents: read
   statuses: write
+  packages: read # pull the prebuilt Playwright runner image; cd.yml holds the write side
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
@@ -17,6 +18,7 @@ concurrency:
 env:
   DOCKER_APP_IMAGE_NAME: 'ghcr.io/hasadna/open-bus-map-search/open-bus-map-search'
   DOCKER_APP_IMAGE_TAG: 'latest'
+  RUNNER_IMAGE_NAME: 'ghcr.io/hasadna/open-bus-map-search/offline-test-deps'
   APPLITOOLS_API_KEY: ${{ secrets.APPLITOOLS_API_KEY }}
   # see: https://applitools.com/docs/eyes/integrations/ci-cd/github-actions#configuring-the-applitools-cicd-integration
   APPLITOOLS_BATCH_ID: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -195,8 +197,24 @@ jobs:
         run: docker network create --internal isolated
       - name: Start application container (prod nginx image)
         run: docker run -d --name app --network isolated ${{ env.DOCKER_APP_IMAGE_NAME }}:${{ env.DOCKER_APP_IMAGE_TAG }}
+      - name: Resolve runner image ref
+        id: runner-image
+        run: echo "ref=$RUNNER_IMAGE_NAME:$(cat package-lock.json scripts/Dockerfile.offline-test | sha256sum | cut -c1-16)" >> "$GITHUB_OUTPUT"
+      # Best-effort: an unreachable registry only costs the build below its cache hit.
+      - name: Log in to GHCR
+        continue-on-error: true
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
       - name: Build Playwright runner image
-        run: docker build -t open-bus-offline-test -f scripts/Dockerfile.offline-test .
+        env:
+          RUNNER_BASE_REF: ${{ steps.runner-image.outputs.ref }}
+        run: |
+          if docker pull -q "$RUNNER_BASE_REF"; then
+            base="$RUNNER_BASE_REF"
+          else
+            echo "no published image for this package-lock.json, building dependencies here"
+            base=deps
+          fi
+          docker build --build-arg RUNNER_BASE="$base" -t open-bus-offline-test -f scripts/Dockerfile.offline-test .
       - name: Wait for nginx and validate hash.txt (shared netns)
         run: |
           for i in $(seq 1 20); do
