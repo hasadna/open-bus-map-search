@@ -341,8 +341,8 @@ jobs:
         if: always()
         run: |
           mkdir -p playwright-artifact
-          if [ -d test-results ]; then cp -r test-results/* playwright-artifact/; fi
-          if [ -d playwright-report ]; then cp -r playwright-report/* playwright-artifact/; fi
+          if [ -d test-results ]; then cp -r test-results/. playwright-artifact/; fi
+          if [ -d playwright-report ]; then cp -r playwright-report/. playwright-artifact/; fi
           touch playwright-artifact/.keep
       - name: Upload Playwright test artifact
         if: always()
@@ -385,7 +385,7 @@ jobs:
         with:
           sha: ${{ github.event.pull_request.head.sha }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          description: 'Playwright html report with traces'
+          description: 'Playwright html report'
           status: ${{needs.test.result}}
           context: 'Test results (click to see!)'
           targetUrl: 'https://s3.amazonaws.com/noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.event.pull_request.head.sha }}/test-results/index.html'
