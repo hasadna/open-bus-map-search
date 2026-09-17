@@ -43,6 +43,8 @@
   "gps_coverage_vehicle_label": "Vehicle:",
   "gps_coverage_no_pings": "No GPS reports received for this vehicle",
   "gps_coverage_one_ping": "Only one GPS report received for this vehicle",
+  "gps_coverage_tooltip_artifact": "Reported position is outside Israel (GPS jamming)",
+  "gps_coverage_artifact_note": "Columns below the line are reports whose coordinates fall outside Israel — the vehicle kept reporting, but the position is not real, so it is left out of the drawn route.",
   "bus_tooltip_footer_previous_location": "Previous location",
   "bus_tooltip_footer_next_location": "Next location",
   "bus_icon_alt": "Bus icon",
