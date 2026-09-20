@@ -1,5 +1,5 @@
 import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
-import { Radio, RadioChangeEvent, Space } from 'antd'
+import { Radio, RadioChangeEvent } from 'antd'
 import { useCallback, useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
@@ -232,15 +232,10 @@ const GapsPatternsPage = () => {
         {t('gaps_patterns_page_title')}
         <InfoYoutubeModal
           label={t('open_video_about_this_page')}
-          title={t('youtube_modal_info_title')}
+          title={t('gaps_patterns_page_description')}
           videoUrl="https://www.youtube-nocookie.com/embed?v=-C_rZlbHBmk&list=PL6Rh06rT7uiX1AQE-lm55hy-seL3idx3T&index=4"
         />
       </Typography>
-      <Space direction="vertical" size="middle" style={{ marginBottom: '22px' }}>
-        <Alert severity="info" variant="outlined" icon={false}>
-          {t('gaps_patterns_page_description')}
-        </Alert>
-      </Space>
       {startDate > endDate ? (
         <Alert severity="error" variant="outlined">
           {t('bug_date_alert')}

@@ -1,4 +1,4 @@
-import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
+import { CircularProgress, Grid, Typography } from '@mui/material'
 import { useCallback, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Marker, Popup, TileLayer, useMap } from 'react-leaflet'
@@ -57,15 +57,10 @@ export default function TimeBasedMapPage() {
         {t('time_based_map_page_title')}
         <InfoYoutubeModal
           label={t('open_video_about_this_page')}
-          title={t('youtube_modal_info_title')}
+          title={t('time_based_map_page_description')}
           videoUrl="https://www.youtube-nocookie.com/embed/bXg50_j_hTA?si=t8PiTrTA1budRZg-&amp;start=150"
         />
       </Typography>
-      <Grid>
-        <Alert severity="info" variant="outlined" icon={false}>
-          {t('time_based_map_page_description')}
-        </Alert>
-      </Grid>
       <Grid container spacing={2}>
         {/* from date */}
         <Grid size={{ md: 4, sm: 6, xs: 12 }}>

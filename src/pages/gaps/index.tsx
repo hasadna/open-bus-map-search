@@ -1,4 +1,4 @@
-import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
+import { CircularProgress, Grid, Typography } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
 import { useCallback, useContext, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -16,6 +16,7 @@ import OperatorSelector from '../components/OperatorSelector'
 import { PageContainer } from '../components/PageContainer'
 import RouteSelector from '../components/RouteSelector'
 import { Row } from '../components/Row'
+import InfoYoutubeModal from '../components/YoutubeModal'
 import GapsTable from './GapsTable'
 
 const GapsPage = () => {
@@ -106,10 +107,12 @@ const GapsPage = () => {
     <PageContainer>
       <Typography className="page-title" variant="h4">
         {t('gaps_page_title')}
+        <InfoYoutubeModal
+          label={t('open_video_about_this_page')}
+          title={t('gaps_page_description')}
+          videoUrl=""
+        />
       </Typography>
-      <Alert severity="info" variant="outlined" icon={false}>
-        {t('gaps_page_description')}
-      </Alert>
       <Grid container spacing={2} sx={{ maxWidth: INPUT_SIZE, width: '100%', mx: 'auto' }}>
         {/* choose date */}
         <Grid size={{ sm: 6, xs: 12 }}>

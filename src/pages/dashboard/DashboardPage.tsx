@@ -31,7 +31,7 @@ const DashboardPage = () => {
         {t('dashboard_page_title')}
         <InfoYoutubeModal
           label={t('open_video_about_this_page')}
-          title={t('youtube_modal_info_title')}
+          title={t('dashboard_page_description')}
           videoUrl="https://www.youtube.com/embed/bXg50_j_hTA?si=4rpSZwMRbMomE4g1"
         />
       </Typography>
@@ -40,9 +40,6 @@ const DashboardPage = () => {
           {t('no_data_from_ETL')}
         </Alert>
       ) : null}
-      <Alert severity="info" variant="outlined" icon={false}>
-        {t('dashboard_page_description')}
-      </Alert>
       {startDate > endDate ? (
         <Alert severity="error" variant="outlined">
           {t('bug_date_alert')}

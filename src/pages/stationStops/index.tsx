@@ -24,6 +24,7 @@ import { CivilDateSelector } from '../components/CivilDateSelector'
 import { NotFound } from '../components/NotFound'
 import { PageContainer } from '../components/PageContainer'
 import { TimeSelector } from '../components/TimeSelector'
+import InfoYoutubeModal from '../components/YoutubeModal'
 import { buildSingleLineMapRideLink } from './singleLineMapRideLink'
 
 const StationStopsPage = () => {
@@ -117,10 +118,12 @@ const StationStopsPage = () => {
     <PageContainer>
       <Typography variant="h4" gutterBottom className="page-title">
         {t('station_stops_page_title')}
+        <InfoYoutubeModal
+          label={t('open_video_about_this_page')}
+          title={t('station_stops_page_description')}
+          videoUrl=""
+        />
       </Typography>
-      <Alert severity="info" variant="outlined" icon={false}>
-        {t('station_stops_page_description')}
-      </Alert>
       {hitsQuery.data &&
         hitsQuery.data.gtfsTime.length > 0 &&
         hitsQuery.data.siriTime.length === 0 && (

@@ -36,9 +36,11 @@ const InfoYoutubeModal = ({ videoUrl, label, title }: InfoYoutubeModalProps) => 
         <Typography variant="h2" sx={{ fontSize: '28px', fontWeight: 'bold', marginBottom: 1.5 }}>
           {title}
         </Typography>
-        <div className="modal-iframe-container">
-          <iframe allowFullScreen src={videoUrl} title={title} />
-        </div>
+        {videoUrl && (
+          <div className="modal-iframe-container">
+            <iframe allowFullScreen src={videoUrl} title={title} />
+          </div>
+        )}
       </Modal>
     </>
   )
