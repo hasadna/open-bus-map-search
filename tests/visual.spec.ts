@@ -1,78 +1,185 @@
-import { Eyes, Target } from '@applitools/eyes-playwright'
-import username from 'git-username'
-import { getBranch, test } from './utils'
+import { test as eyesTest } from '@applitools/eyes-playwright/fixture'
+import { mergeTests } from '@playwright/test'
+import i18next from 'i18next'
+import {
+  test as baseTest,
+  getPastTrainDate,
+  harOptions,
+  setupTest,
+  unlockFullPageScroll,
+  visitPage,
+  waitForSkeletonsToHide,
+} from './utils'
+import { mockVehicleApi, VEHICLE_NUMBER } from './vehicleMocks'
 
-test.describe('Visual Tests', () => {
-  const eyes = new Eyes()
-  test.beforeAll(async () => {
-    if (process.env.CI) {
-      // set batch id to the commit sha
-      eyes.setBatch({
-        id: process.env.SHA,
-        name: 'openbus test branch ' + process.env.GITHUB_REF + ' commit ' + process.env.SHA,
-      })
-    } else {
-      eyes.setBatch(username() + ' is testing openbus ' + new Date().toLocaleString().split(',')[0])
-    }
-    eyes.getConfiguration().setUseDom(true).setEnablePatterns(true)
-    eyes.setParentBranchName('main')
-    eyes.setBranchName((await getBranch()) || 'main')
-  })
+const test = mergeTests(baseTest, eyesTest)
 
-  test.beforeEach(async ({ page }, testinfo) => {
-    if (!process.env.APPLITOOLS_API_KEY) {
-      eyes.setIsDisabled(true)
-      console.log('APPLITOOLS_API_KEY is not defined, please ask noamgaash for the key')
-      test.skip() // on forks, the secret is not available
-      return
-    }
-
-    await eyes.open(page, 'OpenBus', testinfo.title)
-  })
-
-  test.afterEach(async () => {
-    if (process.env.APPLITOOLS_API_KEY) {
-      await eyes.close(false)
-    }
-  })
-
-  test('dashboard page should look good', async ({ page }) => {
-    await page.goto('/dashboard')
-    await page.getByText('אגד').first().waitFor()
-    while ((await page.locator('.ant-skeleton-content').count()) > 0)
-      await page.locator('.ant-skeleton-content').last().waitFor({ state: 'hidden' })
-    await eyes.check('dashboard page', Target.window().layoutRegions('.chart'))
-    // scroll to recharts-wrapper
-    await page.evaluate(() => {
-      document.querySelector('.recharts-wrapper')?.scrollIntoView()
-    })
-    await eyes.check('dashboard page - recharts', Target.window().layoutRegions('.chart'))
-  })
-
-  test('about page should look good', async ({ page }) => {
-    await page.goto('/about')
-    await eyes.check('about page', Target.window())
-  })
-
-  test('timeline page should look good', async ({ page }) => {
-    await page.goto('/timeline')
-    await eyes.check('timeline page', Target.window())
-  })
-
-  test('gaps page should look good', async ({ page }) => {
-    await page.goto('/gaps')
-    await eyes.check('gaps page', Target.window())
-  })
-
-  test('gaps_patterns page should look good', async ({ page }) => {
-    await page.goto('/gaps_patterns')
-    await eyes.check('gaps_patterns page', Target.window())
-  })
-
-  test('map page should look good', async ({ page }) => {
-    await page.goto('/map')
-    await page.getByText('מיקומי אוטובוסים').first().waitFor()
-    await page.locator('.ant-spin-dot').first().waitFor({ state: 'hidden' })
-    await eyes.check('map page', Target.window())
-  })
+test.beforeAll(() => {
+  if (!process.env.APPLITOOLS_API_KEY) {
+    console.log('APPLITOOLS_API_KEY is not defined, please ask noamgaash for the key')
+    test.skip() // on forks, the secret is not available
+  }
 })
+
+for (const mode of ['Light', 'Dark', 'LTR']) {
+  test.describe(`Visual Tests - ${mode}`, () => {
+    test.describe.configure({ retries: 0 })
+
+    test.beforeEach(async ({ page }) => {
+      await unlockFullPageScroll(page)
+      await page.route(/.*youtube*/, (route) => route.abort())
+      await setupTest(page, mode === 'LTR' ? 'en' : 'he')
+      if (mode === 'Dark') {
+        await page.getByLabel('עבור למצב כהה').first().click()
+      }
+      if (mode === 'LTR') {
+        await page.getByRole('button', { name: 'החלף שפה' }).first().click()
+        await page.getByRole('menuitem').filter({ hasText: 'English' }).click()
+      }
+    })
+
+    test(`Home Page Should Look Good [${mode}]`, async ({ eyes }) => {
+      await eyes.check('home page')
+    })
+
+    test(`Dashboard Page Should Look Good [${mode}]`, async ({
+      page,
+      advancedRouteFromHAR,
+      eyes,
+    }) => {
+      await advancedRouteFromHAR('tests/HAR/dashboard.har', harOptions)
+      await page.goto('/dashboard')
+      await page.locator('.preloader').waitFor({ state: 'hidden' })
+      await page.waitForLoadState('networkidle')
+      await waitForSkeletonsToHide(page)
+      await page.getByText('אגד').first().waitFor()
+      await waitForSkeletonsToHide(page)
+      await eyes.check('dashboard page', {
+        layoutRegions: ['.chart'],
+        fully: true,
+      })
+    })
+
+    test(`About Page Should Look Good [${mode}]`, async ({ page, eyes }) => {
+      await visitPage(page, 'about_title')
+      await page.locator('.page-title').waitFor()
+      await eyes.check('about page')
+    })
+
+    test(`Station Stops Page Should Look Good [${mode}]`, async ({
+      page,
+      advancedRouteFromHAR,
+      eyes,
+    }) => {
+      await advancedRouteFromHAR('tests/HAR/stationStops.har', harOptions)
+      await visitPage(page, 'station_stops_page_title')
+      await page.locator('.page-title').waitFor()
+      await eyes.check('station stops page')
+    })
+
+    test(`Gaps Page Should Look Good [${mode}]`, async ({ page, advancedRouteFromHAR, eyes }) => {
+      await advancedRouteFromHAR('tests/HAR/missing.har', harOptions)
+      await visitPage(page, 'gaps_page_title')
+      await page.locator('.page-title').waitFor()
+      await eyes.check('gaps page')
+    })
+
+    test(`Gaps Patterns Page Should Look Good [${mode}]`, async ({
+      page,
+      advancedRouteFromHAR,
+      eyes,
+    }) => {
+      await advancedRouteFromHAR('tests/HAR/patterns.har', harOptions)
+      await visitPage(page, 'gaps_patterns_page_title')
+      await page.getByRole('heading', { level: 4 }).waitFor()
+      await eyes.check('gaps_patterns page')
+    })
+
+    test(`Map Page Should Look Good [${mode}]`, async ({ page, advancedRouteFromHAR, eyes }) => {
+      await advancedRouteFromHAR('tests/HAR/realtimemap.har', harOptions)
+      await visitPage(page, 'time_based_map_page_title')
+      await page.locator('.leaflet-marker-icon').first().waitFor({ state: 'visible' })
+      await page.locator('.ant-spin-dot').first().waitFor({ state: 'hidden' })
+      await eyes.check('map page')
+    })
+
+    test(`Single Line Map Page Should Look Good [${mode}]`, async ({ page, eyes }) => {
+      await visitPage(page, 'singleline_map_page_title')
+      // The by-route/by-vehicle toggle was removed (vehicle search moved to /vehicle);
+      // wait for the operator selector, which always renders the page's filter form.
+      await page.getByLabel(i18next.t('choose_operator')).first().waitFor()
+      await waitForSkeletonsToHide(page)
+      await eyes.check('single line map page', {
+        // map tiles are aborted/blank in tests — compare layout, not pixels
+        layoutRegions: ['.leaflet-container'],
+      })
+    })
+
+    test(`Vehicle Page Should Look Good [${mode}]`, async ({ page, eyes }) => {
+      await mockVehicleApi(page)
+      // full navigation so MainRoute seeds the vehicle number from the URL
+      await page.goto(`/vehicle?vehicle.vehicleNumber=${VEHICLE_NUMBER}`)
+      await page.locator('.preloader').waitFor({ state: 'hidden' })
+      // wait for the resolved rides table (incl. the last, 23:30 row) before snapping
+      await page.getByRole('row').filter({ hasText: '23:30' }).waitFor()
+      await waitForSkeletonsToHide(page)
+      await eyes.check('vehicle page', { fully: true })
+    })
+
+    test(`Train Page Should Look Good [${mode}]`, async ({ page, advancedRouteFromHAR, eyes }) => {
+      await page.clock.setSystemTime(getPastTrainDate())
+      const TRAIN_TEST_DATE = new Date(getPastTrainDate().getTime() - 24 * 60 * 60 * 1000)
+        .toISOString()
+        .slice(0, 10)
+      await advancedRouteFromHAR('tests/HAR/train.har', harOptions)
+      await page.goto(`/train?date=${TRAIN_TEST_DATE}&route=30086`)
+      await page.locator('.preloader').waitFor({ state: 'hidden' })
+      await page.getByText(/30086/).first().waitFor()
+      await page.getByRole('progressbar').waitFor({ state: 'hidden' })
+      await eyes.check('train page', {
+        fully: true,
+        layoutRegions: ['.recharts-wrapper'],
+      })
+    })
+
+    test(`Operator Page Should Look Good [${mode}]`, async ({
+      page,
+      advancedRouteFromHAR,
+      eyes,
+    }) => {
+      await advancedRouteFromHAR('tests/HAR/operator.har', harOptions)
+      await visitPage(page, 'operator_title')
+      await page
+        .getByRole('combobox', { name: i18next.t('choose_operator') })
+        .first()
+        .click()
+      await page.getByRole('option', { name: 'אגד', exact: true }).first().click()
+      await waitForSkeletonsToHide(page)
+      await eyes.check('operator page', {
+        layoutRegions: ['.chart', '.recharts-wrapper'],
+      })
+    })
+
+    test(`Donation modal Should Look Good [${mode}]`, async ({ page, eyes }) => {
+      await page.getByLabel(i18next.t('donate_title')).first().click()
+      await page.locator('.MuiTypography-root').first().waitFor()
+      await eyes.check('donation modal', {
+        region: page.getByRole('dialog').first(),
+      })
+    })
+
+    test(`Public Appeal Page Should Look Good [${mode}]`, async ({ page, eyes }) => {
+      await visitPage(page, 'public_appeal_title')
+      await page.locator('.page-title').waitFor()
+      await eyes.check('public appeal page')
+    })
+
+    test(`Data Research Page Should Look Good [${mode}]`, async ({ page, eyes }) => {
+      await page.goto('/data-research')
+      await page.locator('.preloader').waitFor({ state: 'hidden' })
+      await page.waitForLoadState('networkidle')
+      await waitForSkeletonsToHide(page)
+      await eyes.check('data research page')
+    })
+  })
+}

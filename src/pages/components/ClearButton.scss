@@ -1,11 +1,14 @@
-.clear-indicator {
+// element+class so it outranks the MuiSvgIcon base class (same order-dependent
+// single-class specificity otherwise)
+svg.clear-indicator {
   position: absolute;
   left: 33px;
   visibility: hidden;
   height: 28px;
   width: 28px;
   color: #6a6b6c;
-  padding: 7px;
+  padding: 4px;
+  cursor: pointer;
 
   &:hover {
     background-color: #e7e9eb;

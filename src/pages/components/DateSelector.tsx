@@ -1,40 +1,71 @@
-import { useState, useMemo } from 'react'
-import { DatePicker } from '@mui/x-date-pickers/DatePicker'
+import { DatePicker, DateValidationError } from '@mui/x-date-pickers'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { DateValidationError } from '@mui/x-date-pickers'
-import { DataAndTimeSelectorProps } from './utils/dateAndTime'
+import dayjs from 'src/dayjs'
 
-export function DateSelector({ time, onChange, customLabel, minDate }: DataAndTimeSelectorProps) {
-  const [error, setError] = useState<DateValidationError | null>(null)
+export type DataSelectorProps = {
+  time: dayjs.Dayjs
+  minDate?: dayjs.Dayjs
+  maxDate?: dayjs.Dayjs
+  customLabel?: string
+  disabled?: boolean
+  onChange: (timeValid: dayjs.Dayjs | null) => void
+}
+
+const getErrorMessageKey = (error?: DateValidationError) => {
+  switch (error) {
+    case 'maxDate':
+    case 'minDate':
+      return 'bug_date_alert'
+    case 'invalidDate':
+      return 'bug_date_invalid_format'
+  }
+}
+
+const startOfTime = dayjs('1-1-2023')
+
+export function DateSelector({
+  time,
+  onChange,
+  customLabel,
+  minDate,
+  maxDate,
+  disabled,
+}: DataSelectorProps) {
+  const [error, setError] = useState<DateValidationError>()
   const { t } = useTranslation()
 
-  const errorMessage = useMemo(() => {
-    switch (error) {
-      case 'maxDate':
-      case 'minDate':
-      case 'invalidDate': {
-        return t('bug_date_invalid_format')
-      }
-
-      default: {
-        return ''
-      }
-    }
-  }, [error])
+  const errorMessageKey = getErrorMessageKey(error)
 
   return (
     <DatePicker
-      sx={{ width: '100%' }}
       value={time}
-      onChange={(ts) => onChange(ts!)}
+      onChange={(value, context) => {
+        // The field fires on every keystroke, so a half-typed date arrives here
+        // as invalid. Forwarding it overwrites the sections the user is still
+        // editing, and on the dashboard it reaches groupByService and throws.
+        if (context.validationError) return
+        onChange(value)
+      }}
       format="DD/MM/YYYY"
       label={customLabel || t('choose_date')}
       disableFuture
-      minDate={minDate}
+      minDate={minDate || startOfTime}
+      maxDate={maxDate}
+      disabled={disabled}
       onError={(err) => setError(err)}
       slotProps={{
+        calendarHeader: {
+          sx: {
+            '.MuiPickersCalendarHeader-labelContainer': {
+              margin: '0',
+              marginInlineEnd: 'auto',
+            },
+          },
+        },
         textField: {
-          helperText: errorMessage,
+          fullWidth: true,
+          helperText: errorMessageKey && t(errorMessageKey),
         },
       }}
     />

@@ -1,32 +1,64 @@
-import { useEffect, useState } from 'react'
-import { BASE_PATH } from './apiConfig'
-export interface Agency {
-  date: string // example - "2019-07-01"
-  operator_ref: number // example - 25,
-  agency_name: string // example - "אלקטרה אפיקים"
-}
+import { GtfsAgencyPydanticModel } from '@hasadna/open-bus-api-client'
+import { queryOptions } from '@tanstack/react-query'
+import { addDays, type CivilDate, civilDateToApiDate } from 'src/model/time/civilDate'
+import { GTFS_API } from './apiConfig'
 
-let agencyList: Agency[]
+// The endpoint answers one row per operator per date and caps the result at 100 rows when
+// no limit is sent, so a range has to ask for room for every (operator x date) combination
+// or its later days silently fall off. The picker allows ranges back to 2023.
+const LIMIT = 100000
+
+const FALLBACK_DAYS = 7
 
 /**
- * Fetch agency data from MOT api
- * @returns Agency data array, might contain DUPLICATE agencies with different `date` values
+ * One row per operator, carrying the agency name from the latest date it appears on.
+ *
+ * open-bus-stride-api#58 does this in the API (`merge=true`); until it is merged, a range
+ * query answers with one row per operator *per date*, so the frontend has to merge itself.
  */
-export default async function getAgencyList(): Promise<Agency[]> {
-  if (!agencyList) {
-    const response = await fetch(`${BASE_PATH}/gtfs_agencies/list`)
-    const data = (await response.json()) as Awaited<Agency[]>
-    agencyList = data.filter(Boolean) // filter empty entries
+export function mergeAgencies(agencies: GtfsAgencyPydanticModel[]): GtfsAgencyPydanticModel[] {
+  const latestPerOperator = new Map<number, GtfsAgencyPydanticModel>()
+  for (const agency of agencies) {
+    const latest = latestPerOperator.get(agency.operatorRef)
+    if (!latest || latest.date < agency.date) {
+      latestPerOperator.set(agency.operatorRef, agency)
+    }
   }
-  return agencyList
+  return Array.from(latestPerOperator.values())
 }
 
-export function useAgencyList() {
-  const [agencyList, setAgencyList] = useState<Agency[]>([])
+/** Agencies that ran between two dates (inclusive), one row per operator. */
+export async function fetchAgencyList(
+  dateFrom: CivilDate,
+  dateTo: CivilDate,
+): Promise<GtfsAgencyPydanticModel[]> {
+  const agencies = await GTFS_API.gtfsAgenciesListGet({
+    dateFrom: civilDateToApiDate(dateFrom),
+    dateTo: civilDateToApiDate(dateTo),
+    limit: LIMIT,
+  })
+  return mergeAgencies(agencies.filter(Boolean))
+}
 
-  useEffect(() => {
-    getAgencyList().then(setAgencyList).catch(console.log)
-  }, [])
+export function agencyListQueryOptions(dateFrom: CivilDate, dateTo: CivilDate) {
+  return queryOptions({
+    queryKey: ['agencyList', dateFrom, dateTo],
+    queryFn: () => fetchAgencyList(dateFrom, dateTo),
+  })
+}
 
-  return agencyList
+/**
+ * Agencies of a single day, widening to the preceding week when that day holds no data yet
+ * - GTFS for the current day is published only later in the day, and an empty operator list
+ * is worse than one a few days old.
+ */
+export function agencyListForDateQueryOptions(date: CivilDate) {
+  return queryOptions({
+    queryKey: ['agencyList', 'day', date],
+    queryFn: async () => {
+      const agencies = await fetchAgencyList(date, date)
+      if (agencies.length) return agencies
+      return fetchAgencyList(addDays(date, -FALLBACK_DAYS), date)
+    },
+  })
 }

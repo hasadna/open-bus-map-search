@@ -1,9 +1,9 @@
-import L, { DivIcon, MarkerCluster } from 'leaflet'
-
+import L, { DivIcon } from 'leaflet'
 import './customCluster.scss'
 
-const createClusterCustomIcon = (cluster: MarkerCluster): DivIcon => {
-  const childCount = cluster.getChildCount()
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const createClusterCustomIcon = (cluster: any): DivIcon => {
+  const childCount = cluster!.getChildCount() as number
   const imgPath = getIconForGroup(childCount)
   const className = getClassNameForGroup(childCount)
 

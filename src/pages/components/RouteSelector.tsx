@@ -1,14 +1,15 @@
 import { Autocomplete, TextField } from '@mui/material'
+import { TFunction } from 'i18next'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { TFunction } from 'i18next'
-import { BusRoute } from 'src/model/busRoute'
 import { formatted } from 'src/locale/utils'
+import { BusRoute } from 'src/model/busRoute'
 
 type RouteSelectorProps = {
   routes: BusRoute[]
-  routeKey: string | undefined
-  setRouteKey: (routeKey: string) => void
+  routeKey?: string
+  disabled?: boolean
+  setRouteKey: (routeKey?: string) => void
 }
 
 const getRouteTitle = (route: BusRoute, t: TFunction<'translation', undefined>) =>
@@ -18,10 +19,10 @@ const getRouteTitle = (route: BusRoute, t: TFunction<'translation', undefined>) 
       : `(${t('halufa_ride')} ${route.routeAlternative})`
   }`
 
-const RouteSelector = ({ routes, routeKey, setRouteKey }: RouteSelectorProps) => {
-  const valueFinned = routes.find((route) => route.key === routeKey)
-  const value = valueFinned ? valueFinned : null
+const RouteSelector = ({ routes, routeKey, disabled, setRouteKey }: RouteSelectorProps) => {
   const { t } = useTranslation()
+  const value = routes.find((route) => route.key === routeKey) || null
+
   useEffect(() => {
     routes.sort((a, b) => {
       if (
@@ -35,11 +36,14 @@ const RouteSelector = ({ routes, routeKey, setRouteKey }: RouteSelectorProps) =>
       return a.fromName > b.fromName ? 1 : -1
     })
   }, [routes])
+
   return (
     <Autocomplete
       disablePortal
+      disabled={disabled}
+      fullWidth
       value={value}
-      onChange={(e, value) => setRouteKey(value ? value.key : '0')}
+      onChange={(e, value) => setRouteKey(value?.key)}
       id="route-select"
       options={routes}
       renderInput={(params) => (

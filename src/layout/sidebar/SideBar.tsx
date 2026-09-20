@@ -1,32 +1,30 @@
-import './sidebar.scss'
 import { Drawer, Layout } from 'antd'
 import { useContext, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { LayoutContextInterface, LayoutCtx } from '../LayoutContext'
+import { useTheme } from '../ThemeContext'
 import Menu from './menu/Menu'
-import { Logo } from './logo'
-import { PAGES } from 'src/routes'
+import './sidebar.scss'
+
 const { Sider } = Layout
 
-const CollapsedLogo = () => <h1 className={'sidebar-logo-collapsed'}>🚌</h1>
-
 export default function SideBar() {
+  const { i18n } = useTranslation()
   const { drawerOpen, setDrawerOpen } = useContext<LayoutContextInterface>(LayoutCtx)
   const [collapsed, setCollapsed] = useState(false)
+  const { isDarkTheme } = useTheme()
+
   return (
     <>
       <Drawer
-        placement="right"
+        placement={i18n.dir() === 'rtl' ? 'right' : 'left'}
         mask
-        width={280}
+        size={280}
         onClose={() => setDrawerOpen(false)}
         open={drawerOpen}
-        className="hideOnDesktop"
-        bodyStyle={{ padding: '0' }}>
-        <Logo />
-        <div className="sidebar-divider"></div>
+        rootClassName="hideOnDesktop"
+        styles={{ body: { padding: '0' } }}>
         <Menu />
-        <div className="sidebar-divider"></div>
       </Drawer>
       <Sider
         theme="light"
@@ -35,14 +33,14 @@ export default function SideBar() {
         width={250}
         collapsible
         collapsed={collapsed}
-        onCollapse={(value: boolean) => setCollapsed(value)}
+        style={{
+          // No bottom margin for the fixed trigger: antd already reserves its 48px as
+          // padding on the sider, and reserving it twice cost the menu a row of height.
+          boxShadow: isDarkTheme ? '0 0 12px 4px rgba(0,0,0,0.7)' : '0 0 12px 4px rgba(0,0,0,0.12)',
+        }}
+        onCollapse={setCollapsed}
         className="hideOnMobile">
-        <Link to={PAGES[0].path} replace>
-          {collapsed ? <CollapsedLogo /> : <Logo />}
-        </Link>
-        <div className="sidebar-divider"></div>
-        <Menu />
-        <div className="sidebar-divider"></div>
+        <Menu collapsed={collapsed} compact />
       </Sider>
     </>
   )

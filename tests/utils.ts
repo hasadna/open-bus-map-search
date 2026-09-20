@@ -1,89 +1,209 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-return */
-import * as fs from 'fs'
-import * as path from 'path'
-import * as crypto from 'crypto'
 import { exec } from 'child_process'
-import { Matcher, test as baseTest, customMatcher } from 'playwright-advanced-har'
-import { BrowserContext, Page } from '@playwright/test'
+import { Locator, Page } from '@playwright/test'
+import i18next from 'i18next'
+import Backend from 'i18next-fs-backend'
+import { test as baseTest, customMatcher, Matcher } from 'playwright-advanced-har'
+import { RouteFromHAROptions } from 'playwright-advanced-har/lib/utils/types'
+import { expect } from 'playwright-assertions'
+import { toIsraelTimezone } from 'src/dayjs'
+import { PAGES } from 'src/routes'
 
-const istanbulCLIOutput = path.join(process.cwd(), '.nyc_output')
+export { expect } from 'playwright-assertions'
 
-export function generateUUID(): string {
-  return crypto.randomBytes(16).toString('hex')
+export const test = baseTest
+
+export function getPastDate() {
+  return new Date('2024-02-12T15:00:00+00:00')
 }
 
-export const test = baseTest.extend({
-  context: async ({ context }, use) => {
-    await context.addInitScript(() =>
-      window.addEventListener('beforeunload', () =>
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- window will always stay `any`, see: https://github.com/hasadna/open-bus-map-search/issues/450#issuecomment-1931862354
-        (window as any).collectIstanbulCoverage(JSON.stringify((window as any).__coverage__)),
-      ),
-    )
-    await fs.promises.mkdir(istanbulCLIOutput, { recursive: true })
-    await context.exposeFunction('collectIstanbulCoverage', (coverageJSON: string) => {
-      if (coverageJSON)
-        fs.writeFileSync(
-          path.join(istanbulCLIOutput, `playwright_coverage_${generateUUID()}.json`),
-          coverageJSON,
-        )
-    })
-    await use(context)
-    for (const page of context.pages()) {
-      await page.evaluate(() =>
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- window will always stay `any`, see: https://github.com/hasadna/open-bus-map-search/issues/450#issuecomment-1931862354
-        (window as any).collectIstanbulCoverage(JSON.stringify((window as any).__coverage__)),
-      )
-    }
-  },
-})
-
-export function getPastDate(): Date {
-  return new Date('2024-02-12 15:00:00')
+export function getPastTrainDate() {
+  return new Date('2026-02-12T15:00:00+00:00')
 }
 
-export async function setBrowserTime(date: Date, page: Page | BrowserContext) {
-  const fakeNow = date.valueOf()
-
-  // Update the Date accordingly
-  await page.addInitScript((fakeNow) => {
-    // Extend Date constructor to default to fakeNow
-    ;(window as any).Date = class extends (window as any).Date {
-      constructor(...args: any[]) {
-        if (args.length === 0) {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-          super(fakeNow)
-        } else {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-          super(...args)
+const urlMatcher: Matcher = customMatcher({
+  urlComparator(a, b) {
+    const paramsToIgnore = new Set(['t', 'limit', 'date_from', 'date_to'])
+    // Coordinate bounds come from geolib's floating-point math, whose last digits
+    // can shift between library versions — which would break exact URL matching.
+    // Round them so the HAR match is stable across geolib bumps.
+    // (6 decimals ≈ 11cm, far finer than the source stop data and the 500m box.)
+    const floatParams = new Set([
+      'lat__greater_or_equal',
+      'lat__lower_or_equal',
+      'lon__greater_or_equal',
+      'lon__lower_or_equal',
+    ])
+    function normalize(url: string) {
+      const urlObj = new URL(url)
+      for (const param of paramsToIgnore) {
+        urlObj.searchParams.delete(param)
+      }
+      for (const param of floatParams) {
+        const value = urlObj.searchParams.get(param)
+        if (value !== null) {
+          urlObj.searchParams.set(param, Number(value).toFixed(6))
         }
       }
-    }
-    // Override Date.now() to start from fakeNow
-    const __DateNowOffset = fakeNow - Date.now()
-    const __DateNow = Date.now
-    Date.now = () => __DateNow() + __DateNowOffset
-  }, fakeNow)
-}
-
-export const urlMatcher: Matcher = customMatcher({
-  urlComparator(a, b) {
-    const fieldsToRemove = ['t', 'date_from', 'date_to']
-    ;[a, b] = [a, b].map((url) => {
-      const urlObj = new URL(url)
-      fieldsToRemove.forEach((field) => urlObj.searchParams.delete(field))
+      const sortedParams = Array.from(urlObj.searchParams.entries()).sort(([a], [b]) =>
+        a.localeCompare(b),
+      )
+      urlObj.search = new URLSearchParams(sortedParams).toString()
+      urlObj.pathname = urlObj.pathname.replace(/\/$/, '')
       return urlObj.toString()
-    })
-    return a === b
+    }
+
+    return normalize(a) === normalize(b)
   },
 })
 
-export const getBranch = () =>
-  new Promise<string>((resolve, reject) => {
-    return exec('git rev-parse --abbrev-ref HEAD', (err, stdout) => {
-      if (err) reject(`getBranch Error: ${err}`)
-      else if (typeof stdout === 'string') resolve(stdout.trim())
+export const getBranch = async (): Promise<string> => {
+  return new Promise<string>((resolve, reject) => {
+    exec('git rev-parse --abbrev-ref HEAD', (err, stdout, stderr) => {
+      if (err) {
+        reject(new Error(`getBranch Error: ${err.message || err.name}`))
+      } else if (typeof stdout === 'string' && stdout.trim()) {
+        resolve(stdout.trim())
+      } else {
+        reject(new Error(`getBranch Error: No branch name found. Stderr: ${stderr}`))
+      }
     })
   })
+}
 
-export const expect = test.expect
+/**
+ * Wait until the Leaflet map stops moving. The recenter effect pans the map as
+ * vehicle-position batches stream in, so marker screen coordinates are not
+ * trustworthy (clicks can miss) until the pane's transform stays unchanged
+ * between two consecutive samples.
+ */
+export const waitForMapIdle = async (page: Page) => {
+  let previousTransform = ''
+  await expect(async () => {
+    const transform = await page
+      .locator('.leaflet-map-pane')
+      .evaluate((el) => (el as HTMLElement).style.transform)
+    const stable = transform !== '' && transform === previousTransform
+    previousTransform = transform
+    expect(stable).toBe(true)
+  }).toPass({ timeout: 15000, intervals: [500] })
+}
+
+export const waitForSkeletonsToHide = async (page: Page) => {
+  const skeletons = page.locator('[data-testid="skeleton-loader"]')
+  while ((await skeletons.count()) > 0) {
+    await skeletons.last().waitFor({ state: 'hidden' })
+  }
+}
+
+export const fillDateField = async (
+  page: Page,
+  label: string,
+  value: string = getPastDate().toLocaleDateString('en-GB'),
+) => {
+  const field = page.getByRole('group', { name: label }).first()
+  const [day, month, year] = value.split('/')
+  const sections = field.getByRole('spinbutton')
+
+  await field.waitFor()
+  await sections.nth(0).fill(day.padStart(2, '0'))
+  await sections.nth(1).fill(month.padStart(2, '0'))
+  await sections.nth(2).fill(year)
+  await sections.nth(2).press('Tab')
+}
+
+export const clearInputField = async (input: Locator) => {
+  const clearIndicator = input.locator('..').locator('.clear-indicator').first()
+  await input.hover()
+  await input.click()
+  await clearIndicator.waitFor({ state: 'visible' })
+  await clearIndicator.click()
+}
+
+/**
+ * Let the document itself grow to the full content height, so a full-page capture
+ * really covers the whole page.
+ *
+ * The app shell pins the layout to the viewport and scrolls inside `#main-content`
+ * (`.main` and `#main-content` in src/layout/index.tsx), so `documentElement.scrollHeight`
+ * always equals the viewport height — and a full-page capture is therefore identical to a
+ * viewport one. Applitools' `scrollRootElement` does not help: the Ultrafast Grid forwards
+ * it for native devices only, so a web render always measures the document.
+ *
+ * Must be registered before the first navigation — the style is re-applied on every one.
+ */
+export const unlockFullPageScroll = async (page: Page) => {
+  await page.addInitScript(() => {
+    const style = document.createElement('style')
+    style.textContent = `
+      .main { height: auto !important; overflow: visible !important; }
+      #main-content { overflow: visible !important; }
+    `
+    const attach = () => document.head.appendChild(style)
+    if (document.head) {
+      attach()
+    } else {
+      document.addEventListener('DOMContentLoaded', attach)
+    }
+  })
+}
+
+export const setupTest = async (page: Page, lng: string = 'he') => {
+  await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
+  await page.route(/api\.github\.com/, (route) => route.abort())
+  await page.route(/open-bus-backend\.k8s\.hasadna\.org\.il/, (route) => route.abort())
+  await page.route(/.*openstreetmap*/, (route) => route.abort())
+  // Abort stride-api requests during initial navigation. Tests that need stride-api data
+  // should call advancedRouteFromHAR AFTER setupTest - the HAR route handler takes precedence
+  // over this abort route (Playwright evaluates routes in reverse registration order).
+  await page.route(/stride-api/, (route) => route.abort())
+  await page.clock.setSystemTime(getPastDate())
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await i18next.use(Backend).init({ lng, backend: { loadPath: 'src/locale/{{lng}}.json' } })
+  await page.goto('/')
+  await page.locator('.preloader').waitFor({ state: 'hidden' })
+}
+
+export const visitPage = async (page: Page, label: (typeof PAGES)[number]['label']) => {
+  // Scoped to the nav: the homepage repeats several of these labels on its own link
+  // cards, so an unscoped name match would resolve to two elements.
+  const link = page
+    .locator('.sidebar-menu')
+    .getByRole('link', { name: i18next.t(label), exact: true })
+  const href = await link.getAttribute('href')
+  // Register waitForURL before clicking to avoid missing fast client-side navigations
+  const navigationPromise = href
+    ? page.waitForURL((url) => url.pathname === href)
+    : Promise.resolve()
+  await link.click()
+  await navigationPromise
+  await page.waitForTimeout(500)
+  await page.locator('.preloader').waitFor({ state: 'hidden' })
+  await page.waitForLoadState('networkidle')
+}
+
+/** The operator list must describe the day being analyzed, not the day the browser is on. */
+export const verifyDateFromParameter = async (page: Page) => {
+  // The agency list is a react-query query persisted to localStorage, so a reload can be
+  // answered from that cache without ever reaching the network.
+  await page.evaluate(() => window.localStorage.removeItem('REACT_QUERY_OFFLINE_CACHE'))
+
+  const requestPromise = page.waitForRequest((request) =>
+    request.url().includes('gtfs_agencies/list'),
+  )
+
+  await page.reload()
+  await page.getByLabel('חברה מפעילה').click()
+  const request = await requestPromise
+
+  const params = new URL(request.url()).searchParams
+  const selectedDate = toIsraelTimezone(getPastDate()).format('YYYY-MM-DD')
+
+  expect(params.get('date_from')).toBe(selectedDate)
+  expect(params.get('date_to')).toBe(selectedDate)
+}
+
+export const harOptions: RouteFromHAROptions = {
+  notFound: 'abort',
+  url: /stride-api/,
+  matcher: urlMatcher,
+}

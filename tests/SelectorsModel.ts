@@ -1,4 +1,4 @@
-import { Page, Locator } from '@playwright/test'
+import { Locator, Page } from '@playwright/test'
 
 export default class Selectors {
   _operatorSelector: Locator

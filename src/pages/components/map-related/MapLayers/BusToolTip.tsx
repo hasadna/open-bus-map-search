@@ -1,41 +1,106 @@
-import { ReactNode, useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { Button } from '@mui/material'
-import moment from 'moment-timezone'
-import './BusToolTip.scss'
-import { SiriRideWithRelatedPydanticModel } from 'open-bus-stride-client/openapi/models/SiriRideWithRelatedPydanticModel'
+import { GtfsRoutePydanticModel } from '@hasadna/open-bus-api-client'
+import { Button, CircularProgress } from '@mui/material'
+import { ReactNode, useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import CircularProgress from '@mui/material/CircularProgress'
-import cn from 'classnames'
+import { Link, useNavigate } from 'react-router'
+import { getRoutesByLineRef } from 'src/api/gtfsService'
+import dayjs, { ISRAEL_TIMEZONE } from 'src/dayjs'
+import { GlobalSearchContext } from 'src/model/globalState'
+import { toCivilDate, todayCivilDate } from 'src/model/time/civilDate'
+import { routeStartEnd, vehicleIDFormat } from 'src/pages/components/utils/rotueUtils'
+import SkeletonLoader from 'src/shared/SkeletonLoader'
 import CustomTreeView from '../../CustomTreeView'
-import { getSiriRideWithRelated } from 'src/api/siriService'
-import { Point } from 'src/pages/timeBasedMap'
+import { EasterEgg } from '../../EasterEgg/EasterEgg'
+import type { Point } from '../map-types'
+import ComplaintModal from './ComplaintModal'
+import './BusToolTip.scss'
 
-export type BusToolTipProps = { position: Point; icon: string; children?: ReactNode }
+export type BusToolTipProps = {
+  position: Point
+  icon: string
+  children?: ReactNode
+  /** Turn the line number into a link to /single-line-map. Off by default: the
+   *  line-specific maps that render this tooltip are already showing that line. */
+  linkToLineMap?: boolean
+}
 
-export function BusToolTip({ position, icon, children }: BusToolTipProps) {
-  const [siriRide, setSiriRide] = useState<SiriRideWithRelatedPydanticModel | undefined>()
+export function BusToolTip({ position, icon, children, linkToLineMap }: BusToolTipProps) {
+  const [route, setRoute] = useState<GtfsRoutePydanticModel>()
   const [isLoading, setIsLoading] = useState(false)
   const [showJson, setShowJson] = useState(false)
   const { t, i18n } = useTranslation()
+  const [modalOpen, setModalOpen] = useState(false)
+  const { setSearch } = useContext(GlobalSearchContext)
+  const navigate = useNavigate()
 
   useEffect(() => {
+    if (!position.point?.id) return
     setIsLoading(true)
-    getSiriRideWithRelated(
-      position.point!.siri_route__id.toString(),
-      position.point!.siri_ride__vehicle_ref.toString(),
-      position.point!.siri_route__line_ref.toString(),
+    // Prefer the scheduled start: its day is the GTFS service date, where the recorded time
+    // can sit a day off around midnight. The raw values coalesce before toCivilDate because
+    // toCivilDate(undefined) resolves to *today* — a `toCivilDate(a) ?? toCivilDate(b)` chain
+    // would never reach the recorded time.
+    const rideDay =
+      toCivilDate(position.point?.siriRideScheduledStartTime ?? position.point?.recordedAtTime) ??
+      todayCivilDate()
+    getRoutesByLineRef(
+      (position.point?.siriRouteOperatorRef || 0).toString(),
+      (position.point?.siriRouteLineRef || 0).toString(),
+      rideDay,
     )
-      .then((siriRideRes: SiriRideWithRelatedPydanticModel) => setSiriRide(siriRideRes))
-      .finally(() => setIsLoading(false))
-  }, [position])
+      .then((routes) => {
+        setRoute(routes[0])
+        setIsLoading(false)
+      })
+      .catch((error) => {
+        console.error('Error fetching routes:', error)
+        setIsLoading(false)
+      })
+  }, [position.point?.id])
+
+  function getDirectionFromAngle(angle: number): string {
+    // Normalize the angle to the range 0-360
+    angle = ((angle % 360) + 360) % 360
+    // Define the cardinal directions in clockwise order
+    const directions: string[] = [
+      t('directions.North', { defaultValue: 'North' }),
+      t('directions.Northeast', { defaultValue: 'Northeast' }),
+      t('directions.East', { defaultValue: 'East' }),
+      t('directions.Southeast', { defaultValue: 'Southeast' }),
+      t('directions.South', { defaultValue: 'South' }),
+      t('directions.Southwest', { defaultValue: 'Southwest' }),
+      t('directions.West', { defaultValue: 'West' }),
+      t('directions.Northwest', { defaultValue: 'Northwest' }),
+    ]
+    // Divide the angle into 8 equal sections (45 degrees each)
+    const index: number = Math.round(angle / 45) % 8
+
+    return directions[index]
+  }
+
+  const [from, destination] = routeStartEnd(route?.routeLongName)
+  const lineLabel = route?.routeShortName || 'NaN' // 'NaN' is the fallback for a missing route number
+
+  const showOnLineMap = (route: GtfsRoutePydanticModel) => {
+    setSearch((current) => ({
+      ...current,
+      date: toCivilDate(route.date) ?? current.date,
+      operatorId: route.operatorRef.toString(),
+      lineNumber: route.routeShortName ?? null,
+      routeKey: `${route.routeMkt}-${route.routeDirection}-${route.routeAlternative}`,
+    }))
+    void navigate('/single-line-map')
+  }
 
   return (
-    <div className={cn('bus-tooltip', { hebrew: i18n.language === 'he' })}>
-      {isLoading || !siriRide ? (
-        <div className="loading">
-          <span>{t('loading_routes')}</span>
-          <CircularProgress />
+    <div className="bus-tooltip" dir={i18n.dir()}>
+      {isLoading || !route ? (
+        <div>
+          <h1 className="loading title">
+            <span>{t('loading_routes')}</span>
+            <CircularProgress />
+          </h1>
+          <SkeletonLoader active={false} title={false} rows={7} />
         </div>
       ) : (
         <>
@@ -43,44 +108,68 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
             <h1 className="title">
               {`${t('line')}: `}
               <span>
-                <Link to={`/profile/${siriRide.gtfsRideGtfsRouteId}`}>
-                  {siriRide.gtfsRouteRouteShortName}
-                </Link>
+                {linkToLineMap ? (
+                  <Link
+                    to="/single-line-map"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      showOnLineMap(route)
+                    }}>
+                    {lineLabel}
+                  </Link>
+                ) : (
+                  lineLabel
+                )}
               </span>
             </h1>
-            <img src={icon} alt="bus icon" className="bus-icon" />
+            <Link to={`/operator?operatorId=${position.point?.siriRouteOperatorRef}`}>
+              <img src={icon} alt={t('bus_icon_alt')} className="bus-icon" />
+            </Link>
           </header>
           <div className="content">
             <ul>
               <li>
+                {`${t('agency_name')}: `}
+
+                <span>
+                  <Link to={`/operator?operatorId=${position.point?.siriRouteOperatorRef}`}>
+                    {route.agencyName}
+                  </Link>
+                </span>
+              </li>
+              <li>
                 {`${t('from')}: `}
-                <span>{siriRide.gtfsRouteRouteLongName?.split('<->')[0]}</span>
+                <span>{from}</span>
               </li>
               <li>
                 {`${t('destination')}: `}
-                <span>{siriRide.gtfsRouteRouteLongName?.split('<->')[1]}</span>
+                <span>{destination}</span>
               </li>
               <li>
                 {`${t('velocity')}: `}
-                <span>{`${position.point?.velocity}  ${t('kmh')}`}</span>
+                <span>{`${position.point?.velocity} ${t('kmh')}`}</span>
               </li>
               <li>
                 {`${t('sample_time')}: `}
                 <span>
-                  {/* eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion */}
-                  {moment(position.point!.recorded_at_time as string, moment.ISO_8601)
-                    .tz('Israel')
-                    .format(`DD/MM/yyyy [${t('at_time')}] HH:mm`)}
+                  {dayjs(position.point!.recordedAtTime || new Date())
+                    .tz(ISRAEL_TIMEZONE)
+                    .format(`l [${t('at_time')}] LT`)}
                 </span>
               </li>
               <li>
                 {`${t('vehicle_ref')}: `}
-                <span>{position.point?.siri_ride__vehicle_ref}</span>
+                <span>{vehicleIDFormat(position.point?.siriRideVehicleRef)}</span>
               </li>
               <li>
                 {`${t('drive_direction')}: `}
                 <span>
-                  ({position.point?.bearing} {t('bearing')})
+                  {/* ({position.point?.bearing} {t('bearing')}) */}
+                  {position.point?.bearing} {t('bearing')} (
+                  {position.point?.bearing !== undefined
+                    ? getDirectionFromAngle(position.point.bearing)
+                    : t('unknown', { defaultValue: 'unknown' })}
+                  )
                 </span>
               </li>
               <li>
@@ -88,23 +177,47 @@ export function BusToolTip({ position, icon, children }: BusToolTipProps) {
                 <span>{position.loc.join(' ,')}</span>
               </li>
             </ul>
+            {route.routeType === '3' && ( // Bus Only
+              <EasterEgg code="complaint" autohide={false}>
+                <Button
+                  variant="contained"
+                  color="success"
+                  onClick={() => setModalOpen((prev) => !prev)}
+                  style={{ borderRadius: '50px' }}>
+                  {t('complaints.open_complaint')}
+                </Button>
+                <ComplaintModal
+                  modalOpen={modalOpen}
+                  setModalOpen={setModalOpen}
+                  position={position}
+                  route={route}
+                />
+              </EasterEgg>
+            )}
+            <br />
             <Button
-              sx={i18n.language === 'he' ? { paddingLeft: 0 } : { paddingRight: 0 }}
-              onClick={() => setShowJson((showJson) => !showJson)}>
+              href="https://www.gov.il/BlobFolder/generalpage/gtfs_general_transit_feed_specifications/he/Gtfs%20Documentation%20v3.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              sx={{ marginTop: '2px' }}>
+              {t('homepage.manual')}
+            </Button>
+            <br />
+            <Button sx={{ margin: '2px 0' }} onClick={() => setShowJson((showJson) => !showJson)}>
               {showJson ? t('hide_document') : t('show_document')}
             </Button>
             {showJson && (
-              <div onClick={(e) => e.stopPropagation()}>
+              <div dir="ltr">
                 <CustomTreeView<Point>
-                  id={position.point?.id + ''}
+                  id={`${position.point?.id}`}
                   data={position}
                   name={t('line')}
                 />
-                {siriRide?.gtfsRideId && (
-                  <CustomTreeView<SiriRideWithRelatedPydanticModel | undefined>
-                    id={siriRide?.gtfsRideId + ''}
-                    data={siriRide}
-                    name={t('drive_direction')}
+                {route?.id && (
+                  <CustomTreeView<GtfsRoutePydanticModel>
+                    id={route?.id.toString()}
+                    data={route}
+                    name={t('plannedRoute')}
                   />
                 )}
               </div>

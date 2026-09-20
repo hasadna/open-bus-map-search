@@ -1,85 +1,94 @@
+import { Alert, Grid, Typography } from '@mui/material'
 import { useState } from 'react'
-
-// Services and libraries
-import moment from 'moment'
-// Styling
-import './DashboardPage.scss'
-import 'src/App.scss'
 import { useTranslation } from 'react-i18next'
-import Typography from '@mui/material/Typography'
-import Alert from '@mui/material/Alert'
-import Grid from '@mui/material/Unstable_Grid2' // Grid version 2
-import { useDate } from '../components/DateTimePicker'
-import { DateSelector } from '../components/DateSelector'
+// Services and libraries
+import { useDate } from 'src/hooks/useDate'
+import { addDays, todayCivilDate } from 'src/model/time/civilDate'
+import OperatorSelector from 'src/pages/components/OperatorSelector'
+import { CivilDateSelector } from '../components/CivilDateSelector'
 import { PageContainer } from '../components/PageContainer'
-
 // Components
 import InfoYoutubeModal from '../components/YoutubeModal'
-import DayTimeChart from './ArrivalByTimeChart/DayTimeChart'
 import AllLinesChart from './AllLineschart/AllLinesChart'
+import DayTimeChart from './ArrivalByTimeChart/DayTimeChart'
 import WorstLinesChart from './WorstLinesChart/WorstLinesChart'
-import OperatorSelector from 'src/pages/components/OperatorSelector'
-
-// Declarations
-const now = moment()
+// Styling
+import './DashboardPage.scss'
 
 const DashboardPage = () => {
-  const [startDate, setStartDate] = useDate(now.clone().subtract(7, 'days'))
-  const [endDate, setEndDate] = useDate(now.clone().subtract(1, 'day'))
+  const [startDate, setStartDate] = useDate(addDays(todayCivilDate(), -7))
+  const [endDate, setEndDate] = useDate(addDays(todayCivilDate(), -1))
   const [operatorId, setOperatorId] = useState('')
   const { t } = useTranslation()
 
+  const [AllChartsZeroLines, setAllChartsZeroLines] = useState(false)
+  const [WorstLineZeroLines, setWorstLineZeroLines] = useState(false)
+  const [AllDayTimeChartZeroLines, setAllDayTimeChartZeroLines] = useState(false)
+
   return (
-    <PageContainer>
+    <PageContainer className="dashboard">
       <Typography className="page-title" variant="h4">
         {t('dashboard_page_title')}
         <InfoYoutubeModal
-          label="Open video about this page"
+          label={t('open_video_about_this_page')}
           title={t('dashboard_page_description')}
           videoUrl="https://www.youtube.com/embed/bXg50_j_hTA?si=4rpSZwMRbMomE4g1"
         />
       </Typography>
+      {AllChartsZeroLines && WorstLineZeroLines && AllDayTimeChartZeroLines ? (
+        <Alert severity="warning" variant="outlined">
+          {t('no_data_from_ETL')}
+        </Alert>
+      ) : null}
       {startDate > endDate ? (
-        <Alert severity="error" variant="outlined" sx={{ bgcolor: '#feeaea' }}>
+        <Alert severity="error" variant="outlined">
           {t('bug_date_alert')}
         </Alert>
       ) : null}
       <Grid
         container
         spacing={2}
-        alignItems="center"
-        sx={{ marginTop: '0px' }}
-        justifyContent="space-between">
-        <Grid lg={6} xs={12} container spacing={2} alignItems="center">
-          <Grid xs={6}>
-            <DateSelector
-              time={startDate}
-              onChange={(data) => setStartDate(data)}
-              customLabel={t('start')}
-            />
+        sx={{ marginTop: '0px', alignItems: 'center', justifyContent: 'space-between' }}>
+        <Grid container size={{ xs: 12, lg: 6 }} spacing={2} sx={{ alignItems: 'center' }}>
+          <Grid size={{ xs: 6 }}>
+            <CivilDateSelector value={startDate} onChange={setStartDate} customLabel={t('start')} />
           </Grid>
-          <Grid xs={6}>
-            <DateSelector
-              time={endDate}
-              onChange={(data) => setEndDate(data)}
+          <Grid size={{ xs: 6 }}>
+            <CivilDateSelector
+              value={endDate}
+              onChange={setEndDate}
               minDate={startDate}
               customLabel={t('end')}
             />
           </Grid>
         </Grid>
-        <Grid lg={6} xs={12}>
+        <Grid size={{ xs: 12, lg: 6 }}>
           <OperatorSelector operatorId={operatorId} setOperatorId={setOperatorId} />
         </Grid>
       </Grid>
-      <Grid container spacing={2} alignItems="flex-start">
-        <Grid xs={12} lg={6} className="widget">
-          <AllLinesChart startDate={startDate} endDate={endDate} />
+      <Grid container spacing={2} sx={{ alignItems: 'flex-start' }}>
+        <Grid size={{ xs: 12, lg: 6 }}>
+          <AllLinesChart
+            startDate={startDate}
+            endDate={endDate}
+            alertAllChartsZeroLinesHandling={setAllChartsZeroLines}
+          />
         </Grid>
-        <Grid xs={12} lg={6} className="widget">
-          <WorstLinesChart startDate={startDate} endDate={endDate} operatorId={operatorId} />
+        <Grid size={{ xs: 12, lg: 6 }}>
+          <WorstLinesChart
+            startDate={startDate}
+            endDate={endDate}
+            operatorId={operatorId}
+            alertWorstLineHandling={setWorstLineZeroLines}
+          />
         </Grid>
-        <Grid xs={12} className="widget">
-          <DayTimeChart startDate={startDate} endDate={endDate} operatorId={operatorId} />
+        <Grid size={{ xs: 12 }}>
+          <DayTimeChart
+            startDate={startDate}
+            endDate={endDate}
+            operatorId={operatorId}
+            alertAllDayTimeChartHandling={setAllDayTimeChartZeroLines}
+          />
         </Grid>
       </Grid>
     </PageContainer>

@@ -1,0 +1,71 @@
+import { GtfsRoutePydanticModel } from '@hasadna/open-bus-api-client'
+import { useEffect, useState } from 'react'
+import { getAllRoutesList } from 'src/api/gtfsService'
+import { type CivilDate } from 'src/model/time/civilDate'
+import { routeStartEnd } from 'src/pages/components/utils/rotueUtils'
+
+type AllRoutesState = {
+  routes: RouteItem[]
+  isLoading: boolean
+  error: boolean
+}
+
+export const useAllRoutes = (operatorId?: string, date?: CivilDate) => {
+  const [state, setState] = useState<AllRoutesState>({ routes: [], isLoading: true, error: false })
+
+  useEffect(() => {
+    if (!operatorId || !date) {
+      setState({ routes: [], isLoading: false, error: false })
+      return
+    }
+
+    setState({ routes: [], isLoading: true, error: false })
+    const controller = new AbortController()
+
+    getAllRoutesList(operatorId, date, controller.signal)
+      .then((routes) => {
+        setState({ routes: mapperRoutes(routes), isLoading: false, error: false })
+      })
+      .catch((err) => {
+        setState({ routes: [], isLoading: false, error: true })
+        console.error(err?.message ?? err)
+      })
+
+    return () => controller.abort()
+  }, [operatorId, date])
+
+  return state
+}
+
+type RouteItem = {
+  id: number
+  lineRef: number
+  line: number
+  suffix: string
+  start: string
+  end: string
+  routeKey: string
+}
+
+function mapperRoutes(routes: GtfsRoutePydanticModel[]) {
+  return routes
+    .map(
+      ({
+        id,
+        lineRef,
+        routeShortName,
+        routeLongName,
+        routeMkt,
+        routeDirection,
+        routeAlternative,
+      }) => {
+        const [start, end] = routeStartEnd(routeLongName)
+        const [, routeLine, routeSuffix] = routeShortName?.match(/^(\d+)(.*)$/) ?? []
+        const line = Number(routeLine)
+        const suffix = line && routeSuffix ? routeSuffix : ''
+        const routeKey = `${routeMkt}-${routeDirection}-${routeAlternative}`
+        return { id, lineRef, line, suffix, start, end, routeKey }
+      },
+    )
+    .sort((a, b) => a.line - b.line || a.suffix.localeCompare(b.suffix, 'he'))
+}
