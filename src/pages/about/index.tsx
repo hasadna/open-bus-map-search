@@ -1,8 +1,8 @@
 import { Stack, Typography } from '@mui/material'
+import { styled } from '@mui/material/styles'
 import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
-import styled from 'styled-components'
 import Widget from 'src/shared/Widget'
 import SlackIcon from '../../resources/slack-icon.svg'
 import { combineContributions, CONTRIBUTOR_REPOS, fetchRepoContributors } from './contributors'
@@ -216,18 +216,19 @@ const Contributors = () => {
   )
 }
 
-const AboutStyle = styled.div`
-  display: flex;
-  flex-direction: column;
-  padding: 0 1rem;
-  & .about-center-container {
-    width: 100%;
-    max-width: 770px;
-    & h1 {
-      font-size: 2em;
-    }
-  }
-`
+const AboutStyle = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  padding: '0 1rem',
+  '& .about-center-container': {
+    width: '100%',
+    maxWidth: '770px',
+    '& h1': {
+      fontSize: '2em',
+    },
+  },
+})
+
 function useContributions() {
   const { data, isLoading, isError } = useQuery({
     // the repo list is part of the result's identity — and keying on it retires the
