@@ -1,0 +1,399 @@
+// MUI's default primary, which is what the theme resolves to (ThemeContext sets only
+// `palette.mode`). A stylesheet can't reach the theme, so the map's chrome copies it here.
+$primary: #1976d2;
+
+// The speed ramp's red. ROUTE_COLORS deliberately holds no red, so this can't be mistaken for
+// a ride's own line colour.
+$slow-ping: #c1121f;
+
+// Shared translucency for map overlay controls so they read consistently across
+// both themes. The attribution is more see-through; interactive buttons (zoom,
+// expand) are more opaque for a clearer hit target.
+$control-bg: rgb(255 255 255 / 70%);
+$control-bg-dark: rgb(40 40 40 / 70%);
+$button-bg: rgb(255 255 255 / 90%);
+$button-bg-dark: rgb(40 40 40 / 90%);
+
+// The legend is near-opaque: at 70% the map content under it (e.g. the velocity
+// heatmap's saturated overlay) tints it a different color on every page.
+$legend-bg: rgb(255 255 255 / 90%);
+$legend-bg-dark: rgb(40 40 40 / 92%);
+
+// Shared frame so the zoom bar and expand button read identically (Leaflet's
+// default heavy shadow + missing border otherwise make them look unequal).
+$button-shadow:
+  0 1px 3px rgb(0 0 0 / 8%),
+  0 6px 16px rgb(0 0 0 / 10%);
+$button-border: 1px solid rgb(0 0 0 / 25%);
+$button-border-dark: 1px solid rgb(255 255 255 / 25%);
+
+// Divider between the segments of the zoom bar (+ / − / expand). Deliberately
+// stronger than the frame: Leaflet's own #ccc all but disappears against the
+// button background, which made the three segments read as one blank slab.
+$bar-divider: rgb(0 0 0 / 40%);
+$bar-divider-dark: rgb(255 255 255 / 40%);
+
+main,
+main > div,
+.map-container,
+.leaflet-container,
+.map-info,
+.map-index-item-config {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+}
+
+.leaflet-container {
+  min-height: calc(100vh - 88px);
+}
+
+.map-info {
+  position: relative;
+  margin-bottom: 1em;
+
+  // The slot MapZoomBar appends into the zoom bar must not generate a box of
+  // its own, or the button would be nested one level deeper than the zoom
+  // links and stop lining up with them.
+  .map-zoom-bar-slot {
+    display: contents;
+  }
+
+  .leaflet-control-zoom.leaflet-bar {
+    border: $button-border;
+    box-shadow: $button-shadow;
+  }
+
+  .leaflet-control-zoom a {
+    background: $button-bg;
+    border-bottom-color: $bar-divider;
+
+    &:hover {
+      background: rgb(255 255 255 / 95%);
+    }
+  }
+
+  // The expand button is the bar's bottom segment, so it drops every MUI
+  // button default (round, padded, its own frame) and takes the zoom links'
+  // box instead: same size, same background, square but for the bar's bottom
+  // corners. The separator above it is the zoom-out link's own bottom border,
+  // which Leaflet only removes while that link is the bar's :last-child.
+  .leaflet-control-zoom .expand-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    border: none;
+    border-radius: 0 0 4px 4px;
+    background: $button-bg;
+    color: $primary !important;
+
+    &:hover {
+      background: rgb(255 255 255 / 95%);
+    }
+
+    &:active {
+      background: rgb(255 255 255 / 100%);
+    }
+
+    svg {
+      font-size: 16px;
+    }
+  }
+
+  // Leaflet grows its bar buttons on touch-capable displays; track it so the
+  // expand button never ends up a different size from the zoom links.
+  .leaflet-touch .leaflet-control-zoom .expand-button {
+    width: 30px;
+    height: 30px;
+  }
+
+  .leaflet-control-attribution {
+    background: $control-bg;
+  }
+
+  // Shared legend slot rendered by MapShell's `legend` prop: every map page's
+  // legend gets the same corner, box chrome and dark theming; pages provide
+  // only the content.
+  .map-legend {
+    position: absolute;
+    top: 1em;
+    inset-inline-start: 1em;
+    z-index: 1000;
+    border: 2px solid black;
+    border-radius: 8px;
+    background-color: $legend-bg;
+    padding: 8px 12px;
+    color: black;
+  }
+
+  .map-index {
+    // Two-column table: icons in the start column, text in the end column.
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 4px 8px;
+    align-items: center;
+
+    // display:contents promotes each item's cells into the parent grid so the
+    // icon and text columns line up across every row.
+    &-item {
+      display: contents;
+
+      // The icon is a composite (route-line behind a stop marker); give it a
+      // fixed box and center both parts so they overlap correctly.
+      &-config {
+        justify-self: center;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        width: 25px;
+      }
+
+      &-line {
+        z-index: -1;
+        position: absolute;
+        inset: 0;
+        margin: auto;
+        width: 25px;
+        height: 4px;
+      }
+
+      &-icon {
+        display: flex;
+
+        img,
+        svg {
+          width: 20px;
+          height: 20px;
+        }
+      }
+
+      &-title {
+        justify-self: start;
+        text-align: start;
+
+        // Match the velocity legend's typography; the h3 browser-default
+        // margins were the bulk of this legend's wasted space.
+        h3 {
+          margin: 0;
+          font-size: 13px;
+          font-weight: 600;
+
+          // Per-vehicle subtitle, e.g. "(123-45-678)" — secondary to the title.
+          span {
+            margin-inline-start: 4px;
+            font-weight: 500;
+          }
+        }
+      }
+    }
+
+    // Spans the whole legend rather than sitting in its icon/text columns: it is a key to the
+    // markers, not another one of them.
+    .map-speed-index {
+      grid-column: 1 / -1;
+      margin-top: 2px;
+      border-top: 1px solid rgb(0 0 0 / 20%);
+      padding-top: 4px;
+
+      &-title {
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      &-bands {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        align-items: end;
+      }
+
+      &-band {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-size: 10px;
+
+        // One box per band, so the arrows share a baseline and only their own scale differs.
+        img,
+        svg {
+          width: 22px;
+          height: 22px;
+        }
+      }
+    }
+  }
+}
+
+// Leaflet's popup/controls render hardcoded-white. The .map-info wrapper gets a
+// `dark` class in dark mode, so theme every Leaflet sub-element + the expand
+// button under it (one reactive hook covers popup, zoom, attribution, button).
+.map-info.dark {
+  .map-legend {
+    background-color: $legend-bg-dark;
+    border-color: #fff;
+    color: #fff;
+  }
+
+  .map-speed-index {
+    border-top-color: rgb(255 255 255 / 25%);
+
+    // The markers never change with the theme (the basemap under them stays light), so the key
+    // shows them on a light chip. On the dark panel they read the ramp backwards: the outlined
+    // slow arrows come out solid against it, and the solid fast ones hollow.
+    &-band svg {
+      border-radius: 3px;
+      background: rgb(255 255 255 / 88%);
+    }
+  }
+
+  .leaflet-popup-content-wrapper,
+  .leaflet-popup-tip {
+    background: #1c1d1c;
+    color: #fff;
+  }
+
+  .leaflet-popup-close-button {
+    color: #fff;
+  }
+
+  .leaflet-popup-content-wrapper a {
+    color: #90caf9;
+  }
+
+  .leaflet-control-zoom.leaflet-bar {
+    border: $button-border-dark;
+  }
+
+  .leaflet-control-zoom a {
+    background: $button-bg-dark;
+    color: #fff;
+    border-bottom-color: $bar-divider-dark;
+
+    &:hover {
+      background: rgb(40 40 40 / 100%);
+    }
+  }
+
+  .leaflet-control-attribution {
+    background: $control-bg-dark;
+    color: #ccc;
+
+    a {
+      color: #90caf9;
+    }
+  }
+
+  // Background only — the accent color, frame and divider are all inherited
+  // from the light rules, which already hold in both themes.
+  .leaflet-control-zoom .expand-button {
+    background: $button-bg-dark;
+
+    &:hover {
+      background: rgb(40 40 40 / 95%);
+    }
+
+    &:active {
+      background: rgb(40 40 40 / 100%);
+    }
+  }
+}
+
+pre {
+  direction: ltr;
+  height: 200px;
+  overflow-y: auto;
+}
+
+.map-header-buttons {
+  display: flex;
+  flex-direction: row;
+  margin-top: 10px;
+}
+
+// The inlined markup declares a viewBox but no width/height, so it needs stretching over the
+// icon box. Rotation and band scale live on the SVG itself.
+.vehicle-bearing-marker > svg,
+.vehicle-standing-marker > svg,
+.vehicle-ride-end-marker > svg {
+  width: 100%;
+  height: 100%;
+}
+
+// Every ping glyph keeps its colours in either theme, exactly as .bus-icon-circle does at the
+// ride's start: the dark theme darkens the app's chrome but not the basemap tiles under the
+// markers, so a glyph that inverted with it would end up white on the very same light tiles.
+.ping-badge {
+  fill: #fff;
+  stroke: $primary;
+  stroke-width: 1.8;
+
+  &--standing {
+    stroke: $slow-ping;
+  }
+}
+
+.ping-badge-mark {
+  fill: #000;
+}
+
+.ping-arrow {
+  fill: #000;
+  stroke: #fff;
+  stroke-width: 1.3;
+  stroke-linejoin: round;
+  paint-order: stroke;
+
+  // The band scale is applied to the path, so without this the halo would thin out on the slow
+  // arrows, exactly where they are already hardest to see.
+  vector-effect: non-scaling-stroke;
+
+  &--slow {
+    fill: $slow-ping;
+  }
+}
+
+.bus-icon-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  // border-box keeps the disc 30px across whatever the new rim costs it, so it still lines up
+  // with the ride-end badge drawn at the same 30.
+  > .bus-icon-circle {
+    box-sizing: border-box;
+    width: 30px;
+    height: 30px;
+    padding: 4px;
+    border: 2px solid $primary;
+    border-radius: 50%;
+    background-color: white;
+
+    img {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  > .operator-name {
+    background-color: rgb(255 255 255 / 40%);
+    font-weight: bold;
+  }
+}
+
+.expanded {
+  // Fixed, not absolute: `absolute` resolves against the nearest positioned
+  // ancestor, so any layout wrapper that happens to be positioned would shrink
+  // the expanded map to that wrapper instead of the screen.
+  position: fixed;
+  inset: 0;
+  margin-bottom: 0;
+
+  // Above the sidebar (.ant-layout-sider, z-index 1) and MUI input labels
+  // (z-index 1), which would otherwise paint over the map and steal clicks;
+  // below antd/MUI portal layers (dropdowns/modals, 1050+).
+  z-index: 1000;
+}

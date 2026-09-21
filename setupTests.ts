@@ -1,9 +1,15 @@
-import '@testing-library/jest-dom'
+import { TextDecoder, TextEncoder } from 'util'
+import { ResizeObserver } from '@juggle/resize-observer'
+import '@testing-library/jest-dom/vitest'
 import { cleanup } from '@testing-library/react'
-// runs a cleanup after each test case (e.g. clearing jsdom)
-import ResizeObserver from 'resize-observer-polyfill'
+import './src/locale/allTranslations'
 
 global.ResizeObserver = ResizeObserver
+// jsdom omits TextEncoder/TextDecoder, which react-router v7 imports at module
+// load — without these, any test that renders a routed component fails to import.
+// (node's util provides them.)
+global.TextEncoder ??= TextEncoder as typeof global.TextEncoder
+global.TextDecoder ??= TextDecoder as typeof global.TextDecoder
 afterEach(() => {
   cleanup()
 })

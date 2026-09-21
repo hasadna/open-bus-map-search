@@ -3,16 +3,17 @@ import { useEffect, useMemo } from 'react'
 import { useMap } from 'react-leaflet'
 import { MapProps } from './map-types'
 
-export function useRecenterOnDataChange({ positions, plannedRouteStops }: MapProps) {
+export function useRecenterOnDataChange({ positionGroups, plannedRouteStops }: MapProps) {
   const map = useMap()
 
   const center = useMemo(() => {
     const sum: LatLngTuple = [0, 0]
-    const totalPoints = positions.length + (plannedRouteStops?.length ?? 0)
+    const allPositions = positionGroups.flatMap((g) => g.positions)
+    const totalPoints = allPositions.length + (plannedRouteStops?.length ?? 0)
 
     if (totalPoints === 0) return sum
 
-    for (const position of positions) {
+    for (const position of allPositions) {
       sum[0] += position.loc[0]
       sum[1] += position.loc[1]
     }
@@ -27,11 +28,14 @@ export function useRecenterOnDataChange({ positions, plannedRouteStops }: MapPro
     sum[1] /= totalPoints
 
     return sum
-  }, [positions, plannedRouteStops])
+  }, [positionGroups, plannedRouteStops])
 
   useEffect(() => {
     if (center[0] || center[1]) {
-      map.setView(center, map.getZoom(), { animate: true })
+      // No animation: this effect re-fires per streamed position batch, and
+      // chained animated pans keep the map (and its markers) drifting long
+      // after the data is on screen.
+      map.setView(center, map.getZoom(), { animate: false })
     }
   }, [...center, map])
 }

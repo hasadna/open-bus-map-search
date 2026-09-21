@@ -1,5 +1,6 @@
 import { Autocomplete, TextField } from '@mui/material'
 import { useTranslation } from 'react-i18next'
+import { normalizeScheduledTime } from 'src/pages/components/utils/startTimeUtils'
 
 type FilterPositionsByStartTimeSelectorProps = {
   options: {
@@ -17,8 +18,13 @@ export function FilterPositionsByStartTimeSelector({
   disabled,
   setStartTime,
 }: FilterPositionsByStartTimeSelectorProps) {
-  const foundValue = options.find((option) => option.value === startTime)
-  const value = foundValue || null
+  const normalizedStartTime = normalizeScheduledTime(startTime?.split('|')[0])
+  const selectedIndex = normalizedStartTime
+    ? options.findIndex(
+        (option) => normalizeScheduledTime(option.value.split('|')[0]) === normalizedStartTime,
+      )
+    : -1
+  const value = selectedIndex >= 0 ? options[selectedIndex] : null
 
   const { t } = useTranslation()
 

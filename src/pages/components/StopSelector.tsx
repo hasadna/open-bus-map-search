@@ -18,6 +18,7 @@ const StopSelector = ({ disabled, stops, stopKey, setStopKey }: StopSelectorProp
     <Autocomplete
       disabled={disabled}
       disablePortal
+      fullWidth
       value={value}
       onChange={(e, value) => setStopKey(value ? value.key : '')}
       id="stop-select"

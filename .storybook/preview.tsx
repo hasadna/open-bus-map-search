@@ -1,13 +1,12 @@
 import type { Preview } from '@storybook/react-vite'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { http, HttpResponse } from 'msw'
 import { initialize, mswLoader } from 'msw-storybook-addon'
 import { Suspense, useEffect } from 'react'
 import { BrowserRouter } from 'react-router'
 import { ThemeProvider, useTheme } from 'src/layout/ThemeContext'
 import i18n from 'src/locale/allTranslations'
-import 'leaflet/dist/leaflet.css'
-import 'src/App.scss'
-import 'src/index.css'
+import 'src/index.scss'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -23,13 +22,27 @@ const queryClient = new QueryClient({
 
 queryClient.setQueryData(['version'], '1.2.3')
 
+/**
+ * Anything that resolves an operator goes through the memoized `getAgencyList()` singleton, and
+ * `fetchGroupBy` drops every row whose operator is missing from it. Left unmocked it reaches the
+ * live API, which the visual-test CI job points at 127.0.0.1 — so the agency list comes back empty
+ * and each chart silently renders nothing. A story may still override this with its own handler.
+ */
+const agencyListHandler = http.get('*/gtfs_agencies/list', async () => {
+  const { agencies } = await import('./mockData')
+  return HttpResponse.json(agencies)
+})
+
 const preview: Preview = {
   beforeAll: () => {
-    initialize({
-      serviceWorker: {
-        url: './mockServiceWorker.js',
+    initialize(
+      {
+        serviceWorker: {
+          url: './mockServiceWorker.js',
+        },
       },
-    })
+      [agencyListHandler],
+    )
   },
   loaders: [mswLoader],
   parameters: {
@@ -67,6 +80,10 @@ const preview: Preview = {
   tags: ['autodocs'],
 }
 
+export const initialGlobals = {
+  locale: 'he',
+}
+
 export const globalTypes = {
   locale: {
     name: 'Locale',
@@ -78,6 +95,7 @@ export const globalTypes = {
         { value: 'he', title: 'עברית' },
         { value: 'en', title: 'English' },
         { value: 'ru', title: 'Русский' },
+        { value: 'ar', title: 'العربية' },
       ],
       showName: true,
     },
@@ -115,7 +133,7 @@ const StoryBookWrapper = ({
   }, [darkMode, isDarkTheme, toggleTheme])
 
   useEffect(() => {
-    i18n.changeLanguage(locale)
+    void i18n.changeLanguage(locale)
   }, [locale])
 
   return children

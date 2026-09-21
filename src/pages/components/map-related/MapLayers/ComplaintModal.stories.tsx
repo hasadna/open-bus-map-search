@@ -1,5 +1,8 @@
+import type { GtfsRoutePydanticModel } from '@hasadna/open-bus-api-client'
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { http, HttpResponse } from 'msw'
 import { useState } from 'react'
+import { busToolTipMockedSiriRides } from '../../../../../.storybook/mockData'
 import type { BusToolTipProps } from './BusToolTip'
 import ComplaintModal from './ComplaintModal'
 
@@ -9,7 +12,7 @@ const meta = {
   parameters: {
     layout: 'centered',
     eyes: {
-      waitBeforeCapture: 'form', // Wait for the modal to open before capturing
+      waitBeforeCapture: 'button[type="submit"]',
     },
   },
   argTypes: {
@@ -60,7 +63,33 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-const defaultArgs: BusToolTipProps = {
+const siriRidesHandler = http.get(
+  (info) => new URL(info.request.url).pathname === '/siri_rides/list',
+  ({ request }) => {
+    const { searchParams } = new URL(request.url)
+    const matchesRouteId = searchParams.get('siri_route_ids') === '973'
+    const matchesLineRef = searchParams.get('siri_route__line_refs') === '2974'
+    const matchesVehicleRef = searchParams.get('vehicle_refs') === '23321002'
+
+    if (!matchesRouteId || !matchesLineRef || !matchesVehicleRef) {
+      return HttpResponse.json([])
+    }
+
+    return HttpResponse.json(busToolTipMockedSiriRides)
+  },
+)
+
+const operatorsHandler = http.get(
+  (info) => new URL(info.request.url).pathname === '/gov/operators',
+  () => HttpResponse.json({ success: true, data: [{ dataText: 'אגד', dataCode: 3 }] }),
+)
+
+const citiesHandler = http.get(
+  (info) => new URL(info.request.url).pathname === '/gov/cities',
+  () => HttpResponse.json({ success: true, data: [{ dataText: 'גדרה', dataCode: 2550 }] }),
+)
+
+const defaultArgs: BusToolTipProps & { route: GtfsRoutePydanticModel } = {
   position: {
     loc: [31.799982, 34.786926],
     color: 22,
@@ -93,11 +122,30 @@ const defaultArgs: BusToolTipProps = {
     },
   },
   icon: '/bus-logos/3.svg',
+  route: {
+    id: 125758768,
+    date: new Date('2025-10-27'),
+    lineRef: 19785,
+    operatorRef: 3,
+    routeShortName: '2',
+    routeLongName: 'וייצמן/כצנלסון-גדרה<->שדרות מנחם בגין/כביש 7-גדרה-1#',
+    routeMkt: '81002',
+    routeDirection: '1',
+    routeAlternative: '#',
+    agencyName: 'אגד',
+    routeType: '3',
+  },
 }
 
 export const Default: Story = {
+  parameters: {
+    msw: {
+      handlers: [siriRidesHandler, operatorsHandler, citiesHandler],
+    },
+  },
   args: {
     position: defaultArgs.position,
+    route: defaultArgs.route,
     modalOpen: true,
   },
 }

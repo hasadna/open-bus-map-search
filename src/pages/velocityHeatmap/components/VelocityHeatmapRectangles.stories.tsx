@@ -1,35 +1,10 @@
-import type { SiriVelocityAggregationPydanticModel } from '@hasadna/open-bus-api-client'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { http, HttpResponse } from 'msw'
-import { MapContainer, TileLayer } from 'react-leaflet'
+import { TileLayer } from 'react-leaflet'
+import { MapShell } from 'src/pages/components/map-related/MapShell'
+import { velocityAggregation } from '../../../../.storybook/mockData'
 import { VelocityHeatmapLegend } from './VelocityHeatmapLegend'
 import { VelocityHeatmapRectangles } from './VelocityHeatmapRectangles'
-
-const sampleData: SiriVelocityAggregationPydanticModel[] = [
-  {
-    roundedLon: 34.92,
-    roundedLat: 29.56,
-    totalSampleCount: 8,
-    averageRollingAvg: 60.4,
-    stddevRollingAvg: 3.7,
-  },
-  {
-    roundedLon: 34.93,
-    roundedLat: 29.57,
-    totalSampleCount: 12,
-    averageRollingAvg: 45.2,
-    stddevRollingAvg: 5.1,
-  },
-  {
-    roundedLon: 34.94,
-    roundedLat: 29.58,
-    totalSampleCount: 20,
-    averageRollingAvg: 10.0,
-    stddevRollingAvg: 1.2,
-  },
-]
-
-const noop = () => {}
 
 const meta = {
   title: 'VelocityHeatmap/Rectangles',
@@ -55,12 +30,20 @@ const meta = {
   decorators: [
     (Story, ctx) => {
       return (
-        <div style={{ height: '500px', width: '100%', margin: '16px 0' }}>
-          <MapContainer
+        <div
+          style={{
+            height: '500px',
+            width: '100%',
+            margin: '16px 0',
+            display: 'flex',
+            flexDirection: 'column',
+          }}>
+          <MapShell
             center={[29.57, 34.93]}
             zoom={13}
             scrollWheelZoom={true}
-            style={{ height: '100%', width: '100%' }}>
+            style={{ height: '100%', width: '100%' }}
+            legend={<VelocityHeatmapLegend visMode={ctx.args.visMode} min={0} max={1} />}>
             <TileLayer
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
               url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
@@ -68,11 +51,10 @@ const meta = {
             <Story
               args={{
                 visMode: ctx.args.visMode,
-                setMinMax: noop,
+                setMinMax: () => {},
               }}
             />
-            <VelocityHeatmapLegend visMode={ctx.args.visMode} min={0} max={1} />
-          </MapContainer>
+          </MapShell>
         </div>
       )
     },
@@ -88,15 +70,12 @@ const parameters = {
     handlers: [
       http.get(
         'https://open-bus-stride-api.hasadna.org.il/siri_velocity_aggregation/siri_velocity_aggregation',
-        async () => {
-          await new Promise((r) => setTimeout(r, 500)) // Simulate network delay
-          return HttpResponse.json(sampleData)
-        },
+        () => HttpResponse.json(velocityAggregation),
       ),
     ],
   },
   eyes: {
-    waitBeforeCapture: 2500,
+    waitBeforeCapture: '.leaflet-overlay-pane path',
   },
 }
 

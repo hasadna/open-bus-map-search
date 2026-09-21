@@ -1,11 +1,12 @@
-import { Radio, RadioChangeEvent, Skeleton } from 'antd'
+import { Radio, RadioChangeEvent } from 'antd'
 import { FC, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useWarningContext } from '../context/WarningContextProvider'
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
-import { Dayjs } from 'src/dayjs'
+import { type CivilDate } from 'src/model/time/civilDate'
+import SkeletonLoader from 'src/shared/SkeletonLoader'
 import Widget from 'src/shared/Widget'
-import ArrivalByTimeChart, { ArrivalByTimeData } from './ArrivalByTimeChart'
+import { useWarningContext } from '../context/WarningContextProvider'
+import ArrivalByTimeChart from './ArrivalByTimeChart'
 
 const convertToGraphCompatibleStruct = (arr: GroupByRes[]) => {
   return arr.map((item) => {
@@ -17,13 +18,13 @@ const convertToGraphCompatibleStruct = (arr: GroupByRes[]) => {
       percent: (item.totalActualRides / item.totalPlannedRides) * 100,
       gtfsRouteDate: item.gtfsRouteDate ? new Date(item.gtfsRouteDate) : undefined,
       gtfsRouteHour: item.gtfsRouteHour ? new Date(item.gtfsRouteHour) : undefined,
-    } as ArrivalByTimeData
+    }
   })
 }
 
 interface DayTimeChartProps {
-  startDate: Dayjs
-  endDate: Dayjs
+  startDate: CivilDate
+  endDate: CivilDate
   operatorId: string
 }
 
@@ -32,8 +33,8 @@ const DayTimeChart: FC<DayTimeChartProps> = ({ startDate, endDate, operatorId })
   const [groupByHour, setGroupByHour] = useState<boolean>(false)
 
   const [data, loadingGraph] = useGroupBy({
-    dateFrom: startDate.valueOf(),
-    dateTo: endDate.valueOf(),
+    dateFrom: startDate,
+    dateTo: endDate,
     groupBy: groupByHour ? 'operator_ref,gtfs_route_hour' : 'operator_ref,gtfs_route_date',
   })
 
@@ -64,7 +65,7 @@ const DayTimeChart: FC<DayTimeChartProps> = ({ startDate, endDate, operatorId })
         <Radio.Button value="byHour">{t('group_by_hour_tooltip_content')}</Radio.Button>
       </Radio.Group>
       {loadingGraph ? (
-        <Skeleton active />
+        <SkeletonLoader active />
       ) : (
         <ArrivalByTimeChart data={graphData} operatorId={operatorId} />
       )}

@@ -1,18 +1,17 @@
-import { Skeleton } from 'antd'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
+import { GroupByRes, useGroupBy } from 'src/api/groupByService'
+import { MAJOR_OPERATORS } from 'src/model/operator'
+import { type CivilDate } from 'src/model/time/civilDate'
+import SkeletonLoader from 'src/shared/SkeletonLoader'
+import Widget from 'src/shared/Widget'
 import { useWarningContext } from '../context/WarningContextProvider'
 import LinesHbarChart, { LineBar } from './LineHbarChart/LinesHbarChart'
-import { GroupByRes, useGroupBy } from 'src/api/groupByService'
-import { Dayjs } from 'src/dayjs'
-import { MAJOR_OPERATORS } from 'src/model/operator'
-import Widget from 'src/shared/Widget'
 
 interface WorstLinesChartProps {
-  startDate: Dayjs
-  endDate: Dayjs
+  startDate: CivilDate
+  endDate: CivilDate
   operatorId?: string
-  alertWorstLineHandling: (arg: boolean) => void
 }
 
 const convertToWorstLineChartCompatibleStruct = (arr: GroupByRes[], operatorId?: string) => {
@@ -20,7 +19,7 @@ const convertToWorstLineChartCompatibleStruct = (arr: GroupByRes[], operatorId?:
   return arr
     .filter((row) => {
       if (operatorId) return row.operatorRef?.operatorRef.toString() === operatorId
-      return row.operatorRef && MAJOR_OPERATORS.includes(row.operatorRef.operatorRef.toString())
+      return row.operatorRef && MAJOR_OPERATORS.has(row.operatorRef.operatorRef.toString())
     })
     .map(
       (item) =>
@@ -35,15 +34,10 @@ const convertToWorstLineChartCompatibleStruct = (arr: GroupByRes[], operatorId?:
     )
 }
 
-export const WorstLinesChart = ({
-  startDate,
-  endDate,
-  operatorId,
-  alertWorstLineHandling,
-}: WorstLinesChartProps) => {
+export const WorstLinesChart = ({ startDate, endDate, operatorId }: WorstLinesChartProps) => {
   const [groupByLineData, lineDataLoading] = useGroupBy({
-    dateFrom: startDate.valueOf(),
-    dateTo: endDate.valueOf(),
+    dateFrom: startDate,
+    dateTo: endDate,
     groupBy: 'operator_ref,line_ref',
   })
 
@@ -64,7 +58,7 @@ export const WorstLinesChart = ({
   return (
     <Widget title={t('worst_lines_page_title')}>
       {lineDataLoading ? (
-        <Skeleton active />
+        <SkeletonLoader active />
       ) : (
         <LinesHbarChart
           lines={convertToWorstLineChartCompatibleStruct(groupByLineData, operatorId)}

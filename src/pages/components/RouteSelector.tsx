@@ -41,6 +41,7 @@ const RouteSelector = ({ routes, routeKey, disabled, setRouteKey }: RouteSelecto
     <Autocomplete
       disablePortal
       disabled={disabled}
+      fullWidth
       value={value}
       onChange={(e, value) => setRouteKey(value?.key)}
       id="route-select"

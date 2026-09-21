@@ -1,24 +1,26 @@
-import { Today } from '@mui/icons-material'
+import { TodayTwoTone } from '@mui/icons-material'
 import { Box, Button, ButtonGroup } from '@mui/material'
-import dayjs from 'src/dayjs'
+import { useTranslation } from 'react-i18next'
+import { addDays, type CivilDate, todayCivilDate } from 'src/model/time/civilDate'
 import './DateNavigator.scss'
 
 interface DateNavigatorProps {
-  currentTime: dayjs.Dayjs
-  onChange: (time: dayjs.Dayjs) => void
+  currentDate: CivilDate
+  onChange: (date: CivilDate) => void
 }
 
-export const DateNavigator = ({ currentTime, onChange }: DateNavigatorProps) => {
-  const handleChange = (amount: number, unit: 'day' | 'week') => {
-    const newTime =
-      amount > 0 ? currentTime.add(amount, unit) : currentTime.subtract(Math.abs(amount), unit)
-    onChange(newTime)
-  }
+export const DateNavigator = ({ currentDate, onChange }: DateNavigatorProps) => {
+  const { t } = useTranslation()
 
-  const handleToday = () => onChange(dayjs())
+  const handleChange = (days: number) => onChange(addDays(currentDate, days))
+
+  const handleToday = () => onChange(todayCivilDate())
+
+  const unit = (count: number) =>
+    count === 1 ? t('date_navigator_unit_day') : t('date_navigator_unit_days')
 
   return (
-    <Box sx={{ width: { xs: '100%', sm: '100%' }, my: 1 }}>
+    <Box sx={{ width: '100%', my: 1 }}>
       <ButtonGroup
         variant="outlined"
         fullWidth
@@ -27,23 +29,53 @@ export const DateNavigator = ({ currentTime, onChange }: DateNavigatorProps) => 
           boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
           borderRadius: 2,
         }}>
-        <Button onClick={() => handleChange(-1, 'week')} className="nav-btn">
-          שבוע קודם
-        </Button>
-        <Button onClick={() => handleChange(-1, 'day')} className="nav-btn">
-          יום קודם
+        <Button
+          className="nav-btn"
+          onClick={() => handleChange(-7)}
+          title={t('date_navigator_prev_week')}
+          aria-label={t('date_navigator_prev_week')}>
+          <span className="nav-btn-num" dir="ltr">
+            -7
+          </span>
+          <span className="nav-btn-unit">{unit(7)}</span>
         </Button>
         <Button
-          onClick={handleToday}
+          className="nav-btn"
+          onClick={() => handleChange(-1)}
+          title={t('date_navigator_prev_day')}
+          aria-label={t('date_navigator_prev_day')}>
+          <span className="nav-btn-num" dir="ltr">
+            -1
+          </span>
+          <span className="nav-btn-unit">{unit(1)}</span>
+        </Button>
+        <Button
           className="nav-btn today"
-          startIcon={<Today fontSize="small" />}>
-          היום
+          onClick={handleToday}
+          title={t('date_navigator_today')}
+          aria-label={t('date_navigator_today')}>
+          <TodayTwoTone className="nav-btn-icon" />
+          <span className="nav-btn-unit">{t('date_navigator_today')}</span>
         </Button>
-        <Button onClick={() => handleChange(1, 'day')} className="nav-btn">
-          יום הבא
+        <Button
+          className="nav-btn"
+          onClick={() => handleChange(1)}
+          title={t('date_navigator_next_day')}
+          aria-label={t('date_navigator_next_day')}>
+          <span className="nav-btn-num" dir="ltr">
+            +1
+          </span>
+          <span className="nav-btn-unit">{unit(1)}</span>
         </Button>
-        <Button onClick={() => handleChange(1, 'week')} className="nav-btn">
-          שבוע הבא
+        <Button
+          className="nav-btn"
+          onClick={() => handleChange(7)}
+          title={t('date_navigator_next_week')}
+          aria-label={t('date_navigator_next_week')}>
+          <span className="nav-btn-num" dir="ltr">
+            +7
+          </span>
+          <span className="nav-btn-unit">{unit(7)}</span>
         </Button>
       </ButtonGroup>
     </Box>

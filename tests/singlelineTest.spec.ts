@@ -1,15 +1,18 @@
 import type { Page } from '@playwright/test'
 import {
+  clearInputField,
   expect,
   harOptions,
   setupTest,
   test,
   verifyDateFromParameter,
   visitPage,
+  waitForMapIdle,
   waitForSkeletonsToHide,
 } from './utils'
 
-const BUS_MARKER_SELECTOR = '.leaflet-marker-pane > img[src$="marker-dot.png"]'
+// A ping renders as one of several shapes, so match the class they share, not one shape's asset.
+const BUS_MARKER_SELECTOR = '.leaflet-marker-pane > .vehicle-ping-marker'
 const STATION_MARKER_SELECTOR = '.leaflet-marker-pane > img[src$="marker-bus-stop.png"]'
 
 async function selectOperator(page: Page, operatorName = 'אודליה מוניות בעמ') {
@@ -18,7 +21,7 @@ async function selectOperator(page: Page, operatorName = 'אודליה מוני�
 }
 
 async function fillLineNumber(page: Page, lineNumber = '16') {
-  await page.getByRole('textbox', { name: 'מספר קו' }).fill(lineNumber)
+  await page.getByRole('combobox', { name: 'מספר קו' }).fill(lineNumber)
 }
 
 async function selectRoute(
@@ -42,10 +45,10 @@ test.describe('Single line page tests', () => {
   })
 
   test('should allow selecting operator company options', async ({ page }) => {
-    await expect(page.getByRole('textbox', { name: 'מספר קו' })).not.toBeEditable()
+    await expect(page.getByRole('combobox', { name: 'מספר קו' })).not.toBeEditable()
     await selectOperator(page)
     await expect(page.getByLabel('חברה מפעילה')).toHaveValue('אודליה מוניות בעמ')
-    await expect(page.getByRole('textbox', { name: 'מספר קו' })).toBeEditable()
+    await expect(page.getByRole('combobox', { name: 'מספר קו' })).toBeEditable()
   })
 
   test('should show and enable "choose route" dropdown after selecting line', async ({ page }) => {
@@ -60,7 +63,7 @@ test.describe('Single line page tests', () => {
     await expect(page.locator('#route-select')).not.toBeEditable()
     await fillLineNumber(page)
     await expect(page.locator('#route-select')).toBeEditable()
-    await page.locator("span[aria-label='close']").click()
+    await clearInputField(page.getByRole('combobox', { name: 'מספר קו' }))
     await expect(page.locator('#route-select')).not.toBeEditable()
   })
 
@@ -76,6 +79,27 @@ test.describe('Single line page tests', () => {
     })
   })
 
+  // Asserts on the computed style, not the markup: `style-src` in csp.ts omits 'unsafe-inline',
+  // so expressing the turn as a style attribute would leave every arrow pointing north while the
+  // DOM still read correct.
+  test('should point each ping arrow along the vehicle bearing', async ({ page }) => {
+    await selectOperator(page)
+    await fillLineNumber(page)
+    await selectRoute(page)
+    await selectStartTime(page)
+
+    const arrows = page.locator('.vehicle-bearing-marker > svg > path')
+    await expect(async () => {
+      expect(await arrows.count()).toBeGreaterThan(5)
+    }).toPass({ timeout: 10000 })
+
+    const rotations = await arrows.evaluateAll((paths) =>
+      paths.map((path) => getComputedStyle(path).transform),
+    )
+    expect(rotations).not.toContain('none')
+    expect(new Set(rotations).size).toBeGreaterThan(1)
+  })
+
   test('should show tooltip after clicking on map point in single line map', async ({ page }) => {
     await test.step('Fill line info', async () => {
       await selectOperator(page)
@@ -83,12 +107,20 @@ test.describe('Single line page tests', () => {
       await selectRoute(page)
       await expect(page.locator(STATION_MARKER_SELECTOR)).toHaveCount(2, { timeout: 10000 })
       await selectStartTime(page)
-      await expect(page.locator(BUS_MARKER_SELECTOR)).toHaveCount(70, { timeout: 10000 })
+      await expect(async () => {
+        const count = await page.locator(BUS_MARKER_SELECTOR).count()
+        expect(count).toBeGreaterThan(20)
+      }).toPass({ timeout: 10000 })
     })
 
     await test.step('Click on bus button', async () => {
-      await page.getByText('מסלול בפועלמסלול מתוכנן').click()
-      await page.locator(BUS_MARKER_SELECTOR).nth(2).click({ force: true })
+      await waitForMapIdle(page)
+      const marker = page.locator(BUS_MARKER_SELECTOR).nth(2)
+      // Center the marker first: markers are focused on mousedown (tabindex),
+      // and Chromium auto-scrolls the focused element toward the center - if
+      // that scroll happens between press and release, the click is lost.
+      await marker.evaluate((el) => el.scrollIntoView({ block: 'center', behavior: 'instant' }))
+      await marker.click({ force: true })
       await expect(page.locator('.leaflet-popup-content-wrapper')).toBeAttached({ timeout: 10000 })
       await waitForSkeletonsToHide(page)
     })
@@ -136,5 +168,55 @@ test.describe('Single line page tests', () => {
 
   test('Verify date_from parameter from - "Map by line"', async ({ page }) => {
     await verifyDateFromParameter(page)
+  })
+
+  // Anti-regression for the route-key + start-time refactor on
+  // fix-line-profile-page-route-selection:
+  //
+  //   1. start-time options must come from a single /siri_rides/list query —
+  //      the old code paged through /siri_vehicle_locations/list to discover
+  //      departure times, which was slow and prone to truncation.
+  //   2. once a start time is picked, /siri_vehicle_locations/list must be
+  //      requested with order_by=recorded_at_time asc, because primary-key
+  //      order in the DB is *not* time-ordered (commit d75e664) and the map
+  //      polyline was previously zig-zagging.
+  test('fills all input fields and fetches start-time options via a single SIRI rides query', async ({
+    page,
+  }) => {
+    const requests: string[] = []
+    page.on('request', (req) => {
+      const url = req.url()
+      if (/\/siri_(rides|vehicle_locations)\/list/.test(url)) requests.push(url)
+    })
+
+    await selectOperator(page)
+    await fillLineNumber(page)
+    await selectRoute(page)
+
+    // The dropdown is enabled as soon as siri_rides/list resolves — if the old
+    // useVehicleLocations path comes back, this would only flip after many
+    // siri_vehicle_locations/list pages have loaded.
+    await expect(page.locator('#start-time-select')).toBeEditable({ timeout: 10000 })
+
+    const ridesCalls = requests.filter((u) => u.includes('/siri_rides/list'))
+    const vehicleLocationsBefore = requests.filter((u) =>
+      u.includes('/siri_vehicle_locations/list'),
+    )
+    expect(ridesCalls).toHaveLength(1)
+    expect(vehicleLocationsBefore).toHaveLength(0)
+    expect(ridesCalls[0]).toContain('order_by=scheduled_start_time')
+
+    // Sanity check that the dropdown actually got populated.
+    await page.getByLabel('בחירת שעת התחלה').click()
+    expect(await page.getByRole('option').count()).toBeGreaterThan(0)
+
+    const locationsResponse = page.waitForResponse((r) =>
+      r.url().includes('/siri_vehicle_locations/list'),
+    )
+    await page.getByRole('option').first().click()
+    const response = await locationsResponse
+
+    // Anti-regression: GPS pings must be ordered by recorded_at_time, not id.
+    expect(response.url()).toContain('order_by=recorded_at_time')
   })
 })

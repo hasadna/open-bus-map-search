@@ -10,13 +10,17 @@ test.describe('Version info tests', () => {
 
   test('should see loading state', async ({ page }) => {
     await page.route(VERSION_URL, () => void 0)
-    await expect(page.getByRole('heading', { name: 'גרסה' })).toBeVisible()
-    await expect(page.getByText('טוען...')).toBeVisible()
+    // scoped to the widget: the contributors list on the same page shows the very same
+    // `loading` string while its own request is in flight
+    const versionHeading = page.getByRole('heading', { name: 'גרסה' })
+    await expect(versionHeading).toBeVisible()
+    await expect(versionHeading.locator('..').getByText('טוען...')).toBeVisible()
     await page.getByLabel('החלף שפה').first().click()
     await page.getByText('English').click()
     await page.waitForTimeout(500)
-    await expect(page.getByRole('heading', { name: 'Current version identifier' })).toBeVisible()
-    await expect(page.getByText('loading...')).toBeVisible()
+    const versionHeadingEn = page.getByRole('heading', { name: 'Current version identifier' })
+    await expect(versionHeadingEn).toBeVisible()
+    await expect(versionHeadingEn.locator('..').getByText('loading...')).toBeVisible()
   })
 
   test('should see version', async ({ page }) => {

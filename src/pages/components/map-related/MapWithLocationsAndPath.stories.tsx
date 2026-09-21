@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { filteredPositions, plannedRouteStops } from './mapStorybookData'
+import { plannedRouteStops, positionGroups } from './mapStorybookData'
 import { MapWithLocationsAndPath } from './MapWithLocationsAndPath'
 
 const meta = {
@@ -12,14 +12,14 @@ const meta = {
   },
   args: {
     plannedRouteStops: [],
-    positions: [],
+    positionGroups: [],
     showNavigationButtons: true,
   },
   argTypes: {
-    positions: {
+    positionGroups: {
       control: false,
       table: {
-        type: { summary: 'Point[]' },
+        type: { summary: 'PositionGroup[]' },
       },
     },
     plannedRouteStops: {
@@ -43,6 +43,6 @@ export const Default: Story = {}
 export const WhitData: Story = {
   args: {
     plannedRouteStops: plannedRouteStops,
-    positions: filteredPositions,
+    positionGroups: positionGroups,
   },
 }

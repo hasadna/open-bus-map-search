@@ -1,4 +1,4 @@
-import { ChevronRight, ExpandMore } from '@mui/icons-material'
+import { ChevronRightTwoTone, ExpandMoreTwoTone } from '@mui/icons-material'
 import { SimpleTreeView, TreeItem } from '@mui/x-tree-view'
 
 interface BaseTreeNode {
@@ -77,8 +77,8 @@ const CustomTreeView = <T,>({ data, name, id }: CustomTreeViewProps<T>) => {
   return (
     <SimpleTreeView
       slots={{
-        collapseIcon: ExpandMore,
-        expandIcon: ChevronRight,
+        collapseIcon: ExpandMoreTwoTone,
+        expandIcon: ChevronRightTwoTone,
         endIcon: () => <div style={{ width: 24 }} />,
       }}>
       {renderTree(dataAsTreeNode)}

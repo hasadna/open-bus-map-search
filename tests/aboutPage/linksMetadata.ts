@@ -1,63 +1,73 @@
-export default [
+type LinkTest = {
+  name: string
+  linkName: string
+  expectedHref?: string
+  expectedURL?: string | RegExp
+  expectedHeading?: string
+}
+
+const linkTests: LinkTest[] = [
   {
     name: 'donations link leads to sadna site',
     linkName: 'תרומות קטנות נוספות',
-    expectedHeading: 'הסדנא לידע ציבורי פותחת ומנגישה מידע',
+    expectedHref: 'https://www.jgive.com/new/he/ils/donation-targets/3268#donation-modal',
   },
   {
     name: 'Google Analytics link',
     linkName: 'Google Analytics',
-    expectedURL: 'https://marketingplatform.google.com/about/analytics/',
+    expectedHref: 'https://marketingplatform.google.com/about/analytics/',
   },
   {
     name: 'privacy read more link',
     linkName: 'קראו כאן',
-    expectedURL: /support\.google\.com\/analytics\/answer\/6004245\?hl=iw/,
+    expectedHref: 'https://support.google.com/analytics/answer/6004245?hl=iw',
   },
   {
     name: 'CC BY-SA license link',
     linkName: 'רישיון CC BY-SA',
-    expectedURL: 'https://creativecommons.org/licenses/by-sa/4.0/',
+    expectedHref: 'https://creativecommons.org/licenses/by-sa/4.0/',
   },
   {
     name: 'Creative Commons link',
     linkName: 'Creative Commons',
-    expectedURL: 'https://creativecommons.org/',
+    expectedHref: 'https://creativecommons.org/',
   },
   {
     name: 'contact link',
     linkName: 'צרו איתנו קשר',
-    expectedURL: 'https://www.hasadna.org.il/צור-קשר/',
+    expectedHref: 'https://www.hasadna.org.il/%D7%A6%D7%95%D7%A8-%D7%A7%D7%A9%D7%A8/',
   },
   {
     name: 'Slack link',
     linkName: 'דברו איתנו על זה בסלאק',
-    expectedURL:
+    expectedHref:
       'https://hasadna.slack.com/join/shared_invite/zt-167h764cg-J18ZcY1odoitq978IyMMig#/shared-invite/email',
   },
   {
     name: 'servers donation link',
     linkName: 'שרתים עולים כסף - עזרו לנו להמשיך לתחזק ולפתח את הפרויקט!',
-    expectedURL: 'https://www.jgive.com/new/he/ils/donation-targets/3268#donation-modal',
+    expectedHref: 'https://www.jgive.com/new/he/ils/donation-targets/3268#donation-modal',
   },
   {
     name: 'Open API link',
     linkName: 'Open API',
-    expectedHeading: 'Open Bus Stride API',
+    expectedHref: 'https://open-bus-stride-api.hasadna.org.il/docs',
   },
   {
     name: 'funding donations link',
     linkName: 'ותרומות קטנות נוספות של ידידי ואוהדי הסדנא',
-    expectedURL: 'https://www.jgive.com/new/he/ils/donation-targets/3268#donation-modal',
+    expectedHref: 'https://www.jgive.com/new/he/ils/donation-targets/3268#donation-modal',
   },
   {
     name: 'Applitools link',
     linkName: 'Applitools',
-    expectedURL: 'https://applitools.com/',
+    expectedHref: 'https://applitools.com/',
   },
   {
     name: 'contributing link',
     linkName: 'קרא כאן',
-    expectedURL: 'https://github.com/hasadna/open-bus-map-search/blob/main/CONTRIBUTING.md',
+    expectedHref: 'https://github.com/hasadna/open-bus-map-search/blob/main/CONTRIBUTING.md',
   },
 ]
+
+export default linkTests

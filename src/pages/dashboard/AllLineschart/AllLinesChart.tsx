@@ -1,12 +1,12 @@
-import { InfoCircleOutlined } from '@ant-design/icons'
+import { HelpTwoTone } from '@mui/icons-material'
 import { Tooltip } from '@mui/material'
-import { Skeleton } from 'antd'
 import { FC, Fragment, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useWarningContext } from '../context/WarningContextProvider'
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
-import { Dayjs } from 'src/dayjs'
+import { type CivilDate } from 'src/model/time/civilDate'
+import SkeletonLoader from 'src/shared/SkeletonLoader'
 import Widget from 'src/shared/Widget'
+import { useWarningContext } from '../context/WarningContextProvider'
 import OperatorHbarChart from './OperatorHbarChart/OperatorHbarChart'
 
 const convertToChartCompatibleStruct = (arr: GroupByRes[]) => {
@@ -19,17 +19,17 @@ const convertToChartCompatibleStruct = (arr: GroupByRes[]) => {
 }
 
 interface AllChartComponentProps {
-  startDate: Dayjs
-  endDate: Dayjs
+  startDate: CivilDate
+  endDate: CivilDate
 }
 
-export const AllLinesChart: FC<AllChartComponentProps> = ({ startDate: startDateValue, endDate: endDateValue }) => {
+export const AllLinesChart: FC<AllChartComponentProps> = ({ startDate, endDate }) => {
   const [groupByOperatorData, groupByOperatorLoading] = useGroupBy({
-    dateFrom: startDateValue.valueOf(),
-    dateTo: endDateValue.valueOf(),
+    dateFrom: startDate,
+    dateTo: endDate,
     groupBy: 'operator_ref',
   })
-  const { t: translate } = useTranslation()
+  const { t } = useTranslation()
 
   const { setValue: setWarningFlag } = useWarningContext()
 
@@ -47,17 +47,17 @@ export const AllLinesChart: FC<AllChartComponentProps> = ({ startDate: startDate
     <Widget
       title={
         <>
-          {translate('dashboard_page_title')}
+          {t('dashboard_page_title')}
           <Tooltip
-            title={convertLineFeedToHtmlTags(translate('dashboard_tooltip_content'))}
+            title={convertLineFeedToHtmlTags(t('dashboard_tooltip_content'))}
             placement="left"
             arrow>
-            <InfoCircleOutlined style={{ marginRight: '12px' }} />
+            <HelpTwoTone fontSize="inherit" style={{ marginRight: '12px' }} />
           </Tooltip>
         </>
       }>
       {groupByOperatorLoading ? (
-        <Skeleton active />
+        <SkeletonLoader active />
       ) : (
         <OperatorHbarChart operators={convertToChartCompatibleStruct(groupByOperatorData)} />
       )}

@@ -3,6 +3,7 @@ import i18next from 'i18next'
 import { operatorList } from 'src/pages/operator/data'
 import {
   expect,
+  fillDateField,
   harOptions,
   setupTest,
   test,
@@ -27,9 +28,7 @@ test.describe('Operator Page Tests', () => {
     await expect(page.locator('h4')).toHaveText(i18next.t('operator_title'))
     await page.getByRole('button', { name: 'פתח' }).click()
     await page.getByRole('option', { name: 'אגד', exact: true }).click()
-    await page.getByRole('textbox', { name: 'תאריך' }).click()
-    await page.getByRole('textbox', { name: 'תאריך' }).fill('06/05/2024')
-    await page.getByRole('textbox', { name: 'תאריך' }).press('Enter')
+    await fillDateField(page, 'תאריך', '06/05/2024')
     await page.getByRole('button', { name: 'יומית' }).click()
     await page.getByRole('button', { name: 'שבועית' }).click()
     await page.getByRole('button', { name: 'חודשית' }).click()
@@ -37,13 +36,16 @@ test.describe('Operator Page Tests', () => {
     const h2Tags = await page.evaluate(() => {
       return Array.from(document.querySelectorAll('h2')).map((tag) => tag.textContent)
     })
-    expect(h2Tags).toEqual(['אגד', 'סטטיסטיקה חודשית', 'הקווים הגרועים ביותר', 'כל המסלולים'])
+    expect(h2Tags).toHaveLength(4)
+    expect(h2Tags.slice(0, 3)).toEqual(['אגד', 'סטטיסטיקה חודשית', 'הקווים הגרועים ביותר'])
+    // the routes widget title may carry a "(x routes in y lines)" suffix once loaded
+    expect(h2Tags[3]).toContain(i18next.t('operator.all_lines_on_date'))
   })
 
   test('Test operator inputs', async ({ page }) => {
     await test.step('Validate inputs are disabled when no operator is selected', async () => {
       await expect(page.getByRole('combobox', { name: i18next.t('choose_operator') })).toBeEmpty()
-      await expect(page.getByRole('textbox', { name: i18next.t('choose_date') })).toBeDisabled()
+      await expect(page.locator('input.MuiPickersInputBase-input')).toBeDisabled()
       await expect(
         page.getByRole('button', { name: i18next.t('operator.time_range.day') }),
       ).toBeDisabled()
@@ -61,7 +63,7 @@ test.describe('Operator Page Tests', () => {
     })
 
     await test.step('Validate inputs are enabled after selecting an operator', async () => {
-      await expect(page.getByRole('textbox', { name: i18next.t('choose_date') })).toBeEnabled()
+      await expect(page.locator('input.MuiPickersInputBase-input')).toBeEnabled()
       await expect(
         page.getByRole('button', { name: i18next.t('operator.time_range.day') }),
       ).toBeEnabled()
@@ -137,16 +139,56 @@ test.describe('Operator Page Tests', () => {
 
     await test.step('Validate operator routes', async () => {
       await waitForSkeletonsToHide(page)
-      const table = page.locator('table').nth(2)
-      const rows = table.locator('tbody tr')
-      const totalText = await page.getByText(i18next.t('operator.total')).textContent()
-      const total = Number(totalText?.split(' ')[i18next.language === 'en' ? 2 : 3] || 0)
-      if (total !== 0) {
-        const rowsCount = await rows.count()
-        expect(rowsCount).toEqual(total)
-      } else {
+      // routes are grouped into one collapsible accordion per line
+      const groupCount = await page.locator('.MuiAccordionSummary-root').count()
+      if (groupCount === 0) {
         throw new Error('Operator routes not loaded')
       }
+      // the widget title reads "<title> (<routes> routes in <lines> lines)" — the
+      // lines number must match the number of rendered group headers
+      const titleText = await page
+        .getByRole('heading', { name: i18next.t('operator.all_lines_on_date') })
+        .textContent()
+      const numbers = titleText?.match(/\d+/g)?.map(Number) ?? []
+      expect(numbers[1]).toEqual(groupCount)
+    })
+  })
+
+  test('Test operator routes search box', async ({ page }) => {
+    // line labels rendered in the (collapsed) accordion headers
+    const groupLabels = page.locator('.MuiAccordionSummary-content strong')
+    const search = page.getByPlaceholder(i18next.t('operator.search_placeholder'))
+
+    await test.step('Select operator and wait for routes', async () => {
+      await page.getByRole('combobox', { name: i18next.t('choose_operator') }).click()
+      await page.getByRole('option', { name: 'אגד', exact: true }).click()
+      await waitForSkeletonsToHide(page)
+      // the full אגד list groups into 354 lines (HAR fixture)
+      await expect(groupLabels).toHaveCount(354)
+    })
+
+    await test.step('Search by line-number substring matches all lines containing it', async () => {
+      // "33" must surface 33, 33א, 133, 433 — and only those
+      await search.fill('33')
+      await expect(groupLabels).toHaveText(['33', '33א', '133', '433'])
+    })
+
+    await test.step('Clear button restores the full list', async () => {
+      await page.getByRole('button', { name: i18next.t('operator.clear') }).click()
+      await expect(search).toHaveValue('')
+      await expect(groupLabels).toHaveCount(354)
+    })
+
+    await test.step('Search by city name filters to the lines serving it', async () => {
+      await search.fill('קרית שמונה')
+      // a distinctive city narrows the list to a small subset of lines
+      await expect(groupLabels).toHaveCount(12)
+    })
+
+    await test.step('Non-matching query shows the empty-results message', async () => {
+      await search.fill('זזחחקק')
+      await expect(page.getByText(i18next.t('operator.no_results'))).toBeVisible()
+      await expect(groupLabels).toHaveCount(0)
     })
   })
 
