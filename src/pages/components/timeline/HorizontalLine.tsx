@@ -1,4 +1,4 @@
-import styled from 'styled-components'
+import { styled } from '@mui/material/styles'
 import { NEUTRAL_COLOR } from 'src/pages/components/timeline/TimelinePoint'
 
 type HorizontalLineProps = {
@@ -8,17 +8,19 @@ type HorizontalLineProps = {
   color?: string
 }
 
-const StyledLine = styled.div<{ $top: number; $dashed?: boolean; $color: string }>`
-  position: absolute;
-  left: 0;
-  width: 100%;
-  top: ${({ $top }) => $top}px;
-  height: 0;
-  border-top: 1px ${({ $dashed }) => ($dashed ? 'dashed' : 'solid')} ${({ $color }) => $color};
-  opacity: ${({ $dashed }) => ($dashed ? 0.55 : 0.75)};
-  user-select: none;
-  pointer-events: none;
-`
+const StyledLine = styled('div')<{ $top: number; $dashed?: boolean; $color: string }>(
+  ({ $top, $dashed, $color }) => ({
+    position: 'absolute',
+    left: 0,
+    width: '100%',
+    top: `${$top}px`,
+    height: 0,
+    borderTop: `1px ${$dashed ? 'dashed' : 'solid'} ${$color}`,
+    opacity: $dashed ? 0.55 : 0.75,
+    userSelect: 'none',
+    pointerEvents: 'none',
+  }),
+)
 
 export const HorizontalLine = ({ top, isTarget, color }: HorizontalLineProps) => (
   <StyledLine $top={top} $dashed={isTarget} $color={color ?? NEUTRAL_COLOR} />
