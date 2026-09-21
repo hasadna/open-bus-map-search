@@ -2,7 +2,7 @@ import { expect, setupTest, test } from './utils'
 
 const MENU_ITEMS = [
   'ראשי',
-  'קיום נסיעות',
+  'סיכום ביצועי נסיעות',
   'מסלול נסיעה',
   'עצירות בתחנה',
   'נסיעות שלא בוצעו',

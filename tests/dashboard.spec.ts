@@ -33,7 +33,7 @@ test.describe('dashboard tests', () => {
     await expect(page.locator('h2')).toContainText(TRIP_EXISTENCE_ITEMS)
   })
 
-  test('choosing params in "קיום נסיעות" and organize by date/hour ', async ({ page }) => {
+  test('choosing params in "סיכום ביצועי נסיעות" and organize by date/hour ', async ({ page }) => {
     await fillDateField(page, 'התחלה', '02/6/2024')
     await fillDateField(page, 'סיום', '02/6/2024')
     await page.getByLabel('חברה מפעילה').click()

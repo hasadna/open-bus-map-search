@@ -1,5 +1,6 @@
 import {
   BiotechTwoTone,
+  DashboardTwoTone,
   DirectionsBusTwoTone,
   EmojiTransportationTwoTone,
   GitHub,
@@ -7,7 +8,6 @@ import {
   HomeTwoTone,
   InfoTwoTone,
   MapTwoTone,
-  MonitorTwoTone,
   NoTransferTwoTone,
   PaidTwoTone,
   PestControlTwoTone,
@@ -52,7 +52,7 @@ export const PAGES = [
   {
     label: 'dashboard_page_title',
     path: '/dashboard',
-    icon: <MonitorTwoTone />,
+    icon: <DashboardTwoTone />,
     element: <DashboardPage />,
   },
   {
