@@ -50,6 +50,12 @@ export const PAGES = [
     element: <HomePage />,
   },
   {
+    label: 'dashboard_page_title',
+    path: '/dashboard',
+    icon: <MonitorTwoTone />,
+    element: <DashboardPage />,
+  },
+  {
     label: 'station_stops_page_title',
     path: '/station-stops',
     searchParamsRequired: true,
@@ -145,12 +151,6 @@ export const HEADER_LINKS = [
 ] as const
 
 const HIDDEN_PAGES = [
-  {
-    label: 'dashboard_page_title',
-    path: '/dashboard',
-    icon: <MonitorTwoTone />,
-    element: <DashboardPage />,
-  },
   {
     label: 'data-research',
     path: '/data-research',

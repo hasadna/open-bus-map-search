@@ -28,6 +28,7 @@ const MENU_GROUPS = [
   {
     key: 'menu_group_analysis',
     paths: [
+      '/dashboard',
       '/single-line-map',
       '/station-stops',
       '/gaps',
