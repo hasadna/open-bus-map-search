@@ -1,5 +1,6 @@
 import {
   BiotechTwoTone,
+  DashboardTwoTone,
   DirectionsBusTwoTone,
   EmojiTransportationTwoTone,
   GitHub,
@@ -7,7 +8,6 @@ import {
   HomeTwoTone,
   InfoTwoTone,
   MapTwoTone,
-  MonitorTwoTone,
   NoTransferTwoTone,
   PaidTwoTone,
   PestControlTwoTone,
@@ -48,6 +48,12 @@ export const PAGES = [
     path: '/',
     icon: <HomeTwoTone />,
     element: <HomePage />,
+  },
+  {
+    label: 'dashboard_page_title',
+    path: '/dashboard',
+    icon: <DashboardTwoTone />,
+    element: <DashboardPage />,
   },
   {
     label: 'station_stops_page_title',
@@ -145,12 +151,6 @@ export const HEADER_LINKS = [
 ] as const
 
 const HIDDEN_PAGES = [
-  {
-    label: 'dashboard_page_title',
-    path: '/dashboard',
-    icon: <MonitorTwoTone />,
-    element: <DashboardPage />,
-  },
   {
     label: 'data-research',
     path: '/data-research',

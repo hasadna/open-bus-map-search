@@ -125,7 +125,7 @@ const StationStopsPage = () => {
         hitsQuery.data.gtfsTime.length > 0 &&
         hitsQuery.data.siriTime.length === 0 && (
           <Alert severity="warning" variant="outlined">
-            {t('no_data_from_ETL')}
+            {t('rides_data_none_executed')}
           </Alert>
         )}
       <Grid container spacing={2}>

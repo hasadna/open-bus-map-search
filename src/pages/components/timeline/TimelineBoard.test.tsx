@@ -589,7 +589,8 @@ describe('TimelineBoard card stacking', () => {
   /** The ticks capping the two axes, offset by 1 because each is a 2px bar straddling the
    *  end of its axis rather than sitting on it. */
   const axisBounds = () => {
-    const ticks = Array.from(document.querySelectorAll('.sc-boundary-tick'))
+    const ticks = screen
+      .getAllByTestId('timeline-boundary-tick')
       .map((tick) => parseFloat(getComputedStyle(tick).top) + 1)
       .sort((a, b) => a - b)
     return { start: ticks[0], end: ticks.at(-1)! }
