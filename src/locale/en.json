@@ -9,7 +9,8 @@
     "bus_illustration_alt": "Public transportation bus illustration"
   },
   "homepage_title": "Home",
-  "dashboard_page_title": "Public transport operators according to planned trips",
+  "dashboard_page_title": "Trip performance summary",
+  "all_lines_chart_title": "Public transport operators according to planned trips",
   "dashboard_page_description": "A graphic display of public transportation rides - ratio of successful actual rides / total rides scheduled. Grouped by bus operators (Egged, Dan, Metropolin etc)",
   "dashboard_tooltip_content": "A GPS is attached to every line in Israel that reports the location of the bus every few moments.\nSo what is a missed trip? This is a trip that was planned, but was not reported to have taken place in the GPS data. You can see it in the app for example, but when you wait at the station, it will never arrive",
   "dashboard_page_graph_title": "Exit percentages of total trips by time",
