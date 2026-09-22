@@ -49,7 +49,7 @@ export const AllLinesChart: FC<AllChartComponentProps> = ({
     <Widget
       title={
         <>
-          {t('dashboard_page_title')}
+          {t('all_lines_chart_title')}
           <Tooltip
             title={convertLineFeedToHtmlTags(t('dashboard_tooltip_content'))}
             placement="left"
