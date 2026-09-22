@@ -1,5 +1,5 @@
 import { Radio, RadioChangeEvent } from 'antd'
-import { FC, useEffect, useMemo, useState } from 'react'
+import { FC, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
 import { type CivilDate } from 'src/model/time/civilDate'
@@ -25,15 +25,9 @@ interface DayTimeChartProps {
   startDate: CivilDate
   endDate: CivilDate
   operatorId: string
-  alertAllDayTimeChartHandling: (arg: boolean) => void
 }
 
-const DayTimeChart: FC<DayTimeChartProps> = ({
-  startDate,
-  endDate,
-  operatorId,
-  alertAllDayTimeChartHandling,
-}) => {
+const DayTimeChart: FC<DayTimeChartProps> = ({ startDate, endDate, operatorId }) => {
   const { t } = useTranslation()
   const [groupByHour, setGroupByHour] = useState<boolean>(false)
 
@@ -47,16 +41,6 @@ const DayTimeChart: FC<DayTimeChartProps> = ({
     () => convertToGraphCompatibleStruct(data),
     [endDate, groupByHour, startDate, data.length],
   )
-
-  useEffect(() => {
-    const totalElements = data.length
-    const totalZeroElements = data.filter((el) => el.totalActualRides === 0).length
-    if (totalElements === 0 || totalZeroElements === totalElements) {
-      alertAllDayTimeChartHandling(true)
-    } else {
-      alertAllDayTimeChartHandling(false)
-    }
-  }, [data])
 
   return (
     <Widget title={t(`dashboard_page_graph_title_${groupByHour ? 'hour' : 'day'}`)} marginBottom>

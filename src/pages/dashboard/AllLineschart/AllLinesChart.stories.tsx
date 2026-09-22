@@ -25,13 +25,7 @@ const meta = {
     },
   },
   render: (args) => (
-    <AllLinesChart
-      startDate={toCivilDate(args.startDate)!}
-      endDate={toCivilDate(args.endDate)!}
-      alertAllChartsZeroLinesHandling={function (arg: boolean): void {
-        console.log('alertAllChartsZeroLinesHandling', arg)
-      }}
-    />
+    <AllLinesChart startDate={toCivilDate(args.startDate)!} endDate={toCivilDate(args.endDate)!} />
   ),
 } satisfies Meta<typeof AllLinesChart>
 
@@ -56,8 +50,5 @@ export const Default: Story = {
   args: {
     startDate: toCivilDate(dayjs(getPastDate()).subtract(7, 'day'))!,
     endDate: toCivilDate(dayjs(getPastDate()))!,
-    alertAllChartsZeroLinesHandling: (arg: boolean) => {
-      console.log('alertAllChartsZeroLinesHandling', arg)
-    },
   },
 }
