@@ -55,7 +55,7 @@ export default defineConfig(({ mode }) => {
         include: ['src/**/*.{js,jsx,ts,tsx}'],
         exclude: [
           'src/svgLoader.d.ts',
-          'src/{test_pages,complaint}/**',
+          'src/complaint/**',
           'src/pages/DataResearch/**',
           'src/pages/homepage/**',
           '**/*.{test,spec,config,stories}.*',

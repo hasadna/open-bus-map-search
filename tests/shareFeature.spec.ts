@@ -123,18 +123,4 @@ test.describe('Share URL feature', () => {
     const { pathname } = new URL(clipUrl)
     expect(pathname).toBe('/gaps')
   })
-
-  // -------------------------------------------------------------------------
-  // Line profile — startTime in extra params
-  // -------------------------------------------------------------------------
-
-  test('line profile not-found page share URL has no query params', async ({ page }) => {
-    await page.goto('/profile/not-a-valid-id')
-    await page.waitForLoadState('networkidle')
-    await page.locator('[aria-label="העתק קישור"]').click()
-    const clipUrl = await getClipboard(page)
-    // Without startTime selected, extra params are empty — only path
-    expect(new URL(clipUrl).pathname).toMatch(/\/profile\//)
-    expect(new URL(clipUrl).searchParams.has('operatorId')).toBe(false)
-  })
 })

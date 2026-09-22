@@ -9,6 +9,7 @@ on:
 permissions:
   contents: read
   statuses: write
+  packages: read # pull the prebuilt Playwright runner image; cd.yml holds the write side
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
@@ -17,6 +18,7 @@ concurrency:
 env:
   DOCKER_APP_IMAGE_NAME: 'ghcr.io/hasadna/open-bus-map-search/open-bus-map-search'
   DOCKER_APP_IMAGE_TAG: 'latest'
+  RUNNER_IMAGE_NAME: 'ghcr.io/hasadna/open-bus-map-search/offline-test-deps'
   APPLITOOLS_API_KEY: ${{ secrets.APPLITOOLS_API_KEY }}
   # see: https://applitools.com/docs/eyes/integrations/ci-cd/github-actions#configuring-the-applitools-cicd-integration
   APPLITOOLS_BATCH_ID: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -195,8 +197,24 @@ jobs:
         run: docker network create --internal isolated
       - name: Start application container (prod nginx image)
         run: docker run -d --name app --network isolated ${{ env.DOCKER_APP_IMAGE_NAME }}:${{ env.DOCKER_APP_IMAGE_TAG }}
+      - name: Resolve runner image ref
+        id: runner-image
+        run: echo "ref=$RUNNER_IMAGE_NAME:$(cat package-lock.json scripts/Dockerfile.offline-test | sha256sum | cut -c1-16)" >> "$GITHUB_OUTPUT"
+      # Best-effort: an unreachable registry only costs the build below its cache hit.
+      - name: Log in to GHCR
+        continue-on-error: true
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
       - name: Build Playwright runner image
-        run: docker build -t open-bus-offline-test -f scripts/Dockerfile.offline-test .
+        env:
+          RUNNER_BASE_REF: ${{ steps.runner-image.outputs.ref }}
+        run: |
+          if docker pull -q "$RUNNER_BASE_REF"; then
+            base="$RUNNER_BASE_REF"
+          else
+            echo "no published image for this package-lock.json, building dependencies here"
+            base=deps
+          fi
+          docker build --build-arg RUNNER_BASE="$base" -t open-bus-offline-test -f scripts/Dockerfile.offline-test .
       - name: Wait for nginx and validate hash.txt (shared netns)
         run: |
           for i in $(seq 1 20); do
@@ -236,6 +254,10 @@ jobs:
     name: Storybook Visual Tests
     runs-on: ubuntu-22.04 # not working whit ubuntu 23+
     needs: [build, build-outside-docker]
+    # A fork PR gets no secrets, so the Applitools key is empty and the suite would
+    # self-skip yet still report success; skipping the job renders it as "Skipped" instead.
+    # `github.event.repository` is the BASE repo on a pull_request, so it is never the fork.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     steps:
       - uses: actions/checkout@v6
         with:
@@ -281,6 +303,7 @@ jobs:
     name: Playwright Visual Tests
     runs-on: ubuntu-latest
     needs: [build, build-outside-docker]
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     steps:
       - uses: actions/checkout@v6
         with:
@@ -341,8 +364,8 @@ jobs:
         if: always()
         run: |
           mkdir -p playwright-artifact
-          if [ -d test-results ]; then cp -r test-results/* playwright-artifact/; fi
-          if [ -d playwright-report ]; then cp -r playwright-report/* playwright-artifact/; fi
+          if [ -d test-results ]; then cp -r test-results/. playwright-artifact/; fi
+          if [ -d playwright-report ]; then cp -r playwright-report/. playwright-artifact/; fi
           touch playwright-artifact/.keep
       - name: Upload Playwright test artifact
         if: always()
@@ -362,7 +385,7 @@ jobs:
     name: Publish Test Results
     runs-on: ubuntu-latest
     needs: [test]
-    if: always() && github.event.repository.fork == false && github.actor != 'dependabot[bot]'
+    if: always() && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && github.actor != 'dependabot[bot]'
     env:
       AWS_KEY_ID: ${{ secrets.AWS_KEY_ID }}
     steps:
@@ -385,7 +408,7 @@ jobs:
         with:
           sha: ${{ github.event.pull_request.head.sha }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          description: 'Playwright html report with traces'
+          description: 'Playwright html report'
           status: ${{needs.test.result}}
           context: 'Test results (click to see!)'
           targetUrl: 'https://s3.amazonaws.com/noam-gaash.co.il/${{ github.run_id }}/open-bus/${{ github.event.pull_request.head.sha }}/test-results/index.html'
@@ -394,7 +417,7 @@ jobs:
     name: Close Applitools Visual Test Batches
     runs-on: ubuntu-latest
     needs: [visual-test, storybook-test]
-    if: always() && github.event.repository.fork == false && github.actor != 'dependabot[bot]'
+    if: always() && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && github.actor != 'dependabot[bot]'
     steps:
       - name: Close Applitools batches
         run: |
