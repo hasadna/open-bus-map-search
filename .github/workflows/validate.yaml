@@ -23,9 +23,8 @@ env:
   # deliberately public one with Applitools' `execute` permission only: it can run tests
   # and nothing else — it cannot read results, edit baselines or merge branches. That is
   # what lets untrusted PR code run the visual suite without exposing anything worth
-  # stealing. Revoke or re-mint it at Applitools > Admin > API Keys.
-  # TEST KEY — expires 2026-09-24; swap in a non-expiring one before this merges.
-  APPLITOOLS_API_KEY: ${{ secrets.APPLITOOLS_API_KEY || 'TT3jl8FLvyvOewWPK4fWOhRaGaVNJSdTIrgzQwbH6EE110' }}
+  # stealing.
+  APPLITOOLS_API_KEY: ${{ secrets.APPLITOOLS_API_KEY || 'MPhgRUR95mIYFZ2KkZ100quyuSY36bjiZH6WLCqoX6HRI110' }}
   # see: https://applitools.com/docs/eyes/integrations/ci-cd/github-actions#configuring-the-applitools-cicd-integration
   APPLITOOLS_BATCH_ID: ${{ github.event.pull_request.head.sha || github.sha }}
   APPLITOOLS_BRANCH: ${{ github.repository }}/${{ github.head_ref || github.ref_name }}
