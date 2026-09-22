@@ -48,10 +48,7 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
       eyes,
     }) => {
       await advancedRouteFromHAR('tests/HAR/dashboard.har', harOptions)
-      await page.goto('/dashboard')
-      await page.locator('.preloader').waitFor({ state: 'hidden' })
-      await page.waitForLoadState('networkidle')
-      await waitForSkeletonsToHide(page)
+      await visitPage(page, 'dashboard_page_title')
       await page.getByText('אגד').first().waitFor()
       await waitForSkeletonsToHide(page)
       await eyes.check('dashboard page', {
