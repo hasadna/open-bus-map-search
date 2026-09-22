@@ -19,7 +19,12 @@ env:
   DOCKER_APP_IMAGE_NAME: 'ghcr.io/hasadna/open-bus-map-search/open-bus-map-search'
   DOCKER_APP_IMAGE_TAG: 'latest'
   RUNNER_IMAGE_NAME: 'ghcr.io/hasadna/open-bus-map-search/offline-test-deps'
-  APPLITOOLS_API_KEY: ${{ secrets.APPLITOOLS_API_KEY }}
+  # Fork PRs and Dependabot runs receive no Actions secrets, so the key falls back to a
+  # deliberately public one with Applitools' `execute` permission only: it can run tests
+  # and nothing else — it cannot read results, edit baselines or merge branches. That is
+  # what lets untrusted PR code run the visual suite without exposing anything worth
+  # stealing.
+  APPLITOOLS_API_KEY: ${{ secrets.APPLITOOLS_API_KEY || 'MPhgRUR95mIYFZ2KkZ100quyuSY36bjiZH6WLCqoX6HRI110' }}
   # see: https://applitools.com/docs/eyes/integrations/ci-cd/github-actions#configuring-the-applitools-cicd-integration
   APPLITOOLS_BATCH_ID: ${{ github.event.pull_request.head.sha || github.sha }}
   APPLITOOLS_BRANCH: ${{ github.repository }}/${{ github.head_ref || github.ref_name }}
@@ -254,10 +259,6 @@ jobs:
     name: Storybook Visual Tests
     runs-on: ubuntu-22.04 # not working whit ubuntu 23+
     needs: [build, build-outside-docker]
-    # A fork PR gets no secrets, so the Applitools key is empty and the suite would
-    # self-skip yet still report success; skipping the job renders it as "Skipped" instead.
-    # `github.event.repository` is the BASE repo on a pull_request, so it is never the fork.
-    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     steps:
       - uses: actions/checkout@v6
         with:
@@ -303,7 +304,6 @@ jobs:
     name: Playwright Visual Tests
     runs-on: ubuntu-latest
     needs: [build, build-outside-docker]
-    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     steps:
       - uses: actions/checkout@v6
         with:
@@ -417,7 +417,9 @@ jobs:
     name: Close Applitools Visual Test Batches
     runs-on: ubuntu-latest
     needs: [visual-test, storybook-test]
-    if: always() && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && github.actor != 'dependabot[bot]'
+    # Nothing closes an Applitools batch on its own, and every run now opens one — a fork
+    # PR and a Dependabot run included, since both fall back to the public key above.
+    if: always()
     steps:
       - name: Close Applitools batches
         run: |
