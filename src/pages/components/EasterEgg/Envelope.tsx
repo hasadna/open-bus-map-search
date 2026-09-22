@@ -228,7 +228,7 @@ export const Envelope = () => {
             <div className="letter-title"></div>
             <div className="letter-context"></div>
             <div className="letter-favicon">
-              <img src="/favicon.ico" alt="busFavicon" />
+              <img src="/favicon.ico" alt="" />
             </div>
             <div className="letter-stamp">
               <div className="letter-stamp-inner"></div>

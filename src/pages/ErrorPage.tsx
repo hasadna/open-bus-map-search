@@ -1,9 +1,11 @@
+import { styled } from '@mui/material/styles'
 import { useTranslation } from 'react-i18next'
-import styled from 'styled-components'
 
-const Centered = styled.div`
-  text-align: center;
-`
+const Centered = styled('div')({
+  textAlign: 'center',
+})
+
+const newIssueUrl = 'https://github.com/hasadna/open-bus-map-search/issues/new'
 
 export const ErrorPage = () => {
   const { t } = useTranslation()
@@ -13,13 +15,11 @@ export const ErrorPage = () => {
       <section>
         <p>{t('errorPage.text')}</p>
         <br />
-        <img src="https://media0.giphy.com/media/YcLorQZbPI4Ks/giphy.gif" alt="error" />
+        <img src="https://media0.giphy.com/media/YcLorQZbPI4Ks/giphy.gif" alt="" />
         <br />
         <p>
           {t('errorPage.text2')} <br />
-          <a href="https://github.com/hasadna/open-bus-map-search/issues/new">
-            https://github.com/hasadna/open-bus-map-search/issues/new
-          </a>
+          <a href={newIssueUrl}>{newIssueUrl}</a>
         </p>
       </section>
     </Centered>

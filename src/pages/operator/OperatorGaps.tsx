@@ -1,26 +1,26 @@
 import { Stack } from '@mui/material'
-import { Skeleton } from 'antd'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Cell, Pie, PieChart } from 'recharts'
 import { useGroupBy } from 'src/api/groupByService'
-import dayjs from 'src/dayjs'
+import { type CivilDate, shiftCivilDate } from 'src/model/time/civilDate'
+import SkeletonLoader from 'src/shared/SkeletonLoader'
 import Widget from 'src/shared/Widget'
 import { InfoItem, InfoTable } from '../components/InfoTable'
 
 export const OperatorGaps = ({
   operatorId,
-  timestamp,
+  date,
   timeRange = 'day',
 }: {
   operatorId?: string
-  timestamp?: number
+  date: CivilDate
   timeRange?: 'day' | 'week' | 'month' | 'year'
 }) => {
   const { t, i18n } = useTranslation()
   const [groupByOperatorData, isLoading] = useGroupBy({
-    dateFrom: dayjs(timestamp).add(-1, timeRange).valueOf(),
-    dateTo: timestamp || dayjs().valueOf(),
+    dateFrom: shiftCivilDate(date, -1, timeRange),
+    dateTo: date,
     groupBy: 'operator_ref',
   })
 
@@ -37,7 +37,7 @@ export const OperatorGaps = ({
       { name: t('rides_missing'), value: missing, color: '#FF4040' },
       // { name: t('ride_extra'), value: 0, color: '#FFBB28' },
     ]
-  }, [operatorId, timestamp, groupByOperatorData, i18n.language])
+  }, [operatorId, date, groupByOperatorData, i18n.language])
 
   const prefersReducedMotion = useMemo(() => {
     return window?.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -46,9 +46,9 @@ export const OperatorGaps = ({
   return (
     <Widget title={`${t('operator.statistics')} ${t(`operator.time_range.${timeRange}`)}`}>
       {isLoading ? (
-        <Skeleton active paragraph={{ rows: 2 }} />
+        <SkeletonLoader active rows={2} />
       ) : (
-        <Stack flexDirection="row" justifyContent="space-between">
+        <Stack sx={{ flexDirection: 'row', justifyContent: 'space-between' }}>
           <div>
             <InfoTable>
               {data.map((d) => (

@@ -1,5 +1,8 @@
+import createCache from '@emotion/cache'
+import { CacheProvider } from '@emotion/react'
 import { createTheme, ThemeProvider as MuiThemeProvider, ScopedCssBaseline } from '@mui/material'
 import { arEG, enUS, heIL, ruRU } from '@mui/material/locale'
+import rtlPlugin from '@mui/stylis-plugin-rtl'
 import { LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { enUS as dateEnUS, heIL as dateHeIL, ruRU as dateRuRU } from '@mui/x-date-pickers/locales'
@@ -17,8 +20,21 @@ import {
   useMemo,
 } from 'react'
 import { useTranslation } from 'react-i18next'
+import { prefixer } from 'stylis'
 import { useLocalStorage } from 'usehooks-ts'
 import dayjs from 'src/dayjs'
+import { getLang } from 'src/locale/allTranslations'
+
+// Direction-aware emotion caches: the RTL cache runs the vendor prefixer and then
+// flips physical CSS (left↔right); the LTR cache uses emotion's default (prefixer
+// only). prefixer must be listed explicitly because passing stylisPlugins replaces
+// emotion's default plugin chain. Selecting the cache by the active language keeps
+// MUI's generated styles in sync with the layout direction, so grouped components
+// (ButtonGroup/ToggleButtonGroup) round their outer corners correctly without
+// per-component dir="rtl" workarounds.
+const cacheRtl = createCache({ key: 'muirtl', stylisPlugins: [prefixer, rtlPlugin] })
+const cacheLtr = createCache({ key: 'mui' })
+const RTL_LANGUAGES = ['he', 'ar']
 
 export interface ThemeContextInterface {
   toggleTheme: () => void
@@ -34,17 +50,29 @@ export const ThemeProvider = ({ children }: PropsWithChildren) => {
     'isDarkTheme',
     window.matchMedia('(prefers-color-scheme: dark)').matches,
   )
-  const [language, setLanguage] = useLocalStorage<string>('language', 'he')
+
+  const initialLang = getLang()
+  // Store the language as a raw string (e.g. `he`, not `"he"`) so it matches the value
+  // written by getLang()/i18n in allTranslations.ts. Without identity (de)serializers,
+  // useLocalStorage would JSON.parse the raw value and throw "is not valid JSON".
+  const [language, setLanguage] = useLocalStorage<string>('language', () => initialLang, {
+    serializer: (value) => value,
+    deserializer: (value) => value,
+  })
+
   const { i18n } = useTranslation()
 
   const toggleTheme = useCallback(() => setIsDarkTheme((prev) => !prev), [setIsDarkTheme])
 
+  const emotionCache = RTL_LANGUAGES.includes(language) ? cacheRtl : cacheLtr
+
+  // The URL no longer encodes the language, so switching is just a state update:
+  // the effect below syncs i18n, document direction/title and dayjs.
   const changeLanguage = useCallback(
     (newLanguage: string) => {
       setLanguage(newLanguage)
-      i18n.changeLanguage(newLanguage)
     },
-    [i18n, setLanguage],
+    [setLanguage],
   )
 
   const contextValue = useMemo(
@@ -59,18 +87,25 @@ export const ThemeProvider = ({ children }: PropsWithChildren) => {
 
   useEffect(() => {
     if (!language) return
-    i18n.changeLanguage(language)
+    void i18n.changeLanguage(language)
     document.title = i18n.t('website_name')
     document.documentElement.dir = i18n.dir()
     document.documentElement.lang = language
     dayjs.locale(language)
   }, [language, i18n])
 
+  // Expose the active theme as a body-level class so styled-components and
+  // plain CSS can target dark mode via `.dark &` / `.dark .foo` selectors.
+  useEffect(() => {
+    document.body.classList.toggle('dark', !!isDarkTheme)
+  }, [isDarkTheme])
+
   const muiTheme = useMemo(() => {
     const langConfig = {
       he: { direction: 'rtl', muiLocale: heIL, dateLocale: dateHeIL },
       en: { direction: 'ltr', muiLocale: enUS, dateLocale: dateEnUS },
       ru: { direction: 'ltr', muiLocale: ruRU, dateLocale: dateRuRU },
+      // MUI X ships no Arabic date-picker locale, so the pickers fall back to English
       ar: { direction: 'rtl', muiLocale: arEG, dateLocale: dateEnUS },
     } as const
 
@@ -133,15 +168,17 @@ export const ThemeProvider = ({ children }: PropsWithChildren) => {
   }, [isDarkTheme, language])
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={language}>
-      <ConfigProvider {...antdTheme}>
-        <MuiThemeProvider theme={muiTheme}>
-          <ScopedCssBaseline enableColorScheme>
-            <ThemeContext.Provider value={contextValue}>{children}</ThemeContext.Provider>
-          </ScopedCssBaseline>
-        </MuiThemeProvider>
-      </ConfigProvider>
-    </LocalizationProvider>
+    <CacheProvider value={emotionCache}>
+      <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={language}>
+        <ConfigProvider {...antdTheme}>
+          <MuiThemeProvider theme={muiTheme}>
+            <ScopedCssBaseline enableColorScheme>
+              <ThemeContext.Provider value={contextValue}>{children}</ThemeContext.Provider>
+            </ScopedCssBaseline>
+          </MuiThemeProvider>
+        </ConfigProvider>
+      </LocalizationProvider>
+    </CacheProvider>
   )
 }
 

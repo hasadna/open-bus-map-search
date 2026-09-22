@@ -76,9 +76,10 @@ Open [http://localhost:3000](http://localhost:3000).
 
 | Command                   | Description                                                 |
 | ------------------------- | ----------------------------------------------------------- |
-| `npm run test`            | Run Jest + Playwright tests (excluding visual tests)        |
-| `npm run test:unit`       | Run Jest unit tests                                         |
-| `npm run test:unit:ci`    | Run Jest with coverage                                      |
+| `npm run test`            | Run Vitest + Playwright tests (excluding visual tests)      |
+| `npm run test:unit`       | Run Vitest unit tests                                       |
+| `npm run test:unit:watch` | Run Vitest unit tests in watch mode                         |
+| `npm run test:unit:ci`    | Run Vitest with coverage                                    |
 | `npm run test:e2e`        | Run Playwright end-to-end tests                             |
 | `npm run test:e2e:ui`     | Run Playwright tests with interactive UI                    |
 | `npm run test:e2e:visual` | Run visual regression tests with (Playwright + Applitools ) |

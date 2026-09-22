@@ -22,7 +22,7 @@ const bySeverityHandler = (a: HourlyData, b: HourlyData) => {
 }
 
 export const sortByMode = (hourlyData: HourlyData[] = [], sortingMode: string) => {
-  return [...hourlyData].sort(sortingMode === 'hour' ? byHourHandler : bySeverityHandler)
+  return hourlyData.toSorted(sortingMode === 'hour' ? byHourHandler : bySeverityHandler)
 }
 
 export const mapColorByExecution = (planned: number, actual: number) => {

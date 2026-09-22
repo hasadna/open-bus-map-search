@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { http, HttpResponse } from 'msw'
 import dayjs from 'src/dayjs'
+import { toCivilDate } from 'src/model/time/civilDate'
 import { getPastDate } from '../../../../.storybook/main'
 import AllLinesChart from './AllLinesChart'
 
@@ -12,25 +13,19 @@ const meta = {
       control: 'date',
       description: 'The start date of the chart.',
       table: {
-        type: { summary: 'Dayjs' },
+        type: { summary: 'CivilDate' },
       },
     },
     endDate: {
       control: 'date',
       description: 'The end date of the chart.',
       table: {
-        type: { summary: 'Dayjs' },
+        type: { summary: 'CivilDate' },
       },
     },
   },
   render: (args) => (
-    <AllLinesChart
-      startDate={dayjs(args.startDate)}
-      endDate={dayjs(args.endDate)}
-      alertAllChartsZeroLinesHandling={function (arg: boolean): void {
-        console.log('alertAllChartsZeroLinesHandling', arg)
-      }}
-    />
+    <AllLinesChart startDate={toCivilDate(args.startDate)!} endDate={toCivilDate(args.endDate)!} />
   ),
 } satisfies Meta<typeof AllLinesChart>
 
@@ -53,10 +48,7 @@ export const Default: Story = {
     },
   },
   args: {
-    startDate: dayjs(getPastDate()).subtract(7, 'day'),
-    endDate: dayjs(getPastDate()),
-    alertAllChartsZeroLinesHandling: (arg: boolean) => {
-      console.log('alertAllChartsZeroLinesHandling', arg)
-    },
+    startDate: toCivilDate(dayjs(getPastDate()).subtract(7, 'day'))!,
+    endDate: toCivilDate(dayjs(getPastDate()))!,
   },
 }

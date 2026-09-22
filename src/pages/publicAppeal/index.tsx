@@ -1,11 +1,13 @@
+import { styled } from '@mui/material/styles'
 import { Space, Typography } from 'antd'
 import { useTranslation } from 'react-i18next'
-import styled from 'styled-components'
 import Widget from 'src/shared/Widget'
 import './PublicAppeal.scss'
 
 const { Title } = Typography
 const pageName = 'publicAppealPage'
+// product name, not translatable
+const strideApiLinkText = 'Open Bus Stride API'
 const PublicAppeal = () => {
   const { t } = useTranslation()
   const tasks = t(`${pageName}.tasks`, { returnObjects: true })
@@ -34,22 +36,22 @@ const Task = ({ title, description, marginBottom }: TaskDetails) => {
   return (
     <Widget title={title} marginBottom={marginBottom}>
       <p>{description}</p>
-      <a href="https://open-bus-stride-api.hasadna.org.il/docs">Open Bus Stride API</a>
+      <a href="https://open-bus-stride-api.hasadna.org.il/docs">{strideApiLinkText}</a>
     </Widget>
   )
 }
 
-const PublicAppealStyle = styled.div`
-  display: flex;
-  flex-direction: column;
-  padding: 0 1rem;
-  & .public-appeal-center-container {
-    width: 100%;
-    max-width: 770px;
-    & h1 {
-      font-size: 2em;
-    }
-  }
-`
+const PublicAppealStyle = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  padding: '0 1rem',
+  '& .public-appeal-center-container': {
+    width: '100%',
+    maxWidth: '770px',
+    '& h1': {
+      fontSize: '2em',
+    },
+  },
+})
 
 export default PublicAppeal

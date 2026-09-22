@@ -1,81 +1,123 @@
-import { OpenInFullRounded } from '@mui/icons-material'
-import { IconButton, Stack } from '@mui/material'
-import React, { useCallback, useContext, useRef, useState } from 'react'
-import { MapContainer, TileLayer } from 'react-leaflet'
-import dayjs from 'src/dayjs'
-import { useConstrainedFloatingButton } from 'src/hooks/useConstrainedFloatingButton'
-import { SearchContext } from '../../model/pageState'
+import {
+  Box,
+  CircularProgress,
+  Stack,
+  ToggleButton,
+  ToggleButtonGroup,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material'
+import React, { useContext, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { TileLayer } from 'react-leaflet'
+import { GlobalSearchContext } from 'src/model/globalState'
+import { type CivilDate, todayCivilDate } from 'src/model/time/civilDate'
+import { MapShell } from 'src/pages/components/map-related/MapShell'
+import { CivilDateSelector } from '../components/CivilDateSelector'
 import { DateNavigator } from '../components/dateNavigator/DateNavigator'
-import { DateSelector } from '../components/DateSelector'
+import { PageContainer } from '../components/PageContainer'
 import { VelocityHeatmapLegend } from './components/VelocityHeatmapLegend'
 import { VelocityHeatmapRectangles } from './components/VelocityHeatmapRectangles'
 
 const VIS_MODES = [
-  { key: 'avg', label: 'Visualize Avg Speed' },
-  { key: 'std', label: 'Visualize Std' },
-  { key: 'cv', label: 'Visualize Std / Avg Speed (Coeff of Var)' },
-]
+  { key: 'avg', labelKey: 'velocity_vis_avg' },
+  { key: 'std', labelKey: 'velocity_vis_std' },
+  { key: 'cv', labelKey: 'velocity_vis_cv' },
+] as const
 
 const DEFAULT_ZOOM_LEVEL = 10
 
 const VelocityHeatmapPage: React.FC = () => {
-  const [isExpanded, setIsExpanded] = useState<boolean>(false)
-  const toggleExpanded = useCallback(() => setIsExpanded((expanded) => !expanded), [])
+  const { t } = useTranslation()
+  const theme = useTheme()
+  // Long labels are cramped as 3 columns on a phone, so stack the selector
+  // vertically (one button per row) there and keep a single row on wider screens.
+  const stackVisSelector = useMediaQuery(theme.breakpoints.down('sm'))
 
-  const { search, setSearch } = useContext(SearchContext)
+  const { search, setSearch } = useContext(GlobalSearchContext)
 
   const [visMode, setVisMode] = useState<'avg' | 'std' | 'cv'>('avg')
   const [min, setMin] = useState(0)
   const [max, setMax] = useState(1)
+  const [loading, setLoading] = useState(false)
+  const [hasError, setHasError] = useState(false)
 
-  const mapContainerRef = useRef<HTMLDivElement>(null)
-  const buttonRef = useRef<HTMLButtonElement>(null)
-
-  const handleTimestampChange = (time: dayjs.Dayjs | null) => {
-    setSearch((current) => ({ ...current, timestamp: time?.valueOf() ?? +new Date('2026-01-01') }))
+  const handleDateChange = (next: CivilDate | null) => {
+    setSearch((current) => ({
+      ...current,
+      date: next ?? todayCivilDate(),
+    }))
   }
 
-  useConstrainedFloatingButton(mapContainerRef, buttonRef, isExpanded)
+  const handleVisModeChange = (
+    _: React.MouseEvent<HTMLElement>,
+    value: 'avg' | 'std' | 'cv' | null,
+  ) => {
+    if (value) setVisMode(value)
+  }
 
   return (
-    <div>
-      <h1>Velocity Aggregation Heatmap</h1>
-      <p>This page will display a heatmap of velocity aggregation data.</p>
+    <PageContainer>
+      <Typography variant="h4" component="h1" gutterBottom>
+        {t('velocity_heatmap_page_title')}
+      </Typography>
 
-      {/* choose date*/}
-      <Stack direction="column" spacing={2} sx={{ mb: 2, width: { xs: '100%', md: '70%' } }}>
-        <DateSelector time={dayjs(search.timestamp)} onChange={handleTimestampChange} />
-        <DateNavigator currentTime={dayjs(search.timestamp)} onChange={handleTimestampChange} />
-      </Stack>
-      <div style={{ margin: '12px 0' }}>
-        <b>Visualization:</b>{' '}
-        {VIS_MODES.map((mode) => (
-          <label key={mode.key} style={{ marginRight: 12 }}>
-            <input
-              type="radio"
-              name="visMode"
-              value={mode.key}
-              checked={visMode === mode.key}
-              onChange={() => setVisMode(mode.key as 'avg' | 'std' | 'cv')}
-            />{' '}
-            {mode.label}
-          </label>
-        ))}
-      </div>
-
-      <div ref={mapContainerRef} className={`map-info ${isExpanded ? 'expanded' : 'collapsed'}`}>
-        <IconButton
-          ref={buttonRef}
+      {/* choose date + visualization — centered block */}
+      <Box sx={{ width: '100%', maxWidth: 520, mx: 'auto' }}>
+        <Stack direction="column" spacing={2} sx={{ mb: 2 }}>
+          <CivilDateSelector value={search.date} onChange={handleDateChange} />
+          <DateNavigator currentDate={search.date} onChange={handleDateChange} />
+        </Stack>
+        <ToggleButtonGroup
+          value={visMode}
           color="primary"
-          className="expand-button"
-          onClick={toggleExpanded}>
-          <OpenInFullRounded fontSize="large" />
-        </IconButton>
-        <MapContainer
+          exclusive
+          fullWidth
+          orientation={stackVisSelector ? 'vertical' : 'horizontal'}
+          onChange={handleVisModeChange}
+          sx={{ mt: 2 }}>
+          {VIS_MODES.map((mode) => (
+            <ToggleButton key={mode.key} value={mode.key}>
+              {t(mode.labelKey)}
+            </ToggleButton>
+          ))}
+        </ToggleButtonGroup>
+      </Box>
+
+      <Box sx={{ position: 'relative', height: '100%', width: '100%' }}>
+        {(loading || hasError) && (
+          <Box
+            sx={{
+              position: 'absolute',
+              inset: 0,
+              zIndex: 1000,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 1,
+              pointerEvents: 'none',
+              backgroundColor:
+                theme.palette.mode === 'dark'
+                  ? 'rgba(40, 40, 40, 0.92)'
+                  : 'rgba(255, 255, 255, 0.9)',
+            }}>
+            {loading && <CircularProgress />}
+            <Typography
+              variant="h6"
+              component="span"
+              sx={{ color: theme.palette.mode === 'dark' ? '#fff' : '#000' }}>
+              {hasError ? t('loading_error') : t('loading')}
+            </Typography>
+          </Box>
+        )}
+        <MapShell
           center={[29.65, 34.6]}
           zoom={DEFAULT_ZOOM_LEVEL}
           scrollWheelZoom={true}
-          style={{ height: '100%', width: '100%' }}>
+          style={{ height: '100%', width: '100%' }}
+          legend={<VelocityHeatmapLegend visMode={visMode} min={min} max={max} />}>
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://tile-a.openstreetmap.fr/hot/{z}/{x}/{y}.png"
@@ -86,11 +128,14 @@ const VelocityHeatmapPage: React.FC = () => {
               setMin(min)
               setMax(max)
             }}
+            setStatus={(loading, hasError) => {
+              setLoading(loading)
+              setHasError(hasError)
+            }}
           />
-          <VelocityHeatmapLegend visMode={visMode} min={min} max={max} />
-        </MapContainer>
-      </div>
-    </div>
+        </MapShell>
+      </Box>
+    </PageContainer>
   )
 }
 

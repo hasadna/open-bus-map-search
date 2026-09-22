@@ -1,22 +1,59 @@
 .nav-btn {
-  padding-left: 4px;
-  padding-right: 4px;
-  font-size: 0.75rem !important;
-  white-space: nowrap;
+  // Two centered lines for every button: signed magnitude (-7 / -1 / +1 / +7)
+  // over its unit (day / days); the Today button shows its icon over "Today".
+  // Identical layout in every language, so nothing can overflow.
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  padding: 4px;
   min-width: 0;
   flex: 1;
-  height: 44px;
+  min-height: 48px;
+  line-height: 1.15;
+  white-space: nowrap;
   text-transform: none;
   border-color: rgb(0 0 0 / 12%);
 
-  @media (width >= 600px) {
-    padding-left: 16px;
-    padding-right: 16px;
-    font-size: 0.9rem !important;
+  .nav-btn-icon {
+    font-size: 1.25rem;
   }
 
-  @media (width >= 900px) {
-    font-size: 1rem !important;
+  // Match the icon's box (its font-size) so line 1 is the same height whether it
+  // holds a number or the icon; line-height:1 + centering drops the number's
+  // font leading so both buttons' blocks align line-for-line.
+  .nav-btn-num {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 1.25rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1;
+  }
+
+  .nav-btn-unit {
+    font-size: 0.7rem;
+    opacity: 0.8;
+  }
+
+  @media (width >= 600px) {
+    padding: 6px;
+    min-height: 56px;
+
+    .nav-btn-icon {
+      font-size: 1.5rem;
+    }
+
+    .nav-btn-num {
+      height: 1.5rem;
+      font-size: 1.1rem;
+    }
+
+    .nav-btn-unit {
+      font-size: 0.85rem;
+    }
   }
 
   &.today {
@@ -27,10 +64,6 @@
     &:hover {
       background-color: #1565c0 !important;
       border-color: #1565c0 !important;
-    }
-
-    .MuiButton-startIcon {
-      color: #fff;
     }
   }
 }

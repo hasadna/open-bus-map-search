@@ -2,10 +2,14 @@ import { GTFS_API } from 'src/api/apiConfig'
 import dayjs from 'src/dayjs'
 import { BusRoute, fromGtfsRoute } from 'src/model/busRoute'
 import { BusStop, fromGtfsStop } from 'src/model/busStop'
+import { type CivilDate, civilDateToApiDate } from 'src/model/time/civilDate'
 
+/** GTFS routes running between two calendar days (both inclusive), merged by route key
+ *  so a line's variants collapse into one entry carrying all its routeIds. Pass the same
+ *  date twice for a single day. */
 export async function getRoutesAsync(
-  fromTimestamp: dayjs.Dayjs,
-  toTimestamp: dayjs.Dayjs,
+  from: CivilDate,
+  to: CivilDate,
   operatorId?: string,
   lineNumber?: string,
   signal?: AbortSignal,
@@ -14,19 +18,14 @@ export async function getRoutesAsync(
     {
       routeShortName: lineNumber,
       operatorRefs: operatorId,
-      dateFrom: fromTimestamp.startOf('day').toDate(),
-      dateTo: dayjs.min(toTimestamp.endOf('day'), dayjs()).toDate(),
-      limit: 100,
+      dateFrom: civilDateToApiDate(from),
+      dateTo: civilDateToApiDate(to),
+      limit: 15000,
     },
     { signal },
   )
   const routes = Object.values(
     gtfsRoutes
-      .filter(
-        (route) =>
-          route.date.getDate() >= fromTimestamp.date() &&
-          route.date.getDate() <= toTimestamp.date(),
-      )
       .map((route) => fromGtfsRoute(route))
       .reduce(
         (agg, line) => {
@@ -47,15 +46,15 @@ export async function getRoutesAsync(
 
 export async function getStopsForRouteAsync(
   routeIds: number[],
-  timestamp: dayjs.Dayjs,
+  time: dayjs.Dayjs,
 ): Promise<BusStop[]> {
   const stops: BusStop[] = []
 
   for (const routeId of routeIds) {
     const rides = await GTFS_API.gtfsRidesListGet({
       gtfsRouteId: routeId,
-      startTimeFrom: timestamp.subtract(1, 'day').second(0).millisecond(0).toDate(),
-      startTimeTo: timestamp.add(1, 'day').second(0).millisecond(0).toDate(),
+      startTimeFrom: time.subtract(1, 'day').second(0).millisecond(0).toDate(),
+      startTimeTo: time.add(1, 'day').second(0).millisecond(0).toDate(),
       limit: 1,
       orderBy: 'start_time',
     })
@@ -86,27 +85,13 @@ export async function getStopsForRouteAsync(
   )
 }
 
-export async function getGtfsStopHitTimesAsync(stop: BusStop, timestamp: dayjs.Dayjs) {
+export async function getGtfsStopHitTimesAsync(stop: BusStop, time: dayjs.Dayjs) {
   try {
-    const start = timestamp.subtract(4, 'hour').toDate()
-    const end = timestamp.add(4, 'hour').toDate()
-
-    const rides = await GTFS_API.gtfsRidesListGet({
-      gtfsRouteId: stop.routeId,
-      startTimeFrom: start,
-      startTimeTo: end,
-      orderBy: 'start_time asc',
-    })
-
-    if (rides.length === 0) return []
-
-    const rideIds = rides.map((ride) => ride.id).join(',')
-
     return await GTFS_API.gtfsRideStopsListGet({
-      gtfsRideIds: rideIds,
+      gtfsRideGtfsRouteId: stop.routeId,
       gtfsStopIds: stop.stopId.toString(),
-      arrivalTimeFrom: start,
-      arrivalTimeTo: end,
+      arrivalTimeFrom: time.subtract(4, 'hour').toDate(),
+      arrivalTimeTo: time.add(4, 'hour').toDate(),
       orderBy: 'arrival_time asc',
     })
   } catch (error) {
@@ -115,39 +100,14 @@ export async function getGtfsStopHitTimesAsync(stop: BusStop, timestamp: dayjs.D
   }
 }
 
-export async function getRouteById(routeId?: string, signal?: AbortSignal) {
-  try {
-    if (!routeId?.trim()) {
-      throw new Error('Route id is required and cannot be empty')
-    }
-    const id = Number(routeId)
-    if (!Number.isInteger(id) || id <= 0 || id > Number.MAX_SAFE_INTEGER) {
-      throw new Error(`Invalid route id: ${routeId}.`)
-    }
-    return await GTFS_API.gtfsRoutesGetGet({ id }, { signal })
-  } catch (error) {
-    let errorMessage: string
-    if (error instanceof Error) {
-      errorMessage =
-        error.message === 'Response returned an error code'
-          ? `Route with id ${routeId} not found`
-          : error.message
-    } else {
-      errorMessage = 'An unexpected error occurred while fetching route data'
-    }
-    console.error(`Failed to get route ${routeId}:`, errorMessage)
-    throw new Error(errorMessage)
-  }
-}
-
-export async function getAllRoutesList(operatorId: string, date: Date, signal?: AbortSignal) {
+export async function getAllRoutesList(operatorId: string, date: CivilDate, signal?: AbortSignal) {
   return await GTFS_API.gtfsRoutesListGet(
     {
       operatorRefs: operatorId,
-      dateFrom: date,
-      dateTo: date,
+      dateFrom: civilDateToApiDate(date),
+      dateTo: civilDateToApiDate(date),
       orderBy: 'route_long_name asc',
-      limit: -1,
+      limit: 15000,
     },
     { signal },
   )
@@ -156,14 +116,14 @@ export async function getAllRoutesList(operatorId: string, date: Date, signal?: 
 export async function getRoutesByLineRef(
   operatorId: string,
   lineRefs: string,
-  date: Date,
+  date: CivilDate,
   signal?: AbortSignal,
 ) {
   return await GTFS_API.gtfsRoutesListGet(
     {
       operatorRefs: operatorId,
-      dateFrom: date,
-      dateTo: date,
+      dateFrom: civilDateToApiDate(date),
+      dateTo: civilDateToApiDate(date),
       lineRefs,
       limit: 1,
     },

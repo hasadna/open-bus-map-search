@@ -1,25 +1,20 @@
 import { render, type RenderResult, screen } from '@testing-library/react'
 import type { ReactElement } from 'react'
-import ArrivalByTimeChart, { ArrivalByTimeData } from './ArrivalByTimeChart'
+import ArrivalByTimeChart from './ArrivalByTimeChart'
 import testBusData from './testdata/data.json'
 
-jest.mock('recharts', () => {
-  const original: typeof import('recharts') = jest.requireActual('recharts')
+vi.mock('recharts', async () => {
+  const original = await vi.importActual<typeof import('recharts')>('recharts')
   return {
-    __esModule: true,
     ...original,
-    ResponsiveContainer: jest
-      .fn()
-      .mockImplementation(({ children }: { children: ReactElement }) => (
-        <original.ResponsiveContainer height={300} aspect={1}>
-          {children}
-        </original.ResponsiveContainer>
-      )),
+    ResponsiveContainer: vi.fn().mockImplementation(({ children }: { children: ReactElement }) => (
+      <original.ResponsiveContainer height={300} aspect={1}>
+        {children}
+      </original.ResponsiveContainer>
+    )),
   }
 })
-const data = testBusData.map(
-  (d) => ({ ...d, gtfsRouteDate: new Date(d.gtfsRouteDate) }) as ArrivalByTimeData,
-)
+const data = testBusData.map((d) => ({ ...d, gtfsRouteDate: new Date(d.gtfsRouteDate) }))
 
 describe('ArrivalByTimeChart', () => {
   let renderedComponent: RenderResult

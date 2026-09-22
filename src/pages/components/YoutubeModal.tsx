@@ -1,5 +1,4 @@
-// import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'; //TODO:
-import { InfoCircleOutlined } from '@ant-design/icons'
+import { HelpTwoTone } from '@mui/icons-material'
 import { Typography } from '@mui/material'
 import { Modal } from 'antd'
 import { useState } from 'react'
@@ -16,11 +15,13 @@ const InfoYoutubeModal = ({ videoUrl, label, title }: InfoYoutubeModalProps) => 
 
   return (
     <>
-      <InfoCircleOutlined
-        onClick={() => setVisible(true)}
-        className="modal-info-ico"
+      <button
+        type="button"
         aria-label={label}
-      />
+        className="modal-info-ico"
+        onClick={() => setVisible(true)}>
+        <HelpTwoTone fontSize="inherit" />
+      </button>
       <Modal
         width={'1000px'}
         footer={null}
@@ -32,11 +33,11 @@ const InfoYoutubeModal = ({ videoUrl, label, title }: InfoYoutubeModalProps) => 
         onCancel={() => {
           setVisible(false)
         }}>
-        <Typography variant="h2" fontSize="28px" fontWeight="bold" marginBottom={1.5}>
+        <Typography variant="h2" sx={{ fontSize: '28px', fontWeight: 'bold', marginBottom: 1.5 }}>
           {title}
         </Typography>
         <div className="modal-iframe-container">
-          <iframe allowFullScreen src={videoUrl} />
+          <iframe allowFullScreen src={videoUrl} title={title} />
         </div>
       </Modal>
     </>

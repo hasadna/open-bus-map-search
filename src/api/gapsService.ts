@@ -1,4 +1,4 @@
-import dayjs from 'src/dayjs'
+import dayjs, { ISRAEL_TIMEZONE, toIsraelTimezone } from 'src/dayjs'
 import { USER_CASE_API } from './apiConfig'
 
 export type Gap = {
@@ -7,23 +7,44 @@ export type Gap = {
   gtfsRideId?: number
 }
 
+// What actually lives in the persisted React Query cache. dayjs times are held as ISO
+// strings and revived at the UI edge (GapsTable) — persistence is a structured clone,
+// which would otherwise hand the table a Dayjs-shaped object with no .format() on it.
+export type SerializedGap = {
+  plannedStartTime?: string
+  actualStartTime?: string
+  gtfsRideId?: number
+}
+
+export const serializeGap = (gap: Gap): SerializedGap => ({
+  gtfsRideId: gap.gtfsRideId,
+  plannedStartTime: gap.plannedStartTime?.toISOString(),
+  actualStartTime: gap.actualStartTime?.toISOString(),
+})
+
+export const reviveGap = (gap: SerializedGap): Gap => ({
+  gtfsRideId: gap.gtfsRideId,
+  plannedStartTime: gap.plannedStartTime ? toIsraelTimezone(gap.plannedStartTime) : undefined,
+  actualStartTime: gap.actualStartTime ? toIsraelTimezone(gap.actualStartTime) : undefined,
+})
+
 export function parseTime(time?: dayjs.ConfigType) {
   if (!time) return undefined
-  const utcDayjs = dayjs.utc(time).utcOffset(0, true).tz('Asia/Jerusalem')
+  const utcDayjs = dayjs.utc(time).utcOffset(0, true).tz(ISRAEL_TIMEZONE)
   if (!utcDayjs.isValid()) return undefined
   return utcDayjs
 }
 
 export const getGapsAsync = (
-  fromTimestamp: number,
-  toTimestamp: number,
+  from: dayjs.Dayjs,
+  to: dayjs.Dayjs,
   operatorId: string,
   lineRef: number,
   limit = 10000,
 ) => {
   return USER_CASE_API.ridesExecutionListGet({
-    dateFrom: new Date(fromTimestamp),
-    dateTo: new Date(toTimestamp),
+    dateFrom: from.toDate(),
+    dateTo: to.toDate(),
     limit,
     lineRef,
     operatorRef: parseInt(operatorId),
@@ -33,7 +54,7 @@ export const getGapsAsync = (
         actualStartTime: parseTime(gap.actualStartTime),
         plannedStartTime: parseTime(gap.plannedStartTime),
         gtfsRideId: gap.gtfsRideId,
-      } as Gap
+      }
     }),
   )
 }

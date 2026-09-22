@@ -1,9 +1,11 @@
 import { Stack, Typography } from '@mui/material'
+import { styled } from '@mui/material/styles'
 import { useQuery } from '@tanstack/react-query'
+import { useMemo } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
-import styled from 'styled-components'
 import Widget from 'src/shared/Widget'
 import SlackIcon from '../../resources/slack-icon.svg'
+import { combineContributions, CONTRIBUTOR_REPOS, fetchRepoContributors } from './contributors'
 import { VersionInfo } from './version/VersionInfo'
 import './About.scss'
 
@@ -45,13 +47,14 @@ const WhatIsWebsite = () => {
   )
 }
 const YoutubePlaylist = () => {
+  const { t } = useTranslation()
   return (
     <iframe
       width="560"
       height="315"
       style={{ border: 'none' }}
       src="https://www.youtube.com/embed/videoseries?si=oTULlxq8Is188hPu&amp;list=PL6Rh06rT7uiX1AQE-lm55hy-seL3idx3T"
-      title="YouTube video player"
+      title={t('aboutPage.youtubePlayerTitle')}
       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
       referrerPolicy="strict-origin-when-cross-origin"
       allowFullScreen></iframe>
@@ -115,7 +118,7 @@ const Questions = () => {
         <li>
           <a href="https://hasadna.slack.com/join/shared_invite/zt-167h764cg-J18ZcY1odoitq978IyMMig#/shared-invite/email">
             {t(`${linksTextPath}.slack`)}
-            <img src={SlackIcon} alt="Slack icon" />
+            <img src={SlackIcon} alt="" />
           </a>
         </li>
         <li>
@@ -136,7 +139,9 @@ const Funding = () => {
       <div>
         <p>
           {t('funding_paragraph')}&nbsp;
-          <a href="https://open-bus-stride-api.hasadna.org.il/docs">Open API</a>
+          <a href="https://open-bus-stride-api.hasadna.org.il/docs">
+            {t('aboutPage.fundingApiLinkText')}
+          </a>
         </p>
       </div>
       <ul>
@@ -153,6 +158,8 @@ const Funding = () => {
   )
 }
 
+// attribution notices are deliberately kept in English (the section is styled LTR)
+/* eslint-disable i18next/no-literal-string */
 const Attributions = () => {
   return (
     <Widget title="Attributions" sx={{ textAlign: 'right', direction: 'ltr' }}>
@@ -162,7 +169,7 @@ const Attributions = () => {
           for their visual testing tool
         </li>
         <li>
-          Bus ifmage by{' '}
+          Bus image by{' '}
           <a
             href="https://www.freepik.com/free-vector/passengers-waiting-bus-city-queue-town-road-flat-vector-illustration-public-transport-urban-lifestyle_10173277.htm#query=public%20transportation&position=0&from_view=search&track=ais&uuid=70a79b38-20cb-42b8-9dde-b96a68088522"
             target="_blank"
@@ -175,6 +182,7 @@ const Attributions = () => {
     </Widget>
   )
 }
+/* eslint-enable i18next/no-literal-string */
 
 const Contributors = () => {
   const { t } = useTranslation()
@@ -190,63 +198,43 @@ const Contributors = () => {
         </Trans>
       </p>
       <ol className="contributions">
-        {isLoading && <p>Loading...</p>}
-        {isError && <p>Error...</p>}
-        {contributors &&
-          contributors.map((author) => (
-            <li key={author.id}>
-              <a href={author.html_url}>
-                <h2>{author.login}</h2>
-                <img src={author.avatar_url} alt={author.login} />
-                <p>
-                  {author.contributions} {t('aboutPage.contributions')}
-                </p>
-              </a>
-            </li>
-          ))}
+        {isLoading && <p>{t('loading')}</p>}
+        {isError && <p>{t('loading_error')}</p>}
+        {contributors.map((author) => (
+          <li key={author.id}>
+            <a href={author.html_url}>
+              <h2>{author.login}</h2>
+              <img src={author.avatar_url} alt={author.login} />
+              <p>
+                {author.contributions} {t('aboutPage.contributions')}
+              </p>
+            </a>
+          </li>
+        ))}
       </ol>
     </Widget>
   )
 }
 
-const AboutStyle = styled.div`
-  display: flex;
-  flex-direction: column;
-  padding: 0 1rem;
-  & .about-center-container {
-    width: 100%;
-    max-width: 770px;
-    & h1 {
-      font-size: 2em;
-    }
-  }
-`
+const AboutStyle = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  padding: '0 1rem',
+  '& .about-center-container': {
+    width: '100%',
+    maxWidth: '770px',
+    '& h1': {
+      fontSize: '2em',
+    },
+  },
+})
+
 function useContributions() {
-  const owner = 'hasadna'
-  const repos = [
-    'open-bus-map-search',
-    'open-bus-stride-api',
-    'open-bus-backend',
-    'open-bus-pipelines',
-    'open-bus-siri-requester',
-    'open-bus-gtfs-etl',
-    'open-bus-stride-etl',
-  ]
-
-  const apis = repos.map(
-    (repo) => `https://api.github.com/repos/${owner}/${repo}/contributors?order=desc`,
-  )
-
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['contributors'],
-    queryFn: () =>
-      Promise.all(
-        apis.map((api) =>
-          fetch(api)
-            .then((res) => res.json())
-            .catch(() => ({})),
-        ),
-      ),
+    // the repo list is part of the result's identity — and keying on it retires the
+    // inflated totals that earlier versions of this page persisted to localStorage
+    queryKey: ['contributors', CONTRIBUTOR_REPOS],
+    queryFn: () => Promise.all(CONTRIBUTOR_REPOS.map(fetchRepoContributors)),
     gcTime: Infinity,
     staleTime: 3 * 24 * 60 * 60 * 1000, // refresh the cached data every 3 days
     refetchOnWindowFocus: false,
@@ -255,48 +243,9 @@ function useContributions() {
     networkMode: 'offlineFirst',
   })
 
-  try {
-    const contributors = (data?.flat() as Author[])
-      // filter repos with no contributors
-      .filter(Boolean)
-      // filter out bots
-      .filter((a) => a.type === 'User')
-      // sort by contributions
-      .sort((a: Author, b: Author) => b.contributions - a.contributions)
-      .reduce(combineAuthor, [] as Author[])
-    return { contributors, isLoading, isError }
-  } catch (error) {
-    console.error(error)
-    return { contributors: [] as const, isLoading: false, isError: true }
-  }
-}
+  const contributors = useMemo(() => combineContributions(data ?? []), [data])
 
-// sum contributions of the same user
-function combineAuthor(authors: Author[], author: Author) {
-  const sameUser = authors.find((a) => a.login === author.login)
-  if (!sameUser) {
-    authors.push(author)
-  } else {
-    sameUser.contributions += author.contributions
-  }
-  return authors
-}
-
-type Author = {
-  avatar_url: string
-  contributions: number
-  html_url: string
-  id: number
-  login: string
-  node_id: string
-  organizations_url: string
-  received_events_url: string
-  repos_url: string
-  site_admin: boolean
-  starred_url: string
-  subscriptions_url: string
-  type: string
-  url: string
+  return { contributors, isLoading, isError }
 }
 
 export default About

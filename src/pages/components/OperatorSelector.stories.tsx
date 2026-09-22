@@ -33,7 +33,7 @@ const meta = {
       description: 'Filter function or criteria for the list of operators.',
       control: { type: 'object' },
       table: {
-        type: { summary: ' string[]' },
+        type: { summary: 'Set<string>' },
         defaultValue: { summary: 'undefined' },
       },
     },

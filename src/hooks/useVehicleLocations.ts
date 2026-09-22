@@ -8,6 +8,7 @@ import { uniqBy } from 'es-toolkit/compat'
 import { useEffect, useState } from 'react'
 import { SIRI_API } from 'src/api/apiConfig'
 import dayjs from 'src/dayjs'
+import { locationFixKey } from 'src/pages/components/map-related/map-types'
 
 const LIMIT = 10000 // the maximum number of vehicles to load in one request
 
@@ -41,32 +42,46 @@ const loadedLocations = new Map<
  * it also caches the data, so if the same interval is requested again, it will not load it again.
  */
 class LocationObservable {
-  constructor(query: VehicleLocationQuery) {
-    this.#loadData(query)
+  readonly #key: string
+
+  constructor(query: VehicleLocationQuery, key: string) {
+    this.#key = key
+    void this.#loadData(query)
   }
 
   data: SiriVehicleLocationWithRelatedPydanticModel[] = []
   loading = true
 
   async #loadData(querys: VehicleLocationQuery) {
-    let offset = 0
-    for (let i = 1; this.loading; i++) {
-      const data = await fetchWithQueue(querys, offset)
-      if (!data || data.length === 0) {
-        this.loading = false
-        this.#notifyObservers({ finished: true })
-      } else {
-        this.data = [...this.data, ...data]
-        this.#notifyObservers(data)
-        offset += LIMIT
+    try {
+      let offset = 0
+      for (let i = 1; this.loading; i++) {
+        const data = await fetchWithQueue(querys, offset)
+        if (!data || data.length === 0) {
+          this.loading = false
+          this.#notifyObservers({ finished: true })
+        } else {
+          this.data = [...this.data, ...data]
+          this.#notifyObservers(data)
+          offset += LIMIT
+        }
       }
+    } catch (error) {
+      console.error('Failed to load vehicle locations:', error)
+      this.loading = false
+      // Don't cache a failed load as a successful completion: evict this
+      // entry so the next request for the same range retries instead of
+      // replaying empty/partial data. Current observers are still released
+      // below so the UI doesn't hang waiting on this failed load.
+      loadedLocations.delete(this.#key)
+      this.#notifyObservers({ finished: true })
+    } finally {
+      this.#observers = []
     }
-    this.#observers = []
   }
 
   #notifyObservers(data: SiriVehicleLocationWithRelatedPydanticModel[] | { finished: true }) {
     const observers = this.#observers
-    console.log('notifying observers', observers.length)
     observers.forEach((observer) => observer(data))
   }
 
@@ -83,6 +98,12 @@ class LocationObservable {
       this.#observers.push(observer)
     }
     observer(this.data)
+    // A late subscriber to an already-finished observable (e.g. a cache hit after
+    // navigating away and back) must be told loading is done — otherwise its
+    // optimistic isLoading flag stays stuck on and the spinner never clears.
+    if (!this.loading) {
+      observer({ finished: true })
+    }
     return () => {
       this.#observers = this.#observers.filter((o) => o !== observer)
     }
@@ -139,7 +160,10 @@ function getLocations(
 ) {
   const key = `${formatTime(from)}-${formatTime(to)}-${operatorRef}-${lineRef}-${vehicleRef}`
   if (!loadedLocations.has(key)) {
-    loadedLocations.set(key, new LocationObservable({ from, to, lineRef, vehicleRef, operatorRef }))
+    loadedLocations.set(
+      key,
+      new LocationObservable({ from, to, lineRef, vehicleRef, operatorRef }, key),
+    )
   }
   const observable = loadedLocations.get(key)!
   return observable.observe(onUpdate)
@@ -157,6 +181,11 @@ function getMinutesInRange(from: Dateable, to: Dateable, gap = 1) {
   return minutes
 }
 
+const byRecordedAtTime = (
+  a: SiriVehicleLocationWithRelatedPydanticModel,
+  b: SiriVehicleLocationWithRelatedPydanticModel,
+) => new Date(a.recordedAtTime ?? 0).getTime() - new Date(b.recordedAtTime ?? 0).getTime()
+
 export default function useVehicleLocations({
   from,
   to,
@@ -171,6 +200,10 @@ export default function useVehicleLocations({
 }) {
   const [locations, setLocations] = useState<SiriVehicleLocationWithRelatedPydanticModel[]>([])
   const [isLoading, setIsLoading] = useState<boolean[]>([])
+  // Depend on the instants, not object identities — inline-constructed Date/Dayjs
+  // props would otherwise re-run the effect (and refetch) every render.
+  const fromKey = formatTime(from)
+  const toKey = formatTime(to)
   useEffect(() => {
     if (pause) return
     const range = split ? getMinutesInRange(from, to, split) : [{ from, to }]
@@ -192,8 +225,8 @@ export default function useVehicleLocations({
           } else {
             setLocations((prev) =>
               uniqBy<SiriVehicleLocationWithRelatedPydanticModel>(
-                [...prev, ...data].sort((a, b) => (a.id || 0) - (b.id || 0)),
-                (loc) => loc.id,
+                [...prev, ...data].sort(byRecordedAtTime),
+                locationFixKey,
               ),
             )
           }
@@ -205,7 +238,7 @@ export default function useVehicleLocations({
       unmounts.forEach((unmount) => unmount())
       setIsLoading([])
     }
-  }, [from, to, lineRef, vehicleRef, split])
+  }, [fromKey, toKey, lineRef, vehicleRef, split])
   return {
     locations,
     isLoading: isLoading.some((loading) => loading),

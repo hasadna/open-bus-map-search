@@ -443,6 +443,93 @@
       "contributions": [
         "translation"
       ]
+    },
+    {
+      "login": "eran132",
+      "name": "Eran",
+      "avatar_url": "https://avatars.githubusercontent.com/u/8734923?v=4",
+      "profile": "https://il.linkedin.com/in/eranmark",
+      "contributions": [
+        "code",
+        "research"
+      ]
+    },
+    {
+      "login": "ayalagellis",
+      "name": "ayalagellis",
+      "avatar_url": "https://avatars.githubusercontent.com/u/100130564?v=4",
+      "profile": "https://github.com/ayalagellis",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "arielvino",
+      "name": "arielvino",
+      "avatar_url": "https://avatars.githubusercontent.com/u/71963953?v=4",
+      "profile": "https://github.com/arielvino",
+      "contributions": [
+        "code",
+        "security",
+        "review",
+        "mentoring"
+      ]
+    },
+    {
+      "login": "eithanwes",
+      "name": "eithanwes",
+      "avatar_url": "https://avatars.githubusercontent.com/u/209318276?v=4",
+      "profile": "http://www.lastmile.co.il",
+      "contributions": [
+        "bug"
+      ]
+    },
+    {
+      "login": "alon-greenshtein",
+      "name": "Alon Greenstein",
+      "avatar_url": "https://avatars.githubusercontent.com/u/175951799?v=4",
+      "profile": "https://github.com/alon-greenshtein",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "LeeSkies",
+      "name": "Lee",
+      "avatar_url": "https://avatars.githubusercontent.com/u/110767210?v=4",
+      "profile": "https://github.com/LeeSkies",
+      "contributions": [
+        "code",
+        "review"
+      ]
+    },
+    {
+      "login": "Bellavely",
+      "name": "Bella Vayzburg",
+      "avatar_url": "https://avatars.githubusercontent.com/u/90250915?v=4",
+      "profile": "https://github.com/Bellavely",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "ifrahgul",
+      "name": "Ifrah Gul",
+      "avatar_url": "https://avatars.githubusercontent.com/u/219668347?v=4",
+      "profile": "https://github.com/ifrahgul",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "jonsuguiyama",
+      "name": "Jon Suguiyama",
+      "avatar_url": "https://avatars.githubusercontent.com/u/9615633?v=4",
+      "profile": "https://github.com/jonsuguiyama",
+      "contributions": [
+        "code",
+        "bug"
+      ]
     }
   ]
 }

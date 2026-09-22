@@ -26,18 +26,14 @@ export async function getSiriRideWithRelated(
   return gtfs_route_promise[0]
 }
 
-export async function getSiriStopHitTimesAsync(
-  route: BusRoute,
-  stop: BusStop,
-  timestamp: dayjs.Dayjs,
-) {
+export async function getSiriStopHitTimesAsync(route: BusRoute, stop: BusStop, time: dayjs.Dayjs) {
   const boundary = geoLocationBoundary(stop.location, LOCATION_DELTA_METERS)
 
   const locations = await SIRI_API.siriVehicleLocationsListGet({
     limit: 1024,
     siriRoutesLineRef: route.lineRef.toString(),
-    recordedAtTimeFrom: dayjs(timestamp).subtract(4, 'hour').toDate(),
-    recordedAtTimeTo: dayjs(timestamp).add(4, 'hour').toDate(),
+    recordedAtTimeFrom: dayjs(time).subtract(4, 'hour').toDate(),
+    recordedAtTimeTo: dayjs(time).add(4, 'hour').toDate(),
     latGreaterOrEqual: boundary.lowerBound.latitude,
     latLowerOrEqual: boundary.upperBound.latitude,
     lonGreaterOrEqual: boundary.lowerBound.longitude,
@@ -65,7 +61,7 @@ export async function getSiriStopHitTimesAsync(
   )
 
   const diffFromTargetStart = (location: EnrichedLocation): number =>
-    Math.abs(timestamp.diff(dayjs(location.recordedAtTime), 'second'))
+    Math.abs(time.diff(dayjs(location.recordedAtTime), 'second'))
 
   const closestInTimeHits = stopHits.sort((a, b) => diffFromTargetStart(a) - diffFromTargetStart(b))
   return closestInTimeHits.sort((a, b) => a.recordedAtTime!.getTime() - b.recordedAtTime!.getTime())
