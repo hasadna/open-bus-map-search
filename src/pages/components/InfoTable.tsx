@@ -1,4 +1,4 @@
-import styled from 'styled-components'
+import { styled } from '@mui/material/styles'
 
 export const InfoTable = ({ children }: { children?: React.ReactNode }) => {
   return (
@@ -25,12 +25,12 @@ export const InfoItem = ({
   )
 }
 
-const Table = styled.table`
-  border-collapse: collapse;
-  & > * {
-    font-size: 1em;
-  }
-  td {
-    padding: 0.125rem;
-  }
-`
+const Table = styled('table')({
+  borderCollapse: 'collapse',
+  '& > *': {
+    fontSize: '1em',
+  },
+  '& td': {
+    padding: '0.125rem',
+  },
+})
