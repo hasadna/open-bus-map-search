@@ -18,7 +18,7 @@ function makeWrapper(initialUrlParams: Record<string, string> = {}, setSharePara
   return { Wrapper, setShareParams }
 }
 
-// The timeline page is the real consumer: a single shareable string param
+// The station-stops page is the real consumer: a single shareable string param
 // (time-of-day) plus session-only scroll position.
 const DEFAULTS = {
   params: { time: '08:30' },

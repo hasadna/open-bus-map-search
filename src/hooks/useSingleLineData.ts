@@ -3,8 +3,9 @@ import { uniqBy } from 'es-toolkit/compat'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { SIRI_API } from 'src/api/apiConfig'
 import { getRoutesAsync, getRoutesByLineRef, getStopsForRouteAsync } from 'src/api/gtfsService'
-import { israelDayBounds, toIsraelTimezone, utcNoonForDateStr } from 'src/dayjs'
+import { israelDayBounds, toIsraelTimezone } from 'src/dayjs'
 import { BusRoute } from 'src/model/busRoute'
+import { type CivilDate } from 'src/model/time/civilDate'
 import {
   locationFixKey,
   type PositionGroup,
@@ -20,7 +21,7 @@ import {
 interface UseSingleLineDataOptions {
   operatorId?: string
   lineNumber?: string
-  date: string
+  date: CivilDate
   routeKey?: string | null
   rideTime?: string | null
   onRouteKeyChange?: (routeKey: string | null) => void
@@ -220,9 +221,9 @@ export const useSingleLineData = ({
       if (selectedRoute?.routeIds && selectedRoute.routeIds.length > 0) {
         routeIds = selectedRoute.routeIds
       } else if (scheduledLine && operatorId) {
-        routeIds = (
-          await getRoutesByLineRef(operatorId, scheduledLine, utcNoonForDateStr(date))
-        ).map((route) => route.id)
+        routeIds = (await getRoutesByLineRef(operatorId, scheduledLine, date)).map(
+          (route) => route.id,
+        )
       }
       if (!routeIds || routeIds.length === 0) return []
       return await getStopsForRouteAsync(routeIds, rideStartTime)

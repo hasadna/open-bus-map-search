@@ -72,7 +72,7 @@ jobs:
           # once, in CLAUDE.md — this file does not restate them.
           # See .github/claude-diagnosis-protocol.md.
           claude_args: >-
-            --model opus
+            --model fable
             --effort max
             --append-system-prompt-file .github/claude-diagnosis-protocol.md
             --allowed-tools "Bash,Edit,Write,Read,Glob,Grep,WebFetch,WebSearch,TodoWrite"

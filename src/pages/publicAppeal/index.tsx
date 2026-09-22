@@ -1,6 +1,6 @@
+import { styled } from '@mui/material/styles'
 import { Space, Typography } from 'antd'
 import { useTranslation } from 'react-i18next'
-import styled from 'styled-components'
 import Widget from 'src/shared/Widget'
 import './PublicAppeal.scss'
 
@@ -41,17 +41,17 @@ const Task = ({ title, description, marginBottom }: TaskDetails) => {
   )
 }
 
-const PublicAppealStyle = styled.div`
-  display: flex;
-  flex-direction: column;
-  padding: 0 1rem;
-  & .public-appeal-center-container {
-    width: 100%;
-    max-width: 770px;
-    & h1 {
-      font-size: 2em;
-    }
-  }
-`
+const PublicAppealStyle = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  padding: '0 1rem',
+  '& .public-appeal-center-container': {
+    width: '100%',
+    maxWidth: '770px',
+    '& h1': {
+      fontSize: '2em',
+    },
+  },
+})
 
 export default PublicAppeal

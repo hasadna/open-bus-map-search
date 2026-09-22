@@ -24,12 +24,14 @@ type MainMenuProps = {
   compact?: boolean
 }
 
+const UNGROUPED_PATHS = ['/', '/dashboard'] as const
+
 const MENU_GROUPS = [
   {
     key: 'menu_group_analysis',
     paths: [
       '/single-line-map',
-      '/timeline',
+      '/station-stops',
       '/gaps',
       '/gaps_patterns',
       '/operator',
@@ -194,7 +196,7 @@ const MainMenu = ({ collapsed = false, compact = false }: MainMenuProps) => {
   return (
     <>
       <NavList className="sidebar-menu" compact={compact} collapsed={collapsed}>
-        {renderItem('/')}
+        {UNGROUPED_PATHS.map((path) => renderItem(path))}
         {MENU_GROUPS.flatMap(({ key, paths }) => [
           collapsed ? null : (
             <ListSubheader key={key} disableSticky>

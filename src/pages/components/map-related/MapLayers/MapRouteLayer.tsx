@@ -1,9 +1,9 @@
 import type { Layer } from 'leaflet'
-import { Fragment, useCallback, useRef } from 'react'
+import { Fragment, useCallback, useEffect, useRef } from 'react'
 import { Marker, Polyline, Popup } from 'react-leaflet'
 import { useAgencyList } from 'src/hooks/useAgencyList'
 import { busIcon, busIconPath } from '../../utils/BusIcon'
-import type { Point, PositionGroup } from '../map-types'
+import type { FocusTarget, Point, PositionGroup } from '../map-types'
 import { rideEndMarker, vehicleBearingMarker, vehicleStandingMarker } from '../mapMarkers'
 import {
   bearingZIndex,
@@ -19,6 +19,7 @@ interface MapRouteLayerProps {
   positionGroups: PositionGroup[]
   showNavigationButtons?: boolean
   navigateMarkers: (groupIndex: number, id: number, marker: Layer) => void
+  focusTarget?: FocusTarget | null
 }
 
 /** `Point.color` holds the ping's velocity, not a colour — see `toPoint`. */
@@ -37,6 +38,7 @@ export function MapRouteLayer({
   positionGroups,
   showNavigationButtons,
   navigateMarkers,
+  focusTarget,
 }: MapRouteLayerProps) {
   const markerRef = useRef<{ [key: string]: Layer | null }>({})
   const agencyList = useAgencyList()
@@ -48,6 +50,14 @@ export function MapRouteLayer({
     },
     [navigateMarkers],
   )
+
+  // Only the popup — MapContent owns the fly-to for the same focusTarget, and two
+  // competing animations would fight over the viewport.
+  useEffect(() => {
+    const marker = focusTarget?.marker
+    if (!marker) return
+    markerRef.current[`${marker.groupIndex}-${marker.positionIndex}`]?.openPopup()
+  }, [focusTarget])
 
   return (
     <>

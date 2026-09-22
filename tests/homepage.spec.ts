@@ -21,7 +21,7 @@ test.describe('Homepage', () => {
   test('shows links to all main pages', async ({ page }) => {
     const links = page.locator('.links.hideOnMobile')
     await expect(links.getByText('מסלול נסיעה')).toBeVisible()
-    await expect(links.getByText('היסטוריית נסיעות')).toBeVisible()
+    await expect(links.getByText('עצירות בתחנה')).toBeVisible()
     await expect(links.getByText('נסיעות שלא בוצעו', { exact: true })).toBeVisible()
     await expect(links.getByText('דפוסי נסיעות שלא בוצעו')).toBeVisible()
     await expect(links.getByText('חברה מפעילה')).toBeVisible()

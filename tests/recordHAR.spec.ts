@@ -95,12 +95,12 @@ test.describe('Record HAR files', () => {
     await settleResponseBodies()
   })
 
-  // ---- timeline.har -------------------------------------------------------
+  // ---- stationStops.har -------------------------------------------------------
   // Single test records ALL needed entries in one browser context
-  test('record timeline.har', async ({ page }) => {
-    await setupRecording(page, 'tests/HAR/timeline.har')
+  test('record stationStops.har', async ({ page }) => {
+    await setupRecording(page, 'tests/HAR/stationStops.har')
     await goToPage(page, '/')
-    await goToPage(page, '/timeline')
+    await goToPage(page, '/station-stops')
 
     // Trigger agencies list by opening operator dropdown
     await openDropdownAndWait(page, '#operator-select')
@@ -110,7 +110,7 @@ test.describe('Record HAR files', () => {
     await page.getByPlaceholder('לדוגמה: 17א').fill('1')
     await page.waitForLoadState('networkidle')
 
-    // Select route used for timeline hits test
+    // Select route used for station-stops hits test
     await openDropdownAndWait(page, '#route-select')
     const routeWithHits = 'שדרות מנחם בגין/כביש 7-גדרה ⟵ שדרות מנחם בגין/כביש 7-גדרה'
     const hitsRouteExists = await page.getByRole('option', { name: routeWithHits }).count()
@@ -134,7 +134,7 @@ test.describe('Record HAR files', () => {
 
     // Test empty routes: switch to דן בדרום + line 9999
     // First clear the operator by navigating away and back
-    await page.goto('/timeline')
+    await page.goto('/station-stops')
     await page.locator('.preloader').waitFor({ state: 'hidden' })
     await openDropdownAndWait(page, '#operator-select')
     const danBaDarom = page.getByRole('option', { name: 'דן בדרום', exact: true })
@@ -241,28 +241,6 @@ test.describe('Record HAR files', () => {
     // gtfs_ride_stops -> gtfs_stops) so its tail isn't aborted at teardown and
     // recorded as a status:-1 empty entry. Then capture all bodies.
     await page.waitForLoadState('networkidle')
-    await settleResponseBodies()
-  })
-
-  // ---- lineprofile.har ----------------------------------------------------
-  // Records the queries fired by navigating directly to /profile/{id}:
-  //   * gtfs_routes/get?id=... (loader)
-  //   * gtfs_routes/list?route_short_name=... (useSingleLineData routes for line)
-  //   * siri_rides/list?... (start-time options)
-  // Route id 4339841 is the operator 97 / line 16 route for 2024-02-12 used by the
-  // single-line tests; it is stable for the frozen test date.
-  test('record lineprofile.har', async ({ page }) => {
-    await setupRecording(page, 'tests/HAR/lineprofile.har')
-    const settleResponseBodies = trackResponseBodies(page)
-    await goToPage(page, '/')
-    await goToPage(page, '/profile/4339841')
-    // Wait for the SIRI rides response so start-time options are populated in the HAR.
-    await page
-      .waitForResponse((r) => r.url().includes('/siri_rides/list'), { timeout: 30000 })
-      .catch(() => undefined)
-    await page.waitForLoadState('networkidle')
-
-    // Ensure every stride-api response body is fully captured in the HAR.
     await settleResponseBodies()
   })
 
@@ -378,7 +356,7 @@ test.describe('Record HAR files', () => {
   test('record clearbutton.har', async ({ page }) => {
     await setupRecording(page, 'tests/HAR/clearbutton.har')
     await goToPage(page, '/')
-    await goToPage(page, '/timeline')
+    await goToPage(page, '/station-stops')
 
     // Trigger agencies list
     await openDropdownAndWait(page, '#operator-select')

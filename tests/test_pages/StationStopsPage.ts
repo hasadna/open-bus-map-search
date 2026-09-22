@@ -1,10 +1,10 @@
 import type { Page } from '@playwright/test'
-import { test as base } from 'tests/utils'
+import { test as base } from '../utils'
 import { BasePage } from './BasePage'
 
-export { expect } from 'tests/utils'
+export { expect } from '../utils'
 
-class TimelinePage extends BasePage {
+class StationStopsPage extends BasePage {
   constructor(page: Page) {
     super(page)
   }
@@ -54,8 +54,8 @@ class TimelinePage extends BasePage {
   }
 }
 
-export const test = base.extend<{ timelinePage: TimelinePage }>({
-  timelinePage: async ({ page }, handle) => {
-    await handle(new TimelinePage(page))
+export const test = base.extend<{ stationStopsPage: StationStopsPage }>({
+  stationStopsPage: async ({ page }, handle) => {
+    await handle(new StationStopsPage(page))
   },
 })

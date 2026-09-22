@@ -1,13 +1,13 @@
 import {
   BiotechTwoTone,
+  DashboardTwoTone,
   DirectionsBusTwoTone,
   EmojiTransportationTwoTone,
   GitHub,
-  HistoryTwoTone,
+  HailRounded,
   HomeTwoTone,
   InfoTwoTone,
   MapTwoTone,
-  MonitorTwoTone,
   NoTransferTwoTone,
   PaidTwoTone,
   PestControlTwoTone,
@@ -19,7 +19,6 @@ import {
 } from '@mui/icons-material'
 import { lazy } from 'react'
 import { createBrowserRouter, createRoutesFromElements, Navigate, Route } from 'react-router'
-import { getRouteById } from 'src/api/gtfsService'
 // Eager-imported [DashboardPage, GapsPatternsPage, DataResearch] to merge their recharts/CJS modules into the main chunk and
 // avoid a rolldown OXC-minifier codegen bug that produces `var X=X()` self-calls
 // in the lazy chunks (vite:preloadError -> reload loop). See rolldown-vite #595.
@@ -32,14 +31,13 @@ import { LegacyLangRedirect } from './LegacyLangRedirect'
 import { MainRoute } from './MainRoute'
 
 const HomePage = lazy(() => import('../pages/homepage/HomePage'))
-const TimelinePage = lazy(() => import('../pages/historicTimeline'))
+const StationStopsPage = lazy(() => import('../pages/stationStops'))
 const GapsPage = lazy(() => import('../pages/gaps'))
 const TimeBasedMapPage = lazy(() => import('../pages/timeBasedMap'))
 const SingleLineMapPage = lazy(() => import('../pages/singleLineMap'))
 const VehiclePage = lazy(() => import('../pages/vehicle'))
 const About = lazy(() => import('../pages/about'))
 const Operator = lazy(() => import('../pages/operator'))
-const Profile = lazy(() => import('../pages/lineProfile/LineProfile'))
 const BugReportForm = lazy(() => import('../pages/bugReport/BugReportForm'))
 const PublicAppeal = lazy(() => import('../pages/publicAppeal'))
 const TrainPage = lazy(() => import('../pages/train'))
@@ -52,11 +50,17 @@ export const PAGES = [
     element: <HomePage />,
   },
   {
-    label: 'timeline_page_title',
-    path: '/timeline',
+    label: 'dashboard_page_title',
+    path: '/dashboard',
+    icon: <DashboardTwoTone />,
+    element: <DashboardPage />,
+  },
+  {
+    label: 'station_stops_page_title',
+    path: '/station-stops',
     searchParamsRequired: true,
-    icon: <HistoryTwoTone />,
-    element: <TimelinePage />,
+    icon: <HailRounded />,
+    element: <StationStopsPage />,
   },
   {
     label: 'gaps_page_title',
@@ -148,12 +152,6 @@ export const HEADER_LINKS = [
 
 const HIDDEN_PAGES = [
   {
-    label: 'dashboard_page_title',
-    path: '/dashboard',
-    icon: <MonitorTwoTone />,
-    element: <DashboardPage />,
-  },
-  {
     label: 'data-research',
     path: '/data-research',
     icon: <BiotechTwoTone />,
@@ -176,22 +174,6 @@ export const getRoutesList = () => {
           ErrorBoundary={ErrorPage}
         />
       ))}
-      <Route
-        path="profile/:gtfsRideGtfsRouteId"
-        element={<Profile />}
-        ErrorBoundary={ErrorPage}
-        loader={async ({ params }) => {
-          try {
-            const route = await getRouteById(params?.gtfsRideGtfsRouteId)
-            return { route }
-          } catch (error) {
-            return {
-              route: null,
-              message: (error as Error).message,
-            }
-          }
-        }}
-      />
       {/* Backward-compat: old links carried a language prefix (/he, /en, /ru, /ar).
           Strip it, apply the language, and redirect to the clean path.
           Remove this route (and LegacyLangRedirect) once such links have aged out. */}
