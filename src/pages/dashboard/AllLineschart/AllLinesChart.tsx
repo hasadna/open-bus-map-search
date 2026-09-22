@@ -1,9 +1,9 @@
 import { HelpTwoTone } from '@mui/icons-material'
 import { Tooltip } from '@mui/material'
-import { FC, Fragment, useEffect } from 'react'
+import { FC, Fragment } from 'react'
 import { useTranslation } from 'react-i18next'
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
-import { Dayjs } from 'src/dayjs'
+import { type CivilDate } from 'src/model/time/civilDate'
 import SkeletonLoader from 'src/shared/SkeletonLoader'
 import Widget from 'src/shared/Widget'
 import OperatorHbarChart from './OperatorHbarChart/OperatorHbarChart'
@@ -18,16 +18,11 @@ const convertToChartCompatibleStruct = (arr: GroupByRes[]) => {
 }
 
 interface AllChartComponentProps {
-  startDate: Dayjs
-  endDate: Dayjs
-  alertAllChartsZeroLinesHandling: (arg: boolean) => void
+  startDate: CivilDate
+  endDate: CivilDate
 }
 
-export const AllLinesChart: FC<AllChartComponentProps> = ({
-  startDate,
-  endDate,
-  alertAllChartsZeroLinesHandling,
-}) => {
+export const AllLinesChart: FC<AllChartComponentProps> = ({ startDate, endDate }) => {
   const [groupByOperatorData, groupByOperatorLoading] = useGroupBy({
     dateFrom: startDate,
     dateTo: endDate,
@@ -35,21 +30,11 @@ export const AllLinesChart: FC<AllChartComponentProps> = ({
   })
   const { t } = useTranslation()
 
-  useEffect(() => {
-    const totalElements = groupByOperatorData.length
-    const totalZeroElements = groupByOperatorData.filter((el) => el.totalActualRides === 0).length
-    if (totalElements === 0 || totalZeroElements === totalElements) {
-      alertAllChartsZeroLinesHandling(true)
-    } else {
-      alertAllChartsZeroLinesHandling(false)
-    }
-  }, [groupByOperatorData])
-
   return (
     <Widget
       title={
         <>
-          {t('dashboard_page_title')}
+          {t('all_lines_chart_title')}
           <Tooltip
             title={convertLineFeedToHtmlTags(t('dashboard_tooltip_content'))}
             placement="left"

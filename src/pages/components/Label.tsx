@@ -1,13 +1,13 @@
 import { Typography } from '@mui/material'
-import styled from 'styled-components'
+import { styled } from '@mui/material/styles'
 
-const StyledDiv = styled.div`
-  display: inline-flex;
-  width: 100%;
-  height: 100%;
-  justify-content: flex-start;
-  align-items: center;
-`
+const StyledDiv = styled('div')({
+  display: 'inline-flex',
+  width: '100%',
+  height: '100%',
+  justifyContent: 'flex-start',
+  alignItems: 'center',
+})
 
 type LabelProps = {
   text: string

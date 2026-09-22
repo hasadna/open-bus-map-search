@@ -27,6 +27,7 @@ import { Link, useNavigate } from 'react-router'
 import { useDebounceValue } from 'usehooks-ts'
 import { GlobalSearchContext } from 'src/model/globalState'
 import { ISRAEL_TRAIN_ID } from 'src/model/operator'
+import { type CivilDate } from 'src/model/time/civilDate'
 import SkeletonLoader from 'src/shared/SkeletonLoader'
 import Widget from 'src/shared/Widget'
 import { useAllRoutes } from '../../hooks/useAllRoutes'
@@ -38,7 +39,7 @@ type RouteGroup = {
   routes: Route[]
 }
 
-export const OperatorRoutes = ({ operatorId, date }: { operatorId?: string; date?: string }) => {
+export const OperatorRoutes = ({ operatorId, date }: { operatorId?: string; date: CivilDate }) => {
   const { t } = useTranslation()
   const { routes, isLoading } = useAllRoutes(operatorId, date)
   const [query, setQuery] = useState('')
@@ -142,10 +143,6 @@ const RouteGroup = ({ group, operatorId }: { group: RouteGroup; operatorId?: str
   const navigate = useNavigate()
   const DirectionArrow = i18n.dir() === 'rtl' ? ArrowBackTwoTone : ArrowForwardTwoTone
 
-  const profileLink = (route: Route) => (
-    <Link to={`/profile/${route.id}`}>{t('operator.profile')}</Link>
-  )
-
   const mapLink = (route: Route) => {
     if (operatorId === ISRAEL_TRAIN_ID) {
       return <Link to={`/train?route=${route.lineRef}`}>{t('operator.map')}</Link>
@@ -205,10 +202,7 @@ const RouteGroup = ({ group, operatorId }: { group: RouteGroup; operatorId?: str
                   </tr>
                 </tbody>
               </StackedTable>
-              <StackedActions>
-                {profileLink(route)}
-                {mapLink(route)}
-              </StackedActions>
+              <StackedActions>{mapLink(route)}</StackedActions>
             </StackedRoute>
           ))}
         </Box>
@@ -231,10 +225,7 @@ const RouteGroup = ({ group, operatorId }: { group: RouteGroup; operatorId?: str
                   </TableCell>
                   <TableCell>{route.end}</TableCell>
                   <TableCell>
-                    <Box sx={{ display: 'flex', gap: 2 }}>
-                      {profileLink(route)}
-                      {mapLink(route)}
-                    </Box>
+                    <Box sx={{ display: 'flex', gap: 2 }}>{mapLink(route)}</Box>
                   </TableCell>
                 </TableRow>
               ))}

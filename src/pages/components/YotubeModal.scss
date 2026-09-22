@@ -3,6 +3,13 @@
   align-items: center;
   margin: auto 12px;
   cursor: pointer;
+  padding: 0;
+  border: none;
+  background: none;
+
+  // the icon is sized with fontSize="inherit" from the surrounding heading
+  font: inherit;
+  color: inherit;
 }
 
 .modal-iframe-container {

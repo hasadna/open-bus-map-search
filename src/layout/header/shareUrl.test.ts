@@ -1,11 +1,12 @@
 import { GLOBAL_SEARCH_DEFAULTS, GlobalSearchState } from 'src/model/globalState'
+import { civilDate, type CivilDate } from 'src/model/time/civilDate'
 import { buildShareUrl, PAGE_SHARE_PARAMS } from './shareUrl'
 import type { ShareableKey } from './shareUrl'
 
 const ORIGIN = 'https://open-bus.example.com'
 
 const fullSearch: GlobalSearchState = {
-  date: '2026-05-01',
+  date: civilDate('2026-05-01')!,
   operatorId: '3',
   lineNumber: '64',
   routeKey: 'route-abc',
@@ -159,7 +160,8 @@ describe('buildShareUrl — edge cases', () => {
   it('a page with all empty/null search values produces no query string', () => {
     const empty: GlobalSearchState = {
       ...GLOBAL_SEARCH_DEFAULTS,
-      date: '',
+      // Unreachable in real state; cast to exercise buildShareUrl's falsy-value skip.
+      date: '' as CivilDate,
       operatorId: null,
       lineNumber: null,
       routeKey: null,
@@ -205,33 +207,4 @@ describe('buildShareUrl — per-page param contracts', () => {
       })
     })
   }
-})
-
-// ---------------------------------------------------------------------------
-// buildShareUrl — dynamic profile path
-// ---------------------------------------------------------------------------
-
-// /profile/:id is not in PAGE_SHARE_PARAMS. The route ID is already in the
-// path, so GlobalSearchContext params must not leak into the URL — only explicit
-// page params (e.g. rideTime) registered via PageShareParamsContext appear.
-
-describe('buildShareUrl — dynamic profile path', () => {
-  it('no GlobalSearchContext params leak into the URL', () => {
-    const p = paramsOf(build('/profile/12345', fullSearch))
-    expect(p.operatorId).toBeUndefined()
-    expect(p.lineNumber).toBeUndefined()
-    expect(p.date).toBeUndefined()
-    expect(p.routeKey).toBeUndefined()
-    expect(p.rideTime).toBeUndefined()
-  })
-
-  it('page params (rideTime) are included', () => {
-    const p = paramsOf(build('/profile/12345', fullSearch, { rideTime: '08:30:00' }))
-    expect(p.rideTime).toBe('08:30:00')
-  })
-
-  it('profile id is preserved in the pathname', () => {
-    const url = new URL(build('/profile/12345', fullSearch, { rideTime: '08:30:00' }))
-    expect(url.pathname).toBe('/profile/12345')
-  })
 })

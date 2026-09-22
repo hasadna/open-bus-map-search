@@ -1,5 +1,6 @@
 import { SiriVehicleLocationWithRelatedPydanticModel } from '@hasadna/open-bus-api-client'
 import { toIsraelTimezone } from 'src/dayjs'
+import { toCivilDate } from 'src/model/time/civilDate'
 import { locationFixKey } from 'src/pages/components/map-related/map-types'
 import { formatStartTimeForQuery } from 'src/pages/components/utils/startTimeUtils'
 
@@ -27,8 +28,11 @@ export function buildSingleLineMapRideLink(
   if (!hit.siriRideScheduledStartTime) return undefined
 
   const departure = toIsraelTimezone(hit.siriRideScheduledStartTime)
+  const departureDay = toCivilDate(departure)
+  if (!departureDay) return undefined
+
   const params = new URLSearchParams({
-    date: departure.format('YYYY-MM-DD'),
+    date: departureDay,
     operatorId,
     lineNumber,
     routeKey,

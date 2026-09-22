@@ -1,17 +1,15 @@
-import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
-import { Dayjs } from 'src/dayjs'
 import { MAJOR_OPERATORS } from 'src/model/operator'
+import { type CivilDate } from 'src/model/time/civilDate'
 import SkeletonLoader from 'src/shared/SkeletonLoader'
 import Widget from 'src/shared/Widget'
 import LinesHbarChart, { LineBar } from './LineHbarChart/LinesHbarChart'
 
 interface WorstLinesChartProps {
-  startDate: Dayjs
-  endDate: Dayjs
+  startDate: CivilDate
+  endDate: CivilDate
   operatorId?: string
-  alertWorstLineHandling: (arg: boolean) => void
 }
 
 const convertToWorstLineChartCompatibleStruct = (arr: GroupByRes[], operatorId?: string) => {
@@ -34,12 +32,7 @@ const convertToWorstLineChartCompatibleStruct = (arr: GroupByRes[], operatorId?:
     )
 }
 
-export const WorstLinesChart = ({
-  startDate,
-  endDate,
-  operatorId,
-  alertWorstLineHandling,
-}: WorstLinesChartProps) => {
+export const WorstLinesChart = ({ startDate, endDate, operatorId }: WorstLinesChartProps) => {
   const [groupByLineData, lineDataLoading] = useGroupBy({
     dateFrom: startDate,
     dateTo: endDate,
@@ -47,16 +40,6 @@ export const WorstLinesChart = ({
   })
 
   const { t } = useTranslation()
-
-  useEffect(() => {
-    const totalElements = groupByLineData.length
-    const totalZeroElements = groupByLineData.filter((el) => el.totalActualRides === 0).length
-    if (totalElements === 0 || totalZeroElements === totalElements) {
-      alertWorstLineHandling(true)
-    } else {
-      alertWorstLineHandling(false)
-    }
-  }, [groupByLineData])
 
   return (
     <Widget title={t('worst_lines_page_title')}>

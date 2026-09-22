@@ -4,7 +4,8 @@ import type {
   SiriVehicleLocationWithRelatedPydanticModel,
 } from '@hasadna/open-bus-api-client'
 import { getDistance } from 'geolib'
-import dayjs, { ISRAEL_TIMEZONE, utcNoonForDateStr } from 'src/dayjs'
+import dayjs, { ISRAEL_TIMEZONE } from 'src/dayjs'
+import { addDays, type CivilDate, civilDateToApiDate } from 'src/model/time/civilDate'
 
 export const TRAIN_OPERATOR_REF = '2'
 export const API_PAGE_SIZE = 10_000
@@ -170,13 +171,13 @@ export function getTrainStationAverageDelays(rides: TrainRideData[]): TrainStati
     }))
 }
 
-export function getTrainDateRange(date: string) {
+export function getTrainDateRange(date: CivilDate) {
   const start = dayjs.tz(date, ISRAEL_TIMEZONE)
-  const nextDate = dayjs.tz(start.add(1, 'day').format('YYYY-MM-DD'), ISRAEL_TIMEZONE)
+  const nextDate = dayjs.tz(addDays(date, 1), ISRAEL_TIMEZONE)
 
   return {
-    dateFrom: utcNoonForDateStr(start.format('YYYY-MM-DD')),
-    dateTo: utcNoonForDateStr(start.format('YYYY-MM-DD')),
+    dateFrom: civilDateToApiDate(date),
+    dateTo: civilDateToApiDate(date),
     timeFrom: start.toDate(),
     timeTo: nextDate.toDate(),
   }
