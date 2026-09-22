@@ -1,7 +1,7 @@
 import { Grid, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
+import { styled } from '@mui/material/styles'
 import { useContext, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import styled from 'styled-components'
 import { GlobalSearchContext } from 'src/model/globalState'
 import { type CivilDate, shiftCivilDate, todayCivilDate } from 'src/model/time/civilDate'
 import { CivilDateSelector } from '../components/CivilDateSelector'
@@ -95,16 +95,17 @@ const OperatorPage = () => {
 
 export default OperatorPage
 
-const ChartWrapper = styled.div`
-  height: 100%;
-  > div {
-    height: 100%;
-  }
-  .chart {
-    height: 335.15px;
-    overflow-y: scroll;
-  }
-`
-const Spacing = styled.div`
-  margin-top: 1rem;
-`
+const ChartWrapper = styled('div')({
+  height: '100%',
+  '& > div': {
+    height: '100%',
+  },
+  '& .chart': {
+    height: '335.15px',
+    overflowY: 'scroll',
+  },
+})
+
+const Spacing = styled('div')({
+  marginTop: '1rem',
+})

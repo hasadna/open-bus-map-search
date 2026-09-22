@@ -1,5 +1,5 @@
-import styled from 'styled-components'
+import { styled } from '@mui/material/styles'
 
-export const NotFound = styled.div`
-  color: #710825;
-`
+export const NotFound = styled('div')({
+  color: '#710825',
+})

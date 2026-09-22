@@ -1,9 +1,9 @@
+import { styled } from '@mui/material/styles'
 import { useTranslation } from 'react-i18next'
-import styled from 'styled-components'
 
-const Centered = styled.div`
-  text-align: center;
-`
+const Centered = styled('div')({
+  textAlign: 'center',
+})
 
 const newIssueUrl = 'https://github.com/hasadna/open-bus-map-search/issues/new'
 
