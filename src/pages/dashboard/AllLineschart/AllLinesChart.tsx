@@ -1,6 +1,6 @@
 import { HelpTwoTone } from '@mui/icons-material'
 import { Tooltip } from '@mui/material'
-import { FC, Fragment, useEffect } from 'react'
+import { FC, Fragment } from 'react'
 import { useTranslation } from 'react-i18next'
 import { GroupByRes, useGroupBy } from 'src/api/groupByService'
 import { type CivilDate } from 'src/model/time/civilDate'
@@ -20,30 +20,15 @@ const convertToChartCompatibleStruct = (arr: GroupByRes[]) => {
 interface AllChartComponentProps {
   startDate: CivilDate
   endDate: CivilDate
-  alertAllChartsZeroLinesHandling: (arg: boolean) => void
 }
 
-export const AllLinesChart: FC<AllChartComponentProps> = ({
-  startDate,
-  endDate,
-  alertAllChartsZeroLinesHandling,
-}) => {
+export const AllLinesChart: FC<AllChartComponentProps> = ({ startDate, endDate }) => {
   const [groupByOperatorData, groupByOperatorLoading] = useGroupBy({
     dateFrom: startDate,
     dateTo: endDate,
     groupBy: 'operator_ref',
   })
   const { t } = useTranslation()
-
-  useEffect(() => {
-    const totalElements = groupByOperatorData.length
-    const totalZeroElements = groupByOperatorData.filter((el) => el.totalActualRides === 0).length
-    if (totalElements === 0 || totalZeroElements === totalElements) {
-      alertAllChartsZeroLinesHandling(true)
-    } else {
-      alertAllChartsZeroLinesHandling(false)
-    }
-  }, [groupByOperatorData])
 
   return (
     <Widget

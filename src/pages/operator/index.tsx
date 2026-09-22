@@ -81,9 +81,6 @@ const OperatorPage = () => {
                 operatorId={operatorId}
                 startDate={shiftCivilDate(date, -1, timeRange)}
                 endDate={date}
-                alertWorstLineHandling={function (arg: boolean): void {
-                  console.log('alertWorstLineHandling', arg)
-                }}
               />
             </ChartWrapper>
           </Grid>
