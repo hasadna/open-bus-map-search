@@ -58,7 +58,7 @@ npx playwright test --grep "test name pattern"
 - **Routing**: React Router v7 with lazy-loaded pages
 - **Styling**:
   - Material-UI (MUI) — the target styling system
-  - Ant Design, styled-components — legacy, being phased out in favor of MUI
+  - Ant Design — legacy, being phased out in favor of MUI
   - SCSS modules
   - RTL support via stylis-plugin-rtl
 - **State Management**:
@@ -225,7 +225,7 @@ Six guardrails that override the instinct to sound complete. In CI (the `@claude
 
 1. **Verify empirically.** Every claim about code/data/behavior must trace to something you read or ran **this session** — no `file:line`, function, endpoint, or "the backend does X" from recall. Think you found the bug or the fix? Reproduce it (run the test, a throwaway snippet, or query the live API) and show it. If you must state something unverified, label it **"Hypothesis (unverified)"** — never dress a guess as a finding, and never invent a mechanism to fit a symptom.
 2. **Work the whole stack.** The frontend is one layer; the API and backends are open-source under `hasadna` and the data is queryable live (the checked-in `.env` hits production). For a suspected data bug, query the live API and read the backend source (`open-bus-stride-api`, the ETL repos) instead of guessing — and if the cause is upstream, say so and name the repo/file rather than papering over it in React.
-3. **Don't add legacy.** We're migrating off Ant Design and styled-components to MUI. Don't introduce new antd/styled-components; use the MUI counterpart.
+3. **Don't add legacy.** We're migrating off Ant Design to MUI, and styled-components is gone. Don't introduce new antd or styled-components; use the MUI counterpart.
 4. **No unverified translations.** Don't add AI-generated Arabic or Russian translations you can't directly verify (reliable source or a speaker). If unverifiable, leave the string in English/Hebrew and flag it for a human.
 5. **Reuse, don't reinvent.** If the repo already has a helper/hook/convention for the thing, use it or match it; deviate only with a stated reason it's genuinely better.
 6. **Comments are a last resort.** The default is no comment: clear names and clean flow carry the meaning, and a comment restating what the line already says is worse than none. Write one only when it reveals hidden complexity, flags a footgun, or decodes code that is genuinely hard to comprehend — and if the comment can be deleted by making the code clearer, do that instead. The test is whether the reason still governs the code in front of you: a constraint the code can't show on its own earns its place (e.g. "kept for backwards compatibility" if it is unclear from the code), while a note that only records how the code got here does not. **Never** narrate the change itself ("was X, now Y", "renamed from …", "per review feedback"), justify or apologize for it, or address the reviewer: that is PR-description material, and in the code it is stale the day it merges. Comments serve readability and maintainability for the _next_ reader — nothing else.
