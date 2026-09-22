@@ -1,6 +1,6 @@
 import { GtfsRideStopWithRelatedPydanticModel } from '@hasadna/open-bus-api-client'
+import { styled } from '@mui/material/styles'
 import { useCallback, useMemo, useRef, useState } from 'react'
-import styled from 'styled-components'
 import { MAX_HITS_COUNT } from 'src/api/apiConfig'
 import dayjs from 'src/dayjs'
 import { useTheme } from 'src/layout/ThemeContext'
@@ -51,24 +51,24 @@ const boardWindow = (timestamps: Date[]) => {
   return { lowerBound, rangeSeconds: (Math.max(...instants) - lowerBound) / 1000 }
 }
 
-const TitleRow = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  column-gap: ${COLUMN_GAP}px;
-  margin-bottom: 16px;
-`
+const TitleRow = styled('div')({
+  display: 'grid',
+  gridTemplateColumns: '1fr 1fr',
+  columnGap: `${COLUMN_GAP}px`,
+  marginBottom: '16px',
+})
 
-const StyledTimelineTitle = styled(TimelineTitle)`
-  display: block;
-  text-align: center;
-`
+const StyledTimelineTitle = styled(TimelineTitle)({
+  display: 'block',
+  textAlign: 'center',
+})
 
-const Container = styled.div`
-  position: relative;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  column-gap: ${COLUMN_GAP}px;
-`
+const Container = styled('div')({
+  position: 'relative',
+  display: 'grid',
+  gridTemplateColumns: '1fr 1fr',
+  columnGap: `${COLUMN_GAP}px`,
+})
 
 /**
  * How much colour a resting fill lays down, per theme. On white a fill is a small darkening
@@ -92,30 +92,31 @@ const edgeAlpha = ({ $highlighted, $idle }: BandTint) => `${$highlighted ? 90 : 
  *  where several rides ran off schedule over the same minutes the overlap darkens, and that
  *  darkness is the honest reading — a whole window of buses missed, not one. (Within a single
  *  band early and late still abut at the scheduled instant, so no ride doubles its own colour.) */
-const Band = styled.div<
+const Band = styled('div')<
   BandTint & {
     $top: number
     $height: number
     $rgb: string
   }
->`
-  position: absolute;
-  left: 0;
-  width: 100%;
-  top: ${({ $top }) => $top}px;
-  height: ${({ $height }) => $height}px;
-  min-height: 2px;
-  box-sizing: border-box;
-  background-color: rgb(${({ $rgb }) => $rgb} / ${fillAlpha});
-  border-top: 1px solid rgb(${({ $rgb }) => $rgb} / ${edgeAlpha});
-  border-bottom: 1px solid rgb(${({ $rgb }) => $rgb} / ${edgeAlpha});
-  border-radius: 3px;
-  user-select: none;
-  pointer-events: none;
-  transition:
-    background-color 0.15s ease,
-    border-color 0.15s ease;
-`
+>(({ $top, $height, $rgb, $highlighted, $idle }) => {
+  const tint = { $highlighted, $idle }
+  return {
+    position: 'absolute',
+    left: 0,
+    width: '100%',
+    top: `${$top}px`,
+    height: `${$height}px`,
+    minHeight: '2px',
+    boxSizing: 'border-box',
+    backgroundColor: `rgb(${$rgb} / ${fillAlpha(tint)})`,
+    borderTop: `1px solid rgb(${$rgb} / ${edgeAlpha(tint)})`,
+    borderBottom: `1px solid rgb(${$rgb} / ${edgeAlpha(tint)})`,
+    borderRadius: '3px',
+    userSelect: 'none',
+    pointerEvents: 'none',
+    transition: 'background-color 0.15s ease, border-color 0.15s ease',
+  }
+})
 
 const deviationRgb = (deviation: BandDeviation) => {
   if (deviation === 'late') return 'var(--timeline-late)'
@@ -123,16 +124,16 @@ const deviationRgb = (deviation: BandDeviation) => {
   return 'var(--timeline-neutral-rgb)'
 }
 
-const CenteringWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-`
+const CenteringWrapper = styled('div')({
+  display: 'flex',
+  justifyContent: 'center',
+})
 
-const StyledContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-`
+const StyledContainer = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  width: '100%',
+})
 
 type TimelineBoardProps = {
   className?: string
@@ -223,15 +224,17 @@ export const TimelineBoard = ({
       <StyledContainer
         // deviation colours are rgb triplets, so a fill and its edge rule can share one
         // element at different alphas
-        style={{
-          '--timeline-neutral': isDarkTheme ? '#8c8c8c' : '#bfbfbf',
-          '--timeline-neutral-rgb': isDarkTheme ? '140 140 140' : '191 191 191',
-          '--timeline-highlight-ring': isDarkTheme ? 'white' : '#333',
-          '--timeline-card-bg': isDarkTheme ? '#1c1d1c' : '#fff',
-          '--timeline-absent-fill': isDarkTheme ? '#fff' : '#000',
-          '--timeline-late': isDarkTheme ? '255 77 79' : '245 34 45',
-          '--timeline-early': isDarkTheme ? '255 169 64' : '250 140 22',
-        }}>
+        style={
+          {
+            '--timeline-neutral': isDarkTheme ? '#8c8c8c' : '#bfbfbf',
+            '--timeline-neutral-rgb': isDarkTheme ? '140 140 140' : '191 191 191',
+            '--timeline-highlight-ring': isDarkTheme ? 'white' : '#333',
+            '--timeline-card-bg': isDarkTheme ? '#1c1d1c' : '#fff',
+            '--timeline-absent-fill': isDarkTheme ? '#fff' : '#000',
+            '--timeline-late': isDarkTheme ? '255 77 79' : '245 34 45',
+            '--timeline-early': isDarkTheme ? '255 169 64' : '250 140 22',
+          } as React.CSSProperties
+        }>
         <TitleRow>
           <StyledTimelineTitle pointType={PointType.GTFS} />
           <StyledTimelineTitle pointType={PointType.SIRI} />

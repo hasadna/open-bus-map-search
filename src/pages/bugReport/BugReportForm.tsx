@@ -23,16 +23,15 @@ const BugReportForm = () => {
   const mutation = useMutation({
     mutationFn: (values: CreateIssuePostRequest) =>
       ISSUES_API.issuesCreatePost({ createIssuePostRequest: values }),
-    onSuccess: (response) => {
-      if (response.data?.state === 'open') {
-        form.resetFields()
-        // setFileList([])
-      }
+    onSuccess: () => {
+      form.resetFields()
     },
     onError: (error) => {
       console.error('Error submitting bug report:', error)
     },
   })
+
+  const issueUrl = mutation.data?.data?.url
 
   const onFinish = (values: CreateIssuePostRequest) => {
     mutation.reset()
@@ -69,11 +68,15 @@ const BugReportForm = () => {
         </p>
       }>
       <span>{t('reportBug.description')}</span>
-      {mutation.isSuccess && mutation.data?.data && (
+      {mutation.isSuccess && (
         <Alert severity="success" sx={{ marginBottom: 2 }}>
-          <a href={mutation.data.data.url} target="_blank" rel="noopener noreferrer">
-            {t('reportBug.viewIssue')}
-          </a>
+          {issueUrl ? (
+            <a href={issueUrl} target="_blank" rel="noopener noreferrer">
+              {t('reportBug.viewIssue')}
+            </a>
+          ) : (
+            t('reportBug.success')
+          )}
         </Alert>
       )}
 

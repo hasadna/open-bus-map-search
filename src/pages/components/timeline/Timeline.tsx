@@ -2,10 +2,10 @@ import CloseIcon from '@mui/icons-material/Close'
 import MapIcon from '@mui/icons-material/Map'
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark'
 import { Box, Link as MuiLink, Tooltip } from '@mui/material'
+import { styled } from '@mui/material/styles'
 import { type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
-import styled, { css } from 'styled-components'
 import dayjs from 'src/dayjs'
 import { CARD_DETAILS_SX, CardRow } from 'src/pages/components/timeline/CardRow'
 import {
@@ -36,98 +36,96 @@ const LABEL_OFFSET = 20 // gap between axis and label area
 const CONNECTOR_HORIZ = 8
 const DOT_CENTER_X = 2 + 3 - POINT_SIZE / 2 // = 1
 
-const Line = styled.div<{ $totalHeight: number }>`
-  height: ${({ $totalHeight }) => $totalHeight + PADDING * 3}px;
-  width: 2px;
-  background-color: ${NEUTRAL_COLOR};
-`
+const Line = styled('div')<{ $totalHeight: number }>(({ $totalHeight }) => ({
+  height: `${$totalHeight + PADDING * 3}px`,
+  width: '2px',
+  backgroundColor: NEUTRAL_COLOR,
+}))
 
-const BoundaryTick = styled.div.withConfig({ componentId: 'sc-boundary-tick' })<{ $top: number }>`
-  width: 12px;
-  height: 2px;
-  background-color: ${NEUTRAL_COLOR};
-  position: absolute;
-  top: ${({ $top }) => $top}px;
-  right: -5px;
-`
+const BoundaryTick = styled('div')<{ $top: number }>(({ $top }) => ({
+  width: '12px',
+  height: '2px',
+  backgroundColor: NEUTRAL_COLOR,
+  position: 'absolute',
+  top: `${$top}px`,
+  // Wider than the 2px axis it caps, with an equal overhang either side — so mirroring this
+  // to `left` under RTL leaves it in the same place.
+  right: '-5px',
+}))
 
-const Wrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`
+const Wrapper = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+})
 
-const Title = styled.span<{ $pointType: PointType }>`
-  font-weight: bold;
-  background-color: ${({ $pointType }) => pointTypeToColor[$pointType]};
-  padding: 2px 8px;
-  white-space: nowrap;
-  font-size: clamp(8px, 2.5vw, 16px);
-`
+const Title = styled('span')<{ $pointType: PointType }>(({ $pointType }) => ({
+  fontWeight: 'bold',
+  backgroundColor: pointTypeToColor[$pointType],
+  padding: '2px 8px',
+  whiteSpace: 'nowrap',
+  fontSize: 'clamp(8px, 2.5vw, 16px)',
+}))
 
-const Container = styled.div`
-  display: flex;
-`
+const Container = styled('div')({
+  display: 'flex',
+})
 
-const AxisArea = styled.div`
-  position: relative;
-  width: 2px;
-  flex-shrink: 0;
-`
+const AxisArea = styled('div')({
+  position: 'relative',
+  width: '2px',
+  flexShrink: 0,
+})
 
-const LabelArea = styled.div`
-  position: relative;
-  margin-inline-start: ${LABEL_OFFSET}px;
-`
+const LabelArea = styled('div')({
+  position: 'relative',
+  marginInlineStart: `${LABEL_OFFSET}px`,
+})
 
-const WidthAnchor = styled.span<{ $card?: boolean }>`
-  display: flex;
-  flex-direction: ${({ $card }) => ($card ? 'column' : 'row')};
-  align-items: ${({ $card }) => ($card ? 'stretch' : 'center')};
-  visibility: hidden;
-  pointer-events: none;
-  white-space: nowrap;
+const WidthAnchor = styled('span')<{ $card?: boolean }>(({ $card }) => ({
+  display: 'flex',
+  flexDirection: $card ? 'column' : 'row',
+  alignItems: $card ? 'stretch' : 'center',
+  visibility: 'hidden',
+  pointerEvents: 'none',
+  whiteSpace: 'nowrap',
 
-  ${({ $card }) =>
-    $card &&
-    css`
-      padding: ${CARD_PADDING_Y}px ${CARD_PADDING_X}px;
-      border: 1px solid transparent;
-    `}
-`
+  ...($card && {
+    padding: `${CARD_PADDING_Y}px ${CARD_PADDING_X}px`,
+    border: '1px solid transparent',
+  }),
+}))
 
-const Label = styled.div<{ $top: number; $highlighted?: boolean; $card?: boolean }>`
-  position: absolute;
-  top: ${({ $top }) => $top - POINT_SIZE + 1}px;
-  inset-inline-start: 0;
-  z-index: 2;
-  display: flex;
-  align-items: ${({ $card }) => ($card ? 'stretch' : 'center')};
-  flex-direction: ${({ $card }) => ($card ? 'column' : 'row')};
-  gap: ${({ $card }) => ($card ? 0 : LABEL_ICON_GAP)}px;
-  white-space: nowrap;
-  font-weight: ${({ $highlighted }) => ($highlighted ? 'bold' : 'normal')};
+const Label = styled('div')<{ $top: number; $highlighted?: boolean; $card?: boolean }>(
+  ({ $top, $highlighted, $card }) => ({
+    position: 'absolute',
+    top: `${$top - POINT_SIZE + 1}px`,
+    insetInlineStart: 0,
+    zIndex: 2,
+    display: 'flex',
+    alignItems: $card ? 'stretch' : 'center',
+    flexDirection: $card ? 'column' : 'row',
+    gap: `${$card ? 0 : LABEL_ICON_GAP}px`,
+    whiteSpace: 'nowrap',
+    fontWeight: $highlighted ? 'bold' : 'normal',
 
-  ${({ $card, $highlighted }) =>
-    $card &&
-    css`
-      /* The column already reserves room for the widest card, so filling it keeps every
-         card the same width instead of leaving a ragged edge down the timeline. */
-      inset-inline-end: 0;
-      /* The deviation fills run the width of the whole board, so a card needs ground of
-         its own to stay legible over one. They still read either side of the column. */
-      background-color: var(--timeline-card-bg, #fff);
-      padding: ${CARD_PADDING_Y}px ${CARD_PADDING_X}px;
-      border: 1px solid ${$highlighted ? 'var(--timeline-highlight-ring, #333)' : NEUTRAL_COLOR};
-      /* A ring rather than a thicker border: cardHeight lays the column out from
-         CARD_BORDER, so growing the border itself would shift every card below it. */
-      box-shadow: ${$highlighted ? '0 0 0 1px var(--timeline-highlight-ring, #333)' : 'none'};
-      border-radius: 4px;
-      transition:
-        border-color 0.15s ease,
-        box-shadow 0.15s ease;
-    `}
-`
+    ...($card && {
+      // The column already reserves room for the widest card, so filling it keeps every
+      // card the same width instead of leaving a ragged edge down the timeline.
+      insetInlineEnd: 0,
+      // The deviation fills run the width of the whole board, so a card needs ground of
+      // its own to stay legible over one. They still read either side of the column.
+      backgroundColor: 'var(--timeline-card-bg, #fff)',
+      padding: `${CARD_PADDING_Y}px ${CARD_PADDING_X}px`,
+      border: `1px solid ${$highlighted ? 'var(--timeline-highlight-ring, #333)' : NEUTRAL_COLOR}`,
+      // A ring rather than a thicker border: cardHeight lays the column out from
+      // CARD_BORDER, so growing the border itself would shift every card below it.
+      boxShadow: $highlighted ? '0 0 0 1px var(--timeline-highlight-ring, #333)' : 'none',
+      borderRadius: '4px',
+      transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
+    }),
+  }),
+)
 
 const CARD_TIME_ROW_SX = {
   fontSize: CARD_TIME_FONT_SIZE,
@@ -172,46 +170,48 @@ const MapLink = ({ title, href, card }: { title: string; href: string; card?: bo
   return card ? <CardRow label={title}>{icon}</CardRow> : <Tooltip title={title}>{icon}</Tooltip>
 }
 
-const ConnectorSvg = styled.svg`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 2px;
-  height: 100%;
-  pointer-events: none;
-  overflow: visible;
-`
+const ConnectorSvg = styled('svg')({
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  width: '2px',
+  height: '100%',
+  pointerEvents: 'none',
+  overflow: 'visible',
+})
 
 /** Stands in for a dot that never came, in the label lane at the y of the dot the ride does
  *  have on the other axis. */
-const AbsentMark = styled.span<{ $top: number; $highlighted?: boolean }>`
-  position: absolute;
-  top: ${({ $top }) => $top - POINT_SIZE + 1}px;
-  inset-inline-start: 0;
-  box-sizing: border-box;
-  width: ${ABSENT_MARK_SIZE}px;
-  height: ${ABSENT_MARK_SIZE}px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background-color: var(--timeline-absent-fill, #000);
-  border: 2px solid rgb(var(--timeline-late));
-  color: ${ABSENT_COLOR};
-  transform: ${({ $highlighted }) => ($highlighted ? 'scale(1.5)' : 'scale(1)')};
-  transition: transform 0.15s ease;
-  z-index: 3;
+const AbsentMark = styled('span')<{ $top: number; $highlighted?: boolean }>(
+  ({ $top, $highlighted }) => ({
+    position: 'absolute',
+    top: `${$top - POINT_SIZE + 1}px`,
+    insetInlineStart: 0,
+    boxSizing: 'border-box',
+    width: `${ABSENT_MARK_SIZE}px`,
+    height: `${ABSENT_MARK_SIZE}px`,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: '50%',
+    backgroundColor: 'var(--timeline-absent-fill, #000)',
+    border: '2px solid rgb(var(--timeline-late))',
+    color: ABSENT_COLOR,
+    transform: $highlighted ? 'scale(1.5)' : 'scale(1)',
+    transition: 'transform 0.15s ease',
+    zIndex: 3,
 
-  /* MUI ships a single filled weight, so stroking the glyph's own outline is what gives it
-     enough body to read at this size against the ring. */
-  svg {
-    font-size: ${ABSENT_MARK_SIZE - 6}px;
-    stroke: currentColor;
-    stroke-width: 1.6;
-    stroke-linejoin: round;
-    stroke-linecap: round;
-  }
-`
+    // MUI ships a single filled weight, so stroking the glyph's own outline is what gives it
+    // enough body to read at this size against the ring.
+    '& svg': {
+      fontSize: `${ABSENT_MARK_SIZE - 6}px`,
+      stroke: 'currentColor',
+      strokeWidth: 1.6,
+      strokeLinejoin: 'round',
+      strokeLinecap: 'round',
+    },
+  }),
+)
 
 const connectorColor = (absent: boolean, highlighted: boolean, pointType: PointType) => {
   if (absent) return ABSENT_COLOR
@@ -369,8 +369,8 @@ export const Timeline = ({
       <Container>
         <AxisArea>
           <Line $totalHeight={totalHeight} />
-          <BoundaryTick $top={-1} />
-          <BoundaryTick $top={totalHeight + PADDING * 3 - 1} />
+          <BoundaryTick data-testid="timeline-boundary-tick" $top={-1} />
+          <BoundaryTick data-testid="timeline-boundary-tick" $top={totalHeight + PADDING * 3 - 1} />
 
           <ConnectorSvg>
             {items.map((item, index) => {

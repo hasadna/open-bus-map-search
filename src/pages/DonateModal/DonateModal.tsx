@@ -1,7 +1,7 @@
 import { ArrowBackIosNewTwoTone, CloseTwoTone } from '@mui/icons-material'
 import { Box, Button, Grid, Modal, Typography } from '@mui/material'
+import { styled } from '@mui/material/styles'
 import { useTranslation } from 'react-i18next'
-import styled from 'styled-components'
 import donationImage from 'src/resources/donation.jpg'
 
 interface DonateModalProps {
@@ -23,43 +23,49 @@ const boxStyle = {
   borderRadius: '8px',
 } as const
 
-const ButtonDonate = styled.a`
-  margin-top: 16px;
-  outline: none;
-  direction: rtl;
-  display: inline-flex;
-  align-items: stretch;
-  color: white;
-  flex-wrap: nowrap;
-  text-decoration: none;
-  font-weight: bold;
-  width: 100%;
-  max-width: 420px;
-  border-radius: 1000px;
-  overflow: hidden;
-  transition: ease box-shadow 0.25s;
-  box-shadow: transparent 0 0 0 0;
-  &:focus {
-    box-shadow: #1498e588 0 0 0 3px;
-  }
-`
-const ButtonDonateText = styled.span`
-  background-color: #16a9ff;
-  padding: 8px 32px 8px 8px;
-  text-align: center;
-  font-size: 32px;
-  width: 100%;
-`
+/** The donation itself is Hebrew-only (jgive.com/he), so the button reads right-to-left in
+ *  every language. That direction is pinned by the `dir` attribute rather than a CSS
+ *  `direction` rule, which the RTL stylesheet would mirror back to `ltr`. */
+const ButtonDonate = styled('a')({
+  marginTop: '16px',
+  outline: 'none',
+  display: 'inline-flex',
+  alignItems: 'stretch',
+  color: 'white',
+  flexWrap: 'nowrap',
+  textDecoration: 'none',
+  fontWeight: 'bold',
+  width: '100%',
+  maxWidth: '420px',
+  borderRadius: '1000px',
+  overflow: 'hidden',
+  transition: 'ease box-shadow 0.25s',
+  boxShadow: 'transparent 0 0 0 0',
+  '&:focus': {
+    boxShadow: '#1498e588 0 0 0 3px',
+  },
+})
 
-const ButtonDonateIcon = styled.span`
-  padding: 16px;
-  width: 32px;
-  min-height: 32px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #1498e5;
-`
+const ButtonDonateText = styled('span')({
+  backgroundColor: '#16a9ff',
+  paddingBlock: '8px',
+  // Room at the button's outer edge, but only a hair next to the icon — logical so it
+  // follows the button's own direction instead of the document's.
+  paddingInline: '32px 8px',
+  textAlign: 'center',
+  fontSize: '32px',
+  width: '100%',
+})
+
+const ButtonDonateIcon = styled('span')({
+  padding: '16px',
+  width: '32px',
+  minHeight: '32px',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  backgroundColor: '#1498e5',
+})
 
 const DonateModal = ({ isVisible, onClose }: DonateModalProps) => {
   const { t } = useTranslation()
@@ -115,6 +121,7 @@ const DonateModal = ({ isVisible, onClose }: DonateModalProps) => {
                 />
               </Box>
               <ButtonDonate
+                dir="rtl"
                 href="https://www.jgive.com/new/he/ils/donation-targets/3268"
                 target="_blank"
                 rel="noreferrer">

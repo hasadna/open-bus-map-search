@@ -35,9 +35,6 @@ const meta = {
       startDate={toCivilDate(args.startDate)!}
       endDate={toCivilDate(args.endDate)!}
       operatorId={args.operatorId}
-      alertAllDayTimeChartHandling={function (arg: boolean): void {
-        console.log('alertAllDayTimeChartHandling', arg)
-      }}
     />
   ),
 } satisfies Meta<typeof DayTimeChart>
@@ -64,8 +61,5 @@ export const Default: Story = {
     startDate: toCivilDate(dayjs(getPastDate()).subtract(7, 'day'))!,
     endDate: toCivilDate(dayjs(getPastDate()))!,
     operatorId: '3',
-    alertAllDayTimeChartHandling: (arg: boolean) => {
-      console.log('alertAllDayTimeChartHandling', arg)
-    },
   },
 }
