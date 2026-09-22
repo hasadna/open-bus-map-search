@@ -1,5 +1,5 @@
+import { styled } from '@mui/material/styles'
 import { useContext } from 'react'
-import styled from 'styled-components'
 import { FadeContext } from './EasterEgg'
 
 const colors = {
@@ -9,7 +9,7 @@ const colors = {
   primaryColor600: '#136fc5',
 }
 
-const EnvelopeWrapper = styled.div`
+const EnvelopeWrapper = styled('div')`
   .letter-image {
     position: absolute;
     top: 50%;
