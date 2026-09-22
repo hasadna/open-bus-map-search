@@ -254,6 +254,10 @@ jobs:
     name: Storybook Visual Tests
     runs-on: ubuntu-22.04 # not working whit ubuntu 23+
     needs: [build, build-outside-docker]
+    # A fork PR gets no secrets, so the Applitools key is empty and the suite would
+    # self-skip yet still report success; skipping the job renders it as "Skipped" instead.
+    # `github.event.repository` is the BASE repo on a pull_request, so it is never the fork.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     steps:
       - uses: actions/checkout@v6
         with:
@@ -299,6 +303,7 @@ jobs:
     name: Playwright Visual Tests
     runs-on: ubuntu-latest
     needs: [build, build-outside-docker]
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     steps:
       - uses: actions/checkout@v6
         with:
@@ -380,7 +385,7 @@ jobs:
     name: Publish Test Results
     runs-on: ubuntu-latest
     needs: [test]
-    if: always() && github.event.repository.fork == false && github.actor != 'dependabot[bot]'
+    if: always() && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && github.actor != 'dependabot[bot]'
     env:
       AWS_KEY_ID: ${{ secrets.AWS_KEY_ID }}
     steps:
@@ -412,7 +417,7 @@ jobs:
     name: Close Applitools Visual Test Batches
     runs-on: ubuntu-latest
     needs: [visual-test, storybook-test]
-    if: always() && github.event.repository.fork == false && github.actor != 'dependabot[bot]'
+    if: always() && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && github.actor != 'dependabot[bot]'
     steps:
       - name: Close Applitools batches
         run: |
