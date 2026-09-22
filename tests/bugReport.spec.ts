@@ -143,24 +143,36 @@ test('bug submission success', async ({ page }) => {
     await page.getByRole('button', { name: i18next.t('bug_submit') }).click()
   })
 
-  await test.step('Verify success message is displayed', async () => {
-    await expect(page.getByText(i18next.t('reportBug.viewIssue'))).toBeVisible()
+  await test.step('Verify the success dialog links to the issue page', async () => {
+    const dialog = page.getByRole('dialog')
+    await expect(dialog.getByText(i18next.t('reportBug.success'))).toBeVisible()
+    await expect(
+      dialog.getByRole('link', { name: i18next.t('reportBug.viewIssue') }),
+    ).toHaveAttribute(
+      'href',
+      `https://github.com/hasadna/open-bus-map-search/issues/${successBody.data.number}`,
+    )
+  })
+
+  await test.step('Verify the dialog closes', async () => {
+    await page.getByRole('button', { name: i18next.t('reportBug.close') }).click()
+    await expect(page.getByRole('dialog')).toBeHidden()
   })
 })
 
-const successBodyWithoutIssueUrl = {
+const successBodyWithoutIssueNumber = {
   data: {
     id: 123456,
-    number: 1347,
     title: 'בדיקה',
   },
 }
 
-test('bug submission success without an issue url', async ({ page }) => {
-  await test.step('Mock API to return success without a url', async () => {
+test('bug submission success without an issue number', async ({ page }) => {
+  await test.step('Mock API to return success without a number', async () => {
     await page.route(
       (url) => url.href.includes(ISSUES_URL_FRAGMENT),
-      (route) => route.fulfill({ status: 200, body: JSON.stringify(successBodyWithoutIssueUrl) }),
+      (route) =>
+        route.fulfill({ status: 200, body: JSON.stringify(successBodyWithoutIssueNumber) }),
     )
   })
 
@@ -188,8 +200,10 @@ test('bug submission success without an issue url', async ({ page }) => {
     await page.getByRole('button', { name: i18next.t('bug_submit') }).click()
   })
 
-  await test.step('Verify success message is displayed (not error)', async () => {
-    await expect(page.getByText(i18next.t('reportBug.success'))).toBeVisible()
+  await test.step('Verify the success dialog is displayed without a link', async () => {
+    const dialog = page.getByRole('dialog')
+    await expect(dialog.getByText(i18next.t('reportBug.success'))).toBeVisible()
+    await expect(dialog.getByRole('link')).toHaveCount(0)
   })
 })
 
