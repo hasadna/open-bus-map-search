@@ -1,5 +1,14 @@
 import { CreateIssuePostRequest } from '@hasadna/open-bus-api-client'
-import { Alert } from '@mui/material'
+import { CheckCircleTwoTone } from '@mui/icons-material'
+import {
+  Alert,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Button as MuiButton,
+  Typography,
+} from '@mui/material'
 import { useMutation } from '@tanstack/react-query'
 import { Button, Checkbox, Form, Input, Select } from 'antd'
 import { useMemo, useState } from 'react'
@@ -7,9 +16,12 @@ import { useTranslation } from 'react-i18next'
 import { useSearchParams } from 'react-router'
 import { ISSUES_API } from 'src/api/apiConfig'
 import { EasterEgg } from 'src/pages/components/EasterEgg/EasterEgg'
+import { OutboundArrow } from 'src/pages/components/OutboundArrow'
 import InfoYoutubeModal from 'src/pages/components/YoutubeModal'
 import Widget from 'src/shared/Widget'
 import './BugReportForm.scss'
+
+const issuesUrl = 'https://github.com/hasadna/open-bus-map-search/issues'
 
 // File upload is disabled until the server-side implementation is complete.
 const BugReportForm = () => {
@@ -31,7 +43,8 @@ const BugReportForm = () => {
     },
   })
 
-  const issueUrl = mutation.data?.data?.url
+  const issueNumber = mutation.data?.data?.number
+  const issueUrl = issueNumber ? `${issuesUrl}/${issueNumber}` : undefined
 
   const onFinish = (values: CreateIssuePostRequest) => {
     mutation.reset()
@@ -68,17 +81,63 @@ const BugReportForm = () => {
         </p>
       }>
       <span>{t('reportBug.description')}</span>
-      {mutation.isSuccess && (
-        <Alert severity="success" sx={{ marginBottom: 2 }}>
-          {issueUrl ? (
-            <a href={issueUrl} target="_blank" rel="noopener noreferrer">
-              {t('reportBug.viewIssue')}
-            </a>
-          ) : (
-            t('reportBug.success')
+      <Dialog
+        dir={i18n.dir()}
+        open={mutation.isSuccess}
+        onClose={mutation.reset}
+        slotProps={{ paper: { sx: { borderRadius: '12px', maxWidth: '380px', width: '100%' } } }}>
+        <DialogContent sx={{ textAlign: 'center', paddingBottom: 1 }}>
+          <CheckCircleTwoTone color="success" sx={{ fontSize: 40 }} />
+          <DialogTitle component="h2" sx={{ fontWeight: 700, padding: 0 }}>
+            {t('reportBug.success')}
+          </DialogTitle>
+          {issueNumber && (
+            <Typography
+              dir="ltr"
+              variant="h5"
+              sx={{
+                marginTop: 2,
+                marginInline: 'auto',
+                paddingBlock: 1,
+                paddingInline: 3,
+                maxWidth: 'fit-content',
+                fontWeight: 700,
+                letterSpacing: '0.05em',
+                borderRadius: '8px',
+                border: 1,
+                borderColor: 'divider',
+                backgroundColor: 'action.hover',
+              }}>
+              {`#${issueNumber}`}
+            </Typography>
           )}
-        </Alert>
-      )}
+        </DialogContent>
+        <DialogActions
+          sx={{
+            flexDirection: 'column',
+            gap: 1,
+            padding: 3,
+            paddingTop: 1,
+            '& > *': { margin: 0 },
+          }}>
+          {issueUrl && (
+            <MuiButton
+              fullWidth
+              variant="contained"
+              href={issueUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              // MUI uppercases button labels, which would spell the issue tracker "GITHUB"
+              sx={{ textTransform: 'none' }}>
+              {t('reportBug.viewIssue')}
+              <OutboundArrow />
+            </MuiButton>
+          )}
+          <MuiButton fullWidth onClick={mutation.reset} sx={{ textTransform: 'none' }}>
+            {t('reportBug.close')}
+          </MuiButton>
+        </DialogActions>
+      </Dialog>
 
       {mutation.isError && (
         <Alert severity="error" onClose={mutation.reset} sx={{ marginBottom: 2 }}>
