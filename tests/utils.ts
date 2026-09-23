@@ -160,7 +160,6 @@ export const setupTest = async (page: Page, lng: string = 'he') => {
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await i18next.use(Backend).init({ lng, backend: { loadPath: 'src/locale/{{lng}}.json' } })
   await page.goto('/')
-  await page.locator('.preloader').waitFor({ state: 'hidden' })
 }
 
 export const visitPage = async (page: Page, label: (typeof PAGES)[number]['label']) => {
@@ -176,8 +175,6 @@ export const visitPage = async (page: Page, label: (typeof PAGES)[number]['label
     : Promise.resolve()
   await link.click()
   await navigationPromise
-  await page.waitForTimeout(500)
-  await page.locator('.preloader').waitFor({ state: 'hidden' })
   await page.waitForLoadState('networkidle')
 }
 
