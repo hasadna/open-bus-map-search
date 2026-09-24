@@ -2,6 +2,7 @@ import { ArrowBackIosNewTwoTone, CloseTwoTone } from '@mui/icons-material'
 import { Box, Button, Grid, Modal, Typography } from '@mui/material'
 import { styled } from '@mui/material/styles'
 import { useTranslation } from 'react-i18next'
+import donationImage from 'src/resources/donation.jpg'
 
 interface DonateModalProps {
   isVisible: boolean
@@ -105,18 +106,20 @@ const DonateModal = ({ isVisible, onClose }: DonateModalProps) => {
               <Typography component="div" id="modal-modal-description">
                 <h2>{t('donate_through_jgive.com_title')}</h2>
               </Typography>
-              <a
+              <Box
+                component="a"
                 href="https://www.jgive.com/new/he/ils/donation-targets/3268"
                 target="_blank"
                 rel="noreferrer"
-                style={{ textDecoration: 'none', color: 'inherit', outline: 'none' }}>
-                <img
-                  src="https://www.hasadna.org.il/wp-content/uploads/2017/12/%D7%AA%D7%A8%D7%95%D7%9E%D7%95%D7%AA.jpg"
+                sx={{ textDecoration: 'none', color: 'inherit', outline: 'none' }}>
+                <Box
+                  component="img"
+                  src={donationImage}
                   alt={t('donation_link')}
-                  width="100%"
-                  style={{ maxWidth: '420px', borderRadius: 8 }}
+                  // 420px is the file's own width — past it the artwork only blurs.
+                  sx={{ width: '100%', maxWidth: '420px', borderRadius: '8px' }}
                 />
-              </a>
+              </Box>
               <ButtonDonate
                 dir="rtl"
                 href="https://www.jgive.com/new/he/ils/donation-targets/3268"
