@@ -4,9 +4,9 @@ import { useCallback, useContext, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { usePageState } from 'src/hooks/usePageState'
 import { GlobalSearchContext } from 'src/model/globalState'
-import { type CivilDate, civilDateToDayjs } from 'src/model/time/civilDate'
+import { type CivilDate } from 'src/model/time/civilDate'
 import { INPUT_SIZE } from 'src/resources/sizes'
-import { getGapsAsync, SerializedGap, serializeGap } from '../../api/gapsService'
+import { getGapsWithVehiclesAsync, SerializedGap, serializeGap } from '../../api/gapsService'
 import { getRoutesAsync } from '../../api/gtfsService'
 import { CivilDateSelector } from '../components/CivilDateSelector'
 import { Label } from '../components/Label'
@@ -57,8 +57,7 @@ const GapsPage = () => {
     queryFn: async (): Promise<SerializedGap[] | null> => {
       if (!operatorId || !selectedRoute || !date) return null
       // The endpoint groups by Israel-local day, so asking for this one date is exact.
-      const day = civilDateToDayjs(date)
-      const res = await getGapsAsync(day, day, operatorId, selectedRoute.lineRef)
+      const res = await getGapsWithVehiclesAsync(date, operatorId, selectedRoute.lineRef)
       // Store JSON-serializable strings, not dayjs, so the persisted cache
       // rehydrates losslessly; GapsTable revives them to dayjs on read.
       return res.map(serializeGap)
