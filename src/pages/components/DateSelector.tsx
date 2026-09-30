@@ -2,6 +2,7 @@ import { DatePicker, DateValidationError } from '@mui/x-date-pickers'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import dayjs from 'src/dayjs'
+import { civilDateToDayjs, EARLIEST_SUPPORTED_DATE } from 'src/model/time/civilDate'
 
 export type DataSelectorProps = {
   time: dayjs.Dayjs
@@ -17,12 +18,14 @@ const getErrorMessageKey = (error?: DateValidationError) => {
     case 'maxDate':
     case 'minDate':
       return 'bug_date_alert'
+    case 'disableFuture':
+      return 'date_navigator_future_error'
     case 'invalidDate':
       return 'bug_date_invalid_format'
   }
 }
 
-const startOfTime = dayjs('1-1-2023')
+const startOfTime = civilDateToDayjs(EARLIEST_SUPPORTED_DATE)
 
 export function DateSelector({
   time,
