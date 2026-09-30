@@ -129,7 +129,7 @@
   "date_navigator_next_week": "One week forward",
   "date_navigator_unit_day": "day",
   "date_navigator_unit_days": "days",
-  "date_navigator_future_error": "Future dates are not available.",
+  "date_navigator_future_error": "Future dates are not available",
   "datetime_format": "HH:mm:ss · YYYY-MM-DD",
   "loading_routes": "Loading routes",
   "loading_stops": "Loading stops",
