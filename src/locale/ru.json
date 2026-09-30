@@ -113,6 +113,7 @@
   "date_navigator_next_week": "Неделя вперёд",
   "date_navigator_unit_day": "день",
   "date_navigator_unit_days": "дней",
+  "date_navigator_future_error": "Нельзя выбрать будущую дату.",
   "datetime_format": "HH:mm:ss · YYYY-MM-DD",
   "loading_routes": "Загрузка маршрутов",
   "loading_stops": "Загрузка остановочных станций",
