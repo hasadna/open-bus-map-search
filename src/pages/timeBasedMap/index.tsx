@@ -1,5 +1,6 @@
 import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
-import { useCallback, useEffect, useMemo } from 'react'
+import { debounce } from 'es-toolkit/compat'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Marker, Popup, TileLayer, useMap } from 'react-leaflet'
 import MarkerClusterGroup from 'react-leaflet-markercluster'
@@ -32,14 +33,40 @@ export default function TimeBasedMapPage() {
     params: { datetime: DEFAULT_DATETIME },
     ui: { scrollPosition: 0 },
   })
+
+  const [debouncedDatetime, setDebouncedDatetime] = useState(params.datetime)
+
+  const debouncedSetDatetime = useCallback(
+    debounce((datetime: string) => {
+      setDebouncedDatetime(datetime)
+    }, 500),
+    [],
+  )
+
+  useEffect(() => {
+    if (params.datetime === debouncedDatetime) return
+
+    debouncedSetDatetime(params.datetime)
+
+    return () => {
+      debouncedSetDatetime.cancel()
+    }
+  }, [debouncedDatetime, debouncedSetDatetime, params.datetime])
+
   const from = useMemo(
     () => parseIsraelLocalDatetime(params.datetime) ?? DEFAULT_TIME,
     [params.datetime],
   )
-  const to = useMemo(() => dayjs(from).add(1, 'minutes'), [from])
-  const { locations, isLoading } = useVehicleLocations({ from, to })
+  const fetchFrom = useMemo(
+    () => parseIsraelLocalDatetime(debouncedDatetime) ?? DEFAULT_TIME,
+    [debouncedDatetime],
+  )
+  const to = useMemo(() => dayjs(fetchFrom).add(1, 'minutes'), [fetchFrom])
+  const { locations, isLoading } = useVehicleLocations({ from: fetchFrom, to })
+
   const { t } = useTranslation()
   const positions = useMemo(() => locations.map(toPoint), [locations])
+
   const handleFromChange = useCallback(
     (time: dayjs.Dayjs | null) => {
       const next = time ?? DEFAULT_TIME
