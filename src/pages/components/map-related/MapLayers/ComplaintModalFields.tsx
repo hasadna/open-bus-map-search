@@ -132,10 +132,10 @@ export const RenderField = ({ name, props, rules, type, extra }: FormFieldProps)
     <Form.Item
       key={name}
       name={name}
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       label={t(`complaints.${labelKey}` as any)}
       rules={rules}
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       extra={t(extra as any)}>
       {/* eslint-disable-next-line @typescript-eslint/no-explicit-any*/}
       <Component {...(props as any)} name={name} />

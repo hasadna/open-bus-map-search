@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react'
+import { act, render } from '@testing-library/react'
 import i18n from 'src/locale/allTranslations'
 import { OutboundArrow } from './OutboundArrow'
 
@@ -8,7 +8,9 @@ const arrowName = () =>
 
 describe('OutboundArrow', () => {
   afterEach(async () => {
-    await i18n.changeLanguage('en')
+    await act(async () => {
+      await i18n.changeLanguage('en')
+    })
   })
 
   it('points away from the text in a left-to-right language', () => {
@@ -18,7 +20,9 @@ describe('OutboundArrow', () => {
   })
 
   it('mirrors in a right-to-left language', async () => {
-    await i18n.changeLanguage('he')
+    await act(async () => {
+      await i18n.changeLanguage('he')
+    })
 
     render(<OutboundArrow />)
 

@@ -192,7 +192,7 @@ test.describe('Operator Page Tests', () => {
     })
   })
 
-  test('Verify date_from parameter from - "Operator"', async ({ page }) => {
-    await verifyDateFromParameter(page)
+  test('Verify date_from parameter from - "Operator"', ({ page }) => {
+    verifyDateFromParameter(page)
   })
 })

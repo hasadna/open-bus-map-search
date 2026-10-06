@@ -7,7 +7,6 @@ const VIDEO_SRC =
 // Locators / accessible names used to drive the Report-a-bug UI.
 const SVG_LOCATOR = 'svg'
 const IFRAME_LOCATOR = 'iframe'
-const CLOSE_BUTTON_LABEL = 'Close'
 const SRC_ATTRIBUTE = 'src'
 const FORM_ERROR_SELECTOR = '.ant-form-item-explain-error'
 
@@ -61,7 +60,10 @@ test('An instruction video for Report a bug', async ({ page }) => {
   await expect(videoFrame).toBeVisible()
   await expect(videoFrame).toHaveAttribute(SRC_ATTRIBUTE, VIDEO_SRC)
 
-  await page.getByLabel(CLOSE_BUTTON_LABEL, { exact: true }).click()
+  await page
+    .getByRole('dialog')
+    .getByRole('button', { name: i18next.t('reportBug.close') })
+    .click()
   await expect(videoFrame).toBeHidden() // destroyOnHidden unmounts the iframe
 })
 
