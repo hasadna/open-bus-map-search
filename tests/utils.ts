@@ -189,7 +189,7 @@ export const visitPage = async (page: Page, label: (typeof PAGES)[number]['label
 }
 
 /** The operator list must describe the day being analyzed, not the day the browser is on. */
-export const verifyDateFromParameter = async (page: Page) => {
+export const verifyDateFromParameter = (page: Page) => {
   const requests = agencyRequests.get(page) ?? []
   expect(requests.length).toBeGreaterThan(0)
   const params = new URL(requests.at(-1)!).searchParams
