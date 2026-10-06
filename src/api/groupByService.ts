@@ -9,11 +9,8 @@ import { agencyListQueryOptions } from './agencyList'
 import { AGGREGATIONS_API } from './apiConfig'
 
 type groupByField =
-  | 'gtfs_route_date'
-  | 'operator_ref'
-  | 'day_of_week'
-  | 'line_ref'
-  | 'gtfs_route_hour'
+  'gtfs_route_date' | 'operator_ref' | 'day_of_week' | 'line_ref' | 'gtfs_route_hour'
+
 type groupByFields =
   | groupByField
   | `${groupByField},${groupByField}`

@@ -57,22 +57,31 @@ describe('GapsPatternsPage - failed route fetch clears stale routes', () => {
   })
 
   it('clears the previous line routes/routeKey when the fetch fails', async () => {
-    getRoutesMock.mockResolvedValueOnce([{ key: 'stale-route' } as BusRoute])
-    getRoutesMock.mockRejectedValueOnce(new Error('500 from gtfs'))
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
+    try {
+      getRoutesMock.mockResolvedValueOnce([{ key: 'stale-route' } as BusRoute])
+      getRoutesMock.mockRejectedValueOnce(new Error('500 from gtfs'))
 
-    render(<Harness />)
-    // First line loads fine and its routes render.
-    await waitFor(() => expect(screen.getByTestId('route-selector')).toHaveTextContent('count:1'), {
-      timeout: 8000,
-    })
+      render(<Harness />)
+      // First line loads fine and its routes render.
+      await waitFor(
+        () => expect(screen.getByTestId('route-selector')).toHaveTextContent('count:1'),
+        {
+          timeout: 8000,
+        },
+      )
 
-    // Switching lines reruns the load effect; getRoutesAsync rejects (non-abort),
-    // and the catch must clear the stale routes/routeKey instead of leaving the
-    // previous line's routes rendered as valid.
-    fireEvent.click(screen.getByTestId('switch-line'))
-    await waitFor(() => expect(screen.getByTestId('route-key')).toHaveTextContent('cleared'), {
-      timeout: 8000,
-    })
-    expect(screen.queryByTestId('route-selector')).not.toBeInTheDocument()
+      // Switching lines reruns the load effect; getRoutesAsync rejects (non-abort),
+      // and the catch must clear the stale routes/routeKey instead of leaving the
+      // previous line's routes rendered as valid.
+      fireEvent.click(screen.getByTestId('switch-line'))
+      await waitFor(() => expect(screen.getByTestId('route-key')).toHaveTextContent('cleared'), {
+        timeout: 8000,
+      })
+      expect(screen.queryByTestId('route-selector')).not.toBeInTheDocument()
+      expect(consoleError).toHaveBeenCalledWith('Failed to load routes:', expect.any(Error))
+    } finally {
+      consoleError.mockRestore()
+    }
   }, 15000)
 })

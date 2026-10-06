@@ -12,6 +12,8 @@ export { expect } from 'playwright-assertions'
 
 export const test = baseTest
 
+const agencyRequests = new WeakMap<Page, string[]>()
+
 export function getPastDate() {
   return new Date('2024-02-12T15:00:00+00:00')
 }
@@ -148,6 +150,11 @@ export const unlockFullPageScroll = async (page: Page) => {
 }
 
 export const setupTest = async (page: Page, lng: string = 'he') => {
+  const requests: string[] = []
+  agencyRequests.set(page, requests)
+  page.on('request', (request) => {
+    if (request.url().includes('gtfs_agencies/list')) requests.push(request.url())
+  })
   await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
   await page.route(/api\.github\.com/, (route) => route.abort())
   await page.route(/open-bus-backend\.k8s\.hasadna\.org\.il/, (route) => route.abort())
@@ -183,19 +190,9 @@ export const visitPage = async (page: Page, label: (typeof PAGES)[number]['label
 
 /** The operator list must describe the day being analyzed, not the day the browser is on. */
 export const verifyDateFromParameter = async (page: Page) => {
-  // The agency list is a react-query query persisted to localStorage, so a reload can be
-  // answered from that cache without ever reaching the network.
-  await page.evaluate(() => window.localStorage.removeItem('REACT_QUERY_OFFLINE_CACHE'))
-
-  const requestPromise = page.waitForRequest((request) =>
-    request.url().includes('gtfs_agencies/list'),
-  )
-
-  await page.reload()
-  await page.getByLabel('חברה מפעילה').click()
-  const request = await requestPromise
-
-  const params = new URL(request.url()).searchParams
+  const requests = agencyRequests.get(page) ?? []
+  expect(requests.length).toBeGreaterThan(0)
+  const params = new URL(requests.at(-1)!).searchParams
   const selectedDate = toIsraelTimezone(getPastDate()).format('YYYY-MM-DD')
 
   expect(params.get('date_from')).toBe(selectedDate)

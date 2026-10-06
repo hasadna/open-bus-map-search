@@ -2,7 +2,7 @@ import babel from '@rolldown/plugin-babel'
 import react, { reactCompilerPreset } from '@vitejs/plugin-react'
 import { loadEnv } from 'vite'
 import { defineConfig } from 'vitest/config'
-import { cspHeader, DEV_ONLY_DIRECTIVES } from './csp'
+import { cspHeader, DEV_ONLY_DIRECTIVES } from './csp.ts'
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
