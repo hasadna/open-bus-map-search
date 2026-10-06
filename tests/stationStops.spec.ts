@@ -84,7 +84,7 @@ test.describe('Station Stops Page Tests', () => {
     expect(await stationStopsPage.timelineHourLabels.count()).toBe(50)
   })
 
-  test('Verify date_from parameter', async ({ page }) => {
-    await verifyDateFromParameter(page)
+  test('Verify date_from parameter', ({ page }) => {
+    verifyDateFromParameter(page)
   })
 })
