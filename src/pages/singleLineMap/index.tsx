@@ -99,17 +99,29 @@ const SingleLineMapPage = () => {
       ...current,
       date: next ?? todayCivilDate(),
       rideTime: null,
+      routeKey: null,
     }))
     clearFocusPing()
   }
 
   const handleOperatorChange = (operatorId: string) => {
-    setSearch((current) => ({ ...current, operatorId, rideTime: null }))
+    setSearch((current) => ({ 
+      ...current, 
+      operatorId, 
+      lineNumber: null,
+      routeKey: null,
+      rideTime: null 
+    }))
     clearFocusPing()
   }
 
   const handleLineNumberChange = (lineNumber: string) => {
-    setSearch((current) => ({ ...current, lineNumber, rideTime: null }))
+    setSearch((current) => ({ 
+      ...current, 
+      lineNumber, 
+      routeKey: null,
+      rideTime: null 
+    }))
     clearFocusPing()
   }
 
