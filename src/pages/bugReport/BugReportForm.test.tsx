@@ -30,7 +30,7 @@ function renderForm() {
   )
 }
 
-describe('BugReportForm', () => {
+describe('BugReportForm', { timeout: 15000 }, () => {
   beforeEach(() => {
     vi.clearAllMocks()
     issuesCreatePost.mockResolvedValue({

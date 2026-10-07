@@ -211,11 +211,12 @@ const BugReportForm = () => {
             prevValues.contactEmail !== currentValues.contactEmail
           }>
           {({ getFieldValue }) =>
-            getFieldValue(CONTACT_EMAIL_FIELD) ? (
+            getFieldValue(CONTACT_EMAIL_FIELD)?.trim() ? (
               <Form.Item
                 name="allowPublicContact"
                 valuePropName="checked"
                 initialValue={false}
+                preserve={false}
                 wrapperCol={{ offset: 6, span: 18 }}
                 rules={[
                   {
