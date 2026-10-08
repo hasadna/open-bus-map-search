@@ -8,7 +8,7 @@ import { buildComplaintTitle } from './ComplaintModalFields'
 import { complaintTypeMappings } from './ComplaintModalForms'
 import type { ComplaintFormValues, ComplaintUser } from './ComplaintModalTypes'
 
-export interface ComplaintSubmissionData {
+interface ComplaintSubmissionFields {
   id?: string
   passport?: string
   firstName?: string
@@ -22,15 +22,26 @@ export interface ComplaintSubmissionData {
   details?: string
   requestSubject: RequestSubjectSchema
   title: string
-  bus: {
-    driverName?: string
-    licenseNumber?: string
-    lineNumberText?: string
-    operator?: { dataText: string; dataCode: string }
-    direction?: { dataText: string; dataCode: string }
-    raisingStation?: { dataText: string; dataCode: string }
-  }
 }
+
+type ComplaintBus = {
+  driverName?: string
+  licenseNumber?: string
+  lineNumberText?: string
+  operator?: { dataText: string; dataCode: string }
+  direction?: { dataText: string; dataCode: string }
+  raisingStation?: { dataText: string; dataCode: string }
+}
+type ComplaintTrain = object
+
+type ComplaintTaxi = object
+
+export type ComplaintSubmissionData = ComplaintSubmissionFields &
+  (
+    | { bus: ComplaintBus; train?: never; taxi?: never }
+    | { bus?: never; train: ComplaintTrain; taxi?: never }
+    | { bus?: never; train?: never; taxi: ComplaintTaxi }
+  )
 
 export type ComplaintPersonalDetails = Pick<
   ComplaintUser,
