@@ -11,7 +11,7 @@ import {
 } from '@mui/material'
 import { useMutation } from '@tanstack/react-query'
 import { Button, Checkbox, Form } from 'antd'
-import { useCallback, useEffect, useMemo } from 'react'
+import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useCopyToClipboard, useLocalStorage } from 'usehooks-ts'
 import { COMPLAINTS_API } from 'src/api/apiConfig'
@@ -57,6 +57,7 @@ const ComplaintModal = ({
   const [form] = Form.useForm<ComplaintFormValues>()
   const [userStorage, setUserStorage] = useLocalStorage<Partial<ComplaintUser>>('complaint', {})
   const [, copy] = useCopyToClipboard()
+  const pairKey = useRef('')
   const eventDate = Form.useWatch('eventDate', form)
   const busOperator = Form.useWatch('busOperator', form)
   const lineNumberText = Form.useWatch('lineNumberText', form)
@@ -70,9 +71,28 @@ const ComplaintModal = ({
     selectedRouteIndex !== undefined ? linesQuery.data?.[selectedRouteIndex] : undefined
   const stationQuery = useBoardingStationQuery(selectedRoute)
 
+  useEffect(() => {
+    if (modalOpen) pairKey.current = crypto.randomUUID()
+  }, [modalOpen])
+
   const submitMutation = useMutation({
-    mutationFn: (post: { debug: boolean; data: ComplaintSubmissionData }) =>
-      COMPLAINTS_API.complaintsSendPost({ complaintsSendPostRequest: post }),
+    mutationFn: ({
+      pairKey,
+      ...post
+    }: {
+      debug: boolean
+      data: ComplaintSubmissionData
+      pairKey: string
+    }) =>
+      COMPLAINTS_API.complaintsSendPost(
+        { complaintsSendPostRequest: post },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'pair-key': pairKey,
+          },
+        },
+      ),
   })
 
   const routeOptions = useMemo(
@@ -130,6 +150,7 @@ const ComplaintModal = ({
   const handleSubmit = useCallback(
     (values: ComplaintFormValues) => {
       submitMutation.mutate({
+        pairKey: pairKey.current,
         debug: !!values.debug,
         data: buildComplaintData(values, {
           agencies: busOperatorQuery.data,
@@ -258,6 +279,7 @@ const ComplaintModal = ({
                 </Button>
                 <Button
                   onClick={() => {
+                    pairKey.current = crypto.randomUUID()
                     submitMutation.reset()
                     form.resetFields()
                   }}>
