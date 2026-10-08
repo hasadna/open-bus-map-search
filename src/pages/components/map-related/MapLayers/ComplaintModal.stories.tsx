@@ -79,14 +79,41 @@ const siriRidesHandler = http.get(
   },
 )
 
-const operatorsHandler = http.get(
-  (info) => new URL(info.request.url).pathname === '/gov/operators',
-  () => HttpResponse.json({ success: true, data: [{ dataText: 'אגד', dataCode: 3 }] }),
+const agenciesHandler = http.get('*/gtfs_agencies/list', () =>
+  HttpResponse.json([{ date: '2023-11-01', operatorRef: 3, agencyName: 'אגד' }]),
 )
 
-const citiesHandler = http.get(
-  (info) => new URL(info.request.url).pathname === '/gov/cities',
-  () => HttpResponse.json({ success: true, data: [{ dataText: 'גדרה', dataCode: 2550 }] }),
+const routesHandler = http.get('*/gtfs_routes/list', ({ request }) => {
+  const { searchParams } = new URL(request.url)
+  if (searchParams.get('operator_refs') !== '3') return HttpResponse.json([])
+  return HttpResponse.json([
+    {
+      id: 125758768,
+      date: '2023-11-01',
+      lineRef: 19785,
+      operatorRef: 3,
+      routeShortName: '2',
+      routeLongName: 'ראשון לציון-גדרה',
+      routeMkt: '81002',
+      routeDirection: '1',
+    },
+  ])
+})
+
+const ridesHandler = http.get('*/gtfs_rides/list', () =>
+  HttpResponse.json([{ id: 1, gtfsRouteId: 125758768 }]),
+)
+
+const rideStopsHandler = http.get('*/gtfs_ride_stops/list', () =>
+  HttpResponse.json([
+    {
+      id: 1,
+      gtfsStopCode: 2550,
+      gtfsStopName: 'תחנת דוגמה',
+      gtfsStopDate: '2023-11-01',
+      stopSequence: 1,
+    },
+  ]),
 )
 
 const defaultArgs: BusToolTipProps & { route: GtfsRoutePydanticModel } = {
@@ -140,7 +167,7 @@ const defaultArgs: BusToolTipProps & { route: GtfsRoutePydanticModel } = {
 export const Default: Story = {
   parameters: {
     msw: {
-      handlers: [siriRidesHandler, operatorsHandler, citiesHandler],
+      handlers: [siriRidesHandler, agenciesHandler, routesHandler, ridesHandler, rideStopsHandler],
     },
   },
   args: {

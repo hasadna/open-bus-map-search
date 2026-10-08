@@ -1,45 +1,38 @@
-import { GtfsRoutePydanticModel, RequestSubjectSchema } from '@hasadna/open-bus-api-client'
-import dayjs from 'dayjs'
+import type { GtfsRoutePydanticModel, RequestSubjectSchema } from '@hasadna/open-bus-api-client'
+import type dayjs from 'dayjs'
 import type { Point } from '../map-types'
+import { allComplaintFields } from './ComplaintModalFields'
 
-// --- Core Types ---
+export type ComplaintDocumentType = 'id' | 'passport'
+
 export interface ComplaintUser {
+  documentType: ComplaintDocumentType
+  id_fild: string
+  passport_fild: string
   firstName: string
   lastName: string
-  iDNum: string
-  email: string
   mobile: string
+  email: string
+  emailConfirmation: string
 }
 
 export interface ComplaintData {
   complaintType: ComplaintType
-  applyContent: string
+  details: string
   busOperator?: number
-  licenseNum?: string
+  licenseNumber?: string
+  driverName?: string
   eventDate?: dayjs.Dayjs
   lineNumberText?: string
   eventHour?: dayjs.Dayjs
   direction?: number
   wait?: [dayjs.Dayjs, dayjs.Dayjs]
   raisingStation?: number
-  raisingStationCity?: string
-  destinationStationCity?: string
-  reportdate?: dayjs.Dayjs
-  reportTime?: dayjs.Dayjs
-  busDirectionFrom?: string
-  busDirectionTo?: string
-  addOrRemoveStation?: '1' | '2'
-  raisingStationAddress?: string
-  firstDeclaration?: boolean
-  secondDeclaration?: boolean
-  ravKavNumber?: string
-  addingFrequencyReason?: ('LoadTopics' | 'LongWaiting' | 'ExtensionHours')[]
   debug?: boolean
 }
 
-export type ComplaintFormValues = ComplaintUser & ComplaintData
+export type ComplaintFormValues = Partial<ComplaintUser> & ComplaintData
 
-// --- UI Types ---
 export interface ComplaintModalProps {
   modalOpen?: boolean
   setModalOpen?: (open: boolean) => void
@@ -47,27 +40,7 @@ export interface ComplaintModalProps {
   route: GtfsRoutePydanticModel
 }
 
-// --- Complaint Type System ---
-export const complaintTypes = [
-  'no_ride',
-  'no_stop',
-  'delay',
-  'early',
-  // only in debug
-  'overcrowded',
-  'add_or_remove_station',
-  'add_new_line',
-  'add_frequency',
-  'driver_behavior', // request file upload
-  'cleanliness',
-  'fine_appeal',
-  'route_change',
-  'line_switch',
-  'station_signs',
-  'ticketing_fares_discounts',
-  'other',
-] as const
-
+export const complaintTypes = ['no_ride', 'no_stop', 'delay', 'early'] as const
 export type ComplaintType = (typeof complaintTypes)[number]
 
 export interface ComplaintTypeData {
@@ -77,52 +50,11 @@ export interface ComplaintTypeData {
   title_order: ComplaintField[]
 }
 
-// --- Field Types ---
-export type ComplaintField =
-  | 'firstName'
-  | 'lastName'
-  | 'iDNum'
-  | 'email'
-  | 'mobile'
-  | 'complaintType'
-  | 'applyContent'
-  | 'busOperator'
-  | 'licenseNum'
-  | 'eventDate'
-  | 'lineNumberText'
-  | 'eventHour'
-  | 'direction'
-  | 'wait'
-  | 'raisingStation'
-  | 'raisingStationCity'
-  | 'destinationStationCity'
-  | 'reportdate'
-  | 'reportTime'
-  | 'busDirectionFrom'
-  | 'busDirectionTo'
-  | 'addOrRemoveStation'
-  | 'raisingStationAddress'
-  | 'firstDeclaration'
-  | 'secondDeclaration'
-  | 'ravKavNumber'
-  | 'addingFrequencyReason'
-  | 'debug'
-
-export interface FieldConfig {
-  pre_title?: string
-}
+export type ComplaintField = keyof typeof allComplaintFields
 
 export interface ComplaintTitleData {
   complaintType: ComplaintType
   eventDate?: dayjs.Dayjs
   eventHour?: dayjs.Dayjs
-  reportdate?: dayjs.Dayjs
-  reportTime?: dayjs.Dayjs
   lineNumberText?: string
-  licenseNum?: string
-}
-
-export interface ComplaintTypeMapping {
-  subject: { applyType?: { dataText?: string | null } }
-  title_order: ComplaintField[]
 }
