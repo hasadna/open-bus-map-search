@@ -75,7 +75,6 @@ test('bug missing field - request type', async ({ page }) => {
   await test.step('Fill required fields', async () => {
     await page.getByLabel(i18next.t('bug_title')).fill(INCOMPLETE_BUG_REPORT.title)
     await page.getByLabel(i18next.t('bug_contact_name')).fill(CONTACT.name)
-    await page.getByLabel(i18next.t('bug_contact_email')).fill(CONTACT.email)
     await page.getByLabel(i18next.t('bug_description')).fill(INCOMPLETE_BUG_REPORT.description)
     await page.getByLabel(i18next.t('bug_environment')).fill(INCOMPLETE_BUG_REPORT.environment)
     await page
@@ -131,6 +130,7 @@ test('bug submission success', async ({ page }) => {
     await page.getByLabel(i18next.t('bug_title')).fill(VALID_BUG_REPORT.title)
     await page.getByLabel(i18next.t('bug_contact_name')).fill(CONTACT.name)
     await page.getByLabel(i18next.t('bug_contact_email')).fill(CONTACT.email)
+    await page.getByLabel(i18next.t('bug_contact_consent')).click()
     await page.getByLabel(i18next.t('bug_description')).fill(VALID_BUG_REPORT.description)
     await page.getByLabel(i18next.t('bug_environment')).fill(VALID_BUG_REPORT.environment)
     await page
@@ -188,6 +188,7 @@ test('bug submission success without an issue number', async ({ page }) => {
     await page.getByLabel(i18next.t('bug_title')).fill(VALID_BUG_REPORT.title)
     await page.getByLabel(i18next.t('bug_contact_name')).fill(CONTACT.name)
     await page.getByLabel(i18next.t('bug_contact_email')).fill(CONTACT.email)
+    await page.getByLabel(i18next.t('bug_contact_consent')).click()
     await page.getByLabel(i18next.t('bug_description')).fill(VALID_BUG_REPORT.description)
     await page.getByLabel(i18next.t('bug_environment')).fill(VALID_BUG_REPORT.environment)
     await page
@@ -227,6 +228,7 @@ test('bug submission server error', async ({ page }) => {
     await page.getByLabel(i18next.t('bug_title')).fill(VALID_BUG_REPORT.title)
     await page.getByLabel(i18next.t('bug_contact_name')).fill(CONTACT.name)
     await page.getByLabel(i18next.t('bug_contact_email')).fill(CONTACT.email)
+    await page.getByLabel(i18next.t('bug_contact_consent')).click()
     await page.getByLabel(i18next.t('bug_description')).fill(VALID_BUG_REPORT.description)
     await page.getByLabel(i18next.t('bug_environment')).fill(VALID_BUG_REPORT.environment)
     await page
@@ -243,5 +245,77 @@ test('bug submission server error', async ({ page }) => {
 
   await test.step('Verify error message is displayed', async () => {
     await expect(page.getByText(i18next.t('reportBug.error'))).toBeVisible()
+  })
+})
+
+test('bug submission success without email', async ({ page }) => {
+  let requestPayload: Record<string, unknown> | null = null
+  await test.step('Mock API to capture payload and return success', async () => {
+    await page.route(
+      (url) => url.href.includes(ISSUES_URL_FRAGMENT),
+      async (route) => {
+        requestPayload = route.request().postDataJSON()
+        await route.fulfill({ status: 200, body: JSON.stringify(successBody) })
+      },
+    )
+  })
+
+  await test.step('Open bug report modal', async () => {
+    await page.getByLabel(i18next.t('report_a_bug_title')).click()
+  })
+
+  await test.step('Fill required fields without email', async () => {
+    await page.getByLabel(i18next.t('bug_type')).click()
+    await page.getByText(i18next.t('bug_type_bug')).click()
+    await page.getByLabel(i18next.t('bug_title')).fill(VALID_BUG_REPORT.title)
+    await page.getByLabel(i18next.t('bug_contact_name')).fill(CONTACT.name)
+    await page.getByLabel(i18next.t('bug_description')).fill(VALID_BUG_REPORT.description)
+    await page.getByLabel(i18next.t('bug_environment')).fill(VALID_BUG_REPORT.environment)
+    await page
+      .getByLabel(i18next.t('bug_expected_behavior'))
+      .fill(VALID_BUG_REPORT.expectedBehavior)
+    await page.getByLabel(i18next.t('bug_actual_behavior')).fill(VALID_BUG_REPORT.actualBehavior)
+    await page.getByLabel(i18next.t('bug_reproducibility')).click()
+    await page.getByText(i18next.t('bug_frequency.always')).click()
+  })
+
+  await test.step('Submit the form', async () => {
+    await page.getByRole('button', { name: i18next.t('bug_submit') }).click()
+  })
+
+  await test.step('Verify success dialog and fallback email in request', async () => {
+    const dialog = page.getByRole('dialog')
+    await expect(dialog.getByText(i18next.t('reportBug.success'))).toBeVisible()
+    expect(requestPayload).toMatchObject({ contactEmail: 'anonymous@hasadna.org.il' })
+  })
+})
+
+test('bug submission requires consent when email is provided', async ({ page }) => {
+  await test.step('Open bug report modal', async () => {
+    await page.getByLabel(i18next.t('report_a_bug_title')).click()
+  })
+
+  await test.step('Fill all fields including email but do not check consent', async () => {
+    await page.getByLabel(i18next.t('bug_type')).click()
+    await page.getByText(i18next.t('bug_type_bug')).click()
+    await page.getByLabel(i18next.t('bug_title')).fill(VALID_BUG_REPORT.title)
+    await page.getByLabel(i18next.t('bug_contact_name')).fill(CONTACT.name)
+    await page.getByLabel(i18next.t('bug_contact_email')).fill(CONTACT.email)
+    await page.getByLabel(i18next.t('bug_description')).fill(VALID_BUG_REPORT.description)
+    await page.getByLabel(i18next.t('bug_environment')).fill(VALID_BUG_REPORT.environment)
+    await page
+      .getByLabel(i18next.t('bug_expected_behavior'))
+      .fill(VALID_BUG_REPORT.expectedBehavior)
+    await page.getByLabel(i18next.t('bug_actual_behavior')).fill(VALID_BUG_REPORT.actualBehavior)
+    await page.getByLabel(i18next.t('bug_reproducibility')).click()
+    await page.getByText(i18next.t('bug_frequency.always')).click()
+  })
+
+  await test.step('Submit the form', async () => {
+    await page.getByRole('button', { name: i18next.t('bug_submit') }).click()
+  })
+
+  await test.step('Verify consent error message is displayed', async () => {
+    await expect(page.getByText(i18next.t('bug_contact_consent_required'))).toBeVisible()
   })
 })
