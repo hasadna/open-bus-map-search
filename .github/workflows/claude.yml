@@ -72,8 +72,18 @@ jobs:
           # once, in CLAUDE.md — this file does not restate them.
           # See .github/claude-diagnosis-protocol.md.
           claude_args: >-
-            --model fable
+            --model opus
             --effort max
             --append-system-prompt-file .github/claude-diagnosis-protocol.md
             --allowed-tools "Bash,Edit,Write,Read,Glob,Grep,WebFetch,WebSearch,TodoWrite"
             --disallowed-tools "Bash(docker push:*),Bash(docker image push:*),Bash(docker buildx:*),Bash(podman push:*)"
+
+      # The action prints the result object with its error text redacted, so a
+      # failed run (expired OAuth token, usage limit, model access) shows only
+      # `is_error: true`. Print just the final result's error fields — not the
+      # transcript, which stays hidden because this repo's logs are public.
+      - name: Show Claude error
+        if: failure() && steps.claude.outputs.execution_file != ''
+        env:
+          EXECUTION_FILE: ${{ steps.claude.outputs.execution_file }}
+        run: jq '[.[] | select(.type == "result")] | last | {subtype, is_error, api_error_status, result}' "$EXECUTION_FILE"
