@@ -83,7 +83,7 @@
     "@applitools/eyes-storybook": "^3.68.9",
     "@eslint/eslintrc": "^3.3.7",
     "@eslint/js": "^9.39.4",
-    "@nx/eslint-plugin": "^23.2.1",
+    "@nx/eslint-plugin": "^23.3.0",
     "@playwright/test": "1.63.0",
     "@storybook/addon-docs": "^10.6.1",
     "@storybook/react-vite": "^10.6.1",
