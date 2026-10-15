@@ -1,9 +1,9 @@
 import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
-import { debounce } from 'es-toolkit/compat'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Marker, Popup, TileLayer, useMap } from 'react-leaflet'
 import MarkerClusterGroup from 'react-leaflet-markercluster'
+import { useDebounceValue } from 'usehooks-ts'
 import dayjs, { ISRAEL_TIMEZONE, parseIsraelLocalDatetime } from 'src/dayjs'
 import { useAgencyList } from 'src/hooks/useAgencyList'
 import { usePageState } from 'src/hooks/usePageState'
@@ -34,24 +34,7 @@ export default function TimeBasedMapPage() {
     ui: { scrollPosition: 0 },
   })
 
-  const [debouncedDatetime, setDebouncedDatetime] = useState(params.datetime)
-
-  const debouncedSetDatetime = useCallback(
-    debounce((datetime: string) => {
-      setDebouncedDatetime(datetime)
-    }, 500),
-    [],
-  )
-
-  useEffect(() => {
-    if (params.datetime === debouncedDatetime) return
-
-    debouncedSetDatetime(params.datetime)
-
-    return () => {
-      debouncedSetDatetime.cancel()
-    }
-  }, [debouncedDatetime, debouncedSetDatetime, params.datetime])
+  const [debouncedDatetime] = useDebounceValue(params.datetime, 500)
 
   const from = useMemo(
     () => parseIsraelLocalDatetime(params.datetime) ?? DEFAULT_TIME,
