@@ -35,6 +35,18 @@ jobs:
           # on demand when an operation actually needs full history.
           fetch-depth: 1
 
+      # `model:<alias>` in the triggering text overrides the default, e.g.
+      # `@claude please fix it model:sonnet`. The text is untrusted input, so it
+      # reaches the shell only through env and only allow-listed aliases pass.
+      - name: Pick model
+        id: model
+        env:
+          TEXT: ${{ github.event.comment.body || github.event.review.body || format('{0} {1}', github.event.issue.title, github.event.issue.body) }}
+        run: |
+          model=$(grep -oiE '(^|[[:space:]])model:(opus|sonnet|haiku|fable)\b' <<<"$TEXT" | head -n1 | sed -E 's/.*model://I' | tr '[:upper:]' '[:lower:]' || true)
+          echo "model=${model:-opus}" >> "$GITHUB_OUTPUT"
+          echo "Using model: ${model:-opus}"
+
       - name: Run Claude Code
         id: claude
         uses: anthropics/claude-code-action@v1
@@ -72,7 +84,7 @@ jobs:
           # once, in CLAUDE.md — this file does not restate them.
           # See .github/claude-diagnosis-protocol.md.
           claude_args: >-
-            --model opus
+            --model ${{ steps.model.outputs.model }}
             --effort max
             --append-system-prompt-file .github/claude-diagnosis-protocol.md
             --allowed-tools "Bash,Edit,Write,Read,Glob,Grep,WebFetch,WebSearch,TodoWrite"
