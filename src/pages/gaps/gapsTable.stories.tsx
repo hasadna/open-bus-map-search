@@ -44,15 +44,18 @@ type Story = StoryObj<typeof meta>
 // zone. The gaps are passed through serializeGap → reviveGap (the real cache path).
 const day = dayjs.tz('2025-01-01', ISRAEL_TIMEZONE)
 const mockGaps: Gap[] = [
-  // as planned (green): planned === actual
+  // as planned (green): planned === actual. Shares the 13:00 departure with the
+  // duplicate below, so both carry both plates.
   {
     plannedStartTime: day.set('hour', 13),
     actualStartTime: day.set('hour', 13),
+    vehicleRefs: ['1234567', '53104703'],
   },
   // duplicate (cyan): a second ride sharing the 13:00 actual
   {
     plannedStartTime: undefined,
     actualStartTime: day.set('hour', 13),
+    vehicleRefs: ['1234567', '53104703'],
   },
   // missing (red): a past planned ride with no actual
   {
@@ -63,6 +66,7 @@ const mockGaps: Gap[] = [
   {
     plannedStartTime: undefined,
     actualStartTime: day.set('hour', 14).set('minute', 30),
+    vehicleRefs: ['7654321'],
   },
   // in the future (blue): GapsTable derives this state by comparing against the
   // current time, so this row must stay relative to "now" — a fixed past literal

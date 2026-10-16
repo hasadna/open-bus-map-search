@@ -15,6 +15,7 @@ import { Link } from 'react-router'
 import { Gap, reviveGap, SerializedGap } from 'src/api/gapsService'
 import dayjs from 'src/dayjs'
 import { AfterMidnightHint } from 'src/pages/components/AfterMidnightHint'
+import { vehicleIDFormat } from 'src/pages/components/utils/rotueUtils'
 import { formatStartTimeForQuery } from 'src/pages/components/utils/startTimeUtils'
 import SkeletonLoader from 'src/shared/SkeletonLoader'
 import Widget from 'src/shared/Widget'
@@ -62,25 +63,51 @@ const formatStatus = (gap: Gap, gaps: Gap[] | undefined): keyof typeof colors =>
   return hasTwinRide ? 'ride_duped' : 'ride_extra'
 }
 
-function buildTooltip(gap: Gap, t: TFunction): React.ReactNode {
-  const planned = gap.plannedStartTime?.format(DATE_TIME_FORMAT)
-  const actual = gap.actualStartTime?.format(DATE_TIME_FORMAT)
+// Never a bare string: MUI copies a string title onto the cell as aria-label, which
+// would replace the departure time as the cell's accessible name.
+const tooltipBody = (children: React.ReactNode) => (
+  <div style={{ fontSize: '0.85rem', lineHeight: 1.6 }}>{children}</div>
+)
+
+function buildTooltip(gap: Gap, status: keyof typeof colors, t: TFunction): React.ReactNode {
+  // A ride nobody drove has no plate and no second timestamp, so the legend's own
+  // wording says everything the tooltip could.
+  if (status === 'ride_missing') return tooltipBody(t('ride_missing'))
+
+  const plates = (gap.vehicleRefs ?? [])
+    .map((vehicleRef) => vehicleIDFormat(vehicleRef))
+    .filter((plate) => plate !== undefined)
   const diffMin =
     gap.actualStartTime && gap.plannedStartTime
       ? gap.actualStartTime.diff(gap.plannedStartTime, 'minute')
       : null
-  return (
-    <div style={{ fontSize: '0.85rem', lineHeight: 1.6 }}>
-      <div>
-        {t('gap_tooltip_planned')}: {planned ?? '—'}
-      </div>
-      <div>
-        {t('gap_tooltip_actual')}: {actual ?? '—'}
-      </div>
+  // A ride that left on time repeats the cell's own number twice over, so its tooltip is
+  // spent on the plate instead. Every other status has something the cell can't show:
+  // a missing counterpart (diff is null) or a delay.
+  const showTimes = diffMin !== 0
+  if (!plates.length && !showTimes) return null
+
+  return tooltipBody(
+    <>
+      {plates.map((plate) => (
+        <div key={plate}>
+          {t('vehicle_ref')}: <bdi>{plate}</bdi>
+        </div>
+      ))}
+      {showTimes && (
+        <>
+          <div>
+            {t('gap_tooltip_planned')}: {gap.plannedStartTime?.format(DATE_TIME_FORMAT) ?? '—'}
+          </div>
+          <div>
+            {t('gap_tooltip_actual')}: {gap.actualStartTime?.format(DATE_TIME_FORMAT) ?? '—'}
+          </div>
+        </>
+      )}
       {diffMin !== null && diffMin !== 0 && (
         <div>{t('gap_tooltip_diff_minutes', { diff: diffMin > 0 ? `+${diffMin}` : diffMin })}</div>
       )}
-    </div>
+    </>,
   )
 }
 const getGap = (gap: Gap) => gap.plannedStartTime || gap.actualStartTime
@@ -176,7 +203,7 @@ const GapsTable: React.FC<GapsTableProps> = ({
                         return (
                           <Tooltip
                             key={`${hour}-${j}-${displayTime}`}
-                            title={buildTooltip(gap, t)}
+                            title={buildTooltip(gap, status, t)}
                             arrow>
                             <TableCell
                               sx={{
