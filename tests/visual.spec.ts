@@ -38,7 +38,8 @@ for (const mode of ['Light', 'Dark', 'LTR']) {
       }
     })
 
-    test(`Home Page Should Look Good [${mode}]`, async ({ eyes }) => {
+    test(`Home Page Should Look Good [${mode}]`, async ({ page, eyes }) => {
+      await page.getByRole('heading', { level: 1 }).waitFor()
       await eyes.check('home page')
     })
 
