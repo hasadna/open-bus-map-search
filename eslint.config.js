@@ -114,7 +114,10 @@ export default [
       'playwright/valid-expect': 'error',
       'playwright/no-standalone-expect': 'error',
       // Ban zero-assertion tests; assertFunctionNames whitelists expect()-wrapping helpers.
-      'playwright/expect-expect': ['error', { assertFunctionNames: ['verifyDateFromParameter'] }],
+      'playwright/expect-expect': [
+        'error',
+        { assertFunctionNames: ['verifyDateFromParameter', 'expectRequestedWindows'] },
+      ],
     },
   },
   // No expect() by design: Applitools screenshots / HAR recorder.
