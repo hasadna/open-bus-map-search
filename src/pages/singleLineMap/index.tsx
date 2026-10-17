@@ -1,11 +1,11 @@
 import BusAlertTwoToneIcon from '@mui/icons-material/BusAlertTwoTone'
 import { Alert, CircularProgress, Grid, Link as MuiLink, Tooltip, Typography } from '@mui/material'
-import { useCallback, useContext, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
+import { useGlobalSearch } from 'src/hooks/useGlobalSearch'
 import { usePageState } from 'src/hooks/usePageState'
 import { useSingleLineData } from 'src/hooks/useSingleLineData'
-import { GlobalSearchContext } from 'src/model/globalState'
 import { type CivilDate, todayCivilDate } from 'src/model/time/civilDate'
 import LineNumberSelector from 'src/pages/components/LineSelector'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
@@ -29,7 +29,7 @@ type SingleLineMapParams = { focusPing: string | null }
 type SingleLineMapUi = { scrollPosition: number }
 
 const SingleLineMapPage = () => {
-  const { search, setSearch } = useContext(GlobalSearchContext)
+  const { search, updateSearch } = useGlobalSearch()
   const { operatorId, lineNumber, date, routeKey: searchRouteKey, rideTime } = search
   const { t } = useTranslation()
 
@@ -55,12 +55,12 @@ const SingleLineMapPage = () => {
   }, [])
 
   const onRouteKeyChange = useCallback(
-    (key: string | null) => setSearch((c) => ({ ...c, routeKey: key })),
-    [setSearch],
+    (key: string | null) => updateSearch({ routeKey: key }),
+    [updateSearch],
   )
   const onRideTimeChange = useCallback(
-    (time: string | null) => setSearch((c) => ({ ...c, rideTime: time })),
-    [setSearch],
+    (time: string | null) => updateSearch({ rideTime: time }),
+    [updateSearch],
   )
 
   // Lets the coverage strip (rendered below the map) fly the map to a ping. The seq
@@ -95,26 +95,22 @@ const SingleLineMapPage = () => {
   // A ping belongs to one ride, so every selector that changes which ride is shown
   // drops it — otherwise it lingers in the share URL long after its ride is gone.
   const handleDateChange = (next: CivilDate | null) => {
-    setSearch((current) => ({
-      ...current,
-      date: next ?? todayCivilDate(),
-      rideTime: null,
-    }))
+    updateSearch({ date: next ?? todayCivilDate(), rideTime: null })
     clearFocusPing()
   }
 
   const handleOperatorChange = (operatorId: string) => {
-    setSearch((current) => ({ ...current, operatorId, rideTime: null }))
+    updateSearch({ operatorId, rideTime: null })
     clearFocusPing()
   }
 
   const handleLineNumberChange = (lineNumber: string) => {
-    setSearch((current) => ({ ...current, lineNumber, rideTime: null }))
+    updateSearch({ lineNumber, rideTime: null })
     clearFocusPing()
   }
 
   const handleRouteKeyChange = (routeKey?: string) => {
-    setSearch((current) => ({ ...current, routeKey: routeKey ?? null, rideTime: null }))
+    updateSearch({ routeKey: routeKey ?? null, rideTime: null })
     clearFocusPing()
   }
 

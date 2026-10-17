@@ -1,13 +1,13 @@
 import { CircularProgress, Grid, Typography } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
-import { useCallback, useContext, useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { SIRI_API } from 'src/api/apiConfig'
 import { getAllRoutesList } from 'src/api/gtfsService'
 import { israelDayBounds } from 'src/dayjs'
+import { useGlobalSearch } from 'src/hooks/useGlobalSearch'
 import { usePageState } from 'src/hooks/usePageState'
 import { fromGtfsRoute } from 'src/model/busRoute'
-import { GlobalSearchContext } from 'src/model/globalState'
 import { type CivilDate, todayCivilDate } from 'src/model/time/civilDate'
 import VehicleSelector, { normalizeVehicleNumber } from 'src/pages/components/VehicleSelector'
 import { CivilDateSelector } from '../components/CivilDateSelector'
@@ -23,7 +23,7 @@ type VehicleUi = { scrollPosition: number }
 
 const VehiclePage = () => {
   const { t } = useTranslation()
-  const { search, setSearch } = useContext(GlobalSearchContext)
+  const { search, updateSearch } = useGlobalSearch()
   const { date } = search
 
   // The vehicle number is page-local — never in GlobalSearchContext. usePageState
@@ -47,10 +47,7 @@ const VehiclePage = () => {
   const { start: dayStart, end: dayEnd } = useMemo(() => israelDayBounds(date), [date])
 
   const handleDateChange = (next: CivilDate | null) => {
-    setSearch((current) => ({
-      ...current,
-      date: next ?? todayCivilDate(),
-    }))
+    updateSearch({ date: next ?? todayCivilDate() })
   }
 
   const {
@@ -118,7 +115,7 @@ const VehiclePage = () => {
 
   const handleRowClick = (payload: VehicleRideRow['setSearchPayload']) => {
     if (!payload) return
-    setSearch((current) => ({ ...current, ...payload }))
+    updateSearch(payload)
   }
 
   return (
