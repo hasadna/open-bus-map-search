@@ -1,7 +1,7 @@
 import { SiriVehicleLocationWithRelatedPydanticModel } from '@hasadna/open-bus-api-client'
 import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
-import { useContext, useMemo } from 'react'
+import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   getGtfsStopHitTimesAsync,
@@ -10,8 +10,8 @@ import {
 } from 'src/api/gtfsService'
 import { getSiriStopHitTimesAsync } from 'src/api/siriService'
 import dayjs, { ISRAEL_TIMEZONE } from 'src/dayjs'
+import { useGlobalSearch } from 'src/hooks/useGlobalSearch'
 import { usePageState } from 'src/hooks/usePageState'
-import { GlobalSearchContext } from 'src/model/globalState'
 import { Label } from 'src/pages/components/Label'
 import LineNumberSelector from 'src/pages/components/LineSelector'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
@@ -28,12 +28,11 @@ import { buildSingleLineMapRideLink } from './singleLineMapRideLink'
 
 const StationStopsPage = () => {
   const { t } = useTranslation()
-  const { search, setSearch } = useContext(GlobalSearchContext)
+  const { search, updateSearch } = useGlobalSearch()
   const { operatorId, lineNumber, date, routeKey } = search
 
   const stopKey = search.stopKey
-  const setStopKey = (key: string | undefined) =>
-    setSearch((prev) => ({ ...prev, stopKey: key ?? null }))
+  const setStopKey = (key: string | undefined) => updateSearch({ stopKey: key ?? null })
 
   // time-of-day is page-local: not shared across pages, but is shareable so a
   // link recipient sees the same moment (date comes from global state).
@@ -54,7 +53,7 @@ const StationStopsPage = () => {
           return await getRoutesAsync(date, date, operatorId, lineNumber)
         } catch (error) {
           console.error(error)
-          setSearch((current) => ({ ...current, routeKey: null }))
+          updateSearch({ routeKey: null })
           setStopKey(undefined)
         }
       }
@@ -75,7 +74,7 @@ const StationStopsPage = () => {
           return await getStopsForRouteAsync(selectedRoute.routeIds, time)
         } catch (error) {
           console.error(error)
-          setSearch((current) => ({ ...current, stopKey: null }))
+          updateSearch({ stopKey: null })
         }
       }
       return null
@@ -135,7 +134,7 @@ const StationStopsPage = () => {
             value={date}
             onChange={(d) => {
               if (!d) return
-              setSearch((prev) => ({ ...prev, date: d }))
+              updateSearch({ date: d })
             }}
           />
         </Grid>
@@ -153,7 +152,7 @@ const StationStopsPage = () => {
         <Grid size={{ lg: 4, md: 6, xs: 12 }}>
           <OperatorSelector
             operatorId={operatorId ?? undefined}
-            setOperatorId={(id) => setSearch((prev) => ({ ...prev, operatorId: id }))}
+            setOperatorId={(id) => updateSearch({ operatorId: id })}
             excludeIsraelRailways
           />
         </Grid>
@@ -163,7 +162,7 @@ const StationStopsPage = () => {
             operatorId={operatorId ?? undefined}
             date={date}
             lineNumber={lineNumber ?? undefined}
-            setLineNumber={(number) => setSearch((prev) => ({ ...prev, lineNumber: number }))}
+            setLineNumber={(number) => updateSearch({ lineNumber: number })}
           />
         </Grid>
         {/* routes */}
@@ -177,7 +176,7 @@ const StationStopsPage = () => {
                   disabled={!routesQuery.data}
                   routes={routesQuery.data || []}
                   routeKey={routeKey ?? undefined}
-                  setRouteKey={(key) => setSearch((prev) => ({ ...prev, routeKey: key ?? null }))}
+                  setRouteKey={(key) => updateSearch({ routeKey: key ?? null })}
                 />
               )}
             </div>
