@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.6.1](https://github.com/hasadna/open-bus-map-search/compare/v1.6.0...v1.6.1) (2026-10-18)
+
+
+### Bug Fixes
+
+* future date navigation ([#1901](https://github.com/hasadna/open-bus-map-search/issues/1901)) ([ea7395e](https://github.com/hasadna/open-bus-map-search/commit/ea7395e01594806d002d7e256b6c36f7568263d0))
+* start the operator gaps pie animation immediately ([#1912](https://github.com/hasadna/open-bus-map-search/issues/1912)) ([fce3cbf](https://github.com/hasadna/open-bus-map-search/commit/fce3cbf06f4877a42bfd57dccd58000fd08865f0))
+
 ## [1.6.0](https://github.com/hasadna/open-bus-map-search/compare/v1.5.0...v1.6.0) (2026-09-27)
 
 
