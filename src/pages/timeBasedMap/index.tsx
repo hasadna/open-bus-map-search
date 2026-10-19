@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Marker, Popup, TileLayer, useMap } from 'react-leaflet'
 import MarkerClusterGroup from 'react-leaflet-markercluster'
+import { useDebounceValue } from 'usehooks-ts'
 import dayjs, { ISRAEL_TIMEZONE, parseIsraelLocalDatetime } from 'src/dayjs'
 import { useAgencyList } from 'src/hooks/useAgencyList'
 import { usePageState } from 'src/hooks/usePageState'
@@ -32,14 +33,23 @@ export default function TimeBasedMapPage() {
     params: { datetime: DEFAULT_DATETIME },
     ui: { scrollPosition: 0 },
   })
+
+  const [debouncedDatetime] = useDebounceValue(params.datetime, 500)
+
   const from = useMemo(
     () => parseIsraelLocalDatetime(params.datetime) ?? DEFAULT_TIME,
     [params.datetime],
   )
-  const to = useMemo(() => dayjs(from).add(1, 'minutes'), [from])
-  const { locations, isLoading } = useVehicleLocations({ from, to })
+  const fetchFrom = useMemo(
+    () => parseIsraelLocalDatetime(debouncedDatetime) ?? DEFAULT_TIME,
+    [debouncedDatetime],
+  )
+  const to = useMemo(() => dayjs(fetchFrom).add(1, 'minutes'), [fetchFrom])
+  const { locations, isLoading } = useVehicleLocations({ from: fetchFrom, to })
+
   const { t } = useTranslation()
   const positions = useMemo(() => locations.map(toPoint), [locations])
+
   const handleFromChange = useCallback(
     (time: dayjs.Dayjs | null) => {
       const next = time ?? DEFAULT_TIME
