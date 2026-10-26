@@ -3,6 +3,7 @@ import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useDebounceValue } from 'usehooks-ts'
 import {
   getGtfsStopHitTimesAsync,
   getRoutesAsync,
@@ -46,6 +47,15 @@ const StationStopsPage = () => {
     return dayjs.tz(date, ISRAEL_TIMEZONE).hour(h).minute(m).startOf('minute')
   }, [date, params.time])
 
+  // Debounce the time used for data fetching while keeping the time picker responsive.
+  const [debouncedTime] = useDebounceValue(params.time, 500)
+
+  // Build the request timestamp from the selected date and debounced time.
+  const requestTime = useMemo(() => {
+    const [h, m] = debouncedTime.split(':').map(Number)
+    return dayjs.tz(date, ISRAEL_TIMEZONE).hour(h).minute(m).startOf('minute')
+  }, [date, debouncedTime])
+
   const routesQuery = useQuery({
     queryFn: async () => {
       if (operatorId && lineNumber) {
@@ -71,7 +81,8 @@ const StationStopsPage = () => {
     queryFn: async () => {
       if (selectedRoute) {
         try {
-          return await getStopsForRouteAsync(selectedRoute.routeIds, time)
+          // Fetch stops only after the debounced time has been updated.
+          return await getStopsForRouteAsync(selectedRoute.routeIds, requestTime)
         } catch (error) {
           console.error(error)
           updateSearch({ stopKey: null })
@@ -79,7 +90,7 @@ const StationStopsPage = () => {
       }
       return null
     },
-    queryKey: ['stops', selectedRoute?.lineRef, time.valueOf()],
+    queryKey: ['stops', selectedRoute?.lineRef, requestTime.valueOf()],
   })
 
   const selectedStop = useMemo(
@@ -101,15 +112,16 @@ const StationStopsPage = () => {
   const hitsQuery = useQuery({
     queryFn: async () => {
       if (selectedStop && selectedRoute) {
+        // Keep scheduled and actual stop times in sync with the debounced request time.
         const [gtfsTime, siriTime] = await Promise.all([
-          getGtfsStopHitTimesAsync(selectedStop, time),
-          getSiriStopHitTimesAsync(selectedRoute, selectedStop, time),
+          getGtfsStopHitTimesAsync(selectedStop, requestTime),
+          getSiriStopHitTimesAsync(selectedRoute, selectedStop, requestTime),
         ])
         return { gtfsTime, siriTime }
       }
       return null
     },
-    queryKey: ['hits', selectedRoute?.lineRef, selectedStop?.stopId, time.valueOf()],
+    queryKey: ['hits', selectedRoute?.lineRef, selectedStop?.stopId, requestTime.valueOf()],
   })
 
   return (
@@ -211,7 +223,8 @@ const StationStopsPage = () => {
                 ((hitsQuery.data?.gtfsTime && hitsQuery.data.gtfsTime.length > 0) ||
                 (hitsQuery.data?.siriTime && hitsQuery.data.siriTime.length > 0) ? (
                   <TimelineBoard
-                    target={time}
+                    // Keep the target marker aligned with the time used to fetch the displayed data.
+                    target={requestTime}
                     gtfsTimes={hitsQuery.data.gtfsTime}
                     siriTimes={hitsQuery.data.siriTime}
                     siriLink={siriLink}
