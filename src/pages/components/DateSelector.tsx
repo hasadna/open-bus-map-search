@@ -36,19 +36,25 @@ export function DateSelector({
   disabled,
 }: DataSelectorProps) {
   const [error, setError] = useState<DateValidationError>()
+  // MUI's field shows a typed date only once `value` echoes it back, so every keystroke goes
+  // into the draft — even out-of-range ones, which must never reach the caller.
+  const [draft, setDraft] = useState<dayjs.Dayjs | null>(time)
+  const [committed, setCommitted] = useState(time)
   const { t } = useTranslation()
+
+  if (!time.isSame(committed)) {
+    setCommitted(time)
+    setDraft(time)
+  }
 
   const errorMessageKey = getErrorMessageKey(error)
 
   return (
     <DatePicker
-      value={time}
+      value={draft}
       onChange={(value, context) => {
-        // The field fires on every keystroke, so a half-typed date arrives here
-        // as invalid. Forwarding it overwrites the sections the user is still
-        // editing, and on the dashboard it reaches groupByService and throws.
-        if (context.validationError) return
-        onChange(value)
+        setDraft(value)
+        if (!context.validationError) onChange(value)
       }}
       format="DD/MM/YYYY"
       label={customLabel || t('choose_date')}
