@@ -530,6 +530,15 @@
         "code",
         "bug"
       ]
+    },
+    {
+      "login": "SimonGebru",
+      "name": "Simon Gebru",
+      "avatar_url": "https://avatars.githubusercontent.com/u/172205608?v=4",
+      "profile": "http://simongebru.com",
+      "contributions": [
+        "code"
+      ]
     }
   ]
 }
