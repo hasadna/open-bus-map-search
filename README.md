@@ -113,6 +113,7 @@ We’ve hidden a few fun surprises in the [web app](https://open-bus-map-search.
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Bellavely"><img src="https://avatars.githubusercontent.com/u/90250915?v=4?s=100" width="100px;" alt="Bella Vayzburg"/><br /><sub><b>Bella Vayzburg</b></sub></a><br /><a href="#code-Bellavely" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/ifrahgul"><img src="https://avatars.githubusercontent.com/u/219668347?v=4?s=100" width="100px;" alt="Ifrah Gul"/><br /><sub><b>Ifrah Gul</b></sub></a><br /><a href="#code-ifrahgul" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/jonsuguiyama"><img src="https://avatars.githubusercontent.com/u/9615633?v=4?s=100" width="100px;" alt="Jon Suguiyama"/><br /><sub><b>Jon Suguiyama</b></sub></a><br /><a href="#code-jonsuguiyama" title="Code">💻</a> <a href="#bug-jonsuguiyama" title="Bug reports">🐛</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://simongebru.com"><img src="https://avatars.githubusercontent.com/u/172205608?v=4?s=100" width="100px;" alt="Simon Gebru"/><br /><sub><b>Simon Gebru</b></sub></a><br /><a href="#code-SimonGebru" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
