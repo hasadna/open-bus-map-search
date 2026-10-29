@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.6.1](https://github.com/hasadna/open-bus-map-search/compare/v1.6.0...v1.6.1) (2026-10-29)
+
+
+### Bug Fixes
+
+* debounce station stops time-based requests ([#1920](https://github.com/hasadna/open-bus-map-search/issues/1920)) ([01d579e](https://github.com/hasadna/open-bus-map-search/commit/01d579ee6771d7ac81b435277c2d8ac5ac96249d))
+* future date navigation ([#1901](https://github.com/hasadna/open-bus-map-search/issues/1901)) ([ea7395e](https://github.com/hasadna/open-bus-map-search/commit/ea7395e01594806d002d7e256b6c36f7568263d0))
+* keep typed digits in the date field when the date is out of range ([#1921](https://github.com/hasadna/open-bus-map-search/issues/1921)) ([bee1273](https://github.com/hasadna/open-bus-map-search/commit/bee1273367518fda2ea18dafecac1b8099868ae3))
+* start the operator gaps pie animation immediately ([#1912](https://github.com/hasadna/open-bus-map-search/issues/1912)) ([fce3cbf](https://github.com/hasadna/open-bus-map-search/commit/fce3cbf06f4877a42bfd57dccd58000fd08865f0))
+
 ## [1.6.0](https://github.com/hasadna/open-bus-map-search/compare/v1.5.0...v1.6.0) (2026-09-27)
 
 
