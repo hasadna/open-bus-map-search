@@ -15,7 +15,7 @@ import { useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSearchParams } from 'react-router'
 import { toIsraelTimezone } from 'src/dayjs'
-import { GlobalSearchContext } from 'src/model/globalState'
+import { useGlobalSearch } from 'src/hooks/useGlobalSearch'
 import { InitialUrlParamsContext, PageShareParamsContext } from 'src/model/routeContext'
 import { addDays, todayCivilDate } from 'src/model/time/civilDate'
 import { CivilDateSelector } from 'src/pages/components/CivilDateSelector'
@@ -29,7 +29,7 @@ import { useTrainRideStops, useTrainRoutes, useTrainVehicleLocations } from './u
 
 export default function TrainPage() {
   const { t } = useTranslation()
-  const { search, setSearch } = useContext(GlobalSearchContext)
+  const { search, updateSearch } = useGlobalSearch()
   const [searchParams] = useSearchParams()
   const initialUrlParams = useContext(InitialUrlParamsContext)
   const { setParams: setPageShareParams } = useContext(PageShareParamsContext)
@@ -52,9 +52,9 @@ export default function TrainPage() {
   const locationsQuery = useTrainVehicleLocations(search.date, lineRefs)
   useEffect(() => {
     if (search.date > maxDate) {
-      setSearch((current) => ({ ...current, date: maxDate }))
+      updateSearch({ date: maxDate })
     }
-  }, [maxDate, search.date, setSearch])
+  }, [maxDate, search.date, updateSearch])
 
   useEffect(() => {
     if (selectedLineRef && routesQuery.data && !selectedRoute) {
@@ -91,7 +91,7 @@ export default function TrainPage() {
             maxDate={maxDate}
             onChange={(date) => {
               if (!date) return
-              setSearch((current) => ({ ...current, date }))
+              updateSearch({ date })
             }}
           />
         </Box>

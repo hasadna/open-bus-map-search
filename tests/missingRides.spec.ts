@@ -66,6 +66,6 @@ test('should keep original missing rides percentage when showing only gaps', asy
   await expect(page.getByText('כמעט / כל הנסיעות בוצעו')).toBeVisible()
 })
 
-test('Verify date_from parameter from - "missing rides"', async ({ page }) => {
-  await verifyDateFromParameter(page)
+test('Verify date_from parameter from - "missing rides"', ({ page }) => {
+  verifyDateFromParameter(page)
 })

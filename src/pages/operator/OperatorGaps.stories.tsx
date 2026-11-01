@@ -33,6 +33,9 @@ const URL =
 
 export const Default: Story = {
   parameters: {
+    eyes: {
+      ignoreRegions: [{ selector: 'path' }],
+    },
     msw: {
       handlers: [
         http.get(URL, async () => {

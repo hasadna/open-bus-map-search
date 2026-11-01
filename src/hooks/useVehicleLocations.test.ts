@@ -15,7 +15,12 @@ describe('useVehicleLocations - failed load is not cached as success', () => {
     apiMock.mockReset()
   })
 
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
   it('refetches on a later request for the same range after a failed load', async () => {
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     // Unique range so this test owns its cache key regardless of order.
     const base = 1_700_010_000_000
     const params = {
@@ -30,9 +35,11 @@ describe('useVehicleLocations - failed load is not cached as success', () => {
     // First request fails on every attempt (3 internal retries -> throw).
     apiMock.mockRejectedValue(new Error('network down'))
     const first = renderHook(() => useVehicleLocations(params))
-    await waitFor(() => expect(apiMock.mock.calls.length).toBeGreaterThanOrEqual(3), {
+    await waitFor(() => expect(first.result.current.isLoading).toBe(false), {
       timeout: 10000,
     })
+    expect(apiMock).toHaveBeenCalledTimes(3)
+    expect(errorSpy).toHaveBeenCalledWith('Failed to load vehicle locations:', expect.any(Error))
     const callsAfterFailure = apiMock.mock.calls.length
     first.unmount()
 

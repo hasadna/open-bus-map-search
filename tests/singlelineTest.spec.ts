@@ -166,8 +166,8 @@ test.describe('Single line page tests', () => {
     await expect(page.getByText('הקו לא נמצא')).toBeAttached()
   })
 
-  test('Verify date_from parameter from - "Map by line"', async ({ page }) => {
-    await verifyDateFromParameter(page)
+  test('Verify date_from parameter from - "Map by line"', ({ page }) => {
+    verifyDateFromParameter(page)
   })
 
   // Anti-regression for the route-key + start-time refactor on

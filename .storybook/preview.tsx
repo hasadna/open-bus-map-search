@@ -1,7 +1,8 @@
 import type { Preview } from '@storybook/react-vite'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { http, HttpResponse } from 'msw'
-import { initialize, mswLoader } from 'msw-storybook-addon'
+import { mswLoader } from 'msw-storybook-addon/csf3'
+import { setupWorker } from 'msw/browser'
 import { Suspense, useEffect } from 'react'
 import { BrowserRouter } from 'react-router'
 import { ThemeProvider, useTheme } from 'src/layout/ThemeContext'
@@ -34,17 +35,13 @@ const agencyListHandler = http.get('*/gtfs_agencies/list', async () => {
 })
 
 const preview: Preview = {
-  beforeAll: () => {
-    initialize(
-      {
-        serviceWorker: {
-          url: './mockServiceWorker.js',
-        },
-      },
-      [agencyListHandler],
-    )
-  },
-  loaders: [mswLoader],
+  loaders: [
+    mswLoader(async () => {
+      const worker = setupWorker(agencyListHandler)
+      await worker.start({ serviceWorker: { url: './mockServiceWorker.js' } })
+      return worker
+    }),
+  ],
   parameters: {
     actions: { argTypesRegex: '^on[A-Z].*' },
     controls: {

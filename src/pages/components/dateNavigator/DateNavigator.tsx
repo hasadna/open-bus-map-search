@@ -1,7 +1,12 @@
 import { TodayTwoTone } from '@mui/icons-material'
 import { Box, Button, ButtonGroup } from '@mui/material'
 import { useTranslation } from 'react-i18next'
-import { addDays, type CivilDate, todayCivilDate } from 'src/model/time/civilDate'
+import {
+  addDays,
+  type CivilDate,
+  EARLIEST_SUPPORTED_DATE,
+  todayCivilDate,
+} from 'src/model/time/civilDate'
 import './DateNavigator.scss'
 
 interface DateNavigatorProps {
@@ -11,6 +16,7 @@ interface DateNavigatorProps {
 
 export const DateNavigator = ({ currentDate, onChange }: DateNavigatorProps) => {
   const { t } = useTranslation()
+  const today = todayCivilDate()
 
   const handleChange = (days: number) => onChange(addDays(currentDate, days))
 
@@ -31,6 +37,7 @@ export const DateNavigator = ({ currentDate, onChange }: DateNavigatorProps) => 
         }}>
         <Button
           className="nav-btn"
+          disabled={addDays(currentDate, -7) < EARLIEST_SUPPORTED_DATE}
           onClick={() => handleChange(-7)}
           title={t('date_navigator_prev_week')}
           aria-label={t('date_navigator_prev_week')}>
@@ -41,6 +48,7 @@ export const DateNavigator = ({ currentDate, onChange }: DateNavigatorProps) => 
         </Button>
         <Button
           className="nav-btn"
+          disabled={addDays(currentDate, -1) < EARLIEST_SUPPORTED_DATE}
           onClick={() => handleChange(-1)}
           title={t('date_navigator_prev_day')}
           aria-label={t('date_navigator_prev_day')}>
@@ -59,6 +67,7 @@ export const DateNavigator = ({ currentDate, onChange }: DateNavigatorProps) => 
         </Button>
         <Button
           className="nav-btn"
+          disabled={addDays(currentDate, 1) > today}
           onClick={() => handleChange(1)}
           title={t('date_navigator_next_day')}
           aria-label={t('date_navigator_next_day')}>
@@ -69,6 +78,7 @@ export const DateNavigator = ({ currentDate, onChange }: DateNavigatorProps) => 
         </Button>
         <Button
           className="nav-btn"
+          disabled={addDays(currentDate, 7) > today}
           onClick={() => handleChange(7)}
           title={t('date_navigator_next_week')}
           aria-label={t('date_navigator_next_week')}>

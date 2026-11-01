@@ -32,6 +32,8 @@ export function civilDate(value: string): CivilDate | null {
   return value as CivilDate
 }
 
+export const EARLIEST_SUPPORTED_DATE = civilDate('2023-01-01')!
+
 export function isCivilDate(value: unknown): value is CivilDate {
   return typeof value === 'string' && civilDate(value) === value
 }
