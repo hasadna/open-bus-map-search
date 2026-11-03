@@ -1,6 +1,6 @@
 import {
   EmojiTransportationTwoTone,
-  HistoryTwoTone,
+  HailRounded,
   MapTwoTone,
   MenuTwoTone,
   NoTransferTwoTone,
@@ -60,7 +60,7 @@ export const HomePage = () => {
   return (
     <div className="container">
       <BusImage role="img" aria-label={t('homepage.bus_illustration_alt')} />
-      <h1 className="page-title">{t('homepage.welcome')}</h1>
+      <h1>{t('homepage.welcome')}</h1>
       <h2>{t('homepage.databus_definition')}</h2>
       <p>{t('homepage.website_goal')}</p>
 
@@ -72,10 +72,10 @@ export const HomePage = () => {
           description={t('singleline_map_page_description')}
         />
         <PageLink
-          icon={<HistoryTwoTone />}
-          label={t('timeline_page_title')}
-          to="/timeline"
-          description={t('timeline_page_description')}
+          icon={<HailRounded />}
+          label={t('station_stops_page_title')}
+          to="/station-stops"
+          description={t('station_stops_page_description')}
         />
         <PageLink
           icon={<NoTransferTwoTone />}

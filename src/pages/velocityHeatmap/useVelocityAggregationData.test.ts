@@ -1,18 +1,13 @@
 import dayjs from 'src/dayjs'
 import { fetchAggregation, queryFn } from './useVelocityAggregationData'
 
-jest.mock('src/api/apiConfig', () => ({
+const siriGet = vi.hoisted(() => vi.fn())
+
+vi.mock('src/api/apiConfig', () => ({
   SIRI_API: {
-    velocityAggregationSiriVelocityAggregationSiriVelocityAggregationGet: jest.fn(),
+    velocityAggregationSiriVelocityAggregationSiriVelocityAggregationGet: siriGet,
   },
 }))
-
-const siriGet = jest.requireMock<{
-  SIRI_API: {
-    velocityAggregationSiriVelocityAggregationSiriVelocityAggregationGet: jest.Mock
-  }
-}>('src/api/apiConfig').SIRI_API
-  .velocityAggregationSiriVelocityAggregationSiriVelocityAggregationGet
 
 const bounds = { minLat: 32, maxLat: 33, minLon: 34, maxLon: 35 }
 const zoom = 10
@@ -22,15 +17,13 @@ const pastDate = dayjs().subtract(5, 'day').startOf('day').add(12, 'hour') // < 
 const recentDate = dayjs().startOf('day').add(12, 'hour') // today → not < yesterday → API
 
 const mockCacheOk = (rawSnakeRows: unknown[]) => {
-  global.fetch = jest
-    .fn()
-    .mockResolvedValue({ ok: true, json: () => Promise.resolve(rawSnakeRows) })
+  global.fetch = vi.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve(rawSnakeRows) })
 }
 
 beforeEach(() => {
-  jest.clearAllMocks()
-  jest.spyOn(console, 'warn').mockImplementation(() => {})
-  global.fetch = jest.fn()
+  vi.clearAllMocks()
+  vi.spyOn(console, 'warn').mockImplementation(() => {})
+  global.fetch = vi.fn()
 })
 
 describe('velocity-aggregation source selection', () => {
@@ -40,7 +33,7 @@ describe('velocity-aggregation source selection', () => {
     await fetchAggregation(bounds, pastDate, zoom)
 
     expect(global.fetch).toHaveBeenCalledTimes(1)
-    expect((global.fetch as jest.Mock).mock.calls[0][0]).toContain(
+    expect(vi.mocked(global.fetch).mock.calls[0][0]).toContain(
       'https://docbuvbfdq5r6.cloudfront.net/',
     )
     expect(siriGet).not.toHaveBeenCalled()
@@ -55,7 +48,7 @@ describe('velocity-aggregation source selection', () => {
   })
 
   it('falls back to the live API when the cache lookup fails', async () => {
-    global.fetch = jest.fn().mockResolvedValue({ ok: false })
+    global.fetch = vi.fn().mockResolvedValue({ ok: false })
     siriGet.mockResolvedValue([{ totalSampleCount: 10 }])
     await fetchAggregation(bounds, pastDate, zoom)
 

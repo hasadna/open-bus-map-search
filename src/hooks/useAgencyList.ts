@@ -1,13 +1,17 @@
 import { GtfsAgencyPydanticModel } from '@hasadna/open-bus-api-client'
-import { useEffect, useState } from 'react'
-import { getAgencyList } from 'src/api/agencyList'
+import { useQuery } from '@tanstack/react-query'
+import { useContext } from 'react'
+import { agencyListForDateQueryOptions } from 'src/api/agencyList'
+import { GlobalSearchContext } from 'src/model/globalState'
 
+const NO_AGENCIES: GtfsAgencyPydanticModel[] = []
+
+/** Agencies that ran on the globally selected day (GlobalSearchState.date). */
 export function useAgencyList() {
-  const [agencyList, setAgencyList] = useState<GtfsAgencyPydanticModel[]>([])
+  const {
+    search: { date },
+  } = useContext(GlobalSearchContext)
+  const { data } = useQuery(agencyListForDateQueryOptions(date))
 
-  useEffect(() => {
-    getAgencyList().then(setAgencyList).catch(console.log)
-  }, [])
-
-  return agencyList
+  return data ?? NO_AGENCIES
 }

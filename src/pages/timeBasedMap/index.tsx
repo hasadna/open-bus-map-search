@@ -124,7 +124,7 @@ function Markers({ positions }: { positions: Point[] }) {
         return (
           <Marker position={pos.loc} icon={icon} key={pos.point?.id ?? `${operatorId}-${index}`}>
             <Popup minWidth={300} maxWidth={700}>
-              <BusToolTip position={pos} icon={busIconPath(operatorId)} />
+              <BusToolTip position={pos} icon={busIconPath(operatorId)} linkToLineMap />
             </Popup>
           </Marker>
         )

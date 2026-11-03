@@ -5,14 +5,14 @@ export type ShareableKey = keyof GlobalSearchState
 // Only include params that are actually used on each page.
 // Pages absent from this map (homepage, about, donate, etc.) get no params.
 export const PAGE_SHARE_PARAMS: Partial<Record<string, ShareableKey[]>> = {
-  '/timeline': ['date', 'operatorId', 'lineNumber', 'routeKey', 'stopKey'],
+  '/station-stops': ['date', 'operatorId', 'lineNumber', 'routeKey', 'stopKey'],
   '/gaps': ['date', 'operatorId', 'lineNumber', 'routeKey'],
   '/gaps_patterns': ['operatorId', 'lineNumber', 'routeKey'],
   '/map': [],
   '/velocity-heatmap': ['date'],
   '/single-line-map': ['date', 'operatorId', 'lineNumber', 'routeKey', 'rideTime'],
-  // /vehicle shares the global date here; its page-local vehicleNumber is appended
-  // via PageShareParamsContext (like gaps_patterns' start/end dates).
+  // /vehicle shares the global date here; its page-local vehicle.vehicleNumber is
+  // appended via PageShareParamsContext (like gaps_patterns' start/end dates).
   '/vehicle': ['date'],
   '/operator': ['operatorId', 'date'],
   '/train': ['date'],

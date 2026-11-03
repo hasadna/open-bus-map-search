@@ -1,9 +1,9 @@
-import styled from 'styled-components'
+import { styled } from '@mui/material/styles'
 import { MARGIN_MEDIUM } from 'src/resources/sizes'
 
-export const Row = styled.div`
-  display: flex;
-  flex-direction: row;
-  gap: ${MARGIN_MEDIUM}px;
-  align-items: center;
-`
+export const Row = styled('div')({
+  display: 'flex',
+  flexDirection: 'row',
+  gap: `${MARGIN_MEDIUM}px`,
+  alignItems: 'center',
+})

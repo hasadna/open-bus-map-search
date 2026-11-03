@@ -33,8 +33,7 @@ const SIRI_RIDES = [
     gtfs_route__operator_ref: null,
     scheduled_start_time: '2024-02-12T06:00:00+00:00', // 08:00 Israel time
   },
-  // line 17, 00:30 Israel time the NEXT calendar day — the post-midnight tail of
-  // this service day, must show the moon prefix
+  // line 17, 23:30 Israel time — the last departure of the day
   {
     id: 62029003,
     vehicle_ref: VEHICLE_NUMBER,
@@ -42,7 +41,7 @@ const SIRI_RIDES = [
     siri_route__operator_ref: 97,
     gtfs_route__line_ref: null,
     gtfs_route__operator_ref: null,
-    scheduled_start_time: '2024-02-12T22:30:00+00:00',
+    scheduled_start_time: '2024-02-12T21:30:00+00:00',
   },
 ]
 

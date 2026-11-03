@@ -7,7 +7,6 @@ const VIDEO_SRC =
 // Locators / accessible names used to drive the Report-a-bug UI.
 const SVG_LOCATOR = 'svg'
 const IFRAME_LOCATOR = 'iframe'
-const CLOSE_BUTTON_LABEL = 'Close'
 const SRC_ATTRIBUTE = 'src'
 const FORM_ERROR_SELECTOR = '.ant-form-item-explain-error'
 
@@ -61,7 +60,10 @@ test('An instruction video for Report a bug', async ({ page }) => {
   await expect(videoFrame).toBeVisible()
   await expect(videoFrame).toHaveAttribute(SRC_ATTRIBUTE, VIDEO_SRC)
 
-  await page.getByLabel(CLOSE_BUTTON_LABEL, { exact: true }).click()
+  await page
+    .getByRole('dialog')
+    .getByRole('button', { name: i18next.t('reportBug.close') })
+    .click()
   await expect(videoFrame).toBeHidden() // destroyOnHidden unmounts the iframe
 })
 
@@ -143,8 +145,67 @@ test('bug submission success', async ({ page }) => {
     await page.getByRole('button', { name: i18next.t('bug_submit') }).click()
   })
 
-  await test.step('Verify success message is displayed', async () => {
-    await expect(page.getByText(i18next.t('reportBug.viewIssue'))).toBeVisible()
+  await test.step('Verify the success dialog links to the issue page', async () => {
+    const dialog = page.getByRole('dialog')
+    await expect(dialog.getByText(i18next.t('reportBug.success'))).toBeVisible()
+    await expect(
+      dialog.getByRole('link', { name: i18next.t('reportBug.viewIssue') }),
+    ).toHaveAttribute(
+      'href',
+      `https://github.com/hasadna/open-bus-map-search/issues/${successBody.data.number}`,
+    )
+  })
+
+  await test.step('Verify the dialog closes', async () => {
+    await page.getByRole('button', { name: i18next.t('reportBug.close') }).click()
+    await expect(page.getByRole('dialog')).toBeHidden()
+  })
+})
+
+const successBodyWithoutIssueNumber = {
+  data: {
+    id: 123456,
+    title: 'בדיקה',
+  },
+}
+
+test('bug submission success without an issue number', async ({ page }) => {
+  await test.step('Mock API to return success without a number', async () => {
+    await page.route(
+      (url) => url.href.includes(ISSUES_URL_FRAGMENT),
+      (route) =>
+        route.fulfill({ status: 200, body: JSON.stringify(successBodyWithoutIssueNumber) }),
+    )
+  })
+
+  await test.step('Open bug report modal', async () => {
+    await page.getByLabel(i18next.t('report_a_bug_title')).click()
+  })
+
+  await test.step('Fill all required fields', async () => {
+    await page.getByLabel(i18next.t('bug_type')).click()
+    await page.getByText(i18next.t('bug_type_bug')).click()
+    await page.getByLabel(i18next.t('bug_title')).fill(VALID_BUG_REPORT.title)
+    await page.getByLabel(i18next.t('bug_contact_name')).fill(CONTACT.name)
+    await page.getByLabel(i18next.t('bug_contact_email')).fill(CONTACT.email)
+    await page.getByLabel(i18next.t('bug_description')).fill(VALID_BUG_REPORT.description)
+    await page.getByLabel(i18next.t('bug_environment')).fill(VALID_BUG_REPORT.environment)
+    await page
+      .getByLabel(i18next.t('bug_expected_behavior'))
+      .fill(VALID_BUG_REPORT.expectedBehavior)
+    await page.getByLabel(i18next.t('bug_actual_behavior')).fill(VALID_BUG_REPORT.actualBehavior)
+    await page.getByLabel(i18next.t('bug_reproducibility')).click()
+    await page.getByText(i18next.t('bug_frequency.always')).click()
+  })
+
+  await test.step('Submit the form', async () => {
+    await page.getByRole('button', { name: i18next.t('bug_submit') }).click()
+  })
+
+  await test.step('Verify the success dialog is displayed without a link', async () => {
+    const dialog = page.getByRole('dialog')
+    await expect(dialog.getByText(i18next.t('reportBug.success'))).toBeVisible()
+    await expect(dialog.getByRole('link')).toHaveCount(0)
   })
 })
 

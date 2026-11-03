@@ -7,9 +7,9 @@ export type Gap = {
   gtfsRideId?: number
 }
 
-// What actually lives in the (localStorage-persisted) React Query cache: JSON-native
-// only. dayjs times are held as ISO strings and revived at the UI edge (GapsTable),
-// so a rehydrated cache can never hand the table a bare string to call .format() on.
+// What actually lives in the persisted React Query cache. dayjs times are held as ISO
+// strings and revived at the UI edge (GapsTable) — persistence is a structured clone,
+// which would otherwise hand the table a Dayjs-shaped object with no .format() on it.
 export type SerializedGap = {
   plannedStartTime?: string
   actualStartTime?: string

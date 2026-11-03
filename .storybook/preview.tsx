@@ -1,6 +1,8 @@
 import type { Preview } from '@storybook/react-vite'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { initialize, mswLoader } from 'msw-storybook-addon'
+import { http, HttpResponse } from 'msw'
+import { mswLoader } from 'msw-storybook-addon/csf3'
+import { setupWorker } from 'msw/browser'
 import { Suspense, useEffect } from 'react'
 import { BrowserRouter } from 'react-router'
 import { ThemeProvider, useTheme } from 'src/layout/ThemeContext'
@@ -21,15 +23,25 @@ const queryClient = new QueryClient({
 
 queryClient.setQueryData(['version'], '1.2.3')
 
+/**
+ * Anything that resolves an operator goes through the memoized `getAgencyList()` singleton, and
+ * `fetchGroupBy` drops every row whose operator is missing from it. Left unmocked it reaches the
+ * live API, which the visual-test CI job points at 127.0.0.1 — so the agency list comes back empty
+ * and each chart silently renders nothing. A story may still override this with its own handler.
+ */
+const agencyListHandler = http.get('*/gtfs_agencies/list', async () => {
+  const { agencies } = await import('./mockData')
+  return HttpResponse.json(agencies)
+})
+
 const preview: Preview = {
-  beforeAll: () => {
-    initialize({
-      serviceWorker: {
-        url: './mockServiceWorker.js',
-      },
-    })
-  },
-  loaders: [mswLoader],
+  loaders: [
+    mswLoader(async () => {
+      const worker = setupWorker(agencyListHandler)
+      await worker.start({ serviceWorker: { url: './mockServiceWorker.js' } })
+      return worker
+    }),
+  ],
   parameters: {
     actions: { argTypesRegex: '^on[A-Z].*' },
     controls: {

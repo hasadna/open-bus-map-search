@@ -35,7 +35,7 @@ export default defineConfig<EyesFixture>({
     locale: 'he-IL',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    trace: process.env.CI ? 'on' : 'on-all-retries',
+    trace: process.env.CI ? 'on-first-retry' : 'on-all-retries',
 
     timezoneId: 'Asia/Jerusalem',
 
@@ -44,6 +44,9 @@ export default defineConfig<EyesFixture>({
     serviceWorkers: 'block',
 
     eyesConfig: {
+      // Pin the Applitools app explicitly: unset, the fixture silently defaults to
+      // 'My App', which strands every baseline in a shared junk-drawer app.
+      appName: 'OpenBus',
       type: 'ufg',
       isDisabled: !process.env.APPLITOOLS_API_KEY,
       failTestsOnDiff: false,

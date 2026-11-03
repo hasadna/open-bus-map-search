@@ -34,7 +34,7 @@ for (const timezone of TIMEZONES) {
 
       await page.getByLabel('חברה מפעילה').click()
       await page.getByRole('option', { name: 'אודליה מוניות בעמ', exact: true }).click()
-      await page.getByRole('textbox', { name: 'מספר קו' }).fill('16')
+      await page.getByRole('combobox', { name: 'מספר קו' }).fill('16')
       await page.getByLabel(/בחירת מסלול נסיעה/).click()
 
       await expect(page.getByRole('option')).toContainText(SINGLE_LINE_ROUTES)
@@ -50,7 +50,7 @@ for (const timezone of TIMEZONES) {
 
       await page.getByLabel('חברה מפעילה').click()
       await page.getByRole('option', { name: 'אודליה מוניות בעמ', exact: true }).click()
-      await page.getByRole('textbox', { name: 'מספר קו' }).fill('16')
+      await page.getByRole('combobox', { name: 'מספר קו' }).fill('16')
       await page.getByLabel(/בחירת מסלול נסיעה/).click()
       await page.getByRole('option', { name: SINGLE_LINE_ROUTES[0] }).click()
 
@@ -70,7 +70,7 @@ for (const timezone of TIMEZONES) {
 
       await page.getByLabel('חברה מפעילה').click()
       await page.getByRole('option', { name: 'אודליה מוניות בעמ', exact: true }).click()
-      await page.getByRole('textbox', { name: 'מספר קו' }).fill('16')
+      await page.getByRole('combobox', { name: 'מספר קו' }).fill('16')
       await page.getByLabel(/בחירת מסלול נסיעה/).click()
       await expect(page.getByRole('option')).toContainText([GAPS_ROUTE])
       await page.getByRole('option', { name: GAPS_ROUTE }).click()

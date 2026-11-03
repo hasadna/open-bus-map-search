@@ -22,9 +22,12 @@ const VehicleSelector = ({ vehicleNumber, disabled, setVehicleNumber }: VehicleS
   const debouncedSetVehicleNumber = useCallback(debounce(setVehicleNumber, 200), [setVehicleNumber])
   const { t } = useTranslation()
 
+  // The field keeps its own value so typing isn't throttled by the debounced parent
+  // update, but it must follow the prop when the parent changes it from elsewhere —
+  // a shared link seeds `vehicle.vehicleNumber` into usePageState one tick after mount.
   useLayoutEffect(() => {
     setValue(vehicleNumber)
-  }, [])
+  }, [vehicleNumber])
 
   const handleClearInput = () => {
     setValue(0)
@@ -43,7 +46,9 @@ const VehicleSelector = ({ vehicleNumber, disabled, setVehicleNumber }: VehicleS
       className={textFieldClass}
       label={t('choose_vehicle')}
       type="text"
-      value={value && +value < 0 ? 0 : value}
+      // '' rather than undefined for "no vehicle": the field must stay controlled for
+      // its whole lifetime — a shared link fills it a tick after mount.
+      value={value && +value < 0 ? 0 : (value ?? '')}
       onChange={(e) => {
         const numericValue = normalizeVehicleNumber(e.target.value)
         setValue(numericValue)

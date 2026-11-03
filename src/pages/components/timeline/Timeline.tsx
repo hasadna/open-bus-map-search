@@ -1,13 +1,26 @@
-import {
-  GtfsRideStopWithRelatedPydanticModel,
-  SiriVehicleLocationWithRelatedPydanticModel,
-} from '@hasadna/open-bus-api-client'
+import CloseIcon from '@mui/icons-material/Close'
+import MapIcon from '@mui/icons-material/Map'
+import QuestionMarkIcon from '@mui/icons-material/QuestionMark'
+import { Box, Link as MuiLink, Tooltip } from '@mui/material'
+import { styled } from '@mui/material/styles'
+import { type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
-import styled from 'styled-components'
+import { Link } from 'react-router'
 import dayjs from 'src/dayjs'
-import { Coordinates } from 'src/model/location'
-import { PADDING } from 'src/pages/components/timeline/TimelineBoard'
+import { CARD_DETAILS_SX, CardRow } from 'src/pages/components/timeline/CardRow'
 import {
+  CARD_PADDING_X,
+  CARD_PADDING_Y,
+  CARD_TIME_FONT_SIZE,
+  CARD_TIME_HEIGHT,
+  LABEL_GAP,
+  LABEL_HEIGHT,
+  PADDING,
+} from 'src/pages/components/timeline/layout'
+import { hitTime, instantY, type TimelineHit } from 'src/pages/components/timeline/timelinePairing'
+import {
+  ABSENT_COLOR,
+  ABSENT_MARK_SIZE,
   NEUTRAL_COLOR,
   Point,
   POINT_SIZE,
@@ -16,92 +29,223 @@ import {
   pointTypeToDescription,
 } from 'src/pages/components/timeline/TimelinePoint'
 
-const LABEL_HEIGHT = 18
-const LABEL_GAP = 3
+const LABEL_ICON_GAP = 2
+// Keeps the icon inside LABEL_HEIGHT, so neighbouring labels can't touch.
+const LABEL_ICON_SIZE = '1.1em'
 const LABEL_OFFSET = 20 // gap between axis and label area
 const CONNECTOR_HORIZ = 8
 const DOT_CENTER_X = 2 + 3 - POINT_SIZE / 2 // = 1
 
-const Line = styled.div<{ totalHeight: number }>`
-  height: ${({ totalHeight }) => totalHeight + PADDING * 3}px;
-  width: 2px;
-  background-color: ${NEUTRAL_COLOR};
-`
+const Line = styled('div')<{ $totalHeight: number }>(({ $totalHeight }) => ({
+  height: `${$totalHeight + PADDING * 3}px`,
+  width: '2px',
+  backgroundColor: NEUTRAL_COLOR,
+}))
 
-const BoundaryTick = styled.div.withConfig({ componentId: 'sc-boundary-tick' })<{ top: number }>`
-  width: 12px;
-  height: 2px;
-  background-color: ${NEUTRAL_COLOR};
-  position: absolute;
-  top: ${({ top }) => top}px;
-  right: -5px;
-`
+const BoundaryTick = styled('div')<{ $top: number }>(({ $top }) => ({
+  width: '12px',
+  height: '2px',
+  backgroundColor: NEUTRAL_COLOR,
+  position: 'absolute',
+  top: `${$top}px`,
+  // Wider than the 2px axis it caps, with an equal overhang either side — so mirroring this
+  // to `left` under RTL leaves it in the same place.
+  right: '-5px',
+}))
 
-const Wrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`
+const Wrapper = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+})
 
-const Title = styled.span<{ pointType: PointType }>`
-  font-weight: bold;
-  background-color: ${({ pointType }) => pointTypeToColor[pointType]};
-  padding: 2px 8px;
-  white-space: nowrap;
-  font-size: clamp(8px, 2.5vw, 16px);
-`
+const Title = styled('span')<{ $pointType: PointType }>(({ $pointType }) => ({
+  fontWeight: 'bold',
+  backgroundColor: pointTypeToColor[$pointType],
+  padding: '2px 8px',
+  whiteSpace: 'nowrap',
+  fontSize: 'clamp(8px, 2.5vw, 16px)',
+}))
 
-const Container = styled.div`
-  display: flex;
-`
+const Container = styled('div')({
+  display: 'flex',
+})
 
-const AxisArea = styled.div`
-  position: relative;
-  width: 2px;
-  flex-shrink: 0;
-`
+const AxisArea = styled('div')({
+  position: 'relative',
+  width: '2px',
+  flexShrink: 0,
+})
 
-const LabelArea = styled.div`
-  position: relative;
-  margin-inline-start: ${LABEL_OFFSET}px;
-`
+const LabelArea = styled('div')({
+  position: 'relative',
+  marginInlineStart: `${LABEL_OFFSET}px`,
+})
 
-const WidthAnchor = styled.span`
-  display: block;
-  visibility: hidden;
-  pointer-events: none;
-  white-space: nowrap;
-`
+const WidthAnchor = styled('span')<{ $card?: boolean }>(({ $card }) => ({
+  display: 'flex',
+  flexDirection: $card ? 'column' : 'row',
+  alignItems: $card ? 'stretch' : 'center',
+  visibility: 'hidden',
+  pointerEvents: 'none',
+  whiteSpace: 'nowrap',
 
-const Label = styled.div<{ $top: number; $highlighted?: boolean }>`
-  position: absolute;
-  top: ${({ $top }) => $top - POINT_SIZE + 1}px;
-  inset-inline-start: 0;
-  z-index: 2;
-  white-space: nowrap;
-  font-weight: ${({ $highlighted }) => ($highlighted ? 'bold' : 'normal')};
-`
+  ...($card && {
+    padding: `${CARD_PADDING_Y}px ${CARD_PADDING_X}px`,
+    border: '1px solid transparent',
+  }),
+}))
 
-const ConnectorSvg = styled.svg`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 2px;
-  height: 100%;
-  pointer-events: none;
-  overflow: visible;
-`
+const Label = styled('div')<{ $top: number; $highlighted?: boolean; $card?: boolean }>(
+  ({ $top, $highlighted, $card }) => ({
+    position: 'absolute',
+    top: `${$top - POINT_SIZE + 1}px`,
+    insetInlineStart: 0,
+    zIndex: 2,
+    display: 'flex',
+    alignItems: $card ? 'stretch' : 'center',
+    flexDirection: $card ? 'column' : 'row',
+    gap: `${$card ? 0 : LABEL_ICON_GAP}px`,
+    whiteSpace: 'nowrap',
+    fontWeight: $highlighted ? 'bold' : 'normal',
 
-function resolveCollisions(ys: number[]): number[] {
-  if (ys.length <= 1) return [...ys]
-  const minSpacing = LABEL_HEIGHT + LABEL_GAP
+    ...($card && {
+      // The column already reserves room for the widest card, so filling it keeps every
+      // card the same width instead of leaving a ragged edge down the timeline.
+      insetInlineEnd: 0,
+      // The deviation fills run the width of the whole board, so a card needs ground of
+      // its own to stay legible over one. They still read either side of the column.
+      backgroundColor: 'var(--timeline-card-bg, #fff)',
+      padding: `${CARD_PADDING_Y}px ${CARD_PADDING_X}px`,
+      border: `1px solid ${$highlighted ? 'var(--timeline-highlight-ring, #333)' : NEUTRAL_COLOR}`,
+      // A ring rather than a thicker border: cardHeight lays the column out from
+      // CARD_BORDER, so growing the border itself would shift every card below it.
+      boxShadow: $highlighted ? '0 0 0 1px var(--timeline-highlight-ring, #333)' : 'none',
+      borderRadius: '4px',
+      transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
+    }),
+  }),
+)
+
+const CARD_TIME_ROW_SX = {
+  fontSize: CARD_TIME_FONT_SIZE,
+  lineHeight: `${CARD_TIME_HEIGHT}px`,
+}
+
+/** The inside of a card. The width anchor renders this too, so the two can't drift apart
+ *  and mis-reserve the column's width. */
+const CardBody = ({
+  time,
+  mapLink,
+  details,
+}: {
+  time: ReactNode
+  mapLink?: ReactNode
+  details?: ReactNode
+}) => (
+  <>
+    <Box sx={CARD_TIME_ROW_SX}>{time}</Box>
+    {(mapLink || details) && (
+      <Box sx={CARD_DETAILS_SX}>
+        {mapLink}
+        {details}
+      </Box>
+    )}
+  </>
+)
+
+/** The icon that opens one hit's ride, named by its column's single link title. On a card the
+ *  name is printed beside the icon, so a tooltip there would only repeat it. */
+const MapLink = ({ title, href, card }: { title: string; href: string; card?: boolean }) => {
+  const icon = (
+    <MuiLink
+      component={Link}
+      to={href}
+      reloadDocument
+      aria-label={title}
+      sx={{ display: 'inline-flex' }}>
+      <MapIcon sx={{ fontSize: LABEL_ICON_SIZE }} />
+    </MuiLink>
+  )
+  return card ? <CardRow label={title}>{icon}</CardRow> : <Tooltip title={title}>{icon}</Tooltip>
+}
+
+const ConnectorSvg = styled('svg')({
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  width: '2px',
+  height: '100%',
+  pointerEvents: 'none',
+  overflow: 'visible',
+})
+
+/** Stands in for a dot that never came, in the label lane at the y of the dot the ride does
+ *  have on the other axis. */
+const AbsentMark = styled('span')<{ $top: number; $highlighted?: boolean }>(
+  ({ $top, $highlighted }) => ({
+    position: 'absolute',
+    top: `${$top - POINT_SIZE + 1}px`,
+    insetInlineStart: 0,
+    boxSizing: 'border-box',
+    width: `${ABSENT_MARK_SIZE}px`,
+    height: `${ABSENT_MARK_SIZE}px`,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: '50%',
+    backgroundColor: 'var(--timeline-absent-fill, #000)',
+    border: '2px solid rgb(var(--timeline-late))',
+    color: ABSENT_COLOR,
+    transform: $highlighted ? 'scale(1.5)' : 'scale(1)',
+    transition: 'transform 0.15s ease',
+    zIndex: 3,
+
+    // MUI ships a single filled weight, so stroking the glyph's own outline is what gives it
+    // enough body to read at this size against the ring.
+    '& svg': {
+      fontSize: `${ABSENT_MARK_SIZE - 6}px`,
+      stroke: 'currentColor',
+      strokeWidth: 1.6,
+      strokeLinejoin: 'round',
+      strokeLinecap: 'round',
+    },
+  }),
+)
+
+const connectorColor = (absent: boolean, highlighted: boolean, pointType: PointType) => {
+  if (absent) return ABSENT_COLOR
+  return highlighted ? pointTypeToColor[pointType] : NEUTRAL_COLOR
+}
+
+const connectorOpacity = (absent: boolean, highlighted: boolean) => {
+  if (highlighted) return 1
+  return absent ? 0.9 : 0.8
+}
+
+/** Matches the ring the highlighted card puts on, so the label and the line that leads to
+ *  it thicken together. */
+const connectorWidth = (highlighted: boolean) => (highlighted ? 2 : 1)
+
+/** Boxes share a top edge, so two are clear of each other once they sit the upper one's own
+ *  height apart — which is why the gap is read off the earlier item. `bottom` is the last y
+ *  the label lane owns: a box hangs below the point it names, so without it the lowest one
+ *  would run off the end of the axis. */
+function resolveCollisions(ys: number[], heights: number[], bottom: number): number[] {
+  const lowestFor = (index: number) => bottom - heights[index]
+  if (ys.length <= 1) return ys.map((y, index) => Math.min(y, lowestFor(index)))
   const indexed = ys.map((y, i) => ({ y, i })).sort((a, b) => a.y - b.y)
+  const spacingAfter = (j: number) => heights[indexed[j].i] + LABEL_GAP
   for (let j = 1; j < indexed.length; j++) {
-    const minY = indexed[j - 1].y + minSpacing
+    const minY = indexed[j - 1].y + spacingAfter(j - 1)
     if (indexed[j].y < minY) indexed[j] = { ...indexed[j], y: minY }
   }
+  // Pull the lowest box back on and let the upward pass carry that through the rest.
+  const last = indexed.length - 1
+  const lowest = lowestFor(indexed[last].i)
+  if (indexed[last].y > lowest) indexed[last] = { ...indexed[last], y: lowest }
   for (let j = indexed.length - 2; j >= 0; j--) {
-    const maxY = indexed[j + 1].y - minSpacing
+    const maxY = indexed[j + 1].y - spacingAfter(j)
     if (indexed[j].y > maxY) indexed[j] = { ...indexed[j], y: maxY }
   }
   const result = new Array<number>(ys.length)
@@ -118,22 +262,51 @@ export const TimelineTitle = ({
 }) => {
   const { t } = useTranslation()
   return (
-    <Title pointType={pointType} className={className}>
+    <Title $pointType={pointType} className={className}>
       {t(pointTypeToDescription[pointType]!)}
     </Title>
   )
 }
 
+/** Where a column's times link to — used by the SIRI column to open the ride each time came
+ *  from on the map.
+ *
+ *  One `title` for the whole column, not one per link: they all lead to the same kind of
+ *  page, and the hidden width anchor has to print that title to reserve the row it occupies.
+ *  Reading it off a sample hit instead would tie the column's width to whether that
+ *  particular hit exists and happens to have a link.
+ *
+ *  Followed as a real document navigation: the target reads its state out of the query
+ *  string, which only happens on a fresh app mount. */
+export type TimelineColumnLink = {
+  title: string
+  /** The href for the hit at this index, or undefined to leave it as plain text. */
+  hrefFor: (index: number) => string | undefined
+}
+
 type TimelineProps = {
   className?: string
-  timestamps:
-    | GtfsRideStopWithRelatedPydanticModel[]
-    | (SiriVehicleLocationWithRelatedPydanticModel & Coordinates)[]
-    | Date[]
+  timestamps: TimelineHit[]
   totalHeight: number
   pointType: PointType
   timestampToTop: (timestamp: dayjs.Dayjs) => number
-  hoveredTimestamp?: string
+  /** Which band each timestamp belongs to — parallel to `timestamps`. */
+  bandKeys?: string[]
+  hoveredBand?: string
+  /** Rides whose counterpart is missing from THIS column, at the y of the dot they do have. */
+  absentMarks?: { key: string; top: number }[]
+  link?: TimelineColumnLink
+  /** Draws every label in this column as a bordered card. Without `content` a card holds
+   *  nothing but its time — which is how the two columns stay symmetrical. */
+  cards?: {
+    /** Laid-out height of one card — see `cardHeight`. */
+    height: number
+    /** What each card carries under its time, in `timestamps` order. */
+    content?: ReactNode[]
+    /** The widest content there can be. Labels are absolutely positioned, so this is what
+     *  reserves the column's width and keeps it centred under its title. */
+    widest?: ReactNode
+  }
 }
 
 export const Timeline = ({
@@ -142,49 +315,84 @@ export const Timeline = ({
   totalHeight,
   pointType,
   timestampToTop,
-  hoveredTimestamp,
+  bandKeys,
+  hoveredBand,
+  absentMarks,
+  link,
+  cards,
 }: TimelineProps) => {
-  const { i18n } = useTranslation()
+  const { i18n, t } = useTranslation()
   const isRtl = i18n.dir() === 'rtl'
 
-  const items = timestamps.map((timestamp, i) => {
-    const t =
-      (timestamp as GtfsRideStopWithRelatedPydanticModel).arrivalTime ??
-      (timestamp as SiriVehicleLocationWithRelatedPydanticModel & Coordinates).recordedAtTime! ??
-      (timestamp as Date)
-    const tsKey = dayjs(t).toISOString()
+  const isActualColumn = pointType === PointType.SIRI
+  const AbsentIcon = isActualColumn ? CloseIcon : QuestionMarkIcon
+  const absentLabel = t(
+    isActualColumn ? 'station_stops_no_actual_ride' : 'station_stops_unscheduled_ride',
+  )
+
+  // Times and absent markers share the label lane, so they are laid out as one list —
+  // a marker that dodged only the other markers could still land on a time.
+  const timeItems = timestamps.map((timestamp, i) => {
+    const t = hitTime(timestamp)
     const naturalY = timestampToTop(dayjs(t))
-    const highlighted = hoveredTimestamp !== undefined && tsKey === hoveredTimestamp
-    const timeDisplay = dayjs(t).format('HH:mm:ss')
-    return { i, tsKey, naturalY, highlighted, timeDisplay }
+    const highlighted = hoveredBand !== undefined && bandKeys?.[i] === hoveredBand
+    return {
+      key: `time_${i}`,
+      naturalY,
+      height: cards?.height ?? LABEL_HEIGHT,
+      absent: false,
+      highlighted,
+      timeDisplay: dayjs(t).format('HH:mm:ss'),
+      href: link?.hrefFor(i),
+      details: cards?.content?.[i],
+    }
   })
 
-  const resolvedYs = resolveCollisions(items.map((item) => item.naturalY))
+  const markItems = (absentMarks ?? []).map((mark) => ({
+    key: `absent_${mark.key}`,
+    naturalY: mark.top,
+    height: ABSENT_MARK_SIZE,
+    absent: true,
+    highlighted: hoveredBand === mark.key,
+  }))
+
+  const items = [...timeItems, ...markItems]
+  const resolvedYs = resolveCollisions(
+    items.map((item) => item.naturalY),
+    items.map((item) => item.height),
+    // Label boxes start at `top - POINT_SIZE + 1` (see Label), so this is where the lane ends.
+    totalHeight + PADDING * 3 + POINT_SIZE - 1,
+  )
 
   return (
     <Wrapper className={className}>
       <Container>
         <AxisArea>
-          <Line totalHeight={totalHeight} />
-          <BoundaryTick top={-1} />
-          <BoundaryTick top={totalHeight + PADDING * 3 - 1} />
+          <Line $totalHeight={totalHeight} />
+          <BoundaryTick data-testid="timeline-boundary-tick" $top={-1} />
+          <BoundaryTick data-testid="timeline-boundary-tick" $top={totalHeight + PADDING * 3 - 1} />
 
           <ConnectorSvg>
-            {items.map((item) => {
-              const resolvedY = resolvedYs[item.i]
-              if (Math.abs(resolvedY - item.naturalY) < 1) return null
-              const dotY = item.naturalY + POINT_SIZE / 2
-              const labelY = resolvedY - POINT_SIZE + 1 + LABEL_HEIGHT / 2
-              const color = item.highlighted ? pointTypeToColor[pointType] : NEUTRAL_COLOR
-              const opacity = item.highlighted ? 0.9 : 0.5
+            {items.map((item, index) => {
+              const resolvedY = resolvedYs[index]
+              const { absent } = item
+              // A card sits well clear of its axis and a marker has no dot of its own, so
+              // both read as unattached without a leader line. A bare time label only needs
+              // one once something has pushed it off its instant.
+              const displaced = Math.abs(resolvedY - item.naturalY) >= 1
+              if (!cards && !absent && !displaced) return null
+              const axisY = instantY(item.naturalY)
+              const labelY = resolvedY - POINT_SIZE + 1 + item.height / 2
+              const color = connectorColor(absent, item.highlighted, pointType)
+              const opacity = connectorOpacity(absent, item.highlighted)
               const labelEdgeX = isRtl ? -LABEL_OFFSET : 2 + LABEL_OFFSET
               const horizEndX = isRtl ? labelEdgeX + CONNECTOR_HORIZ : labelEdgeX - CONNECTOR_HORIZ
               return (
                 <path
-                  key={`${item.i}_conn`}
-                  d={`M ${labelEdgeX} ${labelY} L ${horizEndX} ${labelY} L ${DOT_CENTER_X} ${dotY}`}
+                  key={`${item.key}_conn`}
+                  d={`M ${labelEdgeX} ${labelY} L ${horizEndX} ${labelY} L ${DOT_CENTER_X} ${axisY}`}
                   stroke={color}
-                  strokeWidth={1}
+                  strokeWidth={connectorWidth(item.highlighted)}
                   fill="none"
                   opacity={opacity}
                 />
@@ -192,11 +400,15 @@ export const Timeline = ({
             })}
           </ConnectorSvg>
 
-          {items.map((item) => (
+          {/* Deliberately not links, unlike the labels: dots sit at their natural y, so
+              several can land on the same pixel (rides seconds apart, or clamped to the
+              bottom of the axis) and a click could not say which ride it meant. The labels
+              are collision-resolved, so each is an unambiguous target. */}
+          {timeItems.map((item) => (
             <Point
-              key={`${item.i}_dot`}
-              top={item.naturalY}
-              type={pointType}
+              key={`${item.key}_dot`}
+              $top={item.naturalY}
+              $type={pointType}
               $highlighted={item.highlighted}
               title={item.timeDisplay}
             />
@@ -204,15 +416,59 @@ export const Timeline = ({
         </AxisArea>
 
         <LabelArea>
-          <WidthAnchor aria-hidden>00:00:00</WidthAnchor>
-          {items.map((item) => (
-            <Label
-              key={`${item.i}_label`}
-              $top={resolvedYs[item.i]}
+          <WidthAnchor aria-hidden $card={!!cards}>
+            {cards ? (
+              <CardBody
+                time="00:00:00"
+                mapLink={
+                  link && (
+                    <CardRow label={link.title}>
+                      <MapIcon sx={{ fontSize: LABEL_ICON_SIZE }} />
+                    </CardRow>
+                  )
+                }
+                details={cards.widest}
+              />
+            ) : (
+              <>
+                00:00:00
+                {link && <MapIcon sx={{ fontSize: LABEL_ICON_SIZE }} />}
+              </>
+            )}
+          </WidthAnchor>
+          {timeItems.map((item, index) => {
+            const mapLink = link && item.href && (
+              <MapLink title={link.title} href={item.href} card={!!cards} />
+            )
+            return (
+              <Label
+                key={`${item.key}_label`}
+                $top={resolvedYs[index]}
+                $highlighted={item.highlighted}
+                $card={!!cards}
+                // A linked label leaves this off: the icon's tooltip is the only one wanted,
+                // and a native title here would surface a second one behind it.
+                title={item.href ? undefined : item.timeDisplay}>
+                {cards ? (
+                  <CardBody time={item.timeDisplay} mapLink={mapLink} details={item.details} />
+                ) : (
+                  <>
+                    {item.timeDisplay}
+                    {mapLink}
+                  </>
+                )}
+              </Label>
+            )
+          })}
+          {markItems.map((item, index) => (
+            <AbsentMark
+              key={item.key}
+              $top={resolvedYs[timeItems.length + index]}
               $highlighted={item.highlighted}
-              title={item.timeDisplay}>
-              {item.timeDisplay}
-            </Label>
+              title={absentLabel}
+              aria-label={absentLabel}>
+              <AbsentIcon fontSize="inherit" />
+            </AbsentMark>
           ))}
         </LabelArea>
       </Container>

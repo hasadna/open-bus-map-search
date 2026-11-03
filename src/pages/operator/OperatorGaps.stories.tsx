@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { http, HttpResponse } from 'msw'
-import dayjs from 'src/dayjs'
+import { toCivilDate } from 'src/model/time/civilDate'
 import { getPastDate } from '../../../.storybook/main'
 import { OperatorGaps } from './OperatorGaps'
 
@@ -33,6 +33,9 @@ const URL =
 
 export const Default: Story = {
   parameters: {
+    eyes: {
+      ignoreRegions: [{ selector: 'path' }],
+    },
     msw: {
       handlers: [
         http.get(URL, async () => {
@@ -44,7 +47,7 @@ export const Default: Story = {
   },
   args: {
     operatorId: '3',
-    date: dayjs(getPastDate()).format('YYYY-MM-DD'),
+    date: toCivilDate(getPastDate())!,
     timeRange: 'day',
   },
 }

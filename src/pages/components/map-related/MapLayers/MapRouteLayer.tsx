@@ -1,10 +1,17 @@
 import type { Layer } from 'leaflet'
-import { Fragment, useCallback, useRef } from 'react'
+import { Fragment, useCallback, useEffect, useRef } from 'react'
 import { Marker, Polyline, Popup } from 'react-leaflet'
 import { useAgencyList } from 'src/hooks/useAgencyList'
 import { busIcon, busIconPath } from '../../utils/BusIcon'
-import type { PositionGroup } from '../map-types'
-import { actualRouteStopMarker } from '../MapContent'
+import type { FocusTarget, Point, PositionGroup } from '../map-types'
+import { rideEndMarker, vehicleBearingMarker, vehicleStandingMarker } from '../mapMarkers'
+import {
+  bearingZIndex,
+  BOOKEND_Z_INDEX,
+  isStanding,
+  speedBand,
+  STANDING_Z_INDEX,
+} from '../vehicleBearingGlyph'
 import { BusToolTip } from './BusToolTip'
 import BusToolTipFooter from './BusToolTipFooter'
 
@@ -12,12 +19,26 @@ interface MapRouteLayerProps {
   positionGroups: PositionGroup[]
   showNavigationButtons?: boolean
   navigateMarkers: (groupIndex: number, id: number, marker: Layer) => void
+  focusTarget?: FocusTarget | null
+}
+
+/** `Point.color` holds the ping's velocity, not a colour — see `toPoint`. */
+function pingMarker({ bearing, color: velocity }: Point) {
+  // Only the standing badge can say "heading unknown" (it drops its needle); a moving ping has
+  // to point somewhere, and `toPoint` has already defaulted a missing SIRI bearing to 0 anyway.
+  return isStanding(velocity)
+    ? { icon: vehicleStandingMarker(bearing), zIndexOffset: STANDING_Z_INDEX }
+    : {
+        icon: vehicleBearingMarker(bearing ?? 0, velocity),
+        zIndexOffset: bearingZIndex(speedBand(velocity)),
+      }
 }
 
 export function MapRouteLayer({
   positionGroups,
   showNavigationButtons,
   navigateMarkers,
+  focusTarget,
 }: MapRouteLayerProps) {
   const markerRef = useRef<{ [key: string]: Layer | null }>({})
   const agencyList = useAgencyList()
@@ -29,6 +50,14 @@ export function MapRouteLayer({
     },
     [navigateMarkers],
   )
+
+  // Only the popup — MapContent owns the fly-to for the same focusTarget, and two
+  // competing animations would fight over the viewport.
+  useEffect(() => {
+    const marker = focusTarget?.marker
+    if (!marker) return
+    markerRef.current[`${marker.groupIndex}-${marker.positionIndex}`]?.openPopup()
+  }, [focusTarget])
 
   return (
     <>
@@ -42,15 +71,21 @@ export function MapRouteLayer({
             />
             {group.positions.map((pos, i) => {
               const markerKey = `${groupIndex}-${i}`
-              const icon =
+              // A one-ping ride keeps the operator's logo — it never got to finish.
+              const { icon, zIndexOffset } =
                 i === 0
-                  ? busIcon({
-                      // eslint-disable-next-line i18next/no-literal-string -- icon lookup key, not user text
-                      operator_id: pos.operator?.toString() || 'default',
-                      name: agencyList.find((agency) => agency.operatorRef === pos.operator)
-                        ?.agencyName,
-                    })
-                  : actualRouteStopMarker
+                  ? {
+                      icon: busIcon({
+                        // eslint-disable-next-line i18next/no-literal-string -- icon lookup key, not user text
+                        operator_id: pos.operator?.toString() || 'default',
+                        name: agencyList.find((agency) => agency.operatorRef === pos.operator)
+                          ?.agencyName,
+                      }),
+                      zIndexOffset: BOOKEND_Z_INDEX,
+                    }
+                  : i === group.positions.length - 1
+                    ? { icon: rideEndMarker, zIndexOffset: BOOKEND_Z_INDEX }
+                    : pingMarker(pos)
               return (
                 <Marker
                   ref={(ref) => {
@@ -58,6 +93,7 @@ export function MapRouteLayer({
                   }}
                   position={pos.loc}
                   icon={icon}
+                  zIndexOffset={zIndexOffset}
                   key={markerKey}>
                   <Popup minWidth={300} maxWidth={700}>
                     <BusToolTip position={pos} icon={busIconPath(pos.operator!)}>

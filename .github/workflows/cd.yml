@@ -56,3 +56,24 @@ jobs:
               git push origin master
             fi
           fi
+
+  # The offline Playwright suite runs in a container whose dependency layers take ~80s to
+  # build. Publishing them from main lets every PR pull instead of rebuild; the tag is the
+  # hash of the inputs, so a PR only misses when it changes a dependency.
+  runner-image:
+    name: Publish Playwright Runner Image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RUNNER_IMAGE_NAME: 'ghcr.io/hasadna/open-bus-map-search/offline-test-deps'
+        run: |
+          ref="$RUNNER_IMAGE_NAME:$(cat package-lock.json scripts/Dockerfile.offline-test | sha256sum | cut -c1-16)"
+          echo "${GITHUB_TOKEN}" | docker login ghcr.io -u hasadna --password-stdin
+          if docker manifest inspect "$ref" >/dev/null 2>&1; then
+            echo "$ref is already published"
+            exit 0
+          fi
+          docker build --target deps -t "$ref" -f scripts/Dockerfile.offline-test .
+          docker push "$ref"

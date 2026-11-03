@@ -4,7 +4,7 @@ import type { MapProps } from 'src/pages/components/map-related/map-types'
 import { TrainRideCard } from './index'
 import type { TrainRideData } from './trainData'
 
-jest.mock('src/pages/components/map-related/MapWithLocationsAndPath', () => ({
+vi.mock('src/pages/components/map-related/MapWithLocationsAndPath', () => ({
   MapWithLocationsAndPath: ({ positionGroups, plannedRouteStops }: MapProps) => (
     <div
       data-testid="ride-map"
@@ -14,7 +14,7 @@ jest.mock('src/pages/components/map-related/MapWithLocationsAndPath', () => ({
   ),
 }))
 
-jest.mock('./TrainRideTimeline', () => ({
+vi.mock('./TrainRideTimeline', () => ({
   TrainRideTimeline: () => null,
 }))
 

@@ -1,4 +1,4 @@
-import { getAgencyList } from 'src/api/agencyList'
+import { GtfsAgencyPydanticModel } from '@hasadna/open-bus-api-client'
 
 export type Operator = {
   name: string
@@ -9,12 +9,12 @@ export const MAJOR_OPERATORS = new Set(['3', '5', '15', '18', '25', '34']) // ['
 export const ISRAEL_TRAIN_ID = '2'
 
 /**
- * Get operators list, based on agencies fetched from MOT api
+ * Build the operators list out of agencies fetched from the MOT api
+ * @param agencies Agencies as returned by the gtfs_agencies API
  * @param filter Operator ID list
  * @returns List of operators
  */
-export async function getOperators(filter?: Set<string>): Promise<Operator[]> {
-  const agencies = await getAgencyList()
+export function toOperators(agencies: GtfsAgencyPydanticModel[], filter?: Set<string>): Operator[] {
   const operators = new Map<string, Operator>()
 
   for (const agency of agencies) {

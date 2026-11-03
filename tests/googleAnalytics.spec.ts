@@ -70,7 +70,7 @@ test.describe('Google Analytics', () => {
     const before = countPageviews(await readDataLayer(page))
 
     // Real in-app (SPA) navigation via a menu link — exercises MainRoute's pageview effect.
-    await visitPage(page, 'timeline_page_title')
+    await visitPage(page, 'station_stops_page_title')
 
     await expect
       .poll(async () => countPageviews(await readDataLayer(page)), {
