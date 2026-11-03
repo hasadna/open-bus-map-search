@@ -1,6 +1,6 @@
 import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
 import { Radio, RadioChangeEvent, Space } from 'antd'
-import { useCallback, useContext, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   Bar,
@@ -15,8 +15,8 @@ import {
   YAxis,
 } from 'recharts'
 import dayjs from 'src/dayjs'
+import { useGlobalSearch } from 'src/hooks/useGlobalSearch'
 import { usePageState } from 'src/hooks/usePageState'
-import { GlobalSearchContext } from 'src/model/globalState'
 import { addDays, type CivilDate, civilDateToDayjs, todayCivilDate } from 'src/model/time/civilDate'
 import { INPUT_SIZE } from 'src/resources/sizes'
 import SkeletonLoader from 'src/shared/SkeletonLoader'
@@ -178,7 +178,7 @@ const GapsPatternsPage = () => {
     },
     [setParams],
   )
-  const { search, setSearch } = useContext(GlobalSearchContext)
+  const { search, updateSearch } = useGlobalSearch()
   const { operatorId, lineNumber, routeKey } = search
   const [routes, setRoutes] = useState<BusRoute[] | undefined>()
   const [routesIsLoading, setRoutesIsLoading] = useState(false)
@@ -206,7 +206,7 @@ const GapsPatternsPage = () => {
         // clobber a newer in-flight search.
         if (search.lineNumber === lineNumber) {
           setRoutes(undefined)
-          setSearch((current) => ({ ...current, routeKey: null }))
+          updateSearch({ routeKey: null })
         }
       }
     } finally {
@@ -218,13 +218,13 @@ const GapsPatternsPage = () => {
     const controller = new AbortController()
     const signal = controller.signal
     if (!operatorId || operatorId === '0' || !lineNumber) {
-      setSearch((current) => ({ ...current, routeKey: null }))
+      updateSearch({ routeKey: null })
       setRoutes(undefined)
       return
     }
     void loadSearchData(signal)
     return () => controller.abort()
-  }, [operatorId, lineNumber, endDate, startDate, setSearch])
+  }, [operatorId, lineNumber, endDate, startDate, updateSearch])
 
   return (
     <PageContainer>
@@ -275,7 +275,7 @@ const GapsPatternsPage = () => {
         <Grid size={{ xs: 12, sm: 8 }}>
           <OperatorSelector
             operatorId={operatorId ?? undefined}
-            setOperatorId={(id) => setSearch((current) => ({ ...current, operatorId: id }))}
+            setOperatorId={(id) => updateSearch({ operatorId: id })}
             excludeIsraelRailways
           />
         </Grid>
@@ -287,7 +287,7 @@ const GapsPatternsPage = () => {
             operatorId={operatorId ?? undefined}
             date={startDate}
             lineNumber={lineNumber ?? undefined}
-            setLineNumber={(number) => setSearch((current) => ({ ...current, lineNumber: number }))}
+            setLineNumber={(number) => updateSearch({ lineNumber: number })}
           />
         </Grid>
         <Grid size={{ xs: 12 }}>
@@ -306,9 +306,7 @@ const GapsPatternsPage = () => {
                 <RouteSelector
                   routes={routes}
                   routeKey={routeKey ?? undefined}
-                  setRouteKey={(key) =>
-                    setSearch((current) => ({ ...current, routeKey: key ?? null }))
-                  }
+                  setRouteKey={(key) => updateSearch({ routeKey: key ?? null })}
                 />
               </>
             ))}

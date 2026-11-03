@@ -1,8 +1,8 @@
 import { Grid, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
 import { styled } from '@mui/material/styles'
-import { useContext, useState } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { GlobalSearchContext } from 'src/model/globalState'
+import { useGlobalSearch } from 'src/hooks/useGlobalSearch'
 import { type CivilDate, shiftCivilDate, todayCivilDate } from 'src/model/time/civilDate'
 import { CivilDateSelector } from '../components/CivilDateSelector'
 import OperatorSelector from '../components/OperatorSelector'
@@ -17,21 +17,18 @@ const TIME_RANGES = ['day', 'week', 'month'] as const //  'year'
 const OperatorPage = () => {
   const {
     search: { operatorId, date },
-    setSearch,
-  } = useContext(GlobalSearchContext)
+    updateSearch,
+  } = useGlobalSearch()
   const { t } = useTranslation()
 
   const [timeRange, setTimeRange] = useState<(typeof TIME_RANGES)[number]>('day')
 
   const handleOperatorChange = (operatorId: string) => {
-    setSearch((current) => ({ ...current, operatorId }))
+    updateSearch({ operatorId })
   }
 
   const handleDateChange = (next: CivilDate | null) => {
-    setSearch((current) => ({
-      ...current,
-      date: next ?? todayCivilDate(),
-    }))
+    updateSearch({ date: next ?? todayCivilDate() })
   }
 
   return (
