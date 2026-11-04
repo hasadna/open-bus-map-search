@@ -25,7 +25,7 @@
     "es-toolkit": "^1.52.0",
     "geolib": "^3.3.14",
     "i18next": "^26.4.2",
-    "i18next-fs-backend": "^2.6.8",
+    "i18next-fs-backend": "^2.6.9",
     "idb-keyval": "^6.3.0",
     "leaflet": "^1.9.4",
     "leaflet.markercluster": "^1.5.3",
