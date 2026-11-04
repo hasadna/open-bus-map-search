@@ -242,6 +242,7 @@ const SingleLineMapPage = () => {
         plannedRouteStops={plannedRouteStops}
         showNavigationButtons
         focusTarget={focusTarget}
+        flagGpsArtifacts
       />
       <GpsCoverageStrip positionGroups={positionGroups} onFocusPing={focusLocation} />
     </PageContainer>

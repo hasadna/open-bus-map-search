@@ -1,14 +1,25 @@
 import { LatLngTuple } from 'leaflet'
 import { useEffect, useMemo } from 'react'
 import { useMap } from 'react-leaflet'
+import { isPlausibleLocation } from '../utils/gpsIntegrity'
 import { MapProps } from './map-types'
 
-export function useRecenterOnDataChange({ positionGroups, plannedRouteStops }: MapProps) {
+export function useRecenterOnDataChange({
+  positionGroups,
+  plannedRouteStops,
+  flagGpsArtifacts,
+}: MapProps) {
   const map = useMap()
 
   const center = useMemo(() => {
     const sum: LatLngTuple = [0, 0]
-    const allPositions = positionGroups.flatMap((g) => g.positions)
+    const positions = positionGroups.flatMap((g) => g.positions)
+    // The centre is a mean, so a single spoofed fix hundreds of kilometres away drags the whole
+    // view off the ride. A ride with nothing but spoofed fixes still has to show them somewhere.
+    const onRoute = flagGpsArtifacts
+      ? positions.filter((position) => isPlausibleLocation(position.loc))
+      : positions
+    const allPositions = onRoute.length ? onRoute : positions
     const totalPoints = allPositions.length + (plannedRouteStops?.length ?? 0)
 
     if (totalPoints === 0) return sum
@@ -28,7 +39,7 @@ export function useRecenterOnDataChange({ positionGroups, plannedRouteStops }: M
     sum[1] /= totalPoints
 
     return sum
-  }, [positionGroups, plannedRouteStops])
+  }, [positionGroups, plannedRouteStops, flagGpsArtifacts])
 
   useEffect(() => {
     if (center[0] || center[1]) {

@@ -6,6 +6,11 @@ $primary: #1976d2;
 // a ride's own line colour.
 $slow-ping: #c1121f;
 
+// Fixes that fall outside the country. Kept off the speed ramp so "the position is not real"
+// never reads as a speed; must match ARTIFACT_COLOR in GpsCoverageStrip, which grades the same
+// fixes on the coverage strip.
+$gps-artifact: #8b5cf6;
+
 // Shared translucency for map overlay controls so they read consistently across
 // both themes. The attribution is more see-through; interactive buttons (zoom,
 // expand) are more opaque for a clearer hit target.
@@ -333,6 +338,19 @@ pre {
   &--standing {
     stroke: $slow-ping;
   }
+}
+
+// Rings a ping the vehicle could not have been at, rather than marking the glyph inside it:
+// the arrow keeps its speed-band fill and its rotation, so a spoofed fix still reads as
+// "heading 142 at 0 km/h". Losing the bearing is what ruled out drawing over it.
+// Dashed, so the flag survives on a colourless print or for a viewer who cannot separate the
+// violet from the arrow's own red — and so it reads as an annotation rather than another glyph.
+// Same violet ring the coverage strip puts round its below-axis columns.
+.ping-artifact-ring {
+  fill: none;
+  stroke: $gps-artifact;
+  stroke-width: 1.2;
+  stroke-dasharray: 3 2.5;
 }
 
 .ping-badge-mark {
