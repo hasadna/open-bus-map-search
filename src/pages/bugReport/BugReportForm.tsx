@@ -6,7 +6,9 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  FormControlLabel,
   Button as MuiButton,
+  Checkbox as MuiCheckbox,
   Typography,
 } from '@mui/material'
 import { useMutation } from '@tanstack/react-query'
@@ -22,11 +24,17 @@ import Widget from 'src/shared/Widget'
 import './BugReportForm.scss'
 
 const issuesUrl = 'https://github.com/hasadna/open-bus-map-search/issues'
+const CONTACT_EMAIL_FIELD = 'contactEmail'
+
+interface BugReportFormValues extends Omit<CreateIssuePostRequest, 'contactEmail'> {
+  contactEmail?: string
+  allowPublicContact?: boolean
+}
 
 // File upload is disabled until the server-side implementation is complete.
 const BugReportForm = () => {
   const { t, i18n } = useTranslation()
-  const [form] = Form.useForm<CreateIssuePostRequest>()
+  const [form] = Form.useForm<BugReportFormValues>()
   // const [fileList, setFileList] = useState<UploadFile[]>([])
 
   const [searchParams] = useSearchParams()
@@ -46,10 +54,23 @@ const BugReportForm = () => {
   const issueNumber = mutation.data?.data?.number
   const issueUrl = issueNumber ? `${issuesUrl}/${issueNumber}` : undefined
 
-  const onFinish = (values: CreateIssuePostRequest) => {
+  const onFinish = (values: BugReportFormValues) => {
     mutation.reset()
+    const { contactEmail, allowPublicContact, description, ...rest } = values
+    const trimmedEmail = contactEmail?.trim()
+    const shouldIncludeEmail = Boolean(trimmedEmail && allowPublicContact)
+
+    const finalDescription = shouldIncludeEmail
+      ? `${description}\n\n**Contact Email for Follow-up:** ${trimmedEmail}`
+      : description
+
+    const finalEmail =
+      shouldIncludeEmail && trimmedEmail ? trimmedEmail : 'anonymous@hasadna.org.il'
+
     mutation.mutate({
-      ...values,
+      ...rest,
+      description: finalDescription,
+      contactEmail: finalEmail,
       ...(contextUrl ? { debugContext: contextUrl } : {}),
     })
   }
@@ -179,8 +200,40 @@ const BugReportForm = () => {
         <Form.Item
           label={t('bug_contact_email')}
           name="contactEmail"
-          rules={[{ required: true, type: 'email' }]}>
-          <Input />
+          rules={[{ type: 'email' }]}
+          extra={t('bug_contact_email_help')}>
+          <Input placeholder={t('bug_contact_email_placeholder')} />
+        </Form.Item>
+
+        <Form.Item
+          noStyle
+          shouldUpdate={(prevValues, currentValues) =>
+            prevValues.contactEmail !== currentValues.contactEmail
+          }>
+          {({ getFieldValue }) =>
+            getFieldValue(CONTACT_EMAIL_FIELD)?.trim() ? (
+              <Form.Item
+                name="allowPublicContact"
+                valuePropName="checked"
+                initialValue={false}
+                preserve={false}
+                wrapperCol={{ offset: 6, span: 18 }}
+                rules={[
+                  {
+                    validator(_, value) {
+                      return value
+                        ? Promise.resolve()
+                        : Promise.reject(new Error(t('bug_contact_consent_required')))
+                    },
+                  },
+                ]}>
+                <FormControlLabel
+                  control={<MuiCheckbox size="small" />}
+                  label={<Typography variant="body2">{t('bug_contact_consent')}</Typography>}
+                />
+              </Form.Item>
+            ) : null
+          }
         </Form.Item>
 
         <Form.Item
