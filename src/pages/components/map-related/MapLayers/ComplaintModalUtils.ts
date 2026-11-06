@@ -1,56 +1,15 @@
 import type {
+  ComplaintsSendPostRequestData,
+  ComplaintsSendPostRequestDataLangEnum,
   GtfsAgencyPydanticModel,
   GtfsRideStopWithRelatedPydanticModel,
   GtfsRoutePydanticModel,
-  RequestSubjectSchema,
-} from '@hasadna/open-bus-api-client'
+} from 'D:\\WEB\\open-bus-api-client\\open-bus-api-client\\client\\src'
 import { buildComplaintTitle } from './ComplaintModalFields'
 import { complaintTypeMappings } from './ComplaintModalForms'
 import type { ComplaintFormValues, ComplaintUser } from './ComplaintModalTypes'
 
-interface ComplaintSubmissionFields {
-  id?: string
-  passport?: string
-  firstName?: string
-  lastName?: string
-  mobile?: string
-  email?: string
-  eventHour?: string
-  fromHour?: string
-  toHour?: string
-  eventDate?: Date
-  details?: string
-  requestSubject: RequestSubjectSchema
-  title: string
-}
-
-type ComplaintBus = {
-  driverName?: string
-  licenseNumber?: string
-  lineNumberText?: string
-  operator?: { dataText: string; dataCode: string }
-  direction?: { dataText: string; dataCode: string }
-  raisingStation?: { dataText: string; dataCode: string }
-}
-type ComplaintTrain = object
-
-type ComplaintTaxi = object
-
-export type ComplaintSubmissionData = ComplaintSubmissionFields &
-  (
-    | { bus: ComplaintBus; train?: never; taxi?: never }
-    | { bus?: never; train: ComplaintTrain; taxi?: never }
-    | { bus?: never; train?: never; taxi: ComplaintTaxi }
-  )
-
-export type ComplaintPersonalDetails = Pick<
-  ComplaintUser,
-  'firstName' | 'lastName' | 'mobile' | 'email'
-> & { id?: string; passport?: string }
-
-export function buildComplaintPersonalDetails(
-  values: Partial<ComplaintUser>,
-): Partial<ComplaintPersonalDetails> {
+export function buildComplaintPersonalDetails(values: Partial<ComplaintUser>) {
   const { documentType, id_fild, passport_fild, firstName, lastName, mobile, email } = values
   return {
     firstName,
@@ -70,20 +29,27 @@ interface ComplaintLookupData {
 export function buildComplaintData(
   values: ComplaintFormValues,
   lookup: ComplaintLookupData,
-): ComplaintSubmissionData {
+  lang?: string,
+): ComplaintsSendPostRequestData {
+  if (!values.email) throw new Error('Complaint email is required')
+  if (!values.eventHour) throw new Error('Complaint event hour is required')
+  if (!values.eventDate) throw new Error('Complaint event date is required')
   const agency = lookup.agencies?.find((item) => item.operatorRef === values.busOperator)
   const direction = values.direction !== undefined ? lookup.routes?.[values.direction] : undefined
   const station =
     values.raisingStation !== undefined ? lookup.stops?.[values.raisingStation] : undefined
   return {
     ...buildComplaintPersonalDetails(values),
+    email: values.email,
     eventHour: values.eventHour?.format('HH:mm'),
     fromHour: values.wait?.[0]?.format('HH:mm'),
     toHour: values.wait?.[1]?.format('HH:mm'),
     eventDate: values.eventDate?.toDate(),
     details: values.details,
-    requestSubject: complaintTypeMappings[values.complaintType].subject,
+    transport: complaintTypeMappings[values.complaintType].transport,
+    subject: complaintTypeMappings[values.complaintType].subject,
     title: buildComplaintTitle(values),
+    lang: lang as ComplaintsSendPostRequestDataLangEnum,
     bus: {
       driverName: values.driverName,
       licenseNumber: values.licenseNumber,
@@ -104,5 +70,6 @@ export function buildComplaintData(
           }
         : undefined,
     },
-  }
+    train: undefined,
+  } as ComplaintsSendPostRequestData
 }

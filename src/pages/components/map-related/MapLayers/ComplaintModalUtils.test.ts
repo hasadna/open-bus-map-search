@@ -1,3 +1,7 @@
+import {
+  ComplaintsApi,
+  Configuration,
+} from 'D:\\WEB\\open-bus-api-client\\open-bus-api-client\\client\\src'
 import { describe, expect, it } from 'vitest'
 import dayjs from 'src/dayjs'
 import { buildComplaintData, buildComplaintPersonalDetails } from './ComplaintModalUtils'
@@ -45,12 +49,13 @@ describe('buildComplaintPersonalDetails', () => {
 })
 
 describe('complaint payload', () => {
-  it('maps selected lookup values and formats event times', () => {
+  it('maps selected lookup values and serializes the bus complaint request', async () => {
     const eventDate = dayjs('2026-10-06T08:00:00')
     const data = buildComplaintData(
       {
         complaintType: 'delay',
         details: 'Late bus',
+        email: identityDetails.email,
         documentType: 'id',
         id_fild: '000000000',
         busOperator: 3,
@@ -95,5 +100,27 @@ describe('complaint payload', () => {
     expect(data.bus).not.toHaveProperty('toHour')
     expect(data.bus).not.toHaveProperty('eventDate')
     expect(data.bus).not.toHaveProperty('details')
+    const pairKey = 'b6c4c7fe-35ef-401a-8f26-a1b137837fd1'
+    const request = await new ComplaintsApi(new Configuration()).complaintsSendPostRequestOpts({
+      pairKey,
+      complaintsSendPostRequest: { data },
+    })
+    expect(request.headers).toMatchObject({ 'pair-key': pairKey })
+    const body: unknown = JSON.parse(JSON.stringify(request.body))
+    expect(body).toMatchObject({
+      data: {
+        email: identityDetails.email,
+        eventDate: eventDate.toDate().toISOString(),
+        bus: {
+          lineNumberText: '2',
+          operator: { dataText: 'Agency', dataCode: '3' },
+          direction: { dataText: 'Route', dataCode: '123' },
+          raisingStation: { dataText: 'Stop', dataCode: '1234' },
+        },
+      },
+    })
+    expect(body).not.toHaveProperty('data.data')
+    expect(body).not.toHaveProperty('data.train')
+    expect(body).not.toHaveProperty('data.taxi')
   })
 })

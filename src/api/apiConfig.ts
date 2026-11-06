@@ -7,7 +7,7 @@ import {
   IssuesApi,
   SiriApi,
   UserCasesApi,
-} from '@hasadna/open-bus-api-client'
+} from 'D:\\WEB\\open-bus-api-client\\open-bus-api-client\\client\\src'
 
 export const STRIDE_API_BASE_PATH = process.env.VITE_STRIDE_API
 const STRIDE_API_CONFIG = new Configuration({ basePath: STRIDE_API_BASE_PATH })

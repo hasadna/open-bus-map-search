@@ -1,4 +1,7 @@
-import type { GtfsRoutePydanticModel, RequestSubjectSchema } from '@hasadna/open-bus-api-client'
+import type {
+  DataCode,
+  GtfsRoutePydanticModel,
+} from 'D:\\WEB\\open-bus-api-client\\open-bus-api-client\\client\\src'
 import type dayjs from 'dayjs'
 import type { Point } from '../map-types'
 import { allComplaintFields } from './ComplaintModalFields'
@@ -45,8 +48,8 @@ export type ComplaintType = (typeof complaintTypes)[number]
 
 export interface ComplaintTypeData {
   fields: ComplaintField[]
-  subject: RequestSubjectSchema
-  subject_code: number
+  transport: DataCode
+  subject: DataCode
   title_order: ComplaintField[]
 }
 

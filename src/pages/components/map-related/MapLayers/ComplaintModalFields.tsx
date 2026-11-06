@@ -259,7 +259,7 @@ export const allComplaintFields = {
 
 export const buildComplaintTitle = (data: ComplaintTitleData): string => {
   const { complaintType, eventDate, eventHour, lineNumberText } = data
-  const applyTypeText = complaintTypeMappings[complaintType]?.subject?.applyType?.dataText || ''
+  const applyTypeText = complaintTypeMappings[complaintType]?.subject?.dataText || ''
   const titleParts = [applyTypeText]
   for (const fieldName of complaintTypeMappings[complaintType]?.title_order || []) {
     let value: string | undefined

@@ -34,7 +34,7 @@ const BugReportForm = () => {
 
   const mutation = useMutation({
     mutationFn: (values: CreateIssuePostRequest) =>
-      ISSUES_API.issuesCreatePost({ createIssuePostRequest: values }),
+      ISSUES_API.issuesCreatePost({ issuesCreatePostRequest: values }),
     onSuccess: () => {
       form.resetFields()
     },

@@ -21,6 +21,7 @@ import {
   useBusOperatorQuery,
   useLinesQuery,
 } from 'src/hooks/useFormQuerys'
+import { ComplaintsSendPostOperationRequest } from '../../../../../../open-bus-api-client/open-bus-api-client/client/src'
 import { EasterEgg } from '../../EasterEgg/EasterEgg'
 import { Row } from '../../Row'
 import { allComplaintFields, createAllRules, mobileOnly, RenderField } from './ComplaintModalFields'
@@ -33,7 +34,6 @@ import {
   ComplaintUser,
 } from './ComplaintModalTypes'
 import { buildComplaintData } from './ComplaintModalUtils'
-import type { ComplaintSubmissionData } from './ComplaintModalUtils'
 
 const USER_KEYS = new Set([
   'documentType',
@@ -76,25 +76,9 @@ const ComplaintModal = ({
   }, [modalOpen])
 
   const submitMutation = useMutation({
-    mutationFn: ({
-      pairKey,
-      ...post
-    }: {
-      debug: boolean
-      data: ComplaintSubmissionData
-      pairKey: string
-    }) =>
-      COMPLAINTS_API.complaintsSendPost(
-        { complaintsSendPostRequest: post },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'pair-key': pairKey,
-          },
-        },
-      ),
+    mutationFn: (complaint: ComplaintsSendPostOperationRequest) =>
+      COMPLAINTS_API.complaintsSendPost(complaint),
   })
-
   const routeOptions = useMemo(
     () =>
       linesQuery.data?.map((item, index) => ({
@@ -151,12 +135,13 @@ const ComplaintModal = ({
     (values: ComplaintFormValues) => {
       submitMutation.mutate({
         pairKey: pairKey.current,
-        debug: !!values.debug,
-        data: buildComplaintData(values, {
-          agencies: busOperatorQuery.data,
-          routes: linesQuery.data,
-          stops: stationQuery.data,
-        }),
+        complaintsSendPostRequest: {
+          data: buildComplaintData(
+            values,
+            { agencies: busOperatorQuery.data, routes: linesQuery.data, stops: stationQuery.data },
+            i18n.language,
+          ),
+        },
       })
     },
     [busOperatorQuery.data, linesQuery.data, stationQuery.data, submitMutation],
@@ -268,10 +253,10 @@ const ComplaintModal = ({
                   textAlign: 'center',
                   cursor: 'pointer',
                 }}
-                onClick={() => void copy(submitMutation.data?.referenceNumber || '')}>
+                onClick={() => void copy(submitMutation.data?.messageId || '')}>
                 {t('complaints.complaint_number')}
                 <br />
-                <strong>{submitMutation.data?.referenceNumber}</strong>
+                <strong>{submitMutation.data?.messageId}</strong>
               </Typography>
               <Row style={{ justifyContent: 'space-between' }}>
                 <Button type="primary" onClick={() => setModalOpen?.(false)}>

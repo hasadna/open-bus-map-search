@@ -13,11 +13,8 @@ export const complaintTypeMappings: Record<ComplaintType, ComplaintTypeData> = {
       'raisingStation',
       'driverName',
     ],
-    subject: {
-      applySubject: { dataText: 'אוטובוס', dataCode: '0' },
-      applyType: { dataText: 'אי ביצוע נסיעה', dataCode: '2' },
-    },
-    subject_code: 3,
+    transport: { dataText: 'אוטובוס', dataCode: '0' },
+    subject: { dataText: 'אי ביצוע נסיעה', dataCode: '2' },
     title_order: ['lineNumberText', 'eventDate', 'eventHour'],
   },
   no_stop: {
@@ -32,11 +29,8 @@ export const complaintTypeMappings: Record<ComplaintType, ComplaintTypeData> = {
       'raisingStation',
       'driverName',
     ],
-    subject: {
-      applySubject: { dataText: 'אוטובוס', dataCode: '0' },
-      applyType: { dataText: 'אי עצירה בתחנה', dataCode: '3' },
-    },
-    subject_code: 0,
+    transport: { dataText: 'אוטובוס', dataCode: '0' },
+    subject: { dataText: 'אי עצירה בתחנה', dataCode: '3' },
     title_order: ['lineNumberText', 'eventDate', 'eventHour'],
   },
   delay: {
@@ -51,11 +45,8 @@ export const complaintTypeMappings: Record<ComplaintType, ComplaintTypeData> = {
       'raisingStation',
       'driverName',
     ],
-    subject: {
-      applySubject: { dataText: 'אוטובוס', dataCode: '0' },
-      applyType: { dataText: 'איחור', dataCode: '4' },
-    },
-    subject_code: 0,
+    transport: { dataText: 'אוטובוס', dataCode: '0' },
+    subject: { dataText: 'איחור', dataCode: '4' },
     title_order: ['lineNumberText', 'eventDate', 'eventHour'],
   },
   early: {
@@ -70,11 +61,8 @@ export const complaintTypeMappings: Record<ComplaintType, ComplaintTypeData> = {
       'raisingStation',
       'driverName',
     ],
-    subject: {
-      applySubject: { dataText: 'אוטובוס', dataCode: '0' },
-      applyType: { dataText: 'הקדמה', dataCode: '11' },
-    },
-    subject_code: 215,
+    transport: { dataText: 'אוטובוס', dataCode: '0' },
+    subject: { dataText: 'הקדמה', dataCode: '11' },
     title_order: ['lineNumberText', 'eventDate', 'eventHour'],
   },
 }
