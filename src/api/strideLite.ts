@@ -12,8 +12,14 @@ import { type CivilDate, civilDate } from 'src/model/time/civilDate'
 const API_BASE_PATH_STORAGE_KEY = 'strideLiteApiBasePath'
 const OPT_IN_STORAGE_KEY = 'strideLiteEnabled'
 
+const removeTrailingSlashes = (value: string): string => {
+  let end = value.length
+  while (end > 0 && value.charCodeAt(end - 1) === 47) end--
+  return value.slice(0, end)
+}
+
 const buildTimeStrideLiteApiBasePath = (): string =>
-  (import.meta.env.VITE_STRIDE_LITE_API ?? '').replace(/\/+$/, '')
+  removeTrailingSlashes(import.meta.env.VITE_STRIDE_LITE_API ?? '')
 
 /** Runtime override, if set, takes precedence over the build-time default. */
 export const strideLiteApiBasePath = (): string => {
@@ -28,7 +34,7 @@ export const strideLiteApiBasePath = (): string => {
 
 /** An empty value removes the override and restores the build-time default. */
 export const setStrideLiteApiBasePath = (basePath: string): void => {
-  const normalized = basePath.trim().replace(/\/+$/, '')
+  const normalized = removeTrailingSlashes(basePath.trim())
   if (normalized) localStorage.setItem(API_BASE_PATH_STORAGE_KEY, normalized)
   else localStorage.removeItem(API_BASE_PATH_STORAGE_KEY)
 }
@@ -80,7 +86,7 @@ export type StrideLiteCoverageDay = {
 
 const asRecord = (value: unknown): Record<string, unknown> => {
   if (typeof value !== 'object' || value === null || Array.isArray(value)) {
-    throw new Error('stride-lite returned a value that is not an object')
+    throw new TypeError('stride-lite returned a value that is not an object')
   }
   return value as Record<string, unknown>
 }
