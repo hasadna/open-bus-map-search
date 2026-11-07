@@ -17,13 +17,13 @@ import {
   Typography,
   useTheme,
 } from '@mui/material'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
+  applyStrideApiBasePath,
   isStrideLiteConfigured,
   isStrideLiteOptedIn,
-  setStrideLiteApiBasePath,
   setStrideLiteOptedIn,
   strideLiteApiBasePath,
   strideLiteCoverageQueryOptions,
@@ -55,10 +55,11 @@ const StatTile = ({ label, value }: { label: string; value: string }) => (
   </Box>
 )
 
-const BackendSwitch = () => {
+const BackendSwitch = ({ onConfigurationChange }: { onConfigurationChange: () => void }) => {
   const { t } = useTranslation()
   const [basePath, setBasePath] = useState(strideLiteApiBasePath())
   const [urlError, setUrlError] = useState(false)
+  const queryClient = useQueryClient()
 
   const saveBasePath = () => {
     const value = basePath.trim()
@@ -73,8 +74,9 @@ const BackendSwitch = () => {
         return
       }
     }
-    setStrideLiteApiBasePath(value)
-    window.location.reload()
+    applyStrideApiBasePath(value)
+    onConfigurationChange()
+    void queryClient.invalidateQueries()
   }
 
   return (
@@ -107,9 +109,9 @@ const BackendSwitch = () => {
             disabled={!isStrideLiteConfigured()}
             onChange={(event) => {
               setStrideLiteOptedIn(event.target.checked)
-              // The api-client is configured once at module load, so the switch only takes
-              // effect on the next load.
-              window.location.reload()
+              applyStrideApiBasePath()
+              onConfigurationChange()
+              void queryClient.invalidateQueries()
             }}
             slotProps={{ input: { 'aria-label': t('strideLite.backend_switch_label') } }}
           />
@@ -267,6 +269,8 @@ const CoverageSection = () => {
 
 export const StrideLiteStatusPage = () => {
   const { t } = useTranslation()
+  const [, setConfigurationVersion] = useState(0)
+  const onConfigurationChange = () => setConfigurationVersion((version) => version + 1)
   return (
     <PageContainer>
       <Widget title={t('strideLite.title')}>
@@ -278,7 +282,7 @@ export const StrideLiteStatusPage = () => {
           github.com/NoamGaash/stride-lite
         </Link>
         <Box sx={{ mt: 2 }}>
-          <BackendSwitch />
+          <BackendSwitch onConfigurationChange={onConfigurationChange} />
         </Box>
       </Widget>
       {isStrideLiteConfigured() ? (
