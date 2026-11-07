@@ -471,7 +471,7 @@
     },
     "api_base_url_label": "Experimental API base URL",
     "api_base_url_placeholder": "https://example.org",
-    "api_base_url_help": "Set a URL to use it in this browser. Leave empty to restore the build-time default. Saving reloads the page.",
+    "api_base_url_help": "Set a URL to use it in this browser. Leave empty to restore the build-time default. Saving applies the change immediately.",
     "save_api_base_url": "Save API URL",
     "invalid_api_base_url": "Enter a valid HTTP or HTTPS URL without query parameters or a fragment."
   }
