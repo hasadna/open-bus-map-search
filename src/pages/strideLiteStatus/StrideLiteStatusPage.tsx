@@ -2,12 +2,14 @@ import {
   Alert,
   AlertTitle,
   Box,
+  Button,
   FormControlLabel,
   Grid,
   Link,
   Stack,
   Switch,
   Table,
+  TextField,
   TableBody,
   TableCell,
   TableHead,
@@ -16,10 +18,12 @@ import {
   useTheme,
 } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   isStrideLiteConfigured,
   isStrideLiteOptedIn,
+  setStrideLiteApiBasePath,
   setStrideLiteOptedIn,
   strideLiteApiBasePath,
   strideLiteCoverageQueryOptions,
@@ -53,8 +57,49 @@ const StatTile = ({ label, value }: { label: string; value: string }) => (
 
 const BackendSwitch = () => {
   const { t } = useTranslation()
+  const [basePath, setBasePath] = useState(strideLiteApiBasePath())
+  const [urlError, setUrlError] = useState(false)
+
+  const saveBasePath = () => {
+    const value = basePath.trim()
+    if (value) {
+      try {
+        const url = new URL(value)
+        if (!['http:', 'https:'].includes(url.protocol) || url.search || url.hash) {
+          throw new Error('Invalid API base URL')
+        }
+      } catch {
+        setUrlError(true)
+        return
+      }
+    }
+    setStrideLiteApiBasePath(value)
+    window.location.reload()
+  }
+
   return (
     <Stack spacing={1}>
+      <TextField
+        label={t('strideLite.api_base_url_label')}
+        placeholder={t('strideLite.api_base_url_placeholder')}
+        value={basePath}
+        onChange={(event) => {
+          setBasePath(event.target.value)
+          setUrlError(false)
+        }}
+        error={urlError}
+        helperText={
+          urlError ? t('strideLite.invalid_api_base_url') : t('strideLite.api_base_url_help')
+        }
+        size="small"
+        fullWidth
+      />
+      <Button
+        variant="outlined"
+        onClick={saveBasePath}
+        disabled={basePath.trim() === strideLiteApiBasePath()}>
+        {t('strideLite.save_api_base_url')}
+      </Button>
       <FormControlLabel
         control={
           <Switch
