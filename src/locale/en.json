@@ -438,7 +438,7 @@
     "backend_switch_label": "Use the experimental API in this browser",
     "backend_switch_hint": "After the page reloads, requests will go to {{url}}. The setting is stored in this browser only; everyone else keeps using the production server.",
     "not_configured": "The experimental API is not configured",
-    "not_configured_help": "Set VITE_STRIDE_LITE_API in .env.local to a stride-lite base URL and reload. It is unset by default, because the experimental server is not deployed yet.",
+    "not_configured_help": "Enter an experimental API base URL above and save it. The value is stored in this browser only; no rebuild is needed.",
     "unreachable": "Cannot reach the experimental API",
     "status_title": "Right now",
     "newest_snapshot": "Newest snapshot (archive path)",
@@ -468,6 +468,11 @@
       "shortDownload": "Download was cut short",
       "noData": "No data arrived",
       "pipelineFault": "Pipeline fault"
-    }
+    },
+    "api_base_url_label": "Experimental API base URL",
+    "api_base_url_placeholder": "https://example.org",
+    "api_base_url_help": "Set a URL to use it in this browser. Leave empty to restore the build-time default. Saving reloads the page.",
+    "save_api_base_url": "Save API URL",
+    "invalid_api_base_url": "Enter a valid HTTP or HTTPS URL without query parameters or a fragment."
   }
 }
