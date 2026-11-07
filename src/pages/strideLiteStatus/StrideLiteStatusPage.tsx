@@ -20,6 +20,7 @@ import {
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { applyStrideApiBasePath } from 'src/api/apiConfig'
 import {
   isStrideLiteConfigured,
   isStrideLiteOptedIn,
@@ -28,7 +29,6 @@ import {
   strideLiteCoverageQueryOptions,
   strideLiteStatusQueryOptions,
 } from 'src/api/strideLite'
-import { applyStrideApiBasePath } from 'src/api/apiConfig'
 import { civilDateToDayjs } from 'src/model/time/civilDate'
 import SkeletonLoader from 'src/shared/SkeletonLoader'
 import Widget from 'src/shared/Widget'
