@@ -2,18 +2,36 @@
  * stride-lite — the experimental ClickHouse-backed reimplementation of the Stride API
  * (https://github.com/NoamGaash/stride-lite).
  *
- * Opting in is two independent gates: the deployment has to configure a URL
- * (`VITE_STRIDE_LITE_API`, unset by default), and the visitor has to flip the switch on
- * the status page. With either gate closed the app talks to production Stride exactly as
- * before.
+ * The experimental URL can be supplied at build time (`VITE_STRIDE_LITE_API`) or
+ * overridden per browser from the hidden status page. The visitor must also flip the
+ * opt-in switch before Stride requests use it. With the switch off, production is used.
  */
 import { queryOptions } from '@tanstack/react-query'
 import { type CivilDate, civilDate } from 'src/model/time/civilDate'
 
-export const strideLiteApiBasePath = (): string =>
-  (import.meta.env.VITE_STRIDE_LITE_API ?? '').replace(/\/$/, '')
-
+const API_BASE_PATH_STORAGE_KEY = 'strideLiteApiBasePath'
 const OPT_IN_STORAGE_KEY = 'strideLiteEnabled'
+
+const buildTimeStrideLiteApiBasePath = (): string =>
+  (import.meta.env.VITE_STRIDE_LITE_API ?? '').replace(/\/+$/, '')
+
+/** Runtime override, if set, takes precedence over the build-time default. */
+export const strideLiteApiBasePath = (): string => {
+  try {
+    const runtimeOverride = localStorage.getItem(API_BASE_PATH_STORAGE_KEY)
+    if (runtimeOverride !== null) return runtimeOverride
+  } catch {
+    // Storage can be unavailable; fall back to the build-time configuration.
+  }
+  return buildTimeStrideLiteApiBasePath()
+}
+
+/** An empty value removes the override and restores the build-time default. */
+export const setStrideLiteApiBasePath = (basePath: string): void => {
+  const normalized = basePath.trim().replace(/\/+$/, '')
+  if (normalized) localStorage.setItem(API_BASE_PATH_STORAGE_KEY, normalized)
+  else localStorage.removeItem(API_BASE_PATH_STORAGE_KEY)
+}
 
 export const isStrideLiteConfigured = (): boolean => strideLiteApiBasePath() !== ''
 
@@ -112,7 +130,7 @@ const parseCoverageDay = (payload: unknown): StrideLiteCoverageDay => {
 
 const fetchJson = async (path: string): Promise<unknown> => {
   if (!isStrideLiteConfigured()) {
-    throw new Error('VITE_STRIDE_LITE_API is not configured')
+    throw new Error('No experimental API base URL is configured')
   }
   const response = await fetch(`${strideLiteApiBasePath()}${path}`)
   if (!response.ok) {
