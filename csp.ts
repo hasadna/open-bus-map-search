@@ -31,6 +31,7 @@ export const CSP_DIRECTIVES: Record<string, string[]> = {
     'https://api.github.com',
     'https://*.amazonaws.com',
     'https://*.on.aws',
+    'https://*.cloudfront.net',
   ],
   'frame-src': [
     "'self'",
