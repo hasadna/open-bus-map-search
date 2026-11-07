@@ -9,8 +9,9 @@ import {
   SiriApi,
   UserCasesApi,
 } from '@hasadna/open-bus-api-client'
+import { strideApiBasePath } from './strideLite'
 
-export const STRIDE_API_BASE_PATH = process.env.VITE_STRIDE_API
+export const STRIDE_API_BASE_PATH = strideApiBasePath()
 const STRIDE_API_CONFIG = new Configuration({ basePath: STRIDE_API_BASE_PATH })
 
 export const AGGREGATIONS_API = new AggregationsApi(STRIDE_API_CONFIG)

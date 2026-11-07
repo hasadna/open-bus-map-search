@@ -1,0 +1,83 @@
+import type { StrideLiteCoverageDay } from 'src/api/strideLite'
+import { civilDate } from 'src/model/time/civilDate'
+import {
+  classifyCoverageDay,
+  expectedVehicleLocations,
+  withHealthOldestFirst,
+} from './coverageHealth'
+
+// 2026-11-04 is a Wednesday, 2026-11-06 a Friday, 2026-11-07 a Saturday.
+const WEDNESDAY = civilDate('2026-11-04')!
+const FRIDAY = civilDate('2026-11-06')!
+const SATURDAY = civilDate('2026-11-07')!
+
+const day = (overrides: Partial<StrideLiteCoverageDay> = {}): StrideLiteCoverageDay => ({
+  day: WEDNESDAY,
+  snapshots: 1430,
+  vehicleLocations: 7_500_000,
+  duplicateIds: 0,
+  rides: 60_000,
+  ridesWithDuration: 59_000,
+  ridesLinkedToGtfs: 59_500,
+  measuredAt: '2026-11-05T02:00:00Z',
+  ...overrides,
+})
+
+describe('classifyCoverageDay', () => {
+  test('a full weekday is healthy', () => {
+    expect(classifyCoverageDay(day())).toBe('ok')
+  })
+
+  test('Shabbat volumes are healthy, not a fault', () => {
+    expect(classifyCoverageDay(day({ day: FRIDAY, vehicleLocations: 3_700_000 }))).toBe('ok')
+    expect(classifyCoverageDay(day({ day: SATURDAY, vehicleLocations: 1_240_000 }))).toBe('ok')
+  })
+
+  test('the same Saturday volume on a weekday reads as few buses, not as a fault', () => {
+    expect(classifyCoverageDay(day({ day: WEDNESDAY, vehicleLocations: 1_240_000 }))).toBe('quiet')
+  })
+
+  test('no snapshots at all means no data arrived', () => {
+    expect(classifyCoverageDay(day({ snapshots: 0, vehicleLocations: 0 }))).toBe('noData')
+  })
+
+  test('a partial download is distinguished from no data', () => {
+    expect(classifyCoverageDay(day({ snapshots: 900 }))).toBe('shortDownload')
+  })
+
+  test('duplicate ids are a pipeline fault even on a full day', () => {
+    expect(classifyCoverageDay(day({ duplicateIds: 17 }))).toBe('pipelineFault')
+  })
+
+  test('snapshots that hold no locations are a pipeline fault', () => {
+    expect(classifyCoverageDay(day({ vehicleLocations: 0 }))).toBe('pipelineFault')
+  })
+
+  test('rides that reached no GTFS are a pipeline fault', () => {
+    expect(classifyCoverageDay(day({ ridesLinkedToGtfs: 0 }))).toBe('pipelineFault')
+  })
+
+  test('a pipeline fault outranks a short download', () => {
+    expect(classifyCoverageDay(day({ snapshots: 900, duplicateIds: 1 }))).toBe('pipelineFault')
+  })
+})
+
+describe('expectedVehicleLocations', () => {
+  test('scales down for Friday and Saturday only', () => {
+    const weekday = expectedVehicleLocations(WEDNESDAY)
+    expect(expectedVehicleLocations(FRIDAY)).toBeCloseTo(weekday / 2)
+    expect(expectedVehicleLocations(SATURDAY)).toBeCloseTo(weekday / 6)
+  })
+})
+
+describe('withHealthOldestFirst', () => {
+  test('reverses the API order and tags each day', () => {
+    const result = withHealthOldestFirst([
+      day({ day: SATURDAY, vehicleLocations: 1_240_000 }),
+      day({ day: FRIDAY, duplicateIds: 3 }),
+      day({ day: WEDNESDAY }),
+    ])
+    expect(result.map((row) => row.day)).toEqual([WEDNESDAY, FRIDAY, SATURDAY])
+    expect(result.map((row) => row.health)).toEqual(['ok', 'pipelineFault', 'ok'])
+  })
+})
