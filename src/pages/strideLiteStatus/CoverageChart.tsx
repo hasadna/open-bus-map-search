@@ -31,17 +31,15 @@ const CoverageTooltip = ({
   active?: boolean
   payload?: Array<{ payload: ChartRow }>
 }) => {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const theme = useTheme()
   const isDark = theme.palette.mode === 'dark'
-  const compact = new Intl.NumberFormat(undefined, { notation: 'compact' })
-  const full = new Intl.NumberFormat()
+  const compact = new Intl.NumberFormat(i18n.language, { notation: 'compact' })
+  const full = new Intl.NumberFormat(i18n.language)
 
-const row = active
-  ? (payload?.[0]?.payload as (typeof data)[number] | undefined)
-  : undefined
-if (!row) return null
-return (
+  const row = active ? payload?.[0]?.payload : undefined
+  if (!row) return null
+  return (
   <Box
     sx={{
       bgcolor: 'background.paper',
@@ -82,7 +80,7 @@ return (
       </Typography>
     )}
   </Box>
-)
+  )
 
 }
 
