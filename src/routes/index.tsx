@@ -1,5 +1,6 @@
 import {
   BiotechTwoTone,
+  BoltTwoTone,
   DashboardTwoTone,
   DirectionsBusTwoTone,
   EmojiTransportationTwoTone,
@@ -41,6 +42,7 @@ const Operator = lazy(() => import('../pages/operator'))
 const BugReportForm = lazy(() => import('../pages/bugReport/BugReportForm'))
 const PublicAppeal = lazy(() => import('../pages/publicAppeal'))
 const TrainPage = lazy(() => import('../pages/train'))
+const StrideLiteStatusPage = lazy(() => import('../pages/strideLiteStatus/StrideLiteStatusPage'))
 
 export const PAGES = [
   {
@@ -156,6 +158,12 @@ const HIDDEN_PAGES = [
     path: '/data-research',
     icon: <BiotechTwoTone />,
     element: <DataResearch />,
+  },
+  {
+    label: 'strideLite.title',
+    path: '/stride-lite-status',
+    icon: <BoltTwoTone />,
+    element: <StrideLiteStatusPage />,
   },
 ] as const
 

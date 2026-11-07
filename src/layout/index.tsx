@@ -57,6 +57,11 @@ export function MainLayout() {
                     <Envelope />
                   </Link>
                 </EasterEgg>
+                <EasterEgg code="clickhouse">
+                  <Link to="/stride-lite-status">
+                    <Envelope />
+                  </Link>
+                </EasterEgg>
               </Suspense>
             </StyledBody>
             <AppFooter />
