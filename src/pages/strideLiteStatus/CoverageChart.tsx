@@ -39,49 +39,49 @@ const CoverageTooltip = ({
 
   const row = active ? payload?.[0]?.payload : undefined
   if (!row) return null
-  return (
-  <Box
-    sx={{
-      bgcolor: 'background.paper',
-      border: 1,
-      borderColor: 'divider',
-      borderRadius: 1,
-      p: 1,
-      fontVariantNumeric: 'tabular-nums',
-    }}>
-    <Typography variant="subtitle2">
-      {civilDateToDayjs(row.day).format('dddd, DD/MM/YYYY')}
-    </Typography>
-    <Stack
-      direction="row"
-      spacing={0.5}
-      sx={{ alignItems: 'center', color: healthColor(row.health, isDark) }}>
-      <HealthIcon health={row.health} />
-      <Typography variant="body2" sx={{ color: 'text.primary' }}>
-        {t(healthLabelKey(row.health))}
-      </Typography>
-    </Stack>
-    <Typography variant="body2">
-      {t('strideLite.snapshots')}: {full.format(row.snapshots)}
-    </Typography>
-    <Typography variant="body2">
-      {t('strideLite.vehicle_locations')}: {full.format(row.vehicleLocations)}
-    </Typography>
-    <Typography variant="body2">
-      {t('strideLite.duplicate_ids')}: {full.format(row.duplicateIds)}
-    </Typography>
-    <Typography variant="body2">
-      {t('strideLite.rides')}: {full.format(row.rides)} ·{' '}
-      {t('strideLite.rides_linked_to_gtfs')}: {full.format(row.ridesLinkedToGtfs)}
-    </Typography>
-    {row.expected !== undefined && (
-      <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-        {t('strideLite.expected')}: {compact.format(row.expected)}
-      </Typography>
-    )}
-  </Box>
-  )
 
+  return (
+    <Box
+      sx={{
+        bgcolor: 'background.paper',
+        border: 1,
+        borderColor: 'divider',
+        borderRadius: 1,
+        p: 1,
+        fontVariantNumeric: 'tabular-nums',
+      }}>
+      <Typography variant="subtitle2">
+        {civilDateToDayjs(row.day).format('dddd, DD/MM/YYYY')}
+      </Typography>
+      <Stack
+        direction="row"
+        spacing={0.5}
+        sx={{ alignItems: 'center', color: healthColor(row.health, isDark) }}>
+        <HealthIcon health={row.health} />
+        <Typography variant="body2" sx={{ color: 'text.primary' }}>
+          {t(healthLabelKey(row.health))}
+        </Typography>
+      </Stack>
+      <Typography variant="body2">
+        {t('strideLite.snapshots')}: {full.format(row.snapshots)}
+      </Typography>
+      <Typography variant="body2">
+        {t('strideLite.vehicle_locations')}: {full.format(row.vehicleLocations)}
+      </Typography>
+      <Typography variant="body2">
+        {t('strideLite.duplicate_ids')}: {full.format(row.duplicateIds)}
+      </Typography>
+      <Typography variant="body2">
+        {t('strideLite.rides')}: {full.format(row.rides)} ·{' '}
+        {t('strideLite.rides_linked_to_gtfs')}: {full.format(row.ridesLinkedToGtfs)}
+      </Typography>
+      {row.expected !== undefined && (
+        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+          {t('strideLite.expected')}: {compact.format(row.expected)}
+        </Typography>
+      )}
+    </Box>
+  )
 }
 
 export const CoverageChart = ({
