@@ -9,10 +9,16 @@ import {
   SiriApi,
   UserCasesApi,
 } from '@hasadna/open-bus-api-client'
-import { strideApiBasePath } from './strideLite'
+import { setStrideLiteApiBasePath, strideApiBasePath } from './strideLite'
 
 export const STRIDE_API_BASE_PATH = strideApiBasePath()
-const STRIDE_API_CONFIG = new Configuration({ basePath: STRIDE_API_BASE_PATH })
+export const STRIDE_API_CONFIG = new Configuration({ basePath: STRIDE_API_BASE_PATH })
+
+/** Apply a runtime backend change to the shared config used by all generated API clients. */
+export const applyStrideApiBasePath = (basePath?: string): void => {
+  if (basePath !== undefined) setStrideLiteApiBasePath(basePath)
+  STRIDE_API_CONFIG.basePath = strideApiBasePath()
+}
 
 export const AGGREGATIONS_API = new AggregationsApi(STRIDE_API_CONFIG)
 export const GTFS_API = new GtfsApi(STRIDE_API_CONFIG)
