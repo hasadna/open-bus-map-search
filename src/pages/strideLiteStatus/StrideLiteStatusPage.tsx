@@ -67,7 +67,7 @@ const BackendSwitch = ({ onConfigurationChange }: { onConfigurationChange: () =>
       try {
         const url = new URL(value)
         if (!['http:', 'https:'].includes(url.protocol) || url.search || url.hash) {
-          throw new Error('Invalid API base URL')
+          throw new TypeError('Invalid API base URL')
         }
       } catch {
         setUrlError(true)
@@ -75,6 +75,7 @@ const BackendSwitch = ({ onConfigurationChange }: { onConfigurationChange: () =>
       }
     }
     applyStrideApiBasePath(value)
+    setBasePath(strideLiteApiBasePath())
     onConfigurationChange()
     void queryClient.invalidateQueries()
   }
