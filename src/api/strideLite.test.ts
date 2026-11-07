@@ -1,3 +1,4 @@
+import { STRIDE_API_CONFIG, applyStrideApiBasePath } from './apiConfig'
 import {
   isStrideLiteConfigured,
   isStrideLiteSelected,
@@ -56,6 +57,18 @@ describe('stride-lite opt-in', () => {
     expect(strideLiteApiBasePath()).toBe('https://runtime.example')
     setStrideLiteApiBasePath('')
     expect(strideLiteApiBasePath()).toBe('https://build.example')
+  })
+
+  test('changing the runtime URL updates the shared API client config without a reload', () => {
+    vi.stubEnv('VITE_STRIDE_LITE_API', '')
+    applyStrideApiBasePath('https://runtime.example')
+    expect(STRIDE_API_CONFIG.basePath).toBe('https://runtime.example')
+    setStrideLiteOptedIn(true)
+    applyStrideApiBasePath()
+    expect(STRIDE_API_CONFIG.basePath).toBe('https://runtime.example')
+    setStrideLiteOptedIn(false)
+    applyStrideApiBasePath()
+    expect(STRIDE_API_CONFIG.basePath).toBe(PRODUCTION)
   })
 
   test('opting back out returns to production', () => {
