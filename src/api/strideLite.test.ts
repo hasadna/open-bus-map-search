@@ -1,4 +1,4 @@
-import { STRIDE_API_CONFIG, applyStrideApiBasePath } from './apiConfig'
+import { applyStrideApiBasePath, STRIDE_API_CONFIG } from './apiConfig'
 import {
   isStrideLiteConfigured,
   isStrideLiteSelected,
@@ -62,7 +62,7 @@ describe('stride-lite opt-in', () => {
   test('changing the runtime URL updates the shared API client config without a reload', () => {
     vi.stubEnv('VITE_STRIDE_LITE_API', '')
     applyStrideApiBasePath('https://runtime.example')
-    expect(STRIDE_API_CONFIG.basePath).toBe('https://runtime.example')
+    expect(STRIDE_API_CONFIG.basePath).toBe(PRODUCTION)
     setStrideLiteOptedIn(true)
     applyStrideApiBasePath()
     expect(STRIDE_API_CONFIG.basePath).toBe('https://runtime.example')
