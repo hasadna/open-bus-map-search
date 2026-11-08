@@ -51,6 +51,7 @@ const CoverageTooltip = ({
         fontVariantNumeric: 'tabular-nums',
       }}>
       <Typography variant="subtitle2">
+        {/* eslint-disable-next-line i18next/no-literal-string -- date format pattern, not user text */}
         {civilDateToDayjs(row.day).format('dddd, DD/MM/YYYY')}
       </Typography>
       <Stack
@@ -72,8 +73,8 @@ const CoverageTooltip = ({
         {t('strideLite.duplicate_ids')}: {full.format(row.duplicateIds)}
       </Typography>
       <Typography variant="body2">
-        {t('strideLite.rides')}: {full.format(row.rides)} ·{' '}
-        {t('strideLite.rides_linked_to_gtfs')}: {full.format(row.ridesLinkedToGtfs)}
+        {t('strideLite.rides')}: {full.format(row.rides)} · {t('strideLite.rides_linked_to_gtfs')}:{' '}
+        {full.format(row.ridesLinkedToGtfs)}
       </Typography>
       {row.expected !== undefined && (
         <Typography variant="body2" sx={{ color: 'text.secondary' }}>
@@ -97,9 +98,7 @@ export const CoverageChart = ({
   const { t, i18n } = useTranslation()
   const theme = useTheme()
   const isDark = theme.palette.mode === 'dark'
-
   const compact = new Intl.NumberFormat(i18n.language, { notation: 'compact' })
-  const full = new Intl.NumberFormat(i18n.language)
   const data = days.map((day) => ({
     ...day,
     label: civilDateToDayjs(day.day).format('DD/MM'),
