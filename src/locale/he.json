@@ -447,7 +447,7 @@
     "refresh_tasks": "משימות רענון",
     "refresh_tasks_failing": "משימות רענון שנכשלות",
     "refresh_tasks_failing_alert": "{{count}} משימות רענון נכשלות.",
-    "coverage_title": "90 הימים האחרונים",
+    "coverage_title": "יום אחר יום",
     "snapshots_chart_title": "צילומי מצב שהורדו ביום",
     "snapshots_chart_subtitle": "צילום מצב בכל דקה, כ־1,430 ביום, גם בשבת — ההורדה אינה נחה. עמודה נמוכה אומרת שהנתונים לא הגיעו.",
     "locations_chart_title": "מיקומי רכבים ביום",
@@ -458,7 +458,7 @@
     "rides": "נסיעות",
     "rides_linked_to_gtfs": "נסיעות שקושרו ל־GTFS",
     "faults_title": "ימים שדורשים בדיקה",
-    "no_faults": "לא נמצאו תקלות ב־{{count}} הימים האחרונים.",
+    "no_faults": "לא נמצאו תקלות ב־{{count}} הימים המוצגים.",
     "day": "יום",
     "health_column": "פירוש",
     "health": {

@@ -29,20 +29,24 @@ import {
   strideLiteCoverageQueryOptions,
   strideLiteStatusQueryOptions,
 } from 'src/api/strideLite'
-import { civilDateToDayjs } from 'src/model/time/civilDate'
+import { type CivilDate, civilDateToDayjs } from 'src/model/time/civilDate'
 import SkeletonLoader from 'src/shared/SkeletonLoader'
 import Widget from 'src/shared/Widget'
+import { CivilDateSelector } from '../components/CivilDateSelector'
 import { PageContainer } from '../components/PageContainer'
 import { CoverageChart } from './CoverageChart'
 import {
   expectedSnapshots,
   expectedVehicleLocations,
   isFault,
+  selectDayRange,
   withHealthOldestFirst,
 } from './coverageHealth'
 import { healthColor, HealthIcon, healthLabelKey, useHealthReasonText } from './healthDisplay'
 
-const COVERAGE_DAYS = 90
+/** Everything the backend has: one row per day, so even years of it stay small, and a range
+ *  picked here is a filter rather than a new request. */
+const COVERAGE_LIMIT = 10_000
 
 const StatTile = ({ label, value }: { label: string; value: string }) => (
   <Box sx={{ border: 1, borderColor: 'divider', borderRadius: 1, p: 1.5, height: '100%' }}>
@@ -186,18 +190,37 @@ const StatusSection = () => {
 const CoverageSection = () => {
   const { t, i18n } = useTranslation()
   const theme = useTheme()
-  const { data, error, isLoading } = useQuery(strideLiteCoverageQueryOptions(COVERAGE_DAYS))
+  const { data, error, isLoading } = useQuery(strideLiteCoverageQueryOptions(COVERAGE_LIMIT))
   const full = new Intl.NumberFormat(i18n.language)
   const reasonText = useHealthReasonText()
+  const [chosen, setChosen] = useState<{ from?: CivilDate; to?: CivilDate }>({})
 
   if (error) return <Unreachable error={error} />
   if (isLoading || !data) return <SkeletonLoader />
 
-  const days = withHealthOldestFirst(data)
+  const { from, to, oldest, newest, days } = selectDayRange(withHealthOldestFirst(data), chosen)
   const faults = days.filter((day) => isFault(day.health)).reverse()
 
   return (
     <Stack spacing={3}>
+      {from && to && (
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+          <CivilDateSelector
+            value={from}
+            minDate={oldest}
+            maxDate={to}
+            customLabel={t('start')}
+            onChange={(date) => date && setChosen({ from: date, to })}
+          />
+          <CivilDateSelector
+            value={to}
+            minDate={from}
+            maxDate={newest}
+            customLabel={t('end')}
+            onChange={(date) => date && setChosen({ from, to: date })}
+          />
+        </Stack>
+      )}
       <Box>
         <Typography variant="subtitle1">{t('strideLite.snapshots_chart_title')}</Typography>
         <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1 }}>

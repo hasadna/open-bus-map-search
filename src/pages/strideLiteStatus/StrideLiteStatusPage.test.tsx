@@ -1,5 +1,7 @@
+import { LocalizationProvider } from '@mui/x-date-pickers'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor, within } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import type { ReactElement } from 'react'
 import { StrideLiteStatusPage } from './StrideLiteStatusPage'
 
@@ -39,7 +41,9 @@ const renderPage = () =>
   render(
     <QueryClientProvider
       client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
-      <StrideLiteStatusPage />
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <StrideLiteStatusPage />
+      </LocalizationProvider>
     </QueryClientProvider>,
   )
 
@@ -100,6 +104,41 @@ describe('StrideLiteStatusPage', () => {
     // The Shabbat days are healthy, so they stay out of the fault table.
     expect(faults.queryByText('07/11/2026')).not.toBeInTheDocument()
     expect(faults.queryByText('06/11/2026')).not.toBeInTheDocument()
+  })
+
+  test('shows the newest 90 days, and an older fault once the range reaches it', async () => {
+    vi.stubEnv('VITE_STRIDE_LITE_API', 'https://stride-lite.example')
+    const coverage = [
+      coverageDay('2026-11-07', { vehicle_locations: 1_240_000 }),
+      coverageDay('2026-11-04'),
+      // More than 90 days before the newest day.
+      coverageDay('2026-07-01', { duplicate_ids: 5 }),
+    ]
+    const fetchMock = vi.fn((url: string) =>
+      Promise.resolve({
+        ok: true,
+        status: 200,
+        statusText: 'OK',
+        json: () => Promise.resolve(url.includes('/coverage') ? coverage : STATUS),
+      }),
+    )
+    vi.stubGlobal('fetch', fetchMock)
+
+    renderPage()
+
+    expect(await screen.findByText('No faults found in the 2 days shown.')).toBeInTheDocument()
+    expect(fetchMock).toHaveBeenCalledWith(expect.stringContaining('/coverage?limit=10000'))
+
+    const startSections = within(screen.getByRole('group', { name: 'start' })).getAllByRole(
+      'spinbutton',
+    )
+    act(() => startSections[0].focus())
+    for (const digit of '01072026') {
+      fireEvent.input(document.activeElement!, { target: { textContent: digit } })
+    }
+
+    const faults = within(await screen.findByRole('table'))
+    expect(faults.getByText('01/07/2026')).toBeInTheDocument()
   })
 
   test('says it cannot reach the backend rather than rendering zeros', async () => {

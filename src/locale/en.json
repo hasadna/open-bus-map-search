@@ -447,7 +447,7 @@
     "refresh_tasks": "Refresh tasks",
     "refresh_tasks_failing": "Failing refresh tasks",
     "refresh_tasks_failing_alert": "{{count}} refresh tasks are failing.",
-    "coverage_title": "Last 90 days",
+    "coverage_title": "Day by day",
     "snapshots_chart_title": "Snapshots downloaded per day",
     "snapshots_chart_subtitle": "One snapshot a minute, about 1,430 a day, Shabbat included — the download does not rest. A short bar means the data did not arrive.",
     "locations_chart_title": "Vehicle locations per day",
@@ -458,7 +458,7 @@
     "rides": "Rides",
     "rides_linked_to_gtfs": "Rides linked to GTFS",
     "faults_title": "Days that need a look",
-    "no_faults": "No faults found in the last {{count}} days.",
+    "no_faults": "No faults found in the {{count}} days shown.",
     "day": "Day",
     "health_column": "Reading",
     "health": {

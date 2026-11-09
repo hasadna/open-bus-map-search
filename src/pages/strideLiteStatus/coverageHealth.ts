@@ -1,5 +1,5 @@
 import type { StrideLiteCoverageDay } from 'src/api/strideLite'
-import { type CivilDate, civilDateToDayjs } from 'src/model/time/civilDate'
+import { addDays, type CivilDate, civilDateToDayjs } from 'src/model/time/civilDate'
 
 /**
  * The three readings production cannot tell apart, as five states:
@@ -73,3 +73,34 @@ export const withHealthOldestFirst = (days: StrideLiteCoverageDay[]): CoverageDa
   days
     .map((day) => ({ ...day, ...diagnoseCoverageDay(day) }))
     .sort((a, b) => a.day.localeCompare(b.day))
+
+const DEFAULT_RANGE_DAYS = 90
+
+export type DayRange = {
+  from?: CivilDate
+  to?: CivilDate
+  oldest?: CivilDate
+  newest?: CivilDate
+  days: CoverageDayHealth[]
+}
+
+/** The chosen days out of what the backend has, oldest first. An end left unchosen falls back
+ *  to the newest day, and a start to 90 days before the end, clamped to the oldest. */
+export const selectDayRange = (
+  days: CoverageDayHealth[],
+  chosen: { from?: CivilDate; to?: CivilDate },
+): DayRange => {
+  const oldest = days[0]?.day
+  const newest = days.at(-1)?.day
+  const to = chosen.to ?? newest
+  if (!oldest || !to) return { days: [] }
+  const defaultFrom = addDays(to, 1 - DEFAULT_RANGE_DAYS)
+  const from = chosen.from ?? (defaultFrom < oldest ? oldest : defaultFrom)
+  return {
+    from,
+    to,
+    oldest,
+    newest,
+    days: days.filter((row) => row.day >= from && row.day <= to),
+  }
+}

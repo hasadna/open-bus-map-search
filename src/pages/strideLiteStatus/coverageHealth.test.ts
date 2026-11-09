@@ -1,9 +1,10 @@
 import type { StrideLiteCoverageDay } from 'src/api/strideLite'
-import { civilDate } from 'src/model/time/civilDate'
+import { addDays, civilDate } from 'src/model/time/civilDate'
 import {
   classifyCoverageDay,
   diagnoseCoverageDay,
   expectedVehicleLocations,
+  selectDayRange,
   withHealthOldestFirst,
 } from './coverageHealth'
 
@@ -114,5 +115,39 @@ describe('withHealthOldestFirst', () => {
     ])
     expect(result.map((row) => row.day)).toEqual([WEDNESDAY, FRIDAY, SATURDAY])
     expect(result.map((row) => row.health)).toEqual(['ok', 'pipelineFault', 'ok'])
+  })
+})
+
+describe('selectDayRange', () => {
+  const days = Array.from(
+    { length: 120 },
+    (_, i) => withHealthOldestFirst([day({ day: addDays(civilDate('2026-07-01')!, i) })])[0],
+  )
+
+  test('defaults to the newest 90 days the backend has', () => {
+    const range = selectDayRange(days, {})
+    expect(range.to).toBe('2026-10-28')
+    expect(range.from).toBe('2026-07-31')
+    expect(range.days).toHaveLength(90)
+    expect(range.oldest).toBe('2026-07-01')
+    expect(range.newest).toBe('2026-10-28')
+  })
+
+  test('keeps both ends of a chosen range', () => {
+    const range = selectDayRange(days, {
+      from: civilDate('2026-07-10')!,
+      to: civilDate('2026-07-12')!,
+    })
+    expect(range.days.map((row) => row.day)).toEqual(['2026-07-10', '2026-07-11', '2026-07-12'])
+  })
+
+  test('a chosen end alone shows the 90 days up to it', () => {
+    const range = selectDayRange(days, { to: civilDate('2026-08-15')! })
+    expect(range.from).toBe('2026-07-01')
+    expect(range.days.at(-1)?.day).toBe('2026-08-15')
+  })
+
+  test('no data leaves the range empty', () => {
+    expect(selectDayRange([], {}).days).toEqual([])
   })
 })
