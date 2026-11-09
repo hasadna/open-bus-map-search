@@ -40,7 +40,7 @@ import {
   isFault,
   withHealthOldestFirst,
 } from './coverageHealth'
-import { healthColor, HealthIcon, healthLabelKey } from './healthDisplay'
+import { healthColor, HealthIcon, healthLabelKey, useHealthReasonText } from './healthDisplay'
 
 const COVERAGE_DAYS = 90
 
@@ -188,6 +188,7 @@ const CoverageSection = () => {
   const theme = useTheme()
   const { data, error, isLoading } = useQuery(strideLiteCoverageQueryOptions(COVERAGE_DAYS))
   const full = new Intl.NumberFormat(i18n.language)
+  const reasonText = useHealthReasonText()
 
   if (error) return <Unreachable error={error} />
   if (isLoading || !data) return <SkeletonLoader />
@@ -230,7 +231,6 @@ const CoverageSection = () => {
                 <TableCell align="right">{t('strideLite.snapshots')}</TableCell>
                 <TableCell align="right">{t('strideLite.vehicle_locations')}</TableCell>
                 <TableCell align="right">{t('strideLite.duplicate_ids')}</TableCell>
-                <TableCell align="right">{t('strideLite.rides_linked_to_gtfs')}</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -253,11 +253,13 @@ const CoverageSection = () => {
                         {t(healthLabelKey(day.health))}
                       </Typography>
                     </Stack>
+                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                      {reasonText(day.reason)}
+                    </Typography>
                   </TableCell>
                   <TableCell align="right">{full.format(day.snapshots)}</TableCell>
                   <TableCell align="right">{full.format(day.vehicleLocations)}</TableCell>
                   <TableCell align="right">{full.format(day.duplicateIds)}</TableCell>
-                  <TableCell align="right">{full.format(day.ridesLinkedToGtfs)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

@@ -5,7 +5,8 @@ import {
   ErrorTwoTone,
   WarningTwoTone,
 } from '@mui/icons-material'
-import type { DayHealth } from './coverageHealth'
+import { useTranslation } from 'react-i18next'
+import type { DayHealth, HealthReason } from './coverageHealth'
 
 /** Reserved status steps (good / warning / serious / critical), which hold their contrast on
  *  both surfaces; only `quiet` — a normal day, just a thin one — takes a plain series hue, so
@@ -42,3 +43,25 @@ export const HealthIcon = ({ health }: { health: DayHealth }) => {
 }
 
 export const healthLabelKey = (health: DayHealth) => `strideLite.health.${health}` as const
+
+/** One sentence saying why a day got its reading; a healthy day gets one too, so the tooltip
+ *  never leaves a reading unexplained. */
+export const useHealthReasonText = () => {
+  const { t, i18n } = useTranslation()
+  const full = new Intl.NumberFormat(i18n.language)
+  return (reason: HealthReason | undefined): string => {
+    if (!reason) return t('strideLite.reason.ok')
+    switch (reason.key) {
+      case 'noSnapshots':
+        return t('strideLite.reason.noSnapshots')
+      case 'duplicateIds':
+        return t('strideLite.reason.duplicateIds', { n: full.format(reason.count) })
+      case 'noLocations':
+        return t('strideLite.reason.noLocations')
+      case 'shortDownload':
+        return t('strideLite.reason.shortDownload', { missing: full.format(reason.missing) })
+      case 'quiet':
+        return t('strideLite.reason.quiet', { percent: reason.percent })
+    }
+  }
+}

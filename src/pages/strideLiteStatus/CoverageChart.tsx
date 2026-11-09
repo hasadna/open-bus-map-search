@@ -14,8 +14,8 @@ import {
 } from 'recharts'
 import { civilDateToDayjs } from 'src/model/time/civilDate'
 import type { CoverageDayHealth } from './coverageHealth'
-import { HEALTH_ORDER } from './coverageHealth'
-import { healthColor, HealthIcon, healthLabelKey } from './healthDisplay'
+import { expectedSnapshots, expectedVehicleLocations, HEALTH_ORDER } from './coverageHealth'
+import { healthColor, HealthIcon, healthLabelKey, useHealthReasonText } from './healthDisplay'
 
 type Metric = 'snapshots' | 'vehicleLocations'
 
@@ -34,8 +34,8 @@ const CoverageTooltip = ({
   const { t, i18n } = useTranslation()
   const theme = useTheme()
   const isDark = theme.palette.mode === 'dark'
-  const compact = new Intl.NumberFormat(i18n.language, { notation: 'compact' })
   const full = new Intl.NumberFormat(i18n.language)
+  const reasonText = useHealthReasonText()
 
   const row = active ? payload?.[0]?.payload : undefined
   if (!row) return null
@@ -59,28 +59,36 @@ const CoverageTooltip = ({
         spacing={0.5}
         sx={{ alignItems: 'center', color: healthColor(row.health, isDark) }}>
         <HealthIcon health={row.health} />
-        <Typography variant="body2" sx={{ color: 'text.primary' }}>
+        <Typography variant="body2" sx={{ color: 'text.primary', fontWeight: 'bold' }}>
           {t(healthLabelKey(row.health))}
         </Typography>
       </Stack>
-      <Typography variant="body2">
-        {t('strideLite.snapshots')}: {full.format(row.snapshots)}
+      <Typography variant="body2" sx={{ color: 'text.secondary', maxWidth: 280, mb: 0.5 }}>
+        {reasonText(row.reason)}
       </Typography>
       <Typography variant="body2">
-        {t('strideLite.vehicle_locations')}: {full.format(row.vehicleLocations)}
+        {t('strideLite.snapshots')}:{' '}
+        {t('strideLite.of_expected', {
+          value: full.format(row.snapshots),
+          expected: full.format(expectedSnapshots()),
+        })}
+      </Typography>
+      <Typography variant="body2">
+        {t('strideLite.vehicle_locations')}:{' '}
+        {t('strideLite.of_expected', {
+          value: full.format(row.vehicleLocations),
+          expected: full.format(expectedVehicleLocations(row.day)),
+        })}
       </Typography>
       <Typography variant="body2">
         {t('strideLite.duplicate_ids')}: {full.format(row.duplicateIds)}
       </Typography>
       <Typography variant="body2">
-        {t('strideLite.rides')}: {full.format(row.rides)} · {t('strideLite.rides_linked_to_gtfs')}:{' '}
-        {full.format(row.ridesLinkedToGtfs)}
+        {t('strideLite.rides')}: {full.format(row.rides)} ·{' '}
+        {t('strideLite.linked_share', {
+          percent: row.rides ? Math.round((100 * row.ridesLinkedToGtfs) / row.rides) : 0,
+        })}
       </Typography>
-      {row.expected !== undefined && (
-        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-          {t('strideLite.expected')}: {compact.format(row.expected)}
-        </Typography>
-      )}
     </Box>
   )
 }

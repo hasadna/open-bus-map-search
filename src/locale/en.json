@@ -452,7 +452,6 @@
     "snapshots_chart_subtitle": "One snapshot a minute, about 1,430 a day, Shabbat included — the download does not rest. A short bar means the data did not arrive.",
     "locations_chart_title": "Vehicle locations per day",
     "locations_chart_subtitle": "Friday is about half a weekday and Saturday about a sixth; the dashed line already accounts for that, so a Shabbat bar that reaches its own line is a healthy bar.",
-    "expected": "Expected",
     "expected_legend": "Dashed line: the amount expected for that day",
     "snapshots": "Snapshots",
     "duplicate_ids": "Duplicate ids",
@@ -473,6 +472,16 @@
     "api_base_url_placeholder": "https://example.org",
     "api_base_url_help": "Set a URL to use it in this browser. Leave empty to restore the build-time default. Saving applies the change immediately.",
     "save_api_base_url": "Save API URL",
-    "invalid_api_base_url": "Enter a valid HTTP or HTTPS URL without query parameters or a fragment."
+    "invalid_api_base_url": "Enter a valid HTTP or HTTPS URL without query parameters or a fragment.",
+    "of_expected": "{{value}} of ~{{expected}} expected",
+    "linked_share": "{{percent}}% linked to GTFS",
+    "reason": {
+      "ok": "Every snapshot arrived, and the bus activity matches what this day of the week normally has.",
+      "noSnapshots": "Not a single snapshot was downloaded for this day.",
+      "duplicateIds": "{{n}} vehicle-location ids are used more than once, so processing wrote some rows twice.",
+      "noLocations": "Snapshots were downloaded, but no vehicle locations were derived from them.",
+      "shortDownload": "About {{missing}} of the day's ~1,430 one-minute snapshots are missing, so that much of the day has no data.",
+      "quiet": "All the data arrived, but it holds only {{percent}}% of the bus activity expected for this day of the week."
+    }
   }
 }

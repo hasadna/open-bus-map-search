@@ -2,6 +2,7 @@ import type { StrideLiteCoverageDay } from 'src/api/strideLite'
 import { civilDate } from 'src/model/time/civilDate'
 import {
   classifyCoverageDay,
+  diagnoseCoverageDay,
   expectedVehicleLocations,
   withHealthOldestFirst,
 } from './coverageHealth'
@@ -53,12 +54,46 @@ describe('classifyCoverageDay', () => {
     expect(classifyCoverageDay(day({ vehicleLocations: 0 }))).toBe('pipelineFault')
   })
 
-  test('rides that reached no GTFS are a pipeline fault', () => {
-    expect(classifyCoverageDay(day({ ridesLinkedToGtfs: 0 }))).toBe('pipelineFault')
+  test('rides not linked to GTFS do not decide the reading', () => {
+    expect(classifyCoverageDay(day({ ridesLinkedToGtfs: 0 }))).toBe('ok')
   })
 
   test('a pipeline fault outranks a short download', () => {
     expect(classifyCoverageDay(day({ snapshots: 900, duplicateIds: 1 }))).toBe('pipelineFault')
+  })
+})
+
+describe('diagnoseCoverageDay', () => {
+  test('a healthy day needs no reason', () => {
+    expect(diagnoseCoverageDay(day())).toEqual({ health: 'ok' })
+  })
+
+  test('a short download says how many one-minute snapshots are missing', () => {
+    expect(diagnoseCoverageDay(day({ snapshots: 1116 }))).toEqual({
+      health: 'shortDownload',
+      reason: { key: 'shortDownload', missing: 314 },
+    })
+  })
+
+  test('a quiet day says what share of its own expectation arrived', () => {
+    expect(diagnoseCoverageDay(day({ vehicleLocations: 3_000_000 }))).toEqual({
+      health: 'quiet',
+      reason: { key: 'quiet', percent: 40 },
+    })
+  })
+
+  test('duplicate ids carry their count', () => {
+    expect(diagnoseCoverageDay(day({ duplicateIds: 17 }))).toEqual({
+      health: 'pipelineFault',
+      reason: { key: 'duplicateIds', count: 17 },
+    })
+  })
+
+  test('snapshots without locations and no snapshots at all each name themselves', () => {
+    expect(diagnoseCoverageDay(day({ vehicleLocations: 0 })).reason).toEqual({ key: 'noLocations' })
+    expect(diagnoseCoverageDay(day({ snapshots: 0, vehicleLocations: 0 })).reason).toEqual({
+      key: 'noSnapshots',
+    })
   })
 })
 

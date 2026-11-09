@@ -26,27 +26,50 @@ export const expectedVehicleLocations = (day: CivilDate): number =>
 
 export const expectedSnapshots = (): number => HEALTHY_SNAPSHOTS
 
-export const classifyCoverageDay = (day: StrideLiteCoverageDay): DayHealth => {
-  if (day.snapshots === 0) return 'noData'
-  if (day.duplicateIds > 0) return 'pipelineFault'
-  // Snapshots that hold no locations at all, or rides that reached none of the GTFS they are
-  // joined against, mean the data arrived and the processing of it failed.
-  if (day.vehicleLocations === 0) return 'pipelineFault'
-  if (day.rides > 0 && day.ridesLinkedToGtfs === 0) return 'pipelineFault'
-  if (day.snapshots < SHORT_DOWNLOAD_SNAPSHOTS) return 'shortDownload'
-  if (day.vehicleLocations < QUIET_RATIO * expectedVehicleLocations(day.day)) return 'quiet'
-  return 'ok'
+/** What decided a day's reading, with the numbers a person needs to judge it. */
+export type HealthReason =
+  | { key: 'noSnapshots' }
+  | { key: 'duplicateIds'; count: number }
+  | { key: 'noLocations' }
+  | { key: 'shortDownload'; missing: number }
+  | { key: 'quiet'; percent: number }
+
+export type Diagnosis = { health: DayHealth; reason?: HealthReason }
+
+export const diagnoseCoverageDay = (day: StrideLiteCoverageDay): Diagnosis => {
+  if (day.snapshots === 0) return { health: 'noData', reason: { key: 'noSnapshots' } }
+  if (day.duplicateIds > 0) {
+    return { health: 'pipelineFault', reason: { key: 'duplicateIds', count: day.duplicateIds } }
+  }
+  if (day.vehicleLocations === 0) return { health: 'pipelineFault', reason: { key: 'noLocations' } }
+  if (day.snapshots < SHORT_DOWNLOAD_SNAPSHOTS) {
+    return {
+      health: 'shortDownload',
+      reason: { key: 'shortDownload', missing: HEALTHY_SNAPSHOTS - day.snapshots },
+    }
+  }
+  const expected = expectedVehicleLocations(day.day)
+  if (day.vehicleLocations < QUIET_RATIO * expected) {
+    return {
+      health: 'quiet',
+      reason: { key: 'quiet', percent: Math.round((100 * day.vehicleLocations) / expected) },
+    }
+  }
+  return { health: 'ok' }
 }
+
+export const classifyCoverageDay = (day: StrideLiteCoverageDay): DayHealth =>
+  diagnoseCoverageDay(day).health
 
 export const HEALTH_ORDER: DayHealth[] = ['ok', 'quiet', 'shortDownload', 'noData', 'pipelineFault']
 
 export const isFault = (health: DayHealth): boolean =>
   health === 'shortDownload' || health === 'noData' || health === 'pipelineFault'
 
-export type CoverageDayHealth = StrideLiteCoverageDay & { health: DayHealth }
+export type CoverageDayHealth = StrideLiteCoverageDay & Diagnosis
 
 /** Oldest day first, the direction a time axis reads; `/coverage` answers newest first. */
 export const withHealthOldestFirst = (days: StrideLiteCoverageDay[]): CoverageDayHealth[] =>
   days
-    .map((day) => ({ ...day, health: classifyCoverageDay(day) }))
+    .map((day) => ({ ...day, ...diagnoseCoverageDay(day) }))
     .sort((a, b) => a.day.localeCompare(b.day))

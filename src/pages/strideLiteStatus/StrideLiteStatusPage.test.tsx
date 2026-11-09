@@ -70,7 +70,9 @@ describe('StrideLiteStatusPage', () => {
       // Friday — about half a weekday, also not a fault.
       coverageDay('2026-11-06', { vehicle_locations: 3_700_000 }),
       coverageDay('2026-11-05', { duplicate_ids: 12 }),
-      coverageDay('2026-11-04'),
+      // Not linked to GTFS: the backend does not link yet, so this is not a fault.
+      coverageDay('2026-11-04', { rides_linked_to_gtfs: 0 }),
+      coverageDay('2026-11-03', { snapshots: 1116 }),
     ]
     vi.stubGlobal(
       'fetch',
@@ -92,6 +94,9 @@ describe('StrideLiteStatusPage', () => {
     const faults = within(await screen.findByRole('table'))
     expect(faults.getByText('Pipeline fault')).toBeInTheDocument()
     expect(faults.getByText('05/11/2026')).toBeInTheDocument()
+    expect(faults.getByText(/12 vehicle-location ids are used more than once/)).toBeInTheDocument()
+    expect(faults.getByText(/314 of the day/)).toBeInTheDocument()
+    expect(faults.queryByText('04/11/2026')).not.toBeInTheDocument()
     // The Shabbat days are healthy, so they stay out of the fault table.
     expect(faults.queryByText('07/11/2026')).not.toBeInTheDocument()
     expect(faults.queryByText('06/11/2026')).not.toBeInTheDocument()
