@@ -82,8 +82,11 @@ const ComplaintModal = ({
   const routeOptions = useMemo(
     () =>
       linesQuery.data?.map((item, index) => ({
-        label: `${item.routeLongName || ''}${item.routeDirection ? ` (${item.routeDirection})` : ''}`,
+        label: `${item.routeLongName || item.routeShortName || ''}${item.routeDirection ? ` (${item.routeDirection})` : ''}`,
         value: index,
+        disabled:
+          !(item.routeLongName || item.routeShortName) ||
+          !(item.routeMkt || item.routeDirection || item.id !== undefined),
       })),
     [linesQuery.data],
   )
@@ -92,6 +95,7 @@ const ComplaintModal = ({
       stationQuery.data?.map((stop, index) => ({
         label: stop.gtfsStopName || String(stop.gtfsStopCode || ''),
         value: index,
+        disabled: !stop.gtfsStopName || stop.gtfsStopCode === undefined,
       })),
     [stationQuery.data],
   )
@@ -100,11 +104,15 @@ const ComplaintModal = ({
       busOperatorQuery.data?.map(({ agencyName, operatorRef }) => ({
         label: agencyName,
         value: operatorRef,
+        disabled: !agencyName || operatorRef === undefined,
       })),
     [busOperatorQuery.data],
   )
 
-  const allRules = useMemo(() => createAllRules(form, t), [form, t])
+  const language = ['he', 'en', 'ru', 'ar'].includes(i18n.language.split('-')[0])
+    ? i18n.language.split('-')[0]
+    : 'he'
+  const allRules = useMemo(() => createAllRules(form, t, language), [form, t, language])
   const handleSelectOptions = useCallback(
     (name: ComplaintField) => {
       if (name === 'busOperator') return busOperatorOptions
@@ -119,12 +127,23 @@ const ComplaintModal = ({
     if (!complaintType) return null
     return complaintTypeMappings[complaintType].fields.map((name) => {
       const field = { ...allComplaintFields[name] }
-      if (field.type === 'Select')
-        field.props = { ...field.props, options: handleSelectOptions(name) }
+      if (field.type === 'Select') {
+        const options = handleSelectOptions(name)
+        field.props = { ...field.props, options }
+        field.rules = [
+          { required: true },
+          {
+            validator: (_, value) =>
+              options?.some((option) => option.value === value && !option.disabled)
+                ? Promise.resolve()
+                : Promise.reject(new Error(t('complaints.invalid_selection'))),
+          },
+        ]
+      }
       if (name === 'wait') field.rules = allRules.wait
       return <RenderField key={name} {...field} />
     })
-  }, [complaintType, handleSelectOptions, allRules])
+  }, [complaintType, handleSelectOptions, allRules, t])
 
   const complaintOptions = useMemo(
     () => complaintTypes.map((type) => ({ value: type, label: t(`complaints.${type}`) })),
@@ -136,15 +155,16 @@ const ComplaintModal = ({
       submitMutation.mutate({
         pairKey: pairKey.current,
         complaintsSendPostRequest: {
+          debug: values.debug ?? false,
           data: buildComplaintData(
             values,
             { agencies: busOperatorQuery.data, routes: linesQuery.data, stops: stationQuery.data },
-            i18n.language,
+            language,
           ),
         },
       })
     },
-    [busOperatorQuery.data, linesQuery.data, stationQuery.data, submitMutation],
+    [busOperatorQuery.data, linesQuery.data, stationQuery.data, submitMutation, language],
   )
 
   const onValuesChange = useCallback(

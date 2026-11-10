@@ -20,37 +20,20 @@ import type { Rule } from 'antd/es/form'
 import type { TextAreaProps } from 'antd/es/input'
 import type { TFunction } from 'i18next'
 import { useTranslation } from 'react-i18next'
-import dayjs from 'src/dayjs'
 import { complaintTypeMappings } from './ComplaintModalForms'
 import type { ComplaintTitleData } from './ComplaintModalTypes'
 
 const numberOnly = /^[0-9]+$/u
-const hebOnly = /^[\u0590-\u05FF\s'"()\-]+$/u
+const hebrewName = /^[א-ת\s'"()-]+$/u
+const multilingualName = /^[א-תA-Za-zء-ي\s'"()-]+$/u
 export const mobileOnly = /^05[0-689]-?[2-9][0-9]{6}$/u
 
 export function isValidIsraeliId(value: string) {
-  if (value.length !== 9 || !numberOnly.test(value)) return false
-  const sum = value
-    .split('')
-    .map((digit, index) => Number(digit) * ((index % 2) + 1))
-    .reduce((acc, n) => acc + Math.floor(n / 10) + (n % 10), 0)
-  return sum % 10 === 0
+  return value.length === 9 && numberOnly.test(value)
 }
 
-export const createAllRules = (form: FormInstance, t: TFunction) => ({
-  wait: [
-    { required: true },
-    {
-      // eslint-disable-next-line @typescript-eslint/require-await
-      validator: async (_: unknown, value?: [dayjs.Dayjs, dayjs.Dayjs]) => {
-        const eventHour = form.getFieldValue('eventHour') as dayjs.Dayjs | undefined
-        if (!value || !eventHour) return
-        if (dayjs(eventHour).isBefore(value[0]) || dayjs(eventHour).isAfter(value[1])) {
-          throw new Error(t('complaints.event_hour_between_wait'))
-        }
-      },
-    },
-  ] as Rule[],
+export const createAllRules = (_form: FormInstance, t: TFunction, lang = 'he') => ({
+  wait: [] as Rule[],
   id: [
     { required: true },
     {
@@ -66,7 +49,7 @@ export const createAllRules = (form: FormInstance, t: TFunction) => ({
       // eslint-disable-next-line @typescript-eslint/require-await
       validator: async (_: unknown, value?: string) => {
         if (!value) return
-        if (value.trim().length < 3 || value.length > 30) {
+        if (!value.trim() || value.length > 10) {
           throw new Error(t('complaints.invalid_passport'))
         }
       },
@@ -77,12 +60,18 @@ export const createAllRules = (form: FormInstance, t: TFunction) => ({
     { pattern: numberOnly, message: t('complaints.invalid_rav_kav_number') },
   ] as Rule[],
   firstName: [
-    { required: true },
-    { pattern: hebOnly, message: t('complaints.only_hebrew_allowed') },
+    { required: true, min: 1, max: 100 },
+    {
+      pattern: lang === 'he' ? hebrewName : multilingualName,
+      message: t('complaints.invalid_name'),
+    },
   ] as Rule[],
   lastName: [
-    { required: true },
-    { pattern: hebOnly, message: t('complaints.only_hebrew_allowed') },
+    { required: true, min: 1, max: 100 },
+    {
+      pattern: lang === 'he' ? hebrewName : multilingualName,
+      message: t('complaints.invalid_name'),
+    },
   ] as Rule[],
   mobile: [
     { required: true },
@@ -106,18 +95,12 @@ export type FormFieldProps<T extends FieldType = FieldType> = {
 const fieldComponents = {
   Input: (props: InputProps) => <Input {...props} style={fullWidth} />,
   TextArea: (props: TextAreaProps) => <Input.TextArea {...props} style={fullWidth} />,
-  DatePicker: (props: DatePickerProps) => (
-    <DatePicker
-      {...props}
-      style={fullWidth}
-      disabledDate={(date) => date.isAfter(dayjs().startOf('day').add(1, 'day'))}
-    />
-  ),
+  DatePicker: (props: DatePickerProps) => <DatePicker {...props} style={fullWidth} />,
   TimePicker: (props: TimePickerProps) => (
-    <TimePicker {...props} style={fullWidth} format="H:mm" minuteStep={5} />
+    <TimePicker {...props} style={fullWidth} format="HH:mm" />
   ),
   TimeRangePicker: (props: TimeRangePickerProps) => (
-    <TimePicker.RangePicker {...props} style={fullWidth} format="H:mm" minuteStep={5} />
+    <TimePicker.RangePicker {...props} style={fullWidth} format="HH:mm" />
   ),
   Checkbox: (props: CheckboxProps & { title?: string }) => (
     <Checkbox {...props}>{props.title}</Checkbox>
@@ -162,19 +145,19 @@ export const allComplaintFields = {
   passport: createField({
     name: 'passport_fild',
     type: 'Input',
-    props: { maxLength: 30 },
+    props: { maxLength: 10 },
   }),
   firstName: createField({
     name: 'firstName',
     type: 'Input',
     rules: [{ required: true }],
-    props: { maxLength: 25 },
+    props: { maxLength: 100 },
   }),
   lastName: createField({
     name: 'lastName',
     type: 'Input',
     rules: [{ required: true }],
-    props: { maxLength: 25 },
+    props: { maxLength: 100 },
   }),
   mobile: createField({
     name: 'mobile',
@@ -200,8 +183,8 @@ export const allComplaintFields = {
   details: createField({
     name: 'details',
     type: 'TextArea',
-    rules: [{ required: true, min: 2 }],
-    props: { rows: 4, maxLength: 1500 },
+    rules: [{ required: true, min: 5, max: 400 }, { pattern: /^[^&<>]*$/u }],
+    props: { rows: 4, maxLength: 400 },
   }),
   busOperator: createField({
     name: 'busOperator',
@@ -226,7 +209,6 @@ export const allComplaintFields = {
     name: 'lineNumberText',
     type: 'Input',
     rules: [{ required: true }],
-    props: { maxLength: 5 },
     pre_title: 'קו',
   }),
   eventHour: createField({
@@ -244,11 +226,11 @@ export const allComplaintFields = {
   wait: createField({
     name: 'wait',
     type: 'TimeRangePicker',
-    rules: [{ required: true }],
   }),
   raisingStation: createField({
     name: 'raisingStation',
     type: 'Select',
+    rules: [{ required: true }],
   }),
   ravKavNumber: createField({
     name: 'ravKavNumber',

@@ -349,6 +349,8 @@
     "id_fild": "ID Number",
     "passport_fild": "Passport Number",
     "invalid_passport": "Invalid passport number",
+    "invalid_selection": "Select an available option with a name and code.",
+    "invalid_name": "Use letters allowed for your preferred language, digits, spaces, apostrophes, quotes, parentheses or hyphens.",
     "email_confirmation": "Confirm Email",
     "email_mismatch": "Email addresses do not match",
     "vehicle_number": "Vehicle Number",

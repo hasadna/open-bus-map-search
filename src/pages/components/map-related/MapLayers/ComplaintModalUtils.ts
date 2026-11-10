@@ -11,12 +11,15 @@ import type { ComplaintFormValues, ComplaintUser } from './ComplaintModalTypes'
 
 export function buildComplaintPersonalDetails(values: Partial<ComplaintUser>) {
   const { documentType, id_fild, passport_fild, firstName, lastName, mobile, email } = values
+  const documentNumber = (documentType === 'passport' ? passport_fild : id_fild)?.trim()
+  if (!documentType || !documentNumber) throw new Error('Complaint identity document is required')
   return {
     firstName,
     lastName,
-    ...(documentType === 'passport' ? { passport: passport_fild } : { id: id_fild }),
+    ...(documentType === 'passport' ? { passport: documentNumber } : { id: documentNumber }),
     email,
     mobile,
+    ravkav: values.ravKavNumber || undefined,
   }
 }
 
@@ -38,6 +41,33 @@ export function buildComplaintData(
   const direction = values.direction !== undefined ? lookup.routes?.[values.direction] : undefined
   const station =
     values.raisingStation !== undefined ? lookup.stops?.[values.raisingStation] : undefined
+  const bus = {
+    driverName: values.driverName,
+    licenseNumber: values.licenseNumber,
+    lineNumberText: values.lineNumberText,
+    operator: {
+      dataText: agency?.agencyName,
+      dataCode: agency?.operatorRef === undefined ? undefined : String(agency.operatorRef),
+    },
+    direction: {
+      dataText: direction?.routeLongName || direction?.routeShortName,
+      dataCode:
+        direction?.routeMkt ||
+        direction?.routeDirection ||
+        (direction?.id === undefined ? undefined : String(direction.id)),
+    },
+    raisingStation: {
+      dataText: station?.gtfsStopName,
+      dataCode: station?.gtfsStopCode === undefined ? undefined : String(station.gtfsStopCode),
+    },
+  }
+  if (
+    !bus.lineNumberText ||
+    [bus.operator, bus.direction, bus.raisingStation].some(
+      (selection) => !selection.dataText || !selection.dataCode,
+    )
+  )
+    throw new Error('Complaint bus selections require a label and code')
   return {
     ...buildComplaintPersonalDetails(values),
     email: values.email,
@@ -49,27 +79,10 @@ export function buildComplaintData(
     transport: complaintTypeMappings[values.complaintType].transport,
     subject: complaintTypeMappings[values.complaintType].subject,
     title: buildComplaintTitle(values),
-    lang: lang as ComplaintsSendPostRequestDataLangEnum,
-    bus: {
-      driverName: values.driverName,
-      licenseNumber: values.licenseNumber,
-      lineNumberText: values.lineNumberText,
-      operator: agency
-        ? { dataText: agency.agencyName || '', dataCode: String(agency.operatorRef) }
-        : undefined,
-      direction: direction
-        ? {
-            dataText: direction.routeLongName || direction.routeShortName || '',
-            dataCode: direction.routeMkt || direction.routeDirection || String(direction.id),
-          }
-        : undefined,
-      raisingStation: station
-        ? {
-            dataText: station.gtfsStopName || '',
-            dataCode: String(station.gtfsStopCode),
-          }
-        : undefined,
-    },
+    lang: (lang && ['he', 'en', 'ru', 'ar'].includes(lang.split('-')[0])
+      ? lang.split('-')[0]
+      : 'he') as ComplaintsSendPostRequestDataLangEnum,
+    bus,
     train: undefined,
   } as ComplaintsSendPostRequestData
 }

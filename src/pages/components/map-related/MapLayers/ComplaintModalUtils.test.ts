@@ -46,6 +46,12 @@ describe('buildComplaintPersonalDetails', () => {
       passport: 'A1234567',
     })
   })
+
+  it.each(['id', 'passport'] as const)('rejects an empty %s', (documentType) => {
+    expect(() =>
+      buildComplaintPersonalDetails({ documentType, id_fild: ' ', passport_fild: ' ' }),
+    ).toThrow('Complaint identity document is required')
+  })
 })
 
 describe('complaint payload', () => {
@@ -65,6 +71,7 @@ describe('complaint payload', () => {
         eventHour: eventDate,
         wait: [eventDate.subtract(10, 'minute'), eventDate.add(10, 'minute')],
         lineNumberText: '2',
+        ravKavNumber: '12345678901',
       },
       {
         agencies: [{ date: new Date('2026-10-06'), operatorRef: 3, agencyName: 'Agency' }],
@@ -88,6 +95,8 @@ describe('complaint payload', () => {
       eventDate: eventDate.toDate(),
       id: '000000000',
       details: 'Late bus',
+      ravkav: '12345678901',
+      lang: 'he',
       bus: {
         operator: { dataText: 'Agency', dataCode: '3' },
         direction: { dataText: 'Route', dataCode: '123' },
@@ -100,15 +109,32 @@ describe('complaint payload', () => {
     expect(data.bus).not.toHaveProperty('toHour')
     expect(data.bus).not.toHaveProperty('eventDate')
     expect(data.bus).not.toHaveProperty('details')
+    expect(() =>
+      buildComplaintData(
+        {
+          complaintType: 'delay',
+          details: 'Late bus',
+          ...identityDetails,
+          documentType: 'id',
+          id_fild: '000000001',
+          eventDate,
+          eventHour: eventDate,
+          lineNumberText: '2',
+        },
+        {},
+      ),
+    ).toThrow('Complaint bus selections require a label and code')
     const pairKey = 'b6c4c7fe-35ef-401a-8f26-a1b137837fd1'
     const request = await new ComplaintsApi(new Configuration()).complaintsSendPostRequestOpts({
       pairKey,
-      complaintsSendPostRequest: { data },
+      complaintsSendPostRequest: { data, debug: true },
     })
     expect(request.headers).toMatchObject({ 'pair-key': pairKey })
     const body: unknown = JSON.parse(JSON.stringify(request.body))
     expect(body).toMatchObject({
+      debug: true,
       data: {
+        ravkav: '12345678901',
         email: identityDetails.email,
         eventDate: eventDate.toDate().toISOString(),
         bus: {
@@ -122,5 +148,28 @@ describe('complaint payload', () => {
     expect(body).not.toHaveProperty('data.data')
     expect(body).not.toHaveProperty('data.train')
     expect(body).not.toHaveProperty('data.taxi')
+    expect(body).toHaveProperty('data.id', '000000000')
+    expect(body).not.toHaveProperty('data.passport')
+
+    const passportData = { ...data }
+    Object.assign(
+      passportData,
+      buildComplaintPersonalDetails({
+        documentType: 'passport',
+        passport_fild: ' A1234567 ',
+      }),
+    )
+    Reflect.deleteProperty(passportData, 'id')
+    const passportRequest = await new ComplaintsApi(
+      new Configuration(),
+    ).complaintsSendPostRequestOpts({
+      pairKey,
+      complaintsSendPostRequest: {
+        data: passportData,
+      },
+    })
+    const passportBody: unknown = JSON.parse(JSON.stringify(passportRequest.body))
+    expect(passportBody).toHaveProperty('data.passport', 'A1234567')
+    expect(passportBody).not.toHaveProperty('data.id')
   })
 })

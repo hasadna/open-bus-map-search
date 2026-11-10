@@ -17,6 +17,7 @@ export interface ComplaintUser {
   mobile: string
   email: string
   emailConfirmation: string
+  ravKavNumber?: string
 }
 
 export interface ComplaintData {
