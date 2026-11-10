@@ -489,6 +489,8 @@
     "memory_available": "Available memory",
     "of_total": "{{part}} of {{total}}",
     "load_average": "Load (1 min / 15 min)",
+    "cpu_demand": "CPU demand vs. cores (1 min / 15 min)",
+    "load_on_cores": "Load {{load}} · {{count}} cores",
     "uptime": "ClickHouse uptime",
     "clickhouse_version": "ClickHouse version",
     "disk_low": "Only {{percent}}% of the disk is free. Merges need room to write, so the database should grow its volume or shed data soon.",

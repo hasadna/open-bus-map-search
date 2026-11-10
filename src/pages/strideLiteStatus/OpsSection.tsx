@@ -42,11 +42,15 @@ const useFormats = () => {
   })
   const days = new Intl.NumberFormat(lang, { style: 'unit', unit: 'day', maximumFractionDigits: 1 })
   const ms = new Intl.NumberFormat(lang, { style: 'unit', unit: 'millisecond' })
+  const percent = new Intl.NumberFormat(lang, { style: 'percent' })
+  const load = new Intl.NumberFormat(lang, { maximumFractionDigits: 1 })
   return {
     count: (n: number) => count.format(n),
     bytes: (n: number) => gigabytes.format(n / 1e9),
     days: (seconds: number) => days.format(seconds / 86_400),
     ms: (n: number) => ms.format(n),
+    percent: (share: number) => percent.format(share),
+    load: (n: number) => load.format(n),
   }
 }
 
@@ -61,6 +65,19 @@ export const NodeSection = () => {
   const disk = data.disks?.[0]
   const freeShare = disk ? disk.free / disk.total : null
   const failing = data.refreshes?.filter((r) => r.exception !== '') ?? []
+  const loadTile = ({ load1, load15, cpus }: NonNullable<typeof data.server>) => {
+    const raw = `${f.load(load1)} / ${f.load(load15)}`
+    if (!cpus) return { label: t('strideLite.load_average'), value: raw }
+    return {
+      label: t('strideLite.cpu_demand'),
+      value: `${f.percent(load1 / cpus)} / ${f.percent(load15 / cpus)}`,
+      detail: t('strideLite.load_on_cores', {
+        load: raw,
+        count: cpus,
+        interpolation: { escapeValue: false },
+      }),
+    }
+  }
   const tiles = [
     disk && {
       label: t('strideLite.disk_free'),
@@ -73,10 +90,7 @@ export const NodeSection = () => {
         total: f.bytes(data.server.memoryTotal),
       }),
     },
-    data.server && {
-      label: t('strideLite.load_average'),
-      value: `${data.server.load1.toFixed(1)} / ${data.server.load15.toFixed(1)}`,
-    },
+    data.server && loadTile(data.server),
     data.server && { label: t('strideLite.uptime'), value: f.days(data.server.uptimeSeconds) },
     data.server && { label: t('strideLite.clickhouse_version'), value: data.server.version },
   ].filter((tile) => !!tile)

@@ -72,7 +72,7 @@ const BackendSwitch = ({ onConfigurationChange }: { onConfigurationChange: () =>
     applyStrideApiBasePath(value)
     setBasePath(strideLiteApiBasePath())
     onConfigurationChange()
-    void queryClient.invalidateQueries()
+    void queryClient.resetQueries()
   }
 
   return (
@@ -107,7 +107,7 @@ const BackendSwitch = ({ onConfigurationChange }: { onConfigurationChange: () =>
               setStrideLiteOptedIn(event.target.checked)
               applyStrideApiBasePath()
               onConfigurationChange()
-              void queryClient.invalidateQueries()
+              void queryClient.resetQueries()
             }}
             slotProps={{ input: { 'aria-label': t('strideLite.backend_switch_label') } }}
           />

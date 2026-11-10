@@ -489,6 +489,8 @@
     "memory_available": "זיכרון פנוי",
     "of_total": "{{part}} מתוך {{total}}",
     "load_average": "עומס (דקה / 15 דקות)",
+    "cpu_demand": "ביקוש למעבד ביחס לליבות (דקה / 15 דקות)",
+    "load_on_cores": "עומס {{load}} · {{count}} ליבות",
     "uptime": "זמן פעילות של ClickHouse",
     "clickhouse_version": "גרסת ClickHouse",
     "disk_low": "רק {{percent}}% מהדיסק פנוי. מיזוגים צריכים מקום לכתוב, אז בקרוב צריך להגדיל את הכרך או לפנות נתונים.",

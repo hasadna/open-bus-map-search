@@ -1,5 +1,5 @@
 import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister'
-import { QueryClient } from '@tanstack/react-query'
+import { defaultShouldDehydrateQuery, QueryClient } from '@tanstack/react-query'
 import {
   type PersistedClient,
   PersistQueryClientProvider,
@@ -9,6 +9,7 @@ import { createStore, del, get, set } from 'idb-keyval'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import ReactGAImport from 'react-ga4'
+import { shouldPersistQueries } from './api/strideLite'
 import App from './App'
 import './locale/allTranslations'
 import './index.scss'
@@ -71,7 +72,15 @@ try {
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
   <React.StrictMode>
-    <PersistQueryClientProvider client={queryClient} persistOptions={{ persister }}>
+    <PersistQueryClientProvider
+      client={queryClient}
+      persistOptions={{
+        persister,
+        dehydrateOptions: {
+          shouldDehydrateQuery: (query) =>
+            shouldPersistQueries() && defaultShouldDehydrateQuery(query),
+        },
+      }}>
       <App />
     </PersistQueryClientProvider>
   </React.StrictMode>,

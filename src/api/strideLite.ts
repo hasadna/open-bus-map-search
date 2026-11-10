@@ -57,6 +57,10 @@ export const setStrideLiteOptedIn = (optedIn: boolean): void => {
   localStorage.setItem(OPT_IN_STORAGE_KEY, String(optedIn))
 }
 
+/** The experimental backend is still being filled, so an answer it gives today can be
+ *  wrong tomorrow, and none of its answers may resurface after switching back. */
+export const shouldPersistQueries = (): boolean => !isStrideLiteSelected()
+
 /** Which Stride base path the api-client should be built against. */
 export const strideApiBasePath = (): string =>
   isStrideLiteSelected() ? strideLiteApiBasePath() : (process.env.VITE_STRIDE_API ?? '')
@@ -177,6 +181,8 @@ export type StrideLiteOpsMetrics = {
     memoryAvailable: number
     load1: number
     load15: number
+    /** Absent from a backend older than the field. */
+    cpus: number | null
   } | null
   disks: { name: string; free: number; total: number }[] | null
   tables: { table: string; rows: number; bytes: number }[] | null
@@ -214,6 +220,7 @@ const parseOpsMetrics = (payload: unknown): StrideLiteOpsMetrics => {
           memoryAvailable: asNumber(server.OSMemoryAvailable, 'OSMemoryAvailable'),
           load1: asNumber(server.LoadAverage1, 'LoadAverage1'),
           load15: asNumber(server.LoadAverage15, 'LoadAverage15'),
+          cpus: server.cpus === undefined ? null : asNumber(server.cpus, 'cpus'),
         }
       : null,
     disks: section(raw.disks, (r) => ({

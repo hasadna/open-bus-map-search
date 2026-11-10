@@ -4,6 +4,7 @@ import {
   isStrideLiteSelected,
   setStrideLiteApiBasePath,
   setStrideLiteOptedIn,
+  shouldPersistQueries,
   strideApiBasePath,
   strideLiteApiBasePath,
 } from './strideLite'
@@ -76,5 +77,12 @@ describe('stride-lite opt-in', () => {
     setStrideLiteOptedIn(true)
     setStrideLiteOptedIn(false)
     expect(strideApiBasePath()).toBe(PRODUCTION)
+  })
+
+  test('nothing is kept across visits while the experimental backend is in use', () => {
+    vi.stubEnv('VITE_STRIDE_LITE_API', 'https://stride-lite.example')
+    expect(shouldPersistQueries()).toBe(true)
+    setStrideLiteOptedIn(true)
+    expect(shouldPersistQueries()).toBe(false)
   })
 })

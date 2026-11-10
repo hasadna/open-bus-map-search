@@ -37,10 +37,9 @@ const coverageDay = (day: string, overrides: Record<string, number> = {}) => ({
   ...overrides,
 })
 
-const renderPage = () =>
+const renderPage = (client = new QueryClient({ defaultOptions: { queries: { retry: false } } })) =>
   render(
-    <QueryClientProvider
-      client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
+    <QueryClientProvider client={client}>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <StrideLiteStatusPage />
       </LocalizationProvider>
@@ -197,6 +196,7 @@ describe('StrideLiteStatusPage', () => {
         OSMemoryAvailable: 31_236_685_824,
         LoadAverage1: 5.6,
         LoadAverage15: 4.73,
+        cpus: 2,
       },
       disks: [{ name: 'default', free_space: 40e9, total_space: 368e9, unreserved_space: 40e9 }],
       tables: [
@@ -256,6 +256,25 @@ describe('StrideLiteStatusPage', () => {
     expect(screen.getByText('(not an endpoint)')).toBeInTheDocument()
     expect(screen.getByText('All other addresses')).toBeInTheDocument()
     expect(screen.getByText('26.10.3.7')).toBeInTheDocument()
+    expect(screen.getByText('280% / 237%')).toBeInTheDocument()
+    expect(screen.getByText('Load 5.6 / 4.7 · 2 cores')).toBeInTheDocument()
     expect(await screen.findByText('newest snapshot loaded: 2026/11/10/12/59')).toBeInTheDocument()
+  })
+
+  test('switching backends forgets every answer the other one gave', () => {
+    vi.stubEnv('VITE_STRIDE_LITE_API', 'https://stride-lite.example')
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() => new Promise(() => {})),
+    )
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false } } })
+    client.setQueryData(['gtfs_routes', '2026-09-10'], [{ id: 1 }])
+
+    renderPage(client)
+    fireEvent.click(
+      screen.getByRole('switch', { name: 'Use the experimental API in this browser' }),
+    )
+
+    expect(client.getQueryData(['gtfs_routes', '2026-09-10'])).toBeUndefined()
   })
 })

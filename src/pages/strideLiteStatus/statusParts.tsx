@@ -1,7 +1,15 @@
 import { Alert, AlertTitle, Box, Typography } from '@mui/material'
 import { useTranslation } from 'react-i18next'
 
-export const StatTile = ({ label, value }: { label: string; value: string }) => (
+export const StatTile = ({
+  label,
+  value,
+  detail,
+}: {
+  label: string
+  value: string
+  detail?: string
+}) => (
   <Box sx={{ border: 1, borderColor: 'divider', borderRadius: 1, p: 1.5, height: '100%' }}>
     <Typography variant="caption" sx={{ color: 'text.secondary' }}>
       {label}
@@ -9,6 +17,11 @@ export const StatTile = ({ label, value }: { label: string; value: string }) => 
     <Typography variant="h6" sx={{ fontVariantNumeric: 'tabular-nums' }}>
       {value}
     </Typography>
+    {detail && (
+      <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+        {detail}
+      </Typography>
+    )}
   </Box>
 )
 
