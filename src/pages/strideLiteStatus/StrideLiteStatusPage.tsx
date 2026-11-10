@@ -23,12 +23,11 @@ import { useTranslation } from 'react-i18next'
 import { applyStrideApiBasePath } from 'src/api/apiConfig'
 import {
   isStrideLiteConfigured,
-  isStrideLiteOptedIn,
-  setStrideLiteOptedIn,
   strideLiteApiBasePath,
   strideLiteCoverageQueryOptions,
   strideLiteStatusQueryOptions,
 } from 'src/api/strideLite'
+import { useStrideLiteOptIn } from 'src/hooks/useStrideLiteOptIn'
 import { type CivilDate, civilDateToDayjs } from 'src/model/time/civilDate'
 import SkeletonLoader from 'src/shared/SkeletonLoader'
 import Widget from 'src/shared/Widget'
@@ -59,6 +58,7 @@ const BackendSwitch = ({ onConfigurationChange }: { onConfigurationChange: () =>
   const [basePath, setBasePath] = useState(strideLiteApiBasePath())
   const [urlError, setUrlError] = useState(false)
   const queryClient = useQueryClient()
+  const { optedIn, setOptedIn } = useStrideLiteOptIn()
 
   const saveBasePath = () => {
     const value = basePath.trim()
@@ -105,13 +105,11 @@ const BackendSwitch = ({ onConfigurationChange }: { onConfigurationChange: () =>
       <FormControlLabel
         control={
           <Switch
-            checked={isStrideLiteOptedIn()}
+            checked={optedIn}
             disabled={!isStrideLiteConfigured()}
             onChange={(event) => {
-              setStrideLiteOptedIn(event.target.checked)
-              applyStrideApiBasePath()
+              setOptedIn(event.target.checked)
               onConfigurationChange()
-              void queryClient.resetQueries()
             }}
             slotProps={{ input: { 'aria-label': t('strideLite.backend_switch_label') } }}
           />
