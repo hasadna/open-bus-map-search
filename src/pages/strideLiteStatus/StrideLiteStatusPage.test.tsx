@@ -184,4 +184,65 @@ describe('StrideLiteStatusPage', () => {
     expect(await screen.findByText(/non-numeric "snapshots"/)).toBeInTheDocument()
     expect(screen.queryByText('Days that need a look')).not.toBeInTheDocument()
   })
+
+  test('shows the server and its logs, and warns when the disk runs low', async () => {
+    vi.stubEnv('VITE_STRIDE_LITE_API', 'https://stride-lite.example')
+    const metrics = {
+      measured_at: '2026-11-10T13:00:00.000Z',
+      server: {
+        version: '26.10.3.7',
+        uptime_seconds: 17_594,
+        MemoryResident: 1_273_872_384,
+        OSMemoryTotal: 33_026_674_688,
+        OSMemoryAvailable: 31_236_685_824,
+        LoadAverage1: 5.6,
+        LoadAverage15: 4.73,
+      },
+      disks: [{ name: 'default', free_space: 40e9, total_space: 368e9, unreserved_space: 40e9 }],
+      tables: [
+        { table: 'siri_vehicle_location', rows: 7_537_296_286, bytes_on_disk: 136e9, parts: 17 },
+      ],
+      refreshes: { error: 'query failed' },
+      api_requests_last_hour: [
+        {
+          path: '/gtfs_routes/list',
+          requests: 12,
+          errors: 1,
+          p50_ms: 40,
+          p95_ms: 900,
+          max_ms: 1200,
+        },
+      ],
+      errors_last_day: [],
+    }
+    const logs = { catchup: { lines: ['newest snapshot loaded: 2026/11/10/12/59'] } }
+    vi.stubGlobal(
+      'fetch',
+      vi.fn((url: string) =>
+        Promise.resolve({
+          ok: true,
+          status: 200,
+          statusText: 'OK',
+          json: () =>
+            Promise.resolve(
+              url.includes('/ops/metrics')
+                ? metrics
+                : url.includes('/ops/logs')
+                  ? logs
+                  : url.includes('/coverage')
+                    ? [coverageDay('2026-11-07')]
+                    : STATUS,
+            ),
+        }),
+      ),
+    )
+
+    renderPage()
+
+    expect(await screen.findByText(/Only 11% of the disk is free/)).toBeInTheDocument()
+    expect(screen.getByText('siri_vehicle_location')).toBeInTheDocument()
+    expect(screen.getByText('/gtfs_routes/list')).toBeInTheDocument()
+    expect(screen.getByText('26.10.3.7')).toBeInTheDocument()
+    expect(await screen.findByText('newest snapshot loaded: 2026/11/10/12/59')).toBeInTheDocument()
+  })
 })

@@ -482,6 +482,32 @@
       "noLocations": "Snapshots were downloaded, but no vehicle locations were derived from them.",
       "shortDownload": "About {{missing}} of the day's ~1,430 one-minute snapshots are missing, so that much of the day has no data.",
       "quiet": "All the data arrived, but it holds only {{percent}}% of the bus activity expected for this day of the week."
-    }
+    },
+    "node_title": "The server",
+    "logs_title": "Logs",
+    "disk_free": "Free disk",
+    "memory_available": "Available memory",
+    "of_total": "{{part}} of {{total}}",
+    "load_average": "Load (1 min / 15 min)",
+    "uptime": "ClickHouse uptime",
+    "clickhouse_version": "ClickHouse version",
+    "disk_low": "Only {{percent}}% of the disk is free. Merges need room to write, so the database should grow its volume or shed data soon.",
+    "largest_tables": "Largest tables",
+    "table": "Table",
+    "rows": "Rows",
+    "size_on_disk": "On disk",
+    "api_last_hour": "API requests in the last hour",
+    "no_requests": "No requests in the last hour.",
+    "endpoint": "Endpoint",
+    "requests": "Requests",
+    "server_errors": "Server errors",
+    "errors_last_day": "Database errors in the last day",
+    "error_name": "Error",
+    "times": "Times",
+    "last_message": "Latest message",
+    "log_source": "Log",
+    "log_missing": "This log has not been written yet.",
+    "median": "Median",
+    "p95": "95th percentile"
   }
 }

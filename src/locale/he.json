@@ -482,6 +482,32 @@
       "noLocations": "ה־snapshots הורדו, אבל לא חולצו מהם מיקומי רכבים.",
       "shortDownload": "חסרים כ־{{missing}} מתוך כ־1,430 ה־snapshots של היום (אחד לדקה), כך שלחלק הזה של היום אין נתונים.",
       "quiet": "כל הנתונים הגיעו, אבל יש בהם רק {{percent}}% מכמות האוטובוסים הצפויה ליום הזה בשבוע."
-    }
+    },
+    "node_title": "השרת",
+    "logs_title": "לוגים",
+    "disk_free": "דיסק פנוי",
+    "memory_available": "זיכרון פנוי",
+    "of_total": "{{part}} מתוך {{total}}",
+    "load_average": "עומס (דקה / 15 דקות)",
+    "uptime": "זמן פעילות של ClickHouse",
+    "clickhouse_version": "גרסת ClickHouse",
+    "disk_low": "רק {{percent}}% מהדיסק פנוי. מיזוגים צריכים מקום לכתוב, אז בקרוב צריך להגדיל את הכרך או לפנות נתונים.",
+    "largest_tables": "הטבלאות הגדולות",
+    "table": "טבלה",
+    "rows": "שורות",
+    "size_on_disk": "בדיסק",
+    "api_last_hour": "בקשות ל-API בשעה האחרונה",
+    "no_requests": "לא היו בקשות בשעה האחרונה.",
+    "endpoint": "נקודת קצה",
+    "requests": "בקשות",
+    "server_errors": "שגיאות שרת",
+    "errors_last_day": "שגיאות מסד הנתונים ביממה האחרונה",
+    "error_name": "שגיאה",
+    "times": "פעמים",
+    "last_message": "ההודעה האחרונה",
+    "log_source": "לוג",
+    "log_missing": "הלוג הזה עוד לא נכתב.",
+    "median": "חציון",
+    "p95": "אחוזון 95"
   }
 }

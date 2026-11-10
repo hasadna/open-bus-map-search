@@ -164,3 +164,115 @@ export const strideLiteCoverageQueryOptions = (limit: number) =>
     retry: false,
     enabled: isStrideLiteConfigured(),
   })
+
+/** `GET /ops/metrics`. A section the backend could not read arrives as `{ error }` and is
+ *  kept as `null`, so one failing system table does not blank the whole panel. */
+export type StrideLiteOpsMetrics = {
+  measuredAt: string
+  server: {
+    version: string
+    uptimeSeconds: number
+    memoryResident: number
+    memoryTotal: number
+    memoryAvailable: number
+    load1: number
+    load15: number
+  } | null
+  disks: { name: string; free: number; total: number }[] | null
+  tables: { table: string; rows: number; bytes: number }[] | null
+  refreshes:
+    { view: string; status: string; lastSuccessTime: string | null; exception: string }[] | null
+  apiRequests:
+    | { path: string; requests: number; errors: number; p50: number; p95: number; max: number }[]
+    | null
+  errors: { name: string; count: number; lastErrorTime: string; message: string }[] | null
+}
+
+const section = <T>(value: unknown, parse: (row: Record<string, unknown>) => T): T[] | null =>
+  Array.isArray(value) ? value.map((row) => parse(asRecord(row))) : null
+
+const parseOpsMetrics = (payload: unknown): StrideLiteOpsMetrics => {
+  const raw = asRecord(payload)
+  const server = raw.server && !('error' in asRecord(raw.server)) ? asRecord(raw.server) : undefined
+  return {
+    measuredAt: asString(raw.measured_at, 'measured_at'),
+    server: server
+      ? {
+          version: asString(server.version, 'version'),
+          uptimeSeconds: asNumber(server.uptime_seconds, 'uptime_seconds'),
+          memoryResident: asNumber(server.MemoryResident, 'MemoryResident'),
+          memoryTotal: asNumber(server.OSMemoryTotal, 'OSMemoryTotal'),
+          memoryAvailable: asNumber(server.OSMemoryAvailable, 'OSMemoryAvailable'),
+          load1: asNumber(server.LoadAverage1, 'LoadAverage1'),
+          load15: asNumber(server.LoadAverage15, 'LoadAverage15'),
+        }
+      : null,
+    disks: section(raw.disks, (r) => ({
+      name: asString(r.name, 'name'),
+      free: asNumber(r.free_space, 'free_space'),
+      total: asNumber(r.total_space, 'total_space'),
+    })),
+    tables: section(raw.tables, (r) => ({
+      table: asString(r.table, 'table'),
+      rows: asNumber(r.rows, 'rows'),
+      bytes: asNumber(r.bytes_on_disk, 'bytes_on_disk'),
+    })),
+    refreshes: section(raw.refreshes, (r) => ({
+      view: asString(r.view, 'view'),
+      status: asString(r.status, 'status'),
+      lastSuccessTime: asNullableString(r.last_success_time, 'last_success_time'),
+      exception: asString(r.exception, 'exception'),
+    })),
+    apiRequests: section(raw.api_requests_last_hour, (r) => ({
+      path: asString(r.path, 'path'),
+      requests: asNumber(r.requests, 'requests'),
+      errors: asNumber(r.errors, 'errors'),
+      p50: asNumber(r.p50_ms, 'p50_ms'),
+      p95: asNumber(r.p95_ms, 'p95_ms'),
+      max: asNumber(r.max_ms, 'max_ms'),
+    })),
+    errors: section(raw.errors_last_day, (r) => ({
+      name: asString(r.name, 'name'),
+      count: asNumber(r.value, 'value'),
+      lastErrorTime: asString(r.last_error_time, 'last_error_time'),
+      message: asString(r.last_error_message, 'last_error_message'),
+    })),
+  }
+}
+
+/** The backend caches these for 15 s, so polling faster only repeats the same answer. */
+const OPS_REFRESH_MS = 30_000
+
+export const strideLiteOpsMetricsQueryOptions = () =>
+  queryOptions({
+    queryKey: ['strideLite', 'opsMetrics', strideLiteApiBasePath()],
+    queryFn: async () => parseOpsMetrics(await fetchJson('/ops/metrics')),
+    retry: false,
+    refetchInterval: OPS_REFRESH_MS,
+    enabled: isStrideLiteConfigured(),
+  })
+
+/** The fixed set `/ops/logs` serves; the backend refuses any other. */
+export const STRIDE_LITE_LOG_SOURCES = [
+  'catchup',
+  'gtfs',
+  'first-load',
+  'clickhouse',
+  'api',
+] as const
+export type StrideLiteLogSource = (typeof STRIDE_LITE_LOG_SOURCES)[number]
+
+export const strideLiteOpsLogsQueryOptions = (source: StrideLiteLogSource, lines: number) =>
+  queryOptions({
+    queryKey: ['strideLite', 'opsLogs', strideLiteApiBasePath(), source, lines],
+    queryFn: async () => {
+      const payload = asRecord(await fetchJson(`/ops/logs?source=${source}&lines=${lines}`))
+      const entry = asRecord(payload[source])
+      if ('error' in entry) return { lines: [], missing: asString(entry.error, 'error') }
+      if (!Array.isArray(entry.lines)) throw new Error('stride-lite /ops/logs returned no lines')
+      return { lines: entry.lines.map((line) => asString(line, 'line')), missing: null }
+    },
+    retry: false,
+    refetchInterval: OPS_REFRESH_MS,
+    enabled: isStrideLiteConfigured(),
+  })

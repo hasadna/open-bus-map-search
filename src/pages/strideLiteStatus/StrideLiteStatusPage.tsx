@@ -43,21 +43,12 @@ import {
   withHealthOldestFirst,
 } from './coverageHealth'
 import { healthColor, HealthIcon, healthLabelKey, useHealthReasonText } from './healthDisplay'
+import { LogsSection, NodeSection } from './OpsSection'
+import { StatTile, Unreachable } from './statusParts'
 
 /** Everything the backend has: one row per day, so even years of it stay small, and a range
  *  picked here is a filter rather than a new request. */
 const COVERAGE_LIMIT = 10_000
-
-const StatTile = ({ label, value }: { label: string; value: string }) => (
-  <Box sx={{ border: 1, borderColor: 'divider', borderRadius: 1, p: 1.5, height: '100%' }}>
-    <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-      {label}
-    </Typography>
-    <Typography variant="h6" sx={{ fontVariantNumeric: 'tabular-nums' }}>
-      {value}
-    </Typography>
-  </Box>
-)
 
 const BackendSwitch = ({ onConfigurationChange }: { onConfigurationChange: () => void }) => {
   const { t } = useTranslation()
@@ -134,16 +125,6 @@ const BackendSwitch = ({ onConfigurationChange }: { onConfigurationChange: () =>
         </Typography>
       )}
     </Stack>
-  )
-}
-
-const Unreachable = ({ error }: { error: Error }) => {
-  const { t } = useTranslation()
-  return (
-    <Alert severity="warning">
-      <AlertTitle>{t('strideLite.unreachable')}</AlertTitle>
-      <Typography variant="body2">{error.message}</Typography>
-    </Alert>
   )
 }
 
@@ -318,6 +299,12 @@ export const StrideLiteStatusPage = () => {
           </Widget>
           <Widget title={t('strideLite.coverage_title')}>
             <CoverageSection />
+          </Widget>
+          <Widget title={t('strideLite.node_title')}>
+            <NodeSection />
+          </Widget>
+          <Widget title={t('strideLite.logs_title')}>
+            <LogsSection />
           </Widget>
         </>
       ) : (
