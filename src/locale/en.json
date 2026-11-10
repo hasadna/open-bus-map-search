@@ -508,6 +508,8 @@
     "log_source": "Log",
     "log_missing": "This log has not been written yet.",
     "median": "Median",
-    "p95": "95th percentile"
+    "p95": "95th percentile",
+    "other_paths": "All other addresses",
+    "not_endpoint": "(not an endpoint)"
   }
 }

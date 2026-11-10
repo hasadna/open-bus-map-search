@@ -508,6 +508,8 @@
     "log_source": "לוג",
     "log_missing": "הלוג הזה עוד לא נכתב.",
     "median": "חציון",
-    "p95": "אחוזון 95"
+    "p95": "אחוזון 95",
+    "other_paths": "כל שאר הכתובות",
+    "not_endpoint": "(לא endpoint)"
   }
 }

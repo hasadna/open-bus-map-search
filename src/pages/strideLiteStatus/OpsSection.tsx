@@ -28,6 +28,8 @@ import { StatTile, Unreachable } from './statusParts'
 const LOW_DISK_SHARE = 0.15
 const LARGEST_TABLES = 8
 const LOG_LINES = 200
+/** The row the backend folds every unnamed non-endpoint path into. */
+const OTHER_PATHS = 'other'
 
 const useFormats = () => {
   const { i18n } = useTranslation()
@@ -144,7 +146,28 @@ export const NodeSection = () => {
               <TableBody>
                 {data.apiRequests.map((row) => (
                   <TableRow key={row.path}>
-                    <TableCell sx={{ fontFamily: 'monospace' }}>{row.path}</TableCell>
+                    {row.path === OTHER_PATHS ? (
+                      <TableCell sx={{ color: 'text.secondary' }}>
+                        {t('strideLite.other_paths')}
+                      </TableCell>
+                    ) : (
+                      <TableCell
+                        sx={{
+                          fontFamily: 'monospace',
+                          color: row.endpoint ? 'text.primary' : 'text.secondary',
+                          wordBreak: 'break-all',
+                        }}>
+                        {row.path}
+                        {!row.endpoint && (
+                          <Typography
+                            component="span"
+                            variant="caption"
+                            sx={{ fontFamily: 'inherit', ms: 1 }}>
+                            {t('strideLite.not_endpoint')}
+                          </Typography>
+                        )}
+                      </TableCell>
+                    )}
                     <TableCell align="right">{f.count(row.requests)}</TableCell>
                     <TableCell align="right">{f.count(row.errors)}</TableCell>
                     <TableCell align="right">{f.ms(row.p50)}</TableCell>

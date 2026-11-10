@@ -212,6 +212,16 @@ describe('StrideLiteStatusPage', () => {
           p95_ms: 900,
           max_ms: 1200,
         },
+        {
+          path: '/wp-admin/setup.php',
+          endpoint: false,
+          requests: 4,
+          errors: 0,
+          p50_ms: 1,
+          p95_ms: 1,
+          max_ms: 1,
+        },
+        { path: 'other', endpoint: false, requests: 2, errors: 0, p50_ms: 1, p95_ms: 1, max_ms: 1 },
       ],
       errors_last_day: [],
     }
@@ -242,6 +252,9 @@ describe('StrideLiteStatusPage', () => {
     expect(await screen.findByText(/Only 11% of the disk is free/)).toBeInTheDocument()
     expect(screen.getByText('siri_vehicle_location')).toBeInTheDocument()
     expect(screen.getByText('/gtfs_routes/list')).toBeInTheDocument()
+    expect(screen.getByText('/wp-admin/setup.php')).toBeInTheDocument()
+    expect(screen.getByText('(not an endpoint)')).toBeInTheDocument()
+    expect(screen.getByText('All other addresses')).toBeInTheDocument()
     expect(screen.getByText('26.10.3.7')).toBeInTheDocument()
     expect(await screen.findByText('newest snapshot loaded: 2026/11/10/12/59')).toBeInTheDocument()
   })

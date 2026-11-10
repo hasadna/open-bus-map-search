@@ -183,7 +183,16 @@ export type StrideLiteOpsMetrics = {
   refreshes:
     { view: string; status: string; lastSuccessTime: string | null; exception: string }[] | null
   apiRequests:
-    | { path: string; requests: number; errors: number; p50: number; p95: number; max: number }[]
+    | {
+        path: string
+        /** False for a path the API does not serve: a scanner, a typo, a favicon. */
+        endpoint: boolean
+        requests: number
+        errors: number
+        p50: number
+        p95: number
+        max: number
+      }[]
     | null
   errors: { name: string; count: number; lastErrorTime: string; message: string }[] | null
 }
@@ -225,6 +234,8 @@ const parseOpsMetrics = (payload: unknown): StrideLiteOpsMetrics => {
     })),
     apiRequests: section(raw.api_requests_last_hour, (r) => ({
       path: asString(r.path, 'path'),
+      // Older backends send no flag and only ever one non-endpoint row, "other".
+      endpoint: r.endpoint === undefined ? r.path !== 'other' : r.endpoint === true,
       requests: asNumber(r.requests, 'requests'),
       errors: asNumber(r.errors, 'errors'),
       p50: asNumber(r.p50_ms, 'p50_ms'),
