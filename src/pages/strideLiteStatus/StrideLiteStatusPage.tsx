@@ -34,6 +34,7 @@ import SkeletonLoader from 'src/shared/SkeletonLoader'
 import Widget from 'src/shared/Widget'
 import { CivilDateSelector } from '../components/CivilDateSelector'
 import { PageContainer } from '../components/PageContainer'
+import { ActivitySection } from './ActivitySection'
 import { CoverageChart } from './CoverageChart'
 import {
   expectedSnapshots,
@@ -44,7 +45,10 @@ import {
 } from './coverageHealth'
 import { healthColor, HealthIcon, healthLabelKey, useHealthReasonText } from './healthDisplay'
 import { LogsSection, NodeSection } from './OpsSection'
+import { RefreshBar } from './RefreshBar'
+import { RequestsSection } from './RequestsSection'
 import { StatTile, Unreachable } from './statusParts'
+import { StorageSection } from './StorageSection'
 
 /** Everything the backend has: one row per day, so even years of it stay small, and a range
  *  picked here is a filter rather than a new request. */
@@ -300,8 +304,18 @@ export const StrideLiteStatusPage = () => {
           <Widget title={t('strideLite.coverage_title')}>
             <CoverageSection />
           </Widget>
+          <RefreshBar />
           <Widget title={t('strideLite.node_title')}>
             <NodeSection />
+          </Widget>
+          <Widget title={t('strideLite.activity_title')}>
+            <ActivitySection />
+          </Widget>
+          <Widget title={t('strideLite.storage_title')}>
+            <StorageSection />
+          </Widget>
+          <Widget title={t('strideLite.api_requests_title')}>
+            <RequestsSection />
           </Widget>
           <Widget title={t('strideLite.logs_title')}>
             <LogsSection />

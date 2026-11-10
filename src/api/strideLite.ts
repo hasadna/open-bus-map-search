@@ -187,7 +187,67 @@ export type StrideLiteOpsMetrics = {
   disks: { name: string; free: number; total: number }[] | null
   tables: { table: string; rows: number; bytes: number }[] | null
   refreshes:
-    { view: string; status: string; lastSuccessTime: string | null; exception: string }[] | null
+    | {
+        view: string
+        status: string
+        lastSuccessTime: string | null
+        lastRefreshTime: string | null
+        exception: string
+      }[]
+    | null
+  /** A part's own bytes, by what they are for. Its projections are counted only in `projections`. */
+  storageByTable:
+    | {
+        table: string
+        rows: number
+        parts: number
+        bytes: number
+        columns: number
+        columnsUncompressed: number
+        primaryKey: number
+        marks: number
+        skipIndexes: number
+        projections: number
+      }[]
+    | null
+  projections: { table: string; projection: string; rows: number; bytes: number }[] | null
+  skipIndexes:
+    | {
+        table: string
+        name: string
+        type: string
+        expr: string
+        granularity: number
+        bytes: number
+      }[]
+    | null
+  columns:
+    | {
+        table: string
+        column: string
+        type: string
+        codec: string
+        compressed: number
+        uncompressed: number
+      }[]
+    | null
+  /** Bytes on disk that serve no query: parts awaiting deletion, set-aside parts, other databases. */
+  storageNotServed: { kind: string; table: string; parts: number; bytes: number }[] | null
+  merges:
+    | { table: string; elapsed: number; progress: number; isMutation: boolean; bytes: number }[]
+    | null
+  mutations: { table: string; command: string; partsToDo: number; isDone: boolean }[] | null
+  /** Running queries; the shape has every literal replaced by `?`. */
+  processes:
+    | {
+        kind: string
+        elapsed: number
+        readRows: number
+        memory: number
+        internal: boolean
+        shape: string
+      }[]
+    | null
   apiRequests:
     | {
         path: string
@@ -237,18 +297,71 @@ const parseOpsMetrics = (payload: unknown): StrideLiteOpsMetrics => {
       view: asString(r.view, 'view'),
       status: asString(r.status, 'status'),
       lastSuccessTime: asNullableString(r.last_success_time, 'last_success_time'),
+      lastRefreshTime: asNullableString(r.last_refresh_time, 'last_refresh_time'),
       exception: asString(r.exception, 'exception'),
     })),
-    apiRequests: section(raw.api_requests_last_hour, (r) => ({
-      path: asString(r.path, 'path'),
-      // Older backends send no flag and only ever one non-endpoint row, "other".
-      endpoint: r.endpoint === undefined ? r.path !== 'other' : r.endpoint === true,
-      requests: asNumber(r.requests, 'requests'),
-      errors: asNumber(r.errors, 'errors'),
-      p50: asNumber(r.p50_ms, 'p50_ms'),
-      p95: asNumber(r.p95_ms, 'p95_ms'),
-      max: asNumber(r.max_ms, 'max_ms'),
+    storageByTable: section(raw.storage_by_table, (r) => ({
+      table: asString(r.table, 'table'),
+      rows: asNumber(r.rows, 'rows'),
+      parts: asNumber(r.parts, 'parts'),
+      bytes: asNumber(r.bytes_on_disk, 'bytes_on_disk'),
+      columns: asNumber(r.columns_bytes, 'columns_bytes'),
+      columnsUncompressed: asNumber(r.columns_uncompressed_bytes, 'columns_uncompressed_bytes'),
+      primaryKey: asNumber(r.primary_key_bytes, 'primary_key_bytes'),
+      marks: asNumber(r.marks_bytes, 'marks_bytes'),
+      skipIndexes: asNumber(r.skip_index_bytes, 'skip_index_bytes'),
+      projections: asNumber(r.projection_bytes, 'projection_bytes'),
     })),
+    projections: section(raw.projections, (r) => ({
+      table: asString(r.table, 'table'),
+      projection: asString(r.projection, 'projection'),
+      rows: asNumber(r.rows, 'rows'),
+      bytes: asNumber(r.bytes_on_disk, 'bytes_on_disk'),
+    })),
+    skipIndexes: section(raw.skip_indexes, (r) => ({
+      table: asString(r.table, 'table'),
+      name: asString(r.name, 'name'),
+      type: asString(r.type_full, 'type_full'),
+      expr: asString(r.expr, 'expr'),
+      granularity: asNumber(r.granularity, 'granularity'),
+      bytes: asNumber(r.bytes_on_disk, 'bytes_on_disk'),
+    })),
+    columns: section(raw.columns, (r) => ({
+      table: asString(r.table, 'table'),
+      column: asString(r.column, 'column'),
+      type: asString(r.type, 'type'),
+      codec: asString(r.compression_codec, 'compression_codec'),
+      compressed: asNumber(r.data_compressed_bytes, 'data_compressed_bytes'),
+      uncompressed: asNumber(r.data_uncompressed_bytes, 'data_uncompressed_bytes'),
+    })),
+    storageNotServed: section(raw.storage_not_served, (r) => ({
+      kind: asString(r.kind, 'kind'),
+      table: asString(r.table, 'table'),
+      parts: asNumber(r.parts, 'parts'),
+      bytes: asNumber(r.bytes_on_disk, 'bytes_on_disk'),
+    })),
+    merges: section(raw.merges, (r) => ({
+      table: asString(r.table, 'table'),
+      elapsed: asNumber(r.elapsed, 'elapsed'),
+      progress: asNumber(r.progress, 'progress'),
+      isMutation: r.is_mutation === 1 || r.is_mutation === true,
+      bytes: asNumber(r.total_size_bytes_compressed, 'total_size_bytes_compressed'),
+    })),
+    mutations: section(raw.mutations, (r) => ({
+      table: asString(r.table, 'table'),
+      command: asString(r.command, 'command'),
+      partsToDo: asNumber(r.parts_to_do, 'parts_to_do'),
+      isDone: r.is_done === 1 || r.is_done === true,
+    })),
+    processes: section(raw.processes, (r) => ({
+      kind: asString(r.query_kind, 'query_kind'),
+      elapsed: asNumber(r.elapsed, 'elapsed'),
+      readRows: asNumber(r.read_rows, 'read_rows'),
+      memory: asNumber(r.memory_usage, 'memory_usage'),
+      internal: r.is_internal === 1 || r.is_internal === true,
+      shape: asString(r.query_shape, 'query_shape'),
+    })),
+    apiRequests: section(raw.api_requests_last_hour, parseRequestRow),
     errors: section(raw.errors_last_day, (r) => ({
       name: asString(r.name, 'name'),
       count: asNumber(r.value, 'value'),
@@ -265,6 +378,54 @@ export const strideLiteOpsMetricsQueryOptions = () =>
   queryOptions({
     queryKey: ['strideLite', 'opsMetrics', strideLiteApiBasePath()],
     queryFn: async () => parseOpsMetrics(await fetchJson('/ops/metrics')),
+    retry: false,
+    refetchInterval: OPS_REFRESH_MS,
+    enabled: isStrideLiteConfigured(),
+  })
+
+export const STRIDE_LITE_REQUEST_WINDOWS = ['hour', 'day', 'week'] as const
+export type StrideLiteRequestWindow = (typeof STRIDE_LITE_REQUEST_WINDOWS)[number]
+
+type ApiRequestRow = NonNullable<StrideLiteOpsMetrics['apiRequests']>[number]
+
+/** `GET /ops/requests`. The API keeps requests in memory, so `from` — where that memory
+ *  starts — can be later than the window's start, after a restart. */
+export type StrideLiteRequests = {
+  from: string
+  to: string
+  buckets: { start: string; requests: number; errors: number; p95: number | null }[]
+  rows: ApiRequestRow[]
+}
+
+const parseRequestRow = (r: Record<string, unknown>): ApiRequestRow => ({
+  path: asString(r.path, 'path'),
+  // Older backends send no flag and only ever one non-endpoint row, "other".
+  endpoint: r.endpoint === undefined ? r.path !== 'other' : r.endpoint === true,
+  requests: asNumber(r.requests, 'requests'),
+  errors: asNumber(r.errors, 'errors'),
+  p50: asNumber(r.p50_ms, 'p50_ms'),
+  p95: asNumber(r.p95_ms, 'p95_ms'),
+  max: asNumber(r.max_ms, 'max_ms'),
+})
+
+export const strideLiteOpsRequestsQueryOptions = (window: StrideLiteRequestWindow) =>
+  queryOptions({
+    queryKey: ['strideLite', 'opsRequests', strideLiteApiBasePath(), window],
+    queryFn: async (): Promise<StrideLiteRequests> => {
+      const raw = asRecord(await fetchJson(`/ops/requests?window=${window}`))
+      return {
+        from: asString(raw.from, 'from'),
+        to: asString(raw.to, 'to'),
+        buckets:
+          section(raw.buckets, (b) => ({
+            start: asString(b.start, 'start'),
+            requests: asNumber(b.requests, 'requests'),
+            errors: asNumber(b.errors, 'errors'),
+            p95: b.p95_ms === null ? null : asNumber(b.p95_ms, 'p95_ms'),
+          })) ?? [],
+        rows: section(raw.rows, parseRequestRow) ?? [],
+      }
+    },
     retry: false,
     refetchInterval: OPS_REFRESH_MS,
     enabled: isStrideLiteConfigured(),

@@ -22,37 +22,12 @@ import {
   strideLiteOpsMetricsQueryOptions,
 } from 'src/api/strideLite'
 import SkeletonLoader from 'src/shared/SkeletonLoader'
+import { useFormats } from './formats'
 import { StatTile, Unreachable } from './statusParts'
 
 /** Below this share of free disk a merge may not find room to write its result. */
 const LOW_DISK_SHARE = 0.15
-const LARGEST_TABLES = 8
 const LOG_LINES = 200
-/** The row the backend folds every unnamed non-endpoint path into. */
-const OTHER_PATHS = 'other'
-
-const useFormats = () => {
-  const { i18n } = useTranslation()
-  const lang = i18n.language
-  const count = new Intl.NumberFormat(lang)
-  const gigabytes = new Intl.NumberFormat(lang, {
-    style: 'unit',
-    unit: 'gigabyte',
-    maximumFractionDigits: 1,
-  })
-  const days = new Intl.NumberFormat(lang, { style: 'unit', unit: 'day', maximumFractionDigits: 1 })
-  const ms = new Intl.NumberFormat(lang, { style: 'unit', unit: 'millisecond' })
-  const percent = new Intl.NumberFormat(lang, { style: 'percent' })
-  const load = new Intl.NumberFormat(lang, { maximumFractionDigits: 1 })
-  return {
-    count: (n: number) => count.format(n),
-    bytes: (n: number) => gigabytes.format(n / 1e9),
-    days: (seconds: number) => days.format(seconds / 86_400),
-    ms: (n: number) => ms.format(n),
-    percent: (share: number) => percent.format(share),
-    load: (n: number) => load.format(n),
-  }
-}
 
 export const NodeSection = () => {
   const { t } = useTranslation()
@@ -66,7 +41,7 @@ export const NodeSection = () => {
   const freeShare = disk ? disk.free / disk.total : null
   const failing = data.refreshes?.filter((r) => r.exception !== '') ?? []
   const loadTile = ({ load1, load15, cpus }: NonNullable<typeof data.server>) => {
-    const raw = `${f.load(load1)} / ${f.load(load15)}`
+    const raw = `${f.decimal(load1)} / ${f.decimal(load15)}`
     if (!cpus) return { label: t('strideLite.load_average'), value: raw }
     return {
       label: t('strideLite.cpu_demand'),
@@ -114,85 +89,6 @@ export const NodeSection = () => {
           </Grid>
         ))}
       </Grid>
-
-      {data.tables && (
-        <Box>
-          <Typography variant="subtitle1">{t('strideLite.largest_tables')}</Typography>
-          <Table size="small" sx={{ fontVariantNumeric: 'tabular-nums' }}>
-            <TableHead>
-              <TableRow>
-                <TableCell>{t('strideLite.table')}</TableCell>
-                <TableCell align="right">{t('strideLite.rows')}</TableCell>
-                <TableCell align="right">{t('strideLite.size_on_disk')}</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {data.tables.slice(0, LARGEST_TABLES).map((row) => (
-                <TableRow key={row.table}>
-                  <TableCell>{row.table}</TableCell>
-                  <TableCell align="right">{f.count(row.rows)}</TableCell>
-                  <TableCell align="right">{f.bytes(row.bytes)}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </Box>
-      )}
-
-      {data.apiRequests && (
-        <Box>
-          <Typography variant="subtitle1">{t('strideLite.api_last_hour')}</Typography>
-          {data.apiRequests.length === 0 ? (
-            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-              {t('strideLite.no_requests')}
-            </Typography>
-          ) : (
-            <Table size="small" sx={{ fontVariantNumeric: 'tabular-nums' }}>
-              <TableHead>
-                <TableRow>
-                  <TableCell>{t('strideLite.endpoint')}</TableCell>
-                  <TableCell align="right">{t('strideLite.requests')}</TableCell>
-                  <TableCell align="right">{t('strideLite.server_errors')}</TableCell>
-                  <TableCell align="right">{t('strideLite.median')}</TableCell>
-                  <TableCell align="right">{t('strideLite.p95')}</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {data.apiRequests.map((row) => (
-                  <TableRow key={row.path}>
-                    {row.path === OTHER_PATHS ? (
-                      <TableCell sx={{ color: 'text.secondary' }}>
-                        {t('strideLite.other_paths')}
-                      </TableCell>
-                    ) : (
-                      <TableCell
-                        sx={{
-                          fontFamily: 'monospace',
-                          color: row.endpoint ? 'text.primary' : 'text.secondary',
-                          wordBreak: 'break-all',
-                        }}>
-                        {row.path}
-                        {!row.endpoint && (
-                          <Typography
-                            component="span"
-                            variant="caption"
-                            sx={{ fontFamily: 'inherit', ms: 1 }}>
-                            {t('strideLite.not_endpoint')}
-                          </Typography>
-                        )}
-                      </TableCell>
-                    )}
-                    <TableCell align="right">{f.count(row.requests)}</TableCell>
-                    <TableCell align="right">{f.count(row.errors)}</TableCell>
-                    <TableCell align="right">{f.ms(row.p50)}</TableCell>
-                    <TableCell align="right">{f.ms(row.p95)}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
-        </Box>
-      )}
 
       {data.errors && data.errors.length > 0 && (
         <Box>

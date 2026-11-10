@@ -277,4 +277,154 @@ describe('StrideLiteStatusPage', () => {
 
     expect(client.getQueryData(['gtfs_routes', '2026-09-10'])).toBeUndefined()
   })
+
+  test('shows where the disk goes, what runs now, and requests over a chosen window', async () => {
+    vi.stubEnv('VITE_STRIDE_LITE_API', 'https://stride-lite.example')
+    const metrics = {
+      measured_at: '2026-11-10T18:00:00.000Z',
+      server: null,
+      disks: [{ name: 'default', free_space: 60e9, total_space: 368e9, unreserved_space: 60e9 }],
+      tables: [],
+      storage_by_table: [
+        {
+          table: 'siri_ride_stop',
+          rows: 3_225_589_224,
+          parts: 20,
+          bytes_on_disk: 70e9,
+          columns_bytes: 26e9,
+          columns_uncompressed_bytes: 80e9,
+          primary_key_bytes: 1e6,
+          marks_bytes: 9e6,
+          skip_index_bytes: 0,
+          projection_bytes: 43e9,
+        },
+      ],
+      projections: [
+        {
+          table: 'siri_ride_stop',
+          projection: 'by_gtfs_stop',
+          rows: 3_225_589_224,
+          bytes_on_disk: 21.6e9,
+        },
+      ],
+      skip_indexes: [
+        {
+          table: 'gtfs_ride_stop',
+          name: 'idx_tight',
+          type_full: 'bloom_filter(0.0001)',
+          expr: 'gtfs_ride_id',
+          granularity: 1,
+          bytes_on_disk: 138_808,
+          data_uncompressed_bytes: 137_388,
+        },
+      ],
+      columns: [
+        {
+          table: 'siri_ride_stop',
+          column: 'siri_stop_id',
+          type: 'Nullable(Int32)',
+          compression_codec: '',
+          data_compressed_bytes: 6.7e9,
+          data_uncompressed_bytes: 16.1e9,
+        },
+      ],
+      storage_not_served: [],
+      refreshes: [
+        {
+          view: 'enrich_ride',
+          status: 'Running',
+          last_success_time: '2026-11-10T17:40:00Z',
+          last_refresh_time: '2026-11-10T17:55:00Z',
+          exception: '',
+        },
+        {
+          view: 'enrich_stop',
+          status: 'Scheduled',
+          last_success_time: '2026-11-10T17:59:00Z',
+          last_refresh_time: '2026-11-10T17:58:00Z',
+          exception: '',
+        },
+      ],
+      merges: [],
+      mutations: [],
+      processes: [
+        {
+          query_kind: 'Select',
+          elapsed: 21.4,
+          read_rows: 126_000_000,
+          read_bytes: 1e9,
+          total_rows_approx: 126_000_000,
+          written_rows: 0,
+          memory_usage: 300e6,
+          is_internal: 0,
+          query_shape: 'SELECT id FROM stride.siri_ride WHERE vehicle_ref = ?',
+        },
+      ],
+      api_requests_last_hour: [],
+    }
+    const requests = (window: string) => ({
+      window,
+      from: window === 'week' ? '2026-11-10T15:35:00.000Z' : '2026-11-10T17:00:00.000Z',
+      to: '2026-11-10T18:00:00.000Z',
+      buckets: [{ start: '2026-11-10T17:00:00.000Z', requests: 3, errors: 0, p95_ms: 900 }],
+      rows: [
+        {
+          path: window === 'week' ? '/siri_rides/list' : '/gtfs_routes/list',
+          endpoint: true,
+          requests: 3,
+          errors: 0,
+          p50_ms: 40,
+          p95_ms: 900,
+          max_ms: 900,
+        },
+      ],
+    })
+    const fetchMock = vi.fn((url: string) => {
+      const window = /window=(\w+)/.exec(url)?.[1]
+      return Promise.resolve({
+        ok: true,
+        status: 200,
+        statusText: 'OK',
+        json: () =>
+          Promise.resolve(
+            url.includes('/ops/metrics')
+              ? metrics
+              : window
+                ? requests(window)
+                : url.includes('/ops/logs')
+                  ? { catchup: { lines: [] } }
+                  : url.includes('/coverage')
+                    ? [coverageDay('2026-11-07')]
+                    : STATUS,
+          ),
+      })
+    })
+    vi.stubGlobal('fetch', fetchMock)
+
+    renderPage()
+
+    expect(await screen.findByText(/Projections: /)).toBeInTheDocument()
+    expect(screen.getAllByText('siri_ride_stop').length).toBeGreaterThan(0)
+    expect(screen.getByText('siri_ride_stop.by_gtfs_stop')).toBeInTheDocument()
+    expect(screen.getByText('gtfs_ride_stop.idx_tight')).toBeInTheDocument()
+    expect(screen.getByText('siri_ride_stop.siri_stop_id')).toBeInTheDocument()
+
+    expect(
+      screen.getByText('SELECT id FROM stride.siri_ride WHERE vehicle_ref = ?'),
+    ).toBeInTheDocument()
+    expect(screen.getByText('enrich_ride')).toBeInTheDocument()
+    expect(screen.getByText('Running · 1')).toBeInTheDocument()
+    expect(screen.getByText('Scheduled · 1')).toBeInTheDocument()
+
+    expect(await screen.findByText('/gtfs_routes/list')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Last week' }))
+    expect(await screen.findByText('/siri_rides/list')).toBeInTheDocument()
+    expect(screen.getByText(/remembers them only since/)).toBeInTheDocument()
+
+    const metricsCalls = () =>
+      fetchMock.mock.calls.filter(([u]) => u.includes('/ops/metrics')).length
+    const before = metricsCalls()
+    fireEvent.click(screen.getByRole('button', { name: 'Refresh' }))
+    await waitFor(() => expect(metricsCalls()).toBeGreaterThan(before))
+  })
 })
