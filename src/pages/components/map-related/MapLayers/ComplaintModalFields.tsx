@@ -20,8 +20,6 @@ import type { Rule } from 'antd/es/form'
 import type { TextAreaProps } from 'antd/es/input'
 import type { TFunction } from 'i18next'
 import { useTranslation } from 'react-i18next'
-import { complaintTypeMappings } from './ComplaintModalForms'
-import type { ComplaintTitleData } from './ComplaintModalTypes'
 
 const numberOnly = /^[0-9]+$/u
 const hebrewName = /^[א-ת\s'"()-]+$/u
@@ -238,17 +236,3 @@ export const allComplaintFields = {
     props: { maxLength: 11 },
   }),
 } as const
-
-export const buildComplaintTitle = (data: ComplaintTitleData): string => {
-  const { complaintType, eventDate, eventHour, lineNumberText } = data
-  const applyTypeText = complaintTypeMappings[complaintType]?.subject?.dataText || ''
-  const titleParts = [applyTypeText]
-  for (const fieldName of complaintTypeMappings[complaintType]?.title_order || []) {
-    let value: string | undefined
-    if (fieldName === 'eventDate') value = eventDate?.format('DD/MM/YYYY')
-    if (fieldName === 'eventHour') value = eventHour?.format('HH:mm')
-    if (fieldName === 'lineNumberText') value = lineNumberText
-    if (value) titleParts.push(value)
-  }
-  return titleParts.join(' ')
-}

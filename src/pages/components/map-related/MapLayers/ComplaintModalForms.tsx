@@ -15,7 +15,6 @@ export const complaintTypeMappings: Record<ComplaintType, ComplaintTypeData> = {
     ],
     transport: { dataText: 'אוטובוס', dataCode: '0' },
     subject: { dataText: 'אי ביצוע נסיעה', dataCode: '2' },
-    title_order: ['lineNumberText', 'eventDate', 'eventHour'],
   },
   no_stop: {
     fields: [
@@ -31,7 +30,6 @@ export const complaintTypeMappings: Record<ComplaintType, ComplaintTypeData> = {
     ],
     transport: { dataText: 'אוטובוס', dataCode: '0' },
     subject: { dataText: 'אי עצירה בתחנה', dataCode: '3' },
-    title_order: ['lineNumberText', 'eventDate', 'eventHour'],
   },
   delay: {
     fields: [
@@ -47,7 +45,6 @@ export const complaintTypeMappings: Record<ComplaintType, ComplaintTypeData> = {
     ],
     transport: { dataText: 'אוטובוס', dataCode: '0' },
     subject: { dataText: 'איחור', dataCode: '4' },
-    title_order: ['lineNumberText', 'eventDate', 'eventHour'],
   },
   early: {
     fields: [
@@ -63,6 +60,5 @@ export const complaintTypeMappings: Record<ComplaintType, ComplaintTypeData> = {
     ],
     transport: { dataText: 'אוטובוס', dataCode: '0' },
     subject: { dataText: 'הקדמה', dataCode: '11' },
-    title_order: ['lineNumberText', 'eventDate', 'eventHour'],
   },
 }

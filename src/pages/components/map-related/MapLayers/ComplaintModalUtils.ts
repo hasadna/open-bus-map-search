@@ -5,7 +5,6 @@ import type {
   GtfsRideStopWithRelatedPydanticModel,
   GtfsRoutePydanticModel,
 } from 'D:\\WEB\\open-bus-api-client\\open-bus-api-client\\client\\src'
-import { buildComplaintTitle } from './ComplaintModalFields'
 import { complaintTypeMappings } from './ComplaintModalForms'
 import type { ComplaintFormValues, ComplaintUser } from './ComplaintModalTypes'
 
@@ -78,7 +77,6 @@ export function buildComplaintData(
     details: values.details,
     transport: complaintTypeMappings[values.complaintType].transport,
     subject: complaintTypeMappings[values.complaintType].subject,
-    title: buildComplaintTitle(values),
     lang: (lang && ['he', 'en', 'ru', 'ar'].includes(lang.split('-')[0])
       ? lang.split('-')[0]
       : 'he') as ComplaintsSendPostRequestDataLangEnum,

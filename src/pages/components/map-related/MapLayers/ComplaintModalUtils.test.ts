@@ -104,6 +104,7 @@ describe('complaint payload', () => {
       },
     })
     expect(data).not.toHaveProperty('personalDetails')
+    expect(data).not.toHaveProperty('title')
     expect(data.bus).not.toHaveProperty('eventHour')
     expect(data.bus).not.toHaveProperty('fromHour')
     expect(data.bus).not.toHaveProperty('toHour')
@@ -146,6 +147,7 @@ describe('complaint payload', () => {
       },
     })
     expect(body).not.toHaveProperty('data.data')
+    expect(body).not.toHaveProperty('data.title')
     expect(body).not.toHaveProperty('data.train')
     expect(body).not.toHaveProperty('data.taxi')
     expect(body).toHaveProperty('data.id', '000000000')

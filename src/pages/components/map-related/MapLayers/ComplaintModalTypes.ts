@@ -51,14 +51,6 @@ export interface ComplaintTypeData {
   fields: ComplaintField[]
   transport: DataCode
   subject: DataCode
-  title_order: ComplaintField[]
 }
 
 export type ComplaintField = keyof typeof allComplaintFields
-
-export interface ComplaintTitleData {
-  complaintType: ComplaintType
-  eventDate?: dayjs.Dayjs
-  eventHour?: dayjs.Dayjs
-  lineNumberText?: string
-}
