@@ -433,7 +433,7 @@
     "missed_rides_description": "How many rides were supposed to take place on each day/hour in the time range you selected but didn't. (the difference between the two previous graphs)"
   },
   "strideLite": {
-    "title": "Experimental API status",
+    "title": "Experimental API stats",
     "intro": "stride-lite is an experimental rebuild of the Stride API on top of ClickHouse. This page reads its own /status and /coverage endpoints, which the production server does not have, so you can tell apart a day on which no buses ran, a day whose data never arrived, and a day on which the pipeline broke.",
     "header_opt_in": "Use the experimental API",
     "header_opt_out": "Stop using the experimental API",

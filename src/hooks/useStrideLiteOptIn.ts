@@ -1,7 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { useSyncExternalStore } from 'react'
 import { applyStrideApiBasePath } from 'src/api/apiConfig'
-import { isStrideLiteOptedIn, setStrideLiteOptedIn } from 'src/api/strideLite'
+import { isStrideLiteOptedIn, isStrideLiteSelected, setStrideLiteOptedIn } from 'src/api/strideLite'
 
 /** Lets the header button and the status page's switch show the same state. */
 const CHANGE_EVENT = 'stride-lite-opt-in-change'
@@ -26,3 +26,5 @@ export const useStrideLiteOptIn = () => {
   }
   return { optedIn, setOptedIn }
 }
+
+export const useStrideLiteSelected = () => useSyncExternalStore(subscribe, isStrideLiteSelected)

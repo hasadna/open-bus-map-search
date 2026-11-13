@@ -152,6 +152,13 @@ export const HEADER_LINKS = [
   },
 ] as const
 
+export const STRIDE_LITE_STATUS_PAGE = {
+  label: 'strideLite.title',
+  path: '/stride-lite-status',
+  icon: <BoltTwoTone />,
+  element: <StrideLiteStatusPage />,
+} as const
+
 const HIDDEN_PAGES = [
   {
     label: 'data-research',
@@ -159,12 +166,7 @@ const HIDDEN_PAGES = [
     icon: <BiotechTwoTone />,
     element: <DataResearch />,
   },
-  {
-    label: 'strideLite.title',
-    path: '/stride-lite-status',
-    icon: <BoltTwoTone />,
-    element: <StrideLiteStatusPage />,
-  },
+  STRIDE_LITE_STATUS_PAGE,
 ] as const
 
 const routesList = [...PAGES, ...HIDDEN_PAGES, ...HEADER_LINKS].filter((r) => r.element)
