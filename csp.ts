@@ -28,6 +28,7 @@ export const CSP_DIRECTIVES: Record<string, string[]> = {
     'https://www.google-analytics.com',
     'https://region1.google-analytics.com',
     'https://www.googletagmanager.com',
+    'https://www.google.com',
     'https://api.github.com',
   ],
   'frame-src': [
