@@ -92,3 +92,16 @@ it('refetches when the selected day changes', async () => {
   fireEvent.keyDown(screen.getByRole('combobox'), { key: 'ArrowDown' })
   expect(await screen.findByText('מטרופולין')).toBeInTheDocument()
 })
+
+it('says it is loading, not that there are no operators, while the list is on its way', async () => {
+  let resolve: (agencies: GtfsAgencyPydanticModel[]) => void = () => {}
+  agenciesListGet.mockImplementation(() => new Promise((r) => (resolve = r)))
+  render(<Harness />)
+
+  fireEvent.keyDown(screen.getByRole('combobox'), { key: 'ArrowDown' })
+  expect(await screen.findByText('loading...')).toBeInTheDocument()
+
+  resolve([agency(SHABBAT, 3, 'אגד')])
+  expect(await screen.findByText('אגד')).toBeInTheDocument()
+  expect(screen.queryByText('loading...')).not.toBeInTheDocument()
+})

@@ -1,7 +1,7 @@
 import { Autocomplete, TextField } from '@mui/material'
 import { useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useAgencyList } from 'src/hooks/useAgencyList'
+import { useAgencyListQuery } from 'src/hooks/useAgencyList'
 import { ISRAEL_TRAIN_ID, toOperators } from 'src/model/operator'
 
 type OperatorSelectorProps = {
@@ -20,7 +20,7 @@ export default function OperatorSelector({
   excludeIsraelRailways,
 }: OperatorSelectorProps) {
   const { t } = useTranslation()
-  const agencies = useAgencyList()
+  const { agencies, isLoading } = useAgencyListQuery()
 
   const operators = useMemo(() => {
     const operators = toOperators(agencies, filter)
@@ -46,6 +46,8 @@ export default function OperatorSelector({
       onChange={(_, value) => setOperatorId(value ? value.id : '')}
       id="operator-select"
       options={operators}
+      loading={isLoading}
+      loadingText={t('loading')}
       renderInput={(params) => <TextField {...params} label={t('choose_operator')} />}
       getOptionLabel={(option) => option.name}
     />

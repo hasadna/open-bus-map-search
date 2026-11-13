@@ -75,6 +75,7 @@ const SingleLineMapPage = () => {
   const {
     positionGroups,
     locationsAreLoading,
+    optionsAreLoading,
     options,
     plannedRouteStops,
     startTime,
@@ -226,6 +227,7 @@ const SingleLineMapPage = () => {
             <FilterPositionsByStartTimeSelector
               options={options}
               disabled={!routeKey}
+              loading={optionsAreLoading}
               startTime={startTime}
               setStartTime={handleStartTimeChange}
             />

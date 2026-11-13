@@ -9,6 +9,7 @@ type FilterPositionsByStartTimeSelectorProps = {
   }[]
   startTime?: string
   disabled?: boolean
+  loading?: boolean
   setStartTime: (time?: string) => void
 }
 
@@ -16,6 +17,7 @@ export function FilterPositionsByStartTimeSelector({
   options,
   startTime,
   disabled,
+  loading,
   setStartTime,
 }: FilterPositionsByStartTimeSelectorProps) {
   const normalizedStartTime = normalizeScheduledTime(startTime?.split('|')[0])
@@ -37,6 +39,8 @@ export function FilterPositionsByStartTimeSelector({
       onChange={(e, value) => setStartTime(value?.value)}
       id="start-time-select"
       options={options}
+      loading={loading}
+      loadingText={t('loading')}
       renderInput={(params) => <TextField {...params} label={t('choose_start_time')} />}
       getOptionLabel={(option) => option.label}
     />
