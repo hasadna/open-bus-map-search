@@ -189,6 +189,11 @@ export const useSingleLineData = ({
       rideIds.map((rideId, idx) =>
         SIRI_API.siriVehicleLocationsListGet({
           siriRidesIds: rideId.toString(),
+          // siri_vehicle_location is sorted by time on the backend, so without a window a
+          // single ride is looked for across the whole history. A day either side keeps
+          // rides that cross midnight and late readings.
+          recordedAtTimeFrom: dayStart.subtract(1, 'day').toDate(),
+          recordedAtTimeTo: dayEnd.add(1, 'day').toDate(),
           // Israel bounding box — drops null/zero-coordinate and stray pings at the API level
           latGreaterOrEqual: 29.0,
           latLowerOrEqual: 33.5,
@@ -208,7 +213,7 @@ export const useSingleLineData = ({
       .then(setPositionGroups)
       .catch(console.error)
       .finally(() => setLocationsAreLoading(false))
-  }, [selectedRideIdsKey, vehicleRefById])
+  }, [selectedRideIdsKey, vehicleRefById, dayStart, dayEnd])
 
   // Fetch planned stops for the black polyline
   const stopsQuery = useQuery({
