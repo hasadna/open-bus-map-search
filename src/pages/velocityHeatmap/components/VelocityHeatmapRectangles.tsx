@@ -2,10 +2,12 @@ import type { SiriVelocityAggregationPydanticModel } from '@hasadna/open-bus-api
 import { useContext, useEffect } from 'react'
 import { Popup, Rectangle } from 'react-leaflet'
 import dayjs, { ISRAEL_TIMEZONE } from 'src/dayjs'
+import { useStrideLiteSelected } from 'src/hooks/useStrideLiteOptIn'
 import { GlobalSearchContext } from 'src/model/globalState'
 import { useVelocityAggregationData } from '../useVelocityAggregationData'
+import { cellBounds, ISRAEL_BOUNDS, tilesCovering } from '../velocityTiles'
 import { VelocityHeatmapPopup } from './VelocityHeatmapPopup'
-import { useZoomLevel } from './ZoomComponent'
+import { useMapView } from './ZoomComponent'
 
 type VisMode = 'avg' | 'std' | 'cv'
 
@@ -36,31 +38,21 @@ interface VelocityHeatmapRectanglesProps {
   setStatus?: (loading: boolean, hasError: boolean) => void
 }
 
-const DEFAULT_BOUNDS = {
-  minLat: 29.5,
-  maxLat: 33.33,
-  minLon: 34.25,
-  maxLon: 35.7,
-}
-
 export const VelocityHeatmapRectangles = ({
   visMode,
   setMinMax,
   setStatus,
 }: VelocityHeatmapRectanglesProps) => {
   const { search } = useContext(GlobalSearchContext)
-  const zoom = useZoomLevel()
+  const { zoom, bounds: view } = useMapView()
+  const precision = zoom - 6
+  // A tile costs production a scan of the whole day, as much as the whole country does.
+  const tiles = useStrideLiteSelected() ? tilesCovering(view, precision) : [ISRAEL_BOUNDS]
   const { data, loading, error, currZoom } = useVelocityAggregationData(
-    {
-      minLat: DEFAULT_BOUNDS.minLat,
-      maxLat: DEFAULT_BOUNDS.maxLat,
-      minLon: DEFAULT_BOUNDS.minLon,
-      maxLon: DEFAULT_BOUNDS.maxLon,
-    },
+    tiles,
     dayjs.tz(search.date, ISRAEL_TIMEZONE),
-    zoom - 6,
+    precision,
   )
-  const half = 0.5 / Math.pow(2, currZoom)
 
   // Compute min/max for normalization
   let minV = 0,
@@ -93,17 +85,14 @@ export const VelocityHeatmapRectangles = ({
 
   return (
     <>
-      {data?.map((point, idx) => {
-        const bounds: [[number, number], [number, number]] = [
-          [point.roundedLat - half, point.roundedLon - half],
-          [point.roundedLat + half, point.roundedLon + half],
-        ]
+      {data.map((point) => {
+        const bounds = cellBounds(point, currZoom)
         const value = getValue(point, visMode)
         const color = getRedOpacityColor(value, minV, maxV)
         // fillOpacity is always 1, alpha is controlled by color's 4th channel
         return (
           <Rectangle
-            key={idx}
+            key={`${point.roundedLon},${point.roundedLat}`}
             bounds={bounds}
             pathOptions={{ weight: 1, fillColor: color, fillOpacity: 1, stroke: false }}>
             <Popup>
