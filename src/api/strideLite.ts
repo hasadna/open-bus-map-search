@@ -80,6 +80,8 @@ export type StrideLiteStatus = {
 export type StrideLiteCoverageDay = {
   day: CivilDate
   snapshots: number
+  /** Listed in the bucket but carrying no data: a gap at the source. */
+  emptySnapshots: number
   vehicleLocations: number
   duplicateIds: number
   rides: number
@@ -129,6 +131,8 @@ const parseCoverageDay = (payload: unknown): StrideLiteCoverageDay => {
   return {
     day,
     snapshots: asNumber(raw.snapshots, 'snapshots'),
+    emptySnapshots:
+      raw.empty_snapshots === undefined ? 0 : asNumber(raw.empty_snapshots, 'empty_snapshots'),
     vehicleLocations: asNumber(raw.vehicle_locations, 'vehicle_locations'),
     duplicateIds: asNumber(raw.duplicate_ids, 'duplicate_ids'),
     rides: asNumber(raw.rides, 'rides'),

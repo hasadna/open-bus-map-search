@@ -76,6 +76,7 @@ describe('StrideLiteStatusPage', () => {
       // Not linked to GTFS: the backend does not link yet, so this is not a fault.
       coverageDay('2026-11-04', { rides_linked_to_gtfs: 0 }),
       coverageDay('2026-11-03', { snapshots: 1116 }),
+      coverageDay('2026-11-02', { snapshots: 1300, empty_snapshots: 131 }),
     ]
     vi.stubGlobal(
       'fetch',
@@ -99,6 +100,7 @@ describe('StrideLiteStatusPage', () => {
     expect(faults.getByText('05/11/2026')).toBeInTheDocument()
     expect(faults.getByText(/12 vehicle-location ids are used more than once/)).toBeInTheDocument()
     expect(faults.getByText(/314 of the day/)).toBeInTheDocument()
+    expect(faults.getByText(/131 arrived empty/)).toBeInTheDocument()
     expect(faults.queryByText('04/11/2026')).not.toBeInTheDocument()
     // The Shabbat days are healthy, so they stay out of the fault table.
     expect(faults.queryByText('07/11/2026')).not.toBeInTheDocument()

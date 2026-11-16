@@ -16,6 +16,7 @@ const SATURDAY = civilDate('2026-11-07')!
 const day = (overrides: Partial<StrideLiteCoverageDay> = {}): StrideLiteCoverageDay => ({
   day: WEDNESDAY,
   snapshots: 1430,
+  emptySnapshots: 0,
   vehicleLocations: 7_500_000,
   duplicateIds: 0,
   rides: 60_000,
@@ -72,7 +73,14 @@ describe('diagnoseCoverageDay', () => {
   test('a short download says how many one-minute snapshots are missing', () => {
     expect(diagnoseCoverageDay(day({ snapshots: 1116 }))).toEqual({
       health: 'shortDownload',
-      reason: { key: 'shortDownload', missing: 314 },
+      reason: { key: 'shortDownload', missing: 314, empty: 0 },
+    })
+  })
+
+  test('snapshots that arrived empty are a gap too, told apart from the missing ones', () => {
+    expect(diagnoseCoverageDay(day({ snapshots: 1300, emptySnapshots: 131 }))).toEqual({
+      health: 'shortDownload',
+      reason: { key: 'shortDownload', missing: 0, empty: 131 },
     })
   })
 
