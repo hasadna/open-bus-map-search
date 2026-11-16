@@ -31,7 +31,7 @@ export type HealthReason =
   | { key: 'noSnapshots' }
   | { key: 'duplicateIds'; count: number }
   | { key: 'noLocations' }
-  | { key: 'shortDownload'; missing: number }
+  | { key: 'shortDownload'; missing: number; empty: number }
   | { key: 'quiet'; percent: number }
 
 export type Diagnosis = { health: DayHealth; reason?: HealthReason }
@@ -45,7 +45,11 @@ export const diagnoseCoverageDay = (day: StrideLiteCoverageDay): Diagnosis => {
   if (day.snapshots < SHORT_DOWNLOAD_SNAPSHOTS) {
     return {
       health: 'shortDownload',
-      reason: { key: 'shortDownload', missing: HEALTHY_SNAPSHOTS - day.snapshots },
+      reason: {
+        key: 'shortDownload',
+        missing: Math.max(0, HEALTHY_SNAPSHOTS - day.snapshots - day.emptySnapshots),
+        empty: day.emptySnapshots,
+      },
     }
   }
   const expected = expectedVehicleLocations(day.day)

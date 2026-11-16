@@ -59,7 +59,12 @@ export const useHealthReasonText = () => {
       case 'noLocations':
         return t('strideLite.reason.noLocations')
       case 'shortDownload':
-        return t('strideLite.reason.shortDownload', { missing: full.format(reason.missing) })
+        return reason.empty
+          ? t('strideLite.reason.shortDownloadEmpty', {
+              missing: full.format(reason.missing),
+              empty: full.format(reason.empty),
+            })
+          : t('strideLite.reason.shortDownload', { missing: full.format(reason.missing) })
       case 'quiet':
         return t('strideLite.reason.quiet', { percent: reason.percent })
     }
