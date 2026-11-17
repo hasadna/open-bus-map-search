@@ -5,6 +5,8 @@ import { mswLoader } from 'msw-storybook-addon/csf3'
 import { setupWorker } from 'msw/browser'
 import { Suspense, useEffect } from 'react'
 import { BrowserRouter } from 'react-router'
+import { applyStrideApiBasePath } from 'src/api/apiConfig'
+import { setStrideLiteOptedIn } from 'src/api/strideLite'
 import { ThemeProvider, useTheme } from 'src/layout/ThemeContext'
 import i18n from 'src/locale/allTranslations'
 import 'src/index.scss'
@@ -22,6 +24,10 @@ const queryClient = new QueryClient({
 })
 
 queryClient.setQueryData(['version'], '1.2.3')
+
+// The stories' mocks answer production Stride URLs.
+setStrideLiteOptedIn(false)
+applyStrideApiBasePath()
 
 /**
  * Anything that resolves an operator goes through the memoized `getAgencyList()` singleton, and
