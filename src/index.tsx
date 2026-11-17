@@ -8,7 +8,7 @@ import {
 import { createStore, del, get, set } from 'idb-keyval'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import ReactGAImport from 'react-ga4'
+import { ReactGA } from './analytics'
 import { shouldPersistQueries } from './api/strideLite'
 import App from './App'
 import './locale/allTranslations'
@@ -57,11 +57,6 @@ const queryClient = new QueryClient({
     },
   },
 })
-
-// react-ga4's default export is nested under `.default` under some CJS/ESM interop
-// (e.g. Vite/Rolldown), so unwrap it to keep the shared singleton.
-const ReactGA =
-  (ReactGAImport as unknown as { default?: typeof ReactGAImport }).default ?? ReactGAImport
 
 try {
   ReactGA.initialize('G-0YRQT80GG1')

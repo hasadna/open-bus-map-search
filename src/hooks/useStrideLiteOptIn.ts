@@ -1,5 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { useSyncExternalStore } from 'react'
+import { apiBackend, ReactGA } from 'src/analytics'
 import { applyStrideApiBasePath } from 'src/api/apiConfig'
 import { isStrideLiteOptedIn, isStrideLiteSelected, setStrideLiteOptedIn } from 'src/api/strideLite'
 
@@ -22,6 +23,7 @@ export const useStrideLiteOptIn = () => {
     setStrideLiteOptedIn(value)
     applyStrideApiBasePath()
     window.dispatchEvent(new Event(CHANGE_EVENT))
+    ReactGA.event('api_backend_switch', { api_backend: apiBackend() })
     void queryClient.resetQueries()
   }
   return { optedIn, setOptedIn }

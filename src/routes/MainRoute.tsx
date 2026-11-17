@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import ReactGAImport from 'react-ga4'
 import { useLocation, useSearchParams } from 'react-router'
 import { useSessionStorage } from 'usehooks-ts'
+import { apiBackend, ReactGA } from 'src/analytics'
 import { isCivilDate } from 'src/model/time/civilDate'
 import { MainLayout } from '../layout'
 import { ThemeProvider } from '../layout/ThemeContext'
@@ -12,18 +12,17 @@ import {
 } from '../model/globalState'
 import { InitialUrlParamsContext, PageShareParamsContext } from '../model/routeContext'
 
-// react-ga4's default export is nested under `.default` under some CJS/ESM interop
-// (e.g. Vite/Rolldown), so unwrap it to keep the shared singleton.
-const ReactGA =
-  (ReactGAImport as unknown as { default?: typeof ReactGAImport }).default ?? ReactGAImport
-
 export const MainRoute = () => {
   const { pathname, search: locationParams } = useLocation()
   const [, setSearchParams] = useSearchParams()
 
   useEffect(() => {
     try {
-      ReactGA.send({ hitType: 'pageview', page: pathname + locationParams })
+      ReactGA.send({
+        hitType: 'pageview',
+        page: pathname + locationParams,
+        api_backend: apiBackend(),
+      })
     } catch (e) {
       console.error('Failed to initialize Google Analytics', e)
     }

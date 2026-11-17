@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { fireEvent, render, screen } from '@testing-library/react'
+import { ReactGA } from 'src/analytics'
 import { isStrideLiteSelected } from 'src/api/strideLite'
 import { StrideLiteButton } from './StrideLiteButton'
 
@@ -28,6 +29,19 @@ describe('StrideLiteButton', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Use the experimental API' }))
     expect(isStrideLiteSelected()).toBe(true)
+  })
+
+  test('reports each switch to analytics, naming the backend switched to', () => {
+    vi.stubEnv('VITE_STRIDE_LITE_API', 'https://stride-lite.example')
+    const event = vi.spyOn(ReactGA, 'event').mockImplementation(() => {})
+    renderButton()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Stop using the experimental API' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Use the experimental API' }))
+    expect(event.mock.calls).toEqual([
+      ['api_backend_switch', { api_backend: 'production' }],
+      ['api_backend_switch', { api_backend: 'stride-lite' }],
+    ])
   })
 
   test('is absent when no experimental API is configured', () => {
