@@ -16,18 +16,18 @@ const renderButton = (client = new QueryClient()) =>
   )
 
 describe('StrideLiteButton', () => {
-  test('opts this browser in and out, forgetting what the other backend answered', () => {
+  test('opts this browser out and back in, forgetting what the other backend answered', () => {
     vi.stubEnv('VITE_STRIDE_LITE_API', 'https://stride-lite.example')
     const client = new QueryClient()
     client.setQueryData(['gtfs_routes'], [{ id: 1 }])
     renderButton(client)
 
-    fireEvent.click(screen.getByRole('button', { name: 'Use the experimental API' }))
-    expect(isStrideLiteSelected()).toBe(true)
-    expect(client.getQueryData(['gtfs_routes'])).toBeUndefined()
-
     fireEvent.click(screen.getByRole('button', { name: 'Stop using the experimental API' }))
     expect(isStrideLiteSelected()).toBe(false)
+    expect(client.getQueryData(['gtfs_routes'])).toBeUndefined()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Use the experimental API' }))
+    expect(isStrideLiteSelected()).toBe(true)
   })
 
   test('is absent when no experimental API is configured', () => {
