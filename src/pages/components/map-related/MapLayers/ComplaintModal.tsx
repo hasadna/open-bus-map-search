@@ -11,6 +11,7 @@ import {
 } from '@mui/material'
 import { useMutation } from '@tanstack/react-query'
 import { Button, Checkbox, Form } from 'antd'
+import { ComplaintsSendPostOperationRequest } from 'D:\\WEB\\open-bus-api-client\\client\\src'
 import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useCopyToClipboard, useLocalStorage } from 'usehooks-ts'
@@ -21,7 +22,6 @@ import {
   useBusOperatorQuery,
   useLinesQuery,
 } from 'src/hooks/useFormQuerys'
-import { ComplaintsSendPostOperationRequest } from '../../../../../../open-bus-api-client/open-bus-api-client/client/src'
 import { EasterEgg } from '../../EasterEgg/EasterEgg'
 import { Row } from '../../Row'
 import { allComplaintFields, createAllRules, mobileOnly, RenderField } from './ComplaintModalFields'

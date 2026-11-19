@@ -8,10 +8,10 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { TileLayer } from 'react-leaflet'
-import { GlobalSearchContext } from 'src/model/globalState'
+import { useGlobalSearch } from 'src/hooks/useGlobalSearch'
 import { type CivilDate, todayCivilDate } from 'src/model/time/civilDate'
 import { MapShell } from 'src/pages/components/map-related/MapShell'
 import { CivilDateSelector } from '../components/CivilDateSelector'
@@ -35,7 +35,7 @@ const VelocityHeatmapPage: React.FC = () => {
   // vertically (one button per row) there and keep a single row on wider screens.
   const stackVisSelector = useMediaQuery(theme.breakpoints.down('sm'))
 
-  const { search, setSearch } = useContext(GlobalSearchContext)
+  const { search, updateSearch } = useGlobalSearch()
 
   const [visMode, setVisMode] = useState<'avg' | 'std' | 'cv'>('avg')
   const [min, setMin] = useState(0)
@@ -44,10 +44,7 @@ const VelocityHeatmapPage: React.FC = () => {
   const [hasError, setHasError] = useState(false)
 
   const handleDateChange = (next: CivilDate | null) => {
-    setSearch((current) => ({
-      ...current,
-      date: next ?? todayCivilDate(),
-    }))
+    updateSearch({ date: next ?? todayCivilDate() })
   }
 
   const handleVisModeChange = (

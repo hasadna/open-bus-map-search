@@ -1,6 +1,7 @@
 import { SiriVelocityAggregationPydanticModel } from '@hasadna/open-bus-api-client'
 import { useQuery } from '@tanstack/react-query'
 import { SIRI_API } from 'src/api/apiConfig'
+import { isStrideLiteSelected } from 'src/api/strideLite'
 import dayjs from 'src/dayjs'
 
 export interface VelocityAggregationBounds {
@@ -68,8 +69,8 @@ export async function fetchAggregation(
   date: dayjs.Dayjs,
   zoom: number,
 ): Promise<SiriVelocityAggregationPydanticModel[]> {
-  // only try cached data if date is in the past
-  if (date.isBefore(dayjs().subtract(1, 'day'))) {
+  // The cache holds production's answers, so the experimental API must not be served from it
+  if (!isStrideLiteSelected() && date.isBefore(dayjs().subtract(1, 'day'))) {
     try {
       return await loadFromCache(bounds, date, zoom)
     } catch (e) {

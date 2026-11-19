@@ -21,11 +21,11 @@ import {
   Typography,
 } from '@mui/material'
 import { alpha, styled } from '@mui/material/styles'
-import { useContext, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useNavigate } from 'react-router'
 import { useDebounceValue } from 'usehooks-ts'
-import { GlobalSearchContext } from 'src/model/globalState'
+import { useGlobalSearch } from 'src/hooks/useGlobalSearch'
 import { ISRAEL_TRAIN_ID } from 'src/model/operator'
 import { type CivilDate } from 'src/model/time/civilDate'
 import SkeletonLoader from 'src/shared/SkeletonLoader'
@@ -139,7 +139,7 @@ export const OperatorRoutes = ({ operatorId, date }: { operatorId?: string; date
 
 const RouteGroup = ({ group, operatorId }: { group: RouteGroup; operatorId?: string }) => {
   const { t, i18n } = useTranslation()
-  const { setSearch } = useContext(GlobalSearchContext)
+  const { updateSearch } = useGlobalSearch()
   const navigate = useNavigate()
   const DirectionArrow = i18n.dir() === 'rtl' ? ArrowBackTwoTone : ArrowForwardTwoTone
 
@@ -152,11 +152,7 @@ const RouteGroup = ({ group, operatorId }: { group: RouteGroup; operatorId?: str
       <Link
         onClick={(e) => {
           e.preventDefault()
-          setSearch((current) => ({
-            ...current,
-            lineNumber: route.line + route.suffix,
-            routeKey: route.routeKey,
-          }))
+          updateSearch({ lineNumber: route.line + route.suffix, routeKey: route.routeKey })
           void navigate('/single-line-map')
         }}
         to="/single-line-map">

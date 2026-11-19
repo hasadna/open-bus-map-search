@@ -1,8 +1,9 @@
 import { SiriVehicleLocationWithRelatedPydanticModel } from '@hasadna/open-bus-api-client'
 import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
-import { useContext, useMemo } from 'react'
+import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useDebounceValue } from 'usehooks-ts'
 import {
   getGtfsStopHitTimesAsync,
   getRoutesAsync,
@@ -10,8 +11,8 @@ import {
 } from 'src/api/gtfsService'
 import { getSiriStopHitTimesAsync } from 'src/api/siriService'
 import dayjs, { ISRAEL_TIMEZONE } from 'src/dayjs'
+import { useGlobalSearch } from 'src/hooks/useGlobalSearch'
 import { usePageState } from 'src/hooks/usePageState'
-import { GlobalSearchContext } from 'src/model/globalState'
 import { Label } from 'src/pages/components/Label'
 import LineNumberSelector from 'src/pages/components/LineSelector'
 import OperatorSelector from 'src/pages/components/OperatorSelector'
@@ -28,12 +29,11 @@ import { buildSingleLineMapRideLink } from './singleLineMapRideLink'
 
 const StationStopsPage = () => {
   const { t } = useTranslation()
-  const { search, setSearch } = useContext(GlobalSearchContext)
+  const { search, updateSearch } = useGlobalSearch()
   const { operatorId, lineNumber, date, routeKey } = search
 
   const stopKey = search.stopKey
-  const setStopKey = (key: string | undefined) =>
-    setSearch((prev) => ({ ...prev, stopKey: key ?? null }))
+  const setStopKey = (key: string | undefined) => updateSearch({ stopKey: key ?? null })
 
   // time-of-day is page-local: not shared across pages, but is shareable so a
   // link recipient sees the same moment (date comes from global state).
@@ -47,6 +47,15 @@ const StationStopsPage = () => {
     return dayjs.tz(date, ISRAEL_TIMEZONE).hour(h).minute(m).startOf('minute')
   }, [date, params.time])
 
+  // Debounce the time used for data fetching while keeping the time picker responsive.
+  const [debouncedTime] = useDebounceValue(params.time, 500)
+
+  // Build the request timestamp from the selected date and debounced time.
+  const requestTime = useMemo(() => {
+    const [h, m] = debouncedTime.split(':').map(Number)
+    return dayjs.tz(date, ISRAEL_TIMEZONE).hour(h).minute(m).startOf('minute')
+  }, [date, debouncedTime])
+
   const routesQuery = useQuery({
     queryFn: async () => {
       if (operatorId && lineNumber) {
@@ -54,7 +63,7 @@ const StationStopsPage = () => {
           return await getRoutesAsync(date, date, operatorId, lineNumber)
         } catch (error) {
           console.error(error)
-          setSearch((current) => ({ ...current, routeKey: null }))
+          updateSearch({ routeKey: null })
           setStopKey(undefined)
         }
       }
@@ -72,15 +81,16 @@ const StationStopsPage = () => {
     queryFn: async () => {
       if (selectedRoute) {
         try {
-          return await getStopsForRouteAsync(selectedRoute.routeIds, time)
+          // Fetch stops only after the debounced time has been updated.
+          return await getStopsForRouteAsync(selectedRoute.routeIds, requestTime)
         } catch (error) {
           console.error(error)
-          setSearch((current) => ({ ...current, stopKey: null }))
+          updateSearch({ stopKey: null })
         }
       }
       return null
     },
-    queryKey: ['stops', selectedRoute?.lineRef, time.valueOf()],
+    queryKey: ['stops', selectedRoute?.lineRef, requestTime.valueOf()],
   })
 
   const selectedStop = useMemo(
@@ -102,15 +112,16 @@ const StationStopsPage = () => {
   const hitsQuery = useQuery({
     queryFn: async () => {
       if (selectedStop && selectedRoute) {
+        // Keep scheduled and actual stop times in sync with the debounced request time.
         const [gtfsTime, siriTime] = await Promise.all([
-          getGtfsStopHitTimesAsync(selectedStop, time),
-          getSiriStopHitTimesAsync(selectedRoute, selectedStop, time),
+          getGtfsStopHitTimesAsync(selectedStop, requestTime),
+          getSiriStopHitTimesAsync(selectedRoute, selectedStop, requestTime),
         ])
         return { gtfsTime, siriTime }
       }
       return null
     },
-    queryKey: ['hits', selectedRoute?.lineRef, selectedStop?.stopId, time.valueOf()],
+    queryKey: ['hits', selectedRoute?.lineRef, selectedStop?.stopId, requestTime.valueOf()],
   })
 
   return (
@@ -135,7 +146,7 @@ const StationStopsPage = () => {
             value={date}
             onChange={(d) => {
               if (!d) return
-              setSearch((prev) => ({ ...prev, date: d }))
+              updateSearch({ date: d })
             }}
           />
         </Grid>
@@ -153,7 +164,7 @@ const StationStopsPage = () => {
         <Grid size={{ lg: 4, md: 6, xs: 12 }}>
           <OperatorSelector
             operatorId={operatorId ?? undefined}
-            setOperatorId={(id) => setSearch((prev) => ({ ...prev, operatorId: id }))}
+            setOperatorId={(id) => updateSearch({ operatorId: id })}
             excludeIsraelRailways
           />
         </Grid>
@@ -163,7 +174,7 @@ const StationStopsPage = () => {
             operatorId={operatorId ?? undefined}
             date={date}
             lineNumber={lineNumber ?? undefined}
-            setLineNumber={(number) => setSearch((prev) => ({ ...prev, lineNumber: number }))}
+            setLineNumber={(number) => updateSearch({ lineNumber: number })}
           />
         </Grid>
         {/* routes */}
@@ -177,7 +188,7 @@ const StationStopsPage = () => {
                   disabled={!routesQuery.data}
                   routes={routesQuery.data || []}
                   routeKey={routeKey ?? undefined}
-                  setRouteKey={(key) => setSearch((prev) => ({ ...prev, routeKey: key ?? null }))}
+                  setRouteKey={(key) => updateSearch({ routeKey: key ?? null })}
                 />
               )}
             </div>
@@ -212,7 +223,8 @@ const StationStopsPage = () => {
                 ((hitsQuery.data?.gtfsTime && hitsQuery.data.gtfsTime.length > 0) ||
                 (hitsQuery.data?.siriTime && hitsQuery.data.siriTime.length > 0) ? (
                   <TimelineBoard
-                    target={time}
+                    // Keep the target marker aligned with the time used to fetch the displayed data.
+                    target={requestTime}
                     gtfsTimes={hitsQuery.data.gtfsTime}
                     siriTimes={hitsQuery.data.siriTime}
                     siriLink={siriLink}

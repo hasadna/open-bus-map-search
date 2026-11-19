@@ -60,6 +60,7 @@ export const OperatorGaps = ({
           <PieChart width={160} height={160}>
             <Pie
               isAnimationActive={!prefersReducedMotion}
+              animationBegin={0}
               data={data.filter((data) => data?.color)}
               innerRadius={65}
               outerRadius={80}

@@ -1,7 +1,7 @@
 import type {
-  DataCode,
+  DataCodeModel,
   GtfsRoutePydanticModel,
-} from 'D:\\WEB\\open-bus-api-client\\open-bus-api-client\\client\\src'
+} from 'D:\\WEB\\open-bus-api-client\\client\\src'
 import type dayjs from 'dayjs'
 import type { Point } from '../map-types'
 import { allComplaintFields } from './ComplaintModalFields'
@@ -49,8 +49,8 @@ export type ComplaintType = (typeof complaintTypes)[number]
 
 export interface ComplaintTypeData {
   fields: ComplaintField[]
-  transport: DataCode
-  subject: DataCode
+  transport: DataCodeModel
+  subject: DataCodeModel
 }
 
 export type ComplaintField = keyof typeof allComplaintFields

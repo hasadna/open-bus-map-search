@@ -10,6 +10,7 @@ import HeaderLinks from './HeaderLinks/HeaderLinks'
 import { LanguageToggleButton } from './LanguageToggleButton'
 import { Logo } from './Logo'
 import { ShareButton } from './ShareButton'
+import { StrideLiteButton } from './StrideLiteButton'
 import ToggleThemeButton from './ToggleThemeButton'
 import './Header.css'
 
@@ -32,6 +33,7 @@ const MainHeader = () => {
         <Logo />
       </div>
       <HeaderLinks>
+        <StrideLiteButton />
         <ShareButton />
         <LanguageToggleButton />
         <ToggleThemeButton toggleTheme={toggleTheme} isDarkTheme={isDarkTheme} />

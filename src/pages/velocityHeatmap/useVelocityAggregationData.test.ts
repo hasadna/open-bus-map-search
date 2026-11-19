@@ -1,3 +1,4 @@
+import { setStrideLiteOptedIn } from 'src/api/strideLite'
 import dayjs from 'src/dayjs'
 import { fetchAggregation, queryFn } from './useVelocityAggregationData'
 
@@ -42,6 +43,21 @@ describe('velocity-aggregation source selection', () => {
   it('recent dates go to the live API and skip the cache', async () => {
     siriGet.mockResolvedValue([{ totalSampleCount: 10 }])
     await fetchAggregation(bounds, recentDate, zoom)
+
+    expect(global.fetch).not.toHaveBeenCalled()
+    expect(siriGet).toHaveBeenCalledTimes(1)
+  })
+
+  it("past dates go to the experimental API, not production's cache, while it is in use", async () => {
+    vi.stubEnv('VITE_STRIDE_LITE_API', 'https://stride-lite.example')
+    setStrideLiteOptedIn(true)
+    siriGet.mockResolvedValue([{ totalSampleCount: 10 }])
+    try {
+      await fetchAggregation(bounds, pastDate, zoom)
+    } finally {
+      vi.unstubAllEnvs()
+      localStorage.clear()
+    }
 
     expect(global.fetch).not.toHaveBeenCalled()
     expect(siriGet).toHaveBeenCalledTimes(1)

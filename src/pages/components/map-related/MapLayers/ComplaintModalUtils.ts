@@ -4,7 +4,7 @@ import type {
   GtfsAgencyPydanticModel,
   GtfsRideStopWithRelatedPydanticModel,
   GtfsRoutePydanticModel,
-} from 'D:\\WEB\\open-bus-api-client\\open-bus-api-client\\client\\src'
+} from 'D:\\WEB\\open-bus-api-client\\client\\src'
 import { complaintTypeMappings } from './ComplaintModalForms'
 import type { ComplaintFormValues, ComplaintUser } from './ComplaintModalTypes'
 

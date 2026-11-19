@@ -1,7 +1,4 @@
-import {
-  ComplaintsApi,
-  Configuration,
-} from 'D:\\WEB\\open-bus-api-client\\open-bus-api-client\\client\\src'
+import { ComplaintsApi, Configuration } from 'D:\\WEB\\open-bus-api-client\\client\\src'
 import { describe, expect, it } from 'vitest'
 import dayjs from 'src/dayjs'
 import { buildComplaintData, buildComplaintPersonalDetails } from './ComplaintModalUtils'

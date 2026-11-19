@@ -1,9 +1,9 @@
 import { Alert, CircularProgress, Grid, Typography } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
-import { useCallback, useContext, useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useGlobalSearch } from 'src/hooks/useGlobalSearch'
 import { usePageState } from 'src/hooks/usePageState'
-import { GlobalSearchContext } from 'src/model/globalState'
 import { type CivilDate, civilDateToDayjs } from 'src/model/time/civilDate'
 import { INPUT_SIZE } from 'src/resources/sizes'
 import { getGapsAsync, SerializedGap, serializeGap } from '../../api/gapsService'
@@ -20,7 +20,7 @@ import GapsTable from './GapsTable'
 
 const GapsPage = () => {
   const { t } = useTranslation()
-  const { search, setSearch } = useContext(GlobalSearchContext)
+  const { search, setSearch, updateSearch } = useGlobalSearch()
   const { operatorId, lineNumber, date, routeKey } = search
 
   // scrollPosition (auto-restored by usePageState) and the "only gaps" toggle are
@@ -69,16 +69,13 @@ const GapsPage = () => {
 
   const handleDateChange = (next: CivilDate | null) => {
     if (!next) return
-    setSearch((current) => ({
-      ...current,
-      date: next,
-    }))
+    updateSearch({ date: next })
   }
 
   const handleOperatorChange = (operatorId: string) => {
     // Changing/clearing the operator invalidates the chosen route (routes are
     // per operator+line), so reset it to close the stale results table.
-    setSearch((current) => ({ ...current, operatorId, routeKey: null }))
+    updateSearch({ operatorId, routeKey: null })
   }
 
   const handleLineNumberChange = (lineNumber: string) => {
@@ -90,16 +87,16 @@ const GapsPage = () => {
   }
 
   const handleRouteKeyChange = (routeKey?: string) => {
-    setSearch((current) => ({ ...current, routeKey: routeKey ?? null }))
+    updateSearch({ routeKey: routeKey ?? null })
   }
 
   // On gap row click: only set rideTime — the date stays as the day the user was
   // browsing, so single-line-map opens on the same day's departure.
   const handleStartTimeClick = useCallback(
     (rideTime: string) => {
-      setSearch((current) => ({ ...current, rideTime }))
+      updateSearch({ rideTime })
     },
-    [setSearch],
+    [updateSearch],
   )
 
   return (

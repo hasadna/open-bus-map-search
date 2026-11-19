@@ -530,6 +530,24 @@
         "code",
         "bug"
       ]
+    },
+    {
+      "login": "SimonGebru",
+      "name": "Simon Gebru",
+      "avatar_url": "https://avatars.githubusercontent.com/u/172205608?v=4",
+      "profile": "http://simongebru.com",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "RoeeSivan",
+      "name": "Roee Sivan",
+      "avatar_url": "https://avatars.githubusercontent.com/u/187408008?v=4",
+      "profile": "https://github.com/RoeeSivan",
+      "contributions": [
+        "code"
+      ]
     }
   ]
 }
