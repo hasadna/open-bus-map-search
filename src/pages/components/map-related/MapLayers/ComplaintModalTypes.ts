@@ -1,7 +1,5 @@
-import type {
-  DataCodeModel,
-  GtfsRoutePydanticModel,
-} from 'D:\\WEB\\open-bus-api-client\\client\\src'
+import { GtfsRoutePydanticModel } from '@hasadna/open-bus-api-client'
+import type { DataCodeModel } from 'D:\\WEB\\open-bus-api-client\\client\\src'
 import type dayjs from 'dayjs'
 import type { Point } from '../map-types'
 import { allComplaintFields } from './ComplaintModalFields'

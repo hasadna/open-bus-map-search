@@ -1,6 +1,5 @@
 import type {
-  ComplaintsSendPostRequestData,
-  ComplaintsSendPostRequestDataLangEnum,
+  ComplaintFormSchema,
   GtfsAgencyPydanticModel,
   GtfsRideStopWithRelatedPydanticModel,
   GtfsRoutePydanticModel,
@@ -32,7 +31,7 @@ export function buildComplaintData(
   values: ComplaintFormValues,
   lookup: ComplaintLookupData,
   lang?: string,
-): ComplaintsSendPostRequestData {
+): ComplaintFormSchema {
   if (!values.email) throw new Error('Complaint email is required')
   if (!values.eventHour) throw new Error('Complaint event hour is required')
   if (!values.eventDate) throw new Error('Complaint event date is required')
@@ -77,10 +76,8 @@ export function buildComplaintData(
     details: values.details,
     transport: complaintTypeMappings[values.complaintType].transport,
     subject: complaintTypeMappings[values.complaintType].subject,
-    lang: (lang && ['he', 'en', 'ru', 'ar'].includes(lang.split('-')[0])
-      ? lang.split('-')[0]
-      : 'he') as ComplaintsSendPostRequestDataLangEnum,
+    lang: lang && ['he', 'en', 'ru', 'ar'].includes(lang.split('-')[0]) ? lang.split('-')[0] : 'he',
     bus,
     train: undefined,
-  } as ComplaintsSendPostRequestData
+  } as ComplaintFormSchema
 }
