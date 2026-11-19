@@ -19,6 +19,7 @@ import {
   STRIDE_LITE_LOG_SOURCES,
   type StrideLiteLogSource,
   strideLiteOpsLogsQueryOptions,
+  type StrideLiteOpsMetrics,
   strideLiteOpsMetricsQueryOptions,
 } from 'src/api/strideLite'
 import SkeletonLoader from 'src/shared/SkeletonLoader'
@@ -28,6 +29,8 @@ import { StatTile, Unreachable } from './statusParts'
 /** Below this share of free disk a merge may not find room to write its result. */
 const LOW_DISK_SHARE = 0.15
 const LOG_LINES = 200
+/** One reading a minute is expected; a few missed ones still make the window whole. */
+const HISTORY_FULL_SHARE = 0.9
 
 export const NodeSection = () => {
   const { t } = useTranslation()
@@ -90,6 +93,10 @@ export const NodeSection = () => {
         ))}
       </Grid>
 
+      {data.history && data.history.length > 0 && (
+        <NodeHistory history={data.history} cpus={data.server?.cpus ?? null} />
+      )}
+
       {data.errors && data.errors.length > 0 && (
         <Box>
           <Typography variant="subtitle1">{t('strideLite.errors_last_day')}</Typography>
@@ -114,6 +121,56 @@ export const NodeSection = () => {
         </Box>
       )}
     </Stack>
+  )
+}
+
+const NodeHistory = ({
+  history,
+  cpus,
+}: {
+  history: NonNullable<StrideLiteOpsMetrics['history']>
+  cpus: number | null
+}) => {
+  const { t } = useTranslation()
+  const f = useFormats()
+  const demand = (load: number | null) =>
+    load === null ? '—' : cpus ? f.percent(load / cpus) : f.decimal(load)
+  const bytes = (n: number | null) => (n === null ? '—' : f.bytes(n))
+  const recorded = (minutes: number) =>
+    minutes < 24 * 60 ? f.duration(minutes * 60) : f.days(minutes * 60)
+  return (
+    <Box>
+      <Typography variant="subtitle1">{t('strideLite.history_title')}</Typography>
+      <Table size="small" sx={{ fontVariantNumeric: 'tabular-nums' }}>
+        <TableHead>
+          <TableRow>
+            <TableCell />
+            <TableCell align="right">{t('strideLite.history_cpu_avg')}</TableCell>
+            <TableCell align="right">{t('strideLite.history_cpu_p95')}</TableCell>
+            <TableCell align="right">{t('strideLite.history_memory_avg')}</TableCell>
+            <TableCell align="right">{t('strideLite.history_memory_p95')}</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {history.map((row) => (
+            <TableRow key={row.window}>
+              <TableCell component="th" scope="row">
+                {t(`strideLite.window_${row.window}`)}
+                {row.samples < row.hours * 60 * HISTORY_FULL_SHARE && (
+                  <Typography variant="caption" sx={{ display: 'block' }} color="text.secondary">
+                    {t('strideLite.history_partial', { duration: recorded(row.samples) })}
+                  </Typography>
+                )}
+              </TableCell>
+              <TableCell align="right">{demand(row.load1Avg)}</TableCell>
+              <TableCell align="right">{demand(row.load1P95)}</TableCell>
+              <TableCell align="right">{bytes(row.memoryUsedAvg)}</TableCell>
+              <TableCell align="right">{bytes(row.memoryUsedP95)}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </Box>
   )
 }
 

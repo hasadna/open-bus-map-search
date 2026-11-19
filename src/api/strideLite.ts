@@ -189,6 +189,19 @@ export type StrideLiteOpsMetrics = {
     cpus: number | null
   } | null
   disks: { name: string; free: number; total: number }[] | null
+  /** One reading a minute, kept a week; absent from a backend older than it. A window
+   *  with no reading yet has null figures. */
+  history:
+    | {
+        window: StrideLiteRequestWindow
+        hours: number
+        samples: number
+        load1Avg: number | null
+        load1P95: number | null
+        memoryUsedAvg: number | null
+        memoryUsedP95: number | null
+      }[]
+    | null
   tables: { table: string; rows: number; bytes: number }[] | null
   refreshes:
     | {
@@ -267,6 +280,9 @@ export type StrideLiteOpsMetrics = {
   errors: { name: string; count: number; lastErrorTime: string; message: string }[] | null
 }
 
+const asNullableNumber = (value: unknown, field: string): number | null =>
+  value === null || value === undefined ? null : asNumber(value, field)
+
 const section = <T>(value: unknown, parse: (row: Record<string, unknown>) => T): T[] | null =>
   Array.isArray(value) ? value.map((row) => parse(asRecord(row))) : null
 
@@ -291,6 +307,15 @@ const parseOpsMetrics = (payload: unknown): StrideLiteOpsMetrics => {
       name: asString(r.name, 'name'),
       free: asNumber(r.free_space, 'free_space'),
       total: asNumber(r.total_space, 'total_space'),
+    })),
+    history: section(raw.history, (r) => ({
+      window: asString(r.window, 'window') as StrideLiteRequestWindow,
+      hours: asNumber(r.hours, 'hours'),
+      samples: asNumber(r.samples, 'samples'),
+      load1Avg: asNullableNumber(r.load1_avg, 'load1_avg'),
+      load1P95: asNullableNumber(r.load1_p95, 'load1_p95'),
+      memoryUsedAvg: asNullableNumber(r.memory_used_avg, 'memory_used_avg'),
+      memoryUsedP95: asNullableNumber(r.memory_used_p95, 'memory_used_p95'),
     })),
     tables: section(raw.tables, (r) => ({
       table: asString(r.table, 'table'),

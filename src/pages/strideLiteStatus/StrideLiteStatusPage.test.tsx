@@ -260,7 +260,68 @@ describe('StrideLiteStatusPage', () => {
     expect(screen.getByText('26.10.3.7')).toBeInTheDocument()
     expect(screen.getByText('280% / 237%')).toBeInTheDocument()
     expect(screen.getByText('Load 5.6 / 4.7 · 2 cores')).toBeInTheDocument()
+    expect(screen.queryByText('Over time')).not.toBeInTheDocument()
     expect(await screen.findByText('newest snapshot loaded: 2026/11/10/12/59')).toBeInTheDocument()
+  })
+
+  test('shows CPU demand and memory over the last hour, day and week', async () => {
+    vi.stubEnv('VITE_STRIDE_LITE_API', 'https://stride-lite.example')
+    const window = (name: string, hours: number, samples: number) => ({
+      window: name,
+      hours,
+      samples,
+      since: '2026-11-10 12:00:00',
+      load1_avg: 1,
+      load1_p95: 1.8,
+      memory_used_avg: 2e9,
+      memory_used_p95: 3e9,
+      memory_capacity: 8e9,
+    })
+    const metrics = {
+      measured_at: '2026-11-10T13:00:00.000Z',
+      server: {
+        version: '26.10.3.7',
+        uptime_seconds: 17_594,
+        MemoryResident: 1e9,
+        OSMemoryTotal: 8e9,
+        OSMemoryAvailable: 6e9,
+        LoadAverage1: 1,
+        LoadAverage15: 1,
+        cpus: 2,
+      },
+      history: [window('hour', 1, 60), window('day', 24, 1440), window('week', 168, 1440)],
+    }
+    vi.stubGlobal(
+      'fetch',
+      vi.fn((url: string) =>
+        Promise.resolve({
+          ok: true,
+          status: 200,
+          statusText: 'OK',
+          json: () =>
+            Promise.resolve(
+              url.includes('/ops/metrics')
+                ? metrics
+                : url.includes('/ops/logs')
+                  ? {}
+                  : url.includes('/coverage')
+                    ? [coverageDay('2026-11-07')]
+                    : STATUS,
+            ),
+        }),
+      ),
+    )
+
+    renderPage()
+
+    expect(await screen.findByText('Over time')).toBeInTheDocument()
+    const hour = screen.getByRole('row', { name: /Last hour/ })
+    expect(hour).toHaveTextContent('50%')
+    expect(hour).toHaveTextContent('90%')
+    expect(hour).toHaveTextContent('2 GB')
+    expect(hour).toHaveTextContent('3 GB')
+    expect(hour).not.toHaveTextContent('recorded')
+    expect(screen.getByRole('row', { name: /Last week/ })).toHaveTextContent('Only 1 day recorded')
   })
 
   test('switching backends forgets every answer the other one gave', () => {
