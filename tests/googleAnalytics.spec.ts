@@ -70,7 +70,7 @@ test.describe('Google Analytics', () => {
     const pageviews = (await readDataLayer(page))!.filter((e) => e[1] === 'page_view')
     expect(pageviews.length).toBeGreaterThan(0)
     for (const [, , params] of pageviews) {
-      expect(params).toMatchObject({ api_backend: 'production' })
+      expect(params).toMatchObject({ api_backend: 'stride-lite' })
     }
   })
 
