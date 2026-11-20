@@ -98,3 +98,16 @@ describe('queryFn filtering is shared across sources', () => {
     await expect(queryFn(bounds, recentDate, zoom)).rejects.toThrow(/No data points/)
   })
 })
+
+describe('rounding precision', () => {
+  // The API rejects anything outside 0..10 with a 422, production and stride-lite alike.
+  it.each([
+    [11, 10],
+    [-2, 0],
+    [7, 7],
+  ])('zoom %i asks for precision %i', async (requested, sent) => {
+    siriGet.mockResolvedValue([{ totalSampleCount: 10 }])
+    await fetchAggregation(bounds, recentDate, requested)
+    expect(siriGet).toHaveBeenCalledWith(expect.objectContaining({ roundingPrecision: sent }))
+  })
+})
