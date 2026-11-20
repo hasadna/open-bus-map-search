@@ -5,9 +5,9 @@ import Backend from 'i18next-fs-backend'
 import { test as baseTest, customMatcher, Matcher } from 'playwright-advanced-har'
 import { RouteFromHAROptions } from 'playwright-advanced-har/lib/utils/types'
 import { expect } from 'playwright-assertions'
+import { loadEnv } from 'vite'
 import { toIsraelTimezone } from 'src/dayjs'
 import { PAGES } from 'src/routes'
-import { loadEnv } from 'vite'
 
 export { expect } from 'playwright-assertions'
 
