@@ -7,6 +7,7 @@ import { RouteFromHAROptions } from 'playwright-advanced-har/lib/utils/types'
 import { expect } from 'playwright-assertions'
 import { toIsraelTimezone } from 'src/dayjs'
 import { PAGES } from 'src/routes'
+import { loadEnv } from 'vite'
 
 export { expect } from 'playwright-assertions'
 
@@ -22,6 +23,25 @@ export function getPastTrainDate() {
   return new Date('2026-02-12T15:00:00+00:00')
 }
 
+/**
+ * The app asks stride-lite by default and production once a visitor switches back. The
+ * HAR fixtures were recorded from production, and stride-lite serves the same contract,
+ * so a request to either is answered from them, as if it had gone to production.
+ */
+const { VITE_STRIDE_API: PRODUCTION_API, VITE_STRIDE_LITE_API: STRIDE_LITE_API } = loadEnv(
+  'production',
+  process.cwd(),
+  'VITE_',
+)
+const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+export const STRIDE_API_URL = new RegExp(
+  `^(${[PRODUCTION_API, STRIDE_LITE_API].filter(Boolean).map(escapeRegExp).join('|')})/`,
+)
+const asProduction = (url: string) =>
+  STRIDE_LITE_API && url.startsWith(`${STRIDE_LITE_API}/`)
+    ? PRODUCTION_API + url.slice(STRIDE_LITE_API.length)
+    : url
+
 const urlMatcher: Matcher = customMatcher({
   urlComparator(a, b) {
     const paramsToIgnore = new Set(['t', 'limit', 'date_from', 'date_to'])
@@ -36,7 +56,7 @@ const urlMatcher: Matcher = customMatcher({
       'lon__lower_or_equal',
     ])
     function normalize(url: string) {
-      const urlObj = new URL(url)
+      const urlObj = new URL(asProduction(url))
       for (const param of paramsToIgnore) {
         urlObj.searchParams.delete(param)
       }
@@ -162,9 +182,7 @@ export const setupTest = async (page: Page, lng: string = 'he') => {
   // Abort stride-api requests during initial navigation. Tests that need stride-api data
   // should call advancedRouteFromHAR AFTER setupTest - the HAR route handler takes precedence
   // over this abort route (Playwright evaluates routes in reverse registration order).
-  await page.route(/stride-api/, (route) => route.abort())
-  // The HAR fixtures were recorded against production Stride.
-  await page.addInitScript(() => localStorage.setItem('strideLiteEnabled', 'false'))
+  await page.route(STRIDE_API_URL, (route) => route.abort())
   await page.clock.setSystemTime(getPastDate())
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await i18next.use(Backend).init({ lng, backend: { loadPath: 'src/locale/{{lng}}.json' } })
@@ -203,6 +221,6 @@ export const verifyDateFromParameter = (page: Page) => {
 
 export const harOptions: RouteFromHAROptions = {
   notFound: 'abort',
-  url: /stride-api/,
+  url: STRIDE_API_URL,
   matcher: urlMatcher,
 }
