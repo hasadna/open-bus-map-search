@@ -163,6 +163,8 @@ export const setupTest = async (page: Page, lng: string = 'he') => {
   // should call advancedRouteFromHAR AFTER setupTest - the HAR route handler takes precedence
   // over this abort route (Playwright evaluates routes in reverse registration order).
   await page.route(/stride-api/, (route) => route.abort())
+  // The HAR fixtures were recorded against production Stride.
+  await page.addInitScript(() => localStorage.setItem('strideLiteEnabled', 'false'))
   await page.clock.setSystemTime(getPastDate())
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await i18next.use(Backend).init({ lng, backend: { loadPath: 'src/locale/{{lng}}.json' } })

@@ -65,6 +65,15 @@ test.describe('Google Analytics', () => {
     expect(gaErrors, 'GA must initialize/send without throwing').toEqual([])
   })
 
+  test('tags each pageview with the Stride backend in use', async ({ page }) => {
+    await setupTest(page)
+    const pageviews = (await readDataLayer(page))!.filter((e) => e[1] === 'page_view')
+    expect(pageviews.length).toBeGreaterThan(0)
+    for (const [, , params] of pageviews) {
+      expect(params).toMatchObject({ api_backend: 'production' })
+    }
+  })
+
   test('sends an additional pageview on client-side navigation', async ({ page }) => {
     await setupTest(page)
     const before = countPageviews(await readDataLayer(page))

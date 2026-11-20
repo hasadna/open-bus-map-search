@@ -3,8 +3,8 @@
  * (https://github.com/NoamGaash/stride-lite).
  *
  * The experimental URL can be supplied at build time (`VITE_STRIDE_LITE_API`) or
- * overridden per browser from the hidden status page. The visitor must also flip the
- * opt-in switch before Stride requests use it. With the switch off, production is used.
+ * overridden per browser from the hidden status page. Once a URL is configured, Stride
+ * requests use it unless the visitor has switched back to production.
  */
 import { queryOptions } from '@tanstack/react-query'
 import { type CivilDate, civilDate } from 'src/model/time/civilDate'
@@ -43,7 +43,7 @@ export const isStrideLiteConfigured = (): boolean => strideLiteApiBasePath() !==
 
 export const isStrideLiteOptedIn = (): boolean => {
   try {
-    return localStorage.getItem(OPT_IN_STORAGE_KEY) === 'true'
+    return localStorage.getItem(OPT_IN_STORAGE_KEY) !== 'false'
   } catch {
     // Storage can throw (Safari private mode, a blocked third-party context); an
     // experimental backend is not worth breaking the app's boot over.

@@ -18,6 +18,7 @@ const renderMenu = () =>
 describe('Menu', () => {
   test('links to the experimental API stats only while the experimental API is in use', () => {
     vi.stubEnv('VITE_STRIDE_LITE_API', 'https://stride-lite.example')
+    setStrideLiteOptedIn(false)
     renderMenu()
     expect(screen.queryByRole('link', { name: 'Experimental API stats' })).not.toBeInTheDocument()
 
