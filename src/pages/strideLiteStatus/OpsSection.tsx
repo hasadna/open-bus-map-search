@@ -147,8 +147,10 @@ const NodeHistory = ({
             <TableCell />
             <TableCell align="right">{t('strideLite.history_cpu_avg')}</TableCell>
             <TableCell align="right">{t('strideLite.history_cpu_p95')}</TableCell>
+            <TableCell align="right">{t('strideLite.history_cpu_max')}</TableCell>
             <TableCell align="right">{t('strideLite.history_memory_avg')}</TableCell>
             <TableCell align="right">{t('strideLite.history_memory_p95')}</TableCell>
+            <TableCell align="right">{t('strideLite.history_memory_max')}</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -164,8 +166,10 @@ const NodeHistory = ({
               </TableCell>
               <TableCell align="right">{demand(row.load1Avg)}</TableCell>
               <TableCell align="right">{demand(row.load1P95)}</TableCell>
+              <TableCell align="right">{demand(row.load1Max)}</TableCell>
               <TableCell align="right">{bytes(row.memoryUsedAvg)}</TableCell>
               <TableCell align="right">{bytes(row.memoryUsedP95)}</TableCell>
+              <TableCell align="right">{bytes(row.memoryUsedMax)}</TableCell>
             </TableRow>
           ))}
         </TableBody>
