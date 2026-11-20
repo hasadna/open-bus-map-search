@@ -19,7 +19,9 @@ async function setupRecording(page: Page, harFile: string) {
   await page.route(/api\.github\.com/, (route) => route.abort())
   await page.route(/open-bus-backend\.k8s\.hasadna\.org\.il/, (route) => route.abort())
   await page.route(/.*openstreetmap*/, (route) => route.abort())
-  // NOTE: stride-api is NOT aborted here, so real responses are recorded into the HAR
+  // NOTE: stride-api is NOT aborted here, so real responses are recorded into the HAR.
+  // From production, not the default stride-lite: tests/utils.ts answers both from them.
+  await page.addInitScript(() => localStorage.setItem('strideLiteEnabled', 'false'))
   await page.routeFromHAR(harFile, {
     url: /stride-api/,
     update: true,

@@ -22,6 +22,10 @@ export function getPastTrainDate() {
   return new Date('2026-02-12T15:00:00+00:00')
 }
 
+// Production Stride, and stride-lite behind CloudFront. They serve the same API, so the
+// fixtures answer both and the matcher ignores which host was asked.
+export const STRIDE_API_URL = /stride-api|cloudfront\.net/
+
 const urlMatcher: Matcher = customMatcher({
   urlComparator(a, b) {
     const paramsToIgnore = new Set(['t', 'limit', 'date_from', 'date_to'])
@@ -51,7 +55,7 @@ const urlMatcher: Matcher = customMatcher({
       )
       urlObj.search = new URLSearchParams(sortedParams).toString()
       urlObj.pathname = urlObj.pathname.replace(/\/$/, '')
-      return urlObj.toString()
+      return urlObj.pathname + urlObj.search
     }
 
     return normalize(a) === normalize(b)
@@ -162,9 +166,7 @@ export const setupTest = async (page: Page, lng: string = 'he') => {
   // Abort stride-api requests during initial navigation. Tests that need stride-api data
   // should call advancedRouteFromHAR AFTER setupTest - the HAR route handler takes precedence
   // over this abort route (Playwright evaluates routes in reverse registration order).
-  await page.route(/stride-api/, (route) => route.abort())
-  // The HAR fixtures were recorded against production Stride.
-  await page.addInitScript(() => localStorage.setItem('strideLiteEnabled', 'false'))
+  await page.route(STRIDE_API_URL, (route) => route.abort())
   await page.clock.setSystemTime(getPastDate())
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await i18next.use(Backend).init({ lng, backend: { loadPath: 'src/locale/{{lng}}.json' } })
@@ -203,6 +205,6 @@ export const verifyDateFromParameter = (page: Page) => {
 
 export const harOptions: RouteFromHAROptions = {
   notFound: 'abort',
-  url: /stride-api/,
+  url: STRIDE_API_URL,
   matcher: urlMatcher,
 }
