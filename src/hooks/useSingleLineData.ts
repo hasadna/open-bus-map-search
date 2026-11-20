@@ -43,6 +43,7 @@ export const useSingleLineData = ({
   const [vehicleRefById, setVehicleRefById] = useState<Map<number, string>>(new Map())
   const [positionGroups, setPositionGroups] = useState<PositionGroup[]>([])
   const [locationsAreLoading, setLocationsAreLoading] = useState(false)
+  const [optionsAreLoading, setOptionsAreLoading] = useState(false)
   const [error, setError] = useState<string>()
   const startTime = useMemo(() => normalizeStartTimeToken(rideTime ?? undefined), [rideTime])
 
@@ -114,9 +115,11 @@ export const useSingleLineData = ({
     setRideIdsByToken(new Map())
     setVehicleRefById(new Map())
     if (!selectedRoute?.lineRef) {
+      setOptionsAreLoading(false)
       return
     }
     const controller = new AbortController()
+    setOptionsAreLoading(true)
     SIRI_API.siriRidesListGet(
       {
         siriRouteLineRefs: selectedRoute?.lineRef?.toString(),
@@ -173,6 +176,9 @@ export const useSingleLineData = ({
       })
       .catch((err) => {
         if (err?.name !== 'AbortError') console.error(err)
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setOptionsAreLoading(false)
       })
     return () => controller.abort()
   }, [selectedRoute?.lineRef, operatorId, dayStart, dayEnd])
@@ -248,6 +254,7 @@ export const useSingleLineData = ({
     options,
     startTime,
     locationsAreLoading,
+    optionsAreLoading,
     routes,
     routeKey: routeKey ?? undefined,
     error,
