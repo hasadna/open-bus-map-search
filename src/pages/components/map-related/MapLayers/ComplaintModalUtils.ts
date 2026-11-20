@@ -1,11 +1,14 @@
 import type {
-  ComplaintFormSchema,
   GtfsAgencyPydanticModel,
   GtfsRideStopWithRelatedPydanticModel,
   GtfsRoutePydanticModel,
-} from 'D:\\WEB\\open-bus-api-client\\client\\src'
-import { complaintTypeMappings } from './ComplaintModalForms'
-import type { ComplaintFormValues, ComplaintUser } from './ComplaintModalTypes'
+} from '@hasadna/open-bus-api-client'
+import type { ComplaintFormSchema } from 'D:\\WEB\\open-bus-api-client\\client\\src'
+import {
+  type ComplaintFormValues,
+  complaintTypeMappings,
+  type ComplaintUser,
+} from './ComplaintModalForms'
 
 export function buildComplaintPersonalDetails(values: Partial<ComplaintUser>) {
   const { documentType, id_fild, passport_fild, firstName, lastName, mobile, email } = values

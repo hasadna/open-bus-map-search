@@ -29,7 +29,7 @@ export const USER_CASE_API = new UserCasesApi(STRIDE_API_CONFIG)
 
 export const BACKEND_API_BASE_PATH = process.env.VITE_BACKEND_API
 const BACKEND_API_CONFIG = new Configuration({ basePath: BACKEND_API_BASE_PATH })
-const BACKEND_API_CONFIG_DEV = new ConfigurationDEV({ basePath: BACKEND_API_BASE_PATH })
+const BACKEND_API_CONFIG_DEV = new ConfigurationDEV({ basePath: 'http://127.0.0.1:3001' })
 
 export const HEALTH_API = new HealthApi(BACKEND_API_CONFIG)
 export const ISSUES_API = new IssuesApi(BACKEND_API_CONFIG)

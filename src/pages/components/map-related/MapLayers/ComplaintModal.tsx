@@ -1,3 +1,4 @@
+import type { GtfsRoutePydanticModel } from '@hasadna/open-bus-api-client'
 import { CloseTwoTone } from '@mui/icons-material'
 import {
   Alert,
@@ -10,7 +11,7 @@ import {
   Typography,
 } from '@mui/material'
 import { useMutation } from '@tanstack/react-query'
-import { Button, Checkbox, Form } from 'antd'
+import { Button, Form, Radio } from 'antd'
 import { ComplaintsSendPostOperationRequest } from 'D:\\WEB\\open-bus-api-client\\client\\src'
 import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -24,15 +25,14 @@ import {
 } from 'src/hooks/useFormQuerys'
 import { EasterEgg } from '../../EasterEgg/EasterEgg'
 import { Row } from '../../Row'
+import type { Point } from '../map-types'
 import { allComplaintFields, createAllRules, mobileOnly, RenderField } from './ComplaintModalFields'
-import { complaintTypeMappings } from './ComplaintModalForms'
 import {
-  ComplaintField,
-  ComplaintFormValues,
-  ComplaintModalProps,
-  complaintTypes,
-  ComplaintUser,
-} from './ComplaintModalTypes'
+  type ComplaintField,
+  type ComplaintFormValues,
+  complaintTypeMappings,
+  type ComplaintUser,
+} from './ComplaintModalForms'
 import { buildComplaintData } from './ComplaintModalUtils'
 
 const USER_KEYS = new Set([
@@ -46,6 +46,15 @@ const USER_KEYS = new Set([
   'emailConfirmation',
   'ravKavNumber',
 ] as ComplaintField[])
+
+interface ComplaintModalProps {
+  modalOpen?: boolean
+  setModalOpen?: (open: boolean) => void
+  position: Point
+  route: GtfsRoutePydanticModel
+}
+
+const complaintTypes = Object.keys(complaintTypeMappings) as (keyof typeof complaintTypeMappings)[]
 
 const ComplaintModal = ({
   modalOpen = false,
@@ -354,8 +363,14 @@ const ComplaintModal = ({
                 code="debug"
                 autohide={false}
                 onShow={() => form.setFieldValue('debug', true)}>
-                <Form.Item name="debug" valuePropName="checked">
-                  <Checkbox>{t('complaints.debug')}</Checkbox>
+                <Form.Item name="debug" label={t('complaints.debug')}>
+                  <Radio.Group
+                    options={[
+                      { value: 'bounce', label: 'bounce' },
+                      { value: true, label: 'true (success)' },
+                      { value: false, label: 'false' },
+                    ]}
+                  />
                 </Form.Item>
               </EasterEgg>
               <DialogActions sx={{ justifyContent: 'flex-end', padding: 0 }}>
