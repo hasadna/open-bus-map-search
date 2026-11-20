@@ -23,9 +23,16 @@ describe('stride-lite opt-in', () => {
     expect(strideApiBasePath()).toBe(PRODUCTION)
   })
 
-  test('configuring a URL alone does not move anyone off production', () => {
+  test('a visitor who never chose is on the experimental backend once a URL is configured', () => {
     vi.stubEnv('VITE_STRIDE_LITE_API', 'https://stride-lite.example')
     expect(isStrideLiteConfigured()).toBe(true)
+    expect(isStrideLiteSelected()).toBe(true)
+    expect(strideApiBasePath()).toBe('https://stride-lite.example')
+  })
+
+  test('a visitor who switched back to production stays there', () => {
+    vi.stubEnv('VITE_STRIDE_LITE_API', 'https://stride-lite.example')
+    setStrideLiteOptedIn(false)
     expect(isStrideLiteSelected()).toBe(false)
     expect(strideApiBasePath()).toBe(PRODUCTION)
   })
@@ -62,6 +69,7 @@ describe('stride-lite opt-in', () => {
 
   test('changing the runtime URL updates the shared API client config without a reload', () => {
     vi.stubEnv('VITE_STRIDE_LITE_API', '')
+    setStrideLiteOptedIn(false)
     applyStrideApiBasePath('https://runtime.example')
     expect(STRIDE_API_CONFIG.basePath).toBe(PRODUCTION)
     setStrideLiteOptedIn(true)
@@ -81,6 +89,7 @@ describe('stride-lite opt-in', () => {
 
   test('nothing is kept across visits while the experimental backend is in use', () => {
     vi.stubEnv('VITE_STRIDE_LITE_API', 'https://stride-lite.example')
+    setStrideLiteOptedIn(false)
     expect(shouldPersistQueries()).toBe(true)
     setStrideLiteOptedIn(true)
     expect(shouldPersistQueries()).toBe(false)

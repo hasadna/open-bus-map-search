@@ -26,6 +26,7 @@ beforeEach(() => {
   vi.clearAllMocks()
   vi.spyOn(console, 'warn').mockImplementation(() => {})
   global.fetch = vi.fn()
+  setStrideLiteOptedIn(false)
 })
 
 describe('velocity-aggregation source selection', () => {
