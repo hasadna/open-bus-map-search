@@ -466,7 +466,7 @@
     "health": {
       "ok": "Healthy",
       "quiet": "Few buses ran (not a data problem)",
-      "shortDownload": "Download was cut short",
+      "shortDownload": "Part of the day has no data",
       "noData": "No data arrived",
       "pipelineFault": "Pipeline fault"
     },
@@ -483,6 +483,7 @@
       "duplicateIds": "{{n}} vehicle-location ids are used more than once, so processing wrote some rows twice.",
       "noLocations": "Snapshots were downloaded, but no vehicle locations were derived from them.",
       "shortDownload": "About {{missing}} of the day's ~1,430 one-minute snapshots are missing, so that much of the day has no data.",
+      "shortDownloadEmpty": "Of the day's ~1,430 one-minute snapshots, about {{missing}} are missing and {{empty}} arrived empty, so that much of the day has no data.",
       "quiet": "All the data arrived, but it holds only {{percent}}% of the bus activity expected for this day of the week."
     },
     "node_title": "The server",
