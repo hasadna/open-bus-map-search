@@ -5,7 +5,6 @@ import Backend from 'i18next-fs-backend'
 import { test as baseTest, customMatcher, Matcher } from 'playwright-advanced-har'
 import { RouteFromHAROptions } from 'playwright-advanced-har/lib/utils/types'
 import { expect } from 'playwright-assertions'
-import { loadEnv } from 'vite'
 import { toIsraelTimezone } from 'src/dayjs'
 import { PAGES } from 'src/routes'
 
@@ -23,24 +22,9 @@ export function getPastTrainDate() {
   return new Date('2026-02-12T15:00:00+00:00')
 }
 
-/**
- * The app asks stride-lite by default and production once a visitor switches back. The
- * HAR fixtures were recorded from production, and stride-lite serves the same contract,
- * so a request to either is answered from them, as if it had gone to production.
- */
-const { VITE_STRIDE_API: PRODUCTION_API, VITE_STRIDE_LITE_API: STRIDE_LITE_API } = loadEnv(
-  'production',
-  process.cwd(),
-  'VITE_',
-)
-const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-export const STRIDE_API_URL = new RegExp(
-  `^(${[PRODUCTION_API, STRIDE_LITE_API].filter(Boolean).map(escapeRegExp).join('|')})/`,
-)
-const asProduction = (url: string) =>
-  STRIDE_LITE_API && url.startsWith(`${STRIDE_LITE_API}/`)
-    ? PRODUCTION_API + url.slice(STRIDE_LITE_API.length)
-    : url
+// Production Stride, and stride-lite behind CloudFront. They serve the same API, so the
+// fixtures answer both and the matcher ignores which host was asked.
+export const STRIDE_API_URL = /stride-api|cloudfront\.net/
 
 const urlMatcher: Matcher = customMatcher({
   urlComparator(a, b) {
@@ -56,7 +40,7 @@ const urlMatcher: Matcher = customMatcher({
       'lon__lower_or_equal',
     ])
     function normalize(url: string) {
-      const urlObj = new URL(asProduction(url))
+      const urlObj = new URL(url)
       for (const param of paramsToIgnore) {
         urlObj.searchParams.delete(param)
       }
@@ -71,7 +55,7 @@ const urlMatcher: Matcher = customMatcher({
       )
       urlObj.search = new URLSearchParams(sortedParams).toString()
       urlObj.pathname = urlObj.pathname.replace(/\/$/, '')
-      return urlObj.toString()
+      return urlObj.pathname + urlObj.search
     }
 
     return normalize(a) === normalize(b)
