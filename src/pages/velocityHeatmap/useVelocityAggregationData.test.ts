@@ -1,3 +1,4 @@
+import { setStrideLiteOptedIn } from 'src/api/strideLite'
 import dayjs from 'src/dayjs'
 import { fetchAggregation, queryFn } from './useVelocityAggregationData'
 
@@ -24,6 +25,7 @@ beforeEach(() => {
   vi.clearAllMocks()
   vi.spyOn(console, 'warn').mockImplementation(() => {})
   global.fetch = vi.fn()
+  setStrideLiteOptedIn(false)
 })
 
 describe('velocity-aggregation source selection', () => {
@@ -42,6 +44,21 @@ describe('velocity-aggregation source selection', () => {
   it('recent dates go to the live API and skip the cache', async () => {
     siriGet.mockResolvedValue([{ totalSampleCount: 10 }])
     await fetchAggregation(bounds, recentDate, zoom)
+
+    expect(global.fetch).not.toHaveBeenCalled()
+    expect(siriGet).toHaveBeenCalledTimes(1)
+  })
+
+  it("past dates go to the experimental API, not production's cache, while it is in use", async () => {
+    vi.stubEnv('VITE_STRIDE_LITE_API', 'https://stride-lite.example')
+    setStrideLiteOptedIn(true)
+    siriGet.mockResolvedValue([{ totalSampleCount: 10 }])
+    try {
+      await fetchAggregation(bounds, pastDate, zoom)
+    } finally {
+      vi.unstubAllEnvs()
+      localStorage.clear()
+    }
 
     expect(global.fetch).not.toHaveBeenCalled()
     expect(siriGet).toHaveBeenCalledTimes(1)
@@ -80,5 +97,18 @@ describe('queryFn filtering is shared across sources', () => {
   it('throws when live data has no point above the sample threshold', async () => {
     siriGet.mockResolvedValue([{ totalSampleCount: 2 }])
     await expect(queryFn(bounds, recentDate, zoom)).rejects.toThrow(/No data points/)
+  })
+})
+
+describe('rounding precision', () => {
+  // The API rejects anything outside 0..10 with a 422, production and stride-lite alike.
+  it.each([
+    [11, 10],
+    [-2, 0],
+    [7, 7],
+  ])('zoom %i asks for precision %i', async (requested, sent) => {
+    siriGet.mockResolvedValue([{ totalSampleCount: 10 }])
+    await fetchAggregation(bounds, recentDate, requested)
+    expect(siriGet).toHaveBeenCalledWith(expect.objectContaining({ roundingPrecision: sent }))
   })
 })

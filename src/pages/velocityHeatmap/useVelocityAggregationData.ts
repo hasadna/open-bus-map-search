@@ -1,6 +1,7 @@
 import { SiriVelocityAggregationPydanticModel } from '@hasadna/open-bus-api-client'
 import { useQuery } from '@tanstack/react-query'
 import { SIRI_API } from 'src/api/apiConfig'
+import { isStrideLiteSelected } from 'src/api/strideLite'
 import dayjs from 'src/dayjs'
 
 export interface VelocityAggregationBounds {
@@ -12,12 +13,18 @@ export interface VelocityAggregationBounds {
 
 const cacheDomain = 'https://docbuvbfdq5r6.cloudfront.net/'
 
+/** The API answers 422 outside this range. */
+const MAX_ROUNDING_PRECISION = 10
+
+const roundingPrecision = (zoom: number) => Math.min(Math.max(zoom, 0), MAX_ROUNDING_PRECISION)
+
 export function useVelocityAggregationData(
   bounds: VelocityAggregationBounds,
   date: dayjs.Dayjs,
   zoom: number,
 ) {
   date = date.startOf('day').add(12, 'hour') // use midday to avoid timezone issues
+  zoom = roundingPrecision(zoom)
   const { data, isLoading, error } = useQuery({
     queryFn: queryFn.bind(null, bounds, date, zoom),
     queryKey: [
@@ -68,8 +75,9 @@ export async function fetchAggregation(
   date: dayjs.Dayjs,
   zoom: number,
 ): Promise<SiriVelocityAggregationPydanticModel[]> {
-  // only try cached data if date is in the past
-  if (date.isBefore(dayjs().subtract(1, 'day'))) {
+  zoom = roundingPrecision(zoom)
+  // The cache holds production's answers, so the experimental API must not be served from it
+  if (!isStrideLiteSelected() && date.isBefore(dayjs().subtract(1, 'day'))) {
     try {
       return await loadFromCache(bounds, date, zoom)
     } catch (e) {
