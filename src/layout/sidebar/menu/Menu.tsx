@@ -11,9 +11,10 @@ import { styled } from '@mui/material/styles'
 import React, { useContext, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useLocation } from 'react-router'
+import { useStrideLiteSelected } from 'src/hooks/useStrideLiteOptIn'
 import { LayoutContextInterface, LayoutCtx } from 'src/layout/LayoutContext'
 import DonateModal from 'src/pages/DonateModal/DonateModal'
-import { PAGES } from 'src/routes'
+import { PAGES, STRIDE_LITE_STATUS_PAGE } from 'src/routes'
 
 type MainMenuProps = {
   collapsed?: boolean
@@ -134,10 +135,18 @@ const MainMenu = ({ collapsed = false, compact = false }: MainMenuProps) => {
   const { setDrawerOpen } = useContext<LayoutContextInterface>(LayoutCtx)
   const [isDonateModalVisible, setDonateModalVisible] = useState(false)
   const { pathname } = useLocation()
+  const strideLiteSelected = useStrideLiteSelected()
 
   // src/routes imports the layout, so PAGES is still in its temporal dead zone while
   // this module initializes — the lookup has to be built at render time.
-  const pageByPath = new Map<string, (typeof PAGES)[number]>(PAGES.map((page) => [page.path, page]))
+  const pageByPath = new Map<string, (typeof PAGES)[number] | typeof STRIDE_LITE_STATUS_PAGE>(
+    [...PAGES, STRIDE_LITE_STATUS_PAGE].map((page) => [page.path, page]),
+  )
+  const groups = MENU_GROUPS.map(({ key, paths }) =>
+    key === 'menu_group_community' && strideLiteSelected
+      ? { key, paths: [...paths, STRIDE_LITE_STATUS_PAGE.path] }
+      : { key, paths },
+  )
 
   const handleDonateClick = (event: React.MouseEvent) => {
     event.preventDefault()
@@ -197,7 +206,7 @@ const MainMenu = ({ collapsed = false, compact = false }: MainMenuProps) => {
     <>
       <NavList className="sidebar-menu" compact={compact} collapsed={collapsed}>
         {UNGROUPED_PATHS.map((path) => renderItem(path))}
-        {MENU_GROUPS.flatMap(({ key, paths }) => [
+        {groups.flatMap(({ key, paths }) => [
           collapsed ? null : (
             <ListSubheader key={key} disableSticky>
               {t(key)}

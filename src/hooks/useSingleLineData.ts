@@ -43,6 +43,7 @@ export const useSingleLineData = ({
   const [vehicleRefById, setVehicleRefById] = useState<Map<number, string>>(new Map())
   const [positionGroups, setPositionGroups] = useState<PositionGroup[]>([])
   const [locationsAreLoading, setLocationsAreLoading] = useState(false)
+  const [optionsAreLoading, setOptionsAreLoading] = useState(false)
   const [error, setError] = useState<string>()
   const startTime = useMemo(() => normalizeStartTimeToken(rideTime ?? undefined), [rideTime])
 
@@ -114,9 +115,11 @@ export const useSingleLineData = ({
     setRideIdsByToken(new Map())
     setVehicleRefById(new Map())
     if (!selectedRoute?.lineRef) {
+      setOptionsAreLoading(false)
       return
     }
     const controller = new AbortController()
+    setOptionsAreLoading(true)
     SIRI_API.siriRidesListGet(
       {
         siriRouteLineRefs: selectedRoute?.lineRef?.toString(),
@@ -174,6 +177,9 @@ export const useSingleLineData = ({
       .catch((err) => {
         if (err?.name !== 'AbortError') console.error(err)
       })
+      .finally(() => {
+        if (!controller.signal.aborted) setOptionsAreLoading(false)
+      })
     return () => controller.abort()
   }, [selectedRoute?.lineRef, operatorId, dayStart, dayEnd])
 
@@ -189,6 +195,11 @@ export const useSingleLineData = ({
       rideIds.map((rideId, idx) =>
         SIRI_API.siriVehicleLocationsListGet({
           siriRidesIds: rideId.toString(),
+          // siri_vehicle_location is sorted by time on the backend, so without a window a
+          // single ride is looked for across the whole history. A day either side keeps
+          // rides that cross midnight and late readings.
+          recordedAtTimeFrom: dayStart.subtract(1, 'day').toDate(),
+          recordedAtTimeTo: dayEnd.add(1, 'day').toDate(),
           // Israel bounding box — drops null/zero-coordinate and stray pings at the API level
           latGreaterOrEqual: 29.0,
           latLowerOrEqual: 33.5,
@@ -208,7 +219,7 @@ export const useSingleLineData = ({
       .then(setPositionGroups)
       .catch(console.error)
       .finally(() => setLocationsAreLoading(false))
-  }, [selectedRideIdsKey, vehicleRefById])
+  }, [selectedRideIdsKey, vehicleRefById, dayStart, dayEnd])
 
   // Fetch planned stops for the black polyline
   const stopsQuery = useQuery({
@@ -248,6 +259,7 @@ export const useSingleLineData = ({
     options,
     startTime,
     locationsAreLoading,
+    optionsAreLoading,
     routes,
     routeKey: routeKey ?? undefined,
     error,

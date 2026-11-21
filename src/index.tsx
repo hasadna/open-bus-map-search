@@ -1,5 +1,5 @@
 import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister'
-import { QueryClient } from '@tanstack/react-query'
+import { defaultShouldDehydrateQuery, QueryClient } from '@tanstack/react-query'
 import {
   type PersistedClient,
   PersistQueryClientProvider,
@@ -8,7 +8,8 @@ import {
 import { createStore, del, get, set } from 'idb-keyval'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import ReactGAImport from 'react-ga4'
+import { ReactGA } from './analytics'
+import { shouldPersistQueries } from './api/strideLite'
 import App from './App'
 import './locale/allTranslations'
 import './index.scss'
@@ -57,11 +58,6 @@ const queryClient = new QueryClient({
   },
 })
 
-// react-ga4's default export is nested under `.default` under some CJS/ESM interop
-// (e.g. Vite/Rolldown), so unwrap it to keep the shared singleton.
-const ReactGA =
-  (ReactGAImport as unknown as { default?: typeof ReactGAImport }).default ?? ReactGAImport
-
 try {
   ReactGA.initialize('G-0YRQT80GG1')
 } catch (e) {
@@ -71,7 +67,15 @@ try {
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
   <React.StrictMode>
-    <PersistQueryClientProvider client={queryClient} persistOptions={{ persister }}>
+    <PersistQueryClientProvider
+      client={queryClient}
+      persistOptions={{
+        persister,
+        dehydrateOptions: {
+          shouldDehydrateQuery: (query) =>
+            shouldPersistQueries() && defaultShouldDehydrateQuery(query),
+        },
+      }}>
       <App />
     </PersistQueryClientProvider>
   </React.StrictMode>,

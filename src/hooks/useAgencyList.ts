@@ -7,11 +7,15 @@ import { GlobalSearchContext } from 'src/model/globalState'
 const NO_AGENCIES: GtfsAgencyPydanticModel[] = []
 
 /** Agencies that ran on the globally selected day (GlobalSearchState.date). */
-export function useAgencyList() {
+export function useAgencyListQuery() {
   const {
     search: { date },
   } = useContext(GlobalSearchContext)
-  const { data } = useQuery(agencyListForDateQueryOptions(date))
+  const { data, isLoading } = useQuery(agencyListForDateQueryOptions(date))
 
-  return data ?? NO_AGENCIES
+  return { agencies: data ?? NO_AGENCIES, isLoading }
+}
+
+export function useAgencyList() {
+  return useAgencyListQuery().agencies
 }

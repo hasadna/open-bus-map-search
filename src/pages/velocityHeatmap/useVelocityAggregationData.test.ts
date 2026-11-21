@@ -1,5 +1,7 @@
+import type { SiriVelocityAggregationPydanticModel } from '@hasadna/open-bus-api-client'
+import { setStrideLiteOptedIn } from 'src/api/strideLite'
 import dayjs from 'src/dayjs'
-import { fetchAggregation, queryFn } from './useVelocityAggregationData'
+import { combineTiles, fetchAggregation, queryFn } from './useVelocityAggregationData'
 
 const siriGet = vi.hoisted(() => vi.fn())
 
@@ -24,6 +26,7 @@ beforeEach(() => {
   vi.clearAllMocks()
   vi.spyOn(console, 'warn').mockImplementation(() => {})
   global.fetch = vi.fn()
+  setStrideLiteOptedIn(false)
 })
 
 describe('velocity-aggregation source selection', () => {
@@ -42,6 +45,21 @@ describe('velocity-aggregation source selection', () => {
   it('recent dates go to the live API and skip the cache', async () => {
     siriGet.mockResolvedValue([{ totalSampleCount: 10 }])
     await fetchAggregation(bounds, recentDate, zoom)
+
+    expect(global.fetch).not.toHaveBeenCalled()
+    expect(siriGet).toHaveBeenCalledTimes(1)
+  })
+
+  it("past dates go to the experimental API, not production's cache, while it is in use", async () => {
+    vi.stubEnv('VITE_STRIDE_LITE_API', 'https://stride-lite.example')
+    setStrideLiteOptedIn(true)
+    siriGet.mockResolvedValue([{ totalSampleCount: 10 }])
+    try {
+      await fetchAggregation(bounds, pastDate, zoom)
+    } finally {
+      vi.unstubAllEnvs()
+      localStorage.clear()
+    }
 
     expect(global.fetch).not.toHaveBeenCalled()
     expect(siriGet).toHaveBeenCalledTimes(1)
@@ -72,13 +90,48 @@ describe('queryFn filtering is shared across sources', () => {
     expect(data[0].totalSampleCount).toBe(10)
   })
 
-  it('throws when cached data has no point above the sample threshold', async () => {
-    mockCacheOk([{ total_sample_count: 2 }])
-    await expect(queryFn(bounds, pastDate, zoom)).rejects.toThrow(/No data points/)
+  it("drops a cell labelled on the tile's lower edge, which belongs to the tile below", async () => {
+    siriGet.mockResolvedValue([
+      { totalSampleCount: 10, roundedLon: 34, roundedLat: 32.5 },
+      { totalSampleCount: 10, roundedLon: 34.5, roundedLat: 32.5 },
+    ])
+    const data = await queryFn(bounds, recentDate, zoom)
+    expect(data).toEqual([{ totalSampleCount: 10, roundedLon: 34.5, roundedLat: 32.5 }])
+  })
+})
+
+describe('combineTiles', () => {
+  const point = { totalSampleCount: 10 } as SiriVelocityAggregationPydanticModel
+
+  it('reports no data only once every tile came back empty', () => {
+    expect(combineTiles([{ data: [], isLoading: false, error: null }]).error?.message).toMatch(
+      /No data points/,
+    )
+    expect(combineTiles([{ data: [], isLoading: true, error: null }]).error).toBeNull()
   })
 
-  it('throws when live data has no point above the sample threshold', async () => {
-    siriGet.mockResolvedValue([{ totalSampleCount: 2 }])
-    await expect(queryFn(bounds, recentDate, zoom)).rejects.toThrow(/No data points/)
+  it('keeps drawing while a newly visible tile loads', () => {
+    const combined = combineTiles([
+      { data: [point], isLoading: false, error: null },
+      { isLoading: true, error: null },
+    ])
+    expect(combined).toEqual({ data: [point], loading: false, error: null })
+  })
+
+  it('is not an error to look at no tile at all', () => {
+    expect(combineTiles([])).toEqual({ data: [], loading: false, error: null })
+  })
+})
+
+describe('rounding precision', () => {
+  // The API rejects anything outside 0..10 with a 422, production and stride-lite alike.
+  it.each([
+    [11, 10],
+    [-2, 0],
+    [7, 7],
+  ])('zoom %i asks for precision %i', async (requested, sent) => {
+    siriGet.mockResolvedValue([{ totalSampleCount: 10 }])
+    await fetchAggregation(bounds, recentDate, requested)
+    expect(siriGet).toHaveBeenCalledWith(expect.objectContaining({ roundingPrecision: sent }))
   })
 })
