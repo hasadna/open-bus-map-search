@@ -10,6 +10,21 @@ global.ResizeObserver = ResizeObserver
 // (node's util provides them.)
 global.TextEncoder ??= TextEncoder as typeof global.TextEncoder
 global.TextDecoder ??= TextDecoder as typeof global.TextDecoder
+
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: (query: string) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: () => {},
+    removeListener: () => {},
+    addEventListener: () => {},
+    removeEventListener: () => {},
+    dispatchEvent: () => false,
+  }),
+})
+
 afterEach(() => {
   cleanup()
 })
