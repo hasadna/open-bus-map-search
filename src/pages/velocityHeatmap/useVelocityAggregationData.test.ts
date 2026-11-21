@@ -1,6 +1,7 @@
+import type { SiriVelocityAggregationPydanticModel } from '@hasadna/open-bus-api-client'
 import { setStrideLiteOptedIn } from 'src/api/strideLite'
 import dayjs from 'src/dayjs'
-import { fetchAggregation, queryFn } from './useVelocityAggregationData'
+import { combineTiles, fetchAggregation, queryFn } from './useVelocityAggregationData'
 
 const siriGet = vi.hoisted(() => vi.fn())
 
@@ -89,14 +90,36 @@ describe('queryFn filtering is shared across sources', () => {
     expect(data[0].totalSampleCount).toBe(10)
   })
 
-  it('throws when cached data has no point above the sample threshold', async () => {
-    mockCacheOk([{ total_sample_count: 2 }])
-    await expect(queryFn(bounds, pastDate, zoom)).rejects.toThrow(/No data points/)
+  it("drops a cell labelled on the tile's lower edge, which belongs to the tile below", async () => {
+    siriGet.mockResolvedValue([
+      { totalSampleCount: 10, roundedLon: 34, roundedLat: 32.5 },
+      { totalSampleCount: 10, roundedLon: 34.5, roundedLat: 32.5 },
+    ])
+    const data = await queryFn(bounds, recentDate, zoom)
+    expect(data).toEqual([{ totalSampleCount: 10, roundedLon: 34.5, roundedLat: 32.5 }])
+  })
+})
+
+describe('combineTiles', () => {
+  const point = { totalSampleCount: 10 } as SiriVelocityAggregationPydanticModel
+
+  it('reports no data only once every tile came back empty', () => {
+    expect(combineTiles([{ data: [], isLoading: false, error: null }]).error?.message).toMatch(
+      /No data points/,
+    )
+    expect(combineTiles([{ data: [], isLoading: true, error: null }]).error).toBeNull()
   })
 
-  it('throws when live data has no point above the sample threshold', async () => {
-    siriGet.mockResolvedValue([{ totalSampleCount: 2 }])
-    await expect(queryFn(bounds, recentDate, zoom)).rejects.toThrow(/No data points/)
+  it('keeps drawing while a newly visible tile loads', () => {
+    const combined = combineTiles([
+      { data: [point], isLoading: false, error: null },
+      { isLoading: true, error: null },
+    ])
+    expect(combined).toEqual({ data: [point], loading: false, error: null })
+  })
+
+  it('is not an error to look at no tile at all', () => {
+    expect(combineTiles([])).toEqual({ data: [], loading: false, error: null })
   })
 })
 
