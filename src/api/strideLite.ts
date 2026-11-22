@@ -198,8 +198,11 @@ export type StrideLiteOpsMetrics = {
         samples: number
         load1Avg: number | null
         load1P95: number | null
+        /** Absent from a backend older than it. */
+        load1Max: number | null
         memoryUsedAvg: number | null
         memoryUsedP95: number | null
+        memoryUsedMax: number | null
       }[]
     | null
   tables: { table: string; rows: number; bytes: number }[] | null
@@ -314,8 +317,10 @@ const parseOpsMetrics = (payload: unknown): StrideLiteOpsMetrics => {
       samples: asNumber(r.samples, 'samples'),
       load1Avg: asNullableNumber(r.load1_avg, 'load1_avg'),
       load1P95: asNullableNumber(r.load1_p95, 'load1_p95'),
+      load1Max: asNullableNumber(r.load1_max, 'load1_max'),
       memoryUsedAvg: asNullableNumber(r.memory_used_avg, 'memory_used_avg'),
       memoryUsedP95: asNullableNumber(r.memory_used_p95, 'memory_used_p95'),
+      memoryUsedMax: asNullableNumber(r.memory_used_max, 'memory_used_max'),
     })),
     tables: section(raw.tables, (r) => ({
       table: asString(r.table, 'table'),

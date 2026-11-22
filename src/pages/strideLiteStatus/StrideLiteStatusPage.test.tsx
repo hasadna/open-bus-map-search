@@ -273,8 +273,10 @@ describe('StrideLiteStatusPage', () => {
       since: '2026-11-10 12:00:00',
       load1_avg: 1,
       load1_p95: 1.8,
+      load1_max: 3,
       memory_used_avg: 2e9,
       memory_used_p95: 3e9,
+      memory_used_max: 3.5e9,
       memory_capacity: 8e9,
     })
     const metrics = {
@@ -289,7 +291,11 @@ describe('StrideLiteStatusPage', () => {
         LoadAverage15: 1,
         cpus: 2,
       },
-      history: [window('hour', 1, 60), window('day', 24, 1440), window('week', 168, 1440)],
+      history: [
+        window('hour', 1, 60),
+        window('day', 24, 1440),
+        { ...window('week', 168, 1440), load1_max: undefined, memory_used_max: undefined },
+      ],
     }
     vi.stubGlobal(
       'fetch',
@@ -320,8 +326,11 @@ describe('StrideLiteStatusPage', () => {
     expect(hour).toHaveTextContent('90%')
     expect(hour).toHaveTextContent('2 GB')
     expect(hour).toHaveTextContent('3 GB')
+    expect(hour).toHaveTextContent('150%')
+    expect(hour).toHaveTextContent('3.5 GB')
     expect(hour).not.toHaveTextContent('recorded')
     expect(screen.getByRole('row', { name: /Last week/ })).toHaveTextContent('Only 1 day recorded')
+    expect(screen.getByRole('row', { name: /Last week/ })).toHaveTextContent('—')
   })
 
   test('switching backends forgets every answer the other one gave', () => {
