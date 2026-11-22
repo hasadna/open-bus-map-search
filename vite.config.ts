@@ -8,6 +8,12 @@ import { cspHeader, DEV_ONLY_DIRECTIVES } from './csp.ts'
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd())
 
+  // An http API on another host (e.g. a stride-lite in a sibling dev container) is not
+  // covered by the dev CSP's localhost entries, so the browser would block every request.
+  const localApiOrigins = [env.VITE_STRIDE_API, env.VITE_BACKEND_API]
+    .filter((url) => url?.startsWith('http://'))
+    .map((url) => new URL(url).origin)
+
   return {
     base: env?.VITE_BASE_PATH || '/',
     plugins: [
@@ -30,7 +36,12 @@ export default defineConfig(({ mode }) => {
     },
     server: {
       port: 3000,
-      headers: { 'Content-Security-Policy': cspHeader(DEV_ONLY_DIRECTIVES) },
+      headers: {
+        'Content-Security-Policy': cspHeader({
+          ...DEV_ONLY_DIRECTIVES,
+          'connect-src': [...DEV_ONLY_DIRECTIVES['connect-src'], ...localApiOrigins],
+        }),
+      },
     },
     preview: {
       headers: { 'Content-Security-Policy': cspHeader() },
