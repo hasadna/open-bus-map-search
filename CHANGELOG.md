@@ -1,5 +1,31 @@
 # Changelog
 
+## [1.7.0](https://github.com/hasadna/open-bus-map-search/compare/v1.6.0...v1.7.0) (2026-11-22)
+
+
+### Features
+
+* **dev:** allow an http API on any host in the dev server CSP ([#1953](https://github.com/hasadna/open-bus-map-search/issues/1953)) ([3bb83cb](https://github.com/hasadna/open-bus-map-search/commit/3bb83cb513c036b157a18ca76be7e88410762d40))
+* opt-in stride-lite backend and a hidden status page for it ([#1929](https://github.com/hasadna/open-bus-map-search/issues/1929)) ([6389cda](https://github.com/hasadna/open-bus-map-search/commit/6389cda57b84135c7aaa6381434917e29a48045d))
+* **stride-lite-status:** CPU demand and memory over the last hour, day and week ([#1946](https://github.com/hasadna/open-bus-map-search/issues/1946)) ([b59fea0](https://github.com/hasadna/open-bus-map-search/commit/b59fea025d84107f6a261f51f174fb09ede786a6))
+* **stride-lite:** show snapshots that arrived empty as a gap ([#1942](https://github.com/hasadna/open-bus-map-search/issues/1942)) ([7932fb6](https://github.com/hasadna/open-bus-map-search/commit/7932fb66347abd85faffbcc20afd29c22f0af678))
+* **stride-lite:** use the experimental API by default, and measure it in GA ([#1945](https://github.com/hasadna/open-bus-map-search/issues/1945)) ([f58e280](https://github.com/hasadna/open-bus-map-search/commit/f58e2808ea62c3ea6a6cf255fed53e97848adab3))
+* **velocity-heatmap:** load the visible area in tiles from the experimental API ([#1944](https://github.com/hasadna/open-bus-map-search/issues/1944)) ([0855a77](https://github.com/hasadna/open-bus-map-search/commit/0855a77f3984a1737da482162cb21ef99ec2c058))
+
+
+### Bug Fixes
+
+* allow the GA4 collect endpoint on www.google.com in connect-src ([#1936](https://github.com/hasadna/open-bus-map-search/issues/1936)) ([4870c6d](https://github.com/hasadna/open-bus-map-search/commit/4870c6dfc78eaac66c12e082e5bbc5384aefb767))
+* debounce station stops time-based requests ([#1920](https://github.com/hasadna/open-bus-map-search/issues/1920)) ([01d579e](https://github.com/hasadna/open-bus-map-search/commit/01d579ee6771d7ac81b435277c2d8ac5ac96249d))
+* excessive time-based map fetches ([#1902](https://github.com/hasadna/open-bus-map-search/issues/1902)) ([bd7a835](https://github.com/hasadna/open-bus-map-search/commit/bd7a835b7e23fc19c6d03f957885bcbad0d7e2de))
+* future date navigation ([#1901](https://github.com/hasadna/open-bus-map-search/issues/1901)) ([ea7395e](https://github.com/hasadna/open-bus-map-search/commit/ea7395e01594806d002d7e256b6c36f7568263d0))
+* keep typed digits in the date field when the date is out of range ([#1921](https://github.com/hasadna/open-bus-map-search/issues/1921)) ([bee1273](https://github.com/hasadna/open-bus-map-search/commit/bee1273367518fda2ea18dafecac1b8099868ae3))
+* show a loading text instead of "No options" while selector options load ([#1938](https://github.com/hasadna/open-bus-map-search/issues/1938)) ([1fedee3](https://github.com/hasadna/open-bus-map-search/commit/1fedee3dca507300261317a304231d6b137a2255))
+* **single-line:** ask for a ride's locations within a day either side of the date ([#1933](https://github.com/hasadna/open-bus-map-search/issues/1933)) ([6fc0b13](https://github.com/hasadna/open-bus-map-search/commit/6fc0b1360cc8477239bd4bff3666200be0d331bc))
+* start the operator gaps pie animation immediately ([#1912](https://github.com/hasadna/open-bus-map-search/issues/1912)) ([fce3cbf](https://github.com/hasadna/open-bus-map-search/commit/fce3cbf06f4877a42bfd57dccd58000fd08865f0))
+* Test report URL ([#1733](https://github.com/hasadna/open-bus-map-search/issues/1733)) ([00ae3c2](https://github.com/hasadna/open-bus-map-search/commit/00ae3c241520535d4943ce3aeb48b9e6e9398082))
+* **velocity-heatmap:** keep rounding_precision within the API's 0..10 ([#1943](https://github.com/hasadna/open-bus-map-search/issues/1943)) ([09344bd](https://github.com/hasadna/open-bus-map-search/commit/09344bd92d789efa3e299b383db08bf0e001811f))
+
 ## [1.6.0](https://github.com/hasadna/open-bus-map-search/compare/v1.5.0...v1.6.0) (2026-09-27)
 
 
