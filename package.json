@@ -12,7 +12,7 @@
     "@mui/icons-material": "^9.5.0",
     "@mui/material": "^9.5.0",
     "@mui/stylis-plugin-rtl": "^9.4.0",
-    "@mui/x-date-pickers": "^9.14.0",
+    "@mui/x-date-pickers": "^9.18.0",
     "@mui/x-tree-view": "^9.14.0",
     "@rolldown/plugin-babel": "^0.2.4",
     "@tanstack/query-async-storage-persister": "^5.104.1",
