@@ -161,6 +161,7 @@ export const setupTest = async (page: Page, lng: string = 'he') => {
   })
   await page.route(/google-analytics\.com|googletagmanager\.com/, (route) => route.abort())
   await page.route(/api\.github\.com/, (route) => route.abort())
+  await page.route(/kavbochan\.app/, (route) => route.abort())
   await page.route(/open-bus-backend\.k8s\.hasadna\.org\.il/, (route) => route.abort())
   await page.route(/.*openstreetmap*/, (route) => route.abort())
   // Abort stride-api requests during initial navigation. Tests that need stride-api data

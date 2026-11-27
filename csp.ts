@@ -33,6 +33,7 @@ export const CSP_DIRECTIVES: Record<string, string[]> = {
     'https://*.amazonaws.com',
     'https://*.on.aws',
     'https://*.cloudfront.net',
+    'https://kavbochan.app',
     'http://localhost:*',
     'http://127.0.0.1:*',
   ],
