@@ -12,6 +12,7 @@ import { PageContainer } from '../components/PageContainer'
 import InfoYoutubeModal from '../components/YoutubeModal'
 import AllLinesChart from './AllLineschart/AllLinesChart'
 import DayTimeChart from './ArrivalByTimeChart/DayTimeChart'
+import EarlyDeparturesChart from './EarlyDeparturesChart/EarlyDeparturesChart'
 import { ridesDataStatus, type RidesDataStatus } from './ridesDataStatus'
 import WorstLinesChart from './WorstLinesChart/WorstLinesChart'
 // Styling
@@ -107,6 +108,9 @@ const DashboardPage = () => {
         </Grid>
         <Grid size={{ xs: 12 }}>
           <DayTimeChart startDate={startDate} endDate={endDate} operatorId={operatorId} />
+        </Grid>
+        <Grid size={{ xs: 12 }}>
+          <EarlyDeparturesChart startDate={startDate} endDate={endDate} />
         </Grid>
       </Grid>
     </PageContainer>
